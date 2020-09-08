@@ -3,6 +3,7 @@
  */
 export interface AddAuthRequest {
   version: 1;
+  resourceName: string;
   serviceConfiguration: CognitoServiceConfiguration;
 }
 
@@ -15,7 +16,7 @@ export type CognitoServiceConfiguration = BaseCognitoServiceConfiguration & (NoC
  * Configuration that applies to all Cognito configuration
  */
 export interface BaseCognitoServiceConfiguration {
-  serviceName: 'cognito';
+  serviceName: 'Cognito';
   userPoolConfiguration: CognitoUserPoolConfiguration;
 }
 
@@ -43,30 +44,25 @@ export interface CognitoIdentityPoolConfiguration {
    */
   identityPoolName?: string;
   unauthenticatedLogin?: boolean;
-  identitySocialFederation?: {
-    facebook?: {
-      facebookAppId: string;
-    };
-    google?: {
-      googleClientId: string;
-    };
-    amazon?: {
-      amazonAppId: string;
-    };
-  };
+  identitySocialFederation?: CognitoIdentitySocialFederation[];
+}
+
+export interface CognitoIdentitySocialFederation {
+  provider: 'FACEBOOK' | 'GOOGLE' | 'AMAZON';
+  clientId: string;
 }
 
 export interface CognitoUserPoolConfiguration {
   signinMethod: CognitoUserPoolSigninMethod;
-  requiredSignupInformation: CognitoUserProperty[];
+  requiredSignupAttributes: CognitoUserProperty[];
   userPoolName?: string;
   userPoolGroups?: CognitoUserPoolGroup[];
   adminQueries?: CognitoAdminQueries;
   mfa?: CognitoMFAConfiguration;
-  forgotPassword?: CognitoForgotPasswordConfiguration;
+  passwordRecovery?: CognitoPasswordRecoveryConfiguration;
   passwordPolicy?: CognitoPasswordPolicy;
   refreshTokenPeriod?: number;
-  readAttributes?: CognitoUserProperty[];
+  readAttributes?: (CognitoUserProperty | CognitoUserPropertyVerified)[];
   writeAttributes?: CognitoUserProperty[];
   oAuth?: CognitoOAuthConfiguration;
   confirmationRedirect?: CognitoConfirmationRedirectConfiguration;
@@ -86,20 +82,13 @@ export interface CognitoOAuthConfiguration {
   redirectSignoutURIs: string[];
   oAuthGrantType: 'CODE' | 'IMPLICIT';
   oAuthScopes: ('PHONE' | 'EMAIL' | 'OPENID' | 'PROFILE' | 'AWS.COGNITO.SIGNIN.USER.ADMIN')[];
-  socialProviderSettings?: {
-    Facebook?: {
-      appId: string;
-      appSecret: string;
-    };
-    Google?: {
-      webClientId: string;
-      webClientSecret: string;
-    };
-    LoginWithAmazon?: {
-      appId: string;
-      appSecret: string;
-    };
-  };
+  socialProviderConfigurations?: CognitoSocialProviderConfiguration[];
+}
+
+export interface CognitoSocialProviderConfiguration {
+  provider: 'FACEBOOK' | 'GOOGLE' | 'LOGIN_WITH_AMAZON';
+  clientId: string;
+  clientSecret: string;
 }
 
 export interface CognitoConfirmationRedirectConfiguration {
@@ -109,19 +98,19 @@ export interface CognitoConfirmationRedirectConfiguration {
 }
 
 export interface CognitoPasswordPolicy {
-  minimumLength: number;
-  additionalConstraints: CognitoPasswordConstraint[];
+  minimumLength?: number;
+  additionalConstraints?: CognitoPasswordConstraint[];
 }
 
-export type CognitoForgotPasswordConfiguration = CognitoForgotPasswordEmailConfiguration | CognitoForgotPasswordSMSConfiguration;
+export type CognitoPasswordRecoveryConfiguration = CognitoEmailPasswordRecoveryConfiguration | CognitoSMSPasswordRecoveryConfiguration;
 
-export interface CognitoForgotPasswordEmailConfiguration {
+export interface CognitoEmailPasswordRecoveryConfiguration {
   deliveryMethod: 'EMAIL';
   emailMessage: string;
   emailSubject: string;
 }
 
-export interface CognitoForgotPasswordSMSConfiguration {
+export interface CognitoSMSPasswordRecoveryConfiguration {
   deliveryMethod: 'SMS';
   smsMessage: string;
 }
@@ -149,7 +138,6 @@ export interface CognitoAdminQueries {
 }
 
 export interface CognitoUserPoolGroup {
-  priority: number;
   customPolicy?: string;
   groupName: string;
 }
@@ -186,4 +174,9 @@ export enum CognitoUserProperty {
   UPDATED_AT = 'UPDATED_AT',
   WEBSITE = 'WEBSITE',
   ZONE_INFO = 'ZONE_INFO',
+}
+
+export enum CognitoUserPropertyVerified {
+  EMAIL_VERIFIED = 'EMAIL_VERIFIED',
+  PHONE_NUMBER_VERIFIED = 'PHONE_NUMBER_VERIFIED',
 }
