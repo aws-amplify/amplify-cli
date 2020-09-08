@@ -459,7 +459,11 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
             scopes = coreAnswers.newOIDCAuthorizeScopes;
           } else {
             // from add auth without specific scope or update without scope added
-            scopes = answers.oidcAuthorizeScopes ? answers.oidcAuthorizeScopes : ["openid"];
+            scopes = answers.oidcAuthorizeScopes ? answers.oidcAuthorizeScopes : ['openid'];
+          }
+          // Add compulsory scope if missing
+          if (!scopes.includes('openid')) {
+            scopes.unshift('openid');
           }
           try {
             // from update auth => previous data loaded from file as escaped string
@@ -578,7 +582,10 @@ function parseOAuthCreds(providers, metadata, envCreds) {
         providerKeys[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
         if(el === 'OIDC') {
           providerKeys[`${el.toLowerCase()}AppOIDCIssuer`] = provider.oidc_issuer;
-          providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(' ');
+          providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(' ').filter(scope => scope != 'openid');
+          if (providerKeys[`${el.toLowerCase()}AuthorizeScopes`].length === 0) {
+            providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = undefined;
+          }
           providerKeys[`${el.toLowerCase()}AttributesMapping`] = JSON.stringify(provider.attribute_mapping);
         } else {
           providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(',');
