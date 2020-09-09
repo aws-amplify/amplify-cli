@@ -5,10 +5,19 @@ import { prompt } from 'inquirer';
 import path from 'path';
 import _ from 'lodash';
 import { hashElement } from 'folder-hash';
+import { pathManager } from 'amplify-cli-core';
 import { FunctionDependency } from 'amplify-function-plugin-interface';
 import { ServiceName, provider } from './constants';
 import { previousPermissionsQuestion } from './layerHelpers';
-import { getLayerMetadataFactory, Permission, PrivateLayer, LayerParameters, LayerMetadata } from './layerParams';
+import {
+  getLayerMetadataFactory,
+  isMultiEnvLayer,
+  Permission,
+  PrivateLayer,
+  LayerParameters,
+  LayerMetadata,
+  LayerRuntime,
+} from './layerParams';
 import { getLayerRuntimes } from './layerRuntimes';
 import crypto from 'crypto';
 import { updateLayerArtifacts } from './storeResources';
@@ -22,7 +31,7 @@ export async function packageLayer(context, resource: Resource) {
 async function zipLayer(context, resource: Resource) {
   const zipFilename = 'latest-build.zip';
   const layerName = resource.resourceName;
-  const layerDirPath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, layerName);
+  const layerDirPath = path.join(pathManager.getBackendDirPath(), resource.category, layerName);
   const distDir = path.join(layerDirPath, 'dist');
   fs.ensureDirSync(distDir);
   const destination = path.join(distDir, zipFilename);
@@ -88,7 +97,16 @@ async function ensureLayerVersion(context: any, layerName: string) {
   }
   await layerState.setNewVersionHash(); // "finialize" the latest layer version
   const storedParams = layerState.toStoredLayerParameters();
-  const additionalLayerParams = {
+  const additionalLayerParams: {
+    layerName: string;
+    build: boolean;
+    providerContext: {
+      provider: string;
+      service: string;
+      projectName: string;
+    };
+    runtimes?: LayerRuntime[];
+  } = {
     layerName,
     build: true,
     providerContext: {
@@ -96,9 +114,13 @@ async function ensureLayerVersion(context: any, layerName: string) {
       service: ServiceName.LambdaLayer,
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     },
-    runtimes: getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), layerName),
   };
-  const layerParameters: LayerParameters = { ...storedParams, ...additionalLayerParams };
+
+  if (isMultiEnvLayer(context, layerName)) {
+    additionalLayerParams.runtimes = getLayerRuntimes(pathManager.getBackendDirPath(), layerName);
+  }
+
+  const layerParameters = { ...storedParams, ...additionalLayerParams } as LayerParameters;
   updateLayerArtifacts(context, layerParameters, latestVersion, { cfnFile: isNewVersion });
 }
 

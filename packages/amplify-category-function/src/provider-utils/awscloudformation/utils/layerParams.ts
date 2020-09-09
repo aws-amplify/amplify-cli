@@ -86,7 +86,9 @@ class LayerState implements LayerMetadata {
     this.context = context;
     this.layerName = layerName;
     this.storedParams = getStoredLayerState(context, layerName);
-    this.runtimes = getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), layerName);
+    this.runtimes = isMultiEnvLayer(context, layerName)
+      ? getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), layerName)
+      : this.storedParams.runtimes;
     Object.entries(this.storedParams.layerVersionMap).forEach(([versionNumber, versionData]) => {
       this.versionMap.set(Number(versionNumber), new LayerVersionState(versionData));
     });
