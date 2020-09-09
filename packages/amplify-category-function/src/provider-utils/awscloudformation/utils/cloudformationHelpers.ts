@@ -1,6 +1,7 @@
-import { category as categoryName } from '../../../constants';
+import { categoryName, appsyncTableSuffix } from './constants';
+import { getAppSyncResourceName } from './appSyncHelper';
 
-export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults, amplifyMeta) {
+export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults) {
   const currentResources = [];
   const newResources = [];
   let deletedResources = [];
@@ -26,13 +27,11 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
       deletedResources.push(resourceName);
     }
   });
-  const appsyncTableSuffix = '@model(appsync)';
 
   const deleteAppSyncTableResources = deletedResources.filter(resource => resource.includes(appsyncTableSuffix.toUpperCase()));
   deletedResources = deletedResources.filter(resource => !resource.includes(appsyncTableSuffix.toUpperCase()));
   deleteAppSyncTableResources.forEach(table => {
-    const appsyncResourceName =
-      'api' in amplifyMeta ? Object.keys(amplifyMeta.api).find(key => amplifyMeta.api[key].service === 'AppSync') : undefined;
+    const appsyncResourceName = getAppSyncResourceName();
     const replacementTableSuffix = `:${appsyncTableSuffix.toUpperCase()}_`;
     const modelEnvPrefix = `API_${appsyncResourceName.toUpperCase()}_${table
       .replace(replacementTableSuffix, 'TABLE')
