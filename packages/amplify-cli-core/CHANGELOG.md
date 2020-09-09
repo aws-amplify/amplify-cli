@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.3.0...amplify-cli-core@1.3.1) (2020-09-09)
+
+
+### Bug Fixes
+
+* update default file permissions for credentials/config ([#5246](https://github.com/aws-amplify/amplify-cli/issues/5246)) ([b64f1bd](https://github.com/aws-amplify/amplify-cli/commit/b64f1bd784b0595f49241fdd89686c5f8a421ae3))
+
+
+
+
+
 # [1.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.2.0...amplify-cli-core@1.3.0) (2020-08-31)
 
 
