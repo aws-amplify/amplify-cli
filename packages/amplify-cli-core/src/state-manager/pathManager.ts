@@ -3,6 +3,11 @@ import * as fs from 'fs-extra';
 import { homedir } from 'os';
 
 const PathConstants = {
+  // in home directory
+  DotAWSDir: '.aws',
+  AWSCredentials: 'credentials',
+  AWSConfig: 'config',
+
   // in project root
   AmplifyDirName: 'amplify',
   DotAmplifyDirName: '.amplify',
@@ -88,6 +93,12 @@ export class PathManager {
       PathConstants.CurrentCloudBackendDirName,
       PathConstants.BackendConfigFileName,
     ]);
+
+  getDotAWSDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDir));
+
+  getAWSCredentialsFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSCredentials));
+
+  getAWSConfigFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSConfig));
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {
