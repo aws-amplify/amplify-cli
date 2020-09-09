@@ -45,21 +45,6 @@ async function add(context) {
       }
       return providerController.addResource(context, result.service);
     })
-    .then(resourceName => {
-      const options = {
-        service: resultMetadata.service,
-        providerPlugin: resultMetadata.providerName,
-      };
-      const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
-      const authParameters = amplify.readJsonFile(resourceDirPath);
-
-      if (authParameters.dependsOn) {
-        options.dependsOn = authParameters.dependsOn;
-      }
-      amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
-      context.print.success('Successfully added auth resource');
-      return resourceName;
-    })
     .catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error adding the auth resource');
