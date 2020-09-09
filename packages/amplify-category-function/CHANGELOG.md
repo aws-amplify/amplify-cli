@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.24.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.24.0...amplify-category-function@2.24.1-beta.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* migration issue with layers created before 4.29.0 ([#5256](https://github.com/aws-amplify/amplify-cli/issues/5256)) ([239deaa](https://github.com/aws-amplify/amplify-cli/commit/239deaa8f2074046d671b2192d4bdc4f74b5d2d4))
+
+
+
+
+
 # [2.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.23.5...amplify-category-function@2.24.0) (2020-09-03)
 
 

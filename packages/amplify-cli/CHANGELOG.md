@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.29.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.0...@aws-amplify/cli@4.29.1-beta.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* **cli:** do not display stack trace on env list ([#4988](https://github.com/aws-amplify/amplify-cli/issues/4988)) ([a6ed3df](https://github.com/aws-amplify/amplify-cli/commit/a6ed3df3ac35f135ea22b162613096a682bc2c21))
+* **cli:** fix amplify console url ([#5258](https://github.com/aws-amplify/amplify-cli/issues/5258)) ([e4a9568](https://github.com/aws-amplify/amplify-cli/commit/e4a9568d7df6752f51a610cb8739745d1fd2eb67)), closes [#5248](https://github.com/aws-amplify/amplify-cli/issues/5248)
+* update default file permissions for credentials/config ([#5246](https://github.com/aws-amplify/amplify-cli/issues/5246)) ([b64f1bd](https://github.com/aws-amplify/amplify-cli/commit/b64f1bd784b0595f49241fdd89686c5f8a421ae3))
+
+
+
+
+
 # [4.29.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.28.2...@aws-amplify/cli@4.29.0) (2020-09-03)
 
 

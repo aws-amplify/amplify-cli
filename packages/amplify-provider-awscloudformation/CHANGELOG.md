@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.26.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.0...amplify-provider-awscloudformation@4.26.1-beta.0) (2020-09-09)
+
+
+### Bug Fixes
+
+* update default file permissions for credentials/config ([#5246](https://github.com/aws-amplify/amplify-cli/issues/5246)) ([b64f1bd](https://github.com/aws-amplify/amplify-cli/commit/b64f1bd784b0595f49241fdd89686c5f8a421ae3))
+
+
+
+
+
 # [4.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.25.2...amplify-provider-awscloudformation@4.26.0) (2020-09-03)
 
 
