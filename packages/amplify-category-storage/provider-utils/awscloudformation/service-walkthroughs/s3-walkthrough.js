@@ -885,13 +885,16 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
       };
 
       // Update DependsOn
-      context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'dependsOn', [
-        {
-          category: 'function',
-          resourceName: functionName,
-          attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
-        },
-      ]);
+      const dependsOnResources = amplifyMetaFile.storage[resourceName].dependsOn || [];
+      dependsOnResources.filter(resource => {
+        return resource.resourceName !== triggerFunction;
+      });
+      dependsOnResources.push({
+        category: 'function',
+        resourceName: functionName,
+        attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
+      });
+      context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'dependsOn', dependsOnResources);
     }
 
     storageCFNFile.Resources.TriggerPermissions = {
