@@ -105,7 +105,7 @@ export const buildResourceInternal = async (
     }
 
     // Execute the build command, cwd must be the source file directory (Windows requires it)
-    executeCommand(['build', '-o', executablePath, '*.go'], true, envVars, srcDir);
+    executeCommand(['build', '-o', executablePath, '.'], true, envVars, srcDir);
 
     rebuilt = true;
   }
