@@ -1251,10 +1251,10 @@ export const supportedServices = {
             operator: "exists"
           },
           {
-                  key: 'updateFlow',
-                  value: 'providers',
-                  operator: '=',
-                }
+            key: 'updateFlow',
+            value: 'providers',
+            operator: '=',
+          }
         ]
       },
       {
@@ -1323,7 +1323,7 @@ export const supportedServices = {
           },
           {
             key: "oidcAttributesMapping",
-            operator: "!=",
+            preventEdit: "=",
             value: '{}'
           },
           {
@@ -1368,7 +1368,7 @@ export const supportedServices = {
           },
           {
             key: "oidcAttributesMapping",
-            operator: "!=",
+            preventEdit: "=",
             value: '{}'
           },
           {

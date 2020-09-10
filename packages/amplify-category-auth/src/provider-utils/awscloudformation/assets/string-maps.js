@@ -591,9 +591,7 @@ const getAllMaps = edit => {
   if (edit) {
     disableOptionsOnEdit();
     // Inject OIDC mapping
-    //console.log(`edit ${JSON.stringify(edit)}`);
     if(edit.oidcAttributesMapping ){
-      // console.log(`Inject OIDC mapping in hardCoded attributeProviderMap`);
       let oidcAttributesMapping = JSON.parse(edit.oidcAttributesMapping);
       let newMap = {};
       Object.keys(oidcAttributesMapping).map(
@@ -602,20 +600,7 @@ const getAllMaps = edit => {
         newMap[cognitoAttributeName]['oidc'] = { 'attr': oidcAttributesMapping[cognitoAttributeName] };
       });
       Object.assign(attributeProviderMap, newMap);
-      // console.log(`attributeProviderMap ${JSON.stringify(attributeProviderMap)}`);
     }
-    // if(edit.attributeProviderMap ){
-    //   console.log(`Inject OIDC mapping in hardCoded `);
-    //   let oidcAttributesMapping = edit.attributeProviderMap;
-    //   let newMap = {};
-    //   Object.keys(oidcAttributesMapping).map(
-    //     cognitoAttributeName => {
-    //     newMap[cognitoAttributeName] = attributeProviderMap[cognitoAttributeName];
-    //     newMap[cognitoAttributeName]['oidc'] = oidcAttributesMapping[cognitoAttributeName]['oidc'];
-    //   });
-    //   Object.assign(attributeProviderMap, newMap);
-    //   console.log(`attributeProviderMap ${JSON.stringify()}`);
-    // }
   }
   return {
     coreAttributes,

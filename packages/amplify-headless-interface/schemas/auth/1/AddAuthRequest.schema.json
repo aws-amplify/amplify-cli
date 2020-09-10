@@ -448,7 +448,8 @@
                     "enum": [
                         "FACEBOOK",
                         "GOOGLE",
-                        "LOGIN_WITH_AMAZON"
+                        "LOGIN_WITH_AMAZON",
+                        "OIDC"
                     ],
                     "type": "string"
                 },
@@ -543,7 +544,8 @@
                     "enum": [
                         "AMAZON",
                         "FACEBOOK",
-                        "GOOGLE"
+                        "GOOGLE",
+                        "OIDC"
                     ],
                     "type": "string"
                 },

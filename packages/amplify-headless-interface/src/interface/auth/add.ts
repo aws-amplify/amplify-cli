@@ -48,7 +48,7 @@ export interface CognitoIdentityPoolConfiguration {
 }
 
 export interface CognitoIdentitySocialFederation {
-  provider: 'FACEBOOK' | 'GOOGLE' | 'AMAZON';
+  provider: 'FACEBOOK' | 'GOOGLE' | 'AMAZON' | 'OIDC';
   clientId: string;
 }
 
@@ -86,7 +86,7 @@ export interface CognitoOAuthConfiguration {
 }
 
 export interface CognitoSocialProviderConfiguration {
-  provider: 'FACEBOOK' | 'GOOGLE' | 'LOGIN_WITH_AMAZON';
+  provider: 'FACEBOOK' | 'GOOGLE' | 'LOGIN_WITH_AMAZON' | 'OIDC';
   clientId: string;
   clientSecret: string;
 }

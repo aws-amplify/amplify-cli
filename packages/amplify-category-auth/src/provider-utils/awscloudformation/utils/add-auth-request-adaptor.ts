@@ -101,6 +101,10 @@ const socialProviderMap = (
         result.loginwithamazonAppIdUserPool = sc.clientId;
         result.loginwithamazonAppSecretUserPool = sc.clientSecret;
         break;
+      case 'OIDC':
+        result.oidcAppIdUserPool = sc.clientId;
+        result.oidcAppSecretUserPool = sc.clientSecret;
+        break;
     }
   });
   return result;
@@ -205,7 +209,7 @@ const signinAttributeMap: Record<CognitoUserPoolSigninMethod, UsernameAttributes
   [CognitoUserPoolSigninMethod.EMAIL_AND_PHONE_NUMBER]: 'email, phone_number',
 };
 
-const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE', projectType: string): string => {
+const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE' | 'OIDC', projectType: string): string => {
   switch (provider) {
     case 'FACEBOOK':
       return 'facebookAppId';
@@ -222,6 +226,8 @@ const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE', proj
         default:
           throw new Error(`Unknown project type [${projectType}] when mapping federation type`);
       }
+    case 'OIDC':
+      return 'oidcAppId';
     default:
       throw new Error(`Unknown social federation provider [${provider}]`);
   }
