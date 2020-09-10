@@ -231,7 +231,7 @@ export const supportedServices = {
       {
         key: 'amazonAppId',
         prefix:
-          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
+          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. Head to https://developer.amazon.com/docs/login-with-amazon/documentation-overview.html to learn more. \n",
         question: 'Enter your Amazon App ID for your identity pool: ',
         required: true,
         andConditions: [
