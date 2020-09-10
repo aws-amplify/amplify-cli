@@ -8,6 +8,9 @@
                 1
             ]
         },
+        "resourceName": {
+            "type": "string"
+        },
         "serviceConfiguration": {
             "description": "Defines AWS Cognito parameters",
             "anyOf": [
@@ -35,6 +38,7 @@
         }
     },
     "required": [
+        "resourceName",
         "serviceConfiguration",
         "version"
     ],
@@ -46,7 +50,7 @@
                 "serviceName": {
                     "type": "string",
                     "enum": [
-                        "cognito"
+                        "Cognito"
                     ]
                 },
                 "userPoolConfiguration": {
@@ -64,7 +68,7 @@
                 "signinMethod": {
                     "$ref": "#/definitions/CognitoUserPoolSigninMethod"
                 },
-                "requiredSignupInformation": {
+                "requiredSignupAttributes": {
                     "type": "array",
                     "items": {
                         "enum": [
@@ -111,13 +115,13 @@
                         }
                     ]
                 },
-                "forgotPassword": {
+                "passwordRecovery": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/CognitoForgotPasswordEmailConfiguration"
+                            "$ref": "#/definitions/CognitoEmailPasswordRecoveryConfiguration"
                         },
                         {
-                            "$ref": "#/definitions/CognitoForgotPasswordSMSConfiguration"
+                            "$ref": "#/definitions/CognitoSMSPasswordRecoveryConfiguration"
                         }
                     ]
                 },
@@ -134,6 +138,7 @@
                             "ADDRESS",
                             "BIRTHDATE",
                             "EMAIL",
+                            "EMAIL_VERIFIED",
                             "FAMILY_NAME",
                             "GENDER",
                             "GIVEN_NAME",
@@ -142,6 +147,7 @@
                             "NAME",
                             "NICKNAME",
                             "PHONE_NUMBER",
+                            "PHONE_NUMBER_VERIFIED",
                             "PICTURE",
                             "PREFERRED_USERNAME",
                             "PROFILE",
@@ -219,7 +225,7 @@
                 }
             },
             "required": [
-                "requiredSignupInformation",
+                "requiredSignupAttributes",
                 "signinMethod"
             ]
         },
@@ -235,9 +241,6 @@
         "CognitoUserPoolGroup": {
             "type": "object",
             "properties": {
-                "priority": {
-                    "type": "number"
-                },
                 "customPolicy": {
                     "type": "string"
                 },
@@ -246,8 +249,7 @@
                 }
             },
             "required": [
-                "groupName",
-                "priority"
+                "groupName"
             ]
         },
         "CognitoAdminQueries": {
@@ -327,7 +329,7 @@
                 "smsMessage"
             ]
         },
-        "CognitoForgotPasswordEmailConfiguration": {
+        "CognitoEmailPasswordRecoveryConfiguration": {
             "type": "object",
             "properties": {
                 "deliveryMethod": {
@@ -349,7 +351,7 @@
                 "emailSubject"
             ]
         },
-        "CognitoForgotPasswordSMSConfiguration": {
+        "CognitoSMSPasswordRecoveryConfiguration": {
             "type": "object",
             "properties": {
                 "deliveryMethod": {
@@ -385,11 +387,7 @@
                         "type": "string"
                     }
                 }
-            },
-            "required": [
-                "additionalConstraints",
-                "minimumLength"
-            ]
+            }
         },
         "CognitoOAuthConfiguration": {
             "type": "object",
@@ -429,54 +427,10 @@
                         "type": "string"
                     }
                 },
-                "socialProviderSettings": {
-                    "type": "object",
-                    "properties": {
-                        "Facebook": {
-                            "type": "object",
-                            "properties": {
-                                "appId": {
-                                    "type": "string"
-                                },
-                                "appSecret": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "appId",
-                                "appSecret"
-                            ]
-                        },
-                        "Google": {
-                            "type": "object",
-                            "properties": {
-                                "webClientId": {
-                                    "type": "string"
-                                },
-                                "webClientSecret": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "webClientId",
-                                "webClientSecret"
-                            ]
-                        },
-                        "LoginWithAmazon": {
-                            "type": "object",
-                            "properties": {
-                                "appId": {
-                                    "type": "string"
-                                },
-                                "appSecret": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "appId",
-                                "appSecret"
-                            ]
-                        }
+                "socialProviderConfigurations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CognitoSocialProviderConfiguration"
                     }
                 }
             },
@@ -485,6 +439,30 @@
                 "oAuthScopes",
                 "redirectSigninURIs",
                 "redirectSignoutURIs"
+            ]
+        },
+        "CognitoSocialProviderConfiguration": {
+            "type": "object",
+            "properties": {
+                "provider": {
+                    "enum": [
+                        "FACEBOOK",
+                        "GOOGLE",
+                        "LOGIN_WITH_AMAZON"
+                    ],
+                    "type": "string"
+                },
+                "clientId": {
+                    "type": "string"
+                },
+                "clientSecret": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "clientId",
+                "clientSecret",
+                "provider"
             ]
         },
         "CognitoConfirmationRedirectConfiguration": {
@@ -551,44 +529,32 @@
                     "type": "boolean"
                 },
                 "identitySocialFederation": {
-                    "type": "object",
-                    "properties": {
-                        "facebook": {
-                            "type": "object",
-                            "properties": {
-                                "facebookAppId": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "facebookAppId"
-                            ]
-                        },
-                        "google": {
-                            "type": "object",
-                            "properties": {
-                                "googleClientId": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "googleClientId"
-                            ]
-                        },
-                        "amazon": {
-                            "type": "object",
-                            "properties": {
-                                "amazonAppId": {
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "amazonAppId"
-                            ]
-                        }
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/CognitoIdentitySocialFederation"
                     }
                 }
             }
+        },
+        "CognitoIdentitySocialFederation": {
+            "type": "object",
+            "properties": {
+                "provider": {
+                    "enum": [
+                        "AMAZON",
+                        "FACEBOOK",
+                        "GOOGLE"
+                    ],
+                    "type": "string"
+                },
+                "clientId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "clientId",
+                "provider"
+            ]
         }
     },
     "$schema": "http://json-schema.org/draft-07/schema#"

@@ -2,17 +2,16 @@ const aws = require('aws-sdk');
 const fs = require('fs-extra');
 const path = require('path');
 const ini = require('ini');
-const os = require('os');
 const inquirer = require('inquirer');
 const constants = require('./constants');
 const proxyAgent = require('proxy-agent');
+const { pathManager } = require('amplify-cli-core');
 
-const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
-const credentialsFilePath = path.join(dotAWSDirPath, 'credentials');
-const configFilePath = path.join(dotAWSDirPath, 'config');
+const credentialsFilePath = pathManager.getAWSCredentialsFilePath();
+const configFilePath = pathManager.getAWSConfigFilePath();
 
 function setProfile(awsConfig, profileName) {
-  fs.ensureDirSync(dotAWSDirPath);
+  fs.ensureDirSync(pathManager.getDotAWSDirPath());
 
   let credentials = {};
   let config = {};
@@ -57,8 +56,8 @@ function setProfile(awsConfig, profileName) {
     };
   }
 
-  fs.writeFileSync(credentialsFilePath, ini.stringify(credentials), {mode: 0o600});
-  fs.writeFileSync(configFilePath, ini.stringify(config), {mode: 0o600});
+  fs.writeFileSync(credentialsFilePath, ini.stringify(credentials), { mode: 0o600 });
+  fs.writeFileSync(configFilePath, ini.stringify(config), { mode: 0o600 });
 }
 
 async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
