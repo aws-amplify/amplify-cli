@@ -34,7 +34,8 @@ export const safeDefaults = [
   'userpoolClientRefreshTokenValidity',
 ];
 
-export const protectedValues = [
+// These attributes cannot be modified once the auth resource is created
+export const immutableAttributes = [
   'resourceName',
   'userPoolName',
   'identityPoolName',

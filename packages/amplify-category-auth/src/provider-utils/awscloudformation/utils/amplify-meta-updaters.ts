@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny, pathManager } from 'amplify-cli-core';
+import { transformUserPoolGroupSchema } from './transform-user-pool-group';
 /**
  * Factory function that returns a function that updates Amplify meta files after adding auth resource assets
  *
@@ -51,6 +52,51 @@ export const getPostAddAuthMetaUpdater = (context: any, resultMetadata: { servic
       ];
       context.amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
     }
+  }
+  return resourceName;
+};
+
+/**
+ * Factory function that returns a function that updates Amplify meta files after updating auth resource assets
+ * @param context The amplify context
+ */
+export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceName: string) => {
+  const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
+  const authParameters = JSONUtilities.readJson<$TSAny>(resourceDirPath);
+  if (authParameters.dependsOn) {
+    context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'dependsOn', authParameters.dependsOn);
+  }
+
+  let customAuthConfigured = false;
+  if (authParameters.triggers) {
+    const triggers = JSON.parse(authParameters.triggers);
+    customAuthConfigured =
+      triggers.DefineAuthChallenge &&
+      triggers.DefineAuthChallenge.length > 0 &&
+      triggers.CreateAuthChallenge &&
+      triggers.CreateAuthChallenge.length > 0 &&
+      triggers.VerifyAuthChallengeResponse &&
+      triggers.VerifyAuthChallengeResponse.length > 0;
+  }
+  context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'customAuth', customAuthConfigured);
+
+  // Update Identity Pool dependency attributes on userpool groups
+  const allResources = context.amplify.getProjectMeta();
+  if (allResources.auth && allResources.auth.userPoolGroups) {
+    let attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
+    if (authParameters.identityPoolName) {
+      attributes.push('IdentityPoolId');
+    }
+    const userPoolGroupDependsOn = [
+      {
+        category: 'auth',
+        resourceName,
+        attributes,
+      },
+    ];
+
+    context.amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
+    await transformUserPoolGroupSchema(context);
   }
   return resourceName;
 };

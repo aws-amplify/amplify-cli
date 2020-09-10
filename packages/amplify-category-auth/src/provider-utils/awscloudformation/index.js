@@ -1,21 +1,11 @@
 const inquirer = require('inquirer');
 const open = require('open');
-const path = require('path');
-const fs = require('fs-extra');
 const _ = require('lodash');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
-const { verificationBucketName } = require('./utils/verification-bucket-name');
-const {
-  copyCfnTemplate,
-  removeDeprecatedProps,
-  createUserPoolGroups,
-  addAdminAuth,
-  saveResourceParameters,
-  lambdaTriggers,
-  copyS3Assets,
-} = require('./utils/synthesize-resources');
-const { protectedValues, safeDefaults, ENV_SPECIFIC_PARAMS, privateKeys } = require('./constants');
-const { getAddAuthHandler } = require('./handlers/get-add-auth-handler');
+const { copyCfnTemplate, saveResourceParameters } = require('./utils/synthesize-resources');
+const { immutableAttributes: ENV_SPECIFIC_PARAMS, privateKeys } = require('./constants');
+const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
+const { supportedServices } = require('../supported-services');
 
 function serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, serviceMetadata) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -24,156 +14,26 @@ function serviceQuestions(context, defaultValuesFilename, stringMapFilename, ser
 }
 
 async function addResource(context, service) {
-  const serviceMetadata = require('../supported-services').supportedServices[service];
+  const serviceMetadata = supportedServices[service];
   const { defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getAddAuthHandler(context)(
     await serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, serviceMetadata),
   );
 }
 
-// may be able to consolidate this into just createUserPoolGroups
-async function updateUserPoolGroups(context, resourceName, userPoolGroupList) {
-  if (userPoolGroupList && userPoolGroupList.length > 0) {
-    const userPoolGroupPrecedenceList = [];
-
-    for (let i = 0; i < userPoolGroupList.length; i += 1) {
-      userPoolGroupPrecedenceList.push({
-        groupName: userPoolGroupList[i],
-        precedence: i + 1,
-      });
-    }
-
-    const userPoolGroupFile = path.join(
-      context.amplify.pathManager.getBackendDirPath(),
-      'auth',
-      'userPoolGroups',
-      'user-pool-group-precedence.json',
-    );
-
-    fs.outputFileSync(userPoolGroupFile, JSON.stringify(userPoolGroupPrecedenceList, null, 4));
-
-    context.amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', {
-      service: 'Cognito-UserPool-Groups',
-      providerPlugin: 'awscloudformation',
-      dependsOn: [
-        {
-          category: 'auth',
-          resourceName,
-          attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId'],
-        },
-      ],
-    });
-  }
-}
-
-async function updateResource(context, category, serviceResult) {
-  const { service, resourceName } = serviceResult;
-  let props = {};
-  const serviceMetadata = require('../supported-services').supportedServices[service];
-  const { cfnFilename, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, provider } = serviceMetadata;
-
-  return serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, serviceMetadata)
-    .then(async result => {
-      const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
-      const { functionMap } = require(defaultValuesSrc);
-      const { authProviders } = require(`${__dirname}/assets/string-maps.js`);
-
-      /* if user has used the default configuration,
-       * we populate base choices like authSelections and resourceName for them */
-      if (!result.authSelections) {
-        result.authSelections = 'identityPoolAndUserPool';
-      }
-
-      const defaults = functionMap[result.authSelections](context.updatingAuth.resourceName);
-
-      // removing protected values from results
-      for (let i = 0; i < protectedValues.length; i += 1) {
-        if (context.updatingAuth[protectedValues[i]]) {
-          delete result[protectedValues[i]];
-        }
-      }
-
-      if (result.useDefault && ['default', 'defaultSocial'].includes(result.useDefault)) {
-        for (let i = 0; i < safeDefaults.length; i += 1) {
-          delete context.updatingAuth[safeDefaults[i]];
-        }
-      }
-
-      await verificationBucketName(result, context.updatingAuth);
-
-      props = Object.assign(defaults, removeDeprecatedProps(context.updatingAuth), result);
-
-      const resources = context.amplify.getProjectMeta();
-
-      if (resources.auth.userPoolGroups) {
-        await updateUserPoolGroups(context, props.resourceName, result.userPoolGroupList);
-      } else {
-        await createUserPoolGroups(context, props.resourceName, result.userPoolGroupList);
-      }
-
-      if (resources.api && resources.api.AdminQueries) {
-        // Find Existing functionName
-        let functionName;
-        if (resources.api.AdminQueries.dependsOn) {
-          const adminFunctionResource = resources.api.AdminQueries.dependsOn.find(
-            resource => resource.category === 'function' && resource.resourceName.includes('AdminQueries'),
-          );
-          if (adminFunctionResource) {
-            functionName = adminFunctionResource.resourceName;
-          }
-        }
-        await addAdminAuth(context, props.resourceName, 'update', result.adminQueryGroup, functionName);
-      } else {
-        await addAdminAuth(context, props.resourceName, 'add', result.adminQueryGroup);
-      }
-
-      const providerPlugin = context.amplify.getPluginInstance(context, provider);
-      const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', resourceName).triggers || '{}';
-      await lambdaTriggers(props, context, JSON.parse(previouslySaved));
-
-      if ((!result.updateFlow && !result.thirdPartyAuth) || (result.updateFlow === 'manual' && !result.thirdPartyAuth)) {
-        delete props.selectedParties;
-        delete props.authProviders;
-        authProviders.forEach(a => {
-          if (props[a.answerHashKey]) {
-            delete props[a.answerHashKey];
-          }
-        });
-        if (props.googleIos) {
-          delete props.googleIos;
-        }
-        if (props.googleAndroid) {
-          delete props.googleAndroid;
-        }
-        if (props.audiences) {
-          delete props.audiences;
-        }
-      }
-
-      if (props.useDefault === 'default' || props.hostedUI === false) {
-        delete props.oAuthMetadata;
-        delete props.hostedUIProviderMeta;
-        delete props.hostedUIProviderCreds;
-        delete props.hostedUIDomainName;
-        delete props.authProvidersUserPool;
-      }
-
-      if (result.updateFlow !== 'updateUserPoolGroups' && result.updateFlow !== 'updateAdminQueries') {
-        await copyCfnTemplate(context, category, props, cfnFilename);
-        saveResourceParameters(context, provider, category, resourceName, props, ENV_SPECIFIC_PARAMS);
-      }
-    })
-    .then(async () => {
-      await copyS3Assets(context, props);
-      return props.resourceName;
-    });
+async function updateResource(context, { service }) {
+  const serviceMetadata = supportedServices[service];
+  const { defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = serviceMetadata;
+  return getUpdateAuthHandler(context)(
+    await serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, serviceMetadata),
+  );
 }
 
 async function updateConfigOnEnvInit(context, category, service) {
-  const srvcMetaData = require('../supported-services').supportedServices.Cognito;
-  const { defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = srvcMetaData;
+  const srvcMetaData = supportedServices.Cognito;
+  const { defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, provider } = srvcMetaData;
 
-  const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
+  const providerPlugin = context.amplify.getPluginInstance(context, provider);
   // previously selected answers
   const resourceParams = providerPlugin.loadResourceParameters(context, 'auth', service);
   // ask only env specific questions
@@ -240,8 +100,7 @@ async function migrate(context) {
   if (!Object.keys(existingAuth).length > 0) {
     return;
   }
-  const servicesMetadata = require('../supported-services').supportedServices;
-  const { provider, cfnFilename, defaultValuesFilename } = servicesMetadata.Cognito;
+  const { provider, cfnFilename, defaultValuesFilename } = supportedServices.Cognito;
   const defaultValuesSrc = `${__dirname}/assets/${defaultValuesFilename}`;
 
   const { roles } = require(defaultValuesSrc);
@@ -420,8 +279,7 @@ async function openIdentityPoolConsole(context, region, identityPoolId) {
 }
 
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  const serviceMetadata = require('../supported-services').supportedServices[service];
-  const { serviceWalkthroughFilename } = serviceMetadata;
+  const { serviceWalkthroughFilename } = supportedServices[service];
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);
 

@@ -2,9 +2,10 @@ const { messages } = require('../../provider-utils/awscloudformation/assets/stri
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { transformUserPoolGroupSchema } = require('../../provider-utils/awscloudformation/utils/transform-user-pool-group');
 const path = require('path');
+const { category } = require('../..');
+const { attachPrevParamsToContext } = require('../../provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 
 const subcommand = 'update';
-const category = 'auth';
 let options;
 
 module.exports = {
@@ -48,48 +49,9 @@ module.exports = {
           context.print.error('Provider not configured for this category');
           return;
         }
-        return providerController.updateResource(context, category, options);
+        return providerController.updateResource(context, options);
       })
       .then(async name => {
-        // eslint-disable-line no-shadow
-        const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', name, 'parameters.json');
-        const authParameters = amplify.readJsonFile(resourceDirPath);
-        if (authParameters.dependsOn) {
-          amplify.updateamplifyMetaAfterResourceUpdate(category, name, 'dependsOn', authParameters.dependsOn);
-        }
-
-        let customAuthConfigured = false;
-        if (authParameters.triggers) {
-          const triggers = JSON.parse(authParameters.triggers);
-          customAuthConfigured =
-            triggers.DefineAuthChallenge &&
-            triggers.DefineAuthChallenge.length > 0 &&
-            triggers.CreateAuthChallenge &&
-            triggers.CreateAuthChallenge.length > 0 &&
-            triggers.VerifyAuthChallengeResponse &&
-            triggers.VerifyAuthChallengeResponse.length > 0;
-        }
-        amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'customAuth', customAuthConfigured);
-
-        // Update Identity Pool dependency attributes on userpool groups
-        const allResources = context.amplify.getProjectMeta();
-        if (allResources.auth && allResources.auth.userPoolGroups) {
-          let attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
-          if (authParameters.identityPoolName) {
-            attributes.push('IdentityPoolId');
-          }
-          const userPoolGroupDependsOn = [
-            {
-              category: 'auth',
-              resourceName,
-              attributes,
-            },
-          ];
-
-          amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
-          await transformUserPoolGroupSchema(context);
-        }
-
         const { print } = context;
         print.success(`Successfully updated resource ${name} locally`);
         print.info('');

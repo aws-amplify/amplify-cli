@@ -2,6 +2,8 @@ import { ServiceQuestionsResult } from '../service-walkthrough-types';
 import { verificationBucketName } from './verification-bucket-name';
 import { merge } from 'lodash';
 import { structureOAuthMetadata } from '../service-walkthroughs/auth-questions';
+import { removeDeprecatedProps } from './synthesize-resources';
+import { immutableAttributes, safeDefaults } from '../constants';
 
 /**
  * Factory function that returns a function that applies default values to a ServiceQuestionsResult request.
@@ -24,4 +26,26 @@ export const getAddAuthDefaultsApplier = (context: any, defaultValuesFilename: s
   /* merge actual answers object into props object,
    * ensuring that manual entries override defaults */
   return merge(functionMap[result.authSelections](result.resourceName), result, roles);
+};
+
+export const getUpdateAuthDefaultsApplier = (defaultValuesFilename: string, previousResult: ServiceQuestionsResult) => async (
+  result: ServiceQuestionsResult,
+): Promise<ServiceQuestionsResult> => {
+  const { functionMap } = await import(`../assets/${defaultValuesFilename}`);
+  if (!result.authSelections) {
+    result.authSelections = 'identityPoolAndUserPool';
+  }
+
+  const defaults = functionMap[result.authSelections](previousResult.resourceName);
+
+  // ensure immutable attributes are removed from result
+  immutableAttributes.filter(pv => pv in previousResult).forEach(pv => delete (result as any)[pv]);
+
+  if (['default', 'defaultSocial'].includes(result.useDefault)) {
+    safeDefaults.forEach(sd => delete (previousResult as any)[sd]);
+  }
+
+  await verificationBucketName(result, previousResult);
+
+  return merge(defaults, removeDeprecatedProps(previousResult), result);
 };
