@@ -7631,6 +7631,11 @@ clone@^2.1.1:
   resolved "https://registry.npmjs.org/clone/-/clone-2.1.2.tgz#1b7f4b9f591f1e8f83670401600345a02887435f"
   integrity sha1-G39Ln1kfHo+DZwQBYANFoCiHQ18=
 
+cloudform-types@6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/cloudform-types/-/cloudform-types-6.0.0.tgz#2fd9aacb85a231e561becb01c469762c68955b35"
+  integrity sha512-LjOfp+egYDaD0QqFZ86GKewO+ipqPyJ5WA8J0NExFQJKV9J1nzD3EQlTSDS4dOavtwyBKNsd2LDJk4mxQAd32Q==
+
 cloudform-types@^4.1.0, cloudform-types@^4.2.0:
   version "4.2.0"
   resolved "https://registry.npmjs.org/cloudform-types/-/cloudform-types-4.2.0.tgz#698c98a1468bd8fe9c1c275b2e65720f572ca401"

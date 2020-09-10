@@ -24,6 +24,7 @@
     "amplify-category-storage": "2.7.6",
     "amplify-cli-core": "1.3.0",
     "amplify-function-plugin-interface": "1.4.1",
+    "cloudform-types": "6.0.0",
     "enquirer": "^2.3.5",
     "folder-hash": "^3.3.2",
     "fs-extra": "^8.1.0",
