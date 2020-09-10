@@ -15,7 +15,7 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
   let projectName = context.amplify.getProjectConfig().projectName.toLowerCase();
   const disallowedChars = /[^A-Za-z0-9]+/g;
   projectName = projectName.replace(disallowedChars, '');
-  const requestWithDefaults = await getAddAuthDefaultsApplier(defaultValuesFilename, projectName)(request);
+  const requestWithDefaults = await getAddAuthDefaultsApplier(context, defaultValuesFilename, projectName)(request);
   await getResourceSynthesizer(
     context,
     cfnFilename,
