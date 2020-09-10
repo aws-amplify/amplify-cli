@@ -22,7 +22,7 @@ export const askExecRolePermissionsQuestions = async (
   lambdaFunctionToUpdate: string,
   currentPermissionMap?,
 ): Promise<ExecRolePermissionsResponse> => {
-  const amplifyMeta = stateManager.getCurrentMeta();
+  const amplifyMeta = stateManager.getMeta();
 
   const categories = Object.keys(amplifyMeta).filter(category => category !== 'providers');
 
