@@ -10,6 +10,7 @@
     "src/**/*"
   ],
   "references": [
+    {"path": "../amplify-cli-core"},
     {"path": "../amplify-category-function"}
   ]
 }

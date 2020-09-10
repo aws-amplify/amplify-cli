@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.4.0...amplify-storage-simulator@1.4.1) (2020-09-09)
+
+
+### Bug Fixes
+
+* [#4222](https://github.com/aws-amplify/amplify-cli/issues/4222) - mock S3 list returns undefined keys under Windows ([#5261](https://github.com/aws-amplify/amplify-cli/issues/5261)) ([964cc40](https://github.com/aws-amplify/amplify-cli/commit/964cc40fae075dcfd6fa23fd0765ca219e77bb8f))
+
+
+
+
+
 # [1.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-storage-simulator@1.3.1...amplify-storage-simulator@1.4.0) (2020-05-08)
 
 

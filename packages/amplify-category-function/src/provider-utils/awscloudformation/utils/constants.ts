@@ -8,6 +8,7 @@ export const functionParametersFileName = 'function-parameters.json';
 export const layerParametersFileName = 'layer-parameters.json';
 export const parametersFileName = 'parameters.json';
 export const provider = 'awscloudformation';
+export const appsyncTableSuffix = '@model(appsync)';
 
 export const enum ServiceName {
   LambdaFunction = 'Lambda',
