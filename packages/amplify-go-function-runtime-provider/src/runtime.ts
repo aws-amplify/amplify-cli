@@ -84,7 +84,6 @@ export const buildResourceInternal = async (
 
   if (force === true || !timestampToCheck || isBuildStale(request.srcRoot, timestampToCheck, outDir)) {
     const srcDir = path.join(request.srcRoot, SRC);
-    const entryFile = MAIN_SOURCE;
 
     // Clean and/or create the output directory
     if (fs.existsSync(outDir)) {
