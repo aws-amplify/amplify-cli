@@ -1,6 +1,8 @@
 import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, invokeFunction } from '../../src';
 import { Lambda } from 'aws-sdk';
 import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
+import * as fs from 'fs-extra';
+import path from 'path';
 
 type FunctionActions = 'create' | 'update';
 
@@ -204,6 +206,19 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
     default:
       return res;
   }
+};
+
+export const unCommentCorsHeader = async (cwd: string, functionName: string): Promise<void> => {
+  const codeHandlerPath = path.join(cwd, 'amplify', 'backend', 'function', functionName, 'src', 'index.js');
+  const code = fs.readFileSync(codeHandlerPath, { encoding: 'utf8' });
+  const uncommentedCode = code
+    .replace('//  headers: {', '    headers: {')
+    .replace('//      "Access-Control-Allow-Origin": "*"', '        "Access-Control-Allow-Origin": "*"')
+    .replace('//  },', '    },');
+  fs.writeFileSync(codeHandlerPath, uncommentedCode, {
+    flag: 'w',
+    encoding: 'utf8',
+  });
 };
 
 export const functionBuild = (cwd: string, settings: any) => {

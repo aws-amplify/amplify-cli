@@ -1,5 +1,13 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, updateFunction, functionBuild, addLambdaTrigger, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
+import {
+  addFunction,
+  updateFunction,
+  functionBuild,
+  addLambdaTrigger,
+  functionMockAssert,
+  functionCloudInvoke,
+  unCommentCorsHeader,
+} from 'amplify-e2e-core';
 import { addLayer, LayerOptions } from 'amplify-e2e-core';
 import { addSimpleDDB } from 'amplify-e2e-core';
 import { addKinesis } from 'amplify-e2e-core';
@@ -35,6 +43,27 @@ describe('nodejs', () => {
     afterEach(async () => {
       await deleteProject(projRoot);
       deleteProjectDir(projRoot);
+    });
+
+    it('init a project and add simple function and uncomment cors header', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      const random = Math.floor(Math.random() * 10000);
+      const functionName = `testcorsfunction${random}`;
+
+      await addFunction(projRoot, { functionTemplate: 'Hello World', name: functionName }, 'nodejs');
+      await unCommentCorsHeader(projRoot, functionName);
+      await functionBuild(projRoot, {});
+      await amplifyPushAuth(projRoot);
+      const meta = getProjectMeta(projRoot);
+      const { Arn: functionArn, Name, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      expect(functionArn).toBeDefined();
+      expect(functionName).toBeDefined();
+      expect(region).toBeDefined();
+      const cloudFunction = await getFunction(Name, region);
+      const response = await invokeFunction(Name, JSON.stringify({}), region);
+      const payload = JSON.parse(response.Payload.toString());
+      expect(payload.headers['Access-Control-Allow-Origin']).toEqual('*');
+      expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
     });
 
     it('init a project and add simple function', async () => {
