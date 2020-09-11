@@ -184,7 +184,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   }
 
   // formatting oAuthMetaData
-  structureoAuthMetaData(coreAnswers, context, getAllDefaults, amplify);
+  structureOAuthMetadata(coreAnswers, context, getAllDefaults, amplify);
 
   if (coreAnswers.usernameAttributes && !Array.isArray(coreAnswers.usernameAttributes)) {
     if (coreAnswers.usernameAttributes === 'username') {
@@ -453,7 +453,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
 /*
   Format hosted UI oAuth data per lambda spec
 */
-function structureoAuthMetaData(coreAnswers, context, defaults, amplify) {
+function structureOAuthMetadata(coreAnswers, context, defaults, amplify) {
   if (coreAnswers.useDefault === 'default' && context.updatingAuth) {
     delete context.updatingAuth.oAuthMetadata;
     return null;
@@ -706,7 +706,7 @@ module.exports = {
   serviceWalkthrough,
   userPoolProviders,
   parseOAuthCreds,
-  structureoAuthMetaData,
+  structureOAuthMetadata,
   getIAMPolicies,
   identityPoolProviders,
 };
