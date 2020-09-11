@@ -49,7 +49,7 @@ async function run(context) {
   open(deepLinkURL, { wait: false }).catch(() => {});
   await context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
 
-  context.print.info('Enter the access key of the newly created user ////////:');
+  context.print.info('Enter the access key of the newly created user:');
   const accountDetails = await inquirer.prompt([
     {
       type: 'password',
