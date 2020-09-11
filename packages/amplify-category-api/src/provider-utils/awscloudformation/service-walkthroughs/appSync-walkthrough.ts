@@ -448,11 +448,9 @@ export async function askAdditionalAuthQuestions(context, authConfig, defaultAut
       authConfig.additionalAuthenticationProviders.push(config);
     }
   } else {
-    if (currentAuthConfig) {
-      authConfig.additionalAuthenticationProviders = (currentAuthConfig.additionalAuthenticationProviders || []).filter(
-        p => p.authenticationType !== defaultAuthType,
-      );
-    }
+    authConfig.additionalAuthenticationProviders = (currentAuthConfig?.additionalAuthenticationProviders || []).filter(
+      p => p.authenticationType !== defaultAuthType,
+    );
   }
   return authConfig;
 }
