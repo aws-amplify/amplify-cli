@@ -1,8 +1,10 @@
 const aws = require('aws-sdk');
 const fs = require('fs-extra');
 const path = require('path');
+const glob = require('glob');
 const extract = require('extract-zip');
 const inquirer = require('inquirer');
+const { pathManager, PathConstants } = require('amplify-cli-core');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
@@ -45,12 +47,13 @@ async function ensureAmplifyMeta(context, amplifyApp, awsConfig) {
   // if not, it's a migration case and we need to
   // 1. insert the appId
   // 2. upload the metadata file and the backend config file into the deployment bucket
-  const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(process.cwd());
+  const projectPath = process.cwd();
+  const currentAmplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(projectPath);
   const currentAmplifyMeta = context.amplify.readJsonFile(currentAmplifyMetaFilePath);
   if (!currentAmplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel]) {
     currentAmplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyApp.appId;
 
-    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(process.cwd());
+    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath(projectPath);
     const jsonString = JSON.stringify(currentAmplifyMeta, null, 4);
     fs.writeFileSync(currentAmplifyMetaFilePath, jsonString, 'utf8');
     fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
@@ -63,9 +66,10 @@ async function ensureAmplifyMeta(context, amplifyApp, awsConfig) {
 }
 
 async function storeArtifactsForAmplifyService(context, awsConfig, deploymentBucketName) {
+  const projectPath = process.cwd();
   const s3Client = new aws.S3(awsConfig);
-  const amplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(process.cwd());
-  const backendConfigFilePath = context.amplify.pathManager.getCurrentBackendConfigFilePath(process.cwd());
+  const amplifyMetaFilePath = context.amplify.pathManager.getCurrentAmplifyMetaFilePath(projectPath);
+  const backendConfigFilePath = context.amplify.pathManager.getCurrentBackendConfigFilePath(projectPath);
   await uploadFile(s3Client, deploymentBucketName, amplifyMetaFilePath);
   await uploadFile(s3Client, deploymentBucketName, backendConfigFilePath);
 }
@@ -213,10 +217,11 @@ async function downloadBackend(context, backendEnv, awsConfig) {
   if (!backendEnv) {
     return;
   }
-  const amplifyDirPath = context.amplify.pathManager.getAmplifyDirPath(process.cwd());
-  const tempDirPath = path.join(amplifyDirPath, 'temp');
-  const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath(process.cwd());
-  const backendDir = context.amplify.pathManager.getBackendDirPath(process.cwd());
+  const projectPath = process.cwd();
+  const amplifyDirPath = context.amplify.pathManager.getAmplifyDirPath(projectPath);
+  const tempDirPath = path.join(amplifyDirPath, '.temp');
+  const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath(projectPath);
+  const backendDir = context.amplify.pathManager.getBackendDirPath(projectPath);
   const zipFileName = constants.S3BackendZipFileName;
 
   const s3Client = new aws.S3(awsConfig);
@@ -231,23 +236,42 @@ async function downloadBackend(context, backendEnv, awsConfig) {
   const buff = Buffer.from(zipObject.Body);
 
   fs.ensureDirSync(tempDirPath);
-  const tempFilePath = path.join(tempDirPath, zipFileName);
-  fs.writeFileSync(tempFilePath, buff);
 
-  const unzippedDirPath = path.join(tempDirPath, path.basename(zipFileName, '.zip'));
+  try {
+    const tempFilePath = path.join(tempDirPath, zipFileName);
+    fs.writeFileSync(tempFilePath, buff);
 
-  await new Promise((res, rej) => {
-    extract(tempFilePath, { dir: unzippedDirPath }, err => {
-      if (err) {
-        rej(err);
-      }
-      res(unzippedDirPath);
+    const unzippedDirPath = path.join(tempDirPath, path.basename(zipFileName, '.zip'));
+
+    await extract(tempFilePath, { dir: unzippedDirPath });
+
+    // Move out cli.*json if exists in the temp directory into the amplify directory before copying backand and
+    // current cloud backend directories.
+    const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
+      cwd: unzippedDirPath,
+      absolute: true,
     });
-  });
+    const amplifyDir = pathManager.getAmplifyDirPath();
 
-  fs.copySync(unzippedDirPath, currentCloudBackendDir);
-  fs.copySync(unzippedDirPath, backendDir);
-  fs.removeSync(tempDirPath);
+    if (context.exeInfo && context.exeInfo.restoreBackend) {
+      // If backend must be restored then copy out the config files and overwrite existing ones.
+      for (const cliJSONFilePath of cliJSONFiles) {
+        const targetPath = path.join(amplifyDir, path.basename(cliJSONFilePath));
+
+        fs.moveSync(cliJSONFilePath, targetPath, { overwrite: true });
+      }
+    } else {
+      // If backend is not being restored, just delete the config files in the current cloud backend if present
+      for (const cliJSONFilePath of cliJSONFiles) {
+        fs.removeSync(cliJSONFilePath);
+      }
+    }
+
+    fs.copySync(unzippedDirPath, currentCloudBackendDir);
+    fs.copySync(unzippedDirPath, backendDir);
+  } finally {
+    fs.removeSync(tempDirPath);
+  }
 }
 
 module.exports = {

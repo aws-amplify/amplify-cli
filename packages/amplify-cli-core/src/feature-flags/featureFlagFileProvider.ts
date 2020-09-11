@@ -1,10 +1,8 @@
-import * as fs from 'fs-extra';
-import * as _ from 'lodash';
-import * as path from 'path';
+import _ from 'lodash';
 import { FeatureFlagConfiguration, FeatureFlagsEntry } from '.';
-import { CLIEnvironmentProvider, JSONUtilities } from '..';
+import { CLIEnvironmentProvider } from '..';
 import { FeatureFlagValueProvider } from './featureFlagValueProvider';
-import { amplifyConfigFileName, amplifyConfigEnvFileNameTemplate } from '../constants';
+import { stateManager } from '../state-manager';
 
 export type FeatureFlagFileProviderOptions = {
   projectPath?: string;
@@ -18,28 +16,23 @@ export class FeatureFlagFileProvider implements FeatureFlagValueProvider {
       throw new Error(`'projectPath' option is missing`);
     }
 
-    if (!(await fs.pathExists(this.options.projectPath))) {
-      throw new Error(`Project path: '${this.options.projectPath}' does not exist.`);
-    }
-
     const result: FeatureFlagConfiguration = {
       project: {},
       environments: {},
     };
 
-    // Read project level file exists
-    const projectConfigFileName = path.join(this.options.projectPath, amplifyConfigFileName);
-    const projectFeatures = await this.loadConfig(projectConfigFileName);
+    // Read project level file if exists
+    const projectFeatures = await this.loadConfig(this.options.projectPath);
 
     if (projectFeatures) {
       result.project = projectFeatures;
     }
 
-    // Read environment level file if we've a valid environment and file exists
+    // Read environment level file if we have a valid environment and the file exists
     const envName = this.environmentProvider.getCurrentEnvName();
+
     if (envName !== '') {
-      const envConfigFileName = path.join(this.options.projectPath, amplifyConfigEnvFileNameTemplate(envName));
-      const envFeatures = await this.loadConfig(envConfigFileName);
+      const envFeatures = await this.loadConfig(this.options.projectPath, envName);
 
       if (envFeatures) {
         result.environments[envName] = envFeatures;
@@ -49,8 +42,8 @@ export class FeatureFlagFileProvider implements FeatureFlagValueProvider {
     return result;
   };
 
-  private loadConfig = async (fileName: string): Promise<FeatureFlagsEntry | undefined> => {
-    const configFileData = JSONUtilities.readJson<{ features: FeatureFlagsEntry }>(fileName, {
+  private loadConfig = async (projectPath: string, env?: string): Promise<FeatureFlagsEntry | undefined> => {
+    const configFileData = <{ features: FeatureFlagsEntry }>stateManager.getCLIJSON(projectPath, env, {
       throwIfNotExist: false,
     });
 

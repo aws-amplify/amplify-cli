@@ -1,5 +1,7 @@
 const moment = require('moment');
 const path = require('path');
+const { pathManager, PathConstants, stateManager } = require('amplify-cli-core');
+const glob = require('glob');
 const archiver = require('../src/utils/archiver');
 const fs = require('fs-extra');
 const ora = require('ora');
@@ -62,6 +64,8 @@ async function run(context) {
       const stackDescriptionData = await cfnItem.createResourceStack(params);
 
       processStackCreationData(context, amplifyAppId, stackDescriptionData);
+      cloneCLIJSONForNewEnvironment(context);
+
       spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
 
       return context;
@@ -108,6 +112,26 @@ function processStackCreationData(context, amplifyAppId, stackDescriptiondata) {
   }
 }
 
+function cloneCLIJSONForNewEnvironment(context) {
+  if (context.exeInfo.isNewEnv && !context.exeInfo.isNewProject) {
+    const { projectPath } = context.exeInfo.localEnvInfo;
+    const { envName } = stateManager.getLocalEnvInfo(undefined, {
+      throwIfNotExist: false,
+      default: {},
+    });
+
+    if (envName) {
+      const currentEnvCLIJSONPath = pathManager.getCLIJSONFilePath(projectPath, envName);
+
+      if (fs.existsSync(currentEnvCLIJSONPath)) {
+        const newEnvCLIJSONPath = pathManager.getCLIJSONFilePath(projectPath, context.exeInfo.localEnvInfo.envName);
+
+        fs.copyFileSync(currentEnvCLIJSONPath, newEnvCLIJSONPath);
+      }
+    }
+  }
+}
+
 async function onInitSuccessful(context) {
   configurationManager.onInitSuccessful(context);
   if (context.exeInfo.isNewEnv) {
@@ -120,18 +144,23 @@ async function onInitSuccessful(context) {
 function storeCurrentCloudBackend(context) {
   const zipFilename = '#current-cloud-backend.zip';
   const backendDir = context.amplify.pathManager.getBackendDirPath();
-  const tempDir = `${backendDir}/.temp`;
+  const tempDir = path.join(backendDir, '.temp');
   const currentCloudBackendDir = context.exeInfo
-    ? `${context.exeInfo.localEnvInfo.projectPath}/amplify/#current-cloud-backend`
+    ? path.join(context.exeInfo.localEnvInfo.projectPath, PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName)
     : context.amplify.pathManager.getCurrentCloudBackendDirPath();
 
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
   }
 
+  const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
+    cwd: pathManager.getAmplifyDirPath(),
+    absolute: true,
+  });
+
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
   return archiver
-    .run(currentCloudBackendDir, zipFilePath)
+    .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
       const s3Key = `${result.zipFilename}`;
       return new S3(context).then(s3 => {

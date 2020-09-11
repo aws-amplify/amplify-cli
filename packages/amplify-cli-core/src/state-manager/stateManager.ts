@@ -6,6 +6,7 @@ import { Tag, ReadValidateTags } from '../tags';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
+  preserveComments?: boolean;
   default?: T;
 };
 
@@ -76,6 +77,8 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
+  projectConfigExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getProjectConfigFilePath(projectPath));
+
   getProjectConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
     const filePath = pathManager.getProjectConfigFilePath(projectPath);
     const mergedOptions = {
@@ -143,6 +146,26 @@ export class StateManager {
     const filePath = pathManager.getCurrentAmplifyMetaFilePath(projectPath);
 
     JSONUtilities.writeJson(filePath, meta);
+  };
+
+  cliJSONFileExists = (projectPath: string, env?: string): boolean => fs.existsSync(pathManager.getCLIJSONFilePath(projectPath, env));
+
+  getCLIJSON = (projectPath: string, env?: string, options?: GetOptions<$TSAny>): $TSAny => {
+    const filePath = pathManager.getCLIJSONFilePath(projectPath, env);
+    const mergedOptions = {
+      throwIfNotExist: true,
+      ...options,
+    };
+
+    return this.getData<$TSAny>(filePath, mergedOptions);
+  };
+
+  setCLIJSON = (projectPath: string, cliJSON: any, env?: string): void => {
+    const filePath = pathManager.getCLIJSONFilePath(projectPath, env);
+
+    JSONUtilities.writeJson(filePath, cliJSON, {
+      keepComments: true,
+    });
   };
 
   private getData = <T>(filePath: string, options?: GetOptions<T>): T | undefined => {
