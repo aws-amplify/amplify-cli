@@ -1,5 +1,13 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, updateFunction, functionBuild, addLambdaTrigger, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
+import {
+  addFunction,
+  updateFunction,
+  functionBuild,
+  addLambdaTrigger,
+  functionMockAssert,
+  functionCloudInvoke,
+  unCommentCorsHeader,
+} from 'amplify-e2e-core';
 import { addLayer, LayerOptions } from 'amplify-e2e-core';
 import { addSimpleDDB } from 'amplify-e2e-core';
 import { addKinesis } from 'amplify-e2e-core';
