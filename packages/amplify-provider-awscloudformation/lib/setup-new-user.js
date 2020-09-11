@@ -49,7 +49,7 @@ async function run(context) {
   open(deepLinkURL, { wait: false }).catch(() => {});
   await context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
 
-  context.print.info('Enter the access key of the newly created user:');
+  context.print.info('Enter the access key of the newly created user ////////:');
   const accountDetails = await inquirer.prompt([
     {
       type: 'password',
@@ -58,6 +58,20 @@ async function run(context) {
       message: 'accessKeyId: ',
       default: awsConfig.accessKeyId,
       transformer: obfuscationUtil.transform,
+      validate: input => {
+        if (input === constants.DefaultAWSAccessKeyId || input.length < 16 || input.length > 128 || !/^[\w]+$/.test(input)) {
+          let message = 'You must enter a valid accessKeyId';
+          if (input.length < 16) {
+            message += ': Minimum length is 16';
+          } else if (input.length > 128) {
+            message += ': Maximun length is 128';
+          } else if (!/^[\w]+$/.test(input)) {
+            message += ': It can only contain letter, number or underscore characters';
+          }
+          return message;
+        }
+        return true;
+      },
     },
     {
       type: 'password',
@@ -66,6 +80,12 @@ async function run(context) {
       message: 'secretAccessKey: ',
       default: awsConfig.secretAccessKey,
       transformer: obfuscationUtil.transform,
+      validate: input => {
+        if (input === constants.DefaultAWSSecretAccessKey || input.trim().length === 0) {
+          return 'You must enter a valid secretAccessKey';
+        }
+        return true;
+      },
     },
   ]);
 
