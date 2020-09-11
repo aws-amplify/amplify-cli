@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { pathManager, stateManager, $TSContext } from 'amplify-cli-core';
+import { pathManager, stateManager, $TSContext, FeatureFlags } from 'amplify-cli-core';
 import { queryProvider } from './attach-backend-steps/a10-queryProvider';
 import { analyzeProject } from './attach-backend-steps/a20-analyzeProject';
 import { initFrontend } from './attach-backend-steps/a30-initFrontend';
@@ -18,6 +18,13 @@ export async function attachBackend(context: $TSContext, inputParams) {
 
   try {
     await queryProvider(context);
+
+    // After pulling down backend reload feature flag values as new values can affect the remaining
+    // operations of the pull command.
+    if (FeatureFlags.isInitialized()) {
+      await FeatureFlags.reloadValues();
+    }
+
     await analyzeProject(context);
     await initFrontend(context);
     await generateFiles(context);

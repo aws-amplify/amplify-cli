@@ -1,25 +1,33 @@
 import Ajv, { AdditionalPropertiesParams } from 'ajv';
 import * as fs from 'fs-extra';
-import _ from 'lodash';
 import * as path from 'path';
+import _ from 'lodash';
 import { JSONSchema7, JSONSchema7Definition } from 'json-schema';
-import { CLIEnvironmentProvider, JSONUtilities, JSONValidationError } from '..';
+import { CLIEnvironmentProvider, JSONValidationError } from '..';
 import { FeatureFlagConfiguration, FeatureFlagRegistration, FeatureFlagsEntry, FeatureFlagType } from '.';
-import { amplifyConfigFileName, amplifyConfigEnvFileNameTemplate } from '../constants';
 import { FeatureFlagFileProvider } from './featureFlagFileProvider';
 import { FeatureFlagEnvironmentProvider } from './featureFlagEnvironmentProvider';
+import { pathManager } from '../state-manager/pathManager';
+import { stateManager } from '../state-manager';
+import { JSONUtilities } from '../jsonUtilities';
 
 export class FeatureFlags {
   private static instance: FeatureFlags;
 
   private readonly registrations: Map<string, FeatureFlagRegistration[]> = new Map();
+  private fileValueProvider!: FeatureFlagFileProvider;
+  private envValueProvider!: FeatureFlagEnvironmentProvider;
   private effectiveFlags: Readonly<FeatureFlagsEntry> = {};
   private newProjectDefaults: Readonly<FeatureFlagsEntry> = {};
   private existingProjectDefaults: Readonly<FeatureFlagsEntry> = {};
 
-  private constructor(private environmentProvider: CLIEnvironmentProvider, private projectPath: string) {}
+  private constructor(private environmentProvider: CLIEnvironmentProvider, private projectPath: string, private useNewDefaults: boolean) {}
 
-  public static initialize = async (environmentProvider: CLIEnvironmentProvider, projectPath: string): Promise<void> => {
+  public static initialize = async (
+    environmentProvider: CLIEnvironmentProvider,
+    useNewDefaults: boolean = false,
+    additionalFlags?: Record<string, FeatureFlagRegistration[]>,
+  ): Promise<void> => {
     // If we are not running by tests, guard against multiple calls to initialize invocations
     if (typeof jest === 'undefined' && FeatureFlags.instance) {
       throw new Error('FeatureFlags can only be initialzied once');
@@ -29,66 +37,33 @@ export class FeatureFlags {
       throw new Error(`'environmentProvider' argument is required`);
     }
 
-    if (!projectPath) {
-      throw new Error(`'projectPath' argument is required`);
-    }
+    // fallback to process.cwd() if no projectPath cannot be determined
+    const projectPath = pathManager.findProjectRoot() ?? process.cwd();
 
-    if (!(await fs.pathExists(projectPath))) {
-      throw new Error(`Project path: '${projectPath}' does not exist.`);
-    }
+    await FeatureFlags.removeOriginalConfigFile(projectPath);
 
-    const instance = new FeatureFlags(environmentProvider, projectPath);
+    const instance = new FeatureFlags(environmentProvider, projectPath, useNewDefaults);
 
     // Populate registrations here, later this can be coming from plugins' manifests
     instance.registerFlags();
 
+    if (additionalFlags) {
+      for (const sectionName of Object.keys(additionalFlags)) {
+        const flags = additionalFlags[sectionName];
+
+        instance.registerFlag(sectionName, flags);
+      }
+    }
+
     // Create the providers
-    const fileValueProvider = new FeatureFlagFileProvider(environmentProvider, {
+    instance.fileValueProvider = new FeatureFlagFileProvider(environmentProvider, {
       projectPath,
     });
-    const envValueProvider = new FeatureFlagEnvironmentProvider({
+    instance.envValueProvider = new FeatureFlagEnvironmentProvider({
       projectPath,
     });
 
-    // Load the flags from all providers
-    const fileFlags = await fileValueProvider.load();
-    const envFlags = instance.transformEnvFlags(await envValueProvider.load());
-
-    // Validate the loaded flags from all providers
-    instance.validateFlags([
-      {
-        name: 'File',
-        flags: fileFlags,
-      },
-      {
-        name: 'Environment',
-        flags: envFlags,
-      },
-    ]);
-
-    // Build default value objects from registrations
-    instance.buildDefaultValues();
-
-    //
-    // To make access easy, we are unfolding the values from the providers, dot notation based key value pairs.
-    // Example: 'graphqltransformer.transformerversion': 5
-    //
-    // top to bottom the following order is used:
-    // - file project level
-    // - file env level
-    // - environment project level
-    // - environment env level
-    //
-    // The sections, properties and values are verified against the dynamically built up json schema
-    //
-
-    instance.effectiveFlags = _.merge(
-      {},
-      fileFlags.project,
-      fileFlags.environments[environmentProvider.getCurrentEnvName()] ?? {},
-      envFlags.project,
-      envFlags.environments[environmentProvider.getCurrentEnvName()] ?? {},
-    );
+    await instance.loadValues();
 
     FeatureFlags.instance = instance;
   };
@@ -103,9 +78,7 @@ export class FeatureFlags {
   public static ensureDefaultFeatureFlags = async (newProject: boolean): Promise<void> => {
     FeatureFlags.ensureInitialized();
 
-    const configFileName = path.join(FeatureFlags.instance.projectPath, amplifyConfigFileName);
-
-    let config = JSONUtilities.readJson<{ [key: string]: any }>(configFileName, {
+    let config = stateManager.getCLIJSON(FeatureFlags.instance.projectPath, undefined, {
       throwIfNotExist: false,
       preserveComments: true,
     });
@@ -117,9 +90,7 @@ export class FeatureFlags {
         features: newProject ? FeatureFlags.getNewProjectDefaults() : FeatureFlags.getExistingProjectDefaults(),
       };
 
-      JSONUtilities.writeJson(configFileName, config, {
-        keepComments: true,
-      });
+      stateManager.setCLIJSON(FeatureFlags.instance.projectPath, config);
     }
   };
 
@@ -167,13 +138,13 @@ export class FeatureFlags {
     }
 
     if (removeProjectConfiguration) {
-      const configFileName = path.join(FeatureFlags.instance.projectPath, amplifyConfigFileName);
+      const configFileName = pathManager.getCLIJSONFilePath(FeatureFlags.instance.projectPath);
 
       await fs.remove(configFileName);
     }
 
     for (let envName of envNames) {
-      const configFileName = path.join(FeatureFlags.instance.projectPath, amplifyConfigEnvFileNameTemplate(envName));
+      const configFileName = pathManager.getCLIJSONFilePath(FeatureFlags.instance.projectPath, envName);
 
       await fs.remove(configFileName);
     }
@@ -181,6 +152,36 @@ export class FeatureFlags {
 
   public static isInitialized = (): boolean => {
     return FeatureFlags.instance !== undefined;
+  };
+
+  public static reloadValues = async (): Promise<void> => {
+    FeatureFlags.ensureInitialized();
+
+    await FeatureFlags.instance.loadValues();
+  };
+
+  private static removeOriginalConfigFile = async (projectPath: string): Promise<void> => {
+    // Try to read in original `amplify.json` in project root and if it is a valid JSON
+    // and contains a top level `features` property, remove the file.
+    const originalConfigFileName = 'amplify.json';
+
+    try {
+      if (!projectPath) {
+        return;
+      }
+
+      const originalConfigFilePath = path.join(projectPath, originalConfigFileName);
+
+      const configFileData = JSONUtilities.readJson<{ features: FeatureFlagsEntry }>(originalConfigFilePath, {
+        throwIfNotExist: false,
+      });
+
+      if (configFileData?.features !== undefined) {
+        fs.removeSync(originalConfigFilePath);
+      }
+    } catch {
+      // Intentionally left blank
+    }
   };
 
   private static ensureInitialized = (): void => {
@@ -225,7 +226,11 @@ export class FeatureFlags {
 
     // If there is no value, return the registered defaults for existing projects
     if (!value) {
-      value = <T>(flagRegistrationEntry.defaultValueForExistingProjects as unknown);
+      if (this.useNewDefaults) {
+        value = <T>(flagRegistrationEntry.defaultValueForNewProjects as unknown);
+      } else {
+        value = <T>(flagRegistrationEntry.defaultValueForExistingProjects as unknown);
+      }
     }
 
     return value;
@@ -400,6 +405,48 @@ export class FeatureFlags {
     return features;
   };
 
+  private loadValues = async () => {
+    // Load the flags from all providers
+    const fileFlags = await this.fileValueProvider.load();
+    const envFlags = this.transformEnvFlags(await this.envValueProvider.load());
+
+    // Validate the loaded flags from all providers
+    this.validateFlags([
+      {
+        name: 'File',
+        flags: fileFlags,
+      },
+      {
+        name: 'Environment',
+        flags: envFlags,
+      },
+    ]);
+
+    // Build default value objects from registrations
+    this.buildDefaultValues();
+
+    //
+    // To make access easy, we are unfolding the values from the providers, dot notation based key value pairs.
+    // Example: 'graphqltransformer.transformerversion': 5
+    //
+    // top to bottom the following order is used:
+    // - file project level
+    // - file env level
+    // - environment project level
+    // - environment env level
+    //
+    // The sections, properties and values are verified against the dynamically built up json schema
+    //
+
+    this.effectiveFlags = _.merge(
+      this.useNewDefaults ? this.newProjectDefaults : this.existingProjectDefaults,
+      fileFlags.project,
+      fileFlags.environments[this.environmentProvider.getCurrentEnvName()] ?? {},
+      envFlags.project,
+      envFlags.environments[this.environmentProvider.getCurrentEnvName()] ?? {},
+    );
+  };
+
   private registerFlag = (section: string, flags: FeatureFlagRegistration[]): void => {
     if (!section) {
       throw new Error(`'section' argument is required`);
@@ -431,22 +478,22 @@ export class FeatureFlags {
 
   // DEVS: Register feature flags here
   private registerFlags = (): void => {
-    this.registerFlag('graphQLTransformer', [
-      {
-        name: 'transformerVersion',
-        type: 'number',
-        defaultValueForExistingProjects: 4,
-        defaultValueForNewProjects: 5,
-      },
-    ]);
-
-    this.registerFlag('keyTransformer', [
-      {
-        name: 'defaultQuery',
-        type: 'boolean',
-        defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: true,
-      },
-    ]);
+    // Examples:
+    // this.registerFlag('graphQLTransformer', [
+    //   {
+    //     name: 'transformerVersion',
+    //     type: 'number',
+    //     defaultValueForExistingProjects: 4,
+    //     defaultValueForNewProjects: 5,
+    //   },
+    // ]);
+    // this.registerFlag('keyTransformer', [
+    //   {
+    //     name: 'defaultQuery',
+    //     type: 'boolean',
+    //     defaultValueForExistingProjects: false,
+    //     defaultValueForNewProjects: true,
+    //   },
+    // ]);
   };
 }

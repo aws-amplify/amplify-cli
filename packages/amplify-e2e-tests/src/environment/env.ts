@@ -1,6 +1,6 @@
 import { nspawn as spawn, getCLIPath, getSocialProviders } from 'amplify-e2e-core';
 
-export function addEnvironment(cwd: string, settings: { envName: string; numLayers: number }) {
+export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }) {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
@@ -41,7 +41,7 @@ export function checkoutEnvironment(cwd: string, settings: { envName: string }) 
 }
 
 // Test multiple Environments by passing settings.numEnv
-export function listEnvironment(cwd: string, settings: { numEnv: number }) {
+export function listEnvironment(cwd: string, settings: { numEnv?: number }) {
   return new Promise((resolve, reject) => {
     let numEnv = settings.numEnv || 1;
     let regex = /\|\s\*?[a-z]{2,10}\s+\|/;

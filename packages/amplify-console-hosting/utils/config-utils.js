@@ -1,20 +1,22 @@
-const constants = require('../constants/plugin-constants');
-const pathManager = require('../utils/path-manager');
 const fs = require('fs-extra');
-const utils = require('../utils/amplify-context-utils');
 const path = require('path');
+const { pathManager, PathConstants } = require('amplify-cli-core');
+const glob = require('glob');
+const constants = require('../constants/plugin-constants');
+const utils = require('../utils/amplify-context-utils');
 const clientFactory = require('../utils/client-factory');
+const consolePathManager = require('../utils/path-manager');
 const buildUtils = require('./build-utils');
 
 function initCFNTemplate(context, templateFilePath) {
   const templateContent = context.amplify.readJsonFile(templateFilePath);
-  const serviceDirPath = pathManager.getAmplifyHostingDirPath(context);
+  const serviceDirPath = consolePathManager.getAmplifyHostingDirPath(context);
 
-  fs.ensureDirSync(pathManager.getHostingDirPath(context));
+  fs.ensureDirSync(consolePathManager.getHostingDirPath(context));
   fs.ensureDirSync(serviceDirPath);
 
   const jsonString = JSON.stringify(templateContent, null, 4);
-  fs.writeFileSync(pathManager.getTemplatePath(context), jsonString, 'utf8');
+  fs.writeFileSync(consolePathManager.getTemplatePath(context), jsonString, 'utf8');
 }
 
 async function initMetaFile(context, category, resourceName, type) {
@@ -26,11 +28,7 @@ async function initMetaFile(context, category, resourceName, type) {
     lastPushTimeStamp: timeStamp,
   };
 
-  context.amplify.updateamplifyMetaAfterResourceAdd(
-    category,
-    resourceName,
-    metaData,
-  );
+  context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, metaData);
 
   if (timeStamp) {
     // init #current-cloud-backend config file for CICD
@@ -46,7 +44,7 @@ async function initCurrBackendMeta(context, category, resourceName, type, timeSt
     lastPushTimeStamp: timeStamp,
   };
   // init backend meta
-  const currMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath(context);
+  const currMetaFilePath = consolePathManager.getCurrentAmplifyMetaFilePath(context);
   const currMetaContent = context.amplify.readJsonFile(currMetaFilePath);
   if (!currMetaContent[category]) {
     currMetaContent[category] = {};
@@ -60,7 +58,7 @@ async function initCurrBackendMeta(context, category, resourceName, type, timeSt
   fs.writeFileSync(currMetaFilePath, JSON.stringify(currMetaContent, null, 4));
 
   // init backend config
-  const curBackendConfigFilePath = pathManager.getCurrBackendConfigFilePath(context);
+  const curBackendConfigFilePath = consolePathManager.getCurrBackendConfigFilePath(context);
   if (!fs.existsSync(curBackendConfigFilePath)) {
     fs.ensureFileSync(curBackendConfigFilePath);
     fs.writeFileSync(curBackendConfigFilePath, JSON.stringify({}, null, 4));
@@ -83,8 +81,8 @@ async function initCurrBackendMeta(context, category, resourceName, type, timeSt
 
   fs.writeFileSync(curBackendConfigFilePath, JSON.stringify(backendConfig, null, 4));
 
-  const currHostingDir = pathManager.getCurrCloudBackendHostingDirPath(context);
-  const currAmplifyHostingDir = pathManager.getCurrCloudBackendAmplifyHostingDirPath(context);
+  const currHostingDir = consolePathManager.getCurrCloudBackendHostingDirPath(context);
+  const currAmplifyHostingDir = consolePathManager.getCurrCloudBackendAmplifyHostingDirPath(context);
   fs.ensureDirSync(currHostingDir);
   fs.ensureDirSync(currAmplifyHostingDir);
   await storeCurrentCloudBackend(context);
@@ -95,7 +93,7 @@ function initTeamProviderInfo(context, category, resourceName, type) {
 
   const { amplify } = context;
   const currEnv = amplify.getEnvInfo().envName;
-  const teamProviderInfoFilePath = pathManager.getProviderInfoFilePath(context);
+  const teamProviderInfoFilePath = consolePathManager.getProviderInfoFilePath(context);
   const teamProviderInfo = amplify.readJsonFile(teamProviderInfoFilePath);
   if (!teamProviderInfo[currEnv][categories]) {
     teamProviderInfo[currEnv][categories] = {};
@@ -114,16 +112,13 @@ function initTeamProviderInfo(context, category, resourceName, type) {
     appId,
     type,
   };
-  fs.writeFileSync(
-    teamProviderInfoFilePath,
-    JSON.stringify(teamProviderInfo, null, 4),
-  );
+  fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
 }
 
 async function deleteConsoleConfigFromCurrMeta(context) {
   const category = constants.CATEGORY;
   const resourceName = constants.CONSOLE_RESOURCE_NAME;
-  const currMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath(context);
+  const currMetaFilePath = consolePathManager.getCurrentAmplifyMetaFilePath(context);
   const currMetaContent = context.amplify.readJsonFile(currMetaFilePath);
   if (!currMetaContent[category]) {
     return;
@@ -145,7 +140,7 @@ function deleteConsoleConfigFromTeamProviderInfo(context) {
 
   const { amplify } = context;
   const currEnv = amplify.getEnvInfo().envName;
-  const teamProviderInfoFilePath = pathManager.getProviderInfoFilePath(context);
+  const teamProviderInfoFilePath = consolePathManager.getProviderInfoFilePath(context);
   const teamProviderInfo = amplify.readJsonFile(teamProviderInfoFilePath);
   if (!teamProviderInfo[currEnv][categories]) {
     return;
@@ -159,14 +154,11 @@ function deleteConsoleConfigFromTeamProviderInfo(context) {
     return;
   }
   teamProviderInfo[currEnv][categories][category][resourceName] = undefined;
-  fs.writeFileSync(
-    teamProviderInfoFilePath,
-    JSON.stringify(teamProviderInfo, null, 4),
-  );
+  fs.writeFileSync(teamProviderInfoFilePath, JSON.stringify(teamProviderInfo, null, 4));
 }
 
 function initBackendConfig(context, category, resourceName, type) {
-  const backendConfigFilePath = pathManager.getBackendConfigPath(context);
+  const backendConfigFilePath = consolePathManager.getBackendConfigPath(context);
   const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
 
   if (!backendConfig[category]) {
@@ -182,10 +174,7 @@ function initBackendConfig(context, category, resourceName, type) {
     providerPlugin: type === constants.TYPE_CICD ? undefined : constants.PROVIDER,
     type,
   };
-  fs.writeFileSync(
-    backendConfigFilePath,
-    JSON.stringify(backendConfig, null, 4),
-  );
+  fs.writeFileSync(backendConfigFilePath, JSON.stringify(backendConfig, null, 4));
 }
 
 function loadConsoleConfigFromTeamProviderinfo(context) {
@@ -219,7 +208,12 @@ async function storeCurrentCloudBackend(context) {
 
   try {
     const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
-    await buildUtils.zipFile(currentCloudBackendDir, zipFilePath);
+    const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
+      cwd: pathManager.getAmplifyDirPath(),
+      absolute: true,
+    });
+
+    await buildUtils.zipFile(currentCloudBackendDir, zipFilePath, cliJSONFiles);
     await uploadFile(s3, zipFilePath, zipFilename, context);
     await uploadFile(s3, amplifyMetaFilePath, 'amplify-meta.json', context);
     await uploadFile(s3, backendConfigFilePath, 'backend-config.json', context);

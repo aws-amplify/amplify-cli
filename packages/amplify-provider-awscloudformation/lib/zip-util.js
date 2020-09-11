@@ -8,7 +8,7 @@ function downloadZip(s3, tempDir, zipFileName, envName) {
       {
         Key: zipFileName,
       },
-      envName
+      envName,
     ).then((objectResult, objectError) => {
       if (objectError) {
         reject(objectError);
@@ -16,8 +16,10 @@ function downloadZip(s3, tempDir, zipFileName, envName) {
       }
 
       fs.ensureDirSync(tempDir);
+
       const buff = Buffer.from(objectResult);
       const tempfile = `${tempDir}/${zipFileName}`;
+
       fs.writeFile(tempfile, buff, err => {
         if (err) {
           reject(err);
@@ -29,18 +31,14 @@ function downloadZip(s3, tempDir, zipFileName, envName) {
   });
 }
 
-function extractZip(tempdir, zipFile) {
-  return new Promise((resolve, reject) => {
-    const filenameext = path.basename(zipFile);
-    const filename = filenameext.split('.')[0];
-    const unzippedDir = `${tempdir}/${filename}`;
-    extract(zipFile, { dir: unzippedDir }, err => {
-      if (err) {
-        reject(err);
-      }
-      resolve(unzippedDir);
-    });
-  });
+async function extractZip(tempdir, zipFile) {
+  const filenameext = path.basename(zipFile);
+  const filename = filenameext.split('.')[0];
+  const unzippedDir = path.join(tempdir, filename);
+
+  await extract(zipFile, { dir: unzippedDir });
+
+  return unzippedDir;
 }
 
 module.exports = {
