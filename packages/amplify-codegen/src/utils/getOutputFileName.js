@@ -19,7 +19,7 @@ function getOutputFileName(inputFileName, target) {
     const fileExtension = extensionMap[target];
     const ext = path.extname(inputFileName);
     const baseName = inputFileName.substr(0, inputFileName.length - ext.length);
-    const filename = ext === `.${fileExtension}` ? inputFileName : `${baseName}.${fileExtension}`;
+    const filename = inputFileName.includes(fileExtension) ? inputFileName : `${baseName}.${fileExtension}`;
     const defaultPath = Object.keys(folderMap).includes(target) ? folderMap[target] : '';
     return ['API', 'api'].includes(inputFileName) ? path.join(defaultPath, filename) : filename;
   }

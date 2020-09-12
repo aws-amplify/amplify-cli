@@ -37,6 +37,15 @@ export function generateSource(context: LegacyCompilerContext) {
 }
 
 function generateTypes(generator: CodeGenerator, context: LegacyCompilerContext) {
+  // if subscription operations exist create subscriptionResponse interface
+  // https://github.com/aws-amplify/amplify-cli/issues/5284
+  if (context.schema.getSubscriptionType()) {
+    generator.printOnNewline(`
+    export interface SubscriptionResponse<T> {
+      value: GraphQLResult<T>;
+    }`);
+    generator.printNewline();
+  }
   context.typesUsed.forEach(type => typeDeclarationForGraphQLType(generator, type));
 
   Object.values(context.operations).forEach(operation => {
@@ -128,7 +137,7 @@ function generateSubscriptionOperation(generator: CodeGenerator, op: LegacyOpera
   generator.printNewline();
   const subscriptionName = `${operationName}Listener`;
   generator.print(
-    `${subscriptionName}: Observable<${returnType}> = API.graphql(graphqlOperation(\n\`${statement}\`)) as Observable<${returnType}>`,
+    `${subscriptionName}: Observable<SubscriptionResponse<${returnType}>> = API.graphql(graphqlOperation(\n\`${statement}\`)) as Observable<SubscriptionResponse<${returnType}>>`,
   );
   generator.printNewline();
 }
