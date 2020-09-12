@@ -21,6 +21,7 @@ export const askExecRolePermissionsQuestions = async (
   context,
   lambdaFunctionToUpdate: string,
   currentPermissionMap?,
+  currentEnvMap?,
 ): Promise<ExecRolePermissionsResponse> => {
   const amplifyMeta = stateManager.getMeta();
 
@@ -232,6 +233,12 @@ export const askExecRolePermissionsQuestions = async (
       });
     }
   });
+
+  if (currentEnvMap) {
+    _.keys(currentEnvMap).forEach(key => {
+      envVars.add(key);
+    });
+  }
 
   const envVarStringList = Array.from(envVars)
     .sort()
