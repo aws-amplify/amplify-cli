@@ -70,6 +70,19 @@ export class AppSyncModelTypeScriptVisitor<
     return enumDeclarations.string;
   }
 
+  protected hasOwnerAuth(modelObj: CodeGenModel): boolean {
+    for (let directive of modelObj.directives) {
+      if ("auth" === directive.name) {
+        for (let rule of directive.arguments.rules) {
+          if ("owner" === rule.allow) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
   /**
    *
    * @param modelObj CodeGenModel object
@@ -83,12 +96,22 @@ export class AppSyncModelTypeScriptVisitor<
       .withName(modelName)
       .export(true);
 
+    let ownerFieldExists = false;
     modelObj.fields.forEach((field: CodeGenField) => {
+      if ("owner" === this.getFieldName(field) && "String" === this.getNativeType(field)) {
+        ownerFieldExists = true;
+      }
       modelDeclarations.addProperty(this.getFieldName(field), this.getNativeType(field), undefined, 'DEFAULT', {
         readonly: true,
         optional: field.isNullable,
       });
     });
+    if (this.hasOwnerAuth(modelObj) && !ownerFieldExists) {
+      modelDeclarations.addProperty("owner", "String", undefined, 'DEFAULT', {
+        readonly: true,
+        optional: true,
+      });
+    }
 
     // Constructor
     modelDeclarations.addClassMethod(
