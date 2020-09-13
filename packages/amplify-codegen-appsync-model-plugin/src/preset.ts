@@ -1,7 +1,7 @@
 import { Types } from '@graphql-codegen/plugin-helpers';
 import { Kind, TypeDefinitionNode } from 'graphql';
 import { join } from 'path';
-import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP } from './scalars';
+import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP, DART_SCALAR_MAP } from './scalars';
 import { LOADER_CLASS_NAME, GENERATED_PACKAGE_NAME } from './configs/java-config';
 
 const APPSYNC_DATA_STORE_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript'];
@@ -23,7 +23,7 @@ export type AppSyncModelCodeGenPresetConfig = {
    *    - amplify-codegen-appsync-model-plugin
    * ```
    */
-  target: 'java' | 'android' | 'ios' | 'swift' | 'javascript' | 'typescript';
+  target: 'java' | 'android' | 'ios' | 'swift' | 'javascript' | 'typescript' | 'dart';
 };
 
 const generateJavaPreset = (
@@ -187,6 +187,38 @@ const generateJavasScriptPreset = (
   return config;
 };
 
+const generateDartPreset = (
+  options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>,
+  models: TypeDefinitionNode[],
+): Types.GenerateOptions[] => {
+  const config: Types.GenerateOptions[] = [];
+  models.forEach(model => {
+    const modelName = model.name.value;
+    config.push({
+      ...options,
+      filename: join(options.baseOutputDir, `${modelName}.dart`),
+      config: {
+        ...options.config,
+        scalars: { ...DART_SCALAR_MAP, ...options.config.scalars },
+        selectedType: modelName,
+      },
+    });
+  });
+
+  // Class loader
+  config.push({
+    ...options,
+    filename: join(options.baseOutputDir, `${LOADER_CLASS_NAME}.dart`),
+    config: {
+      ...options.config,
+      scalars: { ...DART_SCALAR_MAP, ...options.config.scalars },
+      generate: 'loader',
+    },
+  });
+
+  return config;
+};
+
 export const preset: Types.OutputPreset<AppSyncModelCodeGenPresetConfig> = {
   buildGeneratesSection: (options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>): Types.GenerateOptions[] => {
     const codeGenTarget = options.config.target;
@@ -209,6 +241,9 @@ export const preset: Types.OutputPreset<AppSyncModelCodeGenPresetConfig> = {
         break;
       case 'typescript':
         return generateTypeScriptPreset(options, models);
+        break;
+      case 'dart':
+        return generateDartPreset(options, models);
         break;
       default:
         throw new Error(

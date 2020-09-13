@@ -75,3 +75,20 @@ export const METADATA_SCALAR_MAP: NormalizedScalarsMap = {
   Float: 'Float',
   AWSTimestamp: 'AWSTimestamp',
 };
+
+export const DART_SCALAR_MAP: NormalizedScalarsMap = {
+  ID: 'String',
+  String: 'String',
+  Int: 'int',
+  Float: 'double',
+  Boolean: 'bool',
+  AWSDate: 'DateTime',
+  AWSDateTime: 'DateTime',
+  AWSTime: 'DateTime',
+  AWSTimestamp: 'int',
+  AWSEmail: 'String',
+  AWSJSON: 'String',
+  AWSURL: 'String',
+  AWSPhone: 'String',
+  AWSIPAddress: 'String',
+};
