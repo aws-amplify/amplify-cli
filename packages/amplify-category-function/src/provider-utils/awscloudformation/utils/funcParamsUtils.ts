@@ -4,14 +4,14 @@ import _ from 'lodash';
 // Merges other with existing in a non-destructive way.
 // Specifically, scalar values will not be overwritten
 // Objects will have field added but not removed or modified
-// Arrays will be appended to
+// Arrays will be appended to, duplicates are removed
 export function merge(existing: Partial<FunctionParameters>, other: Partial<FunctionParameters>): Partial<FunctionParameters> {
   const mergeFunc = (oldVal: any, newVal: any) => {
     if (!_.isObject(oldVal)) {
       return oldVal;
     }
     if (_.isArray(oldVal)) {
-      return oldVal.concat(newVal);
+      return _.uniqBy(oldVal.concat(newVal), _.isEqual);
     }
   };
   return _.mergeWith(existing, other, mergeFunc);
