@@ -62,6 +62,7 @@ type JSONModelField = {
   type: JSONModelFieldType;
   isArray: boolean;
   isRequired?: boolean;
+  isArrayRequired?: boolean;
   attributes?: JSONModelFieldAttributes;
   association?: AssociationType;
 };
@@ -200,6 +201,7 @@ export class AppSyncJSONVisitor<
           isArray: field.isList,
           type: this.getType(field.type),
           isRequired: !field.isNullable,
+          isArrayRequired: field.isListNullable !== undefined ? !field.isListNullable : undefined,
           attributes: [],
         };
         const association: AssociationType | void = this.getFieldAssociation(field);

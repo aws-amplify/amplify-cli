@@ -120,6 +120,7 @@ export type TypeInfo = {
   type: string;
   isList: boolean;
   isNullable: boolean;
+  isListNullable?: boolean;
   baseType?: GraphQLNamedType | null;
 };
 export type CodeGenModel = {
