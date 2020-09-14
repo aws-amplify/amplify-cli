@@ -201,9 +201,13 @@ export class AppSyncJSONVisitor<
           isArray: field.isList,
           type: this.getType(field.type),
           isRequired: !field.isNullable,
-          isArrayRequired: field.isListNullable !== undefined ? !field.isListNullable : undefined,
           attributes: [],
         };
+
+        if (field.isListNullable !== undefined) {
+          fieldMeta.isArrayRequired = !field.isListNullable;
+        }
+
         const association: AssociationType | void = this.getFieldAssociation(field);
         if (association) {
           fieldMeta.association = association;
