@@ -3,7 +3,7 @@ import winstonDailyRotateFile from 'winston-daily-rotate-file';
 import { constants } from './constants';
 import { IAmplifyLogger } from './IAmplifyLogger';
 import { JSONUtilities } from 'amplify-cli-core';
-import { getLogFilePath, getLocalLogFilePath, getLogAuditFilePath } from './getLogFilePath';
+import { getLogFilePath, getLocalLogFilePath, getLogAuditFilePath, getLocalAuditLogFile } from './getLogFilePath';
 import { LocalProjectData, LogPayload, LogErrorPayload } from './Types';
 import { Redactor } from './Redactor';
 
@@ -13,7 +13,7 @@ export class AmplifyLogger implements IAmplifyLogger {
   localProjectData!: LocalProjectData;
   disabledAmplifyLogging: boolean = !!process.env.AMPLIFY_CLI_DISABLE_LOGGING;
   options: any = {
-    mode: 0o600,
+    mode: 0o640,
   };
   constructor() {
     this.logger = winston.createLogger();
@@ -21,13 +21,13 @@ export class AmplifyLogger implements IAmplifyLogger {
     if (!this.disabledAmplifyLogging) {
       this.logger.add(
         new winstonDailyRotateFile({
-          auditFile: getLogAuditFilePath(false),
+          auditFile: getLogAuditFilePath(),
           filename: getLogFilePath(),
           datePattern: constants.DATE_PATTERN,
           maxFiles: `${constants.MAX_FILE_DAYS}d`,
           handleExceptions: false,
           format: this.format,
-          options: this.options,
+          //options: this.options,
         }),
       );
     }
@@ -55,21 +55,17 @@ export class AmplifyLogger implements IAmplifyLogger {
     return '';
   }
 
-  replaceAccountId(arg: string): string {
-    return arg.replace(/\d{12}/gm, s => 'xxxxxxxx' + s.slice(7, 11));
-  }
-
   projectLocalLogInit(projecPath: string): void {
     if (!this.disabledAmplifyLogging) {
       this.logger.add(
         new winstonDailyRotateFile({
-          auditFile: getLogAuditFilePath(true),
+          auditFile: getLocalAuditLogFile(projecPath),
           filename: getLocalLogFilePath(projecPath),
           datePattern: constants.DATE_PATTERN,
           maxFiles: `${constants.MAX_FILE_DAYS}d`,
           handleExceptions: false,
           format: this.format,
-          options: this.options,
+          //options: this.options,
         }),
       );
     }

@@ -57,7 +57,7 @@ async function run(context, providerMetadata) {
   fs.removeSync(tempDir);
 
   const cfnItem = await new Cloudformation(context);
-
+  logger('run.cfn.updateamplifyMetaFileWithStackOutputs', [{ StackName: providerMetadata.StackName }])();
   await cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName);
 
   // Copy provider metadata from current-cloud-backend/amplify-meta to backend/ampliy-meta

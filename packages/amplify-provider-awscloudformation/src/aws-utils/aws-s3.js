@@ -171,7 +171,7 @@ class S3 {
 
   deleteAllObjects(bucketName) {
     return new Promise((resolve, reject) => {
-      logger('deleteAllObjects.s3.getAllObjectKey', [bucketName])();
+      logger('deleteAllObjects.s3.getAllObjectKey', [{ BucketName: bucketName }])();
 
       this.getAllObjectKeys(bucketName).then((bucketObjects, error) => {
         if (error) reject(error);
@@ -204,19 +204,19 @@ class S3 {
 
   deleteS3Bucket(bucketName) {
     return new Promise((resolve, reject) => {
-      logger('deleteS3Bucket.s3.ifBucketExists', [bucketName])();
+      logger('deleteS3Bucket.s3.ifBucketExists', [{ BucketName: bucketName }])();
       this.ifBucketExists(bucketName).then((exists, err) => {
         if (err) {
           reject(err);
         }
         if (exists) {
-          logger('deleteS3Bucket.s3.deleteAllObjects', [bucketName])();
+          logger('deleteS3Bucket.s3.deleteAllObjects', [{ BucketName: bucketName }])();
           this.deleteAllObjects(bucketName).then((result, err) => {
             if (err) {
               reject(err);
               return;
             }
-            logger('deleteS3Bucket.s3.deleteBucket', [bucketName])();
+            logger('deleteS3Bucket.s3.deleteBucket', [{ BucketName: bucketName }])();
             this.s3
               .deleteBucket({
                 Bucket: bucketName,
@@ -224,7 +224,7 @@ class S3 {
               .promise()
               .then((dresult, derr) => {
                 if (derr) {
-                  logger('deleteS3Bucket.s3.deleteBucket', [bucketName])(derr);
+                  logger('deleteS3Bucket.s3.deleteBucket', [{ BucketName: bucketName }])(derr);
                   reject(derr);
                   return;
                 }
@@ -240,7 +240,7 @@ class S3 {
 
   ifBucketExists(bucketName) {
     return new Promise((resolve, reject) => {
-      logger('ifBucketExists.s3.headBucket', [bucketName])();
+      logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])();
       this.s3.headBucket(
         {
           Bucket: bucketName,
@@ -255,7 +255,7 @@ class S3 {
               return;
             }
           }
-          logger('ifBucketExists.s3.headBucket', [bucketName])(err);
+          logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])(err);
           reject(err.message);
         },
       );
