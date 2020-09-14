@@ -4,7 +4,7 @@ import { join } from 'path';
 import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP, DART_SCALAR_MAP } from './scalars';
 import { LOADER_CLASS_NAME, GENERATED_PACKAGE_NAME } from './configs/java-config';
 
-const APPSYNC_DATA_STORE_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript'];
+const APPSYNC_DATA_STORE_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript', 'flutter', 'dart'];
 
 export type AppSyncModelCodeGenPresetConfig = {
   /**
@@ -23,7 +23,11 @@ export type AppSyncModelCodeGenPresetConfig = {
    *    - amplify-codegen-appsync-model-plugin
    * ```
    */
+<<<<<<< HEAD
   target: 'java' | 'android' | 'ios' | 'swift' | 'javascript' | 'typescript' | 'dart';
+=======
+  target: 'java' | 'android' | 'ios' | 'swift' | 'javascript' | 'typescript' | 'flutter' | 'dart';
+>>>>>>> 4aa9e6b29... feat(amplify-codegen-appsync-model-plugin): add appsync dart visitor
 };
 
 const generateJavaPreset = (
@@ -192,6 +196,7 @@ const generateDartPreset = (
   models: TypeDefinitionNode[],
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
+<<<<<<< HEAD
   models.forEach(model => {
     const modelName = model.name.value;
     config.push({
@@ -218,6 +223,18 @@ const generateDartPreset = (
 
   return config;
 };
+=======
+  config.push({
+    ...options,
+    filename: join(options.baseOutputDir, `schema.dart`),
+    config: {
+      ...options.config,
+      scalars: { ...JAVA_SCALAR_MAP, ...options.config.scalars },
+    },
+  });
+  return config;
+}
+>>>>>>> 4aa9e6b29... feat(amplify-codegen-appsync-model-plugin): add appsync dart visitor
 
 export const preset: Types.OutputPreset<AppSyncModelCodeGenPresetConfig> = {
   buildGeneratesSection: (options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>): Types.GenerateOptions[] => {
@@ -242,6 +259,10 @@ export const preset: Types.OutputPreset<AppSyncModelCodeGenPresetConfig> = {
       case 'typescript':
         return generateTypeScriptPreset(options, models);
         break;
+<<<<<<< HEAD
+=======
+      case 'flutter':
+>>>>>>> 4aa9e6b29... feat(amplify-codegen-appsync-model-plugin): add appsync dart visitor
       case 'dart':
         return generateDartPreset(options, models);
         break;

@@ -112,6 +112,8 @@ function getModelOutputPath(context) {
         : path.join('app', 'src', 'main', 'java');
     case 'ios':
       return 'amplify/generated/models';
+    case 'flutter':
+      return 'dart/models';
     default:
       return '.';
   }
