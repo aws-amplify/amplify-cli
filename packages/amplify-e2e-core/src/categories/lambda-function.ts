@@ -208,19 +208,6 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
   }
 };
 
-export const unCommentCorsHeader = async (cwd: string, functionName: string): Promise<void> => {
-  const codeHandlerPath = path.join(cwd, 'amplify', 'backend', 'function', functionName, 'src', 'index.js');
-  const code = fs.readFileSync(codeHandlerPath, { encoding: 'utf8' });
-  const uncommentedCode = code
-    .replace('//  headers: {', '    headers: {')
-    .replace('//      "Access-Control-Allow-Origin": "*"', '        "Access-Control-Allow-Origin": "*"')
-    .replace('//  },', '    },');
-  fs.writeFileSync(codeHandlerPath, uncommentedCode, {
-    flag: 'w',
-    encoding: 'utf8',
-  });
-};
-
 export const functionBuild = (cwd: string, settings: any) => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
