@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
-const chalkpipe = require('chalk-pipe');
 const { uniq, pullAll } = require('lodash');
 const path = require('path');
 const { Sort } = require('enquirer');
@@ -68,7 +67,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     // LEARN MORE BLOCK
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
       const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
-      questionObj.prefix = chalkpipe(null, chalk.green)(helpText);
+      questionObj.prefix = chalk.green(helpText);
       // ITERATOR BLOCK
     } else if (
       /*
