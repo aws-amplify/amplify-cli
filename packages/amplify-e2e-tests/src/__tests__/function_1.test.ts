@@ -1,13 +1,5 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import {
-  addFunction,
-  updateFunction,
-  functionBuild,
-  addLambdaTrigger,
-  functionMockAssert,
-  functionCloudInvoke,
-  unCommentCorsHeader,
-} from 'amplify-e2e-core';
+import { addFunction, updateFunction, functionBuild, addLambdaTrigger, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
 import { addLayer, LayerOptions } from 'amplify-e2e-core';
 import { addSimpleDDB } from 'amplify-e2e-core';
 import { addKinesis } from 'amplify-e2e-core';
@@ -49,9 +41,8 @@ describe('nodejs', () => {
       await initJSProjectWithProfile(projRoot, {});
       const random = Math.floor(Math.random() * 10000);
       const functionName = `testcorsfunction${random}`;
-
+      process.env.AMPLIFY_CLI_LAMBDA_CORS_HEADER = 'true';
       await addFunction(projRoot, { functionTemplate: 'Hello World', name: functionName }, 'nodejs');
-      await unCommentCorsHeader(projRoot, functionName);
       await functionBuild(projRoot, {});
       await amplifyPushAuth(projRoot);
       const meta = getProjectMeta(projRoot);
@@ -64,6 +55,7 @@ describe('nodejs', () => {
       const payload = JSON.parse(response.Payload.toString());
       expect(payload.headers['Access-Control-Allow-Origin']).toEqual('*');
       expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
+      delete process.env.AMPLIFY_CLI_LAMBDA_CORS_HEADER;
     });
 
     it('init a project and add simple function', async () => {
