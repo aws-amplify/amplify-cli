@@ -70,17 +70,28 @@ export class AppSyncModelTypeScriptVisitor<
     return enumDeclarations.string;
   }
 
-  protected hasOwnerAuth(modelObj: CodeGenModel): boolean {
+  protected getOwnerFieldName(modelObj: CodeGenModel): string | undefined {
+    let rule = this.getOwnerAuthRule(modelObj);
+    if (rule === undefined) {
+      return undefined
+    }
+    let ownerField = rule.ownerField
+    if (ownerField === undefined) {
+      ownerField = "owner"
+    }
+    return ownerField
+  }
+
+  protected getOwnerAuthRule(modelObj: CodeGenModel): any {
     for (let directive of modelObj.directives) {
       if ("auth" === directive.name) {
         for (let rule of directive.arguments.rules) {
           if ("owner" === rule.allow) {
-            return true;
+            return rule;
           }
         }
       }
     }
-    return false;
   }
 
   /**
@@ -97,8 +108,9 @@ export class AppSyncModelTypeScriptVisitor<
       .export(true);
 
     let ownerFieldExists = false;
+    let ownerFieldName = this.getOwnerFieldName(modelObj);
     modelObj.fields.forEach((field: CodeGenField) => {
-      if ("owner" === this.getFieldName(field) && "String" === this.getNativeType(field)) {
+      if (ownerFieldName === this.getFieldName(field) && "String" === this.getNativeType(field)) {
         ownerFieldExists = true;
       }
       modelDeclarations.addProperty(this.getFieldName(field), this.getNativeType(field), undefined, 'DEFAULT', {
@@ -106,8 +118,8 @@ export class AppSyncModelTypeScriptVisitor<
         optional: field.isNullable,
       });
     });
-    if (this.hasOwnerAuth(modelObj) && !ownerFieldExists) {
-      modelDeclarations.addProperty("owner", "String", undefined, 'DEFAULT', {
+    if (this.getOwnerAuthRule(modelObj) !== undefined && !ownerFieldExists && ownerFieldName !== undefined) {
+      modelDeclarations.addProperty(ownerFieldName, "String", undefined, 'DEFAULT', {
         readonly: true,
         optional: true,
       });

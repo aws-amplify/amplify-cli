@@ -162,7 +162,7 @@ export {
   });
 });
 
-describe('Javascript visitor with auth', () => {
+describe('Javascript visitor with default owner auth', () => {
   const schema = /* GraphQL */ `
     type SimpleModel @model @auth(rules: [{ allow: owner }]) {
       id: ID!
@@ -215,6 +215,80 @@ export declare class SimpleModel {
   readonly name?: string;
   readonly bar?: string;
   readonly owner?: String;
+  constructor(init: ModelInit<SimpleModel>);
+  static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
+}"
+`);
+      expect(generateImportSpy).toBeCalledTimes(1);
+      expect(generateImportSpy).toBeCalledWith();
+
+      expect(generateEnumDeclarationsSpy).toBeCalledTimes(1);
+      expect(generateEnumDeclarationsSpy).toBeCalledWith((declarationVisitor as any).enumMap['SimpleEnum'], true);
+
+      expect(generateModelDeclarationSpy).toBeCalledTimes(2);
+      expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(1, (declarationVisitor as any).modelMap['SimpleModel'], true);
+      expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(2, (declarationVisitor as any).nonModelMap['SimpleNonModelType'], true);
+    });
+  });
+
+});
+
+
+
+describe('Javascript visitor with custom owner field auth', () => {
+  const schema = /* GraphQL */ `
+    type SimpleModel @model @auth(rules: [{ allow: owner, ownerField: "customOwnerField", operations: [create, update, delete, read] }]) {
+      id: ID!
+      name: String
+      bar: String
+    }
+    enum SimpleEnum {
+      enumVal1
+      enumVal2
+    }
+
+    type SimpleNonModelType {
+      id: ID!
+      names: [String]
+    }
+  `;
+  let visitor: AppSyncModelJavascriptVisitor;
+  beforeEach(() => {
+    visitor = getVisitor(schema);
+  });
+
+  describe('generate', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('should add custom owner field to Javascript declaration', () => {
+      const declarationVisitor = getVisitor(schema, true);
+      const generateImportSpy = jest.spyOn(declarationVisitor as any, 'generateImports');
+      const generateEnumDeclarationsSpy = jest.spyOn(declarationVisitor as any, 'generateEnumDeclarations');
+      const generateModelDeclarationSpy = jest.spyOn(declarationVisitor as any, 'generateModelDeclaration');
+      const declarations = declarationVisitor.generate();
+      validateTs(declarations);
+      console.log(declarations)
+      expect(declarations).toMatchInlineSnapshot(`
+"import { ModelInit, MutableModel, PersistentModelConstructor } from \\"@aws-amplify/datastore\\";
+
+export enum SimpleEnum {
+  ENUM_VAL1 = \\"enumVal1\\",
+  ENUM_VAL2 = \\"enumVal2\\"
+}
+
+export declare class SimpleNonModelType {
+  readonly id: string;
+  readonly names?: string[];
+  constructor(init: ModelInit<SimpleNonModelType>);
+}
+
+export declare class SimpleModel {
+  readonly id: string;
+  readonly name?: string;
+  readonly bar?: string;
+  readonly customOwnerField?: String;
   constructor(init: ModelInit<SimpleModel>);
   static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
 }"
