@@ -1,8 +1,6 @@
 import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, invokeFunction } from '../../src';
 import { Lambda } from 'aws-sdk';
 import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
-import * as fs from 'fs-extra';
-import path from 'path';
 
 type FunctionActions = 'create' | 'update';
 
