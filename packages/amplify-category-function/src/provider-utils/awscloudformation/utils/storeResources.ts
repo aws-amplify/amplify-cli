@@ -141,6 +141,9 @@ function copyTemplateFiles(context: any, parameters: FunctionParameters | Functi
     });
     templateParams = _.assign(templateParams, triggerEnvs);
   }
+  templateParams = _.assign(templateParams, {
+    uncommentCorsHeader: process.env.AMPLIFY_CLI_LAMBDA_CORS_HEADER === 'true',
+  });
 
   context.amplify.copyBatch(context, copyJobs, templateParams, false);
 
