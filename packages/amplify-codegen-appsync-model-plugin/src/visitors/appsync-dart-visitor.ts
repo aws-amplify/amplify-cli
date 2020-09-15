@@ -29,9 +29,8 @@ export class AppSyncModelDartVisitor<
         .asKind('class')
         .withName(this.getModelName(model))
         .implements(['Model'])
-        .withComment(`This is an auto generated clas representing the ${model.name} type in your schema.`)
+        .withComment(`This is an auto generated class representing the ${model.name} type in your schema.`)
         .annotate(this.generateModelAnnotations(model));
-      console.log(model.fields);
       model.fields.forEach(field => {
         const value: string = '';
         this.generateModelField(field, value, classDeclarationBlock);

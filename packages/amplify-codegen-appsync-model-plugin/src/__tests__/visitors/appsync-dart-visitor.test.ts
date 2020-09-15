@@ -27,15 +27,13 @@ describe('AppSyncModelVisitor', () => {
       name: String!
       posts: [Post] @connection(keyName: "byBlog", fields: ["id"])
     }
-    type Comment @model 
-      @key(name: "byPost", fields: ["postID", "content"]) {
+    type Comment @model @key(name: "byPost", fields: ["postID", "content"]) {
       id: ID!
       postID: ID!
       post: Post @connection(fields: ["postID"])
       content: String!
     }
-    type Post @model
-      @key(name: "byBlog", fields: ["blogID"]) {
+    type Post @model @key(name: "byBlog", fields: ["blogID"]) {
       id: ID!
       title: String!
       blogID: ID!
@@ -45,47 +43,8 @@ describe('AppSyncModelVisitor', () => {
   `;
 
   it('Should generate classes for models', () => {
-    const visitor = getVisitor(schema, 'Blog');
+    const visitor = getVisitor(schema);
     const generatedCode = visitor.generate();
-    expect(generatedCode).toMatchInlineSnapshot(`
-"@ModelConfig(pluralName: "Blogs")
-class Blog implements Model {
- @override
- @ModelField(targetType: "ID", isRequired: true)
- String id;
- @ModelField(targetType: "String", isRequired: true)
- String name;
- @ModelField(targetType: "Post")
- @HasMany(associatedWith: "blog", type: Post)
- List<Post>? posts;
-}
-@ModelConfig(pluralName: "Comments")
-@Index(name: "byPost", fields: ["postID", "content"])
-class Comment implements Model {
- @override
- @ModelField(targetType: "ID", isRequired: true)
- String id;
- @ModelField(targetType: "Post")
- @BelongsTo(targetName: "postID", type: Post)
- Post post;
- @ModelField(targetType: "String", isRequired: true)
- String content;
-}
-@ModelConfig(pluralName: "Posts")
-@Index(name: "byBlog", fields: ["blogID"])
-class Post implements Model {
- @override
- @ModelField(targetType: "ID", isRequired: true)
- String id;
- @ModelField(targetType: "String", isRequired: true)
- String title;
- @ModelField(targetType: "Blog")
- @BelongsTo(targetName: "blogID", type: Blog)
- Blog blog;
- @ModelField(targetType: "Comment")
- @HasMany(associatedWith: "posts", type: Comment)
- List<Comment>? comments;
-}"
-`);
+    expect(generatedCode).toMatchSnapshot();
   });
 });

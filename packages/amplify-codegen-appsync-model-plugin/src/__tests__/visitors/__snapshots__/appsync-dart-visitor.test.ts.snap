@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppSyncModelVisitor Should generate classes for models 1`] = `
+"/** This is an auto generated class representing the Blog type in your schema. */
+@ModelConfig(pluralName: \\"Blogs\\")
+class Blog implements Model {
+  @override
+  @ModelField(targetType: \\"ID\\", isRequired: true)
+  String id;
+  @ModelField(targetType: \\"String\\", isRequired: true)
+  String name;
+  @ModelField(targetType: \\"Post\\")
+  @HasMany(associatedWith: \\"blog\\", type: Post)
+  List<Post>? posts;
+}
+
+/** This is an auto generated class representing the Comment type in your schema. */
+@ModelConfig(pluralName: \\"Comments\\")
+@Index(name: \\"byPost\\", fields: [\\"postID\\", \\"content\\"])
+class Comment implements Model {
+  @override
+  @ModelField(targetType: \\"ID\\", isRequired: true)
+  String id;
+  @ModelField(targetType: \\"Post\\")
+  @BelongsTo(targetName: \\"postID\\", type: Post)
+  Post post;
+  @ModelField(targetType: \\"String\\", isRequired: true)
+  String content;
+}
+
+/** This is an auto generated class representing the Post type in your schema. */
+@ModelConfig(pluralName: \\"Posts\\")
+@Index(name: \\"byBlog\\", fields: [\\"blogID\\"])
+class Post implements Model {
+  @override
+  @ModelField(targetType: \\"ID\\", isRequired: true)
+  String id;
+  @ModelField(targetType: \\"String\\", isRequired: true)
+  String title;
+  @ModelField(targetType: \\"Blog\\")
+  @BelongsTo(targetName: \\"blogID\\", type: Blog)
+  Blog blog;
+  @ModelField(targetType: \\"Comment\\")
+  @HasMany(associatedWith: \\"post\\", type: Comment)
+  List<Comment>? comments;
+}
+"
+`;
