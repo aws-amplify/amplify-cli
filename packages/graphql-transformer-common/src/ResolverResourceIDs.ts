@@ -1,28 +1,28 @@
-import { graphqlName, toUpper } from './util';
+import { resourceName } from './util';
 
 export class ResolverResourceIDs {
   static DynamoDBCreateResolverResourceID(typeName: string): string {
-    return `Create${typeName}Resolver`;
+    return `Create${resourceName(typeName)}Resolver`;
   }
   static DynamoDBUpdateResolverResourceID(typeName: string): string {
-    return `Update${typeName}Resolver`;
+    return `Update${resourceName(typeName)}Resolver`;
   }
   static DynamoDBDeleteResolverResourceID(typeName: string): string {
-    return `Delete${typeName}Resolver`;
+    return `Delete${resourceName(typeName)}Resolver`;
   }
   static DynamoDBGetResolverResourceID(typeName: string): string {
-    return `Get${typeName}Resolver`;
+    return `Get${resourceName(typeName)}Resolver`;
   }
   static DynamoDBListResolverResourceID(typeName: string): string {
-    return `List${typeName}Resolver`;
+    return `List${resourceName(typeName)}Resolver`;
   }
   static ElasticsearchSearchResolverResourceID(typeName: string): string {
-    return `Search${typeName}Resolver`;
+    return `Search${resourceName(typeName)}Resolver`;
   }
   static SyncResolverResourceID(typeName: string): string {
-    return `Sync${typeName}Resolver`
+    return `Sync${resourceName(typeName)}Resolver`;
   }
   static ResolverResourceID(typeName: string, fieldName: string): string {
-    return `${typeName}${fieldName}Resolver`;
+    return `${resourceName(`${typeName}${fieldName}`)}Resolver`;
   }
 }

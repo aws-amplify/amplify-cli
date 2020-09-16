@@ -355,6 +355,39 @@ export function addS3WithTrigger(cwd: string, settings: any) {
   });
 }
 
+export function updateS3AddTrigger(cwd: string, settings: any) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
+      .wait('Please select from one of the below mentioned services')
+      .sendCarriageReturn() // Content
+      .wait('Restrict access by')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn() // Individual groups
+      .wait('Select groups')
+      .sendCarriageReturn()
+      .wait('What kind of access do you want') // for <UserGroup1> users?
+      .sendCarriageReturn()
+      .wait('What kind of access do you want') // for <UserGroup2> users?
+      .sendCarriageReturn()
+      .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
+      .sendLine('y')
+      .wait('Select from the following options')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Do you want to edit the local')
+      .sendLine('n')
+      .sendCarriageReturn()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function addS3Storage(projectDir: string) {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });

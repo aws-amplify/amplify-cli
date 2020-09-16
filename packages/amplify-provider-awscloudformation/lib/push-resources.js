@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const cfnLint = require('cfn-lint');
 const glob = require('glob');
+const { pathManager, PathConstants } = require('amplify-cli-core');
 const ora = require('ora');
 const S3 = require('../src/aws-utils/aws-s3');
 const Cloudformation = require('../src/aws-utils/aws-cfn');
@@ -175,16 +176,21 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
 function storeCurrentCloudBackend(context) {
   const zipFilename = '#current-cloud-backend.zip';
   const backendDir = context.amplify.pathManager.getBackendDirPath();
-  const tempDir = `${backendDir}/.temp`;
+  const tempDir = path.join(backendDir, '.temp');
   const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
 
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
   }
 
+  const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {
+    cwd: pathManager.getAmplifyDirPath(),
+    absolute: true,
+  });
+
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
   return archiver
-    .run(currentCloudBackendDir, zipFilePath)
+    .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
       const s3Key = `${result.zipFilename}`;
       return new S3(context).then(s3 => {

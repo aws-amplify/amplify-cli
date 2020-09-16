@@ -41,7 +41,10 @@ export async function createWalkthrough(
   templateParameters = merge(templateParameters, await templateWalkthrough(context, templateParameters));
 
   if (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your Lambda function?')) {
-    templateParameters = merge(templateParameters, await askExecRolePermissionsQuestions(context, templateParameters.functionName));
+    templateParameters = merge(
+      templateParameters,
+      await askExecRolePermissionsQuestions(context, templateParameters.functionName, undefined, templateParameters.environmentMap),
+    );
   }
 
   // ask scheduling Lambda questions and merge in results

@@ -83,26 +83,28 @@ const socialProviderMap = (
   requiredAttributes: string[] = [],
 ): SocialProviderResult => {
   const authProvidersUserPool = socialConfig.map(sc => sc.provider).map(provider => pascalCase(provider));
-  const result: ReturnType<typeof socialProviderMap> = {
-    authProvidersUserPool,
-    ...userPoolProviders(authProvidersUserPool, { requiredAttributes }),
-  };
-  socialConfig.forEach(sc => {
-    switch (sc.provider) {
+  const socialConfigMap = socialConfig.reduce((acc, it) => {
+    switch (it.provider) {
       case 'FACEBOOK':
-        result.facebookAppIdUserPool = sc.clientId;
-        result.facebookAppSecretUserPool = sc.clientSecret;
+        acc.facebookAppIdUserPool = it.clientId;
+        acc.facebookAppSecretUserPool = it.clientSecret;
         break;
       case 'GOOGLE':
-        result.googleAppIdUserPool = sc.clientId;
-        result.googleAppSecretUserPool = sc.clientSecret;
+        acc.googleAppIdUserPool = it.clientId;
+        acc.googleAppSecretUserPool = it.clientSecret;
         break;
       case 'LOGIN_WITH_AMAZON':
-        result.loginwithamazonAppIdUserPool = sc.clientId;
-        result.loginwithamazonAppSecretUserPool = sc.clientSecret;
+        acc.loginwithamazonAppIdUserPool = it.clientId;
+        acc.loginwithamazonAppSecretUserPool = it.clientSecret;
         break;
     }
-  });
+    return acc;
+  }, {} as any) as SocialProviderResult;
+  const result: SocialProviderResult = {
+    authProvidersUserPool,
+    ...socialConfigMap,
+    ...userPoolProviders(authProvidersUserPool, { requiredAttributes, ...socialConfigMap }),
+  };
   return result;
 };
 

@@ -1,11 +1,21 @@
 import { getCLIPath, nspawn as spawn } from '../../src';
 
-export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDir?: boolean; appId?: string }) {
+export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDir?: boolean; appId?: string; withRestore?: boolean }) {
   return new Promise((resolve, reject) => {
     const tableHeaderRegex = /\|\sCategory\s+\|\sResource\sname\s+\|\sOperation\s+\|\sProvider\splugin\s+\|/;
     const tableSeperator = /\|(\s-+\s\|){4}/;
 
-    const chain = spawn(getCLIPath(), settings.appId ? ['pull', '--appId', settings.appId] : ['pull'], { cwd, stripColors: true });
+    const args = ['pull'];
+
+    if (settings.appId) {
+      args.push('--appId', settings.appId);
+    }
+
+    if (settings.withRestore) {
+      args.push('--restore');
+    }
+
+    const chain = spawn(getCLIPath(), args, { cwd, stripColors: true });
 
     if (settings.emptyDir) {
       chain
