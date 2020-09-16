@@ -189,6 +189,7 @@ export const askExecRolePermissionsQuestions = async (
       context.print.warning(`Policies cannot be added for ${category}`);
       context.print.info(e.stack);
       context.usageData.emitError(e);
+      process.exitCode = 1;
     }
   }
 

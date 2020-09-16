@@ -11,6 +11,7 @@ module.exports = {
       context.print.info(err.stack);
       context.print.error('An error occurred when pushing the storage resource');
       context.usageData.emitError(err);
+      process.exitCode = 1;
     });
   },
 };

@@ -94,6 +94,7 @@ export async function removeResource(
     context.print.info(err.stack);
     context.print.error('An error occurred when removing the resources from the local directory');
     context.usageData.emitError(err);
+    process.exitCode = 1;
   }
 }
 

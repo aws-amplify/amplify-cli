@@ -22,6 +22,7 @@ module.exports = {
         context.print.info(err.stack);
         context.print.error('There was an error removing the hosting resource');
         context.usageData.emitError(err);
+        process.exitCode = 1;
       }
     } else {
       process.exit(1);

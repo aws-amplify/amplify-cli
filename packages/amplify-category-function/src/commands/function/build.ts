@@ -12,6 +12,7 @@ module.exports = {
       context.print.info(err.stack);
       context.print.error('There was an error building the function resources');
       context.usageData.emitError(err);
+      process.exitCode = 1;
     });
   },
 };

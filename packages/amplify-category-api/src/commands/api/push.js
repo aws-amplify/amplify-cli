@@ -11,6 +11,7 @@ module.exports = {
       context.print.error('There was an error pushing the API resource');
       context.print.error(err.toString());
       context.usageData.emitError(err);
+      process.exitCode = 1;
     });
   },
 };

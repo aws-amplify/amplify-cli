@@ -49,6 +49,7 @@ async function add(context) {
       context.print.info(err.stack);
       context.print.error('There was an error adding the auth resource');
       context.usageData.emitError(err);
+      process.exitCode = 1;
     });
 }
 
