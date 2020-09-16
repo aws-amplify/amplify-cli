@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.10-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.9...amplify-util-mock@3.24.10-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** pass transform config into generateCode ([#5259](https://github.com/aws-amplify/amplify-cli/issues/5259)) ([7a5ec2d](https://github.com/aws-amplify/amplify-cli/commit/7a5ec2ddc36ef2402f305eeca12964a5caac0b84)), closes [#5055](https://github.com/aws-amplify/amplify-cli/issues/5055)
+* timeout mock function invocation ([#5198](https://github.com/aws-amplify/amplify-cli/issues/5198)) ([9d7af87](https://github.com/aws-amplify/amplify-cli/commit/9d7af8731431154091f29a7f194fae2d4ee2ac71))
+
+
+
+
+
 ## [3.24.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.8...amplify-util-mock@3.24.9) (2020-09-09)
 
 **Note:** Version bump only for package amplify-util-mock

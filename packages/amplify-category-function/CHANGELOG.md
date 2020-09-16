@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.25.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.24.1...amplify-category-function@2.25.0-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* duplicate dependsOn entries for layers on update function ([#5312](https://github.com/aws-amplify/amplify-cli/issues/5312)) ([d22daaa](https://github.com/aws-amplify/amplify-cli/commit/d22daaa19282ea44caaa4659cd1c2cb57b721c7b))
+* use _.uniqWith instead of _.uniqBy to remove duplicates ([#5329](https://github.com/aws-amplify/amplify-cli/issues/5329)) ([532f3db](https://github.com/aws-amplify/amplify-cli/commit/532f3db378108091f0735539f824cba5c1dfbd16))
+* **amplify-category-function:** fix function comments ([#5316](https://github.com/aws-amplify/amplify-cli/issues/5316)) ([81d9596](https://github.com/aws-amplify/amplify-cli/commit/81d9596bcc32a3e300fd648f0cf962ceeea3d018)), closes [#4934](https://github.com/aws-amplify/amplify-cli/issues/4934)
+* **amplify-category-function:** removing envVariable for appsync storage ([#5265](https://github.com/aws-amplify/amplify-cli/issues/5265)) ([fe48ab6](https://github.com/aws-amplify/amplify-cli/commit/fe48ab69592a3e0e084d1fb47b30401a886a6453))
+
+
+### Features
+
+* added commented out cors headers ([#5315](https://github.com/aws-amplify/amplify-cli/issues/5315)) ([03ec394](https://github.com/aws-amplify/amplify-cli/commit/03ec394af21b0b5683441c14f22b8cdff9e71053))
+
+
+
+
+
 ## [2.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.24.0...amplify-category-function@2.24.1) (2020-09-09)
 
 

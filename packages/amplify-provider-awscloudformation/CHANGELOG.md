@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.26.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.1...amplify-provider-awscloudformation@4.26.2-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** validate config input ([#5307](https://github.com/aws-amplify/amplify-cli/issues/5307)) ([5a324b2](https://github.com/aws-amplify/amplify-cli/commit/5a324b2ab015c0be8fe83d937325a38470c46c2d)), closes [#4998](https://github.com/aws-amplify/amplify-cli/issues/4998)
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-cli/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-cli/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+
+
+
+
+
 ## [4.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.0...amplify-provider-awscloudformation@4.26.1) (2020-09-09)
 
 

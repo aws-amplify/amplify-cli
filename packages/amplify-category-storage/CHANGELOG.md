@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.8-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.7.7...amplify-category-storage@2.7.8-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** fix storage update ([#5191](https://github.com/aws-amplify/amplify-cli/issues/5191)) ([754f122](https://github.com/aws-amplify/amplify-cli/commit/754f12201c07132ff6c9e7ef88f4c567cdc6302d)), closes [#5124](https://github.com/aws-amplify/amplify-cli/issues/5124)
+
+
+
+
+
 ## [2.7.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.7.6...amplify-category-storage@2.7.7) (2020-09-09)
 
 **Note:** Version bump only for package amplify-category-storage

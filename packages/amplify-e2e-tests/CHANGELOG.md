@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.24.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.23.1...amplify-e2e-tests@2.24.0-beta.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** fix storage update ([#5191](https://github.com/aws-amplify/amplify-cli/issues/5191)) ([754f122](https://github.com/aws-amplify/amplify-cli/commit/754f12201c07132ff6c9e7ef88f4c567cdc6302d)), closes [#5124](https://github.com/aws-amplify/amplify-cli/issues/5124)
+* **amplify-provider-awscloudformation:** validate config input ([#5307](https://github.com/aws-amplify/amplify-cli/issues/5307)) ([5a324b2](https://github.com/aws-amplify/amplify-cli/commit/5a324b2ab015c0be8fe83d937325a38470c46c2d)), closes [#4998](https://github.com/aws-amplify/amplify-cli/issues/4998)
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-cli/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-cli/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+
+
+### Features
+
+* added commented out cors headers ([#5315](https://github.com/aws-amplify/amplify-cli/issues/5315)) ([03ec394](https://github.com/aws-amplify/amplify-cli/commit/03ec394af21b0b5683441c14f22b8cdff9e71053))
+
+
+
+
+
 ## [2.23.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.23.0...amplify-e2e-tests@2.23.1) (2020-09-09)
 
 **Note:** Version bump only for package amplify-e2e-tests
