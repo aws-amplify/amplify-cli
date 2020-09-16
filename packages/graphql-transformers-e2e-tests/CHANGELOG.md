@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.13...graphql-transformers-e2e-tests@6.18.14) (2020-09-16)
+
+
+### Bug Fixes
+
+* **graphql-transformer-common:** support underscore names ([#5263](https://github.com/aws-amplify/amplify-cli/issues/5263)) ([cc7cae6](https://github.com/aws-amplify/amplify-cli/commit/cc7cae65188b57bb913a307186ea20458c875002)), closes [#5212](https://github.com/aws-amplify/amplify-cli/issues/5212)
+
+
+
+
+
 ## [6.18.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.12...graphql-transformers-e2e-tests@6.18.13) (2020-09-02)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

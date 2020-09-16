@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.7...amplify-category-api@2.23.8) (2020-09-16)
+
+
+### Bug Fixes
+
+* checking undefined auth config ([#5313](https://github.com/aws-amplify/amplify-cli/issues/5313)) ([42810c9](https://github.com/aws-amplify/amplify-cli/commit/42810c98b0015f12119f3387749889a6bf6abe9b))
+* removes duplicate auth types ([#5272](https://github.com/aws-amplify/amplify-cli/issues/5272)) ([8747911](https://github.com/aws-amplify/amplify-cli/commit/8747911ff5a515e86971af7d5ad15681c64eb532))
+
+
+
+
+
 ## [2.23.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.6...amplify-category-api@2.23.7) (2020-09-09)
 
 **Note:** Version bump only for package amplify-category-api
