@@ -16,6 +16,10 @@ describe('test SIGINT with execute', () => {
       pathManager: {
         getAWSCredentialsFilePath: jest.fn(),
         getAWSConfigFilePath: jest.fn(),
+        findProjectRoot: jest.fn(),
+      },
+      stateManager: {
+        projectConfigExists: jest.fn(),
       },
       FeatureFlags: {
         initialize: jest.fn(),
@@ -59,6 +63,7 @@ describe('test SIGINT with execute', () => {
         await sleep(2000);
       },
     });
+
     setTimeout(() => {
       process.emit('SIGINT', 'SIGINT');
     }, 50);
