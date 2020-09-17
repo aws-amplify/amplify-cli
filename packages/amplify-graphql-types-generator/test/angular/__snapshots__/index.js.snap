@@ -5,8 +5,7 @@ exports[`Angular code generation #generateSource() should generate correct list 
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 // The episodes in the Star Wars trilogy
@@ -85,8 +84,7 @@ exports[`Angular code generation #generateSource() should generate fragmented qu
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type HeroAndFriendsNamesQuery = {
@@ -175,8 +173,7 @@ exports[`Angular code generation #generateSource() should generate mutation oper
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 // The episodes in the Star Wars trilogy
@@ -245,8 +242,7 @@ exports[`Angular code generation #generateSource() should generate queries retur
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type CustomScalarQuery = {
@@ -277,8 +273,7 @@ exports[`Angular code generation #generateSource() should generate query operati
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type HeroAndDetailsQuery = {
@@ -323,8 +318,7 @@ exports[`Angular code generation #generateSource() should generate simple nested
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 // The episodes in the Star Wars trilogy
@@ -391,8 +385,7 @@ exports[`Angular code generation #generateSource() should generate simple nested
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type StarshipCoordsQuery = {
@@ -423,8 +416,7 @@ exports[`Angular code generation #generateSource() should generate simple query 
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 @Injectable({
@@ -453,8 +445,7 @@ exports[`Angular code generation #generateSource() should generate simple query 
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type HeroNameQuery = {
@@ -486,8 +477,7 @@ exports[`Angular code generation #generateSource() should generate simple query 
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 // The episodes in the Star Wars trilogy
@@ -532,8 +522,7 @@ exports[`Angular code generation #generateSource() should handle comments in enu
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export enum EnumCommentTestCase {
@@ -571,8 +560,7 @@ exports[`Angular code generation #generateSource() should handle interfaces at r
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type CustomScalarQuery = {
@@ -609,8 +597,7 @@ exports[`Angular code generation #generateSource() should handle multi-line comm
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type CustomScalarQuery = {
@@ -643,8 +630,7 @@ exports[`Angular code generation #generateSource() should handle single line com
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type CustomScalarQuery = {
@@ -676,8 +662,7 @@ exports[`Angular code generation #generateSource() should handle unions at root 
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type CustomScalarQuery = {
@@ -712,8 +697,7 @@ exports[`Angular code generation #generateSource() should have __typename value 
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type HeroNameQuery = {
@@ -757,8 +741,7 @@ exports[`Angular code generation #generateSource() should have __typename value 
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type DroidNameQuery = {
@@ -796,8 +779,7 @@ exports[`Angular code generation #generateSource() should have the correct __typ
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 import { Injectable } from \\"@angular/core\\";
-import API, { graphqlOperation } from \\"@aws-amplify/api\\";
-import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import API, { graphqlOperation, GraphQLResult } from \\"@aws-amplify/api-graphql\\";
 import { Observable } from \\"zen-observable-ts\\";
 
 export type FindHumanQuery = {
