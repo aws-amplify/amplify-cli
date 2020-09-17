@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const configurationManager = require('./configuration-manager');
-const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
+const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const { storeCurrentCloudBackend } = require('./push-resources');
 const constants = require('./constants');

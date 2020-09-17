@@ -32,6 +32,7 @@ packages/amplify-console-integration-tests/console-integration-reports
 packages/amplify-migration-tests/amplify-migration-reports
 packages/amplify-migration-tests/lib
 packages/amplify-headless-interface/lib
+packages/amplify-provider-awscloudformation/lib
 packages/amplify-util-headless-input/lib
 packages/*/node_modules
 packages/*/package-lock.json

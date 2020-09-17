@@ -1,4 +1,4 @@
-const { printAuthErrorMessage } = require('../src/aws-utils/aws-amplify');
+const { printAuthErrorMessage } = require('./aws-utils/aws-amplify');
 
 async function checkAmplifyServiceIAMPermission(context, amplifyClient) {
   let hasAmplifyServicePermission = true;

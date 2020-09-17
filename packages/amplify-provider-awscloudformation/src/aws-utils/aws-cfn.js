@@ -7,9 +7,9 @@ const columnify = require('columnify');
 
 const aws = require('./aws.js');
 const S3 = require('./aws-s3');
-const providerName = require('../../lib/constants').ProviderName;
+const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
-const configurationManager = require('../../lib/configuration-manager');
+const configurationManager = require('../configuration-manager');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack

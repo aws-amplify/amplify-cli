@@ -103,7 +103,7 @@ async function configure(context, resourceObj) {
     Object.assign(answers, await inquirer.prompt(inferAssets.setup.name(`${answers.inferType}${defaultValues.resourceName}`)));
     inferType = answers.inferType;
     if (inferType === 'modelInfer') {
-      defaultValues.region = regionMapper.getAvailableRegion('SageMaker', defaultValues.region);
+      defaultValues.region = regionMapper.getAvailableRegion(context, 'SageMaker', defaultValues.region);
     }
   }
 
@@ -139,7 +139,7 @@ async function configure(context, resourceObj) {
 }
 
 function addRegionMapping(context, resourceName, inferType) {
-  const regionMapping = regionMapper.getRegionMapping(service, inferType);
+  const regionMapping = regionMapper.getRegionMapping(context, service, inferType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
   const identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);

@@ -6,7 +6,7 @@ const extract = require('extract-zip');
 const inquirer = require('inquirer');
 const { pathManager, PathConstants } = require('amplify-cli-core');
 const configurationManager = require('./configuration-manager');
-const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
+const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const constants = require('./constants');
 

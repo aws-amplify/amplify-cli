@@ -1,4 +1,4 @@
-const consoleCommand = require('../../lib/console');
+const consoleCommand = require('../../console');
 
 module.exports = {
   name: 'console',
