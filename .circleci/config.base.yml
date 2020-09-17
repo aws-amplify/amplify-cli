@@ -641,7 +641,6 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
-                - provider-ts
     jobs:
       - build
       - publish_to_local_registry:
@@ -666,7 +665,6 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
-                - provider-ts
                 - graphql_e2e_testing
           requires:
             - build
@@ -677,7 +675,6 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
-                - provider-ts
                 - beta
           requires:
             - build
@@ -688,7 +685,6 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
-                - provider-ts
                 - beta
           requires:
             - build
@@ -698,7 +694,6 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
-                - provider-ts
           requires:
             - publish_to_local_registry
       - amplify_migration_tests_latest:
@@ -707,7 +702,6 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
-                - provider-ts
           requires:
             - build
       - amplify_migration_tests_v4:
@@ -716,7 +710,6 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
-                - provider-ts
           requires:
             - build
       - amplify_console_integration_tests:
