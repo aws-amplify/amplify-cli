@@ -1,42 +1,41 @@
 {
   "name": "graphql-auth-transformer",
-  "version": "6.6.0",
+  "version": "6.20.6",
   "description": "Implements the @auth directive for the appsync model transform.",
-  "main": "lib/index.js",
-  "scripts": {
-    "test": "jest",
-    "test-ci": "jest --ci -i",
-    "build": "tsc",
-    "clean": "rimraf ./lib",
-    "watch": "tsc -w"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/graphql-auth-transformer"
   },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "keywords": [
     "graphql",
     "appsync",
     "aws"
   ],
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "clean": "rimraf ./lib",
+    "watch": "tsc -w"
+  },
   "dependencies": {
-    "graphql": "^0.13.2",
-    "graphql-connection-transformer": "4.6.0",
-    "graphql-mapping-template": "4.6.0",
-    "graphql-transformer-common": "4.6.0",
-    "graphql-transformer-core": "6.6.0"
+    "graphql": "^14.5.8",
+    "graphql-connection-transformer": "4.18.12",
+    "graphql-mapping-template": "4.15.2",
+    "graphql-transformer-common": "4.17.10",
+    "graphql-transformer-core": "6.21.4"
   },
   "devDependencies": {
-    "@types/graphql": "^0.13.4",
-    "@types/jest": "23.1.1",
-    "@types/node": "^8.10.59",
-    "cloudform": "^4.1.0",
-    "cloudform-types": "^4.1.0",
-    "graphql-dynamodb-transformer": "6.6.0",
-    "graphql-elasticsearch-transformer": "3.23.0",
-    "jest": "^23.1.0",
-    "rimraf": "^3.0.0",
-    "ts-jest": "^22.4.6",
-    "tslint": "^5.18.0",
-    "typescript": "~3.6.4"
+    "@types/node": "^10.17.13",
+    "cloudform-types": "^4.2.0",
+    "graphql-dynamodb-transformer": "6.19.13",
+    "graphql-elasticsearch-transformer": "4.7.15",
+    "graphql-function-transformer": "2.3.19",
+    "rimraf": "^3.0.0"
   },
   "jest": {
     "testURL": "http://localhost",

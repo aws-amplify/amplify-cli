@@ -26,16 +26,20 @@ module.exports = {
         const { print } = context;
         print.success(`Successfully added resource ${resourceName} locally`);
         print.info('');
+        print.warning(
+          'If a user is part of a user pool group, run "amplify update storage" to enable IAM group policies for CRUD operations',
+        );
         print.success('Some next steps:');
         print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
         print.info(
-          '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud'
+          '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
         );
         print.info('');
       })
       .catch(err => {
         context.print.info(err.stack);
         context.print.error('An error occurred when adding the storage resource');
+        context.usageData.emitError(err);
       });
   },
 };

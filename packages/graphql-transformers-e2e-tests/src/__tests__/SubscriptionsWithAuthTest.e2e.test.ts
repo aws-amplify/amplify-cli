@@ -5,16 +5,16 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import { CreateBucketRequest } from 'aws-sdk/clients/s3';
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
 import gql from 'graphql-tag';
 import { S3Client } from '../S3Client';
 import { deploy } from '../deployNestedStacks';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
 import {
@@ -97,12 +97,21 @@ const TMP_PASSWORD = 'Password123!';
 const REAL_PASSWORD = 'Password1234!';
 
 const INSTRUCTOR_GROUP_NAME = 'Instructor';
+const MEMBER_GROUP_NAME = 'Member';
+const ADMIN_GROUP_NAME = 'Admin';
 
 const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: AWS_REGION });
 const customS3Client = new S3Client(AWS_REGION);
 const awsS3Client = new S3({ region: AWS_REGION });
 
 // interface inputs
+interface MemberInput {
+  id: string;
+  name?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 interface CreateStudentInput {
   id?: string;
   name?: string;
@@ -187,9 +196,21 @@ beforeAll(async () => {
         ssn: String @auth(rules: [{allow: owner}])
     }
 
+    type Member @model
+    @auth(rules: [
+      { allow: groups, groups: ["Admin"] }
+      { allow: groups, groups: ["Member"], operations: [read] }
+    ]) {
+      id: ID
+      name: String
+      createdAt: AWSDateTime
+      updatedAt: AWSDateTime
+    }
+
     type Post @model
         @auth(rules: [
-            {allow: owner, ownerField: "postOwner"}
+            { allow: owner, ownerField: "postOwner" }
+            { allow: private, operations: [read], provider: iam }
         ])
     {
         id: ID!
@@ -466,7 +487,7 @@ beforeAll(async () => {
       LOCAL_BUILD_ROOT,
       BUCKET_NAME,
       DEPLOYMENT_ROOT_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -497,6 +518,10 @@ beforeAll(async () => {
     await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
     await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
     await createGroup(USER_POOL_ID, INSTRUCTOR_GROUP_NAME);
+    await createGroup(USER_POOL_ID, MEMBER_GROUP_NAME);
+    await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME);
+    await addUserToGroup(ADMIN_GROUP_NAME, USERNAME1, USER_POOL_ID);
+    await addUserToGroup(MEMBER_GROUP_NAME, USERNAME2, USER_POOL_ID);
     await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME1, USER_POOL_ID);
     await addUserToGroup(INSTRUCTOR_GROUP_NAME, USERNAME2, USER_POOL_ID);
 
@@ -760,6 +785,99 @@ test('Test a subscription on delete', async done => {
   await deleteStudent(GRAPHQL_CLIENT_1, { id: student4ID });
 });
 
+test('test that group is only allowed to listen to subscriptions and listen to onCreate', async done => {
+  const memberID = '001';
+  const memberName = 'username00';
+  // test that a user that only read can't mutate
+  try {
+    await createMember(GRAPHQL_CLIENT_2, { id: '001', name: 'notUser' });
+  } catch (err) {
+    expect(err).toBeDefined();
+    expect(err.graphQLErrors[0].errorType).toEqual('Unauthorized');
+  }
+
+  // though they should see when a new member is created
+  const observer = GRAPHQL_CLIENT_2.subscribe({
+    query: gql`
+      subscription OnCreateMember {
+        onCreateMember {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+      }
+    `,
+  });
+  const subscription = observer.subscribe((event: any) => {
+    const member = event.data.onCreateMember;
+    subscription.unsubscribe();
+    expect(member).toBeDefined();
+    expect(member.id).toEqual(memberID);
+    expect(member.name).toEqual(memberName);
+    done();
+  });
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+  // user that is authorized creates the update the mutation
+  createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
+});
+
+test('authorized group is allowed to listen to onUpdate', async done => {
+  const memberID = '001';
+  const memberName = 'newUsername';
+  const observer = GRAPHQL_CLIENT_2.subscribe({
+    query: gql`
+      subscription OnUpdateMember {
+        onUpdateMember {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+      }
+    `,
+  });
+  const subscription = observer.subscribe((event: any) => {
+    const subResponse = event.data.onUpdateMember;
+    subscription.unsubscribe();
+    expect(subResponse).toBeDefined();
+    expect(subResponse.id).toEqual(memberID);
+    expect(subResponse.name).toEqual(memberName);
+    done();
+  });
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+  // user that is authorized creates the update the mutation
+  updateMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
+});
+
+test('authorized group is allowed to listen to onDelete', async done => {
+  const memberID = '001';
+  const memberName = 'newUsername';
+  const observer = GRAPHQL_CLIENT_2.subscribe({
+    query: gql`
+      subscription OnDeleteMember {
+        onDeleteMember {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+      }
+    `,
+  });
+  const subscription = observer.subscribe((event: any) => {
+    const subResponse = event.data.onDeleteMember;
+    subscription.unsubscribe();
+    expect(subResponse).toBeDefined();
+    expect(subResponse.id).toEqual(memberID);
+    expect(subResponse.name).toEqual(memberName);
+    done();
+  });
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+  // user that is authorized creates the update the mutation
+  deleteMember(GRAPHQL_CLIENT_1, { id: memberID });
+});
+
 // ownerField Tests
 test('Test subscription onCreatePost with ownerField', async done => {
   const observer = GRAPHQL_CLIENT_1.subscribe({
@@ -787,7 +905,66 @@ test('Test subscription onCreatePost with ownerField', async done => {
   });
 });
 
+test('Test onCreatePost with optional argument', async done => {
+  const failedObserver = GRAPHQL_CLIENT_1.subscribe({
+    query: gql`
+      subscription OnCreatePost {
+        onCreatePost {
+          id
+          title
+          postOwner
+        }
+      }
+    `,
+  });
+  const subscription = failedObserver.subscribe(
+    event => {},
+    err => {
+      expect(err).toHaveProperty('graphQLErrors');
+      const gqlErrors = err.graphQLErrors;
+      subscription.unsubscribe();
+      expect(gqlErrors[0].message).toEqual('Not Authorized to access onCreatePost on type Subscription');
+      expect(gqlErrors[0].errorType).toEqual('Unauthorized');
+      done();
+    },
+  );
+});
+
 // iam tests
+test('Test that IAM can listen and read to onCreatePost', async done => {
+  const postID = 'subscriptionID';
+  const postTitle = 'titleMadeByPostOwner';
+  const observer = GRAPHQL_IAM_AUTH_CLIENT.subscribe({
+    query: gql`
+      subscription OnCreatePost {
+        onCreatePost {
+          id
+          title
+          postOwner
+        }
+      }
+    `,
+  });
+  const subscription = observer.subscribe(
+    (event: any) => {
+      const post = event.data.onCreatePost;
+      console.log(post, null, 4);
+      subscription.unsubscribe();
+      expect(post).toBeDefined();
+      expect(post.id).toEqual(postID);
+      expect(post.title).toEqual(postTitle);
+      expect(post.postOwner).toEqual(USERNAME1);
+      done();
+    },
+    err => {
+      console.error(JSON.stringify(err, null, 4));
+    },
+  );
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+
+  createPost(GRAPHQL_CLIENT_1, { id: postID, title: postTitle, postOwner: USERNAME1 });
+});
+
 test('test that subcsription with apiKey', async done => {
   const observer = GRAPHQL_APIKEY_CLIENT.subscribe({
     query: gql`
@@ -892,6 +1069,48 @@ test('test that subscription with apiKey onDelete', async done => {
 });
 
 // mutations
+async function createMember(client: AWSAppSyncClient<any>, input: MemberInput) {
+  const request = gql`
+    mutation CreateMember($input: CreateMemberInput!) {
+      createMember(input: $input) {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+    }
+  `;
+  return await client.mutate({ mutation: request, variables: { input } });
+}
+
+async function updateMember(client: AWSAppSyncClient<any>, input: MemberInput) {
+  const request = gql`
+    mutation UpdateMember($input: UpdateMemberInput!) {
+      updateMember(input: $input) {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+    }
+  `;
+  return await client.mutate({ mutation: request, variables: { input } });
+}
+
+async function deleteMember(client: AWSAppSyncClient<any>, input: MemberInput) {
+  const request = gql`
+    mutation DeleteMember($input: DeleteMemberInput!) {
+      deleteMember(input: $input) {
+        id
+        name
+        createdAt
+        updatedAt
+      }
+    }
+  `;
+  return await client.mutate({ mutation: request, variables: { input } });
+}
+
 async function createStudent(client: AWSAppSyncClient<any>, input: CreateStudentInput) {
   const request = gql`
     mutation CreateStudent($input: CreateStudentInput!) {

@@ -1,35 +1,36 @@
 {
   "name": "graphql-predictions-transformer",
-  "version": "2.1.1",
+  "version": "2.3.19",
   "description": "Implements the @predictions directive.",
-  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/graphql-predictions-transformer"
+  },
   "author": "Amazon Web Services",
-  "contributors": [
-    "Josue Ruiz"
-  ],
   "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "scripts": {
     "build": "tsc && cd lambdaFunction && bestzip --force node ../lib/predictionsLambdaFunction.zip predictionsLambda.js",
     "watch": "tsc -w",
     "test": "jest",
-    "clean": "rm -rf ./lib"
+    "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "cloudform": "^4.1.0",
-    "cloudform-types": "^4.1.0",
-    "graphql": "^0.13.2",
-    "graphql-mapping-template": "4.6.0",
-    "graphql-transformer-common": "4.6.0",
-    "graphql-transformer-core": "6.6.0"
+    "cloudform-types": "^4.2.0",
+    "graphql": "^14.5.8",
+    "graphql-mapping-template": "4.15.2",
+    "graphql-transformer-common": "4.17.10",
+    "graphql-transformer-core": "6.21.4"
   },
   "devDependencies": {
-    "@types/jest": "23.1.1",
-    "bestzip": "^2.1.5",
-    "jest": "^24.9.0",
-    "ts-jest": "^22.4.6",
-    "tslint": "^5.18.0",
-    "tslint-config-airbnb": "^5.11.1",
-    "typescript": "~3.6.4"
+    "bestzip": "^2.1.5"
   },
   "jest": {
     "transform": {

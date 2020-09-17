@@ -77,7 +77,11 @@ describe('intrinsic-functions', () => {
       conditions: {},
       resources: {
         FooResource: {
-          prop1: 'prop1 value',
+          Type: 'Foo',
+          result: {
+            cfnExposedAttributes: { prop1: 'Prop1', props: 'missing' },
+            Prop1: 'prop1 value',
+          },
         },
       },
       exports: {},
@@ -94,6 +98,10 @@ describe('intrinsic-functions', () => {
 
     it('should throw if the property is missing in the resource', () => {
       const node = ['FooResource', 'missing-prop'];
+      expect(() => cfnGetAtt(node, cfnContext, () => {})).toThrow();
+    });
+    it('should throw if the property is exposed in cfnExposedAttribute but missing in the result', () => {
+      const node = ['FooResource', 'prop2'];
       expect(() => cfnGetAtt(node, cfnContext, () => {})).toThrow();
     });
   });
@@ -124,8 +132,8 @@ describe('intrinsic-functions', () => {
       params: { fromParam: 'foo' },
       conditions: {},
       resources: {
-        fromResource: { name: 'resource' },
-        fromResource2: 'bar',
+        fromResource: { Type: 'Foo', result: { ref: 'resource' } },
+        fromResource2: { Type: 'Bar', result: { Name: 'bar' } },
       },
       exports: {},
     };
@@ -327,9 +335,9 @@ describe('intrinsic-functions', () => {
       expect(parseValue).toHaveBeenCalled();
     });
 
-    it('should throw error if the value is not presnt in exports', () => {
+    it('should return key if the value is not presnt in exports', () => {
       const node = 'bar';
-      expect(() => cfnImportValue(node, cfnContext, parseValue)).toThrow();
+      expect(cfnImportValue(node, cfnContext, parseValue)).toEqual(node);
     });
   });
 

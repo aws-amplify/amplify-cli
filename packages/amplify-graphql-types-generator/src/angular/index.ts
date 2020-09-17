@@ -13,18 +13,20 @@ import {
 } from '../typescript/codeGeneration';
 import { typeNameFromGraphQLType } from '../typescript/types';
 import { Property, interfaceDeclaration } from '../typescript/language';
+import { isList } from '../utilities/graphql';
 
 export function generateSource(context: LegacyCompilerContext) {
   const generator = new CodeGenerator<LegacyCompilerContext>(context);
 
   generator.printOnNewline('/* tslint:disable */');
+  generator.printOnNewline('/* eslint-disable */');
   generator.printOnNewline('//  This file was automatically generated and should not be edited.');
 
   generator.printOnNewline(`import { Injectable } from '@angular/core';`);
   generator.printOnNewline(`import API, { graphqlOperation } from '@aws-amplify/api';`);
   generator.printOnNewline(`import { GraphQLResult } from "@aws-amplify/api/lib/types";`);
 
-  generator.printOnNewline(`import * as Observable from 'zen-observable';`);
+  generator.printOnNewline(`import { Observable } from 'zen-observable-ts';`);
   generator.printNewline();
 
   generateTypes(generator, context);
@@ -74,23 +76,28 @@ function interfaceDeclarationForOperation(generator: CodeGenerator, { operationN
       },
       () => {
         propertyDeclarations(generator, properties);
-      }
+      },
     );
   }
 }
 
 function getOperationResultField(operation: LegacyOperation): LegacyField | void {
-  if (operation.fields.length && operation.fields[0].fields) {
+  if (operation.fields.length) {
     return operation.fields[0];
   }
 }
 
 function getReturnTypeName(generator: CodeGenerator, op: LegacyOperation): String {
   const { operationName, operationType } = op;
-  if (isScalarType(op.fields[0].type)) {
-    return typeNameFromGraphQLType(generator.context, op.fields[0].type);
+  const { type } = op.fields[0];
+  if (isScalarType(type)) {
+    return typeNameFromGraphQLType(generator.context, type);
   } else {
-    return interfaceNameFromOperation({ operationName, operationType });
+    let returnType = interfaceNameFromOperation({ operationName, operationType });
+    if (isList(type)) {
+      returnType = `Array<${returnType}>`;
+    }
+    return returnType;
   }
 }
 
@@ -121,7 +128,7 @@ function generateSubscriptionOperation(generator: CodeGenerator, op: LegacyOpera
   generator.printNewline();
   const subscriptionName = `${operationName}Listener`;
   generator.print(
-    `${subscriptionName}: Observable<${returnType}> = API.graphql(graphqlOperation(\n\`${statement}\`)) as Observable<${returnType}>`
+    `${subscriptionName}: Observable<${returnType}> = API.graphql(graphqlOperation(\n\`${statement}\`)) as Observable<${returnType}>`,
   );
   generator.printNewline();
 }
@@ -161,7 +168,7 @@ export function variablesFromField(
     fragmentSpreads?: any;
     inlineFragments?: LegacyInlineFragment[];
     fieldName?: string;
-  }[]
+  }[],
 ) {
   return fields.map(field => propertyFromVar(context, field));
 }
@@ -177,7 +184,7 @@ export function propertyFromVar(
     fragmentSpreads?: any;
     inlineFragments?: LegacyInlineFragment[];
     fieldName?: string;
-  }
+  },
 ): Property {
   let { name: fieldName, type: fieldType } = field;
   fieldName = fieldName || field.responseName;
@@ -236,7 +243,7 @@ function variableAssignmentToInput(generator: CodeGenerator, vars: Property[]) {
           });
       },
       '{',
-      '}'
+      '}',
     );
     // null able arguments
     vars
@@ -248,7 +255,7 @@ function variableAssignmentToInput(generator: CodeGenerator, vars: Property[]) {
             generator.printOnNewline(`gqlAPIServiceArguments.${v.fieldName} = ${v.fieldName}`);
           },
           '{',
-          '}'
+          '}',
         );
       });
   }

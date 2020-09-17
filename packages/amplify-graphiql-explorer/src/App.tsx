@@ -15,6 +15,7 @@ const AUTH_TYPE_TO_NAME = {
   AMAZON_COGNITO_USER_POOLS: 'User Pool',
   API_KEY: 'API Key',
   OPENID_CONNECT: 'Open ID',
+  AWS_IAM: 'IAM',
 };
 
 type AmplifyAppSyncSimulatorAuthInfo = {
@@ -39,6 +40,7 @@ const LOCAL_STORAGE_KEY_NAMES = {
   cognitoToken: 'AMPLIFY_GRPAHIQL_EXPLORER_COGNITO_JWT_TOKEN',
   oidcToken: 'AMPLIFY_GRPAHIQL_EXPLORER_OIDC_JWT_TOKEN',
   apiKey: 'AMPLIFY_GRPAHIQL_EXPLORER_API_KEY',
+  iam: 'AMPLIFY_GRPAHIQL_EXPLORER_AWS_IAM',
 };
 
 function getAPIInfo() {
@@ -85,6 +87,7 @@ type State = {
     apiKey?: string;
     cognitoJWTToken?: string;
     oidcJWTToken?: string;
+    iam?: string;
   };
 };
 
@@ -101,6 +104,7 @@ class App extends Component<{}, State> {
       apiKey: '',
       cognitoJWTToken: '',
       oidcJWTToken: '',
+      iam: '',
     },
   };
 
@@ -127,7 +131,7 @@ class App extends Component<{}, State> {
   }
 
   toggleAuthModal = () =>
-    this.setState((prevState) =>({
+    this.setState(prevState => ({
       authModalVisible: !prevState.authModalVisible,
     }));
 
@@ -167,12 +171,7 @@ class App extends Component<{}, State> {
       return null;
     }
 
-    var operationKind =
-      def.kind === 'OperationDefinition'
-        ? def.operation
-        : def.kind === 'FragmentDefinition'
-        ? 'fragment'
-        : 'unknown';
+    var operationKind = def.kind === 'OperationDefinition' ? def.operation : def.kind === 'FragmentDefinition' ? 'fragment' : 'unknown';
 
     var operationName =
       def.kind === 'OperationDefinition' && !!def.name
@@ -201,6 +200,8 @@ class App extends Component<{}, State> {
       headers['Authorization'] = this.state.credentials.cognitoJWTToken;
     } else if (this.state.currentAuthMode === AUTH_MODE.OPENID_CONNECT) {
       headers['Authorization'] = this.state.credentials.oidcJWTToken;
+    } else if (this.state.currentAuthMode === AUTH_MODE.AWS_IAM) {
+      headers['Authorization'] = this.state.credentials.iam;
     }
     return fetcher(params, headers);
   }
@@ -219,8 +220,11 @@ class App extends Component<{}, State> {
     } else if (credentials.authMode === AUTH_MODE.OPENID_CONNECT) {
       newState['oidcJWTToken'] = credentials.OIDCToken;
       window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.oidcToken, credentials.OIDCToken);
+    } else if (credentials.authMode === AUTH_MODE.AWS_IAM) {
+      newState['oidcJWTToken'] = credentials.IAM;
+      window.localStorage.setItem(LOCAL_STORAGE_KEY_NAMES.iam, credentials.iam);
     }
-    this.setState((prevState) => ({
+    this.setState(prevState => ({
       credentials: {
         ...prevState.credentials,
         ...newState,
@@ -231,20 +235,16 @@ class App extends Component<{}, State> {
 
   loadCredentials(apiInfo = this.state.apiInfo) {
     const credentials = {};
-    const authProviders = [
-      apiInfo.defaultAuthenticationType,
-      ...apiInfo.additionalAuthenticationProviders,
-    ];
+    const authProviders = [apiInfo.defaultAuthenticationType, ...apiInfo.additionalAuthenticationProviders];
     const possibleAuth = authProviders.map(auth => auth.authenticationType);
+
     if (possibleAuth.includes('API_KEY')) {
       credentials['apiKey'] = DEFAULT_API_INFO.apiKey;
     }
 
     if (possibleAuth.includes('AMAZON_COGNITO_USER_POOLS')) {
       try {
-        credentials['cognitoJWTToken'] = refreshToken(
-          window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.cognitoToken) || ''
-        );
+        credentials['cognitoJWTToken'] = refreshToken(window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.cognitoToken) || '');
       } catch (e) {
         console.warn('Invalid Cognito token found in local storage. Using the default OIDC token');
         // token is not valid
@@ -257,19 +257,19 @@ class App extends Component<{}, State> {
         .filter(auth => auth.authenticationType === AUTH_MODE.OPENID_CONNECT)
         .map((auth: any) => auth.openIDConnectConfig.Issuer);
       try {
-        credentials['oidcJWTToken'] = refreshToken(
-          window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.oidcToken) || '',
-          issuers[0]
-        );
+        credentials['oidcJWTToken'] = refreshToken(window.localStorage.getItem(LOCAL_STORAGE_KEY_NAMES.oidcToken) || '', issuers[0]);
       } catch (e) {
         console.warn('Invalid OIDC token found in local storage. Using the default OIDC token');
         credentials['oidcJWTToken'] = refreshToken(DEFAULT_OIDC_JWT_TOKEN, issuers[0]);
       }
     }
 
+    if (possibleAuth.includes('AWS_IAM')) {
+      credentials['iam'] = 'AWS4-HMAC-SHA256 IAMAuthorized';
+    }
+
     this.setState(() => ({
-      currentAuthMode:
-        AUTH_MODE[apiInfo.defaultAuthenticationType.authenticationType] || AUTH_MODE.API_KEY,
+      currentAuthMode: AUTH_MODE[apiInfo.defaultAuthenticationType.authenticationType] || AUTH_MODE.API_KEY,
     }));
     this.setState({ credentials });
     return credentials;
@@ -319,29 +319,17 @@ class App extends Component<{}, State> {
                 label='Prettify'
                 title='Prettify Query (Shift-Ctrl-P)'
               />
-              <GraphiQL.Button
-                onClick={() => this._graphiql.handleToggleHistory()}
-                label='History'
-                title='Show History'
-              />
-              <GraphiQL.Button
-                onClick={this._handleToggleExplorer}
-                label='Explorer'
-                title='Toggle Explorer'
-              />
-              <GraphiQL.Button
-                onClick={this.toggleAuthModal}
-                label='Update Auth'
-                title='Auth Setting'
-              />
+              <GraphiQL.Button onClick={() => this._graphiql.handleToggleHistory()} label='History' title='Show History' />
+              <GraphiQL.Button onClick={this._handleToggleExplorer} label='Explorer' title='Toggle Explorer' />
+              <GraphiQL.Button onClick={this.toggleAuthModal} label='Update Auth' title='Auth Setting' />
               <GraphiQL.Select label='Auth' onSelect={this.switchAuthMode}>
                 {authModes.map(mode => (
                   <GraphiQL.SelectOption
-                    label={`Use:${AUTH_TYPE_TO_NAME[mode]}`}
+                    label={`Use: ${AUTH_TYPE_TO_NAME[mode]}`}
                     value={mode}
                     key={mode}
                     selected={mode === this.state.currentAuthMode}
-                  ></GraphiQL.SelectOption>
+                  />
                 ))}
               </GraphiQL.Select>
             </GraphiQL.Toolbar>

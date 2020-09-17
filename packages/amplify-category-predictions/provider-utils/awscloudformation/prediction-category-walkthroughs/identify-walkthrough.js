@@ -9,6 +9,7 @@ import {
   removeTextractPolicies,
   addTextractPolicies,
 } from '../assets/identifyCFNGenerate';
+import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 
 const inquirer = require('inquirer');
 const path = require('path');
@@ -34,8 +35,8 @@ const prefixForAdminTrigger = 'protected/predictions/index-faces/';
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt.run(
-        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?'
+      await context.amplify.confirmPrompt(
+        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
       try {
@@ -240,7 +241,7 @@ async function configure(context, resourceObj) {
 }
 
 function addRegionMapping(context, resourceName, identifyType) {
-  const regionMapping = regionMapper.getRegionMapping(service, identifyType);
+  const regionMapping = regionMapper.getRegionMapping(context, service, identifyType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
   const identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
@@ -597,7 +598,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
       projectBackendDirPath,
       category,
       predictionsResourceName,
-      `${predictionsResourceName}-template.json`
+      `${predictionsResourceName}-template.json`,
     );
     let identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
     identifyCFNFile = generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3ResourceName);
@@ -624,7 +625,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
   // Update amplify-meta and backend-config
 
   const backendConfigs = {
-    service: 'Lambda',
+    service: FunctionServiceName.LambdaFunction,
     providerPlugin: 'awscloudformation',
     build: true,
   };
@@ -641,7 +642,7 @@ function addStorageIAMResourcestoIdentifyCFNFile(context, predictionsResourceNam
     projectBackendDirPath,
     category,
     predictionsResourceName,
-    `${predictionsResourceName}-template.json`
+    `${predictionsResourceName}-template.json`,
   );
   let identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
   identifyCFNFile = generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, prefixForAdminTrigger);

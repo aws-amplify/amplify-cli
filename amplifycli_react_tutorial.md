@@ -1,4 +1,4 @@
-<meta http-equiv="refresh" content="0; URL='https://aws-amplify.github.io/docs/js/react'" />
+<meta http-equiv="refresh" content="0; URL='https://docs.amplify.aws/start/q/integration/react'" />
 
 This doc has moved:
-https://aws-amplify.github.io/docs/js/react
+https://docs.amplify.aws/start/q/integration/react

@@ -15,22 +15,22 @@ export interface TransformMigrationConfig {
 }
 
 // Sync Config
-export declare enum ConflictHandlerType {
+export const enum ConflictHandlerType {
   OPTIMISTIC = 'OPTIMISTIC_CONCURRENCY',
   AUTOMERGE = 'AUTOMERGE',
   LAMBDA = 'LAMBDA',
 }
-export type ConflictDectionType = 'VERSION' | 'NONE';
+export type ConflictDetectionType = 'VERSION' | 'NONE';
 export type SyncConfigOPTIMISTIC = {
-  ConflictDetection: ConflictDectionType;
+  ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.OPTIMISTIC;
 };
 export type SyncConfigSERVER = {
-  ConflictDetection: ConflictDectionType;
+  ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.AUTOMERGE;
 };
 export type SyncConfigLAMBDA = {
-  ConflictDetection: ConflictDectionType;
+  ConflictDetection: ConflictDetectionType;
   ConflictHandler: ConflictHandlerType.LAMBDA;
   LambdaConflictHandler: {
     name: string;
@@ -41,8 +41,8 @@ export type SyncConfigLAMBDA = {
 export type SyncConfig = SyncConfigOPTIMISTIC | SyncConfigSERVER | SyncConfigLAMBDA;
 
 export type ResolverConfig = {
-  project: SyncConfig;
-  models: {
+  project?: SyncConfig;
+  models?: {
     [key: string]: SyncConfig;
   };
 };
@@ -91,6 +91,10 @@ export interface TransformConfig {
    */
   Version?: number;
   /**
+   * A flag added to keep a track of a change noted in elasticsearch
+   */
+  ElasticsearchWarning?: boolean;
+  /**
    * Object which states info about a resolver's configuration
    * Such as sync configuration for appsync local support
    */
@@ -131,6 +135,12 @@ export async function writeConfig(projectDir: string, config: TransformConfig): 
  */
 interface ProjectConfiguration {
   schema: string;
+  functions: {
+    [k: string]: string;
+  };
+  pipelineFunctions: {
+    [k: string]: string;
+  };
   resolvers: {
     [k: string]: string;
   };
@@ -142,7 +152,42 @@ interface ProjectConfiguration {
 export async function loadProject(projectDirectory: string, opts?: ProjectOptions): Promise<ProjectConfiguration> {
   // Schema
   const schema = await readSchema(projectDirectory);
-  // Load the resolvers.
+
+  // Load functions
+  const functions = {};
+  if (!(opts && opts.disableFunctionOverrides === true)) {
+    const functionDirectory = path.join(projectDirectory, 'functions');
+    const functionDirectoryExists = await fs.exists(functionDirectory);
+    if (functionDirectoryExists) {
+      const functionFiles = await fs.readdir(functionDirectory);
+      for (const functionFile of functionFiles) {
+        if (functionFile.indexOf('.') === 0) {
+          continue;
+        }
+        const functionFilePath = path.join(functionDirectory, functionFile);
+        functions[functionFile] = functionFilePath;
+      }
+    }
+  }
+
+  // load pipeline functions
+  const pipelineFunctions = {};
+  if (!(opts && opts.disablePipelineFunctionOverrides === true)) {
+    const pipelineFunctionDirectory = path.join(projectDirectory, 'pipelineFunctions');
+    const pipelineFunctionDirectoryExists = await fs.exists(pipelineFunctionDirectory);
+    if (pipelineFunctionDirectoryExists) {
+      const pipelineFunctionFiles = await fs.readdir(pipelineFunctionDirectory);
+      for (const pipelineFunctionFile of pipelineFunctionFiles) {
+        if (pipelineFunctionFile.indexOf('.') === 0) {
+          continue;
+        }
+        const pipelineFunctionPath = path.join(pipelineFunctionDirectory, pipelineFunctionFile);
+        pipelineFunctions[pipelineFunctionFile] = await fs.readFile(pipelineFunctionPath);
+      }
+    }
+  }
+
+  // Load the resolvers
   const resolvers = {};
   if (!(opts && opts.disableResolverOverrides === true)) {
     const resolverDirectory = path.join(projectDirectory, 'resolvers');
@@ -158,6 +203,8 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
       }
     }
   }
+
+  // Load Stacks
   const stacksDirectory = path.join(projectDirectory, 'stacks');
   const stacksDirExists = await fs.exists(stacksDirectory);
   const stacks = {};
@@ -181,6 +228,8 @@ export async function loadProject(projectDirectory: string, opts?: ProjectOption
 
   const config = await loadConfig(projectDirectory);
   return {
+    functions,
+    pipelineFunctions,
     stacks,
     resolvers,
     schema,

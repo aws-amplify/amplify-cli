@@ -1,40 +1,40 @@
 {
   "name": "graphql-dynamodb-transformer",
-  "version": "6.6.0",
-  "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream, and ES index with the queries to match.",
-  "main": "lib/index.js",
-  "scripts": {
-    "test": "jest",
-    "test-ci": "jest --ci -i",
-    "build": "tsc",
-    "clean": "rm -rf ./lib",
-    "watch": "tsc -w"
+  "version": "6.19.13",
+  "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/graphql-dynamodb-transformer"
   },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "keywords": [
     "graphql",
     "appsync",
     "aws"
   ],
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "clean": "rimraf ./lib",
+    "watch": "tsc -w"
+  },
   "dependencies": {
     "@types/pluralize": "^0.0.29",
-    "cloudform": "^4.1.0",
-    "cloudform-types": "^4.1.0",
-    "graphql": "^0.13.2",
-    "graphql-mapping-template": "4.6.0",
-    "graphql-transformer-common": "4.6.0",
-    "graphql-transformer-core": "6.6.0",
+    "cloudform-types": "^4.2.0",
+    "graphql": "^14.5.8",
+    "graphql-mapping-template": "4.15.2",
+    "graphql-transformer-common": "4.17.10",
+    "graphql-transformer-core": "6.21.4",
+    "md5": "^2.2.1",
     "pluralize": "^8.0.0"
   },
   "devDependencies": {
-    "@types/graphql": "^0.13.4",
-    "@types/jest": "23.1.1",
-    "@types/node": "^8.10.59",
-    "jest": "^23.1.0",
-    "ts-jest": "^22.4.6",
-    "tslint": "^5.18.0",
-    "typescript": "~3.6.4"
+    "@types/md5": "^2.1.33",
+    "@types/node": "^10.17.13"
   },
   "jest": {
     "transform": {

@@ -1,6 +1,6 @@
 import { Context } from '../../domain/context';
 
-export function run(context: Context) {
+export const run = (context: Context) => {
   context.print.info('');
 
   const commands = [
@@ -37,7 +37,7 @@ export function run(context: Context) {
       description: 'Prints out the a help message for the plugin command.',
     },
   ];
-  const tableOptions = [];
+  const tableOptions: any = [];
   for (let i = 0; i < commands.length; i += 1) {
     tableOptions.push([commands[i].name, commands[i].description]);
   }
@@ -45,4 +45,4 @@ export function run(context: Context) {
   context.print.info('');
   context.print.table(tableOptions, { format: 'default' });
   context.print.info('');
-}
+};

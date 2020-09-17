@@ -1,6 +1,6 @@
 const aws = require('aws-sdk');
 const proxyAgent = require('proxy-agent');
-const configurationManager = require('../../lib/configuration-manager');
+const configurationManager = require('../configuration-manager');
 const { formUserAgentParam } = require('./user-agent');
 
 const defaultPinpointRegion = 'us-east-1';
@@ -25,12 +25,16 @@ const serviceRegionMap = {
   'eu-west-3': 'eu-west-1',
 };
 
-async function getConfiguredPinpointClient(context, category, action, options = {}) {
+async function getConfiguredPinpointClient(context, category, action, envName) {
   let cred = {};
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 
   try {
-    cred = await configurationManager.loadConfiguration(context);
+    if (envName) {
+      cred = await configurationManager.loadConfigurationForEnv(context, envName);
+    } else {
+      cred = await configurationManager.loadConfiguration(context);
+    }
   } catch (e) {
     // ignore missing config
   }
@@ -50,7 +54,7 @@ async function getConfiguredPinpointClient(context, category, action, options = 
     });
   }
 
-  return new aws.Pinpoint({ ...cred, ...defaultOptions, ...options });
+  return new aws.Pinpoint({ ...cred, ...defaultOptions });
 }
 
 function mapServiceRegion(region) {

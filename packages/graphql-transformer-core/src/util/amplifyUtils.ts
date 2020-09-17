@@ -1,10 +1,11 @@
-const fs = require('fs-extra');
+import fs from 'fs-extra';
 import * as path from 'path';
+import glob from 'glob';
 import { CloudFormation, Fn, Template } from 'cloudform-types';
 import { DeploymentResources } from '../DeploymentResources';
 import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { walkDirPosix, readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory } from './fileUtils';
+import { readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFile, FileHandler } from './fileUtils';
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
 import * as Sanity from './sanity-check';
 
@@ -18,8 +19,11 @@ export interface ProjectOptions {
   currentCloudBackendDirectory: string;
   rootStackFileName?: string;
   dryRun?: boolean;
+  disableFunctionOverrides?: boolean;
+  disablePipelineFunctionOverrides?: boolean;
   disableResolverOverrides?: boolean;
   buildParameters?: Object;
+  minify?: boolean;
 }
 
 export async function buildProject(opts: ProjectOptions) {
@@ -28,7 +32,13 @@ export async function buildProject(opts: ProjectOptions) {
   const builtProject = await _buildProject(opts);
 
   if (opts.projectDirectory && !opts.dryRun) {
-    await writeDeploymentToDisk(builtProject, path.join(opts.projectDirectory, 'build'), opts.rootStackFileName, opts.buildParameters);
+    await writeDeploymentToDisk(
+      builtProject,
+      path.join(opts.projectDirectory, 'build'),
+      opts.rootStackFileName,
+      opts.buildParameters,
+      opts.minify,
+    );
     if (opts.currentCloudBackendDirectory) {
       const lastBuildPath = path.join(opts.currentCloudBackendDirectory, 'build');
       const thisBuildPath = path.join(opts.projectDirectory, 'build');
@@ -162,7 +172,7 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
           missingStackMappings[resourceId] = 'root';
         }
       }
-      const outputIdsInStack = Object.keys(lastDeployedStack.Outputs);
+      const outputIdsInStack = Object.keys(lastDeployedStack.Outputs || {});
       for (const outputId of outputIdsInStack) {
         if (stackMapping[outputId] && 'root' !== stackMapping[outputId]) {
           missingStackMappings[outputId] = 'root';
@@ -184,6 +194,21 @@ async function ensureMissingStackMappings(config: ProjectOptions) {
  * Merge user config on top of transform output when needed.
  */
 function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResources>, transformOutput: DeploymentResources) {
+  // Override user defined functions.
+  const userFunctions = userConfig.functions || {};
+  const transformFunctions = transformOutput.functions;
+  const pipelineFunctions = transformOutput.pipelineFunctions;
+
+  // override functions
+  for (const userFunction of Object.keys(userFunctions)) {
+    transformFunctions[userFunction] = userConfig.functions[userFunction];
+  }
+
+  // override pipeline functions
+  for (const pipelineFunction of Object.keys(userConfig.pipelineFunctions)) {
+    pipelineFunctions[pipelineFunction] = userConfig.pipelineFunctions[pipelineFunction];
+  }
+
   // Override user defined resolvers.
   const userResolvers = userConfig.resolvers || {};
   const transformResolvers = transformOutput.resolvers;
@@ -214,7 +239,7 @@ function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResour
       ...acc,
       [k]: Fn.Ref(k),
     }),
-    {}
+    {},
   );
   // customStackParams is a map that will be passed as the "parameters" value
   // to any nested stacks.
@@ -259,7 +284,7 @@ function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResour
         ...acc,
         [k]: customStackParams[k],
       }),
-      {}
+      {},
     );
 
     transformStacks[userStack] = userDefinedStack;
@@ -289,26 +314,40 @@ function mergeUserConfigWithTransformOutput(userConfig: Partial<DeploymentResour
 
 export interface UploadOptions {
   directory: string;
-  upload(blob: { Key: string; Body: Buffer | string }): Promise<string>;
+  upload: FileHandler;
 }
+
 /**
  * Reads deployment assets from disk and uploads to the cloud via an uploader.
  * @param opts Deployment options.
  */
 export async function uploadDeployment(opts: UploadOptions) {
-  try {
-    if (!opts.directory) {
-      throw new Error(`You must provide a 'directory'`);
-    } else if (!fs.existsSync(opts.directory)) {
-      throw new Error(`Invalid 'directory': directory does not exist at ${opts.directory}`);
-    }
-    if (!opts.upload || typeof opts.upload !== 'function') {
-      throw new Error(`You must provide an 'upload' function`);
-    }
-    await walkDirPosix(opts.directory, opts.upload);
-  } catch (e) {
-    throw e;
+  if (!opts.directory) {
+    throw new Error(`You must provide a 'directory'`);
   }
+
+  if (!fs.existsSync(opts.directory)) {
+    throw new Error(`Invalid 'directory': directory does not exist at ${opts.directory}`);
+  }
+
+  if (!opts.upload || typeof opts.upload !== 'function') {
+    throw new Error(`You must provide an 'upload' function`);
+  }
+
+  const { directory, upload } = opts;
+
+  var fileNames = glob.sync('**/*', {
+    cwd: directory,
+    nodir: true,
+  });
+
+  const uploadPromises = fileNames.map(async fileName => {
+    const resourceContent = fs.createReadStream(path.join(directory, fileName));
+
+    await handleFile(upload, fileName, resourceContent);
+  });
+
+  await Promise.all(uploadPromises);
 }
 
 /**
@@ -318,7 +357,8 @@ async function writeDeploymentToDisk(
   deployment: DeploymentResources,
   directory: string,
   rootStackFileName: string = 'rootStack.json',
-  buildParameters: Object
+  buildParameters: Object,
+  minify = false,
 ) {
   // Delete the last deployments resources.
   await emptyDirectory(directory);
@@ -360,7 +400,11 @@ async function writeDeploymentToDisk(
     const fullStackPath = path.normalize(stackRootPath + '/' + fullFileName);
     let stackString: any = deployment.stacks[stackFileName];
     stackString =
-      typeof stackString === 'string' ? deployment.stacks[stackFileName] : JSON.stringify(deployment.stacks[stackFileName], null, 4);
+      typeof stackString === 'string'
+        ? deployment.stacks[stackFileName]
+        : minify
+        ? JSON.stringify(deployment.stacks[stackFileName])
+        : JSON.stringify(deployment.stacks[stackFileName], null, 4);
     fs.writeFileSync(fullStackPath, stackString);
   }
 
@@ -377,7 +421,8 @@ async function writeDeploymentToDisk(
   }
   const rootStack = deployment.rootStack;
   const rootStackPath = path.normalize(directory + `/${rootStackFileName}`);
-  fs.writeFileSync(rootStackPath, JSON.stringify(rootStack, null, 4));
+  const rootStackString = minify ? JSON.stringify(rootStack) : JSON.stringify(rootStack, null, 4);
+  fs.writeFileSync(rootStackPath, rootStackString);
 
   // Write params to disk
   const jsonString = JSON.stringify(buildParameters, null, 4);
@@ -389,6 +434,7 @@ interface MigrationOptions {
   projectDirectory: string;
   cloudBackendDirectory?: string;
 }
+
 /**
  * Using the current cloudbackend as the source of truth of the current env,
  * move the deployment forward to the intermediate stage before allowing the
@@ -418,6 +464,7 @@ export async function migrateAPIProject(opts: MigrationOptions) {
     cloudBackend: copyOfCloudBackend,
   };
 }
+
 export async function revertAPIMigration(directory: string, oldProject: AmplifyApiV1Project) {
   await fs.remove(directory);
   await writeToPath(directory, oldProject);
@@ -428,6 +475,7 @@ interface AmplifyApiV1Project {
   parameters: any;
   template: Template;
 }
+
 /**
  * Read the configuration for the old version of amplify CLI.
  */
@@ -437,8 +485,7 @@ export async function readV1ProjectConfiguration(projectDirectory: string): Prom
 
   // Get the template
   const cloudFormationTemplatePath = path.join(projectDirectory, CLOUDFORMATION_FILE_NAME);
-  const cloudFormationTemplateExists = await fs.exists(cloudFormationTemplatePath);
-  if (!cloudFormationTemplateExists) {
+  if (!fs.existsSync(cloudFormationTemplatePath)) {
     throw new Error(`Could not find cloudformation template at ${cloudFormationTemplatePath}`);
   }
   const cloudFormationTemplateStr = await fs.readFile(cloudFormationTemplatePath);
@@ -446,8 +493,7 @@ export async function readV1ProjectConfiguration(projectDirectory: string): Prom
 
   // Get the params
   const parametersFilePath = path.join(projectDirectory, 'parameters.json');
-  const parametersFileExists = await fs.exists(parametersFilePath);
-  if (!parametersFileExists) {
+  if (!fs.existsSync(parametersFilePath)) {
     throw new Error(`Could not find parameters.json at ${parametersFilePath}`);
   }
   const parametersFileStr = await fs.readFile(parametersFilePath);

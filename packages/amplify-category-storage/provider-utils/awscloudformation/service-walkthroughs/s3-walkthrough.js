@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const _ = require('lodash');
 const uuid = require('uuid');
+const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -21,8 +22,8 @@ const permissionMap = {
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, options) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt.run(
-        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?'
+      await context.amplify.confirmPrompt(
+        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
       try {
@@ -125,7 +126,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
             type: 'list',
             choices: inputs[i].options,
           },
-          question
+          question,
         );
       } else if (inputs[i].type && inputs[i].type === 'multiselect') {
         question = Object.assign(
@@ -133,14 +134,14 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
             type: 'checkbox',
             choices: inputs[i].options,
           },
-          question
+          question,
         );
       } else {
         question = Object.assign(
           {
             type: 'input',
           },
-          question
+          question,
         );
       }
       questions.push(question);
@@ -168,7 +169,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       if (permissionSelected === 'Learn more') {
         context.print.info('');
         context.print.info(
-          'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Groups that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.'
+          'You can restrict access using CRUD policies for Authenticated Users, Guest Users, or on individual Groups that users belong to in a User Pool. If a user logs into your application and is not a member of any group they will use policy set for “Authenticated Users”, however if they belong to a group they will only get the policy associated with that specific group.',
         );
         context.print.info('');
       }
@@ -325,7 +326,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         selectedUserPoolGroupList,
         groupPolicyMap,
         resourceName,
-        authResourceName
+        authResourceName,
       );
     }
   }
@@ -333,7 +334,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   // Ask Lambda trigger question
 
   if (!parameters || !parameters.triggerFunction || parameters.triggerFunction === 'NONE') {
-    if (await amplify.confirmPrompt.run('Do you want to add a Lambda Trigger for your S3 Bucket?', false)) {
+    if (await amplify.confirmPrompt('Do you want to add a Lambda Trigger for your S3 Bucket?', false)) {
       try {
         answers.triggerFunction = await addTrigger(context, parameters.resourceName, undefined, parameters.adminTriggerFunction, options);
       } catch (e) {
@@ -361,7 +362,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
               parameters.resourceName,
               parameters.triggerFunction,
               parameters.adminTriggerFunction,
-              options
+              options,
             );
             continueWithTriggerOperationQuestion = false;
           } catch (e) {
@@ -544,6 +545,28 @@ async function updateCfnTemplateWithGroups(context, oldGroupList, newGroupList, 
       },
     };
   });
+  // added a new policy for the user group to make action on buckets
+  newGroupList.forEach(group => {
+    if (newGroupPolicyMap[group].includes('s3:ListBucket') === true) {
+      storageCFNFile.Resources[`${group}GroupPolicy`].Properties.PolicyDocument.Statement.push({
+        Effect: 'Allow',
+        Action: 's3:ListBucket',
+        Resource: [
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:aws:s3:::',
+                {
+                  Ref: 'S3Bucket',
+                },
+              ],
+            ],
+          },
+        ],
+      });
+    }
+  });
 
   context.amplify.updateamplifyMetaAfterResourceUpdate(category, s3ResourceName, 'dependsOn', s3DependsOnResources);
 
@@ -636,9 +659,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
       lambdaResources = lambdaResources.filter(lambdaResource => lambdaResource !== triggerFunction);
     }
     if (lambdaResources.length === 0) {
-      throw new Error(
-        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project."
-      );
+      throw new Error("No functions were found in the project. Use 'amplify add function' to add a new function.");
     }
 
     const triggerOptionQuestion = {
@@ -712,14 +733,14 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
     // Update amplify-meta and backend-config
 
     const backendConfigs = {
-      service: 'Lambda',
+      service: FunctionServiceName.LambdaFunction,
       providerPlugin: 'awscloudformation',
       build: true,
     };
 
     await context.amplify.updateamplifyMetaAfterResourceAdd('function', functionName, backendConfigs);
     context.print.success(`Successfully added resource ${functionName} locally`);
-    if (await context.amplify.confirmPrompt.run(`Do you want to edit the local ${functionName} lambda function now?`)) {
+    if (await context.amplify.confirmPrompt(`Do you want to edit the local ${functionName} lambda function now?`)) {
       await context.amplify.openEditor(context, `${targetDir}/function/${functionName}/src/index.js`);
     }
   }
@@ -772,7 +793,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
       lambdaConf = lambdaConf.concat(
         getTriggersForLambdaConfiguration('private', functionName),
         getTriggersForLambdaConfiguration('protected', functionName),
-        getTriggersForLambdaConfiguration('public', functionName)
+        getTriggersForLambdaConfiguration('public', functionName),
       );
       // eslint-disable-next-line max-len
       storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations = lambdaConf;
@@ -864,13 +885,16 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
       };
 
       // Update DependsOn
-      context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'dependsOn', [
-        {
-          category: 'function',
-          resourceName: functionName,
-          attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
-        },
-      ]);
+      const dependsOnResources = amplifyMetaFile.storage[resourceName].dependsOn || [];
+      dependsOnResources.filter(resource => {
+        return resource.resourceName !== triggerFunction;
+      });
+      dependsOnResources.push({
+        category: 'function',
+        resourceName: functionName,
+        attributes: ['Name', 'Arn', 'LambdaExecutionRole'],
+      });
+      context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'dependsOn', dependsOnResources);
     }
 
     storageCFNFile.Resources.TriggerPermissions = {
@@ -948,7 +972,9 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
 
 async function getLambdaFunctions(context) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const lambdaResources = allResources.filter(resource => resource.service === 'Lambda').map(resource => resource.resourceName);
+  const lambdaResources = allResources
+    .filter(resource => resource.service === FunctionServiceName.LambdaFunction)
+    .map(resource => resource.resourceName);
 
   return lambdaResources;
 }

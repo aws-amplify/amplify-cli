@@ -1,5 +1,5 @@
-import { fstat, existsSync } from 'fs-extra';
-
+import { existsSync } from 'fs-extra';
+import _ = require('lodash');
 const path = require('path');
 
 function loadFunction(fileName) {
@@ -35,7 +35,7 @@ function invokeFunction(options: InvokeOptions) {
       },
       fail(error) {
         returned = true;
-        reject(error);
+        reject(_.assign({}, error));
       },
       awsRequestId: 'LAMBDA_INVOKE',
       logStreamName: 'LAMBDA_INVOKE',
@@ -67,17 +67,25 @@ function invokeFunction(options: InvokeOptions) {
     };
 
     const lambda = loadFunction(options.fileName);
+
     const { event } = options;
     try {
       if (!lambda[options.handler]) {
         context.fail(
-          `handler ${options.handler} does not exist in the lambda function ${path.join(options.packageFolder, options.fileName)}`
+          `handler ${options.handler} does not exist in the lambda function ${path.join(options.packageFolder, options.fileName)}`,
         );
         return;
       }
-      const result = await lambda[options.handler](event, context, callback);
-      if (result !== undefined) {
-        context.done(null, result);
+      const response = lambda[options.handler](event, context, callback);
+      if (typeof response === 'object' && typeof response.then === 'function') {
+        const result = await response;
+        if (result !== undefined) {
+          context.done(null, result);
+        } else {
+          context.done(null, null);
+        }
+      } else if (response !== undefined) {
+        context.done(null, null);
       }
     } catch (e) {
       context.done(e, null);
@@ -91,6 +99,6 @@ process.on('message', async options => {
     process.send(JSON.stringify({ result, error: null }));
   } catch (error) {
     process.send(JSON.stringify({ result: null, error }));
-    process.exit(1);
   }
+  process.exit(1);
 });

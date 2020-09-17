@@ -12,8 +12,8 @@ import {
   NamedTypeNode,
 } from 'graphql';
 import { GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
-import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer';
+import { getBaseType } from 'graphql-transformer-common';
 
 test('Test DynamoDBModelTransformer validation happy case', () => {
   const validSchema = `
@@ -461,6 +461,124 @@ test('Test non model objects contain id as a type for fields', () => {
   verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
 });
 
+test('Test schema includes attribute enum when only queries specified', () => {
+  const validSchema = `
+    type Entity @model(mutations: null, subscriptions: null) {
+      id: ID!
+      str: String
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+    transformConfig: {
+      Version: 5,
+    },
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+});
+
+test('Test only get does not generate superfluous input and filter types', () => {
+  const validSchema = `
+  type Entity @model(mutations: null, subscriptions: null, queries: {get: "getEntity"}) {
+    id: ID!
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+    transformConfig: {
+      Version: 5,
+    },
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+});
+
+test('Test timestamp parameters when generating resolvers and output schema', () => {
+  const validSchema = `
+  type Post @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn"}) {
+    id: ID!
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+
+  expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+  expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+});
+
+test('Test resolver template not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime', () => {
+  const validSchema = `
+  type Post @model {
+    id: ID!
+    str: String
+    createdAt: AWSTimestamp
+    updatedAt: AWSTimestamp
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+
+  expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+  expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+});
+
+test('Test create and update mutation input should have timestamps as nullable fields when the type makes it non-nullable', () => {
+  const validSchema = `
+  type Post @model {
+    id: ID!
+    str: String
+    createdAt: AWSDateTime!
+    updatedAt: AWSDateTime!
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+
+  expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+  expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+});
+
+test('Test not to include createdAt and updatedAt field when timestamps is set to null', () => {
+  const validSchema = `
+  type Post @model(timestamps: null) {
+    id: ID!
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toMatchSnapshot();
+
+  expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+  expect(result.resolvers['Mutation.updatePost.req.vtl']).toMatchSnapshot();
+});
+
 test(`V${TRANSFORM_BASE_VERSION} transformer snapshot test`, () => {
   const schema = transformerVersionSnapshot(TRANSFORM_BASE_VERSION);
   expect(schema).toMatchSnapshot();
@@ -474,6 +592,57 @@ test(`V5 transformer snapshot test`, () => {
 test(`Current version transformer snapshot test`, () => {
   const schema = transformerVersionSnapshot(TRANSFORM_CURRENT_VERSION);
   expect(schema).toMatchSnapshot();
+});
+
+test('DynmoDB transformer should add default primary key when not defined', () => {
+  const validSchema = `
+  type Post @model{
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toBeDefined();
+  const schema = parse(result.schema);
+
+  const createPostInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+    d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
+  ) as InputObjectTypeDefinitionNode | undefined;
+  expect(createPostInput).toBeDefined();
+  const defaultIdField: InputValueDefinitionNode = createPostInput.fields.find(f => f.name.value === 'id');
+  expect(defaultIdField).toBeDefined();
+  expect(getBaseType(defaultIdField.type)).toEqual('ID');
+});
+
+test('DynmoDB transformer should add not default primary key when ID is defined', () => {
+  const validSchema = `
+  type Post @model{
+    id: Int
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const result = transformer.transform(validSchema);
+  expect(result).toBeDefined();
+  expect(result.schema).toBeDefined();
+  expect(result.schema).toBeDefined();
+  const schema = parse(result.schema);
+
+  const createPostInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+    d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreatePostInput',
+  ) as InputObjectTypeDefinitionNode | undefined;
+  expect(createPostInput).toBeDefined();
+  const defaultIdField: InputValueDefinitionNode = createPostInput.fields.find(f => f.name.value === 'id');
+  expect(defaultIdField).toBeDefined();
+  expect(getBaseType(defaultIdField.type)).toEqual('Int');
+  // It should not add default value for ctx.arg.id as id is of type Int
+  expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
 });
 
 function transformerVersionSnapshot(version: number): string {

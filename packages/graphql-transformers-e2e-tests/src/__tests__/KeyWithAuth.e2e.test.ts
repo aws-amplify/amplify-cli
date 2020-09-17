@@ -6,13 +6,13 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
-import * as CognitoClient from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import * as S3 from 'aws-sdk/clients/s3';
+import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { default as S3 } from 'aws-sdk/clients/s3';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
 import * as path from 'path';
 import { deploy } from '../deployNestedStacks';
-import * as moment from 'moment';
+import { default as moment } from 'moment';
 import emptyBucket from '../emptyBucket';
 import {
   createUserPool,
@@ -107,7 +107,7 @@ beforeAll(async () => {
         @auth(rules: [{ allow: owner, ownerField: "customerEmail" }, { allow: groups, groups: ["Admin"] }])
     {
         customerEmail: String!
-        createdAt: String
+        createdAt: AWSDateTime
         orderId: String!
     }
     `;
@@ -146,7 +146,7 @@ beforeAll(async () => {
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,
-      BUILD_TIMESTAMP
+      BUILD_TIMESTAMP,
     );
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -299,7 +299,7 @@ async function createOrder(client: GraphQLClient, customerEmail: string, orderId
     }`,
     {
       input: { customerEmail, orderId },
-    }
+    },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -316,7 +316,7 @@ async function updateOrder(client: GraphQLClient, customerEmail: string, orderId
     }`,
     {
       input: { customerEmail, orderId },
-    }
+    },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -333,7 +333,7 @@ async function deleteOrder(client: GraphQLClient, customerEmail: string, orderId
     }`,
     {
       input: { customerEmail, orderId },
-    }
+    },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -348,7 +348,7 @@ async function getOrder(client: GraphQLClient, customerEmail: string, orderId: s
             createdAt
         }
     }`,
-    { customerEmail, orderId }
+    { customerEmail, orderId },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -366,7 +366,7 @@ async function listOrders(client: GraphQLClient, customerEmail: string, orderId:
             nextToken
         }
     }`,
-    { customerEmail, orderId }
+    { customerEmail, orderId },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;
@@ -384,7 +384,7 @@ async function ordersByOrderId(client: GraphQLClient, orderId: string) {
             nextToken
         }
     }`,
-    { orderId }
+    { orderId },
   );
   console.log(JSON.stringify(result, null, 4));
   return result;

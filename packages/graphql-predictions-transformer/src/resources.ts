@@ -1,10 +1,20 @@
 import { ResourceConstants, PredictionsResourceIDs } from 'graphql-transformer-common';
 import {
-  obj, str, print,
-  int, ref, iff,
-  compoundExpression, ifElse, raw,
-  set, forEach, ObjectNode,
-  CompoundExpressionNode, qref, toJson,
+  obj,
+  str,
+  print,
+  int,
+  ref,
+  iff,
+  compoundExpression,
+  ifElse,
+  raw,
+  set,
+  forEach,
+  ObjectNode,
+  CompoundExpressionNode,
+  qref,
+  toJson,
   comment,
 } from 'graphql-mapping-template';
 import { iamActions } from './predictions_utils';
@@ -62,7 +72,7 @@ export class ResourceFactory {
 
   private getStorageARN(name: string) {
     const substitutions = {
-      hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName')))
+      hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName'))),
     };
     if (this.referencesEnv(name)) {
       substitutions['env'] = Fn.Ref(ResourceConstants.PARAMETERS.Env);
@@ -70,13 +80,13 @@ export class ResourceFactory {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Fn.Sub(this.s3ArnKey(name), substitutions),
-      Fn.Sub(this.s3ArnKey(this.removeEnvReference(name)), { hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName'))) })
+      Fn.Sub(this.s3ArnKey(this.removeEnvReference(name)), { hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName'))) }),
     );
   }
 
   private addStorageInStash(storage: string) {
     const substitutions = {
-      hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName')))
+      hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName'))),
     };
     if (this.referencesEnv(storage)) {
       substitutions['env'] = Fn.Ref(ResourceConstants.PARAMETERS.Env);
@@ -84,7 +94,9 @@ export class ResourceFactory {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Fn.Sub(`$util.qr($ctx.stash.put("s3Bucket", "${storage}"))`, substitutions),
-      Fn.Sub(`$util.qr($ctx.stash.put("s3Bucket", "${this.removeEnvReference(storage)}"))`, { hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName'))) })
+      Fn.Sub(`$util.qr($ctx.stash.put("s3Bucket", "${this.removeEnvReference(storage)}"))`, {
+        hash: Fn.Select(3, Fn.Split('-', Fn.Ref('AWS::StackName'))),
+      }),
     );
   }
 
@@ -237,7 +249,7 @@ export class ResourceFactory {
     return Fn.If(
       ResourceConstants.CONDITIONS.HasEnvironmentParameter,
       Fn.Join(separator, [...listToJoin, Fn.Ref(ResourceConstants.PARAMETERS.Env)]),
-      Fn.Join(separator, listToJoin)
+      Fn.Join(separator, listToJoin),
     );
   }
 
@@ -260,9 +272,9 @@ export class ResourceFactory {
           ifElse(
             ref('ctx.stash.get("isList")'),
             compoundExpression([set(ref('result'), ref('ctx.result.split("[ ,]+")')), toJson(ref('result'))]),
-            toJson(ref('ctx.result'))
+            toJson(ref('ctx.result')),
           ),
-        ])
+        ]),
       ),
     }).dependsOn(pipelineFunctions);
   }
@@ -273,6 +285,7 @@ export class ResourceFactory {
       identifyText: {
         request: compoundExpression([
           set(ref('bucketName'), ref('ctx.stash.get("s3Bucket")')),
+          set(ref('identityTextKey'), ref('util.toJson($ctx.args.input.identifyText.key)')),
           obj({
             version: str('2018-05-29'),
             method: str('POST'),
@@ -282,7 +295,7 @@ export class ResourceFactory {
                 Image: obj({
                   S3Object: obj({
                     Bucket: str('$bucketName'),
-                    Name: str('public/$ctx.args.input.identifyText.key'),
+                    Name: str('public/$identityTextKey'),
                   }),
                 }),
               }),
@@ -305,13 +318,14 @@ export class ResourceFactory {
               ]),
               ref('util.toJson($finalResult.trim())'),
             ]),
-            ref('utils.error($ctx.result.body)')
+            ref('utils.error($ctx.result.body)'),
           ),
         ]),
       },
       identifyLabels: {
         request: compoundExpression([
           set(ref('bucketName'), ref('ctx.stash.get("s3Bucket")')),
+          set(ref('identifyLabelKey'), ref('util.toJson($ctx.args.input.identifyLabels.key)')),
           qref('$ctx.stash.put("isList", true)'),
           obj({
             version: str('2018-05-29'),
@@ -322,7 +336,7 @@ export class ResourceFactory {
                 Image: obj({
                   S3Object: obj({
                     Bucket: str('$bucketName'),
-                    Name: str('public/$ctx.args.input.identifyLabels.key'),
+                    Name: str('public/$identifyLabelKey'),
                   }),
                 }),
                 MaxLabels: int(10),
@@ -345,7 +359,7 @@ export class ResourceFactory {
               forEach(/** for */ ref('label'), /** in */ ref('result.Labels'), [set(ref('labels'), str('$labels$label.Name, '))]),
               toJson(ref('labels.replaceAll(", $", "")')), // trim unnessary space
             ]),
-            ref('util.error($ctx.result.body)')
+            ref('util.error($ctx.result.body)'),
           ),
         ]),
       },
@@ -358,8 +372,8 @@ export class ResourceFactory {
             resourcePath: str('/'),
             params: obj({
               body: obj({
-                SourceLanguageCode: str('$ctx.args.input.translateText.sourceLanguage'),
-                TargetLanguageCode: str('$ctx.args.input.translateText.targetLanguage'),
+                SourceLanguageCode: ref('util.toJson($ctx.args.input.translateText.sourceLanguage)'),
+                TargetLanguageCode: ref('util.toJson($ctx.args.input.translateText.targetLanguage)'),
                 Text: str('$text'),
               }),
               headers: obj({
@@ -374,7 +388,7 @@ export class ResourceFactory {
           ifElse(
             raw('$ctx.result.statusCode == 200'),
             compoundExpression([set(ref('result'), ref('util.parseJson($ctx.result.body)')), ref('util.toJson($result.TranslatedText)')]),
-            ref('util.error($ctx.result.body)')
+            ref('util.error($ctx.result.body)'),
           ),
         ]),
       },
@@ -390,9 +404,9 @@ export class ResourceFactory {
               obj({
                 uuid: str('$util.autoId()'),
                 action: str('convertTextToSpeech'),
-                voiceID: str('$ctx.args.input.convertTextToSpeech.voiceID'),
-                text: str('$text'),
-              })
+                voiceID: ref('util.toJson($ctx.args.input.convertTextToSpeech.voiceID)'),
+                text: ref('util.toJson($text)'),
+              }),
             ),
           }),
         ]),
@@ -413,7 +427,7 @@ export class ResourceFactory {
     resolver: {
       request: ObjectNode | CompoundExpressionNode;
       response: ObjectNode | CompoundExpressionNode;
-    }
+    },
   ) {
     return new AppSync.FunctionConfiguration({
       ApiId: Fn.Ref(ResourceConstants.PARAMETERS.AppSyncApiId),

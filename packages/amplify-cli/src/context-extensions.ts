@@ -1,6 +1,6 @@
 import { Context } from './domain/context';
-import fs from 'fs-extra';
-import path from 'path';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import importedColors from 'colors/safe';
 import CLITable from 'cli-table3';
 
@@ -316,8 +316,9 @@ function attachTemplate(context: Context) {
       const data = {
         props,
       };
-      const directory = opts.directory;
-      const pathToTemplate = `${directory}/${template}`;
+      // If a directory was supplied, append a directory seprator.
+      // Otherwise, the template path will be use as-is.
+      const pathToTemplate = opts.directory ? path.join(opts.directory, template) : template;
 
       if (!contextFileSystem.isFile(pathToTemplate)) {
         throw new Error(`template not found ${pathToTemplate}`);

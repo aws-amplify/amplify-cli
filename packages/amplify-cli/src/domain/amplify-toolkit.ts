@@ -1,4 +1,5 @@
-import path from 'path';
+import * as path from 'path';
+import { $TSAny } from 'amplify-cli-core';
 
 export class AmplifyToolkit {
   private _buildResources: any;
@@ -11,20 +12,20 @@ export class AmplifyToolkit {
   private _executeProviderUtils: any;
   private _getAllEnvs: any;
   private _getPlugin: any;
-  private _getCategoryPlugins: any;
+  private _getCategoryPluginInfo: any;
+  private _getAllCategoryPluginInfo: any;
   private _getFrontendPlugins: any;
   private _getEnvDetails: any;
-  private _getEnvInfo: any;
+  private _getEnvInfo?: () => $TSAny;
   private _getProviderPlugins: any;
   private _getPluginInstance: any;
   private _getProjectConfig: any;
-  private _getProjectDetails: any;
-  private _getProjectMeta: any;
+  private _getProjectDetails?: () => $TSAny;
+  private _getProjectMeta?: () => $TSAny;
   private _getResourceStatus: any;
   private _getResourceOutputs: any;
   private _getWhen: any;
   private _inputValidation: any;
-  private _isRunningOnEC2: any;
   private _listCategories: any;
   private _makeId: any;
   private _openEditor: any;
@@ -51,6 +52,7 @@ export class AmplifyToolkit {
   private _updateamplifyMetaAfterBuild: any;
   private _updateAmplifyMetaAfterPackage: any;
   private _updateBackendConfigAfterResourceAdd: any;
+  private _updateBackendConfigAfterResourceUpdate: any;
   private _updateBackendConfigAfterResourceRemove: any;
   private _loadEnvResourceParameters: any;
   private _saveEnvResourceParameters: any;
@@ -62,11 +64,18 @@ export class AmplifyToolkit {
   private _deleteAllTriggers: any;
   private _deleteDeselectedTriggers: any;
   private _dependsOnBlock: any;
+  private _getTags: any;
   private _getTriggerMetadata: any;
   private _getTriggerPermissions: any;
   private _getTriggerEnvVariables: any;
   private _getTriggerEnvInputs: any;
   private _getUserPoolGroupList: any;
+  private _forceRemoveResource: any;
+  private _writeObjectAsJson: any;
+  private _hashDir: any;
+  private _leaveBreadcrumbs: any;
+  private _readBreadcrumbs: any;
+  private _loadRuntimePlugin: any;
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
@@ -75,11 +84,11 @@ export class AmplifyToolkit {
     return this._buildResources;
   }
   get confirmPrompt(): any {
-    this._confirmPrompt = this._confirmPrompt || require(path.join(this._amplifyHelpersDirPath, 'confirm-prompt'));
+    this._confirmPrompt = this._confirmPrompt || require(path.join(this._amplifyHelpersDirPath, 'confirm-prompt')).confirmPrompt;
     return this._confirmPrompt;
   }
   get constants(): any {
-    this._constants = this._constants || require(path.join(this._amplifyHelpersDirPath, 'constants'));
+    this._constants = this._constants || require(path.join(this._amplifyHelpersDirPath, 'constants')).amplifyCLIConstants;
     return this._constants;
   }
   get constructExeInfo(): any {
@@ -112,10 +121,16 @@ export class AmplifyToolkit {
     this._getPlugin = this._getPlugin || require(path.join(this._amplifyHelpersDirPath, 'get-plugin')).getPlugin;
     return this._getPlugin;
   }
-  get getCategoryPlugins(): any {
-    this._getCategoryPlugins =
-      this._getCategoryPlugins || require(path.join(this._amplifyHelpersDirPath, 'get-category-plugins')).getCategoryPlugins;
-    return this._getCategoryPlugins;
+  get getCategoryPluginInfo(): any {
+    this._getCategoryPluginInfo =
+      this._getCategoryPluginInfo || require(path.join(this._amplifyHelpersDirPath, 'get-category-pluginInfo')).getCategoryPluginInfo;
+    return this._getCategoryPluginInfo;
+  }
+  get getAllCategoryPluginInfo(): any {
+    this._getAllCategoryPluginInfo =
+      this._getAllCategoryPluginInfo ||
+      require(path.join(this._amplifyHelpersDirPath, 'get-all-category-pluginInfos')).getAllCategoryPluginInfo;
+    return this._getAllCategoryPluginInfo;
   }
   get getFrontendPlugins(): any {
     this._getFrontendPlugins =
@@ -131,9 +146,9 @@ export class AmplifyToolkit {
     this._getEnvDetails = this._getEnvDetails || require(path.join(this._amplifyHelpersDirPath, 'get-env-details')).getEnvDetails;
     return this._getEnvDetails;
   }
-  get getEnvInfo(): any {
+  get getEnvInfo(): () => $TSAny {
     this._getEnvInfo = this._getEnvInfo || require(path.join(this._amplifyHelpersDirPath, 'get-env-info')).getEnvInfo;
-    return this._getEnvInfo;
+    return this._getEnvInfo!;
   }
   get getPluginInstance(): any {
     this._getPluginInstance =
@@ -145,14 +160,14 @@ export class AmplifyToolkit {
       this._getProjectConfig || require(path.join(this._amplifyHelpersDirPath, 'get-project-config')).getProjectConfig;
     return this._getProjectConfig;
   }
-  get getProjectDetails(): any {
+  get getProjectDetails(): () => $TSAny {
     this._getProjectDetails =
       this._getProjectDetails || require(path.join(this._amplifyHelpersDirPath, 'get-project-details')).getProjectDetails;
-    return this._getProjectDetails;
+    return this._getProjectDetails!;
   }
-  get getProjectMeta(): any {
+  get getProjectMeta(): () => $TSAny {
     this._getProjectMeta = this._getProjectMeta || require(path.join(this._amplifyHelpersDirPath, 'get-project-meta')).getProjectMeta;
-    return this._getProjectMeta;
+    return this._getProjectMeta!;
   }
   get getResourceStatus(): any {
     this._getResourceStatus =
@@ -171,10 +186,6 @@ export class AmplifyToolkit {
   get inputValidation(): any {
     this._inputValidation = this._inputValidation || require(path.join(this._amplifyHelpersDirPath, 'input-validation')).inputValidation;
     return this._inputValidation;
-  }
-  get isRunningOnEC2(): any {
-    this._isRunningOnEC2 = this._isRunningOnEC2 || require(path.join(this._amplifyHelpersDirPath, 'is-running-on-EC2')).isRunningOnEC2;
-    return this._isRunningOnEC2;
   }
   get listCategories(): any {
     this._listCategories = this._listCategories || require(path.join(this._amplifyHelpersDirPath, 'list-categories')).listCategories;
@@ -207,8 +218,8 @@ export class AmplifyToolkit {
     return this._pushResources;
   }
   get storeCurrentCloudBackend(): any {
-    this._storeCurrentCloudBackend = this._storeCurrentCloudBackend ||
-      require(path.join(this._amplifyHelpersDirPath, 'push-resources')).storeCurrentCloudBackend;
+    this._storeCurrentCloudBackend =
+      this._storeCurrentCloudBackend || require(path.join(this._amplifyHelpersDirPath, 'push-resources')).storeCurrentCloudBackend;
     return this._storeCurrentCloudBackend;
   }
   get readJsonFile(): any {
@@ -303,6 +314,12 @@ export class AmplifyToolkit {
       require(path.join(this._amplifyHelpersDirPath, 'update-backend-config')).updateBackendConfigAfterResourceAdd;
     return this._updateBackendConfigAfterResourceAdd;
   }
+  get updateBackendConfigAfterResourceUpdate(): any {
+    this._updateBackendConfigAfterResourceUpdate =
+      this._updateBackendConfigAfterResourceUpdate ||
+      require(path.join(this._amplifyHelpersDirPath, 'update-backend-config')).updateBackendConfigAfterResourceUpdate;
+    return this._updateBackendConfigAfterResourceUpdate;
+  }
   get updateBackendConfigAfterResourceRemove(): any {
     this._updateBackendConfigAfterResourceRemove =
       this._updateBackendConfigAfterResourceRemove ||
@@ -354,6 +371,10 @@ export class AmplifyToolkit {
     this._dependsOnBlock = this._dependsOnBlock || require(path.join(this._amplifyHelpersDirPath, 'trigger-flow')).dependsOnBlock;
     return this._dependsOnBlock;
   }
+  get getTags(): any {
+    this._getTags = this._getTags || require(path.join(this._amplifyHelpersDirPath, 'get-tags')).getTags;
+    return this._getTags;
+  }
   get getTriggerMetadata(): any {
     this._getTriggerMetadata =
       this._getTriggerMetadata || require(path.join(this._amplifyHelpersDirPath, 'trigger-flow')).getTriggerMetadata;
@@ -375,8 +396,42 @@ export class AmplifyToolkit {
     return this._getTriggerEnvInputs;
   }
   get getUserPoolGroupList(): any {
-    this._getUserPoolGroupList = this._getUserPoolGroupList ||
-            require(path.join(this._amplifyHelpersDirPath, 'get-userpoolgroup-list')).getUserPoolGroupList;
+    this._getUserPoolGroupList =
+      this._getUserPoolGroupList || require(path.join(this._amplifyHelpersDirPath, 'get-userpoolgroup-list')).getUserPoolGroupList;
     return this._getUserPoolGroupList;
+  }
+
+  get forceRemoveResource(): any {
+    this._forceRemoveResource =
+      this._forceRemoveResource || require(path.join(this._amplifyHelpersDirPath, 'remove-resource')).forceRemoveResource;
+    return this._forceRemoveResource;
+  }
+
+  get writeObjectAsJson(): any {
+    this._writeObjectAsJson =
+      this._writeObjectAsJson || require(path.join(this._amplifyHelpersDirPath, 'write-object-as-json')).writeObjectAsJson;
+    return this._writeObjectAsJson;
+  }
+
+  get hashDir(): any {
+    this._hashDir = this._hashDir || require(path.join(this._amplifyHelpersDirPath, 'hash-dir')).hashDir;
+    return this._hashDir;
+  }
+
+  get leaveBreadcrumbs(): any {
+    this._leaveBreadcrumbs =
+      this._leaveBreadcrumbs || require(path.join(this._amplifyHelpersDirPath, 'leave-breadcrumbs')).leaveBreadcrumbs;
+    return this._leaveBreadcrumbs;
+  }
+
+  get readBreadcrumbs(): any {
+    this._readBreadcrumbs = this._readBreadcrumbs || require(path.join(this._amplifyHelpersDirPath, 'read-breadcrumbs')).readBreadcrumbs;
+    return this._readBreadcrumbs;
+  }
+
+  get loadRuntimePlugin(): any {
+    this._loadRuntimePlugin =
+      this._loadRuntimePlugin || require(path.join(this._amplifyHelpersDirPath, 'load-runtime-plugin')).loadRuntimePlugin;
+    return this._loadRuntimePlugin;
   }
 }

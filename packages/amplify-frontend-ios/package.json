@@ -1,24 +1,37 @@
 {
   "name": "amplify-frontend-ios",
-  "version": "2.6.0",
+  "version": "2.13.8",
   "description": "amplify-cli front-end plugin for xcode projects",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/amplify-frontend-ios"
+  },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "dependencies": {
-    "chalk": "^2.4.2",
-    "fs-extra": "^8.1.0",
-    "graphql-config": "^2.2.1",
-    "inquirer": "^6.5.1",
-    "path": "^0.12.7"
-  },
+  "main": "index.js",
+  "keywords": [
+    "graphql",
+    "appsync",
+    "aws"
+  ],
   "scripts": {
-    "lint": "eslint .",
-    "lint-fix": "eslint . --fix"
+    "test": "jest",
+    "test-watch": "jest --watch"
   },
-  "devDependencies": {
-    "eslint": "^4.19.1",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.12.0"
+  "dependencies": {
+    "fs-extra": "^8.1.0",
+    "graphql-config": "^2.2.1"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "testURL": "http://localhost",
+    "testRegex": "((\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }

@@ -6,11 +6,13 @@
     "outDir": "lib",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "sourceRoot": "src",
     "lib": ["es2017", "esnext.asynciterable", "dom"],
     "declaration": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "lib", "__tests__"],
-  "include": ["src/"]
+  "exclude": ["node_modules", "lib", "**/__tests__", "**/__e2e__"],
+  "include": ["src/"],
+  "references": [
+    {"path": "../amplify-category-function"}
+  ],
 }

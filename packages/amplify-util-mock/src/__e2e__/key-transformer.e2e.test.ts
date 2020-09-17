@@ -86,6 +86,45 @@ afterAll(async () => {
 /**
  * Test queries below
  */
+test('Test next token with key', async () => {
+  const status = 'PENDING';
+  const createdAt = '2019-06-06T00:01:01.000Z';
+  // createItems
+  await createItem('order1', status, 'item1', '2019-01-06T00:01:01.000Z');
+  await createItem('order2', status, 'item2', '2019-02-06T00:01:01.000Z');
+  await createItem('order3', status, 'item3', '2019-03-06T00:01:01.000Z');
+  await createItem('order4', status, 'item4', '2019-06-06T00:01:01.000Z');
+  // query itemsByCreatedAt with limit of 2
+  // const items = await itemsByCreatedAt(createdAt, { beginsWith: status }, 2);
+  const items = await itemsByStatus(status, { beginsWith: '2019' }, 2);
+  expect(items.data).toBeDefined();
+  const itemsNextToken = items.data.itemsByStatus.nextToken;
+  expect(itemsNextToken).toBeDefined();
+  // get first two values
+  expect(items.data.itemsByStatus.items).toHaveLength(2);
+  expect(items.data.itemsByStatus.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ orderId: 'order1', name: 'item1' }),
+      expect.objectContaining({ orderId: 'order2', name: 'item2' }),
+    ]),
+  );
+  // use next token to get other values
+  const items2 = await itemsByStatus(status, { beginsWith: '2019' }, 2, itemsNextToken);
+  expect(items2.data).toBeDefined();
+  // get last two values
+  expect(items2.data.itemsByStatus.items).toHaveLength(2);
+  expect(items2.data.itemsByStatus.items).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ orderId: 'order3', name: 'item3' }),
+      expect.objectContaining({ orderId: 'order4', name: 'item4' }),
+    ]),
+  );
+  // deleteItems
+  await deleteItem('order1', status, createdAt);
+  await deleteItem('order2', status, createdAt);
+  await deleteItem('order3', status, createdAt);
+  await deleteItem('order4', status, createdAt);
+});
 test('Test getX with a two part primary key.', async () => {
   const order1 = await createOrder('test@gmail.com', '1');
   const getOrder1 = await getOrder('test@gmail.com', order1.data.createOrder.createdAt);
@@ -161,7 +200,10 @@ test('Test listX with three part primary key.', async () => {
   });
   expect(items.data.listItems.items).toHaveLength(1);
   items = await listItem(hashKey, {
-    between: [{ status: 'PENDING', createdAt: '2018-08-01' }, { status: 'PENDING', createdAt: '2018-10-01' }],
+    between: [
+      { status: 'PENDING', createdAt: '2018-08-01' },
+      { status: 'PENDING', createdAt: '2018-10-01' },
+    ],
   });
   expect(items.data.listItems.items).toHaveLength(1);
   items = await listItem(hashKey, {
@@ -253,7 +295,15 @@ test('Test query with three part secondary key, where sort key is an enum.', asy
 });
 
 test('Test update mutation validation with three part secondary key.', async () => {
-  await createShippingUpdate('order1', 'item1', 'PENDING', 'name1');
+  const createResponseMissingLastSortKey = await createShippingUpdate({ orderId: '1sttry', itemId: 'item1', name: '42' });
+  expect(createResponseMissingLastSortKey.data.createShippingUpdate).toBeNull();
+  expect(createResponseMissingLastSortKey.errors).toHaveLength(1);
+
+  const createResponseMissingFirstSortKey = await createShippingUpdate({ orderId: '2ndtry', status: 'PENDING', name: '43?' });
+  expect(createResponseMissingFirstSortKey.data.createShippingUpdate).toBeNull();
+  expect(createResponseMissingFirstSortKey.errors).toHaveLength(1);
+
+  await createShippingUpdate({ orderId: 'order1', itemId: 'item1', status: 'PENDING', name: 'name1' });
   const items = await getShippingUpdates('order1');
   expect(items.data.shippingUpdates.items).toHaveLength(1);
   const item = items.data.shippingUpdates.items[0];
@@ -323,7 +373,7 @@ async function createCustomer(email: string, addresslist: string[], username: st
     }`,
     {
       input: { email, addresslist, username },
-    }
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -340,7 +390,7 @@ async function updateCustomer(email: string, addresslist: string[], username: st
     }`,
     {
       input: { email, addresslist, username },
-    }
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -357,7 +407,7 @@ async function getCustomer(email: string) {
     }`,
     {
       email,
-    }
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -374,7 +424,7 @@ async function createOrder(customerEmail: string, orderId: string) {
     }`,
     {
       input: { customerEmail, orderId, createdAt: new Date().toISOString() },
-    }
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -391,7 +441,7 @@ async function updateOrder(customerEmail: string, createdAt: string, orderId: st
     }`,
     {
       input: { customerEmail, orderId, createdAt },
-    }
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -408,7 +458,7 @@ async function deleteOrder(customerEmail: string, createdAt: string) {
     }`,
     {
       input: { customerEmail, createdAt },
-    }
+    },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -423,7 +473,7 @@ async function getOrder(customerEmail: string, createdAt: string) {
             createdAt
         }
     }`,
-    { customerEmail, createdAt }
+    { customerEmail, createdAt },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -442,7 +492,7 @@ async function createItem(orderId: string, status: string, name: string, created
     }`,
     {
       input,
-    }
+    },
   );
   logDebug(`Running create: ${JSON.stringify(input)}`);
   logDebug(JSON.stringify(result, null, 4));
@@ -462,7 +512,7 @@ async function updateItem(orderId: string, status: string, createdAt: string, na
     }`,
     {
       input,
-    }
+    },
   );
   logDebug(`Running create: ${JSON.stringify(input)}`);
   logDebug(JSON.stringify(result, null, 4));
@@ -482,7 +532,7 @@ async function deleteItem(orderId: string, status: string, createdAt: string) {
     }`,
     {
       input,
-    }
+    },
   );
   logDebug(`Running delete: ${JSON.stringify(input)}`);
   logDebug(JSON.stringify(result, null, 4));
@@ -499,7 +549,7 @@ async function getItem(orderId: string, status: string, createdAt: string) {
             name
         }
     }`,
-    { orderId, status, createdAt }
+    { orderId, status, createdAt },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -541,7 +591,7 @@ async function listItem(orderId?: string, statusCreatedAt?: ItemCompositeKeyCond
             nextToken
         }
     }`,
-    { orderId, statusCreatedAt, limit, nextToken }
+    { orderId, statusCreatedAt, limit, nextToken },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -560,7 +610,7 @@ async function itemsByStatus(status: string, createdAt?: StringKeyConditionInput
             nextToken
         }
     }`,
-    { status, createdAt, limit, nextToken }
+    { status, createdAt, limit, nextToken },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -579,14 +629,21 @@ async function itemsByCreatedAt(createdAt: string, status?: StringKeyConditionIn
             nextToken
         }
     }`,
-    { createdAt, status, limit, nextToken }
+    { createdAt, status, limit, nextToken },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
 }
 
-async function createShippingUpdate(orderId: string, itemId: string, status: string, name?: string) {
-  const input = { status, orderId, itemId, name };
+interface CreateShippingInput {
+  id?: string;
+  orderId?: string;
+  status?: string;
+  itemId?: string;
+  name?: string;
+}
+
+async function createShippingUpdate(input: CreateShippingInput) {
   const result = await GRAPHQL_CLIENT.query(
     `mutation CreateShippingUpdate($input: CreateShippingUpdateInput!) {
         createShippingUpdate(input: $input) {
@@ -599,7 +656,7 @@ async function createShippingUpdate(orderId: string, itemId: string, status: str
     }`,
     {
       input,
-    }
+    },
   );
   logDebug(`Running create: ${JSON.stringify(input)}`);
   logDebug(JSON.stringify(result, null, 4));
@@ -614,7 +671,6 @@ interface UpdateShippingInput {
   name?: string;
 }
 async function updateShippingUpdate(input: UpdateShippingInput) {
-  // const input = { id, status, orderId, itemId, name };
   const result = await GRAPHQL_CLIENT.query(
     `mutation UpdateShippingUpdate($input: UpdateShippingUpdateInput!) {
         updateShippingUpdate(input: $input) {
@@ -627,7 +683,7 @@ async function updateShippingUpdate(input: UpdateShippingInput) {
     }`,
     {
       input,
-    }
+    },
   );
   logDebug(`Running update: ${JSON.stringify(input)}`);
   logDebug(JSON.stringify(result, null, 4));
@@ -648,7 +704,7 @@ async function getShippingUpdates(orderId: string) {
             nextToken
         }
     }`,
-    { orderId }
+    { orderId },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;
@@ -668,7 +724,7 @@ async function getShippingUpdatesWithNameFilter(orderId: string, name: string) {
             nextToken
         }
     }`,
-    { orderId, name }
+    { orderId, name },
   );
   logDebug(JSON.stringify(result, null, 4));
   return result;

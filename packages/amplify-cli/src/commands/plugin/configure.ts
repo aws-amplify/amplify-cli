@@ -1,10 +1,10 @@
-import fs from 'fs-extra';
-import os from 'os';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
 import { PluginPlatform } from '../../domain/plugin-platform';
-import inquirer from '../../domain/inquirer-helper';
 import { constants } from '../../domain/constants';
-import { writePluginsJsonFileSync } from '../../plugin-helpers/access-plugins-file';
+import { writePluginsJsonFile } from '../../plugin-helpers/access-plugins-file';
 import { normalizePluginDirectory } from '../../plugin-helpers/scan-plugin-platform';
 import { scan } from '../../plugin-manager';
 import {
@@ -17,7 +17,7 @@ import {
 const MINPREFIXLENGTH = 2;
 const MAXPREFIXLENGTH = 20;
 
-export async function run(context: Context): Promise<PluginPlatform> {
+export const run = async (context: Context): Promise<PluginPlatform> => {
   const { pluginPlatform } = context;
   const pluginDirectories = 'scannable plugin directories';
   const pluginPrefixes = 'scannable plugin prefixes';
@@ -52,10 +52,10 @@ export async function run(context: Context): Promise<PluginPlatform> {
     }
   } while (answer.selection !== exit);
 
-  writePluginsJsonFileSync(pluginPlatform);
+  writePluginsJsonFile(pluginPlatform);
 
   return scan(pluginPlatform);
-}
+};
 
 async function configurePluginDirectories(context: Context, pluginPlatform: PluginPlatform) {
   displayPluginDirectories(context, pluginPlatform);
@@ -78,7 +78,7 @@ async function configurePluginDirectories(context: Context, pluginPlatform: Plug
     await removePluginDirectory(pluginPlatform);
     if (pluginPlatform.pluginDirectories.length === 0) {
       context.print.warning('You have removed all plugin directories.');
-      context.print.info('Plugin scan is now ineffecitive. \
+      context.print.info('Plugin scan is now ineffective. \
 Only explicitly added plugins are active.');
       context.print.info('The Amplify CLI might not be fully functional.');
     }
@@ -92,8 +92,7 @@ Only explicitly added plugins are active.');
 
 function displayPluginDirectoriesLearnMore(context: Context) {
   context.print.info('');
-  context.print.green('The directories contained this list are searched for \
-plugins in a plugin scan.');
+  context.print.green('A plugin scan searches this directory list for plugins.');
   context.print.green('You can add or remove from this list to change the \
 scan behavior, and consequently its outcome.');
   context.print.green('There are three well-known directories that the CLI \
@@ -186,7 +185,7 @@ async function configurePrefixes(context: Context, pluginPlatform: PluginPlatfor
       context.print.warning('You have removed all prefixes for plugin dir name matching!');
       context.print.info(
         'All the packages inside the plugin directories will be checked \
-during a plugin scan, this can significantly increase the scan time.'
+during a plugin scan. This can significantly increase the scan time.',
       );
     }
   } else if (actionAnswer.action === LEARNMORE) {
@@ -203,7 +202,7 @@ function displayPluginPrefixesLearnMore(context: Context) {
 plugin name matching in plugin scans.');
   context.print.green(
     'Only packages with matching name are considered plugin candidates, \
-they are verified and then added to the Amplify CLI.'
+they are verified and then added to the Amplify CLI.',
   );
   context.print.green('If this list is empty, all packages inside the scanned directories \
 are checked in plugin scans.');
@@ -271,7 +270,7 @@ async function removePrefixes(pluginPlatform: PluginPlatform) {
 async function configureScanInterval(context: Context, pluginPlatform: PluginPlatform) {
   context.print.green(
     'The Amplify CLI plugin platform regularly scans the local \
-system to update its internal metadata on the locally installed plugins.'
+system to update its internal metadata on the locally installed plugins.',
   );
   context.print.green('This automatic scan will happen if the last scan \
 time has passed for longer than max-scan-interval-in-seconds.');

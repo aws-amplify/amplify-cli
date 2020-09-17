@@ -4,12 +4,8 @@ export async function runTransformer(context: any) {
     forceCompile: true,
     dryRun: true,
     disableResolverOverrides: true,
+    disableFunctionOverrides: true,
+    disablePipelineFunctionOverrides: true,
   });
-  const stack = Object.values(transformerOutput.stacks).reduce(
-    (prev, stack: any) => {
-      return { ...prev, ...stack.Resources };
-    },
-    { ...transformerOutput.rootStack.Resources }
-  );
-  return { transformerOutput, stack };
+  return { transformerOutput };
 }

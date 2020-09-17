@@ -1,54 +1,22 @@
-import path from 'path';
-import os from 'os';
-import fs from 'fs-extra';
+import * as path from 'path';
+import * as os from 'os';
 import { PluginPlatform } from '../domain/plugin-platform';
 import { constants } from '../domain/constants';
-import { readJsonFile, readJsonFileSync } from '../utils/readJsonFile';
+import { JSONUtilities } from 'amplify-cli-core';
 
-const JSON_SPACE = 4;
-
-export function readPluginsJsonFileSync(): PluginPlatform | undefined {
-  let result: PluginPlatform | undefined;
+export function readPluginsJsonFile(): PluginPlatform | undefined {
   const pluginsFilePath = getPluginsJsonFilePath();
 
-  if (fs.existsSync(pluginsFilePath)) {
-    result = readJsonFileSync(pluginsFilePath);
-  }
-
-  return result;
+  return JSONUtilities.readJson<PluginPlatform>(pluginsFilePath, {
+    throwIfNotExist: false,
+  });
 }
 
-export async function readPluginsJsonFile(): Promise<PluginPlatform | undefined> {
-  let result: PluginPlatform | undefined;
-  const pluginsFilePath = getPluginsJsonFilePath();
-
-  const exists = await fs.pathExists(pluginsFilePath);
-
-  if (exists) {
-    result = await readJsonFile(pluginsFilePath);
-  }
-
-  return result;
-}
-
-export function writePluginsJsonFileSync(pluginsJson: PluginPlatform): void {
+export function writePluginsJsonFile(pluginsJson: PluginPlatform): void {
   const systemDotAmplifyDirPath = getSystemDotAmplifyDirPath();
   const pluginsJsonFilePath = path.join(systemDotAmplifyDirPath, getPluginsJsonFileName());
 
-  fs.ensureDirSync(systemDotAmplifyDirPath);
-
-  const jsonString = JSON.stringify(pluginsJson, null, JSON_SPACE);
-  fs.writeFileSync(pluginsJsonFilePath, jsonString, 'utf8');
-}
-
-export async function writePluginsJsonFile(pluginsJson: PluginPlatform): Promise<void> {
-  const systemDotAmplifyDirPath = getSystemDotAmplifyDirPath();
-  const pluginsJsonFilePath = path.join(systemDotAmplifyDirPath, getPluginsJsonFileName());
-
-  await fs.ensureDir(systemDotAmplifyDirPath);
-
-  const jsonString = JSON.stringify(pluginsJson, null, JSON_SPACE);
-  await fs.writeFile(pluginsJsonFilePath, jsonString, 'utf8');
+  JSONUtilities.writeJson(pluginsJsonFilePath, pluginsJson);
 }
 
 function getPluginsJsonFilePath(): string {
@@ -63,8 +31,8 @@ function getPluginsJsonFileName(): string {
   let result = constants.PLUGINS_FILE_NAME;
   const amplifyExecutableName = path.basename(process.argv[1]);
 
-  if (amplifyExecutableName !== constants.Amplify) {
-    result = amplifyExecutableName + '-' + constants.PLUGINS_FILE_NAME;
+  if (amplifyExecutableName === 'amplify-dev') {
+    result = `${amplifyExecutableName}-${constants.PLUGINS_FILE_NAME}`;
   }
 
   return result;

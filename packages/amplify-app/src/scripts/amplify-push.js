@@ -5,6 +5,7 @@ const ini = require('ini');
 const { spawn } = require('child_process');
 const inquirer = require('inquirer');
 
+const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
 const dotAWSDirPath = path.normalize(path.join(os.homedir(), '.aws'));
 const configFilePath = path.join(dotAWSDirPath, 'config');
 
@@ -50,7 +51,7 @@ async function getValidProfile(profileToUse) {
 }
 
 async function configureProfile() {
-  const amplifyConfigure = spawn('amplify', ['configure'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+  const amplifyConfigure = spawn(amplify, ['configure'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
 
   return new Promise((resolve, reject) => {
     amplifyConfigure.on('exit', code => {
@@ -89,26 +90,26 @@ async function run() {
   }
 
   const PROJECT_CONFIG = `{\
-    \"envName\":\"${buildConfig.envName || 'amplify'}\"\
+    "envName":"${buildConfig.envName || 'amplify'}"\
   }`;
 
   let PROVIDER_CONFIG;
 
   if (buildConfig.profile) {
     PROVIDER_CONFIG = `{\
-      \"awscloudformation\": {\
-        \"configLevel\":\"project\",\
-        \"useProfile\":true,\
-        \"profileName\":\"${profileToUse}\"\
+      "awscloudformation": {\
+        "configLevel":"project",\
+        "useProfile":true,\
+        "profileName":"${profileToUse}"\
       } \
     }`;
   } else if (buildConfig.accessKeyId && buildConfig.secretAccessKey && buildConfig.region) {
     PROVIDER_CONFIG = `{\
-      \"awscloudformation\": {\
-        \"configLevel\":\"project\",\
-        \"accessKeyId\":\"${buildConfig.accessKeyId}\",\
-        \"secretAccessKey\":\"${buildConfig.secretAccessKey}\",\
-        \"region\":\"${buildConfig.region}\"\
+      "awscloudformation": {\
+        "configLevel":"project",\
+        "accessKeyId":"${buildConfig.accessKeyId}",\
+        "secretAccessKey":"${buildConfig.secretAccessKey}",\
+        "region":"${buildConfig.region}"\
       } \
     }`;
   } else {
@@ -120,7 +121,7 @@ async function run() {
   if (!fs.existsSync(`./amplify/.config/local-env-info.json`)) {
     // init and then push
 
-    cloudPush = spawn('amplify', ['init', '--amplify', PROJECT_CONFIG, '--providers', PROVIDER_CONFIG, '--yes'], {
+    cloudPush = spawn(amplify, ['init', '--amplify', PROJECT_CONFIG, '--providers', PROVIDER_CONFIG, '--yes'], {
       cwd: process.cwd(),
       env: process.env,
       stdio: 'inherit',
@@ -128,7 +129,7 @@ async function run() {
   } else {
     // just push
 
-    cloudPush = spawn('amplify', ['push', '--yes'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
+    cloudPush = spawn(amplify, ['push', '--yes'], { cwd: process.cwd(), env: process.env, stdio: 'inherit' });
   }
 
   cloudPush.on('exit', code => {

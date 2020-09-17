@@ -1,5 +1,5 @@
-import path from 'path';
-import fs from 'fs-extra';
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import { PluginCollection } from '../domain/plugin-collection';
 import { PluginPlatform } from '../domain/plugin-platform';
 import { constants } from '../domain/constants';
@@ -9,10 +9,12 @@ import { PluginInfo } from '../domain/plugin-info';
 import { verifyPlugin } from './verify-plugin';
 import { readPluginsJsonFile, writePluginsJsonFile } from './access-plugins-file';
 import { twoPluginsAreTheSame } from './compare-plugins';
+import { checkPlatformHealth } from './platform-health-check';
 import isChildPath from '../utils/is-child-path';
+import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 
 export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {
-  pluginPlatform = pluginPlatform || (await readPluginsJsonFile()) || new PluginPlatform();
+  pluginPlatform = pluginPlatform || readPluginsJsonFile() || new PluginPlatform();
 
   pluginPlatform!.plugins = new PluginCollection();
 
@@ -28,7 +30,7 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
     });
 
     const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(pluginDirPath => async () =>
-      await verifyAndAdd(pluginPlatform!, pluginDirPath)
+      await verifyAndAdd(pluginPlatform!, pluginDirPath),
     );
     await sequential(scanUserLocationTasks);
   }
@@ -56,13 +58,21 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
   }
 
   pluginPlatform!.lastScanTime = new Date();
-  await writePluginsJsonFile(pluginPlatform!);
+  writePluginsJsonFile(pluginPlatform!);
+
+  await checkPlatformHealth(pluginPlatform);
 
   return pluginPlatform;
 }
 
 export function getCorePluginDirPath(): string {
   return path.normalize(path.join(__dirname, '../../'));
+}
+
+export function getCorePluginVersion(): string {
+  const packageJsonFilePath = path.normalize(path.join(__dirname, '..', '..', 'package.json'));
+  const packageJson = JSONUtilities.readJson<$TSAny>(packageJsonFilePath);
+  return packageJson.version;
 }
 
 async function addCore(pluginPlatform: PluginPlatform) {

@@ -16,7 +16,7 @@ async function deleteImageIndex(rekognition, result, externalImageID) {
       if (result1.DeletedFaces) {
         console.log('deleted faces from collection successfully');
       } else {
-        console.log('error occured');
+        console.log('error occurred');
         console.log(result1);
       }
       resultDeleted = true;

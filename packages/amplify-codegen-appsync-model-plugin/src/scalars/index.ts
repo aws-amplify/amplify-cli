@@ -6,15 +6,23 @@ export const JAVA_SCALAR_MAP: NormalizedScalarsMap = {
   Int: 'Integer',
   Float: 'Float',
   Boolean: 'Boolean',
-  AWSDate: 'java.util.Date',
-  AWSDateTime: 'java.util.Date',
-  AWSTime: 'java.sql.Time',
-  AWSTimestamp: 'long',
+  AWSDate: 'Temporal.Date',
+  AWSDateTime: 'Temporal.DateTime',
+  AWSTime: 'Temporal.Time',
+  AWSTimestamp: 'Temporal.Timestamp',
   AWSEmail: 'String',
   AWSJSON: 'String',
   AWSURL: 'String',
   AWSPhone: 'String',
   AWSIPAddress: 'String',
+};
+
+// Package that needs to be imported when using the types
+export const JAVA_TYPE_IMPORT_MAP: Record<string, string> = {
+  'Temporal.DateTime': 'com.amplifyframework.core.model.temporal.Temporal',
+  'Temporal.Date': 'com.amplifyframework.core.model.temporal.Temporal',
+  'Temporal.Time': 'com.amplifyframework.core.model.temporal.Temporal',
+  'Temporal.Timestamp': 'com.amplifyframework.core.model.temporal.Temporal',
 };
 
 export const SWIFT_SCALAR_MAP: NormalizedScalarsMap = {
@@ -23,9 +31,9 @@ export const SWIFT_SCALAR_MAP: NormalizedScalarsMap = {
   Int: 'Int',
   Float: 'Double',
   Boolean: 'Bool',
-  AWSDate: 'Date',
-  AWSTime: 'Date',
-  AWSDateTime: 'Date',
+  AWSDate: 'Temporal.Date',
+  AWSTime: 'Temporal.Time',
+  AWSDateTime: 'Temporal.DateTime',
   AWSTimestamp: 'Int',
   AWSEmail: 'String',
   AWSJSON: 'String',

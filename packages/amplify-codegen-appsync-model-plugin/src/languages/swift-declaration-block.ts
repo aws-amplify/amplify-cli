@@ -4,6 +4,87 @@ import { NameNode, StringValueNode } from 'graphql';
 function isStringValueNode(node: any): node is StringValueNode {
   return node && typeof node === 'object' && node.kind === 'StringValue';
 }
+const reservedKeywords = [
+  '_COLUMN_',
+  '_FILE_',
+  '_FUNCTION_',
+  '_LINE_',
+  'as',
+  'associativity',
+  'break',
+  'case',
+  'Class',
+  'continue',
+  'convenience',
+  'default',
+  'deinit',
+  'didSet',
+  'do',
+  'dynamic',
+  'dynamicType',
+  'else',
+  'Enum',
+  'extension',
+  'fallthrough',
+  'false',
+  'final',
+  'for',
+  'Func',
+  'get',
+  'if',
+  'import',
+  'in',
+  'infix',
+  'Init',
+  'inout',
+  'internal',
+  'is',
+  'lazy',
+  'left',
+  'Let',
+  'mutating',
+  'nil',
+  'none',
+  'nonmutating',
+  'operator',
+  'optional',
+  'override',
+  'postfix',
+  'precedence',
+  'prefix',
+  'private',
+  'protocol',
+  'Protocol',
+  'public',
+  'required',
+  'return',
+  'right',
+  'self',
+  'Self',
+  'set',
+  'static',
+  'struct',
+  'subscript',
+  'super',
+  'switch',
+  'Type',
+  'typealias',
+  'true',
+  'unknown',
+  'unowned',
+  'var',
+  'weak',
+  'where',
+  'while',
+  'willSet',
+];
+
+export function escapeKeywords(keyword: string): string {
+  if (reservedKeywords.includes(keyword)) {
+    return `\`${keyword}\``;
+  }
+  return keyword;
+}
 
 function transformComment(comment: string | StringValueNode, indentLevel = 0): string {
   if (isStringValueNode(comment)) {
@@ -30,10 +111,16 @@ function transformComment(comment: string | StringValueNode, indentLevel = 0): s
     .join('\n');
 }
 
+export enum ListType {
+  ARRAY = 'ARRAY',
+  LIST = 'LIST',
+}
 export type Access = 'private' | 'public' | 'DEFAULT';
 export type VariableFlags = {
   isList?: boolean;
+  listType?: ListType;
   variable?: boolean;
+  isEnum?: boolean;
 };
 export type StructFlags = VariableFlags & { optional?: boolean; static?: boolean };
 export type PropertyFlags = StructFlags;
@@ -124,7 +211,7 @@ export class SwiftDeclarationBlock {
     flags: PropertyFlags = {},
     comment?: string,
     getter?: string,
-    setter?: string
+    setter?: string,
   ): SwiftDeclarationBlock {
     this._properties.push({
       name,
@@ -164,7 +251,7 @@ export class SwiftDeclarationBlock {
     args: MethodArgument[] = [],
     access: Access = 'public',
     flags: MethodFlags = {},
-    comment: string = ''
+    comment: string = '',
   ): SwiftDeclarationBlock {
     this._methods.push({
       name,
@@ -191,15 +278,17 @@ export class SwiftDeclarationBlock {
         this._comment,
         this.getAccessStr(),
         this._kind,
-        `${this._name}${this._protocols.length ? `: ${this._protocols.join(', ')}` : ''}`,
+        `${escapeKeywords(this._name)}${this._protocols.length ? `: ${this._protocols.join(', ')}` : ''}`,
         '{',
       ],
       false,
-      ' '
+      ' ',
     );
     const enumValues = this.mergeSections(
-      Object.entries(this._enumValues).map(([name, val]) => ['case', name, ...(name !== val ? ['=', `"${val}"`] : [])].join(' ')),
-      false
+      Object.entries(this._enumValues).map(([name, val]) =>
+        ['case', escapeKeywords(name), ...(name !== val ? ['=', `"${val}"`] : [])].join(' '),
+      ),
+      false,
     );
     const declarationFoot = '}';
     return this.mergeSections([declarationHead, indentMultiline(enumValues), declarationFoot], false);
@@ -217,17 +306,17 @@ export class SwiftDeclarationBlock {
             method.access === 'DEFAULT' ? '' : method.access,
             method.flags.static ? 'static' : '',
             ['init', 'deinit'].includes(method.name) ? '' : 'func',
-            `${method.name}${argWithParenthesis}`,
+            `${escapeKeywords(method.name)}${argWithParenthesis}`,
             method.returnType ? `-> ${method.returnType}` : '',
             '{',
           ],
           false,
-          ' '
+          ' ',
         );
         const methodFooter = '}';
         return this.mergeSections([method.comment, methodHeader, indentMultiline(method.implementation), methodFooter], false);
       }),
-      false
+      false,
     );
 
     const declarationHead = this.mergeSections(
@@ -235,11 +324,11 @@ export class SwiftDeclarationBlock {
         this._flags.final ? 'final' : '',
         this.getAccessStr(),
         this._kind,
-        `${this._name}${this._protocols.length ? `: ${this._protocols.join(', ')}` : ''}`,
+        `${escapeKeywords(this._name)}${this._protocols.length ? `: ${this._protocols.join(', ')}` : ''}`,
         '{',
       ],
       false,
-      ' '
+      ' ',
     );
     const declarationBody = indentMultiline(this.mergeSections([...this._block, properties, methods]));
     const declarationFoot = '}';
@@ -249,8 +338,8 @@ export class SwiftDeclarationBlock {
   private generateArgsStr(args: MethodArgument[]): string {
     const res: string[] = args.reduce((acc: string[], arg) => {
       const val: string | null = arg.value ? arg.value : arg.flags.isList ? '[]' : arg.flags.optional ? 'nil' : null;
-      const type = arg.flags.isList ? `List<${arg.type}>` : arg.type;
-      acc.push([arg.name, ': ', type, arg.flags.optional ? '?' : '', val ? ` = ${val}` : ''].join(''));
+      const type = arg.flags.isList ? this.getListType(arg) : escapeKeywords(arg.type);
+      acc.push([escapeKeywords(arg.name), ': ', type, arg.flags.optional ? '?' : '', val ? ` = ${val}` : ''].join(''));
       return acc;
     }, []);
 
@@ -258,13 +347,13 @@ export class SwiftDeclarationBlock {
   }
 
   private generatePropertiesStr(prop: StructProperty): string {
-    const propertyTypeName = prop.flags.isList ? `List<${prop.type}>` : prop.type;
+    const propertyTypeName = prop.flags.isList ? this.getListType(prop) : prop.type;
     const propertyType = propertyTypeName ? `: ${propertyTypeName}${prop.flags.optional ? '?' : ''}` : '';
     let resultArr: string[] = [
-      prop.access,
+      prop.access === 'DEFAULT' ? '' : prop.access,
       prop.flags.static ? 'static' : '',
       prop.flags.variable ? 'var' : 'let',
-      `${prop.name}${propertyType}`,
+      `${escapeKeywords(prop.name)}${propertyType}`,
     ];
 
     const getterStr = prop.getter ? `{\n${indentMultiline(prop.getter)} \n}` : null;
@@ -273,7 +362,7 @@ export class SwiftDeclarationBlock {
     if (setterStr) {
       getterSetterStr = this.mergeSections(
         ['{', indentMultiline(`set: ${setterStr}`), getterStr ? indentMultiline(`get: ${getterStr}`) : '', '}'],
-        false
+        false,
       );
     } else if (getterStr) {
       getterSetterStr = indentMultiline(getterStr);
@@ -297,5 +386,12 @@ export class SwiftDeclarationBlock {
       .map(section => (insertNewLine ? `${section}\n` : section))
       .join(joinStr)
       .trim();
+  }
+
+  private getListType(typeDeclaration: VariableDeclaration): string {
+    if (typeDeclaration.flags.listType === ListType.LIST) {
+      return `List<${escapeKeywords(typeDeclaration.type)}>`;
+    }
+    return `[${escapeKeywords(typeDeclaration.type)}]`;
   }
 }

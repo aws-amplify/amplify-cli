@@ -16,8 +16,8 @@ const service = 'Comprehend';
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt.run(
-        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?'
+      await context.amplify.confirmPrompt(
+        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
       try {
@@ -137,7 +137,7 @@ async function configure(context, resourceObj) {
 }
 
 function addRegionMapping(context, resourceName, interpretType) {
-  const regionMapping = regionMapper.getRegionMapping(service, interpretType);
+  const regionMapping = regionMapper.getRegionMapping(context, service, interpretType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
   const identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);

@@ -1,44 +1,45 @@
 {
   "name": "graphql-elasticsearch-transformer",
-  "version": "4.1.1",
-  "description": "An AppSync model transform that takes a simple model and creates a DynamoDB table, DynamoDB stream, and ES index with the queries to match.",
-  "main": "lib/index.js",
-  "scripts": {
-    "build": "tsc && cd streaming-lambda && bestzip ../lib/streaming-lambda.zip python_streaming_function.py",
-    "watch": "tsc -w && cd streaming-lambda && bestzip ../lib/streaming-lambda.zip python_streaming_function.py",
-    "clean": "rm -rf ./lib"
+  "version": "4.7.15",
+  "description": "An AppSync model transform that creates an ElasticSearch index with the queries to match.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/graphql-elasticsearch-transformer"
   },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "keywords": [
     "graphql",
     "appsync",
     "aws"
   ],
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
+  "scripts": {
+    "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
+    "watch": "tsc -w",
+    "clean": "rimraf ./lib",
+    "test": "jest"
+  },
   "dependencies": {
-    "cloudform": "^4.1.0",
-    "cloudform-types": "^4.1.0",
-    "graphql": "^0.13.2",
-    "graphql-mapping-template": "4.6.0",
-    "graphql-transformer-common": "4.6.0",
-    "graphql-transformer-core": "6.6.0"
+    "cloudform-types": "^4.2.0",
+    "graphql": "^14.5.8",
+    "graphql-mapping-template": "4.15.2",
+    "graphql-transformer-common": "4.17.10",
+    "graphql-transformer-core": "6.21.4"
   },
   "devDependencies": {
-    "@types/jest": "23.1.1",
-    "@types/node": "^8.10.59",
-    "bestzip": "^2.0.0",
-    "graphql-dynamodb-transformer": "6.6.0",
-    "jest": "^23.1.0",
-    "ts-jest": "^22.4.6",
-    "tslint": "^5.18.0",
-    "typescript": "~3.6.4"
+    "@types/node": "^10.17.13",
+    "bestzip": "^2.1.5",
+    "graphql-dynamodb-transformer": "6.19.13"
   },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
     "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*.test.*)$",
+    "testRegex": "(src/__tests__/.*.test.ts)$",
     "moduleFileExtensions": [
       "ts",
       "tsx",

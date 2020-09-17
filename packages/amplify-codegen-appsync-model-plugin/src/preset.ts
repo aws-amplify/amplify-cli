@@ -3,7 +3,6 @@ import { Kind, TypeDefinitionNode } from 'graphql';
 import { join } from 'path';
 import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP } from './scalars';
 import { LOADER_CLASS_NAME, GENERATED_PACKAGE_NAME } from './configs/java-config';
-import { pascalCase } from 'change-case';
 
 const APPSYNC_DATA_STORE_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript'];
 
@@ -27,16 +26,9 @@ export type AppSyncModelCodeGenPresetConfig = {
   target: 'java' | 'android' | 'ios' | 'swift' | 'javascript' | 'typescript';
 };
 
-const hasDirective = (directiveName: string) => (typeObj: TypeDefinitionNode): boolean => {
-  if (typeObj && typeObj.directives && typeObj.directives.length) {
-    return typeObj.directives.find(d => d.name.value === directiveName) !== undefined;
-  }
-  return false;
-};
-
 const generateJavaPreset = (
   options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>,
-  models: TypeDefinitionNode[]
+  models: TypeDefinitionNode[],
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
   const baseOutputDir = [options.baseOutputDir, ...GENERATED_PACKAGE_NAME.split('.')];
@@ -69,7 +61,7 @@ const generateJavaPreset = (
 
 const generateSwiftPreset = (
   options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>,
-  models: TypeDefinitionNode[]
+  models: TypeDefinitionNode[],
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
   models.forEach(model => {
@@ -115,7 +107,7 @@ const generateSwiftPreset = (
 
 const generateTypeScriptPreset = (
   options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>,
-  models: TypeDefinitionNode[]
+  models: TypeDefinitionNode[],
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
   const modelFolder = join(options.baseOutputDir, 'models');
@@ -144,7 +136,7 @@ const generateTypeScriptPreset = (
 
 const generateJavasScriptPreset = (
   options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>,
-  models: TypeDefinitionNode[]
+  models: TypeDefinitionNode[],
 ): Types.GenerateOptions[] => {
   const config: Types.GenerateOptions[] = [];
   const modelFolder = join(options.baseOutputDir, 'models');
@@ -199,10 +191,8 @@ export const preset: Types.OutputPreset<AppSyncModelCodeGenPresetConfig> = {
   buildGeneratesSection: (options: Types.PresetFnArgs<AppSyncModelCodeGenPresetConfig>): Types.GenerateOptions[] => {
     const codeGenTarget = options.config.target;
 
-    const hasModelDirective = hasDirective('model');
     const models: TypeDefinitionNode[] = options.schema.definitions.filter(
-      t =>
-        (t.kind === 'ObjectTypeDefinition' && hasModelDirective(t)) || (t.kind === 'EnumTypeDefinition' && !t.name.value.startsWith('__'))
+      t => t.kind === 'ObjectTypeDefinition' || (t.kind === 'EnumTypeDefinition' && !t.name.value.startsWith('__')),
     ) as any;
 
     switch (codeGenTarget) {
@@ -223,8 +213,8 @@ export const preset: Types.OutputPreset<AppSyncModelCodeGenPresetConfig> = {
       default:
         throw new Error(
           `amplify-codegen-appsync-model-plugin not support language target ${codeGenTarget}. Supported codegen targets arr ${APPSYNC_DATA_STORE_CODEGEN_TARGETS.join(
-            ', '
-          )}`
+            ', ',
+          )}`,
         );
     }
   },

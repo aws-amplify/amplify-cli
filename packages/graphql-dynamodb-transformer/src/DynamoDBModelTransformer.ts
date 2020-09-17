@@ -1,17 +1,16 @@
-import { DeletionPolicy } from 'cloudform-types';
-import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
+import { DeletionPolicy, AppSync } from 'cloudform-types';
+import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 import {
   blankObject,
   makeConnectionField,
   makeField,
   makeInputValueDefinition,
-  makeObjectDefinition,
   wrapNonNull,
   makeNamedType,
   makeNonNullType,
   ModelResourceIDs,
   ResolverResourceIDs,
-  getDirectiveArgument,
+  getBaseType,
 } from 'graphql-transformer-common';
 import { getDirectiveArguments, gql, Transformer, TransformerContext, SyncConfig } from 'graphql-transformer-core';
 import {
@@ -29,8 +28,10 @@ import {
   makeModelXConditionInputObject,
   makeAttributeTypeEnum,
 } from './definitions';
-import { ModelDirectiveArgs } from './ModelDirectiveArgs';
+import { ModelDirectiveArgs, getCreatedAtFieldName, getUpdatedAtFieldName } from './ModelDirectiveArgs';
 import { ResourceFactory } from './resources';
+
+const METADATA_KEY = 'DynamoDBTransformerMetadata';
 
 export interface DynamoDBModelTransformerOptions {
   EnableDeletionProtection?: boolean;
@@ -60,37 +61,45 @@ export const CONDITIONS_MINIMUM_VERSION = 5;
  * }
  */
 
+export const directiveDefinition = gql`
+  directive @model(
+    queries: ModelQueryMap
+    mutations: ModelMutationMap
+    subscriptions: ModelSubscriptionMap
+    timestamps: TimestampConfiguration
+  ) on OBJECT
+  input ModelMutationMap {
+    create: String
+    update: String
+    delete: String
+  }
+  input ModelQueryMap {
+    get: String
+    list: String
+  }
+  input ModelSubscriptionMap {
+    onCreate: [String]
+    onUpdate: [String]
+    onDelete: [String]
+    level: ModelSubscriptionLevel
+  }
+  enum ModelSubscriptionLevel {
+    off
+    public
+    on
+  }
+  input TimestampConfiguration {
+    createdAt: String
+    updatedAt: String
+  }
+`;
+
 export class DynamoDBModelTransformer extends Transformer {
   resources: ResourceFactory;
   opts: DynamoDBModelTransformerOptions;
 
   constructor(opts: DynamoDBModelTransformerOptions = {}) {
-    super(
-      'DynamoDBModelTransformer',
-      gql`
-        directive @model(queries: ModelQueryMap, mutations: ModelMutationMap, subscriptions: ModelSubscriptionMap) on OBJECT
-        input ModelMutationMap {
-          create: String
-          update: String
-          delete: String
-        }
-        input ModelQueryMap {
-          get: String
-          list: String
-        }
-        input ModelSubscriptionMap {
-          onCreate: [String]
-          onUpdate: [String]
-          onDelete: [String]
-          level: ModelSubscriptionLevel
-        }
-        enum ModelSubscriptionLevel {
-          off
-          public
-          on
-        }
-      `
-    );
+    super('DynamoDBModelTransformer', directiveDefinition);
     this.opts = this.getOpts(opts);
     this.resources = new ResourceFactory();
   }
@@ -101,6 +110,23 @@ export class DynamoDBModelTransformer extends Transformer {
     ctx.mergeParameters(template.Parameters);
     ctx.mergeOutputs(template.Outputs);
     ctx.mergeConditions(template.Conditions);
+  };
+
+  public after = (ctx: TransformerContext): void => {
+    // append hoisted initalization code to the top of request mapping template
+    const ddbMetata = ctx.metadata.get(METADATA_KEY);
+    if (ddbMetata) {
+      Object.entries(ddbMetata.hoistedRequestMappingContent || {}).forEach(
+        ([resourceId, hoistedContentGenerator]: [string, () => string | void]) => {
+          const hoistedContent = hoistedContentGenerator();
+          if (hoistedContent) {
+            const resource: AppSync.Resolver = ctx.getResource(resourceId) as any;
+            resource.Properties.RequestMappingTemplate = [hoistedContent, resource.Properties.RequestMappingTemplate].join('\n');
+            ctx.setResource(resourceId, resource);
+          }
+        },
+      );
+    }
   };
 
   /**
@@ -122,6 +148,8 @@ export class DynamoDBModelTransformer extends Transformer {
       }
     });
 
+    this.addIdField(def, directive, ctx);
+
     // Set Sync Config if it exists
 
     // Create the dynamodb table to hold the @model type
@@ -139,7 +167,7 @@ export class DynamoDBModelTransformer extends Transformer {
     ctx.mapResourceToStack(stackName, iamRoleLogicalID);
     ctx.setResource(
       dataSourceRoleLogicalID,
-      this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName, isSyncEnabled)
+      this.resources.makeDynamoDBDataSource(tableLogicalID, iamRoleLogicalID, typeName, isSyncEnabled),
     );
     ctx.mapResourceToStack(stackName, dataSourceRoleLogicalID);
 
@@ -147,7 +175,7 @@ export class DynamoDBModelTransformer extends Transformer {
     ctx.setOutput(
       // "GetAtt" is a backward compatibility addition to prevent breaking current deploys.
       streamArnOutputId,
-      this.resources.makeTableStreamArnOutput(tableLogicalID)
+      this.resources.makeTableStreamArnOutput(tableLogicalID),
     );
     ctx.mapResourceToStack(stackName, streamArnOutputId);
 
@@ -169,21 +197,74 @@ export class DynamoDBModelTransformer extends Transformer {
     // change type to include sync related fields if sync is enabled
     if (isSyncEnabled) {
       const obj = ctx.getObject(def.name.value);
-      const newObj = makeObjectDefinition(obj.name.value, [
+      const newFields = [
         ...obj.fields,
         makeField('_version', [], wrapNonNull(makeNamedType('Int'))),
         makeField('_deleted', [], makeNamedType('Boolean')),
         makeField('_lastChangedAt', [], wrapNonNull(makeNamedType('AWSTimestamp'))),
-      ]);
+      ];
+
+      const newObj = {
+        ...obj,
+        fields: newFields,
+      };
+
       ctx.updateObject(newObj);
     }
+    this.addTimestampFields(def, directive, ctx);
   };
+
+  private addTimestampFields(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
+    const createdAtField = getCreatedAtFieldName(directive);
+    const updatedAtField = getUpdatedAtFieldName(directive);
+    const existingCreatedAtField = def.fields.find(f => f.name.value === createdAtField);
+    const existingUpdatedAtField = def.fields.find(f => f.name.value === updatedAtField);
+    // Todo: Consolidate how warnings are shown. Instead of printing them here, the invoker of transformer should get
+    // all the warnings together and decide how to render those warning
+    if (!DynamoDBModelTransformer.isTimestampCompatibleField(existingCreatedAtField)) {
+      console.log(
+        `${def.name.value}.${existingCreatedAtField.name.value} is of type ${getBaseType(
+          existingCreatedAtField.type,
+        )}. To support auto population change the type to AWSDateTime or String`,
+      );
+    }
+    if (!DynamoDBModelTransformer.isTimestampCompatibleField(existingUpdatedAtField)) {
+      console.log(
+        `${def.name.value}.${existingUpdatedAtField.name.value} is of type ${getBaseType(
+          existingUpdatedAtField.type,
+        )}. To support auto population change the type to AWSDateTime or String`,
+      );
+    }
+    const obj = ctx.getObject(def.name.value);
+    const newObj: ObjectTypeDefinitionNode = {
+      ...obj,
+      fields: [
+        ...obj.fields,
+        ...(createdAtField && !existingCreatedAtField ? [makeField(createdAtField, [], wrapNonNull(makeNamedType('AWSDateTime')))] : []), // createdAt field
+        ...(updatedAtField && !existingUpdatedAtField ? [makeField(updatedAtField, [], wrapNonNull(makeNamedType('AWSDateTime')))] : []), // updated field
+      ],
+    };
+    ctx.updateObject(newObj);
+  }
+
+  // Add ID field to type when does not have id
+  private addIdField(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
+    const hasIdField = def.fields.find(f => f.name.value === 'id');
+    if (!hasIdField) {
+      const obj = ctx.getObject(def.name.value);
+      const newObj: ObjectTypeDefinitionNode = {
+        ...obj,
+        fields: [makeField('id', [], wrapNonNull(makeNamedType('ID'))), ...obj.fields],
+      };
+      ctx.updateObject(newObj);
+    }
+  }
 
   private createMutations = (
     def: ObjectTypeDefinitionNode,
     directive: DirectiveNode,
     ctx: TransformerContext,
-    nonModelArray: ObjectTypeDefinitionNode[]
+    nonModelArray: ObjectTypeDefinitionNode[],
   ) => {
     const typeName = def.name.value;
     const isSyncEnabled = this.opts.SyncConfig ? true : false;
@@ -200,6 +281,19 @@ export class DynamoDBModelTransformer extends Transformer {
     let createFieldNameOverride = undefined;
     let updateFieldNameOverride = undefined;
     let deleteFieldNameOverride = undefined;
+
+    // timestamp fields
+    const createdAtField = getCreatedAtFieldName(directive);
+    const updatedAtField = getUpdatedAtFieldName(directive);
+
+    const existingCreatedAtField = def.fields.find(f => f.name.value === createdAtField);
+    const existingUpdatedAtField = def.fields.find(f => f.name.value === updatedAtField);
+
+    // auto populate the timestamp field only if they are of AWSDateTime type
+    const timestampFields = {
+      createdAtField: DynamoDBModelTransformer.isTimestampCompatibleField(existingCreatedAtField) ? createdAtField : undefined,
+      updatedAtField: DynamoDBModelTransformer.isTimestampCompatibleField(existingUpdatedAtField) ? updatedAtField : undefined,
+    };
 
     // Figure out which mutations to make and if they have name overrides
     if (directiveArguments.mutations === null) {
@@ -228,7 +322,7 @@ export class DynamoDBModelTransformer extends Transformer {
 
     // Create the mutations.
     if (shouldMakeCreate) {
-      const createInput = makeCreateInputObject(def, nonModelArray, ctx, isSyncEnabled);
+      const createInput = makeCreateInputObject(def, directive, nonModelArray, ctx, isSyncEnabled);
       if (!ctx.getType(createInput.name.value)) {
         ctx.addInput(createInput);
       }
@@ -238,6 +332,13 @@ export class DynamoDBModelTransformer extends Transformer {
         syncConfig: this.opts.SyncConfig,
       });
       const resourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
+      this.addInitalizationMetadata(ctx, resourceId, () => {
+        const inputObj = ctx.getType(createInput.name.value) as InputObjectTypeDefinitionNode;
+        if (inputObj) {
+          return this.resources.initalizeDefaultInputForCreateMutation(inputObj, timestampFields);
+        }
+      });
+
       ctx.setResource(resourceId, createResolver);
       ctx.mapResourceToStack(typeName, resourceId);
       const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInput.name.value)))];
@@ -256,6 +357,7 @@ export class DynamoDBModelTransformer extends Transformer {
         type: def.name.value,
         nameOverride: updateFieldNameOverride,
         syncConfig: this.opts.SyncConfig,
+        timestamps: timestampFields,
       });
       const resourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
       ctx.setResource(resourceId, updateResolver);
@@ -349,8 +451,8 @@ export class DynamoDBModelTransformer extends Transformer {
             makeInputValueDefinition('nextToken', makeNamedType('String')),
             makeInputValueDefinition('lastSync', makeNamedType('AWSTimestamp')),
           ],
-          makeNamedType(ModelResourceIDs.ModelConnectionTypeName(def.name.value))
-        )
+          makeNamedType(ModelResourceIDs.ModelConnectionTypeName(def.name.value)),
+        ),
       );
     }
 
@@ -365,8 +467,8 @@ export class DynamoDBModelTransformer extends Transformer {
         makeField(
           getResolver.Properties.FieldName.toString(),
           [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))],
-          makeNamedType(def.name.value)
-        )
+          makeNamedType(def.name.value),
+        ),
       );
     }
 
@@ -380,8 +482,8 @@ export class DynamoDBModelTransformer extends Transformer {
       ctx.mapResourceToStack(typeName, resourceId);
 
       queryFields.push(makeConnectionField(listResolver.Properties.FieldName.toString(), def.name.value));
+      this.generateFilterInputs(ctx, def);
     }
-    this.generateFilterInputs(ctx, def);
 
     ctx.addQueryFields(queryFields);
   };
@@ -519,6 +621,13 @@ export class DynamoDBModelTransformer extends Transformer {
     if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
       ctx.addInput(tableXQueryFilterInput);
     }
+
+    if (this.supportsConditions(ctx)) {
+      const attributeTypeEnum = makeAttributeTypeEnum();
+      if (!this.typeExist(attributeTypeEnum.name.value, ctx)) {
+        ctx.addType(attributeTypeEnum);
+      }
+    }
   }
 
   private generateConditionInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
@@ -615,5 +724,21 @@ export class DynamoDBModelTransformer extends Transformer {
 
   private supportsConditions(context: TransformerContext) {
     return context.getTransformerVersion() >= CONDITIONS_MINIMUM_VERSION;
+  }
+
+  private static isTimestampCompatibleField(field?: FieldDefinitionNode): boolean {
+    if (field && !(getBaseType(field.type) === 'AWSDateTime' || getBaseType(field.type) === 'String')) {
+      return false;
+    }
+    return true;
+  }
+
+  private addInitalizationMetadata(ctx: TransformerContext, resourceId: string, initCodeGenerator: () => string | void): void {
+    const ddbMetadata = ctx.metadata.has(METADATA_KEY) ? ctx.metadata.get(METADATA_KEY) : {};
+    ddbMetadata.hoistedRequestMappingContent = {
+      ...ddbMetadata?.hoistedRequestMappingContent,
+      [resourceId]: initCodeGenerator,
+    };
+    ctx.metadata.set(METADATA_KEY, ddbMetadata);
   }
 }

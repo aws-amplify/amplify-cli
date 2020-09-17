@@ -53,11 +53,20 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
 
   Object.keys(resourceOpsMapping).forEach(resourceName => {
     try {
-      const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
+      const providerPlugin =
+        'providerPlugin' in resourceOpsMapping[resourceName]
+          ? resourceOpsMapping[resourceName].providerPlugin
+          : amplifyMeta[category][resourceName].providerPlugin;
+      const service =
+        'service' in resourceOpsMapping[resourceName]
+          ? resourceOpsMapping[resourceName].service
+          : amplifyMeta[category][resourceName].service;
+
+      const providerController = require(`./provider-utils/${providerPlugin}/index`);
       if (providerController) {
         const { policy, attributes } = providerController.getPermissionPolicies(
           context,
-          amplifyMeta[category][resourceName].service,
+          service,
           resourceName,
           resourceOpsMapping[resourceName]
         );

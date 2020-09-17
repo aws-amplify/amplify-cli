@@ -10,7 +10,7 @@ type Comment @model {
 }
 
 type User @model {
-    id: ID!
-    name: String
-    comments: [Comment] @connection(name: "UserComments")
+  id: ID!
+  name: String
+  comments: [Comment] @connection(name: "UserComments")
 }

@@ -17,5 +17,6 @@ export const constants = {
   ParentDirectory: 'cli-parent-directory',
   GlobalNodeModules: 'global-node-modules',
   ExecuteAmplifyCommand: 'executeAmplifyCommand',
+  ExecuteAmplifyHeadlessCommand: 'executeAmplifyHeadlessCommand',
   HandleAmplifyEvent: 'handleAmplifyEvent',
 };

@@ -1,4 +1,4 @@
-<meta http-equiv="refresh" content="0; URL='https://aws-amplify.github.io/docs/js/graphql'" />
+<meta http-equiv="refresh" content="0; URL='https://docs.amplify.aws/cli/usage/plugin#custom-graphql-transformers'" />
 
 This doc has moved:
-https://aws-amplify.github.io/docs/js/graphql
+https://docs.amplify.aws/cli/plugins/authoring#custom-graphql-transformers

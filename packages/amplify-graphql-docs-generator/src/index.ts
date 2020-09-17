@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as handlebars from 'handlebars';
 import * as prettier from 'prettier';
-const camelCase = require('camel-case');
+import { camelCase } from 'change-case';
 const DEFAULT_MAX_DEPTH = 3;
 
 import generateAllOps, { GQLTemplateOp, GQLAllOperations, GQLTemplateFragment } from './generator';
@@ -19,7 +19,7 @@ const FILE_EXTENSION_MAP = {
 export function generate(
   schemaPath: string,
   outputPath: string,
-  options: { separateFiles: boolean; language: string; maxDepth: number }
+  options: { separateFiles: boolean; language: string; maxDepth: number },
 ): void {
   const language = options.language || 'graphql';
   const schemaData = loadSchema(schemaPath);

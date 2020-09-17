@@ -5,8 +5,12 @@
         "add",
         "remove",
         "push",
+        "update",
         "console",
         "help"
     ],
+    "commandAliases":{
+        "configure": "update"
+    },
     "eventHandlers": []
 }

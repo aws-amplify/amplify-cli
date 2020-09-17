@@ -8,7 +8,7 @@ import {
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
 } from 'graphql';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform, ConflictHandlerType, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { ResolverResourceIDs } from 'graphql-transformer-common';
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
@@ -65,7 +65,7 @@ test('ModelConnectionTransformer should fail if the field type where the directi
     }
 
     type Test1 @model {
-        id: iD!
+        id: ID!
         name: String!
     }
     `;
@@ -74,7 +74,7 @@ test('ModelConnectionTransformer should fail if the field type where the directi
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
   });
 
-  expect(() => transformer.transform(validSchema)).toThrowError('Type "Test2" not found in document.');
+  expect(() => transformer.transform(validSchema)).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
 });
 
 test('ModelConnectionTransformer should fail if an empty list of fields is passed in.', () => {
@@ -146,7 +146,7 @@ test('ModelConnectionTransformer should fail if the query is not run on the defa
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError(
-    'Connection is to a single object but the keyName notDefault was provided which does not reference the default table.'
+    'Connection is to a single object but the keyName notDefault was provided which does not reference the default table.',
   );
 });
 
@@ -217,6 +217,58 @@ test('ModelConnectionTransformer should fail if sort key type passed in does not
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
+});
+
+test('ModelConnectionTransformer should fail if partial sort key is passed in connection.', () => {
+  const validSchema = `
+    type Test @model {
+        id: ID!
+        email: String!
+        testObj: [Test1] @connection(keyName: "testIndex", fields: ["id", "email"])
+    }
+
+    type Test1
+        @model
+        @key(name: "testIndex", fields: ["id", "friendID", "name"])
+    {
+        id: ID!
+        friendID: ID!
+        name: String!
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+  });
+
+  expect(() => transformer.transform(validSchema)).toThrowError(
+    'Invalid @connection directive  testObj. fields does not accept partial sort key',
+  );
+});
+
+test('ModelConnectionTransformer should accept connection without sort key', () => {
+  const validSchema = `
+    type Test @model {
+        id: ID!
+        email: String!
+        testObj: [Test1] @connection(keyName: "testIndex", fields: ["id"])
+    }
+
+    type Test1
+        @model
+        @key(name: "testIndex", fields: ["id", "friendID", "name"])
+    {
+        id: ID!
+        friendID: ID!
+        name: String!
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+  });
+
+  expect(() => transformer.transform(validSchema)).not.toThrowError();
 });
 
 test('ModelConnectionTransformer should fail if sort key type passed in does not match custom index sort key type.', () => {
@@ -495,6 +547,92 @@ test('Test ModelConnectionTransformer for One-to-One getItem with composite sort
   expectFields(testObjType, ['otherHalf']);
   const relatedField = testObjType.fields.find(f => f.name.value === 'otherHalf');
   expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
+});
+
+test('Many-to-many without conflict resolution generates correct schema', () => {
+  const validSchema = `
+    type Post @model {
+      id: ID!
+      title: String!
+      editors: [PostEditor] @connection(keyName: "byPost", fields: ["id"])
+    }
+
+    # Create a join model and disable queries as you don't need them
+    # and can query through Post.editors and User.posts
+    type PostEditor
+      @model(queries: null)
+      @key(name: "byPost", fields: ["postID", "editorID"])
+      @key(name: "byEditor", fields: ["editorID", "postID"]) {
+      id: ID!
+      postID: ID!
+      editorID: ID!
+      post: Post! @connection(fields: ["postID"])
+      editor: User! @connection(fields: ["editorID"])
+    }
+
+    type User @model {
+      id: ID!
+      username: String!
+      posts: [PostEditor] @connection(keyName: "byEditor", fields: ["id"])
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    transformConfig: {
+      Version: TRANSFORM_CURRENT_VERSION,
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  expect(out.schema).toMatchSnapshot();
+});
+
+test('Many-to-many with conflict resolution generates correct schema', () => {
+  const validSchema = `
+    type Post @model {
+      id: ID!
+      title: String!
+      editors: [PostEditor] @connection(keyName: "byPost", fields: ["id"])
+    }
+
+    # Create a join model and disable queries as you don't need them
+    # and can query through Post.editors and User.posts
+    type PostEditor
+      @model(queries: null)
+      @key(name: "byPost", fields: ["postID", "editorID"])
+      @key(name: "byEditor", fields: ["editorID", "postID"]) {
+      id: ID!
+      postID: ID!
+      editorID: ID!
+      post: Post! @connection(fields: ["postID"])
+      editor: User! @connection(fields: ["editorID"])
+    }
+
+    type User @model {
+      id: ID!
+      username: String!
+      posts: [PostEditor] @connection(keyName: "byEditor", fields: ["id"])
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    transformConfig: {
+      Version: TRANSFORM_CURRENT_VERSION,
+      ResolverConfig: {
+        project: {
+          ConflictHandler: ConflictHandlerType.AUTOMERGE,
+          ConflictDetection: 'VERSION',
+        },
+      },
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  expect(out.schema).toMatchSnapshot();
 });
 
 function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitionNode | undefined {

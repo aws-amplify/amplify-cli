@@ -2,7 +2,7 @@ import { TemplateContext } from './RelationalDBSchemaTransformer';
 import { DocumentNode } from 'graphql';
 import { Fn } from 'cloudform-types';
 import AppSync from 'cloudform-types/types/appSync';
-import { print, obj, set, str, list, forEach, ref, compoundExpression } from 'graphql-mapping-template';
+import { print, obj, set, str, list, forEach, ref, compoundExpression, iff, methodCall, ret } from 'graphql-mapping-template';
 import { graphqlName, toUpper, plurality } from 'graphql-transformer-common';
 import { ResourceConstants } from './ResourceConstants';
 import { RelationalDBMappingTemplate } from './RelationalDBMappingTemplate';
@@ -10,6 +10,9 @@ import * as fs from 'fs-extra';
 
 const s3BaseUrl = 's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}';
 const resolverFileName = 'ResolverFileName';
+
+const rdsResponseErrorMessage = 'Invalid response from RDS DataSource. See info for the full response.';
+const rdsResponseErrorType = 'InvalidResponse';
 /**
  * This Class is responsible for Generating the RDS Resolvers based on the
  * GraphQL Schema + Metadata of the RDS Cluster (i.e. Primary Keys for Tables).
@@ -74,11 +77,11 @@ export class RelationalDBResolverGenerator {
     let selectSql;
     if (this.typePrimaryKeyTypeMap.get(type).includes('String')) {
       selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.create${toUpper(
-        type
+        type,
       )}Input.${this.typePrimaryKeyMap.get(type)}\'`;
     } else {
       selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.create${toUpper(
-        type
+        type,
       )}Input.${this.typePrimaryKeyMap.get(type)}`;
     }
 
@@ -98,7 +101,7 @@ export class RelationalDBResolverGenerator {
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(createSql), str(selectSql)]),
         }),
-      ])
+      ]),
     );
 
     const resTemplate = print(ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])'));
@@ -148,10 +151,20 @@ export class RelationalDBResolverGenerator {
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(sql)]),
         }),
-      ])
+      ]),
     );
-
-    const resTemplate = print(ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])'));
+    const resTemplate: string = print(
+      compoundExpression([
+        set(ref('output'), ref('utils.rds.toJsonObject($ctx.result)')),
+        iff(
+          ref('output.isEmpty()'),
+          methodCall(ref('util.error'), str(rdsResponseErrorMessage), str(rdsResponseErrorType), obj({}), ref('output')),
+        ),
+        set(ref('output'), ref('output[0]')),
+        iff(ref('output.isEmpty()'), ret()),
+        methodCall(ref('utils.toJson'), ref('output[0]')),
+      ]),
+    );
 
     fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
     fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
@@ -185,16 +198,16 @@ export class RelationalDBResolverGenerator {
   private makeUpdateRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
     const fieldName = graphqlName('update' + toUpper(type));
     const updateSql = `UPDATE ${type} SET $update WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(
-      type
+      type,
     )}Input.${this.typePrimaryKeyMap.get(type)}`;
     let selectSql;
     if (this.typePrimaryKeyTypeMap.get(type).includes('String')) {
       selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.update${toUpper(
-        type
+        type,
       )}Input.${this.typePrimaryKeyMap.get(type)}\'`;
     } else {
       selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(
-        type
+        type,
       )}Input.${this.typePrimaryKeyMap.get(type)}`;
     }
     const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`;
@@ -210,10 +223,21 @@ export class RelationalDBResolverGenerator {
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(updateSql), str(selectSql)]),
         }),
-      ])
+      ]),
     );
 
-    const resTemplate = print(ref('utils.toJson($utils.parseJson($utils.rds.toJsonString($ctx.result))[1][0])'));
+    const resTemplate: string = print(
+      compoundExpression([
+        set(ref('output'), ref('utils.rds.toJsonObject($ctx.result)')),
+        iff(
+          ref('output.length() < 2'),
+          methodCall(ref('util.error'), str(rdsResponseErrorMessage), str(rdsResponseErrorType), obj({}), ref('output')),
+        ),
+        set(ref('output'), ref('output[1]')),
+        iff(ref('output.isEmpty()'), ret()),
+        methodCall(ref('utils.toJson'), ref('output[0]')),
+      ]),
+    );
 
     fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
     fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
@@ -260,9 +284,20 @@ export class RelationalDBResolverGenerator {
         RelationalDBMappingTemplate.rdsQuery({
           statements: list([str(selectSql), str(deleteSql)]),
         }),
-      ])
+      ]),
     );
-    const resTemplate = print(ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0][0])'));
+    const resTemplate: string = print(
+      compoundExpression([
+        set(ref('output'), ref('utils.rds.toJsonObject($ctx.result)')),
+        iff(
+          ref('output.isEmpty()'),
+          methodCall(ref('util.error'), str(rdsResponseErrorMessage), str(rdsResponseErrorType), obj({}), ref('output')),
+        ),
+        set(ref('output'), ref('output[0]')),
+        iff(ref('output.isEmpty()'), ret()),
+        methodCall(ref('utils.toJson'), ref('output[0]')),
+      ]),
+    );
 
     fs.writeFileSync(`${this.resolverFilePath}/${reqFileName}`, reqTemplate, 'utf8');
     fs.writeFileSync(`${this.resolverFilePath}/${resFileName}`, resTemplate, 'utf8');
@@ -302,7 +337,7 @@ export class RelationalDBResolverGenerator {
     const reqTemplate = print(
       RelationalDBMappingTemplate.rdsQuery({
         statements: list([str(sql)]),
-      })
+      }),
     );
     const resTemplate = print(ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0])'));
 

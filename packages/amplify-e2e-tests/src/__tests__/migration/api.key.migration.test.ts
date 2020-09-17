@@ -1,11 +1,11 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from '../../init';
-import { addApiWithSchema, updateApiSchema } from '../../categories/api';
-import { createNewProjectDir, deleteProjectDir } from '../../utils';
+import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from 'amplify-e2e-core';
+import { addApiWithSchema, updateApiSchema } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 
 describe('amplify add api', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('api-key-migration');
   });
 
   afterEach(async () => {
@@ -21,10 +21,12 @@ describe('amplify add api', () => {
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
-    await amplifyPushUpdate(
-      projRoot,
-      /Attempting to add a local secondary index to the TodoTable table in the Todo stack. Local secondary indexes must be created when the table is created.*/
-    );
+    await expect(
+      amplifyPushUpdate(
+        projRoot,
+        /Attempting to add a local secondary index to the TodoTable table in the Todo stack. Local secondary indexes must be created when the table is created.*/,
+      ),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
   it('init project, run invalid migration trying to change a gsi, and check for error', async () => {
@@ -35,7 +37,9 @@ describe('amplify add api', () => {
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
-    await amplifyPushUpdate(projRoot, /Attempting to edit the global secondary index SomeGSI on the TodoTable table in the Todo stack.*/);
+    await expect(
+      amplifyPushUpdate(projRoot, /Attempting to edit the global secondary index SomeGSI on the TodoTable table in the Todo stack.*/),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
   it('init project, run invalid migration trying to change the key schema, and check for error', async () => {
@@ -46,7 +50,9 @@ describe('amplify add api', () => {
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
-    await amplifyPushUpdate(projRoot, /Attempting to edit the key schema of the TodoTable table in the Todo stack.*/);
+    await expect(
+      amplifyPushUpdate(projRoot, /Attempting to edit the key schema of the TodoTable table in the Todo stack.*/),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
   it('init project, run invalid migration trying to change an lsi, and check for error', async () => {
@@ -57,7 +63,57 @@ describe('amplify add api', () => {
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
-    await amplifyPushUpdate(projRoot, /Attempting to edit the local secondary index SomeLSI on the TodoTable table in the Todo stack.*/);
+    await expect(
+      amplifyPushUpdate(projRoot, /Attempting to edit the local secondary index SomeLSI on the TodoTable table in the Todo stack.*/),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
+  });
+
+  it('init project, run invalid migration trying to add more than one gsi, and check for error', async () => {
+    const projectName = 'migratingkey';
+    const initialSchema = 'migrations_key/initial_schema.graphql';
+    const nextSchema1 = 'migrations_key/cant_add_more_gsi.graphql';
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await expect(
+      amplifyPushUpdate(
+        projRoot,
+        /Attempting to add more than 1 global secondary index SomeGSI1 and someGSI2 on the TodoTable table in the Todo stack.*/,
+      ),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
+  });
+
+  it('init project, run invalid migration trying to delete more than one gsi, and check for error', async () => {
+    const projectName = 'migratingkey1';
+    const initialSchema = 'migrations_key/initial_schema1.graphql';
+    const nextSchema1 = 'migrations_key/cant_remove_more_gsi.graphql';
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await expect(
+      amplifyPushUpdate(
+        projRoot,
+        /Attempting to delete more than 1 global secondary index SomeGSI1 and someGSI2 on the TodoTable table in the Todo stack.*/,
+      ),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
+  });
+
+  it('init project, run invalid migration trying to add and delete gsi, and check for error', async () => {
+    const projectName = 'migratingkey2';
+    const initialSchema = 'migrations_key/initial_schema.graphql';
+    const nextSchema1 = 'migrations_key/cant_update_delete_gsi.graphql';
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await expect(
+      amplifyPushUpdate(
+        projRoot,
+        /Attempting to add and delete a global secondary index SomeGSI1 and someGSI2 on the TodoTable table in the Todo stack.*/,
+      ),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
   it('init project, run valid migration adding a GSI', async () => {

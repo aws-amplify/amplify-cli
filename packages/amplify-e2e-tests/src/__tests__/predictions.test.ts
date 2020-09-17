@@ -1,12 +1,13 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from '../init';
-import { createNewProjectDir, deleteProjectDir, getAWSExports, getCollection } from '../utils';
-import { addConvert, addInterpret, addIdentifyCollection } from '../categories/predictions';
-import { addAuthWithDefault } from '../categories/auth';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getCollection } from 'amplify-e2e-core';
+import { addConvert, addInterpret, addIdentifyCollection } from 'amplify-e2e-core';
+import { addAuthWithDefault } from 'amplify-e2e-core';
+import { getAWSExports } from '../aws-exports/awsExports';
 
 describe('amplify add predictions', () => {
   let projRoot: string;
-  beforeEach(() => {
-    projRoot = createNewProjectDir();
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('predictions');
   });
 
   afterEach(async () => {
@@ -21,7 +22,6 @@ describe('amplify add predictions', () => {
     await addInterpret(projRoot, {});
     await amplifyPushAuth(projRoot);
     const awsExports: any = getAWSExports(projRoot).default;
-    console.log(`AWS Exports \n${JSON.stringify(awsExports, null, 4)}`);
     const { sourceLanguage, targetLanguage } = awsExports.predictions.convert.translateText.defaults;
     const { type } = awsExports.predictions.interpret.interpretText.defaults;
     expect(sourceLanguage).toBeDefined();
@@ -35,14 +35,12 @@ describe('amplify add predictions', () => {
     await addIdentifyCollection(projRoot, {});
     await amplifyPushAuth(projRoot);
     const awsExports: any = getAWSExports(projRoot).default;
-    console.log(`AWS Exports \n${JSON.stringify(awsExports, null, 4)}`);
     const { collectionId: collectionID, maxEntities: maxFaces } = awsExports.predictions.identify.identifyEntities.defaults;
     const { region, celebrityDetectionEnabled } = awsExports.predictions.identify.identifyEntities;
     expect(collectionID).toBeDefined();
     expect(maxFaces).toEqual(50);
     expect(celebrityDetectionEnabled).toBeTruthy();
     const cID = await getCollection(collectionID, region);
-    console.log(`Rekog Collection Response ${JSON.stringify(cID, null, 4)}`);
     expect(cID.CollectionARN.split('/').pop()).toEqual(collectionID);
   });
 });

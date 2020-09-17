@@ -3,6 +3,7 @@ const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const uuid = require('uuid');
+const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -157,9 +158,9 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       {
         AttributeName: defaultValues.sortKeyName,
         AttributeType: defaultValues.sortKeyType,
-      }
+      },
     );
-    continueAttributeQuestion = await amplify.confirmPrompt.run('Would you like to add another column?');
+    continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
   }
   const indexableAttributeList = [];
 
@@ -167,9 +168,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     const attributeAnswer = await inquirer.prompt([attributeQuestion, attributeTypeQuestion]);
 
     if (attributeAnswers.findIndex(attribute => attribute.AttributeName === attributeAnswer[inputs[2].key]) !== -1) {
-      continueAttributeQuestion = await amplify.confirmPrompt.run(
-        'This attribute was already added. Do you want to add another attribute?'
-      );
+      continueAttributeQuestion = await amplify.confirmPrompt('This attribute was already added. Do you want to add another attribute?');
       continue;
     }
 
@@ -181,18 +180,18 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     if (attributeTypes[attributeAnswer[inputs[3].key]].indexable) {
       indexableAttributeList.push(attributeAnswer[inputs[2].key]);
     }
-    continueAttributeQuestion = await amplify.confirmPrompt.run('Would you like to add another column?');
+    continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
   }
   answers.AttributeDefinitions = attributeAnswers;
 
   print.info('');
   print.info(
-    'Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.'
+    'Before you create the database, you must specify how items in your table are uniquely organized. You do this by specifying a primary key. The primary key uniquely identifies each item in the table so that no two items can have the same key. This can be an individual column, or a combination that includes a primary key and a sort key.',
   );
   print.info('');
   print.info('To learn more about primary keys, see:');
   print.info(
-    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey'
+    'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.PrimaryKey',
   );
   print.info('');
   // Ask for primary key
@@ -246,7 +245,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       });
       usedAttributeDefinitions.add(sortKeyName);
     }
-  } else if (await amplify.confirmPrompt.run('Do you want to add a sort key to your table?')) {
+  } else if (await amplify.confirmPrompt('Do you want to add a sort key to your table?')) {
     // Ask for sort key
     if (answers.AttributeDefinitions.length > 1) {
       const sortKeyQuestion = {
@@ -276,17 +275,17 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   print.info('');
   print.info(
-    'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.'
+    'You can optionally add global secondary indexes for this table. These are useful when you run queries defined in a different column than the primary key.',
   );
   print.info('To learn more about indexes, see:');
   print.info(
-    'http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes'
+    'https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.SecondaryIndexes',
   );
   print.info('');
 
   // Ask for GSI's
 
-  if (await amplify.confirmPrompt.run('Do you want to add global secondary indexes to your table?')) {
+  if (await amplify.confirmPrompt('Do you want to add global secondary indexes to your table?')) {
     let continuewithGSIQuestions = true;
     const gsiList = [];
     // Generates a clone of the attribute list
@@ -332,7 +331,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           availableAttributes.splice(gsiPrimaryAttrIndex, 1);
         }
         if (availableAttributes.length > 0) {
-          if (await amplify.confirmPrompt.run('Do you want to add a sort key to your global secondary index?')) {
+          if (await amplify.confirmPrompt('Do you want to add a sort key to your global secondary index?')) {
             const sortKeyQuestion = {
               type: inputs[8].type,
               name: inputs[8].key,
@@ -348,7 +347,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           }
         }
         gsiList.push(gsiItem);
-        continuewithGSIQuestions = await amplify.confirmPrompt.run('Do you want to add more global secondary indexes to your table?');
+        continuewithGSIQuestions = await amplify.confirmPrompt('Do you want to add more global secondary indexes to your table?');
       } else {
         context.print.error('You do not have any other attributes remaining to configure');
         break;
@@ -368,7 +367,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
       ]);
       if (
         !!existingGSIs.length &&
-        (await amplify.confirmPrompt.run('Do you want to keep existing global seconday indexes created on your table?'))
+        (await amplify.confirmPrompt('Do you want to keep existing global seconday indexes created on your table?'))
       ) {
         existingGSIs.forEach(r => gsiList.push(r));
         answers.AttributeDefinitions = [...allAttributeDefinitionsMap.values()];
@@ -386,14 +385,14 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   /* Filter out only attribute
    * definitions which have been used - cfn errors out otherwise */
   answers.AttributeDefinitions = answers.AttributeDefinitions.filter(
-    attributeDefinition => usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1
+    attributeDefinition => usedAttributeDefinitions.indexOf(attributeDefinition.AttributeName) !== -1,
   );
 
   Object.assign(defaultValues, answers);
 
   // Ask Lambda trigger question
   if (!storageParams || !storageParams.triggerFunctions || storageParams.triggerFunctions.length === 0) {
-    if (await amplify.confirmPrompt.run('Do you want to add a Lambda Trigger for your Table?', false)) {
+    if (await amplify.confirmPrompt('Do you want to add a Lambda Trigger for your Table?', false)) {
       let triggerName;
 
       try {
@@ -546,9 +545,7 @@ async function addTrigger(context, resourceName, triggerList) {
     }
 
     if (lambdaResources.length === 0) {
-      throw new Error(
-        "No pre-existing functions found in the project. Please use 'amplify add function' command to add a new function to your project."
-      );
+      throw new Error("No functions were found in the project. Use 'amplify add function' to add a new function.");
     }
 
     const triggerOptionQuestion = {
@@ -602,7 +599,7 @@ async function addTrigger(context, resourceName, triggerList) {
     // Update amplify-meta and backend-config
 
     const backendConfigs = {
-      service: 'Lambda',
+      service: FunctionServiceName.LambdaFunction,
       providerPlugin: 'awscloudformation',
       build: true,
     };
@@ -707,7 +704,7 @@ async function addTrigger(context, resourceName, triggerList) {
 
     context.amplify.updateamplifyMetaAfterResourceUpdate('function', functionName, 'dependsOn', resourceDependsOn);
     context.print.success(`Successfully updated resource ${functionName} locally`);
-    if (await context.amplify.confirmPrompt.run(`Do you want to edit the local ${functionName} lambda function now?`)) {
+    if (await context.amplify.confirmPrompt(`Do you want to edit the local ${functionName} lambda function now?`)) {
       await context.amplify.openEditor(context, `${projectBackendDirPath}/function/${functionName}/src/index.js`);
     }
   } else {
@@ -719,7 +716,9 @@ async function addTrigger(context, resourceName, triggerList) {
 
 async function getLambdaFunctions(context) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const lambdaResources = allResources.filter(resource => resource.service === 'Lambda').map(resource => resource.resourceName);
+  const lambdaResources = allResources
+    .filter(resource => resource.service === FunctionServiceName.LambdaFunction)
+    .map(resource => resource.resourceName);
 
   return lambdaResources;
 }
@@ -837,20 +836,22 @@ function getIAMPolicies(resourceName, crudOptions) {
   policy = {
     Effect: 'Allow',
     Action: actions,
-    Resource: [
-      { Ref: `${category}${resourceName}Arn` },
-      {
-        'Fn::Join': [
-          '/',
-          [
-            {
-              Ref: `${category}${resourceName}Arn`,
-            },
-            'index/*',
-          ],
+    Resource: crudOptions.customPolicyResource
+      ? crudOptions.customPolicyResource
+      : [
+          { Ref: `${category}${resourceName}Arn` },
+          {
+            'Fn::Join': [
+              '/',
+              [
+                {
+                  Ref: `${category}${resourceName}Arn`,
+                },
+                'index/*',
+              ],
+            ],
+          },
         ],
-      },
-    ],
   };
   const attributes = ['Name', 'Arn'];
 

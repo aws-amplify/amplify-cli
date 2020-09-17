@@ -3,6 +3,7 @@ import { validateJava } from '../utils/validate-java';
 import { directives, scalars } from '../../scalars/supported-directives';
 import { AppSyncModelJavaVisitor } from '../../visitors/appsync-java-visitor';
 import { CodeGenGenerateEnum } from '../../visitors/appsync-visitor';
+import { JAVA_SCALAR_MAP } from '../../scalars';
 
 const buildSchemaWithDirectives = (schema: String): GraphQLSchema => {
   return buildSchema([schema, directives, scalars].join('\n'));
@@ -11,7 +12,11 @@ const buildSchemaWithDirectives = (schema: String): GraphQLSchema => {
 const getVisitor = (schema: string, selectedType?: string, generate: CodeGenGenerateEnum = CodeGenGenerateEnum.code) => {
   const ast = parse(schema);
   const builtSchema = buildSchemaWithDirectives(schema);
-  const visitor = new AppSyncModelJavaVisitor(builtSchema, { directives, target: 'android', generate }, { selectedType });
+  const visitor = new AppSyncModelJavaVisitor(
+    builtSchema,
+    { directives, target: 'android', generate, scalars: JAVA_SCALAR_MAP },
+    { selectedType },
+  );
   visit(ast, { leave: visitor });
   return visitor;
 };
@@ -159,6 +164,178 @@ describe('AppSyncModelVisitor', () => {
     expect(generatedCode).toMatchSnapshot();
   });
 
+  describe('Model with Auth', () => {
+    it('should generate class with owner auth', () => {
+      const schema = /* GraphQL */ `
+        type simpleOwnerAuth @model @auth(rules: [{ allow: owner }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'simpleOwnerAuth');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate class with owner auth allowing others to read', () => {
+      const schema = /* GraphQL */ `
+        type allowRead @model @auth(rules: [{ allow: owner, operations: [create, delete, update] }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'allowRead');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate class with static groups', () => {
+      const schema = /* GraphQL */ `
+        type staticGroups @model @auth(rules: [{ allow: groups, groups: ["Admin"] }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'staticGroups');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate class with dynamic groups', () => {
+      const schema = /* GraphQL */ `
+        type dynamicGroups @model @auth(rules: [{ allow: groups, groupsField: "groups" }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'dynamicGroups');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate class with public authorization', () => {
+      const schema = /* GraphQL */ `
+        type publicType @model @auth(rules: [{ allow: public }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'publicType');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate class with private authorization', () => {
+      const schema = /* GraphQL */ `
+        type privateType @model @auth(rules: [{ allow: private }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'privateType');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate class with private authorization and field auth', () => {
+      const schema = /* GraphQL */ `
+        type privateType @model @auth(rules: [{ allow: private }]) {
+          id: ID!
+          name: String
+          bar: String @auth(rules: [{ allow: private, operations: [create, update] }])
+        }
+      `;
+      const visitor = getVisitor(schema, 'privateType');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate class with custom claims', () => {
+      const schema = /* GraphQL */ `
+        type customClaim @model @auth(rules: [{ allow: owner, identityClaim: "user_id" }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'customClaim');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate class with custom group claims', () => {
+      const schema = /* GraphQL */ `
+        type customClaim @model @auth(rules: [{ allow: groups, groups: ["Moderator"], groupClaim: "user_groups" }]) {
+          id: ID!
+          name: String
+          bar: String
+        }
+      `;
+      const visitor = getVisitor(schema, 'customClaim');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+  });
+
+  describe('Non model type', () => {
+    const schema = /* GraphQL */ `
+      type Landmark @model {
+        id: ID!
+        name: String!
+        rating: Int!
+        location: Location!
+        parking: Location
+      }
+      type Location {
+        lat: String!
+        lang: String!
+      }
+    `;
+    it('should generate class for non model types', () => {
+      const visitor = getVisitor(schema, 'Location');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+    it('should generate class for model types with non model fields', () => {
+      const visitor = getVisitor(schema, 'Landmark');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+  });
+
+  it('should generate Temporal type for AWSDate* scalars', () => {
+    const schema = /* GraphQL */ `
+      type TypeWithAWSDateScalars @model {
+        id: ID!
+        date: AWSDate
+        createdAt: AWSDateTime
+        time: AWSTime
+        timestamp: AWSTimestamp
+      }
+    `;
+    const visitor = getVisitor(schema, 'TypeWithAWSDateScalars');
+    const generatedCode = visitor.generate();
+    expect(() => validateJava(generatedCode)).not.toThrow();
+    expect(generatedCode).toMatchSnapshot();
+  });
+
   describe('connection', () => {
     describe('One to Many connection', () => {
       const schema = /* GraphQL */ `
@@ -195,6 +372,35 @@ describe('AppSyncModelVisitor', () => {
         expect(() => validateJava(generatedCode)).not.toThrow();
         expect(generatedCode).toMatchSnapshot();
       });
+    });
+  });
+
+  describe('One to Many connection with no nullable and non nullable fields', () => {
+    const schema = /* GraphQL */ `
+      type Todo @model {
+        id: ID!
+        tasks: [task] @connection(name: "TodoTasks")
+      }
+
+      type task @model {
+        id: ID
+        todo: Todo @connection(name: "TodoTasks")
+        time: AWSTime
+        createdOn: AWSDate
+      }
+    `;
+    it('should generate class for one side of the connection', () => {
+      const visitor = getVisitor(schema, 'Todo');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
+    });
+
+    it('should generate class for many side of the connection', () => {
+      const visitor = getVisitor(schema, 'task');
+      const generatedCode = visitor.generate();
+      expect(() => validateJava(generatedCode)).not.toThrow();
+      expect(generatedCode).toMatchSnapshot();
     });
   });
 });

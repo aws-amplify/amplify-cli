@@ -1,4 +1,4 @@
-import { buildClientSchema, GraphQLObjectType, GraphQLSchema, IntrospectionQuery } from 'graphql';
+import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 
 import { generateQueries, generateMutations, generateSubscriptions, collectExternalFragments } from './generateAllOperations';
 import { GQLDocsGenOptions, GQLAllOperations } from './types';

@@ -1,5 +1,5 @@
+// eslint-disable-next-line
 exports.handler = function(event, context) {
-  //eslint-disable-line
   console.log(JSON.stringify(event, null, 2));
   event.Records.forEach(record => {
     console.log(record.eventID);

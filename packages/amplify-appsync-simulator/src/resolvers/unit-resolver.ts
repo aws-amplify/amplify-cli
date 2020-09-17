@@ -1,12 +1,12 @@
 import { AmplifyAppSyncSimulator } from '..';
 import { AppSyncSimulatorUnitResolverConfig } from '../type-definition';
+import { AppSyncBaseResolver } from './base-resolver';
 
-export class AppSyncUnitResolver {
-  private config: AppSyncSimulatorUnitResolverConfig;
-  constructor(config: AppSyncSimulatorUnitResolverConfig, private simulatorContext: AmplifyAppSyncSimulator) {
+export class AppSyncUnitResolver extends AppSyncBaseResolver {
+  protected config: AppSyncSimulatorUnitResolverConfig;
+  constructor(config: AppSyncSimulatorUnitResolverConfig, simulatorContext: AmplifyAppSyncSimulator) {
+    super(config, simulatorContext);
     try {
-      simulatorContext.getMappingTemplate(config.requestMappingTemplateLocation);
-      simulatorContext.getMappingTemplate(config.responseMappingTemplateLocation);
       simulatorContext.getDataLoader(config.dataSourceName);
     } catch (e) {
       throw new Error(`Invalid config for UNIT_RESOLVER ${JSON.stringify(config)} \n ${e.message}`);
@@ -18,20 +18,24 @@ export class AppSyncUnitResolver {
     this.config = config;
   }
 
-  async resolve(source, args, context, info) {
-    const requestMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.requestMappingTemplateLocation);
-    const responseMappingTemplate = this.simulatorContext.getMappingTemplate(this.config.responseMappingTemplateLocation);
+  async resolve(source, args, context, info): Promise<any> {
+    const requestMappingTemplate = this.getRequestMappingTemplate();
+    const responseMappingTemplate = this.getResponseMappingTemplate();
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
-    const { result: requestPayload, errors: requestTemplateErrors } = requestMappingTemplate.render(
+    const { result: requestPayload, errors: requestTemplateErrors, isReturn } = requestMappingTemplate.render(
       { source, arguments: args },
       context,
-      info
+      info,
     );
     context.appsyncErrors = [...context.appsyncErrors, ...requestTemplateErrors];
     let result = null;
     let error;
+    if (isReturn) {
+      // template has #return bail and return the value specified in the template
+      return requestPayload;
+    }
     try {
-      result = await dataLoader.load(requestPayload);
+      result = await dataLoader.load(requestPayload, { source, args, context, info });
     } catch (e) {
       if (requestPayload && requestPayload.version === '2018-05-29') {
         // https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-changelog.html#aws-appsync-resolver-mapping-template-version-2018-05-29
@@ -47,7 +51,7 @@ export class AppSyncUnitResolver {
     const { result: responseTemplateResult, errors: responseTemplateErrors } = responseMappingTemplate.render(
       { source, arguments: args, result, error },
       context,
-      info
+      info,
     );
     context.appsyncErrors = [...context.appsyncErrors, ...responseTemplateErrors];
 

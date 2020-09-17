@@ -1,39 +1,37 @@
 {
   "name": "graphql-relational-schema-transformer",
-  "version": "2.6.0",
+  "version": "2.15.15",
   "description": "An AppSync model transform that takes a relational database and turns that into a GraphQL API.",
-  "main": "lib/index.js",
-  "scripts": {
-    "test-ci": "jest --ci --coverage",
-    "test": "jest --coverage",
-    "build": "tsc",
-    "clean": "rm -rf ./lib"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws-amplify/amplify-cli.git",
+    "directory": "packages/graphql-relational-schema-transformer"
   },
+  "author": "Amazon Web Services",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "keywords": [
     "graphql",
     "appsync",
     "aws"
   ],
-  "author": "Amazon Web Services",
-  "license": "Apache-2.0",
+  "scripts": {
+    "test": "jest --coverage",
+    "build": "tsc",
+    "clean": "rimraf ./lib"
+  },
   "dependencies": {
+    "cloudform": "^4.2.0",
+    "cloudform-types": "^4.2.0",
     "fs-extra": "^8.1.0",
-    "graphql": "^0.13.2",
-    "graphql-mapping-template": "4.6.0",
-    "graphql-transformer-common": "4.6.0",
-    "graphql-transformer-core": "6.6.0",
-    "mysql": "^2.16.0"
+    "graphql": "^14.5.8",
+    "graphql-mapping-template": "4.15.2",
+    "graphql-transformer-common": "4.17.10"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "@types/graphql": "^0.13.4",
-    "@types/jest": "23.1.1",
-    "@types/mysql": "^2.15.5",
-    "aws-sdk": "^2.580.0",
-    "cloudform": "^4.1.0",
-    "jest": "^23.1.0",
-    "ts-jest": "^22.4.6",
-    "typescript": "~3.6.4"
+    "aws-sdk": "^2.608.0"
   },
   "jest": {
     "collectCoverage": true,
@@ -45,7 +43,7 @@
       "^.+\\.tsx?$": "ts-jest"
     },
     "testURL": "http://localhost",
-    "testRegex": "(src/__tests__/.*.test.*)$",
+    "testRegex": "(src/__tests__/.*.test\\.(js|ts))$",
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -53,6 +51,11 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
   }
 }
