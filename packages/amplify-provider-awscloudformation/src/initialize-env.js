@@ -2,8 +2,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const glob = require('glob');
 const { PathConstants, stateManager } = require('amplify-cli-core');
-const Cloudformation = require('../src/aws-utils/aws-cfn');
-const S3 = require('../src/aws-utils/aws-s3');
+const Cloudformation = require('./aws-utils/aws-cfn');
+const S3 = require('./aws-utils/aws-s3');
 const { downloadZip, extractZip } = require('./zip-util');
 const { S3BackendZipFileName } = require('./constants');
 

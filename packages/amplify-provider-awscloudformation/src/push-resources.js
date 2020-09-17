@@ -5,8 +5,8 @@ const cfnLint = require('cfn-lint');
 const glob = require('glob');
 const { pathManager, PathConstants } = require('amplify-cli-core');
 const ora = require('ora');
-const S3 = require('../src/aws-utils/aws-s3');
-const Cloudformation = require('../src/aws-utils/aws-cfn');
+const S3 = require('./aws-utils/aws-s3');
+const Cloudformation = require('./aws-utils/aws-cfn');
 const providerName = require('./constants').ProviderName;
 const { buildResource } = require('./build-resources');
 const { uploadAppSyncFiles } = require('./upload-appsync-files');
@@ -15,9 +15,9 @@ const { prePushAuthTransform } = require('./auth-transform');
 const { transformGraphQLSchema } = require('./transform-graphql-schema');
 const { displayHelpfulURLs } = require('./display-helpful-urls');
 const { downloadAPIModels } = require('./download-api-models');
-const { loadResourceParameters } = require('../src/resourceParams');
+const { loadResourceParameters } = require('./resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
-const archiver = require('../src/utils/archiver');
+const archiver = require('./utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const { isMultiEnvLayer, packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
 const { stateManager } = require('amplify-cli-core');
@@ -424,7 +424,8 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
 /* eslint-disable */
 function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName, skipEnv) {
   /* eslint-enable */
-  const nestedStack = context.amplify.readJsonFile(`${__dirname}/rootStackTemplate.json`);
+  const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
+  const nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
   const { amplifyMeta } = projectDetails;
   let authResourceName;
   let categories = Object.keys(amplifyMeta);
@@ -504,7 +505,8 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
 
 function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
   const authLogicalResourceName = `auth${authResourceName}`;
-  const idpUpdateRoleCfn = context.amplify.readJsonFile(`${__dirname}/update-idp-roles-cfn.json`);
+  const idpUpdateRoleCfnFilePath = path.join(__dirname, '..', 'resources', 'update-idp-roles-cfn.json');
+  const idpUpdateRoleCfn = context.amplify.readJsonFile(idpUpdateRoleCfnFilePath);
 
   idpUpdateRoleCfn.UpdateRolesWithIDPFunction.DependsOn.push(authLogicalResourceName);
   idpUpdateRoleCfn.UpdateRolesWithIDPFunctionOutputs.Properties.idpId['Fn::GetAtt'].unshift(authLogicalResourceName);

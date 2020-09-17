@@ -1,11 +1,11 @@
 const awsRegions = require('./aws-regions');
-const Cognito = require('../src/aws-utils/aws-cognito');
-const Lambda = require('../src/aws-utils/aws-lambda');
-const DynamoDB = require('../src/aws-utils/aws-dynamodb');
-const AppSync = require('../src/aws-utils/aws-appsync');
-const { Lex } = require('../src/aws-utils/aws-lex');
-const Polly = require('../src/aws-utils/aws-polly');
-const SageMaker = require('../src/aws-utils/aws-sagemaker');
+const Cognito = require('./aws-utils/aws-cognito');
+const Lambda = require('./aws-utils/aws-lambda');
+const DynamoDB = require('./aws-utils/aws-dynamodb');
+const AppSync = require('./aws-utils/aws-appsync');
+const { Lex } = require('./aws-utils/aws-lex');
+const Polly = require('./aws-utils/aws-polly');
+const SageMaker = require('./aws-utils/aws-sagemaker');
 const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
 const { updateStackForAPIMigration } = require('./push-resources');
 

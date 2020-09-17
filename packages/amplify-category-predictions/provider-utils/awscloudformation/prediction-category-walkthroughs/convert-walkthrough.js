@@ -137,7 +137,7 @@ async function configure(context, resourceObj) {
 }
 
 function addRegionMapping(context, resourceName, convertType) {
-  const regionMapping = regionMapper.getRegionMapping(service, convertType);
+  const regionMapping = regionMapper.getRegionMapping(context, service, convertType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
   const identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);

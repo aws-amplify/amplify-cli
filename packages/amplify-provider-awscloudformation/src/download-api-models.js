@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const extract = require('extract-zip');
 const sequential = require('promise-sequential');
-const APIGateway = require('../src/aws-utils/aws-apigw');
+const APIGateway = require('./aws-utils/aws-apigw');
 
 function downloadAPIModels(context, allResources) {
   const { amplify } = context;

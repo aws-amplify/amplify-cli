@@ -1,4 +1,4 @@
-const setupNewUser = require('../../lib/setup-new-user');
+const setupNewUser = require('../../setup-new-user');
 
 module.exports = {
   name: 'setupNewUser',
