@@ -54,8 +54,9 @@ export async function run() {
         throw new Error(verificationResult.message);
       }
     }
-    rewireDeprecatedCommands(input);
 
+    rewireDeprecatedCommands(input);
+    conditionalLoggingInit(input);
     const context = constructContext(pluginPlatform, input);
 
     // Initialize feature flags
