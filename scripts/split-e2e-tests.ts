@@ -19,7 +19,7 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 
 const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/plugin.test.ts',
-  'src/__tests__/datastore-modegen.test.ts',
+  'src/__tests__/datastore-modelgen.test.ts',
   'src/__tests__/interactions.test.ts',
   'src/__tests__/hosting.test.ts',
   'src/__tests__/init.test.ts',

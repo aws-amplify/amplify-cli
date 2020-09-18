@@ -111,8 +111,10 @@ async function init(amplifyServiceParams) {
       environmentVariables: { _LIVE_PACKAGE_UPDATES: '[{"pkg":"@aws-amplify/cli","type":"npm","version":"latest"}]' },
     };
     try {
-      const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
-      amplifyAppId = createAppResponse.app.appId;
+      if (amplifyAppCreationEnabled()) {
+        const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
+        amplifyAppId = createAppResponse.app.appId;
+      }
     } catch (e) {
       if (e.code === 'LimitExceededException') {
         // Do nothing
@@ -259,8 +261,10 @@ async function postPushCheck(context) {
         };
 
         try {
-          const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
-          amplifyAppId = createAppResponse.app.appId;
+          if (amplifyAppCreationEnabled()) {
+            const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
+            amplifyAppId = createAppResponse.app.appId;
+          }
         } catch (e) {
           if (e.code === 'LimitExceededException') {
             // Do nothing
@@ -414,6 +418,8 @@ async function uploadFile(s3, filePath, key) {
     await s3.uploadFile(s3Params);
   }
 }
+
+const amplifyAppCreationEnabled = () => !process.env || process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION !== '1';
 
 module.exports = {
   init,

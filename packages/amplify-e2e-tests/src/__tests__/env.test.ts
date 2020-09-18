@@ -127,7 +127,7 @@ describe('environment commands with Cognito Triggers', () => {
   });
 
   it('init a project, pull environment', async () => {
-    await pullEnvironment(projRoot, {});
+    await pullEnvironment(projRoot);
     const meta = getProjectMeta(projRoot);
     await validate(meta);
   });
@@ -155,7 +155,7 @@ describe('environment commands with recaptcha trigger', () => {
     await validate(meta);
   });
   it('init a project, pull environment', async () => {
-    await pullEnvironment(projRoot, {});
+    await pullEnvironment(projRoot);
     const meta = getProjectMeta(projRoot);
     await validate(meta);
   });
@@ -183,7 +183,7 @@ describe('environment commands with HostedUI params', () => {
   });
 
   it('init a project, pull environment', async () => {
-    await pullEnvironment(projRoot, {});
+    await pullEnvironment(projRoot);
     const meta = getProjectMeta(projRoot);
     await validate(meta);
   });

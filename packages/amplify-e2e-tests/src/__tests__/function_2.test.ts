@@ -1,27 +1,17 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, updateFunction, functionBuild, addLambdaTrigger, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
+import { addFunction, updateFunction, functionBuild, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
 import { addLayer, addOptData, LayerOptions } from 'amplify-e2e-core';
-import { addSimpleDDB } from 'amplify-e2e-core';
-import { addKinesis } from 'amplify-e2e-core';
 import {
   createNewProjectDir,
   deleteProjectDir,
+  getCloudWatchEventRule,
   getProjectMeta,
   getFunction,
   overrideFunctionSrc,
-  getFunctionSrc,
   overrideLayerCode,
   overrideFunctionSrcPython,
   overrideLayerCodePython,
-  overrideLayerCodeJava,
 } from 'amplify-e2e-core';
-import { addApiWithSchema } from 'amplify-e2e-core';
-
-import { appsyncGraphQLRequest } from 'amplify-e2e-core';
-import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getCloudWatchEventRule, getEventSourceMappings } from 'amplify-e2e-core';
-import fs from 'fs-extra';
-import path from 'path';
-import { retry, readJsonFile } from 'amplify-e2e-core';
 
 describe('go function tests', () => {
   const helloWorldSuccessOutput = 'Hello Amplify!';
@@ -208,7 +198,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('add a schedule rule for daily ', async () => {
+  it('add a schedule rule for daily', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addFunction(
       projRoot,
@@ -325,7 +315,7 @@ describe('add function with layers for runtime nodeJS', () => {
     projRoot = await createNewProjectDir('functions');
     await initJSProjectWithProfile(projRoot, {});
     const settings = {
-      layerName: `testlayer${random}`,
+      layerName: `nodetestlayer${random}`,
       versionChanged: true,
       runtimes: ['nodejs'],
     };
@@ -352,7 +342,7 @@ describe('add function with layers for runtime nodeJS', () => {
         },
       },
     };
-    functionName = `testfunction${random}`;
+    functionName = `nodetestfunction${random}`;
     await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'nodejs');
     overrideFunctionSrc(
       projRoot,
@@ -380,7 +370,7 @@ describe('add function with layers for runtime nodeJS', () => {
     await amplifyPushAuth(projRoot);
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
-    expect(JSON.parse(JSON.parse(response.Payload).body)).toEqual(helloWorldSuccessOutput);
+    expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldSuccessOutput);
   });
 });
 
@@ -394,7 +384,7 @@ describe('add function with layers for runtime python', () => {
     projRoot = await createNewProjectDir('functions');
     await initJSProjectWithProfile(projRoot, {});
     const settings = {
-      layerName: `testlayer${random}`,
+      layerName: `pytestlayer${random}`,
       versionChanged: true,
       runtimes: ['python'],
     };
@@ -412,7 +402,7 @@ describe('add function with layers for runtime python', () => {
         },
       },
     };
-    functionName = `testfunction${random}`;
+    functionName = `pytestfunction${random}`;
     await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'python');
     const functionCodePath = `${__dirname}/../../../amplify-e2e-tests/layerdata/python/index.py`;
     overrideFunctionSrcPython(projRoot, functionName, functionCodePath);
@@ -422,10 +412,11 @@ describe('add function with layers for runtime python', () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
+
   it('can add project layers and external layers for python', async () => {
     await amplifyPushAuth(projRoot);
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
-    expect(JSON.parse(response.Payload).message).toEqual(helloWorldSuccessOutput);
+    expect(JSON.parse(response.Payload.toString()).message).toEqual(helloWorldSuccessOutput);
   });
 });
