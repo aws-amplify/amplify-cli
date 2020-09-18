@@ -801,14 +801,6 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/api_3.test.ts
       CLI_REGION: eu-central-1
-  auth_1-amplify_e2e_tests:
-    working_directory: ~/repo
-    docker: *ref_0
-    resource_class: large
-    steps: *ref_1
-    environment:
-      TEST_SUITE: src/__tests__/auth_1.test.ts
-      CLI_REGION: ap-northeast-1
   auth_2-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -816,6 +808,14 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/auth_2.test.ts
+      CLI_REGION: ap-northeast-1
+  env-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/env.test.ts
       CLI_REGION: ap-southeast-1
   auth_3-amplify_e2e_tests:
     working_directory: ~/repo
@@ -833,30 +833,6 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/auth_4.test.ts
       CLI_REGION: us-east-2
-  env-amplify_e2e_tests:
-    working_directory: ~/repo
-    docker: *ref_0
-    resource_class: large
-    steps: *ref_1
-    environment:
-      TEST_SUITE: src/__tests__/env.test.ts
-      CLI_REGION: us-west-2
-  feature-flags-amplify_e2e_tests:
-    working_directory: ~/repo
-    docker: *ref_0
-    resource_class: large
-    steps: *ref_1
-    environment:
-      TEST_SUITE: src/__tests__/feature-flags.test.ts
-      CLI_REGION: eu-west-2
-  function_1-amplify_e2e_tests:
-    working_directory: ~/repo
-    docker: *ref_0
-    resource_class: large
-    steps: *ref_1
-    environment:
-      TEST_SUITE: src/__tests__/function_1.test.ts
-      CLI_REGION: eu-central-1
   function_2-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -864,6 +840,30 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/function_2.test.ts
+      CLI_REGION: us-west-2
+  init-special-case-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/init-special-case.test.ts
+      CLI_REGION: eu-west-2
+  layer-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/layer.test.ts
+      CLI_REGION: eu-central-1
+  schema-auth-1-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/schema-auth-1.test.ts
       CLI_REGION: ap-northeast-1
   init-special-case-amplify_e2e_tests:
     working_directory: ~/repo
@@ -1294,7 +1294,11 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
+<<<<<<< HEAD
             - migration-api-key-migration1-amplify_e2e_tests
+=======
+            - function_1-amplify_e2e_tests
+>>>>>>> chore: update yarn.lock dependencies
       - hostingPROD-amplify_e2e_tests:
           filters: *ref_2
           requires:
@@ -1304,7 +1308,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - env-amplify_e2e_tests:
+      - function_2-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1336,7 +1340,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - feature-flags-amplify_e2e_tests:
+      - init-special-case-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1368,7 +1372,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - function_1-amplify_e2e_tests:
+      - layer-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1400,7 +1404,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - function_2-amplify_e2e_tests:
+      - schema-auth-1-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
