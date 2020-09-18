@@ -14,6 +14,7 @@ export async function postInitSetup(context) {
       if (e.name !== 'InvalidDirectiveError') {
         context.print.error(`An error occurred during the push operation: ${e.message}`);
       }
+      context.usageData.emitError(e);
       process.exit(1);
     }
   }

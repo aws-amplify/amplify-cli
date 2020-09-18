@@ -203,6 +203,7 @@ async function warningMessage(context, warningMessage) {
       default: false,
     });
     if (!response.transformerConfig) {
+      context.usageData.emitSuccess();
       process.exit(0);
     }
   }

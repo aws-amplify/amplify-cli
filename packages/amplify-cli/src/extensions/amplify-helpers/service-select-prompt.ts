@@ -1,6 +1,7 @@
 import * as inquirer from 'inquirer';
 import { getProjectConfig } from './get-project-config';
 import { getProviderPlugins } from './get-provider-plugins';
+import { ResourceDoesNotExistError } from 'amplify-cli-core';
 
 function filterServicesByEnabledProviders(context, enabledProviders, supportedServices) {
   const providerPlugins = getProviderPlugins(context);
@@ -36,7 +37,9 @@ function serviceQuestionWalkthrough(context, supportedServices, category, custom
   }
 
   if (options.length === 0) {
-    context.print.error(`No services defined by configured providers for category: ${category}`);
+    const errMessage = `No services defined by configured providers for category: ${category}`;
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     process.exit(1);
   }
   if (options.length === 1) {

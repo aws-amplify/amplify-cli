@@ -10,12 +10,12 @@ import {
   addTextractPolicies,
 } from '../assets/identifyCFNGenerate';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
-
+const { ResourceDoesNotExistError } = require('amplify-cli-core');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const uuid = require('uuid');
-
+const { ResourceAlreadyExistsError } = require('amplify-category-cli');
 // Predictions Info
 const templateFilename = 'identify-template.json.ejs';
 const identifyTypes = ['identifyText', 'identifyEntities', 'identifyLabels'];
@@ -43,11 +43,14 @@ async function addWalkthrough(context) {
         const { add } = require('amplify-category-auth');
         await add(context);
       } catch (e) {
+        context.usageData.emitError(e);
         context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
+        process.exit(1);
         break;
       }
       break;
     } else {
+      context.usageData.emitSuccess();
       process.exit(0);
     }
   }
@@ -70,9 +73,10 @@ async function updateWalkthrough(context) {
     }
   });
   if (predictionsResources.length === 0) {
-    context.print.error('No resources to update. You need to add a resource.');
+    const errMessage = 'No resources to update. You need to add a resource.';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     process.exit(0);
-    return;
   }
   let resourceObj = predictionsResources[0].value;
   if (predictionsResources.length > 1) {
@@ -116,7 +120,9 @@ async function configure(context, resourceObj) {
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.identifyType);
     if (resourceType) {
-      context.print.warning(`${resourceType} has already been added to this project.`);
+      const errMessage = `${resourceType} has already been added to this project.`;
+      context.print.warning(errMessage);
+      context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
       process.exit(0);
     }
 

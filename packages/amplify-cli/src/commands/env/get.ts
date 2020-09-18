@@ -1,12 +1,14 @@
 import chalk from 'chalk';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities, $TSContext, UnknownArgumentError } from 'amplify-cli-core';
 import { printEnvInfo } from '../helpers/envUtils';
 
-export const run = async context => {
+export const run = async (context: $TSContext) => {
   const envName = context.parameters.options.name;
 
   if (!envName) {
-    context.print.error('You must pass in the name of the environment using the --name flag');
+    const errMessage = 'You must pass in the name of the environment using the --name flag';
+    context.print.error(errMessage);
+    context.usageData.emitError(new UnknownArgumentError(errMessage));
     process.exit(1);
   }
 

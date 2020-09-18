@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as inquirer from 'inquirer';
 import _ from 'lodash';
-import { stateManager, $TSContext, pathManager } from 'amplify-cli-core';
+import { stateManager, $TSContext, pathManager, ResourceDoesNotExistError, MissingParametersError } from 'amplify-cli-core';
 import { updateBackendConfigAfterResourceRemove } from './update-backend-config';
 import { removeResourceParameters } from './envResourceParams';
 
@@ -10,11 +10,13 @@ export async function forceRemoveResource(context: $TSContext, category, name, d
 
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     context.print.error('No resources added for this category');
+    context.usageData.emitError(new ResourceDoesNotExistError());
     process.exit(1);
   }
 
   if (!context || !category || !name || !dir) {
     context.print.error('Unable to force removal of resource: missing parameters');
+    context.usageData.emitError(new MissingParametersError());
     process.exit(1);
   }
 
@@ -40,6 +42,7 @@ export async function removeResource(
 
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     context.print.error('No resources added for this category');
+    context.usageData.emitError(new ResourceDoesNotExistError());
     process.exit(1);
   }
 
@@ -47,7 +50,9 @@ export async function removeResource(
 
   if (resourceName) {
     if (!enabledCategoryResources.includes(resourceName)) {
-      context.print.error(`Resource ${resourceName} has not been added to ${category}`);
+      const errMessage = `Resource ${resourceName} has not been added to ${category}`;
+      context.print.error(errMessage);
+      context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
       process.exit(1);
     }
   } else {

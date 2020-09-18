@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 const _ = require('lodash');
 const uuid = require('uuid');
 const { ServiceName: FunctionServiceName } = require('amplify-category-function');
+const { ResourceDoesNotExistError, ResourceAlreadyExistsError } = require('amplify-cli-core');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -31,17 +32,21 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, o
         await add(context);
       } catch (e) {
         context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
-        break;
+        context.usageData.emitError(e);
+        process.exit(1);
       }
       break;
     } else {
+      context.usageData.emitSuccess();
       process.exit(0);
     }
   }
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
-    context.print.warning('Amazon S3 storage was already added to your project.');
+    const errMessage = 'Amazon S3 storage was already added to your project.';
+    context.print.warning(errMessage);
+    context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     process.exit(0);
   } else {
     return await configure(context, defaultValuesFilename, serviceMetadata, undefined, options);
@@ -61,7 +66,9 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetada) {
   });
 
   if (Object.keys(storageResources).length === 0) {
-    context.print.error('No resources to update. You need to add a resource.');
+    const errMessage = 'No resources to update. You need to add a resource.';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     process.exit(0);
     return;
   }
