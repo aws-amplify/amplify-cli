@@ -10,7 +10,7 @@ const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const { stateManager } = require('amplify-cli-core');
-const { CreateService } = require('./aws-service-creator.js');
+const { CreateService } = require('./aws-service-creator');
 const { fileLogger, logStackEvents } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 

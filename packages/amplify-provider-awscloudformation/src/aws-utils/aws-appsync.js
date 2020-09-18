@@ -1,5 +1,5 @@
 const aws = require('./aws.js');
-const { CreateService } = require('./aws-service-creator.js');
+const { CreateService } = require('./aws-service-creator');
 
 class AppSync {
   constructor(context, options = {}) {
