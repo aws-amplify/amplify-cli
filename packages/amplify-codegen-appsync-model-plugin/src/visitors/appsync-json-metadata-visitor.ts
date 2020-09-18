@@ -10,6 +10,7 @@ import {
   CodeGenEnum,
 } from './appsync-visitor';
 import { METADATA_SCALAR_MAP } from '../scalars';
+import { getOwnerAuthRules, getOwnerFieldName, hasOwnerField } from '../utils/process-auth';
 export type JSONSchema = {
   models: JSONSchemaModels;
   enums: JSONSchemaEnums;
@@ -192,9 +193,20 @@ export class AppSyncJSONVisitor<
   }
 
   private generateNonModelMetadata(nonModel: CodeGenModel): JSONSchemaNonModel {
+    let fields = nonModel.fields
+    let rules = getOwnerAuthRules(nonModel)
+    if (rules !== undefined) {
+      for (let rule of rules) {
+        let ownerFieldName = getOwnerFieldName(rule);
+        if (ownerFieldName !== undefined && !hasOwnerField(fields, ownerFieldName)) {
+        let ownerField = {"name":ownerFieldName, "type":"String", "isNullable":true, "isList":false} as CodeGenField
+        fields.push(ownerField);
+        }
+      }
+    }
     return {
       name: this.getModelName(nonModel),
-      fields: nonModel.fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
+      fields: fields.reduce((acc: JSONModelFields, field: CodeGenField) => {
         const fieldMeta: JSONModelField = {
           name: this.getFieldName(field),
           isArray: field.isList,

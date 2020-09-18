@@ -27,6 +27,7 @@
     "@graphql-tools/utils": "^6.0.18",
     "chalk": "^3.0.0",
     "change-case": "^4.1.1",
+    "lint-fix": "^0.24.0",
     "lower-case-first": "^2.0.1",
     "pluralize": "^8.0.0",
     "strip-indent": "^3.0.0",

@@ -1,6 +1,7 @@
 import { indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { TypeScriptDeclarationBlock } from '../languages/typescript-declaration-block';
 import { camelCase } from 'change-case';
+import { getOwnerAuthRules, getOwnerFieldName, hasOwnerField } from '../utils/process-auth';
 import {
   AppSyncModelVisitor,
   CodeGenEnum,
@@ -70,30 +71,6 @@ export class AppSyncModelTypeScriptVisitor<
     return enumDeclarations.string;
   }
 
-  protected getOwnerFieldName(modelObj: CodeGenModel): string | undefined {
-    let rule = this.getOwnerAuthRule(modelObj);
-    if (rule === undefined) {
-      return undefined
-    }
-    let ownerField = rule.ownerField
-    if (ownerField === undefined) {
-      ownerField = "owner"
-    }
-    return ownerField
-  }
-
-  protected getOwnerAuthRule(modelObj: CodeGenModel): any {
-    for (let directive of modelObj.directives) {
-      if ("auth" === directive.name) {
-        for (let rule of directive.arguments.rules) {
-          if ("owner" === rule.allow) {
-            return rule;
-          }
-        }
-      }
-    }
-  }
-
   /**
    *
    * @param modelObj CodeGenModel object
@@ -107,22 +84,22 @@ export class AppSyncModelTypeScriptVisitor<
       .withName(modelName)
       .export(true);
 
-    let ownerFieldExists = false;
-    let ownerFieldName = this.getOwnerFieldName(modelObj);
     modelObj.fields.forEach((field: CodeGenField) => {
-      if (ownerFieldName === this.getFieldName(field) && "String" === this.getNativeType(field)) {
-        ownerFieldExists = true;
-      }
       modelDeclarations.addProperty(this.getFieldName(field), this.getNativeType(field), undefined, 'DEFAULT', {
         readonly: true,
         optional: field.isNullable,
       });
     });
-    if (this.getOwnerAuthRule(modelObj) !== undefined && !ownerFieldExists && ownerFieldName !== undefined) {
-      modelDeclarations.addProperty(ownerFieldName, "String", undefined, 'DEFAULT', {
-        readonly: true,
-        optional: true,
-      });
+    let ownerAuthRules = getOwnerAuthRules(modelObj);
+    if (ownerAuthRules !== undefined) {
+      for (let rule of ownerAuthRules) {
+        let ownerFieldName = getOwnerFieldName(rule);
+        if (ownerFieldName !== undefined && !hasOwnerField(modelObj.fields, ownerFieldName)) {
+        modelDeclarations.addProperty(ownerFieldName, "String", undefined, 'DEFAULT', {
+          readonly: true,
+          optional: true,
+        });
+      }
     }
 
     // Constructor
