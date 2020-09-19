@@ -95,10 +95,11 @@ export class AppSyncModelTypeScriptVisitor<
       for (let rule of ownerAuthRules) {
         let ownerFieldName = getOwnerFieldName(rule);
         if (ownerFieldName !== undefined && !hasOwnerField(modelObj.fields, ownerFieldName)) {
-        modelDeclarations.addProperty(ownerFieldName, "String", undefined, 'DEFAULT', {
-          readonly: true,
-          optional: true,
-        });
+          modelDeclarations.addProperty(ownerFieldName, "String", undefined, 'DEFAULT', {
+            readonly: true,
+            optional: true,
+          });
+        }
       }
     }
 

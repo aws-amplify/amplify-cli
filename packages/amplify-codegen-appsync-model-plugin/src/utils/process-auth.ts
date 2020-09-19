@@ -94,8 +94,8 @@ export function processAuthDirective(directives: CodeGenDirectives): AuthDirecti
   });
 }
 
-export function getOwnerAuthRules(modelObj: CodeGenModel): any {
-  let rules = Array<any>();
+export function getOwnerAuthRules(modelObj: CodeGenModel): AuthRule[] {
+  let rules = Array<AuthRule>();
   for (let directive of modelObj.directives) {
     if ("auth" === directive.name) {
       for (let rule of directive.arguments.rules) {
@@ -108,7 +108,7 @@ export function getOwnerAuthRules(modelObj: CodeGenModel): any {
   return rules;
 }
 
-export function getOwnerFieldName(rule: any): string | undefined {
+export function getOwnerFieldName(rule: AuthRule): string | undefined {
   if (rule.ownerField === undefined) {
     return "owner";
   } else {
