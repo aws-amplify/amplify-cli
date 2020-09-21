@@ -23,8 +23,7 @@ export function generateSource(context: LegacyCompilerContext) {
   generator.printOnNewline('//  This file was automatically generated and should not be edited.');
 
   generator.printOnNewline(`import { Injectable } from '@angular/core';`);
-  generator.printOnNewline(`import API, { graphqlOperation } from '@aws-amplify/api';`);
-  generator.printOnNewline(`import { GraphQLResult } from "@aws-amplify/api/lib/types";`);
+  generator.printOnNewline(`import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api-graphql';`);
 
   generator.printOnNewline(`import { Observable } from 'zen-observable-ts';`);
   generator.printNewline();
