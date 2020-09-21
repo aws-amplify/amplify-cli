@@ -205,14 +205,12 @@ const generateDartPreset = (
     });
   });
 
-  // Class loader
   config.push({
     ...options,
     filename: join(options.baseOutputDir, `${LOADER_CLASS_NAME}.dart`),
     config: {
       ...options.config,
       scalars: { ...DART_SCALAR_MAP, ...options.config.scalars },
-      generate: 'loader',
     },
   });
 
@@ -231,21 +229,16 @@ export const preset: Types.OutputPreset<AppSyncModelCodeGenPresetConfig> = {
       case 'java':
       case 'android':
         return generateJavaPreset(options, models);
-        break;
       case 'swift':
       case 'ios':
         return generateSwiftPreset(options, models);
-        break;
       case 'javascript':
         return generateJavasScriptPreset(options, models);
-        break;
       case 'typescript':
         return generateTypeScriptPreset(options, models);
-        break;
       case 'flutter':
       case 'dart':
         return generateDartPreset(options, models);
-        break;
       default:
         throw new Error(
           `amplify-codegen-appsync-model-plugin not support language target ${codeGenTarget}. Supported codegen targets arr ${APPSYNC_DATA_STORE_CODEGEN_TARGETS.join(
