@@ -2,12 +2,12 @@ const moment = require('moment');
 const path = require('path');
 const { pathManager, PathConstants, stateManager } = require('amplify-cli-core');
 const glob = require('glob');
-const archiver = require('../src/utils/archiver');
+const archiver = require('./utils/archiver');
 const fs = require('fs-extra');
 const ora = require('ora');
 const sequential = require('promise-sequential');
-const Cloudformation = require('../src/aws-utils/aws-cfn');
-const S3 = require('../src/aws-utils/aws-s3');
+const Cloudformation = require('./aws-utils/aws-cfn');
+const S3 = require('./aws-utils/aws-s3');
 const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
 const amplifyServiceManager = require('./amplify-service-manager');
@@ -18,7 +18,7 @@ async function run(context) {
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
     context.exeInfo = context.exeInfo || {};
     const { projectName } = context.exeInfo.projectConfig;
-    const initTemplateFilePath = path.join(__dirname, 'rootStackTemplate.json');
+    const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
     const timeStamp = `${moment().format('Hmmss')}`;
     const { envName = '' } = context.exeInfo.localEnvInfo;
     let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);

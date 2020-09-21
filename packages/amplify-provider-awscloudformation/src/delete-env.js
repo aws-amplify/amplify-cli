@@ -1,8 +1,8 @@
 const fs = require('fs-extra');
 const path = require('path');
 
-const Cloudformation = require('../src/aws-utils/aws-cfn');
-const S3 = require('../src/aws-utils/aws-s3');
+const Cloudformation = require('./aws-utils/aws-cfn');
+const S3 = require('./aws-utils/aws-s3');
 const { loadConfigurationForEnv } = require('./configuration-manager');
 const { deleteEnv } = require('./amplify-service-manager');
 const { S3BackendZipFileName, ProviderName } = require('./constants');

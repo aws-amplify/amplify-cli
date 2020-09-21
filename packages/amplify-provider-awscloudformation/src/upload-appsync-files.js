@@ -3,7 +3,7 @@ const fsext = require('fs-extra');
 const path = require('path');
 
 const TransformPackage = require('graphql-transformer-core');
-const S3 = require('../src/aws-utils/aws-s3');
+const S3 = require('./aws-utils/aws-s3');
 
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const providerName = require('./constants').ProviderName;

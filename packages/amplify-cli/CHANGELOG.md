@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.29.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.1...@aws-amplify/cli@4.29.2) (2020-09-16)
+
+
+### Bug Fixes
+
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-cli/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-cli/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+
+
+
+
+
 ## [4.29.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.0...@aws-amplify/cli@4.29.1) (2020-09-09)
 
 

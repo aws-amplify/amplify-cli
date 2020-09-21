@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.19.0...amplify-category-auth@2.19.1) (2020-09-16)
+
+
+### Bug Fixes
+
+* translate include oAuthMetadata and fix hostedUI meta ([#5304](https://github.com/aws-amplify/amplify-cli/issues/5304)) ([3c44c11](https://github.com/aws-amplify/amplify-cli/commit/3c44c110964907be203c4c70ee4e80122956fe85))
+
+
+
+
+
 # [2.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.18.6...amplify-category-auth@2.19.0) (2020-09-09)
 
 

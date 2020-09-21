@@ -73,3 +73,12 @@ export function getTeamProviderInfo(projectRootDirPath: string) {
   }
   return teamProviderInfo;
 }
+
+export function getProjectConfig(projectRootDirPath: string) {
+  let projectConfig;
+  const projectConfigPath = path.join(projectRootDirPath, 'amplify', '.config', 'project-config.json');
+  if (fs.existsSync(projectConfigPath)) {
+    projectConfig = util.readJsonFileSync(projectConfigPath);
+  }
+  return projectConfig;
+}

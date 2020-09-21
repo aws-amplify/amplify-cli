@@ -6,7 +6,7 @@ import fs from 'fs-extra';
 import glob from 'glob';
 import path from 'path';
 import { SemVer, coerce, gte, lt } from 'semver';
-import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_SOURCE, MAIN_BINARY_WIN } from './constants';
+import { BIN_LOCAL, BIN, SRC, MAIN_BINARY, DIST, MAIN_BINARY_WIN } from './constants';
 
 const executableName = 'go';
 const minimumVersion = <SemVer>coerce('1.0');
@@ -68,7 +68,7 @@ export const buildResourceInternal = async (
   const outDir = path.join(request.srcRoot, buildDir);
 
   const isWindows = /^win/.test(process.platform);
-  const executableName = isWindows === true ? MAIN_BINARY_WIN : MAIN_BINARY;
+  const executableName = isWindows && forLocalInvoke ? MAIN_BINARY_WIN : MAIN_BINARY;
   const executablePath = path.join(outDir, executableName);
 
   // For local invoke we've to use the build timestamp of the binary built
@@ -84,7 +84,6 @@ export const buildResourceInternal = async (
 
   if (force === true || !timestampToCheck || isBuildStale(request.srcRoot, timestampToCheck, outDir)) {
     const srcDir = path.join(request.srcRoot, SRC);
-    const entryFile = MAIN_SOURCE;
 
     // Clean and/or create the output directory
     if (fs.existsSync(outDir)) {
@@ -105,7 +104,7 @@ export const buildResourceInternal = async (
     }
 
     // Execute the build command, cwd must be the source file directory (Windows requires it)
-    executeCommand(['build', '-o', executablePath, entryFile], true, envVars, srcDir);
+    executeCommand(['build', '-o', executablePath, '.'], true, envVars, srcDir);
 
     rebuilt = true;
   }

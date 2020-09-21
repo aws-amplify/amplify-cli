@@ -1,4 +1,4 @@
-import { Fn, DeletionPolicy, Refs } from 'cloudform';
+import { Fn, DeletionPolicy, Refs } from 'cloudform-types';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
 import { isMultiEnvLayer, Permission, LayerParameters, getLayerMetadataFactory, LayerMetadata } from './layerParams';

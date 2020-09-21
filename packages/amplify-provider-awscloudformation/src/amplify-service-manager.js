@@ -2,8 +2,8 @@ const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
-const S3 = require('../src/aws-utils/aws-s3');
-const { getConfiguredAmplifyClient } = require('../src/aws-utils/aws-amplify');
+const S3 = require('./aws-utils/aws-s3');
+const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const constants = require('./constants');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 

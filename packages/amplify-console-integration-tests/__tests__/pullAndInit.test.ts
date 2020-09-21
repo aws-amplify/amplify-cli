@@ -27,6 +27,7 @@ import {
   removeFilesForThirdParty,
   checkAmplifyFolderStructure,
   getTeamProviderInfo,
+  getProjectConfig,
 } from '../src/pullAndInit/amplifyArtifactsManager';
 import * as util from '../src/util';
 
@@ -233,6 +234,51 @@ describe('amplify app console tests', () => {
     expect(teamInfo[envName].categories.auth).toBeDefined();
     authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
     expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+
+    // with frontend
+    const frontendConfig = deleteAmplifyDir(projRoot);
+    await headlessPull(
+      projRoot,
+      { envName, appId },
+      providersParam,
+      {
+        auth: {
+          facebookAppIdUserPool: FACEBOOK_APP_ID,
+          facebookAppSecretUserPool: FACEBOOK_APP_SECRET,
+          googleAppIdUserPool: GOOGLE_APP_ID,
+          googleAppSecretUserPool: GOOGLE_APP_SECRET,
+          loginwithamazonAppIdUserPool: AMAZON_APP_ID,
+          loginwithamazonAppSecretUserPool: AMAZON_APP_SECRET,
+        },
+      },
+      {
+        frontend: 'javascript',
+        config: {
+          BuildCommand: 'yarn run build',
+          DistributionDir: 'build',
+          SourceDir: 'src',
+          StartCommand: 'yarn run start',
+        },
+        framework: 'react-native',
+      },
+    );
+
+    const projectConfig = getProjectConfig(projRoot);
+    expect(projectConfig).toEqual({
+      providers: ['awscloudformation'],
+      projectName: 'authConsoleTest',
+      version: '3.0',
+      frontend: 'javascript',
+      javascript: {
+        framework: 'react-native',
+        config: {
+          SourceDir: 'src',
+          DistributionDir: 'build',
+          BuildCommand: 'yarn run build',
+          StartCommand: 'yarn run start',
+        },
+      },
+    });
   });
 
   it('test pull with auth config', async () => {

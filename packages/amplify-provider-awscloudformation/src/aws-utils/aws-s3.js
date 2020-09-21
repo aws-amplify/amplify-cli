@@ -1,7 +1,7 @@
 const aws = require('./aws.js');
 const _ = require('lodash');
-const providerName = require('../../lib/constants').ProviderName;
-const configurationManager = require('../../lib/configuration-manager');
+const providerName = require('../constants').ProviderName;
+const configurationManager = require('../configuration-manager');
 const fs = require('fs-extra');
 const ora = require('ora');
 

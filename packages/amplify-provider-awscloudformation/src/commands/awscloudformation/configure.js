@@ -1,4 +1,4 @@
-const configManager = require('../../lib/configuration-manager');
+const configManager = require('../../configuration-manager');
 
 module.exports = {
   name: 'configure',

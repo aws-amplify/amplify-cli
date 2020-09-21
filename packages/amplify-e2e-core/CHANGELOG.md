@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.6.1...amplify-e2e-core@1.6.2) (2020-09-16)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** fix storage update ([#5191](https://github.com/aws-amplify/amplify-cli/issues/5191)) ([754f122](https://github.com/aws-amplify/amplify-cli/commit/754f12201c07132ff6c9e7ef88f4c567cdc6302d)), closes [#5124](https://github.com/aws-amplify/amplify-cli/issues/5124)
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-cli/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-cli/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.6.0...amplify-e2e-core@1.6.1) (2020-09-09)
 
 **Note:** Version bump only for package amplify-e2e-core

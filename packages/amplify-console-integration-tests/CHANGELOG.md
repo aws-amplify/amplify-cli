@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.24](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.2.23...amplify-console-integration-tests@1.2.24) (2020-09-16)
+
+
+### Bug Fixes
+
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-console-integration-tests/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-console-integration-tests/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+
+
+
+
+
 ## [1.2.23](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.2.22...amplify-console-integration-tests@1.2.23) (2020-09-09)
 
 **Note:** Version bump only for package amplify-console-integration-tests
