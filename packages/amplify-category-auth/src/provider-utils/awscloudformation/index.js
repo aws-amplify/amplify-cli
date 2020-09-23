@@ -3,7 +3,7 @@ const open = require('open');
 const _ = require('lodash');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { copyCfnTemplate, saveResourceParameters } = require('./utils/synthesize-resources');
-const { immutableAttributes: ENV_SPECIFIC_PARAMS, privateKeys } = require('./constants');
+const { ENV_SPECIFIC_PARAMS, privateKeys } = require('./constants');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
 const { supportedServices } = require('../supported-services');
 
