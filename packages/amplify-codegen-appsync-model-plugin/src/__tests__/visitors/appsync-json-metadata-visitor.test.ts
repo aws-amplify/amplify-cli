@@ -508,3 +508,271 @@ export declare const schema: Schema;"
     });
   });
 });
+
+
+describe('Metadata visitor', () => {
+  const schema = /* GraphQL */ `
+  type SimpleModel @model @auth(rules: [{ allow: owner, ownerField: "customOwnerField"}, { allow: owner, ownerField: "customOwnerField2"}]) {
+    id: ID!
+    name: String
+    bar: String
+  }
+  enum SimpleEnum {
+    enumVal1
+    enumVal2
+  }
+
+  type SimpleNonModelType {
+    id: ID!
+    names: [String]
+  }
+  `;
+  let visitor: AppSyncJSONVisitor;
+  beforeEach(() => {
+    visitor = getVisitor(schema);
+  });
+
+  describe('metadata snapshots', () => {
+    it('should generate for Javascript', () => {
+      const jsVisitor = getVisitor(schema, 'javascript');
+      expect(jsVisitor.generate()).toMatchInlineSnapshot(`
+        "export const schema = {
+            \\"models\\": {
+                \\"SimpleModel\\": {
+                    \\"name\\": \\"SimpleModel\\",
+                    \\"fields\\": {
+                        \\"id\\": {
+                            \\"name\\": \\"id\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"ID\\",
+                            \\"isRequired\\": true,
+                            \\"attributes\\": []
+                        },
+                        \\"name\\": {
+                            \\"name\\": \\"name\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        },
+                        \\"bar\\": {
+                            \\"name\\": \\"bar\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        },
+                        \\"customOwnerField\\": {
+                            \\"name\\": \\"customOwnerField\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        },
+                        \\"customOwnerField2\\": {
+                            \\"name\\": \\"customOwnerField2\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        }
+                    },
+                    \\"syncable\\": true,
+                    \\"pluralName\\": \\"SimpleModels\\",
+                    \\"attributes\\": [
+                        {
+                            \\"type\\": \\"model\\",
+                            \\"properties\\": {}
+                        },
+                        {
+                            \\"type\\": \\"auth\\",
+                            \\"properties\\": {
+                                \\"rules\\": [
+                                    {
+                                        \\"provider\\": \\"userPools\\",
+                                        \\"ownerField\\": \\"customOwnerField\\",
+                                        \\"allow\\": \\"owner\\",
+                                        \\"identityClaim\\": \\"cognito:username\\",
+                                        \\"operations\\": [
+                                            \\"create\\",
+                                            \\"update\\",
+                                            \\"delete\\",
+                                            \\"read\\"
+                                        ]
+                                    },
+                                    {
+                                        \\"provider\\": \\"userPools\\",
+                                        \\"ownerField\\": \\"customOwnerField2\\",
+                                        \\"allow\\": \\"owner\\",
+                                        \\"identityClaim\\": \\"cognito:username\\",
+                                        \\"operations\\": [
+                                            \\"create\\",
+                                            \\"update\\",
+                                            \\"delete\\",
+                                            \\"read\\"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            \\"enums\\": {
+                \\"SimpleEnum\\": {
+                    \\"name\\": \\"SimpleEnum\\",
+                    \\"values\\": [
+                        \\"enumVal1\\",
+                        \\"enumVal2\\"
+                    ]
+                }
+            },
+            \\"nonModels\\": {
+                \\"SimpleNonModelType\\": {
+                    \\"name\\": \\"SimpleNonModelType\\",
+                    \\"fields\\": {
+                        \\"id\\": {
+                            \\"name\\": \\"id\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"ID\\",
+                            \\"isRequired\\": true,
+                            \\"attributes\\": []
+                        },
+                        \\"names\\": {
+                            \\"name\\": \\"names\\",
+                            \\"isArray\\": true,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        }
+                    }
+                }
+            },
+            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
+        };"
+      `);
+    });
+    it('should generate for typescript', () => {
+      const tsVisitor = getVisitor(schema, 'typescript');
+      expect(tsVisitor.generate()).toMatchInlineSnapshot(`
+        "import { Schema } from \\"@aws-amplify/datastore\\";
+
+        export const schema: Schema = {
+            \\"models\\": {
+                \\"SimpleModel\\": {
+                    \\"name\\": \\"SimpleModel\\",
+                    \\"fields\\": {
+                        \\"id\\": {
+                            \\"name\\": \\"id\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"ID\\",
+                            \\"isRequired\\": true,
+                            \\"attributes\\": []
+                        },
+                        \\"name\\": {
+                            \\"name\\": \\"name\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        },
+                        \\"bar\\": {
+                            \\"name\\": \\"bar\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        },
+                        \\"customOwnerField\\": {
+                            \\"name\\": \\"customOwnerField\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        },
+                        \\"customOwnerField2\\": {
+                            \\"name\\": \\"customOwnerField2\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        }
+                    },
+                    \\"syncable\\": true,
+                    \\"pluralName\\": \\"SimpleModels\\",
+                    \\"attributes\\": [
+                        {
+                            \\"type\\": \\"model\\",
+                            \\"properties\\": {}
+                        },
+                        {
+                            \\"type\\": \\"auth\\",
+                            \\"properties\\": {
+                                \\"rules\\": [
+                                    {
+                                        \\"provider\\": \\"userPools\\",
+                                        \\"ownerField\\": \\"customOwnerField\\",
+                                        \\"allow\\": \\"owner\\",
+                                        \\"identityClaim\\": \\"cognito:username\\",
+                                        \\"operations\\": [
+                                            \\"create\\",
+                                            \\"update\\",
+                                            \\"delete\\",
+                                            \\"read\\"
+                                        ]
+                                    },
+                                    {
+                                        \\"provider\\": \\"userPools\\",
+                                        \\"ownerField\\": \\"customOwnerField2\\",
+                                        \\"allow\\": \\"owner\\",
+                                        \\"identityClaim\\": \\"cognito:username\\",
+                                        \\"operations\\": [
+                                            \\"create\\",
+                                            \\"update\\",
+                                            \\"delete\\",
+                                            \\"read\\"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            \\"enums\\": {
+                \\"SimpleEnum\\": {
+                    \\"name\\": \\"SimpleEnum\\",
+                    \\"values\\": [
+                        \\"enumVal1\\",
+                        \\"enumVal2\\"
+                    ]
+                }
+            },
+            \\"nonModels\\": {
+                \\"SimpleNonModelType\\": {
+                    \\"name\\": \\"SimpleNonModelType\\",
+                    \\"fields\\": {
+                        \\"id\\": {
+                            \\"name\\": \\"id\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"ID\\",
+                            \\"isRequired\\": true,
+                            \\"attributes\\": []
+                        },
+                        \\"names\\": {
+                            \\"name\\": \\"names\\",
+                            \\"isArray\\": true,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        }
+                    }
+                }
+            },
+            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
+        };"
+      `);
+    });
+
+  });
+});

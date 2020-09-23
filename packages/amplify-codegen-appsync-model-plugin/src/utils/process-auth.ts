@@ -1,4 +1,4 @@
-import { CodeGenDirectives, CodeGenDirective } from '../visitors/appsync-visitor';
+import { CodeGenDirectives, CodeGenDirective, CodeGenModel, CodeGenField } from '../visitors/appsync-visitor';
 export enum AuthProvider {
   apiKey = 'apiKey',
   iam = 'iam',
@@ -92,4 +92,31 @@ export function processAuthDirective(directives: CodeGenDirectives): AuthDirecti
       },
     };
   });
+}
+
+export function getOwnerAuthRules(modelObj: CodeGenModel): AuthRule[] {
+  let rules = Array<AuthRule>();
+  for (let directive of modelObj.directives) {
+    if ("auth" === directive.name) {
+      for (let rule of directive.arguments.rules) {
+        if (rule.allow === AuthStrategy.owner) {
+          rules.push(rule);
+        }
+      }
+    }
+  }
+  return rules;
+}
+
+export function getOwnerFieldName(rule: AuthRule): string | undefined {
+  if (rule.ownerField === undefined) {
+    return "owner";
+  } else {
+    return rule.ownerField
+  }
+}
+
+export function hasOwnerField(fields: CodeGenField[], ownerField: string): boolean {
+  let ownerFields = fields.filter(field => field.name === ownerField);
+  return ownerFields && ownerFields.length !== 0
 }
