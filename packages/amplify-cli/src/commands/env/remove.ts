@@ -1,5 +1,5 @@
 import ora from 'ora';
-import { $TSContext, FeatureFlags, stateManager, UnknownArgumentError } from 'amplify-cli-core';
+import { FeatureFlags, stateManager, UnknownArgumentError } from 'amplify-cli-core';
 import { getConfirmation } from '../../extensions/amplify-helpers/delete-project';
 
 export const run = async context => {
