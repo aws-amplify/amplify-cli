@@ -24,23 +24,22 @@ def main():
   args = parser.parse_args()
   scan_limit = 300
 
-  if (args.ak is None or args.sk is None):
-    credentials = boto3.Session().get_credentials()
-    args.sk = args.sk or credentials.secret_key
-    args.ak = args.ak or credentials.access_key
-    args.st = args.st or credentials.token
-
   client = boto3.client('lambda', region_name=args.rn)
-  import_dynamodb_items_to_es(args.tn, args.sk, args.ak, args.st, args.rn, args.esarn, args.lf, scan_limit)
 
-def import_dynamodb_items_to_es(table_name, aws_secret, aws_access, aws_token, aws_region, event_source_arn, lambda_f, scan_limit):
+  if (args.ak is None or args.sk is None):
+    session = Session(region_name=args.rn)
+  else:
+    session = Session(aws_access_key_id=args.ak, aws_secret_access_key=args.sk, aws_session_token=args.st, region_name=args.rn)
+
+  import_dynamodb_items_to_es(args.tn, args.esarn, args.lf, scan_limit, session)
+
+def import_dynamodb_items_to_es(table_name, event_source_arn, lambda_f, scan_limit, session):
   global reports
   global partSize
   global object_amount
 
   logger = logging.getLogger()
   logger.setLevel(logging.INFO)
-  session = Session(aws_access_key_id=aws_access, aws_secret_access_key=aws_secret, aws_session_token=aws_token, region_name=aws_region)
   dynamodb = session.resource('dynamodb')
   logger.info('dynamodb: %s', dynamodb)
   ddb_table_name = table_name
@@ -61,7 +60,7 @@ def import_dynamodb_items_to_es(table_name, aws_secret, aws_access, aws_token, a
         ddb_keys = boto3.dynamodb.types.TypeSerializer().serialize(ddb_keys)["M"]
         record = {
           "dynamodb": {"SequenceNumber": "0000", "Keys": ddb_keys, "NewImage": ddb_data},
-          "awsRegion": aws_region,
+          "awsRegion": session.region_name,
           "eventName": "MODIFY",
           "eventSourceARN": event_source_arn,
           "eventSource": "aws:dynamodb"
