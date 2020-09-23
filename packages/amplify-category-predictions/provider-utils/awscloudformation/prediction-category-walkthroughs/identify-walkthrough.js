@@ -10,12 +10,11 @@ import {
   addTextractPolicies,
 } from '../assets/identifyCFNGenerate';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
-const { ResourceDoesNotExistError } = require('amplify-cli-core');
+const { ResourceDoesNotExistError, ResourceAlreadyExistsError } = require('amplify-cli-core');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const uuid = require('uuid');
-const { ResourceAlreadyExistsError } = require('amplify-category-cli');
 // Predictions Info
 const templateFilename = 'identify-template.json.ejs';
 const identifyTypes = ['identifyText', 'identifyEntities', 'identifyLabels'];
