@@ -24,6 +24,7 @@ export async function pullBackend(context, inputParams) {
         context.print.info(
           `To merge local and upstream changes, commit all backend code changes to Git, perform a merge, resolve conflicts, and then run 'amplify push'.`,
         );
+        context.usageData.emitSuccess();
         process.exit(0);
       }
     }

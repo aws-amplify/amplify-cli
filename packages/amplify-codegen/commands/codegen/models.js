@@ -10,6 +10,7 @@ module.exports = {
     } catch (ex) {
       context.print.info(ex.message);
       console.log(ex.stack);
+      context.usageData.emitError(ex);
       process.exit(1);
     }
   },

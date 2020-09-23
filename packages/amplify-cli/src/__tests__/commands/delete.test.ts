@@ -37,6 +37,9 @@ describe('amplify delete: ', () => {
     print: {
       error: jest.fn(),
     },
+    usageData: {
+      emitError: jest.fn(),
+    },
   };
 
   describe('case: amplify delete is run with additional command line arguments', () => {
@@ -80,11 +83,13 @@ describe('amplify delete: ', () => {
     print: {
       error: jest.fn(),
     },
+    usageData: {
+      emitError: jest.fn(),
+    },
   };
 
   describe('case: amplify delete is run with the --force command line option, as well as additional command line arguments', () => {
     it('delete run method should display an error message', async () => {
-      console.log('did we run?');
       await runDeleteCmd(mockContextWithForceOptionAndCLArgs);
       expect(mockContextWithForceOptionAndCLArgs.print.error).toBeCalledWith('"delete" command does not expect additional arguments.');
       expect(mockContextWithForceOptionAndCLArgs.print.error).toBeCalledWith(

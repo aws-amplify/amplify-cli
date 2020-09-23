@@ -4,7 +4,7 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import { stateManager } from 'amplify-cli-core';
+import { EnvironmentDoesNotExistError, stateManager } from 'amplify-cli-core';
 
 /*
 context: Object // Required
@@ -35,7 +35,9 @@ export async function pushResources(context, category, resourceName, filteredRes
 
       await initializeEnv(context);
     } else {
-      context.print.error("Environment doesn't exist. Please use 'amplify init' to create a new environment");
+      const errMessage = "Environment doesn't exist. Please use 'amplify init' to create a new environment";
+      context.print.error(errMessage);
+      context.usageData.emitError(new EnvironmentDoesNotExistError(errMessage));
       process.exit(1);
     }
   }

@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const ora = require('ora');
 const { DataApiParams } = require('graphql-relational-schema-transformer');
+const { ResourceDoesNotExistError, ResourceCredentialsNotFoundError } = require('amplify-cli-core');
 
 const spinner = ora('');
 const category = 'api';
@@ -11,9 +12,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
 
   // Verify that an API exists in the project before proceeding.
   if (amplifyMeta == null || amplifyMeta[category] == null || Object.keys(amplifyMeta[category]).length === 0) {
-    context.print.error(
-      'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.',
-    );
+    const errMessage =
+      'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     process.exit(0);
   }
 
@@ -30,9 +32,10 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
 
   // If an AppSync API does not exist, inform the user to create the AppSync API
   if (!appSyncApi) {
-    context.print.error(
-      'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.',
-    );
+    const errMessage =
+      'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     process.exit(0);
   }
 
@@ -92,7 +95,9 @@ async function selectCluster(context, inputs, AWS) {
       clusterResourceId: selectedCluster.DbClusterResourceId,
     };
   }
-  context.print.error('No properly configured Aurora Serverless clusters found.');
+  const errMessage = 'No properly configured Aurora Serverless clusters found.';
+  context.print.error(errMessage);
+  context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
   process.exit(0);
 }
 
@@ -142,7 +147,9 @@ async function getSecretStoreArn(context, inputs, clusterResourceId, AWS) {
       const selectedSecretName = await promptWalkthroughQuestion(inputs, 2, Array.from(secrets.keys()));
       selectedSecretArn = secrets.get(selectedSecretName);
     } else {
-      context.print.error('No RDS access credentials found in the AWS Secrect Manager.');
+      const errMessage = 'No RDS access credentials found in the AWS Secrect Manager.';
+      context.print.error(errMessage);
+      context.usageData.emitError(new ResourceCredentialsNotFoundError(errMessage));
       process.exit(0);
     }
   }
@@ -185,7 +192,9 @@ async function selectDatabase(context, inputs, clusterArn, secretArn, AWS) {
     return await promptWalkthroughQuestion(inputs, 3, databaseList);
   }
 
-  context.print.error('No properly configured databases found.');
+  const errMessage = 'No properly configured databases found.';
+  context.print.error(errMessage);
+  context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
   process.exit(0);
 }
 

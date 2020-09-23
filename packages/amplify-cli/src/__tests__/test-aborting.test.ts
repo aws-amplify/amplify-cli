@@ -66,6 +66,7 @@ describe('test SIGINT with execute', () => {
 
     setTimeout(() => {
       process.emit('SIGINT', 'SIGINT');
+      process.exitCode = 2;
     }, 50);
     const mockExit = jest.spyOn(process, 'exit').mockImplementation();
 
@@ -73,6 +74,7 @@ describe('test SIGINT with execute', () => {
     expect(mockContext.usageData.emitAbort).toBeCalled();
     expect(mockContext.usageData.emitInvoke).toBeCalled();
     expect(mockContext.usageData.emitError).toHaveBeenCalledTimes(0);
+    expect(mockContext.usageData.emitSuccess).toHaveBeenCalledTimes(0);
     expect(mockExit).toBeCalledWith(2);
   });
 });

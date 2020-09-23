@@ -1,6 +1,6 @@
 const constants = require('../../src/constants');
 const codeGen = require('../../src');
-
+const { InvalidSubCommandError } = require('amplify-cli-core');
 const featureName = 'codegen';
 
 module.exports = {
@@ -33,6 +33,7 @@ module.exports = {
     }
     if (context.parameters.first) {
       context.print.info(constants.CMD_DESCRIPTION_NOT_SUPPORTED);
+      context.usageData.emitError(new InvalidSubCommandError(constants.CMD_DESCRIPTION_NOT_SUPPORTED));
       process.exit(1);
     }
 
@@ -42,6 +43,7 @@ module.exports = {
       await codeGen.generate(context, forceDownloadSchema, maxDepth);
     } catch (e) {
       context.print.info(e.message);
+      context.usageData.emitError(e);
       process.exit(1);
     }
   },

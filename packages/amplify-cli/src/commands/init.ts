@@ -23,12 +23,14 @@ export const run = async (context: $TSContext) => {
     await initProviders(context);
     await onSuccess(context);
   } catch (e) {
+    context.usageData.emitError(e);
     onFailure(e);
   }
 
   try {
     await postInitSetup(context);
   } catch (e) {
+    context.usageData.emitError(e);
     onFailure(e);
   }
 };

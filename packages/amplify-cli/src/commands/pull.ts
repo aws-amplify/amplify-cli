@@ -19,7 +19,7 @@ export const run = async context => {
     if (inputAppId && AmplifyAppId && inputAppId !== AmplifyAppId) {
       context.print.error('Amplify appId mismatch.');
       context.print.info(`You are currently working in the amplify project with Id ${AmplifyAppId}`);
-      process.exit(1);
+      throw new Error('Amplify appId');
     }
 
     if (inputEnvName) {

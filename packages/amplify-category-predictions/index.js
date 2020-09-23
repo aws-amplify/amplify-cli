@@ -3,6 +3,7 @@ import { promptConsoleSupportedCategory } from './provider-utils/supportedPredic
 const predictionsConsole = require('./provider-utils/awscloudformation/index');
 const inquirer = require('inquirer');
 const path = require('path');
+import { ResourceNotFoundError } from 'amplify-cli-core';
 
 const category = 'predictions';
 
@@ -26,7 +27,9 @@ async function console(context) {
         }
       });
       if (predictionsResources.length === 0) {
-        context.print.error(`No ${result.category} console supported resource found.`);
+        const errMessage = `No ${result.category} console supported resource found.`;
+        context.print.error(errMessage);
+        context.usageData.emitError(new ResourceNotFoundError(errMessage));
         process.exit(0);
         return;
       }
@@ -52,6 +55,7 @@ async function console(context) {
       context.print.error('Error opening console.');
       context.print.info(err.message);
       context.usageData.emitError(err);
+      process.exitCode = 1;
     });
 }
 

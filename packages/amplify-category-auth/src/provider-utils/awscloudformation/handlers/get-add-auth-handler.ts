@@ -28,6 +28,7 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
       context.print.info(err.stack);
       context.print.error('There was an error adding the auth resource');
       context.usageData.emitError(err);
+      process.exitCode = 1;
     });
   return requestWithDefaults.resourceName!;
 };

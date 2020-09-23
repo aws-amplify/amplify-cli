@@ -72,14 +72,17 @@ export async function run() {
     await checkProjectConfigVersion(context);
     context.usageData.emitInvoke();
     await executeCommand(context);
-    context.usageData.emitSuccess();
+    const exitCode = process.exitCode || 0;
+    if (exitCode === 0) {
+      context.usageData.emitSuccess();
+    }
     persistContext(context);
     // no command supplied defaults to help, give update notification at end of execution
     if (input.command === 'help') {
       // Checks for available update, defaults to a 1 day interval for notification
       notify({ defer: true, isGlobal: true });
     }
-    return 0;
+    return exitCode;
   } catch (e) {
     // ToDo: add logging to the core, and log execution errors using the unified core logging.
     errorHandler(e);
@@ -140,9 +143,12 @@ export async function execute(input: Input): Promise<number> {
     process.on('SIGINT', sigIntHandler.bind(context));
     context.usageData.emitInvoke();
     await executeCommand(context);
-    context.usageData.emitSuccess();
+    const exitCode = process.exitCode || 0;
+    if (exitCode === 0) {
+      context.usageData.emitSuccess();
+    }
     persistContext(context);
-    return 0;
+    return exitCode;
   } catch (e) {
     // ToDo: add logging to the core, and log execution errors using the unified core logging.
     errorHandler(e);
