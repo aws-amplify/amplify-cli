@@ -1001,13 +1001,13 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/plugin.test.ts
       CLI_REGION: us-east-2
-  datastore-modegen-amplify_e2e_tests:
+  datastore-modelgen-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
     resource_class: large
     steps: *ref_1
     environment:
-      TEST_SUITE: src/__tests__/datastore-modegen.test.ts
+      TEST_SUITE: src/__tests__/datastore-modelgen.test.ts
       CLI_REGION: us-west-2
   interactions-amplify_e2e_tests:
     working_directory: ~/repo
@@ -1193,7 +1193,7 @@ workflows:
             - plugin-amplify_e2e_tests
             - hostingPROD-amplify_e2e_tests
             - schema-key-amplify_e2e_tests
-            - datastore-modegen-amplify_e2e_tests
+            - datastore-modelgen-amplify_e2e_tests
             - predictions-amplify_e2e_tests
             - schema-model-amplify_e2e_tests
             - interactions-amplify_e2e_tests
@@ -1264,7 +1264,7 @@ workflows:
           requires:
             - publish_to_local_registry
             - api_1-amplify_e2e_tests
-      - datastore-modegen-amplify_e2e_tests:
+      - datastore-modelgen-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry

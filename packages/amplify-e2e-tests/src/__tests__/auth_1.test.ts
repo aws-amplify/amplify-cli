@@ -1,33 +1,16 @@
-import * as fs from 'fs-extra';
-import {
-  initJSProjectWithProfile,
-  initAndroidProjectWithProfile,
-  initIosProjectWithProfile,
-  deleteProject,
-  amplifyPushAuth,
-  amplifyPush,
-} from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
 import {
   addAuthWithDefault,
   removeAuthWithDefault,
   addAuthWithDefaultSocial,
   addAuthWithGroupTrigger,
   addAuthWithRecaptchaTrigger,
-  addAuthWithCustomTrigger,
-  addAuthWithSignInSignOutUrl,
-  updateAuthWithoutCustomTrigger,
-  updateAuthRemoveRecaptchaTrigger,
-  updateAuthSignInSignOutUrl,
   addAuthViaAPIWithTrigger,
-  addAuthWithMaxOptions,
-  addAuthUserPoolOnly,
 } from 'amplify-e2e-core';
 import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
-  getAwsAndroidConfig,
-  getAwsIOSConfig,
   getUserPool,
   getUserPoolClients,
   getLambdaFunction,

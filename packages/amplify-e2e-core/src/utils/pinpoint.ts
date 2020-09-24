@@ -69,9 +69,15 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
   return result;
 }
 
-export function initProject(cwd: string) {
+export function initProjectForPinpoint(cwd: string) {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    let chain = spawn(getCLIPath(), ['init'], {
+      cwd,
+      stripColors: true,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
+    })
       .wait('Enter a name for the project')
       .sendLine(settings.name)
       .wait('Enter a name for the environment')
