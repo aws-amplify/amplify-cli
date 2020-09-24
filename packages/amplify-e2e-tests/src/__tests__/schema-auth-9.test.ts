@@ -1,11 +1,11 @@
 import { initJSProjectWithProfile, deleteProject, createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 import { testSchema } from '../schema-api-directives';
 
-describe('api directives @auth batch 7', () => {
+describe('api directives @auth batch 8', () => {
   let projectDir: string;
 
   beforeEach(async () => {
-    projectDir = await createNewProjectDir('auth7');
+    projectDir = await createNewProjectDir('auth8');
     await initJSProjectWithProfile(projectDir, {});
   });
 
@@ -13,18 +13,19 @@ describe('api directives @auth batch 7', () => {
     await deleteProject(projectDir);
     deleteProjectDir(projectDir);
   });
-  it('auth fieldLevelAuth4', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth4');
+
+  it('auth fieldLevelAuth7', async () => {
+    const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth7');
     expect(testresult).toBeTruthy();
   });
 
-  it('auth fieldLevelAuth5', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth5');
+  it('auth fieldLevelAuth8', async () => {
+    const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth8');
     expect(testresult).toBeTruthy();
   });
 
-  it('auth fieldLevelAuth6', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth6');
+  it('auth generatesOwner', async () => {
+    const testresult = await testSchema(projectDir, 'auth', 'generatesOwner');
     expect(testresult).toBeTruthy();
   });
 });
