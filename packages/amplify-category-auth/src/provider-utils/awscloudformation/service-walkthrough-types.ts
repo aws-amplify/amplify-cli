@@ -7,12 +7,14 @@ export type ServiceQuestionsResult = ServiceQuestionsBaseResult &
   PasswordPolicyResult &
   PasswordRecoveryResult &
   MfaResult &
-  AdminQueriesResult;
+  AdminQueriesResult &
+  Triggers;
 
 export interface ServiceQuestionsBaseResult {
-  serviceName: string;
+  serviceName: 'Cognito';
   resourceName?: string;
-  useDefault: 'manual';
+  useDefault: 'default' | 'defaultSocial' | 'manual';
+  updateFlow?: 'default' | 'defaultSocial' | 'manual' | 'callbacks' | 'providers' | 'updateUserPoolGroups' | 'updateAdminQueries';
   requiredAttributes: string[];
   authSelections: 'userPoolOnly' | 'identityPoolAndUserPool';
   userPoolName?: string;
@@ -25,7 +27,7 @@ export interface ServiceQuestionsBaseResult {
 }
 
 export interface OAuthResult {
-  hostedUI: boolean;
+  hostedUI?: boolean;
   hostedUIDomainName?: string;
   hostedUIProviderMeta?: any;
   hostedUIProviderCreds?: any;
@@ -86,6 +88,10 @@ export interface PasswordPolicyResult {
 export type PasswordPolicy = 'Requires Lowercase' | 'Requires Numbers' | 'Requires Symbols' | 'Requires Uppercase';
 
 export type UsernameAttributes = 'username' | 'email' | 'phone_number' | 'email, phone_number';
+
+export interface Triggers {
+  triggers?: any; // TODO create a type for this
+}
 
 export enum TriggerType {
   CreateAuthChallenge = 'CreateAuthChallenge',
