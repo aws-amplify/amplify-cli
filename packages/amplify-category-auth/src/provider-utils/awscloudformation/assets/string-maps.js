@@ -136,6 +136,7 @@ const attributeProviderMap = {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    oidc: {},
   },
   birthdate: {
     facebook: {
@@ -147,6 +148,7 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    oidc: {},
   },
   email: {
     facebook: {
@@ -161,6 +163,7 @@ const attributeProviderMap = {
       attr: 'email',
       scope: 'profile',
     },
+    oidc: {},
   },
   family_name: {
     facebook: {
@@ -172,6 +175,7 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    oidc: {},
   },
   gender: {
     facebook: {
@@ -183,6 +187,7 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    oidc: {},
   },
   given_name: {
     facebook: {
@@ -194,6 +199,7 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    oidc: {},
   },
   locale: {
     facebook: {},
@@ -202,6 +208,7 @@ const attributeProviderMap = {
       attr: 'postal_code',
       scope: 'postal_code',
     },
+    oidc: {},
   },
   middle_name: {
     facebook: {
@@ -210,6 +217,7 @@ const attributeProviderMap = {
     },
     google: {},
     loginwithamazon: {},
+    oidc: {},
   },
   name: {
     facebook: {
@@ -224,11 +232,13 @@ const attributeProviderMap = {
       attr: 'name',
       scope: 'profile',
     },
+    oidc: {},
   },
   nickname: {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    oidc: {},
   },
   phone_number: {
     facebook: {},
@@ -237,6 +247,7 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    oidc: {},
   },
   picture: {
     facebook: {
@@ -248,26 +259,31 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    oidc: {},
   },
   preferred_username: {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    oidc: {},
   },
   profile: {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    oidc: {},
   },
   zoneinfo: {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    oidc: {},
   },
   website: {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    oidc: {},
   },
   username: {
     facebook: {
@@ -282,6 +298,7 @@ const attributeProviderMap = {
       attr: 'user_id',
       scope: 'profile:user_id',
     },
+    oidc: {},
   },
   updated_at: {
     facebook: {
@@ -290,6 +307,7 @@ const attributeProviderMap = {
     },
     google: {},
     loginwithamazon: {},
+    oidc: {},
   },
 };
 
@@ -364,6 +382,11 @@ const coreAttributes = [
   },
 ];
 
+const attributesRequestMethod = [
+  'POST',
+  'GET'
+]
+
 const appClientReadAttributes = [
   ...coreAttributes,
   {
@@ -391,7 +414,7 @@ const authProviders = [
     name: 'Amazon',
     value: 'www.amazon.com',
     answerHashKey: 'amazonAppId',
-  },
+  }
 ];
 
 const hostedUIProviders = [
@@ -406,6 +429,10 @@ const hostedUIProviders = [
   {
     name: 'Login With Amazon',
     value: 'LoginWithAmazon',
+  },
+  {
+    name: 'Open ID Connect (OIDC)',
+    value: 'OIDC',
   },
 ];
 
@@ -423,19 +450,19 @@ const authorizeScopes = [
 const signInOptions = [
   {
     name: 'Username',
-    value: 'username',
+    value: ['username'],
   },
   {
     name: 'Email',
-    value: 'email',
+    value: ['email'],
   },
   {
     name: 'Phone Number',
-    value: 'phone_number',
+    value: ['phone_number'],
   },
   {
     name: 'Email or Phone Number',
-    value: 'email, phone_number',
+    value: ['email', 'phone_number'],
   },
   ...learnMoreOption,
 ];
@@ -563,6 +590,17 @@ const disableOptionsOnEdit = () => {
 const getAllMaps = edit => {
   if (edit) {
     disableOptionsOnEdit();
+    // Inject OIDC mapping
+    if(edit.oidcAttributesMapping ){
+      let oidcAttributesMapping = JSON.parse(edit.oidcAttributesMapping);
+      let newMap = {};
+      Object.keys(oidcAttributesMapping).map(
+        cognitoAttributeName => {
+        newMap[cognitoAttributeName] = attributeProviderMap[cognitoAttributeName];
+        newMap[cognitoAttributeName]['oidc'] = { 'attr': oidcAttributesMapping[cognitoAttributeName] };
+      });
+      Object.assign(attributeProviderMap, newMap);
+    }
   }
   return {
     coreAttributes,
@@ -580,6 +618,7 @@ const getAllMaps = edit => {
     oAuthFlows,
     oAuthScopes,
     authorizeScopes,
+    attributesRequestMethod,
     attributeProviderMap,
     updateFlowMap,
     capabilities,
@@ -604,6 +643,7 @@ module.exports = {
   authorizeScopes,
   oAuthFlows,
   oAuthScopes,
+  attributesRequestMethod,
   messages,
   attributeProviderMap,
   updateFlowMap,

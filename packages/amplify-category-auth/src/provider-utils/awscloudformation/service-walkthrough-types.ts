@@ -40,6 +40,8 @@ export interface SocialProviderResult {
   authProvidersUserPool?: string[];
   facebookAppIdUserPool?: string;
   facebookAppSecretUserPool?: string;
+  oidcAppIdUserPool?: string;
+  oidcAppSecretUserPool?: string;
   googleAppIdUserPool?: string;
   googleAppSecretUserPool?: string;
   loginwithamazonAppIdUserPool?: string;
@@ -56,6 +58,7 @@ export interface IdentityPoolResult {
   googleAndroid?: string;
   facebookAppId?: string;
   amazonAppId?: string;
+  oidcAppId?: string;
   selectedParties?: string; // serialized json
   audiences?: string[];
 }

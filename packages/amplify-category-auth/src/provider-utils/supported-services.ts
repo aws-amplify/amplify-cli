@@ -116,6 +116,18 @@ export const supportedServices = {
         ],
       },
       {
+        key: "oidcAppId",
+        question: "Enter your OIDC Client ID for your identity pool: ",
+        required: true,
+        andConditions: [
+          {
+            key: "authProviders",
+            value: "OIDC",
+            operator: "includes"
+          }
+        ]
+      },
+      {
         key: 'thirdPartyAuth',
         question: 'Do you want to enable 3rd party authentication providers in your identity pool?',
         learnMore:
@@ -1163,6 +1175,286 @@ export const supportedServices = {
             operator: 'includes',
           },
         ],
+      },
+      {
+        key: "oidcAppIdUserPool",
+        question: "Enter your OIDC App ID for your OAuth flow: ",
+        required: true,
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          }
+        ]
+      },
+      {
+        key: "oidcAppSecretUserPool",
+        question: "Enter your OIDC App Secret for your OAuth flow (optional): ",
+        required: false,
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          }
+        ],
+        validation: {
+          operator: "regex",
+          value: ".*",
+          onErrorMsg: "The value can be anything."
+        }
+      },
+      {
+        key: "oidcAppOIDCIssuer",
+        question: "Enter your OIDC Issuer url: ",
+        required: true,
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          }
+        ],
+        validation: {
+          operator: "regex",
+          value: "^(((?!http://(?!localhost))([a-zA-Z0-9.]{1,})://([a-zA-Z0-9-._~:?#@!$&'()*+,;=/]{1,}))|(?!http)(?!https)([a-zA-Z0-9.]{1,})://)$",
+          onErrorMsg: "The value must be a valid URI with a trailing forward slash. HTTPS must be used instead of HTTP unless you are using localhost."
+        }
+      },
+      {
+        key: "oidcAppOIDCAttributesRequestMethod",
+        question: "Select your OIDC Attributes Request Method:",
+        type: "list",
+        map: "attributesRequestMethod",
+        required: true,
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          }
+        ]
+      },
+      {
+        key: "RemoveScopeConfirmation",
+        question: "Do you want to remove any auth scopes?",
+        type: "confirm",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          },
+          {
+            key: "oidcAuthorizeScopes",
+            operator: "exists"
+          },
+          {
+            key: 'updateFlow',
+            value: 'providers',
+            operator: '=',
+          }
+        ]
+      },
+      {
+        key: "RemoveScopes",
+        question: "Which scopes do you want to remove?",
+        type: "multiselect",
+        iterator: "oidcAuthorizeScopes",
+        andConditions: [
+          {
+            key: "oidcAuthorizeScopes",
+            operator: "exists"
+          },
+          {
+            onCreate: "never"
+          },
+          {
+            key: "RemoveScopeConfirmation",
+            value: true,
+            operator: "="
+          }
+        ]
+      },
+      {
+        key: "OIDCAdditionalScope",
+        question: "Do you want to add auth scopes?",
+        type: "confirm",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          }
+        ]
+      },
+      {
+        key: "newOIDCAuthorizeScopes",
+        question: "Enter auth scope:",
+        required: true,
+        addAnotherLoop: "auth scope",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          },
+          {
+            key: "OIDCAdditionalScope",
+            value: true,
+            operator: "="
+          },
+          {
+            preventEdit: "existsInCurrent",
+            key: "oidcAuthorizeScopes"
+          }
+        ]
+      },
+      {
+        key: "EditMappingConfirmation",
+        question: "Do you want to edit attribute mappings?",
+        type: "confirm",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          },
+          {
+            key: "oidcAttributesMapping",
+            preventEdit: "=",
+            value: '{}'
+          },
+          {
+            onCreate: "never"
+          },
+        ]
+      },
+      {
+        key: "EditMappings",
+        question: "Which attribute mappings do you want to edit?",
+        type: "multiselect",
+        iterator: "oidcAttributesMapping",
+        iteratorValidation: {
+          operator: "regex",
+          value: ".*",
+          onErrorMsg: "The value must be a valid string."
+        },
+        andConditions: [
+          {
+            key: "oidcAttributesMapping",
+            operator: "exists"
+          },
+          {
+            onCreate: "never"
+          },
+          {
+            key: "EditMappingConfirmation",
+            value: true,
+            operator: "="
+          }
+        ]
+      },
+      {
+        key: "RemoveMappingConfirmation",
+        question: "Do you want to remove any attribute mappings?",
+        type: "confirm",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          },
+          {
+            key: "oidcAttributesMapping",
+            preventEdit: "=",
+            value: '{}'
+          },
+          {
+            onCreate: "never"
+          },
+        ]
+      },
+      {
+        key: "RemoveMappings",
+        question: "Which attribute mappings do you want to remove?",
+        type: "multiselect",
+        iterator: "oidcAttributesMapping",
+        iteratorValidation: {
+          operator: "regex",
+          value: ".*",
+          onErrorMsg: "The value must be a valid string."
+        },
+        andConditions: [
+          {
+            key: "oidcAttributesMapping",
+            operator: "exists"
+          },
+          {
+            onCreate: "never"
+          },
+          {
+            key: "RemoveMappingConfirmation",
+            value: true,
+            operator: "="
+          }
+        ]
+      },
+      {
+        key: "OIDCAdditionalMapping",
+        question: "Do you want to add attribute mappings?",
+        type: "confirm",
+        andConditions: [
+          {
+            key: "authProvidersUserPool",
+            value: "OIDC",
+            operator: "includes"
+          },
+        ]
+      },
+      {
+        key: "newOIDCMapping",
+        question: "Which attribute mappings do you want to add?",
+        required: true,
+        type: "multiselect",
+        map: "coreAttributes",
+        iterator: "oidcAttributesMapping",
+        requiredOptions: ["usernameAttributes", "requiredAttributes"],
+        andConditions: [
+          {
+            key: "OIDCAdditionalMapping",
+            value: true,
+            operator: "="
+          },
+          {
+            preventEdit: 'exists',
+            key: 'oidcAttributesMapping',
+          },
+          {
+            preventEdit: 'existsInCurrent',
+            key: 'oidcAttributesMapping',
+          },
+        ]
+      },
+  {
+
+          key: "newOIDCMappingOnUpdate",
+          question: "Which attribute mappings do you want to add?",
+          required: true,
+          type: "multiselect",
+          map: "coreAttributes",
+          iterator: "extraoidcAttributesMapping",
+        andConditions: [
+          {
+            key: "OIDCAdditionalMapping",
+            value: true,
+            operator: "="
+          },
+          {
+            onCreate: "never"
+          }
+        ]
       },
     ],
     cfnFilename: 'auth-template.yml.ejs',

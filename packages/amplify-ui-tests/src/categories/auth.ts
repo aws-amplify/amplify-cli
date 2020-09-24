@@ -24,7 +24,8 @@ export function addAuthWithDefault(cwd: string, settings: any = {}, verbose: boo
 
 export function addAuthWithDefaultSocial(cwd: string, settings: any = {}, verbose: boolean = !isCI()) {
   return new Promise((resolve, reject) => {
-    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET }: any = getEnvVars();
+    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET,
+      OIDC_APP_ID, OIDC_APP_SECRET, OIDC_APP_ISSUER, OIDC_APP_SCOPES, OIDC_APP_MAPPING }: any = getEnvVars();
 
     const missingVars = [];
     if (!FACEBOOK_APP_ID) {
@@ -44,6 +45,21 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any = {}, verbos
     }
     if (!AMAZON_APP_SECRET) {
       missingVars.push('AMAZON_APP_SECRET');
+    }
+    if (!OIDC_APP_ID) {
+      missingVars.push('OIDC_APP_ID');
+    }
+    if (!OIDC_APP_SECRET) {
+      missingVars.push('OIDC_APP_SECRET');
+    }
+    if (!OIDC_APP_ISSUER) {
+      missingVars.push('OIDC_APP_ISSUER');
+    }
+    if (!OIDC_APP_SCOPES) {
+      missingVars.push('OIDC_APP_SCOPES');
+    }
+    if (!OIDC_APP_MAPPING) {
+      missingVars.push('OIDC_APP_MAPPING');
     }
 
     if (missingVars.length > 0) {
@@ -92,6 +108,25 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any = {}, verbos
       .sendline('\r')
       .wait('Enter your Amazon App Secret for your OAuth flow:')
       .sendline(AMAZON_APP_SECRET)
+      .sendline('\r')
+      .wait('Select your OIDC Attributes Request Method:')
+      .sendline('\r')
+      .wait('Enter your OIDC App ID for your OAuth flow:')
+      .sendline(OIDC_APP_ID)
+      .sendline('\r')
+      .wait('Enter your OIDC App Secret for your OAuth flow:')
+      .sendline(OIDC_APP_SECRET)
+      .sendline('\r')
+      .wait('Enter your OIDC Issuer url:')
+      .sendline(OIDC_APP_ISSUER)
+      .sendline('\r')
+      .wait('Select your OIDC Attributes Request Method:')
+      .sendline('\r')
+      .wait('Enter authorize scopes used by your application during authentication to authorize access to a user\'s details, like name and picture as a JSON array (ec. [\"openid\",\"test\"]):')
+      .sendline(OIDC_APP_SCOPES)
+      .sendline('\r')
+      .wait('Enter the expected attributes mapping between your OIDC provider and your Cognito user as a JSON (ex. \"{\"email\":\"EMAIL\",\"username\":\"sub\"}\"):')
+      .sendline(OIDC_APP_MAPPING)
       .sendline('\r')
       .sendEof()
       .run(function(err: Error) {

@@ -5,8 +5,10 @@ IFS='|'
 AUTHCONFIG="{\
 \"facebookAppId\":\"fbid1\",\
 \"googleClientId\":\"goog\",\
-\"amazonAppId\":\"amzn1\"\
+\"amazonAppId\":\"amzn1\",\
+\"oidcAppId\":\"oidc1\"\
 }"
+
 AWSCLOUDFORMATIONCONFIG="{\
 \"configLevel\":\"project\",\
 \"useProfile\":true,\

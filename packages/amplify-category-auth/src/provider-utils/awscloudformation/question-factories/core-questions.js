@@ -38,7 +38,7 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
   };
 
   if (input.type && ['list', 'multiselect'].includes(input.type)) {
-    if (context.updatingAuth && input.iterator) {
+    if (context.updatingAuth && input.iterator && input.iterator !== 'extraoidcAttributesMapping') {
       question = iteratorQuestion(input, question, context);
       // if selecting existing value to edit it's not require to validate inputs
       question.validate = () => true;
@@ -91,9 +91,14 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
 
 function iteratorQuestion(input, question, context) {
   if (context.updatingAuth[input.iterator]) {
+    let iteratorValues = context.updatingAuth[input.iterator];
+    if(input.iterator === 'oidcAttributesMapping') {
+      // loaded from previous answers as escaped string. so parsing it
+      iteratorValues = Object.keys(JSON.parse(context.updatingAuth['oidcAttributesMapping']));
+    }
     question = Object.assign(
       {
-        choices: context.updatingAuth[input.iterator].map(i => ({
+        choices: iteratorValues.map(i => ({
           name: i,
           value: i,
         })),
@@ -115,14 +120,18 @@ function iteratorQuestion(input, question, context) {
 function getRequiredOptions(input, question, getAllMaps, context, currentAnswers) {
   const sourceValues = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
   const sourceArray = uniq(flatten(input.requiredOptions.map(i => sourceValues[i] || [])));
-  const requiredOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => sourceArray.includes(x.value)) : [];
+  let requiredOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => sourceArray.includes(x.value)) : [];
+  if(input.key === 'newOIDCMapping') {
+    requiredOptions = requiredOptions.map(opt => {opt.checked = true; opt.disabled = 'Required'; return opt;});
+  }
   const trueOptions = getAllMaps()[input.map] ? getAllMaps()[input.map].filter(x => !sourceArray.includes(x.value)) : [];
   const msg =
-    requiredOptions && requiredOptions.length > 0
+    requiredOptions && requiredOptions.length > 0 && input.requiredOptionsMsg
       ? `--- ${input.requiredOptionsMsg} ${requiredOptions.map(t => t.name).join(', ')}   ---`
       : '';
+  const displayedRequiredOptions = msg === '' ? requiredOptions : [new inquirer.Separator(msg)];
   question = Object.assign(question, {
-    choices: [new inquirer.Separator(msg), ...trueOptions],
+    choices: [...displayedRequiredOptions, ...trueOptions],
     filter: userInput => {
       return userInput.concat(...requiredOptions.map(z => z.value));
     },
@@ -135,11 +144,11 @@ function filterInputs(input, question, getAllMaps, context, currentAnswers) {
     const choices = input.map ? getAllMaps(context.updatingAuth)[input.map] : input.options;
     const { requiredAttributes } = Object.assign(context.updatingAuth ? context.updatingAuth : {}, currentAnswers);
     if (requiredAttributes) {
-      const attrMap = getAllMaps().attributeProviderMap;
+      const attrMap = getAllMaps(context).attributeProviderMap;
       requiredAttributes.forEach(attr => {
         choices.forEach(choice => {
           choice.missingAttributes = [];
-          if (!attrMap[attr] || !attrMap[attr][`${choice.value.toLowerCase()}`].attr) {
+          if ((!attrMap[attr] || !attrMap[attr][`${choice.value.toLowerCase()}`].attr) && choice.value !== 'OIDC') {
             choice.missingAttributes = choice.missingAttributes.length < 1 ? [attr] : choice.missingAttributes.concat(attr);
             const newList = choice.missingAttributes.join(', ');
             choice.disabled = `Your userpool is configured to require ${newList.substring(
