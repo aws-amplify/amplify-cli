@@ -20,13 +20,13 @@ const mockProjectConfig = {
 const mockResDir = 'MOCK_RES_DIR/Res';
 const mockAPIName = 'FooAPI';
 
-const mockgetProjectConfigDefault = jest.fn();
-const mockgetProjectConfig = jest.fn();
+const mockGetProjectConfigDefault = jest.fn();
+const mockGetProjectConfig = jest.fn();
 describe('getSchemaDownloadLocation', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    mockgetProjectConfigDefault.mockReturnValue(mockProjectConfigDefault);
-    mockgetProjectConfig.mockReturnValue(mockProjectConfig);
+    mockGetProjectConfigDefault.mockReturnValue(mockProjectConfigDefault);
+    mockGetProjectConfig.mockReturnValue(mockProjectConfig);
     getAndroidResDir.mockImplementation(() => {
       throw new Error();
     });
@@ -36,7 +36,7 @@ describe('getSchemaDownloadLocation', () => {
   it('should use the src/graphql directory when used in JS frontend', () => {
     mockContext = {
       amplify: {
-        getProjectConfig: mockgetProjectConfigDefault,
+        getProjectConfig: mockGetProjectConfigDefault,
       },
     };
     const downloadLocation = getSchemaDownloadLocation(mockContext);
@@ -46,7 +46,7 @@ describe('getSchemaDownloadLocation', () => {
   it('should use the defined project config directory when used in JS frontend', () => {
     mockContext = {
       amplify: {
-        getProjectConfig: mockgetProjectConfig,
+        getProjectConfig: mockGetProjectConfig,
       },
     };
     const downloadLocation = getSchemaDownloadLocation(mockContext);
@@ -56,7 +56,7 @@ describe('getSchemaDownloadLocation', () => {
   it('should use the graphql directory when used in iOS frontend', () => {
     mockContext = {
       amplify: {
-        getProjectConfig: mockgetProjectConfig,
+        getProjectConfig: mockGetProjectConfig,
       },
     };
     getFrontendHandler.mockReturnValue('iOS');
@@ -67,7 +67,7 @@ describe('getSchemaDownloadLocation', () => {
   it('should use main directory in Android', () => {
     mockContext = {
       amplify: {
-        getProjectConfig: mockgetProjectConfig,
+        getProjectConfig: mockGetProjectConfig,
       },
     };
     getAndroidResDir.mockReturnValue(mockResDir);
