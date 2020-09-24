@@ -10,12 +10,10 @@ import {
   deleteProjectDir,
   initJSProjectWithProfile,
   getAppId,
-  getLayerVersion,
   getProjectMeta,
   LayerPermission,
   LayerPermissionName,
   LayerRuntimes,
-  listVersions,
   removeLayer,
   updateLayer,
   validateLayerDir,
@@ -137,6 +135,21 @@ describe('amplify add lambda layer', () => {
     await checkoutEnvironment(projRoot, { envName });
     await validatePushedVersion(projRoot, settings.layerName, envName, 1, expectedPerms);
     await validateLayerMetadata(projRoot, settings.layerName, getProjectMeta(projRoot), newEnvName);
+  });
+});
+
+describe('amplify add lambda layer - with amplify console app', () => {
+  let projRoot: string;
+  const envName = 'integtest';
+
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('layers');
+    await initJSProjectWithProfile(projRoot, { envName, disableAmplifyAppCreation: false });
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
   it('tests amplify pull on project with layer', async () => {

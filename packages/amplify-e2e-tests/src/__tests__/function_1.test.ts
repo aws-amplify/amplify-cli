@@ -1,20 +1,8 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, updateFunction, functionBuild, addLambdaTrigger, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
-import { addLayer, LayerOptions } from 'amplify-e2e-core';
+import { addFunction, updateFunction, functionBuild, addLambdaTrigger } from 'amplify-e2e-core';
 import { addSimpleDDB } from 'amplify-e2e-core';
 import { addKinesis } from 'amplify-e2e-core';
-import {
-  createNewProjectDir,
-  deleteProjectDir,
-  getProjectMeta,
-  getFunction,
-  overrideFunctionSrc,
-  getFunctionSrc,
-  overrideLayerCode,
-  overrideFunctionSrcPython,
-  overrideLayerCodePython,
-  overrideLayerCodeJava,
-} from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, overrideFunctionSrc, getFunctionSrc } from 'amplify-e2e-core';
 import { addApiWithSchema } from 'amplify-e2e-core';
 
 import { appsyncGraphQLRequest } from 'amplify-e2e-core';

@@ -493,10 +493,21 @@ export function nspawn(command: string | string[], params: string[] = [], option
     command = command[0];
   }
 
+  let childEnv = undefined;
+
+  // If we have an environment passed in we've to add the current process' environment, otherwised the forked
+  // process would not have $PATH and others that is required to run amplify-cli successfully.
+  if (options.env) {
+    childEnv = {
+      ...process.env,
+      ...options.env,
+    };
+  }
+
   let context: Context = {
     command: command,
     cwd: options.cwd || undefined,
-    env: options.env || undefined,
+    env: childEnv || undefined,
     ignoreCase: options.ignoreCase || true,
     noOutputTimeout: options.noOutputTimeout || DEFAULT_NO_OUTPUT_TIMEOUT,
     params: params,

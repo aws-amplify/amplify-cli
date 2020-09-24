@@ -19,7 +19,7 @@ import { addS3 } from 'amplify-e2e-core';
 import { amplifyPushWithoutCodegen } from 'amplify-e2e-core';
 import { addAuthWithDefault } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
-import { initProject, addPinpointAnalytics, pushToCloud, pinpointAppExist, amplifyDelete } from 'amplify-e2e-core';
+import { initProjectForPinpoint, addPinpointAnalytics, pushToCloud, pinpointAppExist, amplifyDelete } from 'amplify-e2e-core';
 import { getAWSExportsPath } from '../aws-exports/awsExports';
 import _ from 'lodash';
 
@@ -49,7 +49,7 @@ describe('amplify delete', () => {
   });
 
   it('should delete pinpoint project', async () => {
-    await initProject(projRoot);
+    await initProjectForPinpoint(projRoot);
     const pinpointResourceName = await addPinpointAnalytics(projRoot);
     await pushToCloud(projRoot);
     const amplifyMeta = getProjectMeta(projRoot);

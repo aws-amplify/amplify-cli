@@ -43,7 +43,13 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
 
 async function initWorkflow(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region: string }) {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    let chain = spawn(getCLIPath(), ['init'], {
+      cwd,
+      stripColors: true,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
+    })
       .wait('Enter a name for the project')
       .sendCarriageReturn()
       .wait('Enter a name for the environment')
