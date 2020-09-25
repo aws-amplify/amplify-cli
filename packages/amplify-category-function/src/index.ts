@@ -73,8 +73,9 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
 
   Object.keys(resourceOpsMapping).forEach(resourceName => {
     try {
-      const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
-      if (providerController) {
+      const providerName = amplifyMeta[category][resourceName].providerPlugin;
+      if (providerName) {
+        const providerController = require(`./provider-utils/${providerName}/index`);
         const { policy, attributes } = providerController.getPermissionPolicies(
           context,
           amplifyMeta[category][resourceName].service,

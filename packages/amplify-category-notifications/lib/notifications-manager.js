@@ -68,8 +68,16 @@ async function disableChannel(context, channelName) {
 async function configureChannel(context, channelName) {
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
     context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
+
+    if (!context.exeInfo.serviceMeta.providerPlugin) {
+      context.print.error('No resources to update.');
+      return false;
+    }
+
     const channelWorker = require(path.join(__dirname, channelWorkers[channelName]));
     await channelWorker.configure(context);
+
+    return true;
   }
 }
 

@@ -60,7 +60,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetada) {
   const storageResources = {};
 
   Object.keys(amplifyMeta[category]).forEach(resourceName => {
-    if (amplifyMeta[category][resourceName].service === serviceName) {
+    if (amplifyMeta[category][resourceName].service === serviceName && !!amplifyMeta[category][resourceName].providerPlugin) {
       storageResources[resourceName] = amplifyMeta[category][resourceName];
     }
   });

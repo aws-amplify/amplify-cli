@@ -34,7 +34,9 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = await import(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
-  const resources = allResources.filter(resource => resource.service === serviceName).map(resource => resource.resourceName);
+  const resources = allResources
+    .filter(resource => resource.service === serviceName && !!resource.providerPlugin)
+    .map(resource => resource.resourceName);
 
   // There can only be one appsync resource
   if (resources.length === 0) {

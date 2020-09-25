@@ -34,43 +34,67 @@ async function constructPinpointNotificationsMeta(context) {
     pinpointApp = teamProviderInfo[envName].categories[constants.CategoryName][constants.PinpointName];
   }
 
+  let isMobileHubMigrated = false;
+
   if (!pinpointApp) {
     const analyticsMeta = amplifyMeta[constants.AnalyticsCategoryName];
-    pinpointApp = pinpointHelper.scanCategoryMetaForPinpoint(analyticsMeta);
-  }
 
-  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
-  const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
-  if (backendConfig[constants.CategoryName]) {
-    const categoryConfig = backendConfig[constants.CategoryName];
-    const resources = Object.keys(categoryConfig);
-    for (let i = 0; i < resources.length; i++) {
-      serviceBackendConfig = categoryConfig[resources[i]];
-      if (serviceBackendConfig.service === constants.PinpointName) {
-        serviceBackendConfig.resourceName = resources[i];
-        break;
+    // Check if meta contains a resource without provider, so it is a migrated one.
+    if (analyticsMeta) {
+      for (const resourceName of Object.keys(analyticsMeta)) {
+        const resource = analyticsMeta[resourceName];
+
+        if (resource.service === 'Pinpoint' && !resource.providerPlugin) {
+          isMobileHubMigrated = true;
+          break;
+        }
       }
     }
-  }
 
-  if (pinpointApp) {
-    await notificationManager.pullAllChannels(context, pinpointApp);
-    pinpointNotificationsMeta = {
-      Name: pinpointApp.Name,
-      service: constants.PinpointName,
-      output: pinpointApp,
-    };
-  }
-
-  if (serviceBackendConfig) {
-    if (pinpointNotificationsMeta) {
-      pinpointNotificationsMeta.channels = serviceBackendConfig.channels;
-    } else {
-      pinpointNotificationsMeta = serviceBackendConfig;
+    if (!isMobileHubMigrated) {
+      pinpointApp = pinpointHelper.scanCategoryMetaForPinpoint(analyticsMeta);
     }
   }
 
-  return pinpointNotificationsMeta;
+  // Special case, in case of mobile hub migrated projects there is no backend config, so skipping the next parts
+  // as all data is present in the service, no need for any updates.
+
+  if (!isMobileHubMigrated) {
+    const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath();
+    const backendConfig = context.amplify.readJsonFile(backendConfigFilePath);
+    if (backendConfig[constants.CategoryName]) {
+      const categoryConfig = backendConfig[constants.CategoryName];
+      const resources = Object.keys(categoryConfig);
+      for (let i = 0; i < resources.length; i++) {
+        serviceBackendConfig = categoryConfig[resources[i]];
+        if (serviceBackendConfig.service === constants.PinpointName) {
+          serviceBackendConfig.resourceName = resources[i];
+          break;
+        }
+      }
+    }
+
+    if (pinpointApp) {
+      await notificationManager.pullAllChannels(context, pinpointApp);
+      pinpointNotificationsMeta = {
+        Name: pinpointApp.Name,
+        service: constants.PinpointName,
+        output: pinpointApp,
+      };
+    }
+
+    if (serviceBackendConfig) {
+      if (pinpointNotificationsMeta) {
+        pinpointNotificationsMeta.channels = serviceBackendConfig.channels;
+      } else {
+        pinpointNotificationsMeta = serviceBackendConfig;
+      }
+    }
+
+    return pinpointNotificationsMeta;
+  }
+
+  return undefined;
 }
 
 async function deletePinpointAppForEnv(context, envName) {
