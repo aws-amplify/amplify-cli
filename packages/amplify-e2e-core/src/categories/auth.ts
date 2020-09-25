@@ -21,6 +21,22 @@ export function addAuthWithDefault(cwd: string, settings: any = {}) {
   });
 }
 
+export function runAmplifyAuthConsole(cwd: string) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['auth', 'console'], { cwd, stripColors: true })
+      .wait('Which console')
+      .sendCarriageReturn()
+      .wait('Identity Pool console:')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function removeAuthWithDefault(cwd: string) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'auth'], { cwd, stripColors: true })
