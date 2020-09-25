@@ -35,7 +35,7 @@ const checkIfMobileHubProject = (context: $TSContext): void => {
 };
 
 const isCommandSupported = (context: $TSContext): boolean => {
-  const { command, plugin } = context.input;
+  const { command } = context.input;
 
   // env commands are not supported for projects that having resources without provider assigned
   if (command === 'env') {
