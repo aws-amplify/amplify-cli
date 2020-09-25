@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.8...amplify-category-api@2.23.9) (2020-09-25)
+
+
+### Bug Fixes
+
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+
+
+
 ## [2.23.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.7...amplify-category-api@2.23.8) (2020-09-16)
 
 
