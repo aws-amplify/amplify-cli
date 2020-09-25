@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.4.4...amplify-console-hosting@1.4.5) (2020-09-25)
+
+
+### Bug Fixes
+
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+
+
+
 ## [1.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.4.3...amplify-console-hosting@1.4.4) (2020-09-16)
 
 
