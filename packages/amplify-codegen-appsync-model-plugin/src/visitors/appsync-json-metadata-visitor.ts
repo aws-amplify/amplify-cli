@@ -205,7 +205,7 @@ export class AppSyncJSONVisitor<
         };
 
         if (field.isListNullable !== undefined) {
-          fieldMeta.isArrayNullable = !field.isListNullable;
+          fieldMeta.isArrayNullable = field.isListNullable;
         }
 
         const association: AssociationType | void = this.getFieldAssociation(field);
