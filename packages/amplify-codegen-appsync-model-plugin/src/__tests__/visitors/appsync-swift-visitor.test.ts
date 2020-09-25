@@ -932,7 +932,7 @@ describe('AppSyncSwiftVisitor', () => {
           Class: Class
           nonNullClass: Class!
           classes: [Class]
-          nonNullClasses: [Class]!
+          nonNullClasses: [Class!]!
         }
       `;
       const visitor = getVisitor(schema, 'Class');
