@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.20.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.19.1...amplify-category-auth@2.20.0-beta.0) (2020-09-25)
+
+
+### Bug Fixes
+
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+### Features
+
+* headless update auth ([#5308](https://github.com/aws-amplify/amplify-cli/issues/5308)) ([b942f35](https://github.com/aws-amplify/amplify-cli/commit/b942f3589f1df1361ae7eb6e42f18dbf6900d1bf))
+
+
+
+
+
 ## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.19.0...amplify-category-auth@2.19.1) (2020-09-16)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.6.2...amplify-e2e-core@1.7.0-beta.0) (2020-09-25)
+
+
+### Features
+
+* headless update auth ([#5308](https://github.com/aws-amplify/amplify-cli/issues/5308)) ([b942f35](https://github.com/aws-amplify/amplify-cli/commit/b942f3589f1df1361ae7eb6e42f18dbf6900d1bf))
+
+
+
+
+
 ## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.6.1...amplify-e2e-core@1.6.2) (2020-09-16)
 
 

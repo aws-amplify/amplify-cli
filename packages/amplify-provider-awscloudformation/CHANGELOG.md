@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.26.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.2...amplify-provider-awscloudformation@4.26.3-beta.0) (2020-09-25)
+
+
+### Bug Fixes
+
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+
+
+
 ## [4.26.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.1...amplify-provider-awscloudformation@4.26.2) (2020-09-16)
 
 

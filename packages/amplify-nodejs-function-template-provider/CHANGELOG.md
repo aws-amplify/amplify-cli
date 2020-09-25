@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.4.0...amplify-nodejs-function-template-provider@1.4.1-beta.0) (2020-09-25)
+
+
+### Bug Fixes
+
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+* fixed typos and bad import ([#5390](https://github.com/aws-amplify/amplify-cli/issues/5390)) ([0d2f632](https://github.com/aws-amplify/amplify-cli/commit/0d2f632029bc3c78434fe502899780649f3f74e3))
+
+
+
+
+
 # [1.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.3.1...amplify-nodejs-function-template-provider@1.4.0) (2020-09-16)
 
 
