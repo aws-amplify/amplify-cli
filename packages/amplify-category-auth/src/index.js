@@ -17,10 +17,11 @@ const { ENV_SPECIFIC_PARAMS } = require('./provider-utils/awscloudformation/cons
 
 const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
 const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
-const { validateAddAuthRequest } = require('amplify-util-headless-input');
-const { getAddAuthRequestAdaptor } = require('./provider-utils/awscloudformation/utils/add-auth-request-adaptor');
-const { getAddAuthHandler } = require('./provider-utils/awscloudformation/handlers/get-add-auth-handler');
+const { validateAddAuthRequest, validateUpdateAuthRequest } = require('amplify-util-headless-input');
+const { getAddAuthRequestAdaptor, getUpdateAuthRequestAdaptor } = require('./provider-utils/awscloudformation/utils/auth-request-adaptors');
+const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/awscloudformation/handlers/resource-handlers');
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
+const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
@@ -316,6 +317,12 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
       await validateAddAuthRequest(headlessPayload)
         .then(getAddAuthRequestAdaptor(context.amplify.getProjectConfig().frontend))
         .then(getAddAuthHandler(context));
+      return;
+    case 'update':
+      await attachPrevParamsToContext(context);
+      await validateUpdateAuthRequest(headlessPayload)
+        .then(getUpdateAuthRequestAdaptor(context.amplify.getProjectConfig().frontend, context.updatingAuth.requiredAttributes))
+        .then(getUpdateAuthHandler(context));
       return;
     default:
       context.print.error(`Headless mode for ${context.input.command} auth is not implemented yet`);

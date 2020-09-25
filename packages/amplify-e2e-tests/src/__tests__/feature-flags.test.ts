@@ -23,7 +23,9 @@ describe('feature flags', () => {
   });
 
   it('push and pull with multiple config files for environments', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, {
+      disableAmplifyAppCreation: false,
+    });
     await addApiWithSchema(projRoot, 'simple_model.graphql');
 
     const envName = 'test';

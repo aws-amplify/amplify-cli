@@ -1,10 +1,12 @@
 import { ServiceQuestionsResult } from '../service-walkthrough-types';
 import * as path from 'path';
-import { existsSync, copySync } from 'fs-extra';
+import { existsSync, copySync, outputFileSync } from 'fs-extra';
 import uuid from 'uuid';
 import { cfnTemplateRoot, privateKeys, adminAuthAssetRoot, triggerRoot, ENV_SPECIFIC_PARAMS } from '../constants';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 import { pathManager, JSONUtilities } from 'amplify-cli-core';
+import { get } from 'lodash';
+import { authProviders } from '../assets/string-maps';
 
 const category = 'auth';
 
@@ -12,29 +14,149 @@ const category = 'auth';
  * Factory function that returns a function that synthesizes all resources based on a ServiceQuestionsResult request.
  * The function returns the request unchanged to enable .then() chaining
  * @param context The amplify context
- * @param cfnFilename The template cfnFilename
+ * @param cfnFilename The template CFN filename
  * @param provider The cloud provider name
  */
 export const getResourceSynthesizer = (context: any, cfnFilename: string, provider: string) => async (
   request: Readonly<ServiceQuestionsResult>,
 ) => {
   await lambdaTriggers(request, context, null);
-  await createUserPoolGroups(context, request.resourceName, request.userPoolGroupList);
+  await createUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
   await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
   await copyCfnTemplate(context, category, request, cfnFilename);
   saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
-  await copyS3Assets(context, request);
+  await copyS3Assets(request);
   return request;
 };
 
 /**
- * The functions below should not be exported, but they are for now because the update flow still uses them individually
- * Once the update flow is also refactored, they will be internal to this file
+ * Factory function that returns a function that updates the auth resource based on a ServiceQuestionsResult request.
+ * The function retusn the request unchanged to enable .then() chaining
  *
- * They are refactored with minimal modification from awscloudformation/indes.js
+ * The code is more-or-less refactored as-is from the existing update logic
+ * @param context The amplify context
+ * @param cfnFilename The template CFN filename
+ * @param provider The cloud provider name
  */
+export const getResourceUpdater = (context: any, cfnFilename: string, provider: string) => async (request: ServiceQuestionsResult) => {
+  const resources = context.amplify.getProjectMeta();
+  if (resources.auth.userPoolGroups) {
+    await updateUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
+  } else {
+    await createUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
+  }
 
-export const lambdaTriggers = async (coreAnswers: any, context: any, previouslySaved: any) => {
+  const adminQueriesFunctionName = get<{ category: string; resourceName: string }[]>(resources, ['api', 'AdminQueries', 'dependsOn'], [])
+    .filter(resource => resource.category === 'function')
+    .map(resource => resource.resourceName)
+    .find(resourceName => resourceName.includes('AdminQueries'));
+  if (adminQueriesFunctionName) {
+    await addAdminAuth(context, request.resourceName!, 'update', request.adminQueryGroup, adminQueriesFunctionName);
+  } else {
+    await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
+  }
+
+  const providerPlugin = context.amplify.getPluginInstance(context, provider);
+  const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', request.resourceName).triggers || '{}';
+  await lambdaTriggers(request, context, JSON.parse(previouslySaved));
+
+  if ((!request.updateFlow && !request.thirdPartyAuth) || (request.updateFlow === 'manual' && !request.thirdPartyAuth)) {
+    delete request.selectedParties;
+    delete request.authProviders;
+    authProviders.forEach(a => delete (request as any)[a.answerHashKey]);
+    if (request.googleIos) {
+      delete request.googleIos;
+    }
+    if (request.googleAndroid) {
+      delete request.googleAndroid;
+    }
+    if (request.audiences) {
+      delete request.audiences;
+    }
+  }
+
+  if (request.useDefault === 'default' || request.hostedUI === false) {
+    delete request.oAuthMetadata;
+    delete request.hostedUIProviderMeta;
+    delete request.hostedUIProviderCreds;
+    delete request.hostedUIDomainName;
+    delete request.authProvidersUserPool;
+  }
+
+  if (request.updateFlow !== 'updateUserPoolGroups' && request.updateFlow !== 'updateAdminQueries') {
+    await copyCfnTemplate(context, category, request, cfnFilename);
+    saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
+  }
+  await copyS3Assets(request);
+  return request;
+};
+
+/**
+ * The 3 functions below should not be exported, but they are for now because externalAuthEnable still uses them individually
+ */
+export const copyCfnTemplate = async (context: any, category: string, options: any, cfnFilename: string) => {
+  const targetDir = path.join(pathManager.getBackendDirPath(), category, options.resourceName);
+
+  const copyJobs = [
+    {
+      dir: cfnTemplateRoot,
+      template: cfnFilename,
+      target: path.join(targetDir, `${options.resourceName}-cloudformation-template.yml`),
+      paramsFile: path.join(targetDir, 'parameters.json'),
+    },
+  ];
+
+  const privateParams = Object.assign({}, options);
+  privateKeys.forEach(p => delete privateParams[p]);
+
+  return await context.amplify.copyBatch(context, copyJobs, privateParams, true);
+};
+
+export const saveResourceParameters = (
+  context: any,
+  providerName: string,
+  category: string,
+  resource: string,
+  params: any,
+  envSpecificParams: any[] = [],
+) => {
+  const provider = context.amplify.getPluginInstance(context, providerName);
+  let privateParams = Object.assign({}, params);
+  privateKeys.forEach(p => delete privateParams[p]);
+  privateParams = removeDeprecatedProps(privateParams);
+  provider.saveResourceParameters(context, category, resource, privateParams, envSpecificParams);
+};
+
+export const removeDeprecatedProps = (props: any) => {
+  [
+    'authRoleName',
+    'unauthRoleName',
+    'userpoolClientName',
+    'roleName',
+    'policyName',
+    'mfaLambdaLogPolicy',
+    'mfaPassRolePolicy',
+    'mfaLambdaIAMPolicy',
+    'userpoolClientLogPolicy',
+    'userpoolClientLambdaPolicy',
+    'lambdaLogPolicy',
+    'openIdRolePolicy',
+    'openIdLambdaIAMPolicy',
+    'mfaLambdaRole',
+    'openIdLambdaRoleName',
+    'CreateAuthChallenge',
+    'CustomMessage',
+    'DefineAuthChallenge',
+    'PostAuthentication',
+    'PostConfirmation',
+    'PreAuthentication',
+    'PreSignup',
+    'VerifyAuthChallengeResponse',
+  ].forEach(deprecatedField => delete props[deprecatedField]);
+  return props;
+};
+
+const lambdaTriggers = async (coreAnswers: any, context: any, previouslySaved: any) => {
   const { handleTriggers } = require('./trigger-flow-auth-helper');
   let triggerKeyValues = {};
 
@@ -65,7 +187,7 @@ export const lambdaTriggers = async (coreAnswers: any, context: any, previouslyS
   coreAnswers.dependsOn = context.amplify.dependsOnBlock(context, dependsOnKeys, 'Cognito');
 };
 
-export const createUserPoolGroups = async (context: any, resourceName: any, userPoolGroupList: any) => {
+const createUserPoolGroups = async (context: any, resourceName: string, userPoolGroupList?: string[]) => {
   if (userPoolGroupList && userPoolGroupList.length > 0) {
     const userPoolGroupPrecedenceList = [];
 
@@ -108,7 +230,41 @@ export const createUserPoolGroups = async (context: any, resourceName: any, user
   }
 };
 
-export const addAdminAuth = async (
+const updateUserPoolGroups = async (context: any, resourceName: string, userPoolGroupList?: string[]) => {
+  if (userPoolGroupList && userPoolGroupList.length > 0) {
+    const userPoolGroupPrecedenceList = [];
+
+    for (let i = 0; i < userPoolGroupList.length; i += 1) {
+      userPoolGroupPrecedenceList.push({
+        groupName: userPoolGroupList[i],
+        precedence: i + 1,
+      });
+    }
+
+    const userPoolGroupFile = path.join(
+      context.amplify.pathManager.getBackendDirPath(),
+      'auth',
+      'userPoolGroups',
+      'user-pool-group-precedence.json',
+    );
+
+    outputFileSync(userPoolGroupFile, JSON.stringify(userPoolGroupPrecedenceList, null, 4));
+
+    context.amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', {
+      service: 'Cognito-UserPool-Groups',
+      providerPlugin: 'awscloudformation',
+      dependsOn: [
+        {
+          category: 'auth',
+          resourceName,
+          attributes: ['UserPoolId', 'AppClientIDWeb', 'AppClientID', 'IdentityPoolId'],
+        },
+      ],
+    });
+  }
+};
+
+const addAdminAuth = async (
   context: any,
   authResourceName: string,
   operation: 'update' | 'add',
@@ -125,7 +281,7 @@ export const addAdminAuth = async (
   }
 };
 
-export const createAdminAuthFunction = async (
+const createAdminAuthFunction = async (
   context: any,
   authResourceName: string,
   functionName: string,
@@ -202,7 +358,7 @@ export const createAdminAuthFunction = async (
   }
 };
 
-export const createAdminAuthAPI = async (context: any, authResourceName: string, functionName: string, operation: 'update' | 'add') => {
+const createAdminAuthAPI = async (context: any, authResourceName: string, functionName: string, operation: 'update' | 'add') => {
   const apiName = 'AdminQueries';
   const targetDir = path.join(pathManager.getBackendDirPath(), 'api', apiName);
   const dependsOn = [];
@@ -257,72 +413,10 @@ export const createAdminAuthAPI = async (context: any, authResourceName: string,
   }
 };
 
-export const copyCfnTemplate = async (context: any, category: string, options: any, cfnFilename: string) => {
-  const targetDir = path.join(pathManager.getBackendDirPath(), category, options.resourceName);
-
-  const copyJobs = [
-    {
-      dir: cfnTemplateRoot,
-      template: cfnFilename,
-      target: path.join(targetDir, `${options.resourceName}-cloudformation-template.yml`),
-      paramsFile: path.join(targetDir, 'parameters.json'),
-    },
-  ];
-
-  const privateParams = Object.assign({}, options);
-  privateKeys.forEach(p => delete privateParams[p]);
-
-  return await context.amplify.copyBatch(context, copyJobs, privateParams, true);
-};
-
-export const saveResourceParameters = (
-  context: any,
-  providerName: string,
-  category: string,
-  resource: string,
-  params: any,
-  envSpecificParams: any[] = [],
-) => {
-  const provider = context.amplify.getPluginInstance(context, providerName);
-  let privateParams = Object.assign({}, params);
-  privateKeys.forEach(p => delete privateParams[p]);
-  privateParams = removeDeprecatedProps(privateParams);
-  provider.saveResourceParameters(context, category, resource, privateParams, envSpecificParams);
-};
-
-export const removeDeprecatedProps = (props: any) => {
-  [
-    'authRoleName',
-    'unauthRoleName',
-    'userpoolClientName',
-    'roleName',
-    'policyName',
-    'mfaLambdaLogPolicy',
-    'mfaPassRolePolicy',
-    'mfaLambdaIAMPolicy',
-    'userpoolClientLogPolicy',
-    'userpoolClientLambdaPolicy',
-    'lambdaLogPolicy',
-    'openIdRolePolicy',
-    'openIdLambdaIAMPolicy',
-    'mfaLambdaRole',
-    'openIdLambdaRoleName',
-    'CreateAuthChallenge',
-    'CustomMessage',
-    'DefineAuthChallenge',
-    'PostAuthentication',
-    'PostConfirmation',
-    'PreAuthentication',
-    'PreSignup',
-    'VerifyAuthChallengeResponse',
-  ].forEach(deprecatedField => delete props[deprecatedField]);
-  return props;
-};
-
-export const copyS3Assets = async (context: any, props: any) => {
-  const targetDir = path.join(pathManager.getBackendDirPath(), 'auth', props.resourceName, 'assets');
-  const triggers = props.triggers ? JSONUtilities.parse<any>(props.triggers) : null;
-  const confirmationFileNeeded = props.triggers && triggers.CustomMessage && triggers.CustomMessage.includes('verification-link');
+const copyS3Assets = async (request: ServiceQuestionsResult) => {
+  const targetDir = path.join(pathManager.getBackendDirPath(), 'auth', request.resourceName!, 'assets');
+  const triggers = request.triggers ? JSONUtilities.parse<any>(request.triggers) : null;
+  const confirmationFileNeeded = request.triggers && triggers.CustomMessage && triggers.CustomMessage.includes('verification-link');
   if (confirmationFileNeeded) {
     if (!existsSync(targetDir)) {
       const source = path.join(triggerRoot, 'CustomMessage/assets');

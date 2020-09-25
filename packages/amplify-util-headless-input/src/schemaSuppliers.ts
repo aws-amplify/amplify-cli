@@ -8,6 +8,10 @@ export const addAuthRequestSchemaSupplier: VersionedSchemaSupplier = version => 
   return getSchema('AddAuthRequest', 'auth', version);
 };
 
+export const updateAuthRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+  return getSchema('UpdateAuthRequest', 'auth', version);
+};
+
 export const addApiRequestSchemaSupplier: VersionedSchemaSupplier = version => {
   return getSchema('AddApiRequest', 'api', version);
 };

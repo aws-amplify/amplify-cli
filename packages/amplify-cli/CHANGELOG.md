@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.29.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.2...@aws-amplify/cli@4.29.3) (2020-09-25)
+
+
+### Bug Fixes
+
+* abort being called multiple times ([#5302](https://github.com/aws-amplify/amplify-cli/issues/5302)) ([83b2d10](https://github.com/aws-amplify/amplify-cli/commit/83b2d109b6f3cf2e9962bad78607b6a41e7599e2))
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+
+
+
 ## [4.29.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.1...@aws-amplify/cli@4.29.2) (2020-09-16)
 
 

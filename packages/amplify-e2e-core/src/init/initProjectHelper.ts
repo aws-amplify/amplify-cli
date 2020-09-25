@@ -14,6 +14,7 @@ const defaultSettings = {
   profileName: '\r',
   region: process.env.CLI_REGION,
   local: false,
+  disableAmplifyAppCreation: true,
 };
 
 export const amplifyRegions = [
@@ -33,8 +34,16 @@ export const amplifyRegions = [
 
 export function initJSProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
+  let env;
+
+  if (s.disableAmplifyAppCreation === true) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
+
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -72,7 +81,13 @@ export function initJSProjectWithProfile(cwd: string, settings: Object) {
 export function initAndroidProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['init'], {
+      cwd,
+      stripColors: true,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
+    })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -102,7 +117,13 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object) {
 export function initIosProjectWithProfile(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['init'], {
+      cwd,
+      stripColors: true,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
+    })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -132,7 +153,13 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
   const s = { ...defaultSettings, ...settings };
 
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    let chain = spawn(getCLIPath(), ['init'], {
+      cwd,
+      stripColors: true,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
+    })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -176,7 +203,13 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
 
 export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }) {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    let chain = spawn(getCLIPath(), ['init'], {
+      cwd,
+      stripColors: true,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
+    })
       .wait('Do you want to use an existing environment?')
       .sendLine('n')
       .wait('Enter a name for the environment')
@@ -206,7 +239,13 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
 
 export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+    spawn(getCLIPath(), ['init'], {
+      cwd,
+      stripColors: true,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
+    })
       .wait('Do you want to use an existing environment?')
       .sendLine('n')
       .wait('Enter a name for the environment')
