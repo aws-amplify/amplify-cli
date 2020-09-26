@@ -1211,7 +1211,6 @@ workflows:
             branches:
               only:
                 - master
-                - testsplit
                 - graphqlschemae2e
                 - graphql_e2e_testing
           requires:
@@ -1222,7 +1221,6 @@ workflows:
             branches:
               only:
                 - master
-                - testsplit
                 - graphqlschemae2e
                 - beta
           requires:
@@ -1233,7 +1231,6 @@ workflows:
             branches:
               only:
                 - master
-                - testsplit
                 - graphqlschemae2e
                 - beta
           requires:
@@ -1243,7 +1240,6 @@ workflows:
             branches:
               only:
                 - master
-                - testsplit
                 - graphqlschemae2e
           requires:
             - build
@@ -1252,7 +1248,6 @@ workflows:
             branches:
               only:
                 - master
-                - testsplit
                 - graphqlschemae2e
           requires:
             - build
@@ -1313,7 +1308,6 @@ workflows:
             branches:
               only:
                 - master
-                - testsplit
                 - graphqlschemae2e
           requires:
             - publish_to_local_registry
