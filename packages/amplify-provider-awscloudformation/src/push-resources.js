@@ -5,7 +5,7 @@ const cfnLint = require('cfn-lint');
 const glob = require('glob');
 const { pathManager, PathConstants } = require('amplify-cli-core');
 const ora = require('ora');
-const S3 = require('./aws-utils/aws-s3');
+const { S3 } = require('./aws-utils/aws-s3');
 const Cloudformation = require('./aws-utils/aws-cfn');
 const providerName = require('./constants').ProviderName;
 const { buildResource } = require('./build-resources');
@@ -193,7 +193,7 @@ function storeCurrentCloudBackend(context) {
     .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
       const s3Key = `${result.zipFilename}`;
-      return new S3(context).then(s3 => {
+      return S3.getInstance(context).then(s3 => {
         const s3Params = {
           Body: fs.createReadStream(result.zipFilePath),
           Key: s3Key,
@@ -237,7 +237,7 @@ function packageResources(context, resources) {
       .then(result => {
         // Upload zip file to S3
         s3Key = `amplify-builds/${result.zipFilename}`;
-        return new S3(context).then(s3 => {
+        return S3.getInstance(context).then(s3 => {
           const s3Params = {
             Body: fs.createReadStream(result.zipFilePath),
             Key: s3Key,
@@ -404,7 +404,7 @@ function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {
 function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceName, amplifyMeta) {
   const filePath = path.normalize(path.join(resourceDir, cfnFile));
 
-  return new S3(context)
+  return S3.getInstance(context)
     .then(s3 => {
       const s3Params = {
         Body: fs.createReadStream(filePath),

@@ -6,7 +6,7 @@ const chalk = require('chalk');
 const columnify = require('columnify');
 
 const aws = require('./aws.js');
-const S3 = require('./aws-s3');
+const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../configuration-manager');
@@ -207,7 +207,7 @@ class CloudFormation {
       throw new Error('Project deployment bucket has not been created yet. Use amplify init to initialize the project.');
     }
 
-    return new S3(this.context)
+    return S3.getInstance(this.context)
       .then(s3 => {
         const s3Params = {
           Body: fs.createReadStream(filePath),

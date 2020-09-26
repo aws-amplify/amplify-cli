@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 
 const Cloudformation = require('./aws-utils/aws-cfn');
-const S3 = require('./aws-utils/aws-s3');
+const { S3 } = require('./aws-utils/aws-s3');
 const { loadConfigurationForEnv } = require('./configuration-manager');
 const { deleteEnv } = require('./amplify-service-manager');
 const { S3BackendZipFileName, ProviderName } = require('./constants');
@@ -12,7 +12,7 @@ async function run(context, envName, deleteS3) {
   const awsConfig = await loadConfigurationForEnv(context, envName);
   const cfn = await new Cloudformation(context, null, awsConfig);
   if (deleteS3) {
-    const s3 = await new S3(context, {});
+    const s3 = await S3.getInstance(context, {});
     const projectDetails = context.amplify.getProjectDetails();
     const projectBucket = projectDetails.teamProviderInfo[envName][ProviderName].DeploymentBucketName;
     if (await s3.ifBucketExists(projectBucket)) {

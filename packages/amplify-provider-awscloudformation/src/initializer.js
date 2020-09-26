@@ -7,7 +7,7 @@ const fs = require('fs-extra');
 const ora = require('ora');
 const sequential = require('promise-sequential');
 const Cloudformation = require('./aws-utils/aws-cfn');
-const S3 = require('./aws-utils/aws-s3');
+const { S3 } = require('./aws-utils/aws-s3');
 const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
 const amplifyServiceManager = require('./amplify-service-manager');
@@ -163,7 +163,7 @@ function storeCurrentCloudBackend(context) {
     .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
       const s3Key = `${result.zipFilename}`;
-      return new S3(context).then(s3 => {
+      return S3.getInstance(context).then(s3 => {
         const s3Params = {
           Body: fs.createReadStream(result.zipFilePath),
           Key: s3Key,
@@ -178,7 +178,7 @@ function storeCurrentCloudBackend(context) {
 }
 
 function storeArtifactsForAmplifyService(context) {
-  return new S3(context).then(async s3 => {
+  return S3.getInstance(context).then(async s3 => {
     const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
     const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
     const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
