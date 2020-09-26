@@ -44,9 +44,11 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/auth_5.test.ts',
   'src/__tests__/function_3.test.ts',
   //<30m
+  'src/__tests__/schema-auth-3.test.ts',
   'src/__tests__/delete.test.ts',
   'src/__tests__/function_2.test.ts',
   'src/__tests__/auth_3.test.ts',
+  'src/__tests__/layer.test.ts',
   //<35m
   'src/__tests__/migration/api.key.migration1.test.ts',
   'src/__tests__/auth_4.test.ts',
@@ -61,6 +63,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-auth-9.test.ts',
   'src/__tests__/schema-auth-11.test.ts',
   'src/__tests__/migration/api.key.migration2.test.ts',
+  'src/__tests__/function_1.test.ts',
   'src/__tests__/schema-auth-1.test.ts',
   'src/__tests__/function_4.test.ts',
   //<45m
@@ -76,10 +79,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<55m
   'src/__tests__/storage.test.ts',
   'src/__tests__/api_2.test.ts',
-  //unknown
-  'src/__tests__/layer.test.ts',
-  'src/__tests__/schema-auth-3.test.ts',
-  'src/__tests__/function_1.test.ts',
 ];
 
 /**
