@@ -469,4 +469,4 @@ async function showIOSHelpText() {
   console.log('');
 }
 
-module.exports = { run };
+module.exports = { run, createAmplifySkeletonProject };
