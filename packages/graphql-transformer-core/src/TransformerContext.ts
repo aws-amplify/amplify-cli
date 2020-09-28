@@ -410,7 +410,24 @@ export class TransformerContext {
    * @param fields The fields to add the mutation type.
    */
   public addMutationFields(fields: FieldDefinitionNode[]) {
-    const mutationTypeName = this.getMutationTypeName();
+    let mutationTypeName = this.getMutationTypeName();
+
+    if (!mutationTypeName) {
+      // It is possible the schema type is manually defined and there is no mutation operation within it
+      // also there is no Mutation type.
+      const mutationNode = this.getMutation();
+      if (!mutationNode) {
+        const schema = this.getSchema();
+        const mutationOperation = makeOperationType('mutation', 'Mutation');
+        const newSchema = {
+          ...schema,
+          operationTypes: [...schema.operationTypes, mutationOperation],
+        };
+        this.putSchema(newSchema);
+        mutationTypeName = 'Mutation';
+      }
+    }
+
     if (mutationTypeName) {
       if (!this.getType(mutationTypeName)) {
         this.addType(blankObject(mutationTypeName));
@@ -428,6 +445,7 @@ export class TransformerContext {
    */
   public addSubscriptionFields(fields: FieldDefinitionNode[]) {
     let subscriptionTypeName = this.getSubscriptionTypeName();
+
     if (!subscriptionTypeName) {
       // It is possible the schema type is manually defined and there is no subscription operation within it
       // also there is no Subscription type.
@@ -440,6 +458,7 @@ export class TransformerContext {
           operationTypes: [...schema.operationTypes, subscriptionOperation],
         };
         this.putSchema(newSchema);
+        subscriptionTypeName = 'Subscription';
       }
     }
 

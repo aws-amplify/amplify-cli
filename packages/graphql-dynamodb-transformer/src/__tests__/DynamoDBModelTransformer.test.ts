@@ -684,6 +684,9 @@ test('Schema should compile successfully when subscription is missing from schem
   const subscriptionType = getObjectType(parsed, 'Subscription');
   expect(subscriptionType).toBeDefined();
   expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost']);
+  const mutationType = getObjectType(parsed, 'Mutation');
+  expect(mutationType).toBeDefined();
+  expectFields(mutationType, ['createPost', 'updatePost', 'deletePost']);
 });
 
 function transformerVersionSnapshot(version: number): string {
