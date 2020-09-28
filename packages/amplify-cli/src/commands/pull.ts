@@ -1,4 +1,5 @@
 import { pullBackend } from '../pull-backend';
+import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';
 import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
@@ -7,6 +8,11 @@ import { stateManager } from 'amplify-cli-core';
 export const run = async context => {
   const inputParams = constructInputParams(context);
   const projectPath = process.cwd();
+
+  if (inputParams.backendManagerAppId) {
+    preDeployPullBackend(context, inputParams.backendManagerAppId);
+    return;
+  }
 
   if (stateManager.currentMetaFileExists(projectPath)) {
     const { appId: inputAppId, envName: inputEnvName } = inputParams.amplify;
