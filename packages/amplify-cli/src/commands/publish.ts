@@ -1,4 +1,5 @@
 import { run as push } from './push';
+import { FrontendBuildError } from 'amplify-cli-core';
 
 export const run = async context => {
   context.amplify.constructExeInfo(context);
@@ -34,9 +35,15 @@ export const run = async context => {
     continueToPublish = await context.amplify.confirmPrompt('Do you still want to publish the frontend?');
   }
 
-  if (continueToPublish) {
-    const frontendPlugins = context.amplify.getFrontendPlugins(context);
-    const frontendHandlerModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
-    await frontendHandlerModule.publish(context);
+  try {
+    if (continueToPublish) {
+      const frontendPlugins = context.amplify.getFrontendPlugins(context);
+      const frontendHandlerModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
+      await frontendHandlerModule.publish(context);
+    }
+  } catch (e) {
+    context.print.error(`An error occurred during the publish operation`);
+    context.usageData.emitError(new FrontendBuildError());
+    process.exit(1);
   }
 };
