@@ -33,7 +33,7 @@ export async function provideTrigger(request: TemplateContributionRequest, conte
         ...getDstMap(commonFiles),
         [templateFile]: handlerSource,
         'Trigger/aws-lambda-tools-defaults.json.ejs': path.join('src', 'aws-lambda-tools-defaults.json'),
-        'Trigger/Function.csproj.ejs': path.join('src', `${request.contributionContext.functionName}.csproj`),
+        'Trigger/Function.csproj.ejs': path.join('src', `${request.contributionContext.resourceName}.csproj`),
         [eventFile]: path.join('src', 'event.json'),
       },
       defaultEditorFile: handlerSource,

@@ -50,7 +50,7 @@ const coreFunction = (
         .wait('Select which capability you want to add:')
         .sendCarriageReturn() // lambda function
         .wait('Provide a friendly name for your resource to be used as a label')
-        .sendLine(settings.name || '')
+        .sendLine(settings.friendlyName || settings.name || '')
         .wait('Provide the AWS Lambda function name:')
         .sendLine(settings.name || '');
 

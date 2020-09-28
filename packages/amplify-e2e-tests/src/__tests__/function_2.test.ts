@@ -110,11 +110,13 @@ describe('dotnet function tests', () => {
     await initJSProjectWithProfile(projRoot, {});
 
     const random = Math.floor(Math.random() * 10000);
+    const friendlyName = `dotnettestfriendlyfn${random}`;
     funcName = `dotnettestfn${random}`;
 
     await addFunction(
       projRoot,
       {
+        friendlyName,
         name: funcName,
         functionTemplate: 'Hello World',
       },

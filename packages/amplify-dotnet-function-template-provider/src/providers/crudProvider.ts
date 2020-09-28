@@ -34,7 +34,7 @@ export async function provideCrud(request: TemplateContributionRequest, context:
       destMap: {
         ...getDstMap(commonFiles),
         'Crud/aws-lambda-tools-defaults.json.ejs': path.join('src', 'aws-lambda-tools-defaults.json'),
-        'Crud/Function.csproj.ejs': path.join('src', `${request.contributionContext.functionName}.csproj`),
+        'Crud/Function.csproj.ejs': path.join('src', `${request.contributionContext.resourceName}.csproj`),
         'Crud/FunctionHandler.cs.ejs': handlerSource,
         'Crud/event.json.ejs': path.join('src', 'event.json'),
       },
