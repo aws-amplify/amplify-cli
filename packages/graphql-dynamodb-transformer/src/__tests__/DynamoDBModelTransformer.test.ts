@@ -594,7 +594,7 @@ test(`Current version transformer snapshot test`, () => {
   expect(schema).toMatchSnapshot();
 });
 
-test('DynmoDB transformer should add default primary key when not defined', () => {
+test('DynamoDB transformer should add default primary key when not defined', () => {
   const validSchema = `
   type Post @model{
     str: String
@@ -618,7 +618,7 @@ test('DynmoDB transformer should add default primary key when not defined', () =
   expect(getBaseType(defaultIdField.type)).toEqual('ID');
 });
 
-test('DynmoDB transformer should add not default primary key when ID is defined', () => {
+test('DynamoDB transformer should add not default primary key when ID is defined', () => {
   const validSchema = `
   type Post @model{
     id: Int
@@ -643,6 +643,47 @@ test('DynmoDB transformer should add not default primary key when ID is defined'
   expect(getBaseType(defaultIdField.type)).toEqual('Int');
   // It should not add default value for ctx.arg.id as id is of type Int
   expect(result.resolvers['Mutation.createPost.req.vtl']).toMatchSnapshot();
+});
+
+test('DynamoDB transformer should throw for reserved type name usage', () => {
+  const invalidSchema = `
+  type Subscription @model{
+    id: Int
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  expect(() => transformer.transform(invalidSchema)).toThrowError(
+    "Subscription' is a reserved type name and currently in use within the default schema element.",
+  );
+});
+
+test('Schema should compile successfully when subscription is missing from schema', () => {
+  const validSchema = `
+  type Post @model {
+    id: Int
+    str: String
+  }
+
+  type Query {
+    Custom: String
+  }
+
+  schema {
+    query: Query
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  const parsed = parse(out.schema);
+  const subscriptionType = getObjectType(parsed, 'Subscription');
+  expect(subscriptionType).toBeDefined();
+  expectFields(subscriptionType, ['onCreatePost', 'onUpdatePost', 'onDeletePost']);
 });
 
 function transformerVersionSnapshot(version: number): string {
