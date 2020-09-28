@@ -1,6 +1,6 @@
 import sequential from 'promise-sequential';
 import ora from 'ora';
-import { $TSObject, stateManager } from 'amplify-cli-core';
+import { $TSObject, stateManager, exitOnNextTick } from 'amplify-cli-core';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 
 const spinner = ora('');
@@ -51,6 +51,6 @@ export const run = async context => {
       context.print.error(`An error occurred during the push operation: ${e.message}`);
     }
     context.usageData.emitError(e);
-    process.exit(1);
+    exitOnNextTick(1);
   }
 };

@@ -2,7 +2,7 @@ import open from 'open';
 
 const path = require('path');
 const chalk = require('chalk');
-const { NotImplementedError, ResourceDoesNotExistError } = require('amplify-cli-core');
+const { NotImplementedError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 const parametersFileName = 'parameters.json';
 const prefixForAdminTrigger = 'protected/predictions/index-faces/admin';
 
@@ -26,7 +26,7 @@ function updateResource(context, predictionsCategoryFilename) {
     const errMessage = 'Update functionality not available for this service';
     context.print.error(errMessage);
     context.usageData.emitError(new NotImplementedError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   }
 
   return updateWalkthrough(context).then(resource => resource.resourceName);
@@ -93,7 +93,7 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, sho
           const errMessage = 'Push the resources to the cloud using `amplify push` command.';
           context.print.error(errMessage);
           context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-          process.exit(0);
+          exitOnNextTick(0);
         }
       }
     });
@@ -102,7 +102,7 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, sho
       const errMessage = 'Push the resources to the cloud using `amplify push` command.';
       context.print.error(errMessage);
       context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-      process.exit(0);
+      exitOnNextTick(0);
       return;
     }
     const region = amplifyMeta.providers.awscloudformation.Region;
@@ -113,7 +113,7 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, sho
     // !showOnAmplifyStatus is used so that this message is not shown in amplify status scenario.
     context.print.error(errMessage);
     context.usageData.emitError(new NotImplementedError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   }
 }
 

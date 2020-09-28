@@ -7,6 +7,7 @@ export * from './jsonValidationError';
 export * from './state-manager';
 export * from './tags';
 export * from './errors';
+export * from './exitOnNextTick';
 
 // Temporary types until we can finish full type definition across the whole CLI
 

@@ -1,5 +1,6 @@
 import { execSync } from 'child_process';
 import { getPackageManager, normalizePackageManagerForOS, getPackageManagerCommand } from '../packageManagerHelpers';
+import { exitOnNextTick } from 'amplify-cli-core';
 
 export async function postInitSetup(context) {
   if (context.parameters.options.app) {
@@ -15,7 +16,7 @@ export async function postInitSetup(context) {
         context.print.error(`An error occurred during the push operation: ${e.message}`);
       }
       context.usageData.emitError(e);
-      process.exit(1);
+      exitOnNextTick(1);
     }
   }
 }

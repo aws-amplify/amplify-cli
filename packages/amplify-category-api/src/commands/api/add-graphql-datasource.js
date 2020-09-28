@@ -5,7 +5,7 @@ const path = require('path');
 const { RelationalDBSchemaTransformer } = require('graphql-relational-schema-transformer');
 const { RelationalDBTemplateGenerator, AuroraServerlessMySQLDatabaseReader } = require('graphql-relational-schema-transformer');
 const { mergeTypeDefs } = require('@graphql-tools/merge');
-const { ResourceDoesNotExistError } = require('amplify-cli-core');
+const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 
 const subcommand = 'add-graphql-datasource';
 const categories = 'categories';
@@ -191,7 +191,7 @@ function datasourceSelectionPrompt(context, supportedDatasources) {
     const errMessage = `No datasources defined by configured providers for category: ${category}`;
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(1);
+    exitOnNextTick(1);
   }
 
   if (options.length === 1) {

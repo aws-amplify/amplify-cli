@@ -12,7 +12,7 @@ import {
   layerVersionQuestion,
 } from '../utils/layerHelpers';
 import { ServiceName } from '../utils/constants';
-import { ResourceDoesNotExistError } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 
 export async function createLayerWalkthrough(context: any, parameters: Partial<LayerParameters> = {}): Promise<Partial<LayerParameters>> {
   _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));
@@ -55,7 +55,7 @@ export async function updateLayerWalkthrough(
     const errMessage = 'No Lambda layer resource to update. Please use "amplify add function" to create a new Layer';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   }
   const resourceQuestion: InputQuestion = [
     {

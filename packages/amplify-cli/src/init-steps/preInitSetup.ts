@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as url from 'url';
 import { execSync } from 'child_process';
-import { pathManager, $TSContext, NonEmptyDirectoryError } from 'amplify-cli-core';
+import { pathManager, $TSContext, NonEmptyDirectoryError, exitOnNextTick } from 'amplify-cli-core';
 import { getPackageManager } from '../packageManagerHelpers';
 import { normalizePackageManagerForOS } from '../packageManagerHelpers';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';
@@ -23,7 +23,7 @@ export async function preInitSetup(context: $TSContext) {
   if (context.parameters.options.quickstart) {
     await createAmplifySkeleton();
     context.usageData.emitSuccess();
-    process.exit(0);
+    exitOnNextTick(0);
   }
 
   return context;
@@ -43,7 +43,7 @@ async function validateGithubRepo(context: $TSContext, repoUrl: string) {
   } catch (e) {
     context.print.error('Invalid remote github url');
     context.usageData.emitError(e);
-    process.exit(1);
+    exitOnNextTick(1);
   }
 }
 
@@ -59,14 +59,14 @@ async function cloneRepo(context: $TSContext, repoUrl: string) {
     const errMessage = 'Please ensure you run this command in an empty directory';
     context.print.error(errMessage);
     context.usageData.emitError(new NonEmptyDirectoryError(errMessage));
-    process.exit(1);
+    exitOnNextTick(1);
   }
 
   try {
     execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
   } catch (e) {
     context.usageData.emitError(e);
-    process.exit(1);
+    exitOnNextTick(1);
   }
 }
 

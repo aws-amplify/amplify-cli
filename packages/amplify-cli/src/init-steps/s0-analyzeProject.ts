@@ -4,7 +4,7 @@ import * as inquirer from 'inquirer';
 import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
-import { InvalidEnvironmentNameError, stateManager } from 'amplify-cli-core';
+import { InvalidEnvironmentNameError, stateManager, exitOnNextTick } from 'amplify-cli-core';
 
 export async function analyzeProject(context) {
   if (!context.parameters.options.app) {
@@ -113,11 +113,11 @@ async function getEnvName(context) {
     }
     context.print.error(INVALID_ENV_NAME_MSG);
     context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
-    process.exit(1);
+    exitOnNextTick(1);
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
     context.print.error('Environment name missing');
     context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
-    process.exit(1);
+    exitOnNextTick(1);
   }
 
   const newEnvQuestion = async () => {

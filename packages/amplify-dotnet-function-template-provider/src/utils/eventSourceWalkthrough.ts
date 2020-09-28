@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import { askAnalyticsCategoryKinesisQuestions } from './analyticsWalkthrough';
 import { askAPICategoryDynamoDBQuestions, askDynamoDBQuestions } from './dynamoDBWalkthrough';
-import { ResourceDoesNotExistError } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 
 export async function askEventSourceQuestions(context: any) {
   const selectEventSourceQuestion = {
@@ -156,7 +156,7 @@ export async function askEventSourceQuestions(context: any) {
             const errMessage = 'There are no DynamoDB resources configured in your project currently';
             context.print.error(errMessage);
             context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-            process.exit(1);
+            exitOnNextTick(1);
           }
 
           dynamoDBCategoryStorageRes = await askDynamoDBQuestions(context, true);
