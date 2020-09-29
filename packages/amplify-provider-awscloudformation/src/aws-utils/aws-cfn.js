@@ -213,7 +213,7 @@ class CloudFormation {
           Body: fs.createReadStream(filePath),
           Key: cfnFile,
         };
-        return s3.uploadFile(s3Params);
+        return s3.uploadFile(s3Params, false);
       })
       .then(bucketName => {
         const templateURL = `https://s3.amazonaws.com/${bucketName}/${cfnFile}`;

@@ -410,7 +410,7 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
         Body: fs.createReadStream(filePath),
         Key: `amplify-cfn-templates/${category}/${cfnFile}`,
       };
-      return s3.uploadFile(s3Params);
+      return s3.uploadFile(s3Params, false);
     })
     .then(projectBucket => {
       const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${category}/${cfnFile}`;
