@@ -1,4 +1,5 @@
 import { UnknownArgumentError, exitOnNextTick } from 'amplify-cli-core';
+
 export const run = async context => {
   if (Array.isArray(context.parameters.array) && context.parameters.array.length > 0) {
     context.print.error('"delete" command does not expect additional arguments.');
