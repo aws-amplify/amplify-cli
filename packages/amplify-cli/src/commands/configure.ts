@@ -35,6 +35,7 @@ export const run = async (context: Context) => {
     } catch (e) {
       context.usageData.emitError(e);
       onFailure(e);
+      process.exitCode = 1;
     }
   }
 };

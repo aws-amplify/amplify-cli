@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities, stateManager, UnknownArgumentError } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, stateManager, UnknownArgumentError, exitOnNextTick } from 'amplify-cli-core';
 
 export const run = async (context: $TSContext) => {
   const envName = context.parameters.options.name;
@@ -6,7 +6,7 @@ export const run = async (context: $TSContext) => {
     const errMessage = 'You must pass in the name of the environment using the --name flag';
     context.print.error(errMessage);
     context.usageData.emitError(new UnknownArgumentError(errMessage));
-    process.exit(1);
+    exitOnNextTick(1);
   }
 
   let config;
@@ -43,7 +43,7 @@ export const run = async (context: $TSContext) => {
     const errMessage = 'You must pass in the configs of the environment in an object format using the --config flag';
     context.print.error(errMessage);
     context.usageData.emitError(new UnknownArgumentError(errMessage));
-    process.exit(1);
+    exitOnNextTick(1);
   }
 
   let awsInfo;
@@ -56,7 +56,7 @@ export const run = async (context: $TSContext) => {
         'You must pass in the AWS credential info in an object format for intializating your environment using the --awsInfo flag';
       context.print.error(errMessage);
       context.usageData.emitError(new UnknownArgumentError(errMessage));
-      process.exit(1);
+      exitOnNextTick(1);
     }
   }
 

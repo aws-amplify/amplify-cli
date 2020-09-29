@@ -5,7 +5,7 @@ import regionMapper from '../assets/regionMapping';
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
-const { ResourceAlreadyExistsError, ResourceDoesNotExistError } = require('amplify-cli-core');
+const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 // Predictions Info
 const category = 'predictions';
 const parametersFileName = 'parameters.json';
@@ -26,12 +26,12 @@ async function addWalkthrough(context) {
       } catch (e) {
         context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
         context.usageData.emitError(e);
-        process.exit(1);
+        exitOnNextTick(1);
       }
       break;
     } else {
       context.usageData.emitSuccess();
-      process.exit(0);
+      exitOnNextTick(0);
     }
   }
 
@@ -56,7 +56,7 @@ async function updateWalkthrough(context) {
     const errMessage = 'No resources to update. You need to add a resource.';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
     return;
   }
   let resourceObj = predictionsResources[0].value;
@@ -104,7 +104,7 @@ async function configure(context, resourceObj) {
       const errMessage = `${resourceType} has already been added to this project.`;
       context.print.warning(errMessage);
       context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
-      process.exit(0);
+      exitOnNextTick(0);
     }
 
     Object.assign(answers, await inquirer.prompt(interpretAssets.setup.name(`${answers.interpretType}${defaultValues.resourceName}`)));
