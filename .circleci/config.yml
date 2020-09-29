@@ -808,7 +808,23 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/auth_2.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: ap-southeast-1
+  auth_3-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/auth_3.test.ts
+      CLI_REGION: ap-southeast-2
+  auth_4-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/auth_4.test.ts
+      CLI_REGION: us-east-2
   env-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -840,7 +856,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/function_2.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: ap-northeast-1
   init-special-case-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -848,7 +864,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/init-special-case.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-southeast-1
   layer-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -856,7 +872,23 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/layer.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-2
+  migration-api-key-migration1-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/migration/api.key.migration1.test.ts
+      CLI_REGION: us-east-2
+  migration-api-key-migration2-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts
+      CLI_REGION: us-west-2
   schema-auth-1-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1295,10 +1327,14 @@ workflows:
           requires:
             - publish_to_local_registry
 <<<<<<< HEAD
+<<<<<<< HEAD
             - migration-api-key-migration1-amplify_e2e_tests
 =======
             - function_1-amplify_e2e_tests
 >>>>>>> chore: update yarn.lock dependencies
+=======
+            - migration-api-key-migration1-amplify_e2e_tests
+>>>>>>> Revert config.yml
       - hostingPROD-amplify_e2e_tests:
           filters: *ref_2
           requires:
@@ -1308,7 +1344,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - function_2-amplify_e2e_tests:
+      - env-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1340,7 +1376,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - init-special-case-amplify_e2e_tests:
+      - feature-flags-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1372,11 +1408,12 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - layer-amplify_e2e_tests:
+      - function_1-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
       - schema-auth-10-amplify_e2e_tests:
+<<<<<<< HEAD
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1384,6 +1421,15 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
+=======
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+      - schema-auth-8-amplify_e2e_tests:
+          filters: *ref_2
+          requires:
+            - publish_to_local_registry
+>>>>>>> Revert config.yml
             - api_3-amplify_e2e_tests
       - schema-predictions-amplify_e2e_tests:
           filters: *ref_2
@@ -1404,7 +1450,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - schema-auth-1-amplify_e2e_tests:
+      - function_2-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1485,4 +1531,8 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
+<<<<<<< HEAD
             - schema-auth-4-amplify_e2e_tests
+=======
+            - schema-auth-4-amplify_e2e_tests
+>>>>>>> Revert config.yml
