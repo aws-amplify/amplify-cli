@@ -3,11 +3,12 @@ const fsext = require('fs-extra');
 const path = require('path');
 
 const TransformPackage = require('graphql-transformer-core');
-const S3 = require('./aws-utils/aws-s3');
+const { S3 } = require('./aws-utils/aws-s3');
 
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const providerName = require('./constants').ProviderName;
 const { hashElement } = require('folder-hash');
+const ora = require('ora');
 
 const PARAM_FILE_NAME = 'parameters.json';
 const CF_FILE_NAME = 'cloudformation-template.json';
@@ -182,22 +183,28 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     writeUpdatedParametersJson(resource, deploymentRootKey);
 
     // Upload build/* to S3.
-    const s3Client = await new S3(context);
+    const s3Client = await S3.getInstance(context);
     if (!fs.existsSync(resourceBuildDir)) {
       return;
     }
+    const spinner = new ora('Uploading files...');
+    spinner.start();
     await TransformPackage.uploadAPIProject({
       directory: resourceBuildDir,
       upload: async blob => {
         const { Key, Body } = blob;
         const fullKey = `${deploymentRootKey}/${Key}`;
 
-        return await s3Client.uploadFile({
-          Key: fullKey,
-          Body,
-        });
+        return await s3Client.uploadFile(
+          {
+            Key: fullKey,
+            Body,
+          },
+          false,
+        );
       },
     });
+    spinner.stop();
   } else if (allApiResources.length > 0) {
     // We need to update the parameters file even when we are not deploying the API
     // category to fix a bug around deployments on CI/CD platforms. Basically if a

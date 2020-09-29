@@ -4,7 +4,8 @@
     "outDir": "lib",
     "rootDir": "src",
     "strict": false, // TODO enable
-    "allowJs": true
+    "allowJs": true,
+    "checkJs": false // TODO enable till we move everything to TS
   },
   "exclude": [
     "lib",

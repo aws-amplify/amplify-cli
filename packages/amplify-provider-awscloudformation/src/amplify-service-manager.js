@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
-const S3 = require('./aws-utils/aws-s3');
+const { S3 } = require('./aws-utils/aws-s3');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const constants = require('./constants');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
@@ -396,7 +396,7 @@ async function searchAmplifyService(amplifyClient, stackName) {
 }
 
 function storeArtifactsForAmplifyService(context) {
-  return new S3(context).then(async s3 => {
+  return S3.getInstance(context).then(async s3 => {
     const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
     const amplifyMetaFilePath = path.join(currentCloudBackendDir, 'amplify-meta.json');
     const backendConfigFilePath = path.join(currentCloudBackendDir, 'backend-config.json');
