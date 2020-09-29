@@ -3,11 +3,15 @@
   provided that the file names (without extension) are included in the "MODULES" env variable.
   "MODULES" is a comma-delimmited string.
 */
+const moduleNames = process.env.MODULES.split(',');
+const modules = [];
+for (let i = 0; i < moduleNames.length; i += 1) {
+  modules.push(require(`./${moduleNames[i]}`));
+}
 
 exports.handler = (event, context, callback) => {
-  const modules = process.env.MODULES.split(',');
   for (let i = 0; i < modules.length; i += 1) {
-    const { handler } = require(`./${modules[i]}`);
+    const { handler } = modules[i];
     handler(event, context, callback);
   }
 };
