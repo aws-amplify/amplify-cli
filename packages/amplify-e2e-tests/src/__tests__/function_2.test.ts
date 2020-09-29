@@ -104,13 +104,14 @@ describe('dotnet function tests', () => {
   const helloWorldSuccessOutput = '{"key1":"VALUE1","key2":"VALUE2","key3":"VALUE3"}';
   let projRoot: string;
   let funcName: string;
+  let friendlyName: string;
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('dotnet-functions');
     await initJSProjectWithProfile(projRoot, {});
 
     const random = Math.floor(Math.random() * 10000);
-    const friendlyName = `dotnettestfriendlyfn${random}`;
+    friendlyName = `dotnetfnres${random}`;
     funcName = `dotnettestfn${random}`;
 
     await addFunction(
@@ -131,6 +132,7 @@ describe('dotnet function tests', () => {
 
   it('add dotnet hello world function and mock locally', async () => {
     await functionMockAssert(projRoot, {
+      friendlyName,
       funcName,
       successString: helloWorldSuccessOutput,
       eventFile: 'src/event.json',
@@ -140,7 +142,7 @@ describe('dotnet function tests', () => {
   it('add dotnet hello world function and invoke in the cloud', async () => {
     const payload = '{"key1":"value1","key2":"value2","key3":"value3"}';
     await amplifyPushAuth(projRoot);
-    const response = await functionCloudInvoke(projRoot, { funcName, payload });
+    const response = await functionCloudInvoke(projRoot, { friendlyName, funcName, payload });
     expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(helloWorldSuccessOutput));
   });
 });
