@@ -176,13 +176,13 @@ export function isMockable(context: any, resourceName: string): IsMockableRespon
     };
   }
   const { service, dependsOn } = resourceValue;
-  let dependsOnLayers;
-  if (Array.isArray(dependsOn) && dependsOn.length !== 0) {
-    dependsOnLayers = dependsOn
-      .filter(dependency => dependency.category === 'function')
-      .map(val => _.get(context.amplify.getProjectMeta(), [val.category, val.resourceName]))
-      .filter(val => val.service === ServiceName.LambdaLayer);
-  }
+
+  const dependsOnLayers = Array.isArray(dependsOn)
+    ? dependsOn
+        .filter(dependency => dependency.category === 'function')
+        .map(val => _.get(context.amplify.getProjectMeta(), [val.category, val.resourceName]))
+        .filter(val => val.service === ServiceName.LambdaLayer)
+    : [];
 
   const hasLayer = service === ServiceName.LambdaFunction && Array.isArray(dependsOnLayers) && dependsOnLayers.length !== 0;
   if (hasLayer) {
