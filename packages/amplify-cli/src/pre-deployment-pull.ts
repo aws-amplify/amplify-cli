@@ -31,7 +31,10 @@ export async function preDeployPullBackend(context, backendManagerAppId: string)
   }
 
   // Create base-skeleton amplify-folder
-  await createAmplifySkeletonProject();
+  const amplifyDirPath = path.join(process.cwd(), 'amplify');
+  if (!fs.existsSync(amplifyDirPath)) {
+    await createAmplifySkeletonProject();
+  }
 
   // Replace base schema with the schema configured in Backend-manager app
   const schema = resJson.schema;
