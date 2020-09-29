@@ -1,5 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`mock function mock function with empty dependsOn 1`] = `
+Object {
+  "isMockable": true,
+  "reason": "Lambda layers cannot be mocked locally",
+}
+`;
+
 exports[`mock function mock function with functions 1`] = `
 Object {
   "isMockable": true,

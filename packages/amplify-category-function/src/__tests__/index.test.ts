@@ -152,4 +152,22 @@ describe('mock function', () => {
     const resourceName = 'issue4992d7983625';
     expect(isMockable(contextStub, resourceName)).toMatchSnapshot();
   });
+
+  it('mock function with empty dependsOn', async () => {
+    const contextStub = {
+      amplify: {
+        getProjectMeta: () => ({
+          function: {
+            issue4992d7983625: {
+              build: true,
+              providerPlugin: 'awscloudformation',
+              service: 'Lambda',
+            },
+          },
+        }),
+      },
+    };
+    const resourceName = 'issue4992d7983625';
+    expect(isMockable(contextStub, resourceName)).toMatchSnapshot();
+  });
 });
