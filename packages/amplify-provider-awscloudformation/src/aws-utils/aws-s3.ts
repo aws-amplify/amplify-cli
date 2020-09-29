@@ -69,26 +69,23 @@ export class S3 {
       ...this.uploadState.s3Params,
     };
     let uploadTask;
-    showSpinner && spinner.start('Uploading files...');
-    if (
-      (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize) ||
-      (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
-    ) {
-      uploadTask = this.s3.upload(augmentedS3Params);
-      uploadTask.on('httpUploadProgress', max => {
-        if (showSpinner) spinner.text = `Uploading Files...${Math.round((max.loaded / max.total) * 100)}%`;
-      });
-    } else {
-      uploadTask = this.s3.putObject(augmentedS3Params);
-    }
-
     try {
+      showSpinner && spinner.start('Uploading files...');
+      if (
+        (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize) ||
+        (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
+      ) {
+        uploadTask = this.s3.upload(augmentedS3Params);
+        uploadTask.on('httpUploadProgress', max => {
+          if (showSpinner) spinner.text = `Uploading Files...${Math.round((max.loaded / max.total) * 100)}%`;
+        });
+      } else {
+        uploadTask = this.s3.putObject(augmentedS3Params);
+      }
       await uploadTask.promise();
-      showSpinner && spinner.stop();
       return this.uploadState.s3Params.Bucket;
-    } catch (ex) {
+    } finally {
       showSpinner && spinner.stop();
-      throw ex;
     }
   }
 
