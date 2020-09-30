@@ -12,7 +12,6 @@ export function getTypeInfo(typeNode: TypeNode, schema: GraphQLSchema): TypeInfo
     return {
       ...getTypeInfo(typeNode.type.type, schema),
       isList: true,
-      isListNullable: false,
     };
   } else if (typeNode.kind === 'NonNullType') {
     return {
@@ -23,6 +22,7 @@ export function getTypeInfo(typeNode: TypeNode, schema: GraphQLSchema): TypeInfo
     return {
       ...getTypeInfo(typeNode.type, schema),
       isList: true,
+      isListNullable: true,
     };
   }
   return {
