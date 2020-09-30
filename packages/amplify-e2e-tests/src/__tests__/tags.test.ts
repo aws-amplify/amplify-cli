@@ -23,7 +23,9 @@ describe('generated tags test', () => {
   });
 
   it('should compare the nested stack tags key with the tags.json file and return true', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    const projName = 'tagsTest';
+    const envName = 'devtag';
+    await initJSProjectWithProfile(projRoot, { name: projName, envName });
     await addDEVHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
 
@@ -35,6 +37,8 @@ describe('generated tags test', () => {
 
     // Currently only checks to make sure that thhe pushed tags have the same amount and name of keys than the ones added locally on the tags.json file
     expect(checkEquality(localTags, rootStackInfo.Tags)).toBe(true);
+    expect(rootStackInfo.Tags.filter(r => r.Key === 'user:Stack')[0].Value).toEqual(envName);
+    expect(rootStackInfo.Tags.filter(r => r.Key === 'user:Application')[0].Value).toEqual(projName);
   });
 });
 

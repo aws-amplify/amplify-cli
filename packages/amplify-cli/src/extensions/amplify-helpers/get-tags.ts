@@ -1,13 +1,14 @@
-import { stateManager } from 'amplify-cli-core';
+import { stateManager, Tag } from 'amplify-cli-core';
 import { getProjectDetails } from './get-project-details';
-export function getTags() {
+export function getTags(): Tag[] {
   const projectDetails = getProjectDetails();
   const { projectName } = projectDetails.projectConfig;
   const { envName } = projectDetails.localEnvInfo;
-  return HydrateTags(stateManager.getProjectTags(), projectName, envName);
+  return HydrateTags(stateManager.getProjectTags(), { envName, projectName });
 }
 
-function HydrateTags(tags: any[], envName: string, projectName: string) {
+function HydrateTags(tags: Tag[], tagVariables: TagVariables): Tag[] {
+  const { envName, projectName } = tagVariables;
   const replace = {
     '{project-name}': projectName,
     '{project-env}': envName,
@@ -19,3 +20,8 @@ function HydrateTags(tags: any[], envName: string, projectName: string) {
     };
   });
 }
+
+type TagVariables = {
+  envName: string;
+  projectName: string;
+};
