@@ -52,9 +52,7 @@ describe('test SIGINT with execute', () => {
       emitSuccess: jest.fn(),
       init: jest.fn(),
     };
-    mockContext.migrationInfo = {
-      projectHasMobileHubResources: false,
-    };
+    mockContext.projectHasMobileHubResources = false;
     mockContext.amplify = jest.genMockFromModule('../domain/amplify-toolkit');
     jest.setMock('../context-manager', {
       constructContext: jest.fn().mockReturnValue(mockContext),

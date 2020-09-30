@@ -1,12 +1,12 @@
 import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 
 export const ensureMobileHubCommandCompatibility = (context: $TSContext): boolean => {
-  context.migrationInfo = { ...context.migrationInfo, projectHasMobileHubResources: false };
+  context.projectHasMobileHubResources = false;
 
   checkIfMobileHubProject(context);
 
   // Only do further checks if it is mobile hub migrated project
-  if (context.migrationInfo.projectHasMobileHubResources !== true) {
+  if (!context.projectHasMobileHubResources) {
     return true;
   }
 
@@ -41,7 +41,7 @@ const checkIfMobileHubProject = (context: $TSContext): void => {
       });
     });
 
-  context.migrationInfo = { ...context.migrationInfo, projectHasMobileHubResources: hasMigratedResources };
+  context.projectHasMobileHubResources = hasMigratedResources;
 };
 
 const isCommandSupported = (context: $TSContext): boolean => {
