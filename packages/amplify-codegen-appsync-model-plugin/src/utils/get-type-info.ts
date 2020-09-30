@@ -23,6 +23,7 @@ export function getTypeInfo(typeNode: TypeNode, schema: GraphQLSchema): TypeInfo
     return {
       ...getTypeInfo(typeNode.type, schema),
       isList: true,
+      isListNullable: true,
     };
   }
   return {

@@ -97,6 +97,7 @@ describe('Metadata visitor', () => {
             name: 'names',
             isArray: true,
             type: 'String',
+            isArrayNullable: true,
             isRequired: false,
             attributes: [],
             association: namesAssociation,
@@ -326,6 +327,7 @@ describe('Metadata visitor', () => {
                   "names": Object {
                     "attributes": Array [],
                     "isArray": true,
+                    "isArrayNullable": true,
                     "isRequired": false,
                     "name": "names",
                     "type": "String",
@@ -412,7 +414,8 @@ describe('Metadata visitor', () => {
                             \\"isArray\\": true,
                             \\"type\\": \\"String\\",
                             \\"isRequired\\": false,
-                            \\"attributes\\": []
+                            \\"attributes\\": [],
+                            \\"isArrayNullable\\": true
                         }
                     }
                 }
@@ -488,7 +491,8 @@ describe('Metadata visitor', () => {
                             \\"isArray\\": true,
                             \\"type\\": \\"String\\",
                             \\"isRequired\\": false,
-                            \\"attributes\\": []
+                            \\"attributes\\": [],
+                            \\"isArrayNullable\\": true
                         }
                     }
                 }
@@ -509,23 +513,24 @@ export declare const schema: Schema;"
   });
 });
 
-
 describe('Metadata visitor', () => {
   const schema = /* GraphQL */ `
-  type SimpleModel @model @auth(rules: [{ allow: owner, ownerField: "customOwnerField"}, { allow: owner, ownerField: "customOwnerField2"}]) {
-    id: ID!
-    name: String
-    bar: String
-  }
-  enum SimpleEnum {
-    enumVal1
-    enumVal2
-  }
+    type SimpleModel
+      @model
+      @auth(rules: [{ allow: owner, ownerField: "customOwnerField" }, { allow: owner, ownerField: "customOwnerField2" }]) {
+      id: ID!
+      name: String
+      bar: String
+    }
+    enum SimpleEnum {
+      enumVal1
+      enumVal2
+    }
 
-  type SimpleNonModelType {
-    id: ID!
-    names: [String]
-  }
+    type SimpleNonModelType {
+      id: ID!
+      names: [String]
+    }
   `;
   let visitor: AppSyncJSONVisitor;
   beforeEach(() => {
@@ -643,7 +648,8 @@ describe('Metadata visitor', () => {
                             \\"isArray\\": true,
                             \\"type\\": \\"String\\",
                             \\"isRequired\\": false,
-                            \\"attributes\\": []
+                            \\"attributes\\": [],
+                            \\"isArrayNullable\\": true
                         }
                     }
                 }
@@ -764,7 +770,8 @@ describe('Metadata visitor', () => {
                             \\"isArray\\": true,
                             \\"type\\": \\"String\\",
                             \\"isRequired\\": false,
-                            \\"attributes\\": []
+                            \\"attributes\\": [],
+                            \\"isArrayNullable\\": true
                         }
                     }
                 }
@@ -773,6 +780,5 @@ describe('Metadata visitor', () => {
         };"
       `);
     });
-
   });
 });
