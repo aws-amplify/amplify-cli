@@ -7,7 +7,7 @@ export function getTags(): Tag[] {
   return HydrateTags(stateManager.getProjectTags(), { envName, projectName });
 }
 
-function HydrateTags(tags: any[], tagVariables: TagVariables): Tag[] {
+function HydrateTags(tags: Tag[], tagVariables: TagVariables): Tag[] {
   const { envName, projectName } = tagVariables;
   const replace = {
     '{project-name}': projectName,
