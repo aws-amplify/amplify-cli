@@ -24,7 +24,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const dynamoDbResources = {};
 
   Object.keys(amplifyMeta[category]).forEach(resourceName => {
-    if (amplifyMeta[category][resourceName].service === serviceName) {
+    if (amplifyMeta[category][resourceName].service === serviceName && !!amplifyMeta[category][resourceName].providerPlugin) {
       dynamoDbResources[resourceName] = amplifyMeta[category][resourceName];
     }
   });

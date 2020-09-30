@@ -13,6 +13,13 @@ module.exports = {
     context.exeInfo = context.amplify.getProjectDetails();
     const pinpointApp = pinpointHelper.getPinpointApp(context);
     if (pinpointApp) {
+      const pinpointResource = context.exeInfo.amplifyMeta.notifications[pinpointApp.Name];
+
+      if (pinpointResource && !pinpointResource.providerPlugin) {
+        context.print.error('Notifications is migrated from Mobile Hub and cannot be removed with Amplify CLI.');
+        return context;
+      }
+
       const availableChannels = notificationManager.getAvailableChannels(context);
       const enabledChannels = notificationManager.getEnabledChannels(context);
 

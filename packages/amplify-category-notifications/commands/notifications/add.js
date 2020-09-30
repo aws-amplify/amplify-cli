@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const pinpointHelper = require('../../lib/pinpoint-helper');
 const notificationManager = require('../../lib/notifications-manager');
+const constants = require('../../lib/constants');
 const multiEnvManager = require('../../lib/multi-env-manager');
 
 module.exports = {
@@ -8,6 +9,20 @@ module.exports = {
   alias: 'enable',
   run: async context => {
     context.exeInfo = context.amplify.getProjectDetails();
+
+    const categoryMeta = context.exeInfo.amplifyMeta[constants.CategoryName];
+    if (categoryMeta) {
+      const services = Object.keys(categoryMeta);
+      for (let i = 0; i < services.length; i++) {
+        const serviceMeta = categoryMeta[services[i]];
+
+        if (!serviceMeta.providerPlugin) {
+          context.print.error('Notifications is migrated from Mobile Hub and channels cannot be added with Amplify CLI.');
+          return context;
+        }
+      }
+    }
+
     const availableChannels = notificationManager.getAvailableChannels(context);
     const disabledChannels = notificationManager.getDisabledChannels(context);
 

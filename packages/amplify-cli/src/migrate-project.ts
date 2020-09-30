@@ -66,7 +66,7 @@ async function migrateFrom0To1(context: $TSContext, projectPath, projectConfig) 
   try {
     amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
     backupAmplifyDirPath = backup(amplifyDirPath, projectPath);
-    context.migrationInfo = generateMigrationInfo(projectConfig, projectPath);
+    context.migrationInfo = { ...context.migrationInfo, ...generateMigrationInfo(projectConfig, projectPath) };
 
     // Give each category a chance to migrate their respective files
     const categoryMigrationTasks: Function[] = [];

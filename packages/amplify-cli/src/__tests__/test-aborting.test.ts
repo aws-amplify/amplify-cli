@@ -22,6 +22,7 @@ describe('test SIGINT with execute', () => {
         findProjectRoot: jest.fn(),
       },
       stateManager: {
+        getMeta: jest.fn(),
         projectConfigExists: jest.fn(),
       },
       FeatureFlags: {
@@ -50,6 +51,9 @@ describe('test SIGINT with execute', () => {
       emitInvoke: jest.fn(),
       emitSuccess: jest.fn(),
       init: jest.fn(),
+    };
+    mockContext.migrationInfo = {
+      projectHasMobileHubResources: false,
     };
     mockContext.amplify = jest.genMockFromModule('../domain/amplify-toolkit');
     jest.setMock('../context-manager', {

@@ -40,13 +40,15 @@ export async function removeResource(
 ) {
   const amplifyMeta = stateManager.getMeta();
 
-  if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
+  if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).filter(r => !!amplifyMeta[category][r].providerPlugin).length === 0) {
     context.print.error('No resources added for this category');
     context.usageData.emitError(new ResourceDoesNotExistError());
     exitOnNextTick(1);
   }
 
-  let enabledCategoryResources: { name; value } | { name; value }[] | string[] = Object.keys(amplifyMeta[category]);
+  let enabledCategoryResources: { name; value } | { name; value }[] | string[] = Object.keys(amplifyMeta[category]).filter(
+    r => !!amplifyMeta[category][r].providerPlugin,
+  );
 
   if (resourceName) {
     if (!enabledCategoryResources.includes(resourceName)) {
