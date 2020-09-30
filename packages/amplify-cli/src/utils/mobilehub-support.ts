@@ -1,6 +1,8 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 
 export const ensureMobileHubCommandCompatibility = (context: $TSContext): boolean => {
+  context.migrationInfo = { ...context.migrationInfo, projectHasMobileHubResources: false };
+
   checkIfMobileHubProject(context);
 
   // Only do further checks if it is mobile hub migrated project
@@ -12,7 +14,13 @@ export const ensureMobileHubCommandCompatibility = (context: $TSContext): boolea
 };
 
 const checkIfMobileHubProject = (context: $TSContext): void => {
-  const meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
+  const projectPath = pathManager.findProjectRoot();
+
+  if (!projectPath) {
+    return;
+  }
+
+  const meta = stateManager.getMeta(projectPath, { throwIfNotExist: false });
 
   if (!meta) {
     return;
@@ -20,16 +28,18 @@ const checkIfMobileHubProject = (context: $TSContext): void => {
 
   let hasMigratedResources = false;
 
-  Object.keys(meta).forEach(category => {
-    Object.keys(meta[category]).forEach(resourceName => {
-      const resource = meta[category][resourceName];
+  Object.keys(meta)
+    .filter(k => k !== 'providers')
+    .forEach(category => {
+      Object.keys(meta[category]).forEach(resourceName => {
+        const resource = meta[category][resourceName];
 
-      // Mobile hub migrated resources does not have an assigned provider
-      if (!resource.providerPlugin) {
-        hasMigratedResources = true;
-      }
+        // Mobile hub migrated resources does not have an assigned provider
+        if (!resource.providerPlugin) {
+          hasMigratedResources = true;
+        }
+      });
     });
-  });
 
   context.migrationInfo = { ...context.migrationInfo, projectHasMobileHubResources: hasMigratedResources };
 };
