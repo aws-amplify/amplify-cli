@@ -214,7 +214,7 @@ export declare class SimpleModel {
   readonly id: string;
   readonly name?: string;
   readonly bar?: string;
-  readonly owner?: String;
+  readonly owner?: string;
   constructor(init: ModelInit<SimpleModel>);
   static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
 }"
@@ -285,7 +285,7 @@ export declare class SimpleModel {
   readonly id: string;
   readonly name?: string;
   readonly bar?: string;
-  readonly customOwnerField?: String;
+  readonly customOwnerField?: string;
   constructor(init: ModelInit<SimpleModel>);
   static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
 }"
@@ -356,8 +356,8 @@ export declare class SimpleModel {
   readonly id: string;
   readonly name?: string;
   readonly bar?: string;
-  readonly customOwnerField?: String;
-  readonly customOwnerField2?: String;
+  readonly customOwnerField?: string;
+  readonly customOwnerField2?: string;
   constructor(init: ModelInit<SimpleModel>);
   static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
 }"

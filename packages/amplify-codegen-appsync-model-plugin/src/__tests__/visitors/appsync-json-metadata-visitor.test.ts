@@ -200,6 +200,7 @@ describe('Metadata visitor', () => {
           name: 'associatedField',
           type: 'String',
         },
+        isConnectingFieldAutoCreated: false,
       };
       const getFieldNameSpy = jest.spyOn(visitor as any, 'getFieldName');
       const fieldWithHasManyConnection = { ...baseField, connectionInfo: hasManyAssociation };
@@ -228,6 +229,7 @@ describe('Metadata visitor', () => {
           type: 'model',
         },
         targetName: 'connectedId',
+        isConnectingFieldAutoCreated: false,
       };
       const getFieldNameSpy = jest.spyOn(visitor as any, 'getFieldName');
       const fieldWithBelongsToConnection = { ...baseField, connectionInfo: belongsToAssociation };
@@ -648,7 +650,7 @@ describe('Metadata visitor', () => {
                     }
                 }
             },
-            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
+            \\"version\\": \\"5d997b204c79c66d009287de0054655e\\"
         };"
       `);
     });
@@ -769,7 +771,7 @@ describe('Metadata visitor', () => {
                     }
                 }
             },
-            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
+            \\"version\\": \\"5d997b204c79c66d009287de0054655e\\"
         };"
       `);
     });
