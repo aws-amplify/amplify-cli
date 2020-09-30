@@ -7,7 +7,7 @@ const parametersFileName = 'lex-params.json';
 const cfnParametersFilename = 'parameters.json';
 const serviceName = 'Lex';
 const fuzzy = require('fuzzy');
-import { ResourceDoesNotExistError } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   return configure(context, defaultValuesFilename, serviceMetadata);
@@ -31,7 +31,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
     const errMessage = 'No resources to update. You need to add a resource.';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   }
   const resources = Object.keys(lexResources);
   const question = [

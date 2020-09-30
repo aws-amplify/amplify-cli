@@ -17,6 +17,7 @@ const providerName = require('./constants').ProviderName;
 const TransformPackage = require('graphql-transformer-core');
 const { print } = require('graphql');
 const { hashDirectory } = require('./upload-appsync-files');
+const { exitOnNextTick } = require('amplify-cli-core');
 
 const {
   collectDirectivesByTypeNames,
@@ -204,7 +205,7 @@ async function warningMessage(context, warningMessage) {
     });
     if (!response.transformerConfig) {
       context.usageData.emitSuccess();
-      process.exit(0);
+      exitOnNextTick(0);
     }
   }
 }

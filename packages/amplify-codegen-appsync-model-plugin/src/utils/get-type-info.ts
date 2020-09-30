@@ -8,6 +8,12 @@ export function getTypeInfo(typeNode: TypeNode, schema: GraphQLSchema): TypeInfo
       isList: false,
       baseType: schema.getType(typeNode.name.value),
     };
+  } else if (typeNode.kind === 'NonNullType' && typeNode.type.kind === 'ListType') {
+    return {
+      ...getTypeInfo(typeNode.type.type, schema),
+      isList: true,
+      isListNullable: false,
+    };
   } else if (typeNode.kind === 'NonNullType') {
     return {
       ...getTypeInfo(typeNode.type, schema),
@@ -17,7 +23,6 @@ export function getTypeInfo(typeNode: TypeNode, schema: GraphQLSchema): TypeInfo
     return {
       ...getTypeInfo(typeNode.type, schema),
       isList: true,
-      isNullable: true,
     };
   }
   return {

@@ -6,6 +6,8 @@ describe('test SIGINT with execute', () => {
   });
   it('case: run', async () => {
     const input = { argv: ['/usr/local/bin/node', '/usr/local/bin/amplify-dev', '-v'], options: { v: true } };
+    const mockExit = jest.fn();
+
     jest.setMock('amplify-cli-core', {
       JSONUtilities: {
         readJson: jest.fn().mockReturnValue({
@@ -13,6 +15,7 @@ describe('test SIGINT with execute', () => {
           version: '12.12.1',
         }),
       },
+      exitOnNextTick: mockExit,
       pathManager: {
         getAWSCredentialsFilePath: jest.fn(),
         getAWSConfigFilePath: jest.fn(),
@@ -72,7 +75,6 @@ describe('test SIGINT with execute', () => {
       process.emit('SIGINT', 'SIGINT');
       process.exitCode = 2;
     }, 50);
-    const mockExit = jest.spyOn(process, 'exit').mockImplementation();
 
     await require('../index').run();
     expect(mockContext.usageData.emitAbort).toBeCalled();

@@ -3,7 +3,7 @@ import { promptConsoleSupportedCategory } from './provider-utils/supportedPredic
 const predictionsConsole = require('./provider-utils/awscloudformation/index');
 const inquirer = require('inquirer');
 const path = require('path');
-import { ResourceDoesNotExistError } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 
 const category = 'predictions';
 
@@ -30,7 +30,7 @@ async function console(context) {
         const errMessage = `No ${result.category} console supported resource found.`;
         context.print.error(errMessage);
         context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-        process.exit(0);
+        exitOnNextTick(0);
         return;
       }
       let resourceObj = predictionsResources[0].value;

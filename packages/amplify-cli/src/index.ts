@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { $TSContext, CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, exitOnNextTick } from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
@@ -109,7 +109,7 @@ export async function run() {
     if (e.stack) {
       print.info(e.stack);
     }
-    process.exit(1);
+    exitOnNextTick(1);
   }
 }
 
@@ -128,7 +128,7 @@ function sigIntHandler(this: Context, e: any) {
   this.usageData.emitAbort();
   this.print.warn('^Aborted!');
   //exit on abort
-  process.exit(2);
+  exitOnNextTick(2);
 }
 
 // entry from library call

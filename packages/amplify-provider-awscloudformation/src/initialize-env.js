@@ -4,7 +4,7 @@ const glob = require('glob');
 const _ = require('lodash');
 const { JSONUtilities, PathConstants, stateManager } = require('amplify-cli-core');
 const Cloudformation = require('./aws-utils/aws-cfn');
-const S3 = require('./aws-utils/aws-s3');
+const { S3 } = require('./aws-utils/aws-s3');
 const { downloadZip, extractZip } = require('./zip-util');
 const { S3BackendZipFileName } = require('./constants');
 
@@ -18,7 +18,7 @@ async function run(context, providerMetadata) {
   const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
   const backendDir = context.amplify.pathManager.getBackendDirPath();
 
-  const s3 = await new S3(context);
+  const s3 = await S3.getInstance(context);
   const file = await downloadZip(s3, tempDir, S3BackendZipFileName);
   const unzippeddir = await extractZip(tempDir, file);
 

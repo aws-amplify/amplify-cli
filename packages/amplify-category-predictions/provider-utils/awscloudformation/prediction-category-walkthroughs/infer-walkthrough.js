@@ -2,7 +2,7 @@ import open from 'open';
 import inferAssets from '../assets/inferQuestions';
 import getAllDefaults from '../default-values/infer-defaults';
 import regionMapper from '../assets/regionMapping';
-import { ResourceAlreadyExistsError, ResourceDoesNotExistError } from 'amplify-cli-core';
+import { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
@@ -27,13 +27,13 @@ async function addWalkthrough(context) {
       } catch (e) {
         context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
         context.usageData.emitError(e);
-        process.exit(1);
+        exitOnNextTick(1);
         break;
       }
       break;
     } else {
       context.usageData.emitSuccess();
-      process.exit(0);
+      exitOnNextTick(0);
     }
   }
 
@@ -58,7 +58,7 @@ async function updateWalkthrough(context) {
     const errMessage = 'No resources to update. You need to add a resource.';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
     return;
   }
   let resourceObj = predictionsResources[0].value;
@@ -104,7 +104,7 @@ async function configure(context, resourceObj) {
       const errMessage = `${resourceType} has already been added to this project.`;
       context.print.warning(errMessage);
       context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
-      process.exit(0);
+      exitOnNextTick(0);
     }
 
     Object.assign(answers, await inquirer.prompt(inferAssets.setup.name(`${answers.inferType}${defaultValues.resourceName}`)));
@@ -254,7 +254,7 @@ async function getEndpoints(context, questionObj, params) {
     const errMessage = 'No existing endpoints!';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   }
   const { endpoint } = await inquirer.prompt(questionObj.importPrompt({ ...params, endpoints }));
   return endpointMap[endpoint];
