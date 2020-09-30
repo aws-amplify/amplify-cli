@@ -19,6 +19,7 @@ export type $TSContext = {
   amplify: AmplifyToolkit;
   print: $TSAny;
   migrationInfo: $TSAny;
+  projectHasMobileHubResources: boolean;
   prompt: $TSAny;
   exeInfo: $TSAny;
   input: $TSAny;
