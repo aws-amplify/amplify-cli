@@ -24,6 +24,7 @@ export interface ServiceQuestionsBaseResult {
   userpoolClientRefreshTokenValidity?: number;
   userpoolClientReadAttributes: string[];
   userpoolClientWriteAttributes: string[];
+  userpoolClientPreventUserExistenceErrors?: 'ENABLED' | 'LEGACY';
 }
 
 export interface OAuthResult {

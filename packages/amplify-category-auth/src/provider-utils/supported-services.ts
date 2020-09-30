@@ -704,6 +704,21 @@ export const supportedServices = {
         ],
       },
       {
+        key: 'userpoolClientPreventUserExistenceErrors',
+        question: 'Do you want to prevent user existence errors?',
+        required: true,
+        type: 'list',
+        default: true,
+        map: 'preventUserExistenceErrorsMap',
+        andConditions: [
+          {
+            key: 'authSelections',
+            value: 'identityPoolOnly',
+            operator: '!=',
+          }
+        ],
+      },
+      {
         key: 'triggers',
         question: 'Do you want to enable any of the following capabilities?',
         required: true,

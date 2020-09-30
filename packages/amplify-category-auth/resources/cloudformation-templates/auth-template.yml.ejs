@@ -304,6 +304,7 @@ Resources:
       WriteAttributes: !Ref userpoolClientWriteAttributes
       <% } %>
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
+      PreventUserExistenceErrors: !Ref userpoolClientPreventUserExistenceErrors
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
   UserPoolClient:
@@ -318,6 +319,7 @@ Resources:
       <% } %>
       GenerateSecret: !Ref userpoolClientGenerateSecret
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
+      PreventUserExistenceErrors: !Ref userpoolClientPreventUserExistenceErrors
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
   # BEGIN USER POOL LAMBDA RESOURCES

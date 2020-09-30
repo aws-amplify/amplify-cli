@@ -556,6 +556,17 @@ const additonalConfigMap = [
   },
 ];
 
+const preventUserExistenceErrorsMap = [
+  {
+    name: 'Enabled(recommended)',
+    value: 'ENABLED',
+  },
+  {
+    name: 'Legacy',
+    value: 'LEGACY',
+  },
+];
+
 const disableOptionsOnEdit = () => {
   mfaOptions.find(i => i.value === 'ON').disabled = true;
 };
@@ -584,6 +595,7 @@ const getAllMaps = edit => {
     updateFlowMap,
     capabilities,
     additonalConfigMap,
+    preventUserExistenceErrorsMap,
   };
 };
 

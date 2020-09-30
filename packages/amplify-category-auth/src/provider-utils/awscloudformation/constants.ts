@@ -32,6 +32,7 @@ export const safeDefaults = [
   'passwordPolicyMinLength',
   'passwordPolicyCharacters',
   'userpoolClientRefreshTokenValidity',
+  'userpoolClientPreventUserExistenceErrors',
 ];
 
 // These attributes cannot be modified once the auth resource is created
