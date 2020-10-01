@@ -25,7 +25,7 @@
     "graphql": "^14.5.8",
     "graphql-relational-schema-transformer": "2.15.15",
     "graphql-transformer-core": "6.21.5",
-    "inquirer": "^7.0.3",
+    "inquirer": "^7.3.3",
     "open": "^7.0.0",
     "ora": "^4.0.3",
     "uuid": "^3.4.0"

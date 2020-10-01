@@ -20,7 +20,7 @@
   "dependencies": {
     "amplify-category-auth": "2.20.1",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.3",
+    "inquirer": "^7.3.3",
     "open": "^7.0.0",
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1"

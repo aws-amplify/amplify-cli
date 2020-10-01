@@ -56,6 +56,7 @@ async function generateTableContentForApp(context, appId) {
     }
     // Init table
     const table = new Table({
+      style: { head: ['reset'] }, // "no color"
       head: ['FrontEnd Env', 'Domain'],
     });
 
