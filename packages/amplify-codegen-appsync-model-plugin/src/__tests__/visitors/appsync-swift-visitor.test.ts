@@ -1161,7 +1161,7 @@ describe('AppSyncSwiftVisitor', () => {
         `);
       });
 
-      it('should add the default owner field if it is not provided neither in schema nor in ownerField', () => {
+      it('should add the default owner field if it is not provided in schema and in ownerField', () => {
         const schema = /* GraphQL */ `
           type Post @model @auth(rules: [{ allow: owner }]) {
             id: ID!
@@ -1205,7 +1205,7 @@ describe('AppSyncSwiftVisitor', () => {
         `);
       });
 
-      it('should add the ownerField to model generation automatically if not provided in schema', () => {
+      it('should add the custom ownerField to model generation automatically if not provided in schema', () => {
         const schema = /* GraphQL */ `
           type Post @model @auth(rules: [{ allow: owner, ownerField: "customField" }]) {
             id: ID!
