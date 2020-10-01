@@ -1160,6 +1160,145 @@ describe('AppSyncSwiftVisitor', () => {
           }"
         `);
       });
+
+      it('should add the default owner field if it is not provided neither in schema nor in ownerField', () => {
+        const schema = /* GraphQL */ `
+          type Post @model @auth(rules: [{ allow: owner }]) {
+            id: ID!
+            title: String!
+          }
+        `;
+        const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+        const generatedCode = visitor.generate();
+        expect(generatedCode).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Post {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case title
+              case owner
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let post = Post.keys
+              
+              model.authRules = [
+                rule(allow: .owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\", operations: [.create, .update, .delete, .read])
+              ]
+              
+              model.pluralName = \\"Posts\\"
+              
+              model.fields(
+                .id(),
+                .field(post.title, is: .required, ofType: .string),
+                .field(post.owner, is: .optional, ofType: .string)
+              )
+              }
+          }"
+        `);
+      });
+
+      it('should add the ownerField to model generation automatically if not provided in schema', () => {
+        const schema = /* GraphQL */ `
+          type Post @model @auth(rules: [{ allow: owner, ownerField: "customField" }]) {
+            id: ID!
+            title: String!
+          }
+        `;
+        const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+        const generatedCode = visitor.generate();
+        expect(generatedCode).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Post {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case title
+              case customField
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let post = Post.keys
+              
+              model.authRules = [
+                rule(allow: .owner, ownerField: \\"customField\\", identityClaim: \\"cognito:username\\", operations: [.create, .update, .delete, .read])
+              ]
+              
+              model.pluralName = \\"Posts\\"
+              
+              model.fields(
+                .id(),
+                .field(post.title, is: .required, ofType: .string),
+                .field(post.customField, is: .optional, ofType: .string)
+              )
+              }
+          }"
+        `);
+      });
+
+      it('should not overwrite the ownerField if it is provided in schema', () => {
+        const schema = /* GraphQL */ `
+          type Post
+            @model
+            @auth(rules: [{ allow: owner, ownerField: "author" }, { allow: owner, ownerField: "editors", operations: [update, read] }]) {
+            id: ID!
+            title: String!
+            author: String!
+            editors: [String!]
+          }
+        `;
+        const visitor = getVisitor(schema, 'Post', CodeGenGenerateEnum.metadata);
+        const generatedCode = visitor.generate();
+        expect(generatedCode).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Post {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case title
+              case author
+              case editors
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let post = Post.keys
+              
+              model.authRules = [
+                rule(allow: .owner, ownerField: \\"author\\", identityClaim: \\"cognito:username\\", operations: [.create, .update, .delete, .read]),
+                rule(allow: .owner, ownerField: \\"editors\\", identityClaim: \\"cognito:username\\", operations: [.update, .read])
+              ]
+              
+              model.pluralName = \\"Posts\\"
+              
+              model.fields(
+                .id(),
+                .field(post.title, is: .required, ofType: .string),
+                .field(post.author, is: .required, ofType: .string),
+                .field(post.editors, is: .required, ofType: .embeddedCollection(of: String.self))
+              )
+              }
+          }"
+        `);
+      });
     });
   });
 
