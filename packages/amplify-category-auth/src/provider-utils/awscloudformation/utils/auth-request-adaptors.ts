@@ -74,7 +74,7 @@ export const getUpdateAuthRequestAdaptor = (projectType: string, requiredAttribu
 const immutableAttributeAdaptor = (userPoolConfig: CognitoUserPoolConfiguration, identityPoolConfig?: CognitoIdentityPoolConfiguration) => {
   return {
     userPoolName: userPoolConfig.userPoolName,
-    usernameAttributes: signinAttributeMap[userPoolConfig.signinMethod],
+    usernameAttributes: [signinAttributeMap[userPoolConfig.signinMethod]],
     ...immutableIdentityPoolMap(identityPoolConfig),
   };
 };

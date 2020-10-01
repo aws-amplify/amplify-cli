@@ -1,8 +1,8 @@
 /* eslint-disable max-len */
 
-const coreQuestions = require('../../provider-utils/awscloudformation/question-factories/core-questions');
-const defaults = require('../../provider-utils/awscloudformation/assets/cognito-defaults');
-const maps = require('../../provider-utils/awscloudformation/assets/string-maps');
+const coreQuestions = require('../../../../provider-utils/awscloudformation/question-factories/core-questions');
+const defaults = require('../../../../provider-utils/awscloudformation/assets/cognito-defaults');
+const maps = require('../../../../provider-utils/awscloudformation/assets/string-maps');
 
 const defaultFileName = 'cognito-defaults';
 const stringMapFileName = 'string-maps';
