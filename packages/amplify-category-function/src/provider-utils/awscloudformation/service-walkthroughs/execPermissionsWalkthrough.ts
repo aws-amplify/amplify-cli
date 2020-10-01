@@ -114,6 +114,8 @@ export const askExecRolePermissionsQuestions = async (
           context.print.warning(`Policies cannot be added for ${category}/${resourceName}`);
           continue;
         } else if (
+          // In case of AppSync storage resources they are not in the meta file so check for resource existence as well
+          amplifyMeta[category][resourceName] &&
           amplifyMeta[category][resourceName].service === 'S3AndCloudFront' &&
           !amplifyMeta[category][resourceName].providerPlugin
         ) {
