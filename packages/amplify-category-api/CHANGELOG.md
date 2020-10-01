@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.9...amplify-category-api@2.24.0) (2020-10-01)
+
+
+### Bug Fixes
+
+* add support for mobile hub migrated resources ([#5407](https://github.com/aws-amplify/amplify-cli/issues/5407)) ([5dfe287](https://github.com/aws-amplify/amplify-cli/commit/5dfe2872c153047ebdc56bc4f671fd57c12379d9))
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+
+
+### Features
+
+* **amplify-category-api:** add rds support  for new regions ([#5360](https://github.com/aws-amplify/amplify-cli/issues/5360)) ([4f65ed1](https://github.com/aws-amplify/amplify-cli/commit/4f65ed1ba6ab76f7d018b998525b73aa1e47fbcd)), closes [#4739](https://github.com/aws-amplify/amplify-cli/issues/4739)
+
+
+
+
+
 ## [2.23.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.8...amplify-category-api@2.23.9) (2020-09-25)
 
 
