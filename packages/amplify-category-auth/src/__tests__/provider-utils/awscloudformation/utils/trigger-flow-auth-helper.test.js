@@ -1,4 +1,4 @@
-const { handleTriggers } = require('../../provider-utils/awscloudformation/utils/trigger-flow-auth-helper');
+const { handleTriggers } = require('../../../../provider-utils/awscloudformation/utils/trigger-flow-auth-helper');
 
 const defaults = {
   envVars: {},

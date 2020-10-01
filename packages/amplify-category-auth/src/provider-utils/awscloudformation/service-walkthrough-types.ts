@@ -18,7 +18,7 @@ export interface ServiceQuestionsBaseResult {
   requiredAttributes: string[];
   authSelections: 'userPoolOnly' | 'identityPoolAndUserPool';
   userPoolName?: string;
-  usernameAttributes?: UsernameAttributes;
+  usernameAttributes?: UsernameAttributes[];
   userPoolGroups: boolean;
   userPoolGroupList?: string[];
   userpoolClientRefreshTokenValidity?: number;
