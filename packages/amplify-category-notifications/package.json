@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-notifications",
-  "version": "2.15.25",
+  "version": "2.15.26-beta.0",
   "description": "amplify-cli notifications plugin",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "test": "jest --coverage"
   },
   "dependencies": {
-    "amplify-category-auth": "2.20.0",
+    "amplify-category-auth": "2.20.1-beta.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.3",
     "open": "^7.0.0",

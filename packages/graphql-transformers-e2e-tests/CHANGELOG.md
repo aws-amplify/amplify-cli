@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.15-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.14...graphql-transformers-e2e-tests@6.18.15-beta.0) (2020-10-01)
+
+
+### Bug Fixes
+
+* e2e regressions from previous pr ([#5438](https://github.com/aws-amplify/amplify-cli/issues/5438)) ([398d98b](https://github.com/aws-amplify/amplify-cli/commit/398d98b6a57c41f5172d6b56e9a834cfd28b891b))
+
+
+
+
+
 ## [6.18.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.13...graphql-transformers-e2e-tests@6.18.14) (2020-09-16)
 
 

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.17-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.4.16...amplify-category-interactions@2.4.17-beta.0) (2020-10-01)
+
+
+### Bug Fixes
+
+* add support for mobile hub migrated resources ([#5407](https://github.com/aws-amplify/amplify-cli/issues/5407)) ([5dfe287](https://github.com/aws-amplify/amplify-cli/commit/5dfe2872c153047ebdc56bc4f671fd57c12379d9))
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+
+
+
+
+
 ## [2.4.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.4.15...amplify-category-interactions@2.4.16) (2020-09-25)
 
 

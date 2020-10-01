@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.19-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.4.18...amplify-category-predictions@2.4.19-beta.0) (2020-10-01)
+
+
+### Bug Fixes
+
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+
+
+
+
+
 ## [2.4.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.4.17...amplify-category-predictions@2.4.18) (2020-09-25)
 
 

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.3.2...amplify-dotnet-function-template-provider@1.3.3-beta.0) (2020-10-01)
+
+
+### Bug Fixes
+
+* [#5354](https://github.com/aws-amplify/amplify-cli/issues/5354) .net core lambda project file naming ([#5414](https://github.com/aws-amplify/amplify-cli/issues/5414)) ([c0f1953](https://github.com/aws-amplify/amplify-cli/commit/c0f1953acaca33eb0228e1528eb5ac4eb183ff6d))
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+* e2e regressions from previous pr ([#5438](https://github.com/aws-amplify/amplify-cli/issues/5438)) ([398d98b](https://github.com/aws-amplify/amplify-cli/commit/398d98b6a57c41f5172d6b56e9a834cfd28b891b))
+
+
+
+
+
 ## [1.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.3.1...amplify-dotnet-function-template-provider@1.3.2) (2020-09-25)
 
 

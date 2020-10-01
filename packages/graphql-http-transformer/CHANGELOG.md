@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.15.20-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.15.19...graphql-http-transformer@4.15.20-beta.0) (2020-10-01)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
 ## [4.15.19](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.15.18...graphql-http-transformer@4.15.19) (2020-09-16)
 
 **Note:** Version bump only for package graphql-http-transformer
