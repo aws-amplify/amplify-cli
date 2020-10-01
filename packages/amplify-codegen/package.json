@@ -29,7 +29,7 @@
     "glob-all": "^3.1.0",
     "graphql": "^14.5.8",
     "graphql-config": "^2.2.1",
-    "inquirer": "^7.0.3",
+    "inquirer": "^7.3.3",
     "ora": "^4.0.3",
     "slash": "^3.0.0"
   },

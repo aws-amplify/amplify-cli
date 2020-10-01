@@ -18,6 +18,6 @@
   "dependencies": {
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
-    "inquirer": "^7.0.3"
+    "inquirer": "^7.3.3"
   }
 }

@@ -22,7 +22,7 @@
     "amplify-category-auth": "2.20.1",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.3",
+    "inquirer": "^7.3.3",
     "open": "^7.0.0"
   },
   "jest": {

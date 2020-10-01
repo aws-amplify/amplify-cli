@@ -25,7 +25,7 @@
     "amplify-e2e-core": "1.7.1",
     "aws-amplify": "^3.0.8",
     "aws-appsync": "^2.0.2",
-    "aws-sdk": "^2.608.0",
+    "aws-sdk": "^2.765.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",

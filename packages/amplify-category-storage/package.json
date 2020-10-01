@@ -18,7 +18,7 @@
     "amplify-category-auth": "2.20.1",
     "amplify-category-function": "2.25.2",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.3",
+    "inquirer": "^7.3.3",
     "lodash": "^4.17.19",
     "uuid": "^3.4.0"
   }

@@ -20,7 +20,7 @@
   "dependencies": {
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.3",
+    "inquirer": "^7.3.3",
     "mime-types": "^2.1.26",
     "minimatch": "^3.0.4",
     "moment": "^2.24.0",

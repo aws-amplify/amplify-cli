@@ -44,7 +44,7 @@
     "@types/semver": "^7.1.0",
     "@types/which": "^1.3.2",
     "aws-appsync": "^2.0.2",
-    "aws-sdk": "^2.608.0",
+    "aws-sdk": "^2.765.0",
     "aws-sdk-mock": "^5.1.0",
     "axios": "^0.19.2",
     "graphql-auth-transformer": "6.20.7",
