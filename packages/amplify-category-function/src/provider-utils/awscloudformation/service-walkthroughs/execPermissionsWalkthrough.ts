@@ -115,6 +115,7 @@ export const askExecRolePermissionsQuestions = async (
           continue;
         } else if (
           // In case of AppSync storage resources they are not in the meta file so check for resource existence as well
+          amplifyMeta[category] &&
           amplifyMeta[category][resourceName] &&
           amplifyMeta[category][resourceName].service === 'S3AndCloudFront' &&
           !amplifyMeta[category][resourceName].providerPlugin
