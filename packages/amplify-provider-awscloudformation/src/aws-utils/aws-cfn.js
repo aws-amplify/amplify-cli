@@ -311,38 +311,40 @@ class CloudFormation {
 
       const stackResult = await Promise.all(promises);
 
-      Object.keys(amplifyMeta).forEach(category => {
-        Object.keys(amplifyMeta[category]).forEach(resource => {
-          const logicalResourceId = category + resource;
-          const index = resources.findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
+      Object.keys(amplifyMeta)
+        .filter(k => k !== 'providers')
+        .forEach(category => {
+          Object.keys(amplifyMeta[category]).forEach(resource => {
+            const logicalResourceId = category + resource;
+            const index = resources.findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
 
-          if (index !== -1) {
-            const formattedOutputs = formatOutputs(stackResult[index].Stacks[0].Outputs);
+            if (index !== -1) {
+              const formattedOutputs = formatOutputs(stackResult[index].Stacks[0].Outputs);
 
-            const updatedMeta = this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, resource, 'output', formattedOutputs);
+              const updatedMeta = this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, resource, 'output', formattedOutputs);
 
-            // Check to see if this is an AppSync resource and if we've to remove the GraphQLAPIKeyOutput from meta or not
-            if (amplifyMeta[category][resource]) {
-              const resourceObject = amplifyMeta[category][resource];
+              // Check to see if this is an AppSync resource and if we've to remove the GraphQLAPIKeyOutput from meta or not
+              if (amplifyMeta[category][resource]) {
+                const resourceObject = amplifyMeta[category][resource];
 
-              if (
-                resourceObject.service === 'AppSync' &&
-                resourceObject.output &&
-                resourceObject.output.GraphQLAPIKeyOutput &&
-                !formattedOutputs.GraphQLAPIKeyOutput
-              ) {
-                const updatedResourceObject = updatedMeta[category][resource];
+                if (
+                  resourceObject.service === 'AppSync' &&
+                  resourceObject.output &&
+                  resourceObject.output.GraphQLAPIKeyOutput &&
+                  !formattedOutputs.GraphQLAPIKeyOutput
+                ) {
+                  const updatedResourceObject = updatedMeta[category][resource];
 
-                if (updatedResourceObject.output.GraphQLAPIKeyOutput) {
-                  delete updatedResourceObject.output.GraphQLAPIKeyOutput;
+                  if (updatedResourceObject.output.GraphQLAPIKeyOutput) {
+                    delete updatedResourceObject.output.GraphQLAPIKeyOutput;
+                  }
                 }
-              }
 
-              stateManager.setMeta(undefined, updatedMeta);
+                stateManager.setMeta(undefined, updatedMeta);
+              }
             }
-          }
+          });
         });
-      });
     }
   }
 

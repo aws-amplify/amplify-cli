@@ -86,17 +86,19 @@ async function run(context, providerMetadata) {
     ).toString(),
   );
 
-  Object.keys(s3AmplifyMeta).forEach(category => {
-    Object.keys(s3AmplifyMeta[category]).forEach(resourceName => {
-      const resource = s3AmplifyMeta[category][resourceName];
+  Object.keys(s3AmplifyMeta)
+    .filter(k => k !== 'providers')
+    .forEach(category => {
+      Object.keys(s3AmplifyMeta[category]).forEach(resourceName => {
+        const resource = s3AmplifyMeta[category][resourceName];
 
-      // Mobile hub migrated resources does not have an assigned provider
-      if (!resource.providerPlugin) {
-        _.set(amplifyMeta, [category, resourceName], resource);
-        hasMigratedResources = true;
-      }
+        // Mobile hub migrated resources does not have an assigned provider
+        if (!resource.providerPlugin) {
+          _.set(amplifyMeta, [category, resourceName], resource);
+          hasMigratedResources = true;
+        }
+      });
     });
-  });
 
   stateManager.setMeta(undefined, amplifyMeta);
 
