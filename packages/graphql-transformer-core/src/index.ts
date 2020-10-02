@@ -12,6 +12,8 @@ import {
   uploadDeployment as uploadAPIProject,
   migrateAPIProject,
   revertAPIMigration,
+  CLOUDFORMATION_FILE_NAME,
+  PARAMETERS_FILE_NAME,
 } from './util/amplifyUtils';
 import {
   readSchema as readProjectSchema,
@@ -63,4 +65,6 @@ export {
   ResolverConfig,
   SyncConfig,
   DeploymentResources,
+  CLOUDFORMATION_FILE_NAME,
+  PARAMETERS_FILE_NAME,
 };

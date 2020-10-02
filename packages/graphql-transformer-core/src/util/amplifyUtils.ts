@@ -9,8 +9,8 @@ import { readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFil
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
 import * as Sanity from './sanity-check';
 
-const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
-const PARAMETERS_FILE_NAME = 'parameters.json';
+export const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
+export const PARAMETERS_FILE_NAME = 'parameters.json';
 
 export interface ProjectOptions {
   projectDirectory?: string;
