@@ -1,7 +1,7 @@
 import * as os from 'os';
 import { Input } from '../input';
 import { getLatestPayloadVersion } from './VersionManager';
-
+import ci from 'ci-info';
 export class UsageDataPayload {
   sessionUuid: String;
   installationUuid: String;
@@ -14,6 +14,7 @@ export class UsageDataPayload {
   osRelease: String;
   nodeVersion: String;
   state: String;
+  isCi: Boolean | undefined;
   constructor(sessionUuid: String, installationUuid: String, version: String, input: Input, error: Error | null, state: String) {
     this.sessionUuid = sessionUuid;
     this.installationUuid = installationUuid;
@@ -25,6 +26,7 @@ export class UsageDataPayload {
     this.nodeVersion = process.versions.node;
     this.state = state;
     this.payloadVersion = getLatestPayloadVersion();
+    this.isCi = ci.isCI;
     if (error) {
       this.error = new SerializableError(error);
     }
