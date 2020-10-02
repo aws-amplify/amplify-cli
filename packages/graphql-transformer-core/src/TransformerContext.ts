@@ -33,6 +33,7 @@ import {
 import { _Kind } from 'graphql/language/kinds';
 import { ResolverConfig } from './util';
 import { makeOperationType } from 'graphql-transformer-common';
+import { FeatureFlagProvider } from './FeatureFlags';
 export interface MappingParameters {
   [key: string]: {
     [key: string]: {
@@ -114,7 +115,7 @@ export class TransformerContext {
 
   private transformerVersion: Number;
 
-  constructor(inputSDL: string) {
+  constructor(inputSDL: string, public readonly featureFlags: FeatureFlagProvider) {
     const doc: DocumentNode = parse(inputSDL);
     for (const def of doc.definitions) {
       if (def.kind === 'OperationDefinition' || def.kind === 'FragmentDefinition') {

@@ -39,6 +39,7 @@ export * from './util';
 export function getAppSyncServiceExtraDirectives(): string {
   return print(EXTRA_DIRECTIVES_DOCUMENT);
 }
+export { FeatureFlagProvider } from './FeatureFlags';
 
 export {
   GraphQLTransform,

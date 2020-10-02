@@ -13,7 +13,9 @@ import { FunctionTransformer } from 'graphql-function-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
 import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
-const providerName = require('./constants').ProviderName;
+import { ProviderName as providerName } from './constants';
+import { AmplifyCLIFeatureFlagAdapter } from './utils/transfomer-feature-flag-adapter';
+
 import {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
@@ -272,7 +274,7 @@ async function migrateProject(context, options) {
   }
 }
 
-async function transformGraphQLSchema(context, options) {
+export async function transformGraphQLSchema(context, options) {
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
   if (flags['no-gql-override']) {
@@ -453,6 +455,7 @@ async function transformGraphQLSchema(context, options) {
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
     minify: options.minify,
+    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
   };
   const transformerOutput = await buildAPIProject(buildConfig);
 
@@ -502,7 +505,7 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 //   return undefined;
 // }
 
-async function getDirectiveDefinitions(context, resourceDir) {
+export async function getDirectiveDefinitions(context, resourceDir) {
   const transformList = await getTransformerFactory(context, resourceDir)(true);
   const appSynDirectives = getAppSyncServiceExtraDirectives();
   const transformDirectives = transformList
@@ -547,8 +550,3 @@ function getBucketName(context, s3ResourceName, backEndDir) {
     : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
   return { bucketName };
 }
-
-module.exports = {
-  transformGraphQLSchema,
-  getDirectiveDefinitions,
-};
