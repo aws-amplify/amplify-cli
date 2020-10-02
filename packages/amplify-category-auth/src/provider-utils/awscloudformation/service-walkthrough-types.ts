@@ -87,7 +87,7 @@ export interface PasswordPolicyResult {
 
 export type PasswordPolicy = 'Requires Lowercase' | 'Requires Numbers' | 'Requires Symbols' | 'Requires Uppercase';
 
-export type UsernameAttributes = 'username' | 'email' | 'phone_number' | 'email, phone_number';
+export type UsernameAttributes = 'email' | 'phone_number';
 
 export interface Triggers {
   triggers?: any; // TODO create a type for this
