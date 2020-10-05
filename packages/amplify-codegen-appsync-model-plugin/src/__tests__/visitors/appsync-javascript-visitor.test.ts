@@ -26,6 +26,7 @@ describe('Javascript visitor', () => {
       id: ID!
       name: String
       bar: String
+      foo: [Bar!] @connection
     }
     enum SimpleEnum {
       enumVal1
@@ -35,6 +36,10 @@ describe('Javascript visitor', () => {
     type SimpleNonModelType {
       id: ID!
       names: [String]
+    }
+
+    type Bar @model {
+      id: ID!
     }
   `;
   let visitor: AppSyncModelJavascriptVisitor;
@@ -108,8 +113,16 @@ export declare class SimpleModel {
   readonly id: string;
   readonly name?: string;
   readonly bar?: string;
+  readonly foo?: Bar[];
   constructor(init: ModelInit<SimpleModel>);
   static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
+}
+
+export declare class Bar {
+  readonly id: string;
+  readonly simpleModelFooId?: string;
+  constructor(init: ModelInit<Bar>);
+  static copyOf(source: Bar, mutator: (draft: MutableModel<Bar>) => MutableModel<Bar> | void): Bar;
 }"
 `);
       expect(generateImportSpy).toBeCalledTimes(1);
@@ -118,9 +131,10 @@ export declare class SimpleModel {
       expect(generateEnumDeclarationsSpy).toBeCalledTimes(1);
       expect(generateEnumDeclarationsSpy).toBeCalledWith((declarationVisitor as any).enumMap['SimpleEnum'], true);
 
-      expect(generateModelDeclarationSpy).toBeCalledTimes(2);
+      expect(generateModelDeclarationSpy).toBeCalledTimes(3);
       expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(1, (declarationVisitor as any).modelMap['SimpleModel'], true);
-      expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(2, (declarationVisitor as any).nonModelMap['SimpleNonModelType'], true);
+      expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(2, (declarationVisitor as any).modelMap['Bar'], true);
+      expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(3, (declarationVisitor as any).nonModelMap['SimpleNonModelType'], true);
     });
   });
 
@@ -141,10 +155,11 @@ const SimpleEnum = {
   \\"ENUM_VAL2\\": \\"enumVal2\\"
 };
 
-const { SimpleModel, SimpleNonModelType } = initSchema(schema);
+const { SimpleModel, Bar, SimpleNonModelType } = initSchema(schema);
 
 export {
   SimpleModel,
+  Bar,
   SimpleEnum,
   SimpleNonModelType
 };"
@@ -156,7 +171,11 @@ export {
 
     expect(generateModelInitializationSpy).toHaveBeenCalledTimes(1);
     expect(generateModelInitializationSpy).toHaveBeenCalledWith(
-      [(jsVisitor as any).modelMap['SimpleModel'], (jsVisitor as any).nonModelMap['SimpleNonModelType']],
+      [
+        (jsVisitor as any).modelMap['SimpleModel'],
+        (jsVisitor as any).modelMap['Bar'],
+        (jsVisitor as any).nonModelMap['SimpleNonModelType'],
+      ],
       false,
     );
   });
