@@ -22,6 +22,9 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
+    "@aws-amplify/graphql-transformer-interfaces": "1.0.0",
+    "@aws-amplify/graphql-transformer-core": "0.0.1",
+    "@aws-amplify/graphql-model-transformer": "0.0.1",
     "amplify-category-auth": "2.22.0",
     "amplify-category-function": "2.25.7",
     "amplify-category-predictions": "2.5.3",
@@ -60,7 +63,8 @@
     "open": "^7.0.0",
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
-    "proxy-agent": "^3.1.1"
+    "proxy-agent": "^3.1.1",
+    "rimraf": "^3.0.0"
   },
   "jest": {
     "transform": {

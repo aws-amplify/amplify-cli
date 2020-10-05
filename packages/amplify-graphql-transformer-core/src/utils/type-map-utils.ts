@@ -13,14 +13,10 @@ import {
   Kind,
 } from 'graphql';
 
-export function collectDirectiveNames(sdl: string): string[] {
-  const dirs = collectDirectives(sdl);
-  return dirs.map(d => d.name.value);
-}
 
 export function collectDirectives(sdl: string): DirectiveNode[] {
   const doc = parse(sdl);
-  let directives = [];
+  let directives: DirectiveNode[] = [];
   for (const def of doc.definitions) {
     switch (def.kind) {
       case Kind.OBJECT_TYPE_DEFINITION:
@@ -49,6 +45,7 @@ export function collectDirectives(sdl: string): DirectiveNode[] {
 
 export function collectDirectivesByTypeNames(sdl: string) {
   let types = collectDirectivesByType(sdl);
+  const typeToDirectiveMap: Record<string, string[]> = {}
   const directives: Set<string> = new Set();
   Object.keys(types).forEach(dir => {
     let set: Set<string> = new Set();
@@ -56,15 +53,15 @@ export function collectDirectivesByTypeNames(sdl: string) {
       set.add(d.name.value);
       directives.add(d.name.value);
     });
-    types[dir] = Array.from(set);
+    typeToDirectiveMap[dir] = Array.from(set);
   });
-  return { types, directives: Array.from(directives) };
+  return { types: typeToDirectiveMap, directives: Array.from(directives) };
 }
 
-export function collectDirectivesByType(sdl: string): Object {
+export function collectDirectivesByType(sdl: string): Record<string, DirectiveNode[]> {
   const doc = parse(sdl);
   // defined types with directives list
-  let types = {};
+  let types: Record<string, DirectiveNode[]> = {};
   for (const def of doc.definitions) {
     switch (def.kind) {
       case Kind.OBJECT_TYPE_DEFINITION:
@@ -91,30 +88,30 @@ export function collectDirectivesByType(sdl: string): Object {
 }
 
 export function collectObjectDirectives(node: ObjectTypeDefinitionNode): DirectiveNode[] {
-  let dirs = [];
-  for (const field of node.fields) {
+  let dirs: DirectiveNode[] = [];
+  for (const field of node.fields || []) {
     const fieldDirs = collectFieldDirectives(field);
     dirs = dirs.concat(fieldDirs);
   }
-  return dirs.concat(node.directives);
+  return dirs.concat(node.directives || []);
 }
 
 export function collectInterfaceDirectives(node: InterfaceTypeDefinitionNode): DirectiveNode[] {
-  let dirs = [];
-  for (const field of node.fields) {
+  let dirs: DirectiveNode[] = [];
+  for (const field of node.fields || []) {
     const fieldDirs = collectFieldDirectives(field);
     dirs = dirs.concat(fieldDirs);
   }
-  return dirs.concat(node.directives);
+  return dirs.concat(node.directives || []);
 }
 
 export function collectFieldDirectives(node: FieldDefinitionNode): DirectiveNode[] {
-  let dirs = [];
-  for (const arg of node.arguments) {
+  let dirs: DirectiveNode[] = [];
+  for (const arg of node.arguments || []) {
     const argDirs = collectArgumentDirectives(arg);
     dirs = dirs.concat(argDirs);
   }
-  return dirs.concat(node.directives);
+  return dirs.concat(node.directives || []);
 }
 
 export function collectArgumentDirectives(node: InputValueDefinitionNode): DirectiveNode[] {
@@ -130,21 +127,21 @@ export function collectScalarDirectives(node: ScalarTypeDefinitionNode): Directi
 }
 
 export function collectInputObjectDirectives(node: InputObjectTypeDefinitionNode): DirectiveNode[] {
-  let dirs = [];
-  for (const field of node.fields) {
+  let dirs: DirectiveNode[] = [];
+  for (const field of node.fields || []) {
     const fieldDirs = collectArgumentDirectives(field);
     dirs = dirs.concat(fieldDirs);
   }
-  return dirs.concat(node.directives);
+  return dirs.concat(node.directives || []);
 }
 
 export function collectEnumDirectives(node: EnumTypeDefinitionNode): DirectiveNode[] {
-  let dirs = [];
-  for (const val of node.values) {
+  let dirs: DirectiveNode[] = [];
+  for (const val of node.values || []) {
     const valDirs = collectEnumValueDirectives(val);
     dirs = dirs.concat(valDirs);
   }
-  return dirs.concat(node.directives);
+  return dirs.concat(node.directives || []);
 }
 
 export function collectEnumValueDirectives(node: EnumValueDefinitionNode): DirectiveNode[] {

@@ -1,0 +1,77 @@
+{
+    "name": "@aws-amplify/graphql-model-transformer",
+    "version": "0.0.1",
+    "description": "Amplfy graphql @model tranformer",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aws-amplify/amplify-cli.git",
+        "directory": "packages/amplify-graphql-model-transformer"
+    },
+    "author": "Amazon Web Services",
+    "license": "Apache-2.0",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "keywords": [
+        "graphql",
+        "cloudformation",
+        "aws",
+        "amplify"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "clean": "rimraf ./lib"
+    },
+    "dependencies": {
+        "@aws-amplify/graphql-transformer-core": "^0.0.1",
+        "@aws-cdk/aws-dynamodb": "~1.67.0",
+        "@aws-cdk/aws-applicationautoscaling": "~1.67.0",
+        "@aws-cdk/aws-cloudwatch": "~1.67.0",
+        "@aws-cdk/aws-iam": "~1.67.0",
+        "@aws-cdk/aws-kms": "~1.67.0",
+        "@aws-cdk/aws-lambda": "~1.67.0",
+        "@aws-cdk/core": "~1.67.0",
+        "@aws-cdk/custom-resources": "~1.67.0",
+        "@aws-cdk/aws-autoscaling-common": "~1.67.0",
+        "@aws-cdk/aws-cloudformation": "~1.67.0",
+        "@aws-cdk/aws-logs": "~1.67.0",
+        "@aws-cdk/aws-sns": "~1.67.0",
+        "@aws-cdk/aws-s3": "~1.67.0",
+        "@aws-cdk/cx-api": "~1.67.0",
+        "@aws-cdk/aws-events": "~1.67.0",
+        "@aws-cdk/aws-sqs": "~1.67.0",
+        "@aws-cdk/region-info": "~1.67.0",
+        "@aws-cdk/aws-codeguruprofiler": "~1.67.0",
+        "@aws-cdk/aws-ec2": "~1.67.0",
+        "@aws-cdk/aws-efs": "~1.67.0",
+        "@aws-cdk/aws-s3-assets": "~1.67.0",
+        "@aws-cdk/cloud-assembly-schema": "~1.67.0",
+        "@aws-cdk/assets":"~1.67.0",
+        "@aws-cdk/aws-ssm":"~1.67.0",
+        "constructs": "^3.0.12",
+        "graphql": "^14.5.8",
+        "graphql-transformer-common": "^4.17.10",
+        "graphql-transformer-core": "6.21.5"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^8.0.1",
+        "@types/node": "^10.17.13",
+        "@aws-amplify/graphql-transformer-interfaces": "1.0.0"
+    },
+    "jest": {
+        "transform": {
+            "^.+\\.tsx?$": "ts-jest"
+        },
+        "testURL": "http://localhost",
+        "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "js",
+            "jsx",
+            "json",
+            "node"
+        ],
+        "collectCoverage": true
+    }
+}

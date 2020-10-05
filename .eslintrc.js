@@ -263,6 +263,10 @@ module.exports = {
     '/packages/graphql-*-transformer/lib',
     '/packages/graphql-mapping-template/lib',
     '/packages/graphql-transformer-*/lib',
+    '/packages/amplify-headless-interface/lib',
+    '/packages/amplify-util-headless-input/lib',
+    'packages/amplify-graphql-*transformer*/lib',
+    '/packages/amplify-provider-awscloudformation/lib',
 
     // Ignore CHANGELOG.md files
     '/packages/*/CHANGELOG.md'
