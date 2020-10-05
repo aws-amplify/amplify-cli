@@ -41,8 +41,9 @@ export class JSONUtilities {
     fileName: string,
     data: any,
     options?: {
-      minify?: boolean;
       keepComments?: boolean;
+      minify?: boolean;
+      secureFile?: boolean;
     },
   ): void => {
     if (!fileName) {
@@ -54,8 +55,9 @@ export class JSONUtilities {
     }
 
     const mergedOptions = {
-      minify: false,
       keepComments: false,
+      minify: false,
+      secureFile: false,
       ...options,
     };
 
@@ -68,7 +70,12 @@ export class JSONUtilities {
     const dirPath = path.dirname(fileName);
     fs.ensureDirSync(dirPath);
 
-    fs.writeFileSync(fileName, jsonString, 'utf8');
+    const writeFileOptions: { encoding: string; fileMode?: string } = { encoding: 'utf8' };
+    if (mergedOptions.secureFile) {
+      writeFileOptions.fileMode = '600';
+    }
+
+    fs.writeFileSync(fileName, jsonString, writeFileOptions);
   };
 
   public static parse = <T>(
@@ -132,7 +139,7 @@ export class JSONUtilities {
       jsonString = JSON.stringify(data);
     } else {
       // Temporarily fallback to builtin stringify until 'undefined' serialization can be solved with hjson
-      // This only affects comment roundtripping what we don't use explicitly anywhere yet.
+      // This only affects comment roundtripping which we don't use explicitly anywhere yet.
       jsonString = JSON.stringify(data, null, 2);
       // jsonString = hjson.stringify(data, {
       //   bracesSameLine: true,

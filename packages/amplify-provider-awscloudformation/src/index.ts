@@ -59,6 +59,13 @@ function buildResources(context, category, resourceName) {
   return resourceBuilder.run(context, category, resourceName);
 }
 
+function getAdminCredentials(idToken) {
+  const res = aws.getCredentialsForIdentity({ IdentityId: idToken }, (err, data) => {
+    if (err) console.err('Failed to get AWS credentials:', err);
+    console.log(data);
+  });
+}
+
 async function getConfiguredAWSClient(context, category, action) {
   await aws.configureWithCreds(context);
   category = category || 'missing';
@@ -108,6 +115,7 @@ module.exports = {
   buildResources,
   providerUtils,
   setupNewUser,
+  getAdminCredentials,
   getConfiguredAWSClient,
   getPinpointRegionMapping,
   getLexRegionMapping,
