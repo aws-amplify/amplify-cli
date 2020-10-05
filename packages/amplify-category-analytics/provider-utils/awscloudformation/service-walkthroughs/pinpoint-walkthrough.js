@@ -8,7 +8,7 @@ const category = 'analytics';
 const parametersFileName = 'parameters.json';
 const serviceName = 'Pinpoint';
 const templateFileName = 'pinpoint-cloudformation-template.json';
-import { ResourceAlreadyExistsError } from 'amplify-cli-core';
+import { ResourceAlreadyExistsError, exitOnNextTick } from 'amplify-cli-core';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const resourceName = resourceAlreadyExists(context);
@@ -17,7 +17,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
     const errMessage = 'Pinpoint analytics have already been added to your project.';
     context.print.warning(errMessage);
     context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   } else {
     return configure(context, defaultValuesFilename, serviceMetadata);
   }

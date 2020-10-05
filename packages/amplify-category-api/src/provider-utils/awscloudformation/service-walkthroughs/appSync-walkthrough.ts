@@ -12,7 +12,7 @@ import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-au
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
 import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
-import { ResourceAlreadyExistsError, ResourceDoesNotExistError, UnknownResourceTypeError } from 'amplify-cli-core';
+import { ResourceAlreadyExistsError, ResourceDoesNotExistError, UnknownResourceTypeError, exitOnNextTick } from 'amplify-cli-core';
 
 const serviceName = 'AppSync';
 const providerName = 'awscloudformation';
@@ -69,7 +69,7 @@ export const serviceWalkthrough = async (context, defaultValuesFilename, service
       'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.';
     context.print.warning(errMessage);
     context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   }
 
   const { amplify } = context;
@@ -180,7 +180,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
     const errMessage = 'No AppSync resource to update. Use the "amplify add api" command to update your existing AppSync API.';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   }
 
   // Get models
@@ -499,7 +499,7 @@ async function askAuthQuestions(authType, context, printLeadText = false) {
   const errMessage = `Unknown authType: ${authType}`;
   context.print.error(errMessage);
   context.usageData.emitError(new UnknownResourceTypeError(errMessage));
-  process.exit(1);
+  exitOnNextTick(1);
 }
 
 async function askUserPoolQuestions(context) {

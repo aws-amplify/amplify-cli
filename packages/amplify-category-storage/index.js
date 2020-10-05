@@ -29,7 +29,7 @@ async function migrate(context) {
           const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
           if (providerController) {
             migrateResourcePromises.push(
-              providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName)
+              providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName),
             );
           } else {
             context.print.error(`Provider not configured for ${category}: ${resourceName}`);
@@ -62,13 +62,13 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           ? resourceOpsMapping[resourceName].service
           : amplifyMeta[category][resourceName].service;
 
-      const providerController = require(`./provider-utils/${providerPlugin}/index`);
-      if (providerController) {
+      if (providerPlugin) {
+        const providerController = require(`./provider-utils/${providerPlugin}/index`);
         const { policy, attributes } = providerController.getPermissionPolicies(
           context,
           service,
           resourceName,
-          resourceOpsMapping[resourceName]
+          resourceOpsMapping[resourceName],
         );
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });

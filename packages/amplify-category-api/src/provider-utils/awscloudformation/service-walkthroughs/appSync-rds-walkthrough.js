@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const ora = require('ora');
 const { DataApiParams } = require('graphql-relational-schema-transformer');
-const { ResourceDoesNotExistError, ResourceCredentialsNotFoundError } = require('amplify-cli-core');
+const { ResourceDoesNotExistError, ResourceCredentialsNotFoundError, exitOnNextTick } = require('amplify-cli-core');
 
 const spinner = ora('');
 const category = 'api';
@@ -16,7 +16,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
       'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   }
 
   // Loop through to find the AppSync API Resource Name
@@ -36,7 +36,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
       'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   }
 
   const { inputs, availableRegions } = datasourceMetadata;
@@ -98,7 +98,7 @@ async function selectCluster(context, inputs, AWS) {
   const errMessage = 'No properly configured Aurora Serverless clusters found.';
   context.print.error(errMessage);
   context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-  process.exit(0);
+  exitOnNextTick(0);
 }
 
 /**
@@ -150,7 +150,7 @@ async function getSecretStoreArn(context, inputs, clusterResourceId, AWS) {
       const errMessage = 'No RDS access credentials found in the AWS Secrect Manager.';
       context.print.error(errMessage);
       context.usageData.emitError(new ResourceCredentialsNotFoundError(errMessage));
-      process.exit(0);
+      exitOnNextTick(0);
     }
   }
 
@@ -195,7 +195,7 @@ async function selectDatabase(context, inputs, clusterArn, secretArn, AWS) {
   const errMessage = 'No properly configured databases found.';
   context.print.error(errMessage);
   context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-  process.exit(0);
+  exitOnNextTick(0);
 }
 
 /**

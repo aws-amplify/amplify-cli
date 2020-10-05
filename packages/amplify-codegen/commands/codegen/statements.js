@@ -1,5 +1,5 @@
 const codeGen = require('../../src');
-
+const { exitOnNextTick } = require('amplify-cli-core');
 const featureName = 'statements';
 
 module.exports = {
@@ -12,7 +12,7 @@ module.exports = {
     } catch (ex) {
       context.print.info(ex.message);
       context.usageData.emitError(ex);
-      process.exit(1);
+      exitOnNextTick(1);
     }
   },
 };

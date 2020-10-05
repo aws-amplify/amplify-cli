@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.2...amplify-appsync-simulator@1.23.3) (2020-10-01)
+
+
+### Bug Fixes
+
+* [#5372](https://github.com/aws-amplify/amplify-cli/issues/5372) - cut signing url ending slash when matching in mock ([#5434](https://github.com/aws-amplify/amplify-cli/issues/5434)) ([dfff875](https://github.com/aws-amplify/amplify-cli/commit/dfff87538dd5cb4cd932c9b141c9549e740e9942))
+
+
+
+
+
 ## [1.23.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.1...amplify-appsync-simulator@1.23.2) (2020-08-20)
 
 

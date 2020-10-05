@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.20](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.19...amplify-codegen@2.15.20) (2020-10-01)
+
+
+### Bug Fixes
+
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+* changed default config to user defined config ([#5334](https://github.com/aws-amplify/amplify-cli/issues/5334)) ([c630145](https://github.com/aws-amplify/amplify-cli/commit/c63014558547f75a0afa7e506116d8bb124c44d2))
+
+
+
+
+
 ## [2.15.19](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.18...amplify-codegen@2.15.19) (2020-09-25)
 
 

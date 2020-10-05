@@ -1,6 +1,7 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
 import {
   addAuthWithDefault,
+  runAmplifyAuthConsole,
   removeAuthWithDefault,
   addAuthWithDefaultSocial,
   addAuthWithGroupTrigger,
@@ -35,6 +36,7 @@ describe('amplify add auth...', () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
+    await runAmplifyAuthConsole(projRoot);
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);

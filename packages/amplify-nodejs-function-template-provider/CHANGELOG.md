@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.4.1...amplify-nodejs-function-template-provider@1.4.2) (2020-10-01)
+
+
+### Bug Fixes
+
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+
+
+
+
+
 ## [1.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.4.0...amplify-nodejs-function-template-provider@1.4.1) (2020-09-25)
 
 

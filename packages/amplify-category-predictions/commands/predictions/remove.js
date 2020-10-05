@@ -7,7 +7,7 @@ const storageCategory = 'storage';
 const parametersFileName = 'parameters.json';
 const amplifyMetaFilename = 'amplify-meta.json';
 const s3CloudFormationTemplateFile = 's3-cloudformation-template.json';
-const { ResoureNotFoundError } = require('amplify-cli-core');
+const { ResoureNotFoundError, exitOnNextTick } = require('amplify-cli-core');
 module.exports = {
   name: subcommand,
   run: async context => {
@@ -21,7 +21,7 @@ module.exports = {
         const projectStorage = projectDetails.amplifyMeta.storage;
         if (!projectStorage) {
           context.usageData.emitError(new ResoureNotFoundError('Project storage not found'));
-          process.exit(0);
+          exitOnNextTick(0);
           return;
         }
         const keys = Object.keys(projectStorage);
@@ -34,7 +34,7 @@ module.exports = {
 
         if (s3ResourceName === '') {
           context.usageData.emitError(new ResoureNotFoundError('S3 Resource does not exist'));
-          process.exit(0);
+          exitOnNextTick(0);
           return;
         }
 

@@ -18,6 +18,17 @@ module.exports = {
 
     if (!Object.keys(existingAuth).length > 0) {
       return context.print.warning('Auth has not yet been added to this project.');
+    } else {
+      const services = Object.keys(existingAuth);
+
+      for (let i = 0; i < services.length; i++) {
+        const serviceMeta = existingAuth[services[i]];
+
+        if (serviceMeta.service === 'Cognito' && !serviceMeta.providerPlugin) {
+          context.print.error('Auth is migrated from Mobile Hub and cannot be updated with Amplify CLI.');
+          return context;
+        }
+      }
     }
 
     context.print.info('Please note that certain attributes may not be overwritten if you choose to use defaults settings.');

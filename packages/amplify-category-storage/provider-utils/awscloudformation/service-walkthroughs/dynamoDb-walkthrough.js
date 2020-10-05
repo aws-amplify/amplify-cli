@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs-extra');
 const uuid = require('uuid');
 const { ServiceName: FunctionServiceName } = require('amplify-category-function');
-const { ResourceDoesNotExistError } = require('amplify-cli-core');
+const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -24,7 +24,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const dynamoDbResources = {};
 
   Object.keys(amplifyMeta[category]).forEach(resourceName => {
-    if (amplifyMeta[category][resourceName].service === serviceName) {
+    if (amplifyMeta[category][resourceName].service === serviceName && !!amplifyMeta[category][resourceName].providerPlugin) {
       dynamoDbResources[resourceName] = amplifyMeta[category][resourceName];
     }
   });
@@ -33,7 +33,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
     const errMessage = 'No resources to update. You need to add a resource.';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
     return;
   }
   const resources = Object.keys(dynamoDbResources);

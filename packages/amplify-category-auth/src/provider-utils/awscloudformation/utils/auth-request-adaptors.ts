@@ -250,11 +250,11 @@ const mfaTypeMap: Record<'SMS' | 'TOTP', 'SMS Text Message' | 'TOTP'> = {
   TOTP: 'TOTP',
 };
 
-const signinAttributeMap: Record<CognitoUserPoolSigninMethod, UsernameAttributes> = {
-  [CognitoUserPoolSigninMethod.USERNAME]: 'username',
-  [CognitoUserPoolSigninMethod.EMAIL]: 'email',
-  [CognitoUserPoolSigninMethod.PHONE_NUMBER]: 'phone_number',
-  [CognitoUserPoolSigninMethod.EMAIL_AND_PHONE_NUMBER]: 'email, phone_number',
+const signinAttributeMap: Record<CognitoUserPoolSigninMethod, UsernameAttributes[] | undefined> = {
+  [CognitoUserPoolSigninMethod.USERNAME]: undefined,
+  [CognitoUserPoolSigninMethod.EMAIL]: ['email'],
+  [CognitoUserPoolSigninMethod.PHONE_NUMBER]: ['phone_number'],
+  [CognitoUserPoolSigninMethod.EMAIL_AND_PHONE_NUMBER]: ['email', 'phone_number'],
 };
 
 const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE', projectType: string): string => {

@@ -26,7 +26,7 @@ export function provideServerless(request: TemplateContributionRequest): Promise
       destMap: {
         ...getDstMap(commonFiles),
         'Serverless/aws-lambda-tools-defaults.json.ejs': path.join('src', 'aws-lambda-tools-defaults.json'),
-        'Serverless/Function.csproj.ejs': path.join('src', `${request.contributionContext.functionName}.csproj`),
+        'Serverless/Function.csproj.ejs': path.join('src', `${request.contributionContext.resourceName}.csproj`),
         'Serverless/FunctionHandler.cs.ejs': handlerSource,
         'Serverless/event.json.ejs': path.join('src', 'event.json'),
       },

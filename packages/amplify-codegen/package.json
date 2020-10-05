@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen",
-  "version": "2.15.19",
+  "version": "2.15.20",
   "description": "amplify code generator",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@graphql-codegen/core": "1.8.3",
-    "amplify-codegen-appsync-model-plugin": "1.20.6",
+    "amplify-codegen-appsync-model-plugin": "1.20.7",
     "amplify-graphql-docs-generator": "2.1.16",
     "amplify-graphql-types-generator": "2.5.1",
     "chalk": "^3.0.0",
@@ -29,7 +29,7 @@
     "glob-all": "^3.1.0",
     "graphql": "^14.5.8",
     "graphql-config": "^2.2.1",
-    "inquirer": "^7.0.3",
+    "inquirer": "^7.3.3",
     "ora": "^4.0.3",
     "slash": "^3.0.0"
   },

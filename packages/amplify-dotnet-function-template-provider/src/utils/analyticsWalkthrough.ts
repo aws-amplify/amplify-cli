@@ -1,5 +1,5 @@
 import inquirer from 'inquirer';
-import { ResourceDoesNotExistError } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 export async function askAnalyticsCategoryKinesisQuestions(context: any) {
   const { amplify } = context;
   const { allResources } = await amplify.getResourceStatus();
@@ -10,7 +10,7 @@ export async function askAnalyticsCategoryKinesisQuestions(context: any) {
     const errMessage = 'No Kinesis streams resource to select. Please use "amplify add analytics" command to create a new Kinesis stream';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
     return;
   } else if (kinesisResources.length === 1) {
     targetResourceName = kinesisResources[0].resourceName;

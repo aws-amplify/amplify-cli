@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const _ = require('lodash');
 const uuid = require('uuid');
 const { ServiceName: FunctionServiceName } = require('amplify-category-function');
-const { ResourceDoesNotExistError, ResourceAlreadyExistsError } = require('amplify-cli-core');
+const { ResourceDoesNotExistError, ResourceAlreadyExistsError, exitOnNextTick } = require('amplify-cli-core');
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -33,12 +33,12 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, o
       } catch (e) {
         context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
         context.usageData.emitError(e);
-        process.exit(1);
+        exitOnNextTick(1);
       }
       break;
     } else {
       context.usageData.emitSuccess();
-      process.exit(0);
+      exitOnNextTick(0);
     }
   }
   const resourceName = resourceAlreadyExists(context);
@@ -47,7 +47,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, o
     const errMessage = 'Amazon S3 storage was already added to your project.';
     context.print.warning(errMessage);
     context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   } else {
     return await configure(context, defaultValuesFilename, serviceMetadata, undefined, options);
   }
@@ -60,7 +60,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetada) {
   const storageResources = {};
 
   Object.keys(amplifyMeta[category]).forEach(resourceName => {
-    if (amplifyMeta[category][resourceName].service === serviceName) {
+    if (amplifyMeta[category][resourceName].service === serviceName && !!amplifyMeta[category][resourceName].providerPlugin) {
       storageResources[resourceName] = amplifyMeta[category][resourceName];
     }
   });
@@ -69,7 +69,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetada) {
     const errMessage = 'No resources to update. You need to add a resource.';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
     return;
   }
   const [resourceName] = Object.keys(storageResources);

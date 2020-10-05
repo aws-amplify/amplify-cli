@@ -22,7 +22,7 @@ export async function provideHelloWorld(request: TemplateContributionRequest): P
       destMap: {
         ...getDstMap(commonFiles),
         'HelloWorld/aws-lambda-tools-defaults.json.ejs': path.join('src', 'aws-lambda-tools-defaults.json'),
-        'HelloWorld/Function.csproj.ejs': path.join('src', `${request.contributionContext.functionName}.csproj`),
+        'HelloWorld/Function.csproj.ejs': path.join('src', `${request.contributionContext.resourceName}.csproj`),
         'HelloWorld/FunctionHandler.cs.ejs': handlerSource,
         'HelloWorld/event.json': path.join('src', 'event.json'),
       },

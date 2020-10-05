@@ -237,7 +237,7 @@ async function initEnv(context) {
 
 async function console(context) {
   const { amplify } = context;
-  const supportedServices = amplify.readJsonFile(`${__dirname}/provider-utils/supported-services.json`);
+  const { supportedServices } = require('./provider-utils/supported-services');
   const amplifyMeta = amplify.getProjectMeta();
 
   if (!amplifyMeta.auth || Object.keys(amplifyMeta.auth).length === 0) {
@@ -269,8 +269,9 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
 
   Object.keys(resourceOpsMapping).forEach(resourceName => {
     try {
-      const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
-      if (providerController) {
+      const providerName = amplifyMeta[category][resourceName].providerPlugin;
+      if (providerName) {
+        const providerController = require(`./provider-utils/${providerName}/index`);
         const { policy, attributes } = providerController.getPermissionPolicies(
           context,
           amplifyMeta[category][resourceName].service,

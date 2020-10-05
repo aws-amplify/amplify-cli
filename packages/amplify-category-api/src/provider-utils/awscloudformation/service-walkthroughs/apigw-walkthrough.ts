@@ -5,7 +5,7 @@ import uuid from 'uuid';
 import { rootAssetDir } from '../aws-constants';
 import { checkForPathOverlap, validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
-import { ResourceDoesNotExistError } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 
 const category = 'api';
 const serviceName = 'API Gateway';
@@ -34,14 +34,16 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = await import(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
-  const resources = allResources.filter(resource => resource.service === serviceName).map(resource => resource.resourceName);
+  const resources = allResources
+    .filter(resource => resource.service === serviceName && !!resource.providerPlugin)
+    .map(resource => resource.resourceName);
 
   // There can only be one appsync resource
   if (resources.length === 0) {
     const errMessage = 'No REST API resource to update. Please use "amplify add api" command to create a new REST API';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
     return;
   }
 
@@ -74,7 +76,7 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
     const errMessage = `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`;
     context.print.warning(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   }
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();

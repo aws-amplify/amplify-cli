@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, exitOnNextTick } from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
@@ -16,6 +16,7 @@ import { notify } from './version-notifier';
 // https://github.com/SBoudrias/Inquirer.js/issues/887
 import { EventEmitter } from 'events';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
+import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
 EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
@@ -64,24 +65,40 @@ export async function run() {
 
     const projectPath = pathManager.findProjectRoot() ?? process.cwd();
     const useNewDefaults = !stateManager.projectConfigExists(projectPath);
+
     await FeatureFlags.initialize(contextEnvironmentProvider, useNewDefaults);
 
     await attachUsageData(context);
+
     errorHandler = boundErrorHandler.bind(context);
     process.on('SIGINT', sigIntHandler.bind(context));
+
     await checkProjectConfigVersion(context);
+
     context.usageData.emitInvoke();
+
+    // For mobile hub migrated project validate project and command to be executed
+    if (!ensureMobileHubCommandCompatibility((context as unknown) as $TSContext)) {
+      // Double casting until we have properly typed context
+      return 1;
+    }
+
     await executeCommand(context);
+
     const exitCode = process.exitCode || 0;
+
     if (exitCode === 0) {
       context.usageData.emitSuccess();
     }
+
     persistContext(context);
+
     // no command supplied defaults to help, give update notification at end of execution
     if (input.command === 'help') {
       // Checks for available update, defaults to a 1 day interval for notification
       notify({ defer: true, isGlobal: true });
     }
+
     return exitCode;
   } catch (e) {
     // ToDo: add logging to the core, and log execution errors using the unified core logging.
@@ -92,7 +109,7 @@ export async function run() {
     if (e.stack) {
       print.info(e.stack);
     }
-    process.exit(1);
+    exitOnNextTick(1);
   }
 }
 
@@ -111,7 +128,7 @@ function sigIntHandler(this: Context, e: any) {
   this.usageData.emitAbort();
   this.print.warn('^Aborted!');
   //exit on abort
-  process.exit(2);
+  exitOnNextTick(2);
 }
 
 // entry from library call

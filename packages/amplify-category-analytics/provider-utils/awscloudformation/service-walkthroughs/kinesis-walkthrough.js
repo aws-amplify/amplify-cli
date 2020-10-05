@@ -3,7 +3,7 @@ const path = require('path');
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
 const category = 'analytics';
 const service = 'Kinesis';
-const { ResourceAlreadyExistsError, ResourceDoesNotExistError } = require('amplify-cli-core');
+const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const resourceName = resourceAlreadyExists(context);
@@ -12,7 +12,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
     const errMessage = 'Kinesis resource have already been added to your project.';
     context.print.warning(errMessage);
     context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
   }
   return configure(context, defaultValuesFilename, serviceMetadata);
 }
@@ -136,7 +136,7 @@ async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata
     const errMessage = 'No Kinesis streams resource to update. Please use "amplify add analytics" command to create a new Kinesis stream';
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    process.exit(0);
+    exitOnNextTick(0);
     return;
   } else if (kinesisResources.length === 1) {
     [targetResourceName] = kinesisResources;

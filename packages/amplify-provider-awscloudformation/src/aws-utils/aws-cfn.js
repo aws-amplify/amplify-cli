@@ -6,10 +6,11 @@ const chalk = require('chalk');
 const columnify = require('columnify');
 
 const aws = require('./aws.js');
-const S3 = require('./aws-s3');
+const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../configuration-manager');
+const { stateManager } = require('amplify-cli-core');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -207,13 +208,13 @@ class CloudFormation {
       throw new Error('Project deployment bucket has not been created yet. Use amplify init to initialize the project.');
     }
 
-    return new S3(this.context)
+    return S3.getInstance(this.context)
       .then(s3 => {
         const s3Params = {
           Body: fs.createReadStream(filePath),
           Key: cfnFile,
         };
-        return s3.uploadFile(s3Params);
+        return s3.uploadFile(s3Params, false);
       })
       .then(bucketName => {
         const templateURL = `https://s3.amazonaws.com/${bucketName}/${cfnFile}`;
@@ -277,81 +278,74 @@ class CloudFormation {
       });
   }
 
-  updateamplifyMetaFileWithStackOutputs(parentStackName) {
+  async updateamplifyMetaFileWithStackOutputs(parentStackName) {
     const cfnParentStackParams = {
       StackName: parentStackName,
     };
     const projectDetails = this.context.amplify.getProjectDetails();
     const { amplifyMeta } = projectDetails;
 
-    const cfnModel = this.cfn;
-    return cfnModel
-      .describeStackResources(cfnParentStackParams)
-      .promise()
-      .then(result => {
-        let resources = result.StackResources;
-        resources = resources.filter(
-          resource =>
-            ![
-              'DeploymentBucket',
-              'AuthRole',
-              'UnauthRole',
-              'UpdateRolesWithIDPFunction',
-              'UpdateRolesWithIDPFunctionOutputs',
-              'UpdateRolesWithIDPFunctionRole',
-            ].includes(resource.LogicalResourceId),
-        );
+    const result = await this.cfn.describeStackResources(cfnParentStackParams).promise();
+    const resources = result.StackResources.filter(
+      resource =>
+        ![
+          'DeploymentBucket',
+          'AuthRole',
+          'UnauthRole',
+          'UpdateRolesWithIDPFunction',
+          'UpdateRolesWithIDPFunctionOutputs',
+          'UpdateRolesWithIDPFunctionRole',
+        ].includes(resource.LogicalResourceId),
+    );
 
-        const promises = [];
+    if (resources.length > 0) {
+      const promises = [];
 
-        for (let i = 0; i < resources.length; i += 1) {
-          const cfnNestedStackParams = {
-            StackName: resources[i].PhysicalResourceId,
-          };
-          promises.push(this.describeStack(cfnNestedStackParams));
-        }
+      for (let i = 0; i < resources.length; i++) {
+        const cfnNestedStackParams = {
+          StackName: resources[i].PhysicalResourceId,
+        };
 
-        return Promise.all(promises).then(stackResult => {
-          Object.keys(amplifyMeta).forEach(category => {
-            Object.keys(amplifyMeta[category]).forEach(resource => {
-              const logicalResourceId = category + resource;
-              const index = resources.findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
-              if (index !== -1) {
-                const formattedOutputs = formatOutputs(stackResult[index].Stacks[0].Outputs);
+        promises.push(this.describeStack(cfnNestedStackParams));
+      }
 
-                const updatedMeta = this.context.amplify.updateamplifyMetaAfterResourceUpdate(
-                  category,
-                  resource,
-                  'output',
-                  formattedOutputs,
-                );
+      const stackResult = await Promise.all(promises);
 
-                // Check to see if this is an AppSync resource and if we've to remove the GraphQLAPIKeyOutput from meta or not
-                if (amplifyMeta[category][resource]) {
-                  const resourceObject = amplifyMeta[category][resource];
+      Object.keys(amplifyMeta)
+        .filter(k => k !== 'providers')
+        .forEach(category => {
+          Object.keys(amplifyMeta[category]).forEach(resource => {
+            const logicalResourceId = category + resource;
+            const index = resources.findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
 
-                  if (
-                    resourceObject.service === 'AppSync' &&
-                    resourceObject.output &&
-                    resourceObject.output.GraphQLAPIKeyOutput &&
-                    !formattedOutputs.GraphQLAPIKeyOutput
-                  ) {
-                    const updatedResourceObject = updatedMeta[category][resource];
+            if (index !== -1) {
+              const formattedOutputs = formatOutputs(stackResult[index].Stacks[0].Outputs);
 
-                    if (updatedResourceObject.output.GraphQLAPIKeyOutput) {
-                      delete updatedResourceObject.output.GraphQLAPIKeyOutput;
-                    }
+              const updatedMeta = this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, resource, 'output', formattedOutputs);
+
+              // Check to see if this is an AppSync resource and if we've to remove the GraphQLAPIKeyOutput from meta or not
+              if (amplifyMeta[category][resource]) {
+                const resourceObject = amplifyMeta[category][resource];
+
+                if (
+                  resourceObject.service === 'AppSync' &&
+                  resourceObject.output &&
+                  resourceObject.output.GraphQLAPIKeyOutput &&
+                  !formattedOutputs.GraphQLAPIKeyOutput
+                ) {
+                  const updatedResourceObject = updatedMeta[category][resource];
+
+                  if (updatedResourceObject.output.GraphQLAPIKeyOutput) {
+                    delete updatedResourceObject.output.GraphQLAPIKeyOutput;
                   }
-
-                  const amplifyMetaFilePath = this.context.amplify.pathManager.getAmplifyMetaFilePath();
-                  const jsonString = JSON.stringify(updatedMeta, null, 4);
-                  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
                 }
+
+                stateManager.setMeta(undefined, updatedMeta);
               }
-            });
+            }
           });
         });
-      });
+    }
   }
 
   listExports(nextToken = null) {
