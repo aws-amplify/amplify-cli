@@ -47,7 +47,7 @@
                     ]
                 },
                 "userPoolModification": {
-                    "$ref": "#/definitions/Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\"|\"oAuth\"|\"addUserToGroup\"|\"emailBlacklist\"|\"emailWhitelist\"|\"customAuthScaffolding\">"
+                    "$ref": "#/definitions/Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\"|\"oAuth\"|\"addUserToGroup\"|\"emailBlocklist\"|\"emailAllowlist\"|\"customAuthScaffolding\">"
                 }
             },
             "required": [
@@ -55,7 +55,7 @@
                 "userPoolModification"
             ]
         },
-        "Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\"|\"oAuth\"|\"addUserToGroup\"|\"emailBlacklist\"|\"emailWhitelist\"|\"customAuthScaffolding\">": {
+        "Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\"|\"oAuth\"|\"addUserToGroup\"|\"emailBlocklist\"|\"emailAllowlist\"|\"customAuthScaffolding\">": {
             "type": "object",
             "properties": {
                 "userPoolGroups": {
@@ -159,13 +159,13 @@
                         "groupName"
                     ]
                 },
-                "emailBlacklist": {
+                "emailBlocklist": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "emailWhitelist": {
+                "emailAllowlist": {
                     "type": "array",
                     "items": {
                         "type": "string"

@@ -200,13 +200,13 @@
                         "groupName"
                     ]
                 },
-                "emailBlacklist": {
+                "emailBlocklist": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "emailWhitelist": {
+                "emailAllowlist": {
                     "type": "array",
                     "items": {
                         "type": "string"

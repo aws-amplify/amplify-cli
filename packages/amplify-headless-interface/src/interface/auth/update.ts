@@ -29,8 +29,8 @@ export type CognitoUserPoolModification = Pick<
   | 'writeAttributes'
   | 'oAuth'
   | 'addUserToGroup'
-  | 'emailBlacklist'
-  | 'emailWhitelist'
+  | 'emailBlocklist'
+  | 'emailAllowlist'
   | 'customAuthScaffolding'
 >;
 export type CognitoIdentityPoolModification = Pick<CognitoIdentityPoolConfiguration, 'unauthenticatedLogin' | 'identitySocialFederation'>;
