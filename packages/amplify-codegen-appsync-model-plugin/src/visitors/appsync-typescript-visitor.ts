@@ -217,7 +217,7 @@ export class AppSyncModelTypeScriptVisitor<
 
   protected getListType(typeStr: string, field: CodeGenField): string {
     let type: string = typeStr;
-    if (field.isList && field.isNullable) {
+    if (field.isNullable) {
       type = `(${type} | null)`;
     }
     return `${type}[]`;
