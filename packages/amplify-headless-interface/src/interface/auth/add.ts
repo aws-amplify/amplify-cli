@@ -69,8 +69,8 @@ export interface CognitoUserPoolConfiguration {
   addUserToGroup?: {
     groupName: string;
   };
-  emailBlacklist?: string[];
-  emailWhitelist?: string[];
+  emailBlocklist?: string[];
+  emailAllowlist?: string[];
   customAuthScaffolding?: {
     customChallengeAnswer: string;
   };
