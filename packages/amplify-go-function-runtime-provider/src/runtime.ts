@@ -183,7 +183,6 @@ const winZip = async (src: string, dest: string, print: any) => {
     `If the function ${resourceName} depends on assets outside of the go binary, you'll need to manually zip the binary along with the assets using WSL or another shell that generates a *nix-like zip file.`,
   );
   print.warning('See https://github.com/aws/aws-lambda-go/issues/13#issuecomment-358729411.');
-  print.wanring('Alternatively, you can put the assets in a Lambda Layer: https://docs.amplify.aws/cli/function/layers');
 };
 
 const nixZip = async (src: string, dest: string) => {
