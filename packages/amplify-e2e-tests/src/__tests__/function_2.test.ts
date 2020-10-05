@@ -1,18 +1,17 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, updateFunction, functionBuild, addLambdaTrigger } from 'amplify-e2e-core';
+import { addFunction, updateFunction } from 'amplify-e2e-core';
 import { addSimpleDDB } from 'amplify-e2e-core';
-import { addKinesis } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, overrideFunctionSrc, getFunctionSrc } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc, getFunctionSrc } from 'amplify-e2e-core';
 import { addApiWithSchema } from 'amplify-e2e-core';
 
-import { appsyncGraphQLRequest } from 'amplify-e2e-core';
-import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getCloudWatchEventRule, getEventSourceMappings } from 'amplify-e2e-core';
+import { invokeFunction } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
-import { retry, readJsonFile } from 'amplify-e2e-core';
+import { readJsonFile } from 'amplify-e2e-core';
 import _ from 'lodash';
 
 describe('nodejs', () => {
+  
   describe('amplify add function with additional permissions', () => {
     let projRoot: string;
     beforeEach(async () => {

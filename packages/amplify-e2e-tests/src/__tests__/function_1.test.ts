@@ -1,15 +1,14 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, updateFunction, functionBuild, addLambdaTrigger } from 'amplify-e2e-core';
+import { addFunction, functionBuild, addLambdaTrigger } from 'amplify-e2e-core';
 import { addSimpleDDB } from 'amplify-e2e-core';
 import { addKinesis } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction, overrideFunctionSrc, getFunctionSrc } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction } from 'amplify-e2e-core';
 import { addApiWithSchema } from 'amplify-e2e-core';
 
 import { appsyncGraphQLRequest } from 'amplify-e2e-core';
-import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getCloudWatchEventRule, getEventSourceMappings } from 'amplify-e2e-core';
-import fs from 'fs-extra';
-import path from 'path';
-import { retry, readJsonFile } from 'amplify-e2e-core';
+import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getEventSourceMappings } from 'amplify-e2e-core';
+
+import { retry } from 'amplify-e2e-core';
 import _ from 'lodash';
 
 describe('nodejs', () => {
