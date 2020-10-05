@@ -514,17 +514,17 @@ const capabilities = [
     },
   },
   {
-    name: 'Email Domain Filtering (blacklist)',
-    value: 'emailBlacklist',
+    name: 'Email Domain Filtering (blocklist)',
+    value: 'emailBlocklist',
     triggers: {
-      PreSignup: ['email-filter-blacklist'],
+      PreSignup: ['email-filter-blocklist'],
     },
   },
   {
-    name: 'Email Domain Filtering (whitelist)',
-    value: 'emailWhitelist',
+    name: 'Email Domain Filtering (allowlist)',
+    value: 'emailAllowlist',
     triggers: {
-      PreSignup: ['email-filter-whitelist'],
+      PreSignup: ['email-filter-allowlist'],
     },
   },
   {
