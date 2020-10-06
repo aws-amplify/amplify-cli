@@ -3684,7 +3684,7 @@ public final class Todo implements Model {
     Todo build();
     BuildStep id(String id) throws IllegalArgumentException;
     BuildStep description(String description);
-    BuildStep due_date(String due_date);
+    BuildStep dueDate(String dueDate);
     BuildStep value(Float value);
   }
   
@@ -4338,6 +4338,173 @@ public final class authorBook implements Model {
 "
 `;
 
+exports[`AppSyncModelVisitor should generate model with non-camel case field 1`] = `
+"package com.amplifyframework.datastore.generated.model;
+
+
+import java.util.List;
+import java.util.UUID;
+import java.util.Objects;
+
+import androidx.core.util.ObjectsCompat;
+
+import com.amplifyframework.core.model.Model;
+import com.amplifyframework.core.model.annotations.Index;
+import com.amplifyframework.core.model.annotations.ModelConfig;
+import com.amplifyframework.core.model.annotations.ModelField;
+import com.amplifyframework.core.model.query.predicate.QueryField;
+
+import static com.amplifyframework.core.model.query.predicate.QueryField.field;
+
+/** This is an auto generated class representing the NonCamelCaseField type in your schema. */
+@SuppressWarnings(\\"all\\")
+@ModelConfig(pluralName = \\"NonCamelCaseFields\\")
+public final class NonCamelCaseField implements Model {
+  public static final QueryField ID = field(\\"id\\");
+  public static final QueryField EMPLOYEE_PID = field(\\"employeePID\\");
+  private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
+  private final @ModelField(targetType=\\"String\\") String employeePID;
+  public String getId() {
+      return id;
+  }
+  
+  public String getEmployeePid() {
+      return employeePID;
+  }
+  
+  private NonCamelCaseField(String id, String employeePID) {
+    this.id = id;
+    this.employeePID = employeePID;
+  }
+  
+  @Override
+   public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      } else if(obj == null || getClass() != obj.getClass()) {
+        return false;
+      } else {
+      NonCamelCaseField nonCamelCaseField = (NonCamelCaseField) obj;
+      return ObjectsCompat.equals(getId(), nonCamelCaseField.getId()) &&
+              ObjectsCompat.equals(getEmployeePid(), nonCamelCaseField.getEmployeePid());
+      }
+  }
+  
+  @Override
+   public int hashCode() {
+    return new StringBuilder()
+      .append(getId())
+      .append(getEmployeePid())
+      .toString()
+      .hashCode();
+  }
+  
+  @Override
+   public String toString() {
+    return new StringBuilder()
+      .append(\\"NonCamelCaseField {\\")
+      .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
+      .append(\\"employeePID=\\" + String.valueOf(getEmployeePid()))
+      .append(\\"}\\")
+      .toString();
+  }
+  
+  public static BuildStep builder() {
+      return new Builder();
+  }
+  
+  /** 
+   * WARNING: This method should not be used to build an instance of this object for a CREATE mutation.
+   * This is a convenience method to return an instance of the object with only its ID populated
+   * to be used in the context of a parameter in a delete mutation or referencing a foreign key
+   * in a relationship.
+   * @param id the id of the existing item this instance will represent
+   * @return an instance of this model with only ID populated
+   * @throws IllegalArgumentException Checks that ID is in the proper format
+   */
+  public static NonCamelCaseField justId(String id) {
+    try {
+      UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+    } catch (Exception exception) {
+      throw new IllegalArgumentException(
+              \\"Model IDs must be unique in the format of UUID. This method is for creating instances \\" +
+              \\"of an existing object with only its ID field for sending as a mutation parameter. When \\" +
+              \\"creating a new object, use the standard builder method and leave the ID field blank.\\"
+      );
+    }
+    return new NonCamelCaseField(
+      id,
+      null
+    );
+  }
+  
+  public CopyOfBuilder copyOfBuilder() {
+    return new CopyOfBuilder(id,
+      employeePID);
+  }
+  public interface BuildStep {
+    NonCamelCaseField build();
+    BuildStep id(String id) throws IllegalArgumentException;
+    BuildStep employeePid(String employeePid);
+  }
+  
+
+  public static class Builder implements BuildStep {
+    private String id;
+    private String employeePID;
+    @Override
+     public NonCamelCaseField build() {
+        String id = this.id != null ? this.id : UUID.randomUUID().toString();
+        
+        return new NonCamelCaseField(
+          id,
+          employeePID);
+    }
+    
+    @Override
+     public BuildStep employeePid(String employeePid) {
+        this.employeePID = employeePid;
+        return this;
+    }
+    
+    /** 
+     * WARNING: Do not set ID when creating a new object. Leave this blank and one will be auto generated for you.
+     * This should only be set when referring to an already existing object.
+     * @param id id
+     * @return Current Builder instance, for fluent method chaining
+     * @throws IllegalArgumentException Checks that ID is in the proper format
+     */
+    public BuildStep id(String id) throws IllegalArgumentException {
+        this.id = id;
+        
+        try {
+            UUID.fromString(id); // Check that ID is in the UUID format - if not an exception is thrown
+        } catch (Exception exception) {
+          throw new IllegalArgumentException(\\"Model IDs must be unique in the format of UUID.\\",
+                    exception);
+        }
+        
+        return this;
+    }
+  }
+  
+
+  public final class CopyOfBuilder extends Builder {
+    private CopyOfBuilder(String id, String employeePid) {
+      super.id(id);
+      super.employeePid(employeePid);
+    }
+    
+    @Override
+     public CopyOfBuilder employeePid(String employeePid) {
+      return (CopyOfBuilder) super.employeePid(employeePid);
+    }
+  }
+  
+}
+"
+`;
+
 exports[`AppSyncModelVisitor should generate model with snake case 1`] = `
 "package com.amplifyframework.datastore.generated.model;
 
@@ -4612,7 +4779,7 @@ public final class SnakeCaseField implements Model {
   public interface BuildStep {
     SnakeCaseField build();
     BuildStep id(String id) throws IllegalArgumentException;
-    BuildStep first_name(String first_name);
+    BuildStep firstName(String firstName);
   }
   
 

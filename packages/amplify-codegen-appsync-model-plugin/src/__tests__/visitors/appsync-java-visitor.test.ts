@@ -148,6 +148,19 @@ describe('AppSyncModelVisitor', () => {
     expect(generatedCode).toMatchSnapshot();
   });
 
+  it('should generate model with non-camel case field', () => {
+    const schema = /* GraphQL */ `
+      type NonCamelCaseField @model {
+        id: ID!
+        employeePID: String
+      }
+    `;
+    const visitor = getVisitor(schema, 'NonCamelCaseField');
+    const generatedCode = visitor.generate();
+    expect(() => validateJava(generatedCode)).not.toThrow();
+    expect(generatedCode).toMatchSnapshot();
+  })
+
   it('should generate model with key directive', () => {
     const schema = /* GraphQL */ `
       type authorBook @model @key(name: "byAuthor", fields: ["author_id"]) @key(name: "byBook", fields: ["book_id"]) {

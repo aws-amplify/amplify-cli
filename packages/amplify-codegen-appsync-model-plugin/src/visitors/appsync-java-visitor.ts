@@ -367,8 +367,9 @@ export class AppSyncModelJavaVisitor<
     }
 
     nullableFields.forEach(field => {
-      const fieldName = this.getFieldName(field);
-      builderBody.push(`${this.getStepInterfaceName('Build')} ${fieldName}(${this.getNativeType(field)} ${fieldName});`);
+      const fieldName = this.getStepFunctionArgumentName(field);
+      const methodName = this.getStepFunctionName(field);
+      builderBody.push(`${this.getStepInterfaceName('Build')} ${methodName}(${this.getNativeType(field)} ${fieldName});`);
     });
 
     builder.withBlock(indentMultiline(builderBody.join('\n')));
