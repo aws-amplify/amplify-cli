@@ -1,9 +1,9 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
 import { addFunction, updateFunction } from 'amplify-e2e-core';
-import { addSimpleDDB } from 'amplify-e2e-core';
+import { addSimpleDDB, addDDBWithTrigger } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc, getFunctionSrc } from 'amplify-e2e-core';
 import { addApiWithSchema } from 'amplify-e2e-core';
-
+import { getBackendAmplifyMeta } from 'amplify-e2e-core';
 import { invokeFunction } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
@@ -11,7 +11,6 @@ import { readJsonFile } from 'amplify-e2e-core';
 import _ from 'lodash';
 
 describe('nodejs', () => {
-  
   describe('amplify add function with additional permissions', () => {
     let projRoot: string;
     beforeEach(async () => {
@@ -254,6 +253,34 @@ describe('nodejs', () => {
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
       expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(3);
+    });
+
+    it('update DDB trigger function to add permissions should not changed its dependsOn attributes of the trigger source', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      await addDDBWithTrigger(projRoot, {});
+
+      const originalAmplifyMeta = getBackendAmplifyMeta(projRoot);
+      const functionResourceName = Object.keys(originalAmplifyMeta.function)[0];
+      const originalAttributes = originalAmplifyMeta.function[functionResourceName].dependsOn[0].attributes.sort();
+
+      await updateFunction(
+        projRoot,
+        {
+          permissions: ['storage'],
+          choices: ['function', 'storage'],
+          operations: ['read', 'update'],
+        },
+        'nodejs',
+      );
+
+      const updateAmplifyMeta = getBackendAmplifyMeta(projRoot);
+      const updateAttributes = updateAmplifyMeta.function[functionResourceName].dependsOn[0].attributes.sort();
+      expect(originalAttributes).toEqual(updateAttributes);
+
+      await amplifyPushAuth(projRoot);
+      const amplifyMeta = getBackendAmplifyMeta(projRoot);
+      expect(amplifyMeta.function[functionResourceName].output).toBeDefined();
+      expect(amplifyMeta.function[functionResourceName].output.Arn).toBeDefined();
     });
 
     it('function dependencies should be preserved when not editing permissions during `amplify update function`', async () => {

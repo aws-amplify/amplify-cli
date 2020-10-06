@@ -214,7 +214,7 @@ export declare class SimpleModel {
   readonly id: string;
   readonly name?: string;
   readonly bar?: string;
-  readonly owner?: String;
+  readonly owner?: string;
   constructor(init: ModelInit<SimpleModel>);
   static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
 }"
@@ -230,7 +230,6 @@ export declare class SimpleModel {
       expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(2, (declarationVisitor as any).nonModelMap['SimpleNonModelType'], true);
     });
   });
-
 });
 
 describe('Javascript visitor with custom owner field auth', () => {
@@ -285,7 +284,7 @@ export declare class SimpleModel {
   readonly id: string;
   readonly name?: string;
   readonly bar?: string;
-  readonly customOwnerField?: String;
+  readonly customOwnerField?: string;
   constructor(init: ModelInit<SimpleModel>);
   static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
 }"
@@ -301,12 +300,13 @@ export declare class SimpleModel {
       expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(2, (declarationVisitor as any).nonModelMap['SimpleNonModelType'], true);
     });
   });
-
 });
 
 describe('Javascript visitor with multiple owner field auth', () => {
   const schema = /* GraphQL */ `
-    type SimpleModel @model @auth(rules: [{ allow: owner, ownerField: "customOwnerField"}, { allow: owner, ownerField: "customOwnerField2"}]) {
+    type SimpleModel
+      @model
+      @auth(rules: [{ allow: owner, ownerField: "customOwnerField" }, { allow: owner, ownerField: "customOwnerField2" }]) {
       id: ID!
       name: String
       bar: String
@@ -356,8 +356,8 @@ export declare class SimpleModel {
   readonly id: string;
   readonly name?: string;
   readonly bar?: string;
-  readonly customOwnerField?: String;
-  readonly customOwnerField2?: String;
+  readonly customOwnerField?: string;
+  readonly customOwnerField2?: string;
   constructor(init: ModelInit<SimpleModel>);
   static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
 }"
@@ -373,5 +373,4 @@ export declare class SimpleModel {
       expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(2, (declarationVisitor as any).nonModelMap['SimpleNonModelType'], true);
     });
   });
-
 });

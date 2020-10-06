@@ -4,10 +4,8 @@ import { addSimpleDDB } from 'amplify-e2e-core';
 import { addKinesis } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getFunction } from 'amplify-e2e-core';
 import { addApiWithSchema } from 'amplify-e2e-core';
-
 import { appsyncGraphQLRequest } from 'amplify-e2e-core';
 import { getCloudWatchLogs, putKinesisRecords, invokeFunction, getEventSourceMappings } from 'amplify-e2e-core';
-
 import { retry } from 'amplify-e2e-core';
 import _ from 'lodash';
 
