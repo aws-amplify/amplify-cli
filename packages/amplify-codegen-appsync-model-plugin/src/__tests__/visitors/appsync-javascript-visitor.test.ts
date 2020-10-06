@@ -230,7 +230,6 @@ export declare class SimpleModel {
       expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(2, (declarationVisitor as any).nonModelMap['SimpleNonModelType'], true);
     });
   });
-
 });
 
 describe('Javascript visitor with custom owner field auth', () => {
@@ -301,12 +300,13 @@ export declare class SimpleModel {
       expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(2, (declarationVisitor as any).nonModelMap['SimpleNonModelType'], true);
     });
   });
-
 });
 
 describe('Javascript visitor with multiple owner field auth', () => {
   const schema = /* GraphQL */ `
-    type SimpleModel @model @auth(rules: [{ allow: owner, ownerField: "customOwnerField"}, { allow: owner, ownerField: "customOwnerField2"}]) {
+    type SimpleModel
+      @model
+      @auth(rules: [{ allow: owner, ownerField: "customOwnerField" }, { allow: owner, ownerField: "customOwnerField2" }]) {
       id: ID!
       name: String
       bar: String
@@ -373,5 +373,4 @@ export declare class SimpleModel {
       expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(2, (declarationVisitor as any).nonModelMap['SimpleNonModelType'], true);
     });
   });
-
 });
