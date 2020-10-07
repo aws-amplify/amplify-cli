@@ -1,5 +1,5 @@
 import { indent, indentMultiline, transformComment } from '@graphql-codegen/visitor-plugin-common';
-import { camelCase, constantCase, pascalCase } from 'change-case';
+import { camelCase, constantCase } from 'change-case';
 import dedent from 'ts-dedent';
 import {
   MODEL_CLASS_IMPORT_PACKAGES,
@@ -590,7 +590,8 @@ export class AppSyncModelJavaVisitor<
    * @param field codegen field
    */
   protected getFieldGetterName(field: CodeGenField): string {
-    return `get${pascalCase(field.name)}`;
+    const fieldName = field.name;
+    return `get${fieldName[0].toUpperCase()}${fieldName.slice(1)}`;
   }
 
   /**
@@ -598,7 +599,7 @@ export class AppSyncModelJavaVisitor<
    * @param field
    */
   protected getStepFunctionName(field: CodeGenField): string {
-    return camelCase(field.name);
+    return field.name;
   }
 
   /**
@@ -606,7 +607,7 @@ export class AppSyncModelJavaVisitor<
    * @param field
    */
   protected getStepFunctionArgumentName(field: CodeGenField): string {
-    return camelCase(field.name);
+    return field.name;
   }
 
   /**
@@ -745,7 +746,7 @@ export class AppSyncModelJavaVisitor<
    * @returns string
    */
   private getStepInterfaceName(nextFieldName: string): string {
-    return `${pascalCase(nextFieldName)}Step`;
+    return `${nextFieldName[0].toUpperCase()}${nextFieldName.slice(1)}Step`;
   }
 
   protected generateModelAnnotations(model: CodeGenModel): string[] {

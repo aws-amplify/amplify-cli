@@ -3549,7 +3549,7 @@ public final class Todo implements Model {
       return description;
   }
   
-  public String getDueDate() {
+  public String getDue_date() {
       return due_date;
   }
   
@@ -3587,7 +3587,7 @@ public final class Todo implements Model {
               ObjectsCompat.equals(getTitle(), todo.getTitle()) &&
               ObjectsCompat.equals(getDone(), todo.getDone()) &&
               ObjectsCompat.equals(getDescription(), todo.getDescription()) &&
-              ObjectsCompat.equals(getDueDate(), todo.getDueDate()) &&
+              ObjectsCompat.equals(getDue_date(), todo.getDue_date()) &&
               ObjectsCompat.equals(getVersion(), todo.getVersion()) &&
               ObjectsCompat.equals(getValue(), todo.getValue());
       }
@@ -3600,7 +3600,7 @@ public final class Todo implements Model {
       .append(getTitle())
       .append(getDone())
       .append(getDescription())
-      .append(getDueDate())
+      .append(getDue_date())
       .append(getVersion())
       .append(getValue())
       .toString()
@@ -3615,7 +3615,7 @@ public final class Todo implements Model {
       .append(\\"title=\\" + String.valueOf(getTitle()) + \\", \\")
       .append(\\"done=\\" + String.valueOf(getDone()) + \\", \\")
       .append(\\"description=\\" + String.valueOf(getDescription()) + \\", \\")
-      .append(\\"due_date=\\" + String.valueOf(getDueDate()) + \\", \\")
+      .append(\\"due_date=\\" + String.valueOf(getDue_date()) + \\", \\")
       .append(\\"version=\\" + String.valueOf(getVersion()) + \\", \\")
       .append(\\"value=\\" + String.valueOf(getValue()))
       .append(\\"}\\")
@@ -3684,7 +3684,7 @@ public final class Todo implements Model {
     Todo build();
     BuildStep id(String id) throws IllegalArgumentException;
     BuildStep description(String description);
-    BuildStep dueDate(String dueDate);
+    BuildStep due_date(String due_date);
     BuildStep value(Float value);
   }
   
@@ -3739,8 +3739,8 @@ public final class Todo implements Model {
     }
     
     @Override
-     public BuildStep dueDate(String dueDate) {
-        this.due_date = dueDate;
+     public BuildStep due_date(String due_date) {
+        this.due_date = due_date;
         return this;
     }
     
@@ -3773,13 +3773,13 @@ public final class Todo implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String title, Boolean done, String description, String dueDate, Integer version, Float value) {
+    private CopyOfBuilder(String id, String title, Boolean done, String description, String due_date, Integer version, Float value) {
       super.id(id);
       super.title(title)
         .done(done)
         .version(version)
         .description(description)
-        .dueDate(dueDate)
+        .due_date(due_date)
         .value(value);
     }
     
@@ -3804,8 +3804,8 @@ public final class Todo implements Model {
     }
     
     @Override
-     public CopyOfBuilder dueDate(String dueDate) {
-      return (CopyOfBuilder) super.dueDate(dueDate);
+     public CopyOfBuilder due_date(String due_date) {
+      return (CopyOfBuilder) super.due_date(due_date);
     }
     
     @Override
@@ -4116,11 +4116,11 @@ public final class authorBook implements Model {
       return id;
   }
   
-  public String getAuthorId() {
+  public String getAuthor_id() {
       return author_id;
   }
   
-  public String getBookId() {
+  public String getBook_id() {
       return book_id;
   }
   
@@ -4149,8 +4149,8 @@ public final class authorBook implements Model {
       } else {
       authorBook authorBook = (authorBook) obj;
       return ObjectsCompat.equals(getId(), authorBook.getId()) &&
-              ObjectsCompat.equals(getAuthorId(), authorBook.getAuthorId()) &&
-              ObjectsCompat.equals(getBookId(), authorBook.getBookId()) &&
+              ObjectsCompat.equals(getAuthor_id(), authorBook.getAuthor_id()) &&
+              ObjectsCompat.equals(getBook_id(), authorBook.getBook_id()) &&
               ObjectsCompat.equals(getAuthor(), authorBook.getAuthor()) &&
               ObjectsCompat.equals(getBook(), authorBook.getBook());
       }
@@ -4160,8 +4160,8 @@ public final class authorBook implements Model {
    public int hashCode() {
     return new StringBuilder()
       .append(getId())
-      .append(getAuthorId())
-      .append(getBookId())
+      .append(getAuthor_id())
+      .append(getBook_id())
       .append(getAuthor())
       .append(getBook())
       .toString()
@@ -4173,15 +4173,15 @@ public final class authorBook implements Model {
     return new StringBuilder()
       .append(\\"authorBook {\\")
       .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
-      .append(\\"author_id=\\" + String.valueOf(getAuthorId()) + \\", \\")
-      .append(\\"book_id=\\" + String.valueOf(getBookId()) + \\", \\")
+      .append(\\"author_id=\\" + String.valueOf(getAuthor_id()) + \\", \\")
+      .append(\\"book_id=\\" + String.valueOf(getBook_id()) + \\", \\")
       .append(\\"author=\\" + String.valueOf(getAuthor()) + \\", \\")
       .append(\\"book=\\" + String.valueOf(getBook()))
       .append(\\"}\\")
       .toString();
   }
   
-  public static AuthorIdStep builder() {
+  public static Author_idStep builder() {
       return new Builder();
   }
   
@@ -4220,13 +4220,13 @@ public final class authorBook implements Model {
       author,
       book);
   }
-  public interface AuthorIdStep {
-    BookIdStep authorId(String authorId);
+  public interface Author_idStep {
+    Book_idStep author_id(String author_id);
   }
   
 
-  public interface BookIdStep {
-    BuildStep bookId(String bookId);
+  public interface Book_idStep {
+    BuildStep book_id(String book_id);
   }
   
 
@@ -4238,7 +4238,7 @@ public final class authorBook implements Model {
   }
   
 
-  public static class Builder implements AuthorIdStep, BookIdStep, BuildStep {
+  public static class Builder implements Author_idStep, Book_idStep, BuildStep {
     private String id;
     private String author_id;
     private String book_id;
@@ -4257,16 +4257,16 @@ public final class authorBook implements Model {
     }
     
     @Override
-     public BookIdStep authorId(String authorId) {
-        Objects.requireNonNull(authorId);
-        this.author_id = authorId;
+     public Book_idStep author_id(String author_id) {
+        Objects.requireNonNull(author_id);
+        this.author_id = author_id;
         return this;
     }
     
     @Override
-     public BuildStep bookId(String bookId) {
-        Objects.requireNonNull(bookId);
-        this.book_id = bookId;
+     public BuildStep book_id(String book_id) {
+        Objects.requireNonNull(book_id);
+        this.book_id = book_id;
         return this;
     }
     
@@ -4305,22 +4305,22 @@ public final class authorBook implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String authorId, String bookId, String author, String book) {
+    private CopyOfBuilder(String id, String author_id, String book_id, String author, String book) {
       super.id(id);
-      super.authorId(authorId)
-        .bookId(bookId)
+      super.author_id(author_id)
+        .book_id(book_id)
         .author(author)
         .book(book);
     }
     
     @Override
-     public CopyOfBuilder authorId(String authorId) {
-      return (CopyOfBuilder) super.authorId(authorId);
+     public CopyOfBuilder author_id(String author_id) {
+      return (CopyOfBuilder) super.author_id(author_id);
     }
     
     @Override
-     public CopyOfBuilder bookId(String bookId) {
-      return (CopyOfBuilder) super.bookId(bookId);
+     public CopyOfBuilder book_id(String book_id) {
+      return (CopyOfBuilder) super.book_id(book_id);
     }
     
     @Override
@@ -4368,7 +4368,7 @@ public final class NonCamelCaseField implements Model {
       return id;
   }
   
-  public String getEmployeePid() {
+  public String getEmployeePID() {
       return employeePID;
   }
   
@@ -4386,7 +4386,7 @@ public final class NonCamelCaseField implements Model {
       } else {
       NonCamelCaseField nonCamelCaseField = (NonCamelCaseField) obj;
       return ObjectsCompat.equals(getId(), nonCamelCaseField.getId()) &&
-              ObjectsCompat.equals(getEmployeePid(), nonCamelCaseField.getEmployeePid());
+              ObjectsCompat.equals(getEmployeePID(), nonCamelCaseField.getEmployeePID());
       }
   }
   
@@ -4394,7 +4394,7 @@ public final class NonCamelCaseField implements Model {
    public int hashCode() {
     return new StringBuilder()
       .append(getId())
-      .append(getEmployeePid())
+      .append(getEmployeePID())
       .toString()
       .hashCode();
   }
@@ -4404,7 +4404,7 @@ public final class NonCamelCaseField implements Model {
     return new StringBuilder()
       .append(\\"NonCamelCaseField {\\")
       .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
-      .append(\\"employeePID=\\" + String.valueOf(getEmployeePid()))
+      .append(\\"employeePID=\\" + String.valueOf(getEmployeePID()))
       .append(\\"}\\")
       .toString();
   }
@@ -4445,7 +4445,7 @@ public final class NonCamelCaseField implements Model {
   public interface BuildStep {
     NonCamelCaseField build();
     BuildStep id(String id) throws IllegalArgumentException;
-    BuildStep employeePid(String employeePid);
+    BuildStep employeePID(String employeePID);
   }
   
 
@@ -4462,8 +4462,8 @@ public final class NonCamelCaseField implements Model {
     }
     
     @Override
-     public BuildStep employeePid(String employeePid) {
-        this.employeePID = employeePid;
+     public BuildStep employeePID(String employeePID) {
+        this.employeePID = employeePID;
         return this;
     }
     
@@ -4490,14 +4490,14 @@ public final class NonCamelCaseField implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String employeePid) {
+    private CopyOfBuilder(String id, String employeePID) {
       super.id(id);
-      super.employeePid(employeePid);
+      super.employeePID(employeePID);
     }
     
     @Override
-     public CopyOfBuilder employeePid(String employeePid) {
-      return (CopyOfBuilder) super.employeePid(employeePid);
+     public CopyOfBuilder employeePID(String employeePID) {
+      return (CopyOfBuilder) super.employeePID(employeePID);
     }
   }
   
@@ -4702,7 +4702,7 @@ public final class SnakeCaseField implements Model {
       return id;
   }
   
-  public String getFirstName() {
+  public String getFirst_name() {
       return first_name;
   }
   
@@ -4720,7 +4720,7 @@ public final class SnakeCaseField implements Model {
       } else {
       SnakeCaseField snakeCaseField = (SnakeCaseField) obj;
       return ObjectsCompat.equals(getId(), snakeCaseField.getId()) &&
-              ObjectsCompat.equals(getFirstName(), snakeCaseField.getFirstName());
+              ObjectsCompat.equals(getFirst_name(), snakeCaseField.getFirst_name());
       }
   }
   
@@ -4728,7 +4728,7 @@ public final class SnakeCaseField implements Model {
    public int hashCode() {
     return new StringBuilder()
       .append(getId())
-      .append(getFirstName())
+      .append(getFirst_name())
       .toString()
       .hashCode();
   }
@@ -4738,7 +4738,7 @@ public final class SnakeCaseField implements Model {
     return new StringBuilder()
       .append(\\"SnakeCaseField {\\")
       .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
-      .append(\\"first_name=\\" + String.valueOf(getFirstName()))
+      .append(\\"first_name=\\" + String.valueOf(getFirst_name()))
       .append(\\"}\\")
       .toString();
   }
@@ -4779,7 +4779,7 @@ public final class SnakeCaseField implements Model {
   public interface BuildStep {
     SnakeCaseField build();
     BuildStep id(String id) throws IllegalArgumentException;
-    BuildStep firstName(String firstName);
+    BuildStep first_name(String first_name);
   }
   
 
@@ -4796,8 +4796,8 @@ public final class SnakeCaseField implements Model {
     }
     
     @Override
-     public BuildStep firstName(String firstName) {
-        this.first_name = firstName;
+     public BuildStep first_name(String first_name) {
+        this.first_name = first_name;
         return this;
     }
     
@@ -4824,14 +4824,14 @@ public final class SnakeCaseField implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String firstName) {
+    private CopyOfBuilder(String id, String first_name) {
       super.id(id);
-      super.firstName(firstName);
+      super.first_name(first_name);
     }
     
     @Override
-     public CopyOfBuilder firstName(String firstName) {
-      return (CopyOfBuilder) super.firstName(firstName);
+     public CopyOfBuilder first_name(String first_name) {
+      return (CopyOfBuilder) super.first_name(first_name);
     }
   }
   
