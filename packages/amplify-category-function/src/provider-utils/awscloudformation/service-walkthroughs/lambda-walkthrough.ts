@@ -30,6 +30,9 @@ export async function createWalkthrough(
 
   // ask generic function questions and merge in results
   templateParameters = merge(templateParameters, await generalQuestionsWalkthrough(context));
+  if (templateParameters.functionName) {
+    templateParameters.resourceName = templateParameters.functionName;
+  }
 
   // ask runtime selection questions and merge in results
   if (!templateParameters.runtime) {
@@ -40,18 +43,22 @@ export async function createWalkthrough(
   // ask template selection questions and merge in results
   templateParameters = merge(templateParameters, await templateWalkthrough(context, templateParameters));
 
-  if (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your Lambda function?')) {
-    templateParameters = merge(
-      templateParameters,
-      await askExecRolePermissionsQuestions(context, templateParameters.functionName, undefined, templateParameters.environmentMap),
-    );
+  // ask whether to configure advanced settings
+  if (await context.amplify.confirmPrompt('Do you want to configure advanced settings?')) {
+    if (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your Lambda function?')) {
+      templateParameters = merge(
+        templateParameters,
+        await askExecRolePermissionsQuestions(context, templateParameters.functionName, undefined, templateParameters.environmentMap),
+      );
+    }
+
+    // ask scheduling Lambda questions and merge in results
+    templateParameters = merge(templateParameters, await scheduleWalkthrough(context, templateParameters));
+
+    // ask lambda layer questions and merge in results
+    templateParameters = merge(templateParameters, await addLayersToFunctionWalkthrough(context, templateParameters.runtime));
   }
 
-  // ask scheduling Lambda questions and merge in results
-  templateParameters = merge(templateParameters, await scheduleWalkthrough(context, templateParameters));
-
-  // ask lambda layer questions and merge in results
-  templateParameters = merge(templateParameters, await addLayersToFunctionWalkthrough(context, templateParameters.runtime));
   return templateParameters;
 }
 /**
