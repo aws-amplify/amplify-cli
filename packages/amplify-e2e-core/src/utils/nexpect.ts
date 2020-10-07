@@ -584,7 +584,7 @@ export function nspawn(command: string | string[], params: string[] = [], option
   // For push operations in E2E we have to explicitly disable the Amplify Console App creation
   // as for the tests that need it, it is already enabled for init, setting the env var here
   // disables the post push check we have in the CLI.
-  if (command && ((!command.length && command.toLowerCase() === 'push') || (command.length && command[0].toLowerCase() === 'push'))) {
+  if (params.length > 0 && params[0].toLowerCase() === 'push') {
     pushEnv = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
