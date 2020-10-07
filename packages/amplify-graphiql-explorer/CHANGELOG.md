@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.3.2...amplify-graphiql-explorer@1.3.3-beta.0) (2020-10-07)
+
+**Note:** Version bump only for package amplify-graphiql-explorer
+
+
+
+
+
 ## [1.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.3.1...amplify-graphiql-explorer@1.3.2) (2020-04-23)
 
 **Note:** Version bump only for package amplify-graphiql-explorer

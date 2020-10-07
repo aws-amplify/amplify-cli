@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformers-e2e-tests",
-  "version": "6.18.15",
+  "version": "6.18.16-beta.0",
   "description": "End to end functional tests for appsync supported transformers.",
   "private": true,
   "repository": {
