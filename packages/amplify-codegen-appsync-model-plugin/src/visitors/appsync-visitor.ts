@@ -26,7 +26,7 @@ import { getTypeInfo } from '../utils/get-type-info';
 import { CodeGenConnectionType, CodeGenFieldConnection, processConnections } from '../utils/process-connections';
 import { sortFields } from '../utils/sort';
 import { printWarning } from '../utils/warn';
-import { processAuthDirective } from '../utils/process-auth';
+import { processAuthDirective, AuthStrategy } from '../utils/process-auth';
 
 export enum CodeGenGenerateEnum {
   metadata = 'metadata',
@@ -120,6 +120,7 @@ export type TypeInfo = {
   type: string;
   isList: boolean;
   isNullable: boolean;
+  isListNullable?: boolean;
   baseType?: GraphQLNamedType | null;
 };
 export type CodeGenModel = {
@@ -478,6 +479,19 @@ export class AppSyncModelVisitor<
     Object.values(this.modelMap).forEach(model => {
       const filteredDirectives = model.directives.filter(d => d.name !== 'auth');
       const authDirectives = processAuthDirective(model.directives);
+      authDirectives.forEach(directive => {
+        directive.arguments.rules.forEach(rule => {
+          if (rule.allow === AuthStrategy.owner) {
+            addFieldToModel(model, {
+              type: 'String',
+              isList: false,
+              isNullable: true,
+              name: rule.ownerField ? rule.ownerField : 'owner',
+              directives: [],
+            });
+          }
+        });
+      });
       model.directives = [...filteredDirectives, ...authDirectives];
     });
   }

@@ -1,3 +1,4 @@
+import { JSONUtilities } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
@@ -5,7 +6,7 @@ import { nspawn as spawn, ExecutionContext, getCLIPath, KEY_DOWN_ARROW } from '.
 import { getLayerVersion, listVersions } from '../utils/sdk-calls';
 import { multiSelect } from '../utils/selectors';
 
-type LayerRuntimes = 'dotnetcore3.1' | 'go1.x' | 'java' | 'nodejs' | 'python';
+export type LayerRuntimes = 'nodejs' | 'python';
 
 const layerRuntimeChoices = ['NodeJS', 'Python'];
 const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (Anyone on AWS can use this layer)'];
@@ -23,30 +24,33 @@ export function validateLayerDir(projRoot: string, layerName: string, runtimes: 
   return validDir;
 }
 
-export function validatePushedVersion(projRoot: string, layerName: string, version: number, permissions: Permission[]): boolean {
-  const layerParametersPath = path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'layer-parameters.json');
-  if (fs.existsSync(layerParametersPath)) {
-    const layerParameters = fs.readJsonSync(layerParametersPath);
-    let storedPermissions = layerParameters.layerVersionMap[`${version}`].permissions;
-    return _.difference(permissions, storedPermissions) === _.difference(storedPermissions, permissions);
-  }
-  return false;
+export function validatePushedVersion(
+  projRoot: string,
+  layerName: string,
+  envName: string,
+  version: number,
+  permissions: LayerPermission[],
+) {
+  const layerData = getLayerDataFromTeamProviderInfo(projRoot, layerName, envName);
+  const storedPermissions: LayerPermission[] = _.get(layerData, ['layerVersionMap', `${version}`, 'permissions']);
+  permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
 }
 
-export async function validateLayerMetadata(layerName: string, meta: any) {
+export async function validateLayerMetadata(projRoot: string, layerName: string, meta: any, envName: string) {
   const { Arn: arn, Region: region } = meta.function[layerName].output;
-  const runtimes = meta.function[layerName].runtimes;
+  const localLayerData = getLayerDataFromTeamProviderInfo(projRoot, layerName, envName);
+  const runtimes = getLayerRuntimes(projRoot, layerName);
   const runtimeValues = Object.keys(runtimes).map(key => runtimes[key].cloudTemplateValue);
-  const localVersions = Object.keys(meta.function[layerName].layerVersionMap);
+  const localVersions = Object.keys(localLayerData.layerVersionMap);
 
   expect(arn).toBeDefined();
   expect(region).toBeDefined();
-  const data = await getLayerVersion(arn, region);
-  const { LayerVersions: Versions } = await listVersions(layerName, region);
+  const cloudData = await getLayerVersion(arn, region);
+  const { LayerVersions: Versions } = await listVersions(`${layerName}-${envName}`, region);
   const cloudVersions = Versions.map(version => version.Version);
   expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
-  expect(data.LayerVersionArn).toEqual(arn);
-  expect(data.CompatibleRuntimes).toEqual(runtimeValues);
+  expect(cloudData.LayerVersionArn).toEqual(arn);
+  expect(cloudData.CompatibleRuntimes).toEqual(runtimeValues);
 }
 
 export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false) {
@@ -102,9 +106,9 @@ export function removeLayer(cwd: string) {
   });
 }
 
-export function updateLayer(cwd: string, settings?: any) {
+export function updateLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false) {
   return new Promise((resolve, reject) => {
-    const chain: ExecutionContext = spawn(getCLIPath(), ['update', 'function'], { cwd, stripColors: true })
+    const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn(); // Layer
@@ -139,18 +143,40 @@ export function updateLayer(cwd: string, settings?: any) {
   });
 }
 
+export function addOptData(projRoot: string, layerName: string): void {
+  fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), 'data', 'utf8');
+}
+
+export enum LayerPermissionName {
+  awsAccounts = 'awsAccounts',
+  awsOrg = 'awsOrg',
+  private = 'private',
+  public = 'public',
+}
+
+export interface LayerPermission {
+  type: LayerPermissionName;
+  accounts?: string[];
+  orgs?: string[];
+}
+
+function getLayerDataFromTeamProviderInfo(projRoot: string, layerName: string, envName: string) {
+  const teamProviderInfoPath = path.join(projRoot, 'amplify', 'team-provider-info.json');
+  const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
+  return _.get(teamProviderInfo, [envName, 'nonCFNdata', 'function', layerName]);
+}
+
+function getLayerRuntimes(projRoot: string, layerName: string) {
+  const runtimesFilePath = path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'layer-runtimes.json');
+  return JSONUtilities.readJson(runtimesFilePath);
+}
+
 function getRuntimeDisplayNames(runtimes: LayerRuntimes[]) {
   return runtimes.map(runtime => getLayerRuntimeInfo(runtime).displayName);
 }
 
 function getLayerRuntimeInfo(runtime: LayerRuntimes) {
   switch (runtime) {
-    case 'dotnetcore3.1':
-      return { displayName: '.NET Core 3.1', path: path.join('lib', runtime) };
-    case 'go1.x':
-      return { displayName: 'Go', path: path.join('lib', runtime) };
-    case 'java':
-      return { displayName: 'Java', path: path.join('lib', runtime, 'lib') };
     case 'nodejs':
       return { displayName: 'NodeJS', path: path.join('lib', runtime, 'node_modules') };
     case 'python':
@@ -167,8 +193,8 @@ function waitForLayerSuccessPrintout(chain: ExecutionContext, settings: any, act
     .wait('Next steps:')
     .wait('Move your libraries to the following folder:');
 
-  for (let i = 0; i < settings.runtimes.length; ++i) {
-    const { displayName, path } = getLayerRuntimeInfo(settings.runtimes[i]);
+  for (let runtime of settings.runtimes) {
+    const { displayName, path } = getLayerRuntimeInfo(runtime);
     const layerRuntimeDir = `[${displayName}]: amplify/backend/function/${settings.layerName}/${path}`;
     chain.wait(layerRuntimeDir);
   }
@@ -178,21 +204,4 @@ function waitForLayerSuccessPrintout(chain: ExecutionContext, settings: any, act
     .wait('"amplify function update <function-name>" - configure a function with this Lambda layer')
     .wait('"amplify push" - builds all of your local backend resources and provisions them in the cloud')
     .sendEof();
-}
-
-export function addOptData(projRoot: string, layerName: string): void {
-  fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), 'data', 'utf8');
-}
-
-enum PermissionName {
-  awsAccounts = 'awsAccounts',
-  awsOrg = 'awsOrg',
-  private = 'private',
-  public = 'public',
-}
-
-interface Permission {
-  type: PermissionName;
-  accounts?: string[];
-  orgs?: string[];
 }

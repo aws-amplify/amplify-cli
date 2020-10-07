@@ -1,6 +1,5 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
-const chalkpipe = require('chalk-pipe');
 const { uniq, pullAll } = require('lodash');
 const path = require('path');
 const { Sort } = require('enquirer');
@@ -68,7 +67,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     // LEARN MORE BLOCK
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
       const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
-      questionObj.prefix = chalkpipe(null, chalk.green)(helpText);
+      questionObj.prefix = chalk.green(helpText);
       // ITERATOR BLOCK
     } else if (
       /*
@@ -184,7 +183,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   }
 
   // formatting oAuthMetaData
-  structureoAuthMetaData(coreAnswers, context, getAllDefaults, amplify);
+  structureOAuthMetadata(coreAnswers, context, getAllDefaults, amplify);
 
   if (coreAnswers.usernameAttributes && !Array.isArray(coreAnswers.usernameAttributes)) {
     if (coreAnswers.usernameAttributes === 'username') {
@@ -198,6 +197,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     ...coreAnswers,
     userPoolGroupList,
     adminQueryGroup,
+    serviceName: 'Cognito',
   };
 }
 
@@ -452,7 +452,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
 /*
   Format hosted UI oAuth data per lambda spec
 */
-function structureoAuthMetaData(coreAnswers, context, defaults, amplify) {
+function structureOAuthMetadata(coreAnswers, context, defaults, amplify) {
   if (coreAnswers.useDefault === 'default' && context.updatingAuth) {
     delete context.updatingAuth.oAuthMetadata;
     return null;
@@ -705,6 +705,7 @@ module.exports = {
   serviceWalkthrough,
   userPoolProviders,
   parseOAuthCreds,
-  structureoAuthMetaData,
+  structureOAuthMetadata,
   getIAMPolicies,
+  identityPoolProviders,
 };

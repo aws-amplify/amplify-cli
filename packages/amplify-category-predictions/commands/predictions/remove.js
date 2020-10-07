@@ -7,7 +7,7 @@ const storageCategory = 'storage';
 const parametersFileName = 'parameters.json';
 const amplifyMetaFilename = 'amplify-meta.json';
 const s3CloudFormationTemplateFile = 's3-cloudformation-template.json';
-
+const { ResoureNotFoundError, exitOnNextTick } = require('amplify-cli-core');
 module.exports = {
   name: subcommand,
   run: async context => {
@@ -20,7 +20,8 @@ module.exports = {
         const projectDetails = context.amplify.getProjectDetails();
         const projectStorage = projectDetails.amplifyMeta.storage;
         if (!projectStorage) {
-          process.exit(0);
+          context.usageData.emitError(new ResoureNotFoundError('Project storage not found'));
+          exitOnNextTick(0);
           return;
         }
         const keys = Object.keys(projectStorage);
@@ -32,7 +33,8 @@ module.exports = {
         });
 
         if (s3ResourceName === '') {
-          process.exit(0);
+          context.usageData.emitError(new ResoureNotFoundError('S3 Resource does not exist'));
+          exitOnNextTick(0);
           return;
         }
 
@@ -71,6 +73,7 @@ module.exports = {
         context.print.info(err.stack);
         context.print.error('An error occurred when removing the predictions resource');
         context.usageData.emitError(err);
+        process.exitCode = 1;
       });
   },
 };

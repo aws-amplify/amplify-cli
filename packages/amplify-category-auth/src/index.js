@@ -7,17 +7,21 @@ const sequential = require('promise-sequential');
 
 const defaults = require('./provider-utils/awscloudformation/assets/cognito-defaults');
 const { getAuthResourceName } = require('./utils/getAuthResourceName');
+const { updateConfigOnEnvInit, migrate } = require('./provider-utils/awscloudformation');
 const {
-  updateConfigOnEnvInit,
   copyCfnTemplate,
   saveResourceParameters,
-  ENV_SPECIFIC_PARAMS,
-  migrate,
   removeDeprecatedProps,
-} = require('./provider-utils/awscloudformation');
+} = require('./provider-utils/awscloudformation/utils/synthesize-resources');
+const { ENV_SPECIFIC_PARAMS } = require('./provider-utils/awscloudformation/constants');
 
-const { transformUserPoolGroupSchema } = require('./utils/transform-user-pool-group');
+const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
 const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
+const { validateAddAuthRequest, validateUpdateAuthRequest } = require('amplify-util-headless-input');
+const { getAddAuthRequestAdaptor, getUpdateAuthRequestAdaptor } = require('./provider-utils/awscloudformation/utils/auth-request-adaptors');
+const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/awscloudformation/handlers/resource-handlers');
+const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
+const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
@@ -40,27 +44,13 @@ async function add(context) {
         context.print.error('Provider not configured for this category');
         return;
       }
-      return providerController.addResource(context, category, result.service);
-    })
-    .then(resourceName => {
-      const options = {
-        service: resultMetadata.service,
-        providerPlugin: resultMetadata.providerName,
-      };
-      const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
-      const authParameters = amplify.readJsonFile(resourceDirPath);
-
-      if (authParameters.dependsOn) {
-        options.dependsOn = authParameters.dependsOn;
-      }
-      amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
-      context.print.success('Successfully added auth resource');
-      return resourceName;
+      return providerController.addResource(context, result.service);
     })
     .catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error adding the auth resource');
       context.usageData.emitError(err);
+      process.exitCode = 1;
     });
 }
 
@@ -247,7 +237,7 @@ async function initEnv(context) {
 
 async function console(context) {
   const { amplify } = context;
-  const supportedServices = amplify.readJsonFile(`${__dirname}/provider-utils/supported-services.json`);
+  const { supportedServices } = require('./provider-utils/supported-services');
   const amplifyMeta = amplify.getProjectMeta();
 
   if (!amplifyMeta.auth || Object.keys(amplifyMeta.auth).length === 0) {
@@ -279,8 +269,9 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
 
   Object.keys(resourceOpsMapping).forEach(resourceName => {
     try {
-      const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
-      if (providerController) {
+      const providerName = amplifyMeta[category][resourceName].providerPlugin;
+      if (providerName) {
+        const providerController = require(`./provider-utils/${providerName}/index`);
         const { policy, attributes } = providerController.getPermissionPolicies(
           context,
           amplifyMeta[category][resourceName].service,
@@ -312,6 +303,33 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
+/**
+ * Entry point for headless commands
+ * @param {any} context The amplify context object
+ * @param {string} headlessPayload The serialized payload from the platform
+ */
+const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
+  switch (context.input.command) {
+    case 'add':
+      if (projectHasAuth(context)) {
+        return;
+      }
+      await validateAddAuthRequest(headlessPayload)
+        .then(getAddAuthRequestAdaptor(context.amplify.getProjectConfig().frontend))
+        .then(getAddAuthHandler(context));
+      return;
+    case 'update':
+      await attachPrevParamsToContext(context);
+      await validateUpdateAuthRequest(headlessPayload)
+        .then(getUpdateAuthRequestAdaptor(context.amplify.getProjectConfig().frontend, context.updatingAuth.requiredAttributes))
+        .then(getUpdateAuthHandler(context));
+      return;
+    default:
+      context.print.error(`Headless mode for ${context.input.command} auth is not implemented yet`);
+      return;
+  }
+};
+
 async function handleAmplifyEvent(context, args) {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
@@ -330,7 +348,9 @@ module.exports = {
   console,
   getPermissionPolicies,
   executeAmplifyCommand,
+  executeAmplifyHeadlessCommand,
   handleAmplifyEvent,
   prePushAuthHook,
   uploadFiles,
+  category,
 };

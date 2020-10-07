@@ -2,7 +2,12 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
 
-const PathConstants = {
+export const PathConstants = {
+  // in home directory
+  DotAWSDir: '.aws',
+  AWSCredentials: 'credentials',
+  AWSConfig: 'config',
+
   // in project root
   AmplifyDirName: 'amplify',
   DotAmplifyDirName: '.amplify',
@@ -23,6 +28,10 @@ const PathConstants = {
   LocalAWSInfoFileName: 'local-aws-info.json',
   TeamProviderInfoFileName: 'team-provider-info.json',
   BackendConfigFileName: 'backend-config.json',
+
+  CLIJSONFileName: 'cli.json',
+  CLIJSONFileNameGlob: 'cli*.json',
+  CLIJsonWithEnvironmentFileName: (env: string) => `cli.${env}.json`,
 };
 
 export class PathManager {
@@ -88,6 +97,18 @@ export class PathManager {
       PathConstants.CurrentCloudBackendDirName,
       PathConstants.BackendConfigFileName,
     ]);
+
+  getDotAWSDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDir));
+
+  getAWSCredentialsFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSCredentials));
+
+  getAWSConfigFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSConfig));
+
+  getCLIJSONFilePath = (projectPath: string, env?: string): string => {
+    const fileName = env === undefined ? PathConstants.CLIJSONFileName : PathConstants.CLIJsonWithEnvironmentFileName(env);
+
+    return this.constructPath(projectPath, [PathConstants.AmplifyDirName, fileName]);
+  };
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {

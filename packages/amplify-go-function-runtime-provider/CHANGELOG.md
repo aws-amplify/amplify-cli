@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.2.3...amplify-go-function-runtime-provider@1.2.4) (2020-09-25)
+
+
+### Bug Fixes
+
+* enable building multiple go files, .exe extension for local invoke on Windows only ([#5262](https://github.com/aws-amplify/amplify-cli/issues/5262)) ([1936591](https://github.com/aws-amplify/amplify-cli/commit/1936591b0abfdc04f1172c88c554463c6aeb0877))
+
+
+
+
+
+## [1.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.2.2...amplify-go-function-runtime-provider@1.2.3) (2020-08-31)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
 ## [1.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.2.0...amplify-go-function-runtime-provider@1.2.2) (2020-07-29)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider

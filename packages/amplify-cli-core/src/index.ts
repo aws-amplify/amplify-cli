@@ -6,6 +6,8 @@ export * from './jsonUtilities';
 export * from './jsonValidationError';
 export * from './state-manager';
 export * from './tags';
+export * from './errors';
+export * from './exitOnNextTick';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -17,6 +19,7 @@ export type $TSContext = {
   amplify: AmplifyToolkit;
   print: $TSAny;
   migrationInfo: $TSAny;
+  projectHasMobileHubResources: boolean;
   prompt: $TSAny;
   exeInfo: $TSAny;
   input: $TSAny;

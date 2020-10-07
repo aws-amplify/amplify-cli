@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 
 const DEFAULT_IGNORE_PATTERN = ['*/*/build/**', '*/*/dist/**', 'function/*/src/node_modules/**'];
 
-function run(folder, zipFilePath, ignorePattern = DEFAULT_IGNORE_PATTERN) {
+function run(folder, zipFilePath, ignorePattern = DEFAULT_IGNORE_PATTERN, extraFiles) {
   const zipFileFolder = path.dirname(zipFilePath);
   const zipFilename = path.basename(zipFilePath);
 
@@ -30,6 +30,15 @@ function run(folder, zipFilePath, ignorePattern = DEFAULT_IGNORE_PATTERN) {
       ignore: ignorePattern,
       dot: true,
     });
+
+    if (extraFiles && extraFiles.length && extraFiles.length > 0) {
+      for (const filePath of extraFiles) {
+        const fileName = path.basename(filePath);
+
+        zip.file(filePath, { name: fileName });
+      }
+    }
+
     zip.finalize();
   });
 }

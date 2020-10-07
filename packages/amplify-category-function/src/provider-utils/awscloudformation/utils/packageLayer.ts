@@ -5,10 +5,20 @@ import { prompt } from 'inquirer';
 import path from 'path';
 import _ from 'lodash';
 import { hashElement } from 'folder-hash';
+import { pathManager } from 'amplify-cli-core';
 import { FunctionDependency } from 'amplify-function-plugin-interface';
 import { ServiceName, provider } from './constants';
 import { previousPermissionsQuestion } from './layerHelpers';
-import { getLayerMetadataFactory, Permission, PrivateLayer, LayerParameters, LayerMetadata } from './layerParams';
+import {
+  getLayerMetadataFactory,
+  isMultiEnvLayer,
+  Permission,
+  PrivateLayer,
+  LayerParameters,
+  LayerMetadata,
+  LayerRuntime,
+} from './layerParams';
+import { getLayerRuntimes } from './layerRuntimes';
 import crypto from 'crypto';
 import { updateLayerArtifacts } from './storeResources';
 import globby from 'globby';
@@ -19,10 +29,10 @@ export async function packageLayer(context, resource: Resource) {
 }
 
 async function zipLayer(context, resource: Resource) {
-  const layerName = resource.resourceName;
-  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, layerName);
   const zipFilename = 'latest-build.zip';
-  const distDir = path.join(resourcePath, 'dist');
+  const layerName = resource.resourceName;
+  const layerDirPath = path.join(pathManager.getBackendDirPath(), resource.category, layerName);
+  const distDir = path.join(layerDirPath, 'dist');
   fs.ensureDirSync(distDir);
   const destination = path.join(distDir, zipFilename);
   const zip = archiver.create('zip');
@@ -43,8 +53,8 @@ async function zipLayer(context, resource: Resource) {
       reject(new Error('Failed to zip code.'));
     });
 
-    const libGlob = glob.sync(path.join(resourcePath, 'lib', '*'));
-    const optPath = path.join(resourcePath, 'opt');
+    const libGlob = glob.sync(path.join(layerDirPath, 'lib', '*'));
+    const optPath = path.join(layerDirPath, 'opt');
 
     let conflicts: string[] = [];
     libGlob.forEach(lib => {
@@ -79,15 +89,24 @@ async function zipLayer(context, resource: Resource) {
 async function ensureLayerVersion(context: any, layerName: string) {
   const layerState = getLayerMetadataFactory(context)(layerName);
   const isNewVersion = await layerState.syncVersions();
+  const latestVersion = layerState.getLatestVersion();
   if (isNewVersion) {
-    const latestVersion = layerState.getLatestVersion();
     context.print.success(`Content changes in Lambda layer ${layerName} detected. Layer version increased to ${latestVersion}`);
     context.print.warning('Note: You need to run "amplify update function" to configure your functions with the latest layer version.');
     await setNewVersionPermissions(context, layerName, layerState);
   }
   await layerState.setNewVersionHash(); // "finialize" the latest layer version
   const storedParams = layerState.toStoredLayerParameters();
-  const additionalLayerParams = {
+  const additionalLayerParams: {
+    layerName: string;
+    build: boolean;
+    providerContext: {
+      provider: string;
+      service: string;
+      projectName: string;
+    };
+    runtimes?: LayerRuntime[];
+  } = {
     layerName,
     build: true,
     providerContext: {
@@ -96,8 +115,13 @@ async function ensureLayerVersion(context: any, layerName: string) {
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     },
   };
-  const layerParameters: LayerParameters = { ...storedParams, ...additionalLayerParams };
-  updateLayerArtifacts(context, layerParameters, { cfnFile: isNewVersion });
+
+  if (isMultiEnvLayer(context, layerName)) {
+    additionalLayerParams.runtimes = getLayerRuntimes(pathManager.getBackendDirPath(), layerName);
+  }
+
+  const layerParameters = { ...storedParams, ...additionalLayerParams } as LayerParameters;
+  updateLayerArtifacts(context, layerParameters, latestVersion, { cfnFile: isNewVersion });
 }
 
 async function setNewVersionPermissions(context: any, layerName: string, layerState: LayerMetadata) {

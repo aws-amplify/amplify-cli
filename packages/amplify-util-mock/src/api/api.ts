@@ -18,6 +18,7 @@ import { getInvoker } from 'amplify-category-function';
 import { keys } from 'lodash';
 import { LambdaFunctionConfig } from '../CFNParser/lambda-resource-processor';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
+import { timeConstrainedInvoker } from '../func';
 
 export class APITest {
   private apiName: string;
@@ -57,7 +58,7 @@ export class APITest {
       this.appSyncSimulator.init(appSyncConfig);
 
       await this.generateTestFrontendExports(context);
-      await this.generateCode(context);
+      await this.generateCode(context, appSyncConfig);
 
       context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
     } catch (e) {
@@ -95,13 +96,13 @@ export class APITest {
     return { ...this.transformerResult, mappingTemplates: overriddenTemplates };
   }
 
-  private async generateCode(context, transformerOutput = null) {
+  private async generateCode(context: any, config: AmplifyAppSyncSimulatorConfig = null) {
     try {
       context.print.info('Running GraphQL codegen');
       const { projectPath } = context.amplify.getEnvInfo();
       const schemaPath = path.join(projectPath, 'amplify', 'backend', 'api', this.apiName, 'build', 'schema.graphql');
-      if (transformerOutput) {
-        fs.writeFileSync(schemaPath, transformerOutput.schema);
+      if (config && config.schema) {
+        fs.writeFileSync(schemaPath, config.schema.content);
       }
       if (!isCodegenConfigured(context, this.apiName)) {
         await add(context);
@@ -144,9 +145,9 @@ export class APITest {
         }
       } else if (filePath.includes(inputSchemaPath)) {
         context.print.info('GraphQL Schema change detected. Reloading...');
-        const config = await this.runTransformer(context, this.apiParameters);
+        const config: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
-        await this.generateCode(context);
+        await this.generateCode(context, config);
       } else if (filePath.includes(parameterFilePath)) {
         const apiParameters = await this.loadAPIParameters(context);
         if (JSON.stringify(apiParameters) !== JSON.stringify(this.apiParameters)) {
@@ -154,13 +155,13 @@ export class APITest {
           this.apiParameters = apiParameters;
           const config = await this.runTransformer(context, this.apiParameters);
           await this.appSyncSimulator.reload(config);
-          await this.generateCode(context);
+          await this.generateCode(context, config);
         }
       } else if (filePath.includes(customStackPath)) {
         context.print.info('Custom stack change detected. Reloading...');
         const config = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
-        await this.generateCode(context);
+        await this.generateCode(context, config);
       }
     } catch (e) {
       context.print.info(`Reloading failed with error\n${e}`);
@@ -206,9 +207,12 @@ export class APITest {
           return {
             ...d,
             invoke: payload => {
-              return invoker({
-                event: payload,
-              });
+              return timeConstrainedInvoker(
+                invoker({
+                  event: payload,
+                }),
+                context.input.options,
+              );
             },
           };
         }),

@@ -58,6 +58,13 @@ export async function initEnv(context) {
    * configured an RDS datasource
    */
   const backendConfigFilePath = amplify.pathManager.getBackendConfigFilePath();
+
+  // If this is a mobile hub migrated project without locally added resources then there is no
+  // backend config exists yet.
+  if (!fs.existsSync(backendConfigFilePath)) {
+    return;
+  }
+
   const backendConfig = amplify.readJsonFile(backendConfigFilePath);
 
   if (!backendConfig[category]) {
@@ -146,8 +153,9 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
   await Promise.all(
     Object.keys(resourceOpsMapping).map(async resourceName => {
       try {
-        const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
-        if (providerController) {
+        const providerName = amplifyMeta[category][resourceName].providerPlugin;
+        if (providerName) {
+          const providerController = require(`./provider-utils/${providerName}/index`);
           const { policy, attributes } = await providerController.getPermissionPolicies(
             context,
             amplifyMeta[category][resourceName].service,

@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.4.3...amplify-category-hosting@2.4.4) (2020-10-01)
+
+
+### Bug Fixes
+
+* add support for mobile hub migrated resources ([#5407](https://github.com/aws-amplify/amplify-cli/issues/5407)) ([5dfe287](https://github.com/aws-amplify/amplify-cli/commit/5dfe2872c153047ebdc56bc4f671fd57c12379d9))
+
+
+
+
+
+## [2.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.4.2...amplify-category-hosting@2.4.3) (2020-09-25)
+
+
+### Bug Fixes
+
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+
+
+
 ## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.4.0...amplify-category-hosting@2.4.2) (2020-07-29)
 
 

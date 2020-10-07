@@ -3,6 +3,72 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.7.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.7.0...amplify-e2e-core@1.7.1) (2020-10-01)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fix auth console ([#5408](https://github.com/aws-amplify/amplify-cli/issues/5408)) ([afbe065](https://github.com/aws-amplify/amplify-cli/commit/afbe065757ce488c1769848d0db3d03465a9b6c9)), closes [#5364](https://github.com/aws-amplify/amplify-cli/issues/5364)
+* [#5354](https://github.com/aws-amplify/amplify-cli/issues/5354) .net core lambda project file naming ([#5414](https://github.com/aws-amplify/amplify-cli/issues/5414)) ([c0f1953](https://github.com/aws-amplify/amplify-cli/commit/c0f1953acaca33eb0228e1528eb5ac4eb183ff6d))
+* e2e regressions from previous pr ([#5438](https://github.com/aws-amplify/amplify-cli/issues/5438)) ([398d98b](https://github.com/aws-amplify/amplify-cli/commit/398d98b6a57c41f5172d6b56e9a834cfd28b891b))
+
+
+
+
+
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.6.2...amplify-e2e-core@1.7.0) (2020-09-25)
+
+
+### Features
+
+* headless update auth ([#5308](https://github.com/aws-amplify/amplify-cli/issues/5308)) ([b942f35](https://github.com/aws-amplify/amplify-cli/commit/b942f3589f1df1361ae7eb6e42f18dbf6900d1bf))
+
+
+
+
+
+## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.6.1...amplify-e2e-core@1.6.2) (2020-09-16)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** fix storage update ([#5191](https://github.com/aws-amplify/amplify-cli/issues/5191)) ([754f122](https://github.com/aws-amplify/amplify-cli/commit/754f12201c07132ff6c9e7ef88f4c567cdc6302d)), closes [#5124](https://github.com/aws-amplify/amplify-cli/issues/5124)
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-cli/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-cli/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+
+
+
+
+
+## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.6.0...amplify-e2e-core@1.6.1) (2020-09-09)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.5.0...amplify-e2e-core@1.6.0) (2020-09-03)
+
+
+### Features
+
+* Multienv support for Lambda layers ([#5081](https://github.com/aws-amplify/amplify-cli/issues/5081)) ([4af1363](https://github.com/aws-amplify/amplify-cli/commit/4af13634bcdd58511712249e6774fc9f287c9ef5))
+
+
+
+
+
+# [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.4.3...amplify-e2e-core@1.5.0) (2020-08-31)
+
+
+### Features
+
+* resource Tagging Support ([#5178](https://github.com/aws-amplify/amplify-cli/issues/5178)) ([e34226d](https://github.com/aws-amplify/amplify-cli/commit/e34226dde30d7d345e3cc2e72e187b242a09c389))
+
+
+
+
+
 ## [1.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.4.2...amplify-e2e-core@1.4.3) (2020-08-14)
 
 **Note:** Version bump only for package amplify-e2e-core

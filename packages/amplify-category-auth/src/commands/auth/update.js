@@ -1,10 +1,11 @@
 const { messages } = require('../../provider-utils/awscloudformation/assets/string-maps');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
-const { transformUserPoolGroupSchema } = require('../../utils/transform-user-pool-group');
+const { transformUserPoolGroupSchema } = require('../../provider-utils/awscloudformation/utils/transform-user-pool-group');
 const path = require('path');
+const { category } = require('../..');
+const { attachPrevParamsToContext } = require('../../provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 
 const subcommand = 'update';
-const category = 'auth';
 let options;
 
 module.exports = {
@@ -17,6 +18,17 @@ module.exports = {
 
     if (!Object.keys(existingAuth).length > 0) {
       return context.print.warning('Auth has not yet been added to this project.');
+    } else {
+      const services = Object.keys(existingAuth);
+
+      for (let i = 0; i < services.length; i++) {
+        const serviceMeta = existingAuth[services[i]];
+
+        if (serviceMeta.service === 'Cognito' && !serviceMeta.providerPlugin) {
+          context.print.error('Auth is migrated from Mobile Hub and cannot be updated with Amplify CLI.');
+          return context;
+        }
+      }
     }
 
     context.print.info('Please note that certain attributes may not be overwritten if you choose to use defaults settings.');
@@ -48,48 +60,9 @@ module.exports = {
           context.print.error('Provider not configured for this category');
           return;
         }
-        return providerController.updateResource(context, category, options);
+        return providerController.updateResource(context, options);
       })
       .then(async name => {
-        // eslint-disable-line no-shadow
-        const resourceDirPath = path.join(amplify.pathManager.getBackendDirPath(), 'auth', name, 'parameters.json');
-        const authParameters = amplify.readJsonFile(resourceDirPath);
-        if (authParameters.dependsOn) {
-          amplify.updateamplifyMetaAfterResourceUpdate(category, name, 'dependsOn', authParameters.dependsOn);
-        }
-
-        let customAuthConfigured = false;
-        if (authParameters.triggers) {
-          const triggers = JSON.parse(authParameters.triggers);
-          customAuthConfigured =
-            triggers.DefineAuthChallenge &&
-            triggers.DefineAuthChallenge.length > 0 &&
-            triggers.CreateAuthChallenge &&
-            triggers.CreateAuthChallenge.length > 0 &&
-            triggers.VerifyAuthChallengeResponse &&
-            triggers.VerifyAuthChallengeResponse.length > 0;
-        }
-        amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'customAuth', customAuthConfigured);
-
-        // Update Identity Pool dependency attributes on userpool groups
-        const allResources = context.amplify.getProjectMeta();
-        if (allResources.auth && allResources.auth.userPoolGroups) {
-          let attributes = ['UserPoolId', 'AppClientIDWeb', 'AppClientID'];
-          if (authParameters.identityPoolName) {
-            attributes.push('IdentityPoolId');
-          }
-          const userPoolGroupDependsOn = [
-            {
-              category: 'auth',
-              resourceName,
-              attributes,
-            },
-          ];
-
-          amplify.updateamplifyMetaAfterResourceUpdate('auth', 'userPoolGroups', 'dependsOn', userPoolGroupDependsOn);
-          await transformUserPoolGroupSchema(context);
-        }
-
         const { print } = context;
         print.success(`Successfully updated resource ${name} locally`);
         print.info('');
@@ -104,6 +77,7 @@ module.exports = {
         context.print.info(err.stack);
         context.print.error('There was an error adding the auth resource');
         context.usageData.emitError(err);
+        process.exitCode = 1;
       });
   },
 };

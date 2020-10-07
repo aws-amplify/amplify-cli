@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.14...graphql-transformers-e2e-tests@6.18.15) (2020-10-01)
+
+
+### Bug Fixes
+
+* e2e regressions from previous pr ([#5438](https://github.com/aws-amplify/amplify-cli/issues/5438)) ([398d98b](https://github.com/aws-amplify/amplify-cli/commit/398d98b6a57c41f5172d6b56e9a834cfd28b891b))
+
+
+
+
+
+## [6.18.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.13...graphql-transformers-e2e-tests@6.18.14) (2020-09-16)
+
+
+### Bug Fixes
+
+* **graphql-transformer-common:** support underscore names ([#5263](https://github.com/aws-amplify/amplify-cli/issues/5263)) ([cc7cae6](https://github.com/aws-amplify/amplify-cli/commit/cc7cae65188b57bb913a307186ea20458c875002)), closes [#5212](https://github.com/aws-amplify/amplify-cli/issues/5212)
+
+
+
+
+
+## [6.18.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.12...graphql-transformers-e2e-tests@6.18.13) (2020-09-02)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.18.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.11...graphql-transformers-e2e-tests@6.18.12) (2020-08-31)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** to support non string key in es ([#5180](https://github.com/aws-amplify/amplify-cli/issues/5180)) ([b119344](https://github.com/aws-amplify/amplify-cli/commit/b1193446ff3503311a043dfc23dd6c30fcaa94ed)), closes [#5140](https://github.com/aws-amplify/amplify-cli/issues/5140)
+
+
+
+
+
 ## [6.18.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.10...graphql-transformers-e2e-tests@6.18.11) (2020-08-20)
 
 

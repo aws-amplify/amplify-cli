@@ -32,6 +32,7 @@ import {
 } from 'graphql/language/ast';
 import { _Kind } from 'graphql/language/kinds';
 import { ResolverConfig } from './util';
+import { makeOperationType } from 'graphql-transformer-common';
 export interface MappingParameters {
   [key: string]: {
     [key: string]: {
@@ -409,7 +410,24 @@ export class TransformerContext {
    * @param fields The fields to add the mutation type.
    */
   public addMutationFields(fields: FieldDefinitionNode[]) {
-    const mutationTypeName = this.getMutationTypeName();
+    let mutationTypeName = this.getMutationTypeName();
+
+    if (!mutationTypeName) {
+      // It is possible the schema type is manually defined and there is no mutation operation within it
+      // also there is no Mutation type.
+      const mutationNode = this.getMutation();
+      if (!mutationNode) {
+        const schema = this.getSchema();
+        const mutationOperation = makeOperationType('mutation', 'Mutation');
+        const newSchema = {
+          ...schema,
+          operationTypes: [...schema.operationTypes, mutationOperation],
+        };
+        this.putSchema(newSchema);
+        mutationTypeName = 'Mutation';
+      }
+    }
+
     if (mutationTypeName) {
       if (!this.getType(mutationTypeName)) {
         this.addType(blankObject(mutationTypeName));
@@ -426,7 +444,24 @@ export class TransformerContext {
    * @param fields The fields to add the subscription type.
    */
   public addSubscriptionFields(fields: FieldDefinitionNode[]) {
-    const subscriptionTypeName = this.getSubscriptionTypeName();
+    let subscriptionTypeName = this.getSubscriptionTypeName();
+
+    if (!subscriptionTypeName) {
+      // It is possible the schema type is manually defined and there is no subscription operation within it
+      // also there is no Subscription type.
+      const subscriptionNode = this.getSubscription();
+      if (!subscriptionNode) {
+        const schema = this.getSchema();
+        const subscriptionOperation = makeOperationType('subscription', 'Subscription');
+        const newSchema = {
+          ...schema,
+          operationTypes: [...schema.operationTypes, subscriptionOperation],
+        };
+        this.putSchema(newSchema);
+        subscriptionTypeName = 'Subscription';
+      }
+    }
+
     if (subscriptionTypeName) {
       if (!this.getType(subscriptionTypeName)) {
         this.addType(blankObject(subscriptionTypeName));

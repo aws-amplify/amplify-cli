@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.12...graphql-key-transformer@2.19.13) (2020-10-01)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.11...graphql-key-transformer@2.19.12) (2020-09-16)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.10...graphql-key-transformer@2.19.11) (2020-09-02)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** support model without id ([#4570](https://github.com/aws-amplify/amplify-cli/issues/4570)) ([7cb0648](https://github.com/aws-amplify/amplify-cli/commit/7cb064874d95527882eb58b1a18fa99dd2377ca7))
+
+
+
+
+
+## [2.19.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.9...graphql-key-transformer@2.19.10) (2020-08-31)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
 ## [2.19.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.8...graphql-key-transformer@2.19.9) (2020-08-14)
 
 **Note:** Version bump only for package graphql-key-transformer

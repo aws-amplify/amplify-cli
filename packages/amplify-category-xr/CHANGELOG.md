@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.4.16...amplify-category-xr@2.4.17) (2020-10-01)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
+## [2.4.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.4.15...amplify-category-xr@2.4.16) (2020-09-25)
+
+
+### Bug Fixes
+
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+
+
+
+## [2.4.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.4.14...amplify-category-xr@2.4.15) (2020-09-16)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
+## [2.4.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.4.13...amplify-category-xr@2.4.14) (2020-09-09)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
+## [2.4.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.4.12...amplify-category-xr@2.4.13) (2020-09-03)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
+## [2.4.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.4.11...amplify-category-xr@2.4.12) (2020-09-03)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
+## [2.4.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.4.10...amplify-category-xr@2.4.11) (2020-08-31)
+
+**Note:** Version bump only for package amplify-category-xr
+
+
+
+
+
 ## [2.4.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-xr@2.4.9...amplify-category-xr@2.4.10) (2020-08-20)
 
 **Note:** Version bump only for package amplify-category-xr

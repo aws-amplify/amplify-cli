@@ -142,6 +142,7 @@ export function makeCreateInputObject(
     [updatedAtField]: ['AWSDateTime', 'String'],
   };
 
+  const hasIdField = obj.fields.find(f => f.name.value === 'id');
   const fields: InputValueDefinitionNode[] = obj.fields
     .filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.getType(getBaseType(field.type));
@@ -193,7 +194,11 @@ export function makeCreateInputObject(
       kind: 'Name',
       value: name,
     },
-    fields,
+    fields: [
+      // add default id field and expose that
+      ...(hasIdField ? [] : [makeInputValueDefinition('id', makeNamedType('ID'))]),
+      ...fields,
+    ],
     directives: [],
   };
 }

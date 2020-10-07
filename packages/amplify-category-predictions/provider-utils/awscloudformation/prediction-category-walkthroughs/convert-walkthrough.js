@@ -5,14 +5,13 @@ import regionMapper from '../assets/regionMapping';
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
-
+const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 // Predictions Info
 const category = 'predictions';
 const parametersFileName = 'parameters.json';
 const templateFilename = 'convert-template.json.ejs';
 const convertTypes = ['translateText', 'speechGenerator', 'transcription'];
 let service = '';
-
 // Needs Cognito Authentication
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
@@ -30,7 +29,8 @@ async function addWalkthrough(context) {
       }
       break;
     } else {
-      process.exit(0);
+      context.usageData.emitSuccess();
+      exitOnNextTick(0);
     }
   }
 
@@ -52,8 +52,10 @@ async function updateWalkthrough(context) {
     }
   });
   if (predictionsResources.length === 0) {
-    context.print.error('No resources to update. You need to add a resource.');
-    process.exit(0);
+    const errMessage = 'No resources to update. You need to add a resource.';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
     return;
   }
   let resourceObj = predictionsResources[0].value;
@@ -98,8 +100,10 @@ async function configure(context, resourceObj) {
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.convertType);
     if (resourceType) {
-      context.print.warning(`${resourceType} has already been added to this project.`);
-      process.exit(0);
+      const errMessage = `${resourceType} has already been added to this project.`;
+      context.print.warning(errMessage);
+      context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+      exitOnNextTick(0);
     }
 
     Object.assign(answers, await inquirer.prompt(convertAssets.setup.name(`${answers.convertType}${defaultValues.resourceName}`)));
@@ -137,7 +141,7 @@ async function configure(context, resourceObj) {
 }
 
 function addRegionMapping(context, resourceName, convertType) {
-  const regionMapping = regionMapper.getRegionMapping(service, convertType);
+  const regionMapping = regionMapper.getRegionMapping(context, service, convertType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
   const identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);

@@ -1,6 +1,5 @@
 import { indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { TypeScriptDeclarationBlock } from '../languages/typescript-declaration-block';
-import { camelCase } from 'change-case';
 import {
   AppSyncModelVisitor,
   CodeGenEnum,

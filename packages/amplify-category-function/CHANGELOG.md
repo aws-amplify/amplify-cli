@@ -3,6 +3,91 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.25.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.25.1...amplify-category-function@2.25.2) (2020-10-01)
+
+
+### Bug Fixes
+
+* add support for mobile hub migrated resources ([#5407](https://github.com/aws-amplify/amplify-cli/issues/5407)) ([5dfe287](https://github.com/aws-amplify/amplify-cli/commit/5dfe2872c153047ebdc56bc4f671fd57c12379d9))
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+* check on  dependsOn Array ([#5446](https://github.com/aws-amplify/amplify-cli/issues/5446)) ([7930961](https://github.com/aws-amplify/amplify-cli/commit/793096192bc8f2d17926f58fcf362d37a2f98668))
+* storage permission resource check - appsync ([#5461](https://github.com/aws-amplify/amplify-cli/issues/5461)) ([126b423](https://github.com/aws-amplify/amplify-cli/commit/126b4235e670bba3ae40f1fcf03d3fa26befef93))
+
+
+
+
+
+## [2.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.25.0...amplify-category-function@2.25.1) (2020-09-25)
+
+
+### Bug Fixes
+
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+
+
+
+# [2.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.24.1...amplify-category-function@2.25.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* duplicate dependsOn entries for layers on update function ([#5312](https://github.com/aws-amplify/amplify-cli/issues/5312)) ([d22daaa](https://github.com/aws-amplify/amplify-cli/commit/d22daaa19282ea44caaa4659cd1c2cb57b721c7b))
+* use _.uniqWith instead of _.uniqBy to remove duplicates ([#5329](https://github.com/aws-amplify/amplify-cli/issues/5329)) ([532f3db](https://github.com/aws-amplify/amplify-cli/commit/532f3db378108091f0735539f824cba5c1dfbd16))
+* **amplify-category-function:** fix function comments ([#5316](https://github.com/aws-amplify/amplify-cli/issues/5316)) ([81d9596](https://github.com/aws-amplify/amplify-cli/commit/81d9596bcc32a3e300fd648f0cf962ceeea3d018)), closes [#4934](https://github.com/aws-amplify/amplify-cli/issues/4934)
+* **amplify-category-function:** removing envVariable for appsync storage ([#5265](https://github.com/aws-amplify/amplify-cli/issues/5265)) ([fe48ab6](https://github.com/aws-amplify/amplify-cli/commit/fe48ab69592a3e0e084d1fb47b30401a886a6453))
+
+
+### Features
+
+* added commented out cors headers ([#5315](https://github.com/aws-amplify/amplify-cli/issues/5315)) ([03ec394](https://github.com/aws-amplify/amplify-cli/commit/03ec394af21b0b5683441c14f22b8cdff9e71053))
+
+
+
+
+
+## [2.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.24.0...amplify-category-function@2.24.1) (2020-09-09)
+
+
+### Bug Fixes
+
+* migration issue with layers created before 4.29.0 ([#5256](https://github.com/aws-amplify/amplify-cli/issues/5256)) ([239deaa](https://github.com/aws-amplify/amplify-cli/commit/239deaa8f2074046d671b2192d4bdc4f74b5d2d4))
+
+
+
+
+
+# [2.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.23.5...amplify-category-function@2.24.0) (2020-09-03)
+
+
+### Features
+
+* Multienv support for Lambda layers ([#5081](https://github.com/aws-amplify/amplify-cli/issues/5081)) ([4af1363](https://github.com/aws-amplify/amplify-cli/commit/4af13634bcdd58511712249e6774fc9f287c9ef5))
+
+
+
+
+
+## [2.23.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.23.4...amplify-category-function@2.23.5) (2020-09-03)
+
+
+### Bug Fixes
+
+* returns resourname instead of function ([#5208](https://github.com/aws-amplify/amplify-cli/issues/5208)) ([44c2d3d](https://github.com/aws-amplify/amplify-cli/commit/44c2d3d35cfdea3a7e206e852d17332d42fd2f0d))
+
+
+
+
+
+## [2.23.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.23.3...amplify-category-function@2.23.4) (2020-08-31)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 ## [2.23.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.23.2...amplify-category-function@2.23.3) (2020-08-20)
 
 **Note:** Version bump only for package amplify-category-function

@@ -7,6 +7,7 @@ const parametersFileName = 'lex-params.json';
 const cfnParametersFilename = 'parameters.json';
 const serviceName = 'Lex';
 const fuzzy = require('fuzzy');
+import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   return configure(context, defaultValuesFilename, serviceMetadata);
@@ -21,15 +22,16 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const lexResources = {};
 
   Object.keys(amplifyMeta[category]).forEach(resourceName => {
-    if (amplifyMeta[category][resourceName].service === serviceName) {
+    if (amplifyMeta[category][resourceName].service === serviceName && !!amplifyMeta[category][resourceName].providerPlugin) {
       lexResources[resourceName] = amplifyMeta[category][resourceName];
     }
   });
 
   if (!amplifyMeta[category] || Object.keys(lexResources).length === 0) {
-    context.print.error('No resources to update. You need to add a resource.');
-    process.exit(0);
-    return;
+    const errMessage = 'No resources to update. You need to add a resource.';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
   }
   const resources = Object.keys(lexResources);
   const question = [
@@ -581,7 +583,7 @@ async function getSlotType(context, serviceMetadata, newSlotTypes, parameters) {
         context,
         'awscloudformation',
         'getBuiltInSlotTypes',
-        slotTypeOptions
+        slotTypeOptions,
       );
       builtInSlotTypes = builtInSlotTypes.concat(builtInSlotTypesReturn.slotTypes.map(builtinSlotType => builtinSlotType.signature));
       slotTypeOptions = builtInSlotTypesReturn.nextToken;

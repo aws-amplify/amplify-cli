@@ -5,6 +5,7 @@ import { legacyAddResource } from './legacy-add-resource';
 import { legacyUpdateResource } from './legacy-update-resource';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { editSchemaFlow } from './utils/edit-schema-flow';
+import { NotImplementedError, exitOnNextTick } from 'amplify-cli-core';
 
 export async function console(context, service) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
@@ -12,8 +13,10 @@ export async function console(context, service) {
   const { openConsole } = require(serviceWalkthroughSrc);
 
   if (!openConsole) {
-    context.print.error('Opening console functionality not available for this option');
-    process.exit(0);
+    const errMessage = 'Opening console functionality not available for this option';
+    context.print.error(errMessage);
+    context.usageData.emitError(new NotImplementedError(errMessage));
+    exitOnNextTick(0);
   }
 
   return openConsole(context);
@@ -46,8 +49,10 @@ export async function updateResource(context, category, service) {
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
 
   if (!updateWalkthrough) {
-    context.print.error('Update functionality not available for this option');
-    process.exit(0);
+    const errMessage = 'Update functionality not available for this option';
+    context.print.error(errMessage);
+    context.usageData.emitError(new NotImplementedError(errMessage));
+    exitOnNextTick(0);
   }
 
   const updateWalkthroughPromise: Promise<UpdateApiRequest> = updateWalkthrough(context, defaultValuesFilename, serviceMetadata);

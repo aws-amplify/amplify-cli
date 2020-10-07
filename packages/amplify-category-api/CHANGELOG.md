@@ -3,6 +3,81 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.9...amplify-category-api@2.24.0) (2020-10-01)
+
+
+### Bug Fixes
+
+* add support for mobile hub migrated resources ([#5407](https://github.com/aws-amplify/amplify-cli/issues/5407)) ([5dfe287](https://github.com/aws-amplify/amplify-cli/commit/5dfe2872c153047ebdc56bc4f671fd57c12379d9))
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+
+
+### Features
+
+* **amplify-category-api:** add rds support  for new regions ([#5360](https://github.com/aws-amplify/amplify-cli/issues/5360)) ([4f65ed1](https://github.com/aws-amplify/amplify-cli/commit/4f65ed1ba6ab76f7d018b998525b73aa1e47fbcd)), closes [#4739](https://github.com/aws-amplify/amplify-cli/issues/4739)
+
+
+
+
+
+## [2.23.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.8...amplify-category-api@2.23.9) (2020-09-25)
+
+
+### Bug Fixes
+
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+
+
+
+## [2.23.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.7...amplify-category-api@2.23.8) (2020-09-16)
+
+
+### Bug Fixes
+
+* checking undefined auth config ([#5313](https://github.com/aws-amplify/amplify-cli/issues/5313)) ([42810c9](https://github.com/aws-amplify/amplify-cli/commit/42810c98b0015f12119f3387749889a6bf6abe9b))
+* removes duplicate auth types ([#5272](https://github.com/aws-amplify/amplify-cli/issues/5272)) ([8747911](https://github.com/aws-amplify/amplify-cli/commit/8747911ff5a515e86971af7d5ad15681c64eb532))
+
+
+
+
+
+## [2.23.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.6...amplify-category-api@2.23.7) (2020-09-09)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [2.23.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.5...amplify-category-api@2.23.6) (2020-09-03)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [2.23.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.4...amplify-category-api@2.23.5) (2020-09-03)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [2.23.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.3...amplify-category-api@2.23.4) (2020-08-31)
+
+
+### Bug Fixes
+
+* sub * for path parms in CFN policy ([#5092](https://github.com/aws-amplify/amplify-cli/issues/5092)) ([2942688](https://github.com/aws-amplify/amplify-cli/commit/29426884968314122b65a24b2f9658a618bf9120))
+
+
+
+
+
 ## [2.23.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.23.2...amplify-category-api@2.23.3) (2020-08-20)
 
 **Note:** Version bump only for package amplify-category-api

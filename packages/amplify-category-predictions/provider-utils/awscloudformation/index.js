@@ -2,7 +2,7 @@ import open from 'open';
 
 const path = require('path');
 const chalk = require('chalk');
-
+const { NotImplementedError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 const parametersFileName = 'parameters.json';
 const prefixForAdminTrigger = 'protected/predictions/index-faces/admin';
 
@@ -23,8 +23,10 @@ function updateResource(context, predictionsCategoryFilename) {
   const { updateWalkthrough } = require(predictionCtgWalkthroughSrc);
 
   if (!updateWalkthrough) {
-    context.print.error('Update functionality not available for this service');
-    process.exit(0);
+    const errMessage = 'Update functionality not available for this service';
+    context.print.error(errMessage);
+    context.usageData.emitError(new NotImplementedError(errMessage));
+    exitOnNextTick(0);
   }
 
   return updateWalkthrough(context).then(resource => resource.resourceName);
@@ -88,25 +90,30 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, sho
         if (projectStorage[resource].output) {
           bucketName = projectStorage[resource].output.BucketName;
         } else {
-          context.print.error('Push the resources to the cloud using `amplify push` command.');
-          process.exit(0);
+          const errMessage = 'Push the resources to the cloud using `amplify push` command.';
+          context.print.error(errMessage);
+          context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+          exitOnNextTick(0);
         }
       }
     });
 
     if (bucketName === '' || !(amplifyMeta.predictions[resourceName].output && amplifyMeta.predictions[resourceName].output.collectionId)) {
-      context.print.error('Push the resources to the cloud using `amplify push` command.');
-      process.exit(0);
+      const errMessage = 'Push the resources to the cloud using `amplify push` command.';
+      context.print.error(errMessage);
+      context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+      exitOnNextTick(0);
       return;
     }
     const region = amplifyMeta.providers.awscloudformation.Region;
     await openRekognitionUploadUrl(context, bucketName, region, parameters.folderPolicies, showOnAmplifyStatus);
   } else if (!showOnAmplifyStatus) {
+    const errMessage =
+      'Console command not supported for your configuration in the project. Use ‘amplify update predictions’ to modify your configurations.';
     // !showOnAmplifyStatus is used so that this message is not shown in amplify status scenario.
-    context.print.error(
-      'Console command not supported for your configuration in the project. Use ‘amplify update predictions’ to modify your configurations.'
-    );
-    process.exit(0);
+    context.print.error(errMessage);
+    context.usageData.emitError(new NotImplementedError(errMessage));
+    exitOnNextTick(0);
   }
 }
 
@@ -119,7 +126,7 @@ async function openRekognitionUploadUrl(context, bucketName, region, folderPolic
     await open(URL, { wait: false });
   }
   context.print.info(
-    chalk`Rekognition endpoint to upload Images: {blue.underline ${URL}} (Amazon Rekognition only supports uploading PNG and JPEG files)`
+    chalk`Rekognition endpoint to upload Images: {blue.underline ${URL}} (Amazon Rekognition only supports uploading PNG and JPEG files)`,
   );
 }
 

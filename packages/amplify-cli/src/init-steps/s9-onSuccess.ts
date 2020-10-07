@@ -37,7 +37,7 @@ export async function onSuccess(context: $TSContext) {
     });
 
     if (!FeatureFlags.isInitialized()) {
-      await FeatureFlags.initialize(contextEnvironmentProvider, projectPath);
+      await FeatureFlags.initialize(contextEnvironmentProvider, true);
     }
 
     await FeatureFlags.ensureDefaultFeatureFlags(true);

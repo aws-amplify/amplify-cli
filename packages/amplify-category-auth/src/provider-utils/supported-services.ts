@@ -231,7 +231,7 @@ export const supportedServices = {
       {
         key: 'amazonAppId',
         prefix:
-          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
+          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. Head to https://docs.amplify.aws/lib/auth/social/q/platform/js#setup-your-auth-provider to learn more. \n",
         question: 'Enter your Amazon App ID for your identity pool: ',
         required: true,
         andConditions: [
@@ -1141,7 +1141,7 @@ export const supportedServices = {
       {
         key: 'loginwithamazonAppIdUserPool',
         prefix:
-          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
+          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. Head to https://docs.amplify.aws/lib/auth/social/q/platform/js#setup-your-auth-provider to learn more. \n",
         question: 'Enter your Amazon App ID for your OAuth flow: ',
         required: true,
         andConditions: [

@@ -12,6 +12,7 @@ import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-au
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
 import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
+import { ResourceAlreadyExistsError, ResourceDoesNotExistError, UnknownResourceTypeError, exitOnNextTick } from 'amplify-cli-core';
 
 const serviceName = 'AppSync';
 const providerName = 'awscloudformation';
@@ -64,10 +65,11 @@ export const serviceWalkthrough = async (context, defaultValuesFilename, service
   let resolverConfig;
 
   if (resourceName) {
-    context.print.warning(
-      'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.',
-    );
-    process.exit(0);
+    const errMessage =
+      'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.';
+    context.print.warning(errMessage);
+    context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    exitOnNextTick(0);
   }
 
   const { amplify } = context;
@@ -175,8 +177,10 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   } else {
-    context.print.error('No AppSync resource to update. Use the "amplify add api" command to update your existing AppSync API.');
-    process.exit(0);
+    const errMessage = 'No AppSync resource to update. Use the "amplify add api" command to update your existing AppSync API.';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
   }
 
   // Get models
@@ -420,13 +424,12 @@ async function askDefaultAuthQuestion(context) {
   };
 }
 
-async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) {
+export async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) {
+  const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
+  authConfig.additionalAuthenticationProviders = [];
   if (await context.prompt.confirm('Configure additional auth types?')) {
-    authConfig.additionalAuthenticationProviders = [];
     // Get additional auth configured
     const remainingAuthProviderChoices = authProviderChoices.filter(p => p.value !== defaultAuthType);
-
-    const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
     const currentAdditionalAuth = ((currentAuthConfig && currentAuthConfig.additionalAuthenticationProviders
       ? currentAuthConfig.additionalAuthenticationProviders
       : []) as any[]).map(authProvider => authProvider.authenticationType);
@@ -448,8 +451,11 @@ async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) 
 
       authConfig.additionalAuthenticationProviders.push(config);
     }
+  } else {
+    authConfig.additionalAuthenticationProviders = (currentAuthConfig?.additionalAuthenticationProviders || []).filter(
+      p => p.authenticationType !== defaultAuthType,
+    );
   }
-
   return authConfig;
 }
 
@@ -490,8 +496,10 @@ async function askAuthQuestions(authType, context, printLeadText = false) {
     return openIDConnectConfig;
   }
 
-  context.print.error(`Unknown authType: ${authType}`);
-  process.exit(1);
+  const errMessage = `Unknown authType: ${authType}`;
+  context.print.error(errMessage);
+  context.usageData.emitError(new UnknownResourceTypeError(errMessage));
+  exitOnNextTick(1);
 }
 
 async function askUserPoolQuestions(context) {

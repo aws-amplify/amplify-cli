@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.6...amplify-codegen-appsync-model-plugin@1.20.7) (2020-10-01)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:** DataStore Array Support ([#5327](https://github.com/aws-amplify/amplify-cli/issues/5327)) ([c88bee1](https://github.com/aws-amplify/amplify-cli/commit/c88bee1a4eed9aafca0e764fb2867176eed1c8e2)), closes [#5139](https://github.com/aws-amplify/amplify-cli/issues/5139)
+* **amplify-codegen-appsync-model-plugin:** fix nullable lists ([#5450](https://github.com/aws-amplify/amplify-cli/issues/5450)) ([ec02076](https://github.com/aws-amplify/amplify-cli/commit/ec02076e9a4aab119a8a85e729b19fb4727607f4))
+
+
+
+
+
+## [1.20.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.5...amplify-codegen-appsync-model-plugin@1.20.6) (2020-09-25)
+
+
+### Bug Fixes
+
+* add owner field if owner auth is included in auth rules ([#5335](https://github.com/aws-amplify/amplify-cli/issues/5335)) ([2200f51](https://github.com/aws-amplify/amplify-cli/commit/2200f51c70ffa6c3fe88efa6b563e962668da3e0))
+
+
+
+
+
+## [1.20.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.4...amplify-codegen-appsync-model-plugin@1.20.5) (2020-08-31)
+
+**Note:** Version bump only for package amplify-codegen-appsync-model-plugin
+
+
+
+
+
 ## [1.20.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.3...amplify-codegen-appsync-model-plugin@1.20.4) (2020-08-20)
 
 

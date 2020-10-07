@@ -3,6 +3,105 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.29.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.3...@aws-amplify/cli@4.29.4) (2020-10-01)
+
+
+### Bug Fixes
+
+* add support for mobile hub migrated resources ([#5407](https://github.com/aws-amplify/amplify-cli/issues/5407)) ([5dfe287](https://github.com/aws-amplify/amplify-cli/commit/5dfe2872c153047ebdc56bc4f671fd57c12379d9))
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+* **cli:** fixed projName and envName ([#5400](https://github.com/aws-amplify/amplify-cli/issues/5400)) ([8c18418](https://github.com/aws-amplify/amplify-cli/commit/8c184180a69755acc7ed87f03b40e07e231de245)), closes [#5399](https://github.com/aws-amplify/amplify-cli/issues/5399)
+* mobile hub check miss for uninitialized projects ([#5457](https://github.com/aws-amplify/amplify-cli/issues/5457)) ([879b0dd](https://github.com/aws-amplify/amplify-cli/commit/879b0ddf947c418a1fe778eaf7925128812f0248))
+* move mobile hub flag to context directly ([#5459](https://github.com/aws-amplify/amplify-cli/issues/5459)) ([1828d21](https://github.com/aws-amplify/amplify-cli/commit/1828d214e3491a3633d72f571b7a8f1ab271f7a1))
+* publish returns with exitcode 1 ([#5413](https://github.com/aws-amplify/amplify-cli/issues/5413)) ([2064830](https://github.com/aws-amplify/amplify-cli/commit/20648308fca4d4ae6dba84874c3f5508405ff701))
+
+
+
+
+
+## [4.29.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.2...@aws-amplify/cli@4.29.3) (2020-09-25)
+
+
+### Bug Fixes
+
+* abort being called multiple times ([#5302](https://github.com/aws-amplify/amplify-cli/issues/5302)) ([83b2d10](https://github.com/aws-amplify/amplify-cli/commit/83b2d109b6f3cf2e9962bad78607b6a41e7599e2))
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+
+
+
+## [4.29.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.1...@aws-amplify/cli@4.29.2) (2020-09-16)
+
+
+### Bug Fixes
+
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-cli/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-cli/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+
+
+
+
+
+## [4.29.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.0...@aws-amplify/cli@4.29.1) (2020-09-09)
+
+
+### Bug Fixes
+
+* **cli:** do not display stack trace on env list ([#4988](https://github.com/aws-amplify/amplify-cli/issues/4988)) ([a6ed3df](https://github.com/aws-amplify/amplify-cli/commit/a6ed3df3ac35f135ea22b162613096a682bc2c21))
+* **cli:** fix amplify console url ([#5258](https://github.com/aws-amplify/amplify-cli/issues/5258)) ([e4a9568](https://github.com/aws-amplify/amplify-cli/commit/e4a9568d7df6752f51a610cb8739745d1fd2eb67)), closes [#5248](https://github.com/aws-amplify/amplify-cli/issues/5248)
+* update default file permissions for credentials/config ([#5246](https://github.com/aws-amplify/amplify-cli/issues/5246)) ([b64f1bd](https://github.com/aws-amplify/amplify-cli/commit/b64f1bd784b0595f49241fdd89686c5f8a421ae3))
+
+
+
+
+
+# [4.29.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.28.2...@aws-amplify/cli@4.29.0) (2020-09-03)
+
+
+### Features
+
+* Multienv support for Lambda layers ([#5081](https://github.com/aws-amplify/amplify-cli/issues/5081)) ([4af1363](https://github.com/aws-amplify/amplify-cli/commit/4af13634bcdd58511712249e6774fc9f287c9ef5))
+
+
+
+
+
+## [4.28.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.28.1...@aws-amplify/cli@4.28.2) (2020-09-03)
+
+
+### Bug Fixes
+
+* support serve script ([#5211](https://github.com/aws-amplify/amplify-cli/issues/5211)) ([cc71f5a](https://github.com/aws-amplify/amplify-cli/commit/cc71f5a3561e3a5a163bb04bb56144a3f23971db))
+
+
+
+
+
+## [4.28.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.28.0...@aws-amplify/cli@4.28.1) (2020-09-02)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [4.28.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.27.3...@aws-amplify/cli@4.28.0) (2020-08-31)
+
+
+### Bug Fixes
+
+* add compatibility to json parse for non-string values ([#5147](https://github.com/aws-amplify/amplify-cli/issues/5147)) ([3bc9306](https://github.com/aws-amplify/amplify-cli/commit/3bc9306c7b3d078d9b531f5950e8a304fc031d23))
+* fixed Tags update when no resource ([#5187](https://github.com/aws-amplify/amplify-cli/issues/5187)) ([3bc85b0](https://github.com/aws-amplify/amplify-cli/commit/3bc85b02ccf127a79689ca7600ab6f35f6421187))
+
+
+### Features
+
+* resource Tagging Support ([#5178](https://github.com/aws-amplify/amplify-cli/issues/5178)) ([e34226d](https://github.com/aws-amplify/amplify-cli/commit/e34226dde30d7d345e3cc2e72e187b242a09c389))
+
+
+
+
+
 ## [4.27.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.27.2...@aws-amplify/cli@4.27.3) (2020-08-20)
 
 

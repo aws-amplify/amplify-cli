@@ -38,6 +38,7 @@ module.exports = {
         context.print.info(err.stack);
         context.print.error('There was an error adding the API resource');
         context.usageData.emitError(err);
+        process.exitCode = 1;
       });
   },
 };

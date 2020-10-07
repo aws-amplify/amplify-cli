@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.25.0...amplify-e2e-tests@2.25.1) (2020-10-01)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** fix auth console ([#5408](https://github.com/aws-amplify/amplify-cli/issues/5408)) ([afbe065](https://github.com/aws-amplify/amplify-cli/commit/afbe065757ce488c1769848d0db3d03465a9b6c9)), closes [#5364](https://github.com/aws-amplify/amplify-cli/issues/5364)
+* [#5354](https://github.com/aws-amplify/amplify-cli/issues/5354) .net core lambda project file naming ([#5414](https://github.com/aws-amplify/amplify-cli/issues/5414)) ([c0f1953](https://github.com/aws-amplify/amplify-cli/commit/c0f1953acaca33eb0228e1528eb5ac4eb183ff6d))
+* e2e regressions from previous pr ([#5438](https://github.com/aws-amplify/amplify-cli/issues/5438)) ([398d98b](https://github.com/aws-amplify/amplify-cli/commit/398d98b6a57c41f5172d6b56e9a834cfd28b891b))
+* **cli:** fixed projName and envName ([#5400](https://github.com/aws-amplify/amplify-cli/issues/5400)) ([8c18418](https://github.com/aws-amplify/amplify-cli/commit/8c184180a69755acc7ed87f03b40e07e231de245)), closes [#5399](https://github.com/aws-amplify/amplify-cli/issues/5399)
+
+
+
+
+
+# [2.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.24.0...amplify-e2e-tests@2.25.0) (2020-09-25)
+
+
+### Features
+
+* headless update auth ([#5308](https://github.com/aws-amplify/amplify-cli/issues/5308)) ([b942f35](https://github.com/aws-amplify/amplify-cli/commit/b942f3589f1df1361ae7eb6e42f18dbf6900d1bf))
+
+
+
+
+
+# [2.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.23.1...amplify-e2e-tests@2.24.0) (2020-09-16)
+
+
+### Bug Fixes
+
+* **amplify-category-storage:** fix storage update ([#5191](https://github.com/aws-amplify/amplify-cli/issues/5191)) ([754f122](https://github.com/aws-amplify/amplify-cli/commit/754f12201c07132ff6c9e7ef88f4c567cdc6302d)), closes [#5124](https://github.com/aws-amplify/amplify-cli/issues/5124)
+* **amplify-provider-awscloudformation:** validate config input ([#5307](https://github.com/aws-amplify/amplify-cli/issues/5307)) ([5a324b2](https://github.com/aws-amplify/amplify-cli/commit/5a324b2ab015c0be8fe83d937325a38470c46c2d)), closes [#4998](https://github.com/aws-amplify/amplify-cli/issues/4998)
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-cli/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-cli/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+
+
+### Features
+
+* added commented out cors headers ([#5315](https://github.com/aws-amplify/amplify-cli/issues/5315)) ([03ec394](https://github.com/aws-amplify/amplify-cli/commit/03ec394af21b0b5683441c14f22b8cdff9e71053))
+
+
+
+
+
+## [2.23.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.23.0...amplify-e2e-tests@2.23.1) (2020-09-09)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+# [2.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.22.0...amplify-e2e-tests@2.23.0) (2020-09-03)
+
+
+### Features
+
+* Multienv support for Lambda layers ([#5081](https://github.com/aws-amplify/amplify-cli/issues/5081)) ([4af1363](https://github.com/aws-amplify/amplify-cli/commit/4af13634bcdd58511712249e6774fc9f287c9ef5))
+
+
+
+
+
+# [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.3...amplify-e2e-tests@2.22.0) (2020-08-31)
+
+
+### Bug Fixes
+
+* **graphql-mapping-template:** fix [@key](https://github.com/key) issue when datastore enabled ([#5175](https://github.com/aws-amplify/amplify-cli/issues/5175)) ([d58c4aa](https://github.com/aws-amplify/amplify-cli/commit/d58c4aa6ba07859a6fec250df281649bb17548e9)), closes [#4355](https://github.com/aws-amplify/amplify-cli/issues/4355)
+* Validation check when mutating more than 1 GSI in update flow ([#5141](https://github.com/aws-amplify/amplify-cli/issues/5141)) ([4faaba0](https://github.com/aws-amplify/amplify-cli/commit/4faaba0509467aad03db11709175f4a3071459ae))
+
+
+### Features
+
+* resource Tagging Support ([#5178](https://github.com/aws-amplify/amplify-cli/issues/5178)) ([e34226d](https://github.com/aws-amplify/amplify-cli/commit/e34226dde30d7d345e3cc2e72e187b242a09c389))
+
+
+
+
+
 ## [2.21.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.2...amplify-e2e-tests@2.21.3) (2020-08-14)
 
 

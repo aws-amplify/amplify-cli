@@ -229,6 +229,7 @@ async function remove(context) {
     .catch(err => {
       context.print.info(err.stack);
       context.usageData.emitError(err);
+      process.exitCode = 1;
     });
 }
 

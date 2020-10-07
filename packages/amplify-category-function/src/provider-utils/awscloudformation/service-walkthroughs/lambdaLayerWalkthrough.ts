@@ -12,6 +12,7 @@ import {
   layerVersionQuestion,
 } from '../utils/layerHelpers';
 import { ServiceName } from '../utils/constants';
+import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 
 export async function createLayerWalkthrough(context: any, parameters: Partial<LayerParameters> = {}): Promise<Partial<LayerParameters>> {
   _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));
@@ -51,8 +52,10 @@ export async function updateLayerWalkthrough(
   const resources = allResources.filter(resource => resource.service === ServiceName.LambdaLayer).map(resource => resource.resourceName);
 
   if (resources.length === 0) {
-    context.print.error('No Lambda layer resource to update. Please use "amplify add function" to create a new Layer');
-    process.exit(0);
+    const errMessage = 'No Lambda layer resource to update. Please use "amplify add function" to create a new Layer';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
   }
   const resourceQuestion: InputQuestion = [
     {
@@ -72,6 +75,7 @@ export async function updateLayerWalkthrough(
   // load the current layer state
   const layerState: LayerMetadata = getLayerMetadataFactory(context)(parameters.layerName);
   await layerState.syncVersions();
+  parameters.runtimes = layerState.runtimes || [];
 
   // runtime question
   if (await context.amplify.confirmPrompt('Do you want to update the compatible runtimes?', false)) {

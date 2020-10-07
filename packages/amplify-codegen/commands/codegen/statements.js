@@ -1,5 +1,5 @@
 const codeGen = require('../../src');
-
+const { exitOnNextTick } = require('amplify-cli-core');
 const featureName = 'statements';
 
 module.exports = {
@@ -11,7 +11,8 @@ module.exports = {
       await codeGen.generateStatements(context, forceDownloadSchema, maxDepth);
     } catch (ex) {
       context.print.info(ex.message);
-      process.exit(1);
+      context.usageData.emitError(ex);
+      exitOnNextTick(1);
     }
   },
 };

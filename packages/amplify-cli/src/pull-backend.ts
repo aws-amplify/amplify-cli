@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import { initializeEnv } from './initialize-env';
 import { postPullCodeGenCheck } from './amplify-service-helper';
+import { exitOnNextTick } from 'amplify-cli-core';
 
 export async function pullBackend(context, inputParams) {
   context.exeInfo = context.amplify.getProjectDetails();
@@ -24,7 +25,8 @@ export async function pullBackend(context, inputParams) {
         context.print.info(
           `To merge local and upstream changes, commit all backend code changes to Git, perform a merge, resolve conflicts, and then run 'amplify push'.`,
         );
-        process.exit(0);
+        context.usageData.emitSuccess();
+        exitOnNextTick(0);
       }
     }
   }

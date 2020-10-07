@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.17.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.9...graphql-transformer-common@4.17.10) (2020-09-16)
+
+
+### Bug Fixes
+
+* **graphql-transformer-common:** support underscore names ([#5263](https://github.com/aws-amplify/amplify-cli/issues/5263)) ([cc7cae6](https://github.com/aws-amplify/amplify-cli/commit/cc7cae65188b57bb913a307186ea20458c875002)), closes [#5212](https://github.com/aws-amplify/amplify-cli/issues/5212)
+
+
+
+
+
+## [4.17.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.8...graphql-transformer-common@4.17.9) (2020-08-31)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
 ## [4.17.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.7...graphql-transformer-common@4.17.8) (2020-08-14)
 
 **Note:** Version bump only for package graphql-transformer-common

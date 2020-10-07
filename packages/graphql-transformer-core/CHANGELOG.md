@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.21.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.21.4...graphql-transformer-core@6.21.5) (2020-10-01)
+
+
+### Bug Fixes
+
+* [#4944](https://github.com/aws-amplify/amplify-cli/issues/4944), [#5332](https://github.com/aws-amplify/amplify-cli/issues/5332) ([#5431](https://github.com/aws-amplify/amplify-cli/issues/5431)) ([6104bde](https://github.com/aws-amplify/amplify-cli/commit/6104bde76533614cd41bd0d97aaad06660275add))
+
+
+
+
+
+## [6.21.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.21.3...graphql-transformer-core@6.21.4) (2020-09-16)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.21.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.21.2...graphql-transformer-core@6.21.3) (2020-08-31)
+
+
+### Bug Fixes
+
+* Validation check when mutating more than 1 GSI in update flow ([#5141](https://github.com/aws-amplify/amplify-cli/issues/5141)) ([4faaba0](https://github.com/aws-amplify/amplify-cli/commit/4faaba0509467aad03db11709175f4a3071459ae))
+
+
+
+
+
 ## [6.21.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.21.1...graphql-transformer-core@6.21.2) (2020-08-14)
 
 **Note:** Version bump only for package graphql-transformer-core

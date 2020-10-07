@@ -1,13 +1,13 @@
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
-const frameworkConfigMapping = require('./framework-config-mapping');
+const { getProjectConfiguration, getSupportedFrameworks } = require('./framework-config-mapping');
 const constants = require('./constants');
 
 async function init(context) {
   normalizeInputParams(context);
   const framework = guessFramework(context, context.exeInfo.localEnvInfo.projectPath);
-  const config = frameworkConfigMapping[framework];
+  const config = getProjectConfiguration(framework, context.exeInfo.localEnvInfo.projectPath);
   context.exeInfo.projectConfig[constants.Label] = {
     framework,
     config,
@@ -30,7 +30,7 @@ async function configure(context) {
     currentConfiguration.framework = guessFramework(context.exeInfo.localEnvInfo.projectPath);
   }
   if (!currentConfiguration.config) {
-    currentConfiguration.config = frameworkConfigMapping[currentConfiguration.framework];
+    currentConfiguration.config = getProjectConfiguration(currentConfiguration.framework, context.exeInfo.localEnvInfo.projectPath);
   }
   await confirmConfiguration(context);
 }
@@ -41,7 +41,7 @@ function normalizeInputParams(context) {
     inputParams = context.exeInfo.inputParams[constants.Label];
   }
   if (inputParams && inputParams.framework) {
-    if (!Object.keys(frameworkConfigMapping).includes(inputParams.framework.toLowerCase())) {
+    if (!getSupportedFrameworks().includes(inputParams.framework.toLowerCase())) {
       context.print.warning(`Unsupported javascript framework: ${inputParams.framework}`);
       inputParams.framework = 'none';
     } else {
@@ -74,7 +74,10 @@ async function confirmFramework(context) {
   if (inputParams && inputParams.framework) {
     if (context.exeInfo.projectConfig[constants.Label].framework !== inputParams.framework) {
       context.exeInfo.projectConfig[constants.Label].framework = inputParams.framework;
-      context.exeInfo.projectConfig[constants.Label].config = frameworkConfigMapping[inputParams.framework];
+      context.exeInfo.projectConfig[constants.Label].config = getProjectConfiguration(
+        inputParams.framework,
+        context.exeInfo.localEnvInfo.projectPath,
+      );
     }
   } else if (!context.exeInfo.inputParams.yes) {
     context.print.info('Please tell us about your project');
@@ -82,13 +85,16 @@ async function confirmFramework(context) {
       type: 'list',
       name: 'framework',
       message: 'What javascript framework are you using',
-      choices: Object.keys(frameworkConfigMapping),
+      choices: getSupportedFrameworks(),
       default: context.exeInfo.projectConfig[constants.Label].framework,
     };
     const answers = await inquirer.prompt(frameworkComfirmation);
     if (context.exeInfo.projectConfig[constants.Label].framework !== answers.framework) {
       context.exeInfo.projectConfig[constants.Label].framework = answers.framework;
-      context.exeInfo.projectConfig[constants.Label].config = frameworkConfigMapping[answers.framework];
+      context.exeInfo.projectConfig[constants.Label].config = getProjectConfiguration(
+        answers.framework,
+        context.exeInfo.localEnvInfo.projectPath,
+      );
     }
   }
 }
@@ -99,8 +105,10 @@ async function confirmFrameworkConfiguration(context) {
     Object.assign(context.exeInfo.projectConfig[constants.Label].config, inputParams.config);
   } else if (!context.exeInfo.inputParams.yes) {
     if (!context.exeInfo.projectConfig[constants.Label].config) {
-      context.exeInfo.projectConfig[constants.Label].config =
-        frameworkConfigMapping[context.exeInfo.projectConfig[constants.Label].framework];
+      context.exeInfo.projectConfig[constants.Label].config = getProjectConfiguration(
+        context.exeInfo.projectConfig[constants.Label].framework,
+        context.exeInfo.localEnvInfo.projectPath,
+      );
     }
     const { config } = context.exeInfo.projectConfig[constants.Label];
     const configurationSettings = [

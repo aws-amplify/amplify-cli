@@ -1,12 +1,15 @@
 import chalk from 'chalk';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities, $TSContext, UnknownArgumentError, exitOnNextTick } from 'amplify-cli-core';
+import { printEnvInfo } from '../helpers/envUtils';
 
-export const run = async context => {
+export const run = async (context: $TSContext) => {
   const envName = context.parameters.options.name;
 
   if (!envName) {
-    context.print.error('You must pass in the name of the environment using the --name flag');
-    process.exit(1);
+    const errMessage = 'You must pass in the name of the environment using the --name flag';
+    context.print.error(errMessage);
+    context.usageData.emitError(new UnknownArgumentError(errMessage));
+    exitOnNextTick(1);
   }
 
   const allEnvs = context.amplify.getEnvDetails();
@@ -27,20 +30,7 @@ export const run = async context => {
       envFound = true;
       context.print.info('');
       context.print.info(chalk.red(env));
-      context.print.info('--------------');
-
-      Object.keys(allEnvs[env]).forEach(provider => {
-        context.print.info(`Provider: ${provider}`);
-
-        Object.keys(allEnvs[env][provider]).forEach(providerAttr => {
-          context.print.info(`${providerAttr}: ${allEnvs[env][provider][providerAttr]}`);
-        });
-
-        context.print.info('--------------');
-        context.print.info('');
-      });
-
-      context.print.info('');
+      printEnvInfo(context, env, allEnvs);
     }
   });
 

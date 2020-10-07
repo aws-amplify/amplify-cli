@@ -239,25 +239,29 @@ function debug(message: string, title: string = 'DEBUG'): void {
 }
 
 function table(data: string[][], options: any = {}): void {
-  let t;
+  let t: CLITable.Table;
   switch (options.format) {
     case 'markdown':
       const header = data.shift();
       t = new CLITable({
+        style: { head: ['reset'] }, // "no color"
         head: header,
         chars: CLI_TABLE_MARKDOWN,
-      }) as CLITable.HorizontalTable;
+      });
       t.push(...data);
       t.unshift(columnHeaderDivider(t));
       break;
     case 'lean':
-      t = new CLITable() as CLITable.HorizontalTable;
+      t = new CLITable({
+        style: { head: ['reset'] }, // "no color"
+      });
       t.push(...data);
       break;
     default:
       t = new CLITable({
+        style: { head: ['reset'] }, // "no color"
         chars: CLI_TABLE_COMPACT,
-      }) as CLITable.HorizontalTable;
+      });
       t.push(...data);
   }
   console.log(t.toString());

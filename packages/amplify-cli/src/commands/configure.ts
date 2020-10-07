@@ -33,7 +33,9 @@ export const run = async (context: Context) => {
       await configProviders(context);
       await onSuccess(context);
     } catch (e) {
+      context.usageData.emitError(e);
       onFailure(e);
+      process.exitCode = 1;
     }
   }
 };

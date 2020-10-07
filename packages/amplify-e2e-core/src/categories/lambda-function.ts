@@ -50,7 +50,7 @@ const coreFunction = (
         .wait('Select which capability you want to add:')
         .sendCarriageReturn() // lambda function
         .wait('Provide a friendly name for your resource to be used as a label')
-        .sendLine(settings.name || '')
+        .sendLine(settings.friendlyName || settings.name || '')
         .wait('Provide the AWS Lambda function name:')
         .sendLine(settings.name || '');
 
@@ -373,9 +373,13 @@ const addCron = (chain: ExecutionContext, settings: any) => {
   return chain;
 };
 
-export const functionMockAssert = (cwd: string, settings: { funcName: string; successString: string; eventFile: string }) => {
+export const functionMockAssert = (
+  cwd: string,
+  settings: { friendlyName?: string; funcName: string; successString: string; eventFile: string },
+) => {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['mock', 'function', settings.funcName, '--event', settings.eventFile], { cwd, stripColors: true })
+    const lookupName = settings.friendlyName ? settings.friendlyName : settings.funcName;
+    spawn(getCLIPath(), ['mock', 'function', lookupName, '--event', settings.eventFile], { cwd, stripColors: true })
       .wait('Result:')
       .wait(settings.successString)
       .wait('Finished execution.')
@@ -386,10 +390,12 @@ export const functionMockAssert = (cwd: string, settings: { funcName: string; su
 
 export const functionCloudInvoke = async (
   cwd: string,
-  settings: { funcName: string; payload: string },
+  settings: { friendlyName?: string; funcName: string; payload: string },
 ): Promise<Lambda.InvocationResponse> => {
   const meta = getProjectMeta(cwd);
-  const { Name: functionName, Region: region } = meta.function[settings.funcName].output;
+  const lookupName = settings.friendlyName ? settings.friendlyName : settings.funcName;
+  expect(meta.function[lookupName]).toBeDefined();
+  const { Name: functionName, Region: region } = meta.function[lookupName].output;
   expect(functionName).toBeDefined();
   expect(region).toBeDefined();
   const result = await invokeFunction(functionName, settings.payload, region);

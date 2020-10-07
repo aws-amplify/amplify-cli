@@ -3,10 +3,22 @@ import * as os from 'os';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
 import { v4 as uuid } from 'uuid';
-import { EnvVarFormatError, FeatureFlags, CLIEnvironmentProvider, CLIContextEnvironmentProvider, JSONUtilities } from '..';
-import { amplifyConfigFileName } from '../constants';
+import {
+  EnvVarFormatError,
+  FeatureFlags,
+  CLIEnvironmentProvider,
+  CLIContextEnvironmentProvider,
+  JSONUtilities,
+  pathManager,
+  pathManager as realPathManager,
+  FeatureFlagRegistration,
+} from '..';
 import { FeatureFlagEnvironmentProvider } from '../feature-flags/featureFlagEnvironmentProvider';
 import { FeatureFlagFileProvider } from '../feature-flags/featureFlagFileProvider';
+
+// These constants are not exported, hence the redefinition for tests
+const amplifyDirName = 'amplify';
+const amplifyConfigFileName = 'cli.json';
 
 describe('feature flags', () => {
   describe('featureflag provider tests', () => {
@@ -29,11 +41,16 @@ describe('feature flags', () => {
       try {
         await fs.mkdirs(tempProjectDir);
 
-        const projectConfigFileName = path.join(tempProjectDir, amplifyConfigFileName);
+        process.chdir(tempProjectDir);
+
+        const projectConfigFileName = pathManager.getCLIJSONFilePath(tempProjectDir);
+
+        await fs.mkdirs(path.dirname(projectConfigFileName));
 
         await fs.copyFile(templateConfigFileName, projectConfigFileName);
 
-        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, tempProjectDir);
+        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, undefined, getTestFlags());
+
         await FeatureFlags.ensureDefaultFeatureFlags(true);
 
         const updatedConfig = JSONUtilities.readJson<any>(projectConfigFileName);
@@ -54,11 +71,15 @@ describe('feature flags', () => {
       try {
         await fs.mkdirs(tempProjectDir);
 
+        process.chdir(tempProjectDir);
+
         const projectConfigFileName = path.join(tempProjectDir, amplifyConfigFileName);
+
+        await fs.mkdirs(path.dirname(projectConfigFileName));
 
         await fs.copyFile(templateConfigFileName, projectConfigFileName);
 
-        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, tempProjectDir);
+        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, undefined, getTestFlags());
         await FeatureFlags.ensureDefaultFeatureFlags(true);
 
         const originalConfig = (await fs.readFile(templateConfigFileName)).toString();
@@ -77,9 +98,13 @@ describe('feature flags', () => {
       try {
         await fs.mkdirs(tempProjectDir);
 
-        const projectConfigFileName = path.join(tempProjectDir, amplifyConfigFileName);
+        process.chdir(tempProjectDir);
 
-        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, tempProjectDir);
+        const projectConfigFileName = path.join(tempProjectDir, amplifyDirName, amplifyConfigFileName);
+
+        await fs.mkdirs(path.dirname(projectConfigFileName));
+
+        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, undefined, getTestFlags());
         await FeatureFlags.ensureDefaultFeatureFlags(true);
 
         const createdConfig = (await fs.readFile(projectConfigFileName)).toString();
@@ -92,40 +117,8 @@ describe('feature flags', () => {
 
     test('missing environmentProvider argument', async () => {
       await expect(async () => {
-        await FeatureFlags.initialize((undefined as unknown) as CLIContextEnvironmentProvider, (undefined as unknown) as string);
+        await FeatureFlags.initialize((undefined as unknown) as CLIContextEnvironmentProvider, undefined, getTestFlags());
       }).rejects.toThrowError(`'environmentProvider' argument is required`);
-    });
-
-    test('missing projectPath argument for initialize', async () => {
-      const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
-      };
-
-      const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
-
-      await expect(async () => {
-        await FeatureFlags.initialize(envProvider, (undefined as unknown) as string);
-      }).rejects.toThrowError(`'projectPath' argument is required`);
-    });
-
-    test('projectPath does not exist for initialize', async () => {
-      const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
-      };
-
-      const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
-
-      await expect(async () => {
-        await FeatureFlags.initialize(envProvider, '/foo/bar');
-      }).rejects.toThrowError(`Project path: '/foo/bar' does not exist.`);
     });
 
     test('initialize feature flag provider successfully', async () => {
@@ -143,13 +136,34 @@ describe('feature flags', () => {
       // Set current cwd to projectPath for .env to work correctly
       process.chdir(projectPath);
 
-      await FeatureFlags.initialize(envProvider, projectPath);
+      await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
 
       const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
       const isDefaultQueryEnabled = FeatureFlags.getBoolean('keyTransformer.defaultQuery');
 
       expect(transformerVersion).toBe(4);
       expect(isDefaultQueryEnabled).toBe(true);
+    });
+
+    test('initialize feature flag provider successfully with no files and return new project defaults', async () => {
+      const osTempDir = await fs.realpath(os.tmpdir());
+      const tempProjectDir = path.join(osTempDir, `amp-${uuid()}`);
+
+      try {
+        await fs.mkdirs(tempProjectDir);
+
+        process.chdir(tempProjectDir);
+
+        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider, true, getTestFlags());
+
+        const transformerVersion = FeatureFlags.getNumber('graphQLTransformer.transformerVersion');
+        const isDefaultQueryEnabled = FeatureFlags.getBoolean('keyTransformer.defaultQuery');
+
+        expect(transformerVersion).toBe(5);
+        expect(isDefaultQueryEnabled).toBe(true);
+      } finally {
+        rimraf.sync(tempProjectDir);
+      }
     });
 
     test('initialize feature flag provider fail with json error', async () => {
@@ -168,7 +182,7 @@ describe('feature flags', () => {
       process.chdir(projectPath);
 
       await expect(async () => {
-        await FeatureFlags.initialize(envProvider, projectPath);
+        await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       }).rejects.toThrowError(
         `Found '}' where a key name was expected (check your syntax or use quotes if the key name includes {}[],: or whitespace) at line 1,0 >>> Not a json {\n ...`,
       );
@@ -189,7 +203,7 @@ describe('feature flags', () => {
       // Set current cwd to projectPath for .env to work correctly
       process.chdir(projectPath);
 
-      await FeatureFlags.initialize(envProvider, projectPath);
+      await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       const effectiveFlags = FeatureFlags.getEffectiveFlags();
 
       expect(effectiveFlags).toMatchObject({
@@ -217,7 +231,7 @@ describe('feature flags', () => {
       // Set current cwd to projectPath for .env to work correctly
       process.chdir(projectPath);
 
-      await FeatureFlags.initialize(envProvider, projectPath);
+      await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       const effectiveFlags = FeatureFlags.getEffectiveFlags();
 
       expect(effectiveFlags).toMatchObject({
@@ -245,7 +259,7 @@ describe('feature flags', () => {
       // Set current cwd to projectPath for .env to work correctly
       process.chdir(projectPath);
 
-      await FeatureFlags.initialize(envProvider, projectPath);
+      await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       const effectiveFlags = FeatureFlags.getEffectiveFlags();
 
       expect(effectiveFlags).toMatchObject({
@@ -273,7 +287,7 @@ describe('feature flags', () => {
       // Set current cwd to projectPath for .env to work correctly
       process.chdir(projectPath);
 
-      await FeatureFlags.initialize(envProvider, projectPath);
+      await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       const effectiveFlags = FeatureFlags.getEffectiveFlags();
 
       expect(effectiveFlags).toMatchObject({
@@ -302,7 +316,7 @@ describe('feature flags', () => {
       process.chdir(projectPath);
 
       await expect(async () => {
-        await FeatureFlags.initialize(envProvider, projectPath);
+        await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       }).rejects.toThrowError(`Section 'foo' is not registered in feature provider`);
     });
 
@@ -322,7 +336,7 @@ describe('feature flags', () => {
       process.chdir(projectPath);
 
       await expect(async () => {
-        await FeatureFlags.initialize(envProvider, projectPath);
+        await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       }).rejects.toThrowError(`Flag 'bar' within 'graphqltransformer' is not registered in feature provider`);
     });
 
@@ -342,7 +356,7 @@ describe('feature flags', () => {
       process.chdir(projectPath);
 
       await expect(async () => {
-        await FeatureFlags.initialize(envProvider, projectPath);
+        await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       }).rejects.toThrowError(`Invalid boolean value: 'invalid' for 'defaultquery' in section 'keytransformer'`);
     });
 
@@ -362,9 +376,30 @@ describe('feature flags', () => {
       process.chdir(projectPath);
 
       await expect(async () => {
-        await FeatureFlags.initialize(envProvider, projectPath);
+        await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       }).rejects.toThrowError(`Invalid number value: 'invalid' for 'transformerversion' in section 'graphqltransformer'`);
     });
+
+    const getTestFlags = (): Record<string, FeatureFlagRegistration[]> => {
+      return {
+        graphQLTransformer: [
+          {
+            name: 'transformerVersion',
+            type: 'number',
+            defaultValueForExistingProjects: 4,
+            defaultValueForNewProjects: 5,
+          },
+        ],
+        keyTransformer: [
+          {
+            name: 'defaultQuery',
+            type: 'boolean',
+            defaultValueForExistingProjects: false,
+            defaultValueForNewProjects: true,
+          },
+        ],
+      };
+    };
   });
 
   describe('environment provider tests', () => {
@@ -489,26 +524,6 @@ describe('feature flags', () => {
 
         await provider.load();
       }).rejects.toThrowError(`'projectPath' option is missing`);
-    });
-
-    test('projectPath does not exist', async () => {
-      const context: any = {
-        getEnvInfo: (_: boolean): any => {
-          return {
-            envName: 'dev',
-          };
-        },
-      };
-
-      const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
-
-      await expect(async () => {
-        const provider = new FeatureFlagFileProvider(envProvider, {
-          projectPath: '/foo/bar',
-        });
-
-        await provider.load();
-      }).rejects.toThrowError(`Project path: '/foo/bar' does not exist.`);
     });
 
     test('reads features when both files exists', async () => {

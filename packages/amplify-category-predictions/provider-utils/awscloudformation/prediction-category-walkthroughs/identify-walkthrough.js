@@ -10,12 +10,11 @@ import {
   addTextractPolicies,
 } from '../assets/identifyCFNGenerate';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
-
+const { ResourceDoesNotExistError, ResourceAlreadyExistsError, exitOnNextTick } = require('amplify-cli-core');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
 const uuid = require('uuid');
-
 // Predictions Info
 const templateFilename = 'identify-template.json.ejs';
 const identifyTypes = ['identifyText', 'identifyEntities', 'identifyLabels'];
@@ -43,12 +42,15 @@ async function addWalkthrough(context) {
         const { add } = require('amplify-category-auth');
         await add(context);
       } catch (e) {
+        context.usageData.emitError(e);
         context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
+        exitOnNextTick(1);
         break;
       }
       break;
     } else {
-      process.exit(0);
+      context.usageData.emitSuccess();
+      exitOnNextTick(0);
     }
   }
 
@@ -70,9 +72,10 @@ async function updateWalkthrough(context) {
     }
   });
   if (predictionsResources.length === 0) {
-    context.print.error('No resources to update. You need to add a resource.');
-    process.exit(0);
-    return;
+    const errMessage = 'No resources to update. You need to add a resource.';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
   }
   let resourceObj = predictionsResources[0].value;
   if (predictionsResources.length > 1) {
@@ -116,8 +119,10 @@ async function configure(context, resourceObj) {
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.identifyType);
     if (resourceType) {
-      context.print.warning(`${resourceType} has already been added to this project.`);
-      process.exit(0);
+      const errMessage = `${resourceType} has already been added to this project.`;
+      context.print.warning(errMessage);
+      context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+      exitOnNextTick(0);
     }
 
     Object.assign(answers, await inquirer.prompt(identifyAssets.setup.name(`${answers.identifyType}${defaultValues.resourceName}`)));
@@ -241,7 +246,7 @@ async function configure(context, resourceObj) {
 }
 
 function addRegionMapping(context, resourceName, identifyType) {
-  const regionMapping = regionMapper.getRegionMapping(service, identifyType);
+  const regionMapping = regionMapper.getRegionMapping(context, service, identifyType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
   const identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);

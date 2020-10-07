@@ -22,6 +22,7 @@ module.exports = {
         context.print.info(err.stack);
         context.print.error('There was an error removing the hosting resource');
         context.usageData.emitError(err);
+        process.exitCode = 1;
       }
     } else {
       process.exit(1);
@@ -38,8 +39,8 @@ async function chooseResource(context, inputResourceName) {
   const amplifyMetaFilePath = amplify.pathManager.getAmplifyMetaFilePath();
   if (fs.existsSync(amplifyMetaFilePath)) {
     const amplifyMeta = amplify.readJsonFile(amplifyMetaFilePath);
-    if (amplifyMeta[category] && Object.keys(amplifyMeta[category]).length > 0) {
-      let enabledResources = Object.keys(amplifyMeta[category]);
+    if (amplifyMeta[category] && Object.keys(amplifyMeta[category]).filter(r => !!amplifyMeta[category][r].providerPlugin).length > 0) {
+      let enabledResources = Object.keys(amplifyMeta[category]).filter(r => !!amplifyMeta[category][r].providerPlugin);
 
       let inputIsValid = true;
       if (services && services.length > 0) {

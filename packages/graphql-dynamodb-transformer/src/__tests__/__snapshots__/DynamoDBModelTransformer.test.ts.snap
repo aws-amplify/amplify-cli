@@ -152,6 +152,47 @@ type Subscription {
 "
 `;
 
+exports[`DynamoDB transformer should add not default primary key when ID is defined 1`] = `
+"## [Start] Set default values. **
+#set( $createdAt = $util.time.nowISO8601() )
+## Automatically set the createdAt timestamp. **
+$util.qr($context.args.input.put(\\"createdAt\\", $util.defaultIfNull($ctx.args.input.createdAt, $createdAt)))
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $createdAt)))
+## [End] Set default values. **
+## [Start] Prepare DynamoDB PutItem Request. **
+$util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
+#set( $condition = {
+  \\"expression\\": \\"attribute_not_exists(#id)\\",
+  \\"expressionNames\\": {
+      \\"#id\\": \\"id\\"
+  }
+} )
+#if( $context.args.condition )
+  #set( $condition.expressionValues = {} )
+  #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
+  $util.qr($condition.put(\\"expression\\", \\"($condition.expression) AND $conditionFilterExpressions.expression\\"))
+  $util.qr($condition.expressionNames.putAll($conditionFilterExpressions.expressionNames))
+  $util.qr($condition.expressionValues.putAll($conditionFilterExpressions.expressionValues))
+#end
+#if( $condition.expressionValues && $condition.expressionValues.size() == 0 )
+  #set( $condition = {
+  \\"expression\\": $condition.expression,
+  \\"expressionNames\\": $condition.expressionNames
+} )
+#end
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"PutItem\\",
+  \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
+  \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
+} #end,
+  \\"attributeValues\\": $util.dynamodb.toMapValuesJson($context.args.input),
+  \\"condition\\": $util.toJson($condition)
+}
+## [End] Prepare DynamoDB PutItem Request. **"
+`;
+
 exports[`Test create and update mutation input should have timestamps as nullable fields when the type makes it non-nullable 1`] = `
 "type Post {
   id: ID!

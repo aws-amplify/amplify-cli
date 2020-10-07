@@ -105,6 +105,7 @@ async function remove(context) {
     context.print.info(err.stack);
     context.print.error(REMOVE_ERROR_MESSAGE);
     context.usageData.emitError(err);
+    process.exitCode = 1;
   });
 }
 

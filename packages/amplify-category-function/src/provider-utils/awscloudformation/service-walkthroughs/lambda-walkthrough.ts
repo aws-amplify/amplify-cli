@@ -41,7 +41,10 @@ export async function createWalkthrough(
   templateParameters = merge(templateParameters, await templateWalkthrough(context, templateParameters));
 
   if (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your Lambda function?')) {
-    templateParameters = merge(templateParameters, await askExecRolePermissionsQuestions(context, templateParameters.functionName));
+    templateParameters = merge(
+      templateParameters,
+      await askExecRolePermissionsQuestions(context, templateParameters.functionName, undefined, templateParameters.environmentMap),
+    );
   }
 
   // ask scheduling Lambda questions and merge in results
@@ -56,7 +59,7 @@ export async function createWalkthrough(
  */
 export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const lambdaFuncResourceNames = ((await context.amplify.getResourceStatus()).allResources as any[])
-    .filter(resource => resource.service === ServiceName.LambdaFunction)
+    .filter(resource => resource.service === ServiceName.LambdaFunction && !!resource.providerPlugin)
     .map(resource => resource.resourceName);
 
   if (lambdaFuncResourceNames.length === 0) {
@@ -101,7 +104,24 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   if (
     await context.amplify.confirmPrompt('Do you want to update the Lambda function permissions to access other resources in this project?')
   ) {
-    merge(functionParameters, await askExecRolePermissionsQuestions(context, lambdaToUpdate, currentParameters.permissions));
+    const additionalParameters = await askExecRolePermissionsQuestions(context, lambdaToUpdate, currentParameters.permissions);
+
+    const currentDependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
+    if (currentDependsOn.length > 0) {
+      additionalParameters.dependsOn = additionalParameters.dependsOn || [];
+      currentDependsOn.forEach(dependency => {
+        const updatedDependency = additionalParameters.dependsOn.find(d => {
+          return d.category === dependency.category && d.resourceName === dependency.resourceName;
+        });
+        if (updatedDependency) {
+          updatedDependency.attributes = _.uniqWith(updatedDependency.attributes.concat(dependency.attributes), _.isEqual);
+        } else {
+          additionalParameters.dependsOn.push(dependency);
+        }
+      });
+    }
+
+    merge(functionParameters, additionalParameters);
 
     const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);
@@ -199,7 +219,11 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
       }
     }
   });
-  cfnContent.Resources.LambdaFunction.Properties.Layers = convertLambdaLayerMetaToLayerCFNArray(functionParameters.lambdaLayers);
+  cfnContent.Resources.LambdaFunction.Properties.Layers = convertLambdaLayerMetaToLayerCFNArray(
+    context,
+    functionParameters.lambdaLayers,
+    context.amplify.getEnvInfo().envName,
+  );
   context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
 
   return functionParameters;

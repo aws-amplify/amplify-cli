@@ -23,6 +23,7 @@ module.exports = {
         context.print.info(err.stack);
         context.print.error('An error occurred when updating the storage resource');
         context.usageData.emitError(err);
+        process.exitCode = 1;
       });
   },
 };

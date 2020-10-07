@@ -1,5 +1,5 @@
 import ora from 'ora';
-import { FeatureFlags, stateManager } from 'amplify-cli-core';
+import { FeatureFlags, stateManager, UnknownArgumentError, exitOnNextTick } from 'amplify-cli-core';
 import { getConfirmation } from '../../extensions/amplify-helpers/delete-project';
 
 export const run = async context => {
@@ -7,8 +7,10 @@ export const run = async context => {
   const currentEnv = context.amplify.getEnvInfo().envName;
 
   if (!envName) {
-    context.print.error("You must pass in the name of the environment as a part of the 'amplify env remove <env-name>' command");
-    process.exit(1);
+    const errMessage = "You must pass in the name of the environment as a part of the 'amplify env remove <env-name>' command";
+    context.print.error(errMessage);
+    context.usageData.emitError(new UnknownArgumentError(errMessage));
+    exitOnNextTick(1);
   }
   let envFound = false;
   const allEnvs = context.amplify.getEnvDetails();
@@ -24,11 +26,12 @@ export const run = async context => {
     context.print.error('No environment found with the corresponding name provided');
   } else {
     if (currentEnv === envName) {
-      context.print.error(
-        'You cannot delete your current environment. Please switch to another environment to delete your current environment',
-      );
+      const errMessage =
+        'You cannot delete your current environment. Please switch to another environment to delete your current environment';
+      context.print.error(errMessage);
       context.print.error("If this is your only environment you can use the 'amplify delete' command to delete your project");
-      process.exit(1);
+      context.usageData.emitError(new UnknownArgumentError(errMessage));
+      exitOnNextTick(1);
     }
 
     const confirmation = await getConfirmation(context, envName);
