@@ -19,7 +19,6 @@ import { AssertionError } from 'assert';
 import strip = require('strip-ansi');
 import { EOL } from 'os';
 import retimer = require('retimer');
-import { max } from 'lodash';
 
 const DEFAULT_NO_OUTPUT_TIMEOUT = 5 * 60 * 1000; // 5 Minutes
 const EXIT_CODE_TIMEOUT = 2;
