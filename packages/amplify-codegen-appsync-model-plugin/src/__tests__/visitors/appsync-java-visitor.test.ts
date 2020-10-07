@@ -161,22 +161,6 @@ describe('AppSyncModelVisitor', () => {
     expect(generatedCode).toMatchSnapshot();
   })
 
-  it('should generate model with both snake_case field and camelCase field', () => {
-    const schema = /* GraphQL */ `
-      type SnakeAndCamelField @model {
-        id: ID!
-        taskPID: String!
-        subject_name: String!
-        subjectName: String!
-        content: String
-      }
-    `;
-    const visitor = getVisitor(schema, 'SnakeAndCamelField');
-    const generatedCode = visitor.generate();
-    expect(() => validateJava(generatedCode)).not.toThrow();
-    expect(generatedCode).toMatchSnapshot();
-  });
-
   it('should generate model with key directive', () => {
     const schema = /* GraphQL */ `
       type authorBook @model @key(name: "byAuthor", fields: ["author_id"]) @key(name: "byBook", fields: ["book_id"]) {
