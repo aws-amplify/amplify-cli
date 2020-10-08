@@ -27,13 +27,23 @@ function getProjectMeta(projectRoot: string) {
 }
 
 function getProjectTags(projectRoot: string) {
-  const metaFilePath = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'tags.json');
-  return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
+  const projectTagsFilePath = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'tags.json');
+  return JSON.parse(fs.readFileSync(projectTagsFilePath, 'utf8'));
 }
 
 function getBackendAmplifyMeta(projectRoot: string) {
   const metaFilePath = path.join(projectRoot, 'amplify', 'backend', 'amplify-meta.json');
   return JSON.parse(fs.readFileSync(metaFilePath, 'utf8'));
+}
+
+function getBackendConfig(projectRoot: string) {
+  const backendFConfigFilePath = path.join(projectRoot, 'amplify', 'backend', 'backend-config.json');
+  return JSON.parse(fs.readFileSync(backendFConfigFilePath, 'utf8'));
+}
+
+function getTeamProviderInfo(projectRoot: string) {
+  const teamProviderFilePath = path.join(projectRoot, 'amplify', 'team-provider-info.json');
+  return JSON.parse(fs.readFileSync(teamProviderFilePath, 'utf8'));
 }
 
 function getS3StorageBucketName(projectRoot: string) {
@@ -66,4 +76,6 @@ export {
   getAWSConfigIOSPath,
   getS3StorageBucketName,
   getAmplifyDirPath,
+  getBackendConfig,
+  getTeamProviderInfo,
 };

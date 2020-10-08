@@ -1,5 +1,4 @@
-import { nspawn as spawn, retry } from '../../src';
-import { getCLIPath, describeCloudFormationStack, getProjectMeta } from '../../src';
+import { nspawn as spawn, retry, getCLIPath, describeCloudFormationStack, getProjectMeta } from '..';
 
 export const deleteProject = async (cwd: string, profileConfig?: any) => {
   const { StackName: stackName, Region: region } = getProjectMeta(cwd).providers.awscloudformation;
