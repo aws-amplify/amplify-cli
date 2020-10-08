@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import { spawn } from 'child_process';
 
 export async function preDeployPullBackend(context, backendManagerAppId: string) {
-  const url = `https://oxfsx40moe.execute-api.us-east-1.amazonaws.com/beta/AppState/${backendManagerAppId}`;
+  const url = `https://9xxtujb3ba.execute-api.us-west-2.amazonaws.com/beta/AppState/${backendManagerAppId}`;
 
   // Fetch schema
   const res = await fetch(`${url}`);
