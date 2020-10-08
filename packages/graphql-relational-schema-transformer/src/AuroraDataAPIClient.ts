@@ -50,7 +50,7 @@ export class AuroraDataAPIClient {
    * @return a list of column descriptions.
    */
   public describeTable = async (tableName: string) => {
-    this.Params.sql = `DESCRIBE ${tableName}`;
+    this.Params.sql = `DESCRIBE \`${tableName}\``;
     const response = await this.RDS.executeStatement(this.Params).promise();
     const listOfColumns = response['records'];
     let columnDescriptions = [];
