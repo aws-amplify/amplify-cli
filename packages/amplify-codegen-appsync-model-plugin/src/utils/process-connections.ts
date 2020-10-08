@@ -198,9 +198,6 @@ export function processConnections(
             license: License;
           }
           */
-          console.log('field', field);
-          console.log('otherSideField', otherSideField);
-          console.log('model', model);
           throw new Error(
             `DataStore does not support 1 to 1 connection with both sides of connection as optional field: ${model.name}.${field.name}`,
           );
