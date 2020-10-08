@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.20.1...amplify-category-auth@2.20.2) (2020-10-07)
+
+
+### Bug Fixes
+
+* headless auth required attributes must be an array ([#5467](https://github.com/aws-amplify/amplify-cli/issues/5467)) ([dbde67c](https://github.com/aws-amplify/amplify-cli/commit/dbde67c3c39ecb14b32da82546927cee14405a0b))
+* username is default signin, doesn't need to be specified ([#5474](https://github.com/aws-amplify/amplify-cli/issues/5474)) ([4c42ad5](https://github.com/aws-amplify/amplify-cli/commit/4c42ad59db93144e131193c41c5f3d4aa4db1b92))
+
+
+
+
+
 ## [2.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.20.0...amplify-category-auth@2.20.1) (2020-10-01)
 
 
