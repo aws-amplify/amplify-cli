@@ -2,7 +2,7 @@ import path from 'path';
 import * as execa from 'execa';
 import fs from 'fs-extra';
 import glob from 'glob';
-import { shimPath, shimJarPath } from './constants';
+import { shimPath, shimJarPath, pkgRelativeShimJarPath } from './constants';
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 
 export const buildResource = async (request: BuildRequest): Promise<BuildResult> => {
@@ -18,12 +18,16 @@ export const buildResource = async (request: BuildRequest): Promise<BuildResult>
   return { rebuilt: false };
 };
 
-const installDependencies = (resourceDir: string) => {
-  runPackageManager(resourceDir, 'build');
-
+export const ensureShimJar = () => {
   if (!fs.existsSync(shimJarPath)) {
     runPackageManager(shimPath, 'jar');
   }
+  return pkgRelativeShimJarPath;
+};
+
+const installDependencies = (resourceDir: string) => {
+  runPackageManager(resourceDir, 'build');
+  ensureShimJar();
 };
 
 const runPackageManager = (cwd: string, buildArgs: string) => {
