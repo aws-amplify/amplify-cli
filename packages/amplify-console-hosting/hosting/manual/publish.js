@@ -9,7 +9,7 @@ const ora = require('ora');
 
 const ZIPPING_MESSAGE = 'Zipping artifacts.. ';
 const ZIPPING_SUCCESS_MESSAGE = 'Zipping artifacts completed.';
-const ZIPPING_FAILURE_MESSAGE = 'Zipping artifacts failed. This is often because your DistributionDir is configured to a nonexistent folder, e.g. "build" instead of "dist". Check /amplify/.config/project-config.json and fix accordingly.';
+const ZIPPING_FAILURE_MESSAGE = 'Zipping artifacts failed. This is often due to an invalid distribution directory path. Run "amplify configure project" to check if your Distribution Directory is pointing to a valid path.';
 
 
 async function publish(context, doSkipBuild, doSkipPush) {
