@@ -200,7 +200,7 @@ describe('amplify app console tests', () => {
       AMAZON_APP_ID,
       AMAZON_APP_SECRET,
     } = getSocialProviders();
-    await initJSProjectWithProfile(projRoot, { name: 'authConsoleTest', envName });
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: 'authConsoleTest', envName });
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
     let teamInfo = getTeamProviderInfo(projRoot);
@@ -283,7 +283,7 @@ describe('amplify app console tests', () => {
 
   it('test pull with auth config', async () => {
     const envName = 'dev';
-    await initJSProjectWithProfile(projRoot, { name: 'authConsoleTest', envName });
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: 'authConsoleTest', envName });
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
     let teamInfo = getTeamProviderInfo(projRoot);
