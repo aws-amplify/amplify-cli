@@ -11,7 +11,7 @@ import { readPluginsJsonFile, writePluginsJsonFile } from './access-plugins-file
 import { twoPluginsAreTheSame } from './compare-plugins';
 import { checkPlatformHealth } from './platform-health-check';
 import isChildPath from '../utils/is-child-path';
-import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny, isPackaged } from 'amplify-cli-core';
 
 export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {
   pluginPlatform = pluginPlatform || readPluginsJsonFile() || new PluginPlatform();
@@ -33,6 +33,10 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
       await verifyAndAdd(pluginPlatform!, pluginDirPath),
     );
     await sequential(scanUserLocationTasks);
+  }
+
+  if (isPackaged) {
+    pluginPlatform!.pluginDirectories.push(constants.PackagedNodeModules);
   }
 
   if (pluginPlatform!.pluginDirectories.length > 0 && pluginPlatform!.pluginPrefixes.length > 0) {
@@ -91,15 +95,18 @@ async function addCore(pluginPlatform: PluginPlatform) {
 }
 
 export function normalizePluginDirectory(directory: string): string {
-  let result = directory;
-  if (directory === constants.LocalNodeModules) {
-    result = path.normalize(path.join(__dirname, '../../node_modules'));
-  } else if (directory === constants.ParentDirectory) {
-    result = path.normalize(path.join(__dirname, '../../../'));
-  } else if (directory === constants.GlobalNodeModules) {
-    result = getGlobalNodeModuleDirPath();
+  switch (directory) {
+    case constants.PackagedNodeModules:
+      return path.normalize(path.join(__dirname, '../../../..'));
+    case constants.LocalNodeModules:
+      return path.normalize(path.join(__dirname, '../../node_modules'));
+    case constants.ParentDirectory:
+      return path.normalize(path.join(__dirname, '../../../'));
+    case constants.GlobalNodeModules:
+      return getGlobalNodeModuleDirPath();
+    default:
+      return directory;
   }
-  return result;
 }
 
 function isMatchingNamePattern(pluginPrefixes: string[], pluginDirName: string): boolean {
