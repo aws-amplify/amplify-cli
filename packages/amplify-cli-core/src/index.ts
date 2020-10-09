@@ -27,7 +27,31 @@ export type $TSContext = {
   parameters: $TSAny;
   usageData: $TSAny;
   runtime: $TSAny;
+  pluginPlatform: IPluginPlatform;
 };
+
+export type IPluginPlatform = {
+  pluginDirectories: string[];
+  pluginPrefixes: string[];
+  userAddedLocations: string[];
+  lastScanTime: Date;
+  maxScanIntervalInSeconds: Number;
+  plugins: IPluginCollection;
+  excluded: IPluginCollection;
+};
+
+export type IPluginCollection = {
+  [pluginType: string]: IPluginInfo[];
+};
+
+export type IPluginInfo = {
+  packageName: string;
+  packageVersion: string;
+  packageLocation: string;
+  manifest: $IPluginManifest;
+};
+
+export type $IPluginManifest = $TSAny;
 
 // Use it for all file content read from amplify-meta.json
 export type $TSMeta = any;

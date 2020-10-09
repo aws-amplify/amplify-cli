@@ -43,6 +43,8 @@ export class PathManager {
     // this.projectRootPath = this.findProjectRoot();
   }
 
+  getAmplifyPackageLibDirPath = (packageName: string): string => path.join(this.getHomeDotAmplifyDirPath(), 'lib', packageName);
+
   getHomeDotAmplifyDirPath = (): string => this.homeDotAmplifyDirPath;
 
   getAmplifyDirPath = (projectPath?: string): string => this.constructPath(projectPath, [PathConstants.AmplifyDirName]);

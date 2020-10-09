@@ -1,9 +1,10 @@
 import { PluginCollection } from './plugin-collection';
 import { constants } from './constants';
+import { IPluginPlatform } from 'amplify-cli-core';
 
 const SECONDSINADAY = 86400;
 
-export class PluginPlatform {
+export class PluginPlatform implements IPluginPlatform {
   constructor() {
     this.pluginDirectories = [constants.LocalNodeModules, constants.ParentDirectory, constants.GlobalNodeModules];
     this.pluginPrefixes = [constants.AmplifyPrefix];

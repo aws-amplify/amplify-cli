@@ -213,7 +213,10 @@ function getClient(emu, options = {}) {
   });
 }
 
+const getPackageAssetPaths = () => ['emulator'];
+
 module.exports = {
   launch,
   getClient,
+  getPackageAssetPaths,
 };
