@@ -1,4 +1,4 @@
-import { getCLIPath, nspawn as spawn } from '../../src';
+import { getCLIPath, nspawn as spawn } from '..';
 
 export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDir?: boolean; appId?: string; withRestore?: boolean }) {
   return new Promise((resolve, reject) => {

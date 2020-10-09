@@ -1,426 +1,355 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
-import { addFunction, updateFunction, functionBuild, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
-import { addLayer, addOptData, LayerOptions } from 'amplify-e2e-core';
-import {
-  createNewProjectDir,
-  deleteProjectDir,
-  getCloudWatchEventRule,
-  getProjectMeta,
-  getFunction,
-  overrideFunctionSrc,
-  overrideLayerCode,
-  overrideFunctionSrcPython,
-  overrideLayerCodePython,
-} from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
+import { addFunction, updateFunction } from 'amplify-e2e-core';
+import { addSimpleDDB, addDDBWithTrigger } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc, getFunctionSrc } from 'amplify-e2e-core';
+import { addApiWithSchema } from 'amplify-e2e-core';
+import { getBackendAmplifyMeta } from 'amplify-e2e-core';
+import { invokeFunction } from 'amplify-e2e-core';
+import fs from 'fs-extra';
+import path from 'path';
+import { readJsonFile } from 'amplify-e2e-core';
+import _ from 'lodash';
 
-describe('go function tests', () => {
-  const helloWorldSuccessOutput = 'Hello Amplify!';
-  let projRoot: string;
-  let funcName: string;
+describe('nodejs', () => {
+  describe('amplify add function with additional permissions', () => {
+    let projRoot: string;
+    beforeEach(async () => {
+      projRoot = await createNewProjectDir('fn-with-perm');
+    });
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('go-functions');
-    await initJSProjectWithProfile(projRoot, {});
+    afterEach(async () => {
+      await deleteProject(projRoot);
+      deleteProjectDir(projRoot);
+    });
 
-    const random = Math.floor(Math.random() * 10000);
-    funcName = `gotestfn${random}`;
+    it('lambda with dynamoDB permissions should be able to scan ddb', async () => {
+      await initJSProjectWithProfile(projRoot, {});
 
-    await addFunction(
-      projRoot,
-      {
-        name: funcName,
-        functionTemplate: 'Hello World',
-      },
-      'go',
-    );
-  });
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+      const ddbName = `integtestddb${random}`;
 
-  afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
+      // test ability to scan both appsync @model-backed and regular ddb tables
+      await addApiWithSchema(projRoot, 'simple_model.graphql');
+      await addSimpleDDB(projRoot, { name: ddbName });
 
-  it('add go hello world function and mock locally', async () => {
-    await functionMockAssert(projRoot, {
-      funcName,
-      successString: helloWorldSuccessOutput,
-      eventFile: 'src/event.json',
-    }); // will throw if successString is not in output
-  });
-
-  it('add go hello world function and invoke in the cloud', async () => {
-    const payload = '{"name":"Amplify"}';
-    await amplifyPushAuth(projRoot);
-    const response = await functionCloudInvoke(projRoot, { funcName, payload });
-    expect(JSON.parse(response.Payload.toString())).toEqual(helloWorldSuccessOutput);
-  });
-});
-
-describe('python function tests', () => {
-  const helloWorldSuccessOutput = '{"message":"Hello from your new Amplify Python lambda!"}';
-
-  let projRoot: string;
-  let funcName: string;
-
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('py-functions');
-    await initJSProjectWithProfile(projRoot, {});
-
-    const random = Math.floor(Math.random() * 10000);
-    funcName = `pytestfn${random}`;
-
-    await addFunction(
-      projRoot,
-      {
-        name: funcName,
-        functionTemplate: 'Hello World',
-      },
-      'python',
-    );
-  });
-
-  afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
-
-  it('add python hello world and mock locally', async () => {
-    await functionMockAssert(projRoot, {
-      funcName,
-      successString: helloWorldSuccessOutput,
-      eventFile: 'src/event.json',
-    }); // will throw if successString is not in output
-  });
-
-  it('add python hello world and invoke in the cloud', async () => {
-    const payload = '{"test":"event"}';
-    await amplifyPushAuth(projRoot);
-    const response = await functionCloudInvoke(projRoot, { funcName, payload });
-    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(helloWorldSuccessOutput));
-  });
-});
-
-describe('dotnet function tests', () => {
-  const helloWorldSuccessOutput = '{"key1":"VALUE1","key2":"VALUE2","key3":"VALUE3"}';
-  let projRoot: string;
-  let funcName: string;
-  let friendlyName: string;
-
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('dotnet-functions');
-    await initJSProjectWithProfile(projRoot, {});
-
-    const random = Math.floor(Math.random() * 10000);
-    friendlyName = `dotnetfnres${random}`;
-    funcName = `dotnettestfn${random}`;
-
-    await addFunction(
-      projRoot,
-      {
-        friendlyName,
-        name: funcName,
-        functionTemplate: 'Hello World',
-      },
-      'dotnetCore31',
-    );
-  });
-
-  afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
-
-  it('add dotnet hello world function and mock locally', async () => {
-    await functionMockAssert(projRoot, {
-      friendlyName,
-      funcName,
-      successString: helloWorldSuccessOutput,
-      eventFile: 'src/event.json',
-    }); // will throw if successString is not in output
-  });
-
-  it('add dotnet hello world function and invoke in the cloud', async () => {
-    const payload = '{"key1":"value1","key2":"value2","key3":"value3"}';
-    await amplifyPushAuth(projRoot);
-    const response = await functionCloudInvoke(projRoot, { friendlyName, funcName, payload });
-    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(helloWorldSuccessOutput));
-  });
-});
-
-describe('java function tests', () => {
-  const helloWorldSuccessOutput = '{"greetings":"Hello John Doe!"}';
-  let projRoot: string;
-  let funcName: string;
-
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('java-functions');
-    await initJSProjectWithProfile(projRoot, {});
-
-    const random = Math.floor(Math.random() * 10000);
-    funcName = `javatestfn${random}`;
-
-    await addFunction(
-      projRoot,
-      {
-        name: funcName,
-        functionTemplate: 'Hello World',
-      },
-      'java',
-    );
-  });
-
-  afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
-
-  it('add java hello world function and mock locally', async () => {
-    await functionMockAssert(projRoot, {
-      funcName,
-      successString: helloWorldSuccessOutput,
-      eventFile: 'src/event.json',
-    }); // will throw if successString is not in output
-  });
-
-  it('add java hello world function and invoke in the cloud', async () => {
-    const payload = '{"firstName":"John","lastName" : "Doe"}';
-    await amplifyPushAuth(projRoot);
-    const response = await functionCloudInvoke(projRoot, { funcName, payload });
-    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(helloWorldSuccessOutput));
-  });
-});
-
-describe('amplify add/update/remove function based on schedule rule', () => {
-  let projRoot: string;
-
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('schedule');
-  });
-
-  afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
-
-  it('add a schedule rule for daily', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addFunction(
-      projRoot,
-      {
-        functionTemplate: 'Hello World',
-        schedulePermissions: {
-          interval: 'Daily',
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['storage'],
+            choices: ['api', 'storage', 'function'],
+            resources: [ddbName, 'Todo:@model(appsync)'],
+            resourceChoices: [ddbName, 'Todo:@model(appsync)'],
+            operations: ['read'],
+          },
         },
-      },
-      'nodejs',
-    );
-    await functionBuild(projRoot, {});
-    await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
-      key => meta.function[key],
-    )[0].output;
-    expect(functionArn).toBeDefined();
-    expect(functionName).toBeDefined();
-    expect(region).toBeDefined();
-    expect(ruleName).toBeDefined();
-    const cloudFunction = await getFunction(functionName, region);
-    expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
-    const ScheduleRuleName = await getCloudWatchEventRule(functionArn, meta.providers.awscloudformation.Region);
-    expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
-  });
+        'nodejs',
+      );
 
-  it('update a schedule rule for daily', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addFunction(
-      projRoot,
-      {
-        functionTemplate: 'Hello World',
-        schedulePermissions: {
-          interval: 'Daily',
+      overrideFunctionSrc(
+        projRoot,
+        fnName,
+        `
+        const AWS = require('aws-sdk');
+        const DDB = new AWS.DynamoDB();
+
+        exports.handler = function(event, context) {
+          return DDB.scan({ TableName: event.tableName }).promise()
+        }
+      `,
+      );
+
+      await amplifyPush(projRoot);
+      const meta = getProjectMeta(projRoot);
+      const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map(key => meta.api[key])[0].output;
+      const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      expect(appsyncId).toBeDefined();
+      expect(functionName).toBeDefined();
+      expect(region).toBeDefined();
+
+      // test @model-backed dynamoDB scan
+      const result1 = await invokeFunction(functionName, JSON.stringify({ tableName: `Todo-${appsyncId}-integtest` }), region);
+      expect(result1.StatusCode).toBe(200);
+      expect(result1.Payload).toBeDefined();
+
+      const payload1 = JSON.parse(result1.Payload.toString());
+      expect(payload1.errorType).toBeUndefined();
+      expect(payload1.errorMessage).toBeUndefined();
+      expect(payload1.Items).toBeDefined();
+      expect(payload1.Count).toBeDefined();
+      expect(payload1.ScannedCount).toBeDefined();
+
+      // test regular storage resource dynamoDB scan
+      const { Name: tableName } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+      const result2 = await invokeFunction(functionName, JSON.stringify({ tableName }), region);
+      expect(result2.StatusCode).toBe(200);
+      expect(result2.Payload).toBeDefined();
+
+      const payload2 = JSON.parse(result2.Payload.toString());
+      expect(payload2.errorType).toBeUndefined();
+      expect(payload2.errorMessage).toBeUndefined();
+      expect(payload2.Items).toBeDefined();
+      expect(payload2.Count).toBeDefined();
+      expect(payload2.ScannedCount).toBeDefined();
+    });
+
+    it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
         },
-      },
-      'nodejs',
-    );
-    await functionBuild(projRoot, {});
-    await updateFunction(
-      projRoot,
-      {
-        functionTemplate: 'Hello World',
-        schedulePermissions: {
-          interval: 'Daily',
-          action: 'Update the schedule',
+        'nodejs',
+      );
+
+      overrideFunctionSrc(
+        projRoot,
+        fnName,
+        `
+        const AWS = require('aws-sdk');
+        const DDB = new AWS.DynamoDB();
+
+        exports.handler = function(event, context) {
+          return DDB.scan({ TableName: event.tableName }).promise()
+        }
+      `,
+      );
+
+      await amplifyPushAuth(projRoot);
+      let meta = getProjectMeta(projRoot);
+      const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      expect(functionArn).toBeDefined();
+      expect(functionName).toBeDefined();
+      expect(region).toBeDefined();
+
+      await addApiWithSchema(projRoot, 'simple_model.graphql');
+      await updateFunction(
+        projRoot,
+        {
+          name: fnName,
+          additionalPermissions: {
+            permissions: ['storage'],
+            choices: ['function', 'api', 'storage'],
+            resources: ['Todo:@model(appsync)'],
+            resourceChoices: ['Todo:@model(appsync)'],
+            operations: ['read'],
+          },
         },
-      },
-      'nodejs',
-    );
-    await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
-      key => meta.function[key],
-    )[0].output;
-    expect(functionArn).toBeDefined();
-    expect(functionName).toBeDefined();
-    expect(region).toBeDefined();
-    expect(ruleName).toBeDefined();
+        'nodejs',
+      );
+      await amplifyPush(projRoot);
 
-    const cloudFunction = await getFunction(functionName, region);
-    expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
-    const ScheduleRuleName = await getCloudWatchEventRule(functionArn, meta.providers.awscloudformation.Region);
-    expect(ScheduleRuleName.RuleNames[0]).toEqual(ruleName);
-  });
+      meta = getProjectMeta(projRoot);
+      const { GraphQLAPIIdOutput: appsyncId } = Object.keys(meta.api).map(key => meta.api[key])[0].output;
+      const result = await invokeFunction(functionName, JSON.stringify({ tableName: `Todo-${appsyncId}-integtest` }), region);
+      expect(result.StatusCode).toBe(200);
+      expect(result.Payload).toBeDefined();
 
-  it('remove a schedule rule for daily', async () => {
-    await initJSProjectWithProfile(projRoot, {});
-    await addFunction(
-      projRoot,
-      {
-        functionTemplate: 'Hello World',
-        schedulePermissions: {
-          interval: 'Daily',
+      const payload = JSON.parse(result.Payload.toString());
+      expect(payload.errorType).toBeUndefined();
+      expect(payload.errorMessage).toBeUndefined();
+      expect(payload.Items).toBeDefined();
+      expect(payload.Count).toBeDefined();
+      expect(payload.ScannedCount).toBeDefined();
+    });
+
+    it('@model-backed lambda function should generate envvars TODOTABLE_NAME, TODOTABLE_ARN, GRAPHQLAPIIDOUTPUT', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      await addApiWithSchema(projRoot, 'simple_model.graphql');
+
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['storage'],
+            choices: ['api', 'storage'],
+            resources: ['Todo:@model(appsync)'],
+            resourceChoices: ['Todo:@model(appsync)'],
+            operations: ['read'],
+          },
         },
-      },
-      'nodejs',
-    );
-    await functionBuild(projRoot, {});
-    await updateFunction(
-      projRoot,
-      {
-        functionTemplate: 'Hello World',
-        schedulePermissions: {
-          interval: 'Daily',
-          action: 'Remove the schedule',
+        'nodejs',
+      );
+
+      let lambdaSource = getFunctionSrc(projRoot, fnName).toString();
+      expect(lambdaSource.includes('TODOTABLE_NAME')).toBeTruthy();
+      expect(lambdaSource.includes('TODOTABLE_ARN')).toBeTruthy();
+      expect(lambdaSource.includes('GRAPHQLAPIIDOUTPUT')).toBeTruthy();
+    });
+
+    it('environment vars comment should update on permission update', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      const random = Math.floor(Math.random() * 10000);
+      const funcName = `nodetestfn${random}`;
+      const ddbName = `nodetestddb`;
+
+      await addFunction(
+        projRoot,
+        {
+          name: funcName,
+          functionTemplate: 'Hello World',
         },
-      },
-      'nodejs',
-    );
-    await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-    const { Arn: functionArn, Name: functionName, Region: region, CloudWatchEventRule: ruleName } = Object.keys(meta.function).map(
-      key => meta.function[key],
-    )[0].output;
-    expect(functionArn).toBeDefined();
-    expect(functionName).toBeDefined();
-    expect(region).toBeDefined();
-    expect(ruleName).toBeUndefined();
-
-    const cloudFunction = await getFunction(functionName, region);
-    expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
-  });
-});
-
-describe('add function with layers for runtime nodeJS', () => {
-  let projRoot: string;
-  const helloWorldSuccessOutput = 'Hello from Lambda! data';
-  const random = Math.floor(Math.random() * 10000);
-  let functionName: string;
-
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('functions');
-    await initJSProjectWithProfile(projRoot, {});
-    const settings = {
-      layerName: `nodetestlayer${random}`,
-      versionChanged: true,
-      runtimes: ['nodejs'],
-    };
-    await addLayer(projRoot, settings);
-    addOptData(projRoot, settings.layerName);
-    // create index.js
-    overrideLayerCode(
-      projRoot,
-      settings.layerName,
-      `
-      const testString = "Hello from Lambda!"
-      module.exports = testString;
-    `,
-      `index.js`,
-    );
-
-    const layerOptions: LayerOptions = {
-      select: [`${settings.layerName}`],
-      expectedListOptions: [`${settings.layerName}`],
-      versions: {
-        [`${settings.layerName}`]: {
-          version: 1,
-          expectedVersionOptions: [1],
+        'nodejs',
+      );
+      await addSimpleDDB(projRoot, { name: ddbName });
+      await updateFunction(
+        projRoot,
+        {
+          additionalPermissions: {
+            permissions: ['storage'],
+            choices: ['function', 'storage'],
+            operations: ['read'],
+            resources: [ddbName],
+          },
         },
-      },
-    };
-    functionName = `nodetestfunction${random}`;
-    await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'nodejs');
-    overrideFunctionSrc(
-      projRoot,
-      functionName,
-      `
-      const fs = require('fs');
-      const testString = require('${settings.layerName}');
-      exports.handler = async (event) => {
-        const data = fs.readFileSync('/opt/data.txt')
-        const response = {
-            statusCode: 200,
-            body: JSON.stringify(testString + ' ' + data),
-        };
-        return response;
-      };
-    `,
-    );
-  });
+        'nodejs',
+      );
+      const lambdaHandlerContents = fs.readFileSync(
+        path.join(projRoot, 'amplify', 'backend', 'function', funcName, 'src', 'index.js'),
+        'utf8',
+      );
+      expect(lambdaHandlerContents).toMatchSnapshot();
+    });
 
-  afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
-  it('can add project layers and external layers for nodejs', async () => {
-    await amplifyPushAuth(projRoot);
-    const payload = '{}';
-    const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
-    expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldSuccessOutput);
-  });
-});
+    it('adding api and storage permissions should not add duplicates to CFN', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      await addApiWithSchema(projRoot, 'two-model-schema.graphql');
 
-describe('add function with layers for runtime python', () => {
-  let projRoot: string;
-  const helloWorldSuccessOutput = 'Hello from Lambda!';
-  const random = Math.floor(Math.random() * 10000);
-  let functionName: string;
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+      const ddbName = `ddbTable${random}`;
 
-  beforeEach(async () => {
-    projRoot = await createNewProjectDir('functions');
-    await initJSProjectWithProfile(projRoot, {});
-    const settings = {
-      layerName: `pytestlayer${random}`,
-      versionChanged: true,
-      runtimes: ['python'],
-    };
-    await addLayer(projRoot, settings);
-    // create index.js
-    const layerCodePath = `${__dirname}/../../../amplify-e2e-tests/layerdata/python/testfunc.py`;
-    overrideLayerCodePython(projRoot, settings.layerName, layerCodePath);
-    const layerOptions: LayerOptions = {
-      select: [`${settings.layerName}`],
-      expectedListOptions: [`${settings.layerName}`],
-      versions: {
-        [`${settings.layerName}`]: {
-          version: 1,
-          expectedVersionOptions: [1],
+      await addSimpleDDB(projRoot, { name: ddbName });
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['storage'],
+            choices: ['api', 'storage'],
+            resources: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            resourceChoices: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            operations: ['read'],
+          },
         },
-      },
-    };
-    functionName = `pytestfunction${random}`;
-    await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'python');
-    const functionCodePath = `${__dirname}/../../../amplify-e2e-tests/layerdata/python/index.py`;
-    overrideFunctionSrcPython(projRoot, functionName, functionCodePath);
-  });
+        'nodejs',
+      );
 
-  afterEach(async () => {
-    await deleteProject(projRoot);
-    deleteProjectDir(projRoot);
-  });
+      const lambdaCFN = readJsonFile(
+        path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
+      );
+      expect(lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement.length).toBe(3);
+    });
 
-  it('can add project layers and external layers for python', async () => {
-    await amplifyPushAuth(projRoot);
-    const payload = '{}';
-    const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
-    expect(JSON.parse(response.Payload.toString()).message).toEqual(helloWorldSuccessOutput);
+    it('update DDB trigger function to add permissions should not changed its dependsOn attributes of the trigger source', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      await addDDBWithTrigger(projRoot, {});
+
+      const originalAmplifyMeta = getBackendAmplifyMeta(projRoot);
+      const functionResourceName = Object.keys(originalAmplifyMeta.function)[0];
+      const originalAttributes = originalAmplifyMeta.function[functionResourceName].dependsOn[0].attributes.sort();
+
+      await updateFunction(
+        projRoot,
+        {
+          permissions: ['storage'],
+          choices: ['function', 'storage'],
+          operations: ['read', 'update'],
+        },
+        'nodejs',
+      );
+
+      const updateAmplifyMeta = getBackendAmplifyMeta(projRoot);
+      const updateAttributes = updateAmplifyMeta.function[functionResourceName].dependsOn[0].attributes.sort();
+      expect(originalAttributes).toEqual(updateAttributes);
+
+      await amplifyPushAuth(projRoot);
+      const amplifyMeta = getBackendAmplifyMeta(projRoot);
+      expect(amplifyMeta.function[functionResourceName].output).toBeDefined();
+      expect(amplifyMeta.function[functionResourceName].output.Arn).toBeDefined();
+    });
+
+    it('function dependencies should be preserved when not editing permissions during `amplify update function`', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      await addApiWithSchema(projRoot, 'two-model-schema.graphql');
+
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+      const ddbName = `ddbTable${random}`;
+
+      await addSimpleDDB(projRoot, { name: ddbName });
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['storage'],
+            choices: ['api', 'storage'],
+            resources: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            resourceChoices: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            operations: ['read'],
+          },
+        },
+        'nodejs',
+      );
+
+      const configPath = path.join(projRoot, 'amplify', 'backend', 'backend-config.json');
+      const metaPath = path.join(projRoot, 'amplify', 'backend', 'amplify-meta.json');
+      const functionConfig = readJsonFile(configPath).function[fnName];
+      const functionMeta = readJsonFile(metaPath).function[fnName];
+      delete functionMeta.lastPushTimeStamp;
+
+      // Don't update anything, sends 'n' to the question:
+      // Do you want to update the Lambda function permissions to access...?
+      await updateFunction(projRoot, {}, 'nodejs');
+      const updatedFunctionConfig = readJsonFile(configPath).function[fnName];
+      const updatedFunctionMeta = readJsonFile(metaPath).function[fnName];
+      delete updatedFunctionMeta.lastPushTimeStamp;
+      expect(functionConfig).toStrictEqual(updatedFunctionConfig);
+      expect(functionMeta).toStrictEqual(updatedFunctionMeta);
+    });
+
+    it('should add api key from api to env vars', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      const random = Math.floor(Math.random() * 10000);
+      const apiName = `apiwithapikey${random}`;
+      await addApiWithSchema(projRoot, 'simple_model.graphql', { apiName });
+      const fnName = `apikeyenvvar${random}`;
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['api'],
+            choices: ['api'],
+            resources: [apiName],
+            operations: ['read'],
+          },
+        },
+        'nodejs',
+      );
+
+      const lambdaCFN = readJsonFile(
+        path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
+      );
+      const envVarsObj = lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables;
+      expect(_.keys(envVarsObj)).toContain(`API_${apiName.toUpperCase()}_GRAPHQLAPIKEYOUTPUT`);
+    });
   });
 });

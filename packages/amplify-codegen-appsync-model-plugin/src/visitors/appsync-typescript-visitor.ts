@@ -1,7 +1,5 @@
 import { indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { TypeScriptDeclarationBlock } from '../languages/typescript-declaration-block';
-import { camelCase } from 'change-case';
-import { getOwnerAuthRules, getOwnerFieldName, hasOwnerField } from '../utils/process-auth';
 import {
   AppSyncModelVisitor,
   CodeGenEnum,
@@ -90,18 +88,6 @@ export class AppSyncModelTypeScriptVisitor<
         optional: field.isList ? field.isListNullable : field.isNullable,
       });
     });
-    let ownerAuthRules = getOwnerAuthRules(modelObj);
-    if (ownerAuthRules !== undefined) {
-      for (let rule of ownerAuthRules) {
-        let ownerFieldName = getOwnerFieldName(rule);
-        if (ownerFieldName !== undefined && !hasOwnerField(modelObj.fields, ownerFieldName)) {
-          modelDeclarations.addProperty(ownerFieldName, 'String', undefined, 'DEFAULT', {
-            readonly: true,
-            optional: true,
-          });
-        }
-      }
-    }
 
     // Constructor
     modelDeclarations.addClassMethod(

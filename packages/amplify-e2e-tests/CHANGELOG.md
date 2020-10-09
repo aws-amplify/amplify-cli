@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.25.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.25.1...amplify-e2e-tests@2.25.2) (2020-10-07)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** fix update permission bug ([#5421](https://github.com/aws-amplify/amplify-cli/issues/5421)) ([f1194fd](https://github.com/aws-amplify/amplify-cli/commit/f1194fdd0aacbd2c316545422ad5e659d7042118)), closes [#5333](https://github.com/aws-amplify/amplify-cli/issues/5333)
+
+
+
+
+
 ## [2.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.25.0...amplify-e2e-tests@2.25.1) (2020-10-01)
 
 
