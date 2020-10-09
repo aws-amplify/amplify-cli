@@ -24,3 +24,5 @@ export const enum CronExpressionsMode {
   Yearly = 'Yearly',
   Custom = 'Custom AWS cron expression',
 }
+
+export const advancedSettingsList = ['Resource access permissions', 'Scheduled recurring invocation', 'Lambda layers configuration'];

@@ -6,7 +6,7 @@ import { FunctionParameters, ProjectLayer } from 'amplify-function-plugin-interf
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
-import { ServiceName, functionParametersFileName, parametersFileName } from '../utils/constants';
+import { ServiceName, functionParametersFileName, parametersFileName, advancedSettingsList } from '../utils/constants';
 import { category } from '../../../constants';
 import { getNewCFNParameters, getNewCFNEnvVariables } from '../utils/cloudformationHelpers';
 import { askExecRolePermissionsQuestions } from './execPermissionsWalkthrough';
@@ -42,6 +42,12 @@ export async function createWalkthrough(
 
   // ask template selection questions and merge in results
   templateParameters = merge(templateParameters, await templateWalkthrough(context, templateParameters));
+
+  // list out the advanced settings before asking whether to configure them
+  context.print.info('');
+  context.print.success('  Available advanced settings:');
+  advancedSettingsList.forEach(setting => context.print.info('  - '.concat(setting)));
+  context.print.info('');
 
   // ask whether to configure advanced settings
   if (await context.amplify.confirmPrompt('Do you want to configure advanced settings?')) {
