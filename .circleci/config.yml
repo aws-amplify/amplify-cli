@@ -1233,6 +1233,7 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - beta
+                - yes-push-fix
           requires:
             - build
       - amplify_migration_tests_latest:
@@ -1262,47 +1263,14 @@ workflows:
       - deploy:
           requires:
             - build
-            - test
-            - mock_e2e_tests
-            - graphql_e2e_tests
-            - integration_test
-            - amplify_console_integration_tests
-            - amplify_migration_tests_latest
-            - amplify_migration_tests_v4
-            - schema-auth-7-amplify_e2e_tests
-            - schema-auth-9-amplify_e2e_tests
-            - schema-model-amplify_e2e_tests
-            - storage-amplify_e2e_tests
-            - schema-auth-8-amplify_e2e_tests
-            - schema-auth-11-amplify_e2e_tests
-            - migration-api-connection-migration-amplify_e2e_tests
-            - api_2-amplify_e2e_tests
-            - function_2-amplify_e2e_tests
-            - schema-searchable-amplify_e2e_tests
-            - migration-api-key-migration2-amplify_e2e_tests
-            - schema-connection-amplify_e2e_tests
-            - auth_3-amplify_e2e_tests
-            - schema-auth-4-amplify_e2e_tests
-            - function_1-amplify_e2e_tests
-            - schema-auth-6-amplify_e2e_tests
-            - layer-amplify_e2e_tests
-            - api_3-amplify_e2e_tests
-            - schema-auth-1-amplify_e2e_tests
-            - schema-auth-2-amplify_e2e_tests
-            - migration-api-key-migration1-amplify_e2e_tests
-            - env-amplify_e2e_tests
-            - function_4-amplify_e2e_tests
-            - api_1-amplify_e2e_tests
-            - auth_4-amplify_e2e_tests
-            - auth_2-amplify_e2e_tests
-            - schema-function-amplify_e2e_tests
-            - schema-auth-5-amplify_e2e_tests
+            - publish_to_local_registry
           filters:
             branches:
               only:
                 - release
                 - master
                 - beta
+                - yes-push-fix
       - plugin-amplify_e2e_tests:
           filters: &ref_2
             branches:

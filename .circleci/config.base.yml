@@ -686,6 +686,7 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - beta
+                - yes-push-fix
           requires:
             - build
       - amplify_e2e_tests:
@@ -723,20 +724,22 @@ workflows:
       - deploy:
           requires:
             - build
-            - test
-            - mock_e2e_tests
-            - graphql_e2e_tests
-            - integration_test
-            - amplify_e2e_tests
-            - amplify_console_integration_tests
-            - amplify_migration_tests_latest
-            - amplify_migration_tests_v4
+            - publish_to_local_registry
+            # - test
+            # - mock_e2e_tests
+            # - graphql_e2e_tests
+            # - integration_test
+            # - amplify_e2e_tests
+            # - amplify_console_integration_tests
+            # - amplify_migration_tests_latest
+            # - amplify_migration_tests_v4
           filters:
             branches:
               only:
                 - release
                 - master
                 - beta
+                - yes-push-fix
       # - integration_test_js:
       #     filters:
       #       branches:
