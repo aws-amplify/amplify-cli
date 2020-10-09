@@ -148,6 +148,16 @@ export interface FunctionTriggerParameters {
   cloudResourceTemplatePath?: string;
 }
 
+export interface ContainerParameters {
+  resourceName: string;
+  parentStack: string;
+  dependsOn?: FunctionDependency[]; // resources this function depends on
+  functionTemplate?: FunctionTemplate; // fully describes the template that will be used
+  categoryPolicies?: object[]; // IAM policies that should be applied to this lambda
+  byoc?: boolean; // flag to identify is bringing their own container
+  template?: boolean; // flag to indicate has to create a new container from template
+}
+
 export interface ProviderContext {
   provider: string;
   service: string;

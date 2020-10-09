@@ -12,6 +12,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
+    "watch": "tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "test": "jest"
   },

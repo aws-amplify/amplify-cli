@@ -14,7 +14,8 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "test": "jest"
+    "test": "jest",
+    "watch": "tsc -w"
   },
   "keywords": [
     "amplify",

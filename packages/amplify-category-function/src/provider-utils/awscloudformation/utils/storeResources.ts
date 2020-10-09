@@ -1,5 +1,5 @@
 import { JSONUtilities } from 'amplify-cli-core';
-import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
+import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs, ContainerParameters } from 'amplify-function-plugin-interface';
 import _ from 'lodash';
 import fs from 'fs-extra';
 import path from 'path';
@@ -10,20 +10,47 @@ import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './layer
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { saveLayerRuntimes } from './layerRuntimes';
 
+export function createContainerResources(context: any, parameters: ContainerParameters) {
+  context.amplify.updateamplifyMetaAfterResourceAdd(
+    categoryName,
+    parameters.resourceName,
+    {
+      container: true,
+      build: true,
+      providerPlugin: "awscloudformation",
+      service: "ElasticContainer",
+      dependsOn: []
+    }
+  );
+  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+  const resourceDirPath = path.join(projectBackendDirPath, categoryName, parameters.resourceName);
+  
+  fs.ensureDirSync(path.join(resourceDirPath, 'src'));
+
+  fs.writeFileSync(path.join(resourceDirPath, 'src', 'Dockerfile'), '# my docker thing');
+
+}
+
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
 export function createFunctionResources(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {
+  context.print.info('before update meta');
   context.amplify.updateamplifyMetaAfterResourceAdd(
     categoryName,
     parameters.resourceName || parameters.functionName,
     translateFuncParamsToResourceOpts(parameters),
   );
 
+  context.print.info('after update meta');
   // copy template, CFN and parameter files
   copyTemplateFiles(context, parameters);
+  context.print.info('after copy template meta');
   saveMutableState(context, parameters);
+  context.print.info('after save mutable state');
   saveCFNParameters(context, parameters);
+  context.print.info('after save CFN parameters');
   context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
+  context.print.info('after leave breadcrumbs');
 }
 
 export const createLayerArtifacts = (context, parameters: LayerParameters, latestVersion: number = 1): string => {

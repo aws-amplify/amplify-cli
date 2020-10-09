@@ -1,4 +1,4 @@
-import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext } from 'amplify-function-plugin-interface';
+import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext, ContainerParameters } from 'amplify-function-plugin-interface';
 import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './utils/layerParams';
 import { chooseParamsOnEnvInit } from './utils/layerHelpers';
 import { supportedServices } from '../supported-services';
@@ -9,7 +9,8 @@ import {
   saveMutableState,
   saveCFNParameters,
   createLayerArtifacts,
-  updateLayerArtifacts,
+  updateLayerArtifacts, 
+  createContainerResources
 } from './utils/storeResources';
 import { getLayerRuntimes } from './utils/layerRuntimes';
 import { ServiceConfig } from '../supportedServicesType';
@@ -36,7 +37,7 @@ export async function addResource(
   parameters?: Partial<FunctionParameters> | FunctionTriggerParameters | Partial<LayerParameters>,
 ): Promise<string> {
   // load the service config for this service
-  const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
+  const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> | ServiceConfig<ContainerParameters> = supportedServices[service];
   const BAD_SERVICE_ERR = new Error(`amplify-category-function is not configured to provide service type ${service}`);
   if (!serviceConfig) {
     throw BAD_SERVICE_ERR;
@@ -45,10 +46,39 @@ export async function addResource(
     case ServiceName.LambdaFunction:
       return addFunctionResource(context, category, service, serviceConfig, parameters);
     case ServiceName.LambdaLayer:
-      return addLayerResource(context, service, serviceConfig, parameters as LayerParameters);
+      return addLayerResource(context, service, serviceConfig as ServiceConfig<LayerParameters>, parameters as LayerParameters);
+    case ServiceName.ElasticContainer:
+      return addElasticContainerResource(context, category, service, serviceConfig, parameters as ContainerParameters);
     default:
       throw BAD_SERVICE_ERR;
   }
+}
+
+export async function addElasticContainerResource(
+  context,
+  category,
+  service,
+  serviceConfig,
+  parameters: Partial<ContainerParameters>
+): Promise<string> {
+  const { print } = context;
+  const containerConfig = await serviceConfig.walkthroughs.createWalkthrough(context, parameters);
+
+  let completeParams: ContainerParameters = {
+    parentStack: 'idk',
+    resourceName: containerConfig.resourceName
+  };
+
+  createContainerResources(context, completeParams);
+
+  print.success(`Successfully added resource ${completeParams.resourceName} locally.`);
+  print.info('');
+  print.success('Next steps for your brand new container:');
+
+  print.info(
+    '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
+  );
+  return completeParams.resourceName;
 }
 
 export async function addFunctionResource(

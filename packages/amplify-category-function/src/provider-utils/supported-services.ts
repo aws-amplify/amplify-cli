@@ -1,5 +1,6 @@
 import { migrate, createWalkthrough, updateWalkthrough } from './awscloudformation/service-walkthroughs/lambda-walkthrough';
 import { createLayerWalkthrough, updateLayerWalkthrough } from './awscloudformation/service-walkthroughs/lambdaLayerWalkthrough';
+import { createContainerWalkthrough, updateContainerWalkthrough } from './awscloudformation/service-walkthroughs/containers-walkthrough';
 import * as lambdaController from './awscloudformation';
 import { SupportedServices } from './supportedServicesType';
 import { getIAMPolicies } from './awscloudformation/utils/cloudformationHelpers';
@@ -24,6 +25,15 @@ export const supportedServices: SupportedServices = {
     walkthroughs: {
       createWalkthrough: createLayerWalkthrough,
       updateWalkthrough: updateLayerWalkthrough,
+    },
+    provider: 'awscloudformation',
+    providerController: lambdaController,
+  },
+  ElasticContainer: {
+    alias: 'Elastic Container Service (ECS)',
+    walkthroughs: {
+      createWalkthrough: createContainerWalkthrough,
+      updateWalkthrough: updateContainerWalkthrough,
     },
     provider: 'awscloudformation',
     providerController: lambdaController,

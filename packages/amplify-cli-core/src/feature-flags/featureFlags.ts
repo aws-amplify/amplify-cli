@@ -476,6 +476,14 @@ export class FeatureFlags {
 
   // DEVS: Register feature flags here
   private registerFlags = (): void => {
+    this.registerFlag('advancedCompute', [
+      {
+        name: 'enabled',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
+    ])
     // Examples:
     // this.registerFlag('keyTransformer', [
     //   {

@@ -5,7 +5,7 @@ import os from 'os';
 import uuid from 'uuid';
 import { rootAssetDir } from '../aws-constants';
 import { checkForPathOverlap, validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
-import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -14,6 +14,7 @@ const category = 'api';
 const serviceName = 'API Gateway';
 const parametersFileName = 'api-params.json';
 const cfnParametersFilename = 'parameters.json';
+
 
 export async function serviceWalkthrough(context, defaultValuesFilename) {
   const { amplify } = context;
@@ -28,7 +29,45 @@ export async function serviceWalkthrough(context, defaultValuesFilename) {
   const apiNames = await askApiNames(context, allDefaultValues);
   answers = { ...answers, ...apiNames };
 
+  const enableAdvanceFeature = FeatureFlags.getBoolean('advancedCompute.enabled');
+
+  if (enableAdvanceFeature) {
+    const apigwOrEcs = await askForApigwOrECS();
+    context.print.info(apigwOrEcs);
+
+    if (apigwOrEcs === 'ecs') {
+      context.print.info('Enabling advance feature enabled', enableAdvanceFeature);
+      return {};
+    }
+
+  }
+
   return pathFlow(context, answers);
+}
+
+async function askForApigwOrECS() {
+
+  const question = [
+    {
+      name: 'apigwOrEcs',
+      message: 'Please select the REST API you would want to update',
+      type: 'list',
+      choices: [
+        {
+          name: 'APIGW',
+          value: 'apigw'
+        },
+        {
+          name: 'ECS',
+          value: 'ecs'
+        }
+      ],
+    }
+  ];
+
+  const { apigwOrEcs } = await inquirer.prompt(question);
+
+  return apigwOrEcs;
 }
 
 export async function updateWalkthrough(context, defaultValuesFilename) {
