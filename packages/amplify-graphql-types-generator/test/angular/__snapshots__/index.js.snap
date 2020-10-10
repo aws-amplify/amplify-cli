@@ -527,6 +527,50 @@ export class APIService {
 "
 `;
 
+exports[`Angular code generation #generateSource() should generate subscriptions 1`] = `
+"/* tslint:disable */
+/* eslint-disable */
+//  This file was automatically generated and should not be edited.
+import { Injectable } from \\"@angular/core\\";
+import API, { graphqlOperation } from \\"@aws-amplify/api\\";
+import { GraphQLResult } from \\"@aws-amplify/api/lib/types\\";
+import { Observable } from \\"zen-observable-ts\\";
+
+export interface SubscriptionResponse<T> {
+  value: GraphQLResult<T>;
+}
+
+export type OnCreateRestaurantSubscription = {
+  __typename: \\"Restaurant\\";
+  id: string;
+  name: string;
+  description: string;
+  city: string;
+};
+
+@Injectable({
+  providedIn: \\"root\\"
+})
+export class APIService {
+  OnCreateRestaurantListener: Observable<
+    SubscriptionResponse<OnCreateRestaurantSubscription>
+  > = API.graphql(
+    graphqlOperation(
+      \`subscription OnCreateRestaurant {
+        onCreateRestaurant {
+          __typename
+          id
+          name
+          description
+          city
+        }
+      }\`
+    )
+  ) as Observable<SubscriptionResponse<OnCreateRestaurantSubscription>>;
+}
+"
+`;
+
 exports[`Angular code generation #generateSource() should handle comments in enums 1`] = `
 "/* tslint:disable */
 /* eslint-disable */
