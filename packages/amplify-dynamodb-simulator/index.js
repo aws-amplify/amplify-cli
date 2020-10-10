@@ -5,6 +5,7 @@ const waitPort = require('wait-port');
 const detectPort = require('detect-port');
 const log = require('logdown')('dynamodb-emulator');
 const execa = require('execa');
+const { pathManager } = require('amplify-cli-core');
 
 // random port I chose in the ephemeral range.
 const basePort = 62224;
@@ -16,7 +17,10 @@ const defaultOptions = {
   startTimeout: 20 * 1000,
 };
 
-const emulatorPath = path.join(__dirname, 'emulator');
+const packageName = 'amplify-dynamodb-simulator';
+const relativeEmulatorPath = 'emulator';
+
+const emulatorPath = path.join(pathManager.getAmplifyPackageLibDirPath(packageName), relativeEmulatorPath);
 const retryInterval = 20;
 const maxRetries = 5;
 
@@ -213,7 +217,7 @@ function getClient(emu, options = {}) {
   });
 }
 
-const getPackageAssetPaths = () => ['emulator'];
+const getPackageAssetPaths = async () => [relativeEmulatorPath];
 
 module.exports = {
   launch,

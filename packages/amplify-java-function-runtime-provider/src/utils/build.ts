@@ -1,13 +1,14 @@
-import path from 'path';
+import { join } from 'path';
 import * as execa from 'execa';
 import fs from 'fs-extra';
 import glob from 'glob';
-import { shimPath, shimJarPath, pkgRelativeShimJarPath } from './constants';
+import { packageName, relativeShimJarPath, relativeShimSrcPath } from './constants';
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
+import { pathManager } from 'amplify-cli-core';
 
 export const buildResource = async (request: BuildRequest): Promise<BuildResult> => {
-  const resourceDir = path.join(request.srcRoot);
-  const projectPath = path.join(resourceDir);
+  const resourceDir = join(request.srcRoot);
+  const projectPath = join(resourceDir);
 
   if (!request.lastBuildTimestamp || isBuildStale(request.srcRoot, request.lastBuildTimestamp)) {
     installDependencies(projectPath);
@@ -18,16 +19,14 @@ export const buildResource = async (request: BuildRequest): Promise<BuildResult>
   return { rebuilt: false };
 };
 
-export const ensureShimJar = () => {
-  if (!fs.existsSync(shimJarPath)) {
-    runPackageManager(shimPath, 'jar');
-  }
-  return pkgRelativeShimJarPath;
-};
-
 const installDependencies = (resourceDir: string) => {
   runPackageManager(resourceDir, 'build');
-  ensureShimJar();
+
+  // ensure invoker shim is built
+  const packageLibDir = pathManager.getAmplifyPackageLibDirPath(packageName);
+  if (!fs.existsSync(join(packageLibDir, relativeShimJarPath))) {
+    runPackageManager(join(packageLibDir, relativeShimSrcPath), 'jar');
+  }
 };
 
 const runPackageManager = (cwd: string, buildArgs: string) => {

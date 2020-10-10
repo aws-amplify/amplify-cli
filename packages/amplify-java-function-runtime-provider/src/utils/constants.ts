@@ -1,7 +1,7 @@
-import path from 'path';
+import * as path from 'path';
 
-export const shimPath = path.resolve(path.join(__dirname, '..', '..', 'resources', 'localinvoke'));
-export const shimJarPath = path.join(shimPath, 'lib', 'localinvoke.jar');
-export const pkgRelativeShimJarPath = path.join('resources', 'localinvoke', 'lib', 'localinvoke.jar');
+export const packageName = 'amplify-java-function-runtime-provider';
+export const relativeShimSrcPath = path.join('resources', 'localinvoke');
+export const relativeShimJarPath = path.join(relativeShimSrcPath, 'lib', 'localinvoke.jar');
 export const minJavaVersion = '>=11';
 export const minGradleVersion = '>=5';

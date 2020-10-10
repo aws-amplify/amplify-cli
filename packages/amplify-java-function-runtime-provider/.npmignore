@@ -3,4 +3,5 @@
 src
 tsconfig.json
 tsconfig.tsbuildinfo
-!resources/**/src/**
+resources/localinvoke/*
+!resources/localinvoke/lib/

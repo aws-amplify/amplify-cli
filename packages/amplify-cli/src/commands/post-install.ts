@@ -1,22 +1,25 @@
-import { $TSContext, IPluginInfo, PathManager } from 'amplify-cli-core';
+import { $TSContext, GetPackageAssetPaths, pathManager } from 'amplify-cli-core';
 import { entries } from 'lodash';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
 export const run = async (context: $TSContext) => {
-  const pathManager = new PathManager();
+  // clean any previous libs
+  await fs.remove(pathManager.getAmplifyLibRoot());
+  await fs.ensureDir(pathManager.getAmplifyLibRoot());
+
   const pluginMetaList = entries(context.pluginPlatform.plugins)
     // can't use flatMap here as our target node version doesn't support it :(
     .reduce(
       (allPlugins, [_, categoryPlugins]) => allPlugins.concat(categoryPlugins),
       [] as { packageName: string; packageLocation: string }[],
     )
-    .concat(additionalPackageRegistry.map(packageName => ({ packageName, packageLocation: packageName })));
+    .concat(additionalPackageRegistry.map(packageName => ({ packageName, packageLocation: path.parse(require.resolve(packageName)).dir })));
 
   await Promise.all(
     pluginMetaList.map(async pluginMeta => {
-      const { getPluginArtifacts: getPackageAssetPaths } = (await import(pluginMeta.packageLocation)) as {
-        getPluginArtifacts: () => string[];
+      const { getPackageAssetPaths } = (await import(pluginMeta.packageLocation)) as {
+        getPackageAssetPaths: GetPackageAssetPaths;
       };
       if (typeof getPackageAssetPaths !== 'function') {
         return;
@@ -28,7 +31,7 @@ export const run = async (context: $TSContext) => {
             async assetPath =>
               await fs.copy(
                 path.join(pluginMeta.packageLocation, assetPath),
-                path.join(pathManager.getAmplifyPackageLibDirPath(pluginMeta.packageName), assetPAth),
+                path.join(pathManager.getAmplifyPackageLibDirPath(pluginMeta.packageName), assetPath),
               ),
           ),
         );
