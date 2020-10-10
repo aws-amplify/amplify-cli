@@ -362,7 +362,15 @@ function packageResources(context, resources) {
               S3Key: s3Key,
             };
           }
-        } else {
+        } else if (resource.service === FunctionServiceName.ElasticContainer) {
+          const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
+          const cfnParams = context.amplify.readJsonFile(cfnParamsFilePath);
+
+          _.set(cfnParams, ['ParamZipPath'], s3Key);
+          
+          context.amplify.writeObjectAsJson(cfnParamsFilePath, cfnParams, true);
+        }
+        else {
           if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
             cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
               Bucket: s3Bucket,
