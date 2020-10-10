@@ -21,6 +21,13 @@ export class ModelResourceIDs {
     }
     return `Model${name}FilterInput`;
   }
+  static ModelSyncPredicateInputTypeName(name: string): string {
+    const nameOverride = DEFAULT_SCALARS[name];
+    if (nameOverride) {
+      return `Model${nameOverride}SyncPredicateInput`;
+    }
+    return `Model${name}SyncPredicateInput`;
+  }
   static ModelFilterScalarInputTypeName(name: string, includeFilter: Boolean): string {
     const nameOverride = DEFAULT_SCALARS[name];
     if (nameOverride) {

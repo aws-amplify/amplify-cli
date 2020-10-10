@@ -6,6 +6,7 @@ import {
   StringNode,
   str,
   ObjectNode,
+  ListNode,
   compoundExpression,
   set,
   list,
@@ -14,6 +15,7 @@ import {
   qref,
   iff,
   raw,
+  nul,
   CompoundExpressionNode,
 } from './ast';
 
@@ -131,24 +133,37 @@ export class DynamoDBMappingTemplate {
    * @param param An object used when creating the operation request to appsync
    */
   public static syncItem({
+    syncPredicate,
     filter,
     limit,
     nextToken,
     lastSync,
   }: {
+    syncPredicate?: ListNode | Expression;
     filter?: ObjectNode | Expression;
     limit?: Expression;
     nextToken?: Expression;
     lastSync?: Expression;
-  }): ObjectNode {
-    return obj({
-      version: str('2018-05-29'),
-      operation: str('Sync'),
-      limit,
-      nextToken,
-      lastSync,
-      filter,
-    });
+  }): CompoundExpressionNode {
+    return compoundExpression([
+      set(ref('filterMap'), obj({})),
+      ifElse(
+        raw(`!$util.isNullOrEmpty($ctx.args.syncPredicate.and)`),
+        compoundExpression([
+          set(ref('json'), raw(`$ctx.args.syncPredicate.and)`)),
+          forEach(ref('entry'), ref(`json`), [raw('$filterMap.add($entry)')]),
+        ]),
+        set(ref(`filterMap`), raw(`$ctx.args.syncPredicate.or)`)),
+      ),
+      obj({
+        version: str('2018-05-29'),
+        operation: str('Sync'),
+        limit,
+        nextToken,
+        lastSync,
+        filter: ifElse(ref('filterMap'), ref('util.transform.toDynamoDBFilterExpression($filterMap)'), nul()),
+      }),
+    ]);
   }
 
   /**

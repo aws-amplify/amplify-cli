@@ -21,6 +21,7 @@ import {
   makeModelConnectionType,
   makeModelSortDirectionEnumObject,
   makeModelXFilterInputObject,
+  makeModelXSyncPredicateInputObject,
   makeNonModelInputObject,
   makeScalarFilterInputs,
   makeSubscriptionField,
@@ -445,18 +446,22 @@ export class DynamoDBModelTransformer extends Transformer {
       }
     }
 
-    // Create sync query
+    // Create sync query if @model present for datastore
     if (isSyncEnabled) {
-      const syncResolver = this.resources.makeSyncResolver(typeName);
+      // change here for selective Sync for @model (Just add the queryMap for table and query expression)
+      const syncResolver = this.resources.makeSyncResolverv2(typeName);
       const syncResourceID = ResolverResourceIDs.SyncResolverResourceID(typeName);
       ctx.setResource(syncResourceID, syncResolver);
       ctx.mapResourceToStack(typeName, syncResourceID);
       this.generateModelXConnectionType(ctx, def, isSyncEnabled);
       this.generateFilterInputs(ctx, def);
+      this.generateSyncPredicateInputs(ctx, def);
       queryFields.push(
         makeField(
           syncResolver.Properties.FieldName.toString(),
           [
+            // added Query type for selective sync
+            makeInputValueDefinition('syncPredicate', makeNamedType(ModelResourceIDs.ModelSyncPredicateInputTypeName(def.name.value))),
             makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(def.name.value))),
             makeInputValueDefinition('limit', makeNamedType('Int')),
             makeInputValueDefinition('nextToken', makeNamedType('String')),
@@ -638,6 +643,20 @@ export class DynamoDBModelTransformer extends Transformer {
       if (!this.typeExist(attributeTypeEnum.name.value, ctx)) {
         ctx.addType(attributeTypeEnum);
       }
+    }
+  }
+
+  /**
+   * Generate Predicate type for Sync Query for DataStore
+   * @param ctx : transformer context
+   * @param def : ObjectTypeDefinition
+   */
+
+  private generateSyncPredicateInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
+    // Create the ModelXSyncPredicateInput
+    const tableXSyncPredicateInput = makeModelXSyncPredicateInputObject(def, ctx, this.supportsConditions(ctx));
+    if (!this.typeExist(tableXSyncPredicateInput.name.value, ctx)) {
+      ctx.addInput(tableXSyncPredicateInput);
     }
   }
 
