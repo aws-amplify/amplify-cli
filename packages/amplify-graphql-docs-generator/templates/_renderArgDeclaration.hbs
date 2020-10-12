@@ -1,7 +1,0 @@
-{{#if args.length}}
-  (
-    {{#each args as |arg index|}}
-      ${{ arg.name }}:{{#if isList}}[{{/if}}{{arg.type}}{{#if arg.isRequired}}!{{/if}}{{#if isList}}]{{#if isListRequired}}!{{/if}}{{/if}}{{#if arg.defaultValue}}={{arg.defaultValue}}{{/if}}{{#unless @last}},{{/unless}}
-    {{/each}}
-  )
-{{/if}}

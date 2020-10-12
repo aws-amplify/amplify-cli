@@ -1,9 +1,0 @@
-{
-    "name": "javascript",
-    "aliases": ["js"],
-    "type": "frontend",
-    "commands": [
-        "help"
-    ],
-    "eventHandlers": []
-}

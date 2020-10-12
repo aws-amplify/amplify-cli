@@ -1,9 +1,0 @@
-{
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "skipLibCheck": true,
-    "strict": false, // TODO enable
-    "rootDir": "src",
-    "outDir": "lib"
-  }
-}

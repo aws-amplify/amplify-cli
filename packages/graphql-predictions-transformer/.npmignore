@@ -1,6 +1,0 @@
-**/__mocks__/**
-**/__tests__/**
-lambdaFunction
-src
-tsconfig.json
-tsconfig.tsbuildinfo

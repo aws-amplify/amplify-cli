@@ -1,7 +1,0 @@
-type Todo @model @key(name: "SomeGSI2", fields: ["version", "id"]) {
-  id: ID!
-  id2: ID!
-  name: String!
-  name2: String!
-  version: String!
-}

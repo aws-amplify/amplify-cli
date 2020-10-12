@@ -1,1 +1,0 @@
-testString = "Hello from Lambda!"

@@ -1,6 +1,0 @@
-**/__mocks__/**
-**/__tests__/**
-**/__e2e__/**
-src
-tsconfig.json
-tsconfig.tsbuildinfo
