@@ -9,7 +9,7 @@ yellow="\033[33m"
 cyan="\033[36m"
 white="\033[37m"
 
-printf "\n$yellow Installing Amplify CLI!$reset\n\n"
+printf "\n$yellow Installing the AWS Amplify CLI...$reset\n\n"
 
 # Detect platform
 if [[ $OSTYPE == "linux-gnu" ]]; then
@@ -88,4 +88,4 @@ else
 fi
 
 $BINARY_PATH post-install
-printf "$green\nSuccessfully installed the Amplify CLI.\nOpen a new shell and run '$BINARY_NAME help' to get started!$reset\n"
+printf "$green\nSuccessfully installed the Amplify CLI.\nRun '$BINARY_NAME help' to get started!$reset\n"
