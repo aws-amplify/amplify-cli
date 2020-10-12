@@ -7,4 +7,3 @@ build
 .idea/*
 dist/
 coverage
-src/parse/index.js

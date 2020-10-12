@@ -24,9 +24,7 @@
   ],
   "scripts": {
     "test": "npm run test-sub",
-    "test-sub": "mocha tests --require should",
-    "pub": "npm version patch && npm publish && git push origin master && git push origin --tag",
-    "build": "jison src/parse/velocity.yy src/parse/velocity.l -o src/parse/index.js"
+    "test-sub": "mocha tests --require should"
   },
   "dependencies": {
     "lodash": "^4.17.19"
@@ -36,7 +34,6 @@
     "coveralls": "~3.0.9",
     "growl": "^1.10.5",
     "istanbul": "~0.4.5",
-    "jison": ">=0.4",
     "mocha": ">=7.0.0",
     "mocha-lcov-reporter": "1.3.0",
     "should": "^13.2.3",
