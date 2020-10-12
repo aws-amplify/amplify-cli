@@ -39,22 +39,19 @@ BINARY_URL=https://github.com/aws-amplify/amplify-cli/releases/download/$version
 
 # Dowload binary
 BINARIES_DIR_PATH=$HOME/.amplify/bin
-BINARY_PATH=$BINARIES_DIR_PATH/amplify
+BINARY_NAME=amp # amd for testing. Change to 'amplify' before launch
+BINARY_PATH=$BINARIES_DIR_PATH/$BINARY_NAME
 mkdir -p $BINARIES_DIR_PATH
 printf "$yellow Downloading binary...$reset\n"
 
 curl -L -o $BINARY_PATH $BINARY_URL
 chmod +x $BINARY_PATH
 
-# Create 'amp' alias
-ln -sf amplify $BINARIES_DIR_PATH/amp
-
 # Add to $PATH
 SOURCE_STR="# Added by Amplify CLI binary installer\nexport PATH=\"\$HOME/.amplify/bin:\$PATH\"\n"
 add_to_path () {
   command printf "\n$SOURCE_STR" >> "$1"
   printf "\n$yellow Added the following to $1:\n\n$SOURCE_STR$reset"
-  source $1
 }
 SHELLTYPE="$(basename "/$SHELL")"
 if [[ $SHELLTYPE = "fish" ]]; then
@@ -90,5 +87,5 @@ else
   fi
 fi
 
-$HOME/.amplify/bin/amplify post-install
-printf "$green\nSuccessfully installed the Amplify CLI. Run 'amplify help' to get started!$reset\n"
+$BINARY_PATH post-install
+printf "$green\nSuccessfully installed the Amplify CLI.\nOpen a new shell and run '$BINARY_NAME help' to get started!$reset\n"
