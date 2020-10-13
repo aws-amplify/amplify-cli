@@ -1,0 +1,48 @@
+@echo off
+set reset=[0m
+set red=[31m
+set green=[32m
+set yellow=[33m
+set cyan=[36m
+set white=[37m
+
+echo.
+echo %yellow%Installing the AWS Amplify CLI...%reset%
+echo.
+
+:: Detect unsupported architecture
+for /f %%g in ('echo %PROCESSOR_ARCHITECTURE% ^| findstr 64') do (set is64Bit=%%g)
+if %is64Bit% == '' (
+    echo %red%Sorry, there's no Amplify CLI binary installer available for %PROCESSOR_ARCHITECTURE% architecture%reset%
+    exit 1
+)
+
+if not defined version (
+    for /f delims^=^"^ tokens^=4 %%g in ('curl -sL https://api.github.com/repos/aws-amplify/amplify-cli/releases/latest ^| findstr tag_name') do (set version=%%g)
+)
+
+set binary_url=https://github.com/aws-amplify/amplify-cli/releases/download/%version%/amplify-pkg-win.exe
+set binaries_dir_path=%userprofile%\.amplify\bin
+:: Binary name is amp for testing. Change to 'amplify' before launch
+set binary_base=amp
+set binary_name=%binary_base%.exe
+set binary_path=%binaries_dir_path%\%binary_name%
+md %binaries_dir_path%
+
+echo %yellow%Downloading binary...%reset%
+
+curl -L -o %binary_path% %binary_url%
+
+:: Add to user path
+for /f %%g in ('echo %PATH% ^| findstr %binaries_dir_path%) do (set isPathSet=%%g)
+if %isPathSet == '' (
+    setx PATH "%PATH%;%binaries_dir_path%" > nul
+    echo %yellow%Added %binaries_dir_path% to user PATH%reset%
+)
+
+:: %binary_path% post-install
+echo.
+echo %green%Successfully installed the Amplify CLI.
+echo.
+echo Run '%binary_name% help' to get started!%reset%
+echo.
