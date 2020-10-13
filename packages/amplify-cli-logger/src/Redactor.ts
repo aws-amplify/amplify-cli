@@ -1,4 +1,4 @@
-const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app', 'bucket'];
+const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app', 'bucket', 'token'];
 const quotes = '\\\\?"';
 const keyMatcher = `\\w*?(${containsToRedact.join('|')})\\w*?`;
 const completeMatch = `${quotes}(${keyMatcher})${quotes}:\\s?${quotes}([^!\\\\?"]+)${quotes}`;
@@ -8,6 +8,7 @@ export function Redactor(arg: string | undefined): string {
 
   // matches any json and gives values in json
   const jsonregex: RegExp = new RegExp(completeMatch, 'gmi');
+  // test for value in containsToRedact
   if (jsonregex.test(arg)) {
     jsonregex.lastIndex = 0;
     let m: RegExpExecArray | null;
@@ -19,6 +20,7 @@ export function Redactor(arg: string | undefined): string {
       }
     } while (m !== null);
     valuestToRedact.forEach(val => {
+      //replace value using string Masker
       arg = arg?.replace(val, stringMasker);
     });
   }
@@ -29,12 +31,14 @@ function stringMasker(s: string): string {
   if (!s.includes('-') && !s.includes('/')) return redactPart(s);
 
   // if string only includes '/' char
-  if (s.includes('/') && !s.includes('-')) return redactBySlahsSplit(s);
+  if (s.includes('/') && !s.includes('-')) return redactBySlashSplit(s);
   const newString = s
-    .split('-')
+    .split('-') // split string by '-'
     .map(part => {
+      // and then redact the smaller pieces selarated by '/'
       if (part.includes('/')) {
-        return redactBySlahsSplit(part);
+        // start redacting only when it contains '/'
+        return redactBySlashSplit(part);
       } else {
         return redactPart(part);
       }
@@ -43,14 +47,14 @@ function stringMasker(s: string): string {
 
   return newString;
 }
-
-function redactBySlahsSplit(s: string): string {
+//redacts all the pieces joined by '/' individually
+function redactBySlashSplit(s: string): string {
   return s
     .split('/')
     .map(redactPart)
     .join('/');
 }
-
+// replaces 60% of string by [***]
 function redactPart(s: string): string {
   const length = s.length;
   const maskPercentage = 60 / 100;

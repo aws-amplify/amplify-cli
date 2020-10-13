@@ -13,8 +13,8 @@ export const fileLogger = file => (crumb, args) => error => {
   }
 };
 
-export function logStackEvents(events) {
+export const logStackEvents = events => {
   logger.logInfo({
     message: events,
   });
-}
+};

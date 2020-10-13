@@ -1,4 +1,5 @@
 import winston, { Logger, format } from 'winston';
+import * as os from 'os';
 import winstonDailyRotateFile from 'winston-daily-rotate-file';
 import { constants } from './constants';
 import { IAmplifyLogger } from './IAmplifyLogger';
@@ -19,7 +20,7 @@ export class AmplifyLogger implements IAmplifyLogger {
           auditFile: getLogAuditFilePath(),
           filename: getLogFilePath(),
           datePattern: constants.DATE_PATTERN,
-          maxFiles: `${constants.MAX_FILE_DAYS}d`,
+          maxFiles: constants.MAX_FILE_DAYS,
           handleExceptions: false,
           format: this.format,
         }),
@@ -30,10 +31,10 @@ export class AmplifyLogger implements IAmplifyLogger {
   private formatter(info: winston.Logform.TransformableInfo): string {
     const format = `${info.timestamp}|${info.level} : ${info.message}`;
     if (info.level === 'error') {
-      return `${format} \n ${info.error}`;
+      return `${format}${os.EOL}${info.error}`;
     }
 
-    return '';
+    return format;
   }
 
   projectLocalLogInit(projecPath: string): void {
@@ -43,10 +44,9 @@ export class AmplifyLogger implements IAmplifyLogger {
           auditFile: getLocalAuditLogFile(projecPath),
           filename: getLocalLogFilePath(projecPath),
           datePattern: constants.DATE_PATTERN,
-          maxFiles: `${constants.MAX_FILE_DAYS}d`,
+          maxFiles: constants.MAX_FILE_DAYS,
           handleExceptions: false,
           format: this.format,
-          //options: this.options,
         }),
       );
     }
