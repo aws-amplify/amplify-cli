@@ -1,39 +1,20 @@
-const { logger } = require('amplify-cli-logger');
+const { logger, Redactor } = require('amplify-cli-logger');
+const mainModule = 'amplify-provider-awscloudformation';
 
 export const fileLogger = file => (crumb, args) => error => {
-  if (error) {
-    logError({
-      mod: `${file}.${crumb}`,
-      args,
-      error,
-    });
+  const message = `${mainModule}.${file}.${crumb}(${Redactor(JSON.stringify(args))})`;
+  if (!error) {
+    logger.logInfo({ message });
   } else {
-    logInfo({
-      mod: `${file}.${crumb}`,
-      args,
+    logger.logError({
+      message,
+      error,
     });
   }
 };
 
 export function logStackEvents(events) {
   logger.logInfo({
-    module: events,
-    isStackEvent: true,
-    args: [],
+    message: events,
   });
 }
-
-const logInfo = ({ mod, args }) => {
-  logger.logInfo({
-    module: `aws-provider-awscloudformation.${mod}`,
-    args,
-  });
-};
-
-const logError = ({ mod, args, error }) => {
-  logger.logError({
-    module: `aws-provider-awscloudformation.${mod}`,
-    args,
-    error,
-  });
-};

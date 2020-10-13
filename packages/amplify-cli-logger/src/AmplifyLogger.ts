@@ -2,19 +2,14 @@ import winston, { Logger, format } from 'winston';
 import winstonDailyRotateFile from 'winston-daily-rotate-file';
 import { constants } from './constants';
 import { IAmplifyLogger } from './IAmplifyLogger';
-import { JSONUtilities } from 'amplify-cli-core';
 import { getLogFilePath, getLocalLogFilePath, getLogAuditFilePath, getLocalAuditLogFile } from './getLogFilePath';
 import { LocalProjectData, LogPayload, LogErrorPayload } from './Types';
-import { Redactor } from './Redactor';
 
 export class AmplifyLogger implements IAmplifyLogger {
   logger: Logger;
   format: winston.Logform.Format;
   localProjectData!: LocalProjectData;
   disabledAmplifyLogging: boolean = !!process.env.AMPLIFY_CLI_DISABLE_LOGGING;
-  options: any = {
-    mode: 0o640,
-  };
   constructor() {
     this.logger = winston.createLogger();
     this.format = format.combine(format.timestamp(), format.splat(), format.printf(this.formatter));
@@ -27,7 +22,6 @@ export class AmplifyLogger implements IAmplifyLogger {
           maxFiles: `${constants.MAX_FILE_DAYS}d`,
           handleExceptions: false,
           format: this.format,
-          //options: this.options,
         }),
       );
     }
@@ -35,19 +29,6 @@ export class AmplifyLogger implements IAmplifyLogger {
 
   private formatter(info: winston.Logform.TransformableInfo): string {
     const format = `${info.timestamp}|${info.level} : ${info.message}`;
-    if (info.level === 'info') {
-      if (info.isStackEvent) return format;
-      return `${format}(${info.args
-        .map((arg: any) => {
-          if (arg) {
-            return Redactor(JSONUtilities.stringify(arg, { minify: true }));
-          } else {
-            return arg;
-          }
-        })
-        .join(',')})`;
-    }
-
     if (info.level === 'error') {
       return `${format} \n ${info.error}`;
     }
@@ -72,16 +53,12 @@ export class AmplifyLogger implements IAmplifyLogger {
   }
 
   logInfo(content: LogPayload): void {
-    const { module, ...others } = content;
-    this.logger.info(content.module, { ...others });
+    const { message, ...others } = content;
+    this.logger.info(message, { ...others });
   }
 
   logError(content: LogErrorPayload): void {
-    const { module, ...others } = content;
-    this.logger.error(module, { ...others });
-  }
-
-  log(message: string): void {
-    this.logger.info(message);
+    const { message, ...others } = content;
+    this.logger.error(message, { ...others });
   }
 }

@@ -1,8 +1,6 @@
 export type LocalProjectData = {};
 export type LogPayload = {
-  module: string;
-  args: Array<any>;
-  isStackEvent: boolean;
+  message: string;
 };
 
 export type LogErrorPayload = LogPayload & {
