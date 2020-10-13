@@ -1,6 +1,16 @@
 import { DynamoDB } from 'aws-sdk';
 import { unmarshall, nullIfEmpty } from './utils';
 import { AmplifyAppSyncSimulatorDataLoader } from '..';
+import { ExpressionAttributeValueMap, TransactWriteItem } from 'aws-sdk/clients/dynamodb';
+import {
+  AppSyncConditionCheckTransactionWriteItems,
+  AppSyncDeleteItemTransactionWriteItems,
+  AppSyncPutItemTransactionWriteItems,
+  AppSyncTransactionWriteItem,
+  AppSyncTransactionWriteItemsOperation,
+  AppSyncTransactionWriteItemsOperationResponse,
+  AppSyncUpdateItemTransactionWriteItems,
+} from './AppSyncTransactionWriteItems';
 
 type DynamoDBConnectionConfig = {
   endpoint: string;
@@ -41,6 +51,8 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
           return await this.query(payload);
         case 'Scan':
           return await this.scan(payload);
+        case 'TransactWriteItems':
+          return await this.transactWriteItems(payload);
 
         case 'BatchGetItem':
         case 'BatchPutItem':
@@ -180,6 +192,155 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
 
     return unmarshall(deleted);
   }
+
+  private transformExpressionAttributeValues(
+    expressions: ExpressionAttributeValueMap | null | undefined,
+  ): ExpressionAttributeValueMap | null | undefined {
+    if (typeof expressions !== 'object') {
+      return expressions;
+    }
+    const attributes: ExpressionAttributeValueMap[] = [];
+    attributes.push(expressions);
+
+    while (attributes.length > 0) {
+      const attr = attributes.shift();
+      Object.keys(attr).forEach(key => {
+        const value = attr[key];
+        if (value.M) {
+          attributes.push(value.M);
+        }
+        if (value.N) {
+          value.N = `${value.N}`;
+        }
+        if (value.NS) {
+          value.NS = value.NS.map(item => `${item}`);
+        }
+      });
+    }
+    return expressions;
+  }
+
+  private transformPutTransationWriteItem(transactItem: AppSyncPutItemTransactionWriteItems): TransactWriteItem {
+    return {
+      Put: {
+        TableName: transactItem.table,
+        Item: transactItem.attributeValues,
+        ConditionExpression: transactItem.condition?.expression,
+        ExpressionAttributeNames: transactItem.condition?.expressionNames,
+        ExpressionAttributeValues: this.transformExpressionAttributeValues(transactItem.condition?.expressionValues),
+        ReturnValuesOnConditionCheckFailure: transactItem.condition?.returnValuesOnConditionCheckFailure ? 'ALL_OLD' : 'NONE',
+      },
+    };
+  }
+
+  private transformUpdateTransationWriteItem(transactItem: AppSyncUpdateItemTransactionWriteItems): TransactWriteItem {
+    return {
+      Update: {
+        Key: transactItem.key,
+        TableName: transactItem.table,
+        UpdateExpression: transactItem.update.expression,
+        ConditionExpression: transactItem.condition?.expression,
+        ExpressionAttributeNames:
+          transactItem.update.expressionNames || transactItem.condition?.expressionNames
+            ? {
+                ...(transactItem.update.expressionNames || {}),
+                ...(transactItem.condition.expressionNames || {}),
+              }
+            : undefined,
+        ExpressionAttributeValues:
+          transactItem.update.expressionValues || transactItem.condition?.expressionValues
+            ? this.transformExpressionAttributeValues({
+                ...(transactItem.update.expressionValues || {}),
+                ...(transactItem.condition.expressionValues || {}),
+              })
+            : undefined,
+        ReturnValuesOnConditionCheckFailure: transactItem.condition?.returnValuesOnConditionCheckFailure ? 'ALL_OLD' : 'NONE',
+      },
+    };
+  }
+
+  private transformDeleteTransationWriteItem(transactItem: AppSyncDeleteItemTransactionWriteItems): TransactWriteItem {
+    return {
+      Delete: {
+        Key: transactItem.key,
+        TableName: transactItem.table,
+        ConditionExpression: transactItem.condition?.expression,
+        ExpressionAttributeNames: transactItem.condition?.expressionNames,
+        ExpressionAttributeValues: this.transformExpressionAttributeValues(transactItem.condition?.expressionValues),
+        ReturnValuesOnConditionCheckFailure: transactItem.condition?.returnValuesOnConditionCheckFailure ? 'ALL_OLD' : 'NONE',
+      },
+    };
+  }
+
+  private transformCheckConditionTransationWriteItem(transactItem: AppSyncConditionCheckTransactionWriteItems): TransactWriteItem {
+    return {
+      ConditionCheck: {
+        Key: transactItem.key,
+        TableName: transactItem.table,
+        ConditionExpression: transactItem.condition?.expression,
+        ExpressionAttributeNames: transactItem.condition?.expressionNames,
+        ExpressionAttributeValues: this.transformExpressionAttributeValues(transactItem.condition?.expressionValues),
+        ReturnValuesOnConditionCheckFailure: transactItem.condition?.returnValuesOnConditionCheckFailure ? 'ALL_OLD' : 'NONE',
+      },
+    };
+  }
+
+  private async transactWriteItems({
+    transactItems,
+  }: AppSyncTransactionWriteItemsOperation): Promise<AppSyncTransactionWriteItemsOperationResponse> {
+    const keys = transactItems.map(({ key }) => key);
+
+    const transactionMap = (transactItem: AppSyncTransactionWriteItem): TransactWriteItem => {
+      switch (transactItem.operation) {
+        case 'PutItem':
+          return this.transformPutTransationWriteItem(transactItem);
+        case 'UpdateItem':
+          return this.transformUpdateTransationWriteItem(transactItem);
+        case 'DeleteItem':
+          return this.transformDeleteTransationWriteItem(transactItem);
+        case 'ConditionCheck':
+          return this.transformCheckConditionTransationWriteItem(transactItem);
+
+        default:
+          return transactItem;
+      }
+    };
+
+    const transactionItemsMapped = transactItems.map(transactionMap);
+
+    const request = this.client.transactWriteItems({
+      TransactItems: transactionItemsMapped,
+    });
+
+    return new Promise((resolve, reject) => {
+      request.on('extractError', resp => {
+        try {
+          const errors = JSON.parse(resp.httpResponse.body.toString());
+          resolve({
+            keys: null,
+            cancellationReasons: errors.CancellationReasons,
+          });
+        } catch (e) {
+          reject(resp.httpResponse.body.toString());
+        }
+      });
+
+      request.on('extractData', response => {
+        resolve({
+          keys,
+          cancellationReasons: null,
+        });
+      });
+
+      request.on('error', error => {
+        console.log('[on error]', error);
+        reject(error);
+      });
+
+      request.send();
+    });
+  }
+
   private async scan(payload) {
     const { filter, index, limit, consistentRead = false, nextToken, select, totalSegments, segment } = payload;
 
