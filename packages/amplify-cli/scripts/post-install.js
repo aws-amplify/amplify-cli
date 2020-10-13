@@ -16,7 +16,8 @@ try {
 }
 
 // execute post-install amplify command
-execa.commandSync('amplify post-install');
+const ampPath = path.resolve(path.join(__dirname, '..', 'bin', 'amplify'));
+execa.commandSync(`${ampPath} post-install`);
 
 console.log(EOL);
 console.log(chalk.green('----------------------------------------'));
