@@ -45,8 +45,8 @@ export async function createWalkthrough(
 
   // list out the advanced settings before asking whether to configure them
   context.print.info('');
-  context.print.success('  Available advanced settings:');
-  advancedSettingsList.forEach(setting => context.print.info('  - '.concat(setting)));
+  context.print.success('Available advanced settings:');
+  advancedSettingsList.forEach(setting => context.print.info('- '.concat(setting)));
   context.print.info('');
 
   // ask whether to configure advanced settings
@@ -113,13 +113,28 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, category, functionParameters.resourceName);
   const currentParameters = loadFunctionParameters(context, resourceDirPath);
+  const functionRuntime = context.amplify.readBreadcrumbs(context, category, functionParameters.resourceName).functionRuntime as string;
+
+  context.print.success('General information');
+  context.print.info('| Name: '.concat(lambdaToUpdate));
+  context.print.info('| Runtime: '.concat(functionRuntime));
+  context.print.info('');
+
+  const currentDependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
+  if (currentDependsOn.length > 0) {
+    context.print.success('Resource access permission');
+    currentDependsOn.forEach(dependency => {
+      const currentPermissions = currentParameters.permissions[dependency.category][dependency.resourceName];
+      const formattedCurrentPermissions = ' ('.concat(currentPermissions.join(', ').concat(')'));
+      context.print.info('- '.concat(dependency.resourceName).concat(formattedCurrentPermissions));
+    });
+  }
 
   if (
     await context.amplify.confirmPrompt('Do you want to update the Lambda function permissions to access other resources in this project?')
   ) {
     const additionalParameters = await askExecRolePermissionsQuestions(context, lambdaToUpdate, currentParameters.permissions);
 
-    const currentDependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
     if (currentDependsOn.length > 0) {
       additionalParameters.dependsOn = additionalParameters.dependsOn || [];
       currentDependsOn.forEach(dependency => {
@@ -206,7 +221,6 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   };
   merge(functionParameters, await scheduleWalkthrough(context, scheduleParameters));
 
-  const functionRuntime = context.amplify.readBreadcrumbs(context, category, functionParameters.resourceName).functionRuntime as string;
   const currentFunctionParameters =
     context.amplify.readJsonFile(path.join(resourceDirPath, functionParametersFileName), undefined, false) || {};
   merge(
