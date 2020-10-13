@@ -19,11 +19,14 @@ export function getLocalLogFilePath(projectPath: string): string {
 }
 
 function getFolder() {
-  const executable = process.argv[1];
   let folder = constants.LOG_DIRECTORY;
 
-  if (executable && executable.includes('dev')) {
-    folder += '-dev';
+  if (process.argv.length > 1) {
+    const executable = process.argv[1];
+
+    if (executable && executable.includes('dev')) {
+      folder += '-dev';
+    }
   }
   return folder;
 }
