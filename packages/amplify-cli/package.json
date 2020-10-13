@@ -1,6 +1,6 @@
 {
   "name": "@aws-amplify/cli",
-  "version": "4.29.6",
+  "version": "4.29.7-beta.0",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -60,10 +60,10 @@
     "amplify-java-function-template-provider": "1.4.1",
     "amplify-nodejs-function-runtime-provider": "1.1.5",
     "amplify-nodejs-function-template-provider": "1.4.2",
-    "amplify-provider-awscloudformation": "4.26.6",
+    "amplify-provider-awscloudformation": "4.26.7-beta.0",
     "amplify-python-function-runtime-provider": "1.2.3",
     "amplify-python-function-template-provider": "1.2.1",
-    "amplify-util-mock": "3.24.13",
+    "amplify-util-mock": "3.24.14-beta.0",
     "chalk": "^3.0.0",
     "cli-table3": "^0.6.0",
     "colors": "^1.4.0",
