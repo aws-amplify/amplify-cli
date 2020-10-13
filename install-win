@@ -22,7 +22,7 @@ if not defined version (
     for /f delims^=^"^ tokens^=4 %%g in ('curl -sL https://api.github.com/repos/aws-amplify/amplify-cli/releases/latest ^| findstr tag_name') do (set version=%%g)
 )
 
-set binary_url=https://github.com/aws-amplify/amplify-cli/releases/download/%version%/amplify
+set binary_url=https://github.com/aws-amplify/amplify-cli/releases/download/%version%/amplify-pkg-win.exe
 set binaries_dir_path=%userprofile%\.amplify\bin
 :: Binary name is amp for testing. Change to 'amplify' before launch
 set binary_base=amp
