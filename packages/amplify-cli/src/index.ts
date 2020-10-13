@@ -126,8 +126,7 @@ function boundErrorHandler(this: Context, e: Error) {
 
 function sigIntHandler(this: Context, e: any) {
   this.usageData.emitAbort();
-  this.print.warn('^Aborted!');
-  //exit on abort
+  this.print.warning('^Aborted!');
   exitOnNextTick(2);
 }
 
