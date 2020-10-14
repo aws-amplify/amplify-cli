@@ -148,14 +148,14 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     cloudwatchRule: cfnParameters.CloudWatchRule,
     resourceName: functionParameters.resourceName,
   };
-  if (scheduleParameters) {
+  if (scheduleParameters.cloudwatchRule) {
     context.print.success('Scheduled recurring invocation');
     context.print.info('| '.concat(scheduleParameters.cloudwatchRule));
     context.print.info('');
   }
 
   // Provide lambda layer information
-  if (currentParameters.lambdaLayers) {
+  if (currentParameters.lambdaLayers.length) {
     context.print.success('Lambda layers');
     currentParameters.lambdaLayers.forEach(layer => {
       context.print.info('- '.concat(layer.arn));
