@@ -143,16 +143,15 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
       UpdateExpression: update.expression,
       ConditionExpression: condition.expression,
       ReturnValues: 'ALL_NEW',
-      ExpressionAttributeNames: {
+      ExpressionAttributeNames: nullIfEmpty({
         ...(condition.expressionNames || {}),
-        ...update.expressionNames,
-      },
-      ExpressionAttributeValues: {
+        ...(update.expressionNames || {}),
+      }),
+      ExpressionAttributeValues: nullIfEmpty({
         ...(condition.expressionValues || {}),
-        ...update.expressionValues,
-      },
+        ...(update.expressionValues || {}),
+      }),
     };
-
     const { Attributes: updated } = await this.client.updateItem(params).promise();
     return unmarshall(updated);
   }
