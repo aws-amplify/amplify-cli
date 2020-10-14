@@ -1,12 +1,13 @@
 import inquirer from 'inquirer';
 import uuid from 'uuid';
 import { FunctionParameters } from 'amplify-function-plugin-interface';
+import { advancedSettingsList } from '../utils/constants';
 
 /**
  * Asks general questions about the function and populates corresponding FunctionParameters
  * @param context The Amplify Context object
  */
-export default async function generalQuestionsWalkthrough(context: any): Promise<Partial<FunctionParameters>> {
+export async function generalQuestionsWalkthrough(context: any): Promise<Partial<FunctionParameters>> {
   return await inquirer.prompt(generalQuestions(context));
 }
 
@@ -32,4 +33,14 @@ function generalQuestions(context: any): object[] {
       },
     },
   ];
+}
+
+export async function settingsUpdateSelection() {
+  const settingsSelectionQuestion = {
+    type: 'checkbox',
+    name: 'selectedSettings',
+    message: 'Which setting do you want to update?',
+    choices: advancedSettingsList,
+  };
+  return await inquirer.prompt([settingsSelectionQuestion]);
 }
