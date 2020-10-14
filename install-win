@@ -19,7 +19,7 @@ if %is64Bit% == '' (
 )
 
 if not defined version (
-    for /f delims^=^"^ tokens^=4 %%g in ( 'curl -sL https://api.github.com/repos/aws-amplify/amplify-cli/releases/latest ^| findstr tag_name' ) do ( set version=%%g )
+    for /f delims^=^"^ tokens^=4 %%g in ('curl -sL https://api.github.com/repos/aws-amplify/amplify-cli/releases/latest ^| findstr tag_name') do (set version=%%g)
 )
 
 set binary_url=https://github.com/aws-amplify/amplify-cli/releases/download/%version%/amplify-pkg-win.exe
@@ -31,7 +31,6 @@ set binary_path=%binaries_dir_path%\%binary_name%
 md %binaries_dir_path%
 
 echo %yellow%Downloading binary...%reset%
-
 curl -L -o %binary_path% %binary_url%
 
 :: Add to user path
@@ -45,5 +44,5 @@ if errorlevel 1 (
 echo.
 echo %green%Successfully installed the Amplify CLI.
 echo.
-echo Run '%binary_name% help' to get started!%reset%
+echo Run '%binary_base% help' to get started!%reset%
 echo.
