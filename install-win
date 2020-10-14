@@ -45,5 +45,5 @@ if %found == '' (
 echo.
 echo %green%Successfully installed the Amplify CLI.
 echo.
-echo Run '%binary_name% help' to get started!%reset%
+echo Run '%binary_base% help' to get started!%reset%
 echo.
