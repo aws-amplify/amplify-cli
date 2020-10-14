@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.26.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.6...amplify-provider-awscloudformation@4.26.7) (2020-10-13)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** apigw resource download ([#5564](https://github.com/aws-amplify/amplify-cli/issues/5564)) ([43eb3e8](https://github.com/aws-amplify/amplify-cli/commit/43eb3e8a307bb320648c5cce87cb21ec10e54b7a)), closes [#5557](https://github.com/aws-amplify/amplify-cli/issues/5557)
+
+
+
+
+
+## [4.26.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.5...amplify-provider-awscloudformation@4.26.6) (2020-10-09)
+
+
+### Bug Fixes
+
+* cli.json update on pull, E2E enhancements ([#5516](https://github.com/aws-amplify/amplify-cli/issues/5516)) ([952a92e](https://github.com/aws-amplify/amplify-cli/commit/952a92ef1926d86798efef2bbc27fe1c49d8e75f))
+
+
+
+
+
+## [4.26.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.4...amplify-provider-awscloudformation@4.26.5) (2020-10-07)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
 ## [4.26.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.3...amplify-provider-awscloudformation@4.26.4) (2020-10-01)
 
 

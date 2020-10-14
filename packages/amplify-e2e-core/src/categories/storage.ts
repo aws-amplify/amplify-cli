@@ -1,4 +1,4 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '../../src';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 import { singleSelect, multiSelect } from '../utils/selectors';
 
 export function addSimpleDDB(cwd: string, settings: any) {

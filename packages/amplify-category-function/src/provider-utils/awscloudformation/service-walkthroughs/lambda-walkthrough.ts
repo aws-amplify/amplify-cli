@@ -104,7 +104,24 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   if (
     await context.amplify.confirmPrompt('Do you want to update the Lambda function permissions to access other resources in this project?')
   ) {
-    merge(functionParameters, await askExecRolePermissionsQuestions(context, lambdaToUpdate, currentParameters.permissions));
+    const additionalParameters = await askExecRolePermissionsQuestions(context, lambdaToUpdate, currentParameters.permissions);
+
+    const currentDependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
+    if (currentDependsOn.length > 0) {
+      additionalParameters.dependsOn = additionalParameters.dependsOn || [];
+      currentDependsOn.forEach(dependency => {
+        const updatedDependency = additionalParameters.dependsOn.find(d => {
+          return d.category === dependency.category && d.resourceName === dependency.resourceName;
+        });
+        if (updatedDependency) {
+          updatedDependency.attributes = _.uniqWith(updatedDependency.attributes.concat(dependency.attributes), _.isEqual);
+        } else {
+          additionalParameters.dependsOn.push(dependency);
+        }
+      });
+    }
+
+    merge(functionParameters, additionalParameters);
 
     const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);

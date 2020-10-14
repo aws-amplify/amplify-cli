@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath } from '../../src';
+import { nspawn as spawn, getCLIPath } from '..';
 
 export function addSampleInteraction(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {

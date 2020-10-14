@@ -58,7 +58,12 @@ export type ExecutionContext = {
   sendLine: (line: string) => ExecutionContext;
   sendCarriageReturn: () => ExecutionContext;
   send: (line: string) => ExecutionContext;
+  sendKeyDown: (repeat?: number) => ExecutionContext;
+  sendKeyUp: (repeat?: number) => ExecutionContext;
+  sendConfirmYes: () => ExecutionContext;
+  sendConfirmNo: () => ExecutionContext;
   sendEof: () => ExecutionContext;
+  delay: (milliseconds: number) => ExecutionContext;
   run: (cb: (err: any, signal?: any) => void) => ExecutionContext;
 };
 
@@ -109,7 +114,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_expect',
         shift: true,
-        description: '[expect] ' + expectation,
+        description: `[expect] ${expectation}`,
         requiresInput: true,
         expectation: expectation,
       };
@@ -129,7 +134,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_wait',
         shift: false,
-        description: '[wait] ' + expectation,
+        description: `[wait] ${expectation}`,
         requiresInput: true,
         expectation: expectation,
       };
@@ -139,12 +144,12 @@ function chain(context: Context): ExecutionContext {
     sendLine: function(line: string): ExecutionContext {
       let _sendline: ExecutionStep = {
         fn: () => {
-          context.process.write(line + EOL);
+          context.process.write(`${line}${EOL}`);
           return true;
         },
         name: '_sendline',
         shift: true,
-        description: '[sendline] ' + line,
+        description: `[sendline] ${line}`,
         requiresInput: false,
       };
       context.queue.push(_sendline);
@@ -158,7 +163,7 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_sendline',
         shift: true,
-        description: '[sendline] ',
+        description: '[sendline] <CR>',
         requiresInput: false,
       };
       context.queue.push(_sendline);
@@ -172,7 +177,69 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: '[send] ' + line,
+        description: `[send] ${line}`,
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
+    sendKeyDown: function(repeat?: number): ExecutionContext {
+      const repeatitions = repeat ? Math.max(1, repeat) : 1;
+      var _send: ExecutionStep = {
+        fn: () => {
+          for (let i = 0; i < repeatitions; i++) {
+            context.process.write(KEY_DOWN_ARROW);
+          }
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: `'[send] <Down> (${repeatitions})`,
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
+    sendKeyUp: function(repeat?: number): ExecutionContext {
+      const repeatitions = repeat ? Math.max(1, repeat) : 1;
+      var _send: ExecutionStep = {
+        fn: () => {
+          for (let i = 0; i < repeatitions; i++) {
+            context.process.write(KEY_UP_ARROW);
+          }
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: `'[send] <Up> (${repeatitions})`,
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
+    sendConfirmYes: function(): ExecutionContext {
+      var _send: ExecutionStep = {
+        fn: () => {
+          context.process.write(`Y${EOL}`);
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: `'[send] Y <CR>`,
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
+    sendConfirmNo: function(): ExecutionContext {
+      var _send: ExecutionStep = {
+        fn: () => {
+          context.process.write(`N${EOL}`);
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: `'[send] N <CR>`,
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -190,6 +257,23 @@ function chain(context: Context): ExecutionContext {
         requiresInput: false,
       };
       context.queue.push(_sendEof);
+      return chain(context);
+    },
+    delay: function(milliseconds: number): ExecutionContext {
+      var _delay: ExecutionStep = {
+        fn: () => {
+          const startCallback = Date.now();
+
+          while (Date.now() - startCallback < milliseconds) {}
+
+          return true;
+        },
+        shift: true,
+        name: '_delay',
+        description: `'[delay] (${milliseconds})`,
+        requiresInput: false,
+      };
+      context.queue.push(_delay);
       return chain(context);
     },
     run: function(callback: (err: any, code?: number, signal?: string | number) => void): ExecutionContext {
@@ -269,7 +353,8 @@ function chain(context: Context): ExecutionContext {
           onError(new Error('Cannot process non-function on nexpect stack.'), true);
           return false;
         } else if (
-          ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName) === -1
+          ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName) ===
+          -1
         ) {
           //
           // If the `currentFn` is a function, but not those set by `.sendline()` or
@@ -494,12 +579,23 @@ export function nspawn(command: string | string[], params: string[] = [], option
   }
 
   let childEnv = undefined;
+  let pushEnv = undefined;
+
+  // For push operations in E2E we have to explicitly disable the Amplify Console App creation
+  // as for the tests that need it, it is already enabled for init, setting the env var here
+  // disables the post push check we have in the CLI.
+  if (params.length > 0 && params[0].toLowerCase() === 'push') {
+    pushEnv = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
 
   // If we have an environment passed in we've to add the current process' environment, otherwised the forked
   // process would not have $PATH and others that is required to run amplify-cli successfully.
-  if (options.env) {
+  if (options.env || pushEnv) {
     childEnv = {
       ...process.env,
+      ...pushEnv,
       ...options.env,
     };
   }

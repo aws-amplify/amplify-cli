@@ -1,6 +1,6 @@
-import fs from 'fs-extra';
-import path from 'path';
-import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '../../src';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '..';
 import { spawnSync } from 'child_process';
 
 export function addDEVHosting(cwd: string) {

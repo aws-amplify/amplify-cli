@@ -1,9 +1,10 @@
-const fs = require('fs-extra');
-const extract = require('extract-zip');
-const sequential = require('promise-sequential');
-const APIGateway = require('./aws-utils/aws-apigw');
+import fs from 'fs-extra';
+import extract from 'extract-zip';
+import sequential from 'promise-sequential';
+import { $TSContext, pathManager } from 'amplify-cli-core';
+import { APIGateway } from './aws-utils/aws-apigw';
 
-function downloadAPIModels(context, allResources) {
+export async function downloadAPIModels(context: $TSContext, allResources) {
   const { amplify } = context;
   const projectConfig = amplify.getProjectConfig();
 
@@ -29,41 +30,27 @@ function downloadAPIModels(context, allResources) {
   return sequential(promises);
 }
 
-function extractAPIModel(context, resource, framework) {
-  return new APIGateway(context).then(apigw => {
-    const apigwParams = getAPIGWRequestParams(context, resource, framework);
+async function extractAPIModel(context: $TSContext, resource, framework) {
+  const apigw = await APIGateway.getInstance(context);
+  const apigwParams = getAPIGWRequestParams(context, resource, framework);
 
-    const apiName = resource.output.ApiName;
+  const apiName = resource.output.ApiName;
 
-    return apigw.apigw
-      .getSdk(apigwParams)
-      .promise()
-      .then(data => {
-        const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const data = await apigw.apigw.getSdk(apigwParams).promise();
 
-        const tempDir = `${backendDir}/.temp`;
+  const backendDir = pathManager.getBackendDirPath();
 
-        fs.ensureDirSync(tempDir);
+  const tempDir = `${backendDir}/.temp`;
 
-        const buff = Buffer.from(data.body);
-        return new Promise((resolve, reject) => {
-          fs.writeFile(`${tempDir}/${apiName}.zip`, buff, err => {
-            if (err) {
-              reject(err);
-            }
-            extract(`${tempDir}/${apiName}.zip`, { dir: tempDir }, err => {
-              if (err) {
-                reject(err);
-              }
-              // Copy files to src
-              copyFilesToSrc(context, apiName, framework);
-              fs.removeSync(tempDir);
-              resolve();
-            });
-          });
-        });
-      });
-  });
+  fs.ensureDirSync(tempDir);
+
+  const buff = Buffer.from(data.body);
+  fs.writeFileSync(`${tempDir}/${apiName}.zip`, buff);
+  await extract(`${tempDir}/${apiName}.zip`, { dir: tempDir });
+
+  // Copy files to src
+  copyFilesToSrc(context, apiName, framework);
+  fs.removeSync(tempDir);
 }
 
 function copyFilesToSrc(context, apiName, framework) {
@@ -98,7 +85,7 @@ function copyFilesToSrc(context, apiName, framework) {
   }
 }
 
-function getAPIGWRequestParams(context, resource, framework) {
+function getAPIGWRequestParams(_: $TSContext, resource, framework) {
   const apiUrl = resource.output.RootUrl;
   const apiName = resource.output.ApiName;
   const firstSplit = apiUrl.split('/');
@@ -135,7 +122,3 @@ function getAPIGWRequestParams(context, resource, framework) {
       throw new Error(`Unsupported framework. ${framework}`);
   }
 }
-
-module.exports = {
-  downloadAPIModels,
-};
