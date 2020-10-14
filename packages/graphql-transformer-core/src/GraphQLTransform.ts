@@ -23,8 +23,8 @@ import { ITransformer } from './ITransformer';
 import { validateModelSchema } from './validation';
 import { TransformFormatter } from './TransformFormatter';
 import { TransformConfig, SyncUtils } from './util';
-import { SyncResourceIDs } from 'graphql-transformer-common';
 import { FeatureFlagProvider, NoopFeatureFlagProvider } from './FeatureFlags';
+import { SyncResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { Md5 } from 'ts-md5/dist/md5';
 
 function isFunction(obj: any) {
@@ -343,7 +343,7 @@ export class GraphQLTransform {
           ind++;
         }
       }
-      context.metadata.set('syncResolver', syncKeyMap);
+      context.metadata.set(ResourceConstants.SNIPPETS.SyncResolverKey, syncKeyMap);
     }
 
     for (const dir of def.directives) {

@@ -455,13 +455,13 @@ export class DynamoDBModelTransformer extends Transformer {
       ctx.mapResourceToStack(typeName, syncResourceID);
       this.generateModelXConnectionType(ctx, def, isSyncEnabled);
       this.generateFilterInputs(ctx, def);
-      this.generateSyncPredicateInputs(ctx, def);
+      //this.generateSyncPredicateInputs(ctx, def);
       queryFields.push(
         makeField(
           syncResolver.Properties.FieldName.toString(),
           [
             // added Query type for selective sync
-            makeInputValueDefinition('syncPredicate', makeNamedType(ModelResourceIDs.ModelSyncPredicateInputTypeName(def.name.value))),
+            //makeInputValueDefinition('syncPredicate', makeNamedType(ModelResourceIDs.ModelSyncPredicateInputTypeName(def.name.value))),
             makeInputValueDefinition('filter', makeNamedType(ModelResourceIDs.ModelFilterInputTypeName(def.name.value))),
             makeInputValueDefinition('limit', makeNamedType('Int')),
             makeInputValueDefinition('nextToken', makeNamedType('String')),
