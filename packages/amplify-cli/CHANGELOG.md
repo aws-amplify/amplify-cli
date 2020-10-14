@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.29.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.6...@aws-amplify/cli@4.29.7) (2020-10-13)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.29.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.5...@aws-amplify/cli@4.29.6) (2020-10-09)
+
+
+### Bug Fixes
+
+* [#5516](https://github.com/aws-amplify/amplify-cli/issues/5516) exclude pinpoint from provider check for false positives ([#5535](https://github.com/aws-amplify/amplify-cli/issues/5535)) ([c3ea3a4](https://github.com/aws-amplify/amplify-cli/commit/c3ea3a4343d6ebd2f48d1c0ac6574c6d118e73d0))
+
+
+
+
+
 ## [4.29.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.4...@aws-amplify/cli@4.29.5) (2020-10-07)
 
 **Note:** Version bump only for package @aws-amplify/cli
