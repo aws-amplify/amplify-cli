@@ -12,7 +12,7 @@ echo %yellow%Installing the AWS Amplify CLI...%reset%
 echo.
 
 :: Detect unsupported architecture
-for /f %%g in ( 'echo %PROCESSOR_ARCHITECTURE% ^| findstr 64' ) do ( set is64Bit=%%g )
+for /f %%g in ('echo %PROCESSOR_ARCHITECTURE% ^| findstr 64') do (set is64Bit=%%g)
 if %is64Bit% == '' (
     echo %red%Sorry, there's no Amplify CLI binary installer available for %PROCESSOR_ARCHITECTURE% architecture%reset%
     exit 1
@@ -37,6 +37,7 @@ curl -L -o %binary_path% %binary_url%
 %binary_name% > nul 2> nul
 if errorlevel 1 (
     setx PATH "%PATH%;%binaries_dir_path%" > nul
+    set "PATH=%PATH%;%binaries_dir_path%"
     echo %yellow%Added %binaries_dir_path% to user PATH%reset%
 )
 
