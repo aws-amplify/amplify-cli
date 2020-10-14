@@ -35,7 +35,7 @@ echo %yellow%Downloading binary...%reset%
 curl -L -o %binary_path% %binary_url%
 
 :: Add to user path
-for /f %%g in ('where %binary_name%') do (set found=%%g)
+for /f %%g in ('echo %PATH% ^| findstr -l %binaries_dir_path%') do (set found=%%g)
 if %found == '' (
     setx PATH "%PATH%;%binaries_dir_path%" > nul
     echo %yellow%Added %binaries_dir_path% to user PATH%reset%
