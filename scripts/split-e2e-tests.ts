@@ -43,6 +43,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/auth_1.test.ts',
   'src/__tests__/auth_5.test.ts',
   'src/__tests__/function_3.test.ts',
+  'src/__tests__/import_auth_1.test.ts',
   //<30m
   'src/__tests__/schema-auth-3.test.ts',
   'src/__tests__/delete.test.ts',
@@ -115,7 +116,7 @@ export type CircleCIConfig = {
   };
 };
 
-function getTestFiles(dir: string, pattern = '**/import_auth*.test.ts'): string[] {
+function getTestFiles(dir: string, pattern = '**/*.test.ts'): string[] {
   return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir }));
 }
 
