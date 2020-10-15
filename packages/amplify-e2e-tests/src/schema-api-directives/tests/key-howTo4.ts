@@ -171,94 +171,94 @@ export const expected_result_query2 = {
 };
 
 //query1 with no PK and all filter
-// export const query3 = `
-// query SyncComments {
-//   syncComments(filter: {and: [ {createdAt : {gt : "2018-01-01T00:00Z"}}}) {
-//     items {
-//       content
-//       createdAt
-//       editor
-//       data1
-//       data2
-//       editor
-//       username
-//     }
-//   }
-// }
-// `;
-// export const expected_result_query3 = {
-//   data: {
-//     listItems: {
-//       items: [
-//         {
-//           content: "order1",
-//           username: "akz",
-//           createdAt: "2019-01-01T01:05:49.129Z",
-//           editor: "user1",
-//           data1 : "example1",
-//           data2 : "example2"
-//         },
-//       ],
-//     },
-//   },
-// };
+export const query3 = `
+query SyncComments {
+  syncComments(filter: {and: [ {createdAt : {gt : "2019-01-01T00:00Z"}}]}) {
+    items {
+      content
+      createdAt
+      editor
+      data1
+      data2
+      editor
+      username
+    }
+  }
+}
+`;
+export const expected_result_query3 = {
+  data: {
+    syncComments: {
+      items: [
+        {
+          content: 'order1',
+          username: 'akz',
+          createdAt: '2019-01-01T01:05:49.129Z',
+          editor: 'user1',
+          data1: 'example1',
+          data2: 'example2',
+        },
+      ],
+    },
+  },
+};
 
-// //query1 with no PK and no filter
-// export const query4 = `
-// query SyncComments {
-//   syncComments() {
-//     items {
-//       content
-//       createdAt
-//       editor
-//       data1
-//       data2
-//       editor
-//       username
-//     }
-//   }
-// }
-// `;
-// export const expected_result_query4 = {
-//   data: {
-//     listItems: {
-//       items: [
-//         {
-//           content: "order1",
-//           username: "akz",
-//           createdAt: "2019-01-01T01:05:49.129Z",
-//           editor: "user1",
-//           data1 : "example1",
-//           data2 : "example2"
-//         },
-//         {
-//           content: "order2",
-//           username: "akz",
-//           createdAt: "2018-01-01T01:05:49.129Z",
-//           editor: "user1",
-//           data1 : "example3",
-//           data2 : "example4"
-//         },
-//         {
-//           content: "order3",
-//           username: "akz",
-//           createdAt: "2009-01-01T01:05:49.129Z",
-//           editor: "user3",
-//           data1 : "example5",
-//           data2 : "example6"
-//         },
-//         {
-//           content: "order1",
-//           username: "user1",
-//           createdAt: "2015-01-01T01:05:49.129Z",
-//           editor: "akz",
-//           data1 : "example1",
-//           data2 : "example2"
-//         }
-//       ],
-//     },
-//   },
-// };
+//query1 with no PK and no filter
+export const query4 = `
+query SyncComments {
+  syncComments() {
+    items {
+      content
+      createdAt
+      editor
+      data1
+      data2
+      editor
+      username
+    }
+  }
+}
+`;
+export const expected_result_query4 = {
+  data: {
+    syncComments: {
+      items: [
+        {
+          content: 'order3',
+          username: 'akz',
+          createdAt: '2009-01-01T01:05:49.129Z',
+          editor: 'user3',
+          data1: 'example5',
+          data2: 'example6',
+        },
+        {
+          content: 'order1',
+          username: 'akz',
+          createdAt: '2019-01-01T01:05:49.129Z',
+          editor: 'user1',
+          data1: 'example1',
+          data2: 'example2',
+        },
+        {
+          content: 'order2',
+          username: 'akz',
+          createdAt: '2018-01-01T01:05:49.129Z',
+          editor: 'user1',
+          data1: 'example3',
+          data2: 'example4',
+        },
+        {
+          content: 'order1',
+          username: 'user1',
+          createdAt: '2015-01-01T01:05:49.129Z',
+          editor: 'akz',
+          data1: 'example1',
+          data2: 'example2',
+        },
+      ],
+    },
+  },
+};
 
 export async function runTest(projectDir: string, testModule: any) {
   await addApiWithSchemaAndConflictDetection(projectDir, testModule.schemaName);

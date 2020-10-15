@@ -6,7 +6,6 @@ import {
   StringNode,
   str,
   ObjectNode,
-  ListNode,
   compoundExpression,
   set,
   list,
@@ -15,7 +14,6 @@ import {
   qref,
   iff,
   raw,
-  nul,
   CompoundExpressionNode,
 } from './ast';
 

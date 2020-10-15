@@ -1063,7 +1063,7 @@ function setSyncQueryFilterSnippet() {
             ]),
           ]),
         ]),
-        set(ref(`filterMap`), raw(`$ctx.args.filter)`)),
+        set(ref(`filterMap`), raw(`$ctx.args.filter`)),
       ),
     ]),
   );
@@ -1194,15 +1194,14 @@ function makeSyncQueryResolver(directive: DirectiveNode) {
           set(ref(`${requestVariable}.scanIndexForward`), bool(true)),
         ),
         iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken')), true),
-        ifElse(
-          ref('filterMap'),
+        iff(
+          raw('$filterMap != {}'),
           set(ref(`${requestVariable}.filter`), ref('util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap))')),
-          nul(),
         ),
         raw(`$util.toJson($${requestVariable})`),
       ]),
       DynamoDBMappingTemplate.syncItem({
-        filter: ifElse(ref('ctx.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
+        filter: ifElse(raw('$ctx.args.filter != {}'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
         limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
         lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
         nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),

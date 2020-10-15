@@ -631,26 +631,7 @@ export class ResourceFactory {
    * Create a resolver that syncs local storage with cloud storage
    * @param type
    */
-  // public makeSyncResolver(type: string, queryTypeName: string = 'Query') {
-  //   const fieldName = graphqlName('sync' + toUpper(plural(type)));
-  //   return new AppSync.Resolver({
-  //     ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
-  //     DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
-  //     FieldName: fieldName,
-  //     TypeName: queryTypeName,
-  //     RequestMappingTemplate: print(
-  //       DynamoDBMappingTemplate.syncItem({
-  //         filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
-  //         limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
-  //         lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
-  //         nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
-  //       }),
-  //     ),
-  //     ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(true)),
-  //   });
-  // }
-
-  public makeSyncResolverv2(type: string, queryTypeName: string = 'Query') {
+  public makeSyncResolver(type: string, queryTypeName: string = 'Query') {
     const fieldName = graphqlName('sync' + toUpper(plural(type)));
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -658,9 +639,8 @@ export class ResourceFactory {
       FieldName: fieldName,
       TypeName: queryTypeName,
       RequestMappingTemplate: print(
-        // added syncpredicate in Query
         DynamoDBMappingTemplate.syncItem({
-          filter: ifElse(ref('ctx.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
+          filter: ifElse(ref('context.args.filter'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
           limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
           lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
           nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),
@@ -669,6 +649,7 @@ export class ResourceFactory {
       ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(true)),
     });
   }
+
   /**
    * Create a resolver that queries an item in DynamoDB.
    * @param type
