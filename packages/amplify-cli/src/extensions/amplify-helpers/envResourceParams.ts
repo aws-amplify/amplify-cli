@@ -15,7 +15,7 @@ function getCurrentEnvName(context: $TSContext) {
   return getEnvInfo().envName;
 }
 
-function loadAllResourceParameters(context: $TSContext) {
+function getAppplicableTeamProviderInfo(context: $TSContext) {
   try {
     if (isMigrationContext(context)) {
       return context.migrationInfo.teamProviderInfo;
@@ -58,33 +58,37 @@ function removeObjectRecursively(obj, keys) {
   }
 }
 
-function saveAllResourceParams(context: $TSContext, data: $TSObject) {
-  if (isMigrationContext(context)) return; // no need to serialize team provider
-
-  stateManager.setTeamProviderInfo(undefined, data);
-}
-
 export function saveEnvResourceParameters(context: $TSContext, category: string, resource: string, parameters: $TSObject) {
-  const allParams = loadAllResourceParameters(context);
+  const teamProviderInfo = getAppplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
-  const resources = getOrCreateSubObject(allParams, [currentEnv, CATEGORIES, category]);
+  const resources = getOrCreateSubObject(teamProviderInfo, [currentEnv, CATEGORIES, category]);
+
   resources[resource] = _.assign(resources[resource], parameters);
-  saveAllResourceParams(context, allParams);
+
+  if (!isMigrationContext(context)) {
+    stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+  }
 }
 
 export function loadEnvResourceParameters(context: $TSContext, category: string, resource: string) {
-  const allParams = loadAllResourceParameters(context);
+  const teamProviderInfo = getAppplicableTeamProviderInfo(context);
+
   try {
     const currentEnv = getCurrentEnvName(context);
-    return getOrCreateSubObject(allParams, [currentEnv, CATEGORIES, category, resource]);
+
+    return getOrCreateSubObject(teamProviderInfo, [currentEnv, CATEGORIES, category, resource]);
   } catch (e) {
     return {};
   }
 }
 
 export function removeResourceParameters(context: $TSContext, category: string, resource: string) {
-  const allParams = loadAllResourceParameters(context);
+  const teamProviderInfo = getAppplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
-  removeObjectRecursively(allParams, [currentEnv, CATEGORIES, category, resource]);
-  saveAllResourceParams(context, allParams);
+
+  removeObjectRecursively(teamProviderInfo, [currentEnv, CATEGORIES, category, resource]);
+
+  if (!isMigrationContext(context)) {
+    stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+  }
 }

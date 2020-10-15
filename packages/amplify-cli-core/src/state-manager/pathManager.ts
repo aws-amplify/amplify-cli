@@ -23,6 +23,7 @@ export const PathConstants = {
   ProjectConfigFileName: 'project-config.json',
   AmplifyMetaFileName: 'amplify-meta.json',
   TagsFileName: 'tags.json',
+  ParametersJsonFileName: 'parameters.json',
 
   LocalEnvFileName: 'local-env-info.json',
   LocalAWSInfoFileName: 'local-aws-info.json',
@@ -83,6 +84,24 @@ export class PathManager {
 
   getCurrentTagFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName, PathConstants.TagsFileName]);
+
+  getResourceParamatersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      category,
+      resourceName,
+      PathConstants.ParametersJsonFileName,
+    ]);
+
+  getCurrentResourceParamatersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.CurrentCloudBackendDirName,
+      category,
+      resourceName,
+      PathConstants.ParametersJsonFileName,
+    ]);
 
   getCurrentAmplifyMetaFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [

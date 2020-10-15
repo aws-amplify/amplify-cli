@@ -11,6 +11,7 @@
   ],
   "references": [
     {"path": "../amplify-cli-core"},
-    {"path": "../amplify-category-function"}
+    {"path": "../amplify-category-function"},
+    { "path": "../amplify-util-import" }
   ]
 }

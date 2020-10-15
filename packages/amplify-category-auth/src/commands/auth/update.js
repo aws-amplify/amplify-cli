@@ -27,6 +27,9 @@ module.exports = {
         if (serviceMeta.service === 'Cognito' && !serviceMeta.providerPlugin) {
           context.print.error('Auth is migrated from Mobile Hub and cannot be updated with Amplify CLI.');
           return context;
+        } else if (serviceMeta.service === 'Cognito' && serviceMeta.serviceType === 'imported') {
+          context.print.error('Updating of imported Auth resources is not supported.');
+          return context;
         }
       }
     }

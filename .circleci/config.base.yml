@@ -666,6 +666,7 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - graphql_e2e_testing
+                - feat-import
           requires:
             - build
             - mock_e2e_tests
@@ -676,6 +677,7 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - beta
+                - feat-import
           requires:
             - build
             - mock_e2e_tests
@@ -686,6 +688,7 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - beta
+                - feat-import
           requires:
             - build
       - amplify_e2e_tests:
@@ -694,6 +697,7 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
+                - feat-import
           requires:
             - publish_to_local_registry
       - amplify_migration_tests_latest:
@@ -702,6 +706,7 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
+                - feat-import
           requires:
             - build
       - amplify_migration_tests_v4:
@@ -710,6 +715,7 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
+                - feat-import
           requires:
             - build
       - amplify_console_integration_tests:
@@ -717,6 +723,7 @@ workflows:
             branches:
               only:
                 - beta
+                - feat-import
           requires:
             - build
             - publish_to_local_registry
@@ -737,6 +744,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - feat-import
       # - integration_test_js:
       #     filters:
       #       branches:

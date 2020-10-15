@@ -101,6 +101,21 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
+  getResourceParametersJson = (
+    projectPath: string | undefined,
+    category: string,
+    resourceName: string,
+    options?: GetOptions<$TSAny>,
+  ): $TSAny => {
+    const filePath = pathManager.getResourceParamatersFilePath(projectPath, category, resourceName);
+    const mergedOptions = {
+      throwIfNotExist: true,
+      ...options,
+    };
+
+    return this.getData<$TSAny>(filePath, mergedOptions);
+  };
+
   setLocalEnvInfo = (projectPath: string | undefined, localEnvInfo: $TSAny): void => {
     const filePath = pathManager.getLocalEnvFilePath(projectPath);
 
@@ -146,6 +161,12 @@ export class StateManager {
     const filePath = pathManager.getCurrentAmplifyMetaFilePath(projectPath);
 
     JSONUtilities.writeJson(filePath, meta);
+  };
+
+  setResourceParametersJson = (projectPath: string | undefined, category: string, resourceName: string, parameters: $TSAny): void => {
+    const filePath = pathManager.getResourceParamatersFilePath(projectPath, category, resourceName);
+
+    JSONUtilities.writeJson(filePath, parameters);
   };
 
   cliJSONFileExists = (projectPath: string, env?: string): boolean => fs.existsSync(pathManager.getCLIJSONFilePath(projectPath, env));

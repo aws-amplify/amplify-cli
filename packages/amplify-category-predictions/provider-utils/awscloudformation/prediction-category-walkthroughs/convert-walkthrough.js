@@ -1,6 +1,7 @@
 import convertAssets from '../assets/convertQuestions';
 import getAllDefaults from '../default-values/convert-defaults';
 import regionMapper from '../assets/regionMapping';
+import { enableGuestAuth } from './enable-guest-auth';
 
 const inquirer = require('inquirer');
 const path = require('path');
@@ -228,26 +229,6 @@ function resourceAlreadyExists(context, convertType) {
     });
   }
   return type;
-}
-
-async function enableGuestAuth(context, resourceName, allowUnauthenticatedIdentities) {
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-  // enable allowUnauthenticatedIdentities
-  const identifyRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
-  // getting requirement satisfaction map
-  const satisfiedRequirements = await checkRequirements(identifyRequirements, context, 'predictions', resourceName);
-  // checking to see if any requirements are unsatisfied
-  const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
-
-  // if requirements are unsatisfied, trigger auth
-  if (foundUnmetRequirements) {
-    try {
-      await externalAuthEnable(context, 'predictions', resourceName, identifyRequirements);
-    } catch (e) {
-      context.print.error(e);
-      throw e;
-    }
-  }
 }
 
 function checkIfAuthExists(context) {

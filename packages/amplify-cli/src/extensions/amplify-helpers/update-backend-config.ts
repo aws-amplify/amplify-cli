@@ -13,10 +13,11 @@ export function updateBackendConfigAfterResourceAdd(category, resourceName, opti
 
   if (!backendConfig[category][resourceName]) {
     backendConfig[category][resourceName] = {};
-    backendConfig[category][resourceName] = options;
-
-    stateManager.setBackendConfig(undefined, backendConfig);
   }
+
+  backendConfig[category][resourceName] = options;
+
+  stateManager.setBackendConfig(undefined, backendConfig);
 }
 
 export function updateBackendConfigAfterResourceUpdate(category, resourceName, attribute, value) {

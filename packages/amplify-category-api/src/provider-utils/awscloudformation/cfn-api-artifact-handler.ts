@@ -16,7 +16,13 @@ import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-aut
 import uuid from 'uuid';
 import _ from 'lodash';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
-import { getAppSyncResourceName, getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from './utils/amplify-meta-utils';
+import {
+  getAppSyncResourceName,
+  getAppSyncAuthConfig,
+  checkIfAuthExists,
+  getImportedAuthUserPoolId,
+  authConfigHasApiKey,
+} from './utils/amplify-meta-utils';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
 
 export const getCfnApiArtifactHandler = (context): ApiArtifactHandler => {
@@ -198,6 +204,14 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
         userPoolId = `auth${configuredUserPoolName}`;
       } else {
         throw new Error('Cannot find a configured Cognito User Pool.');
+      }
+
+      // At this point there is a configured userpool found either way, so
+      // check if it is an imported auth resource or not
+      const importedUserPoolId = getImportedAuthUserPoolId(this.context);
+
+      if (importedUserPoolId) {
+        return importedUserPoolId;
       }
 
       return {

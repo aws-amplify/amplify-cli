@@ -23,6 +23,18 @@ export async function analyzeProject(context) {
 
   context.exeInfo.isNewEnv = isNewEnv(envName);
 
+  // If it is a new env and we have an existing environment save that name so
+  // it can be used to gather resource information like
+  if (context.exeInfo.isNewEnv && !context.exeInfo.isNewProject) {
+    const currentLocalEnvInfo = stateManager.getLocalEnvInfo(undefined, {
+      throwIfNotExist: false,
+    });
+
+    if (currentLocalEnvInfo) {
+      context.exeInfo.sourceEnvName = currentLocalEnvInfo.envName;
+    }
+  }
+
   if ((context.exeInfo.inputParams && context.exeInfo.inputParams.yes) || context.parameters.options.forcePush) {
     context.exeInfo.forcePush = true;
   } else {

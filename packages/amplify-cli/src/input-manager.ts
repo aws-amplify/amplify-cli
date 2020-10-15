@@ -61,7 +61,7 @@ export function getCommandLineInput(pluginPlatform: PluginPlatform): Input {
   return result;
 }
 
-function normailizeInput(input: Input): Input {
+function normalizeInput(input: Input): Input {
   // -v --version => version command
   // -h --help => help command
   // -y --yes => yes option
@@ -80,6 +80,12 @@ function normailizeInput(input: Input): Input {
       input.options[constants.YES] = true;
       delete input.options[constants.YES_SHORT];
     }
+
+    // To make sure that 'yes' is always have a boolean value set it to false before
+    // normalizing it
+    if (input.options[constants.YES] === undefined) {
+      input.options[constants.YES] = false;
+    }
   }
 
   input.command = input.command || constants.PLUGIN_DEFAULT_COMMAND;
@@ -92,7 +98,7 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
 
   input.plugin = input.plugin || constants.CORE;
 
-  normailizeInput(input);
+  normalizeInput(input);
 
   const pluginCandidates = getPluginsWithName(pluginPlatform, input.plugin!);
 

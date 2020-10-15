@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "lib",
-    "rootDir": "src",
+    "rootDir": "./src",
     "strict": false, // TODO enable
     "allowJs": true,
     "checkJs": false // TODO enable till we move everything to TS
@@ -14,6 +14,7 @@
   "references": [
     {"path": "../amplify-category-auth"},
     {"path": "../amplify-cli-core"},
+    {"path": "../amplify-util-import"},
     {"path": "../graphql-auth-transformer"},
     {"path": "../graphql-connection-transformer"},
     {"path": "../graphql-dynamodb-transformer"},

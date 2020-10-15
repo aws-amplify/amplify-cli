@@ -1,6 +1,7 @@
 import inquirer from 'inquirer';
 import path from 'path';
 import fs from 'fs-extra';
+import os from 'os';
 import uuid from 'uuid';
 import { rootAssetDir } from '../aws-constants';
 import { checkForPathOverlap, validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
@@ -211,7 +212,6 @@ async function askPrivacy(context, answers, currentPath) {
     const userPoolGroupList = await context.amplify.getUserPoolGroupList(context);
 
     let permissionSelected = 'Auth/Guest Users';
-    let allowUnauthenticatedIdentities = false;
     const privacy: any = {};
     const { checkRequirements, externalAuthEnable } = await import('amplify-category-auth');
 
@@ -279,43 +279,16 @@ async function askPrivacy(context, answers, currentPath) {
         privacy.auth = await askReadWrite('Authenticated', context, authPrivacy);
 
         const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
-        // getting requirement satisfaction map
-        const satisfiedRequirements = await checkRequirements(apiRequirements, context);
-        // checking to see if any requirements are unsatisfied
-        const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
-        // if requirements are unsatisfied, trigger auth
-
-        if (foundUnmetRequirements) {
-          try {
-            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-          } catch (e) {
-            context.print.error(e);
-            throw e;
-          }
-        }
+        await ensureAuth(checkRequirements, externalAuthEnable, context, apiRequirements, answers.resourceName);
       }
 
       if (answer.privacy === 'protected') {
         privacy.auth = await askReadWrite('Authenticated', context, authPrivacy);
         privacy.unauth = await askReadWrite('Guest', context, unauthPrivacy);
-        allowUnauthenticatedIdentities = true;
-        const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
-        // getting requirement satisfaction map
-        const satisfiedRequirements = await checkRequirements(apiRequirements, context);
-        // checking to see if any requirements are unsatisfied
-        const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+        const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
 
-        // if requirements are unsatisfied, trigger auth
-
-        if (foundUnmetRequirements) {
-          try {
-            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-          } catch (e) {
-            context.print.error(e);
-            throw e;
-          }
-        }
+        await ensureAuth(checkRequirements, externalAuthEnable, context, apiRequirements, answers.resourceName);
       }
     }
 
@@ -323,21 +296,8 @@ async function askPrivacy(context, answers, currentPath) {
       // Enable Auth if not enabled
 
       const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
-      // getting requirement satisfaction map
-      const satisfiedRequirements = await checkRequirements(apiRequirements, context);
-      // checking to see if any requirements are unsatisfied
-      const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
-      // if requirements are unsatisfied, trigger auth
-
-      if (foundUnmetRequirements) {
-        try {
-          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-        } catch (e) {
-          context.print.error(e);
-          throw e;
-        }
-      }
+      await ensureAuth(checkRequirements, externalAuthEnable, context, apiRequirements, answers.resourceName);
 
       // Get Auth resource name
       const authResourceName = await getAuthResourceName(context);
@@ -384,6 +344,30 @@ async function askPrivacy(context, answers, currentPath) {
       }
     }
     return privacy;
+  }
+}
+
+async function ensureAuth(checkRequirements, externalAuthEnable, context, apiRequirements, resourceName) {
+  const checkResult = await checkRequirements(apiRequirements, context, 'api', resourceName);
+
+  // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
+  // configuration.
+  if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
+    throw new Error(checkResult.errors.join(os.EOL));
+  }
+
+  if (checkResult.errors && checkResult.errors.length > 0) {
+    context.print.warning(checkResult.errors.join(os.EOL));
+  }
+
+  // If auth is not imported and there were errors, adjust or enable auth configuration
+  if (!checkResult.authEnabled || !checkResult.requirementsMet) {
+    try {
+      await externalAuthEnable(context, 'api', resourceName, apiRequirements);
+    } catch (error) {
+      context.print.error(error);
+      throw error;
+    }
   }
 }
 

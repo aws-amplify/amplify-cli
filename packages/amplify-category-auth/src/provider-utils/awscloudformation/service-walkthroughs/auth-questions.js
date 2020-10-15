@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
+const _ = require('lodash');
 const { uniq, pullAll } = require('lodash');
 const path = require('path');
 const { Sort } = require('enquirer');
@@ -566,7 +567,7 @@ async function lambdaFlow(context, answers) {
   return triggers || answers;
 }
 
-function getIAMPolicies(resourceName, crudOptions) {
+function getIAMPolicies(context, resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
@@ -674,24 +675,36 @@ function getIAMPolicies(resourceName, crudOptions) {
     }
   });
 
+  let userPoolReference;
+
+  const { amplifyMeta } = context.amplify.getProjectDetails();
+
+  const authResource = _.get(amplifyMeta, [category, resourceName], undefined);
+
+  if (!authResource) {
+    throw new Error(`Cannot get resource: ${resourceName} from '${category}' category.`);
+  }
+
+  if (authResource.serviceType === 'imported') {
+    const userPoolId = _.get(authResource, ['output', 'UserPoolId'], undefined);
+
+    if (!userPoolId) {
+      throw new Error(`Cannot read the UserPoolId attribute value from the output section of resource: '${resourceName}'.`);
+    }
+
+    userPoolReference = userPoolId;
+  } else {
+    userPoolReference = {
+      Ref: `${category}${resourceName}UserPoolId`,
+    };
+  }
+
   policy = {
     Effect: 'Allow',
     Action: actions,
     Resource: [
       {
-        'Fn::Join': [
-          '',
-          [
-            'arn:aws:cognito-idp:',
-            { Ref: 'AWS::Region' },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':userpool/',
-            {
-              Ref: `${category}${resourceName}UserPoolId`,
-            },
-          ],
-        ],
+        'Fn::Join': ['', ['arn:aws:cognito-idp:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':userpool/', userPoolReference]],
       },
     ],
   };
