@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.3.3...amplify-velocity-template@1.3.4) (2020-10-15)
+
+
+### Bug Fixes
+
+* **amplify-velocity-template:** expression not equals works unproperly ([#5571](https://github.com/aws-amplify/amplify-cli/issues/5571)) ([7bc5051](https://github.com/aws-amplify/amplify-cli/commit/7bc5051f8713b3d3b945e35e5138c4146be26e01)), closes [#5570](https://github.com/aws-amplify/amplify-cli/issues/5570)
+
+
+
+
+
 ## [1.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.3.2...amplify-velocity-template@1.3.3) (2020-10-13)
 
 
