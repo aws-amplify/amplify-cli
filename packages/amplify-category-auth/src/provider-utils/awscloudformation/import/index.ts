@@ -231,7 +231,7 @@ const importServiceWalkthrough = async (
     }
 
     if (proceedWithChecks) {
-      if (_.isEmpty(answers.appClientWeb?.SupportedIdentityProviders) && _.isEmpty(answers.appClientWeb?.SupportedIdentityProviders)) {
+      if (_.isEmpty(answers.appClientWeb?.SupportedIdentityProviders) && _.isEmpty(answers.appClientNative?.SupportedIdentityProviders)) {
         context.print.info(importMessages.NoOAuthConfigurationOnAppClients());
 
         oauthLoopFinished = true;
@@ -885,10 +885,6 @@ export const importedAuthEnvInit = async (
   const projectConfig = context.amplify.getProjectConfig();
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
-
-  // Since env add, env checkout and pull also goes into the same code path we have to control
-  // whether we prompt to include previous resource or proceed silently.
-  const promptToImportPrevious = isEnvAdd;
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters

@@ -18,7 +18,6 @@ export const getImportedAuthRoles = (
     if (importedAuthResources.length === 1) {
       const authResource = importedAuthResources[0];
       const resourceName = authResource[0];
-      const resource: $TSObject = authResource[1] as $TSObject;
 
       // We have an imported resource, get the roles from the team provider info
       const envSpecificParameters = context.amplify.loadEnvResourceParameters(context, authCategoryName, resourceName);

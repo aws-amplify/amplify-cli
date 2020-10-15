@@ -60,8 +60,6 @@ async function updateConfigOnEnvInit(context, category, service) {
       isInHeadlessMode(context) ? getHeadlessParams(context) : {},
     );
 
-    envSpecificParametersResult = envSpecificParameters;
-
     // No need for headless check as this will never be true for headless
     if (doServiceWalkthrough === true) {
       const importResult = await importResource(
