@@ -148,7 +148,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     cloudwatchRule: cfnParameters.CloudWatchRule,
     resourceName: functionParameters.resourceName,
   };
-  if (scheduleParameters.cloudwatchRule) {
+  if (scheduleParameters.cloudwatchRule !== 'NONE') {
     context.print.success('Scheduled recurring invocation');
     context.print.info('| '.concat(scheduleParameters.cloudwatchRule));
     context.print.info('');
@@ -248,7 +248,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
 
   // ask scheduling Lambda questions and merge in results
   if (selectedSettings.includes(cronJobSetting)) {
-    merge(functionParameters, await scheduleWalkthrough(context, scheduleParameters));
+    merge(functionParameters, await scheduleWalkthrough(context, scheduleParameters, true));
   }
 
   // ask lambdalayer questions and merge results
@@ -257,7 +257,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
       context.amplify.readJsonFile(path.join(resourceDirPath, functionParametersFileName), undefined, false) || {};
     merge(
       functionParameters,
-      await addLayersToFunctionWalkthrough(context, { value: functionRuntime }, currentFunctionParameters.lambdaLayers),
+      await addLayersToFunctionWalkthrough(context, { value: functionRuntime }, currentFunctionParameters.lambdaLayers, true),
     );
     // writing to the CFN here because it's done above for the schedule and the permissions but we should really pull all of it into another function
     const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
