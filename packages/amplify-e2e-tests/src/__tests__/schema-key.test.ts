@@ -10,8 +10,8 @@ describe('api directives @key', () => {
   });
 
   afterEach(async () => {
-    await deleteProject(projectDir);
-    deleteProjectDir(projectDir);
+    // await deleteProject(projectDir);
+    // deleteProjectDir(projectDir);
   });
 
   it('key howTo1', async () => {
@@ -29,7 +29,7 @@ describe('api directives @key', () => {
     expect(testresult).toBeTruthy();
   });
 
-  it.only('key SelectiveSync with key directive', async () => {
+  it('key SelectiveSync with key directive', async () => {
     const testresult = await testSchema(projectDir, 'key', 'howTo4');
     expect(testresult).toBeTruthy();
   });

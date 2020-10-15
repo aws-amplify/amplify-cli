@@ -203,10 +203,10 @@ export const expected_result_query3 = {
   },
 };
 
-//query1 with no PK and no filter
+//query1 with no PK and "or" filter
 export const query4 = `
 query SyncComments {
-  syncComments() {
+  syncComments(filter: {or: [ {data1 : {gt : "example3"}},{username : {eq : "user1"}}]}) {
     items {
       content
       createdAt
@@ -224,36 +224,20 @@ export const expected_result_query4 = {
     syncComments: {
       items: [
         {
-          content: 'order3',
-          username: 'akz',
-          createdAt: '2009-01-01T01:05:49.129Z',
-          editor: 'user3',
-          data1: 'example5',
-          data2: 'example6',
-        },
-        {
-          content: 'order1',
-          username: 'akz',
-          createdAt: '2019-01-01T01:05:49.129Z',
-          editor: 'user1',
-          data1: 'example1',
-          data2: 'example2',
-        },
-        {
-          content: 'order2',
-          username: 'akz',
-          createdAt: '2018-01-01T01:05:49.129Z',
-          editor: 'user1',
-          data1: 'example3',
-          data2: 'example4',
-        },
-        {
           content: 'order1',
           username: 'user1',
           createdAt: '2015-01-01T01:05:49.129Z',
           editor: 'akz',
           data1: 'example1',
           data2: 'example2',
+        },
+        {
+          content: 'order3',
+          username: 'akz',
+          createdAt: '2009-01-01T01:05:49.129Z',
+          editor: 'user3',
+          data1: 'example5',
+          data2: 'example6',
         },
       ],
     },

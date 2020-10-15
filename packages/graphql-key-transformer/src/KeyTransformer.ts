@@ -217,7 +217,7 @@ export class KeyTransformer extends Transformer {
                 print(setSyncQueryFilterSnippet()),
                 print(setSyncKeyexpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
                 print(setSyncKeyexpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
-                print(makeSyncQueryResolver(directive)),
+                print(makeSyncQueryResolver()),
               ]);
             } else {
               syncResolver.Properties.RequestMappingTemplate = joinSnippets([
@@ -1019,13 +1019,13 @@ function setSyncQueryMapSnippet(definition: ObjectTypeDefinitionNode, directive:
     key = `${keys[0]}+null`;
   } else if (keys.length > 1) {
     key = keys.join('+');
-    expressions.push(
-      raw(`$util.qr($QueryMap.put('${key}' , '${index}'))`),
-      raw(`$util.qr($PkMap.put('${keys[0]}' , '${index}'))`),
-      raw(`$util.qr($PkTypeMap.put('${keys[0]}' , '${keyTypes[0]}'))`),
-      raw(`$util.qr($SkTypeMap.put('${keys[1]}' , '${keyTypes[1]}'))`),
-    );
   }
+  expressions.push(
+    raw(`$util.qr($QueryMap.put('${key}' , '${index}'))`),
+    raw(`$util.qr($PkMap.put('${keys[0]}' , '${index}'))`),
+    raw(`$util.qr($PkTypeMap.put('${keys[0]}' , '${keyTypes[0]}'))`),
+    raw(`$util.qr($SkTypeMap.put('${keys[1]}' , '${keyTypes[1]}'))`),
+  );
   return block(`Set query expression for @key`, expressions);
 }
 
@@ -1167,9 +1167,7 @@ function setSyncKeyexpressionForRangeKey(queryExprReference: string) {
   ]);
 }
 
-function makeSyncQueryResolver(directive: DirectiveNode) {
-  const directiveArgs: KeyArguments = getDirectiveArguments(directive);
-  const index = directiveArgs.name;
+function makeSyncQueryResolver() {
   const requestVariable = 'QueryRequest';
   const expressions: Expression[] = [];
   expressions.push(
