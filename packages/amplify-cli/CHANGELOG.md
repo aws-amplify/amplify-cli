@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.29.8-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.7...@aws-amplify/cli@4.29.8-beta.0) (2020-10-15)
+
+
+### Bug Fixes
+
+* **cli:** fix print.warn to print.warning ([#5576](https://github.com/aws-amplify/amplify-cli/issues/5576)) ([ef8dbc8](https://github.com/aws-amplify/amplify-cli/commit/ef8dbc89adfea685afc9aba10fe3b252959e3252))
+
+
+
+
+
 ## [4.29.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.6...@aws-amplify/cli@4.29.7) (2020-10-13)
 
 **Note:** Version bump only for package @aws-amplify/cli

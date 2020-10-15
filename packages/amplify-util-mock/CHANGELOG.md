@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.24.15-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.14...amplify-util-mock@3.24.15-beta.0) (2020-10-15)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [3.24.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.13...amplify-util-mock@3.24.14) (2020-10-13)
 
 **Note:** Version bump only for package amplify-util-mock

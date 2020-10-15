@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.5...amplify-appsync-simulator@1.23.6-beta.0) (2020-10-15)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** make ExpressionAttributeNames optional ([#5575](https://github.com/aws-amplify/amplify-cli/issues/5575)) ([35af053](https://github.com/aws-amplify/amplify-cli/commit/35af053de048875ea946b4467804f5f9c317a130)), closes [#5573](https://github.com/aws-amplify/amplify-cli/issues/5573)
+* **amplify-velocity-template:** expression not equals works unproperly ([#5571](https://github.com/aws-amplify/amplify-cli/issues/5571)) ([7bc5051](https://github.com/aws-amplify/amplify-cli/commit/7bc5051f8713b3d3b945e35e5138c4146be26e01)), closes [#5570](https://github.com/aws-amplify/amplify-cli/issues/5570)
+
+
+
+
+
 ## [1.23.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.4...amplify-appsync-simulator@1.23.5) (2020-10-13)
 
 **Note:** Version bump only for package amplify-appsync-simulator
