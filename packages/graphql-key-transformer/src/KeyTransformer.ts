@@ -1181,7 +1181,7 @@ function makeSyncQueryResolver(directive: DirectiveNode) {
           ref(requestVariable),
           obj({
             version: str(RESOLVER_VERSION_ID),
-            operation: str('Scan'),
+            operation: str('Sync'),
             limit: ref('limit'),
             query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
             index: ref('index'),
