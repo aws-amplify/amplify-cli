@@ -114,6 +114,10 @@ export class StateManager {
     };
 
     return this.getData<$TSAny>(filePath, mergedOptions);
+  }
+
+  getAmplifyAdminConfig = (appId: string) => {
+    return (JSONUtilities.readJson(pathManager.getAmplifyAdminConfigFilePath()) as any)[appId];
   };
 
   setLocalEnvInfo = (projectPath: string | undefined, localEnvInfo: $TSAny): void => {

@@ -1,3 +1,4 @@
+const { CognitoIdentity } = require('aws-sdk');
 const path = require('path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
@@ -8,6 +9,9 @@ const constants = require('./constants');
 const setupNewUser = require('./setup-new-user');
 const obfuscateUtil = require('./utility-obfuscate');
 const systemConfigManager = require('./system-config-manager');
+
+const { stateManager } = require('amplify-cli-core');
+const { reject } = require('lodash');
 
 const defaultAWSConfig = {
   useProfile: true,
@@ -65,8 +69,7 @@ function normalizeInputParams(context) {
     if (context.exeInfo.inputParams[constants.Label]) {
       inputParams = context.exeInfo.inputParams[constants.Label];
     } else {
-      for (let i = 0; i < constants.Aliases.length; i++) {
-        const alias = constants.Aliases[i];
+      for (let alias of constants.Aliases) {
         if (context.exeInfo.inputParams[alias]) {
           inputParams = context.exeInfo.inputParams[alias];
           break;
@@ -509,18 +512,50 @@ function loadConfigFromPath(context, profilePath) {
   throw new Error(`Invalid config ${profilePath}`);
 }
 
+function getAdminCredentials(idToken, identityId, region, callback) {
+  const cognitoIdentity = new CognitoIdentity({ region });
+  const logins = {
+    [idToken.payload.iss]: idToken.jwtToken,
+  };
+  cognitoIdentity.getCredentialsForIdentity(
+    {
+      IdentityId: identityId,
+      Logins: logins,
+    },
+    callback,
+  );
+}
+
 async function loadConfigurationForEnv(context, env) {
   const projectConfigInfo = getConfigForEnv(context, env);
-  if (projectConfigInfo.configLevel === 'project') {
+  // TODO: check project for admin proj identifier
+  const isAmplifyAdmin = true;
+  let awsConfig;
+  if (isAmplifyAdmin) {
+    context.print.info('Attempting to get credentials...');
+    const appId = '123'; // TODO: load from project
+    // projectConfigInfo.configLevel = 'amplifyAdmin';
+    // load and token and check expiry, refresh if needed
+    const tokens = stateManager.getAmplifyAdminConfig(appId);
+    // use tokens to get creds and assign to config
+    const { region } = tokens;
+    getAdminCredentials(tokens.idToken, `TODO: Identity id here`, region, (err, data) => {
+      if (err) {
+        context.print.error('\nFailed to get credentials.\n');
+        context.print.error(err); // TODO: for debugging purposes
+        throw err;
+      }
+      awsConfig = data;
+    });
+  } else if (projectConfigInfo.configLevel === 'project') {
     const { config } = projectConfigInfo;
-    let awsConfig;
     if (config.useProfile) {
       awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
     } else {
       awsConfig = loadConfigFromPath(context, config.awsConfigFilePath);
     }
-    return awsConfig;
   }
+  return awsConfig;
 }
 
 async function resetCache(context) {
