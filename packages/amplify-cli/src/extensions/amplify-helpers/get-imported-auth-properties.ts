@@ -1,9 +1,16 @@
 import _ from 'lodash';
 import { $TSContext } from 'amplify-cli-core';
 
-export const getImportedAuthRoles = (
+export const getImportedAuthProperties = (
   context: $TSContext,
-): { imported: boolean; authRoleArn?: string; authRoleName?: string; unauthRoleArn?: string; unauthRoleName?: string } => {
+): {
+  imported: boolean;
+  userPoolId?: string;
+  authRoleArn?: string;
+  authRoleName?: string;
+  unauthRoleArn?: string;
+  unauthRoleName?: string;
+} => {
   const { amplifyMeta } = context.amplify.getProjectDetails();
   const authCategoryName = 'auth';
   const authServiceName = 'Cognito';
@@ -22,9 +29,20 @@ export const getImportedAuthRoles = (
       // We have an imported resource, get the roles from the team provider info
       const envSpecificParameters = context.amplify.loadEnvResourceParameters(context, authCategoryName, resourceName);
 
-      if (envSpecificParameters && envSpecificParameters.authRoleArn && envSpecificParameters.unauthRoleArn) {
+      // Role specific parameters only mandatory if an identityPoolId also present in the envParameters
+      if (
+        envSpecificParameters &&
+        envSpecificParameters.userPoolId &&
+        (!envSpecificParameters.identityPoolId ||
+          (!!envSpecificParameters.identityPoolId &&
+            envSpecificParameters.authRoleArn &&
+            envSpecificParameters.authRoleName &&
+            envSpecificParameters.unauthRoleArn &&
+            envSpecificParameters.unauthRoleName))
+      ) {
         return {
           imported: true,
+          userPoolId: envSpecificParameters.userPoolId,
           authRoleArn: envSpecificParameters.authRoleArn,
           authRoleName: envSpecificParameters.authRoleName,
           unauthRoleArn: envSpecificParameters.unauthRoleArn,

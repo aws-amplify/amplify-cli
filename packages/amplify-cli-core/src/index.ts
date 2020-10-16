@@ -127,5 +127,14 @@ interface AmplifyToolkit {
   leaveBreadcrumbs: () => $TSAny;
   readBreadcrumbs: () => $TSAny;
   loadRuntimePlugin: () => $TSAny;
-  getImportedAuthRoles: (context: $TSContext) => { imported: boolean; authRoleArn?: string; unauthRoleArn?: string };
+  getImportedAuthProperties: (
+    context: $TSContext,
+  ) => {
+    imported: boolean;
+    userPoolId?: string;
+    authRoleArn?: string;
+    authRoleName?: string;
+    unauthRoleArn?: string;
+    unauthRoleName?: string;
+  };
 }

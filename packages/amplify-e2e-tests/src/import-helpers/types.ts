@@ -15,6 +15,11 @@ export type ProjectDetails = {
     AppClientIDWeb?: string;
     HostedUIDomain?: string;
     OAuthMetadata?: $TSObject;
+    IdentityPoolId?: string;
+    IdentityPoolName?: string;
+    AmazonWebClient?: string;
+    FacebookWebClient?: string;
+    GoogleWebClient?: string;
   };
   team?: {
     userPoolId?: string;
@@ -22,5 +27,15 @@ export type ProjectDetails = {
     webClientId?: string;
     nativeClientId?: string;
     hostedUIProviderCreds?: $TSObject;
+    identityPoolId?: string;
+    identityPoolName?: string;
+    allowUnauthenticatedIdentities?: string;
+    authRoleArn?: string;
+    authRoleName?: string;
+    unauthRoleArn?: string;
+    unauthRoleName?: string;
+    amazonAppId?: string;
+    facebookAppId?: string;
+    googleClientId?: string;
   };
 };

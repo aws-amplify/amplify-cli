@@ -21,9 +21,10 @@ export const getProjectDetails = (projectRoot: string): ProjectDetails => {
 
   const authMeta = meta.auth[authMetaKey];
   const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
+  const providerTeam = _.get(team, ['integtest', 'awscloudformation']);
   const parameters = readAuthParametersJson(projectRoot, authMetaKey);
 
-  return {
+  const result: ProjectDetails = {
     authResourceName: authMetaKey,
     parameters: {
       authSelections: parameters.authSelections,
@@ -46,6 +47,33 @@ export const getProjectDetails = (projectRoot: string): ProjectDetails => {
       hostedUIProviderCreds: authTeam.hostedUIProviderCreds ? JSON.parse(authTeam.hostedUIProviderCreds) : undefined,
     },
   };
+
+  if (result.parameters.authSelections === 'identityPoolAndUserPool') {
+    result.meta = {
+      ...result.meta,
+      IdentityPoolId: authMeta.output.IdentityPoolId,
+      IdentityPoolName: authMeta.output.IdentityPoolName,
+      AmazonWebClient: authMeta.output.AmazonWebClient,
+      FacebookWebClient: authMeta.output.FacebookWebClient,
+      GoogleWebClient: authMeta.output.GoogleWebClient,
+    };
+
+    result.team = {
+      ...result.team,
+      identityPoolId: authMeta.output.IdentityPoolId,
+      identityPoolName: authMeta.output.IdentityPoolName,
+      allowUnauthenticatedIdentities: parameters.allowUnauthenticatedIdentities,
+      authRoleArn: providerTeam.AuthRoleArn,
+      authRoleName: providerTeam.AuthRoleName,
+      unauthRoleArn: providerTeam.UnauthRoleArn,
+      unauthRoleName: providerTeam.UnauthRoleName,
+      amazonAppId: authTeam.amazonAppId,
+      facebookAppId: authTeam.facebookAppId,
+      googleClientId: authTeam.googleClientId,
+    };
+  }
+
+  return result;
 };
 
 export const getOGProjectDetails = (projectRoot: string): ProjectDetails => {

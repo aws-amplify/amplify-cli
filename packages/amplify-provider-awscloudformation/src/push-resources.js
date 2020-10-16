@@ -105,6 +105,59 @@ async function run(context, resourceDefinition) {
       }
     }
 
+    // Check if there was any imported auth resource and if there was we have to refresh the
+    // COGNITO_USER_POOLS configuration for AppSync APIs in meta if we have any
+    if (resourcesToBeSynced.length > 0) {
+      const importResources = resourcesToBeSynced.filter(r => r.sync === 'import');
+
+      if (importResources.length > 0) {
+        const {
+          imported,
+          userPoolId,
+          authRoleArn,
+          authRoleName,
+          unauthRoleArn,
+          unauthRoleName,
+        } = context.amplify.getImportedAuthProperties(context);
+
+        // Sanity check it will always be true in this case
+        if (imported) {
+          const appSyncAPIs = allResources.filter(resource => resource.service === 'AppSync');
+          const meta = stateManager.getMeta(undefined);
+          let hasChanges = false;
+
+          for (const appSyncAPI of appSyncAPIs) {
+            const apiResource = _.get(meta, ['api', appSyncAPI.resourceName]);
+
+            if (apiResource) {
+              const defaultAuthentication = _.get(apiResource, ['output', 'authConfig', 'defaultAuthentication']);
+
+              if (defaultAuthentication && defaultAuthentication.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
+                defaultAuthentication.userPoolConfig?.userPoolId = userPoolId;
+                hasChanges = true;
+              }
+
+              const additionalAuthenticationProviders = _.get(apiResource, ['output', 'authConfig', 'additionalAuthenticationProviders']);
+
+              for (const additionalAuthenticationProvider of additionalAuthenticationProviders) {
+                if (
+                  additionalAuthenticationProvider &&
+                  additionalAuthenticationProvider.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
+                ) {
+                  additionalAuthenticationProvider.userPoolConfig?.userPoolId = userPoolId;
+                  hasChanges = true;
+                }
+              }
+            }
+          }
+
+          if (hasChanges) {
+            stateManager.setMeta(undefined, meta);
+          }
+        }
+      }
+    }
+
     await downloadAPIModels(context, newAPIresources);
 
     // Store current cloud backend in S3 deployment bcuket
@@ -525,20 +578,34 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
         }
 
         // If auth is imported check the parameters section of the nested template
-        // and if it has auth or unauth role arn or name, then inject it from the
+        // and if it has auth or unauth role arn or name or userpool id, then inject it from the
         // imported auth resource's properties
-        const { imported, authRoleArn, authRoleName, unauthRoleArn, unauthRoleName } = context.amplify.getImportedAuthRoles(context);
+        const {
+          imported,
+          userPoolId,
+          authRoleArn,
+          authRoleName,
+          unauthRoleArn,
+          unauthRoleName,
+        } = context.amplify.getImportedAuthProperties(context);
 
         if (category !== 'auth' && resourceDetails.service !== 'Cognito' && imported) {
+          if (parameters.AuthCognitoUserPoolId) {
+            parameters.AuthCognitoUserPoolId = userPoolId;
+          }
+
           if (parameters.authRoleArn) {
             parameters.authRoleArn = authRoleArn;
           }
+
           if (parameters.authRoleName) {
             parameters.authRoleName = authRoleName;
           }
+
           if (parameters.unauthRoleArn) {
             parameters.unauthRoleArn = unauthRoleArn;
           }
+
           if (parameters.unauthRoleName) {
             parameters.unauthRoleName = unauthRoleName;
           }

@@ -33,36 +33,6 @@ export const checkIfAuthExists = context => {
   return authResourceName;
 };
 
-// Get the auth service based on the resource id in meta and if the resource is imported
-// return the real user pool id otherwise undefined
-export const getImportedAuthUserPoolId = (context: $TSContext): string | undefined => {
-  const { amplifyMeta } = context.amplify.getProjectDetails();
-  const authCategoryName = 'auth';
-  const authServiceName = 'Cognito';
-
-  const authCategory = _.get(amplifyMeta, [authCategoryName], undefined);
-
-  // Get the first resource as only 1 auth category resource is supported by the CLI
-  if (authCategory) {
-    const authResourceKeys = Object.keys(authCategory).filter(
-      (key: any) => authCategory[key].service === authServiceName && authCategory[key].serviceType === 'imported',
-    ) as any;
-
-    if (authResourceKeys.length === 1) {
-      const userPoolId = _.get(authCategory[authResourceKeys[0]], ['output', 'UserPoolId'], undefined);
-
-      if (!userPoolId) {
-        throw new Error('UserPoolId cannot be retrieved from the imported resource.');
-      }
-
-      return userPoolId;
-    }
-  }
-
-  // explicitly return undefined
-  return undefined;
-};
-
 // some utility functions to extract the AppSync API name and config from amplify-meta
 
 export const getAppSyncAuthConfig = projectMeta => {

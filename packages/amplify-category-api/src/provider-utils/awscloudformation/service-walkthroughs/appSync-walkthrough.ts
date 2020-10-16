@@ -11,7 +11,7 @@ import { UpdateApiRequest } from '../../../../../amplify-headless-interface/lib/
 import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
-import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey, getImportedAuthUserPoolId } from '../utils/amplify-meta-utils';
+import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
 import { ResourceAlreadyExistsError, ResourceDoesNotExistError, UnknownResourceTypeError, exitOnNextTick } from 'amplify-cli-core';
 
 const serviceName = 'AppSync';
@@ -517,15 +517,8 @@ async function askUserPoolQuestions(context) {
     context.print.info('Use a Cognito user pool configured as a part of this project.');
   }
 
-  // Check if it is an imported auth resource or not
-  const importedUserPoolId = getImportedAuthUserPoolId(context);
-
-  if (importedUserPoolId) {
-    authResourceName = importedUserPoolId;
-  } else {
-    // Added resources are prefixed with auth
-    authResourceName = `auth${authResourceName}`;
-  }
+  // Added resources are prefixed with auth
+  authResourceName = `auth${authResourceName}`;
 
   return {
     authenticationType: 'AMAZON_COGNITO_USER_POOLS',

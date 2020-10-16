@@ -76,7 +76,7 @@ export class AmplifyToolkit {
   private _leaveBreadcrumbs: any;
   private _readBreadcrumbs: any;
   private _loadRuntimePlugin: any;
-  private _getImportedAuthRoles: any;
+  private _getImportedAuthProperties: any;
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
@@ -436,9 +436,10 @@ export class AmplifyToolkit {
     return this._loadRuntimePlugin;
   }
 
-  get getImportedAuthRoles(): any {
-    this._getImportedAuthRoles =
-      this._getImportedAuthRoles || require(path.join(this._amplifyHelpersDirPath, 'get-imported-auth-roles')).getImportedAuthRoles;
-    return this._getImportedAuthRoles;
+  get getImportedAuthProperties(): any {
+    this._getImportedAuthProperties =
+      this._getImportedAuthProperties ||
+      require(path.join(this._amplifyHelpersDirPath, 'get-imported-auth-properties')).getImportedAuthProperties;
+    return this._getImportedAuthProperties;
   }
 }

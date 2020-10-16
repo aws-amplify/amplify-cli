@@ -1,21 +1,21 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import {
+  addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   addAuthUserPoolOnlyWithOAuth,
   AddAuthUserPoolOnlyWithOAuthSettings,
+  addFunction,
+  amplifyPull,
   amplifyPush,
   amplifyPushAuth,
+  amplifyStatus,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  initJSProjectWithProfile,
-  amplifyStatus,
-  getTeamProviderInfo,
-  addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
-  addFunction,
   getAppId,
-  amplifyPull,
   getEnvVars,
+  getTeamProviderInfo,
+  initJSProjectWithProfile,
   initProjectWithAccessKey,
 } from 'amplify-e2e-core';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';

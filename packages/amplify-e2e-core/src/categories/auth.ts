@@ -1122,8 +1122,10 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(cwd: string, settings: A
       .wait('Allow unauthenticated logins');
 
     if (settings.allowUnauthenticatedIdentities) {
-      chain.sendConfirmYes();
-    } else chain.sendConfirmNo();
+      chain.sendKeyUp().sendCarriageReturn();
+    } else {
+      chain.sendConfirmNo();
+    }
 
     chain
       .wait('Do you want to enable 3rd party authentication providers')
