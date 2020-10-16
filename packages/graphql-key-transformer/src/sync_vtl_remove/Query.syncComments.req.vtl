@@ -1,3 +1,19 @@
+####### schema #########
+type Comment @model
+@key(fields:["content","createdAt"])
+@key(name: "byUsername", fields: ["username", "createdAt"], queryField: "commentsByUsername")
+@key(name: "byeditor", fields: ["editor", "createdAt"], queryField: "commentsByeditors")  
+{
+  id: ID!
+  content: String!
+  username: String!
+  createdAt: String!
+  editor: String!
+  data1: String!
+  data2:String!
+}
+####### schema #########
+
 ## [Start] Set map initialization for @key **
 #set( $index = "" )
 #set( $scan = true )
@@ -9,6 +25,12 @@
 #set( $PkType = {} )
 #set( $SkType = {} )
 ## [End] Set map initialization for @key **
+## [Start] Set query expression for @key **
+$util.qr($QueryMap.put('content+createdAt' , 'dbTable'))
+$util.qr($PkMap.put('content' , 'dbTable'))
+$util.qr($PkTypeMap.put('content' , 'S'))
+$util.qr($SkTypeMap.put('createdAt' , 'S'))
+## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 $util.qr($QueryMap.put('username+createdAt' , 'byUsername'))
 $util.qr($PkMap.put('username' , 'byUsername'))
@@ -109,8 +131,7 @@ $util.qr($SkTypeMap.put('createdAt' , 'S'))
   "version": "2018-05-29",
   "operation": "Sync",
   "limit": $limit,
-  "query": $modelQueryExpression,
-  "index": $index
+  "query": $modelQueryExpression
 } )
   #if( !$util.isNull($ctx.args.sortDirection)
                     && $ctx.args.sortDirection == "DESC" )
@@ -121,6 +142,9 @@ $util.qr($SkTypeMap.put('createdAt' , 'S'))
 #if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
   #if( $filterMap != {} )
     #set( $QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap)) )
+  #end
+  #if( $index != "dbTable" )
+    #set( $QueryRequest.index = $index )
   #end
   $util.toJson($QueryRequest)
 #else

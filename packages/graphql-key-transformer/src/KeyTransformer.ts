@@ -174,7 +174,8 @@ export class KeyTransformer extends Transformer {
       }
       if (syncResolver) {
         // add table primary key
-        // Currently not datastore supported
+        // Currently composite key not supported
+        constructSyncResolver(definition, directive, ctx, syncResolver, true);
       }
     } else {
       // When looking at a secondary key we need to ensure any composite sort key values
@@ -200,33 +201,8 @@ export class KeyTransformer extends Transformer {
         ]);
       }
       if (syncResolver) {
-        if (ctx.metadata.has(ResourceConstants.SNIPPETS.SyncResolverKey)) {
-          const resolverMap = ctx.metadata.get(ResourceConstants.SNIPPETS.SyncResolverKey);
-          if (resolverMap.has(Md5.hashStr(JSON.stringify(directive)))) {
-            let keyListIndex = resolverMap.get(Md5.hashStr(JSON.stringify(directive)));
-            if (keyListIndex === 0) {
-              syncResolver.Properties.RequestMappingTemplate = '';
-              syncResolver.Properties.RequestMappingTemplate = joinSnippets([
-                print(generateSyncResolverInit()),
-                print(setSyncQueryMapSnippet(definition, directive, ctx)),
-              ]);
-            } else if (keyListIndex === resolverMap.size - 1) {
-              syncResolver.Properties.RequestMappingTemplate = joinSnippets([
-                syncResolver.Properties.RequestMappingTemplate,
-                print(setSyncQueryMapSnippet(definition, directive, ctx)),
-                print(setSyncQueryFilterSnippet()),
-                print(setSyncKeyexpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
-                print(setSyncKeyexpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
-                print(makeSyncQueryResolver()),
-              ]);
-            } else {
-              syncResolver.Properties.RequestMappingTemplate = joinSnippets([
-                syncResolver.Properties.RequestMappingTemplate,
-                print(setSyncQueryMapSnippet(definition, directive, ctx)),
-              ]);
-            }
-          }
-        }
+        // Currently composite key not supported
+        constructSyncResolver(definition, directive, ctx, syncResolver, false);
       }
 
       if (directiveArgs.queryField) {
@@ -1004,7 +980,7 @@ function joinSnippets(lines: string[]): string {
 }
 
 // QueryMap doesnt Support Composite Keys
-function setSyncQueryMapSnippet(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext) {
+function setSyncQueryMapSnippet(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext, isTable: boolean) {
   const args: KeyArguments = getDirectiveArguments(directive);
   const keys = args.fields;
   const keyTypes = keys.map(k => {
@@ -1013,7 +989,7 @@ function setSyncQueryMapSnippet(definition: ObjectTypeDefinitionNode, directive:
   });
 
   const expressions: Expression[] = [];
-  const index: String = args.name;
+  const index: String = isTable ? 'dbTable' : args.name;
   let key: String = '';
   if (keys.length === 1) {
     key = `${keys[0]}+null`;
@@ -1182,7 +1158,6 @@ function makeSyncQueryResolver() {
             operation: str('Sync'),
             limit: ref('limit'),
             query: ref(ResourceConstants.SNIPPETS.ModelQueryExpression),
-            index: ref('index'),
           }),
         ),
         ifElse(
@@ -1196,6 +1171,7 @@ function makeSyncQueryResolver() {
           raw('$filterMap != {}'),
           set(ref(`${requestVariable}.filter`), ref('util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap))')),
         ),
+        iff(raw(`$index != "dbTable"`), set(ref(`${requestVariable}.index`), ref('index'))),
         raw(`$util.toJson($${requestVariable})`),
       ]),
       DynamoDBMappingTemplate.syncItem({
@@ -1207,4 +1183,40 @@ function makeSyncQueryResolver() {
     ),
   );
   return block(` Set query expression for @key`, expressions);
+}
+
+function constructSyncResolver(
+  definition: ObjectTypeDefinitionNode,
+  directive: DirectiveNode,
+  ctx: TransformerContext,
+  syncResolver: any,
+  isTable: boolean,
+) {
+  if (ctx.metadata.has(ResourceConstants.SNIPPETS.SyncResolverKey)) {
+    const resolverMap = ctx.metadata.get(ResourceConstants.SNIPPETS.SyncResolverKey);
+    if (resolverMap.has(Md5.hashStr(JSON.stringify(directive)))) {
+      let keyListIndex = resolverMap.get(Md5.hashStr(JSON.stringify(directive)));
+      if (keyListIndex === 0) {
+        syncResolver.Properties.RequestMappingTemplate = '';
+        syncResolver.Properties.RequestMappingTemplate = joinSnippets([
+          print(generateSyncResolverInit()),
+          print(setSyncQueryMapSnippet(definition, directive, ctx, isTable)),
+        ]);
+      } else if (keyListIndex === resolverMap.size - 1) {
+        syncResolver.Properties.RequestMappingTemplate = joinSnippets([
+          syncResolver.Properties.RequestMappingTemplate,
+          print(setSyncQueryMapSnippet(definition, directive, ctx, isTable)),
+          print(setSyncQueryFilterSnippet()),
+          print(setSyncKeyexpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+          print(setSyncKeyexpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+          print(makeSyncQueryResolver()),
+        ]);
+      } else {
+        syncResolver.Properties.RequestMappingTemplate = joinSnippets([
+          syncResolver.Properties.RequestMappingTemplate,
+          print(setSyncQueryMapSnippet(definition, directive, ctx, isTable)),
+        ]);
+      }
+    }
+  }
 }
