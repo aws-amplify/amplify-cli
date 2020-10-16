@@ -99,6 +99,12 @@ export interface TransformConfig {
    * Such as sync configuration for appsync local support
    */
   ResolverConfig?: ResolverConfig;
+
+  /**
+   * List of custom transformer plugins
+   */
+  transformers?: string[];
+  warningESMessage?: boolean;
 }
 /**
  * try to load transformer config from specified projectDir

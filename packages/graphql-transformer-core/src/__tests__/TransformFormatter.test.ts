@@ -1,6 +1,7 @@
 import { TransformFormatter } from '../TransformFormatter';
 import { Template, Fn, AppSync, DynamoDB } from 'cloudform-types';
 import { TransformerContext } from '..';
+import { NoopFeatureFlagProvider } from '../../lib/FeatureFlags';
 
 const template: Template = {
   Parameters: {
@@ -68,7 +69,8 @@ const template: Template = {
 
 test('Test getTemplateReferences', () => {
   const formatter = new TransformFormatter();
-  const context = new TransformerContext('type Post @model { id: ID! title: String }');
+  const ff = new NoopFeatureFlagProvider();
+  const context = new TransformerContext('type Post @model { id: ID! title: String }', ff);
   context.mapResourceToStack('PostModel', 'CreatePostResolver');
   context.mapResourceToStack('PostModel', 'UpdatePostResolver');
   context.mapResourceToStack('PostModel', 'PostTableDataSource');
