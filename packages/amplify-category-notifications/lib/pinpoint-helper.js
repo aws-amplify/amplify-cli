@@ -115,7 +115,7 @@ async function createPinpointApp(context, resourceName) {
   context.exeInfo.pinpointApp = pinpointApp; // needed for authHelper.ensureAuth(context);
 
   context.print.info('');
-  await authHelper.ensureAuth(context);
+  await authHelper.ensureAuth(context, resourceName);
   context.print.info('');
 
   return resourceName;

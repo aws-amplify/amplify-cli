@@ -1,43 +1,116 @@
 const inquirer = require('inquirer');
 const open = require('open');
 const _ = require('lodash');
+const { stateManager } = require('amplify-cli-core');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { copyCfnTemplate, saveResourceParameters } = require('./utils/synthesize-resources');
 const { ENV_SPECIFIC_PARAMS, privateKeys } = require('./constants');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
 const { supportedServices } = require('../supported-services');
+const { importResource, importedAuthEnvInit } = require('./import');
 
-function serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, serviceMetadata) {
+function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
-  return serviceWalkthrough(context, defaultValuesFilename, stringMapFilename, serviceMetadata);
+  return serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, serviceMetadata);
 }
 
 async function addResource(context, service) {
   const serviceMetadata = supportedServices[service];
-  const { defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getAddAuthHandler(context)(
-    await serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, serviceMetadata),
+    await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
   );
 }
 
 async function updateResource(context, { service }) {
   const serviceMetadata = supportedServices[service];
-  const { defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename } = serviceMetadata;
+  const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename } = serviceMetadata;
   return getUpdateAuthHandler(context)(
-    await serviceQuestions(context, defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, serviceMetadata),
+    await serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata),
   );
 }
 
 async function updateConfigOnEnvInit(context, category, service) {
   const srvcMetaData = supportedServices.Cognito;
-  const { defaultValuesFilename, stringMapFilename, serviceWalkthroughFilename, provider } = srvcMetaData;
+  const { defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, provider } = srvcMetaData;
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
   // previously selected answers
   const resourceParams = providerPlugin.loadResourceParameters(context, 'auth', service);
   // ask only env specific questions
   let currentEnvSpecificValues = context.amplify.loadEnvResourceParameters(context, category, service);
+
+  const resource = _.get(context.exeInfo, ['amplifyMeta', category, service]);
+
+  // Imported auth resource behavior is different from Amplify managed resources, as
+  // they are immutable and all parameters and values are derived from the currently
+  // cloud deployed values.
+  if (resource && resource.serviceType === 'imported') {
+    let envSpecificParametersResult;
+    const { doServiceWalkthrough, succeeded, envSpecificParameters } = await importedAuthEnvInit(
+      context,
+      service,
+      resource,
+      resourceParams,
+      provider,
+      providerPlugin,
+      currentEnvSpecificValues,
+      isInHeadlessMode(context),
+      isInHeadlessMode(context) ? getHeadlessParams(context) : {},
+    );
+
+    // No need for headless check as this will never be true for headless
+    if (doServiceWalkthrough === true) {
+      const importResult = await importResource(
+        context,
+        {
+          providerName: provider,
+          provider: undefined, // We don't have the resolved directory of the provider we pass in an instance
+          service: 'Cognito',
+        },
+        resourceParams,
+        providerPlugin,
+      );
+
+      if (importResult) {
+        envSpecificParametersResult = importResult.envSpecificParameters;
+      } else {
+        throw new Error('There was an error importing the previously configured auth configuration to the new environment.');
+      }
+    } else if (succeeded) {
+      envSpecificParametersResult = envSpecificParameters;
+    } else {
+      // succeeded === false | undefined
+      throw new Error('There was an error importing the previously configured auth configuration to the new environment.');
+    }
+
+    // If the imported resource was synced up to the cloud before, copy over the timestamp since frontend generation
+    // and other pieces of the CLI could rely on the presence of a value, if no timestamp was found for the same
+    // resource, then do nothing as push will assign one.
+    const currentMeta = stateManager.getCurrentMeta(undefined, {
+      throwIfNotExist: false,
+    });
+
+    if (currentMeta) {
+      const meta = stateManager.getMeta(undefined, {
+        throwIfNotExist: false,
+      });
+
+      const cloudTimestamp = _.get(currentMeta, [category, service, 'lastPushTimeStamp'], undefined);
+
+      if (cloudTimestamp) {
+        resource.lastPushTimeStamp = cloudTimestamp;
+      } else {
+        resource.lastPushTimeStamp = new Date();
+      }
+
+      _.set(meta, [category, service, 'lastPushTimeStamp'], cloudTimestamp);
+      stateManager.setMeta(undefined, meta);
+    }
+
+    return envSpecificParametersResult;
+  }
 
   // legacy headless mode (only supports init)
   if (isInHeadlessMode(context)) {
@@ -76,20 +149,24 @@ async function updateConfigOnEnvInit(context, category, service) {
   srvcMetaData.inputs = srvcMetaData.inputs.filter(
     input => ENV_SPECIFIC_PARAMS.includes(input.key) && !Object.keys(currentEnvSpecificValues).includes(input.key),
   );
+
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { serviceWalkthrough } = require(serviceWalkthroughSrc);
 
   // interactive mode
-  const result = await serviceWalkthrough(context, defaultValuesFilename, stringMapFilename, srvcMetaData, resourceParams);
+  const result = await serviceWalkthrough(context, defaultValuesFilename, stringMapsFilename, srvcMetaData, resourceParams);
   let envParams = {};
+
   if (resourceParams.hostedUIProviderMeta) {
     envParams = formatCredsforEnvParams(currentEnvSpecificValues, result, resourceParams);
   }
+
   ENV_SPECIFIC_PARAMS.forEach(paramName => {
     if (paramName in result && paramName !== 'hostedUIProviderCreds' && privateKeys.indexOf(paramName) === -1) {
       envParams[paramName] = result[paramName];
     }
   });
+
   return envParams;
 }
 
@@ -288,7 +365,7 @@ function getPermissionPolicies(context, service, resourceName, crudOptions) {
     return;
   }
 
-  return getIAMPolicies(resourceName, crudOptions);
+  return getIAMPolicies(context, resourceName, crudOptions);
 }
 
 module.exports = {
@@ -298,4 +375,5 @@ module.exports = {
   migrate,
   console,
   getPermissionPolicies,
+  importResource,
 };

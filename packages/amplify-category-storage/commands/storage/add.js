@@ -37,8 +37,13 @@ module.exports = {
         print.info('');
       })
       .catch(err => {
-        context.print.info(err.stack);
+        if (err.message) {
+          context.print.error(err.message);
+        }
         context.print.error('An error occurred when adding the storage resource');
+        if (err.stack) {
+          context.print.info(err.stack);
+        }
         context.usageData.emitError(err);
         process.exitCode = 1;
       });

@@ -24,6 +24,7 @@
     "publish:master": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --yes",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --yes",
     "publish:release": "lerna publish --conventional-commits --exact --yes --message 'chore(release): Publish [ci skip]'",
+    "publish:feat-import": "lerna publish --canary --force-publish --preid=import --dist-tag=import --exact --include-merged-tags --conventional-prerelease --yes",
     "publish:headless-staging": "lerna publish --canary --force-publish --preid=headless --dist-tag=headless --exact --include-merged-tags --conventional-prerelease --yes",
     "postpublish:release": "git fetch . release:master && git push origin master",
     "publish-to-verdaccio": "lerna publish --yes --force-publish --no-git-tag-version --no-commit-hooks --no-push --exact --dist-tag=latest --conventional-commits --conventional-prerelease --preid=verdaccio",

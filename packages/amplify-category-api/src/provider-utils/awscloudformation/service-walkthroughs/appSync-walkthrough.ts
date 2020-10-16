@@ -517,10 +517,13 @@ async function askUserPoolQuestions(context) {
     context.print.info('Use a Cognito user pool configured as a part of this project.');
   }
 
+  // Added resources are prefixed with auth
+  authResourceName = `auth${authResourceName}`;
+
   return {
     authenticationType: 'AMAZON_COGNITO_USER_POOLS',
     userPoolConfig: {
-      userPoolId: `auth${authResourceName}`,
+      userPoolId: authResourceName,
     },
   };
 }

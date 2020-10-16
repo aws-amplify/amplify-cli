@@ -30,7 +30,7 @@ const parametersJson = 'parameters.json';
 
 async function run(context, resourceDefinition) {
   try {
-    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = resourceDefinition;
+    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, allResources } = resourceDefinition;
     const {
       parameters: { options },
     } = context;
@@ -60,7 +60,8 @@ async function run(context, resourceDefinition) {
 
     projectDetails = context.amplify.getProjectDetails();
 
-    if (resources.length > 0 || resourcesToBeDeleted.length > 0) {
+    // We do not need CloudFormation update if only syncable resources are the changes.
+    if (resourcesToBeCreated.length > 0 || resourcesToBeUpdated.length > 0 || resourcesToBeDeleted.length > 0) {
       await updateCloudFormationNestedStack(context, formNestedStack(context, projectDetails), resourcesToBeCreated, resourcesToBeUpdated);
     }
 
@@ -69,6 +70,21 @@ async function run(context, resourceDefinition) {
 
     if (resources.length > 0) {
       await context.amplify.updateamplifyMetaAfterPush(resources);
+    }
+
+    if (resourcesToBeSynced.length > 0) {
+      const importResources = resourcesToBeSynced.filter(r => r.sync === 'import');
+      const unlinkedResources = resourcesToBeSynced.filter(r => r.sync === 'unlink');
+
+      if (importResources.length > 0) {
+        await context.amplify.updateamplifyMetaAfterPush(importResources);
+      }
+
+      if (unlinkedResources.length > 0) {
+        for (let i = 0; i < unlinkedResources.length; i++) {
+          context.amplify.updateamplifyMetaAfterResourceDelete(unlinkedResources[i].category, unlinkedResources[i].resourceName);
+        }
+      }
     }
 
     for (let i = 0; i < resourcesToBeDeleted.length; i++) {
@@ -86,6 +102,59 @@ async function run(context, resourceDefinition) {
     for (let i = 0; i < updatedAllResources.length; i++) {
       if (resources.findIndex(resource => resource.resourceName === updatedAllResources[i].resourceName) > -1) {
         newAPIresources.push(updatedAllResources[i]);
+      }
+    }
+
+    // Check if there was any imported auth resource and if there was we have to refresh the
+    // COGNITO_USER_POOLS configuration for AppSync APIs in meta if we have any
+    if (resourcesToBeSynced.length > 0) {
+      const importResources = resourcesToBeSynced.filter(r => r.sync === 'import');
+
+      if (importResources.length > 0) {
+        const {
+          imported,
+          userPoolId,
+          authRoleArn,
+          authRoleName,
+          unauthRoleArn,
+          unauthRoleName,
+        } = context.amplify.getImportedAuthProperties(context);
+
+        // Sanity check it will always be true in this case
+        if (imported) {
+          const appSyncAPIs = allResources.filter(resource => resource.service === 'AppSync');
+          const meta = stateManager.getMeta(undefined);
+          let hasChanges = false;
+
+          for (const appSyncAPI of appSyncAPIs) {
+            const apiResource = _.get(meta, ['api', appSyncAPI.resourceName]);
+
+            if (apiResource) {
+              const defaultAuthentication = _.get(apiResource, ['output', 'authConfig', 'defaultAuthentication']);
+
+              if (defaultAuthentication && defaultAuthentication.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
+                defaultAuthentication.userPoolConfig.userPoolId = userPoolId;
+                hasChanges = true;
+              }
+
+              const additionalAuthenticationProviders = _.get(apiResource, ['output', 'authConfig', 'additionalAuthenticationProviders']);
+
+              for (const additionalAuthenticationProvider of additionalAuthenticationProviders) {
+                if (
+                  additionalAuthenticationProvider &&
+                  additionalAuthenticationProvider.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
+                ) {
+                  additionalAuthenticationProvider.userPoolConfig.userPoolId = userPoolId;
+                  hasChanges = true;
+                }
+              }
+            }
+          }
+
+          if (hasChanges) {
+            stateManager.setMeta(undefined, meta);
+          }
+        }
       }
     }
 
@@ -446,10 +515,38 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
         if (dependsOn) {
           for (let i = 0; i < dependsOn.length; i += 1) {
             for (let j = 0; j < dependsOn[i].attributes.length; j += 1) {
-              const parameterKey = dependsOn[i].category + dependsOn[i].resourceName + dependsOn[i].attributes[j];
-              const dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
+              // If the depends on resource is an imported resource we cannot form GetAtt type reference
+              // since there is no such thing. We have to read the output.{AttributeName} from the meta
+              // and inject the value itself into the parameters block
+              let parameterValue;
 
-              parameters[parameterKey] = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
+              const dependentResource = _.get(amplifyMeta, [dependsOn[i].category, dependsOn[i].resourceName], undefined);
+
+              if (!dependentResource) {
+                throw new Error(`Cannot get resource: ${dependsOn[i].resourceName} from '${dependsOn[i].category}' category.`);
+              }
+
+              if (dependentResource.serviceType === 'imported') {
+                const outputAttributeValue = _.get(dependentResource, ['output', dependsOn[i].attributes[j]], undefined);
+
+                if (!outputAttributeValue) {
+                  const error = new Error(
+                    `Cannot read the '${dependsOn[i].attributes[j]}' dependent attribute value from the output section of resource: '${dependsOn[i].resourceName}'.`,
+                  );
+                  error.stack = undefined;
+
+                  throw error;
+                }
+
+                parameterValue = outputAttributeValue;
+              } else {
+                const dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
+                parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
+              }
+
+              const parameterKey = `${dependsOn[i].category}${dependsOn[i].resourceName}${dependsOn[i].attributes[j]}`;
+
+              parameters[parameterKey] = parameterValue;
             }
 
             if (dependsOn[i].exports) {
@@ -480,6 +577,40 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
           Object.assign(parameters, { env: currentEnv });
         }
 
+        // If auth is imported check the parameters section of the nested template
+        // and if it has auth or unauth role arn or name or userpool id, then inject it from the
+        // imported auth resource's properties
+        const {
+          imported,
+          userPoolId,
+          authRoleArn,
+          authRoleName,
+          unauthRoleArn,
+          unauthRoleName,
+        } = context.amplify.getImportedAuthProperties(context);
+
+        if (category !== 'auth' && resourceDetails.service !== 'Cognito' && imported) {
+          if (parameters.AuthCognitoUserPoolId) {
+            parameters.AuthCognitoUserPoolId = userPoolId;
+          }
+
+          if (parameters.authRoleArn) {
+            parameters.authRoleArn = authRoleArn;
+          }
+
+          if (parameters.authRoleName) {
+            parameters.authRoleName = authRoleName;
+          }
+
+          if (parameters.unauthRoleArn) {
+            parameters.unauthRoleArn = unauthRoleArn;
+          }
+
+          if (parameters.unauthRoleName) {
+            parameters.unauthRoleName = unauthRoleName;
+          }
+        }
+
         if (resourceDetails.providerMetadata) {
           templateURL = resourceDetails.providerMetadata.s3TemplateURL;
           nestedStack.Resources[resourceKey] = {
@@ -495,11 +626,17 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
   });
 
   if (authResourceName) {
-    const authParameters = loadResourceParameters(context, 'auth', authResourceName);
-    if (authParameters.identityPoolName) {
-      updateIdPRolesInNestedStack(context, nestedStack, authResourceName);
+    const importedAuth = _.get(amplifyMeta, ['auth', authResourceName], undefined);
+
+    // If auth is imported we cannot update the IDP as it is not part of the stack resources we deploy.
+    if (importedAuth && importedAuth.serviceType !== 'imported') {
+      const authParameters = loadResourceParameters(context, 'auth', authResourceName);
+      if (authParameters.identityPoolName) {
+        updateIdPRolesInNestedStack(context, nestedStack, authResourceName);
+      }
     }
   }
+
   return nestedStack;
 }
 

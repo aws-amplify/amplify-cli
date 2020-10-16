@@ -65,6 +65,7 @@
     "amplify-python-function-runtime-provider": "1.2.3",
     "amplify-python-function-template-provider": "1.2.1",
     "amplify-util-mock": "3.24.15",
+    "amplify-util-import": "1.0.0",
     "chalk": "^3.0.0",
     "ci-info": "^2.0.0",
     "cli-table3": "^0.6.0",

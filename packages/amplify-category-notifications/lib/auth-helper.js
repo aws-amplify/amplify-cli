@@ -1,10 +1,11 @@
 const ora = require('ora');
+const os = require('os');
 const constants = require('./constants');
 
 const providerName = 'awscloudformation';
 const spinner = ora('');
 
-async function ensureAuth(context) {
+async function ensureAuth(context, resourceName) {
   try {
     spinner.start('Creating and attaching IAM policy.');
     const policy = await createPolicy(context);
@@ -14,7 +15,7 @@ async function ensureAuth(context) {
     spinner.fail('Error occurred during IAM policy setup.');
     throw e;
   }
-  await checkAuth(context);
+  await checkAuth(context, resourceName);
 }
 
 async function createPolicy(context) {
@@ -59,21 +60,33 @@ async function attachPolicyToRole(context, policy, roleName) {
   });
 }
 
-async function checkAuth(context) {
+async function checkAuth(context, resourceName) {
   const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
   const apiRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
-  const satisfiedRequirements = await checkRequirements(apiRequirements, context);
-  const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+  const checkResult = await checkRequirements(apiRequirements, context, constants.CategoryName, resourceName);
 
-  if (foundUnmetRequirements) {
-    context.print.warning(`Adding ${constants.CategoryName} would also add the Auth category to the project if not already added.`);
+  // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
+  // configuration.
+  if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
+    throw new Error(checkResult.errors.join(os.EOL));
+  }
+
+  if (checkResult.errors && checkResult.errors.length > 0) {
+    context.print.warning(checkResult.errors.join(os.EOL));
+  }
+
+  // If auth is not imported and there were errors, adjust or enable auth configuration
+  if (!checkResult.authEnabled || !checkResult.requirementsMet) {
     try {
-      await externalAuthEnable(context, constants.CategoryName, '', apiRequirements);
+      context.print.warning(`Adding ${constants.CategoryName} would also add the Auth category to the project if not already added.`);
+
+      await externalAuthEnable(context, constants.CategoryName, resourceName, apiRequirements);
+
       context.print.warning('Execute "amplify push" to update the Auth resources in the cloud.');
-    } catch (e) {
-      context.print.error(e);
-      throw e;
+    } catch (error) {
+      context.print.error(error);
+      throw error;
     }
   }
 }

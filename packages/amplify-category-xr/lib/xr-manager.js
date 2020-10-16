@@ -12,7 +12,7 @@ const SUMERIAN_CONSOLE_URL = 'https://console.aws.amazon.com/sumerian/home/start
 
 async function ensureSetup(context, resourceName) {
   if (!isXRSetup(context)) {
-    await authHelper.ensureAuth(context);
+    await authHelper.ensureAuth(context, resourceName);
   }
   await setupAccess(context, resourceName);
 }
