@@ -33,7 +33,7 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
 
 function getHashForResourceDir(dirPath) {
   const options = {
-    folders: { exclude: ['.*', 'node_modules', 'test_coverage', 'dist', 'build'] },
+    folders: { exclude: ['.*', 'node_modules', 'test_coverage', 'dist'] },
   };
 
   return hashElement(dirPath, options).then(result => result.hash);
