@@ -1,6 +1,6 @@
 import { Input } from './domain/input';
-import { pathManager } from 'amplify-cli-core';
-import { logger } from 'amplify-cli-logger';
+import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { logger, Redactor } from 'amplify-cli-logger';
 import path from 'path';
 import { constants } from './domain/constants';
 export function conditionalLoggingInit(input: Input): void {
@@ -14,4 +14,9 @@ export function conditionalLoggingInit(input: Input): void {
   if (projectPath) {
     logger.projectLocalLogInit(path.join(projectPath, constants.Amplify));
   }
+  logger.logInfo({
+    message: `amplify ${input.command} \
+${input.subCommands ? input.subCommands.join(' ') : ''} \
+${input.options ? Redactor(JSONUtilities.stringify(input.options, { minify: true })) : ''}`,
+  });
 }

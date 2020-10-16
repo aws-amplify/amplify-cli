@@ -11,7 +11,7 @@ const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const { stateManager } = require('amplify-cli-core');
 const { CreateService } = require('./aws-service-creator');
-const { fileLogger, logStackEvents } = require('../utils/aws-logger');
+const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-cfn');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
@@ -460,7 +460,6 @@ function showEvents(events) {
     const e = events.map(ev => {
       const res = {};
       const { ResourceStatus: resourceStatus } = ev;
-      logStackEvents(`${ev.ResourceStatus} ${ev.LogicalResourceId} ${ev.ResourceType} ${ev.ResourceStatusReason || ''} (${ev.Timestamp})`);
       let colorFn = chalk.reset;
       if (CNF_ERROR_STATUS.includes(resourceStatus)) {
         colorFn = chalk.red;

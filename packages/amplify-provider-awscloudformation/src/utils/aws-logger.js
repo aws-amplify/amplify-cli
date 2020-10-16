@@ -1,6 +1,5 @@
 const { logger, Redactor } = require('amplify-cli-logger');
 const mainModule = 'amplify-provider-awscloudformation';
-
 export const fileLogger = file => (crumb, args) => error => {
   const message = `${mainModule}.${file}.${crumb}(${Redactor(JSON.stringify(args))})`;
   if (!error) {
@@ -11,10 +10,4 @@ export const fileLogger = file => (crumb, args) => error => {
       error,
     });
   }
-};
-
-export const logStackEvents = events => {
-  logger.logInfo({
-    message: events,
-  });
 };
