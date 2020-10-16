@@ -10,8 +10,8 @@ describe('api directives @key', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projectDir);
-    // deleteProjectDir(projectDir);
+    await deleteProject(projectDir);
+    deleteProjectDir(projectDir);
   });
 
   it('key howTo1', async () => {
