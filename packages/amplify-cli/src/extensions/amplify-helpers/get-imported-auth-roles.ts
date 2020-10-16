@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 
 export const getImportedAuthRoles = (
   context: $TSContext,

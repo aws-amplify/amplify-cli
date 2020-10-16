@@ -15,7 +15,7 @@ function getCurrentEnvName(context: $TSContext) {
   return getEnvInfo().envName;
 }
 
-function getAppplicableTeamProviderInfo(context: $TSContext) {
+function getApplicableTeamProviderInfo(context: $TSContext) {
   try {
     if (isMigrationContext(context)) {
       return context.migrationInfo.teamProviderInfo;
@@ -59,7 +59,7 @@ function removeObjectRecursively(obj, keys) {
 }
 
 export function saveEnvResourceParameters(context: $TSContext, category: string, resource: string, parameters: $TSObject) {
-  const teamProviderInfo = getAppplicableTeamProviderInfo(context);
+  const teamProviderInfo = getApplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
   const resources = getOrCreateSubObject(teamProviderInfo, [currentEnv, CATEGORIES, category]);
 
@@ -71,7 +71,7 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
 }
 
 export function loadEnvResourceParameters(context: $TSContext, category: string, resource: string) {
-  const teamProviderInfo = getAppplicableTeamProviderInfo(context);
+  const teamProviderInfo = getApplicableTeamProviderInfo(context);
 
   try {
     const currentEnv = getCurrentEnvName(context);
@@ -83,7 +83,7 @@ export function loadEnvResourceParameters(context: $TSContext, category: string,
 }
 
 export function removeResourceParameters(context: $TSContext, category: string, resource: string) {
-  const teamProviderInfo = getAppplicableTeamProviderInfo(context);
+  const teamProviderInfo = getApplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
 
   removeObjectRecursively(teamProviderInfo, [currentEnv, CATEGORIES, category, resource]);

@@ -1,6 +1,4 @@
 const awsRegions = require('./aws-regions');
-const Cognito = require('./aws-utils/aws-cognito');
-const CognitoIdentity = require('./aws-utils/aws-cognito-identity');
 const Lambda = require('./aws-utils/aws-lambda');
 const DynamoDB = require('./aws-utils/aws-dynamodb');
 const AppSync = require('./aws-utils/aws-appsync');
@@ -45,30 +43,6 @@ module.exports = {
     authRoleArn: context.amplify.getProjectDetails().amplifyMeta.providers.awscloudformation.AuthRoleArn,
   }),
   /* eslint-enable */
-  createCognitoIdentityServiceProvider: async context => {
-    return (await new Cognito(context)).cognito;
-  },
-  createCognitoIdentity: async context => {
-    return (await new CognitoIdentity(context)).identity;
-  },
-  getUserPools: (context, options) =>
-    new Cognito(context)
-      .then(cognitoModel =>
-        cognitoModel.cognito
-          .listUserPools({ MaxResults: 60 })
-          .promise()
-          .then(result => {
-            let userPools = result.UserPools;
-            if (options && options.region) {
-              userPools = userPools.filter(userPool => userPool.Id.startsWith(options.region));
-            }
-            return userPools;
-          }),
-      )
-      .catch(err => {
-        context.print.error('Failed to fetch user pools');
-        throw err;
-      }),
   getLambdaFunctions: async context => {
     const lambdaModel = await new Lambda(context);
     let nextMarker;

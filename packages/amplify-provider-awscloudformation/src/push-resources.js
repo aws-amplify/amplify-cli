@@ -464,7 +464,7 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
             for (let j = 0; j < dependsOn[i].attributes.length; j += 1) {
               // If the depends on resource is an imported resource we cannot form GetAtt type reference
               // since there is no such thing. We have to read the output.{AttributeName} from the meta
-              // and inject the value ifself into the parameters block
+              // and inject the value itself into the parameters block
               let parameterValue;
 
               const dependentResource = _.get(amplifyMeta, [dependsOn[i].category, dependsOn[i].resourceName], undefined);

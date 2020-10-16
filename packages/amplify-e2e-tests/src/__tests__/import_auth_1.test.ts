@@ -1,104 +1,57 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { v4 as uuid } from 'uuid';
-import _ from 'lodash';
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import {
-  nspawn as spawn,
-  getCLIPath,
   addAuthUserPoolOnlyWithOAuth,
   AddAuthUserPoolOnlyWithOAuthSettings,
-  AddAuthUserPoolOnlyNoOAuthSettings,
   amplifyPush,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getProjectMeta,
   initJSProjectWithProfile,
-  getBackendAmplifyMeta,
   amplifyStatus,
   getTeamProviderInfo,
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   addFunction,
   getAppId,
   amplifyPull,
-  getBackendConfig,
   getEnvVars,
   initProjectWithAccessKey,
 } from 'amplify-e2e-core';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 import { getCognitoResourceName } from '../schema-api-directives/authHelper';
 import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
-
-const projectPrefix = 'authimp';
-const ogProjectPrefix = 'ogauthimp';
-
-const projectSettings = {
-  name: projectPrefix,
-};
-
-const ogProjectSettings = {
-  name: ogProjectPrefix,
-};
-
-const getShortId = (): string => {
-  const [shortId] = uuid().split('-');
-
-  return shortId;
-};
-
-type ProjectDetails = {
-  authResourceName?: string;
-  parameters?: {
-    authSelections?: string;
-    resourceName?: string;
-    serviceType?: string;
-  };
-  meta?: {
-    UserPoolId?: string;
-    UserPoolName?: string;
-    AppClientID?: string;
-    AppClientSecret?: string;
-    AppClientIDWeb?: string;
-    HostedUIDomain?: string;
-    OAuthMetadata?: $TSObject;
-  };
-  team?: {
-    userPoolId?: string;
-    userPoolName?: string;
-    webClientId?: string;
-    nativeClientId?: string;
-    hostedUIProviderCreds?: $TSObject;
-  };
-};
-
-const createNoOAuthSettings = (projectPrefix: string, shortId: string): AddAuthUserPoolOnlyNoOAuthSettings => {
-  return {
-    resourceName: `${projectPrefix}res${shortId}`,
-    userPoolName: `${projectPrefix}up${shortId}`,
-  };
-};
-
-const createWithOAuthSettings = (projectPrefix: string, shortId: string): AddAuthUserPoolOnlyWithOAuthSettings => {
-  return {
-    resourceName: `${projectPrefix}oares${shortId}`,
-    userPoolName: `${projectPrefix}oaup${shortId}`,
-    domainPrefix: `${projectPrefix}oadom${shortId}`,
-    signInUrl1: 'https://sin1/',
-    signInUrl2: 'https://sin2/',
-    signOutUrl1: 'https://sout1/',
-    signOutUrl2: 'https://sout2/',
-    facebookAppId: `facebookAppId`,
-    facebookAppSecret: `facebookAppSecret`,
-    googleAppId: `googleAppId`,
-    googleAppSecret: `googleAppSecret`,
-    amazonAppId: `amazonAppId`,
-    amazonAppSecret: `amazonAppSecret`,
-  };
-};
+import {
+  addS3WithAuthConfigurationMismatchErrorExit,
+  createUserPoolOnlyWithOAuthSettings,
+  expectApiHasCorrectAuthConfig,
+  expectLocalAndCloudMetaFilesMatching,
+  expectLocalAndOGMetaFilesOutputMatching,
+  expectLocalAndPulledBackendConfigMatching,
+  expectLocalTeamInfoHasNoCategories,
+  expectNoAuthInMeta,
+  expectProjectDetailsMatch,
+  getOGProjectDetails,
+  getProjectDetails,
+  getShortId,
+  importUserPoolOnly,
+  ProjectDetails,
+  readRootStack,
+  removeImportedAuthWithDefault,
+} from '../import-helpers';
 
 describe('auth import userpool only', () => {
+  const projectPrefix = 'auimpup';
+  const ogProjectPrefix = 'ogauimpup';
+
+  const projectSettings = {
+    name: projectPrefix,
+  };
+
+  const ogProjectSettings = {
+    name: ogProjectPrefix,
+  };
+
   // OG is the CLI project that creates the user pool to import by other test projects
   let ogProjectRoot: string;
   let ogShortId: string;
@@ -111,7 +64,7 @@ describe('auth import userpool only', () => {
   beforeAll(async () => {
     ogProjectRoot = await createNewProjectDir(ogProjectSettings.name);
     ogShortId = getShortId();
-    ogSettings = createWithOAuthSettings(ogProjectSettings.name, ogShortId);
+    ogSettings = createUserPoolOnlyWithOAuthSettings(ogProjectSettings.name, ogShortId);
 
     await initJSProjectWithProfile(ogProjectRoot, ogProjectSettings);
     await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, ogSettings);
@@ -180,7 +133,7 @@ describe('auth import userpool only', () => {
 
     const projectDetails = getProjectDetails(projectRoot);
 
-    expectApiHasCorrectAuthConfig(projectRoot, ogProjectDetails.meta.UserPoolId);
+    expectApiHasCorrectAuthConfig(projectRoot, projectPrefix, ogProjectDetails.meta.UserPoolId);
   });
 
   it('imported auth with function and crud on auth should push', async () => {
@@ -364,256 +317,3 @@ describe('auth import userpool only', () => {
     );
   });
 });
-
-const getProjectDetails = (projectRoot: string): ProjectDetails => {
-  const meta = getBackendAmplifyMeta(projectRoot);
-  const team = getTeamProviderInfo(projectRoot);
-
-  const authMetaKey = Object.keys(meta.auth)
-    .filter(key => meta.auth[key].service === 'Cognito')
-    .map(key => key)[0];
-
-  const authMeta = meta.auth[authMetaKey];
-  const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
-  const parameters = readAuthParametersJson(projectRoot, authMetaKey);
-
-  return {
-    authResourceName: authMetaKey,
-    parameters: {
-      authSelections: parameters.authSelections,
-      resourceName: parameters.userPoolName,
-    },
-    meta: {
-      UserPoolId: authMeta.output.UserPoolId,
-      UserPoolName: authMeta.output.UserPoolName,
-      AppClientID: authMeta.output.AppClientID,
-      AppClientSecret: authMeta.output.AppClientSecret,
-      AppClientIDWeb: authMeta.output.AppClientIDWeb,
-      HostedUIDomain: authMeta.output.HostedUIDomain,
-      OAuthMetadata: authMeta.output.OAuthMetadata ? JSON.parse(authMeta.output.OAuthMetadata) : undefined,
-    },
-    team: {
-      userPoolId: authTeam.userPoolId,
-      userPoolName: authTeam.userPoolName,
-      webClientId: authTeam.webClientId,
-      nativeClientId: authTeam.nativeClientId,
-      hostedUIProviderCreds: authTeam.hostedUIProviderCreds ? JSON.parse(authTeam.hostedUIProviderCreds) : undefined,
-    },
-  };
-};
-
-const getOGProjectDetails = (projectRoot: string): ProjectDetails => {
-  const meta = getBackendAmplifyMeta(projectRoot);
-  const team = getTeamProviderInfo(projectRoot);
-
-  const authMetaKey = Object.keys(meta.auth)
-    .filter(key => meta.auth[key].service === 'Cognito')
-    .map(key => key)[0];
-
-  const authMeta = meta.auth[authMetaKey];
-  const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
-  const parameters = readAuthParametersJson(projectRoot, authMetaKey);
-
-  return {
-    authResourceName: authMetaKey,
-    parameters: {
-      authSelections: parameters.authSelections,
-      resourceName: parameters.userPoolName,
-    },
-    meta: {
-      UserPoolId: authMeta.output.UserPoolId,
-      UserPoolName: authMeta.output.UserPoolName,
-      AppClientID: authMeta.output.AppClientID,
-      AppClientSecret: authMeta.output.AppClientSecret,
-      AppClientIDWeb: authMeta.output.AppClientIDWeb,
-      HostedUIDomain: authMeta.output.HostedUIDomain,
-      OAuthMetadata: authMeta.output.OAuthMetadata ? JSON.parse(authMeta.output.OAuthMetadata) : undefined,
-    },
-    team: {
-      userPoolId: authMeta.output.UserPoolId,
-      userPoolName: authMeta.output.UserPoolName,
-      webClientId: authMeta.output.AppClientIDWeb,
-      nativeClientId: authMeta.output.AppClientID,
-      hostedUIProviderCreds: authTeam.hostedUIProviderCreds ? JSON.parse(authTeam.hostedUIProviderCreds) : undefined,
-    },
-  };
-};
-
-const expectProjectDetailsMatch = (projectDetails: ProjectDetails, ogProjectDetails: ProjectDetails) => {
-  expect(projectDetails.parameters.authSelections).toEqual(ogProjectDetails.parameters.authSelections);
-
-  expect(projectDetails.meta.UserPoolId).toEqual(ogProjectDetails.meta.UserPoolId);
-  expect(projectDetails.meta.AppClientID).toEqual(ogProjectDetails.meta.AppClientID);
-  expect(projectDetails.meta.AppClientSecret).toEqual(ogProjectDetails.meta.AppClientSecret);
-  expect(projectDetails.meta.AppClientIDWeb).toEqual(ogProjectDetails.meta.AppClientIDWeb);
-  expect(projectDetails.meta.HostedUIDomain).toEqual(ogProjectDetails.meta.HostedUIDomain);
-
-  if (projectDetails.meta.OAuthMetadata) {
-    expect(ogProjectDetails.meta.OAuthMetadata).toBeDefined();
-
-    expect(projectDetails.meta.OAuthMetadata.AllowedOAuthFlows).toEqual(ogProjectDetails.meta.OAuthMetadata.AllowedOAuthFlows);
-    expect(projectDetails.meta.OAuthMetadata.AllowedOAuthScopes.sort()).toEqual(
-      ogProjectDetails.meta.OAuthMetadata.AllowedOAuthScopes.sort(),
-    );
-    expect(projectDetails.meta.OAuthMetadata.CallbackURLs).toEqual(ogProjectDetails.meta.OAuthMetadata.CallbackURLs);
-    expect(projectDetails.meta.OAuthMetadata.LogoutURLs).toEqual(ogProjectDetails.meta.OAuthMetadata.LogoutURLs);
-  }
-
-  expect(projectDetails.team.userPoolId).toEqual(ogProjectDetails.team.userPoolId);
-  expect(projectDetails.team.webClientId).toEqual(ogProjectDetails.team.webClientId);
-  expect(projectDetails.team.nativeClientId).toEqual(ogProjectDetails.team.nativeClientId);
-  expect(projectDetails.team.hostedUIProviderCreds).toMatchObject(ogProjectDetails.team.hostedUIProviderCreds);
-};
-
-const importUserPoolOnly = (cwd: string, autoCompletePrefix: string) => {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
-      .wait('What type of auth resource do you want to import')
-      .sendKeyDown()
-      .sendCarriageReturn()
-      .wait('Select the User Pool you want to import')
-      .send(autoCompletePrefix)
-      .delay(500) // Some delay required for autocomplete and terminal to catch up
-      .sendCarriageReturn()
-      .wait('- JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js')
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-};
-
-const removeImportedAuthWithDefault = (cwd: string) => {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['auth', 'remove'], { cwd, stripColors: true })
-      .wait('Choose the resource you would want to remove')
-      .sendCarriageReturn()
-      .wait('Are you sure you want to unlink this imported resource')
-      .sendConfirmYes()
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-};
-
-const expectLocalAndCloudMetaFilesMatching = (projectRoot: string) => {
-  const cloudMeta = getProjectMeta(projectRoot);
-  const meta = getBackendAmplifyMeta(projectRoot);
-
-  expect(cloudMeta).toMatchObject(meta);
-};
-
-const expectLocalAndOGMetaFilesOutputMatching = (projectRoot: string, ogProjectRoot: string) => {
-  const meta = getBackendAmplifyMeta(projectRoot);
-  const ogMeta = getBackendAmplifyMeta(ogProjectRoot);
-
-  const authMeta = Object.keys(meta.auth)
-    .filter(key => meta.auth[key].service === 'Cognito')
-    .map(key => meta.auth[key])[0];
-
-  const ogAuthMeta = Object.keys(ogMeta.auth)
-    .filter(key => ogMeta.auth[key].service === 'Cognito')
-    .map(key => ogMeta.auth[key])[0];
-
-  expect(authMeta.output.AppClientID).toEqual(ogAuthMeta.output.AppClientID);
-  expect(authMeta.output.AppClientIDWeb).toEqual(ogAuthMeta.output.AppClientIDWeb);
-  expect(authMeta.output.AppClientSecret).toEqual(ogAuthMeta.output.AppClientSecret);
-  expect(authMeta.output.HostedUIDomain).toEqual(ogAuthMeta.output.HostedUIDomain);
-  expect(authMeta.output.UserPoolId).toEqual(ogAuthMeta.output.UserPoolId);
-};
-
-const expectNoAuthInMeta = (projectRoot: string) => {
-  const meta = getBackendAmplifyMeta(projectRoot);
-
-  expect(meta.auth).toBeDefined();
-  expect(meta.auth).toMatchObject({});
-};
-
-const expectLocalTeamInfoHasNoCategories = (projectRoot: string) => {
-  const team = getTeamProviderInfo(projectRoot);
-
-  expect(team.integtest.categories).toBeUndefined();
-};
-
-const readApiParametersJson = (projectRoot: string): $TSObject => {
-  const parametersFilePath = path.join(projectRoot, 'amplify', 'backend', 'api', projectPrefix, 'parameters.json');
-  const parameters = JSONUtilities.readJson(parametersFilePath);
-
-  return parameters;
-};
-
-const readAuthParametersJson = (projectRoot: string, resourceName: string): $TSObject => {
-  const parametersFilePath = path.join(projectRoot, 'amplify', 'backend', 'auth', resourceName, 'parameters.json');
-  const parameters = JSONUtilities.readJson(parametersFilePath);
-
-  return parameters;
-};
-
-const readRootStack = (projectRoot: string): $TSObject => {
-  const rootStackFilePath = path.join(projectRoot, 'amplify', 'backend', 'awscloudformation', 'nested-cloudformation-stack.yml');
-  const rootStack = JSONUtilities.readJson(rootStackFilePath);
-
-  return rootStack;
-};
-
-const expectApiHasCorrectAuthConfig = (projectRoot: string, userPoolId: string) => {
-  const meta = getBackendAmplifyMeta(projectRoot);
-
-  const authConfig = meta.api?.authimp?.output?.authConfig;
-
-  expect(authConfig).toBeDefined();
-
-  expect(authConfig.defaultAuthentication?.authenticationType).toEqual('AMAZON_COGNITO_USER_POOLS');
-  expect(authConfig.defaultAuthentication?.userPoolConfig?.userPoolId).toEqual(userPoolId);
-
-  const parameters = readApiParametersJson(projectRoot);
-
-  expect(parameters?.AuthCognitoUserPoolId).toEqual(userPoolId);
-
-  const rootStack = readRootStack(projectRoot);
-
-  expect(rootStack.Resources?.apiauthimp?.Properties?.Parameters?.AuthCognitoUserPoolId).toEqual(userPoolId);
-};
-
-const addS3WithAuthConfigurationMismatchErrorExit = (cwd: string, settings: any) => {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
-      .wait('Please select from one of the below mentioned services')
-      .sendCarriageReturn()
-      .wait('Please provide a friendly name')
-      .sendCarriageReturn()
-      .wait('Please provide bucket name')
-      .sendCarriageReturn()
-      .wait('Who should have access')
-      .sendCarriageReturn()
-      .wait('What kind of access do you want')
-      .sendLine(' ')
-      .wait('Do you want to add a Lambda Trigger for your S3 Bucket')
-      .sendConfirmNo()
-      .wait('Current auth configuration is: userPoolOnly, but identityPoolAndUserPool was required.')
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-};
-
-const expectLocalAndPulledBackendConfigMatching = (projectRoot: string, projectRootPull: string) => {
-  const backendConfig = getBackendConfig(projectRoot);
-  const backendConfigPull = getBackendConfig(projectRootPull);
-
-  expect(backendConfig).toMatchObject(backendConfigPull);
-};

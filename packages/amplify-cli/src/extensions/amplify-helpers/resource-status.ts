@@ -89,7 +89,7 @@ function getAllResources(amplifyMeta, category, resourceName, filteredResources)
   return resources;
 }
 
-function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources) {
+function getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources) {
   let resources: any[] = [];
 
   Object.keys(amplifyMeta).forEach(categoryName => {
@@ -97,8 +97,8 @@ function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, reso
     Object.keys(categoryItem).forEach(resource => {
       if (
         (!amplifyMeta[categoryName][resource].lastPushTimeStamp ||
-          !currentamplifyMeta[categoryName] ||
-          !currentamplifyMeta[categoryName][resource]) &&
+          !currentAmplifyMeta[categoryName] ||
+          !currentAmplifyMeta[categoryName][resource]) &&
         categoryName !== 'providers' &&
         amplifyMeta[categoryName][resource].serviceType !== 'imported'
       ) {
@@ -130,8 +130,8 @@ function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, reso
         const dependsOnResourcename = resources[i].dependsOn[j].resourceName;
         if (
           (!amplifyMeta[dependsOnCategory][dependsOnResourcename].lastPushTimeStamp ||
-            !currentamplifyMeta[dependsOnCategory] ||
-            !currentamplifyMeta[dependsOnCategory][dependsOnResourcename]) &&
+            !currentAmplifyMeta[dependsOnCategory] ||
+            !currentAmplifyMeta[dependsOnCategory][dependsOnResourcename]) &&
           amplifyMeta[dependsOnCategory][dependsOnResourcename].serviceType !== 'imported'
         ) {
           resources.push(amplifyMeta[dependsOnCategory][dependsOnResourcename]);
@@ -143,17 +143,17 @@ function getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, reso
   return _.uniqWith(resources, _.isEqual);
 }
 
-function getResourcesToBeDeleted(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources) {
+function getResourcesToBeDeleted(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources) {
   let resources: any[] = [];
 
-  Object.keys(currentamplifyMeta).forEach(categoryName => {
-    const categoryItem = currentamplifyMeta[categoryName];
+  Object.keys(currentAmplifyMeta).forEach(categoryName => {
+    const categoryItem = currentAmplifyMeta[categoryName];
     Object.keys(categoryItem).forEach(resource => {
       if ((!amplifyMeta[categoryName] || !amplifyMeta[categoryName][resource]) && categoryItem[resource].serviceType !== 'imported') {
-        currentamplifyMeta[categoryName][resource].resourceName = resource;
-        currentamplifyMeta[categoryName][resource].category = categoryName;
+        currentAmplifyMeta[categoryName][resource].resourceName = resource;
+        currentAmplifyMeta[categoryName][resource].category = categoryName;
 
-        resources.push(currentamplifyMeta[categoryName][resource]);
+        resources.push(currentAmplifyMeta[categoryName][resource]);
       }
     });
   });
@@ -173,15 +173,15 @@ function getResourcesToBeDeleted(amplifyMeta, currentamplifyMeta, category, reso
   return resources;
 }
 
-async function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources) {
+async function getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources) {
   let resources: any[] = [];
 
   await asyncForEach(Object.keys(amplifyMeta), async categoryName => {
     const categoryItem = amplifyMeta[categoryName];
     await asyncForEach(Object.keys(categoryItem), async resource => {
       if (
-        currentamplifyMeta[categoryName] &&
-        currentamplifyMeta[categoryName][resource] !== undefined &&
+        currentAmplifyMeta[categoryName] &&
+        currentAmplifyMeta[categoryName][resource] !== undefined &&
         amplifyMeta[categoryName] &&
         amplifyMeta[categoryName][resource] !== undefined &&
         amplifyMeta[categoryName][resource].serviceType !== 'imported'
@@ -190,7 +190,7 @@ async function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category
         const backendModified = await isBackendDirModifiedSinceLastPush(
           resource,
           categoryName,
-          currentamplifyMeta[categoryName][resource].lastPushTimeStamp,
+          currentAmplifyMeta[categoryName][resource].lastPushTimeStamp,
           isLambdaLayer,
         );
 
@@ -216,7 +216,7 @@ async function getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category
   return resources;
 }
 
-function getResourcesToBeSynced(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources) {
+function getResourcesToBeSynced(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources) {
   let resources: any[] = [];
 
   // For imported resource we are handling add/remove/delete in one place, because
@@ -231,7 +231,7 @@ function getResourcesToBeSynced(amplifyMeta, currentamplifyMeta, category, resou
       .forEach(resource => {
         // Added
         if (
-          _.get(currentamplifyMeta, [categoryName, resource], undefined) === undefined &&
+          _.get(currentAmplifyMeta, [categoryName, resource], undefined) === undefined &&
           _.get(amplifyMeta, [categoryName, resource], undefined) !== undefined
         ) {
           amplifyMeta[categoryName][resource].resourceName = resource;
@@ -240,7 +240,7 @@ function getResourcesToBeSynced(amplifyMeta, currentamplifyMeta, category, resou
 
           resources.push(amplifyMeta[categoryName][resource]);
         } else if (
-          _.get(currentamplifyMeta, [categoryName, resource], undefined) !== undefined &&
+          _.get(currentAmplifyMeta, [categoryName, resource], undefined) !== undefined &&
           _.get(amplifyMeta, [categoryName, resource], undefined) === undefined
         ) {
           // Removed
@@ -250,7 +250,7 @@ function getResourcesToBeSynced(amplifyMeta, currentamplifyMeta, category, resou
 
           resources.push(amplifyMeta[categoryName][resource]);
         } else if (
-          _.get(currentamplifyMeta, [categoryName, resource], undefined) !== undefined &&
+          _.get(currentAmplifyMeta, [categoryName, resource], undefined) !== undefined &&
           _.get(amplifyMeta, [categoryName, resource], undefined) !== undefined
         ) {
           // Refresh - for resources that are already present, it is possible that secrets needed to be
@@ -268,22 +268,22 @@ function getResourcesToBeSynced(amplifyMeta, currentamplifyMeta, category, resou
   // For remove it is possible that the the object key for the category not present in the meta so an extra iteration needed on
   // currentAmplifyMeta keys as well
 
-  Object.keys(currentamplifyMeta).forEach(categoryName => {
-    const categoryItem = currentamplifyMeta[categoryName];
+  Object.keys(currentAmplifyMeta).forEach(categoryName => {
+    const categoryItem = currentAmplifyMeta[categoryName];
 
     Object.keys(categoryItem)
       .filter(resource => categoryItem[resource].serviceType === 'imported')
       .forEach(resource => {
         // Removed
         if (
-          _.get(currentamplifyMeta, [categoryName, resource], undefined) !== undefined &&
+          _.get(currentAmplifyMeta, [categoryName, resource], undefined) !== undefined &&
           _.get(amplifyMeta, [categoryName, resource], undefined) === undefined
         ) {
-          currentamplifyMeta[categoryName][resource].resourceName = resource;
-          currentamplifyMeta[categoryName][resource].category = categoryName;
-          currentamplifyMeta[categoryName][resource].sync = 'unlink';
+          currentAmplifyMeta[categoryName][resource].resourceName = resource;
+          currentAmplifyMeta[categoryName][resource].category = categoryName;
+          currentAmplifyMeta[categoryName][resource].sync = 'unlink';
 
-          resources.push(currentamplifyMeta[categoryName][resource]);
+          resources.push(currentAmplifyMeta[categoryName][resource]);
         }
       });
   });
@@ -310,11 +310,11 @@ async function asyncForEach(array, callback) {
 export async function getResourceStatus(category?, resourceName?, providerName?, filteredResources?) {
   const amplifyProjectInitStatus = getCloudInitStatus();
   let amplifyMeta: $TSAny;
-  let currentamplifyMeta: $TSMeta = {};
+  let currentAmplifyMeta: $TSMeta = {};
 
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
     amplifyMeta = stateManager.getMeta();
-    currentamplifyMeta = stateManager.getCurrentMeta();
+    currentAmplifyMeta = stateManager.getCurrentMeta();
   } else if (amplifyProjectInitStatus === CLOUD_NOT_INITIALIZED) {
     amplifyMeta = stateManager.getBackendConfig();
   } else {
@@ -328,10 +328,10 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     throw error;
   }
 
-  let resourcesToBeCreated: any = getResourcesToBeCreated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
-  let resourcesToBeUpdated: any = await getResourcesToBeUpdated(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
-  let resourcesToBeSynced: any = getResourcesToBeSynced(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
-  let resourcesToBeDeleted: any = getResourcesToBeDeleted(amplifyMeta, currentamplifyMeta, category, resourceName, filteredResources);
+  let resourcesToBeCreated: any = getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
+  let resourcesToBeUpdated: any = await getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
+  let resourcesToBeSynced: any = getResourcesToBeSynced(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
+  let resourcesToBeDeleted: any = getResourcesToBeDeleted(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
 
   let allResources: any = getAllResources(amplifyMeta, category, resourceName, filteredResources);
 

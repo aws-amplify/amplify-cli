@@ -355,8 +355,12 @@ const validateUserPool = async (
   const nativeClients = userPoolClients.filter(c => c.ClientSecret !== undefined);
 
   // Check if the selected user pool has at least 1 native and 1 web app client configured.
-  if (webClients?.length < 1 || nativeClients?.length < 1) {
-    return importMessages.NoWebAndNativeClients;
+  if (webClients?.length < 1) {
+    return importMessages.NoAtLeastOneAppClient('Web');
+  }
+
+  if (nativeClients?.length < 1) {
+    return importMessages.NoAtLeastOneAppClient('Native');
   }
 
   // If authSelections involves the selection of an Identity Pool as well then we have to look for an
@@ -732,7 +736,7 @@ const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): Meta
       for (const key of Object.keys(answers.identityPool!.SupportedLoginProviders || {})) {
         switch (key) {
           case 'www.amazon.com':
-            output.GoogleWebClient = answers.identityPool!.SupportedLoginProviders![key];
+            output.AmazonWebClient = answers.identityPool!.SupportedLoginProviders![key];
             break;
           case 'graph.facebook.com':
             output.FacebookWebClient = answers.identityPool!.SupportedLoginProviders![key];
@@ -830,8 +834,8 @@ const createEnvSpecificResourceParameters = (
 const createOAuthCredentials = (identityProviders: IdentityProviderType[]): string => {
   const credentials = identityProviders.map(idp => ({
     ProviderName: idp.ProviderName!,
-    client_id: idp.ProviderDetails?.client_id,
-    client_secret: idp.ProviderDetails?.client_secret,
+    client_id: idp.ProviderDetails!.client_id,
+    client_secret: idp.ProviderDetails!.client_secret,
   }));
 
   return JSON.stringify(credentials);

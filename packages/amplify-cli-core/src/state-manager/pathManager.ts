@@ -94,15 +94,6 @@ export class PathManager {
       PathConstants.ParametersJsonFileName,
     ]);
 
-  getCurrentResourceParamatersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
-    this.constructPath(projectPath, [
-      PathConstants.AmplifyDirName,
-      PathConstants.CurrentCloudBackendDirName,
-      category,
-      resourceName,
-      PathConstants.ParametersJsonFileName,
-    ]);
-
   getCurrentAmplifyMetaFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [
       PathConstants.AmplifyDirName,

@@ -21,7 +21,8 @@ export const importMessages = {
   IdentityPoolNotFound: (identityPoolName: string, identityPoolId: string) =>
     `The previously configured Identity Pool: '${identityPoolName}' (${identityPoolId}) cannot be found.`,
   AppClientNotFound: (type: 'Web' | 'Native', clientId: string) => `The previously configured ${type} Application Client cannot be found.`,
-  NoWebAndNativeClients: `The selected Cognito User Pool does not have at least 1 web and 1 native application client configured.`,
+  NoAtLeastOneAppClient: (type: 'Web' | 'Native') =>
+    `The selected Cognito User Pool does not have at least 1 ${type} Application Client configured.`,
 
   OneIdentityPoolValid: (identityPoolName: string, identityPoolId: string) =>
     `${greenCheck} Only one Identity Pool resource found: '${identityPoolName}' (${identityPoolId}) was automatically selected.`,
