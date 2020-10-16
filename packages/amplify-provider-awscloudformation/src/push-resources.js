@@ -133,7 +133,7 @@ async function run(context, resourceDefinition) {
               const defaultAuthentication = _.get(apiResource, ['output', 'authConfig', 'defaultAuthentication']);
 
               if (defaultAuthentication && defaultAuthentication.authenticationType === 'AMAZON_COGNITO_USER_POOLS') {
-                defaultAuthentication.userPoolConfig?.userPoolId = userPoolId;
+                defaultAuthentication.userPoolConfig.userPoolId = userPoolId;
                 hasChanges = true;
               }
 
@@ -144,7 +144,7 @@ async function run(context, resourceDefinition) {
                   additionalAuthenticationProvider &&
                   additionalAuthenticationProvider.authenticationType === 'AMAZON_COGNITO_USER_POOLS'
                 ) {
-                  additionalAuthenticationProvider.userPoolConfig?.userPoolId = userPoolId;
+                  additionalAuthenticationProvider.userPoolConfig.userPoolId = userPoolId;
                   hasChanges = true;
                 }
               }

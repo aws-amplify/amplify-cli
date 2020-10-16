@@ -1,4 +1,3 @@
-import { $TSContext } from 'amplify-cli-core';
 import _ from 'lodash';
 
 export const authConfigHasApiKey = authConfig => {
