@@ -1,6 +1,6 @@
 import semver from 'semver';
 
-const APIVersionToPayloadVersion = new Map<string, Array<string>>([['v1.0', ['1.0.0']]]);
+const APIVersionToPayloadVersion = new Map<string, Array<string>>([['v1.0', ['1.0.0', '1.0.1']]]);
 
 export function getLatestApiVersion(): string {
   return [...APIVersionToPayloadVersion.keys()].reduce(getMaxVersion, '0');
