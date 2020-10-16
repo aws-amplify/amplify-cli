@@ -11,6 +11,7 @@ export function addPinpoint(cwd: string, settings: any) {
       .send('\b')
       .delay(500) // Some delay required for autocomplete and terminal to catch up
       .sendLine(settings.rightName)
+      .wait('Apps need authorization to send analytics events. Do you want to allow guests')
       .sendLine('n')
       .wait(`Successfully added resource ${settings.rightName} locally`)
       .sendEof()
@@ -35,6 +36,7 @@ export function addKinesis(cwd: string, settings: any) {
       .wait('Name is invalid.')
       .sendCarriageReturn()
       .send('\b')
+      .delay(500) // Some delay required for autocomplete and terminal to catch up
       .sendLine(settings.rightName)
       .wait('Enter number of shards')
       .sendCarriageReturn()
