@@ -43,8 +43,6 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/auth_1.test.ts',
   'src/__tests__/auth_5.test.ts',
   'src/__tests__/function_3.test.ts',
-  'src/__tests__/import_auth_1.test.ts',
-  'src/__tests__/import_auth_2.test.ts',
   //<30m
   'src/__tests__/schema-auth-3.test.ts',
   'src/__tests__/delete.test.ts',
@@ -59,6 +57,8 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/schema-searchable.test.ts',
   'src/__tests__/schema-auth-4.test.ts',
   'src/__tests__/api_3.test.ts',
+  'src/__tests__/import_auth_1.test.ts',
+  'src/__tests__/import_auth_2.test.ts',
   //<40m
   'src/__tests__/env.test.ts',
   'src/__tests__/auth_2.test.ts',

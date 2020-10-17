@@ -52,11 +52,20 @@ describe('auth import userpool only', () => {
     name: ogProjectPrefix,
   };
 
+  const dummyOGProjectSettings = {
+    name: 'dummyog1',
+  };
+
   // OG is the CLI project that creates the user pool to import by other test projects
   let ogProjectRoot: string;
   let ogShortId: string;
   let ogSettings: AddAuthUserPoolOnlyWithOAuthSettings;
   let ogProjectDetails: ProjectDetails;
+
+  // We need an extra OG project to make sure that autocomplete prompt hits in
+  let dummyOGProjectRoot: string;
+  let dummyOGShortId: string;
+  let dummyOGSettings: AddAuthUserPoolOnlyWithOAuthSettings;
 
   let projectRoot: string;
   let ignoreProjectDeleteErrors: boolean = false;
@@ -71,11 +80,22 @@ describe('auth import userpool only', () => {
     await amplifyPushAuth(ogProjectRoot);
 
     ogProjectDetails = getOGProjectDetails(ogProjectRoot);
+
+    dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
+    dummyOGShortId = getShortId();
+    dummyOGSettings = createUserPoolOnlyWithOAuthSettings(dummyOGProjectSettings.name, ogShortId);
+
+    await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
+    await addAuthUserPoolOnlyWithOAuth(dummyOGProjectRoot, dummyOGSettings);
+    await amplifyPushAuth(dummyOGProjectRoot);
   });
 
   afterAll(async () => {
     await deleteProject(ogProjectRoot);
     deleteProjectDir(ogProjectRoot);
+
+    await deleteProject(dummyOGProjectRoot);
+    deleteProjectDir(dummyOGProjectRoot);
   });
 
   beforeEach(async () => {

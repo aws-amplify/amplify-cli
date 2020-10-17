@@ -937,22 +937,6 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/function_3.test.ts
       CLI_REGION: ap-southeast-2
-  import_auth_1-amplify_e2e_tests:
-    working_directory: ~/repo
-    docker: *ref_0
-    resource_class: large
-    steps: *ref_1
-    environment:
-      TEST_SUITE: src/__tests__/import_auth_1.test.ts
-      CLI_REGION: us-east-2
-  import_auth_2-amplify_e2e_tests:
-    working_directory: ~/repo
-    docker: *ref_0
-    resource_class: large
-    steps: *ref_1
-    environment:
-      TEST_SUITE: src/__tests__/import_auth_2.test.ts
-      CLI_REGION: us-west-2
   schema-auth-3-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -960,7 +944,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/schema-auth-3.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: us-east-2
   delete-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -968,7 +952,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/delete.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: us-west-2
   function_2-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -976,7 +960,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/function_2.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: eu-west-2
   auth_3-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -984,7 +968,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/auth_3.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: eu-central-1
   layer-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -992,7 +976,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/layer.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: ap-northeast-1
   migration-api-key-migration1-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1000,7 +984,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration1.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: ap-southeast-1
   auth_4-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1008,7 +992,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/auth_4.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: ap-southeast-2
   schema-auth-7-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1016,7 +1000,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/schema-auth-7.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: us-east-2
   schema-auth-8-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1024,7 +1008,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/schema-auth-8.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: us-west-2
   schema-searchable-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1032,7 +1016,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/schema-searchable.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: eu-west-2
   schema-auth-4-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1040,7 +1024,7 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/schema-auth-4.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: eu-central-1
   api_3-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1048,6 +1032,22 @@ jobs:
     steps: *ref_1
     environment:
       TEST_SUITE: src/__tests__/api_3.test.ts
+      CLI_REGION: ap-northeast-1
+  import_auth_1-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/import_auth_1.test.ts
+      CLI_REGION: ap-southeast-1
+  import_auth_2-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_1
+    environment:
+      TEST_SUITE: src/__tests__/import_auth_2.test.ts
       CLI_REGION: ap-southeast-2
   env-amplify_e2e_tests:
     working_directory: ~/repo
@@ -1291,32 +1291,32 @@ workflows:
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
-            - migration-api-key-migration1-amplify_e2e_tests
+            - schema-auth-7-amplify_e2e_tests
             - env-amplify_e2e_tests
             - function_4-amplify_e2e_tests
             - api_1-amplify_e2e_tests
-            - auth_4-amplify_e2e_tests
+            - schema-auth-8-amplify_e2e_tests
             - auth_2-amplify_e2e_tests
             - schema-function-amplify_e2e_tests
             - schema-auth-5-amplify_e2e_tests
-            - schema-auth-7-amplify_e2e_tests
+            - schema-searchable-amplify_e2e_tests
             - schema-auth-9-amplify_e2e_tests
             - schema-model-amplify_e2e_tests
             - storage-amplify_e2e_tests
-            - schema-auth-8-amplify_e2e_tests
+            - schema-auth-4-amplify_e2e_tests
             - schema-auth-11-amplify_e2e_tests
             - migration-api-connection-migration-amplify_e2e_tests
             - api_2-amplify_e2e_tests
-            - function_2-amplify_e2e_tests
-            - schema-searchable-amplify_e2e_tests
-            - migration-api-key-migration2-amplify_e2e_tests
-            - schema-connection-amplify_e2e_tests
-            - auth_3-amplify_e2e_tests
-            - schema-auth-4-amplify_e2e_tests
-            - function_1-amplify_e2e_tests
-            - schema-auth-6-amplify_e2e_tests
             - layer-amplify_e2e_tests
             - api_3-amplify_e2e_tests
+            - migration-api-key-migration2-amplify_e2e_tests
+            - schema-connection-amplify_e2e_tests
+            - migration-api-key-migration1-amplify_e2e_tests
+            - import_auth_1-amplify_e2e_tests
+            - function_1-amplify_e2e_tests
+            - schema-auth-6-amplify_e2e_tests
+            - auth_4-amplify_e2e_tests
+            - import_auth_2-amplify_e2e_tests
             - schema-auth-1-amplify_e2e_tests
             - schema-auth-2-amplify_e2e_tests
           filters:
@@ -1343,11 +1343,11 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - import_auth_1-amplify_e2e_tests:
+      - schema-auth-3-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - migration-api-key-migration1-amplify_e2e_tests:
+      - schema-auth-7-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1366,7 +1366,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-            - import_auth_1-amplify_e2e_tests
+            - schema-auth-3-amplify_e2e_tests
       - init-special-case-amplify_e2e_tests:
           filters: *ref_2
           requires:
@@ -1379,11 +1379,11 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - import_auth_2-amplify_e2e_tests:
+      - delete-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - auth_4-amplify_e2e_tests:
+      - schema-auth-8-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1402,7 +1402,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-            - import_auth_2-amplify_e2e_tests
+            - delete-amplify_e2e_tests
       - datastore-modelgen-amplify_e2e_tests:
           filters: *ref_2
           requires:
@@ -1415,11 +1415,11 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - schema-auth-3-amplify_e2e_tests:
+      - function_2-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - schema-auth-7-amplify_e2e_tests:
+      - schema-searchable-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1438,7 +1438,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-            - schema-auth-3-amplify_e2e_tests
+            - function_2-amplify_e2e_tests
       - amplify-configure-amplify_e2e_tests:
           filters: *ref_2
           requires:
@@ -1451,11 +1451,11 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - delete-amplify_e2e_tests:
+      - auth_3-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - schema-auth-8-amplify_e2e_tests:
+      - schema-auth-4-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1474,7 +1474,7 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-            - delete-amplify_e2e_tests
+            - auth_3-amplify_e2e_tests
       - init-amplify_e2e_tests:
           filters: *ref_2
           requires:
@@ -1487,11 +1487,11 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - function_2-amplify_e2e_tests:
+      - layer-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - schema-searchable-amplify_e2e_tests:
+      - api_3-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1518,11 +1518,11 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - auth_3-amplify_e2e_tests:
+      - migration-api-key-migration1-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - schema-auth-4-amplify_e2e_tests:
+      - import_auth_1-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
@@ -1549,11 +1549,11 @@ workflows:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - layer-amplify_e2e_tests:
+      - auth_4-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
-      - api_3-amplify_e2e_tests:
+      - import_auth_2-amplify_e2e_tests:
           filters: *ref_2
           requires:
             - publish_to_local_registry
