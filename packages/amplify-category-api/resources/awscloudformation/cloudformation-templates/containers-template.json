@@ -1,0 +1,447 @@
+{
+    "Parameters": {
+      "ParamUserPoolArn": {
+        "Type": "String"
+      },
+      "ParamContainerPort": {
+        "Type": "Number"
+      },
+      "vpcId": {
+        "Type": "String"
+      },
+      "serviceArn": {
+        "Type": "String"
+      }
+    },
+    "Resources": {
+      "MyNetworkLoadBalancerE0D8DAC9": {
+        "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+        "Properties": {
+          "LoadBalancerAttributes": [
+            {
+              "Key": "deletion_protection.enabled",
+              "Value": "false"
+            }
+          ],
+          "Scheme": "internal",
+          "Subnets": [
+            {
+              "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+            },
+            {
+              "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+            }
+          ],
+          "Type": "network"
+        },
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/MyNetworkLoadBalancer/Resource"
+        }
+      },
+      "MyNetworkLoadBalancerCosaDB890A09": {
+        "Type": "AWS::ElasticLoadBalancingV2::Listener",
+        "Properties": {
+          "DefaultActions": [
+            {
+              "TargetGroupArn": {
+                "Ref": "LeTargetC192D3D3"
+              },
+              "Type": "forward"
+            }
+          ],
+          "LoadBalancerArn": {
+            "Ref": "MyNetworkLoadBalancerE0D8DAC9"
+          },
+          "Port": {
+            "Ref": "ParamContainerPort"
+          },
+          "Protocol": "TCP"
+        },
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/MyNetworkLoadBalancer/Cosa/Resource"
+        }
+      },
+      "LeTargetC192D3D3": {
+        "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+        "Properties": {
+          "Port": {
+            "Ref": "ParamContainerPort"
+          },
+          "Protocol": "TCP",
+          "TargetType": "ip",
+          "VpcId": {
+            "Ref": "VPCB9E5F0B4"
+          }
+        },
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/LeTarget/Resource"
+        }
+      },
+      "MyVpcLink2A8025D5B": {
+        "Type": "AWS::ApiGateway::VpcLink",
+        "Properties": {
+          "Name": "WithcdkStackMyVpcLink22F1763F5",
+          "TargetArns": [
+            {
+              "Ref": "MyNetworkLoadBalancerE0D8DAC9"
+            }
+          ]
+        },
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/MyVpcLink2/Resource"
+        }
+      },
+      "MyApi29E763169": {
+        "Type": "AWS::ApiGateway::RestApi",
+        "Properties": {
+          "Name": "MyApi2"
+        },
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/MyApi2/Resource"
+        }
+      },
+      "MyApi2CloudWatchRole7EE8E5B3": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "apigateway.amazonaws.com"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "ManagedPolicyArns": [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                ]
+              ]
+            }
+          ]
+        },
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/MyApi2/CloudWatchRole/Resource"
+        }
+      },
+      "MyApi2Account6A9CF7DD": {
+        "Type": "AWS::ApiGateway::Account",
+        "Properties": {
+          "CloudWatchRoleArn": {
+            "Fn::GetAtt": [
+              "MyApi2CloudWatchRole7EE8E5B3",
+              "Arn"
+            ]
+          }
+        },
+        "DependsOn": [
+          "MyApi29E763169"
+        ],
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/MyApi2/Account"
+        }
+      },
+      "MyApi2DeploymentBE2CFF593b424a5aa66b532ae5a1cc37eba7f3e4": {
+        "Type": "AWS::ApiGateway::Deployment",
+        "Properties": {
+          "RestApiId": {
+            "Ref": "MyApi29E763169"
+          },
+          "Description": "Automatically created by the RestApi construct"
+        },
+        "DependsOn": [
+          "MyApi2ANYB6A6ADA2"
+        ],
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/MyApi2/Deployment/Resource"
+        }
+      },
+      "MyApi2DeploymentStageprod8B809392": {
+        "Type": "AWS::ApiGateway::Stage",
+        "Properties": {
+          "RestApiId": {
+            "Ref": "MyApi29E763169"
+          },
+          "DeploymentId": {
+            "Ref": "MyApi2DeploymentBE2CFF593b424a5aa66b532ae5a1cc37eba7f3e4"
+          },
+          "StageName": "prod"
+        },
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/MyApi2/DeploymentStage.prod/Resource"
+        }
+      },
+      "MyApi2ANYB6A6ADA2": {
+        "Type": "AWS::ApiGateway::Method",
+        "Properties": {
+          "HttpMethod": "ANY",
+          "ResourceId": {
+            "Fn::GetAtt": [
+              "MyApi29E763169",
+              "RootResourceId"
+            ]
+          },
+          "RestApiId": {
+            "Ref": "MyApi29E763169"
+          },
+          "AuthorizationScopes": [
+            "openid"
+          ],
+          "AuthorizationType": "COGNITO_USER_POOLS",
+          "AuthorizerId": {
+            "Ref": "MyAuthorizer"
+          },
+          "Integration": {
+            "ConnectionId": {
+              "Ref": "MyVpcLink2A8025D5B"
+            },
+            "ConnectionType": "VPC_LINK",
+            "IntegrationHttpMethod": "ANY",
+            "Type": "HTTP_PROXY",
+            "Uri": {
+              "Fn::Join": [
+                ":",
+                [
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "http://",
+                        {
+                          "Fn::GetAtt": [
+                            "MyNetworkLoadBalancerE0D8DAC9",
+                            "DNSName"
+                          ]
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "Ref": "ParamContainerPort"
+                  }
+                ]
+              ]
+            }
+          }
+        },
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/MyApi2/Default/ANY/Resource"
+        }
+      },
+      "MyAuthorizer": {
+        "Type": "AWS::ApiGateway::Authorizer",
+        "Properties": {
+          "RestApiId": {
+            "Ref": "MyApi29E763169"
+          },
+          "Type": "COGNITO_USER_POOLS",
+          "IdentitySource": "method.request.header.Authorization",
+          "Name": "DefaultAuthorizer",
+          "ProviderARNs": [
+            {
+              "Ref": "ParamUserPoolArn"
+            }
+          ]
+        },
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/MyAuthorizer"
+        }
+      },
+      "CDKMetadata": {
+        "Type": "AWS::CDK::Metadata",
+        "Properties": {
+          "Modules": "aws-cdk=1.66.0,@aws-cdk/assets=1.66.0,@aws-cdk/aws-apigateway=1.66.0,@aws-cdk/aws-applicationautoscaling=1.66.0,@aws-cdk/aws-autoscaling=1.66.0,@aws-cdk/aws-autoscaling-common=1.66.0,@aws-cdk/aws-autoscaling-hooktargets=1.66.0,@aws-cdk/aws-certificatemanager=1.66.0,@aws-cdk/aws-cloudformation=1.66.0,@aws-cdk/aws-cloudfront=1.66.0,@aws-cdk/aws-cloudwatch=1.66.0,@aws-cdk/aws-codebuild=1.66.0,@aws-cdk/aws-codeguruprofiler=1.66.0,@aws-cdk/aws-codepipeline=1.66.0,@aws-cdk/aws-codepipeline-actions=1.66.0,@aws-cdk/aws-cognito=1.66.0,@aws-cdk/aws-ec2=1.66.0,@aws-cdk/aws-ecr=1.66.0,@aws-cdk/aws-ecr-assets=1.66.0,@aws-cdk/aws-ecs=1.66.0,@aws-cdk/aws-elasticloadbalancingv2=1.66.0,@aws-cdk/aws-elasticloadbalancingv2-actions=1.66.0,@aws-cdk/aws-events=1.66.0,@aws-cdk/aws-events-targets=1.66.0,@aws-cdk/aws-iam=1.66.0,@aws-cdk/aws-kms=1.66.0,@aws-cdk/aws-lambda=1.66.0,@aws-cdk/aws-logs=1.66.0,@aws-cdk/aws-s3=1.66.0,@aws-cdk/aws-s3-assets=1.66.0,@aws-cdk/aws-servicediscovery=1.66.0,@aws-cdk/aws-sns=1.66.0,@aws-cdk/aws-sns-subscriptions=1.66.0,@aws-cdk/aws-sqs=1.66.0,@aws-cdk/aws-ssm=1.66.0,@aws-cdk/cloud-assembly-schema=1.66.0,@aws-cdk/core=1.66.0,@aws-cdk/custom-resources=1.66.0,@aws-cdk/cx-api=1.66.0,@aws-cdk/region-info=1.66.0,jsii-runtime=node.js/v12.16.1"
+        },
+        "Metadata": {
+          "aws:cdk:path": "WithcdkStack/CDKMetadata/Default"
+        },
+        "Condition": "CDKMetadataAvailable"
+      }
+    },
+    "Conditions": {
+      "CDKMetadataAvailable": {
+        "Fn::Or": [
+          {
+            "Fn::Or": [
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "ap-east-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "ap-northeast-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "ap-northeast-2"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "ap-south-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "ap-southeast-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "ap-southeast-2"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "ca-central-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "cn-north-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "cn-northwest-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "eu-central-1"
+                ]
+              }
+            ]
+          },
+          {
+            "Fn::Or": [
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "eu-north-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "eu-west-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "eu-west-2"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "eu-west-3"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "me-south-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "sa-east-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "us-east-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "us-east-2"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "us-west-1"
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "us-west-2"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+
+  

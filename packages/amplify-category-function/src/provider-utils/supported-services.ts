@@ -5,8 +5,9 @@ import * as lambdaController from './awscloudformation';
 import { SupportedServices } from './supportedServicesType';
 import { getIAMPolicies } from './awscloudformation/utils/cloudformationHelpers';
 import { askExecRolePermissionsQuestions } from './awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
+import { FeatureFlags } from 'amplify-cli-core';
 
-export const supportedServices: SupportedServices = {
+const supportedServices: SupportedServices = {
   Lambda: {
     alias: 'Lambda function (serverless function)',
     walkthroughs: {
@@ -29,7 +30,10 @@ export const supportedServices: SupportedServices = {
     provider: 'awscloudformation',
     providerController: lambdaController,
   },
-  ElasticContainer: {
+};
+
+if (FeatureFlags.getBoolean('advancedCompute.enabled')) {
+  supportedServices.ElasticContainer = {
     alias: 'Elastic Container Service (ECS)',
     walkthroughs: {
       createWalkthrough: createContainerWalkthrough,
@@ -37,5 +41,8 @@ export const supportedServices: SupportedServices = {
     },
     provider: 'awscloudformation',
     providerController: lambdaController,
-  },
-};
+  };
+
+}
+
+export { supportedServices };

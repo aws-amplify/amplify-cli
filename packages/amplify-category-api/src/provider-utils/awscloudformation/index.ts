@@ -6,6 +6,7 @@ import { legacyUpdateResource } from './legacy-update-resource';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { editSchemaFlow } from './utils/edit-schema-flow';
 import { NotImplementedError, exitOnNextTick } from 'amplify-cli-core';
+import { addResource as addContainer } from './containers-handler';
 
 export async function console(context, service) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
@@ -37,6 +38,9 @@ export async function addResource(context, category, service, options) {
         await editSchemaFlow(context, apiName);
       }
       return apiName;
+    case 'Containers':      
+      const resourceName = await addContainer(serviceWalkthroughPromise, context, category, service, options);
+      return resourceName;
     default:
       return legacyAddResource(serviceWalkthroughPromise, context, category, service, options);
   }

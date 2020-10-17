@@ -29,7 +29,7 @@ export async function serviceWalkthrough(context, defaultValuesFilename) {
   const apiNames = await askApiNames(context, allDefaultValues);
   answers = { ...answers, ...apiNames };
 
-  const enableAdvanceFeature = FeatureFlags.getBoolean('advancedCompute.enabled');
+  const enableAdvanceFeature = FeatureFlags.getBoolean('advancedCompute.enabled') && false; // TODO: checking which flow seems better
 
   if (enableAdvanceFeature) {
     const apigwOrEcs = await askForApigwOrECS();
@@ -50,11 +50,11 @@ async function askForApigwOrECS() {
   const question = [
     {
       name: 'apigwOrEcs',
-      message: 'Please select the REST API you would want to update',
+      message: 'Please select the type of  REST API you would want to ',
       type: 'list',
       choices: [
         {
-          name: 'APIGW',
+          name: 'APIGW + Lambda',
           value: 'apigw'
         },
         {

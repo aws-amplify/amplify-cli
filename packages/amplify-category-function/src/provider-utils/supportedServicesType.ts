@@ -4,7 +4,7 @@ import { LayerParameters } from './awscloudformation/utils/layerParams';
 export interface SupportedServices {
   Lambda: ServiceConfig<FunctionParameters>;
   LambdaLayer: ServiceConfig<LayerParameters>;
-  ElasticContainer: ServiceConfig<ContainerParameters>;
+  ElasticContainer?: ServiceConfig<ContainerParameters>;
 }
 
 export interface ServiceConfig<T> {

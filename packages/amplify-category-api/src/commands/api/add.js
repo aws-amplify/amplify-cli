@@ -1,3 +1,5 @@
+const { FeatureFlags } = require("amplify-cli-core");
+
 const subcommand = 'add';
 const category = 'api';
 
@@ -7,7 +9,8 @@ module.exports = {
   name: subcommand,
   run: async context => {
     const { amplify } = context;
-    const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
+    const supportedServicesPath = '../../provider-utils/supported-services';
+    const servicesMetadata = require(supportedServicesPath).supportedServices;
     return amplify
       .serviceSelectionPrompt(context, category, servicesMetadata)
       .then(result => {
