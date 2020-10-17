@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.30.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.8...@aws-amplify/cli@4.30.0-beta.0) (2020-10-17)
+
+
+### Bug Fixes
+
+* --yes on pull and init no longer does a force push. Use --forcePush in addition to --yes to force a push ([#5546](https://github.com/aws-amplify/amplify-cli/issues/5546)) ([b20c2d6](https://github.com/aws-amplify/amplify-cli/commit/b20c2d6f1240565604f4a6b8ffe53987c4f76ed4))
+
+
+### Features
+
+* changes for native packaging ([#5548](https://github.com/aws-amplify/amplify-cli/issues/5548)) ([7a06f6d](https://github.com/aws-amplify/amplify-cli/commit/7a06f6d96e42a5863e2192560890adbd741b0dc6))
+* support importing of auth resources ([#5591](https://github.com/aws-amplify/amplify-cli/issues/5591)) ([7903246](https://github.com/aws-amplify/amplify-cli/commit/790324680544fe18481f91390001f9f07a144203))
+* using ci-info ci status ([#5345](https://github.com/aws-amplify/amplify-cli/issues/5345)) ([827f14f](https://github.com/aws-amplify/amplify-cli/commit/827f14f888778b323761cda851fe45e797ca88f6))
+
+
+
+
+
 ## [4.29.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.7...@aws-amplify/cli@4.29.8) (2020-10-15)
 
 

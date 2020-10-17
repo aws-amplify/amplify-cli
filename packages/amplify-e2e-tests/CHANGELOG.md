@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.26.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.25.3...amplify-e2e-tests@2.26.0-beta.0) (2020-10-17)
+
+
+### Features
+
+* support importing of auth resources ([#5591](https://github.com/aws-amplify/amplify-cli/issues/5591)) ([7903246](https://github.com/aws-amplify/amplify-cli/commit/790324680544fe18481f91390001f9f07a144203))
+
+
+
+
+
 ## [2.25.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.25.2...amplify-e2e-tests@2.25.3) (2020-10-09)
 
 **Note:** Version bump only for package amplify-e2e-tests

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.8.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.7.11...amplify-category-storage@2.8.0-beta.0) (2020-10-17)
+
+
+### Features
+
+* support importing of auth resources ([#5591](https://github.com/aws-amplify/amplify-cli/issues/5591)) ([7903246](https://github.com/aws-amplify/amplify-cli/commit/790324680544fe18481f91390001f9f07a144203))
+
+
+
+
+
 ## [2.7.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.7.10...amplify-category-storage@2.7.11) (2020-10-07)
 
 **Note:** Version bump only for package amplify-category-storage

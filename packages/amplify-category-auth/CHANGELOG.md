@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.21.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.20.2...amplify-category-auth@2.21.0-beta.0) (2020-10-17)
+
+
+### Bug Fixes
+
+* store oauthMetadata properly on headless update ([#5597](https://github.com/aws-amplify/amplify-cli/issues/5597)) ([bdadafc](https://github.com/aws-amplify/amplify-cli/commit/bdadafca991bf9227046dba22cb196ac66e26cc6))
+
+
+### Features
+
+* support importing of auth resources ([#5591](https://github.com/aws-amplify/amplify-cli/issues/5591)) ([7903246](https://github.com/aws-amplify/amplify-cli/commit/790324680544fe18481f91390001f9f07a144203))
+
+
+
+
+
 ## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.20.1...amplify-category-auth@2.20.2) (2020-10-07)
 
 
