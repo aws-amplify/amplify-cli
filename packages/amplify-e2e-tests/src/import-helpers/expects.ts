@@ -79,7 +79,7 @@ export const expectApiHasCorrectAuthConfig = (projectRoot: string, projectPrefix
 
   const rootStack = readRootStack(projectRoot);
 
-  expect(rootStack.Resources?.apiauthimp?.Properties?.Parameters?.AuthCognitoUserPoolId).toEqual(userPoolId);
+  expect(rootStack.Resources?.apiauimpup?.Properties?.Parameters?.AuthCognitoUserPoolId).toEqual(userPoolId);
 };
 
 export const expectLocalAndPulledBackendConfigMatching = (projectRoot: string, projectRootPull: string) => {
