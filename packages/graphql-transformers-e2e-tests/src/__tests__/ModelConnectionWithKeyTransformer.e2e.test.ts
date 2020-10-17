@@ -110,6 +110,7 @@ beforeAll(async () => {
     @model(subscriptions: null)
     @key(fields: ["id", "sort"])
     @key(name: "byName", fields: ["name", "id"])
+    @key(name: "byNameIdAndSort", fields: ["name","id","sort"])
     {
         id: ID!
         sort: Int!
@@ -128,8 +129,20 @@ beforeAll(async () => {
       connectionPK: ID
       connectionSort: Int
       connectionSK: String
+      connectionName: String
       connection: Model1 @connection(keyField:"connectionPK", sortField: "connectionSort")
       connections: [Model1] @connection(keyName: "byName", fields: ["connectionSK"])
+      connectionsWithCompositeKey: [Model4]
+      @connection(
+        keyName: "byNameIdAndSort"
+        fields: ["connectionName", "connectionPK", "connectionSort"])
+    }
+
+    type Model4 @model(subscriptions: null) @key(name: "byNameIdAndSort", fields: ["name", "id", "sort"])
+    {
+      id: ID!
+      sort: Int!
+      name: String!
     }
     `;
 
@@ -193,6 +206,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   try {
+    return;
     console.log('Deleting stack ' + STACK_NAME);
     await cf.deleteStack(STACK_NAME);
     await cf.waitForStack(STACK_NAME);
@@ -681,4 +695,84 @@ test('Connection with null partition key returns null when getting a list of ite
   expect(item2.id).toEqual('Null-List-M31');
   expect(item2.connections.items.length).toEqual(1);
   expect(item2.connections.items[0].id).toEqual('Null-List-M11');
+});
+
+test('Connection with null key attributes returns empty array', async () => {
+  // https://github.com/aws-amplify/amplify-cli/pull/5153#pullrequestreview-506028382
+  const mutationResponse = await GRAPHQL_CLIENT.query(
+    `
+    mutation createModel3WithMissingPKConnectionField {
+      createModel3(input: {id: "Null-Connection-PK-M34", connectionSort: 909, connectionPK: "unused-pk"}) {
+        connectionsWithCompositeKey {
+          items {
+            id
+            name
+            sort
+          }
+        }
+      }
+    }
+    `,
+    {},
+  );
+
+  expect(mutationResponse.data.createModel3).toBeDefined();
+  const item = mutationResponse.data.createModel3;
+  expect(item.connectionsWithCompositeKey.items.length).toEqual(0);
+  expect(mutationResponse.errors).not.toBeDefined();
+
+  const mutationResponse2 = await GRAPHQL_CLIENT.query(
+    `
+    mutation createModel4 {
+      createModel4(input: {id: "1", sort: 1, name: "model4Name"}) {
+        id
+      }
+    }
+    `,
+    {},
+  );
+
+  const mutationResponse3 = await GRAPHQL_CLIENT.query(
+    `
+    mutation createModel3WithMissingSortConnectionField {
+      createModel3(input: {id: "Null-Connection-PK-M34-3", connectionSort: 1, connectionName: "model4Name"}) {
+        connectionsWithCompositeKey {
+          items {
+            id
+            name
+            sort
+          }
+        }
+      }
+    }
+    `,
+    {},
+  );
+
+  expect(mutationResponse3.data.createModel3).toBeDefined();
+  const item3 = mutationResponse3.data.createModel3;
+  expect(item3.connectionsWithCompositeKey.items.length).toEqual(0);
+  expect(mutationResponse3.errors).not.toBeDefined();
+
+  const mutationResponse4 = await GRAPHQL_CLIENT.query(
+    `
+    mutation createModel3WithAllConnectionFields {
+      createModel3(input: {id: "Null-Connection-PK-M34-4", connectionSort: 1, connectionName: "model4Name", connectionPK: "1"}) {
+        connectionsWithCompositeKey {
+          items {
+            id
+            name
+            sort
+          }
+        }
+      }
+    }
+    `,
+    {},
+  );
+
+  expect(mutationResponse4.data.createModel3).toBeDefined();
+  const item4 = mutationResponse4.data.createModel3;
+  expect(item4.connectionsWithCompositeKey.items.length).toEqual(1);
+  expect(mutationResponse4.errors).not.toBeDefined();
 });
