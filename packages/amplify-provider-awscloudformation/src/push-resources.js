@@ -111,14 +111,7 @@ async function run(context, resourceDefinition) {
       const importResources = resourcesToBeSynced.filter(r => r.sync === 'import');
 
       if (importResources.length > 0) {
-        const {
-          imported,
-          userPoolId,
-          authRoleArn,
-          authRoleName,
-          unauthRoleArn,
-          unauthRoleName,
-        } = context.amplify.getImportedAuthProperties(context);
+        const { imported, userPoolId } = context.amplify.getImportedAuthProperties(context);
 
         // Sanity check it will always be true in this case
         if (imported) {

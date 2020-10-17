@@ -26,7 +26,7 @@ import {
   ProjectDetails,
 } from '../import-helpers';
 
-const profileName = 'default';
+const profileName = 'amplify-integ-test-user';
 
 describe('auth import identity pool and userpool', () => {
   const projectPrefix = 'auimpidup';
@@ -40,11 +40,20 @@ describe('auth import identity pool and userpool', () => {
     name: ogProjectPrefix,
   };
 
+  const dummyOGProjectSettings = {
+    name: 'dummyog2',
+  };
+
   // OG is the CLI project that creates the user pool to import by other test projects
   let ogProjectRoot: string;
   let ogShortId: string;
   let ogSettings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
   let ogProjectDetails: ProjectDetails;
+
+  // We need an extra OG project to make sure that autocomplete prompt hits in
+  let dummyOGProjectRoot: string;
+  let dummyOGShortId: string;
+  let dummyOGSettings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
 
   let projectRoot: string;
   let ignoreProjectDeleteErrors: boolean = false;
@@ -59,11 +68,22 @@ describe('auth import identity pool and userpool', () => {
     await amplifyPushAuth(ogProjectRoot);
 
     ogProjectDetails = getOGProjectDetails(ogProjectRoot);
+
+    dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
+    dummyOGShortId = getShortId();
+    dummyOGSettings = createIDPAndUserPoolWithOAuthSettings(dummyOGProjectSettings.name, ogShortId);
+
+    await initJSProjectWithProfile(dummyOGProjectRoot, dummyOGProjectSettings);
+    await addAuthIdentityPoolAndUserPoolWithOAuth(dummyOGProjectRoot, dummyOGSettings);
+    await amplifyPushAuth(dummyOGProjectRoot);
   });
 
   afterAll(async () => {
     await deleteProject(ogProjectRoot);
     deleteProjectDir(ogProjectRoot);
+
+    await deleteProject(dummyOGProjectRoot);
+    deleteProjectDir(dummyOGProjectRoot);
   });
 
   beforeEach(async () => {
