@@ -151,8 +151,6 @@ describe('auth import userpool only', () => {
     await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectRoot);
     await amplifyPush(projectRoot);
 
-    const projectDetails = getProjectDetails(projectRoot);
-
     expectApiHasCorrectAuthConfig(projectRoot, projectPrefix, ogProjectDetails.meta.UserPoolId);
   });
 

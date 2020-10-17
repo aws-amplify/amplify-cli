@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { getProjectMeta, getBackendAmplifyMeta, getTeamProviderInfo, getBackendConfig } from 'amplify-e2e-core';
-import { ProjectDetails, readApiParametersJson, readRootStack } from '.';
+import { ProjectDetails, readRootStack } from '.';
 
 export const expectProjectDetailsMatch = (projectDetails: ProjectDetails, ogProjectDetails: ProjectDetails) => {
   expect(projectDetails.parameters.authSelections).toEqual(ogProjectDetails.parameters.authSelections);
@@ -70,16 +70,12 @@ export const expectLocalTeamInfoHasNoCategories = (projectRoot: string) => {
 export const expectApiHasCorrectAuthConfig = (projectRoot: string, projectPrefix: string, userPoolId: string) => {
   const meta = getBackendAmplifyMeta(projectRoot);
 
-  const authConfig = meta.api?.authimp?.output?.authConfig;
+  const authConfig = meta.api?.auimpup?.output?.authConfig;
 
   expect(authConfig).toBeDefined();
 
   expect(authConfig.defaultAuthentication?.authenticationType).toEqual('AMAZON_COGNITO_USER_POOLS');
   expect(authConfig.defaultAuthentication?.userPoolConfig?.userPoolId).toEqual(userPoolId);
-
-  const parameters = readApiParametersJson(projectRoot, projectPrefix);
-
-  expect(parameters?.AuthCognitoUserPoolId).toEqual(userPoolId);
 
   const rootStack = readRootStack(projectRoot);
 
