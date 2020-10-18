@@ -12,6 +12,31 @@ describe('VelocityTemplate', () => {
     simulator = new AmplifyAppSyncSimulator();
   });
 
+  describe('constructor', () => {
+    it('should handle bad template', () => {
+      expect(
+        () =>
+          new VelocityTemplate(
+            {
+              path: 'INLINE_TEMPLATE',
+              content: `{
+          "version": "2017-02-28",
+          "payload": {
+            "identity": $util.toJson($$context.identity)
+          }
+        }`,
+            },
+            simulator,
+          ),
+      ).toThrowError(
+        'Error:Parse error on INLINE_TEMPLATE:3: \n' +
+          'Lexical error on line 4. Unrecognized text.\n' +
+          '...tity": $util.toJson($$context.identity)\n' +
+          '-----------------------^',
+      );
+    });
+  });
+
   describe('#render', () => {
     it('should handle string comparison', () => {
       const template = new VelocityTemplate(
