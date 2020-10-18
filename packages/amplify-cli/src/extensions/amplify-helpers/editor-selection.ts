@@ -96,8 +96,7 @@ function hideNoManualEdit(editor) {
         JSONUtilities.writeJson(workspaceSettingsPath, merge(exclusionRules, settings));
       } catch (error) {
         // Workspace settings file does not exist.
-      } finally {
-        // So let's create it with exclude settings.
+        // Let's create it with exclude settings.
         JSONUtilities.writeJson(workspaceSettingsPath, exclusionRules);
       }
       break;
