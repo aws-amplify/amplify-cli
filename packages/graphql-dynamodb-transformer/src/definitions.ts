@@ -31,7 +31,7 @@ import {
   makeValueNode,
   withNamedNodeNamed,
   isListType,
-  isScalarOrScalarList
+  isScalarOrScalarList,
 } from 'graphql-transformer-common';
 import { TransformerContext } from 'graphql-transformer-core';
 import { getCreatedAtFieldName, getUpdatedAtFieldName } from './ModelDirectiveArgs';
@@ -148,7 +148,7 @@ export function makeCreateInputObject(
     .filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.getType(getBaseType(field.type));
       if (
-        isScalar(field.type) ||
+        isScalarOrScalarList(field.type) ||
         nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ||
         (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
       ) {
@@ -215,7 +215,7 @@ export function makeUpdateInputObject(
     .filter(f => {
       const fieldType = ctx.getType(getBaseType(f.type));
       if (
-        isScalar(f.type) ||
+        isScalarOrScalarList(f.type) ||
         nonModelTypes.find(e => e.name.value === getBaseType(f.type)) ||
         (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
       ) {

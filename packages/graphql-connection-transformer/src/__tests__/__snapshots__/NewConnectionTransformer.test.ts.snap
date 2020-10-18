@@ -295,6 +295,7 @@ exports[`Many-to-many without conflict resolution generates correct schema 1`] =
 "type Post {
   id: ID!
   title: String!
+  frontMatter: [FrontMatter]
   editors(editorID: ModelIDKeyConditionInput, filter: ModelPostEditorFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelPostEditorConnection
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
@@ -316,6 +317,16 @@ type User {
   posts(postID: ModelIDKeyConditionInput, filter: ModelPostEditorFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelPostEditorConnection
   createdAt: AWSDateTime!
   updatedAt: AWSDateTime!
+}
+
+type FrontMatter {
+  name: String
+  value: String
+}
+
+input FrontMatterInput {
+  name: String
+  value: String
 }
 
 enum ModelSortDirection {
@@ -432,11 +443,13 @@ type Query {
 input CreatePostInput {
   id: ID
   title: String!
+  frontMatter: [FrontMatterInput]
 }
 
 input UpdatePostInput {
   id: ID!
   title: String
+  frontMatter: [FrontMatterInput]
 }
 
 input DeletePostInput {
