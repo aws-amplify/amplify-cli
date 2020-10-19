@@ -507,10 +507,10 @@ describe('Metadata visitor', () => {
     it('should generate for typeDeclaration', () => {
       const typeDeclaration = getVisitor(schema, 'typeDeclaration');
       expect(typeDeclaration.generate()).toMatchInlineSnapshot(`
-        "import { Schema } from '@aws-amplify/datastore';
+"import { Schema } from '@aws-amplify/datastore';
 
-        export declare const schema: Schema;"
-      `);
+export declare const schema: Schema;"
+`);
     });
   });
 });
