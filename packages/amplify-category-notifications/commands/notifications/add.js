@@ -16,7 +16,7 @@ module.exports = {
       for (let i = 0; i < services.length; i++) {
         const serviceMeta = categoryMeta[services[i]];
 
-        if (!serviceMeta.providerPlugin) {
+        if (serviceMeta.mobileHubMigrated === true) {
           context.print.error('Notifications is migrated from Mobile Hub and channels cannot be added with Amplify CLI.');
           return context;
         }

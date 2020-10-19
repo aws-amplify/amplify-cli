@@ -22,7 +22,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const lexResources = {};
 
   Object.keys(amplifyMeta[category]).forEach(resourceName => {
-    if (amplifyMeta[category][resourceName].service === serviceName && !!amplifyMeta[category][resourceName].providerPlugin) {
+    if (amplifyMeta[category][resourceName].service === serviceName && amplifyMeta[category][resourceName].mobileHubMigrated !== true) {
       lexResources[resourceName] = amplifyMeta[category][resourceName];
     }
   });

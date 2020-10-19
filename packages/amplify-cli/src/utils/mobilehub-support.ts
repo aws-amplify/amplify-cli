@@ -34,8 +34,8 @@ const checkIfMobileHubProject = (context: $TSContext): void => {
       Object.keys(meta[category]).forEach(resourceName => {
         const resource = meta[category][resourceName];
 
-        // Mobile hub migrated resources and CLI created Pinoint ones does not have an assigned provider
-        if (!resource.providerPlugin && resource.service !== 'Pinpoint') {
+        // Mobile hub migrated resources has this property on the resource record set to true by migrator plugin.
+        if (resource.mobileHubMigrated === true) {
           hasMigratedResources = true;
         }
       });

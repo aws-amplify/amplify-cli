@@ -93,7 +93,7 @@ async function run(context, providerMetadata) {
         const resource = s3AmplifyMeta[category][resourceName];
 
         // Mobile hub migrated resources does not have an assigned provider
-        if (!resource.providerPlugin) {
+        if (resource.mobileHubMigrated === true) {
           _.set(amplifyMeta, [category, resourceName], resource);
           hasMigratedResources = true;
         }
