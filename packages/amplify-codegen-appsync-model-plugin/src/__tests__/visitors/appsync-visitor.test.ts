@@ -312,7 +312,7 @@ describe('AppSyncModelVisitor', () => {
       expect(groupRule.operations).toEqual(['create', 'update', 'delete', 'read']);
     });
 
-    it('should field level process with owner authorization', () => {
+    it('should process field level auth with default owner authorization', () => {
       const schema = /* GraphQL*/ `
         type Employee @model
           @auth(rules: [
