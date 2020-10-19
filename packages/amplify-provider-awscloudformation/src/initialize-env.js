@@ -73,7 +73,7 @@ async function run(context, providerMetadata) {
   });
 
   //
-  // Download the meta file from the bucket and see if it has migrated resources (no provider field)
+  // Download the meta file from the bucket and see if it has migrated resources (mobileHubMigrated property === true)
   // copy those over to the reconstructed meta file.
   //
 
