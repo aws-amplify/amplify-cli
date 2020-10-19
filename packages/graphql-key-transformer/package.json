@@ -27,8 +27,7 @@
     "graphql-dynamodb-transformer": "6.19.15",
     "graphql-mapping-template": "4.15.2",
     "graphql-transformer-common": "4.17.10",
-    "graphql-transformer-core": "6.21.6",
-    "ts-md5": "^1.2.7"
+    "graphql-transformer-core": "6.21.6"
   },
   "jest": {
     "testURL": "http://localhost",

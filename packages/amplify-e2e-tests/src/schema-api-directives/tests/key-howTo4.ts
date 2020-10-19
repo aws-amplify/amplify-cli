@@ -25,7 +25,7 @@ export const mutation1 = `
  mutation CreateComment{
     createComment(input: {
         content: "order1",
-        username: "akz",
+        username: "user2",
         createdAt: "2019-01-01T01:05:49.129Z",
         editor: "user1",
         data1 : "example1",
@@ -44,7 +44,7 @@ export const mutation2 = `
   mutation CreateComment{
      createComment(input: {
          content: "order2",
-         username: "akz",
+         username: "user2",
          createdAt: "2018-01-01T01:05:49.129Z",
          editor: "user1",
          data1 : "example3",
@@ -63,7 +63,7 @@ export const mutation3 = `
    mutation CreateComment{
       createComment(input: {
           content: "order3",
-          username: "akz",
+          username: "user2",
           createdAt: "2009-01-01T01:05:49.129Z",
           editor: "user3",
           data1 : "example5",
@@ -84,7 +84,7 @@ export const mutation4 = `
            content: "order1",
            username: "user1",
            createdAt: "2015-01-01T01:05:49.129Z",
-           editor: "akz",
+           editor: "user2",
            data1 : "example1",
            data2 : "example2"
      }) {
@@ -100,7 +100,7 @@ export const mutation4 = `
 //query1 with no filter
 export const query1 = `
 query SyncComments {
-  syncComments(filter: {and: [{username: {eq: "akz"}}, {createdAt: {gt: "2010-01-01T00:00Z"}}]}) {
+  syncComments(filter: {and: [{username: {eq: "user2"}}, {createdAt: {gt: "2010-01-01T00:00Z"}}]}) {
     items {
       content
       createdAt
@@ -119,7 +119,7 @@ export const expected_result_query1 = {
       items: [
         {
           content: 'order2',
-          username: 'akz',
+          username: 'user2',
           createdAt: '2018-01-01T01:05:49.129Z',
           editor: 'user1',
           data1: 'example3',
@@ -127,7 +127,7 @@ export const expected_result_query1 = {
         },
         {
           content: 'order1',
-          username: 'akz',
+          username: 'user2',
           createdAt: '2019-01-01T01:05:49.129Z',
           editor: 'user1',
           data1: 'example1',
@@ -140,7 +140,7 @@ export const expected_result_query1 = {
 //query1 with filter
 export const query2 = `
 query SyncComments {
-  syncComments(filter: {and: [{username: {eq: "akz"}}, {createdAt: {gt: "2010-01-01T00:00Z"}}, { content: {eq : "order1"}}]}) {
+  syncComments(filter: {and: [{username: {eq: "user2"}}, {createdAt: {gt: "2010-01-01T00:00Z"}}, { content: {eq : "order1"}}]}) {
     items {
       content
       createdAt
@@ -159,7 +159,7 @@ export const expected_result_query2 = {
       items: [
         {
           content: 'order1',
-          username: 'akz',
+          username: 'user2',
           createdAt: '2019-01-01T01:05:49.129Z',
           editor: 'user1',
           data1: 'example1',
@@ -192,7 +192,7 @@ export const expected_result_query3 = {
       items: [
         {
           content: 'order1',
-          username: 'akz',
+          username: 'user2',
           createdAt: '2019-01-01T01:05:49.129Z',
           editor: 'user1',
           data1: 'example1',
@@ -227,13 +227,13 @@ export const expected_result_query4 = {
           content: 'order1',
           username: 'user1',
           createdAt: '2015-01-01T01:05:49.129Z',
-          editor: 'akz',
+          editor: 'user2',
           data1: 'example1',
           data2: 'example2',
         },
         {
           content: 'order3',
-          username: 'akz',
+          username: 'user2',
           createdAt: '2009-01-01T01:05:49.129Z',
           editor: 'user3',
           data1: 'example5',

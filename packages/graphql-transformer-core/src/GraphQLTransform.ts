@@ -25,7 +25,7 @@ import { TransformFormatter } from './TransformFormatter';
 import { TransformConfig, SyncUtils } from './util';
 import { FeatureFlagProvider, NoopFeatureFlagProvider } from './FeatureFlags';
 import { SyncResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import { Md5 } from 'ts-md5/dist/md5';
+import md5 from 'md5';
 
 function isFunction(obj: any) {
   return obj && typeof obj === 'function';
@@ -334,13 +334,13 @@ export class GraphQLTransform {
     let index = 0;
 
     // hashing key directive to get the order in @key transformer
-    let ind = 0;
+    let keyDirIndex = 0;
     let syncKeyMap: Map<string | Int32Array, number> = new Map();
     if (transformer.name === 'KeyTransformer') {
-      for (const dir of def.directives) {
-        if (dir.name.value === 'key') {
-          syncKeyMap.set(Md5.hashStr(JSON.stringify(dir)), ind);
-          ind++;
+      for (const directive of def.directives) {
+        if (directive.name.value === 'key') {
+          syncKeyMap.set(md5(JSON.stringify(directive)), keyDirIndex);
+          keyDirIndex++;
         }
       }
       context.metadata.set(ResourceConstants.SNIPPETS.SyncResolverKey, syncKeyMap);

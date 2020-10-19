@@ -57,7 +57,7 @@ import {
 } from 'graphql';
 import { AppSync, Fn, Refs } from 'cloudform-types';
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
-import { Md5 } from 'ts-md5/dist/md5';
+import md5 from 'md5';
 
 interface KeyArguments {
   name?: string;
@@ -66,7 +66,6 @@ interface KeyArguments {
 }
 
 export class KeyTransformer extends Transformer {
-  SyncConfig?: SyncConfig;
   constructor() {
     // TODO remove once prettier is upgraded
     // prettier-ignore
@@ -1062,7 +1061,7 @@ function generateSyncResolverInit() {
   return block(`Set map initialization for @key`, expressions);
 }
 
-function setSyncKeyexpressionForHashKey(queryExprReference: string) {
+function setSyncKeyExpressionForHashKey(queryExprReference: string) {
   const expressions: Expression[] = [];
   expressions.push(
     set(ref(ResourceConstants.SNIPPETS.ModelQueryExpression), obj({})),
@@ -1078,7 +1077,7 @@ function setSyncKeyexpressionForHashKey(queryExprReference: string) {
   return block(`Set Primary Key initialization @key`, expressions);
 }
 
-function setSyncKeyexpressionForRangeKey(queryExprReference: string) {
+function setSyncKeyExpressionForRangeKey(queryExprReference: string) {
   return block('Applying Key Condition', [
     iff(
       raw(`!$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).beginsWith)`),
@@ -1194,8 +1193,8 @@ function constructSyncResolver(
 ) {
   if (ctx.metadata.has(ResourceConstants.SNIPPETS.SyncResolverKey)) {
     const resolverMap = ctx.metadata.get(ResourceConstants.SNIPPETS.SyncResolverKey);
-    if (resolverMap.has(Md5.hashStr(JSON.stringify(directive)))) {
-      let keyListIndex = resolverMap.get(Md5.hashStr(JSON.stringify(directive)));
+    if (resolverMap.has(md5(JSON.stringify(directive)))) {
+      let keyListIndex = resolverMap.get(md5(JSON.stringify(directive)));
       if (keyListIndex === 0) {
         syncResolver.Properties.RequestMappingTemplate = '';
         syncResolver.Properties.RequestMappingTemplate = joinSnippets([
@@ -1207,8 +1206,8 @@ function constructSyncResolver(
           syncResolver.Properties.RequestMappingTemplate,
           print(setSyncQueryMapSnippet(definition, directive, ctx, isTable)),
           print(setSyncQueryFilterSnippet()),
-          print(setSyncKeyexpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
-          print(setSyncKeyexpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+          print(setSyncKeyExpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+          print(setSyncKeyExpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
           print(makeSyncQueryResolver()),
         ]);
       } else {

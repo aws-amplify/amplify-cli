@@ -20718,11 +20718,6 @@ ts-jest@^25.5.0:
     semver "6.x"
     yargs-parser "18.x"
 
-ts-md5@^1.2.7:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/ts-md5/-/ts-md5-1.2.7.tgz#b76471fc2fd38f0502441f6c3b9494ed04537401"
-  integrity sha512-emODogvKGWi1KO1l9c6YxLMBn6CEH3VrH5mVPIyOtxBG52BvV4jP3GWz6bOZCz61nLgBc3ffQYE4+EHfCD+V7w==
-
 ts-node@^8.10.1, ts-node@^8.10.2, ts-node@^8.9.0:
   version "8.10.2"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-8.10.2.tgz#eee03764633b1234ddd37f8db9ec10b75ec7fb8d"
