@@ -1,9 +1,6 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
 import { addFunction, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
-import {
-  createNewProjectDir,
-  deleteProjectDir,
-} from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 
 describe('go function tests', () => {
   const helloWorldSuccessOutput = 'Hello Amplify!';
