@@ -1,13 +1,17 @@
+import { ServiceSelection } from './serviceSelection';
+
 export * from './cliContext';
 export * from './cliContextEnvironmentProvider';
 export * from './cliEnvironmentProvider';
 export * from './feature-flags';
 export * from './jsonUtilities';
 export * from './jsonValidationError';
+export * from './serviceSelection';
 export * from './state-manager';
 export * from './tags';
 export * from './errors';
 export * from './exitOnNextTick';
+export * from './isPackaged';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -66,7 +70,7 @@ interface AmplifyToolkit {
   listCategories: () => $TSAny;
   makeId: () => $TSAny;
   openEditor: () => $TSAny;
-  onCategoryOutputsChange: (context: $TSContext, amplifyMeta: $TSMeta) => $TSAny;
+  onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
   pathManager: () => $TSAny;
   pressEnterToContinue: () => $TSAny;
   pushResources: () => $TSAny;
@@ -79,20 +83,31 @@ interface AmplifyToolkit {
   showHelp: () => $TSAny;
   showHelpfulProviderLinks: () => $TSAny;
   showResourceTable: () => $TSAny;
-  serviceSelectionPrompt: () => $TSAny;
+  serviceSelectionPrompt: (
+    context: $TSContext,
+    category: string,
+    servicesMetadata: $TSAny,
+    customQuestion?: $TSAny,
+  ) => Promise<ServiceSelection>;
   updateProjectConfig: () => $TSAny;
   updateamplifyMetaAfterResourceUpdate: () => $TSAny;
-  updateamplifyMetaAfterResourceAdd: () => $TSAny;
+  updateamplifyMetaAfterResourceAdd: (
+    category: string,
+    resourceName: string,
+    metaResourceData: $TSAny,
+    backendResourceData?: $TSAny,
+    overwriteObjectIfExists?: boolean,
+  ) => $TSAny;
   updateamplifyMetaAfterResourceDelete: () => $TSAny;
   updateProvideramplifyMeta: () => $TSAny;
   updateamplifyMetaAfterPush: () => $TSAny;
   updateamplifyMetaAfterBuild: () => $TSAny;
   updateAmplifyMetaAfterPackage: () => $TSAny;
-  updateBackendConfigAfterResourceAdd: () => $TSAny;
+  updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSAny) => $TSAny;
   updateBackendConfigAfterResourceUpdate: () => $TSAny;
   updateBackendConfigAfterResourceRemove: () => $TSAny;
-  loadEnvResourceParameters: () => $TSAny;
-  saveEnvResourceParameters: () => $TSAny;
+  loadEnvResourceParameters: (context: $TSContext, category: string, resourceName: string) => $TSAny;
+  saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams: $TSObject) => $TSAny;
   removeResourceParameters: () => $TSAny;
   triggerFlow: () => $TSAny;
   addTrigger: () => $TSAny;
@@ -112,4 +127,14 @@ interface AmplifyToolkit {
   leaveBreadcrumbs: () => $TSAny;
   readBreadcrumbs: () => $TSAny;
   loadRuntimePlugin: () => $TSAny;
+  getImportedAuthProperties: (
+    context: $TSContext,
+  ) => {
+    imported: boolean;
+    userPoolId?: string;
+    authRoleArn?: string;
+    authRoleName?: string;
+    unauthRoleArn?: string;
+    unauthRoleName?: string;
+  };
 }

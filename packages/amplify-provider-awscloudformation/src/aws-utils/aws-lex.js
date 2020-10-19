@@ -1,6 +1,5 @@
 const aws = require('./aws.js');
-const configurationManager = require('../configuration-manager');
-
+const { CreateService } = require('./aws-service-creator');
 const serviceRegionMap = {
   'us-east-1': 'us-east-1',
   'us-east-2': 'us-east-1',
@@ -25,14 +24,9 @@ const serviceRegionMap = {
 class Lex {
   constructor(context, options = {}) {
     return (async () => {
-      let cred = {};
-      try {
-        cred = await configurationManager.loadConfiguration(context);
-      } catch (e) {
-        // ignore missing config
-      }
       this.context = context;
-      this.lex = new aws.LexModelBuildingService({ ...cred, ...options, apiVersion: '2017-04-19' });
+      //this.lex = new aws.LexModelBuildingService({ ...options, apiVersion: '2017-04-19' });
+      this.lex = await CreateService(context, aws.LexModelBuildingService, { ...options, apiVersion: '2017-04-19' });
       return this;
     })();
   }

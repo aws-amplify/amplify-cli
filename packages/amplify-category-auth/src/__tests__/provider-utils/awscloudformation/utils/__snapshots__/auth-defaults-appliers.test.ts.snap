@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`update auth defaults applier calls structureOAuthMetadata 1`] = `
+Object {
+  "authSelections": "userPoolOnly",
+  "include": "this value",
+  "some": "default value",
+  "useDefault": "manual",
+}
+`;

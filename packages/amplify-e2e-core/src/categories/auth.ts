@@ -1,5 +1,33 @@
 import { nspawn as spawn, KEY_UP_ARROW, KEY_DOWN_ARROW, getCLIPath, getSocialProviders } from '..';
 
+export type AddAuthUserPoolOnlyNoOAuthSettings = {
+  resourceName: string;
+  userPoolName: string;
+};
+
+export type AddAuthUserPoolOnlyWithOAuthSettings = AddAuthUserPoolOnlyNoOAuthSettings & {
+  domainPrefix: string;
+  signInUrl1: string;
+  signInUrl2: string;
+  signOutUrl1: string;
+  signOutUrl2: string;
+  facebookAppId: string;
+  facebookAppSecret: string;
+  googleAppId: string;
+  googleAppSecret: string;
+  amazonAppId: string;
+  amazonAppSecret: string;
+};
+
+export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnlyWithOAuthSettings & {
+  identityPoolName: string;
+  allowUnauthenticatedIdentities: boolean;
+  thirdPartyAuth: boolean;
+  idpFacebookAppId: string;
+  idpGoogleAppId: string;
+  idpAmazonAppId: string;
+};
+
 export function addAuthWithDefault(cwd: string, settings: any = {}) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
@@ -986,5 +1014,261 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
         reject(err);
       }
     });
+  });
+}
+
+export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserPoolOnlyWithOAuthSettings) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+      .wait('Do you want to use the default authentication and security configuration?')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Select the authentication/authorization services that you want to use')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Please provide a friendly name for your resource that will be used')
+      .sendLine(settings.resourceName)
+      .wait('Please provide a name for your user pool')
+      .sendLine(settings.userPoolName)
+      .wait('How do you want users to be able to sign in')
+      .sendCarriageReturn() // Username
+      .wait('Do you want to add User Pool Groups?')
+      .sendKeyDown() // No
+      .sendCarriageReturn()
+      .wait('Do you want to add an admin queries API?')
+      .sendKeyDown() // No
+      .sendCarriageReturn()
+      .wait('Multifactor authentication (MFA) user login options')
+      .sendCarriageReturn() // OFF
+      .wait('Email based user registration/forgot password')
+      .sendCarriageReturn() // Enabled
+      .wait('Please specify an email verification subject')
+      .sendCarriageReturn()
+      .wait('Please specify an email verification message')
+      .sendCarriageReturn()
+      .wait('Do you want to override the default password policy')
+      .sendConfirmNo()
+      .wait('What attributes are required for signing up?')
+      .sendCarriageReturn()
+      .wait("Specify the app's refresh token expiration period (in days)")
+      .sendCarriageReturn()
+      .wait('Do you want to specify the user attributes this app can read and write')
+      .sendConfirmNo()
+      .wait('Do you want to enable any of the following capabilities?')
+      .sendCarriageReturn()
+      .wait('Do you want to use an OAuth flow')
+      .sendCarriageReturn() // Yes
+      .wait('What domain name prefix do you want to use?')
+      .sendLine(settings.domainPrefix)
+      .wait('Enter your redirect signin URI')
+      .sendLine(settings.signInUrl1)
+      .wait('Do you want to add another redirect signin URI')
+      .sendConfirmYes()
+      .wait('Enter your redirect signin URI')
+      .sendLine(settings.signInUrl2)
+      .wait('Do you want to add another redirect signin URI')
+      .sendConfirmNo()
+      .wait('Enter your redirect signout URI')
+      .sendLine(settings.signOutUrl1)
+      .wait('Do you want to add another redirect signout URI')
+      .sendConfirmYes()
+      .wait('Enter your redirect signout URI')
+      .sendLine(settings.signOutUrl2)
+      .wait('Do you want to add another redirect signout URI')
+      .sendConfirmNo()
+      .wait('Select the OAuth flows enabled for this project')
+      .sendCarriageReturn() // Authorication Grant
+      .wait('Select the OAuth scopes enabled for this project')
+      .sendCarriageReturn() // All
+      .wait('Select the social providers you want to configure for your user pool')
+      .sendLine('a') // Select all
+      .wait('Enter your Facebook App ID for your OAuth flow')
+      .sendLine(settings.facebookAppId)
+      .wait('Enter your Facebook App Secret for your OAuth flow')
+      .sendLine(settings.facebookAppSecret)
+      .wait('Enter your Google Web Client ID for your OAuth flow')
+      .sendLine(settings.googleAppId)
+      .wait('Enter your Google Web Client Secret for your OAuth flow')
+      .sendLine(settings.googleAppSecret)
+      .wait('Enter your Amazon App ID for your OAuth flow')
+      .sendLine(settings.amazonAppId)
+      .wait('Enter your Amazon App Secret for your OAuth flow')
+      .sendLine(settings.amazonAppSecret)
+      .wait('Do you want to configure Lambda Triggers for Cognito')
+      .sendConfirmNo()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addAuthIdentityPoolAndUserPoolWithOAuth(cwd: string, settings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings) {
+  return new Promise((resolve, reject) => {
+    let chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+      .wait('Do you want to use the default authentication and security configuration?')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Select the authentication/authorization services that you want to use')
+      .sendCarriageReturn()
+      .wait('Please provide a friendly name for your resource that will be used')
+      .sendLine(settings.resourceName)
+      .wait('Please enter a name for your identity pool')
+      .sendLine(settings.identityPoolName)
+      .wait('Allow unauthenticated logins');
+
+    if (settings.allowUnauthenticatedIdentities) {
+      chain.sendKeyUp().sendCarriageReturn();
+    } else {
+      chain.sendConfirmNo();
+    }
+
+    chain
+      .wait('Do you want to enable 3rd party authentication providers')
+      .sendConfirmYes()
+      .wait('Select the third party identity providers you want to')
+      .send('a')
+      .sendCarriageReturn()
+      .wait('Enter your Facebook App ID for your identity pool')
+      .sendLine(settings.idpFacebookAppId)
+      .wait('Enter your Google Web Client ID for your identity pool:')
+      .sendLine(settings.idpGoogleAppId)
+      .wait('Enter your Amazon App ID for your identity pool')
+      .sendLine(settings.idpAmazonAppId)
+      .wait('Please provide a name for your user pool')
+      .sendLine(settings.userPoolName)
+      .wait('How do you want users to be able to sign in')
+      .sendCarriageReturn() // Username
+      .wait('Do you want to add User Pool Groups?')
+      .sendKeyDown() // No
+      .sendCarriageReturn()
+      .wait('Do you want to add an admin queries API?')
+      .sendKeyDown() // No
+      .sendCarriageReturn()
+      .wait('Multifactor authentication (MFA) user login options')
+      .sendCarriageReturn() // OFF
+      .wait('Email based user registration/forgot password')
+      .sendCarriageReturn() // Enabled
+      .wait('Please specify an email verification subject')
+      .sendCarriageReturn()
+      .wait('Please specify an email verification message')
+      .sendCarriageReturn()
+      .wait('Do you want to override the default password policy')
+      .sendConfirmNo()
+      .wait('What attributes are required for signing up?')
+      .sendCarriageReturn()
+      .wait("Specify the app's refresh token expiration period (in days)")
+      .sendCarriageReturn()
+      .wait('Do you want to specify the user attributes this app can read and write')
+      .sendConfirmNo()
+      .wait('Do you want to enable any of the following capabilities?')
+      .sendCarriageReturn()
+      .wait('Do you want to use an OAuth flow')
+      .sendCarriageReturn() // Yes
+      .wait('What domain name prefix do you want to use?')
+      .sendLine(settings.domainPrefix)
+      .wait('Enter your redirect signin URI')
+      .sendLine(settings.signInUrl1)
+      .wait('Do you want to add another redirect signin URI')
+      .sendConfirmYes()
+      .wait('Enter your redirect signin URI')
+      .sendLine(settings.signInUrl2)
+      .wait('Do you want to add another redirect signin URI')
+      .sendConfirmNo()
+      .wait('Enter your redirect signout URI')
+      .sendLine(settings.signOutUrl1)
+      .wait('Do you want to add another redirect signout URI')
+      .sendConfirmYes()
+      .wait('Enter your redirect signout URI')
+      .sendLine(settings.signOutUrl2)
+      .wait('Do you want to add another redirect signout URI')
+      .sendConfirmNo()
+      .wait('Select the OAuth flows enabled for this project')
+      .sendCarriageReturn() // Authorication Grant
+      .wait('Select the OAuth scopes enabled for this project')
+      .sendCarriageReturn() // All
+      .wait('Select the social providers you want to configure for your user pool')
+      .sendLine('a') // Select all
+      .wait('Enter your Facebook App ID for your OAuth flow')
+      .sendLine(settings.facebookAppId)
+      .wait('Enter your Facebook App Secret for your OAuth flow')
+      .sendLine(settings.facebookAppSecret)
+      .wait('Enter your Google Web Client ID for your OAuth flow')
+      .sendLine(settings.googleAppId)
+      .wait('Enter your Google Web Client Secret for your OAuth flow')
+      .sendLine(settings.googleAppSecret)
+      .wait('Enter your Amazon App ID for your OAuth flow')
+      .sendLine(settings.amazonAppId)
+      .wait('Enter your Amazon App Secret for your OAuth flow')
+      .sendLine(settings.amazonAppSecret)
+      .wait('Do you want to configure Lambda Triggers for Cognito')
+      .sendConfirmNo()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoolOnlyNoOAuthSettings) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+      .wait('Do you want to use the default authentication and security configuration?')
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Select the authentication/authorization services that you want to use')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Please provide a friendly name for your resource that will be used')
+      .sendLine(settings.resourceName)
+      .wait('Please provide a name for your user pool')
+      .sendLine(settings.userPoolName)
+      .wait('How do you want users to be able to sign in')
+      .sendCarriageReturn() // Username
+      .wait('Do you want to add User Pool Groups?')
+      .sendKeyDown() // No
+      .sendCarriageReturn()
+      .wait('Do you want to add an admin queries API?')
+      .sendKeyDown() // No
+      .sendCarriageReturn()
+      .wait('Multifactor authentication (MFA) user login options')
+      .sendCarriageReturn() // OFF
+      .wait('Email based user registration/forgot password')
+      .sendCarriageReturn() // Enabled
+      .wait('Please specify an email verification subject')
+      .sendCarriageReturn()
+      .wait('Please specify an email verification message')
+      .sendCarriageReturn()
+      .wait('Do you want to override the default password policy')
+      .sendConfirmNo()
+      .wait('What attributes are required for signing up?')
+      .sendCarriageReturn()
+      .wait("Specify the app's refresh token expiration period (in days)")
+      .sendCarriageReturn()
+      .wait('Do you want to specify the user attributes this app can read and write')
+      .sendConfirmNo()
+      .wait('Do you want to enable any of the following capabilities?')
+      .sendCarriageReturn()
+      .wait('Do you want to use an OAuth flow')
+      .sendKeyDown() // No
+      .sendCarriageReturn()
+      .wait('Do you want to configure Lambda Triggers for Cognito')
+      .sendConfirmNo()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }

@@ -1,17 +1,9 @@
 const aws = require('./aws.js');
-const configurationManager = require('../configuration-manager');
-
+const { CreateService } = require('./aws-service-creator');
 class Polly {
   constructor(context, options = {}) {
     return (async () => {
-      let cred = {};
-      try {
-        cred = await configurationManager.loadConfiguration(context);
-      } catch (e) {
-        // ignore missing config
-      }
-      this.context = context;
-      this.polly = new aws.Polly({ ...cred, ...options, apiVersion: '2016-06-10' });
+      this.polly = await CreateService(context, aws.Polly, { ...options, apiVersion: '2016-06-10' });
       return this;
     })();
   }

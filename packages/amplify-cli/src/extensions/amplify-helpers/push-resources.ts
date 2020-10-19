@@ -17,6 +17,7 @@ export async function pushResources(context, category, resourceName, filteredRes
   if (context.parameters.options.env) {
     const envName = context.parameters.options.env;
     const allEnvs = context.amplify.getAllEnvs(context);
+
     if (allEnvs.findIndex(env => env === envName) !== -1) {
       context.exeInfo = {};
       context.exeInfo.forcePush = false;
@@ -36,8 +37,10 @@ export async function pushResources(context, category, resourceName, filteredRes
       await initializeEnv(context);
     } else {
       const errMessage = "Environment doesn't exist. Please use 'amplify init' to create a new environment";
+
       context.print.error(errMessage);
       context.usageData.emitError(new EnvironmentDoesNotExistError(errMessage));
+
       exitOnNextTick(1);
     }
   }
@@ -47,10 +50,12 @@ export async function pushResources(context, category, resourceName, filteredRes
   // no changes detected
   if (!hasChanges && !context.exeInfo.forcePush) {
     context.print.info('\nNo changes detected');
+
     return context;
   }
 
   let continueToPush = context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
+
   if (!continueToPush) {
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }
@@ -65,6 +70,7 @@ export async function pushResources(context, category, resourceName, filteredRes
     } catch (err) {
       // Handle the errors and print them nicely for the user.
       context.print.error(`\n${err.message}`);
+
       throw err;
     }
   }

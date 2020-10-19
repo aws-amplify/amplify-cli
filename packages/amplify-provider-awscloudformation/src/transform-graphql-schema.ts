@@ -1,25 +1,22 @@
-const fs = require('fs-extra');
-const path = require('path');
-const chalk = require('chalk');
-const inquirer = require('inquirer');
-const importGlobal = require('import-global');
-const importFrom = require('import-from');
-const { DynamoDBModelTransformer } = require('graphql-dynamodb-transformer');
-const { ModelAuthTransformer } = require('graphql-auth-transformer');
-const { ModelConnectionTransformer } = require('graphql-connection-transformer');
-const { SearchableModelTransformer } = require('graphql-elasticsearch-transformer');
-const { VersionedModelTransformer } = require('graphql-versioned-transformer');
-const { FunctionTransformer } = require('graphql-function-transformer');
-const { HttpTransformer } = require('graphql-http-transformer');
-const { PredictionsTransformer } = require('graphql-predictions-transformer');
-const { KeyTransformer } = require('graphql-key-transformer');
-const providerName = require('./constants').ProviderName;
-const TransformPackage = require('graphql-transformer-core');
-const { print } = require('graphql');
-const { hashDirectory } = require('./upload-appsync-files');
-const { exitOnNextTick } = require('amplify-cli-core');
+import fs from 'fs-extra';
+import path from 'path';
+import chalk from 'chalk';
+import inquirer from 'inquirer';
+import importGlobal from 'import-global';
+import importFrom from 'import-from';
+import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelAuthTransformer } from 'graphql-auth-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
+import { VersionedModelTransformer } from 'graphql-versioned-transformer';
+import { FunctionTransformer } from 'graphql-function-transformer';
+import { HttpTransformer } from 'graphql-http-transformer';
+import { PredictionsTransformer } from 'graphql-predictions-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
+import { ProviderName as providerName } from './constants';
+import { AmplifyCLIFeatureFlagAdapter } from './utils/transfomer-feature-flag-adapter';
 
-const {
+import {
   collectDirectivesByTypeNames,
   readTransformerConfiguration,
   writeTransformerConfiguration,
@@ -27,7 +24,16 @@ const {
   TRANSFORM_BASE_VERSION,
   CLOUDFORMATION_FILE_NAME,
   getAppSyncServiceExtraDirectives,
-} = TransformPackage;
+  ITransformer,
+  revertAPIMigration,
+  migrateAPIProject,
+  readProjectConfiguration,
+  buildAPIProject,
+} from 'graphql-transformer-core';
+
+import { print } from 'graphql';
+import { hashDirectory } from './upload-appsync-files';
+import { exitOnNextTick } from 'amplify-cli-core';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -46,9 +52,9 @@ function warnOnAuth(context, map) {
   }
 }
 
-function getTransformerFactory(context, resourceDir, authConfig) {
-  return async (addSearchableTransformer, storageConfig) => {
-    const transformerList = [
+function getTransformerFactory(context, resourceDir, authConfig?) {
+  return async (addSearchableTransformer, storageConfig?) => {
+    const transformerList: ITransformer[] = [
       // TODO: Removing until further discussion. `getTransformerOptions(project, '@model')`
       new DynamoDBModelTransformer(),
       new VersionedModelTransformer(),
@@ -235,7 +241,7 @@ async function migrateProject(context, options) {
   let oldCloudBackend;
   try {
     context.print.info('\nMigrating your API. This may take a few minutes.');
-    const { project, cloudBackend } = await TransformPackage.migrateAPIProject({
+    const { project, cloudBackend } = await migrateAPIProject({
       projectDirectory: resourceDir,
       cloudBackendDirectory,
     });
@@ -243,7 +249,7 @@ async function migrateProject(context, options) {
     oldCloudBackend = cloudBackend;
     await updateAndWaitForStack({ isCLIMigration });
   } catch (e) {
-    await TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
+    await revertAPIMigration(resourceDir, oldProjectConfig);
     throw e;
   }
   try {
@@ -256,19 +262,19 @@ async function migrateProject(context, options) {
     return result;
   } catch (e) {
     context.print.error('Reverting API migration.');
-    await TransformPackage.revertAPIMigration(resourceDir, oldCloudBackend);
+    await revertAPIMigration(resourceDir, oldCloudBackend);
     try {
       await updateAndWaitForStack({ isReverting: true, isCLIMigration });
     } catch (e) {
       context.print.error('Error reverting intermediate migration stack.');
     }
-    await TransformPackage.revertAPIMigration(resourceDir, oldProjectConfig);
+    await revertAPIMigration(resourceDir, oldProjectConfig);
     context.print.error('API successfully reverted.');
     throw e;
   }
 }
 
-async function transformGraphQLSchema(context, options) {
+export async function transformGraphQLSchema(context, options) {
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
   if (flags['no-gql-override']) {
@@ -423,8 +429,8 @@ async function transformGraphQLSchema(context, options) {
 
   fs.ensureDirSync(buildDir);
   // Transformer compiler code
-  // const schemaText = await TransformPackage.readProjectSchema(resourceDir);
-  const project = await TransformPackage.readProjectConfiguration(resourceDir);
+  // const schemaText = await readProjectSchema(resourceDir);
+  const project = await readProjectConfiguration(resourceDir);
 
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
@@ -449,8 +455,9 @@ async function transformGraphQLSchema(context, options) {
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
     minify: options.minify,
+    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
   };
-  const transformerOutput = await TransformPackage.buildAPIProject(buildConfig);
+  const transformerOutput = await buildAPIProject(buildConfig);
 
   context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
@@ -474,7 +481,7 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
   let parameters;
   try {
     const parametersPath = path.join(previouslyDeployedBackendDir, `build/${parametersFileName}`);
-    const parametersExists = await fs.exists(parametersPath);
+    const parametersExists = fs.existsSync(parametersPath);
     if (parametersExists) {
       const parametersString = await fs.readFile(parametersPath);
       parameters = JSON.parse(parametersString.toString());
@@ -498,7 +505,7 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 //   return undefined;
 // }
 
-async function getDirectiveDefinitions(context, resourceDir) {
+export async function getDirectiveDefinitions(context, resourceDir) {
   const transformList = await getTransformerFactory(context, resourceDir)(true);
   const appSynDirectives = getAppSyncServiceExtraDirectives();
   const transformDirectives = transformList
@@ -543,8 +550,3 @@ function getBucketName(context, s3ResourceName, backEndDir) {
     : `${bucketParameters.bucketName}${s3ResourceName}-\${env}`;
   return { bucketName };
 }
-
-module.exports = {
-  transformGraphQLSchema,
-  getDirectiveDefinitions,
-};

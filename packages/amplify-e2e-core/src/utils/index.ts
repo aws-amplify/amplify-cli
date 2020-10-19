@@ -23,11 +23,11 @@ export * from './envVars';
 config();
 
 export function deleteProjectDir(root: string) {
-  return rimraf.sync(root);
+  rimraf.sync(root);
 }
 
 export function deleteAmplifyDir(root: string) {
-  return rimraf.sync(path.join(root, 'amplify'));
+  rimraf.sync(path.join(root, 'amplify'));
 }
 
 export function overrideFunctionSrc(root: string, name: string, code: string) {

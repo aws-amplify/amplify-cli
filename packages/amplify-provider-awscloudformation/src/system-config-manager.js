@@ -6,6 +6,8 @@ const inquirer = require('inquirer');
 const constants = require('./constants');
 const proxyAgent = require('proxy-agent');
 const { pathManager } = require('amplify-cli-core');
+const { fileLogger } = require('../src/utils/aws-logger');
+const logger = fileLogger('system-config-manager');
 
 const credentialsFilePath = pathManager.getAWSCredentialsFilePath();
 const configFilePath = pathManager.getAWSConfigFilePath();
@@ -114,25 +116,29 @@ async function getRoleCredentials(context, profileName, profileConfig) {
       context.print.info(`  ${profileConfig.mfa_serial}`);
       mfaTokenCode = await getMfaTokenCode();
     }
-
+    logger('getRoleCredentials.aws.STS', [sourceProfileAwsConfig])();
     const sts = new aws.STS(sourceProfileAwsConfig);
-    const roleData = await sts
-      .assumeRole({
-        RoleArn: profileConfig.role_arn,
-        RoleSessionName: roleSessionName,
-        DurationSeconds: profileConfig.duration_seconds,
-        ExternalId: profileConfig.external_id,
-        SerialNumber: profileConfig.mfa_serial,
-        TokenCode: mfaTokenCode,
-      })
-      .promise();
-
-    roleCredentials = {
-      accessKeyId: roleData.Credentials.AccessKeyId,
-      secretAccessKey: roleData.Credentials.SecretAccessKey,
-      sessionToken: roleData.Credentials.SessionToken,
-      expiration: roleData.Credentials.Expiration,
+    const assumeRoleRequest = {
+      RoleArn: profileConfig.role_arn,
+      RoleSessionName: roleSessionName,
+      DurationSeconds: profileConfig.duration_seconds,
+      ExternalId: profileConfig.external_id,
+      SerialNumber: profileConfig.mfa_serial,
+      TokenCode: mfaTokenCode,
     };
+    const log = logger('getRoleCredentials.sts.assumeRole', [assumeRoleRequest]);
+    try {
+      log();
+      const roleData = await sts.assumeRole().promise();
+      roleCredentials = {
+        accessKeyId: roleData.Credentials.AccessKeyId,
+        secretAccessKey: roleData.Credentials.SecretAccessKey,
+        sessionToken: roleData.Credentials.SessionToken,
+        expiration: roleData.Credentials.Expiration,
+      };
+    } catch (ex) {
+      log(ex);
+    }
 
     cacheRoleCredentials(context, profileConfig.role_arn, roleSessionName, roleCredentials);
   }

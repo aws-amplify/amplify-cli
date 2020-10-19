@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.7.2...amplify-e2e-core@1.8.0) (2020-10-17)
+
+
+### Features
+
+* support importing of auth resources ([#5591](https://github.com/aws-amplify/amplify-cli/issues/5591)) ([7903246](https://github.com/aws-amplify/amplify-cli/commit/790324680544fe18481f91390001f9f07a144203))
+
+
+
+
+
 ## [1.7.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.7.1...amplify-e2e-core@1.7.2) (2020-10-09)
 
 

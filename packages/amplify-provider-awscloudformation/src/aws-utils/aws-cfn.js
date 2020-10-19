@@ -9,8 +9,10 @@ const aws = require('./aws.js');
 const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
-const configurationManager = require('../configuration-manager');
 const { stateManager } = require('amplify-cli-core');
+const { CreateService } = require('./aws-service-creator');
+const { fileLogger } = require('../utils/aws-logger');
+const logger = fileLogger('aws-cfn');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -29,18 +31,12 @@ class CloudFormation {
       this.pollQueue = new BottleNeck({ minTime: 100, maxConcurrent: CFN_MAX_CONCURRENT_REQUEST });
       this.pollQueueStacks = [];
       this.stackEvents = [];
-      let cred;
-      try {
-        cred = await configurationManager.loadConfiguration(context);
-      } catch (e) {
-        // no credential. New project
-      }
       const userAgentOption = {};
       if (userAgentAction) {
         userAgentOption.customUserAgent = userAgentParam;
       }
 
-      this.cfn = new aws.CloudFormation({ ...cred, ...options, ...userAgentOption });
+      this.cfn = await CreateService(context, aws.CloudFormation, { ...options, ...userAgentOption });
       this.context = context;
       return this;
     })();
@@ -57,8 +53,10 @@ class CloudFormation {
     self.eventStartTime = new Date();
 
     return new Promise((resolve, reject) => {
+      logger('cfnModel.createStack', [cfnParentStackParams])();
       cfnModel.createStack(cfnParentStackParams, createErr => {
         this.readStackEvents(cfnParentStackParams.StackName);
+        logger('cfnModel.createStack', [cfnParentStackParams])(createErr);
         if (createErr) {
           context.print.error('An error occurred when creating the CloudFormation stack');
           reject(createErr);
@@ -173,6 +171,9 @@ class CloudFormation {
 
   getStackEvents(stackName) {
     const self = this;
+    const describeStackEventsArgs = { StackName: stackName };
+    const log = logger('getStackEvents.cfnModel.describeStackEvents', [describeStackEventsArgs]);
+    log();
     return this.cfn
       .describeStackEvents({ StackName: stackName })
       .promise()
@@ -182,6 +183,7 @@ class CloudFormation {
         return Promise.resolve(events);
       })
       .catch(e => {
+        log(e);
         if (e && e.code === 'Throttling') {
           return Promise.resolve([]);
         }
@@ -214,6 +216,7 @@ class CloudFormation {
           Body: fs.createReadStream(filePath),
           Key: cfnFile,
         };
+        logger('updateResourceStack.s3.uploadFile', [{ Key: s3Params.cfnFile }])();
         return s3.uploadFile(s3Params, false);
       })
       .then(bucketName => {
@@ -226,6 +229,7 @@ class CloudFormation {
         const self = this;
         this.eventStartTime = new Date();
         return new Promise((resolve, reject) => {
+          logger('updateResourceStack.describeStack', [cfnStackCheckParams])();
           this.describeStack(cfnStackCheckParams)
             .then(() => {
               const cfnParentStackParams = {
@@ -248,7 +252,7 @@ class CloudFormation {
                 ],
                 Tags,
               };
-
+              logger('updateResourceStack.updateStack', [cfnStackCheckParams])();
               cfnModel.updateStack(cfnParentStackParams, updateErr => {
                 self.readStackEvents(stackName);
 
@@ -284,7 +288,7 @@ class CloudFormation {
     };
     const projectDetails = this.context.amplify.getProjectDetails();
     const { amplifyMeta } = projectDetails;
-
+    logger('updateamplifyMetaFileWithStackOutputs.cfn.describeStackResources', [cfnParentStackParams])();
     const result = await this.cfn.describeStackResources(cfnParentStackParams).promise();
     const resources = result.StackResources.filter(
       resource =>
@@ -349,9 +353,12 @@ class CloudFormation {
   }
 
   listExports(nextToken = null) {
+    const log = logger('listExports.cfn.listExports', [{ NextToken: nextToken }]);
     return new Promise((resolve, reject) => {
+      log();
       this.cfn.listExports(nextToken ? { NextToken: nextToken } : {}, (err, data) => {
         if (err) {
+          log(err);
           reject(err);
         } else if (data.NextToken) {
           this.listExports(data.NextToken).then(innerExports => resolve([...data.Exports, ...innerExports]));
@@ -364,12 +371,15 @@ class CloudFormation {
 
   describeStack(cfnNestedStackParams, maxTry = 10, timeout = CFN_POLL_TIME) {
     const cfnModel = this.cfn;
+    const log = logger('describeStack.cfn.describeStacks', [cfnNestedStackParams]);
     return new Promise((resolve, reject) => {
+      log();
       cfnModel
         .describeStacks(cfnNestedStackParams)
         .promise()
         .then(result => resolve(result))
         .catch(e => {
+          log(e);
           if (e.code === 'Throttling' && e.retryable) {
             setTimeout(() => {
               resolve(this.describeStack(cfnNestedStackParams, maxTry - 1, timeout));
@@ -394,8 +404,10 @@ class CloudFormation {
     };
 
     const cfnModel = this.cfn;
+    const log = logger('deleteResourceStack.cfn.describeStacks', [cfnStackParams]);
 
     return new Promise((resolve, reject) => {
+      log();
       cfnModel.describeStacks(cfnStackParams, (err, data) => {
         const cfnDeleteStatus = 'stackDeleteComplete';
         if (
@@ -421,6 +433,7 @@ class CloudFormation {
             });
           });
         } else {
+          log(err);
           reject(err);
         }
       });
@@ -447,7 +460,6 @@ function showEvents(events) {
     const e = events.map(ev => {
       const res = {};
       const { ResourceStatus: resourceStatus } = ev;
-
       let colorFn = chalk.reset;
       if (CNF_ERROR_STATUS.includes(resourceStatus)) {
         colorFn = chalk.red;
@@ -462,12 +474,12 @@ function showEvents(events) {
       });
       return res;
     });
-    console.log(
-      columnify(e, {
-        columns: COLUMNS,
-        showHeaders: false,
-      }),
-    );
+
+    const formattedEvents = columnify(e, {
+      columns: COLUMNS,
+      showHeaders: false,
+    });
+    console.log(formattedEvents);
   }
 }
 

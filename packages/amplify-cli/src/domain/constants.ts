@@ -16,7 +16,9 @@ export const constants = {
   LocalNodeModules: 'cli-local-node-modules',
   ParentDirectory: 'cli-parent-directory',
   GlobalNodeModules: 'global-node-modules',
+  PackagedNodeModules: 'packaged-node-modules',
   ExecuteAmplifyCommand: 'executeAmplifyCommand',
   ExecuteAmplifyHeadlessCommand: 'executeAmplifyHeadlessCommand',
   HandleAmplifyEvent: 'handleAmplifyEvent',
+  LogFilename: 'amplify-cli.log',
 };

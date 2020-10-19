@@ -7,6 +7,7 @@ const constants = require('../constants');
 const { ensureIntrospectionSchema, getAppSyncAPIDetails } = require('../utils');
 const path = require('path');
 const fs = require('fs-extra');
+const ensureSchemaCompiled = require('../utils/ensureSchemaCompiled');
 
 async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth) {
   let withoutInit = false;
@@ -46,6 +47,8 @@ async function generateStatementsAndTypes(context, forceDownloadSchema, maxDepth
   if (!withoutInit) {
     ({ projectPath } = context.amplify.getEnvInfo());
   }
+
+  await ensureSchemaCompiled(context, path.join(projectPath, project.schema));
 
   let downloadPromises;
   if (!withoutInit) {

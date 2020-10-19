@@ -2,7 +2,7 @@ const aws = require('aws-sdk');
 const proxyAgent = require('proxy-agent');
 const configurationManager = require('../configuration-manager');
 const { formUserAgentParam } = require('./user-agent');
-
+const { CreateService } = require('./aws-service-creator');
 const defaultPinpointRegion = 'us-east-1';
 const serviceRegionMap = {
   'us-east-1': 'us-east-1',
@@ -54,7 +54,7 @@ async function getConfiguredPinpointClient(context, category, action, envName) {
     });
   }
 
-  return new aws.Pinpoint({ ...cred, ...defaultOptions });
+  return await CreateService(context, aws.Pinpoint, defaultOptions, cred);
 }
 
 function mapServiceRegion(region) {

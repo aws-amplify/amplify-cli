@@ -18,6 +18,9 @@ const { loadResourceParameters, saveResourceParameters } = require('./resourcePa
 const { formUserAgentParam } = require('./aws-utils/user-agent');
 const predictionsRegionMap = require('./aws-predictions-regions');
 
+import { CognitoUserPoolService, createCognitoUserPoolService } from './aws-utils/CognitoUserPoolService';
+import { IdentityPoolService, createIdentityPoolService } from './aws-utils/IdentityPoolService';
+
 function init(context) {
   return initializer.run(context);
 }
@@ -87,12 +90,12 @@ function configureNewUser(context) {
   return setupNewUser.run(context);
 }
 
-function console(context) {
+function openConsole(context) {
   return consoleCommand.run(context);
 }
 
 module.exports = {
-  console,
+  console: openConsole,
   attachBackend,
   init,
   initEnv,
@@ -116,4 +119,8 @@ module.exports = {
   saveResourceParameters,
   predictionsRegionMap,
   ...require('./amplify-plugin-index'),
+  CognitoUserPoolService,
+  createCognitoUserPoolService,
+  IdentityPoolService,
+  createIdentityPoolService,
 };

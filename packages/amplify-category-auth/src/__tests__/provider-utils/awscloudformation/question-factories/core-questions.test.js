@@ -5,7 +5,7 @@ const defaults = require('../../../../provider-utils/awscloudformation/assets/co
 const maps = require('../../../../provider-utils/awscloudformation/assets/string-maps');
 
 const defaultFileName = 'cognito-defaults';
-const stringMapFileName = 'string-maps';
+const stringMapsFileName = 'string-maps';
 const mockContext = {};
 let mockAmplify = {};
 const mappedOptions1 = [{ name: 'name1', value: 'value1' }];
@@ -113,7 +113,7 @@ describe('When generating auth questions...', () => {
 
   describe('...and when generating simple inputs...', () => {
     it('it should return a question object when passed a simple input without getWhen conditions.', () => {
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res).toBeInstanceOf(Object);
       expect(res.type).toEqual('input');
       expect(res.name).toEqual(key);
@@ -121,31 +121,31 @@ describe('When generating auth questions...', () => {
     });
 
     it('should try calling getWhen.', () => {
-      coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(mockAmplify.getWhen).toHaveBeenCalled();
     });
 
     it('should try calling inputValidation.', () => {
-      coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(mockAmplify.inputValidation).toHaveBeenCalled();
     });
 
     it('should try calling getAllDefaults if updatingAuth is not present in the context.', () => {
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       res.default();
       expect(defaults.getAllDefaults).toHaveBeenCalled();
     });
 
     it('should not getAllDefaults if updatingAuth is present in the context.', () => {
       mockContext.updatingAuth = { Q1: 'my old answer' };
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       res.default();
       expect(defaults.getAllDefaults).not.toHaveBeenCalled();
     });
 
     it('should return the answer from context.updatingAuth if updatingAuth is present.', () => {
       mockContext.updatingAuth = { Q1: 'my old answer' };
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const def = res.default();
       expect(def).toEqual('my old answer');
     });
@@ -155,32 +155,32 @@ describe('When generating auth questions...', () => {
     //   input.type = 'list';
     //   input.requiredOptions = [{ key: ['required1'] }];
     //   input.options = [{ key: 'testkey', val: 'testval' }];
-    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
     //   expect(res.choices).toEqual(input.options);
     // });
 
     it('should render inputs of type "multiselect" as type "checkbox"', () => {
       input.type = 'multiselect';
       input.when = () => true;
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.type).toEqual('checkbox');
     });
 
     it('should render inputs of type "confirm" as type "confirm"', () => {
       input.type = 'confirm';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.type).toEqual('confirm');
     });
 
     it('should render inputs of type "input" as type "input"', () => {
       input.type = 'input';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.type).toEqual('input');
     });
 
     it('should render inputs without a type as type "input"', () => {
       input.type = undefined;
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.type).toEqual('input');
     });
   });
@@ -191,7 +191,7 @@ describe('When generating auth questions...', () => {
     //   input.requiredOptions = 'keyone';
     //   input.type = 'list';
     //   input.map = 'mappedOptions1';
-    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
     //   expect(res.choices).toEqual(mappedOptions1);
     // });
 
@@ -200,7 +200,7 @@ describe('When generating auth questions...', () => {
     //   input.requiredOptions = [undefined];
     //   input.type = 'list';
     //   input.map = 'mappedOptions1';
-    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+    //   const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
     //   expect(res.choices).toEqual(mappedOptions1);
     // });
 
@@ -210,7 +210,7 @@ describe('When generating auth questions...', () => {
       input.requiredOptions = ['mappedOptions2'];
       currentAnswers.mappedOptions2 = 'valueone';
       input.type = 'list';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.filter).toBeTruthy();
     });
 
@@ -220,7 +220,7 @@ describe('When generating auth questions...', () => {
       input.requiredOptions = ['mappedOptions2'];
       currentAnswers.mappedOptions2 = 'value2';
       input.type = 'list';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const requiredPresent = res.choices.filter(a => a.name === 'name2').length > 0;
       expect(requiredPresent).toBe(false);
     });
@@ -231,7 +231,7 @@ describe('When generating auth questions...', () => {
       input.requiredOptions = ['mappedOptions2'];
       Object.assign(mockContext, { updatingAuth: { mappedOptions2: 'value2' } });
       input.type = 'list';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const requiredPresent = res.choices.filter(a => a.name === 'name2').length > 0;
       expect(requiredPresent).toBe(false);
     });
@@ -241,7 +241,7 @@ describe('When generating auth questions...', () => {
       input.iterator = 'iteratorkey';
       Object.assign(mockContext, { updatingAuth: { iteratorkey: ['val1', 'val2'] } });
       input.type = 'list';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const requiredChoices = res.choices && res.choices.length === 2 && res.choices[0].name === 'val1' && res.choices[0].value === 'val1';
       expect(requiredChoices).toBe(true);
     });
@@ -252,7 +252,7 @@ describe('When generating auth questions...', () => {
       Object.assign(mockContext, { updatingAuth: { requiredAttributes: ['email', 'address'] } });
       input.type = 'multiselect';
       input.map = 'hostedUIProviders';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const correctChoices = res.choices && res.choices.length === 3 && res.choices.filter(i => i.disabled).length === 1;
       expect(correctChoices).toBe(true);
     });
@@ -263,7 +263,7 @@ describe('When generating auth questions...', () => {
       input.type = 'multiselect';
       input.filter = 'attributes';
       input.map = 'coreAttributes';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       const emailChoice = res.choices.find(i => i.value === 'email');
       const addressChoice = res.choices.find(i => i.value === 'address');
       const localeChoice = res.choices.find(i => i.value === 'locale');
@@ -281,7 +281,7 @@ describe('When generating auth questions...', () => {
       input.filter = 'updateOptions';
       input.map = 'updateFlowMap';
       Object.assign(mockContext, { updatingAuth: {} });
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.choices.length).toEqual(5);
       expect(res.choices[0].value).toEqual('default');
       expect(res.choices[1].value).toEqual('defaultSocial');
@@ -297,7 +297,7 @@ describe('When generating auth questions...', () => {
       input.type = 'multiselect';
       input.filter = 'updateOptions';
       input.map = 'updateFlowMap';
-      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapFileName, currentAnswers, mockContext);
+      const res = coreQuestions.parseInputs(input, mockAmplify, defaultFileName, stringMapsFileName, currentAnswers, mockContext);
       expect(res.choices.length).toEqual(7);
       expect(res.choices[0].value).toEqual('default');
       expect(res.choices[1].value).toEqual('defaultSocial');
