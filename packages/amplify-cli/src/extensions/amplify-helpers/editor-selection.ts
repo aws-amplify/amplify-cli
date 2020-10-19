@@ -81,13 +81,13 @@ function hideNoManualEdit(editor) {
       const workspaceSettingsPath = '.vscode/settings.json';
       const exclusionRules = {
         'files.exclude': {
-          'amplify/.config': true,
-          'amplify/**/*-parameters.json': true,
-          'amplify/**/amplify.state': true,
-          'amplify/**/transform.conf.json': true,
-          'amplify/#current-cloud-backend': true,
-          'amplify/backend/amplify-meta.json': true,
-          'amplify/backend/awscloudformation': true,
+          '**/amplify/.config': true,
+          '**/amplify/**/*-parameters.json': true,
+          '**/amplify/**/amplify.state': true,
+          '**/amplify/**/transform.conf.json': true,
+          '**/amplify/#current-cloud-backend': true,
+          '**/amplify/backend/amplify-meta.json': true,
+          '**/amplify/backend/awscloudformation': true,
         },
       };
       try {
