@@ -393,3 +393,56 @@ export declare class SimpleModel {
     });
   });
 });
+
+describe('Javascript visitor with auth directives in field level', () => {
+  const schema = /* GraphQL */ `
+    type Employee @model @auth(rules: [{ allow: owner }, { allow: groups, groups: ["Admins"] }]) {
+      id: ID!
+      name: String!
+      address: String!
+      ssn: String @auth(rules: [{ allow: owner }])
+    }
+  `;
+
+  let visitor: AppSyncModelJavascriptVisitor;
+  beforeEach(() => {
+    visitor = getVisitor(schema);
+  });
+
+  describe('generate', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('should add custom both owner fields to Javascript declaration', () => {
+      const declarationVisitor = getVisitor(schema, true);
+      const generateImportSpy = jest.spyOn(declarationVisitor as any, 'generateImports');
+      const generateModelDeclarationSpy = jest.spyOn(declarationVisitor as any, 'generateModelDeclaration');
+      const declarations = declarationVisitor.generate();
+      validateTs(declarations);
+      expect(declarations).toMatchInlineSnapshot(`
+        "import { ModelInit, MutableModel, PersistentModelConstructor } from \\"@aws-amplify/datastore\\";
+
+
+
+
+
+        export declare class Employee {
+          readonly id: string;
+          readonly name: string;
+          readonly address: string;
+          readonly ssn?: string;
+          readonly owner?: string;
+          constructor(init: ModelInit<Employee>);
+          static copyOf(source: Employee, mutator: (draft: MutableModel<Employee>) => MutableModel<Employee> | void): Employee;
+        }"
+      `);
+
+      expect(generateImportSpy).toBeCalledTimes(1);
+      expect(generateImportSpy).toBeCalledWith();
+
+      expect(generateModelDeclarationSpy).toBeCalledTimes(1);
+      expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(1, (declarationVisitor as any).modelMap['Employee'], true);
+    });
+  });
+});
