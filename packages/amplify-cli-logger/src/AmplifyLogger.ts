@@ -25,6 +25,12 @@ export class AmplifyLogger implements IAmplifyLogger {
           format: this.format,
         }),
       );
+    } else {
+      this.logger.add(
+        new winston.transports.Console({
+          silent: true,
+        }),
+      );
     }
   }
 
