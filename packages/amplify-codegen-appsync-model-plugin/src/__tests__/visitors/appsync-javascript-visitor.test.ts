@@ -71,10 +71,10 @@ describe('Javascript visitor', () => {
       const imports = (visitor as any).generateImportsJavaScriptImplementation();
       validateTs(imports);
       expect(imports).toMatchInlineSnapshot(`
-"// @ts-check
-import { initSchema } from '@aws-amplify/datastore';
-import { schema } from './schema';"
-`);
+        "// @ts-check
+        import { initSchema } from '@aws-amplify/datastore';
+        import { schema } from './schema';"
+      `);
     });
   });
 
@@ -91,27 +91,27 @@ import { schema } from './schema';"
       const declarations = declarationVisitor.generate();
       validateTs(declarations);
       expect(declarations).toMatchInlineSnapshot(`
-"import { ModelInit, MutableModel, PersistentModelConstructor } from \\"@aws-amplify/datastore\\";
+        "import { ModelInit, MutableModel, PersistentModelConstructor } from \\"@aws-amplify/datastore\\";
 
-export enum SimpleEnum {
-  ENUM_VAL1 = \\"enumVal1\\",
-  ENUM_VAL2 = \\"enumVal2\\"
-}
+        export enum SimpleEnum {
+          ENUM_VAL1 = \\"enumVal1\\",
+          ENUM_VAL2 = \\"enumVal2\\"
+        }
 
-export declare class SimpleNonModelType {
-  readonly id: string;
-  readonly names?: string[];
-  constructor(init: ModelInit<SimpleNonModelType>);
-}
+        export declare class SimpleNonModelType {
+          readonly id: string;
+          readonly names?: string[];
+          constructor(init: ModelInit<SimpleNonModelType>);
+        }
 
-export declare class SimpleModel {
-  readonly id: string;
-  readonly name?: string;
-  readonly bar?: string;
-  constructor(init: ModelInit<SimpleModel>);
-  static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
-}"
-`);
+        export declare class SimpleModel {
+          readonly id: string;
+          readonly name?: string;
+          readonly bar?: string;
+          constructor(init: ModelInit<SimpleModel>);
+          static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
+        }"
+      `);
       expect(generateImportSpy).toBeCalledTimes(1);
       expect(generateImportSpy).toBeCalledWith();
 
@@ -132,23 +132,23 @@ export declare class SimpleModel {
     const codeBlock = jsVisitor.generate();
     validateTs(codeBlock);
     expect(codeBlock).toMatchInlineSnapshot(`
-"// @ts-check
-import { initSchema } from '@aws-amplify/datastore';
-import { schema } from './schema';
+      "// @ts-check
+      import { initSchema } from '@aws-amplify/datastore';
+      import { schema } from './schema';
 
-const SimpleEnum = {
-  \\"ENUM_VAL1\\": \\"enumVal1\\",
-  \\"ENUM_VAL2\\": \\"enumVal2\\"
-};
+      const SimpleEnum = {
+        \\"ENUM_VAL1\\": \\"enumVal1\\",
+        \\"ENUM_VAL2\\": \\"enumVal2\\"
+      };
 
-const { SimpleModel, SimpleNonModelType } = initSchema(schema);
+      const { SimpleModel, SimpleNonModelType } = initSchema(schema);
 
-export {
-  SimpleModel,
-  SimpleEnum,
-  SimpleNonModelType
-};"
-`);
+      export {
+        SimpleModel,
+        SimpleEnum,
+        SimpleNonModelType
+      };"
+    `);
     expect(generateEnumObjectSpy).toHaveBeenCalledWith((jsVisitor as any).enumMap['SimpleEnum']);
 
     expect(generateImportsJavaScriptImplementationSpy).toHaveBeenCalledTimes(1);
@@ -197,28 +197,28 @@ describe('Javascript visitor with default owner auth', () => {
       const declarations = declarationVisitor.generate();
       validateTs(declarations);
       expect(declarations).toMatchInlineSnapshot(`
-"import { ModelInit, MutableModel, PersistentModelConstructor } from \\"@aws-amplify/datastore\\";
+        "import { ModelInit, MutableModel, PersistentModelConstructor } from \\"@aws-amplify/datastore\\";
 
-export enum SimpleEnum {
-  ENUM_VAL1 = \\"enumVal1\\",
-  ENUM_VAL2 = \\"enumVal2\\"
-}
+        export enum SimpleEnum {
+          ENUM_VAL1 = \\"enumVal1\\",
+          ENUM_VAL2 = \\"enumVal2\\"
+        }
 
-export declare class SimpleNonModelType {
-  readonly id: string;
-  readonly names?: string[];
-  constructor(init: ModelInit<SimpleNonModelType>);
-}
+        export declare class SimpleNonModelType {
+          readonly id: string;
+          readonly names?: string[];
+          constructor(init: ModelInit<SimpleNonModelType>);
+        }
 
-export declare class SimpleModel {
-  readonly id: string;
-  readonly name?: string;
-  readonly bar?: string;
-  readonly owner?: string;
-  constructor(init: ModelInit<SimpleModel>);
-  static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
-}"
-`);
+        export declare class SimpleModel {
+          readonly id: string;
+          readonly name?: string;
+          readonly bar?: string;
+          readonly owner?: string;
+          constructor(init: ModelInit<SimpleModel>);
+          static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
+        }"
+      `);
       expect(generateImportSpy).toBeCalledTimes(1);
       expect(generateImportSpy).toBeCalledWith();
 
@@ -267,28 +267,28 @@ describe('Javascript visitor with custom owner field auth', () => {
       const declarations = declarationVisitor.generate();
       validateTs(declarations);
       expect(declarations).toMatchInlineSnapshot(`
-"import { ModelInit, MutableModel, PersistentModelConstructor } from \\"@aws-amplify/datastore\\";
+        "import { ModelInit, MutableModel, PersistentModelConstructor } from \\"@aws-amplify/datastore\\";
 
-export enum SimpleEnum {
-  ENUM_VAL1 = \\"enumVal1\\",
-  ENUM_VAL2 = \\"enumVal2\\"
-}
+        export enum SimpleEnum {
+          ENUM_VAL1 = \\"enumVal1\\",
+          ENUM_VAL2 = \\"enumVal2\\"
+        }
 
-export declare class SimpleNonModelType {
-  readonly id: string;
-  readonly names?: string[];
-  constructor(init: ModelInit<SimpleNonModelType>);
-}
+        export declare class SimpleNonModelType {
+          readonly id: string;
+          readonly names?: string[];
+          constructor(init: ModelInit<SimpleNonModelType>);
+        }
 
-export declare class SimpleModel {
-  readonly id: string;
-  readonly name?: string;
-  readonly bar?: string;
-  readonly customOwnerField?: string;
-  constructor(init: ModelInit<SimpleModel>);
-  static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
-}"
-`);
+        export declare class SimpleModel {
+          readonly id: string;
+          readonly name?: string;
+          readonly bar?: string;
+          readonly customOwnerField?: string;
+          constructor(init: ModelInit<SimpleModel>);
+          static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
+        }"
+      `);
       expect(generateImportSpy).toBeCalledTimes(1);
       expect(generateImportSpy).toBeCalledWith();
 
@@ -339,29 +339,29 @@ describe('Javascript visitor with multiple owner field auth', () => {
       const declarations = declarationVisitor.generate();
       validateTs(declarations);
       expect(declarations).toMatchInlineSnapshot(`
-"import { ModelInit, MutableModel, PersistentModelConstructor } from \\"@aws-amplify/datastore\\";
+        "import { ModelInit, MutableModel, PersistentModelConstructor } from \\"@aws-amplify/datastore\\";
 
-export enum SimpleEnum {
-  ENUM_VAL1 = \\"enumVal1\\",
-  ENUM_VAL2 = \\"enumVal2\\"
-}
+        export enum SimpleEnum {
+          ENUM_VAL1 = \\"enumVal1\\",
+          ENUM_VAL2 = \\"enumVal2\\"
+        }
 
-export declare class SimpleNonModelType {
-  readonly id: string;
-  readonly names?: string[];
-  constructor(init: ModelInit<SimpleNonModelType>);
-}
+        export declare class SimpleNonModelType {
+          readonly id: string;
+          readonly names?: string[];
+          constructor(init: ModelInit<SimpleNonModelType>);
+        }
 
-export declare class SimpleModel {
-  readonly id: string;
-  readonly name?: string;
-  readonly bar?: string;
-  readonly customOwnerField?: string;
-  readonly customOwnerField2?: string;
-  constructor(init: ModelInit<SimpleModel>);
-  static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
-}"
-`);
+        export declare class SimpleModel {
+          readonly id: string;
+          readonly name?: string;
+          readonly bar?: string;
+          readonly customOwnerField?: string;
+          readonly customOwnerField2?: string;
+          constructor(init: ModelInit<SimpleModel>);
+          static copyOf(source: SimpleModel, mutator: (draft: MutableModel<SimpleModel>) => MutableModel<SimpleModel> | void): SimpleModel;
+        }"
+      `);
       expect(generateImportSpy).toBeCalledTimes(1);
       expect(generateImportSpy).toBeCalledWith();
 
@@ -371,6 +371,59 @@ export declare class SimpleModel {
       expect(generateModelDeclarationSpy).toBeCalledTimes(2);
       expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(1, (declarationVisitor as any).modelMap['SimpleModel'], true);
       expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(2, (declarationVisitor as any).nonModelMap['SimpleNonModelType'], true);
+    });
+  });
+});
+
+describe('Javascript visitor with auth directives in field level', () => {
+  const schema = /* GraphQL */ `
+    type Employee @model @auth(rules: [{ allow: owner }, { allow: groups, groups: ["Admins"] }]) {
+      id: ID!
+      name: String!
+      address: String!
+      ssn: String @auth(rules: [{ allow: owner }])
+    }
+  `;
+
+  let visitor: AppSyncModelJavascriptVisitor;
+  beforeEach(() => {
+    visitor = getVisitor(schema);
+  });
+
+  describe('generate', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('should add custom both owner fields to Javascript declaration', () => {
+      const declarationVisitor = getVisitor(schema, true);
+      const generateImportSpy = jest.spyOn(declarationVisitor as any, 'generateImports');
+      const generateModelDeclarationSpy = jest.spyOn(declarationVisitor as any, 'generateModelDeclaration');
+      const declarations = declarationVisitor.generate();
+      validateTs(declarations);
+      expect(declarations).toMatchInlineSnapshot(`
+        "import { ModelInit, MutableModel, PersistentModelConstructor } from \\"@aws-amplify/datastore\\";
+
+
+
+
+
+        export declare class Employee {
+          readonly id: string;
+          readonly name: string;
+          readonly address: string;
+          readonly ssn?: string;
+          readonly owner?: string;
+          constructor(init: ModelInit<Employee>);
+          static copyOf(source: Employee, mutator: (draft: MutableModel<Employee>) => MutableModel<Employee> | void): Employee;
+        }"
+      `);
+
+      expect(generateImportSpy).toBeCalledTimes(1);
+      expect(generateImportSpy).toBeCalledWith();
+
+      expect(generateModelDeclarationSpy).toBeCalledTimes(1);
+      expect(generateModelDeclarationSpy).toHaveBeenNthCalledWith(1, (declarationVisitor as any).modelMap['Employee'], true);
     });
   });
 });
