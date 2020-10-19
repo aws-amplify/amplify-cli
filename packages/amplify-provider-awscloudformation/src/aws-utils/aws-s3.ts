@@ -10,6 +10,8 @@ import { pagedAWSCall } from './paged-call';
 import { ListObjectsV2Output, ListObjectsV2Request, NextToken } from 'aws-sdk/clients/s3';
 
 const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html#minPartSize-property
+const { fileLogger } = require('../utils/aws-logger');
+const logger = fileLogger('aws-s3');
 
 export class S3 {
   private static instance: S3;
@@ -68,6 +70,7 @@ export class S3 {
       ...s3Params,
       ...this.uploadState.s3Params,
     };
+    const { Body, ...others } = augmentedS3Params;
     let uploadTask;
     try {
       showSpinner && spinner.start('Uploading files...');
@@ -75,15 +78,20 @@ export class S3 {
         (s3Params.Body instanceof fs.ReadStream && fs.statSync(s3Params.Body.path).size > minChunkSize) ||
         (Buffer.isBuffer(s3Params.Body) && s3Params.Body.length > minChunkSize)
       ) {
+        logger('uploadFile.s3.upload', [others])();
         uploadTask = this.s3.upload(augmentedS3Params);
         uploadTask.on('httpUploadProgress', max => {
           if (showSpinner) spinner.text = `Uploading Files...${Math.round((max.loaded / max.total) * 100)}%`;
         });
       } else {
+        logger('uploadFile.s3.putObject', [others])();
         uploadTask = this.s3.putObject(augmentedS3Params);
       }
       await uploadTask.promise();
       return this.uploadState.s3Params.Bucket;
+    } catch (ex) {
+      logger('uploadFile.s3', [others])(ex);
+      throw ex;
     } finally {
       showSpinner && spinner.stop();
     }
@@ -93,9 +101,15 @@ export class S3 {
     const projectDetails = this.context.amplify.getProjectDetails();
     const projectBucket = projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
-
-    const result = await this.s3.getObject(s3Params).promise();
-    return result.Body;
+    const log = logger('s3.getFile', [s3Params]);
+    try {
+      log();
+      const result = await this.s3.getObject(s3Params).promise();
+      return result.Body;
+    } catch (ex) {
+      log(ex);
+      throw ex;
+    }
   }
 
   async createBucket(bucketName, throwIfExists: boolean = false): Promise<string | void> {
@@ -103,13 +117,15 @@ export class S3 {
     const params = {
       Bucket: bucketName,
     };
-
+    logger('createBucket.ifBucketExists', [bucketName])();
     if (!(await this.ifBucketExists(bucketName))) {
       this.context.print.warning(
         'The specified S3 bucket to store the CloudFormation templates is not present. We are creating one for you....',
       );
       this.context.print.warning(`Bucket name: ${bucketName}`);
+      logger('createBucket.s3.createBucket', [params])();
       await this.s3.createBucket(params).promise();
+      logger('createBucket.s3.waitFor', ['bucketExists', params])();
       await this.s3.waitFor('bucketExists', params).promise();
       this.context.print.success('S3 bucket successfully created');
       return bucketName;
@@ -122,6 +138,7 @@ export class S3 {
     const result = await pagedAWSCall<ListObjectsV2Output, { Key: string }, NextToken>(
       async (param: $TSAny, nextToken?: NextToken) => {
         const parmaWithNextToken: ListObjectsV2Request = nextToken ? { ...param, ContinuationToken: nextToken } : param;
+        logger('getAllObjectKey.s3.listObjectsV2', [parmaWithNextToken])();
         return await this.s3.listObjectsV2(parmaWithNextToken).promise();
       },
       {
@@ -134,9 +151,11 @@ export class S3 {
   }
 
   public async deleteAllObjects(bucketName): Promise<void> {
+    logger('deleteAllObjects.s3.getAllObjectKey', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectKeys(bucketName);
     const chunkedResult = _.chunk(allObjects, 1000);
     for (let chunk of chunkedResult) {
+      logger('deleteAllObjects.s3.deleteObjects', [{ Bucket: bucketName }])();
       await this.s3
         .deleteObjects({
           Bucket: bucketName,
@@ -149,14 +168,18 @@ export class S3 {
   }
 
   public async deleteS3Bucket(bucketName) {
+    logger('deleteS3Bucket.s3.ifBucketExists', [{ BucketName: bucketName }])();
     if (await this.ifBucketExists(bucketName)) {
+      logger('deleteS3Bucket.s3.deleteAllObjects', [{ BucketName: bucketName }])();
       await this.deleteAllObjects(bucketName);
+      logger('deleteS3Bucket.s3.deleteBucket', [{ BucketName: bucketName }])();
       await this.s3.deleteBucket({ Bucket: bucketName }).promise();
     }
   }
 
   public async ifBucketExists(bucketName: string) {
     try {
+      logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])();
       await this.s3
         .headBucket({
           Bucket: bucketName,
@@ -164,6 +187,7 @@ export class S3 {
         .promise();
       return true;
     } catch (e) {
+      logger('ifBucketExists.s3.headBucket', [{ BucketName: bucketName }])(e);
       if (e.statusCode === 404) {
         return false;
       }

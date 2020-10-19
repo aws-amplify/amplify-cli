@@ -20,4 +20,5 @@ export const constants = {
   ExecuteAmplifyCommand: 'executeAmplifyCommand',
   ExecuteAmplifyHeadlessCommand: 'executeAmplifyHeadlessCommand',
   HandleAmplifyEvent: 'handleAmplifyEvent',
+  LogFilename: 'amplify-cli.log',
 };

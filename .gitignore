@@ -17,6 +17,7 @@ packages/amplify-dynamodb-simulator/__test__/dynamodb-data
 packages/graphql*/lib
 packages/amplify-cli/lib
 packages/amplify-cli-core/lib
+packages/amplify-cli-logger/lib
 packages/amplify-mqtt-server/lib
 packages/amplify-appsync-simulator/lib
 packages/amplify-codegen-appsync-model-plugin/lib

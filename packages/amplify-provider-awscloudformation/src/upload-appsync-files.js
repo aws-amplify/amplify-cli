@@ -4,6 +4,8 @@ const path = require('path');
 
 const TransformPackage = require('graphql-transformer-core');
 const { S3 } = require('./aws-utils/aws-s3');
+const { fileLogger } = require('../src/utils/aws-logger');
+const logger = fileLogger('upload-appsync-files');
 
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const providerName = require('./constants').ProviderName;
@@ -194,6 +196,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
       upload: async blob => {
         const { Key, Body } = blob;
         const fullKey = `${deploymentRootKey}/${Key}`;
+        logger('uploadAppSyncFiles.upload.s3Client.uploadFile', [{ Key }])();
 
         return await s3Client.uploadFile(
           {
