@@ -7,7 +7,7 @@ const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
 const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
 const { updateStackForAPIMigration } = require('./push-resources');
-const { fileLogger } = require('../src/utils/aws-logger');
+const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('utility-functions');
 
 module.exports = {
