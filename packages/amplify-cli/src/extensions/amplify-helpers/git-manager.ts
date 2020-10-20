@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import * as os from 'os';
-import { LocalLogDirectory } from 'amplify-cli-logger';
 
 const amplifyMark = '#amplify';
 const amplifyMarkRegExp = new RegExp(`^${amplifyMark}`);
@@ -46,7 +45,6 @@ function getGitIgnoreAppendString() {
   const ignoreList = [
     'amplify/\\#current-cloud-backend',
     'amplify/.config/local-*',
-    `amplify/${LocalLogDirectory}`,
     'amplify/mock-data',
     'amplify/backend/amplify-meta.json',
     'amplify/backend/awscloudformation',
