@@ -159,7 +159,19 @@ describe('AppSyncModelVisitor', () => {
     const generatedCode = visitor.generate();
     expect(() => validateJava(generatedCode)).not.toThrow();
     expect(generatedCode).toMatchSnapshot();
-  })
+  });
+
+  it('should throw error if two fields have the same camel field', () => {
+    const schema = /* GraphQL */ `
+      type sameCamelCaseField @model {
+        id: ID!
+        subjectName: String
+        subject_name: String
+      }
+    `;
+    const visitor = getVisitor(schema, 'sameCamelCaseField');
+    expect(visitor.generate).toThrowErrorMatchingSnapshot();
+  });
 
   it('should generate model with key directive', () => {
     const schema = /* GraphQL */ `

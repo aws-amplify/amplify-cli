@@ -4838,3 +4838,5 @@ public final class SnakeCaseField implements Model {
 }
 "
 `;
+
+exports[`AppSyncModelVisitor should throw error if two fields have the same camel field 1`] = `"Fields \\"subject_name\\" and \\"subjectName\\" in sameCamelCaseField cannot be used at the same time which will result in the duplicate builder method."`;

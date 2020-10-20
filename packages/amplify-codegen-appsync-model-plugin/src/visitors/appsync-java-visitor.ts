@@ -16,6 +16,7 @@ import { AppSyncModelVisitor, CodeGenField, CodeGenModel, ParsedAppSyncModelConf
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { AuthDirective, AuthStrategy } from '../utils/process-auth';
 import { printWarning } from '../utils/warn';
+import { validateFieldName } from '../utils/validate-field-name';
 
 export class AppSyncModelJavaVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
@@ -29,6 +30,7 @@ export class AppSyncModelJavaVisitor<
     if (this._parsedConfig.generate === 'loader') {
       return this.generateClassLoader();
     }
+    validateFieldName({...this.getSelectedModels(), ...this.getSelectedNonModels()});
     if (this.selectedTypeIsEnum()) {
       return this.generateEnums();
     } else if (this.selectedTypeIsNonModel()) {
