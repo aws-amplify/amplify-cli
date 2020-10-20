@@ -3,19 +3,19 @@ import { Input } from '../input';
 import { getLatestPayloadVersion } from './VersionManager';
 import ci from 'ci-info';
 export class UsageDataPayload {
-  sessionUuid: String;
-  installationUuid: String;
-  amplifyCliVersion: String;
+  sessionUuid: string;
+  installationUuid: string;
+  amplifyCliVersion: string;
   input: Input | null;
-  timestamp: String;
+  timestamp: string;
   error!: SerializableError;
-  payloadVersion: String;
-  osPlatform: String;
-  osRelease: String;
-  nodeVersion: String;
-  state: String;
-  isCi: Boolean | undefined;
-  constructor(sessionUuid: String, installationUuid: String, version: String, input: Input, error: Error | null, state: String) {
+  payloadVersion: string;
+  osPlatform: string;
+  osRelease: string;
+  nodeVersion: string;
+  state: string;
+  isCi: boolean;
+  constructor(sessionUuid: string, installationUuid: string, version: string, input: Input, error: Error | null, state: string) {
     this.sessionUuid = sessionUuid;
     this.installationUuid = installationUuid;
     this.amplifyCliVersion = version;
@@ -33,7 +33,7 @@ export class UsageDataPayload {
   }
 }
 export class SerializableError {
-  name: String;
+  name: string;
   constructor(error: Error) {
     this.name = error.name;
   }
