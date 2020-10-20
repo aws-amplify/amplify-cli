@@ -7,6 +7,8 @@ export const run = async (context: $TSContext) => {
   // clean any previous libs
   await fs.remove(pathManager.getAmplifyLibRoot());
   await fs.ensureDir(pathManager.getAmplifyLibRoot());
+  // set env var to prevent errors due to no package libs
+  process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB = 'true';
 
   const pluginMetaList = entries(context.pluginPlatform.plugins)
     // can't use flatMap here as our target node version doesn't support it :(
@@ -38,6 +40,7 @@ export const run = async (context: $TSContext) => {
       }
     }),
   );
+  delete process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB;
 };
 
 // Registry of packages that are NOT Amplify plugins which need binary files copied when the CLI is executing as a native binary

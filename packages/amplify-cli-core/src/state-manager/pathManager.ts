@@ -43,7 +43,13 @@ export class PathManager {
     // this.projectRootPath = this.findProjectRoot();
   }
 
-  getAmplifyPackageLibDirPath = (packageName: string): string => path.join(this.getAmplifyLibRoot(), packageName);
+  getAmplifyPackageLibDirPath = (packageName: string): string => {
+    const result = path.join(this.getAmplifyLibRoot(), packageName);
+    if (!process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB && !fs.pathExistsSync(result)) {
+      throw new Error(`Package lib at ${result} does not exist. Try running 'amplify post-install' to copy files to the correct location.`);
+    }
+    return result;
+  };
 
   getAmplifyLibRoot = (): string => path.join(this.getHomeDotAmplifyDirPath(), 'lib');
 
