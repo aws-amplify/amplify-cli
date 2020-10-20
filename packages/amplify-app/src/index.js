@@ -106,8 +106,8 @@ async function createAmplifySkeletonProject() {
     console.log(`${emoji.get('guitar')} Creating base Amplify project`);
 
     return new Promise((resolve, reject) => {
-      const cmd = path.basename(process.argv[1]) === 'amplify-app-dev' ? amplifyDev : amplify;
-      const createSkeletonAmplifyProject = spawn(cmd, ['init', '--quickstart'], {
+      const amplifyCmd = path.basename(process.argv[1]) === 'amplify-app-dev' ? amplifyDev : amplify;
+      const createSkeletonAmplifyProject = spawn(amplifyCmd, ['init', '--quickstart'], {
         cwd: process.cwd(),
         env: process.env,
         stdio: 'inherit',
