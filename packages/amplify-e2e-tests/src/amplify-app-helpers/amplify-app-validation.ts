@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { pathManager } from 'amplify-cli-core';
 
 function validateProject(projRoot: string, platform: string) {
   expect(fs.existsSync(path.join(projRoot, 'amplify'))).toBeTruthy();
@@ -83,4 +84,17 @@ function validateAmplifyPush(projRoot: string) {
   expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'amplify-meta.json'))).toBeTruthy();
 }
 
-export { validateProject, validateProjectConfig, validateApi, validateBackendConfig, validateModelgen, validateAmplifyPush };
+function validateFeatureFlags(projRoot: string) {
+  const testCLIJSONPath = pathManager.getCLIJSONFilePath(projRoot);
+  expect(fs.existsSync(testCLIJSONPath)).toBeTruthy();
+}
+
+export {
+  validateProject,
+  validateProjectConfig,
+  validateApi,
+  validateBackendConfig,
+  validateModelgen,
+  validateAmplifyPush,
+  validateFeatureFlags,
+};
