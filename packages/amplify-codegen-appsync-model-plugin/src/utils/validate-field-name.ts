@@ -1,6 +1,10 @@
 import { camelCase } from "change-case";
 import { CodeGenModelMap } from "../visitors/appsync-visitor";
 
+/**
+ * Validate if two field names have identical camelCase output. This will cause compile error in Java modelgen output.
+ * e.g 'due_date' and 'dueDate' will result in the same 'dueDate'
+ */
 export function validateFieldName(models: CodeGenModelMap) : void {
   Object.entries(models).forEach(([modelName, model]) => {
     let validateMap: any = {};
