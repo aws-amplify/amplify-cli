@@ -646,6 +646,7 @@ export class KeyTransformer extends Transformer {
     const tableResource = ctx.getResource(tableLogicalID);
     const primaryKeyDirective = getPrimaryKey(definition);
     const primaryPartitionKeyName = primaryKeyDirective ? getDirectiveArguments(primaryKeyDirective).fields[0] : 'id';
+    const defaultGSI = ctx.featureFlags.getBoolean('defaultSecondaryIndex', false);
     if (!tableResource) {
       throw new InvalidDirectiveError(`The @key directive may only be added to object definitions annotated with @model.`);
     } else {
@@ -656,7 +657,7 @@ export class KeyTransformer extends Transformer {
           ProjectionType: 'ALL',
         }),
       };
-      if (primaryPartitionKeyName === ks[0].AttributeName) {
+      if (primaryPartitionKeyName === ks[0].AttributeName && !defaultGSI) {
         // This is an LSI.
         // Add the new secondary index and update the table's attribute definitions.
         tableResource.Properties.LocalSecondaryIndexes = append(

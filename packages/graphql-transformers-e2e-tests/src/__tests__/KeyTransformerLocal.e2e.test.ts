@@ -328,6 +328,21 @@ test('Test that a secondary @key with a multiple field adds an LSI.', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+    featureFlags: {
+      getNumber: (featureName: string, defaultValue: Number) => {
+        return defaultValue || 0;
+      },
+      getString: (featureName: string, defaultValue: string) => {
+        return defaultValue || '';
+      },
+      getBoolean: (featureName: string, defaultValue: boolean) => {
+        if (featureName === 'defaultSecondaryIndex') return true;
+        return defaultValue || false;
+      },
+      getObject: (featureName: string, defaultValue: Object) => {
+        return defaultValue || null;
+      },
+    },
   });
 
   const out = transformer.transform(validSchema);
@@ -337,6 +352,58 @@ test('Test that a secondary @key with a multiple field adds an LSI.', () => {
   expect(tableResource.Properties.LocalSecondaryIndexes[0].KeySchema[0].KeyType).toEqual('HASH');
   expect(tableResource.Properties.LocalSecondaryIndexes[0].KeySchema[1].AttributeName).toEqual('updatedAt');
   expect(tableResource.Properties.LocalSecondaryIndexes[0].KeySchema[1].KeyType).toEqual('RANGE');
+  expect(tableResource.Properties.AttributeDefinitions.find(ad => ad.AttributeName === 'email').AttributeType).toEqual('S');
+  expect(tableResource.Properties.AttributeDefinitions.find(ad => ad.AttributeName === 'updatedAt').AttributeType).toEqual('S');
+  expect(tableResource.Properties.AttributeDefinitions.find(ad => ad.AttributeName === 'createdAt').AttributeType).toEqual('S');
+  const schema = parse(out.schema);
+  const queryType = schema.definitions.find((def: any) => def.name && def.name.value === 'Query') as ObjectTypeDefinitionNode;
+  const queryIndexField = queryType.fields.find(f => f.name && f.name.value === 'testsByEmailByUpdatedAt') as FieldDefinitionNode;
+  expect(queryIndexField.arguments).toHaveLength(6);
+  expectArguments(queryIndexField, ['email', 'updatedAt', 'filter', 'nextToken', 'limit', 'sortDirection']);
+
+  // When using a complex primary key args are added to the list field. They are optional and if provided, will use a Query instead of a Scan.
+  const listTestsField = queryType.fields.find(f => f.name && f.name.value === 'listTests') as FieldDefinitionNode;
+  expect(listTestsField.arguments).toHaveLength(6);
+  expectArguments(listTestsField, ['email', 'createdAt', 'filter', 'nextToken', 'limit', 'sortDirection']);
+});
+
+test('Test that a secondary @key with a multiple field adds an GSI based on enabled feature flag.', () => {
+  const validSchema = `
+    type Test
+        @model @key(fields: ["email", "createdAt"])
+        @key(name: "GSI_Email_UpdatedAt", fields: ["email", "updatedAt"], queryField: "testsByEmailByUpdatedAt") {
+        email: String!
+        createdAt: AWSDateTime!
+        updatedAt: AWSDateTime!
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+    featureFlags: {
+      getNumber: (featureName: string, defaultValue: Number) => {
+        return defaultValue || 0;
+      },
+      getString: (featureName: string, defaultValue: string) => {
+        return defaultValue || '';
+      },
+      getBoolean: (featureName: string, defaultValue: boolean) => {
+        if (featureName === 'defaultSecondaryIndex') return true;
+        return defaultValue || false;
+      },
+      getObject: (featureName: string, defaultValue: Object) => {
+        return defaultValue || null;
+      },
+    },
+  });
+
+  const out = transformer.transform(validSchema);
+  let tableResource = out.stacks.Test.Resources.TestTable;
+  expect(tableResource).toBeDefined();
+  expect(tableResource.Properties.GlobalSecondaryIndexes[0].KeySchema[0].AttributeName).toEqual('email');
+  expect(tableResource.Properties.GlobalSecondaryIndexes[0].KeySchema[0].KeyType).toEqual('HASH');
+  expect(tableResource.Properties.GlobalSecondaryIndexes[0].KeySchema[1].AttributeName).toEqual('updatedAt');
+  expect(tableResource.Properties.GlobalSecondaryIndexes[0].KeySchema[1].KeyType).toEqual('RANGE');
   expect(tableResource.Properties.AttributeDefinitions.find(ad => ad.AttributeName === 'email').AttributeType).toEqual('S');
   expect(tableResource.Properties.AttributeDefinitions.find(ad => ad.AttributeName === 'updatedAt').AttributeType).toEqual('S');
   expect(tableResource.Properties.AttributeDefinitions.find(ad => ad.AttributeName === 'createdAt').AttributeType).toEqual('S');

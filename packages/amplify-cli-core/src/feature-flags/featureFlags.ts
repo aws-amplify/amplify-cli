@@ -569,6 +569,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
       },
+      {
+        name: 'defaultSecondaryIndex',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
     ]);
   };
 }
