@@ -1,11 +1,17 @@
 const aws = require('./aws.js');
-const { CreateService } = require('./aws-service-creator');
+const configurationManager = require('../configuration-manager');
 
 class DynamoDB {
   constructor(context, options = {}) {
     return (async () => {
+      let cred;
+      try {
+        cred = await configurationManager.loadConfiguration(context);
+      } catch (e) {
+        // ignore errors
+      }
       this.context = context;
-      this.dynamodb = await CreateService(context, aws.DynamoDB, options);
+      this.dynamodb = new aws.DynamoDB({ ...cred, ...options });
       return this;
     })();
   }
