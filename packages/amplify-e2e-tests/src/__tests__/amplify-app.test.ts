@@ -16,6 +16,7 @@ import {
   validateBackendConfig,
   validateModelgen,
   validateAmplifyPush,
+  validateFeatureFlags,
 } from '../amplify-app-helpers/amplify-app-validation';
 
 describe('amplify-app platform tests', () => {
@@ -37,6 +38,7 @@ describe('amplify-app platform tests', () => {
     validateProjectConfig(projRoot, 'android');
     validateApi(projRoot);
     validateBackendConfig(projRoot);
+    validateFeatureFlags(projRoot);
   });
 
   it('should setup an iOS project', async () => {
@@ -45,6 +47,7 @@ describe('amplify-app platform tests', () => {
     validateProjectConfig(projRoot, 'ios');
     validateApi(projRoot);
     validateBackendConfig(projRoot);
+    validateFeatureFlags(projRoot);
   });
 
   it('should set up a angular project', async () => {
@@ -53,6 +56,7 @@ describe('amplify-app platform tests', () => {
     validateProjectConfig(projRoot, 'javascript', 'angular');
     validateApi(projRoot);
     validateBackendConfig(projRoot);
+    validateFeatureFlags(projRoot);
   });
 
   it('should set up a react project and run scripts', async () => {
@@ -61,6 +65,7 @@ describe('amplify-app platform tests', () => {
     validateProjectConfig(projRoot, 'javascript', 'react');
     validateApi(projRoot);
     validateBackendConfig(projRoot);
+    validateFeatureFlags(projRoot);
     await addIntegAccountInConfig(projRoot);
     await amplifyModelgen(projRoot);
     validateModelgen(projRoot);
