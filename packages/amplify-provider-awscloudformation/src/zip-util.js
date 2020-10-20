@@ -1,7 +1,7 @@
 const extract = require('extract-zip');
 const fs = require('fs-extra');
 const path = require('path');
-const { fileLogger } = require('../src/utils/aws-logger');
+const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('zip-util');
 
 function downloadZip(s3, tempDir, zipFileName, envName) {

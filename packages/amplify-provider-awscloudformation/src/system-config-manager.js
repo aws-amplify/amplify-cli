@@ -6,7 +6,7 @@ const inquirer = require('inquirer');
 const constants = require('./constants');
 const proxyAgent = require('proxy-agent');
 const { pathManager } = require('amplify-cli-core');
-const { fileLogger } = require('../src/utils/aws-logger');
+const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('system-config-manager');
 
 const credentialsFilePath = pathManager.getAWSCredentialsFilePath();
