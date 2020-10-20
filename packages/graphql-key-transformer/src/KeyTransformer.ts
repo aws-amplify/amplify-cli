@@ -646,7 +646,7 @@ export class KeyTransformer extends Transformer {
     const tableResource = ctx.getResource(tableLogicalID);
     const primaryKeyDirective = getPrimaryKey(definition);
     const primaryPartitionKeyName = primaryKeyDirective ? getDirectiveArguments(primaryKeyDirective).fields[0] : 'id';
-    const defaultGSI = ctx.featureFlags.getBoolean('defaultSecondaryIndex', false);
+    const defaultGSI = ctx.featureFlags.getBoolean('secondaryKeyAsGSI', false);
     if (!tableResource) {
       throw new InvalidDirectiveError(`The @key directive may only be added to object definitions annotated with @model.`);
     } else {

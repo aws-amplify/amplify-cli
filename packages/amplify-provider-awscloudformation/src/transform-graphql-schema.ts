@@ -31,6 +31,7 @@ import {
   migrateAPIProject,
   readProjectConfiguration,
   buildAPIProject,
+  TransformConfig,
 } from 'graphql-transformer-core';
 
 import { print } from 'graphql';
@@ -72,7 +73,7 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
       transformerList.push(new SearchableModelTransformer());
     }
 
-    const customTransformersConfig = await readTransformerConfiguration(resourceDir);
+    const customTransformersConfig: TransformConfig = await readTransformerConfiguration(resourceDir);
     const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
       ? customTransformersConfig.transformers
       : []

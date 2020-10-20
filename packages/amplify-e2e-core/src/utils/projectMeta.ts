@@ -4,6 +4,16 @@ import * as fs from 'fs-extra';
 import _ from 'lodash';
 import { JSONUtilities } from 'amplify-cli-core';
 
+function getFeatureFlagConfig(projRoot: string) {
+  const featureFlagPath = path.join(projRoot, 'amplify', 'cli.json');
+  return JSONUtilities.readJson(featureFlagPath);
+}
+
+function setFeatureFlagConfig(projRoot: string, config: any) {
+  const featureFlagPath = path.join(projRoot, 'amplify', 'cli.json');
+  JSONUtilities.writeJson(featureFlagPath, config);
+}
+
 function getAWSConfigAndroidPath(projRoot: string): string {
   return path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'awsconfiguration.json');
 }
@@ -114,6 +124,8 @@ function setParameters(projRoot: string, category: string, resourceName: string,
 }
 
 export {
+  getFeatureFlagConfig,
+  setFeatureFlagConfig,
   getProjectMeta,
   getProjectTags,
   getBackendAmplifyMeta,

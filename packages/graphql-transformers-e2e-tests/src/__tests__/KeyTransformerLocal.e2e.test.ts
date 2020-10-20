@@ -336,7 +336,7 @@ test('Test that a secondary @key with a multiple field adds an LSI.', () => {
         return defaultValue || '';
       },
       getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'defaultSecondaryIndex') return true;
+        if (featureName === 'secondaryKeyAsGSI') return true;
         return defaultValue || false;
       },
       getObject: (featureName: string, defaultValue: Object) => {
@@ -388,7 +388,7 @@ test('Test that a secondary @key with a multiple field adds an GSI based on enab
         return defaultValue || '';
       },
       getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'defaultSecondaryIndex') return true;
+        if (featureName === 'secondaryKeyAsGSI') return true;
         return defaultValue || false;
       },
       getObject: (featureName: string, defaultValue: Object) => {
