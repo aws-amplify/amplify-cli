@@ -112,8 +112,9 @@ async function getModelOutputPath(context) {
   let defaultPath = '.';
   switch (projectConfig.frontend) {
     case 'javascript':
-      defaultPath = 'src/models';
-      break;
+      return projectConfig.javascript && projectConfig.javascript.config && projectConfig.javascript.config.SourceDir
+        ? path.normalize(projectConfig.javascript.config.SourceDir)
+        : 'src';
     case 'android':
       defaultPath = projectConfig.android && projectConfig.android.config && projectConfig.android.config.ResDir
         ? path.normalize(path.join(projectConfig.android.config.ResDir, '..', 'java'))
