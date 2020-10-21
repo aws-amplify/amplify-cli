@@ -49,6 +49,7 @@
     "amplify-console-hosting": "1.6.0",
     "amplify-dotnet-function-runtime-provider": "1.4.0",
     "amplify-dotnet-function-template-provider": "1.4.3",
+    "amplify-cli-logger": "1.0.0",
     "amplify-frontend-android": "2.14.2",
     "amplify-frontend-flutter": "0.2.0",
     "amplify-frontend-ios": "2.16.0",
@@ -93,7 +94,8 @@
     "semver": "^7.1.1",
     "tar-fs": "^2.1.1",
     "update-notifier": "^4.1.0",
-    "which": "^2.0.2"
+    "which": "^2.0.2",
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/ci-info": "^2.0.0",
