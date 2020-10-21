@@ -8,8 +8,8 @@ const reactConfig = {
 };
 
 const reactNativeConfig = {
-  SourceDir: '/',
-  DistributionDir: '/',
+  SourceDir: './',
+  DistributionDir: './',
   BuildCommand: `${npm} run-script build`,
   StartCommand: `${npm} run-script start`,
 };
@@ -36,7 +36,7 @@ const vueConfig = {
 };
 
 const emberConfig = {
-  SourceDir: '/',
+  SourceDir: './',
   DistributionDir: 'dist',
   BuildCommand: `${npm} run-script build -- -e production`,
   StartCommand: `${npm} run-script start`,
