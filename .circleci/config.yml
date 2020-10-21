@@ -2136,7 +2136,6 @@ workflows:
               only:
                 - release
                 - master
-                - /feat\/cloudformation-logging/
                 - beta
       - github_release:
           requires:
