@@ -78,10 +78,10 @@ export async function run() {
     context.usageData.emitInvoke();
 
     // For mobile hub migrated project validate project and command to be executed
-    // if (!ensureMobileHubCommandCompatibility((context as unknown) as $TSContext)) {
-    //   // Double casting until we have properly typed context
-    //   return 1;
-    // }
+    if (!ensureMobileHubCommandCompatibility((context as unknown) as $TSContext)) {
+      // Double casting until we have properly typed context
+      return 1;
+    }
 
     await executeCommand(context);
 
