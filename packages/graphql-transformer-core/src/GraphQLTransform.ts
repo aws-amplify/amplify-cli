@@ -23,9 +23,8 @@ import { ITransformer } from './ITransformer';
 import { validateModelSchema } from './validation';
 import { TransformFormatter } from './TransformFormatter';
 import { TransformConfig, SyncUtils } from './util';
+import { SyncResourceIDs } from 'graphql-transformer-common';
 import { FeatureFlagProvider, NoopFeatureFlagProvider } from './FeatureFlags';
-import { SyncResourceIDs, ResourceConstants } from 'graphql-transformer-common';
-import md5 from 'md5';
 
 function isFunction(obj: any) {
   return obj && typeof obj === 'function';
@@ -332,20 +331,6 @@ export class GraphQLTransform {
     context: TransformerContext,
   ) {
     let index = 0;
-
-    // hashing key directive to get the order in @key transformer
-    let keyDirIndex = 0;
-    let syncKeyMap: Map<string | Int32Array, number> = new Map();
-    if (transformer.name === 'KeyTransformer') {
-      for (const directive of def.directives) {
-        if (directive.name.value === 'key') {
-          syncKeyMap.set(md5(JSON.stringify(directive)), keyDirIndex);
-          keyDirIndex++;
-        }
-      }
-      context.metadata.set(ResourceConstants.SNIPPETS.SyncResolverKey, syncKeyMap);
-    }
-
     for (const dir of def.directives) {
       if (!validDirectiveNameMap[dir.name.value]) {
         throw new UnknownDirectiveError(

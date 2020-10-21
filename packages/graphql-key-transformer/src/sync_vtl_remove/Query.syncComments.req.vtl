@@ -20,28 +20,18 @@ type Comment @model
 #set( $filterMap = {} )
 #set( $QueryMap = {} )
 #set( $PkMap = {} )
-#set( $PkTypeMap = {} )
-#set( $SkTypeMap = {} )
-#set( $PkType = {} )
-#set( $SkType = {} )
 ## [End] Set map initialization for @key **
 ## [Start] Set query expression for @key **
 $util.qr($QueryMap.put('content+createdAt' , 'dbTable'))
 $util.qr($PkMap.put('content' , 'dbTable'))
-$util.qr($PkTypeMap.put('content' , 'S'))
-$util.qr($SkTypeMap.put('createdAt' , 'S'))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 $util.qr($QueryMap.put('username+createdAt' , 'byUsername'))
 $util.qr($PkMap.put('username' , 'byUsername'))
-$util.qr($PkTypeMap.put('username' , 'S'))
-$util.qr($SkTypeMap.put('createdAt' , 'S'))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 $util.qr($QueryMap.put('editor+createdAt' , 'byeditor'))
 $util.qr($PkMap.put('editor' , 'byeditor'))
-$util.qr($PkTypeMap.put('editor' , 'S'))
-$util.qr($SkTypeMap.put('createdAt' , 'S'))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 #if( !$util.isNullOrEmpty($ctx.args.filter.and) )
@@ -54,13 +44,11 @@ $util.qr($SkTypeMap.put('createdAt' , 'S'))
         #set( $scan = false )
         $util.qr($ctx.args.put($pk,$entry.value.eq))
         #set( $index = $PkMap.get($pk) )
-        #set( $PkType = $PkTypeMap.get($pk) )
       #end
       #if( $ind == 1 && !$util.isNullOrEmpty($pk) && !$util.isNullOrEmpty($QueryMap.get("${pk}+$entry.key")) )
         #set( $sk = $entry.key )
         $util.qr($ctx.args.put($sk,$entry.value))
         #set( $index = $QueryMap.get("${pk}+$sk") )
-        #set( $SkType = $SkTypeMap.get($sk) )
       #else
         #if( $ind > 0 )
           $util.qr($filterMap.put($entry.key,$entry.value))
@@ -80,9 +68,7 @@ $util.qr($SkTypeMap.put('createdAt' , 'S'))
   "#pk": "$pk"
 } )
   #set( $modelQueryExpression.expressionValues = {
-  ":pk": {
-      "$PkType": "$ctx.args.get($pk)"
-  }
+  ":pk": $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($pk)))
 } )
 #end
 ## [End] Set Primary Key initialization @key **
@@ -90,38 +76,38 @@ $util.qr($SkTypeMap.put('createdAt' , 'S'))
 #if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).beginsWith) )
   #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND begins_with(#sortKey, :sortKey)" )
   $util.qr($modelQueryExpression.expressionNames.put("#sortKey", $sk))
-  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "$SkType": $ctx.args.get($sk).beginsWith }))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).beginsWith))))
 #end
 #if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).between) )
   #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1" )
   $util.qr($modelQueryExpression.expressionNames.put("#sortKey", $sk))
-  $util.qr($modelQueryExpression.expressionValues.put(":sortKey0", { "$SkType" : $ctx.args.get($sk).between[0] }))
-  $util.qr($modelQueryExpression.expressionValues.put(":sortKey1", { "$SkType": $ctx.args.get($sk).between[1] }))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[0]))))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).between[1]))))
 #end
 #if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).eq) )
   #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey = :sortKey" )
   $util.qr($modelQueryExpression.expressionNames.put("#sortKey", $sk))
-  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "$SkType": $ctx.args.get($sk).eq }))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).eq))))
 #end
 #if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).lt) )
   #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey < :sortKey" )
   $util.qr($modelQueryExpression.expressionNames.put("#sortKey", $sk))
-  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "$SkType": $ctx.args.get($sk).lt }))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).lt))))
 #end
 #if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).le) )
   #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey <= :sortKey" )
   $util.qr($modelQueryExpression.expressionNames.put("#sortKey", $sk))
-  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "$SkType" : $ctx.args.get($sk).le }))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).le))))
 #end
 #if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).gt) )
   #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey > :sortKey" )
   $util.qr($modelQueryExpression.expressionNames.put("#sortKey", $sk))
-  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "$SkType" : $ctx.args.get($sk).gt }))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).gt))))
 #end
 #if( !$util.isNull($ctx.args.get($sk)) && !$util.isNull($ctx.args.get($sk).ge) )
   #set( $modelQueryExpression.expression = "$modelQueryExpression.expression AND #sortKey >= :sortKey" )
   $util.qr($modelQueryExpression.expressionNames.put("#sortKey", $sk))
-  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", { "$SkType" : $ctx.args.get($sk).ge }))
+  $util.qr($modelQueryExpression.expressionValues.put(":sortKey", $util.parseJson($util.dynamodb.toDynamoDBJson($ctx.args.get($sk).ge))))
 #end
 ## [End] Applying Key Condition **
 ## [Start]  Set query expression for @key **

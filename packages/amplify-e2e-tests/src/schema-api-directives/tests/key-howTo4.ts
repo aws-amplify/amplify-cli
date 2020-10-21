@@ -206,7 +206,7 @@ export const expected_result_query3 = {
 //query1 with no PK and "or" filter
 export const query4 = `
 query SyncComments {
-  syncComments(filter: {or: [ {data1 : {gt : "example3"}},{username : {eq : "user1"}}]}) {
+  syncComments(filter: {and: [ {data1 : {lt : "example4"}},{username : {eq : "user1"}}]}) {
     items {
       content
       createdAt
@@ -230,14 +230,6 @@ export const expected_result_query4 = {
           editor: 'user2',
           data1: 'example1',
           data2: 'example2',
-        },
-        {
-          content: 'order3',
-          username: 'user2',
-          createdAt: '2009-01-01T01:05:49.129Z',
-          editor: 'user3',
-          data1: 'example5',
-          data2: 'example6',
         },
       ],
     },
