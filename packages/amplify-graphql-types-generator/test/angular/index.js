@@ -7,6 +7,7 @@ import { generateSource } from '../../src/angular';
 import { loadSchema } from '../../src/loading';
 const starWarsSchema = loadSchema(require.resolve('../fixtures/starwars/schema.json'));
 const miscSchema = loadSchema(require.resolve('../fixtures/misc/schema.json'));
+const subscriptionSchema = loadSchema(require.resolve('../fixtures/misc/subscriptionSchema.json'));
 
 import { CodeGenerator } from '../../src/utilities/CodeGenerator';
 
@@ -348,6 +349,23 @@ describe('Angular code generation', function() {
         query Echo($msg: String) {
           echo(msg: $msg)
         }
+      `);
+
+      const source = generateSource(context);
+      expect(source).toMatchSnapshot();
+    });
+
+    test(`should generate subscriptions`, function() {
+      const { compileFromSource } = setup(subscriptionSchema);
+      const context = compileFromSource(`
+      subscription OnCreateRestaurant {
+        onCreateRestaurant {
+          id
+          name
+          description
+          city
+        }
+      }
       `);
 
       const source = generateSource(context);
