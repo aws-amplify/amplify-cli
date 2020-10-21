@@ -121,6 +121,7 @@ function getAWSExportsObject(resources) {
         Object.assign(configOutput, getAppSyncConfig(serviceResourceMapping[service], projectRegion));
         break;
       case 'API Gateway':
+      case 'Containers':
         Object.assign(configOutput, getAPIGWConfig(serviceResourceMapping[service], projectRegion));
         break;
       case 'Pinpoint':

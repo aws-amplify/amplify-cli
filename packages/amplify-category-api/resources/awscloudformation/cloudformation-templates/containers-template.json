@@ -1,447 +1,917 @@
 {
-    "Parameters": {
-      "ParamUserPoolArn": {
-        "Type": "String"
+  "Parameters": {
+    "ParamContainerPort": {
+      "Type": "Number"
+    },
+    "env": {
+      "Type": "String"
+    }
+  },
+  "Resources": {
+    "VPCB9E5F0B4": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC"
+          }
+        ]
       },
-      "ParamContainerPort": {
-        "Type": "Number"
-      },
-      "vpcId": {
-        "Type": "String"
-      },
-      "serviceArn": {
-        "Type": "String"
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/Resource"
       }
     },
-    "Resources": {
-      "MyNetworkLoadBalancerE0D8DAC9": {
-        "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
-        "Properties": {
-          "LoadBalancerAttributes": [
-            {
-              "Key": "deletion_protection.enabled",
-              "Value": "false"
-            }
-          ],
-          "Scheme": "internal",
-          "Subnets": [
-            {
-              "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
-            },
-            {
-              "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
-            }
-          ],
-          "Type": "network"
+    "VPCPublicSubnet1SubnetB4246D30": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/24",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
         },
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/MyNetworkLoadBalancer/Resource"
-        }
-      },
-      "MyNetworkLoadBalancerCosaDB890A09": {
-        "Type": "AWS::ElasticLoadBalancingV2::Listener",
-        "Properties": {
-          "DefaultActions": [
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
             {
-              "TargetGroupArn": {
-                "Ref": "LeTargetC192D3D3"
-              },
-              "Type": "forward"
-            }
-          ],
-          "LoadBalancerArn": {
-            "Ref": "MyNetworkLoadBalancerE0D8DAC9"
-          },
-          "Port": {
-            "Ref": "ParamContainerPort"
-          },
-          "Protocol": "TCP"
-        },
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/MyNetworkLoadBalancer/Cosa/Resource"
-        }
-      },
-      "LeTargetC192D3D3": {
-        "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-        "Properties": {
-          "Port": {
-            "Ref": "ParamContainerPort"
-          },
-          "Protocol": "TCP",
-          "TargetType": "ip",
-          "VpcId": {
-            "Ref": "VPCB9E5F0B4"
-          }
-        },
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/LeTarget/Resource"
-        }
-      },
-      "MyVpcLink2A8025D5B": {
-        "Type": "AWS::ApiGateway::VpcLink",
-        "Properties": {
-          "Name": "WithcdkStackMyVpcLink22F1763F5",
-          "TargetArns": [
-            {
-              "Ref": "MyNetworkLoadBalancerE0D8DAC9"
+              "Fn::GetAZs": ""
             }
           ]
         },
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/MyVpcLink2/Resource"
-        }
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PublicSubnet1"
+          }
+        ]
       },
-      "MyApi29E763169": {
-        "Type": "AWS::ApiGateway::RestApi",
-        "Properties": {
-          "Name": "MyApi2"
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet1/Subnet"
+      }
+    },
+    "VPCPublicSubnet1RouteTableFEE4B781": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
         },
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/MyApi2/Resource"
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet1/RouteTable"
+      }
+    },
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+        },
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
         }
       },
-      "MyApi2CloudWatchRole7EE8E5B3": {
-        "Type": "AWS::IAM::Role",
-        "Properties": {
-          "AssumeRolePolicyDocument": {
-            "Statement": [
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet1/RouteTableAssociation"
+      }
+    },
+    "VPCPublicSubnet1DefaultRoute91CEF279": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet1/DefaultRoute"
+      }
+    },
+    "VPCPublicSubnet1EIP6AD938E8": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet1/EIP"
+      }
+    },
+    "VPCPublicSubnet1NATGatewayE0556630": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "VPCPublicSubnet1EIP6AD938E8",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet1/NATGateway"
+      }
+    },
+    "VPCPublicSubnet2Subnet74179F39": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.1.0/24",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet2/Subnet"
+      }
+    },
+    "VPCPublicSubnet2RouteTable6F1A15F1": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet2/RouteTable"
+      }
+    },
+    "VPCPublicSubnet2RouteTableAssociation5A808732": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+        },
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet2Subnet74179F39"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet2/RouteTableAssociation"
+      }
+    },
+    "VPCPublicSubnet2DefaultRouteB7481BBA": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      },
+      "DependsOn": [
+        "VPCVPCGW99B986DC"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet2/DefaultRoute"
+      }
+    },
+    "VPCPublicSubnet2EIP4947BC00": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet2/EIP"
+      }
+    },
+    "VPCPublicSubnet2NATGateway3C070193": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "VPCPublicSubnet2EIP4947BC00",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet2Subnet74179F39"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet2/NATGateway"
+      }
+    },
+    "VPCPrivateSubnet1Subnet8BCA10E0": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.2.0/24",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PrivateSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PrivateSubnet1/Subnet"
+      }
+    },
+    "VPCPrivateSubnet1RouteTableBE8A6027": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PrivateSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PrivateSubnet1/RouteTable"
+      }
+    },
+    "VPCPrivateSubnet1RouteTableAssociation347902D1": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+        },
+        "SubnetId": {
+          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PrivateSubnet1/RouteTableAssociation"
+      }
+    },
+    "VPCPrivateSubnet1DefaultRouteAE1D6490": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PrivateSubnet1/DefaultRoute"
+      }
+    },
+    "VPCPrivateSubnet2SubnetCFCDAA7A": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.3.0/24",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PrivateSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PrivateSubnet2/Subnet"
+      }
+    },
+    "VPCPrivateSubnet2RouteTable0A19E10E": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC/PrivateSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PrivateSubnet2/RouteTable"
+      }
+    },
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+        },
+        "SubnetId": {
+          "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PrivateSubnet2/RouteTableAssociation"
+      }
+    },
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "VPCPublicSubnet2NATGateway3C070193"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/PrivateSubnet2/DefaultRoute"
+      }
+    },
+    "VPCIGWB7E252D3": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "WithcdkStack/VPC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/IGW"
+      }
+    },
+    "VPCVPCGW99B986DC": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        },
+        "InternetGatewayId": {
+          "Ref": "VPCIGWB7E252D3"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/VPC/VPCGW"
+      }
+    },
+    "MyServiceSecurityGroup3C4EC593": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "WithcdkStack/MyServiceSecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyServiceSecurityGroup/Resource"
+      }
+    },
+    "MyServiceSecurityGroupfrom00000IndirectPortBF49297D": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "CidrIp": "0.0.0.0/0",
+        "Description": "from 0.0.0.0/0:{IndirectPort}",
+        "FromPort": {
+          "Ref": "ParamContainerPort"
+        },
+        "GroupId": {
+          "Fn::GetAtt": [
+            "MyServiceSecurityGroup3C4EC593",
+            "GroupId"
+          ]
+        },
+        "ToPort": {
+          "Ref": "ParamContainerPort"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyServiceSecurityGroup/from 0.0.0.0_0:{IndirectPort}"
+      }
+    },
+    "MyCluster4C1BA579": {
+      "Type": "AWS::ECS::Cluster",
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyCluster/Resource"
+      }
+    },
+    "MyClusterDefaultServiceDiscoveryNamespace4A9016C4": {
+      "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+      "Properties": {
+        "Name": "Manolo",
+        "Vpc": {
+          "Ref": "VPCB9E5F0B4"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyCluster/DefaultServiceDiscoveryNamespace/Resource"
+      }
+    },
+    "MyServiceB4132EDA": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "MyCluster4C1BA579"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 100
+        },
+        "DesiredCount": 1,
+        "EnableECSManagedTags": false,
+        "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "MyContainer",
+            "ContainerPort": {
+              "Ref": "ParamContainerPort"
+            },
+            "TargetGroupArn": {
+              "Ref": "LeTargetC192D3D3"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
               {
-                "Action": "sts:AssumeRole",
-                "Effect": "Allow",
-                "Principal": {
-                  "Service": "apigateway.amazonaws.com"
-                }
+                "Fn::GetAtt": [
+                  "MyServiceSecurityGroup3C4EC593",
+                  "GroupId"
+                ]
               }
             ],
-            "Version": "2012-10-17"
-          },
-          "ManagedPolicyArns": [
-            {
-              "Fn::Join": [
-                "",
-                [
-                  "arn:",
-                  {
-                    "Ref": "AWS::Partition"
-                  },
-                  ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
-                ]
-              ]
-            }
-          ]
-        },
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/MyApi2/CloudWatchRole/Resource"
-        }
-      },
-      "MyApi2Account6A9CF7DD": {
-        "Type": "AWS::ApiGateway::Account",
-        "Properties": {
-          "CloudWatchRoleArn": {
-            "Fn::GetAtt": [
-              "MyApi2CloudWatchRole7EE8E5B3",
-              "Arn"
+            "Subnets": [
+              {
+                "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+              },
+              {
+                "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+              }
             ]
           }
         },
-        "DependsOn": [
-          "MyApi29E763169"
-        ],
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/MyApi2/Account"
-        }
-      },
-      "MyApi2DeploymentBE2CFF593b424a5aa66b532ae5a1cc37eba7f3e4": {
-        "Type": "AWS::ApiGateway::Deployment",
-        "Properties": {
-          "RestApiId": {
-            "Ref": "MyApi29E763169"
-          },
-          "Description": "Automatically created by the RestApi construct"
-        },
-        "DependsOn": [
-          "MyApi2ANYB6A6ADA2"
-        ],
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/MyApi2/Deployment/Resource"
-        }
-      },
-      "MyApi2DeploymentStageprod8B809392": {
-        "Type": "AWS::ApiGateway::Stage",
-        "Properties": {
-          "RestApiId": {
-            "Ref": "MyApi29E763169"
-          },
-          "DeploymentId": {
-            "Ref": "MyApi2DeploymentBE2CFF593b424a5aa66b532ae5a1cc37eba7f3e4"
-          },
-          "StageName": "prod"
-        },
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/MyApi2/DeploymentStage.prod/Resource"
-        }
-      },
-      "MyApi2ANYB6A6ADA2": {
-        "Type": "AWS::ApiGateway::Method",
-        "Properties": {
-          "HttpMethod": "ANY",
-          "ResourceId": {
-            "Fn::GetAtt": [
-              "MyApi29E763169",
-              "RootResourceId"
-            ]
-          },
-          "RestApiId": {
-            "Ref": "MyApi29E763169"
-          },
-          "AuthorizationScopes": [
-            "openid"
-          ],
-          "AuthorizationType": "COGNITO_USER_POOLS",
-          "AuthorizerId": {
-            "Ref": "MyAuthorizer"
-          },
-          "Integration": {
-            "ConnectionId": {
-              "Ref": "MyVpcLink2A8025D5B"
+        "ServiceRegistries": [
+          {
+            "ContainerName": "MyContainer",
+            "ContainerPort": {
+              "Ref": "ParamContainerPort"
             },
-            "ConnectionType": "VPC_LINK",
-            "IntegrationHttpMethod": "ANY",
-            "Type": "HTTP_PROXY",
-            "Uri": {
-              "Fn::Join": [
-                ":",
-                [
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "http://",
-                        {
-                          "Fn::GetAtt": [
-                            "MyNetworkLoadBalancerE0D8DAC9",
-                            "DNSName"
-                          ]
-                        }
-                      ]
-                    ]
-                  },
-                  {
-                    "Ref": "ParamContainerPort"
-                  }
-                ]
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "MyServiceCloudmapService207257AE",
+                "Arn"
               ]
             }
           }
-        },
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/MyApi2/Default/ANY/Resource"
-        }
+        ]
       },
-      "MyAuthorizer": {
-        "Type": "AWS::ApiGateway::Authorizer",
-        "Properties": {
-          "RestApiId": {
-            "Ref": "MyApi29E763169"
-          },
-          "Type": "COGNITO_USER_POOLS",
-          "IdentitySource": "method.request.header.Authorization",
-          "Name": "DefaultAuthorizer",
-          "ProviderARNs": [
-            {
-              "Ref": "ParamUserPoolArn"
-            }
-          ]
-        },
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/MyAuthorizer"
-        }
-      },
-      "CDKMetadata": {
-        "Type": "AWS::CDK::Metadata",
-        "Properties": {
-          "Modules": "aws-cdk=1.66.0,@aws-cdk/assets=1.66.0,@aws-cdk/aws-apigateway=1.66.0,@aws-cdk/aws-applicationautoscaling=1.66.0,@aws-cdk/aws-autoscaling=1.66.0,@aws-cdk/aws-autoscaling-common=1.66.0,@aws-cdk/aws-autoscaling-hooktargets=1.66.0,@aws-cdk/aws-certificatemanager=1.66.0,@aws-cdk/aws-cloudformation=1.66.0,@aws-cdk/aws-cloudfront=1.66.0,@aws-cdk/aws-cloudwatch=1.66.0,@aws-cdk/aws-codebuild=1.66.0,@aws-cdk/aws-codeguruprofiler=1.66.0,@aws-cdk/aws-codepipeline=1.66.0,@aws-cdk/aws-codepipeline-actions=1.66.0,@aws-cdk/aws-cognito=1.66.0,@aws-cdk/aws-ec2=1.66.0,@aws-cdk/aws-ecr=1.66.0,@aws-cdk/aws-ecr-assets=1.66.0,@aws-cdk/aws-ecs=1.66.0,@aws-cdk/aws-elasticloadbalancingv2=1.66.0,@aws-cdk/aws-elasticloadbalancingv2-actions=1.66.0,@aws-cdk/aws-events=1.66.0,@aws-cdk/aws-events-targets=1.66.0,@aws-cdk/aws-iam=1.66.0,@aws-cdk/aws-kms=1.66.0,@aws-cdk/aws-lambda=1.66.0,@aws-cdk/aws-logs=1.66.0,@aws-cdk/aws-s3=1.66.0,@aws-cdk/aws-s3-assets=1.66.0,@aws-cdk/aws-servicediscovery=1.66.0,@aws-cdk/aws-sns=1.66.0,@aws-cdk/aws-sns-subscriptions=1.66.0,@aws-cdk/aws-sqs=1.66.0,@aws-cdk/aws-ssm=1.66.0,@aws-cdk/cloud-assembly-schema=1.66.0,@aws-cdk/core=1.66.0,@aws-cdk/custom-resources=1.66.0,@aws-cdk/cx-api=1.66.0,@aws-cdk/region-info=1.66.0,jsii-runtime=node.js/v12.16.1"
-        },
-        "Metadata": {
-          "aws:cdk:path": "WithcdkStack/CDKMetadata/Default"
-        },
-        "Condition": "CDKMetadataAvailable"
+      "DependsOn": [
+        "MyNetworkLoadBalancerCosaDB890A09"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyService/Service"
       }
     },
-    "Conditions": {
-      "CDKMetadataAvailable": {
-        "Fn::Or": [
-          {
-            "Fn::Or": [
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "ap-east-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "ap-northeast-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "ap-northeast-2"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "ap-south-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "ap-southeast-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "ap-southeast-2"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "ca-central-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "cn-north-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "cn-northwest-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "eu-central-1"
-                ]
-              }
+    "MyServiceCloudmapService207257AE": {
+      "Type": "AWS::ServiceDiscovery::Service",
+      "Properties": {
+        "DnsConfig": {
+          "DnsRecords": [
+            {
+              "TTL": 60,
+              "Type": "SRV"
+            }
+          ],
+          "NamespaceId": {
+            "Fn::GetAtt": [
+              "MyClusterDefaultServiceDiscoveryNamespace4A9016C4",
+              "Id"
             ]
           },
+          "RoutingPolicy": "MULTIVALUE"
+        },
+        "HealthCheckCustomConfig": {
+          "FailureThreshold": 1
+        },
+        "NamespaceId": {
+          "Fn::GetAtt": [
+            "MyClusterDefaultServiceDiscoveryNamespace4A9016C4",
+            "Id"
+          ]
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyService/CloudmapService/Resource"
+      }
+    },
+    "MyNetworkLoadBalancerE0D8DAC9": {
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "Properties": {
+        "LoadBalancerAttributes": [
           {
-            "Fn::Or": [
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "eu-north-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "eu-west-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "eu-west-2"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "eu-west-3"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "me-south-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "sa-east-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "us-east-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "us-east-2"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "us-west-1"
-                ]
-              },
-              {
-                "Fn::Equals": [
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  "us-west-2"
-                ]
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
+        "Scheme": "internal",
+        "Subnets": [
+          {
+            "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+          },
+          {
+            "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "Type": "network"
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyNetworkLoadBalancer/Resource"
+      }
+    },
+    "MyNetworkLoadBalancerCosaDB890A09": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "LeTargetC192D3D3"
+            },
+            "Type": "forward"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "MyNetworkLoadBalancerE0D8DAC9"
+        },
+        "Port": {
+          "Ref": "ParamContainerPort"
+        },
+        "Protocol": "TCP"
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyNetworkLoadBalancer/Cosa/Resource"
+      }
+    },
+    "LeTargetC192D3D3": {
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "Properties": {
+        "Port": {
+          "Ref": "ParamContainerPort"
+        },
+        "Protocol": "TCP",
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "VPCB9E5F0B4"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/LeTarget/Resource"
+      }
+    },
+    "MyVpcLink2A8025D5B": {
+      "Type": "AWS::ApiGateway::VpcLink",
+      "Properties": {
+        "Name": "WithcdkStackMyVpcLink22F1763F5",
+        "TargetArns": [
+          {
+            "Ref": "MyNetworkLoadBalancerE0D8DAC9"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyVpcLink2/Resource"
+      }
+    },
+    "MyApi29E763169": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "MyApi2"
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyApi2/Resource"
+      }
+    },
+    "MyApi2CloudWatchRole7EE8E5B3": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
               }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
             ]
           }
         ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyApi2/CloudWatchRole/Resource"
+      }
+    },
+    "MyApi2Account6A9CF7DD": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "MyApi2CloudWatchRole7EE8E5B3",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "MyApi29E763169"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyApi2/Account"
+      }
+    },
+    "MyApi2DeploymentBE2CFF593b424a5aa66b532ae5a1cc37eba7f3e4": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyApi29E763169"
+        },
+        "Description": "Automatically created by the RestApi construct"
+      },
+      "DependsOn": [
+        "MyApi2ANYB6A6ADA2"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyApi2/Deployment/Resource"
+      }
+    },
+    "MyApi2DeploymentStageprod8B809392": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyApi29E763169"
+        },
+        "DeploymentId": {
+          "Ref": "MyApi2DeploymentBE2CFF593b424a5aa66b532ae5a1cc37eba7f3e4"
+        },
+        "StageName": "prod"
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyApi2/DeploymentStage.prod/Resource"
+      }
+    },
+    "MyApi2ANYB6A6ADA2": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "MyApi29E763169",
+            "RootResourceId"
+          ]
+        },
+        "RestApiId": {
+          "Ref": "MyApi29E763169"
+        },
+        "AuthorizationScopes": [
+          "openid"
+        ],
+        "AuthorizationType": "COGNITO_USER_POOLS",
+        "AuthorizerId": {
+          "Ref": "MyAuthorizer"
+        },
+        "Integration": {
+          "ConnectionId": {
+            "Ref": "MyVpcLink2A8025D5B"
+          },
+          "ConnectionType": "VPC_LINK",
+          "IntegrationHttpMethod": "ANY",
+          "Type": "HTTP_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              ":",
+              [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "http://",
+                      {
+                        "Fn::GetAtt": [
+                          "MyNetworkLoadBalancerE0D8DAC9",
+                          "DNSName"
+                        ]
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Ref": "ParamContainerPort"
+                }
+              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyApi2/Default/ANY/Resource"
+      }
+    },
+    "MyAuthorizer": {
+      "Type": "AWS::ApiGateway::Authorizer",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "MyApi29E763169"
+        },
+        "Type": "COGNITO_USER_POOLS",
+        "IdentitySource": "method.request.header.Authorization",
+        "Name": "DefaultAuthorizer",
+        "ProviderARNs": [
+          {
+            "Fn::Join": [
+              "",
+              [ 
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":cognito-idp:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":userpool/"
+              ]
+            ]
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyAuthorizer"
       }
     }
+  },
+  "Outputs": {
+    "RootUrl": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "MyApi29E763169"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "MyApi2DeploymentStageprod8B809392"
+            },
+            "/"
+          ]
+        ]
+      }
+    },
+    "ApiName": {
+      "Value": ""
+    }
+  },
+  "Conditions": {
   }
-
-  
+}

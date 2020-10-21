@@ -57,7 +57,8 @@ async function run(context, resourceDefinition) {
     await prePushAuthTransform(context, resources);
     await prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated);
     await updateS3Templates(context, resources, projectDetails.amplifyMeta);
-
+    // upload custom awaiter code
+    await uploadAwaiterZipFile(context);
     spinner.start();
 
     projectDetails = context.amplify.getProjectDetails();
@@ -166,6 +167,20 @@ async function run(context, resourceDefinition) {
     spinner.fail('An error occurred when pushing the resources to the cloud');
     throw err;
   }
+}
+
+async function uploadAwaiterZipFile(context) {
+  const customerAwaiterFileName = 'custom-resource-pipeline-awaiter.zip';
+  const customAwaiterZipFilePath = path.join(__dirname, '..', 'resources', customerAwaiterFileName);
+
+  return S3.getInstance(context).then(s3 => {
+    const s3Params = {
+      Body: fs.createReadStream(customAwaiterZipFilePath),
+      Key: customerAwaiterFileName,
+    };
+    return s3.uploadFile(s3Params);
+  });
+
 }
 
 async function updateStackForAPIMigration(context, category, resourceName, options) {
@@ -367,7 +382,7 @@ function packageResources(context, resources) {
           const cfnParams = context.amplify.readJsonFile(cfnParamsFilePath);
 
           _.set(cfnParams, ['ParamZipPath'], s3Key);
-          
+
           context.amplify.writeObjectAsJson(cfnParamsFilePath, cfnParams, true);
         }
         else {

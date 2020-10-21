@@ -19,6 +19,8 @@ export async function serviceWalkthrough(context, defaultValuesFilename) {
 
   const containerName = await askContainerSource(context);
 
+  let authName;
+
   const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
   // getting requirement satisfaction map
   const satisfiedRequirements = await checkRequirements(apiRequirements, context);
@@ -26,17 +28,20 @@ export async function serviceWalkthrough(context, defaultValuesFilename) {
   const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
   // if requirements are unsatisfied, trigger auth
+  
 
   if (foundUnmetRequirements) {
     try {
-      await externalAuthEnable(context, 'api', resourceName, apiRequirements);
+      authName = await externalAuthEnable(context, 'api', resourceName, apiRequirements);
     } catch (e) {
       context.print.error(e);
       throw e;
     }
+  } else {
+    [authName] = Object.keys(context.amplify.getProjectDetails().amplifyMeta.auth);
   }
 
-  return { resourceName, containerName };
+  return { resourceName, containerName, authName };
 }
 
 async function askResourceName(context, getAllDefaults) {
@@ -131,7 +136,7 @@ async function newContainer(context) {
 
   return add(context, 'awscloudformation', FunctionServiceName.ElasticContainer, {}).then(resourceName => {
     context.print.success('Succesfully added the Lambda function locally');
-    return { lambdaFunction: resourceName };
+    return resourceName;
   });
 }
 
