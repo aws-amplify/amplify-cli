@@ -5,10 +5,13 @@ import {
   LambdaDataSource,
   BaseDataSource,
   CfnResolver,
+  AuthorizationMode,
+  IamResource,
 } from '@aws-cdk/aws-appsync';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { ITable } from '@aws-cdk/aws-dynamodb';
-import { Construct, IConstruct, Stack } from '@aws-cdk/core';
+import { CfnResource, Construct, IConstruct, Stack } from '@aws-cdk/core';
+import { Grant, IGrantable } from '@aws-cdk/aws-iam';
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
@@ -42,6 +45,7 @@ export interface TemplateProvider {
 }
 
 export interface GraphQLApiProvider {
+  readonly apiId: string;
   addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource;
   addDynamoDbDataSource(name: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource;
   addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
@@ -67,4 +71,40 @@ export interface GraphQLApiProvider {
 
   getDataSource: (name: string) => BaseDataSource | void;
   hasDataSource: (name: string) => boolean;
+  // getDefaultAuthorization(): Readonly<AuthorizationMode>;
+  // getAdditionalAuthorizationModes(): Readonly<AuthorizationMode[]>;
+  addToSchema(addition: string): void;
+  addSchemaDependency(construct: CfnResource): boolean;
+
+  grant(grantee: IGrantable, resources: APIIAMResourceProvider, ...actions: string[]): Grant;
+  // /**
+  //  *  Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM principal's policy.
+  //  *
+  //  * @param grantee The principal.
+  //  * @param fields The fields to grant access to that are Mutations (leave blank for all).
+  //  */
+  grantMutation(grantee: IGrantable, ...fields: string[]): Grant;
+  // /**
+  //  *  Adds an IAM policy statement for Query access to this GraphQLApi to an IAM principal's policy.
+  //  *
+  //  * @param grantee The principal.
+  //  * @param fields The fields to grant access to that are Queries (leave blank for all).
+  //  */
+  grantQuery(grantee: IGrantable, ...fields: string[]): Grant;
+  // /**
+  //  *  Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM principal's policy.
+  //  *
+  //  * @param grantee The principal.
+  //  * @param fields The fields to grant access to that are Subscriptions (leave blank for all).
+  //  */
+  grantSubscription(grantee: IGrantable, ...fields: string[]): Grant;
+}
+
+export interface APIIAMResourceProvider {
+  /**
+   * Return the Resource ARN
+   *
+   * @param api The GraphQL API to give permissions
+   */
+  resourceArns(api: GraphQLApiProvider): string[];
 }

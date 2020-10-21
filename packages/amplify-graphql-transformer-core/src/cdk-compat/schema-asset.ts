@@ -1,17 +1,20 @@
+import { GraphQLApiProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnGraphQLSchema, GraphqlApi, Schema } from '@aws-cdk/aws-appsync';
 import { Lazy } from '@aws-cdk/core';
+import { GraphQLApi } from '../graphql-api';
 import { FileAsset } from './file-asset';
 
-export class TransformerSchema extends Schema {
+export class TransformerSchema {
   private asset?: FileAsset;
-  private api?: GraphqlApi;
+  private api?: GraphQLApi;
+  private definition: string = '';
 
   private schemaConstruct?: CfnGraphQLSchema;
-  bind = (api: GraphqlApi): CfnGraphQLSchema => {
+  bind = (api: GraphQLApi): CfnGraphQLSchema => {
     if (!this.schemaConstruct) {
       const schema = this;
       this.api = api;
-      this.schemaConstruct = new CfnGraphQLSchema(api, 'Schemaasdf', {
+      this.schemaConstruct = new CfnGraphQLSchema(api, 'TransformerSchema', {
         apiId: api.apiId,
         definitionS3Location: Lazy.stringValue({
           produce: () => {

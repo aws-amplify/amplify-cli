@@ -1,12 +1,11 @@
 import { Construct } from '@aws-cdk/core';
 import {
   CfnFunctionConfiguration,
-  GraphqlApi as GraphQLApi,
   BaseDataSource,
-  MappingTemplate,
   BackedDataSource,
 } from '@aws-cdk/aws-appsync';
 import { TemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLApi } from './graphql-api';
 export interface BaseFunctionConfigurationProps {
   /**
    * The request mapping template for this resolver

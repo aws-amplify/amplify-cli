@@ -24,4 +24,4 @@ export {
   TransformerModelProvider,
 } from './transformer-model';
 
-export { GraphQLApiProvider, AppSyncFunctionConfigurationProvider, DataSourceOptions, TemplateProvider } from './graphql-api-provider'
+export { GraphQLApiProvider, AppSyncFunctionConfigurationProvider, DataSourceOptions, TemplateProvider, APIIAMResourceProvider } from './graphql-api-provider'
