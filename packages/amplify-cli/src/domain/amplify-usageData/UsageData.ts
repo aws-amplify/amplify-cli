@@ -9,9 +9,9 @@ import { IUsageData } from './IUsageData';
 import { JSONUtilities } from 'amplify-cli-core';
 
 export class UsageData implements IUsageData {
-  sessionUuid: String;
-  installationUuid: String = '';
-  version: String = '';
+  sessionUuid: string;
+  installationUuid: string = '';
+  version: string = '';
   input: Input;
   url: UrlWithStringQuery;
   requestTimeout: number = 100;
@@ -23,7 +23,7 @@ export class UsageData implements IUsageData {
     this.input = new Input([]);
   }
 
-  init(installationUuid: String, version: String, input: Input): void {
+  init(installationUuid: string, version: string, input: Input): void {
     this.installationUuid = installationUuid;
     this.version = version;
     this.input = redactInput(input, true);
@@ -47,7 +47,7 @@ export class UsageData implements IUsageData {
     return this.emit(null, WorkflowState.Successful);
   }
 
-  async emit(error: Error | null, state: String): Promise<void> {
+  async emit(error: Error | null, state: string): Promise<void> {
     const payload = new UsageDataPayload(this.sessionUuid, this.installationUuid, this.version, this.input, error, state);
     return this.send(payload);
   }
