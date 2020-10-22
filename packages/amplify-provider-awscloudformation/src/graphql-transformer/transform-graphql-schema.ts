@@ -402,7 +402,6 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     authConfig: opts.authConfig,
     buildParameters: opts.buildParameters,
     stacks: opts.projectConfig.stacks || {},
-    featureFlags: new NewFeatureFlagProvider(),
   });
   return transform.transform(userProjectConfig.schema.toString());
 }
