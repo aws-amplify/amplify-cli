@@ -308,7 +308,7 @@ export const supportedServices = {
       {
         key: 'adminQueries',
         question: 'Do you want to add an admin queries API?',
-        learnMore: 'This flow will help you add multiple user pool groups to your user-pool',
+        learnMore: 'TODO: Find out what admin queries APIs are',
         required: true,
         type: 'list',
         map: 'booleanOptions',
