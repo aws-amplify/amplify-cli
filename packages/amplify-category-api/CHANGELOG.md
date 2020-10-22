@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.25.0...amplify-category-api@2.25.1) (2020-10-22)
+
+
+### Bug Fixes
+
+* refactor mobile hub migration checks ([#5632](https://github.com/aws-amplify/amplify-cli/issues/5632)) ([b796eb8](https://github.com/aws-amplify/amplify-cli/commit/b796eb8303bb903f5f531506254441a63eba2962))
+
+
+
+
+
 # [2.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.24.1...amplify-category-api@2.25.0) (2020-10-17)
 
 

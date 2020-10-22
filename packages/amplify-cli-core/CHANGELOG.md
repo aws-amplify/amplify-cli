@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.4.0...amplify-cli-core@1.5.0) (2020-10-22)
+
+
+### Features
+
+* update post-install to copy executable assets to .amplify ([#5595](https://github.com/aws-amplify/amplify-cli/issues/5595)) ([53a23a0](https://github.com/aws-amplify/amplify-cli/commit/53a23a07cbb9e09566c1f0f577ba2b7488bc2eae))
+
+
+
+
+
 # [1.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.3.4...amplify-cli-core@1.4.0) (2020-10-17)
 
 

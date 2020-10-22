@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.27.0...amplify-provider-awscloudformation@4.28.0) (2020-10-22)
+
+
+### Bug Fixes
+
+* refactor mobile hub migration checks ([#5632](https://github.com/aws-amplify/amplify-cli/issues/5632)) ([b796eb8](https://github.com/aws-amplify/amplify-cli/commit/b796eb8303bb903f5f531506254441a63eba2962))
+* show app id when listing console apps ([#5670](https://github.com/aws-amplify/amplify-cli/issues/5670)) ([1b7b5ec](https://github.com/aws-amplify/amplify-cli/commit/1b7b5ece57c482f8293b423465c5c24814815399))
+* update current-cloud backend-config on resource removal ([#5658](https://github.com/aws-amplify/amplify-cli/issues/5658)) ([592f694](https://github.com/aws-amplify/amplify-cli/commit/592f694530dd61302ff790fbcf5b3ea135812c47))
+
+
+### Features
+
+* Cloudformation logging ([#5195](https://github.com/aws-amplify/amplify-cli/issues/5195)) ([19b2165](https://github.com/aws-amplify/amplify-cli/commit/19b21651375848c0858328952852201da47b17bb))
+
+
+
+
+
 # [4.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.7...amplify-provider-awscloudformation@4.27.0) (2020-10-17)
 
 

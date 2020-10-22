@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.5.1...amplify-graphql-types-generator@2.5.2) (2020-10-22)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** add proper response type for subs ([#5317](https://github.com/aws-amplify/amplify-cli/issues/5317)) ([48d2e11](https://github.com/aws-amplify/amplify-cli/commit/48d2e11b2a9dbb9616cc989aa76c207eb7b5f13b)), closes [#5284](https://github.com/aws-amplify/amplify-cli/issues/5284)
+
+
+
+
+
 ## [2.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-types-generator@2.5.0...amplify-graphql-types-generator@2.5.1) (2020-09-25)
 
 

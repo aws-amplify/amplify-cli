@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.15.16...graphql-relational-schema-transformer@2.15.17) (2020-10-22)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
 ## [2.15.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.15.15...graphql-relational-schema-transformer@2.15.16) (2020-10-07)
 
 **Note:** Version bump only for package graphql-relational-schema-transformer
