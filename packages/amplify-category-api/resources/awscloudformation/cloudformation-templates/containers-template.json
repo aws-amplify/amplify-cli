@@ -103,9 +103,7 @@
           "Ref": "VPCIGWB7E252D3"
         }
       },
-      "DependsOn": [
-        "VPCVPCGW99B986DC"
-      ],
+      "DependsOn": ["VPCVPCGW99B986DC"],
       "Metadata": {
         "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet1/DefaultRoute"
       }
@@ -129,10 +127,7 @@
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "AllocationId": {
-          "Fn::GetAtt": [
-            "VPCPublicSubnet1EIP6AD938E8",
-            "AllocationId"
-          ]
+          "Fn::GetAtt": ["VPCPublicSubnet1EIP6AD938E8", "AllocationId"]
         },
         "SubnetId": {
           "Ref": "VPCPublicSubnet1SubnetB4246D30"
@@ -225,9 +220,7 @@
           "Ref": "VPCIGWB7E252D3"
         }
       },
-      "DependsOn": [
-        "VPCVPCGW99B986DC"
-      ],
+      "DependsOn": ["VPCVPCGW99B986DC"],
       "Metadata": {
         "aws:cdk:path": "WithcdkStack/VPC/PublicSubnet2/DefaultRoute"
       }
@@ -251,10 +244,7 @@
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
         "AllocationId": {
-          "Fn::GetAtt": [
-            "VPCPublicSubnet2EIP4947BC00",
-            "AllocationId"
-          ]
+          "Fn::GetAtt": ["VPCPublicSubnet2EIP4947BC00", "AllocationId"]
         },
         "SubnetId": {
           "Ref": "VPCPublicSubnet2Subnet74179F39"
@@ -489,10 +479,7 @@
           "Ref": "ParamContainerPort"
         },
         "GroupId": {
-          "Fn::GetAtt": [
-            "MyServiceSecurityGroup3C4EC593",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["MyServiceSecurityGroup3C4EC593", "GroupId"]
         },
         "ToPort": {
           "Ref": "ParamContainerPort"
@@ -550,10 +537,7 @@
             "AssignPublicIp": "DISABLED",
             "SecurityGroups": [
               {
-                "Fn::GetAtt": [
-                  "MyServiceSecurityGroup3C4EC593",
-                  "GroupId"
-                ]
+                "Fn::GetAtt": ["MyServiceSecurityGroup3C4EC593", "GroupId"]
               }
             ],
             "Subnets": [
@@ -573,17 +557,12 @@
               "Ref": "ParamContainerPort"
             },
             "RegistryArn": {
-              "Fn::GetAtt": [
-                "MyServiceCloudmapService207257AE",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["MyServiceCloudmapService207257AE", "Arn"]
             }
           }
         ]
       },
-      "DependsOn": [
-        "MyNetworkLoadBalancerCosaDB890A09"
-      ],
+      "DependsOn": ["MyNetworkLoadBalancerCosaDB890A09"],
       "Metadata": {
         "aws:cdk:path": "WithcdkStack/MyService/Service"
       }
@@ -599,10 +578,7 @@
             }
           ],
           "NamespaceId": {
-            "Fn::GetAtt": [
-              "MyClusterDefaultServiceDiscoveryNamespace4A9016C4",
-              "Id"
-            ]
+            "Fn::GetAtt": ["MyClusterDefaultServiceDiscoveryNamespace4A9016C4", "Id"]
           },
           "RoutingPolicy": "MULTIVALUE"
         },
@@ -610,10 +586,7 @@
           "FailureThreshold": 1
         },
         "NamespaceId": {
-          "Fn::GetAtt": [
-            "MyClusterDefaultServiceDiscoveryNamespace4A9016C4",
-            "Id"
-          ]
+          "Fn::GetAtt": ["MyClusterDefaultServiceDiscoveryNamespace4A9016C4", "Id"]
         }
       },
       "Metadata": {
@@ -744,15 +717,10 @@
       "Type": "AWS::ApiGateway::Account",
       "Properties": {
         "CloudWatchRoleArn": {
-          "Fn::GetAtt": [
-            "MyApi2CloudWatchRole7EE8E5B3",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["MyApi2CloudWatchRole7EE8E5B3", "Arn"]
         }
       },
-      "DependsOn": [
-        "MyApi29E763169"
-      ],
+      "DependsOn": ["MyApi29E763169"],
       "Metadata": {
         "aws:cdk:path": "WithcdkStack/MyApi2/Account"
       }
@@ -765,9 +733,7 @@
         },
         "Description": "Automatically created by the RestApi construct"
       },
-      "DependsOn": [
-        "MyApi2ANYB6A6ADA2"
-      ],
+      "DependsOn": ["MyApi2ANYB6A6ADA2", "MyApi2OPTIONSEF4A35E5"],
       "Metadata": {
         "aws:cdk:path": "WithcdkStack/MyApi2/Deployment/Resource"
       }
@@ -787,22 +753,59 @@
         "aws:cdk:path": "WithcdkStack/MyApi2/DeploymentStage.prod/Resource"
       }
     },
+    "MyApi2OPTIONSEF4A35E5": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "OPTIONS",
+        "ResourceId": {
+          "Fn::GetAtt": ["MyApi29E763169", "RootResourceId"]
+        },
+        "RestApiId": {
+          "Ref": "MyApi29E763169"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationResponses": [
+            {
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+              },
+              "StatusCode": "204"
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{ statusCode: 200 }"
+          },
+          "Type": "MOCK"
+        },
+        "MethodResponses": [
+          {
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "StatusCode": "204"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "WithcdkStack/MyApi2/Default/OPTIONS/Resource"
+      }
+    },
     "MyApi2ANYB6A6ADA2": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
         "HttpMethod": "ANY",
         "ResourceId": {
-          "Fn::GetAtt": [
-            "MyApi29E763169",
-            "RootResourceId"
-          ]
+          "Fn::GetAtt": ["MyApi29E763169", "RootResourceId"]
         },
         "RestApiId": {
           "Ref": "MyApi29E763169"
         },
-        "AuthorizationScopes": [
-          "openid"
-        ],
+        "AuthorizationScopes": ["openid"],
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
           "Ref": "MyAuthorizer"
@@ -824,10 +827,7 @@
                     [
                       "http://",
                       {
-                        "Fn::GetAtt": [
-                          "MyNetworkLoadBalancerE0D8DAC9",
-                          "DNSName"
-                        ]
+                        "Fn::GetAtt": ["MyNetworkLoadBalancerE0D8DAC9", "DNSName"]
                       }
                     ]
                   ]
@@ -857,7 +857,7 @@
           {
             "Fn::Join": [
               "",
-              [ 
+              [
                 "arn:",
                 {
                   "Ref": "AWS::Partition"
@@ -912,6 +912,5 @@
       "Value": ""
     }
   },
-  "Conditions": {
-  }
+  "Conditions": {}
 }

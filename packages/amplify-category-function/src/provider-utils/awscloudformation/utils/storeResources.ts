@@ -9,21 +9,17 @@ import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './layerParams';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { saveLayerRuntimes } from './layerRuntimes';
-import { containerTemplate as containerCfn,  buildspec } from './container-resource-template';
+import { containerTemplate as containerCfn, buildspec } from './container-resource-template';
 
 const DEFAULT_CONTAINER_PORT = 8080;
 export function createContainerResources(context: any, parameters: ContainerParameters) {
-  context.amplify.updateamplifyMetaAfterResourceAdd(
-    categoryName,
-    parameters.resourceName,
-    {
-      container: true,
-      build: true,
-      providerPlugin: "awscloudformation",
-      service: "ElasticContainer",
-      dependsOn: []
-    }
-  );
+  context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.resourceName, {
+    container: true,
+    build: true,
+    providerPlugin: 'awscloudformation',
+    service: 'ElasticContainer',
+    dependsOn: [],
+  });
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, parameters.resourceName);
 
@@ -33,15 +29,18 @@ export function createContainerResources(context: any, parameters: ContainerPara
     ParamRepositoryName: parameters.resourceName,
     ParamZipPath: '', // TBD after push
     ParamDeploymentBucket: `${context.amplify.getProjectMeta().providers[provider].DeploymentBucketName}`,
-    ParamContainerPort: DEFAULT_CONTAINER_PORT
-  }
+    ParamContainerPort: DEFAULT_CONTAINER_PORT,
+  };
 
-  fs.writeFileSync(path.join(resourceDirPath, 'src', 'Dockerfile'), 'FROM inanimate/echo-server');
+  fs.writeFileSync(
+    path.join(resourceDirPath, 'src', 'Dockerfile'),
+    `FROM inanimate/echo-server
+  ENV ADD_HEADERS={"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}`,
+  );
   fs.writeFileSync(path.join(resourceDirPath, 'src', 'buildspec.yml'), buildspec);
   JSONUtilities.writeJson(path.join(resourceDirPath, 'container-template.json'), containerCfn);
   JSONUtilities.writeJson(path.join(resourceDirPath, 'parameters.json'), templateParameters);
 }
-
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
