@@ -1,24 +1,22 @@
 import { Construct } from '@aws-cdk/core';
-import {
-  CfnFunctionConfiguration,
-  BaseDataSource,
-  BackedDataSource,
-} from '@aws-cdk/aws-appsync';
-import { TemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { CfnFunctionConfiguration, BaseDataSource, BackedDataSource } from '@aws-cdk/aws-appsync';
+import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { GraphQLApi } from './graphql-api';
+import { TemplateType } from '@aws-amplify/graphql-transformer-interfaces/lib/graphql-api-provider';
+import { InlineTemplate, S3MappingTemplate } from './cdk-compat/template-asset';
 export interface BaseFunctionConfigurationProps {
   /**
    * The request mapping template for this resolver
    *
    * @default - No mapping template
    */
-  readonly requestMappingTemplate: TemplateProvider;
+  readonly requestMappingTemplate: MappingTemplateProvider;
   /**
    * The response mapping template for this resolver
    *
    * @default - No mapping template
    */
-  readonly responseMappingTemplate: TemplateProvider;
+  readonly responseMappingTemplate: MappingTemplateProvider;
 
   readonly description?: string;
 }
@@ -59,8 +57,12 @@ export class AppSyncFunctionConfiguration extends Construct {
       functionVersion: '2018-05-29',
       description: props.description,
       dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
-      requestMappingTemplateS3Location: requestTemplate.s3Location.s3Url,
-      responseMappingTemplateS3Location: responseTemplate.s3Location.s3Url,
+      ...(props.requestMappingTemplate instanceof InlineTemplate
+        ? { requestMappingTemplate: requestTemplate }
+        : { requestMappingTemplateS3Location: requestTemplate }),
+      ...(props.responseMappingTemplate instanceof InlineTemplate
+        ? { responseMappingTemplate: responseTemplate }
+        : { responseMappingTemplateS3Location: responseTemplate }),
     });
 
     props.api.addSchemaDependency(this.function);

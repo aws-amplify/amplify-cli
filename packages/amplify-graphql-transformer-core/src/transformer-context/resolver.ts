@@ -4,17 +4,19 @@ import {
   TransformerContextProvider,
   TransformerResolversManagerProvider,
   AppSyncFunctionConfigurationProvider,
+  MappingTemplateProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { Stack } from '@aws-cdk/core';
+import { Stack, isResolvableObject } from '@aws-cdk/core';
 import { GraphQLApiProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { MappingTemplate } from '../cdk-compat';
 import { StackManager } from './stack-manager';
 import assert from 'assert';
 import { toPascalCase } from 'graphql-transformer-common';
+import { dedent } from 'ts-dedent';
 
 type Slot = {
-  requestMappingTemplate: string;
-  responseMappingTemplate?: string;
+  requestMappingTemplate: MappingTemplateProvider;
+  responseMappingTemplate?: MappingTemplateProvider;
   dataSource?: DataSourceProvider;
 };
 
@@ -27,8 +29,8 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     typeName: string,
     fieldName: string,
     dataSource: DataSourceProvider,
-    requestMappingTemplate: string,
-    responseMappingTemplate: string,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
   ): TransformerResolver => {
     return new TransformerResolver(
       typeName,
@@ -45,8 +47,8 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     typeName: string,
     fieldName: string,
     dataSource: DataSourceProvider,
-    requestMappingTemplate: string,
-    responseMappingTemplate: string,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
   ): TransformerResolver => {
     return new TransformerResolver(
       typeName,
@@ -63,8 +65,8 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     typeName: string,
     fieldName: string,
     dataSource: DataSourceProvider,
-    requestMappingTemplate: string,
-    responseMappingTemplate: string,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
   ): TransformerResolver => {
     return new TransformerResolver(
       typeName,
@@ -114,8 +116,8 @@ export class TransformerResolver implements TransformerResolverProvider {
     private typeName: string,
     private fieldName: string,
     private datasource: DataSourceProvider,
-    private requestMappingTemplate: string,
-    private responseMappingTemplate: string,
+    private requestMappingTemplate: MappingTemplateProvider,
+    private responseMappingTemplate: MappingTemplateProvider,
     private requestSlots: string[],
     private responseSlots: string[],
   ) {
@@ -124,7 +126,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     assert(datasource, 'dataSourceName is required');
     assert(requestMappingTemplate, 'requestMappingTemplate is required');
     assert(responseMappingTemplate, 'responseMappingTemplate is required');
-    this.slotNames = new Set([...requestMappingTemplate, ...responseMappingTemplate]);
+    this.slotNames = new Set([...requestSlots, ...responseSlots]);
   }
 
   mapToStack = (stack: Stack) => {
@@ -132,8 +134,8 @@ export class TransformerResolver implements TransformerResolverProvider {
   };
   addToSlot = (
     slotName: string,
-    requestMappingTemplate: string,
-    responseMappingTemplate?: string,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate?: MappingTemplateProvider,
     dataSource?: DataSourceProvider,
   ): void => {
     if (!this.slotNames.has(slotName)) {
@@ -157,33 +159,67 @@ export class TransformerResolver implements TransformerResolverProvider {
   synthesize = (context: TransformerContextProvider, api: GraphQLApiProvider): void => {
     const stack = this.stack || (context.stackManager as StackManager).rootStack;
     this.ensureNoneDataSource(api);
-    const templateNamePrefix = `${this.typeName}.${this.fieldName}`;
     const requestFns = this.synthesizePipelineFunctions(stack, api, this.requestSlots);
     const responseFns = this.synthesizePipelineFunctions(stack, api, this.responseSlots);
     const dataSourceProviderFn = api.addAppSyncFunction(
       toPascalCase([this.typeName, this.fieldName, 'DataResolverFn']),
-      MappingTemplate.fromInlineTemplate(this.requestMappingTemplate, `pipelineFunctions/${templateNamePrefix}.dataloader.req.vtl`),
-      MappingTemplate.fromInlineTemplate(this.responseMappingTemplate, `pipelineFunctions/${templateNamePrefix}.dataloader.res.vtl`),
+      this.requestMappingTemplate,
+      this.responseMappingTemplate,
       this.datasource.name,
       stack,
     );
-
+    const dataSourceType = this.datasource.ds.type;
+    let dataSource = '';
+    switch (dataSourceType) {
+      case 'AMAZON_DYNAMODB':
+        if (this.datasource.ds.dynamoDbConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig)) {
+          const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
+          dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
+        }
+        break;
+      case 'AMAZON_ELASTICSEARCH':
+        if (this.datasource.ds.elasticsearchConfig && !isResolvableObject(this.datasource.ds.elasticsearchConfig)) {
+          const endpoint = this.datasource.ds.elasticsearchConfig?.endpoint;
+          dataSource = `$util.qr($ctx.stash.put("endpoint", "${endpoint}"))`;
+        }
+        break;
+      case 'AWS_LAMBDA':
+        if (this.datasource.ds.lambdaConfig && !isResolvableObject(this.datasource.ds.lambdaConfig)) {
+          const lambdaFunctionArn = this.datasource.ds.lambdaConfig?.lambdaFunctionArn;
+          dataSource = `$util.qr($ctx.stash.put("lambdaFunctionArn", "${lambdaFunctionArn}"))`;
+        }
+        break;
+      case 'HTTP':
+        if (this.datasource.ds.httpConfig && !isResolvableObject(this.datasource.ds.httpConfig)) {
+          const endpoint = this.datasource.ds.httpConfig?.endpoint;
+          dataSource = `$util.qr($ctx.stash.put("endpoint", "${endpoint}"))`;
+        }
+        break;
+      case 'RELATIONAL_DATABASE':
+        if (
+          this.datasource.ds.relationalDatabaseConfig &&
+          !isResolvableObject(this.datasource.ds.relationalDatabaseConfig) &&
+          !isResolvableObject(this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig)
+        ) {
+          const databaseName = this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig!.databaseName;
+          dataSource = `$util.qr($ctx.stash.metadata.put("databaseName", "${databaseName}"))`;
+        }
+        break;
+    }
     api.addResolver(
       this.typeName,
       this.fieldName,
-      MappingTemplate.fromInlineTemplate(
-        `
+      MappingTemplate.inlineTemplateFromString(
+        dedent`
       $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
       $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
+      $util.qr($ctx.stash.put("metadata", $util.defaultIfNull($ctx.stash.metadata, {})))
+      $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
+      $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
+      ${dataSource}
       `,
-        `resolvers/${templateNamePrefix}.req.vtl`,
       ),
-      MappingTemplate.fromInlineTemplate(
-        `
-      $util.toJson($ctx.prev.result)
-      `,
-        `resolvers/${templateNamePrefix}res.vtl`,
-      ),
+      MappingTemplate.inlineTemplateFromString('$util.toJson($ctx.prev.result)'),
       undefined,
       [...requestFns, dataSourceProviderFn, ...responseFns].map(fn => fn.functionId),
       stack,
@@ -196,36 +232,19 @@ export class TransformerResolver implements TransformerResolverProvider {
     for (let slotName of slotsNames) {
       if (this.slotMap.has(slotName)) {
         const slotEntries = this.slotMap.get(slotName);
-        const hasDataSource = slotEntries!.some(entry => entry.dataSource);
-        const hasResponseTemplate = slotEntries!.some(entry => entry.responseMappingTemplate);
-
-        if (!hasDataSource && !hasResponseTemplate) {
-          // we can merge all the slot item into one AppSync function
-          const requestTemplate = slotEntries!.map(entry => entry.requestMappingTemplate).join('\n\n');
-          const name = `${this.typeName}.${this.fieldName}.${slotName}Function`;
+        // Create individual functions
+        let index = 0;
+        for (let slotItem of slotEntries!) {
+          const name = `${this.typeName}.${this.fieldName}.${slotName}${index++}Function`;
+          const { requestMappingTemplate, responseMappingTemplate, dataSource } = slotItem;
           const fn = api.addAppSyncFunction(
             name,
-            MappingTemplate.fromInlineTemplate(requestTemplate, `pipelineFunctions/${name}.req.vtl`),
-            MappingTemplate.fromInlineTemplate('$util.toJson({})', `pipelineFunctions/${name}.res.vtl`),
-            NONE_DATA_SOURCE_NAME,
+            requestMappingTemplate,
+            responseMappingTemplate || MappingTemplate.inlineTemplateFromString('$util.toJson({})'),
+            dataSource?.name || NONE_DATA_SOURCE_NAME,
             stack,
           );
           appSyncFunctions.push(fn);
-        } else {
-          // Create individual functions
-          let index = 0;
-          for (let slotItem of slotEntries!) {
-            const name = `${this.typeName}.${this.fieldName}.${slotName}${index++}Function`;
-            const { requestMappingTemplate, responseMappingTemplate, dataSource } = slotItem;
-            const fn = api.addAppSyncFunction(
-              name,
-              MappingTemplate.fromInlineTemplate(requestMappingTemplate, `pipelineFunctions/${name}.req.vtl`),
-              MappingTemplate.fromInlineTemplate(responseMappingTemplate || '$util.toJson({})', `pipelineFunctions/${name}.res.vtl`),
-              dataSource?.name || NONE_DATA_SOURCE_NAME,
-              stack,
-            );
-            appSyncFunctions.push(fn);
-          }
         }
       }
     }

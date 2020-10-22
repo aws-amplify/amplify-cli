@@ -1,9 +1,4 @@
-import {
-  ObjectTypeDefinitionNode,
-  DirectiveDefinitionNode,
-  InputValueDefinitionNode,
-  DirectiveNode,
-} from 'graphql';
+import { ObjectTypeDefinitionNode, InputValueDefinitionNode } from 'graphql';
 import { camelCase } from 'change-case';
 import {
   AppSyncDataSourceType,
@@ -17,13 +12,8 @@ import {
   DataSourceInstance,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AttributeType, ITable, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
-import { TransformerModelBase } from '@aws-amplify/graphql-transformer-core';
-import {
-  TranformerTransformSchemaStepContextProvider,
-  TransformerPrepareStepContextProvider,
-  TransformerSchemaVisitStepContextProvider,
-  TransformerValidationStepContextProvider,
-} from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerModelBase, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
+import { TranformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { makeField, makeInputValueDefinition, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
 import { RemovalPolicy } from '@aws-cdk/core';
 
@@ -81,8 +71,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         typeName,
         fieldName,
         dataSource,
-        'Get Request Template',
-        'GetResponseTemplate',
+        MappingTemplate.s3MappingTemplateFromString('Get Request Template', `${typeName}.${fieldName}.req.vtl` ),
+        MappingTemplate.s3MappingTemplateFromString('Get Response Template', `${typeName}.${fieldName}.res.vtl`),
       );
     }
     return this.resolverMap[resolverKey];
@@ -98,7 +88,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[typeName];
     const resolverKey = this.generateResolverKey(typeName, fieldName);
     if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(typeName, fieldName, dataSource, '{}', '{}');
+      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+        typeName,
+        fieldName,
+        dataSource,
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.res.vtl`),
+      );
     }
     return this.resolverMap[resolverKey];
   };
@@ -112,7 +108,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[typeName];
     const resolverKey = this.generateResolverKey(typeName, fieldName);
     if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(typeName, fieldName, dataSource, '{}', '{}');
+      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+        typeName,
+        fieldName,
+        dataSource,
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.res.vtl`),
+      );
     }
     return this.resolverMap[resolverKey];
   };
@@ -190,7 +192,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[typeName];
     const resolverKey = this.generateResolverKey(typeName, fieldName);
     if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(typeName, fieldName, dataSource, '{}', '{}');
+      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+        typeName,
+        fieldName,
+        dataSource,
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.res.vtl`),
+      );
     }
     return this.resolverMap[resolverKey];
   };
@@ -203,7 +211,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[typeName];
     const resolverKey = this.generateResolverKey(typeName, fieldName);
     if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(typeName, fieldName, dataSource, '{}', '{}');
+      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+        typeName,
+        fieldName,
+        dataSource,
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.res.vtl`),
+      );
     }
     return this.resolverMap[resolverKey];
   };
@@ -216,7 +230,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[typeName];
     const resolverKey = this.generateResolverKey(typeName, fieldName);
     if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(typeName, fieldName, dataSource, '{}', '{}');
+      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+        typeName,
+        fieldName,
+        dataSource,
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.res.vtl`),
+      );
     }
     return this.resolverMap[resolverKey];
   };
@@ -229,7 +249,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[typeName];
     const resolverKey = this.generateResolverKey(typeName, fieldName);
     if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(typeName, fieldName, dataSource, '{}', '{}');
+      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+        typeName,
+        fieldName,
+        dataSource,
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.res.vtl`),
+      );
     }
     return this.resolverMap[resolverKey];
   };
@@ -242,7 +268,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[typeName];
     const resolverKey = this.generateResolverKey(typeName, fieldName);
     if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(typeName, fieldName, dataSource, '{}', '{}');
+      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+        typeName,
+        fieldName,
+        dataSource,
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.res.vtl`),
+      );
     }
     return this.resolverMap[resolverKey];
   };

@@ -26,4 +26,13 @@ export {
 } from './transformer-model';
 export { FeatureFlagProvider } from './featuer-flags';
 
-export { GraphQLApiProvider, AppSyncFunctionConfigurationProvider, DataSourceOptions, TemplateProvider, APIIAMResourceProvider } from './graphql-api-provider'
+export {
+  GraphQLApiProvider,
+  AppSyncFunctionConfigurationProvider,
+  DataSourceOptions,
+  MappingTemplateProvider,
+  S3MappingTemplateProvider,
+  InlineMappingTemplateProvider,
+  APIIAMResourceProvider,
+  TemplateType as MappingTemplateType,
+} from './graphql-api-provider';

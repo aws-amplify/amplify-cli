@@ -1,17 +1,23 @@
 import * as cdk from '@aws-cdk/core';
 import * as crypto from 'crypto';
-import { TemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  MappingTemplateProvider,
+  S3MappingTemplateProvider,
+  InlineMappingTemplateProvider,
+  MappingTemplateType,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { FileAsset } from './file-asset';
-export class MappingTemplate implements TemplateProvider {
+export class S3MappingTemplate implements S3MappingTemplateProvider {
   private content: string;
   private name: string;
   private asset?: FileAsset;
-  static fromFile(path: string, templateName: string): MappingTemplate {
+  public readonly type = MappingTemplateType.S3_LOCATION;
+  static fromFile(path: string, templateName: string): S3MappingTemplate {
     throw new Error('Not implemented');
   }
 
-  static fromInlineTemplate(code: string, templateName?: string): MappingTemplate {
-    return new MappingTemplate(code, templateName);
+  static fromInlineTemplate(code: string, templateName?: string): S3MappingTemplate {
+    return new S3MappingTemplate(code, templateName);
   }
 
   constructor(content: string, name?: string) {
@@ -23,16 +29,7 @@ export class MappingTemplate implements TemplateProvider {
     this.name = name || `mapping-template-${assetHash}.vtl`;
   }
 
-  bind(
-    scope: cdk.Construct,
-  ): {
-    s3Location: {
-      bucketName: string;
-      objectKey: string;
-      httpUrl: string;
-      s3Url: string;
-    };
-  } {
+  bind(scope: cdk.Construct): string {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
       this.asset = new FileAsset(scope, `Template${this.name}`, {
@@ -40,13 +37,29 @@ export class MappingTemplate implements TemplateProvider {
         fileName: this.name,
       });
     }
-    return {
-      s3Location: {
-        bucketName: this.asset.s3BucketName,
-        objectKey: this.asset.s3ObjectKey,
-        httpUrl: this.asset.httpUrl,
-        s3Url: this.asset.s3Url,
-      },
-    };
+    return this.asset.s3Url;
+  }
+}
+
+export class InlineTemplate implements InlineMappingTemplateProvider {
+  public readonly type = MappingTemplateType.INLINE;
+
+  constructor(private content: string) {}
+  bind(scope: cdk.Construct): string {
+    return this.content;
+  }
+}
+
+export class MappingTemplate {
+  static inlineTemplateFromString(template: string): InlineTemplate {
+    return new InlineTemplate(template);
+  }
+  static s3MappingTemplateFromString(
+    template: string,
+    templateName: string,
+    type: 'pipeline' | 'resolver' = 'pipeline',
+  ): S3MappingTemplate {
+    const templatePrefix = type == 'pipeline' ? 'pipelineFunctions' : 'resolvers';
+    return new S3MappingTemplate(template, `${templatePrefix}/${templateName}`);
   }
 }

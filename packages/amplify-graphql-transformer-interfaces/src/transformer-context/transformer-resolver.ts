@@ -1,10 +1,10 @@
 import { Stack } from '@aws-cdk/core';
-import { GraphQLApiProvider } from '../graphql-api-provider';
+import { GraphQLApiProvider, MappingTemplateProvider } from '../graphql-api-provider';
 import { DataSourceProvider } from './datasource';
 import { TransformerContextProvider } from './transformer-context';
 
 export interface TransformerResolverProvider {
-  addToSlot: (slotName: string, requestMappingTemplate: string, responseMappingTemplate?: string, dataSource?: DataSourceProvider) => void;
+  addToSlot: (slotName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
   synthesize: (context: TransformerContextProvider, api: GraphQLApiProvider) => void;
   mapToStack:(stack: Stack) => void;
 }
@@ -19,23 +19,23 @@ export interface TransformerResolversManagerProvider {
     typeName: string,
     fieldName: string,
     dataSource: DataSourceProvider,
-    requestMappingTemplate: string,
-    responseMappingTemplate: string,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
   ) => TransformerResolverProvider;
 
   generateMutationResolver: (
     typeName: string,
     fieldName: string,
     dataSource: DataSourceProvider,
-    requestMappingTemplate: string,
-    responseMappingTemplate: string,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
   ) => TransformerResolverProvider;
 
   generateSubscriptionResolver: (
     typeName: string,
     fieldName: string,
     dataSource: DataSourceProvider,
-    requestMappingTemplate: string,
-    responseMappingTemplate: string,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
   ) => TransformerResolverProvider;
 }

@@ -24,12 +24,13 @@ import {
 } from '@aws-cdk/aws-appsync';
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { GraphQLApiProvider, TemplateProvider, APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLApiProvider, MappingTemplateProvider, APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { toCamelCase } from 'graphql-transformer-common';
+import { InlineTemplate } from './cdk-compat/template-asset';
 
 export interface GraphqlApiProps {
   /**
@@ -254,8 +255,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
 
   public addAppSyncFunction(
     name: string,
-    requestMappingTemplate: TemplateProvider,
-    responseMappingTemplate: TemplateProvider,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
     stack?: Stack,
   ): AppSyncFunctionConfiguration {
@@ -331,8 +332,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
   public addResolver(
     typeName: string,
     fieldName: string,
-    requestMappingTemplate: TemplateProvider,
-    responseMappingTemplate: TemplateProvider,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
     dataSourceName?: string,
     pipelineConfig?: string[],
     stack?: Stack,
@@ -341,8 +342,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
 
-    const requestTemplateLocation = requestMappingTemplate.bind(this).s3Location.s3Url;
-    const responseTemplateLocation = responseMappingTemplate.bind(this).s3Location.s3Url;
+    const requestTemplateLocation = requestMappingTemplate.bind(this);
+    const responseTemplateLocation = responseMappingTemplate.bind(this);
     const resolverName = toCamelCase([typeName, fieldName, 'Resolver']);
     if (dataSourceName) {
       const dataSource = this.dataSources.get(dataSourceName);
@@ -353,8 +354,12 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
         typeName: typeName,
         kind: 'UNIT',
         dataSourceName: dataSource?.ds.attrName || dataSourceName,
-        requestMappingTemplateS3Location: requestTemplateLocation,
-        responseMappingTemplateS3Location: responseTemplateLocation,
+        ...(requestMappingTemplate instanceof InlineTemplate
+          ? { requestMappingTemplate: requestTemplateLocation }
+          : { requestMappingTemplateS3Location: requestTemplateLocation }),
+        ...(responseMappingTemplate instanceof InlineTemplate
+          ? { responseMappingTemplate: responseTemplateLocation }
+          : { responseMappingTemplateS3Location: responseTemplateLocation }),
       });
       this.addSchemaDependency(resolver);
       return resolver;
@@ -364,8 +369,12 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
         fieldName: fieldName,
         typeName: typeName,
         kind: 'PIPELINE',
-        requestMappingTemplateS3Location: requestTemplateLocation,
-        responseMappingTemplateS3Location: responseTemplateLocation,
+        ...(requestMappingTemplate instanceof InlineTemplate
+          ? { requestMappingTemplate: requestTemplateLocation }
+          : { requestMappingTemplateS3Location: requestTemplateLocation }),
+        ...(responseMappingTemplate instanceof InlineTemplate
+          ? { responseMappingTemplate: responseTemplateLocation }
+          : { responseMappingTemplateS3Location: responseTemplateLocation }),
         pipelineConfig: {
           functions: pipelineConfig,
         },

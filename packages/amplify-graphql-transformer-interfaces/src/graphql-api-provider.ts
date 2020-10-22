@@ -32,18 +32,22 @@ export interface DataSourceOptions {
   readonly description?: string;
 }
 
-export interface TemplateProvider {
+export enum TemplateType  {
+  INLINE = 'INLINE',
+  S3_LOCATION = 'S3_LOCATION'
+}
+export interface InlineMappingTemplateProvider {
+  type: TemplateType.INLINE
+  bind(scope: Construct): string;
+}
+export interface S3MappingTemplateProvider {
+  type: TemplateType.S3_LOCATION
   bind(
     scope: Construct,
-  ): {
-    s3Location: {
-      bucketName: string;
-      objectKey: string;
-      httpUrl: string;
-      s3Url: string;
-    };
-  };
+  ): string;
 }
+
+export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
 
 export interface GraphQLApiProvider {
   readonly apiId: string;
@@ -54,8 +58,8 @@ export interface GraphQLApiProvider {
 
   addAppSyncFunction: (
     name: string,
-    requestMappingTemplate: TemplateProvider,
-    responseMappingTemplate: TemplateProvider,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
     dataSourceName: string,
     stack?: Stack,
   ) => AppSyncFunctionConfigurationProvider;
@@ -63,8 +67,8 @@ export interface GraphQLApiProvider {
   addResolver: (
     typeName: string,
     fieldName: string,
-    requestMappingTemplate: TemplateProvider,
-    responseMappingTemplate: TemplateProvider,
+    requestMappingTemplate: MappingTemplateProvider,
+    responseMappingTemplate: MappingTemplateProvider,
     dataSourceName?: string,
     pipelineConfig?: string[],
     stack?: Stack,
