@@ -232,6 +232,7 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
+            ./packages/amplify-cli/bin/amplify post-install
             cd packages/amplify-migration-tests
             yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
@@ -256,6 +257,7 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
+            ./packages/amplify-cli/bin/amplify post-install
             cd packages/amplify-migration-tests
             yarn run migration --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m

@@ -197,7 +197,7 @@ export async function loadPluginFromFactory(pluginPath, expectedFactoryFunction,
   try {
     plugin = await import(pluginPath);
   } catch (err) {
-    throw new Error('Could not load selected plugin');
+    throw new Error(`Could not load selected plugin. Error is [${err}]`);
   }
   if (!plugin) {
     throw new Error('Could not load selected plugin');
