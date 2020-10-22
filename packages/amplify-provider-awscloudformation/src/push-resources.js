@@ -68,7 +68,7 @@ async function run(context, resourceDefinition) {
     await postPushGraphQLCodegen(context);
     await amplifyServiceManager.postPushCheck(context);
 
-    if (resources.length > 0) {
+    if (resources.concat(resourcesToBeDeleted).length > 0) {
       await context.amplify.updateamplifyMetaAfterPush(resources);
     }
 
