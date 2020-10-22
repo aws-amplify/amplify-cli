@@ -39,7 +39,7 @@ export class VelocityTemplate {
       });
       this.template = template;
     } catch (e) {
-      const lineDetails = `${e.hash.line}:${e.hash.loc.first_column}`;
+      const lineDetails = `${e.hash.line}:${e.hash.loc?.first_column ? e.hash.loc.first_column : ''}`;
       const fileName = template.path ? `${template.path}:${lineDetails}` : lineDetails;
       const templateError = new VelocityTemplateParseError(`Error:Parse error on ${fileName} \n${e.message}`);
       templateError.stack = e.stack;
