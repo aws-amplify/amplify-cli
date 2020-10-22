@@ -135,7 +135,7 @@ async function getAmplifyApp(context, amplifyClient) {
     const options = [];
     apps.forEach(app => {
       const option = {
-        name: `${app.name}`,
+        name: `${app.name} (${app.appId})`,
         value: app,
         short: app.appId,
       };
