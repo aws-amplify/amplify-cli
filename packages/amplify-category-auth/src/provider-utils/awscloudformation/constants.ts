@@ -35,14 +35,7 @@ export const safeDefaults = [
 ];
 
 // These attributes cannot be modified once the auth resource is created
-export const immutableAttributes = [
-  'resourceName',
-  'userPoolName',
-  'identityPoolName',
-  'usernameAttributes',
-  'autoVerifiedAttributes',
-  'requiredAttributes',
-];
+export const immutableAttributes = ['resourceName', 'userPoolName', 'identityPoolName', 'usernameAttributes', 'requiredAttributes'];
 
 export const privateKeys = [
   'facebookAppIdUserPool',

@@ -140,7 +140,7 @@ export async function updateamplifyMetaAfterPush(resources) {
     // Skip hash calculation for imported resources
     if (resources[i].serviceType !== 'imported') {
       const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resources[i].category, resources[i].resourceName));
-      // skip hasing deleted resources
+      // skip hashing deleted resources
       if (fs.pathExistsSync(sourceDir)) {
         const hashDir = await getHashForResourceDir(sourceDir);
         amplifyMeta[resources[i].category][resources[i].resourceName].lastPushDirHash = hashDir;
