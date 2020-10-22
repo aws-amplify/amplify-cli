@@ -1,5 +1,5 @@
 import { parse, InputObjectTypeDefinitionNode } from 'graphql';
-import { GraphQLTransform, InvalidDirectiveError } from 'graphql-transformer-core';
+import { GraphQLTransform, InvalidDirectiveError, SyncConfig, ConflictHandlerType } from 'graphql-transformer-core';
 import { KeyTransformer } from '../KeyTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 
@@ -200,4 +200,36 @@ test('KeyTransformer should not remove default primary key when primary key not 
   expect(createBlogInput).toBeDefined();
   const defaultIdField = createBlogInput.fields.find(f => f.name.value === 'id');
   expect(defaultIdField).toBeDefined();
+});
+
+test('Check KeyTransformer Resolver Code when sync enabled', () => {
+  const validSchema = `
+    type Item @model
+        @key(fields: ["orderId", "status", "createdAt"])
+        @key(name: "ByStatus", fields: ["status", "createdAt"], queryField: "itemsByStatus")
+        @key(name: "ByCreatedAt", fields: ["createdAt", "status"], queryField: "itemsByCreatedAt")
+    {
+        orderId: ID!
+        status: Status!
+        createdAt: AWSDateTime!
+        name: String!
+    }
+    enum Status {
+      DELIVERED IN_TRANSIT PENDING UNKNOWN
+    }`;
+  const config: SyncConfig = {
+    ConflictDetection: 'VERSION',
+    ConflictHandler: ConflictHandlerType.AUTOMERGE,
+  };
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+    transformConfig: {
+      ResolverConfig: {
+        project: config,
+      },
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.resolvers).toMatchSnapshot();
 });

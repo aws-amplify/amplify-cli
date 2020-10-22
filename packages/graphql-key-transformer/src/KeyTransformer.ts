@@ -78,27 +78,31 @@ export class KeyTransformer extends Transformer {
 
   public before = (ctx: TransformerContext): void => {
     // generate a Map for the (resolver , VTLExpression)
-    const resolverMap: Map<string, string> = new Map();
-    ctx.metadata.set(ResourceConstants.SNIPPETS.SyncResolverKey, resolverMap);
+    if (ctx.isProjectUsingDataStore()) {
+      const resolverMap: Map<string, string> = new Map();
+      ctx.metadata.set(ResourceConstants.SNIPPETS.SyncResolverKey, resolverMap);
+    }
   };
 
   public after = (ctx: TransformerContext): void => {
     // construct sync VTL code
-    const resolverMap = ctx.metadata.get(ResourceConstants.SNIPPETS.SyncResolverKey);
-    if (resolverMap.size) {
-      resolverMap.forEach((syncVTLContent, resource) => {
-        if (syncVTLContent) {
-          resource.Properties.RequestMappingTemplate = '';
-          resource.Properties.RequestMappingTemplate = joinSnippets([
-            print(generateSyncResolverInit()),
-            syncVTLContent,
-            print(setSyncQueryFilterSnippet()),
-            print(setSyncKeyExpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
-            print(setSyncKeyExpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
-            print(makeSyncQueryResolver()),
-          ]);
-        }
-      });
+    if (ctx.isProjectUsingDataStore()) {
+      const resolverMap = ctx.metadata.get(ResourceConstants.SNIPPETS.SyncResolverKey);
+      if (resolverMap.size) {
+        resolverMap.forEach((syncVTLContent, resource) => {
+          if (syncVTLContent) {
+            resource.Properties.RequestMappingTemplate = '';
+            resource.Properties.RequestMappingTemplate = joinSnippets([
+              print(generateSyncResolverInit()),
+              syncVTLContent,
+              print(setSyncQueryFilterSnippet()),
+              print(setSyncKeyExpressionForHashKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+              print(setSyncKeyExpressionForRangeKey(ResourceConstants.SNIPPETS.ModelQueryExpression)),
+              print(makeSyncQueryResolver()),
+            ]);
+          }
+        });
+      }
     }
   };
   /**
@@ -199,7 +203,7 @@ export class KeyTransformer extends Transformer {
       if (syncResolver) {
         // add table primary key
         // Currently composite key not supported
-        constructSyncResolver(definition, directive, ctx, syncResolver, true);
+        constructSyncResolver(directive, ctx, syncResolver, true);
       }
     } else {
       // When looking at a secondary key we need to ensure any composite sort key values
@@ -226,7 +230,7 @@ export class KeyTransformer extends Transformer {
       }
       if (syncResolver) {
         // Currently composite key not supported
-        constructSyncResolver(definition, directive, ctx, syncResolver, false);
+        constructSyncResolver(directive, ctx, syncResolver, false);
       }
 
       if (directiveArgs.queryField) {
@@ -1004,14 +1008,9 @@ function joinSnippets(lines: string[]): string {
 }
 
 // QueryMap doesnt Support Composite Keys
-function setSyncQueryMapSnippet(definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext, isTable: boolean) {
+function setSyncQueryMapSnippet(directive: DirectiveNode, isTable: boolean) {
   const args: KeyArguments = getDirectiveArguments(directive);
   const keys = args.fields;
-  const keyTypes = keys.map(k => {
-    const field = definition.fields.find(f => f.name.value === k);
-    return attributeTypeFromType(field.type, ctx);
-  });
-
   const expressions: Expression[] = [];
   const index: String = isTable ? 'dbTable' : args.name;
   let key: String = '';
@@ -1217,20 +1216,14 @@ function makeSyncQueryResolver() {
   return block(` Set query expression for @key`, expressions);
 }
 
-function constructSyncResolver(
-  definition: ObjectTypeDefinitionNode,
-  directive: DirectiveNode,
-  ctx: TransformerContext,
-  syncResolver: any,
-  isTable: boolean,
-) {
+function constructSyncResolver(directive: DirectiveNode, ctx: TransformerContext, syncResolver: any, isTable: boolean) {
   if (ctx.metadata.has(ResourceConstants.SNIPPETS.SyncResolverKey)) {
     const resolverMap = ctx.metadata.get(ResourceConstants.SNIPPETS.SyncResolverKey);
     if (resolverMap.has(syncResolver)) {
       const prevSnippet = resolverMap.get(syncResolver);
-      resolverMap.set(syncResolver, joinSnippets([prevSnippet, print(setSyncQueryMapSnippet(definition, directive, ctx, isTable))]));
+      resolverMap.set(syncResolver, joinSnippets([prevSnippet, print(setSyncQueryMapSnippet(directive, isTable))]));
     } else {
-      resolverMap.set(syncResolver, print(setSyncQueryMapSnippet(definition, directive, ctx, isTable)));
+      resolverMap.set(syncResolver, print(setSyncQueryMapSnippet(directive, isTable)));
     }
   }
 }
