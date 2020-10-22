@@ -28,4 +28,9 @@ describe('api directives @key', () => {
     const testresult = await testSchema(projectDir, 'key', 'howTo3');
     expect(testresult).toBeTruthy();
   });
+
+  it('key SelectiveSync with key directive', async () => {
+    const testresult = await testSchema(projectDir, 'key', 'howTo4');
+    expect(testresult).toBeTruthy();
+  });
 });

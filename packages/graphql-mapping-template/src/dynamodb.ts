@@ -140,15 +140,17 @@ export class DynamoDBMappingTemplate {
     limit?: Expression;
     nextToken?: Expression;
     lastSync?: Expression;
-  }): ObjectNode {
-    return obj({
-      version: str('2018-05-29'),
-      operation: str('Sync'),
-      limit,
-      nextToken,
-      lastSync,
-      filter,
-    });
+  }): CompoundExpressionNode {
+    return compoundExpression([
+      obj({
+        version: str('2018-05-29'),
+        operation: str('Sync'),
+        limit,
+        nextToken,
+        lastSync,
+        filter,
+      }),
+    ]);
   }
 
   /**
