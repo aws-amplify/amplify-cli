@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.25.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.16...amplify-util-mock@3.25.0-beta.0) (2020-10-22)
+
+
+### Features
+
+* update post-install to copy executable assets to .amplify ([#5595](https://github.com/aws-amplify/amplify-cli/issues/5595)) ([53a23a0](https://github.com/aws-amplify/amplify-cli/commit/53a23a07cbb9e09566c1f0f577ba2b7488bc2eae))
+
+
+
+
+
 ## [3.24.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.15...amplify-util-mock@3.24.16) (2020-10-17)
 
 **Note:** Version bump only for package amplify-util-mock

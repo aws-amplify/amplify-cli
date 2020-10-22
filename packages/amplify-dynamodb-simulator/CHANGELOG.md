@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.15.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.14.3...amplify-dynamodb-simulator@1.15.0-beta.0) (2020-10-22)
+
+
+### Bug Fixes
+
+* use correct version of amplify-cli-core ([#5661](https://github.com/aws-amplify/amplify-cli/issues/5661)) ([c8c2e1a](https://github.com/aws-amplify/amplify-cli/commit/c8c2e1a9242e2096484f194b9e1944bf34840c51))
+
+
+### Features
+
+* update post-install to copy executable assets to .amplify ([#5595](https://github.com/aws-amplify/amplify-cli/issues/5595)) ([53a23a0](https://github.com/aws-amplify/amplify-cli/commit/53a23a07cbb9e09566c1f0f577ba2b7488bc2eae))
+
+
+
+
+
 ## [1.14.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.14.2...amplify-dynamodb-simulator@1.14.3) (2020-10-07)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

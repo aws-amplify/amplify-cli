@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.8.0...amplify-e2e-core@1.8.1-beta.0) (2020-10-22)
+
+
+### Bug Fixes
+
+* update current-cloud backend-config on resource removal ([#5658](https://github.com/aws-amplify/amplify-cli/issues/5658)) ([592f694](https://github.com/aws-amplify/amplify-cli/commit/592f694530dd61302ff790fbcf5b3ea135812c47))
+
+
+
+
+
 # [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.7.2...amplify-e2e-core@1.8.0) (2020-10-17)
 
 

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.16.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.21...amplify-codegen@2.16.0-beta.0) (2020-10-22)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** add proper response type for subs ([#5317](https://github.com/aws-amplify/amplify-cli/issues/5317)) ([48d2e11](https://github.com/aws-amplify/amplify-cli/commit/48d2e11b2a9dbb9616cc989aa76c207eb7b5f13b)), closes [#5284](https://github.com/aws-amplify/amplify-cli/issues/5284)
+
+
+### Features
+
+* **amplify-codegen:** add schema compile process in codegen commands ([#5164](https://github.com/aws-amplify/amplify-cli/issues/5164)) ([85f739a](https://github.com/aws-amplify/amplify-cli/commit/85f739a46112ff29b3b04e882ecd8db020452308))
+
+
+
+
+
 ## [2.15.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.20...amplify-codegen@2.15.21) (2020-10-07)
 
 **Note:** Version bump only for package amplify-codegen
