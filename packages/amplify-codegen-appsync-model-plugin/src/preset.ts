@@ -204,16 +204,6 @@ const generateDartPreset = (
       },
     });
   });
-
-  config.push({
-    ...options,
-    filename: join(options.baseOutputDir, `${LOADER_CLASS_NAME}.dart`),
-    config: {
-      ...options.config,
-      scalars: { ...DART_SCALAR_MAP, ...options.config.scalars },
-    },
-  });
-
   return config;
 };
 
