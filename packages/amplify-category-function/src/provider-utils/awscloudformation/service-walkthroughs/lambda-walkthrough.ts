@@ -24,6 +24,11 @@ import { tryUpdateTopLevelComment } from '../utils/updateTopLevelComment';
 import { addLayersToFunctionWalkthrough } from './addLayerToFunctionWalkthrough';
 import { convertLambdaLayerMetaToLayerCFNArray } from '../utils/layerArnConverter';
 import { loadFunctionParameters } from '../utils/loadFunctionParameters';
+import {
+  fetchPermissionCategories,
+  fetchPermissionResourcesForCategory,
+  fetchPermissionsForResourceInCategory,
+} from '../utils/permissionMapUtils';
 
 /**
  * Starting point for CLI walkthrough that generates a lambda function
@@ -58,7 +63,7 @@ export async function createWalkthrough(
   context.print.info('');
 
   // ask whether to configure advanced settings
-  if (await context.amplify.confirmPrompt('Do you want to configure advanced settings?')) {
+  if (await context.amplify.confirmPrompt('Do you want to configure advanced settings?', false)) {
     if (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your Lambda function?')) {
       templateParameters = merge(
         templateParameters,
@@ -130,16 +135,21 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   context.print.info('');
 
   // Provide resource access permission information
-  const currentDependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
-  if (currentDependsOn.length) {
-    context.print.success('Resource access permission');
-    currentDependsOn.forEach(dependency => {
-      const currentPermissions = currentParameters.permissions[dependency.category][dependency.resourceName];
-      const formattedCurrentPermissions = ' ('.concat(currentPermissions.join(', ').concat(')'));
-      context.print.info('- '.concat(dependency.resourceName).concat(formattedCurrentPermissions));
+  context.print.success('Resource access permission');
+  const currentCategoryPermissions = fetchPermissionCategories(currentParameters.permissions);
+  if (currentCategoryPermissions.length) {
+    currentCategoryPermissions.forEach(category => {
+      const currentResources = fetchPermissionResourcesForCategory(currentParameters.permissions, category);
+      currentResources.forEach(resource => {
+        const currentPermissions = fetchPermissionsForResourceInCategory(currentParameters.permissions, category, resource);
+        const formattedCurrentPermissions = ' ('.concat(currentPermissions.join(', ').concat(')'));
+        context.print.info('- '.concat(resource).concat(formattedCurrentPermissions));
+      });
     });
-    context.print.info('');
+  } else {
+    context.print.info('- Not configured');
   }
+  context.print.info('');
 
   // TODO format weekly, monthly and yearly crons
   // Provide scheduling information
@@ -148,26 +158,34 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     cloudwatchRule: cfnParameters.CloudWatchRule,
     resourceName: functionParameters.resourceName,
   };
-  if (scheduleParameters.cloudwatchRule !== 'NONE') {
-    context.print.success('Scheduled recurring invocation');
+  context.print.success('Scheduled recurring invocation');
+  if (scheduleParameters.cloudwatchRule && scheduleParameters.cloudwatchRule !== 'NONE') {
     context.print.info('| '.concat(scheduleParameters.cloudwatchRule));
+    context.print.info('');
+  } else {
+    context.print.info('| Not configured');
     context.print.info('');
   }
 
   // Provide lambda layer information
+  context.print.success('Lambda layers');
   if (currentParameters.lambdaLayers.length) {
-    context.print.success('Lambda layers');
     currentParameters.lambdaLayers.forEach(layer => {
       context.print.info('- '.concat(layer.arn));
     });
+    context.print.info('');
+  } else {
+    context.print.info('- Not configured');
     context.print.info('');
   }
 
   // Determine which settings need to be updated
   const { selectedSettings }: any = await settingsUpdateSelection();
+
   if (selectedSettings.includes(resourceAccessSetting)) {
     const additionalParameters = await askExecRolePermissionsQuestions(context, lambdaToUpdate, currentParameters.permissions);
 
+    const currentDependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
     if (currentDependsOn.length > 0) {
       additionalParameters.dependsOn = additionalParameters.dependsOn || [];
       currentDependsOn.forEach(dependency => {

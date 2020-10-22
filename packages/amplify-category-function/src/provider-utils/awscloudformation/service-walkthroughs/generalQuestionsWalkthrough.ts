@@ -37,7 +37,7 @@ function generalQuestions(context: any): object[] {
 
 export async function settingsUpdateSelection() {
   const settingsSelectionQuestion = {
-    type: 'checkbox',
+    type: 'list',
     name: 'selectedSettings',
     message: 'Which setting do you want to update?',
     choices: advancedSettingsList,
