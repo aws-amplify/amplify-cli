@@ -308,7 +308,7 @@ export const supportedServices = {
       {
         key: 'adminQueries',
         question: 'Do you want to add an admin queries API?',
-        learnMore: 'TODO: Find out what admin queries APIs are',
+        learnMore: 'Admin Queries API let you perform user admin functions from your frontend. See https://docs.amplify.aws/cli/auth/admin#admin-queries-api for more.',
         required: true,
         type: 'list',
         map: 'booleanOptions',
