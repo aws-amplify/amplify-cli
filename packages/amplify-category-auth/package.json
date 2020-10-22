@@ -23,7 +23,6 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "amplify-category-function": "2.25.4",
     "amplify-cli-core": "1.4.0",
     "amplify-headless-interface": "1.4.0",
     "amplify-util-headless-input": "1.3.0",

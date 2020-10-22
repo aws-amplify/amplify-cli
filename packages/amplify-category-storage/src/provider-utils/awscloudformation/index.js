@@ -1,18 +1,20 @@
 import { NotImplementedError, exitOnNextTick } from 'amplify-cli-core';
+
 function addResource(context, category, service, options) {
-  const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = require('../supported-services').supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { addWalkthrough } = require(serviceWalkthroughSrc);
 
   return addWalkthrough(context, defaultValuesFilename, serviceMetadata, options).then(async resourceName => {
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
+
     return resourceName;
   });
 }
 
 function updateResource(context, category, service) {
-  const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = require('../supported-services').supportedServices[service];
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
@@ -28,7 +30,7 @@ function updateResource(context, category, service) {
 }
 
 function migrateResource(context, projectPath, service, resourceName) {
-  const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = require('../supported-services').supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { migrate } = require(serviceWalkthroughSrc);
@@ -42,7 +44,7 @@ function migrateResource(context, projectPath, service, resourceName) {
 }
 
 function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  const serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
+  const serviceMetadata = require('../supported-services').supportedServices[service];
   const { serviceWalkthroughFilename } = serviceMetadata;
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { getIAMPolicies } = require(serviceWalkthroughSrc);

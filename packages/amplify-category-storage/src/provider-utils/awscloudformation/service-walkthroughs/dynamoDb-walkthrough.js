@@ -31,11 +31,13 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
 
   if (!amplifyMeta[category] || Object.keys(dynamoDbResources).length === 0) {
     const errMessage = 'No resources to update. You need to add a resource.';
+
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
     return;
   }
+
   const resources = Object.keys(dynamoDbResources);
   const question = [
     {
@@ -52,7 +54,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
 async function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {
   const { amplify, print } = context;
   const { inputs } = serviceMetadata;
-  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
+  const defaultValuesSrc = path.join(__dirname, '..', 'default-values', defaultValuesFilename);
   const { getAllDefaults } = require(defaultValuesSrc);
 
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
@@ -77,12 +79,15 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
     let parameters;
+
     try {
       parameters = context.amplify.readJsonFile(parametersFilePath);
     } catch (e) {
       parameters = {};
     }
+
     parameters.resourceName = resourceName;
+
     Object.assign(defaultValues, parameters);
 
     // Get storage question params
@@ -152,6 +157,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   let continueAttributeQuestion = true;
   const attributeAnswers = [];
+
   if (resourceName) {
     attributeAnswers.push(
       {
@@ -163,8 +169,10 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         AttributeType: defaultValues.sortKeyType,
       },
     );
+
     continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
   }
+
   const indexableAttributeList = [];
 
   while (continueAttributeQuestion) {
@@ -183,8 +191,10 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     if (attributeTypes[attributeAnswer[inputs[3].key]].indexable) {
       indexableAttributeList.push(attributeAnswer[inputs[2].key]);
     }
+
     continueAttributeQuestion = await amplify.confirmPrompt('Would you like to add another column?');
   }
+
   answers.AttributeDefinitions = attributeAnswers;
 
   print.info('');
@@ -216,6 +226,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     };
 
     const partitionKeyAnswer = await inquirer.prompt([primaryKeyQuestion]);
+
     partitionKeyName = partitionKeyAnswer[inputs[4].key];
   }
 
@@ -227,6 +238,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   // Get the type for primary index
 
   const primaryAttrTypeIndex = answers.AttributeDefinitions.findIndex(attr => attr.AttributeName === partitionKeyName);
+
   partitionKeyType = answers.AttributeDefinitions[primaryAttrTypeIndex].AttributeType;
 
   const primaryKeyAttrIndex = indexableAttributeList.indexOf(partitionKeyName);
@@ -234,6 +246,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   if (primaryKeyAttrIndex > -1) {
     indexableAttributeList.splice(primaryKeyAttrIndex, 1);
   }
+
   usedAttributeDefinitions.add(partitionKeyName);
 
   let sortKeyName;
@@ -241,11 +254,13 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   if (resourceName) {
     ({ sortKeyName } = defaultValues);
+
     if (sortKeyName) {
       answers.KeySchema.push({
         AttributeName: sortKeyName,
         KeyType: 'RANGE',
       });
+
       usedAttributeDefinitions.add(sortKeyName);
     }
   } else if (await amplify.confirmPrompt('Do you want to add a sort key to your table?')) {
@@ -258,16 +273,20 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         choices: indexableAttributeList,
       };
       const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
+
       sortKeyName = sortKeyAnswer[inputs[5].key];
+
       answers.KeySchema.push({
         AttributeName: sortKeyName,
         KeyType: 'RANGE',
       });
+
       usedAttributeDefinitions.add(sortKeyName);
     } else {
       context.print.error('You must add additional keys in order to select a sort key.');
     }
   }
+
   if (sortKeyName) {
     // Get the type for primary index
     const sortKeyAttrTypeIndex = answers.AttributeDefinitions.findIndex(attr => attr.AttributeName === sortKeyName);
@@ -293,6 +312,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     const gsiList = [];
     // Generates a clone of the attribute list
     const availableAttributes = indexableAttributeList.slice();
+
     while (continuewithGSIQuestions) {
       if (availableAttributes.length > 0) {
         const gsiAttributeQuestion = {
@@ -307,8 +327,10 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           validate: amplify.inputValidation(inputs[3]),
           choices: availableAttributes,
         };
+
         /*eslint-disable*/
         const gsiPrimaryAnswer = await inquirer.prompt([gsiAttributeQuestion, gsiPrimaryKeyQuestion]);
+
         /* eslint-enable */
         const gsiItem = {
           ProvisionedThroughput: {
@@ -330,9 +352,11 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         usedAttributeDefinitions.add(gsiPrimaryAnswer[inputs[7].key]);
 
         const gsiPrimaryAttrIndex = indexableAttributeList.indexOf(gsiPrimaryAnswer[inputs[7].key]);
+
         if (gsiPrimaryAttrIndex > -1) {
           availableAttributes.splice(gsiPrimaryAttrIndex, 1);
         }
+
         if (availableAttributes.length > 0) {
           if (await amplify.confirmPrompt('Do you want to add a sort key to your global secondary index?')) {
             const sortKeyQuestion = {
@@ -341,15 +365,20 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
               message: inputs[8].question,
               choices: availableAttributes,
             };
+
             const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
+
             gsiItem.KeySchema.push({
               AttributeName: sortKeyAnswer[inputs[8].key],
               KeyType: 'RANGE',
             });
+
             usedAttributeDefinitions.add(sortKeyAnswer[inputs[8].key]);
           }
         }
+
         gsiList.push(gsiItem);
+
         continuewithGSIQuestions = await amplify.confirmPrompt('Do you want to add more global secondary indexes to your table?');
       } else {
         context.print.error('You do not have any other attributes remaining to configure');
@@ -368,23 +397,28 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         ...existingAttributeDefinitions.map(r => [r.AttributeName, r]),
         ...answers.AttributeDefinitions.map(r => [r.AttributeName, r]),
       ]);
+
       if (
         !!existingGSIs.length &&
         (await amplify.confirmPrompt('Do you want to keep existing global seconday indexes created on your table?'))
       ) {
         existingGSIs.forEach(r => gsiList.push(r));
         answers.AttributeDefinitions = [...allAttributeDefinitionsMap.values()];
+
         usedAttributeDefinitions = existingGSIs.reduce((prev, current) => {
           current.KeySchema.map(r => prev.add(r.AttributeName));
           return prev;
         }, usedAttributeDefinitions);
       }
     }
+
     if (gsiList.length > 0) {
       answers.GlobalSecondaryIndexes = gsiList;
     }
   }
+
   usedAttributeDefinitions = Array.from(usedAttributeDefinitions);
+
   /* Filter out only attribute
    * definitions which have been used - cfn errors out otherwise */
   answers.AttributeDefinitions = answers.AttributeDefinitions.filter(
@@ -400,9 +434,11 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
       try {
         triggerName = await addTrigger(context, defaultValues.resourceName);
+
         if (!storageParams) {
           storageParams = {};
         }
+
         storageParams.triggerFunctions = [triggerName];
       } catch (e) {
         context.print.error(e.message);
@@ -417,6 +453,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     };
     let triggerName;
     let continueWithTriggerOperationQuestion = true;
+
     while (continueWithTriggerOperationQuestion) {
       const triggerOperationAnswer = await inquirer.prompt([triggerOperationQuestion]);
 
@@ -431,6 +468,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
             } else {
               storageParams.triggerFunctions.push(triggerName);
             }
+
             continueWithTriggerOperationQuestion = false;
           } catch (e) {
             context.print.error(e.message);
@@ -446,6 +484,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
               triggerName = await removeTrigger(context, defaultValues.resourceName, storageParams.triggerFunctions);
 
               const index = storageParams.triggerFunctions.indexOf(triggerName);
+
               if (index >= 0) {
                 storageParams.triggerFunctions.splice(index, 1);
                 continueWithTriggerOperationQuestion = false;
@@ -465,15 +504,18 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           break;
         }
         default:
-          console.log(`${triggerOperationAnswer.triggerOperation} not supported`);
+          context.print.error(`${triggerOperationAnswer.triggerOperation} not supported`);
       }
     }
   }
 
   const resource = defaultValues.resourceName;
   const resourceDirPath = path.join(projectBackendDirPath, category, resource);
+
   delete defaultValues.resourceName;
+
   fs.ensureDirSync(resourceDirPath);
+
   const parametersFilePath = path.join(resourceDirPath, parametersFileName);
 
   // Copy just the table name as parameters
@@ -482,18 +524,23 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
     partitionKeyName,
     partitionKeyType,
   };
+
   if (sortKeyName) {
     Object.assign(parameters, { sortKeyName, sortKeyType });
   }
 
   let jsonString = JSON.stringify(parameters, null, 4);
+
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
 
   const storageParamsFilePath = path.join(resourceDirPath, storageParamsFileName);
+
   jsonString = JSON.stringify(storageParams, null, 4);
+
   fs.writeFileSync(storageParamsFilePath, jsonString, 'utf8');
 
   await copyCfnTemplate(context, category, resource, defaultValues);
+
   return resource;
 }
 
@@ -513,10 +560,13 @@ async function removeTrigger(context, resourceName, triggerList) {
 
   if (fs.existsSync(functionCFNFilePath)) {
     const functionCFNFile = context.amplify.readJsonFile(functionCFNFilePath);
+
     delete functionCFNFile.Resources[`${resourceName}TriggerPolicy`];
     delete functionCFNFile.Resources[`${resourceName}Trigger`];
+
     // Update the functions resource
     const functionCFNString = JSON.stringify(functionCFNFile, null, 4);
+
     fs.writeFileSync(functionCFNFilePath, functionCFNString, 'utf8');
   }
 
@@ -538,6 +588,7 @@ async function addTrigger(context, resourceName, triggerList) {
 
     if (triggerList) {
       const filteredLambdaResources = [];
+
       lambdaResources.forEach(lambdaResource => {
         if (triggerList.indexOf(lambdaResource) === -1) {
           filteredLambdaResources.push(lambdaResource);
@@ -559,13 +610,16 @@ async function addTrigger(context, resourceName, triggerList) {
     };
 
     const triggerOptionAnswer = await inquirer.prompt([triggerOptionQuestion]);
+
     functionName = triggerOptionAnswer.triggerOption;
   } else {
     // Create a new lambda trigger
 
     const targetDir = context.amplify.pathManager.getBackendDirPath();
     const [shortId] = uuid().split('-');
+
     functionName = `${resourceName}Trigger${shortId}`;
+
     const pluginDir = __dirname;
 
     const defaults = {
@@ -576,23 +630,23 @@ async function addTrigger(context, resourceName, triggerList) {
     const copyJobs = [
       {
         dir: pluginDir,
-        template: '../triggers/dynamoDB/lambda-cloudformation-template.json.ejs',
-        target: `${targetDir}/function/${functionName}/${functionName}-cloudformation-template.json`,
+        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 'dynamoDB', 'lambda-cloudformation-template.json.ejs'),
+        target: path.join(targetDir, 'function', functionName, `${functionName}-cloudformation-template.json`),
       },
       {
         dir: pluginDir,
-        template: '../triggers/dynamoDB/event.json',
-        target: `${targetDir}/function/${functionName}/src/event.json`,
+        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 'dynamoDB', 'event.json'),
+        target: path.join(targetDir, 'function', functionName, 'src', 'event.json'),
       },
       {
         dir: pluginDir,
-        template: '../triggers/dynamoDB/index.js',
-        target: `${targetDir}/function/${functionName}/src/index.js`,
+        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 'dynamoDB', 'index.js'),
+        target: path.join(targetDir, 'function', functionName, 'src', 'index.js'),
       },
       {
         dir: pluginDir,
-        template: '../triggers/dynamoDB/package.json.ejs',
-        target: `${targetDir}/function/${functionName}/src/package.json`,
+        template: path.join('..', '..', '..', '..', 'resources', 'triggers', 'dynamoDB', 'package.json.ejs'),
+        target: path.join(targetDir, 'function', functionName, 'src', 'package.json'),
       },
     ];
 
@@ -611,6 +665,7 @@ async function addTrigger(context, resourceName, triggerList) {
 
     context.print.success(`Successfully added resource ${functionName} locally`);
   }
+
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const functionCFNFilePath = path.join(projectBackendDirPath, 'function', functionName, `${functionName}-cloudformation-template.json`);
 
@@ -686,6 +741,7 @@ async function addTrigger(context, resourceName, triggerList) {
 
     const resourceDependsOn = amplifyMeta.function[functionName].dependsOn || [];
     let resourceExists = false;
+
     resourceDependsOn.forEach(resource => {
       if (resource.resourceName === resourceName) {
         resourceExists = true;
@@ -703,10 +759,12 @@ async function addTrigger(context, resourceName, triggerList) {
 
     // Update the functions resource
     const functionCFNString = JSON.stringify(functionCFNFile, null, 4);
+
     fs.writeFileSync(functionCFNFilePath, functionCFNString, 'utf8');
 
     context.amplify.updateamplifyMetaAfterResourceUpdate('function', functionName, 'dependsOn', resourceDependsOn);
     context.print.success(`Successfully updated resource ${functionName} locally`);
+
     if (await context.amplify.confirmPrompt(`Do you want to edit the local ${functionName} lambda function now?`)) {
       await context.amplify.openEditor(context, `${projectBackendDirPath}/function/${functionName}/src/index.js`);
     }
@@ -734,8 +792,8 @@ function copyCfnTemplate(context, categoryName, resourceName, options) {
   const copyJobs = [
     {
       dir: pluginDir,
-      template: `../cloudformation-templates/${templateFileName}`,
-      target: `${targetDir}/${categoryName}/${resourceName}/${resourceName}-cloudformation-template.json`,
+      template: path.join('..', '..', '..', '..', 'resources', 'cloudformation-templates', templateFileName),
+      target: path.join(targetDir, categoryName, resourceName, `${resourceName}-cloudformation-template.json`),
     },
   ];
 
@@ -750,6 +808,7 @@ function migrate(context, projectPath, resourceName) {
   // Removes dangling commas from a JSON
   const removeDanglingCommas = value => {
     const regex = /,(?!\s*?[{["'\w])/g;
+
     return value.replace(regex, '');
   };
 
@@ -758,15 +817,18 @@ function migrate(context, projectPath, resourceName) {
 
   let oldcfnString = fs.readFileSync(cfnFilePath, 'utf8');
   oldcfnString = removeDanglingCommas(oldcfnString);
+
   const oldCfn = JSON.parse(oldcfnString);
 
   const newCfn = {};
+
   Object.assign(newCfn, oldCfn);
 
   // Add env parameter
   if (!newCfn.Parameters) {
     newCfn.Parameters = {};
   }
+
   newCfn.Parameters.env = {
     Type: 'String',
   };
@@ -775,6 +837,7 @@ function migrate(context, projectPath, resourceName) {
   if (!newCfn.Conditions) {
     newCfn.Conditions = {};
   }
+
   newCfn.Conditions.ShouldNotCreateEnvResources = {
     'Fn::Equals': [
       {
@@ -810,6 +873,7 @@ function migrate(context, projectPath, resourceName) {
   };
 
   const jsonString = JSON.stringify(newCfn, null, '\t');
+
   fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
 }
 
@@ -856,6 +920,7 @@ function getIAMPolicies(resourceName, crudOptions) {
           },
         ],
   };
+
   const attributes = ['Name', 'Arn'];
 
   return { policy, attributes };

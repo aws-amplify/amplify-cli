@@ -7,11 +7,14 @@ async function add(context, providerName, service) {
     service,
     providerPlugin: providerName,
   };
-  const providerController = require(`./provider-utils/${providerName}/index`);
+
+  const providerController = require(`./provider-utils/${providerName}`);
+
   if (!providerController) {
     context.print.error('Provider not configured for this category');
     return;
   }
+
   return providerController.addResource(context, category, service, options);
 }
 
@@ -22,11 +25,13 @@ async function console(context) {
 async function migrate(context) {
   const { projectPath, amplifyMeta } = context.migrationInfo;
   const migrateResourcePromises = [];
+
   Object.keys(amplifyMeta).forEach(categoryName => {
     if (categoryName === category) {
       Object.keys(amplifyMeta[category]).forEach(resourceName => {
         try {
-          const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
+          const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}`);
+
           if (providerController) {
             migrateResourcePromises.push(
               providerController.migrateResource(context, projectPath, amplifyMeta[category][resourceName].service, resourceName),
@@ -63,13 +68,14 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           : amplifyMeta[category][resourceName].service;
 
       if (providerPlugin) {
-        const providerController = require(`./provider-utils/${providerPlugin}/index`);
+        const providerController = require(`./provider-utils/${providerPlugin}`);
         const { policy, attributes } = providerController.getPermissionPolicies(
           context,
           service,
           resourceName,
           resourceOpsMapping[resourceName],
         );
+
         permissionPolicies.push(policy);
         resourceAttributes.push({ resourceName, attributes, category });
       } else {
@@ -80,11 +86,13 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
       throw e;
     }
   });
+
   return { permissionPolicies, resourceAttributes };
 }
 
 async function executeAmplifyCommand(context) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
+
   if (context.input.command === 'help') {
     commandPath = path.join(commandPath, category);
   } else {
@@ -92,6 +100,7 @@ async function executeAmplifyCommand(context) {
   }
 
   const commandModule = require(commandPath);
+
   await commandModule.run(context);
 }
 
