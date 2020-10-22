@@ -4,6 +4,8 @@ import { pythonPackage } from './util/packageUtils';
 import { pythonInvoke } from './util/invokeUtil';
 import { checkDeps } from './util/depUtils';
 import path from 'path';
+import { relativeShimPath } from './constants';
+import { GetPackageAssetPaths } from 'amplify-cli-core';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
@@ -28,3 +30,5 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     invoke: request => pythonBuild(request).then(() => pythonInvoke(context, request)),
   };
 };
+
+export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativeShimPath];

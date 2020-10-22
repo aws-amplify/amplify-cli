@@ -3,6 +3,7 @@ const chalk = require('chalk');
 const fs = require('fs-extra');
 const path = require('path');
 const { EOL } = require('os');
+const execa = require('execa');
 
 // Delete stale ESM cache
 try {
@@ -13,6 +14,11 @@ try {
 } catch (e) {
   // could not delete the cache directory but don't want to fail the installation
 }
+
+// execute post-install amplify command
+const ampPath = path.resolve(path.join(__dirname, '..', 'bin', 'amplify'));
+execa.commandSync(`${ampPath} post-install`);
+
 console.log(EOL);
 console.log(chalk.green('----------------------------------------'));
 console.log(chalk.green('Successfully installed the Amplify CLI'));

@@ -3,8 +3,10 @@
 import { InvocationRequest } from 'amplify-function-plugin-interface/src';
 import execa from 'execa';
 import path from 'path';
+import { pathManager } from 'amplify-cli-core';
+import { packageName, relativeShimPath } from '../constants';
 
-const shimPath = path.join(__dirname, '../../shim/shim.py');
+const shimPath = path.join(pathManager.getAmplifyPackageLibDirPath(packageName), relativeShimPath);
 
 export async function pythonInvoke(context: any, request: InvocationRequest): Promise<any> {
   const handlerParts = path.parse(request.handler);
