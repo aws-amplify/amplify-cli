@@ -815,6 +815,30 @@ test('query using date range for createdAt', async () => {
   });
 });
 
+test('query using date range for createdAt', async () => {
+  const expectLenghth = 2;
+  const searchResponse = await GRAPHQL_CLIENT.query(
+    `query {
+      searchUsers(filter: {createdAt: {range: ["2016", "2019"]}}) {
+        items {
+          id
+          name
+          createdAt
+          userItems
+        }
+      }
+    }
+    `,
+    {},
+  );
+  expect(searchResponse).toBeDefined();
+  const items = searchResponse.data.searchUsers.items;
+  expect(items.length).toEqual(expectLenghth);
+  expect(items).toMatch(
+    expect.arrayContaining([expect.objectContaining({ createdAt: '2017-06-10' }), expect.objectContaining({ createdAt: '2017-08-22' })]),
+  );
+});
+
 test('query for books by Agatha Christie with model using @key', async () => {
   const expectedBookItemsLength = 2;
   const expectedBookNames: string[] = ['Murder on the Orient Express', 'Death on the Nile'];
