@@ -9,7 +9,13 @@
   },
   "author": "Amazon Web Services",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "watch": "tsc -w"
+  },
   "keywords": [
     "amplify",
     "aws"
@@ -17,9 +23,14 @@
   "dependencies": {
     "amplify-category-auth": "2.21.0",
     "amplify-category-function": "2.25.4",
+    "amplify-cli-core": "1.4.0",
+    "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "lodash": "^4.17.19",
     "uuid": "^3.4.0"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2"
   }
 }

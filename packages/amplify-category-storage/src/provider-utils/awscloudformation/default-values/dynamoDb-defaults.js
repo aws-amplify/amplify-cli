@@ -7,6 +7,7 @@ const getAllDefaults = project => {
     resourceName: `dynamo${shortId}`,
     tableName: `${name}${uuid().replace(/-/g, '')}`,
   };
+
   return defaults;
 };
 

@@ -1,4 +1,4 @@
-const subcommand = 'push';
+const subcommand = 'remove';
 const category = 'storage';
 
 module.exports = {
@@ -6,11 +6,13 @@ module.exports = {
   run: async context => {
     const { amplify, parameters } = context;
     const resourceName = parameters.first;
-    context.amplify.constructExeInfo(context);
-    return amplify.pushResources(context, category, resourceName).catch(err => {
+
+    return amplify.removeResource(context, category, resourceName).catch(err => {
       context.print.info(err.stack);
-      context.print.error('An error occurred when pushing the storage resource');
+      context.print.error('An error occurred when removing the storage resource');
+
       context.usageData.emitError(err);
+
       process.exitCode = 1;
     });
   },
