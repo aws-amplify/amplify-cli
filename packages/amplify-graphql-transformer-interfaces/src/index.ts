@@ -13,7 +13,8 @@ export {
   TransformerBeforeStepContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
-  TransformerValidationStepContextProvider
+  TransformerValidationStepContextProvider,
+  TransformerResourceHelperProvider
 } from './transformer-context';
 export { TransformerPluginProvider, TransformerPluginType } from './transformer-plugin-provider';
 export {
@@ -23,5 +24,6 @@ export {
   TransformerModelEnhancementProvider,
   TransformerModelProvider,
 } from './transformer-model';
+export { FeatureFlagProvider } from './featuer-flags';
 
 export { GraphQLApiProvider, AppSyncFunctionConfigurationProvider, DataSourceOptions, TemplateProvider, APIIAMResourceProvider } from './graphql-api-provider'

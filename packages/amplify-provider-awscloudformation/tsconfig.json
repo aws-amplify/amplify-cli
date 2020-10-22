@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "lib",
+    "outDir": "./lib",
     "rootDir": "./src",
     "strict": false, // TODO enable
     "allowJs": true,
@@ -9,7 +9,7 @@
     "lib": ["ESNext"]
   },
   "exclude": [
-    "lib",
+    "./lib",
     "src/__tests__",
   ],
   "references": [
@@ -25,6 +25,12 @@
     {"path": "../graphql-key-transformer"},
     {"path": "../graphql-predictions-transformer"},
     {"path": "../graphql-transformer-core"},
-    {"path": "../graphql-versioned-transformer"}
+    {"path": "../graphql-versioned-transformer"},
+    {
+      "path": "../amplify-graphql-transformer-interfaces"
+    },
+    {
+      "path": "../amplify-graphql-transformer-core"
+    }
   ]
 }

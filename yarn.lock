@@ -12090,6 +12090,18 @@ graphql-transformer-core@6.13.1:
     graphql "^14.5.8"
     graphql-transformer-common "4.13.1"
 
+graphql-transformer-core@6.21.5:
+  version "6.21.5"
+  resolved "https://registry.yarnpkg.com/graphql-transformer-core/-/graphql-transformer-core-6.21.5.tgz#b05656580d7d8823a2c469a0e03e2c1991066544"
+  integrity sha512-Z1xkebjl8ULv3B3mXB/Tga90eiCQiEiSt9IiEUtBUo7+DkXuQUAx7lXWEFXZ1H/LcqAk6+ltEv2Xo+K4EPWxXQ==
+  dependencies:
+    cloudform-types "^4.2.0"
+    deep-diff "^1.0.2"
+    fs-extra "^8.1.0"
+    glob "^7.1.6"
+    graphql "^14.5.8"
+    graphql-transformer-common "4.17.10"
+
 graphql-type-json@^0.3.1:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/graphql-type-json/-/graphql-type-json-0.3.2.tgz#f53a851dbfe07bd1c8157d24150064baab41e115"

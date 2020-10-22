@@ -10,6 +10,7 @@ import { GraphQLApiProvider } from '@aws-amplify/graphql-transformer-interfaces'
 import { MappingTemplate } from '../cdk-compat';
 import { StackManager } from './stack-manager';
 import assert from 'assert';
+import { toPascalCase } from 'graphql-transformer-common';
 
 type Slot = {
   requestMappingTemplate: string;
@@ -160,11 +161,11 @@ export class TransformerResolver implements TransformerResolverProvider {
     const requestFns = this.synthesizePipelineFunctions(stack, api, this.requestSlots);
     const responseFns = this.synthesizePipelineFunctions(stack, api, this.responseSlots);
     const dataSourceProviderFn = api.addAppSyncFunction(
-      `${this.typeName}.${this.fieldName}DataResolverFn`,
+      toPascalCase([this.typeName, this.fieldName, 'DataResolverFn']),
       MappingTemplate.fromInlineTemplate(this.requestMappingTemplate, `pipelineFunctions/${templateNamePrefix}.dataloader.req.vtl`),
       MappingTemplate.fromInlineTemplate(this.responseMappingTemplate, `pipelineFunctions/${templateNamePrefix}.dataloader.res.vtl`),
       this.datasource.name,
-      stack
+      stack,
     );
 
     api.addResolver(

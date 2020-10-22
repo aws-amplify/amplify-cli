@@ -25,7 +25,7 @@ import {
 } from './utils';
 import { TransformerContext } from '../transformer-context';
 
-import { GraphQLApiProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FeatureFlagProvider, GraphQLApiProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 import { AppSyncAuthConfiguration, TransformConfig } from './transformer-config';
 import { validateModelSchema } from './validation';
@@ -36,7 +36,7 @@ import Template, { DeploymentResources } from './types';
 import { App, Aws, CfnOutput, CfnParameter, Fn } from '@aws-cdk/core';
 import { TransformerRootStack } from '../cdk-compat';
 import { adoptAuthModes } from '../utils/authType';
-import { AuthorizationType, CfnApiKey } from '@aws-cdk/aws-appsync';
+import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 
 function isFunction(obj: any): obj is Function {
   return obj && typeof obj === 'function';
@@ -61,6 +61,7 @@ export interface GraphQLTransformOptions {
   readonly authConfig?: AppSyncAuthConfiguration;
   readonly buildParameters?: Record<string, any>;
   readonly stacks?: Record<string, Template>;
+  readonly featuerFlags?: FeatureFlagProvider;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -111,7 +112,7 @@ export class GraphQLTransform {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
-    const context = new TransformerContext(this.app, parsedDocument, this.stackMappingOverrides);
+    const context = new TransformerContext(this.app, parsedDocument, this.stackMappingOverrides, this.options.featuerFlags);
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {
@@ -220,9 +221,9 @@ export class GraphQLTransform {
     const rootStack = stackManager.rootStack;
     const output: TransformerOutput = context.output as TransformerOutput;
 
-    const api = this.generateGraphQlApi(rootStack, output);
+    const api = this.generateGraphQlApi(stackManager, output);
 
-    (context as TransformerContext).setApi(api);
+    (context as TransformerContext).bind(api);
     for (const transformer of this.transformers) {
       if (isFunction(transformer.generateResolvers)) {
         transformer.generateResolvers(context);
@@ -243,16 +244,13 @@ export class GraphQLTransform {
     return this.synthesize(context);
   }
 
-  private generateGraphQlApi(rootStack: TransformerRootStack, output: TransformerOutput) {
+  private generateGraphQlApi(stackManager: StackManager, output: TransformerOutput) {
     //Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
 
-    const authorizationConfig = adoptAuthModes(rootStack, this.authConfig);
-    const apiName = new CfnParameter(rootStack, 'AppSyncAPIName', {
-      default: 'API',
-      type: 'String',
-    }).valueAsString;
-
+    const rootStack = stackManager.rootStack;
+    const authorizationConfig = adoptAuthModes(stackManager, this.authConfig);
+    const apiName = stackManager.addParameter('AppSyncApiName', { type: 'String'}).valueAsString;
     const api = new GraphQLApi(rootStack, 'api', {
       name: apiName,
       authorizationConfig,
@@ -265,13 +263,19 @@ export class GraphQLTransform {
       authModes.includes(AuthorizationType.API_KEY) &&
       !(this.buildParameters.CreateAPIKey && this.buildParameters.CreateAPIKey !== false)
     ) {
-      const apiKeDescription = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].find(
-        entry => entry?.authorizationType === AuthorizationType.API_KEY,
-      )?.apiKeyConfig!.description;
-      const apiKey = new CfnApiKey(rootStack, 'GraphQLAPIKey', {
-        apiId: api.apiId,
-        description: apiKeDescription || 'API Key',
+      const apiKeyConfig: AuthorizationMode | undefined = [
+        authorizationConfig.defaultAuthorization,
+        ...(authorizationConfig.additionalAuthorizationModes || []),
+      ].find(auth => auth?.authorizationType == AuthorizationType.API_KEY);
+      const apiKeyDescription = apiKeyConfig!.apiKeyConfig?.description;
+      const apiKeyExpirationDays = apiKeyConfig!.apiKeyConfig?.expires;
+
+      const apiKey = api.createAPIKey({
+        description: apiKeyDescription,
+        expires: apiKeyExpirationDays,
+
       });
+
       new CfnOutput(rootStack, 'GraphQLAPIKeyOutput', {
         value: apiKey.attrApiKey,
         description: 'Your GraphQL API ID.',

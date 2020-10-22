@@ -29,6 +29,7 @@ import { GraphQLApiProvider, TemplateProvider, APIIAMResourceProvider } from '@a
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { toCamelCase } from 'graphql-transformer-common';
 
 export interface GraphqlApiProps {
   /**
@@ -121,6 +122,10 @@ export class IamResource implements APIIAMResourceProvider {
     );
   }
 }
+
+export type TransformerAPIProps = GraphqlApiProps & {
+  readonly createApiKey?: boolean;
+};
 export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
   /**
    * an unique AWS AppSync GraphQL API identifier
@@ -169,7 +174,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
 
   private dataSources: Map<string, BaseDataSource> = new Map();
 
-  constructor(scope: Construct, id: string, props: GraphqlApiProps) {
+  constructor(scope: Construct, id: string, props: TransformerAPIProps) {
     super(scope, id);
     this.authorizationConfig = {
       defaultAuthorization: { authorizationType: AuthorizationType.API_KEY },
@@ -201,7 +206,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
     this.schema = props.schema ?? new TransformerSchema();
     this.schemaResource = this.schema.bind(this);
 
-    if (modes.some(mode => mode.authorizationType === AuthorizationType.API_KEY)) {
+    if (props.createApiKey && modes.some(mode => mode.authorizationType === AuthorizationType.API_KEY)) {
       const config = modes.find((mode: AuthorizationMode) => {
         return mode.authorizationType === AuthorizationType.API_KEY && mode.apiKeyConfig;
       })?.apiKeyConfig;
@@ -292,7 +297,6 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
     return this.grant(grantee, IamResource.ofType('Mutation', ...fields), 'appsync:GraphQL');
   }
 
-
   /**
    * Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM
    * principal's policy.
@@ -311,7 +315,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
     const expires = config?.expires ? config?.expires.toEpoch() : undefined;
     return new CfnApiKey(this, `${config?.name || 'Default'}ApiKey`, {
       expires,
-      description: config?.description,
+      description: config?.description || undefined,
       apiId: this.apiId,
     });
   }
@@ -337,9 +341,9 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
       throw new Error(`DataSource ${dataSourceName} is missing in the API`);
     }
 
-    const requestTemplateLocation = requestMappingTemplate.bind(this).s3Location.httpUrl;
-    const responseTemplateLocation = responseMappingTemplate.bind(this).s3Location.httpUrl;
-    const resolverName = `${typeName}.${fieldName}Resolver`;
+    const requestTemplateLocation = requestMappingTemplate.bind(this).s3Location.s3Url;
+    const responseTemplateLocation = responseMappingTemplate.bind(this).s3Location.s3Url;
+    const resolverName = toCamelCase([typeName, fieldName, 'Resolver']);
     if (dataSourceName) {
       const dataSource = this.dataSources.get(dataSourceName);
 
@@ -349,8 +353,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
         typeName: typeName,
         kind: 'UNIT',
         dataSourceName: dataSource?.ds.attrName || dataSourceName,
-        requestMappingTemplate: requestTemplateLocation,
-        responseMappingTemplate: responseTemplateLocation,
+        requestMappingTemplateS3Location: requestTemplateLocation,
+        responseMappingTemplateS3Location: responseTemplateLocation,
       });
       this.addSchemaDependency(resolver);
       return resolver;
@@ -360,8 +364,8 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
         fieldName: fieldName,
         typeName: typeName,
         kind: 'PIPELINE',
-        requestMappingTemplate: requestTemplateLocation,
-        responseMappingTemplate: responseTemplateLocation,
+        requestMappingTemplateS3Location: requestTemplateLocation,
+        responseMappingTemplateS3Location: responseTemplateLocation,
         pipelineConfig: {
           functions: pipelineConfig,
         },

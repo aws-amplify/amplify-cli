@@ -40,6 +40,7 @@ export interface TemplateProvider {
       bucketName: string;
       objectKey: string;
       httpUrl: string;
+      s3Url: string;
     };
   };
 }

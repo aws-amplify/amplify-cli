@@ -25,6 +25,7 @@ import {
   TransformerValidationStepContextProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { makeField, makeInputValueDefinition, makeNamedType, makeNonNullType } from 'graphql-transformer-common';
+import { RemovalPolicy } from '@aws-cdk/core';
 
 export const directiveDefinition = /* GraphQl */ `
   directive @model(
@@ -147,16 +148,18 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const queryFields = this.getQueryFieldNames(context, def!);
 
       // add the table
-      const tableResourceName = `${def!.name.value}Table`;
-      const stack = context.stackManager.getStackFor(tableResourceName, def!.name.value);
+      const tableLogicalName = `${def!.name.value}Table`;
+      const tableName = context.resourceHelper.generateResourceName(def!.name.value);
+      const stack = context.stackManager.getStackFor(tableLogicalName, def!.name.value);
       // Expose a way in context to allow proper resource naming
-      const table = new Table(stack, tableResourceName, {
-        tableName: def!.name.value,
+      const table = new Table(stack, tableLogicalName, {
+        tableName,
         partitionKey: {
           name: 'id',
           type: AttributeType.STRING,
         },
         encryption: TableEncryption.DEFAULT,
+        removalPolicy: RemovalPolicy.DESTROY,
       });
       // Expose a better API to select what stack this belongs to
       const dataSource = context.api.addDynamoDbDataSource(

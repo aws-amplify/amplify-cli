@@ -60,6 +60,6 @@ export class StackManager implements StackManagerProvider {
   };
 
   getParameter = (name: string): CfnParameter | void => {
-    this.paramMap.get(name);
+    return this.paramMap.get(name);
   };
 }

@@ -5,6 +5,8 @@ import { DocumentNode } from 'graphql';
 import { TransformerContextOutputProvider } from './output';
 import { StackManagerProvider } from './stacks';
 import { GraphQLApiProvider } from '../graphql-api-provider';
+import { TransformerResourceHelperProvider } from './resource-helper'
+import { FeatureFlagProvider } from '../featuer-flags';
 
 export interface TransformerContextProvider {
   resolvers: TransformerResolversManagerProvider;
@@ -15,11 +17,19 @@ export interface TransformerContextProvider {
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
   api: GraphQLApiProvider;
+  resourceHelper: TransformerResourceHelperProvider;
+  featureFlags: FeatureFlagProvider;
 }
 
 
-export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument'>
-export type TransformerSchemaVisitStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'output' | 'providerRegistry'>;
-export type TransformerValidationStepContextProvider = Pick<TransformerContextProvider, 'inputDocument'| 'output' | 'providerRegistry'| 'dataSources'>
+export type TransformerBeforeStepContextProvider = Pick<TransformerContextProvider, 'inputDocument' | 'featureFlags'>;
+export type TransformerSchemaVisitStepContextProvider = Pick<
+  TransformerContextProvider,
+  'inputDocument' | 'output' | 'providerRegistry' | 'featureFlags'
+>;
+export type TransformerValidationStepContextProvider = Pick<
+  TransformerContextProvider,
+  'inputDocument' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags'
+>;
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;
 export type TranformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;

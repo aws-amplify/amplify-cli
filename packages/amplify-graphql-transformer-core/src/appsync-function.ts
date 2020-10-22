@@ -53,14 +53,14 @@ export class AppSyncFunctionConfiguration extends Construct {
 
     const requestTemplate = props.requestMappingTemplate.bind(this);
     const responseTemplate = props.responseMappingTemplate.bind(this);
-    this.function = new CfnFunctionConfiguration(this, `${id}AppSyncFunction`, {
+    this.function = new CfnFunctionConfiguration(this, `${id}.AppSyncFunction`, {
       name: id,
       apiId: props.api.apiId,
       functionVersion: '2018-05-29',
       description: props.description,
       dataSourceName: props.dataSource instanceof BaseDataSource ? props.dataSource.ds.attrName : props.dataSource,
-      requestMappingTemplate: requestTemplate.s3Location.httpUrl,
-      responseMappingTemplate: responseTemplate.s3Location.httpUrl,
+      requestMappingTemplateS3Location: requestTemplate.s3Location.s3Url,
+      responseMappingTemplateS3Location: responseTemplate.s3Location.s3Url,
     });
 
     props.api.addSchemaDependency(this.function);

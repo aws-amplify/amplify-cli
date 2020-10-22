@@ -2,6 +2,7 @@ export { DataSourceProvider, TransformerDataSourceManagerProvider, AppSyncDataSo
 export { TransformerContextOutputProvider } from './output';
 export { TransformerProviderRegistry } from './provider-registry';
 export { TransformerResolverProvider, TransformerResolversManagerProvider } from './transformer-resolver';
+export { TransformerResourceHelperProvider } from './resource-helper'
 export {
   TransformerContextProvider,
   TranformerTransformSchemaStepContextProvider,
@@ -11,3 +12,4 @@ export {
   TransformerValidationStepContextProvider,
 } from './transformer-context';
 export { StackManagerProvider } from './stacks';
+
