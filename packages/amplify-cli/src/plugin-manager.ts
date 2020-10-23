@@ -16,6 +16,10 @@ import { AmplifyEvent } from './domain/amplify-event';
 import { constants } from './domain/constants';
 import { print } from './context-extensions';
 
+// both getPluginPlatform and isNewCli read the plugins file.
+// the contents of the file are shared here to avoid reading the file twice
+let pluginPlatform: PluginPlatform | undefined;
+
 export async function getPluginPlatform(): Promise<PluginPlatform> {
   // This function is called at the beginning of each command execution
   // and performs the following actions:
@@ -24,7 +28,7 @@ export async function getPluginPlatform(): Promise<PluginPlatform> {
   // 3. re-scan if needed.
   // 4. write to update the plugins.json file if re-scan is performed
   // 5. return the pluginsInfo object
-  let pluginPlatform = readPluginsJsonFile();
+  pluginPlatform = pluginPlatform || readPluginsJsonFile();
 
   if (pluginPlatform) {
     if (isCoreMatching(pluginPlatform)) {
@@ -44,6 +48,11 @@ export async function getPluginPlatform(): Promise<PluginPlatform> {
 
   return pluginPlatform;
 }
+
+export const isNewCli = () => {
+  pluginPlatform = pluginPlatform || readPluginsJsonFile();
+  return !pluginPlatform || !isCoreMatching(pluginPlatform);
+};
 
 function isCoreMatching(pluginPlatform: PluginPlatform): boolean {
   try {
@@ -135,6 +144,7 @@ export async function scan(pluginPlatform?: PluginPlatform): Promise<PluginPlatf
     return result;
   } catch (e) {
     print.error('Plugin scan failed.');
+    print.info(e);
     throw new Error('Plugin scan failed.');
   }
 }
