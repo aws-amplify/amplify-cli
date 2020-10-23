@@ -507,10 +507,10 @@ describe('Metadata visitor', () => {
     it('should generate for typeDeclaration', () => {
       const typeDeclaration = getVisitor(schema, 'typeDeclaration');
       expect(typeDeclaration.generate()).toMatchInlineSnapshot(`
-"import { Schema } from '@aws-amplify/datastore';
+        "import { Schema } from '@aws-amplify/datastore';
 
-export declare const schema: Schema;"
-`);
+        export declare const schema: Schema;"
+      `);
     });
   });
 });
@@ -568,20 +568,6 @@ describe('Metadata visitor', () => {
                             \\"type\\": \\"String\\",
                             \\"isRequired\\": false,
                             \\"attributes\\": []
-                        },
-                        \\"customOwnerField\\": {
-                            \\"name\\": \\"customOwnerField\\",
-                            \\"isArray\\": false,
-                            \\"type\\": \\"String\\",
-                            \\"isRequired\\": false,
-                            \\"attributes\\": []
-                        },
-                        \\"customOwnerField2\\": {
-                            \\"name\\": \\"customOwnerField2\\",
-                            \\"isArray\\": false,
-                            \\"type\\": \\"String\\",
-                            \\"isRequired\\": false,
-                            \\"attributes\\": []
                         }
                     },
                     \\"syncable\\": true,
@@ -656,7 +642,7 @@ describe('Metadata visitor', () => {
                     }
                 }
             },
-            \\"version\\": \\"5d997b204c79c66d009287de0054655e\\"
+            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
         };"
       `);
     });
@@ -690,20 +676,6 @@ describe('Metadata visitor', () => {
                             \\"type\\": \\"String\\",
                             \\"isRequired\\": false,
                             \\"attributes\\": []
-                        },
-                        \\"customOwnerField\\": {
-                            \\"name\\": \\"customOwnerField\\",
-                            \\"isArray\\": false,
-                            \\"type\\": \\"String\\",
-                            \\"isRequired\\": false,
-                            \\"attributes\\": []
-                        },
-                        \\"customOwnerField2\\": {
-                            \\"name\\": \\"customOwnerField2\\",
-                            \\"isArray\\": false,
-                            \\"type\\": \\"String\\",
-                            \\"isRequired\\": false,
-                            \\"attributes\\": []
                         }
                     },
                     \\"syncable\\": true,
@@ -778,7 +750,7 @@ describe('Metadata visitor', () => {
                     }
                 }
             },
-            \\"version\\": \\"5d997b204c79c66d009287de0054655e\\"
+            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
         };"
       `);
     });
@@ -835,13 +807,6 @@ describe('Metadata visitor for auth process in field level', () => {
                             \\"type\\": \\"String\\",
                             \\"isRequired\\": false,
                             \\"attributes\\": []
-                        },
-                        \\"owner\\": {
-                            \\"name\\": \\"owner\\",
-                            \\"isArray\\": false,
-                            \\"type\\": \\"String\\",
-                            \\"isRequired\\": false,
-                            \\"attributes\\": []
                         }
                     },
                     \\"syncable\\": true,
@@ -889,7 +854,7 @@ describe('Metadata visitor for auth process in field level', () => {
             },
             \\"enums\\": {},
             \\"nonModels\\": {},
-            \\"version\\": \\"38f7db9c1e8eab155fd9ce672a92f248\\"
+            \\"version\\": \\"bff2efaf6e138056991c723932df2763\\"
         };"
       `);
     });
@@ -931,13 +896,6 @@ describe('Metadata visitor for auth process in field level', () => {
                             \\"type\\": \\"String\\",
                             \\"isRequired\\": false,
                             \\"attributes\\": []
-                        },
-                        \\"owner\\": {
-                            \\"name\\": \\"owner\\",
-                            \\"isArray\\": false,
-                            \\"type\\": \\"String\\",
-                            \\"isRequired\\": false,
-                            \\"attributes\\": []
                         }
                     },
                     \\"syncable\\": true,
@@ -985,7 +943,7 @@ describe('Metadata visitor for auth process in field level', () => {
             },
             \\"enums\\": {},
             \\"nonModels\\": {},
-            \\"version\\": \\"38f7db9c1e8eab155fd9ce672a92f248\\"
+            \\"version\\": \\"bff2efaf6e138056991c723932df2763\\"
         };"
       `);
     });

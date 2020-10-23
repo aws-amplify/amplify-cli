@@ -480,38 +480,12 @@ export class AppSyncModelVisitor<
     Object.values(this.modelMap).forEach(model => {
       const filteredDirectives = model.directives.filter(d => d.name !== 'auth');
       const authDirectives = processAuthDirective(model.directives);
-      authDirectives.forEach(directive => {
-        directive.arguments.rules.forEach(rule => {
-          if (rule.allow === AuthStrategy.owner) {
-            addFieldToModel(model, {
-              type: 'String',
-              isList: false,
-              isNullable: true,
-              name: rule.ownerField ? rule.ownerField : 'owner',
-              directives: [],
-            });
-          }
-        });
-      });
       model.directives = [...filteredDirectives, ...authDirectives];
 
       //field @auth process
       model.fields.forEach(field => {
         const nonAuthDirectives = field.directives.filter(d => d.name != 'auth');
         const authDirectives = processAuthDirective(field.directives);
-        authDirectives.forEach(directive => {
-          directive.arguments.rules.forEach(rule => {
-            if (rule.allow === AuthStrategy.owner) {
-              addFieldToModel(model, {
-                type: 'String',
-                isList: false,
-                isNullable: true,
-                name: rule.ownerField ? rule.ownerField : 'owner',
-                directives: [],
-              });
-            }
-          });
-        });
         field.directives = [...nonAuthDirectives, ...authDirectives];
       });
     });
