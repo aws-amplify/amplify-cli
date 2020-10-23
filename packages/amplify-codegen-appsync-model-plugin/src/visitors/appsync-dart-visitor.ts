@@ -19,24 +19,84 @@ export class AppSyncModelDartVisitor<
       const result: string[] = [];
       Object.entries(this.getSelectedModels()).forEach(([name, model]) => {
         const modelDeclaration = this.generateModelClass(model);
+        const modelType = this.generateModelType(model);
+        const modelSchema = this.generateModelSchema(model);
+
         result.push(modelDeclaration);
+        result.push(modelType);
+        result.push(modelSchema)
       });
       return result.join('\n');
     }
 
     protected generateModelClass(model: CodeGenModel): string {
+      //class wrapper
       const classDeclarationBlock = new DartDeclarationBlock()
         .asKind('class')
         .withName(this.getModelName(model))
-        .implements(['Model'])
+        .extends(['Model'])
         .withComment(`This is an auto generated class representing the ${model.name} type in your schema.`)
-        .annotate(this.generateModelAnnotations(model));
+        .annotate(['immutalbe']);
+      //model type field
+      classDeclarationBlock.addClassMember('classType', '', `${this.getModelName(model)}Type()`, { static: true, const: true});
+      //model fields
       model.fields.forEach(field => {
-        const value: string = '';
-        this.generateModelField(field, value, classDeclarationBlock);
+        this.generateModelField(field, '', classDeclarationBlock);
       });
+      //getIdß
+      this.generateGetIdMethod(model, classDeclarationBlock);
+      //constructor
+      this.generateConstructor(model, classDeclarationBlock);
+      //equals
+      this.generateEqualsMethodAndOperator(model, classDeclarationBlock);
+      //hashCode
+      this.generateHashCodeMethod(model, classDeclarationBlock);
+      //toString
+      this.generateToStringMethod(model, classDeclarationBlock);
+      //copyWith
+      this.generateCopyWithMethod(model, classDeclarationBlock);
+      //de/serialization method
+      this.generateSerializationMethod(model, classDeclarationBlock);
       return classDeclarationBlock.string;
     }
+
+    protected generateModelType(model: CodeGenModel): string {
+      const classDeclarationBlock = new DartDeclarationBlock()
+        .asKind('class')
+        .withName(`${this.getModelName(model)}Type`)
+        .extends([`ModelType<${this.getModelName(model)}>`]);
+      return classDeclarationBlock.string;
+    }
+
+    protected generateModelSchema(model: CodeGenModel): string {
+      const classDeclarationBlock = new DartDeclarationBlock()
+        .asKind('extension')
+        .withName(`${this.getModelName(model)}Schema`)
+        .extensionOn(this.getModelName(model));
+      return classDeclarationBlock.string;
+    }
+
+    protected generateGetIdMethod(model: CodeGenModel, declarationBlock: DartDeclarationBlock) : void {
+    }
+    protected generateConstructor(model: CodeGenModel, declarationBlock: DartDeclarationBlock) : void {
+      //TODO
+    }
+    protected generateEqualsMethodAndOperator(model: CodeGenModel, declarationBlock: DartDeclarationBlock) : void {
+      //TODO
+    }
+    protected generateHashCodeMethod(model: CodeGenModel, declarationBlock: DartDeclarationBlock) : void {
+      //TODO
+    }
+    protected generateToStringMethod(model: CodeGenModel, declarationBlock: DartDeclarationBlock) : void {
+      //TODO
+    }
+    protected generateCopyWithMethod(model: CodeGenModel, declarationBlock: DartDeclarationBlock) : void {
+      //TODO
+    }
+    protected generateSerializationMethod(model: CodeGenModel, declarationBlock: DartDeclarationBlock) : void {
+      //TODO
+    }
+
 
     /**
      * Generate code for model annotations which has model and key directives
@@ -65,14 +125,13 @@ export class AppSyncModelDartVisitor<
     /**
      * Generate code for fields inside models
      * @param field
+     * @param value
      * @param classDeclarationBlock
      */
     protected generateModelField(field: CodeGenField, value: string, classDeclarationBlock: DartDeclarationBlock): void {
-      const annotations = this.generateFieldAnnotations(field);
       const fieldType = this.getNativeType(field);
       const fieldName = this.getFieldName(field);
-      const nullable = field.isNullable && (!field.connectionInfo || field.connectionInfo.kind !== CodeGenConnectionType.BELONGS_TO);
-      classDeclarationBlock.addClassMember(fieldName, fieldType, value, annotations, nullable);
+      classDeclarationBlock.addClassMember(fieldName, fieldType, value, { final: true });
     }
 
     protected generateFieldAnnotations(field: CodeGenField): string[] {
