@@ -9,7 +9,7 @@ import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './layerParams';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { saveLayerRuntimes } from './layerRuntimes';
-import { containerTemplate as containerCfn, buildspec } from './container-resource-template';
+import { containerTemplate as containerCfn, containerFiles } from './container-resource-template';
 
 const DEFAULT_CONTAINER_PORT = 8080;
 export function createContainerResources(context: any, parameters: ContainerParameters) {
@@ -32,12 +32,9 @@ export function createContainerResources(context: any, parameters: ContainerPara
     ParamContainerPort: DEFAULT_CONTAINER_PORT,
   };
 
-  fs.writeFileSync(
-    path.join(resourceDirPath, 'src', 'Dockerfile'),
-    `FROM inanimate/echo-server
-  ENV ADD_HEADERS='{"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}'`,
-  );
-  fs.writeFileSync(path.join(resourceDirPath, 'src', 'buildspec.yml'), buildspec);
+  Object.entries(containerFiles).forEach(([fileName, fileContents]) => {
+    fs.writeFileSync(path.join(resourceDirPath, 'src', fileName), fileContents);
+  });
   JSONUtilities.writeJson(path.join(resourceDirPath, 'container-template.json'), containerCfn);
   JSONUtilities.writeJson(path.join(resourceDirPath, 'parameters.json'), templateParameters);
 }
