@@ -13,13 +13,19 @@ export const run = async context => {
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
     const { envName } = stateManager.getLocalEnvInfo(projectPath);
 
-    const { AmplifyAppId } = teamProviderInfo[envName].awscloudformation;
+    const appId = get(teamProviderInfo, [envName, 'awscloudformation', 'AmplifyAppId'], false);
+
     const localEnvNames = Object.keys(teamProviderInfo);
 
-    if (inputAppId && AmplifyAppId && inputAppId !== AmplifyAppId) {
+    if (inputAppId && appId && inputAppId !== appId) {
       context.print.error('Amplify appId mismatch.');
-      context.print.info(`You are currently working in the amplify project with Id ${AmplifyAppId}`);
-      throw new Error('Amplify appId');
+      context.print.info(`You are currently working in the amplify project with Id ${appId}`);
+      process.exit(1);
+    } else if (!appId) {
+      context.print.error(`Environment '${envName}' not found.`);
+      context.print.info(`Try running "amplify env add" to add a new environment.`);
+      context.print.info(`If this backend already exists, try restoring it's definition in your team-provider-info.json file.`);
+      process.exit(1);
     }
 
     if (inputEnvName) {
