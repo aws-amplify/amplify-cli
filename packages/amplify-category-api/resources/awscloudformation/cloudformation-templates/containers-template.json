@@ -805,7 +805,7 @@
         "RestApiId": {
           "Ref": "MyApi29E763169"
         },
-        "AuthorizationScopes": ["openid"],
+        "AuthorizationScopes": ["aws.cognito.signin.user.admin"],
         "AuthorizationType": "COGNITO_USER_POOLS",
         "AuthorizerId": {
           "Ref": "MyAuthorizer"

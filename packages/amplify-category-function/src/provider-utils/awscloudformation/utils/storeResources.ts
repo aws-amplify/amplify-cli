@@ -35,7 +35,7 @@ export function createContainerResources(context: any, parameters: ContainerPara
   fs.writeFileSync(
     path.join(resourceDirPath, 'src', 'Dockerfile'),
     `FROM inanimate/echo-server
-  ENV ADD_HEADERS={"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}`,
+  ENV ADD_HEADERS='{"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*"}'`,
   );
   fs.writeFileSync(path.join(resourceDirPath, 'src', 'buildspec.yml'), buildspec);
   JSONUtilities.writeJson(path.join(resourceDirPath, 'container-template.json'), containerCfn);
