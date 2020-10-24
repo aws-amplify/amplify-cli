@@ -77,6 +77,8 @@ export class AmplifyToolkit {
   private _readBreadcrumbs: any;
   private _loadRuntimePlugin: any;
   private _getImportedAuthProperties: any;
+  private _runCleanUpTasks: any;
+  private _cleanUpTasks: Array<Function>;
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
@@ -441,5 +443,22 @@ export class AmplifyToolkit {
       this._getImportedAuthProperties ||
       require(path.join(this._amplifyHelpersDirPath, 'get-imported-auth-properties')).getImportedAuthProperties;
     return this._getImportedAuthProperties;
+  }
+
+  get runCleanUpTasks(): any {
+    this._runCleanUpTasks = this._runCleanUpTasks || require(path.join(this._amplifyHelpersDirPath, 'run-cleanup-tasks')).runCleanUpTasks;
+    return this._runCleanUpTasks;
+  }
+
+  constructor() {
+    this._cleanUpTasks = new Array();
+  }
+
+  addCleanUpTask(task: Function) {
+    this._cleanUpTasks.push(task);
+  }
+
+  getCleanUpTasks(): Function[] {
+    return this._cleanUpTasks;
   }
 }
