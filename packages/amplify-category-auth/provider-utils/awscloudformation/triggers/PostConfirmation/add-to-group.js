@@ -22,7 +22,7 @@ exports.handler = async (event, context) => {
   try {
     await cognitoidentityserviceprovider.adminAddUserToGroup(addUserParams).promise();
     return {
-      statusCode: 500,
+      statusCode: 200,
       body: JSON.stringify(event)
     }
   } catch (error) {
