@@ -1,11 +1,10 @@
 import { getAmplifyMeta } from './index';
-import { addCleanupTask } from './cleanup-task';
 export class ConfigOverrideManager {
   private static instance: ConfigOverrideManager = null;
   private overrides: {};
   constructor(context) {
     this.overrides = {};
-    addCleanupTask(context, async () => {
+    context.amplify.addCleanUpTask(async context => {
       await this.restoreFrontendExports(context);
     });
   }
