@@ -3,7 +3,7 @@ import { CognitoIdentity } from 'aws-sdk';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import { JWK, JWKS, JWT, JWS } from 'jose';
+import { JWK, JWKS, JWT } from 'jose';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 
