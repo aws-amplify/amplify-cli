@@ -1,4 +1,5 @@
 import open from 'open';
+import ora from 'ora';
 import { analyzeProject } from '../config-steps/c0-analyzeProject';
 import { configFrontendHandler } from '../config-steps/c1-configFrontend';
 import { configProviders } from '../config-steps/c2-configProviders';
@@ -24,19 +25,24 @@ export const run = async (context: Context) => {
 
   if (context.parameters.options.appId) {
     const { appId } = context.parameters.options;
-    //const URL = `https://amplifyadmin.amplifyapp.com/verify/${appId}`;
-    const URL = 'http://localhost:3000';
+    const URL = `https://www.dracarys.app.com/verify/${appId}`;
     context.print.info(`Opening link: ${URL}`);
     await open(URL, { wait: false }).catch(e => {
-      console.error('Failed to open web browser');
+      context.print.error('Failed to open web browser.');
+      return;
     });
     // spawn express server locally to get credentials from redirect
-    // const spinner = ora('Starting localhost:4242\n').start();
-    const adminLoginServer = new AdminLoginServer(appId, () => {
-      // spinner.stop();
-      adminLoginServer.shutdown();
-    });
-    // await on results, stop spinner
+    const spinner = ora('Starting localhost:4242\n').start();
+    try {
+      const adminLoginServer = new AdminLoginServer(appId, URL, () => {
+        adminLoginServer.shutdown();
+        spinner.stop();
+        context.print.info('Successfully received Amplify Admin tokens.');
+      });
+    } catch (e) {
+      spinner.stop();
+      context.print.error(e);
+    }
     return;
   }
 

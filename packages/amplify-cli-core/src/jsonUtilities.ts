@@ -70,9 +70,9 @@ export class JSONUtilities {
     const dirPath = path.dirname(fileName);
     fs.ensureDirSync(dirPath);
 
-    const writeFileOptions: { encoding: string; fileMode?: string } = { encoding: 'utf8' };
+    const writeFileOptions: { encoding: string; mode?: number } = { encoding: 'utf8' };
     if (mergedOptions.secureFile) {
-      writeFileOptions.fileMode = '600';
+      writeFileOptions.mode = 0o600;
     }
 
     fs.writeFileSync(fileName, jsonString, writeFileOptions);

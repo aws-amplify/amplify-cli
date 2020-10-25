@@ -1,18 +1,13 @@
+import { stateManager } from 'amplify-cli-core';
 import { CognitoIdentity } from 'aws-sdk';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-// import { JWT } from 'jose';
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { JWK, JWKS, JWT, JWS } from 'jose';
+import _ from 'lodash';
+import fetch from 'node-fetch';
 
-// TODO, type info
-interface TokenPayload {
-  accessToken: any;
-  clockDrift: number;
-  idToken: any;
-  refreshToken: any;
-  region: string;
-}
+import { TokenPayload, CognitoIdToken, CognitoAccessToken } from '../utils/cognitoJwtTypes';
 
 export class AdminLoginServer {
   private port = 4242; // placeholder
@@ -20,81 +15,99 @@ export class AdminLoginServer {
   private server;
   private appId: string;
 
-  private corsOptions = {
-    origin: ['http://localhost:3000'],
-    methods: ['POST', 'OPTIONS'],
-    allowedHeaders: 'Content-Type',
+  private corsOptions: {
+    origin: string[];
+    methods: string[];
+    allowedHeaders: string;
   };
 
-  constructor(appId: string, callback: () => void) {
+  constructor(appId: string, originUrl: string, callback: () => void) {
     this.appId = appId;
+    this.corsOptions = {
+      origin: [originUrl],
+      methods: ['POST', 'OPTIONS'],
+      allowedHeaders: 'Content-Type',
+    };
     this.app = express();
     this.app.use(cors(this.corsOptions));
     this.app.use(bodyParser.json());
     this.setupRoute(callback);
-    this.server = this.app.listen(this.getPort(), () => console.log(`listening on port ${this.getPort()}`));
+    this.server = this.app.listen(this.getPort());
   }
 
-  // Todo: scan for available ports across a range like mock
+  // TODO: scan for available ports across a range like mock
   private getPort() {
     return this.port;
   }
 
-  private getAdminCredentials(idToken: any, region: string, callback: (err: any, data: any) => void) {
+  private async getAdminCredentials(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> {
     const cognitoIdentity = new CognitoIdentity({ region });
+    const login = idToken.payload.iss.replace('https://', '');
     const logins = {
-      [idToken.payload.iss]: idToken.jwtToken,
+      [login]: idToken.jwtToken,
     };
-    cognitoIdentity.getId(
-      {
-        IdentityPoolId: `TODO: Identity pool here`,
+    const { IdentityId } = await cognitoIdentity
+      .getId({
+        IdentityPoolId,
         Logins: logins,
-      },
-      (err, data) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        console.log(data);
-        const { IdentityId } = data;
-        if (IdentityId) {
-          cognitoIdentity.getCredentialsForIdentity(
-            {
-              IdentityId,
-              Logins: logins,
-            },
-            callback,
-          );
-        } else {
-          console.error('IdentityId not defined. The CLI was unable to retrieve credentials.');
-        }
-      },
-    );
+      })
+      .promise();
+    if (!IdentityId) {
+      throw new Error('IdentityId not defined. The CLI was unable to retrieve credentials.');
+    }
+    return IdentityId;
   }
 
-  private setupRoute(callback: () => void) {
-    this.app.post('/amplifyadmin/', (req, res) => {
-      console.log('Tokens received');
-      this.storeTokens(req.body, this.appId);
-      delete req.body;
-      res.sendStatus(200);
+  private async setupRoute(callback) {
+    this.app.post('/amplifyadmin/', async (req, res) => {
+      try {
+        await this.storeTokens(req.body, this.appId);
+        delete req.body;
+        res.sendStatus(200);
+      } catch (e) {
+        res.sendStatus(500);
+        throw new Error('Failed to receive expected authentication tokens.');
+      }
       callback();
     });
   }
 
-  private storeTokens(payload: TokenPayload, appId: string) {
-    const config: { [key: string]: TokenPayload } =
-      JSONUtilities.readJson(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) || {};
-    // TODO: validate payload - strip excess token data from react app
-    config[appId] = payload;
-    JSONUtilities.writeJson(pathManager.getAmplifyAdminConfigFilePath(), config, { secureFile: true });
-    console.log(payload);
-    // const retVal = JWT.verify(payload.accessToken.jwtToken, );
-    // console.log(retVal);
-    this.getAdminCredentials(payload.idToken, payload.region, (err, data) => {
-      if (err) console.error('Failed to get AWS credentials:', err);
-      console.log(data);
-    });
+  private validateTokens(
+    tokens: {
+      accessToken: CognitoAccessToken;
+      idToken: CognitoIdToken;
+    },
+    keyStore: JWKS.KeyStore,
+  ) {
+    const issuer: string = tokens.idToken.payload.iss;
+    const audience: string = tokens.idToken.payload.aud;
+    const decodedJwtId = JWT.IdToken.verify(tokens.idToken.jwtToken, keyStore, { issuer, audience });
+    const decodedJwtAccess = JWT.verify(tokens.accessToken.jwtToken, keyStore);
+
+    return _.isEqual(decodedJwtId, tokens.idToken.payload) && _.isEqual(decodedJwtAccess, tokens.accessToken.payload);
+  }
+
+  private async storeTokens(payload: TokenPayload, appId: string) {
+    const issuer: string = payload.idToken.payload.iss;
+    let keys;
+    await fetch(`${issuer}/.well-known/jwks.json`)
+      .then(res => res.json())
+      .then(json => (keys = json.keys))
+      .catch(e => console.error(e));
+
+    const keyStore = new JWKS.KeyStore(keys.map(key => JWK.asKey(key)));
+    const areTokensValid = this.validateTokens(
+      {
+        idToken: payload.idToken,
+        accessToken: payload.accessToken,
+      },
+      keyStore,
+    );
+    if (areTokensValid) {
+      const IdentityId = await this.getAdminCredentials(payload.idToken, payload.IdentityPoolId, payload.region);
+      const config = { ...payload, IdentityId };
+      stateManager.setAmplifyAdminConfigEntry(appId, config);
+    }
   }
 
   shutdown() {
