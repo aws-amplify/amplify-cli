@@ -1,5 +1,4 @@
 import { GraphQLInt, GraphQLScalarType, GraphQLError, Kind, StringValueNode } from 'graphql';
-import GraphQLJSON from 'graphql-type-json';
 import { isValidNumber } from 'libphonenumber-js';
 
 import { GraphQLDate, GraphQLTime, GraphQLDateTime } from 'graphql-iso-date';
@@ -139,12 +138,42 @@ const AWSIPAddress = new GraphQLScalarType({
   },
 });
 
+const parseJson = (value: string) => {
+  if (typeof value !== "string") {
+    throw new GraphQLError(`Unable to parse ${value} as valid JSON.`);
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch (error) {
+    throw new TypeError(`Unable to parse ${value} as valid JSON.`);
+  }
+}
+
+const AWSJSON = new GraphQLScalarType({
+  name: 'AWSJSON',
+  description: 'The AWSJSON scalar type represents a valid json object serialized as a string.',
+  serialize(value) {
+    return JSON.stringify(value);
+  },
+  parseValue(value) {
+    return parseJson(value);
+  },
+  parseLiteral(ast) {
+    if (ast.kind !== Kind.STRING) {
+      throw new GraphQLError(`Unable to parse ${ast.kind} as valid JSON.`);
+    }
+
+    return parseJson(ast.value);
+  },
+});
+
 export const scalars = {
-  AWSJSON: GraphQLJSON,
+  AWSJSON,
   AWSDate,
   AWSTime,
   AWSDateTime,
-  AWSPhone,
+  AWSPhone: new AWSPhone({ name: 'AWSPhone', description: 'AWSPhone' }),
   AWSEmail: EmailAddressResolver,
   AWSURL: URLResolver,
   AWSTimestamp,

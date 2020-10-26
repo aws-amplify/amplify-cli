@@ -98,7 +98,10 @@ export function generateResolvers(
 
   return makeExecutableSchema({
     typeDefs: doc,
-    resolvers: resolverMapWithAuth,
+    resolvers: {
+      ...resolverMapWithAuth,
+      ...scalars,
+    },
     schemaDirectives,
   });
 }
