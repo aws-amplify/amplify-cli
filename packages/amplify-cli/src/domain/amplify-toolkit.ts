@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { $TSAny } from 'amplify-cli-core';
+import { Context } from './context';
 
 export class AmplifyToolkit {
   private _buildResources: any;
@@ -77,7 +78,6 @@ export class AmplifyToolkit {
   private _readBreadcrumbs: any;
   private _loadRuntimePlugin: any;
   private _getImportedAuthProperties: any;
-  private _runCleanUpTasks: any;
   private _cleanUpTasks: Array<Function>;
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
@@ -445,20 +445,15 @@ export class AmplifyToolkit {
     return this._getImportedAuthProperties;
   }
 
-  get runCleanUpTasks(): any {
-    this._runCleanUpTasks = this._runCleanUpTasks || require(path.join(this._amplifyHelpersDirPath, 'run-cleanup-tasks')).runCleanUpTasks;
-    return this._runCleanUpTasks;
-  }
-
   constructor() {
     this._cleanUpTasks = new Array();
   }
 
-  addCleanUpTask(task: Function) {
+  addCleanUpTask = (task: (context: Context) => void) => {
     this._cleanUpTasks.push(task);
   }
 
-  getCleanUpTasks(): Function[] {
-    return this._cleanUpTasks;
+  runCleanUpTasks = async (context: Context) => {
+    await Promise.all(this._cleanUpTasks.map(task => task(context)));
   }
 }
