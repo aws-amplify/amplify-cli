@@ -26,7 +26,7 @@ import { getTypeInfo } from '../utils/get-type-info';
 import { CodeGenConnectionType, CodeGenFieldConnection, processConnections } from '../utils/process-connections';
 import { sortFields } from '../utils/sort';
 import { printWarning } from '../utils/warn';
-import { processAuthDirective, AuthStrategy } from '../utils/process-auth';
+import { processAuthDirective } from '../utils/process-auth';
 
 export enum CodeGenGenerateEnum {
   metadata = 'metadata',
