@@ -37,7 +37,7 @@ export const postInstallInitialization = async () => {
     }),
   );
   delete process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB;
-  print.success('Done');
+  print.success('Done initializing new version.');
 };
 
 const resolvePackageRoot = (packageName: string) => {

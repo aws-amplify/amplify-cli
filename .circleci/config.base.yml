@@ -129,10 +129,10 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-            setNpmRegistryUrlToLocal
-            changeNpmGlobalPath
+            setSudoNpmRegistryUrlToLocal
+            changeSudoNpmGlobalPath
             sudo npm install -g @aws-amplify/cli
-            unsetNpmRegistryUrl
+            unsetSudoNpmRegistryUrl
             amplify version
 
   amplify_e2e_tests:
@@ -718,8 +718,6 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
-                - feat-import
       - amplify_e2e_tests:
           filters:
             branches:
