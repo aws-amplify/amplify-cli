@@ -15,10 +15,7 @@ import { twoPluginsAreTheSame } from './plugin-helpers/compare-plugins';
 import { AmplifyEvent } from './domain/amplify-event';
 import { constants } from './domain/constants';
 import { print } from './context-extensions';
-
-// both getPluginPlatform and isNewCli read the plugins file.
-// the contents of the file are shared here to avoid reading the file twice
-let pluginPlatform: PluginPlatform | undefined;
+import { postInstallInitialization } from './utils/post-install-initialization';
 
 export async function getPluginPlatform(): Promise<PluginPlatform> {
   // This function is called at the beginning of each command execution
@@ -28,7 +25,7 @@ export async function getPluginPlatform(): Promise<PluginPlatform> {
   // 3. re-scan if needed.
   // 4. write to update the plugins.json file if re-scan is performed
   // 5. return the pluginsInfo object
-  pluginPlatform = pluginPlatform || readPluginsJsonFile();
+  let pluginPlatform = readPluginsJsonFile();
 
   if (pluginPlatform) {
     if (isCoreMatching(pluginPlatform)) {
@@ -40,19 +37,18 @@ export async function getPluginPlatform(): Promise<PluginPlatform> {
         pluginPlatform = await scan();
       }
     } else {
+      // new CLI version detected
+      await postInstallInitialization();
       pluginPlatform = await scan();
     }
   } else {
+    // first CLI install detected
+    await postInstallInitialization();
     pluginPlatform = await scan();
   }
 
   return pluginPlatform;
 }
-
-export const isNewCli = () => {
-  pluginPlatform = pluginPlatform || readPluginsJsonFile();
-  return !pluginPlatform || !isCoreMatching(pluginPlatform);
-};
 
 function isCoreMatching(pluginPlatform: PluginPlatform): boolean {
   try {

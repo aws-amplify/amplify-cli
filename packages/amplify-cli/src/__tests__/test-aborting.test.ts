@@ -32,7 +32,6 @@ describe('test SIGINT with execute', () => {
     });
     jest.setMock('../plugin-manager', {
       getPluginPlatform: jest.fn(),
-      isNewCli: jest.fn(),
     });
     jest.setMock('../input-manager', {
       getCommandLineInput: jest.fn().mockReturnValue(input),

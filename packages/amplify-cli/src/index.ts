@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { $TSContext, CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, exitOnNextTick } from 'amplify-cli-core';
 import { Input } from './domain/input';
-import { getPluginPlatform, isNewCli, scan } from './plugin-manager';
+import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
 import { constructContext, persistContext, attachUsageData } from './context-manager';
 import { print } from './context-extensions';
@@ -24,9 +24,6 @@ EventEmitter.defaultMaxListeners = 1000;
 export async function run() {
   let errorHandler = (e: Error) => {};
   try {
-    if (isNewCli()) {
-      await postInstallInitialization();
-    }
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
     // with non-help command supplied, give notification before execution
