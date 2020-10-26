@@ -528,7 +528,7 @@ async function getAdminCredentials(idToken, identityId, region) {
     .promise();
 }
 
-async function refreshJWTs(authConfig) {
+async function refreshJWTs(authConfig, print) {
   const CognitoISP = new aws.CognitoIdentityServiceProvider({ region: authConfig.region });
   try {
     const result = await CognitoISP.initiateAuth({
@@ -540,8 +540,7 @@ async function refreshJWTs(authConfig) {
     }).promise();
     return result.AuthenticationResult;
   } catch (e) {
-    console.error('Failed to refresh tokens');
-    console.error(e);
+    print.error('Failed to refresh tokens.');
     throw e;
   }
 }
@@ -554,6 +553,7 @@ function isJwtExpired(token) {
 
 async function loadConfigurationForEnv(context, env) {
   const projectConfigInfo = getConfigForEnv(context, env);
+  const { print } = context;
   let awsConfig;
   if (projectConfigInfo.configLevel === 'amplifyAdmin') {
     const amplifyMeta = stateManager.getMeta();
@@ -561,15 +561,15 @@ async function loadConfigurationForEnv(context, env) {
     // load and token and check expiry, refresh if needed
     const authConfig = stateManager.getAmplifyAdminConfigEntry(appId);
     if (!authConfig) {
-      context.print.info('');
-      context.print.error(`No credentials found for appId: ${appId}`);
-      context.print.info(`If the appId is correct, try running amplify configure --appId ${appId}`);
+      print.info('');
+      print.error(`No credentials found for appId: ${appId}`);
+      print.info(`If the appId is correct, try running amplify configure --appId ${appId}`);
       process.exit(1);
     }
 
     // use tokens to get creds and assign to config
     if (isJwtExpired(authConfig.idToken)) {
-      const refreshedTokens = await refreshJWTs(authConfig);
+      const refreshedTokens = await refreshJWTs(authConfig, print);
       // Refresh stored tokens
       authConfig.idToken.jwtToken = refreshedTokens.IdToken;
       authConfig.accessToken.jwtToken = refreshedTokens.AccessToken;
@@ -607,8 +607,8 @@ async function loadConfigurationForEnv(context, env) {
         sessionToken: credentials.SessionToken,
       };
     } catch (e) {
-      context.print.info('');
-      context.print.error('Failed to get credentials.');
+      print.info('');
+      print.error('Failed to get credentials.');
       process.exit(1);
     }
   } else if (projectConfigInfo.configLevel === 'project') {
