@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.16.0...amplify-codegen@2.16.1-beta.0) (2020-10-27)
+
+
+### Reverts
+
+* Revert "feat(amplify-codegen): add schema compile process in codegen commands (#5164)" (#5707) ([d83f496](https://github.com/aws-amplify/amplify-cli/commit/d83f496f9ab51ded2eef6b0dd796627009eaf556)), closes [#5164](https://github.com/aws-amplify/amplify-cli/issues/5164) [#5707](https://github.com/aws-amplify/amplify-cli/issues/5707)
+
+
+
+
+
 # [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.15.21...amplify-codegen@2.16.0) (2020-10-22)
 
 

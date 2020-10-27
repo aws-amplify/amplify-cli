@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.31.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.31.0...@aws-amplify/cli@4.31.1-beta.0) (2020-10-27)
+
+
+### Bug Fixes
+
+* move post-install steps to plugin platform rather than post install script ([#5678](https://github.com/aws-amplify/amplify-cli/issues/5678)) ([f83bbab](https://github.com/aws-amplify/amplify-cli/commit/f83bbab378f6857202653cd57c607cead11cbe52))
+
+
+
+
+
 # [4.31.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.30.0...@aws-amplify/cli@4.31.0) (2020-10-22)
 
 
