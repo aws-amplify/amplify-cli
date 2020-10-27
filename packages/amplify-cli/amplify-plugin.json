@@ -11,7 +11,6 @@
     "init",
     "migrate",
     "plugin",
-    "post-install",
     "publish",
     "push",
     "pull",

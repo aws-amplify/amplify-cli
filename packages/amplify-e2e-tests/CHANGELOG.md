@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.27.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.27.0...amplify-e2e-tests@2.27.1) (2020-10-27)
+
+
+### Bug Fixes
+
+* sync resolver for mock ([#5684](https://github.com/aws-amplify/amplify-cli/issues/5684)) ([80e2cd4](https://github.com/aws-amplify/amplify-cli/commit/80e2cd44bde1021d4415c6c3b670f44ec1bcae3c))
+
+
+
+
+
 # [2.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.26.0...amplify-e2e-tests@2.27.0) (2020-10-22)
 
 

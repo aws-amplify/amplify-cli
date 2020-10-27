@@ -1027,10 +1027,11 @@ function setSyncQueryFilterSnippet() {
   const expressions: Expression[] = [];
   expressions.push(
     compoundExpression([
+      set(ref('filterArgsMap'), ref('ctx.args.filter.get("and")')),
       ifElse(
-        raw(`!$util.isNullOrEmpty($ctx.args.filter.and)`),
+        raw(`!$util.isNullOrEmpty($filterArgsMap)`),
         compoundExpression([
-          set(ref('json'), raw(`$ctx.args.filter.and`)),
+          set(ref('json'), raw(`$filterArgsMap`)),
           forEach(ref('item'), ref(`json`), [
             set(ref('ind'), ref('foreach.index')),
             forEach(ref('entry'), ref('item.entrySet()'), [
@@ -1070,6 +1071,7 @@ function generateSyncResolverInit() {
     set(ref('filterMap'), obj({})),
     set(ref('QueryMap'), obj({})),
     set(ref('PkMap'), obj({})),
+    set(ref('filterArgsMap'), obj({})),
   );
   return block(`Set map initialization for @key`, expressions);
 }
@@ -1199,14 +1201,18 @@ function makeSyncQueryResolver() {
         ),
         iff(ref('context.args.nextToken'), set(ref(`${requestVariable}.nextToken`), ref('context.args.nextToken')), true),
         iff(
-          raw('$filterMap != {}'),
+          raw('!$util.isNullOrEmpty($filterMap)'),
           set(ref(`${requestVariable}.filter`), ref('util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap))')),
         ),
         iff(raw(`$index != "dbTable"`), set(ref(`${requestVariable}.index`), ref('index'))),
         raw(`$util.toJson($${requestVariable})`),
       ]),
       DynamoDBMappingTemplate.syncItem({
-        filter: ifElse(raw('$ctx.args.filter != {}'), ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'), nul()),
+        filter: ifElse(
+          raw('!$util.isNullOrEmpty($ctx.args.filter)'),
+          ref('util.transform.toDynamoDBFilterExpression($ctx.args.filter)'),
+          nul(),
+        ),
         limit: ref(`util.defaultIfNull($ctx.args.limit, ${ResourceConstants.DEFAULT_SYNC_QUERY_PAGE_LIMIT})`),
         lastSync: ref('util.toJson($util.defaultIfNull($ctx.args.lastSync, null))'),
         nextToken: ref('util.toJson($util.defaultIfNull($ctx.args.nextToken, null))'),

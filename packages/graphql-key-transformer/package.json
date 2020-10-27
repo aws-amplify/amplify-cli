@@ -1,6 +1,6 @@
 {
   "name": "graphql-key-transformer",
-  "version": "2.19.15",
+  "version": "2.19.16",
   "description": "Implements the @key directive.",
   "repository": {
     "type": "git",

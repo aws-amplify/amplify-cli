@@ -114,6 +114,26 @@ jobs:
           no_output_timeout: 90m
       - store_test_results:
           path: packages/graphql-transformers-e2e-tests/
+  amplify_sudo_install_test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
+      - run:
+          name: Start verdaccio and Install Amplify CLI as sudo
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setSudoNpmRegistryUrlToLocal
+            changeSudoNpmGlobalPath
+            sudo npm install -g @aws-amplify/cli
+            unsetSudoNpmRegistryUrl
+            amplify version
 
   amplify_e2e_tests:
     <<: *defaults
@@ -232,7 +252,6 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
-            ./packages/amplify-cli/bin/amplify post-install
             cd packages/amplify-migration-tests
             yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
@@ -257,7 +276,6 @@ jobs:
           command: |
             source .circleci/local_publish_helpers.sh
             changeNpmGlobalPath
-            ./packages/amplify-cli/bin/amplify post-install
             cd packages/amplify-migration-tests
             yarn run migration --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
@@ -693,6 +711,13 @@ workflows:
                 - feat-import
           requires:
             - build
+      - amplify_sudo_install_test:
+          requires:
+            - publish_to_local_registry
+          filters:
+            branches:
+              only:
+                - master
       - amplify_e2e_tests:
           filters:
             branches:
@@ -737,6 +762,7 @@ workflows:
             - graphql_e2e_tests
             - integration_test
             - amplify_e2e_tests
+            - amplify_sudo_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4

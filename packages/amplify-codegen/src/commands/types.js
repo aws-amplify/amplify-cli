@@ -5,7 +5,7 @@ const Ora = require('ora');
 
 const constants = require('../constants');
 const loadConfig = require('../codegen-config');
-const { ensureIntrospectionSchema, ensureSchemaCompiled, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
+const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
 
 async function generateTypes(context, forceDownloadSchema, withoutInit = false, decoupleFrontend = '') {
   let frontend = decoupleFrontend;
@@ -51,10 +51,6 @@ async function generateTypes(context, forceDownloadSchema, withoutInit = false, 
         });
         const schemaPath = path.join(projectPath, cfg.schema);
         const target = cfg.amplifyExtension.codeGenTarget;
-
-        if (context.input.command === 'types') {
-          await ensureSchemaCompiled(context, schemaPath);
-        }
 
         const outputPath = path.join(projectPath, generatedFileName);
         let region;

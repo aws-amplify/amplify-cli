@@ -236,6 +236,39 @@ export const expected_result_query4 = {
   },
 };
 
+//query1 with no and and or in filter object
+export const query5 = `
+query SyncComments {
+  syncComments(filter: { data1 : {lt : "example4"}, username : {eq : "user1"}}) {
+    items {
+      content
+      createdAt
+      editor
+      data1
+      data2
+      editor
+      username
+    }
+  }
+}
+`;
+export const expected_result_query5 = {
+  data: {
+    syncComments: {
+      items: [
+        {
+          content: 'order1',
+          username: 'user1',
+          createdAt: '2015-01-01T01:05:49.129Z',
+          editor: 'user2',
+          data1: 'example1',
+          data2: 'example2',
+        },
+      ],
+    },
+  },
+};
+
 export async function runTest(projectDir: string, testModule: any) {
   await addApiWithSchemaAndConflictDetection(projectDir, testModule.schemaName);
   await amplifyPush(projectDir);

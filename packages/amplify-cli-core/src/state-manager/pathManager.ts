@@ -47,7 +47,7 @@ export class PathManager {
   getAmplifyPackageLibDirPath = (packageName: string): string => {
     const result = path.join(this.getAmplifyLibRoot(), packageName);
     if (!process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB && !fs.pathExistsSync(result)) {
-      throw new Error(`Package lib at ${result} does not exist. Try running 'amplify post-install' to copy files to the correct location.`);
+      throw new Error(`Package lib at ${result} does not exist.`);
     }
     return result;
   };

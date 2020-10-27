@@ -1219,6 +1219,7 @@ $util.toJson($ctx.result)
 #set( $filterMap = {} )
 #set( $QueryMap = {} )
 #set( $PkMap = {} )
+#set( $filterArgsMap = {} )
 ## [End] Set map initialization for @key **
 ## [Start] Set query expression for @key **
 $util.qr($QueryMap.put('orderId+status+createdAt' , 'dbTable'))
@@ -1233,8 +1234,9 @@ $util.qr($QueryMap.put('createdAt+status' , 'ByCreatedAt'))
 $util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
-#if( !$util.isNullOrEmpty($ctx.args.filter.and) )
-  #set( $json = $ctx.args.filter.and )
+#set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
+#if( !$util.isNullOrEmpty($filterArgsMap) )
+  #set( $json = $filterArgsMap )
   #foreach( $item in $json )
     #set( $ind = $foreach.index )
     #foreach( $entry in $item.entrySet() )
@@ -1325,7 +1327,7 @@ $util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
     #set( $QueryRequest.scanIndexForward = true )
   #end
 #if( $context.args.nextToken ) #set( $QueryRequest.nextToken = $context.args.nextToken ) #end
-  #if( $filterMap != {} )
+  #if( !$util.isNullOrEmpty($filterMap) )
     #set( $QueryRequest.filter = $util.parseJson($util.transform.toDynamoDBFilterExpression($filterMap)) )
   #end
   #if( $index != \\"dbTable\\" )
@@ -1339,7 +1341,7 @@ $util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
       \\"limit\\": $util.defaultIfNull($ctx.args.limit, 100),
       \\"nextToken\\": $util.toJson($util.defaultIfNull($ctx.args.nextToken, null)),
       \\"lastSync\\": $util.toJson($util.defaultIfNull($ctx.args.lastSync, null)),
-      \\"filter\\":     #if( $ctx.args.filter != {} )
+      \\"filter\\":     #if( !$util.isNullOrEmpty($ctx.args.filter) )
 $util.transform.toDynamoDBFilterExpression($ctx.args.filter)
     #else
 null

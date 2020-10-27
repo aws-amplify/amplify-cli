@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.7...amplify-appsync-simulator@1.23.8) (2020-10-27)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** handle Lexical error correctly ([#5622](https://github.com/aws-amplify/amplify-cli/issues/5622)) ([22209c4](https://github.com/aws-amplify/amplify-cli/commit/22209c465b147913bb034c054e85a2e1de4246ff)), closes [#5621](https://github.com/aws-amplify/amplify-cli/issues/5621)
+
+
+
+
+
 ## [1.23.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.6...amplify-appsync-simulator@1.23.7) (2020-10-22)
 
 **Note:** Version bump only for package amplify-appsync-simulator
