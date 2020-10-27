@@ -104,6 +104,7 @@ process.on('message', async options => {
         },
       }),
     );
+    exit(1);
   }
-  exit(1);
+  exit(0);
 });
