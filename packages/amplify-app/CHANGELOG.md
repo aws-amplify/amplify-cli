@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.16...amplify-app@2.17.17) (2020-10-27)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.15...amplify-app@2.17.16) (2020-10-22)
+
+
+### Bug Fixes
+
+* **amplify-app:** initialize feature flag  ([#5643](https://github.com/aws-amplify/amplify-cli/issues/5643)) ([9608b56](https://github.com/aws-amplify/amplify-cli/commit/9608b5616c2b92417a1b559f41f5d3f8f42f97e5))
+
+
+
+
+
+## [2.17.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.14...amplify-app@2.17.15) (2020-10-17)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.13...amplify-app@2.17.14) (2020-10-07)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
 ## [2.17.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.12...amplify-app@2.17.13) (2020-09-25)
 
 **Note:** Version bump only for package amplify-app

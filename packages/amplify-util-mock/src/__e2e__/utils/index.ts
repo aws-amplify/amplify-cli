@@ -9,6 +9,12 @@ import { invoke } from '../../utils/lambda/invoke';
 import { getFunctionDetails } from './lambda-helper';
 import { DynamoDB } from 'aws-sdk';
 
+jest.mock('amplify-cli-core', () => ({
+  pathManager: {
+    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('../amplify-dynamodb-simulator'),
+  },
+}));
+
 export async function launchDDBLocal() {
   let dbPath;
   while (true) {

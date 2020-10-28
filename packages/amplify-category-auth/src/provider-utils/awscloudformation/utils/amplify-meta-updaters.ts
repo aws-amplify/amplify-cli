@@ -15,8 +15,8 @@ export const getPostAddAuthMetaUpdater = (context: any, resultMetadata: { servic
     service: resultMetadata.service,
     providerPlugin: resultMetadata.providerName,
   };
-  const resourceDirPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
-  const authParameters = JSONUtilities.readJson<{ dependsOn: any[]; triggers: string; identityPoolName: string }>(resourceDirPath)!;
+  const parametersJSONPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
+  const authParameters = JSONUtilities.readJson<{ dependsOn: any[]; triggers: string; identityPoolName: string }>(parametersJSONPath)!;
 
   if (authParameters.dependsOn) {
     options.dependsOn = authParameters.dependsOn;
@@ -71,11 +71,11 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
   if (authParameters.triggers) {
     const triggers = JSON.parse(authParameters.triggers);
     customAuthConfigured =
-      triggers.DefineAuthChallenge &&
+      !!triggers.DefineAuthChallenge &&
       triggers.DefineAuthChallenge.length > 0 &&
-      triggers.CreateAuthChallenge &&
+      !!triggers.CreateAuthChallenge &&
       triggers.CreateAuthChallenge.length > 0 &&
-      triggers.VerifyAuthChallengeResponse &&
+      !!triggers.VerifyAuthChallengeResponse &&
       triggers.VerifyAuthChallengeResponse.length > 0;
   }
   context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'customAuth', customAuthConfigured);

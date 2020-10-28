@@ -10,10 +10,12 @@ import {
   addTextractPolicies,
 } from '../assets/identifyCFNGenerate';
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
+import { enableGuestAuth } from './enable-guest-auth';
 const { ResourceDoesNotExistError, ResourceAlreadyExistsError, exitOnNextTick } = require('amplify-cli-core');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
+const os = require('os');
 const uuid = require('uuid');
 // Predictions Info
 const templateFilename = 'identify-template.json.ejs';
@@ -337,26 +339,6 @@ function checkIfAuthExists(context) {
   return authExists;
 }
 
-async function enableGuestAuth(context, resourceName, allowUnauthenticatedIdentities) {
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-  // enable allowUnauthenticatedIdentities
-  const identifyRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
-  // getting requirement satisfaction map
-  const satisfiedRequirements = await checkRequirements(identifyRequirements, context, 'predictions', resourceName);
-  // checking to see if any requirements are unsatisfied
-  const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
-
-  // if requirements are unsatisfied, trigger auth
-  if (foundUnmetRequirements) {
-    try {
-      await externalAuthEnable(context, 'predictions', resourceName, identifyRequirements);
-    } catch (e) {
-      context.print.error(e);
-      throw e;
-    }
-  }
-}
-
 function resourceAlreadyExists(context, identifyType) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
@@ -379,7 +361,6 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
   const defaultValues = getAllS3Defaults(context.amplify.getProjectDetails());
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
   const options = {
     providerPlugin: 'awscloudformation',
@@ -409,7 +390,7 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
     answers = { ...answers, bucketName };
   }
 
-  let allowUnauthenticatedIdentities = false;
+  let allowUnauthenticatedIdentities; // default to undefined since if S3 does not require unauth access the IdentityPool can still have that enabled
   if (answers.storageAccess === 'authAndGuest') {
     Object.assign(answers, getAllAuthAndGuestDefaults());
     allowUnauthenticatedIdentities = true;
@@ -419,24 +400,40 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
   const s3Resource = {
     resourceName: answers.resourceName,
   };
-  const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
   answers.adminTriggerFunction = await addTrigger(context, s3Resource, options, predictionsResourceName);
   answers.triggerFunction = 'NONE';
 
   // getting requirement satisfaction map
-  const satisfiedRequirements = await checkRequirements(storageRequirements, context, storageCategory, answers.resourceName);
-  // checking to see if any requirements are unsatisfied
-  const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
+  const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
 
-  // if requirements are unsatisfied, trigger auth
-  if (foundUnmetRequirements) {
+  const checkResult = await checkRequirements(storageRequirements, context, storageCategory, answers.resourceName);
+
+  // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
+  // configuration.
+  if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
+    throw new Error(checkResult.errors.join(os.EOL));
+  }
+
+  if (checkResult.errors && checkResult.errors.length > 0) {
+    context.print.warning(checkResult.errors.join(os.EOL));
+  }
+
+  // If auth is not imported and there were errors, adjust or enable auth configuration
+  if (!checkResult.authEnabled || !checkResult.requirementsMet) {
     try {
+      // If this is not set as requirement, then explicitly configure it to disabled.
+      if (storageRequirements.allowUnauthenticatedIdentities === undefined) {
+        storageRequirements.allowUnauthenticatedIdentities = false;
+      }
       await externalAuthEnable(context, storageCategory, answers.resourceName, storageRequirements);
-    } catch (e) {
-      context.print.error(e);
-      throw e;
+    } catch (error) {
+      context.print.error(error);
+      throw error;
     }
   }
+
+  // At this point we have a valid auth configuration either imported or added/updated.
 
   Object.assign(defaultValues, answers);
   const resource = defaultValues.resourceName;

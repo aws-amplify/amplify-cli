@@ -1,4 +1,4 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '../../src';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 
 // add convert resource
 export function addConvert(cwd: string, settings: any) {

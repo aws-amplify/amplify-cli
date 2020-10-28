@@ -137,6 +137,7 @@ export class SearchableModelTransformer extends Transformer {
             makeInputValueDefinition('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
             makeInputValueDefinition('limit', makeNamedType('Int')),
             makeInputValueDefinition('nextToken', makeNamedType('String')),
+            makeInputValueDefinition('from', makeNamedType('Int')),
           ],
           makeNamedType(`Searchable${def.name.value}Connection`),
         ),

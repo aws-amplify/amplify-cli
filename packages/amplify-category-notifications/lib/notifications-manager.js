@@ -69,7 +69,7 @@ async function configureChannel(context, channelName) {
   if (Object.keys(channelWorkers).indexOf(channelName) > -1) {
     context.exeInfo.pinpointClient = await pintpointHelper.getPinpointClient(context, 'update');
 
-    if (!context.exeInfo.serviceMeta.providerPlugin) {
+    if (context.exeInfo.serviceMeta.mobileHubMigrated === true) {
       context.print.error('No resources to update.');
       return false;
     }

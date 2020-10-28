@@ -40,14 +40,17 @@ export async function removeResource(
 ) {
   const amplifyMeta = stateManager.getMeta();
 
-  if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).filter(r => !!amplifyMeta[category][r].providerPlugin).length === 0) {
+  if (
+    !amplifyMeta[category] ||
+    Object.keys(amplifyMeta[category]).filter(r => amplifyMeta[category][r].mobileHubMigrated !== true).length === 0
+  ) {
     context.print.error('No resources added for this category');
     context.usageData.emitError(new ResourceDoesNotExistError());
     exitOnNextTick(1);
   }
 
   let enabledCategoryResources: { name; value } | { name; value }[] | string[] = Object.keys(amplifyMeta[category]).filter(
-    r => !!amplifyMeta[category][r].providerPlugin,
+    r => amplifyMeta[category][r].mobileHubMigrated !== true,
   );
 
   if (resourceName) {
@@ -79,7 +82,8 @@ export async function removeResource(
   }
 
   context.print.info('');
-  let service = _.get(amplifyMeta, [category, resourceName, 'service']);
+  const service = _.get(amplifyMeta, [category, resourceName, 'service']);
+  const serviceType = _.get(amplifyMeta, [category, resourceName, 'serviceType']);
 
   if (_.has(questionOptions, ['serviceDeletionInfo', service])) {
     context.print.info(questionOptions.serviceDeletionInfo![service]);
@@ -87,13 +91,21 @@ export async function removeResource(
 
   const resourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
 
-  const confirm =
-    (context.input.options && context.input.options.yes) ||
-    (await context.amplify.confirmPrompt(
-      'Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.',
-    ));
+  let promptText =
+    'Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.';
 
-  if (!confirm) return;
+  // For imported resources we have to show a different message to ensure customers that resource
+  // will NOT be deleted in the cloud.
+  if (serviceType === 'imported') {
+    promptText =
+      'Are you sure you want to unlink this imported resource from this Amplify backend environment? The imported resource itself will not be deleted.';
+  }
+
+  const confirm = (context.input.options && context.input.options.yes) || (await context.amplify.confirmPrompt(promptText));
+
+  if (!confirm) {
+    return;
+  }
 
   try {
     return deleteResourceFiles(context, category, resourceName, resourceDir);
@@ -133,6 +145,7 @@ const deleteResourceFiles = async (context, category, resourceName, resourceDir,
 
   // Remove resource directory from backend/
   context.filesystem.remove(resourceDir);
+
   removeResourceParameters(context, category, resourceName);
   updateBackendConfigAfterResourceRemove(category, resourceName);
 

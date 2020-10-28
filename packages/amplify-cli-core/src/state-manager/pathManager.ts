@@ -23,6 +23,7 @@ export const PathConstants = {
   ProjectConfigFileName: 'project-config.json',
   AmplifyMetaFileName: 'amplify-meta.json',
   TagsFileName: 'tags.json',
+  ParametersJsonFileName: 'parameters.json',
 
   LocalEnvFileName: 'local-env-info.json',
   LocalAWSInfoFileName: 'local-aws-info.json',
@@ -42,6 +43,16 @@ export class PathManager {
     this.homeDotAmplifyDirPath = path.join(homedir(), PathConstants.DotAmplifyDirName);
     // this.projectRootPath = this.findProjectRoot();
   }
+
+  getAmplifyPackageLibDirPath = (packageName: string): string => {
+    const result = path.join(this.getAmplifyLibRoot(), packageName);
+    if (!process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB && !fs.pathExistsSync(result)) {
+      throw new Error(`Package lib at ${result} does not exist.`);
+    }
+    return result;
+  };
+
+  getAmplifyLibRoot = (): string => path.join(this.getHomeDotAmplifyDirPath(), 'lib');
 
   getHomeDotAmplifyDirPath = (): string => this.homeDotAmplifyDirPath;
 
@@ -83,6 +94,15 @@ export class PathManager {
 
   getCurrentTagFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName, PathConstants.TagsFileName]);
+
+  getResourceParamatersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      category,
+      resourceName,
+      PathConstants.ParametersJsonFileName,
+    ]);
 
   getCurrentAmplifyMetaFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [

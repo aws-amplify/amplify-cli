@@ -445,8 +445,9 @@ export class DynamoDBModelTransformer extends Transformer {
       }
     }
 
-    // Create sync query
+    // Create sync query if @model present for datastore
     if (isSyncEnabled) {
+      // change here for selective Sync for @model (Just add the queryMap for table and query expression)
       const syncResolver = this.resources.makeSyncResolver(typeName);
       const syncResourceID = ResolverResourceIDs.SyncResolverResourceID(typeName);
       ctx.setResource(syncResourceID, syncResolver);
@@ -640,6 +641,12 @@ export class DynamoDBModelTransformer extends Transformer {
       }
     }
   }
+
+  /**
+   * Generate Predicate type for Sync Query for DataStore
+   * @param ctx : transformer context
+   * @param def : ObjectTypeDefinition
+   */
 
   private generateConditionInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
     const scalarFilters = makeScalarFilterInputs(this.supportsConditions(ctx));

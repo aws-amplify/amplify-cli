@@ -135,7 +135,7 @@ async function getAmplifyApp(context, amplifyClient) {
     const options = [];
     apps.forEach(app => {
       const option = {
-        name: `${app.name}`,
+        name: `${app.name} (${app.appId})`,
         value: app,
         short: app.appId,
       };
@@ -258,8 +258,9 @@ async function downloadBackend(context, backendEnv, awsConfig) {
       absolute: true,
     });
     const amplifyDir = pathManager.getAmplifyDirPath();
+    const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
 
-    if (context.exeInfo && context.exeInfo.restoreBackend) {
+    if ((context.exeInfo && context.exeInfo.restoreBackend) || isPulling) {
       // If backend must be restored then copy out the config files and overwrite existing ones.
       for (const cliJSONFilePath of cliJSONFiles) {
         const targetPath = path.join(amplifyDir, path.basename(cliJSONFilePath));

@@ -62,7 +62,7 @@ export async function getConfirmation(context, env?) {
     return {
       proceed: true,
       deleteS3: true,
-      deleteAmpilfyApp: true,
+      deleteAmpilfyApp: !process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION
     };
   const environmentText = env ? `'${env}' environment` : 'all the environments';
   return {

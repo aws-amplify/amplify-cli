@@ -53,36 +53,49 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
 
     fs.ensureDirSync(targetDir);
 
-    fs.copySync(sourceDir, targetDir);
+    // in the case that the resource is being deleted, the sourceDir won't exist
+    if (fs.pathExistsSync(sourceDir)) {
+      fs.copySync(sourceDir, targetDir);
+    }
   }
 
   fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
   fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
+
   // if project hasn't been initialized after tags has been released
   if (fs.existsSync(tagFilePath)) {
     fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
   }
 }
 
-export function updateamplifyMetaAfterResourceAdd(category, resourceName, options: { dependsOn? } = {}) {
+export function updateamplifyMetaAfterResourceAdd(
+  category,
+  resourceName,
+  metadataResource: { dependsOn? } = {},
+  backendConfigResource?: { dependsOn? },
+  overwriteObjectIfExists?: boolean,
+) {
   const amplifyMeta = stateManager.getMeta();
 
-  if (options.dependsOn) {
-    checkForCyclicDependencies(category, resourceName, options.dependsOn);
+  if (metadataResource.dependsOn) {
+    checkForCyclicDependencies(category, resourceName, metadataResource.dependsOn);
   }
 
   if (!amplifyMeta[category]) {
     amplifyMeta[category] = {};
   }
-  if (amplifyMeta[category][resourceName]) {
+  if (amplifyMeta[category][resourceName] && !overwriteObjectIfExists) {
     throw new Error(`${resourceName} is present in amplify-meta.json`);
   }
   amplifyMeta[category][resourceName] = {};
-  amplifyMeta[category][resourceName] = options;
+  amplifyMeta[category][resourceName] = metadataResource;
 
   stateManager.setMeta(undefined, amplifyMeta);
 
-  updateBackendConfigAfterResourceAdd(category, resourceName, options);
+  // If a backend config resource passed in store it, otherwise the same data as in meta
+  // In case of imported resources the output block contains only the user selected values that
+  // are needed for recreation of sensitive data like secrets and such.
+  updateBackendConfigAfterResourceAdd(category, resourceName, backendConfigResource || metadataResource);
 }
 
 export function updateProvideramplifyMeta(providerName, options) {
@@ -124,13 +137,26 @@ export async function updateamplifyMetaAfterPush(resources) {
   const currentTimestamp = new Date();
 
   for (let i = 0; i < resources.length; i += 1) {
-    const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resources[i].category, resources[i].resourceName));
-    const hashDir = await getHashForResourceDir(sourceDir);
+    // Skip hash calculation for imported resources
+    if (resources[i].serviceType !== 'imported') {
+      const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resources[i].category, resources[i].resourceName));
+      // skip hashing deleted resources
+      if (fs.pathExistsSync(sourceDir)) {
+        const hashDir = await getHashForResourceDir(sourceDir);
+        amplifyMeta[resources[i].category][resources[i].resourceName].lastPushDirHash = hashDir;
+        amplifyMeta[resources[i].category][resources[i].resourceName].lastPushTimeStamp = currentTimestamp;
+      }
+    }
 
-    /*eslint-disable */
-    amplifyMeta[resources[i].category][resources[i].resourceName].lastPushTimeStamp = currentTimestamp;
-    amplifyMeta[resources[i].category][resources[i].resourceName].lastPushDirHash = hashDir;
-    /* eslint-enable */
+    // If the operation was a remove-sync then for imported resources we cannot set timestamp
+    // but those are still in the received array as this method is operation agnostic.
+    if (
+      resources[i].serviceType === 'imported' &&
+      amplifyMeta[resources[i].category] &&
+      amplifyMeta[resources[i].category][resources[i].resourceName]
+    ) {
+      amplifyMeta[resources[i].category][resources[i].resourceName].lastPushTimeStamp = currentTimestamp;
+    }
   }
 
   stateManager.setMeta(undefined, amplifyMeta);

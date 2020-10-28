@@ -43,7 +43,7 @@ describe('test SIGINT with execute', () => {
     const mockContext: Context = jest.genMockFromModule('../domain/context');
     mockContext.input = input;
     mockContext.print = {
-      warn: jest.fn(),
+      warning: jest.fn(),
     };
     mockContext.usageData = {
       emitError: jest.fn(),
