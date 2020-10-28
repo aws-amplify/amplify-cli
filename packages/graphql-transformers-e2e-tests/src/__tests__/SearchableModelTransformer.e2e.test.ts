@@ -276,6 +276,49 @@ test('Test searchPosts with sort field on a string field', async () => {
   expect(firstItemOfThirdQuery).toEqual(fourthItemOfFirstQuery);
 });
 
+test('Test searchPosts with offset pagination', async () => {
+  const firstQuery = await runQuery(
+    `query {
+        searchPosts(from: 0, limit: 999, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+            total
+          }
+    }`,
+    'Test searchPosts with offset pagination ',
+  );
+  expect(firstQuery).toBeDefined();
+  expect(firstQuery.data.searchPosts).toBeDefined();
+  const firstLength = firstQuery.data.searchPosts.items.length;
+  const secondQuery = await runQuery(
+    `query {
+        searchPosts(from: 2, limit: 999, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+            total
+          }
+    }`,
+    'Test searchPosts with offset pagination 2 ',
+  );
+  expect(secondQuery).toBeDefined();
+  expect(secondQuery.data.searchPosts).toBeDefined();
+  const secondLength = secondQuery.data.searchPosts.items.length;
+  expect(secondLength).toEqual(firstLength - 2);
+  const firstItem = firstQuery.data.searchPosts.items[0];
+  const secondItems = secondQuery.data.searchPosts.items;
+  expect(secondItems.find(i => i.id === firstItem.id)).not.toBeDefined();
+});
+
 test('Test searchPosts with sort on date type', async () => {
   const query = await runQuery(
     `query {
