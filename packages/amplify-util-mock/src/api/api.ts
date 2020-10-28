@@ -5,7 +5,7 @@ import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-c
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 
-import { getAmplifyMeta, addCleanupTask, getMockDataDirectory, hydrateAllEnvVars } from '../utils';
+import { getAmplifyMeta, getMockDataDirectory, hydrateAllEnvVars } from '../utils';
 import { checkJavaVersion } from '../utils/index';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
@@ -35,7 +35,7 @@ export class APITest {
 
   async start(context, port: number = 20002, wsPort: number = 20003) {
     try {
-      addCleanupTask(context, async context => {
+      context.amplify.addCleanUpTask(async context => {
         await this.stop(context);
       });
       this.projectRoot = context.amplify.getEnvInfo().projectPath;
