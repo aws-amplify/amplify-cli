@@ -76,69 +76,77 @@ const coreFunction = (
       return;
     }
 
-    // other permissions flow
-    chain.wait(
-      action === 'create'
-        ? 'Do you want to access other resources in this project from your Lambda function?'
-        : 'Do you want to update the Lambda function permissions to access other resources in this project?',
-    );
+    // advanced settings flow
+    chain.wait(action === 'create' ? 'Do you want to configure advanced settings?' : 'Which setting do you want to update?');
 
-    if (settings.additionalPermissions) {
-      multiSelect(
-        chain.sendLine('y').wait('Select the category'),
-        settings.additionalPermissions.permissions,
-        settings.additionalPermissions.choices,
-      );
-      // when single resource, it gets autoselected
-      if (settings.additionalPermissions.resources.length > 1) {
-        multiSelect(
-          chain.wait('Select the one you would like your'),
-          settings.additionalPermissions.resources,
-          settings.additionalPermissions.resourceChoices,
+    // other permissions flow
+    if (settings.advancedSettings) {
+      chain
+        .sendLine('y')
+        .wait(
+          action === 'create'
+            ? 'Do you want to access other resources in this project from your Lambda function?'
+            : 'Do you want to update the Lambda function permissions to access other resources in this project?',
         );
+      if (settings.additionalPermissions) {
+        multiSelect(
+          chain.sendLine('y').wait('Select the category'),
+          settings.additionalPermissions.permissions,
+          settings.additionalPermissions.choices,
+        );
+        // when single resource, it gets autoselected
+        if (settings.additionalPermissions.resources.length > 1) {
+          multiSelect(
+            chain.wait('Select the one you would like your'),
+            settings.additionalPermissions.resources,
+            settings.additionalPermissions.resourceChoices,
+          );
+        }
+
+        // n-resources repeated questions
+        settings.additionalPermissions.resources.forEach(elem =>
+          multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
+            'create',
+            'read',
+            'update',
+            'delete',
+          ]),
+        );
+      } else {
+        chain.sendLine('n');
       }
 
-      // n-resources repeated questions
-      settings.additionalPermissions.resources.forEach(elem =>
-        multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
-          'create',
-          'read',
-          'update',
-          'delete',
-        ]),
-      );
-    } else {
-      chain.sendLine('n');
-    }
-
-    //scheduling questions
-    if (action === 'create') {
-      chain.wait('Do you want to invoke this function on a recurring schedule?');
-    } else {
-      if (
-        settings.schedulePermissions === undefined ||
-        (settings.schedulePermissions && settings.schedulePermissions.noScheduleAdd === 'true')
-      ) {
+      //scheduling questions
+      if (action === 'create') {
         chain.wait('Do you want to invoke this function on a recurring schedule?');
       } else {
-        chain.wait(`Do you want to update or remove the function's schedule?`);
+        if (
+          settings.schedulePermissions === undefined ||
+          (settings.schedulePermissions && settings.schedulePermissions.noScheduleAdd === 'true')
+        ) {
+          chain.wait('Do you want to invoke this function on a recurring schedule?');
+        } else {
+          chain.wait(`Do you want to update or remove the function's schedule?`);
+        }
       }
-    }
 
-    if (settings.schedulePermissions === undefined) {
-      chain.sendLine('n');
-    } else {
-      chain.sendLine('y');
-      cronWalkthrough(chain, settings, action);
-    }
+      if (settings.schedulePermissions === undefined) {
+        chain.sendLine('n');
+      } else {
+        chain.sendLine('y');
+        cronWalkthrough(chain, settings, action);
+      }
 
-    // lambda layers question
-    chain.wait('Do you want to configure Lambda layers for this function?');
-    if (settings.layerOptions === undefined) {
-      chain.sendLine('n');
+      // lambda layers question
+      chain.wait('Do you want to configure Lambda layers for this function?');
+      if (settings.layerOptions === undefined) {
+        chain.sendLine('n');
+      } else {
+        chain.sendLine('y');
+        addLayerWalkthrough(chain, settings.layerOptions);
+      }
     } else {
-      chain.sendLine('y');
-      addLayerWalkthrough(chain, settings.layerOptions);
+      chain.sendLine('n');
     }
 
     // edit function question
