@@ -1,10 +1,11 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
 import {
   addAuthWithDefault,
   removeAuthWithDefault,
-  addAuthWithMaxOptions,
-  addAuthUserPoolOnly,
-  getBackendAmplifyMeta,
+  addAuthWithDefaultSocial,
+  addAuthWithGroupTrigger,
+  addAuthWithRecaptchaTrigger,
+  addAuthViaAPIWithTrigger,
 } from 'amplify-e2e-core';
 import {
   createNewProjectDir,
@@ -14,7 +15,6 @@ import {
   getUserPoolClients,
   getLambdaFunction,
 } from 'amplify-e2e-core';
-import _ from 'lodash';
 
 const defaultsSettings = {
   name: 'authTest',
@@ -31,49 +31,77 @@ describe('amplify add auth...', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should init a project and add auth with defaults and push, then remove auth and push should clean up trust relationship conditions', async () => {
+  it('...should init a project and add auth with defaultSocial', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
-    await amplifyPushAuth(projRoot);
-
-    const amplifyMeta = getBackendAmplifyMeta(projRoot);
-    const { AuthRoleName, UnauthRoleName } = amplifyMeta.providers.awscloudformation;
-    const cognitoResource = Object.values(amplifyMeta.auth).find((res: any) => {
-      return res.service === 'Cognito';
-    }) as any;
-    const idpId = cognitoResource.output.IdentityPoolId;
-
-    expect(AuthRoleName).toHaveValidPolicyConditionMatchingIdpId(idpId);
-    expect(UnauthRoleName).toHaveValidPolicyConditionMatchingIdpId(idpId);
-
-    await removeAuthWithDefault(projRoot);
-    await amplifyPushAuth(projRoot);
-
-    expect(AuthRoleName).not.toHaveValidPolicyConditionMatchingIdpId(idpId);
-    expect(UnauthRoleName).not.toHaveValidPolicyConditionMatchingIdpId(idpId);
-  });
-
-  it('...should init a project with only user pool and no identity pool', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthUserPoolOnly(projRoot, {});
+    await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[1].output.UserPoolId;
+
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
+    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
 
     expect(userPool.UserPool).toBeDefined();
+    expect(clients).toHaveLength(2);
+    expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
+    expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
+    expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(4);
   });
 
-  it('...should init a project where all possible options are selected', async () => {
+  it('...should init a project and add auth a PostConfirmation: add-to-group trigger', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithMaxOptions(projRoot, {});
+    await addAuthWithGroupTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
 
-    const createFunctionName = `${Object.keys(meta.auth)[1]}CreateAuthChallenge-integtest`;
-    const defineFunctionName = `${Object.keys(meta.auth)[1]}DefineAuthChallenge-integtest`;
+    const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
 
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[1];
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const id = authMeta.output.UserPoolId;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
+    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
+
+    const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
+    expect(userPool.UserPool).toBeDefined();
+    expect(clients).toHaveLength(2);
+    expect(lambdaFunction).toBeDefined();
+    expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
+  });
+
+  it('...should allow the user to add auth via API category, with a trigger', async () => {
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthViaAPIWithTrigger(projRoot, {});
+    await amplifyPush(projRoot);
+    const meta = getProjectMeta(projRoot);
+
+    const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const id = authMeta.output.UserPoolId;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
+    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
+
+    const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
+    expect(userPool.UserPool).toBeDefined();
+    expect(clients).toHaveLength(2);
+    expect(lambdaFunction).toBeDefined();
+    expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
+  });
+
+  it('...should init a project and add 3 custom auth flow triggers for Google reCaptcha', async () => {
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+
+    const createFunctionName = `${Object.keys(meta.auth)[0]}CreateAuthChallenge-integtest`;
+    const defineFunctionName = `${Object.keys(meta.auth)[0]}DefineAuthChallenge-integtest`;
+    const verifyFunctionName = `${Object.keys(meta.auth)[0]}VerifyAuthChallengeResponse-integtest`;
+
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
@@ -81,13 +109,13 @@ describe('amplify add auth...', () => {
 
     const createFunction = await getLambdaFunction(createFunctionName, meta.providers.awscloudformation.Region);
     const defineFunction = await getLambdaFunction(defineFunctionName, meta.providers.awscloudformation.Region);
+    const verifyFunction = await getLambdaFunction(verifyFunctionName, meta.providers.awscloudformation.Region);
 
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
     expect(createFunction).toBeDefined();
     expect(defineFunction).toBeDefined();
-
-    expect(createFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
-    expect(defineFunction.Configuration.Environment.Variables.MODULES).toEqual('custom');
+    expect(verifyFunction).toBeDefined();
+    expect(verifyFunction.Configuration.Environment.Variables.RECAPTCHASECRET).toEqual('dummykey');
   });
 });

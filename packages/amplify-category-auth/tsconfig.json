@@ -16,5 +16,6 @@
     {"path": "../amplify-cli-core"},
     {"path": "../amplify-headless-interface"},
     {"path": "../amplify-util-headless-input"},
+    {"path": "../amplify-util-import"},
   ]
 }

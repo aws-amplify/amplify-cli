@@ -15,6 +15,7 @@ import { twoPluginsAreTheSame } from './plugin-helpers/compare-plugins';
 import { AmplifyEvent } from './domain/amplify-event';
 import { constants } from './domain/constants';
 import { print } from './context-extensions';
+import { postInstallInitialization } from './utils/post-install-initialization';
 
 export async function getPluginPlatform(): Promise<PluginPlatform> {
   // This function is called at the beginning of each command execution
@@ -36,9 +37,13 @@ export async function getPluginPlatform(): Promise<PluginPlatform> {
         pluginPlatform = await scan();
       }
     } else {
+      // new CLI version detected
+      await postInstallInitialization();
       pluginPlatform = await scan();
     }
   } else {
+    // first CLI install detected
+    await postInstallInitialization();
     pluginPlatform = await scan();
   }
 
@@ -135,6 +140,7 @@ export async function scan(pluginPlatform?: PluginPlatform): Promise<PluginPlatf
     return result;
   } catch (e) {
     print.error('Plugin scan failed.');
+    print.info(e);
     throw new Error('Plugin scan failed.');
   }
 }

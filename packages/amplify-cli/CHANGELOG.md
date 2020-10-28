@@ -3,6 +3,93 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.31.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.31.0...@aws-amplify/cli@4.31.1) (2020-10-27)
+
+
+### Bug Fixes
+
+* move post-install steps to plugin platform rather than post install script ([#5678](https://github.com/aws-amplify/amplify-cli/issues/5678)) ([f83bbab](https://github.com/aws-amplify/amplify-cli/commit/f83bbab378f6857202653cd57c607cead11cbe52))
+
+
+
+
+
+# [4.31.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.30.0...@aws-amplify/cli@4.31.0) (2020-10-22)
+
+
+### Bug Fixes
+
+* **amplify-app:** initialize feature flag  ([#5643](https://github.com/aws-amplify/amplify-cli/issues/5643)) ([9608b56](https://github.com/aws-amplify/amplify-cli/commit/9608b5616c2b92417a1b559f41f5d3f8f42f97e5))
+* check lib before running post-install ([#5669](https://github.com/aws-amplify/amplify-cli/issues/5669)) ([9ccda46](https://github.com/aws-amplify/amplify-cli/commit/9ccda46fb3ea545f838939b2b13d1555d95437dd))
+* refactor mobile hub migration checks ([#5632](https://github.com/aws-amplify/amplify-cli/issues/5632)) ([b796eb8](https://github.com/aws-amplify/amplify-cli/commit/b796eb8303bb903f5f531506254441a63eba2962))
+* update current-cloud backend-config on resource removal ([#5658](https://github.com/aws-amplify/amplify-cli/issues/5658)) ([592f694](https://github.com/aws-amplify/amplify-cli/commit/592f694530dd61302ff790fbcf5b3ea135812c47))
+
+
+### Features
+
+* Cloudformation logging ([#5195](https://github.com/aws-amplify/amplify-cli/issues/5195)) ([19b2165](https://github.com/aws-amplify/amplify-cli/commit/19b21651375848c0858328952852201da47b17bb))
+* update post-install to copy executable assets to .amplify ([#5595](https://github.com/aws-amplify/amplify-cli/issues/5595)) ([53a23a0](https://github.com/aws-amplify/amplify-cli/commit/53a23a07cbb9e09566c1f0f577ba2b7488bc2eae))
+
+
+
+
+
+# [4.30.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.8...@aws-amplify/cli@4.30.0) (2020-10-17)
+
+
+### Bug Fixes
+
+* --yes on pull and init no longer does a force push. Use --forcePush in addition to --yes to force a push ([#5546](https://github.com/aws-amplify/amplify-cli/issues/5546)) ([b20c2d6](https://github.com/aws-amplify/amplify-cli/commit/b20c2d6f1240565604f4a6b8ffe53987c4f76ed4))
+
+
+### Features
+
+* changes for native packaging ([#5548](https://github.com/aws-amplify/amplify-cli/issues/5548)) ([7a06f6d](https://github.com/aws-amplify/amplify-cli/commit/7a06f6d96e42a5863e2192560890adbd741b0dc6))
+* support importing of auth resources ([#5591](https://github.com/aws-amplify/amplify-cli/issues/5591)) ([7903246](https://github.com/aws-amplify/amplify-cli/commit/790324680544fe18481f91390001f9f07a144203))
+* using ci-info ci status ([#5345](https://github.com/aws-amplify/amplify-cli/issues/5345)) ([827f14f](https://github.com/aws-amplify/amplify-cli/commit/827f14f888778b323761cda851fe45e797ca88f6))
+
+
+
+
+
+## [4.29.8](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.7...@aws-amplify/cli@4.29.8) (2020-10-15)
+
+
+### Bug Fixes
+
+* **cli:** fix print.warn to print.warning ([#5576](https://github.com/aws-amplify/amplify-cli/issues/5576)) ([ef8dbc8](https://github.com/aws-amplify/amplify-cli/commit/ef8dbc89adfea685afc9aba10fe3b252959e3252))
+
+
+
+
+
+## [4.29.7](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.6...@aws-amplify/cli@4.29.7) (2020-10-13)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.29.6](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.5...@aws-amplify/cli@4.29.6) (2020-10-09)
+
+
+### Bug Fixes
+
+* [#5516](https://github.com/aws-amplify/amplify-cli/issues/5516) exclude pinpoint from provider check for false positives ([#5535](https://github.com/aws-amplify/amplify-cli/issues/5535)) ([c3ea3a4](https://github.com/aws-amplify/amplify-cli/commit/c3ea3a4343d6ebd2f48d1c0ac6574c6d118e73d0))
+
+
+
+
+
+## [4.29.5](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.4...@aws-amplify/cli@4.29.5) (2020-10-07)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [4.29.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.29.3...@aws-amplify/cli@4.29.4) (2020-10-01)
 
 

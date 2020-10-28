@@ -112,7 +112,7 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
     const resource = resources[0];
     const { category, resourceName } = resource;
     const amplifyMeta = context.amplify.getProjectMeta();
-    if (!amplifyMeta[category][resourceName].output) {
+    if (!amplifyMeta[category][resourceName] || !amplifyMeta[category][resourceName].output) {
       return;
     }
     const { Region } = amplifyMeta.providers.awscloudformation;

@@ -1,22 +1,36 @@
 import * as fs from 'fs-extra';
 import {
   initJSProjectWithProfile,
+  initAndroidProjectWithProfile,
+  initIosProjectWithProfile,
   deleteProject,
   amplifyPushAuth,
-  addHeadlessAuth,
-  updateHeadlessAuth,
-  removeHeadlessAuth,
 } from 'amplify-e2e-core';
-import { addAuthWithDefault, getBackendAmplifyMeta } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool } from 'amplify-e2e-core';
-import { AddAuthRequest, CognitoUserPoolSigninMethod, CognitoUserProperty, UpdateAuthRequest } from 'amplify-headless-interface';
+import {
+  addAuthWithRecaptchaTrigger,
+  addAuthWithCustomTrigger,
+  addAuthWithSignInSignOutUrl,
+  updateAuthWithoutCustomTrigger,
+  updateAuthRemoveRecaptchaTrigger,
+  updateAuthSignInSignOutUrl,
+} from 'amplify-e2e-core';
+import {
+  createNewProjectDir,
+  deleteProjectDir,
+  getProjectMeta,
+  getAwsAndroidConfig,
+  getAwsIOSConfig,
+  getUserPool,
+  getUserPoolClients,
+  getLambdaFunction,
+} from 'amplify-e2e-core';
 import _ from 'lodash';
 
 const defaultsSettings = {
   name: 'authTest',
 };
 
-describe('headless auth', () => {
+describe('amplify updating auth...', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('auth-update');
@@ -26,69 +40,75 @@ describe('headless auth', () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
-  it('adds auth resource', async () => {
-    const addAuthRequest: AddAuthRequest = {
-      version: 1,
-      resourceName: 'myAuthResource',
-      serviceConfiguration: {
-        serviceName: 'Cognito',
-        includeIdentityPool: false,
-        userPoolConfiguration: {
-          requiredSignupAttributes: [CognitoUserProperty.EMAIL, CognitoUserProperty.PHONE_NUMBER],
-          signinMethod: CognitoUserPoolSigninMethod.USERNAME,
-        },
-      },
-    };
 
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addHeadlessAuth(projRoot, addAuthRequest);
-    await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
-    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    expect(userPool.UserPool).toBeDefined();
+  it('...should edit signin url on update', async () => {
+    const settings = {
+      signinUrl: 'http://localhost:3001/',
+      signoutUrl: 'http://localhost:3002/',
+      updatesigninUrl: 'http://localhost:3003/',
+      updatesignoutUrl: 'http://localhost:3004/',
+    };
+    await initAndroidProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithSignInSignOutUrl(projRoot, settings);
+    await updateAuthSignInSignOutUrl(projRoot, settings);
   });
 
-  it('updates existing auth resource', async () => {
-    const updateAuthRequest: UpdateAuthRequest = {
-      version: 1,
-      serviceModification: {
-        serviceName: 'Cognito',
-        userPoolModification: {
-          userPoolGroups: [
-            {
-              groupName: 'group1',
-            },
-            {
-              groupName: 'group2',
-            },
-          ],
-        },
-        includeIdentityPool: true,
-        identityPoolModification: {
-          unauthenticatedLogin: true,
-        },
-      },
-    };
-
+  it('...should init a project and add auth with a custom trigger, and then update to remove the custom js while leaving the other js', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
-    await updateHeadlessAuth(projRoot, updateAuthRequest);
+    await addAuthWithCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
+
+    const functionName = `${Object.keys(meta.auth)[0]}PreSignup-integtest`;
+
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
+    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
+
+    const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
+    const dirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
+    expect(dirContents.includes('custom.js')).toBeTruthy();
     expect(userPool.UserPool).toBeDefined();
-    expect(_.get(meta, ['auth', 'userPoolGroups'])).toBeDefined();
+    expect(clients).toHaveLength(2);
+    expect(lambdaFunction).toBeDefined();
+    expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist,custom');
+
+    await updateAuthWithoutCustomTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    const updatedFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
+    const updatedDirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
+    expect(updatedDirContents.includes('custom.js')).toBeFalsy();
+    expect(updatedDirContents.includes('email-filter-blacklist.js')).toBeTruthy();
+    expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist');
   });
 
-  it('removes auth resource', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithDefault(projRoot, {});
-    const { auth: authBefore } = getBackendAmplifyMeta(projRoot);
-    const authResourceName = _.keys(authBefore).find(() => true); // first element or undefined
-    await removeHeadlessAuth(projRoot, authResourceName);
-    const { auth: authAfter } = getBackendAmplifyMeta(projRoot);
-    expect(_.isEmpty(authAfter)).toBe(true);
+  it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update ', async () => {
+    await initAndroidProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    let meta = getAwsAndroidConfig(projRoot);
+    expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
+    expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
+    await updateAuthRemoveRecaptchaTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    meta = getAwsAndroidConfig(projRoot);
+    expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
+    expect(meta.Auth.Default.authenticationFlowType).toEqual('USER_SRP_AUTH');
+  });
+
+  it('...should init an ios project and add customAuth flag, and remove the flag when custom auth triggers are removed upon update', async () => {
+    await initIosProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithRecaptchaTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    let meta = getAwsIOSConfig(projRoot);
+    expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
+    expect(meta.Auth.Default.authenticationFlowType).toEqual('CUSTOM_AUTH');
+    await updateAuthRemoveRecaptchaTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    meta = getAwsIOSConfig(projRoot);
+    expect(meta.Auth.Default.authenticationFlowType).toBeDefined();
+    expect(meta.Auth.Default.authenticationFlowType).toEqual('USER_SRP_AUTH');
   });
 });

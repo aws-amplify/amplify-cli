@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const path = require('path');
+const os = require('os');
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
 const category = 'analytics';
 const service = 'Kinesis';
@@ -74,19 +75,27 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     };
 
     // Check for authorization rules and settings
-
     const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
-    const apiRequirements = {
+    const analyticsRequirements = {
       authSelections: 'identityPoolOnly',
       allowUnauthenticatedIdentities: true,
     };
-    // getting requirement satisfaction map
-    const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', targetResourceName);
-    // checking to see if any requirements are unsatisfied
-    const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
-    if (foundUnmetRequirements) {
+    const checkResult = await checkRequirements(analyticsRequirements, context, 'analytics', targetResourceName);
+
+    // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
+    // configuration.
+    if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
+      throw new Error(checkResult.errors.join(os.EOL));
+    }
+
+    if (checkResult.errors && checkResult.errors.length > 0) {
+      context.print.warning(checkResult.errors.join(os.EOL));
+    }
+
+    // If auth is not imported and there were errors, adjust or enable auth configuration
+    if (!checkResult.authEnabled || !checkResult.requirementsMet) {
       context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
       if (
         await amplify.confirmPrompt(
@@ -94,24 +103,26 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
         )
       ) {
         try {
-          await externalAuthEnable(context, 'api', targetResourceName, apiRequirements);
-        } catch (e) {
-          context.print.error(e);
-          throw e;
+          await externalAuthEnable(context, 'analytics', targetResourceName, analyticsRequirements);
+        } catch (error) {
+          context.print.error(error);
+          throw error;
         }
       } else {
         try {
           context.print.warning(
             'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
           );
-          apiRequirements.allowUnauthenticatedIdentities = false;
-          await externalAuthEnable(context, 'api', targetResourceName, apiRequirements);
-        } catch (e) {
-          context.print.error(e);
-          throw e;
+          analyticsRequirements.allowUnauthenticatedIdentities = false;
+          await externalAuthEnable(context, 'analytics', targetResourceName, analyticsRequirements);
+        } catch (error) {
+          context.print.error(error);
+          throw error;
         }
       }
     }
+
+    // At this point we have a valid auth configuration either imported or added/updated.
 
     // allow overwrite in update case: resourceName specified
     await amplify.copyBatch(context, copyJobs, {}, !!resourceName, params);

@@ -1,7 +1,13 @@
+import { $TSAny, $TSContext, ServiceSelection } from 'amplify-cli-core';
 import * as inquirer from 'inquirer';
 import { getProjectConfig } from './get-project-config';
 import { getProviderPlugins } from './get-provider-plugins';
 import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+
+type ServiceSelectionOption = {
+  name: string;
+  value: ServiceSelection;
+};
 
 function filterServicesByEnabledProviders(context, enabledProviders, supportedServices) {
   const providerPlugins = getProviderPlugins(context);
@@ -22,8 +28,8 @@ function filterServicesByEnabledProviders(context, enabledProviders, supportedSe
   return filteredServices;
 }
 
-function serviceQuestionWalkthrough(context, supportedServices, category, customQuestion = null) {
-  const options: any[] = [];
+async function serviceQuestionWalkthrough(context, supportedServices, category, customQuestion = null): Promise<ServiceSelection> {
+  const options: ServiceSelectionOption[] = [];
   for (let i = 0; i < supportedServices.length; ++i) {
     const optionName = supportedServices[i].alias || `${supportedServices[i].providerName}:${supportedServices[i].service}`;
     options.push({
@@ -59,10 +65,17 @@ function serviceQuestionWalkthrough(context, supportedServices, category, custom
     },
   ];
 
-  return inquirer.prompt(question).then(answer => answer.service);
+  const answer = await inquirer.prompt<{ service: ServiceSelection }>(question);
+
+  return answer.service;
 }
 
-export function serviceSelectionPrompt(context, category, supportedServices, customQuestion = null) {
+export function serviceSelectionPrompt(
+  context: $TSContext,
+  category: string,
+  supportedServices: $TSAny,
+  customQuestion: $TSAny = null,
+): Promise<ServiceSelection> {
   const { providers } = getProjectConfig();
   supportedServices = filterServicesByEnabledProviders(context, providers, supportedServices);
   return serviceQuestionWalkthrough(context, supportedServices, category, customQuestion);

@@ -28,10 +28,10 @@ export const getAddAuthDefaultsApplier = (context: any, defaultValuesFilename: s
   return merge(functionMap[result.authSelections](result.resourceName), result, roles);
 };
 
-export const getUpdateAuthDefaultsApplier = (defaultValuesFilename: string, previousResult: ServiceQuestionsResult) => async (
+export const getUpdateAuthDefaultsApplier = (context: any, defaultValuesFilename: string, previousResult: ServiceQuestionsResult) => async (
   result: ServiceQuestionsResult,
 ): Promise<ServiceQuestionsResult> => {
-  const { functionMap } = await import(`../assets/${defaultValuesFilename}`);
+  const { functionMap, getAllDefaults } = await import(`../assets/${defaultValuesFilename}`);
   if (!result.authSelections) {
     result.authSelections = 'identityPoolAndUserPool';
   }
@@ -46,6 +46,8 @@ export const getUpdateAuthDefaultsApplier = (defaultValuesFilename: string, prev
   }
 
   await verificationBucketName(result, previousResult);
+
+  structureOAuthMetadata(result, context, getAllDefaults, context.amplify); // adds "oauthMetadata" to result
 
   return merge(defaults, removeDeprecatedProps(previousResult), result);
 };

@@ -495,5 +495,13 @@ export class FeatureFlags {
     //     defaultValueForNewProjects: true,
     //   },
     // ]);
+    this.registerFlag('graphQLTransformer', [
+      {
+        name: 'addMissingOwnerFields',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+    ]);
   };
 }

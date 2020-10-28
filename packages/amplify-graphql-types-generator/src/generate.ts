@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
 
@@ -25,7 +25,7 @@ export default function generate(
   only: string,
   target: TargetType,
   tagName: string,
-  options: any
+  options: any,
 ) {
   const schema = loadSchema(schemaPath);
 
@@ -100,7 +100,7 @@ export default function generate(
     }
 
     if (outputPath) {
-      fs.writeFileSync(outputPath, output);
+      fs.outputFileSync(outputPath, output);
     } else {
       console.log(output);
     }

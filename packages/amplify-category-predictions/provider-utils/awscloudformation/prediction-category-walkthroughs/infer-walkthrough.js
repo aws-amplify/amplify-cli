@@ -6,6 +6,7 @@ import { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick }
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
+import { enableGuestAuth } from './enable-guest-auth';
 
 // Predictions Info
 const category = 'predictions';
@@ -204,26 +205,6 @@ function checkIfAuthExists(context) {
     });
   }
   return authExists;
-}
-
-async function enableGuestAuth(context, resourceName, allowUnauthenticatedIdentities) {
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-  // enable allowUnauthenticatedIdentities
-  const identifyRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
-  // getting requirement satisfaction map
-  const satisfiedRequirements = await checkRequirements(identifyRequirements, context, 'predictions', resourceName);
-  // checking to see if any requirements are unsatisfied
-  const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
-
-  // if requirements are unsatisfied, trigger auth
-  if (foundUnmetRequirements) {
-    try {
-      await externalAuthEnable(context, 'predictions', resourceName, identifyRequirements);
-    } catch (e) {
-      context.print.error(e);
-      throw e;
-    }
-  }
 }
 
 function resourceAlreadyExists(context, inferType) {

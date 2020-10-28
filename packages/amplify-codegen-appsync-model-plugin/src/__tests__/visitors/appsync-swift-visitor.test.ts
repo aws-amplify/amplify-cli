@@ -1299,6 +1299,57 @@ describe('AppSyncSwiftVisitor', () => {
           }"
         `);
       });
+
+      it('should process field auth with default owner authorization', () => {
+        const schema = /* GraphQL */ `
+          type Employee @model @auth(rules: [{ allow: owner }, { allow: groups, groups: ["Admins"] }]) {
+            id: ID!
+            name: String!
+            address: String!
+            ssn: String @auth(rules: [{ allow: owner }])
+          }
+        `;
+        const visitor = getVisitor(schema, 'Employee', CodeGenGenerateEnum.metadata);
+        const generatedCode = visitor.generate();
+        expect(generatedCode).toMatchInlineSnapshot(`
+          "// swiftlint:disable all
+          import Amplify
+          import Foundation
+
+          extension Employee {
+            // MARK: - CodingKeys 
+             public enum CodingKeys: String, ModelKey {
+              case id
+              case name
+              case address
+              case ssn
+              case owner
+            }
+            
+            public static let keys = CodingKeys.self
+            //  MARK: - ModelSchema 
+            
+            public static let schema = defineSchema { model in
+              let employee = Employee.keys
+              
+              model.authRules = [
+                rule(allow: .owner, ownerField: \\"owner\\", identityClaim: \\"cognito:username\\", operations: [.create, .update, .delete, .read]),
+                rule(allow: .groups, groupClaim: \\"cognito:groups\\", groups: [\\"Admins\\"], operations: [.create, .update, .delete, .read])
+              ]
+              
+              model.pluralName = \\"Employees\\"
+              
+              model.fields(
+                .id(),
+                .field(employee.name, is: .required, ofType: .string),
+                .field(employee.address, is: .required, ofType: .string),
+                .field(employee.ssn, is: .optional, ofType: .string),
+                .field(employee.owner, is: .optional, ofType: .string)
+              )
+              }
+          }"
+        `);
+      });
     });
   });
 

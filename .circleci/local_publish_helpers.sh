@@ -18,9 +18,15 @@ function loginToLocalRegistry {
 }
 
 function unsetNpmRegistryUrl {
-  # Restore the original NPM and Yarn registry URLs and stop Verdaccio
+  # Restore the original NPM and Yarn registry URLs
   npm set registry "https://registry.npmjs.org/"
   yarn config set registry "https://registry.npmjs.org/"
+}
+
+function unsetSudoNpmRegistryUrl {
+  # Restore the original NPM and Yarn registry URLs
+  sudo npm set registry "https://registry.npmjs.org/"
+  sudo yarn config set registry "https://registry.npmjs.org/"
 }
 
 function changeNpmGlobalPath {
@@ -29,8 +35,20 @@ function changeNpmGlobalPath {
   export PATH=~/.npm-global/bin:$PATH
 }
 
+function changeSudoNpmGlobalPath {
+  mkdir -p ~/.npm-global-sudo
+  npm config set prefix '~/.npm-global-sudo'
+  export PATH=~/.npm-global/bin:$PATH
+}
+
 function setNpmRegistryUrlToLocal {
   # Set registry to local registry
   npm set registry "$custom_registry_url"
   yarn config set registry "$custom_registry_url"
+}
+
+function setSudoNpmRegistryUrlToLocal {
+  # Set registry to local registry
+  sudo npm set registry "$custom_registry_url"
+  sudo yarn config set registry "$custom_registry_url"
 }

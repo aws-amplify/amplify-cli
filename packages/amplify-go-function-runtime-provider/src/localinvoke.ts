@@ -1,10 +1,11 @@
 import path from 'path';
 import fs from 'fs-extra';
 import portfinder from 'portfinder';
+import { pathManager } from 'amplify-cli-core';
 
 import { InvocationRequest, BuildRequest } from 'amplify-function-plugin-interface';
 import { buildResourceInternal, executeCommand } from './runtime';
-import { MAIN_SOURCE, MAX_PORT, BASE_PORT, BIN_LOCAL, MAIN_BINARY, MAIN_BINARY_WIN } from './constants';
+import { MAIN_SOURCE, MAX_PORT, BASE_PORT, BIN_LOCAL, MAIN_BINARY, MAIN_BINARY_WIN, packageName, relativeShimSrcPath } from './constants';
 import execa, { ExecaChildProcess } from 'execa';
 
 // Go typing standards dictating JSON properties with PascalCase format
@@ -16,7 +17,7 @@ type LambdaResult = {
 const UNKNOWN_ERROR = 'Unknown error occurred during the execution of the Lambda function';
 
 const buildLocalInvoker = async (context: any) => {
-  const localInvokerDir = path.join(__dirname, '..', 'resources', 'localinvoke');
+  const localInvokerDir = path.join(pathManager.getAmplifyPackageLibDirPath(packageName), relativeShimSrcPath);
   const isWindows = /^win/.test(process.platform);
   const localInvokeExecutableName = isWindows === true ? MAIN_BINARY_WIN : MAIN_BINARY;
   const localInvokeExecutablePath = path.join(localInvokerDir, localInvokeExecutableName);

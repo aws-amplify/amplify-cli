@@ -26,7 +26,7 @@ describe('auth update: ', () => {
       },
       // eslint-disable-next-line
       getResourceStatus: () => {
-        return { allResources: [{ service: 'Cognito' }] };
+        return { allResources: [{ service: 'Cognito', serviceType: 'managed' }] };
       }, //eslint-disable-line
     },
     print: {

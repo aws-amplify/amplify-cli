@@ -44,7 +44,7 @@ async function constructPinpointNotificationsMeta(context) {
       for (const resourceName of Object.keys(analyticsMeta)) {
         const resource = analyticsMeta[resourceName];
 
-        if (resource.service === 'Pinpoint' && !resource.providerPlugin) {
+        if (resource.mobileHubMigrated === true) {
           isMobileHubMigrated = true;
           break;
         }

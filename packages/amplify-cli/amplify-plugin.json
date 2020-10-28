@@ -10,12 +10,12 @@
     "help",
     "init",
     "migrate",
+    "plugin",
     "publish",
     "push",
     "pull",
     "run",
     "status",
-    "plugin",
     "version"
   ],
   "commandAliases": {

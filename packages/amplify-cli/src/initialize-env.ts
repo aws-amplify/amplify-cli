@@ -7,7 +7,7 @@ const spinner = ora('');
 
 export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $TSMeta) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
-  let isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
 
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;
