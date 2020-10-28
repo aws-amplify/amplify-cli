@@ -16,6 +16,7 @@ import {
   qref,
   toJson,
   comment,
+  HttpMappingTemplate,
 } from 'graphql-mapping-template';
 import { iamActions } from './predictions_utils';
 import { IAM, Fn, AppSync, Lambda } from 'cloudform-types';
@@ -281,30 +282,33 @@ export class ResourceFactory {
 
   // predictions action functions
   public createActionFunction(action: string, datasourceName: string) {
+    const httpPayload = `${action}Payload`;
     const actionFunctionResolvers = {
       identifyText: {
         request: compoundExpression([
           set(ref('bucketName'), ref('ctx.stash.get("s3Bucket")')),
-          set(ref('identityTextKey'), ref('util.toJson($ctx.args.input.identifyText.key)')),
-          obj({
-            version: str('2018-05-29'),
-            method: str('POST'),
-            resourcePath: str('/'),
-            params: obj({
-              body: obj({
-                Image: obj({
-                  S3Object: obj({
-                    Bucket: str('$bucketName'),
-                    Name: str('public/$identityTextKey'),
+          set(ref('identityTextKey'), ref('ctx.args.input.identifyText.key')),
+          set(
+            ref(httpPayload),
+            HttpMappingTemplate.postRequest({
+              resourcePath: '/',
+              params: obj({
+                body: obj({
+                  Image: obj({
+                    S3Object: obj({
+                      Bucket: str('$bucketName'),
+                      Name: str('public/$identityTextKey'),
+                    }),
                   }),
                 }),
-              }),
-              headers: obj({
-                'Content-Type': str('application/x-amz-json-1.1'),
-                'X-Amz-Target': str('RekognitionService.DetectText'),
+                headers: obj({
+                  'Content-Type': str('application/x-amz-json-1.1'),
+                  'X-Amz-Target': str('RekognitionService.DetectText'),
+                }),
               }),
             }),
-          }),
+          ),
+          toJson(ref(httpPayload)),
         ]),
         response: compoundExpression([
           iff(ref('ctx.error'), ref('util.error($ctx.error.message)')),
@@ -325,29 +329,31 @@ export class ResourceFactory {
       identifyLabels: {
         request: compoundExpression([
           set(ref('bucketName'), ref('ctx.stash.get("s3Bucket")')),
-          set(ref('identifyLabelKey'), ref('util.toJson($ctx.args.input.identifyLabels.key)')),
+          set(ref('identifyLabelKey'), ref('$ctx.args.input.identifyLabels.key')),
           qref('$ctx.stash.put("isList", true)'),
-          obj({
-            version: str('2018-05-29'),
-            method: str('POST'),
-            resourcePath: str('/'),
-            params: obj({
-              body: obj({
-                Image: obj({
-                  S3Object: obj({
-                    Bucket: str('$bucketName'),
-                    Name: str('public/$identifyLabelKey'),
+          set(
+            ref(httpPayload),
+            HttpMappingTemplate.postRequest({
+              resourcePath: '/',
+              params: obj({
+                body: obj({
+                  Image: obj({
+                    S3Object: obj({
+                      Bucket: str('$bucketName'),
+                      Name: str('public/$identifyLabelKey'),
+                    }),
                   }),
+                  MaxLabels: int(10),
+                  MinConfidence: int(55),
                 }),
-                MaxLabels: int(10),
-                MinConfidence: int(55),
-              }),
-              headers: obj({
-                'Content-Type': str('application/x-amz-json-1.1'),
-                'X-Amz-Target': str('RekognitionService.DetectLabels'),
+                headers: obj({
+                  'Content-Type': str('application/x-amz-json-1.1'),
+                  'X-Amz-Target': str('RekognitionService.DetectLabels'),
+                }),
               }),
             }),
-          }),
+          ),
+          toJson(ref(httpPayload)),
         ]),
         response: compoundExpression([
           iff(ref('ctx.error'), ref('util.error($ctx.error.message)')),
@@ -366,22 +372,24 @@ export class ResourceFactory {
       translateText: {
         request: compoundExpression([
           set(ref('text'), ref('util.defaultIfNull($ctx.args.input.translateText.text, $ctx.prev.result)')),
-          obj({
-            version: str('2018-05-29'),
-            method: str('POST'),
-            resourcePath: str('/'),
-            params: obj({
-              body: obj({
-                SourceLanguageCode: ref('util.toJson($ctx.args.input.translateText.sourceLanguage)'),
-                TargetLanguageCode: ref('util.toJson($ctx.args.input.translateText.targetLanguage)'),
-                Text: str('$text'),
-              }),
-              headers: obj({
-                'Content-Type': str('application/x-amz-json-1.1'),
-                'X-Amz-Target': str('AWSShineFrontendService_20170701.TranslateText'),
+          set(
+            ref(httpPayload),
+            HttpMappingTemplate.postRequest({
+              resourcePath: '/',
+              params: obj({
+                body: obj({
+                  SourceLanguageCode: ref('ctx.args.input.translateText.sourceLanguage'),
+                  TargetLanguageCode: ref('ctx.args.input.translateText.targetLanguage'),
+                  Text: ref('text'),
+                }),
+                headers: obj({
+                  'Content-Type': str('application/x-amz-json-1.1'),
+                  'X-Amz-Target': str('AWSShineFrontendService_20170701.TranslateText'),
+                }),
               }),
             }),
-          }),
+          ),
+          toJson(ref(httpPayload)),
         ]),
         response: compoundExpression([
           iff(ref('ctx.error'), ref('util.error($ctx.error.message)')),
@@ -404,8 +412,8 @@ export class ResourceFactory {
               obj({
                 uuid: str('$util.autoId()'),
                 action: str('convertTextToSpeech'),
-                voiceID: ref('util.toJson($ctx.args.input.convertTextToSpeech.voiceID)'),
-                text: ref('util.toJson($text)'),
+                voiceID: ref('ctx.args.input.convertTextToSpeech.voiceID'),
+                text: ref('text'),
               }),
             ),
           }),
