@@ -18,10 +18,7 @@ import {
   equals,
   iff,
   raw,
-  comment,
-  qref,
   Expression,
-  block,
 } from 'graphql-mapping-template';
 import {
   ResourceConstants,
@@ -167,7 +164,7 @@ export class ResourceFactory {
           key: keyObj,
         }),
       ),
-      ResponseMappingTemplate: print(ref('util.toJson($context.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(false)),
     }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
   }
 
@@ -229,7 +226,10 @@ export class ResourceFactory {
         ]),
       ),
       ResponseMappingTemplate: print(
-        compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
+        DynamoDBMappingTemplate.dynamoDBResponse(
+          false,
+          compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
+        ),
       ),
     }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
   }
@@ -289,7 +289,7 @@ export class ResourceFactory {
           }),
         ]),
       ),
-      ResponseMappingTemplate: print(ref('util.toJson($context.result)')),
+      ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(false)),
     }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
   }
 
@@ -363,7 +363,10 @@ export class ResourceFactory {
       TypeName: type,
       RequestMappingTemplate: print(compoundExpression([...setup, queryObj])),
       ResponseMappingTemplate: print(
-        compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
+        DynamoDBMappingTemplate.dynamoDBResponse(
+          false,
+          compoundExpression([iff(raw('!$result'), set(ref('result'), ref('ctx.result'))), raw('$util.toJson($result)')]),
+        ),
       ),
     }).dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID);
   }

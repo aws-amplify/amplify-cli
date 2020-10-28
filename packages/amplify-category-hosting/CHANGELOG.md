@@ -3,6 +3,90 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.4.5...amplify-category-hosting@2.4.6) (2020-10-22)
+
+
+### Bug Fixes
+
+* refactor mobile hub migration checks ([#5632](https://github.com/aws-amplify/amplify-cli/issues/5632)) ([b796eb8](https://github.com/aws-amplify/amplify-cli/commit/b796eb8303bb903f5f531506254441a63eba2962))
+
+
+
+
+
+## [2.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.4.4...amplify-category-hosting@2.4.5) (2020-10-07)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+## [2.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.4.3...amplify-category-hosting@2.4.4) (2020-10-01)
+
+
+### Bug Fixes
+
+* add support for mobile hub migrated resources ([#5407](https://github.com/aws-amplify/amplify-cli/issues/5407)) ([5dfe287](https://github.com/aws-amplify/amplify-cli/commit/5dfe2872c153047ebdc56bc4f671fd57c12379d9))
+
+
+
+
+
+## [2.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.4.2...amplify-category-hosting@2.4.3) (2020-09-25)
+
+
+### Bug Fixes
+
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+
+
+
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.4.0...amplify-category-hosting@2.4.2) (2020-07-29)
+
+
+### Performance Improvements
+
+* fulfill promises to upload files to S3 concurrently ([#4575](https://github.com/aws-amplify/amplify-cli/issues/4575)) ([9fbee8a](https://github.com/aws-amplify/amplify-cli/commit/9fbee8a71b4bf941dbda9d2f76fbedd73ab754ef)), closes [#4158](https://github.com/aws-amplify/amplify-cli/issues/4158)
+
+
+### Reverts
+
+* Revert problematic PRs (#4803) ([f21a0f4](https://github.com/aws-amplify/amplify-cli/commit/f21a0f449a23c0c80a6f3280eef76bcbf3e9cb7c)), closes [#4803](https://github.com/aws-amplify/amplify-cli/issues/4803) [#4796](https://github.com/aws-amplify/amplify-cli/issues/4796) [#4576](https://github.com/aws-amplify/amplify-cli/issues/4576) [#4575](https://github.com/aws-amplify/amplify-cli/issues/4575) [#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)
+
+
+
+
+
+## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.4.0...amplify-category-hosting@2.4.1) (2020-07-23)
+
+
+### Performance Improvements
+
+* fulfill promises to upload files to S3 concurrently ([#4575](https://github.com/aws-amplify/amplify-cli/issues/4575)) ([96d1914](https://github.com/aws-amplify/amplify-cli/commit/96d1914f26507184f14371294d31b3a5e5c94954)), closes [#4158](https://github.com/aws-amplify/amplify-cli/issues/4158)
+
+
+### Reverts
+
+* Revert problematic PRs (#4803) ([7f38d81](https://github.com/aws-amplify/amplify-cli/commit/7f38d81ef2f890c25d39b02407c5255c8760c511)), closes [#4803](https://github.com/aws-amplify/amplify-cli/issues/4803) [#4796](https://github.com/aws-amplify/amplify-cli/issues/4796) [#4576](https://github.com/aws-amplify/amplify-cli/issues/4576) [#4575](https://github.com/aws-amplify/amplify-cli/issues/4575) [#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)
+
+
+
+
+
+# [2.4.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.3.3...amplify-category-hosting@2.4.0) (2020-07-07)
+
+
+### Features
+
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([30a7fe7](https://github.com/aws-amplify/amplify-cli/commit/30a7fe70f5838a766631befcc720a721e801bc5f))
+
+
+
+
+
 ## [2.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.3.2...amplify-category-hosting@2.3.3) (2020-06-18)
 
 

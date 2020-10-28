@@ -1,11 +1,11 @@
-import { FunctionTemplateParameters, ContributionRequest } from 'amplify-function-plugin-interface';
+import { FunctionTemplateParameters, TemplateContributionRequest } from 'amplify-function-plugin-interface';
 import { commonFiles, templateRoot } from '../utils/constants';
 import { getDstMap } from '../utils/destFileMapper';
 import path from 'path';
 
 const pathToTemplateFiles = path.join(templateRoot, 'lambda');
 
-export function provideServerless(request: ContributionRequest): Promise<FunctionTemplateParameters> {
+export function provideServerless(request: TemplateContributionRequest): Promise<FunctionTemplateParameters> {
   const files = [
     ...commonFiles,
     'Serverless/aws-lambda-tools-defaults.json.ejs',
@@ -26,7 +26,7 @@ export function provideServerless(request: ContributionRequest): Promise<Functio
       destMap: {
         ...getDstMap(commonFiles),
         'Serverless/aws-lambda-tools-defaults.json.ejs': path.join('src', 'aws-lambda-tools-defaults.json'),
-        'Serverless/Function.csproj.ejs': path.join('src', `${request.contributionContext.functionName}.csproj`),
+        'Serverless/Function.csproj.ejs': path.join('src', `${request.contributionContext.resourceName}.csproj`),
         'Serverless/FunctionHandler.cs.ejs': handlerSource,
         'Serverless/event.json.ejs': path.join('src', 'event.json'),
       },

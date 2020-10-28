@@ -1,4 +1,6 @@
-import * as url from 'url';
+import url from 'url';
+import path from 'path';
+import fs from 'fs-extra';
 import { post } from '../utils/request';
 
 export async function appsyncGraphQLRequest(resource: { [id: string]: any }, op: { query: string; variables: string | null }) {
@@ -15,3 +17,8 @@ export async function appsyncGraphQLRequest(resource: { [id: string]: any }, op:
     },
   });
 }
+
+export const getProjectSchema = (projRoot: string, apiName: string) => {
+  const schemaFilePath = path.join(projRoot, 'amplify', 'backend', 'api', apiName, 'schema.graphql');
+  return fs.readFileSync(schemaFilePath, 'utf8');
+};

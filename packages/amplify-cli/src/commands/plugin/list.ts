@@ -1,9 +1,9 @@
+import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
-import inquirer from '../../domain/inquirer-helper';
 import { PluginCollection } from '../../domain/plugin-collection';
 import { displayGeneralInfo, displayPluginCollection, displayPluginInfoArray } from '../../plugin-helpers/display-plugin-platform';
 
-export async function run(context: Context) {
+export const run = async (context: Context) => {
   const { pluginPlatform } = context;
 
   const plugins = 'active plugins';
@@ -33,7 +33,7 @@ export async function run(context: Context) {
       listPluginCollection(context, pluginPlatform.plugins);
       break;
   }
-}
+};
 
 async function listPluginCollection(context: Context, collection: PluginCollection) {
   const all = 'all';

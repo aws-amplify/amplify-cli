@@ -71,7 +71,7 @@ export function makeScalarKeyConditionInputs(): InputObjectTypeDefinitionNode[] 
 }
 export function makeScalarKeyConditionForType(
   type: TypeNode,
-  nonScalarTypeResolver: (baseType: string) => string = undefined
+  nonScalarTypeResolver: (baseType: string) => string = undefined,
 ): InputObjectTypeDefinitionNode {
   const baseType = getBaseType(type);
   let resolvedScalarName: string;
@@ -107,7 +107,7 @@ export function makeScalarKeyConditionForType(
 export function makeCompositeKeyConditionInputForKey(
   modelName: string,
   keyName: string,
-  fields: FieldDefinitionNode[]
+  fields: FieldDefinitionNode[],
 ): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelCompositeKeyConditionInputTypeName(modelName, keyName);
   const conditions = STRING_KEY_CONDITIONS;
@@ -125,7 +125,7 @@ export function makeCompositeKeyConditionInputForKey(
 export function makeCompositeKeyInputForKey(
   modelName: string,
   keyName: string,
-  fields: FieldDefinitionNode[]
+  fields: FieldDefinitionNode[],
 ): InputObjectTypeDefinitionNode {
   const inputValues = fields.map((field: FieldDefinitionNode, idx) => {
     const baseTypeName = getBaseType(field.type);
@@ -155,7 +155,7 @@ export function applyKeyConditionExpression(
   attributeType: 'S' | 'N' | 'B' = 'S',
   queryExprReference: string = 'query',
   sortKeyName?: string,
-  prefixVariableName?: string
+  prefixVariableName?: string,
 ) {
   const prefixValue = (value: string): string => (prefixVariableName ? `$${prefixVariableName}#${value}` : value);
   const _sortKeyName = sortKeyName ? sortKeyName : argName;
@@ -168,31 +168,31 @@ export function applyKeyConditionExpression(
         // TODO: Handle N & B.
         qref(
           `$${queryExprReference}.expressionValues.put(":sortKey", { "${attributeType}": "${prefixValue(
-            `$ctx.args.${argName}.beginsWith`
-          )}" })`
+            `$ctx.args.${argName}.beginsWith`,
+          )}" })`,
         ),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.between)`),
       compoundExpression([
         set(
           ref(`${queryExprReference}.expression`),
-          raw(`"$${queryExprReference}.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1"`)
+          raw(`"$${queryExprReference}.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1"`),
         ),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${_sortKeyName}")`),
         // TODO: Handle N & B.
         qref(
           `$${queryExprReference}.expressionValues.put(":sortKey0", { "${attributeType}": "${prefixValue(
-            `$ctx.args.${argName}.between[0]`
-          )}" })`
+            `$ctx.args.${argName}.between[0]`,
+          )}" })`,
         ),
         qref(
           `$${queryExprReference}.expressionValues.put(":sortKey1", { "${attributeType}": "${prefixValue(
-            `$ctx.args.${argName}.between[1]`
-          )}" })`
+            `$ctx.args.${argName}.between[1]`,
+          )}" })`,
         ),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.eq)`),
@@ -201,9 +201,9 @@ export function applyKeyConditionExpression(
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${_sortKeyName}")`),
         // TODO: Handle N & B.
         qref(
-          `$${queryExprReference}.expressionValues.put(":sortKey", { "${attributeType}": "${prefixValue(`$ctx.args.${argName}.eq`)}" })`
+          `$${queryExprReference}.expressionValues.put(":sortKey", { "${attributeType}": "${prefixValue(`$ctx.args.${argName}.eq`)}" })`,
         ),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.lt)`),
@@ -212,9 +212,9 @@ export function applyKeyConditionExpression(
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${_sortKeyName}")`),
         // TODO: Handle N & B.
         qref(
-          `$${queryExprReference}.expressionValues.put(":sortKey", { "${attributeType}": "${prefixValue(`$ctx.args.${argName}.lt`)}" })`
+          `$${queryExprReference}.expressionValues.put(":sortKey", { "${attributeType}": "${prefixValue(`$ctx.args.${argName}.lt`)}" })`,
         ),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.le)`),
@@ -223,9 +223,9 @@ export function applyKeyConditionExpression(
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${_sortKeyName}")`),
         // TODO: Handle N & B.
         qref(
-          `$${queryExprReference}.expressionValues.put(":sortKey", { "${attributeType}": "${prefixValue(`$ctx.args.${argName}.le`)}" })`
+          `$${queryExprReference}.expressionValues.put(":sortKey", { "${attributeType}": "${prefixValue(`$ctx.args.${argName}.le`)}" })`,
         ),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.gt)`),
@@ -234,9 +234,9 @@ export function applyKeyConditionExpression(
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${_sortKeyName}")`),
         // TODO: Handle N & B.
         qref(
-          `$${queryExprReference}.expressionValues.put(":sortKey", { "${attributeType}": "${prefixValue(`$ctx.args.${argName}.gt`)}" })`
+          `$${queryExprReference}.expressionValues.put(":sortKey", { "${attributeType}": "${prefixValue(`$ctx.args.${argName}.gt`)}" })`,
         ),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${argName}) && !$util.isNull($ctx.args.${argName}.ge)`),
@@ -245,9 +245,9 @@ export function applyKeyConditionExpression(
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${_sortKeyName}")`),
         // TODO: Handle N & B.
         qref(
-          `$${queryExprReference}.expressionValues.put(":sortKey", { "${attributeType}": "${prefixValue(`$ctx.args.${argName}.ge`)}" })`
+          `$${queryExprReference}.expressionValues.put(":sortKey", { "${attributeType}": "${prefixValue(`$ctx.args.${argName}.ge`)}" })`,
         ),
-      ])
+      ]),
     ),
   ]);
 }
@@ -264,7 +264,7 @@ export function applyCompositeKeyConditionExpression(
   keyNames: string[],
   queryExprReference: string = 'query',
   sortKeyArgumentName: string,
-  sortKeyAttributeName: string
+  sortKeyAttributeName: string,
 ) {
   const accumulatorVar1 = 'sortKeyValue';
   const accumulatorVar2 = 'sortKeyValue2';
@@ -281,21 +281,21 @@ export function applyCompositeKeyConditionExpression(
             idx === 0
               ? set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.beginsWith.${keyName}`))
               : set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.beginsWith.${keyName}`)),
-            true
-          )
+            true,
+          ),
         ),
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND begins_with(#sortKey, :sortKey)"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
         // TODO: Handle N & B.
         qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.between)`),
       compoundExpression([
         iff(
           raw(`$ctx.args.${sortKeyArgumentName}.between.size() != 2`),
-          raw(`$util.error("Argument ${sortKeyArgumentName}.between expects exactly 2 elements.")`)
+          raw(`$util.error("Argument ${sortKeyArgumentName}.between expects exactly 2 elements.")`),
         ),
         ...keyNames.map((keyName, idx) =>
           iff(
@@ -303,8 +303,8 @@ export function applyCompositeKeyConditionExpression(
             idx === 0
               ? set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.between[0].${keyName}`))
               : set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.between[0].${keyName}`)),
-            true
-          )
+            true,
+          ),
         ),
         ...keyNames.map((keyName, idx) =>
           iff(
@@ -312,18 +312,18 @@ export function applyCompositeKeyConditionExpression(
             idx === 0
               ? set(ref(accumulatorVar2), str(`$ctx.args.${sortKeyArgumentName}.between[1].${keyName}`))
               : set(ref(accumulatorVar2), str(`$${accumulatorVar2}${sep}$ctx.args.${sortKeyArgumentName}.between[1].${keyName}`)),
-            true
-          )
+            true,
+          ),
         ),
         set(
           ref(`${queryExprReference}.expression`),
-          raw(`"$${queryExprReference}.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1"`)
+          raw(`"$${queryExprReference}.expression AND #sortKey BETWEEN :sortKey0 AND :sortKey1"`),
         ),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
         // TODO: Handle N & B.
         qref(`$${queryExprReference}.expressionValues.put(":sortKey0", { "S": "$${accumulatorVar1}" })`),
         qref(`$${queryExprReference}.expressionValues.put(":sortKey1", { "S": "$${accumulatorVar2}" })`),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.eq)`),
@@ -334,14 +334,14 @@ export function applyCompositeKeyConditionExpression(
             idx === 0
               ? set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.eq.${keyName}`))
               : set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.eq.${keyName}`)),
-            true
-          )
+            true,
+          ),
         ),
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey = :sortKey"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
         // TODO: Handle N & B.
         qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.lt)`),
@@ -352,14 +352,14 @@ export function applyCompositeKeyConditionExpression(
             idx === 0
               ? set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.lt.${keyName}`))
               : set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.lt.${keyName}`)),
-            true
-          )
+            true,
+          ),
         ),
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey < :sortKey"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
         // TODO: Handle N & B.
         qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.le)`),
@@ -370,14 +370,14 @@ export function applyCompositeKeyConditionExpression(
             idx === 0
               ? set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.le.${keyName}`))
               : set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.le.${keyName}`)),
-            true
-          )
+            true,
+          ),
         ),
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey <= :sortKey"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
         // TODO: Handle N & B.
         qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.gt)`),
@@ -388,14 +388,14 @@ export function applyCompositeKeyConditionExpression(
             idx === 0
               ? set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.gt.${keyName}`))
               : set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.gt.${keyName}`)),
-            true
-          )
+            true,
+          ),
         ),
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey > :sortKey"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
         // TODO: Handle N & B.
         qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`),
-      ])
+      ]),
     ),
     iff(
       raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && !$util.isNull($ctx.args.${sortKeyArgumentName}.ge)`),
@@ -406,14 +406,14 @@ export function applyCompositeKeyConditionExpression(
             idx === 0
               ? set(ref(accumulatorVar1), str(`$ctx.args.${sortKeyArgumentName}.ge.${keyName}`))
               : set(ref(accumulatorVar1), str(`$${accumulatorVar1}${sep}$ctx.args.${sortKeyArgumentName}.ge.${keyName}`)),
-            true
-          )
+            true,
+          ),
         ),
         set(ref(`${queryExprReference}.expression`), raw(`"$${queryExprReference}.expression AND #sortKey >= :sortKey"`)),
         qref(`$${queryExprReference}.expressionNames.put("#sortKey", "${sortKeyAttributeName}")`),
         // TODO: Handle N & B.
         qref(`$${queryExprReference}.expressionValues.put(":sortKey", { "S": "$${accumulatorVar1}" })`),
-      ])
+      ]),
     ),
     newline(),
   ]);
@@ -432,7 +432,7 @@ export function applyCompositeKeyConditionExpression(
 export function applyKeyExpressionForCompositeKey(
   keys: string[],
   attributeTypes: ('S' | 'N' | 'B')[] = ['S'],
-  queryExprReference: string = 'query'
+  queryExprReference: string = 'query',
 ) {
   if (keys.length > 2) {
     // In the case of > 2, we condense the composite key, validate inputs at runtime, and wire up the HASH/RANGE expressions.
@@ -464,7 +464,7 @@ export function applyKeyExpressionForCompositeKey(
   }
 }
 
-function setupHashKeyExpression(hashKeyName: string, hashKeyAttributeType: string, queryExprReference: string) {
+export function setupHashKeyExpression(hashKeyName: string, hashKeyAttributeType: string, queryExprReference: string) {
   return iff(
     raw(`!$util.isNull($ctx.args.${hashKeyName})`),
     compoundExpression([
@@ -472,9 +472,9 @@ function setupHashKeyExpression(hashKeyName: string, hashKeyAttributeType: strin
       set(ref(`${queryExprReference}.expressionNames`), obj({ [`#${hashKeyName}`]: str(hashKeyName) })),
       set(
         ref(`${queryExprReference}.expressionValues`),
-        obj({ [`:${hashKeyName}`]: obj({ [hashKeyAttributeType]: str(`$ctx.args.${hashKeyName}`) }) })
+        obj({ [`:${hashKeyName}`]: obj({ [hashKeyAttributeType]: str(`$ctx.args.${hashKeyName}`) }) }),
       ),
-    ])
+    ]),
   );
 }
 
@@ -514,9 +514,9 @@ function validateKeyArguments(keys: string[]) {
           raw(
             `$util.error("When providing argument '${rightKey}' you must also provide arguments ${keys
               .slice(0, index)
-              .join(', ')}", "InvalidArgumentsError")`
-          )
-        )
+              .join(', ')}", "InvalidArgumentsError")`,
+          ),
+        ),
       );
     }
     return block('Validate key arguments.', exprs);
@@ -536,7 +536,7 @@ function validateCompositeKeyArguments(keys: string[]) {
   const exprs: Expression[] = [
     iff(
       raw(`!$util.isNull($ctx.args.${sortKeyArgumentName}) && $util.isNullOrBlank($ctx.args.${hashKey})`),
-      invalidArgumentError(`When providing argument '${sortKeyArgumentName}' you must also provide '${hashKey}'.`)
+      invalidArgumentError(`When providing argument '${sortKeyArgumentName}' you must also provide '${hashKey}'.`),
     ),
   ];
   if (sortKeys.length > 1) {
@@ -553,39 +553,39 @@ function validateCompositeKeyArguments(keys: string[]) {
       compoundExpression([
         iff(
           raw(`$ctx.args.${sortKeyArgumentName}.between.size() != 2`),
-          invalidArgumentError(`Argument '${sortKeyArgumentName}.between' expects exactly two elements.`)
+          invalidArgumentError(`Argument '${sortKeyArgumentName}.between' expects exactly two elements.`),
         ),
         loopOverKeys((rightKey: string, previousKey: string) =>
           compoundExpression([
             iff(
               raw(
-                `!$util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[0].${rightKey}) && $util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[0].${previousKey})`
+                `!$util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[0].${rightKey}) && $util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[0].${previousKey})`,
               ),
               invalidArgumentError(
-                `When providing argument '${sortKeyArgumentName}.between[0].${rightKey}' you must also provide '${sortKeyArgumentName}.between[0].${previousKey}'.`
-              )
+                `When providing argument '${sortKeyArgumentName}.between[0].${rightKey}' you must also provide '${sortKeyArgumentName}.between[0].${previousKey}'.`,
+              ),
             ),
             iff(
               raw(
-                `!$util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[1].${rightKey}) && $util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[1].${previousKey})`
+                `!$util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[1].${rightKey}) && $util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.between[1].${previousKey})`,
               ),
               invalidArgumentError(
-                `When providing argument '${sortKeyArgumentName}.between[1].${rightKey}' you must also provide '${sortKeyArgumentName}.between[1].${previousKey}'.`
-              )
+                `When providing argument '${sortKeyArgumentName}.between[1].${rightKey}' you must also provide '${sortKeyArgumentName}.between[1].${previousKey}'.`,
+              ),
             ),
-          ])
+          ]),
         ),
       ]);
     const validateOtherOperation = () =>
       loopOverKeys((rightKey: string, previousKey: string) =>
         iff(
           raw(
-            `!$util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.get("$operation").${rightKey}) && $util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.get("$operation").${previousKey})`
+            `!$util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.get("$operation").${rightKey}) && $util.isNullOrBlank($ctx.args.${sortKeyArgumentName}.get("$operation").${previousKey})`,
           ),
           invalidArgumentError(
-            `When providing argument '${sortKeyArgumentName}.$operation.${rightKey}' you must also provide '${sortKeyArgumentName}.$operation.${previousKey}'.`
-          )
-        )
+            `When providing argument '${sortKeyArgumentName}.$operation.${rightKey}' you must also provide '${sortKeyArgumentName}.$operation.${previousKey}'.`,
+          ),
+        ),
       );
     exprs.push(
       iff(
@@ -594,13 +594,13 @@ function validateCompositeKeyArguments(keys: string[]) {
           set(ref('sortKeyArgumentOperations'), raw(`$ctx.args.${sortKeyArgumentName}.keySet()`)),
           iff(
             raw(`$sortKeyArgumentOperations.size() > 1`),
-            invalidArgumentError(`Argument ${sortKeyArgumentName} must specify at most one key condition operation.`)
+            invalidArgumentError(`Argument ${sortKeyArgumentName} must specify at most one key condition operation.`),
           ),
           forEach(ref('operation'), ref('sortKeyArgumentOperations'), [
             ifElse(raw(`$operation == "between"`), validateBetween(), validateOtherOperation()),
           ]),
-        ])
-      )
+        ]),
+      ),
     );
     return block('Validate key arguments.', exprs);
   } else {

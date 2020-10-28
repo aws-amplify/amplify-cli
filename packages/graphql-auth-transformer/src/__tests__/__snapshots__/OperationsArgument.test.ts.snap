@@ -1,8 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test "create", "update", "delete" auth operations 1`] = `"$util.toJson($ctx.result)"`;
+exports[`Test "create", "update", "delete" auth operations 1`] = `
+"#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end"
+`;
 
-exports[`Test "create", "update", "delete" auth operations 2`] = `"$util.toJson($ctx.result)"`;
+exports[`Test "create", "update", "delete" auth operations 2`] = `
+"#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end"
+`;
 
 exports[`Test "create", "update", "delete" auth operations 3`] = `
 "## [Start] Set default values. **
@@ -71,7 +83,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 } )
 #end
 {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
@@ -294,7 +306,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   $util.qr($update.put(\\"expressionValues\\", $expValues))
 #end
 {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\": {
@@ -453,7 +465,7 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
 } )
 #end
 {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
@@ -633,9 +645,21 @@ exports[`Test that checks subscription resolvers are generated with auth logic 3
 $util.toJson(null)"
 `;
 
-exports[`Test that operation overwrites queries in auth operations 1`] = `"$util.toJson($ctx.result)"`;
+exports[`Test that operation overwrites queries in auth operations 1`] = `
+"#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end"
+`;
 
-exports[`Test that operation overwrites queries in auth operations 2`] = `"$util.toJson($ctx.result)"`;
+exports[`Test that operation overwrites queries in auth operations 2`] = `
+"#if( $ctx.error )
+$util.error($ctx.error.message, $ctx.error.type)
+#else
+$util.toJson($ctx.result)
+#end"
+`;
 
 exports[`Test that operation overwrites queries in auth operations 3`] = `
 "## [Start] Set default values. **
@@ -704,7 +728,7 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 } )
 #end
 {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"PutItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\":   $util.dynamodb.toDynamoDBJson($ctx.args.input.id)
@@ -927,7 +951,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   $util.qr($update.put(\\"expressionValues\\", $expValues))
 #end
 {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"UpdateItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\": {
@@ -1086,7 +1110,7 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
 } )
 #end
 {
-  \\"version\\": \\"2017-02-28\\",
+  \\"version\\": \\"2018-05-29\\",
   \\"operation\\": \\"DeleteItem\\",
   \\"key\\": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   \\"id\\": $util.dynamodb.toDynamoDBJson($ctx.args.input.id)

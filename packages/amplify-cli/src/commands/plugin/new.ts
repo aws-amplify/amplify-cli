@@ -1,17 +1,17 @@
-import path from 'path';
+import * as path from 'path';
 import { Context } from '../../domain/context';
 import { constants } from '../../domain/constants';
 import { createNewPlugin } from '../../plugin-manager';
 import { addUserPluginPackage } from '../../plugin-manager';
 import { AddPluginError } from '../../domain/add-plugin-result';
 
-export async function run(context: Context) {
+export const run = async (context: Context) => {
   const pluginDirPath = await createNewPlugin(context, process.cwd());
   if (pluginDirPath) {
     const isPluggedInLocalAmplifyCLI = await plugIntoLocalAmplifyCli(context, pluginDirPath);
     printInfo(context, pluginDirPath, isPluggedInLocalAmplifyCLI);
   }
-}
+};
 
 async function plugIntoLocalAmplifyCli(context: Context, pluginDirPath: string): Promise<boolean> {
   let isPluggedIn = false;

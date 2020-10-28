@@ -25,6 +25,9 @@ import {
   ifElse,
   newline,
   methodCall,
+  RESOLVER_VERSION_ID,
+  isNullOrEmpty,
+  ret
 } from 'graphql-mapping-template';
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common';
 import GraphQLApi, {
@@ -105,7 +108,10 @@ export class ResourceFactory {
     if (apiKeyConfig && apiKeyConfig.apiKeyExpirationDays) {
       expirationDays = apiKeyConfig.apiKeyExpirationDays;
     }
-    const expirationDateInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * expirationDays; /* d */
+    // add delay expiration time is valid upon resource creation
+    let expirationDateInSeconds = 60 /* s */ * 60 /* m */ * 24 /* h */ * expirationDays /* d */;
+    // Add a 2 minute time delay if set to 1 day: https://github.com/aws-amplify/amplify-cli/issues/4460
+    if (expirationDays === 1) expirationDateInSeconds += 60 * 2;
     const nowEpochTime = Math.floor(Date.now() / 1000);
     return new AppSync.ApiKey({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
@@ -223,7 +229,7 @@ export class ResourceFactory {
       TypeName: type,
       RequestMappingTemplate: print(
         obj({
-          version: str('2017-02-28'),
+          version: str(RESOLVER_VERSION_ID),
           payload: obj({}),
         }),
       ),
@@ -715,7 +721,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       const allowedOwnersVariable = `allowedOwners${ruleNumber}`;
       ownerAuthorizationExpressions = ownerAuthorizationExpressions.concat(
         comment(`Authorization rule: { allow: ${rule.allow}, ownerField: "${ownerAttribute}", identityClaim: "${identityAttribute}" }`),
-        set(ref(allowedOwnersVariable), ref(`${variableToCheck}.${ownerAttribute}`)),
+        set(ref(allowedOwnersVariable), ref(`util.defaultIfNull($${variableToCheck}.${ownerAttribute}, [])`)),
         isUser
           ? // tslint:disable-next-line
             set(
@@ -771,6 +777,13 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       raw('$util.unauthorized()'),
     );
     return block('Throw if unauthorized', [ifUnauthThrow]);
+  }
+
+  public returnIfEmpty(objectPath: string): Expression {
+    return iff(
+      isNullOrEmpty(ref(objectPath)),
+      ret()
+    );
   }
 
   public throwIfStaticGroupUnauthorized(field?: FieldDefinitionNode): Expression {
@@ -897,7 +910,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
       TypeName: subscriptionTypeName,
       RequestMappingTemplate: print(
         raw(`{
-    "version": "2018-05-29",
+    "version": "${RESOLVER_VERSION_ID}",
     "payload": {}
 }`),
       ),
@@ -913,7 +926,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
   }
 
   public setOperationExpression(operation: string): string {
-    return print(block('Setting the operation', [set(ref('context.result.operation'), str(operation))]));
+    return print(block('Setting the operation', [qref(print(methodCall(ref('ctx.result.put'), str('operation'), str(operation))))]));
   }
 
   public getAuthModeCheckWrappedExpression(expectedAuthModes: Set<AuthProvider>, expression: Expression): Expression {

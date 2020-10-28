@@ -2,6 +2,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
@@ -30,7 +31,7 @@ import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
 
-describe(`ModelAuthTests`, async () => {
+describe(`ModelAuthTests`, () => {
   const cf = new CloudFormationClient('us-west-2');
 
   const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
@@ -44,22 +45,22 @@ describe(`ModelAuthTests`, async () => {
   /**
    * Client 1 is logged in and is a member of the Admin group.
    */
-  let GRAPHQL_CLIENT_1 = undefined;
+  let GRAPHQL_CLIENT_1: GraphQLClient = undefined;
 
   /**
    * Client 1 is logged in and is a member of the Admin group via an access token.
    */
-  let GRAPHQL_CLIENT_1_ACCESS = undefined;
+  let GRAPHQL_CLIENT_1_ACCESS: GraphQLClient = undefined;
 
   /**
    * Client 2 is logged in and is a member of the Devs group.
    */
-  let GRAPHQL_CLIENT_2 = undefined;
+  let GRAPHQL_CLIENT_2: GraphQLClient = undefined;
 
   /**
    * Client 3 is logged in and is a member of the Devs-Admin group via an access token.
    */
-  let GRAPHQL_CLIENT_3 = undefined;
+  let GRAPHQL_CLIENT_3: GraphQLClient = undefined;
 
   let USER_POOL_ID = undefined;
 
@@ -172,8 +173,9 @@ describe(`ModelAuthTests`, async () => {
           title: String!
           owner: String
       }
-      type OwnerReadProtected @model @auth(rules: [{ allow: owner, operations: [read] }]) {
+      type OwnerReadProtected @model @auth(rules: [{ allow: owner, operations: [read] }]) @key(fields: ["id", "sk"])  {
           id: ID!
+          sk: String!
           content: String
           owner: String
       }
@@ -183,11 +185,11 @@ describe(`ModelAuthTests`, async () => {
           owner: String
       }
       type Performance @model @auth(rules: [{ allow: groups, groups: ["Admin"]}, { allow: private, operations: [read] }]) {
-          id: ID!
+          id: ID
           performer: String!
           description: String!
           time: AWSDateTime
-          stage: Stage! @connection
+          stage: Stage @connection
       }
       type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"]}, { allow: private, operations: [read] }]) {
           id: ID!
@@ -198,6 +200,7 @@ describe(`ModelAuthTests`, async () => {
       transformers: [
         new DynamoDBModelTransformer(),
         new ModelConnectionTransformer(),
+        new KeyTransformer(),
         new ModelAuthTransformer({
           authConfig: {
             defaultAuthentication: {
@@ -528,6 +531,7 @@ describe(`ModelAuthTests`, async () => {
     );
     expect(updateResponse.data.updatePost).toEqual(null);
     expect(updateResponse.errors.length).toEqual(1);
+    expect((updateResponse.errors[0] as any).data).toBeNull();
     expect((updateResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
   });
 
@@ -615,6 +619,7 @@ describe(`ModelAuthTests`, async () => {
     );
     expect(deleteResponse.data.deletePost).toEqual(null);
     expect(deleteResponse.errors.length).toEqual(1);
+    expect((deleteResponse.errors[0] as any).data).toBeNull();
     expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
   });
 
@@ -687,7 +692,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(10);
   });
@@ -700,7 +705,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSalary.wage).toEqual(10);
     const req2 = await GRAPHQL_CLIENT_2.query(`
@@ -710,7 +715,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req2, null, 4));
     expect(req2.data.updateSalary.wage).toEqual(14);
   });
@@ -723,7 +728,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(11);
@@ -734,7 +739,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req2, null, 4));
     expect(req2.data.updateSalary.id).toEqual(req.data.createSalary.id);
     expect(req2.data.updateSalary.wage).toEqual(12);
@@ -748,7 +753,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(13);
@@ -759,9 +764,10 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     expect(req2.data.updateSalary).toEqual(null);
     expect(req2.errors.length).toEqual(1);
+    expect((req2.errors[0] as any).data).toBeNull();
     expect((req2.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
   });
 
@@ -773,7 +779,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(15);
@@ -784,7 +790,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req2, null, 4));
     expect(req2.data.deleteSalary.id).toEqual(req.data.createSalary.id);
     expect(req2.data.deleteSalary.wage).toEqual(15);
@@ -798,7 +804,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(16);
@@ -809,9 +815,10 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     expect(req2.data.deleteSalary).toEqual(null);
     expect(req2.errors.length).toEqual(1);
+    expect((req2.errors[0] as any).data).toBeNull();
     expect((req2.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
   });
 
@@ -823,7 +830,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(15);
@@ -834,7 +841,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     expect(req2.data.getSalary.id).toEqual(req.data.createSalary.id);
     expect(req2.data.getSalary.wage).toEqual(15);
   });
@@ -847,7 +854,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(15);
@@ -858,7 +865,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     expect(req2.data.getSalary.id).toEqual(req.data.createSalary.id);
     expect(req2.data.getSalary.wage).toEqual(15);
   });
@@ -871,7 +878,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(16);
@@ -882,7 +889,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     expect(req2.data.getSalary).toEqual(null);
     expect(req2.errors.length).toEqual(1);
     expect((req2.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -896,7 +903,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(101);
@@ -909,7 +916,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }
-      `);
+      `, {});
     expect(req2.data.listSalarys.items.length).toEqual(1);
     expect(req2.data.listSalarys.items[0].id).toEqual(req.data.createSalary.id);
     expect(req2.data.listSalarys.items[0].wage).toEqual(101);
@@ -923,7 +930,7 @@ describe(`ModelAuthTests`, async () => {
               wage
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSalary.id).toBeDefined();
     expect(req.data.createSalary.wage).toEqual(102);
@@ -936,7 +943,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }
-      `);
+      `, {});
     expect(req2.data.listSalarys.items).toEqual([]);
   });
 
@@ -952,7 +959,7 @@ describe(`ModelAuthTests`, async () => {
               groups
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createManyGroupProtected.id).toBeDefined();
     expect(req.data.createManyGroupProtected.value).toEqual(10);
@@ -968,7 +975,7 @@ describe(`ModelAuthTests`, async () => {
               groups
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createManyGroupProtected).toEqual(null);
     expect(req.errors.length).toEqual(1);
@@ -984,7 +991,7 @@ describe(`ModelAuthTests`, async () => {
           group
         }
       }
-    `,
+    `, {}
     );
 
     console.log(JSON.stringify(req, null, 4));
@@ -996,7 +1003,7 @@ describe(`ModelAuthTests`, async () => {
           group
         }
       }
-    `,
+    `, {}
     );
     console.log(JSON.stringify(req2, null, 4));
     const req3 = await GRAPHQL_CLIENT_3.query(
@@ -1007,11 +1014,12 @@ describe(`ModelAuthTests`, async () => {
           group
         }
       }
-    `,
+    `, {}
     );
     console.log(JSON.stringify(req3, null, 4));
     expect(req.data.createSingleGroupProtected.value).toEqual(11);
     expect(req.data.createSingleGroupProtected.value).toEqual(req3.data.getSingleGroupProtected.value);
+    expect((req2.errors[0] as any).data).toBeNull();
     expect((req2.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
   });
 
@@ -1024,7 +1032,7 @@ describe(`ModelAuthTests`, async () => {
               group
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSingleGroupProtected.id).toBeDefined();
     expect(req.data.createSingleGroupProtected.value).toEqual(10);
@@ -1040,7 +1048,7 @@ describe(`ModelAuthTests`, async () => {
               group
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createSingleGroupProtected).toEqual(null);
     expect(req.errors.length).toEqual(1);
@@ -1057,7 +1065,7 @@ describe(`ModelAuthTests`, async () => {
               watchers
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createPWProtected).toBeTruthy();
 
@@ -1070,7 +1078,7 @@ describe(`ModelAuthTests`, async () => {
               watchers
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(uReq, null, 4));
     expect(uReq.data.updatePWProtected).toBeTruthy();
 
@@ -1086,7 +1094,7 @@ describe(`ModelAuthTests`, async () => {
               nextToken
           }
       }
-      `);
+      `, {});
     expect(req2.data.listPWProtecteds.items.length).toEqual(1);
     expect(req2.data.listPWProtecteds.items[0].id).toEqual(req.data.createPWProtected.id);
     expect(req2.data.listPWProtecteds.items[0].content).toEqual('Foobie2');
@@ -1100,7 +1108,7 @@ describe(`ModelAuthTests`, async () => {
               watchers
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req3, null, 4));
     expect(req3.data.getPWProtected).toBeTruthy();
 
@@ -1113,7 +1121,7 @@ describe(`ModelAuthTests`, async () => {
               watchers
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(dReq, null, 4));
     expect(dReq.data.deletePWProtected).toBeTruthy();
   });
@@ -1128,7 +1136,7 @@ describe(`ModelAuthTests`, async () => {
               watchers
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createPWProtected).toBeTruthy();
 
@@ -1144,7 +1152,7 @@ describe(`ModelAuthTests`, async () => {
               nextToken
           }
       }
-      `);
+      `, {});
     expect(req2.data.listPWProtecteds.items.length).toEqual(0);
 
     const req3 = await GRAPHQL_CLIENT_1.query(`
@@ -1156,7 +1164,7 @@ describe(`ModelAuthTests`, async () => {
               watchers
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req3, null, 4));
     expect(req3.data.getPWProtected).toEqual(null);
     expect(req3.errors.length).toEqual(1);
@@ -1173,7 +1181,7 @@ describe(`ModelAuthTests`, async () => {
               watchers
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createPWProtected).toBeTruthy();
 
@@ -1189,7 +1197,7 @@ describe(`ModelAuthTests`, async () => {
               nextToken
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req2, null, 4));
     expect(req2.data.listPWProtecteds.items.length).toEqual(0);
     expect(req2.data.listPWProtecteds.nextToken).toBeNull();
@@ -1203,7 +1211,7 @@ describe(`ModelAuthTests`, async () => {
               watchers
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(uReq, null, 4));
     expect(uReq.data.updatePWProtected).toBeNull();
 
@@ -1216,7 +1224,7 @@ describe(`ModelAuthTests`, async () => {
               watchers
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req3, null, 4));
     expect(req3.data.getPWProtected).toBeNull();
 
@@ -1229,7 +1237,7 @@ describe(`ModelAuthTests`, async () => {
               watchers
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(dReq, null, 4));
     expect(dReq.data.deletePWProtected).toBeNull();
 
@@ -1243,7 +1251,7 @@ describe(`ModelAuthTests`, async () => {
               watchers
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(getReq, null, 4));
     expect(getReq.data.getPWProtected).toBeTruthy();
   });
@@ -1256,7 +1264,7 @@ describe(`ModelAuthTests`, async () => {
               content
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.data.createAdminNote.id).toBeDefined();
     expect(req.data.createAdminNote.content).toEqual('Hello');
@@ -1267,7 +1275,7 @@ describe(`ModelAuthTests`, async () => {
               content
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req2, null, 4));
     expect(req2.data.updateAdminNote.id).toEqual(req.data.createAdminNote.id);
     expect(req2.data.updateAdminNote.content).toEqual('Hello 2');
@@ -1278,7 +1286,7 @@ describe(`ModelAuthTests`, async () => {
               content
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req3, null, 4));
     expect(req3.data.deleteAdminNote.id).toEqual(req.data.createAdminNote.id);
     expect(req3.data.deleteAdminNote.content).toEqual('Hello 2');
@@ -1292,7 +1300,7 @@ describe(`ModelAuthTests`, async () => {
               content
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(adminReq, null, 4));
     expect(adminReq.data.createAdminNote.id).toBeDefined();
     expect(adminReq.data.createAdminNote.content).toEqual('Hello');
@@ -1304,7 +1312,7 @@ describe(`ModelAuthTests`, async () => {
               content
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req, null, 4));
     expect(req.errors.length).toEqual(1);
     expect((req.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -1316,7 +1324,7 @@ describe(`ModelAuthTests`, async () => {
               content
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req2, null, 4));
     expect(req2.errors.length).toEqual(1);
     expect((req2.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -1328,7 +1336,7 @@ describe(`ModelAuthTests`, async () => {
               content
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(req3, null, 4));
     expect(req3.errors.length).toEqual(1);
     expect((req3.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -1351,7 +1359,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
 
@@ -1365,7 +1373,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedBy2AsAdmin, null, 4));
     expect(fetchOwnedBy2AsAdmin.data.getAllThree).toBeTruthy();
 
@@ -1375,7 +1383,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
   });
@@ -1393,7 +1401,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
 
@@ -1407,7 +1415,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedBy2AsOwner, null, 4));
     expect(fetchOwnedBy2AsOwner.data.getAllThree).toBeTruthy();
 
@@ -1417,7 +1425,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
   });
@@ -1435,7 +1443,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
 
@@ -1449,7 +1457,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedBy2AsEditor, null, 4));
     expect(fetchOwnedBy2AsEditor.data.getAllThree).toBeTruthy();
 
@@ -1459,7 +1467,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
   });
@@ -1477,7 +1485,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByAdmins, null, 4));
     expect(ownedByAdmins.data.createAllThree).toBeTruthy();
 
@@ -1491,7 +1499,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedByAdminsAsAdmin, null, 4));
     expect(fetchOwnedByAdminsAsAdmin.data.getAllThree).toBeTruthy();
 
@@ -1505,7 +1513,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedByAdminsAsNonAdmin, null, 4));
     expect(fetchOwnedByAdminsAsNonAdmin.errors.length).toEqual(1);
     expect((fetchOwnedByAdminsAsNonAdmin.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -1516,7 +1524,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByAdmins.data.createAllThree.id);
   });
@@ -1534,7 +1542,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByAdmins, null, 4));
     expect(ownedByAdmins.data.createAllThree).toBeTruthy();
 
@@ -1548,7 +1556,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedByAdminsAsAdmin, null, 4));
     expect(fetchOwnedByAdminsAsAdmin.data.getAllThree).toBeTruthy();
 
@@ -1562,7 +1570,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedByAdminsAsNonAdmin, null, 4));
     expect(fetchOwnedByAdminsAsNonAdmin.errors.length).toEqual(1);
     expect((fetchOwnedByAdminsAsNonAdmin.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -1573,7 +1581,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByAdmins.data.createAllThree.id);
   });
@@ -1595,7 +1603,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
 
@@ -1611,7 +1619,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedBy2AsAdmin, null, 4));
     expect(fetchOwnedBy2AsAdmin.data.listAllThrees.items).toHaveLength(1);
     expect(fetchOwnedBy2AsAdmin.data.listAllThrees.items[0].id).toEqual(ownedBy2.data.createAllThree.id);
@@ -1622,7 +1630,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
   });
@@ -1640,7 +1648,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
 
@@ -1656,7 +1664,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedBy2AsOwner, null, 4));
     expect(fetchOwnedBy2AsOwner.data.listAllThrees.items).toHaveLength(1);
     expect(fetchOwnedBy2AsOwner.data.listAllThrees.items[0].id).toEqual(ownedBy2.data.createAllThree.id);
@@ -1667,7 +1675,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
   });
@@ -1685,7 +1693,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
 
@@ -1701,7 +1709,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedBy2AsEditor, null, 4));
     expect(fetchOwnedBy2AsEditor.data.listAllThrees.items).toHaveLength(1);
     expect(fetchOwnedBy2AsEditor.data.listAllThrees.items[0].id).toEqual(ownedBy2.data.createAllThree.id);
@@ -1712,7 +1720,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
   });
@@ -1730,7 +1738,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByAdmins, null, 4));
     expect(ownedByAdmins.data.createAllThree).toBeTruthy();
 
@@ -1746,7 +1754,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedByAdminsAsAdmin, null, 4));
     expect(fetchOwnedByAdminsAsAdmin.data.listAllThrees.items).toHaveLength(1);
     expect(fetchOwnedByAdminsAsAdmin.data.listAllThrees.items[0].id).toEqual(ownedByAdmins.data.createAllThree.id);
@@ -1763,7 +1771,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedByAdminsAsNonAdmin, null, 4));
     expect(fetchOwnedByAdminsAsNonAdmin.data.listAllThrees.items).toHaveLength(0);
 
@@ -1773,7 +1781,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByAdmins.data.createAllThree.id);
   });
@@ -1791,7 +1799,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByAdmins, null, 4));
     expect(ownedByAdmins.data.createAllThree).toBeTruthy();
 
@@ -1807,7 +1815,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedByAdminsAsAdmin, null, 4));
     expect(fetchOwnedByAdminsAsAdmin.data.listAllThrees.items).toHaveLength(1);
     expect(fetchOwnedByAdminsAsAdmin.data.listAllThrees.items[0].id).toEqual(ownedByAdmins.data.createAllThree.id);
@@ -1824,7 +1832,7 @@ describe(`ModelAuthTests`, async () => {
               }
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(fetchOwnedByAdminsAsNonAdmin, null, 4));
     expect(fetchOwnedByAdminsAsNonAdmin.data.listAllThrees.items).toHaveLength(0);
 
@@ -1834,7 +1842,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByAdmins.data.createAllThree.id);
   });
@@ -1856,7 +1864,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
     // set by input
@@ -1879,7 +1887,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2NoEditors, null, 4));
     expect(ownedBy2NoEditors.data.createAllThree).toBeTruthy();
     // set by input
@@ -1895,7 +1903,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 
@@ -1905,7 +1913,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq2, null, 4));
     expect(deleteReq2.data.deleteAllThree.id).toEqual(ownedBy2NoEditors.data.createAllThree.id);
   });
@@ -1924,7 +1932,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
     expect(ownedBy2.data.createAllThree.owner).toEqual('user2@test.com');
@@ -1945,7 +1953,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy1, null, 4));
     expect(ownedBy1.errors.length).toEqual(1);
     expect((ownedBy1.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -1956,7 +1964,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
   });
@@ -1975,7 +1983,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
     expect(ownedBy2.data.createAllThree.owner).toBeNull();
@@ -1995,7 +2003,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2WithDefaultOwner, null, 4));
     expect(ownedBy2WithDefaultOwner.data.createAllThree).toBeTruthy();
     expect(ownedBy2WithDefaultOwner.data.createAllThree.owner).toEqual('user2@test.com');
@@ -2016,7 +2024,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByEditorsUnauthed, null, 4));
     expect(ownedByEditorsUnauthed.errors.length).toEqual(1);
     expect((ownedByEditorsUnauthed.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -2027,7 +2035,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
 
@@ -2037,7 +2045,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq2, null, 4));
     expect(deleteReq2.data.deleteAllThree.id).toEqual(ownedBy2WithDefaultOwner.data.createAllThree.id);
   });
@@ -2057,7 +2065,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByDevs, null, 4));
     expect(ownedByDevs.data.createAllThree).toBeTruthy();
     expect(ownedByDevs.data.createAllThree.owner).toBeNull();
@@ -2079,7 +2087,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByAdminsUnauthed, null, 4));
     expect(ownedByAdminsUnauthed.errors.length).toEqual(1);
     expect((ownedByAdminsUnauthed.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -2090,7 +2098,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByDevs.data.createAllThree.id);
   });
@@ -2110,7 +2118,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByAdmins, null, 4));
     expect(ownedByAdmins.data.createAllThree).toBeTruthy();
     expect(ownedByAdmins.data.createAllThree.owner).toBeNull();
@@ -2131,7 +2139,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByAdminsUnauthed, null, 4));
     expect(ownedByAdminsUnauthed.errors.length).toEqual(1);
     expect((ownedByAdminsUnauthed.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -2142,7 +2150,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByAdmins.data.createAllThree.id);
   });
@@ -2165,7 +2173,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
     // set by input
@@ -2188,7 +2196,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByTwoUpdate, null, 4));
     expect(ownedByTwoUpdate.data.updateAllThree).toBeTruthy();
     // set by input
@@ -2204,7 +2212,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
   });
@@ -2223,7 +2231,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
     expect(ownedBy2.data.createAllThree.owner).toEqual('user2@test.com');
@@ -2244,7 +2252,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2Update, null, 4));
     expect(ownedBy2Update.data.updateAllThree).toBeTruthy();
     // set by input
@@ -2260,7 +2268,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
   });
@@ -2279,7 +2287,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createAllThree).toBeTruthy();
     expect(ownedBy2.data.createAllThree.owner).toBeNull();
@@ -2300,7 +2308,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByUpdate, null, 4));
     expect(ownedByUpdate.data.updateAllThree).toBeTruthy();
     // set by input
@@ -2316,7 +2324,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedBy2.data.createAllThree.id);
   });
@@ -2336,7 +2344,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByDevs, null, 4));
     expect(ownedByDevs.data.createAllThree).toBeTruthy();
     expect(ownedByDevs.data.createAllThree.owner).toBeNull();
@@ -2357,7 +2365,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByUpdate, null, 4));
     expect(ownedByUpdate.data.updateAllThree).toBeTruthy();
     // set by input
@@ -2381,7 +2389,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByAdminsUnauthed, null, 4));
     expect(ownedByAdminsUnauthed.errors.length).toEqual(1);
     expect((ownedByAdminsUnauthed.errors[0] as any).errorType).toEqual('Unauthorized');
@@ -2392,7 +2400,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByDevs.data.createAllThree.id);
   });
@@ -2412,7 +2420,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByDevs, null, 4));
     expect(ownedByDevs.data.createAllThree).toBeTruthy();
     expect(ownedByDevs.data.createAllThree.owner).toBeNull();
@@ -2432,7 +2440,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByUpdate, null, 4));
     expect(ownedByUpdate.data.updateAllThree).toBeTruthy();
     // set by input
@@ -2455,9 +2463,10 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByAdminsUnauthed, null, 4));
     expect(ownedByAdminsUnauthed.errors.length).toEqual(1);
+    expect((ownedByAdminsUnauthed.errors[0] as any).data).toBeNull();
     expect((ownedByAdminsUnauthed.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 
     const ownedByDevs2 = await GRAPHQL_CLIENT_1.query(`
@@ -2474,7 +2483,7 @@ describe(`ModelAuthTests`, async () => {
               alternativeGroup
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedByDevs2, null, 4));
     expect(ownedByDevs2.data.createAllThree).toBeTruthy();
     expect(ownedByDevs2.data.createAllThree.owner).toBeNull();
@@ -2487,7 +2496,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq2, null, 4));
     expect(deleteReq2.data.deleteAllThree.id).toEqual(ownedByDevs2.data.createAllThree.id);
 
@@ -2497,7 +2506,7 @@ describe(`ModelAuthTests`, async () => {
                   id
               }
           }
-      `);
+      `, {});
     console.log(JSON.stringify(deleteReq, null, 4));
     expect(deleteReq.data.deleteAllThree.id).toEqual(ownedByDevs.data.createAllThree.id);
   });
@@ -2513,7 +2522,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(ownedBy2, null, 4));
     expect(ownedBy2.data.createTestIdentity).toBeTruthy();
     expect(ownedBy2.data.createTestIdentity.title).toEqual('Test title');
@@ -2531,7 +2540,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(update, null, 4));
     expect(update.data.updateTestIdentity).toBeTruthy();
     expect(update.data.updateTestIdentity.title).toEqual('Test title update');
@@ -2546,7 +2555,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(getReq, null, 4));
     expect(getReq.data.getTestIdentity).toBeTruthy();
     expect(getReq.data.getTestIdentity.title).toEqual('Test title update');
@@ -2581,7 +2590,7 @@ describe(`ModelAuthTests`, async () => {
               owner
           }
       }
-      `);
+      `, {});
     console.log(JSON.stringify(delReq, null, 4));
     expect(delReq.data.deleteTestIdentity).toBeTruthy();
     expect(delReq.data.deleteTestIdentity.title).toEqual('Test title update');
@@ -2594,14 +2603,25 @@ describe(`ModelAuthTests`, async () => {
   test("Test get and list with 'read' operation set", async () => {
     const response = await GRAPHQL_CLIENT_1.query(
       `mutation {
-          createOwnerReadProtected(input: { content: "Hello, World!", owner: "${USERNAME1}" }) {
+          createNoOwner: createOwnerReadProtected(input: { id: "1", sk: "1", content: "Hello, World! - No Owner" }) {
               id
               content
               owner
           }
+          createOwnerReadProtected(input: { id: "1", sk: "2", content: "Hello, World!", owner: "${USERNAME1}" }) {
+              id
+              content
+              owner
+          }
+          createNoOwner2: createOwnerReadProtected(input: { id: "1", sk: "3", content: "Hello, World! - No Owner 2" }) {
+            id
+            content
+            owner
+        }
       }`,
       {},
     );
+
     console.log(response);
     expect(response.data.createOwnerReadProtected.id).toBeDefined();
     expect(response.data.createOwnerReadProtected.content).toEqual('Hello, World!');
@@ -2609,7 +2629,7 @@ describe(`ModelAuthTests`, async () => {
 
     const response2 = await GRAPHQL_CLIENT_2.query(
       `query {
-          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}") {
+          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}", sk:"2") {
               id content owner
           }
       }`,
@@ -2621,7 +2641,7 @@ describe(`ModelAuthTests`, async () => {
 
     const response3 = await GRAPHQL_CLIENT_1.query(
       `query {
-          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}") {
+          getOwnerReadProtected(id: "${response.data.createOwnerReadProtected.id}", sk:"2") {
               id content owner
           }
       }`,
@@ -2634,7 +2654,7 @@ describe(`ModelAuthTests`, async () => {
 
     const response4 = await GRAPHQL_CLIENT_1.query(
       `query {
-          listOwnerReadProtecteds {
+          listOwnerReadProtecteds(id: "1") {
               items {
                   id content owner
               }
@@ -2643,7 +2663,7 @@ describe(`ModelAuthTests`, async () => {
       {},
     );
     console.log(response4);
-    expect(response4.data.listOwnerReadProtecteds.items.length).toBeGreaterThanOrEqual(1);
+    expect(response4.data.listOwnerReadProtecteds.items.length).toEqual(1);
 
     const response5 = await GRAPHQL_CLIENT_2.query(
       `query {
@@ -2799,6 +2819,7 @@ describe(`ModelAuthTests`, async () => {
     expect(response3.data.deleteOwnerCreateUpdateDeleteProtected.content).toEqual('Hello, World!');
     expect(response3.data.deleteOwnerCreateUpdateDeleteProtected.owner).toEqual(USERNAME1);
   });
+
 
   test('Test allow private combined with groups as Admin and non-admin users', async () => {
     const create = `mutation {
@@ -2978,5 +2999,90 @@ describe(`ModelAuthTests`, async () => {
 
     expect(response10.data.deletePerformance).toBeDefined();
     expect(response10.data.deletePerformance.id).toEqual('P1');
+  });
+
+  test('Test authorized user can get Performance with no created stage', async () => {
+    const createPerf = `mutation {
+      create: createPerformance(input: {
+        id: "P3"
+        performer: "Perf #3"
+        description: "desc"
+        time: "2021-11-11T00:00:00Z"
+      }) {
+        id
+        performer
+        description
+        time
+        createdAt
+        updatedAt
+      }
+    }`;
+    
+    const getPerf = `query {
+      g1: getPerformance(id: "P3") {
+        id
+        performer
+        description
+        time
+        stage {
+          id
+          name
+          createdAt
+          updatedAt
+        }
+        createdAt
+        updatedAt
+      }
+    }
+    `;
+
+    const createStage = `mutation {
+      createStage(input: {name: "stage3", id: "003"}) {
+        createdAt
+        id
+        name
+        updatedAt
+      }
+    }`;
+
+    const updatePerf = `mutation {
+      u1: updatePerformance(input: {id: "P3", performanceStageId: "003"}) {
+        createdAt
+        description
+        id
+        performer
+        time
+        updatedAt
+        stage {
+          id
+          name
+        }
+      }
+    }`
+
+    // first make a query to the record 'P3'
+    const response1 = await GRAPHQL_CLIENT_1.query(getPerf, {});
+    expect(response1).toBeDefined();
+    expect(response1.data.g1).toBeNull();
+
+    // create performance and expect stage to be null
+    await GRAPHQL_CLIENT_1.query(createPerf, {});
+    const response2 = await GRAPHQL_CLIENT_1.query(getPerf, {});
+    expect(response2).toBeDefined();
+    expect(response2.data.g1).toBeDefined();
+    expect(response2.data.g1.id).toEqual("P3");
+    expect(response2.data.g1.description).toEqual("desc");
+    expect(response2.data.g1.stage).toBeNull();
+
+    //create stage and then add it to perf should show stage in perf
+    await GRAPHQL_CLIENT_1.query(createStage, {});
+    const response3 = await GRAPHQL_CLIENT_1.query(updatePerf, {});
+    expect(response3).toBeDefined();
+    expect(response3.data.u1).toBeDefined();
+    expect(response3.data.u1.id).toEqual("P3")
+    expect(response3.data.u1.stage).toMatchObject({
+      id: "003",
+      name: "stage3"
+    });
   });
 });

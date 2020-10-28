@@ -14,7 +14,7 @@
 			},
 			{
 				"key": "startChoice",
-				"question": "Would you like to start with a sample chatbot, import a chatbot, or start from scratch?",
+				"question": "Would you like to start with a sample chatbot or start from scratch?",
 				"type": "list",
 				"options": [
 			    	"Start with a sample", 

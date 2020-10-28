@@ -1,6 +1,8 @@
 import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
 import { checkDependencies, packageResource, buildResource } from './runtime';
 import { localInvoke } from './localinvoke';
+import { relativeShimSrcPath } from './constants';
+import { GetPackageAssetPaths } from 'amplify-cli-core';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
@@ -14,6 +16,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'go1.x',
           cloudTemplateValue: 'go1.x',
           defaultHandler: 'main',
+          layerExecutablePath: 'go1.x',
         },
       });
     },
@@ -23,3 +26,5 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     invoke: request => localInvoke(request, context),
   };
 };
+
+export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativeShimSrcPath];

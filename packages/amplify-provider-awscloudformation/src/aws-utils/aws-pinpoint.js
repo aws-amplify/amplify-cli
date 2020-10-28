@@ -1,6 +1,6 @@
 const aws = require('aws-sdk');
 const proxyAgent = require('proxy-agent');
-const configurationManager = require('../../lib/configuration-manager');
+const configurationManager = require('../configuration-manager');
 const { formUserAgentParam } = require('./user-agent');
 
 const defaultPinpointRegion = 'us-east-1';

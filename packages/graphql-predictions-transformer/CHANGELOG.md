@@ -3,6 +3,102 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.22](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.21...graphql-predictions-transformer@2.3.22) (2020-10-22)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.21](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.20...graphql-predictions-transformer@2.3.21) (2020-10-17)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.20](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.19...graphql-predictions-transformer@2.3.20) (2020-10-01)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.19](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.18...graphql-predictions-transformer@2.3.19) (2020-09-16)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.18](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.17...graphql-predictions-transformer@2.3.18) (2020-08-31)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.16...graphql-predictions-transformer@2.3.17) (2020-08-14)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.15...graphql-predictions-transformer@2.3.16) (2020-08-11)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.13...graphql-predictions-transformer@2.3.15) (2020-07-29)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.13...graphql-predictions-transformer@2.3.14) (2020-07-23)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.12...graphql-predictions-transformer@2.3.13) (2020-07-18)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.11...graphql-predictions-transformer@2.3.12) (2020-07-15)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.10...graphql-predictions-transformer@2.3.11) (2020-06-25)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
 ## [2.3.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.9...graphql-predictions-transformer@2.3.10) (2020-06-18)
 
 **Note:** Version bump only for package graphql-predictions-transformer

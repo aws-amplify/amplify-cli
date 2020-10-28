@@ -2,6 +2,7 @@ import { existsSync } from 'fs-extra';
 import { InvokeOptions } from './invokeOptions';
 import path from 'path';
 import _ from 'lodash';
+import exit from 'exit';
 
 //  copied from amplify-util-mock with slight modifications
 
@@ -91,7 +92,8 @@ export function invokeFunction(options: InvokeOptions) {
 process.on('message', async options => {
   try {
     const result = await invokeFunction(JSON.parse(options));
-    process.send!(JSON.stringify({ result, error: null }));
+    process.stdout.write('\n');
+    process.stdout.write(JSON.stringify({ result, error: null }));
   } catch (error) {
     process.send!(
       JSON.stringify({
@@ -102,6 +104,7 @@ process.on('message', async options => {
         },
       }),
     );
+    exit(1);
   }
-  process.exit(1);
+  exit(0);
 });

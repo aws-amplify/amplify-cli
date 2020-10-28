@@ -3,6 +3,246 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.25.0...amplify-util-mock@3.25.1) (2020-10-27)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [3.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.16...amplify-util-mock@3.25.0) (2020-10-22)
+
+
+### Features
+
+* update post-install to copy executable assets to .amplify ([#5595](https://github.com/aws-amplify/amplify-cli/issues/5595)) ([53a23a0](https://github.com/aws-amplify/amplify-cli/commit/53a23a07cbb9e09566c1f0f577ba2b7488bc2eae))
+
+
+
+
+
+## [3.24.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.15...amplify-util-mock@3.24.16) (2020-10-17)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.24.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.14...amplify-util-mock@3.24.15) (2020-10-15)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.24.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.13...amplify-util-mock@3.24.14) (2020-10-13)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.24.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.12...amplify-util-mock@3.24.13) (2020-10-07)
+
+
+### Bug Fixes
+
+* fixed exit codes on message ([#5385](https://github.com/aws-amplify/amplify-cli/issues/5385)) ([b5641db](https://github.com/aws-amplify/amplify-cli/commit/b5641db760134bcf3185b798b384fbb7cc5ac382))
+
+
+
+
+
+## [3.24.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.11...amplify-util-mock@3.24.12) (2020-10-01)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.24.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.10...amplify-util-mock@3.24.11) (2020-09-25)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.24.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.9...amplify-util-mock@3.24.10) (2020-09-16)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** pass transform config into generateCode ([#5259](https://github.com/aws-amplify/amplify-cli/issues/5259)) ([7a5ec2d](https://github.com/aws-amplify/amplify-cli/commit/7a5ec2ddc36ef2402f305eeca12964a5caac0b84)), closes [#5055](https://github.com/aws-amplify/amplify-cli/issues/5055)
+* timeout mock function invocation ([#5198](https://github.com/aws-amplify/amplify-cli/issues/5198)) ([9d7af87](https://github.com/aws-amplify/amplify-cli/commit/9d7af8731431154091f29a7f194fae2d4ee2ac71))
+
+
+
+
+
+## [3.24.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.8...amplify-util-mock@3.24.9) (2020-09-09)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.24.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.7...amplify-util-mock@3.24.8) (2020-09-03)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.24.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.6...amplify-util-mock@3.24.7) (2020-09-03)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.24.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.5...amplify-util-mock@3.24.6) (2020-09-02)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.24.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.4...amplify-util-mock@3.24.5) (2020-08-31)
+
+
+### Bug Fixes
+
+* match Fn::GetAtt and Fn::Sub when initializing lambda resolvers ([#5095](https://github.com/aws-amplify/amplify-cli/issues/5095)) ([11771f6](https://github.com/aws-amplify/amplify-cli/commit/11771f6b5dee939abbc4baf54da5fdacf49fbf85))
+
+
+
+
+
+## [3.24.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.3...amplify-util-mock@3.24.4) (2020-08-20)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** fix returning null on nonexistent fields ([#5093](https://github.com/aws-amplify/amplify-cli/issues/5093)) ([a0439db](https://github.com/aws-amplify/amplify-cli/commit/a0439db462e8189d7b158472f269326e2c6bdb8d)), closes [#5003](https://github.com/aws-amplify/amplify-cli/issues/5003)
+* **amplify-util-mock:** update Java version check logic ([dc28a0e](https://github.com/aws-amplify/amplify-cli/commit/dc28a0e770ae78a4d37138b76d3c22bae4679c6a)), closes [#5044](https://github.com/aws-amplify/amplify-cli/issues/5044)
+
+
+
+
+
+## [3.24.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.2...amplify-util-mock@3.24.3) (2020-08-14)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** early return if no obj ([#5050](https://github.com/aws-amplify/amplify-cli/issues/5050)) ([ed1f2b3](https://github.com/aws-amplify/amplify-cli/commit/ed1f2b364b50ab3f2b16ddac849c937b239bb499))
+
+
+
+
+
+## [3.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.1...amplify-util-mock@3.24.2) (2020-08-11)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.24.0...amplify-util-mock@3.24.1) (2020-08-06)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [3.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.22.4...amplify-util-mock@3.24.0) (2020-07-29)
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([6d1c632](https://github.com/aws-amplify/amplify-cli/commit/6d1c632952a49cb56670c11c9cb0c3620d0eb332))
+
+
+
+
+
+# [3.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.22.4...amplify-util-mock@3.23.0) (2020-07-23)
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([4639450](https://github.com/aws-amplify/amplify-cli/commit/463945029cfe861f74986d9a8b9af6b827d2063d))
+
+
+
+
+
+## [3.22.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.22.3...amplify-util-mock@3.22.4) (2020-07-18)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.22.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.22.2...amplify-util-mock@3.22.3) (2020-07-15)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.22.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.22.1...amplify-util-mock@3.22.2) (2020-07-14)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.22.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.22.0...amplify-util-mock@3.22.1) (2020-07-09)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [3.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.21.3...amplify-util-mock@3.22.0) (2020-07-07)
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
+## [3.21.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.21.2...amplify-util-mock@3.21.3) (2020-06-25)
+
+
+### Reverts
+
+* Revert "fix: change scope of hashed files for AppSync (#4602)" ([73aaab1](https://github.com/aws-amplify/amplify-cli/commit/73aaab1a7b1f8b2de5fa22fa1ef9aeea7de35cb4)), closes [#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)
+
+
+
+
+
 ## [3.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.21.1...amplify-util-mock@3.21.2) (2020-06-18)
 
 

@@ -125,15 +125,14 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
         result.push(schemaDeclarations.string);
       });
 
-    Object.values(this.getSelectedNonModels())
-      .forEach(model => {
-        const schemaDeclarations = new SwiftDeclarationBlock().asKind('extension').withName(this.getNonModelName(model));
+    Object.values(this.getSelectedNonModels()).forEach(model => {
+      const schemaDeclarations = new SwiftDeclarationBlock().asKind('extension').withName(this.getNonModelName(model));
 
-        this.generateCodingKeys(this.getNonModelName(model), model, schemaDeclarations),
-          this.generateModelSchema(this.getNonModelName(model), model, schemaDeclarations);
+      this.generateCodingKeys(this.getNonModelName(model), model, schemaDeclarations),
+        this.generateModelSchema(this.getNonModelName(model), model, schemaDeclarations);
 
-        result.push(schemaDeclarations.string);
-      });
+      result.push(schemaDeclarations.string);
+    });
     return result.join('\n');
   }
 
@@ -289,7 +288,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     }
     if (field.type in schemaTypeMap) {
       if (field.isList) {
-       return `${this.getNativeType(field)}.self`;
+        return `${this.getNativeType(field)}.self`;
       }
       return schemaTypeMap[field.type];
     }

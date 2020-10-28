@@ -3,6 +3,116 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.7.18](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.17...graphql-elasticsearch-transformer@4.7.18) (2020-10-22)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.7.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.16...graphql-elasticsearch-transformer@4.7.17) (2020-10-17)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.7.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.15...graphql-elasticsearch-transformer@4.7.16) (2020-10-01)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.7.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.14...graphql-elasticsearch-transformer@4.7.15) (2020-09-16)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.7.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.13...graphql-elasticsearch-transformer@4.7.14) (2020-09-02)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.7.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.12...graphql-elasticsearch-transformer@4.7.13) (2020-08-31)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** to support non string key in es ([#5180](https://github.com/aws-amplify/amplify-cli/issues/5180)) ([b119344](https://github.com/aws-amplify/amplify-cli/commit/b1193446ff3503311a043dfc23dd6c30fcaa94ed)), closes [#5140](https://github.com/aws-amplify/amplify-cli/issues/5140)
+
+
+
+
+
+## [4.7.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.11...graphql-elasticsearch-transformer@4.7.12) (2020-08-14)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.7.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.10...graphql-elasticsearch-transformer@4.7.11) (2020-08-11)
+
+
+### Bug Fixes
+
+* **graphql-elasticsearch-transformer:** fix script to use keyschema ([#5036](https://github.com/aws-amplify/amplify-cli/issues/5036)) ([68a0d1e](https://github.com/aws-amplify/amplify-cli/commit/68a0d1e084d6d51c2ec0140d42a9eb008148c9d9)), closes [#3786](https://github.com/aws-amplify/amplify-cli/issues/3786)
+
+
+
+
+
+## [4.7.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.8...graphql-elasticsearch-transformer@4.7.10) (2020-07-29)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.7.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.8...graphql-elasticsearch-transformer@4.7.9) (2020-07-23)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.7.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.7...graphql-elasticsearch-transformer@4.7.8) (2020-07-18)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.7.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.6...graphql-elasticsearch-transformer@4.7.7) (2020-07-15)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.7.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.5...graphql-elasticsearch-transformer@4.7.6) (2020-06-25)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
 ## [4.7.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.4...graphql-elasticsearch-transformer@4.7.5) (2020-06-18)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer

@@ -3,6 +3,87 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.17.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.10...graphql-transformer-common@4.17.11) (2020-10-22)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.17.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.9...graphql-transformer-common@4.17.10) (2020-09-16)
+
+
+### Bug Fixes
+
+* **graphql-transformer-common:** support underscore names ([#5263](https://github.com/aws-amplify/amplify-cli/issues/5263)) ([cc7cae6](https://github.com/aws-amplify/amplify-cli/commit/cc7cae65188b57bb913a307186ea20458c875002)), closes [#5212](https://github.com/aws-amplify/amplify-cli/issues/5212)
+
+
+
+
+
+## [4.17.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.8...graphql-transformer-common@4.17.9) (2020-08-31)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.17.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.7...graphql-transformer-common@4.17.8) (2020-08-14)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.17.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.5...graphql-transformer-common@4.17.7) (2020-07-29)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.17.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.5...graphql-transformer-common@4.17.6) (2020-07-23)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.17.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.4...graphql-transformer-common@4.17.5) (2020-07-18)
+
+**Note:** Version bump only for package graphql-transformer-common
+
+
+
+
+
+## [4.17.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.3...graphql-transformer-common@4.17.4) (2020-07-15)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** error if field not in relatedType ([#4481](https://github.com/aws-amplify/amplify-cli/issues/4481)) ([0a6a7ea](https://github.com/aws-amplify/amplify-cli/commit/0a6a7eabbe726d7add52b8a8811c54f7257d176f)), closes [#4236](https://github.com/aws-amplify/amplify-cli/issues/4236)
+
+
+
+
+
+## [4.17.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.2...graphql-transformer-common@4.17.3) (2020-06-25)
+
+
+### Reverts
+
+* Revert "fix: change scope of hashed files for AppSync (#4602)" ([73aaab1](https://github.com/aws-amplify/amplify-cli/commit/73aaab1a7b1f8b2de5fa22fa1ef9aeea7de35cb4)), closes [#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)
+
+
+
+
+
 ## [4.17.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-common@4.17.1...graphql-transformer-common@4.17.2) (2020-06-18)
 
 

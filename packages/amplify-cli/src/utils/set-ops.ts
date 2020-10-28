@@ -14,7 +14,7 @@ export function twoStringSetsAreEqual(a: Set<string>, b: Set<string>): boolean {
 
 export function twoStringSetsAreDisjoint(a: Set<string>, b: Set<string>): boolean {
   if (a.size > b.size) {
-    var temp = a;
+    let temp = a;
     a = b;
     b = temp;
   }
@@ -32,7 +32,7 @@ export function findIntersections(a: Set<string>, b: Set<string>): Set<string> {
   const result = new Set<string>();
 
   if (a.size > b.size) {
-    var temp = a;
+    let temp = a;
     a = b;
     b = temp;
   }

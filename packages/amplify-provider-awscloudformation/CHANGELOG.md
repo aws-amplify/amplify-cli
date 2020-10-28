@@ -3,6 +3,302 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.28.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.28.0...amplify-provider-awscloudformation@4.28.1) (2020-10-27)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [4.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.27.0...amplify-provider-awscloudformation@4.28.0) (2020-10-22)
+
+
+### Bug Fixes
+
+* refactor mobile hub migration checks ([#5632](https://github.com/aws-amplify/amplify-cli/issues/5632)) ([b796eb8](https://github.com/aws-amplify/amplify-cli/commit/b796eb8303bb903f5f531506254441a63eba2962))
+* show app id when listing console apps ([#5670](https://github.com/aws-amplify/amplify-cli/issues/5670)) ([1b7b5ec](https://github.com/aws-amplify/amplify-cli/commit/1b7b5ece57c482f8293b423465c5c24814815399))
+* update current-cloud backend-config on resource removal ([#5658](https://github.com/aws-amplify/amplify-cli/issues/5658)) ([592f694](https://github.com/aws-amplify/amplify-cli/commit/592f694530dd61302ff790fbcf5b3ea135812c47))
+
+
+### Features
+
+* Cloudformation logging ([#5195](https://github.com/aws-amplify/amplify-cli/issues/5195)) ([19b2165](https://github.com/aws-amplify/amplify-cli/commit/19b21651375848c0858328952852201da47b17bb))
+
+
+
+
+
+# [4.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.7...amplify-provider-awscloudformation@4.27.0) (2020-10-17)
+
+
+### Features
+
+* support importing of auth resources ([#5591](https://github.com/aws-amplify/amplify-cli/issues/5591)) ([7903246](https://github.com/aws-amplify/amplify-cli/commit/790324680544fe18481f91390001f9f07a144203))
+
+
+
+
+
+## [4.26.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.6...amplify-provider-awscloudformation@4.26.7) (2020-10-13)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** apigw resource download ([#5564](https://github.com/aws-amplify/amplify-cli/issues/5564)) ([43eb3e8](https://github.com/aws-amplify/amplify-cli/commit/43eb3e8a307bb320648c5cce87cb21ec10e54b7a)), closes [#5557](https://github.com/aws-amplify/amplify-cli/issues/5557)
+
+
+
+
+
+## [4.26.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.5...amplify-provider-awscloudformation@4.26.6) (2020-10-09)
+
+
+### Bug Fixes
+
+* cli.json update on pull, E2E enhancements ([#5516](https://github.com/aws-amplify/amplify-cli/issues/5516)) ([952a92e](https://github.com/aws-amplify/amplify-cli/commit/952a92ef1926d86798efef2bbc27fe1c49d8e75f))
+
+
+
+
+
+## [4.26.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.4...amplify-provider-awscloudformation@4.26.5) (2020-10-07)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.26.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.3...amplify-provider-awscloudformation@4.26.4) (2020-10-01)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix redundant upload message  ([#5429](https://github.com/aws-amplify/amplify-cli/issues/5429)) ([3076b05](https://github.com/aws-amplify/amplify-cli/commit/3076b0565ba993ff9bf46721903f011f05ee851c)), closes [#5393](https://github.com/aws-amplify/amplify-cli/issues/5393)
+* add support for mobile hub migrated resources ([#5407](https://github.com/aws-amplify/amplify-cli/issues/5407)) ([5dfe287](https://github.com/aws-amplify/amplify-cli/commit/5dfe2872c153047ebdc56bc4f671fd57c12379d9))
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+* filter our providers when processing meta ([#5460](https://github.com/aws-amplify/amplify-cli/issues/5460)) ([e1e07b2](https://github.com/aws-amplify/amplify-cli/commit/e1e07b245db0963c4655e646c53e7615febe2930))
+
+
+
+
+
+## [4.26.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.2...amplify-provider-awscloudformation@4.26.3) (2020-09-25)
+
+
+### Bug Fixes
+
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+
+
+
+
+
+## [4.26.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.1...amplify-provider-awscloudformation@4.26.2) (2020-09-16)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** validate config input ([#5307](https://github.com/aws-amplify/amplify-cli/issues/5307)) ([5a324b2](https://github.com/aws-amplify/amplify-cli/commit/5a324b2ab015c0be8fe83d937325a38470c46c2d)), closes [#4998](https://github.com/aws-amplify/amplify-cli/issues/4998)
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-cli/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-cli/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+
+
+
+
+
+## [4.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.0...amplify-provider-awscloudformation@4.26.1) (2020-09-09)
+
+
+### Bug Fixes
+
+* update default file permissions for credentials/config ([#5246](https://github.com/aws-amplify/amplify-cli/issues/5246)) ([b64f1bd](https://github.com/aws-amplify/amplify-cli/commit/b64f1bd784b0595f49241fdd89686c5f8a421ae3))
+
+
+
+
+
+# [4.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.25.2...amplify-provider-awscloudformation@4.26.0) (2020-09-03)
+
+
+### Features
+
+* Multienv support for Lambda layers ([#5081](https://github.com/aws-amplify/amplify-cli/issues/5081)) ([4af1363](https://github.com/aws-amplify/amplify-cli/commit/4af13634bcdd58511712249e6774fc9f287c9ef5))
+
+
+
+
+
+## [4.25.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.25.1...amplify-provider-awscloudformation@4.25.2) (2020-09-03)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.25.0...amplify-provider-awscloudformation@4.25.1) (2020-09-02)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** include region configure url ([#5196](https://github.com/aws-amplify/amplify-cli/issues/5196)) ([44fdf95](https://github.com/aws-amplify/amplify-cli/commit/44fdf9583185463873b4ce67bee77f7b00e8cfdf)), closes [#4735](https://github.com/aws-amplify/amplify-cli/issues/4735)
+
+
+
+
+
+# [4.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.24.4...amplify-provider-awscloudformation@4.25.0) (2020-08-31)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** set credentials file permission ([#5194](https://github.com/aws-amplify/amplify-cli/issues/5194)) ([50d5e6e](https://github.com/aws-amplify/amplify-cli/commit/50d5e6ec377347362b9659ddf5f9fdbd0f65ca21))
+* **amplify-provider-awscloudformation:** timeout error ([#5158](https://github.com/aws-amplify/amplify-cli/issues/5158)) ([a88e30a](https://github.com/aws-amplify/amplify-cli/commit/a88e30a56dd748c5af6daa3b118c72e603c25997))
+
+
+### Features
+
+* resource Tagging Support ([#5178](https://github.com/aws-amplify/amplify-cli/issues/5178)) ([e34226d](https://github.com/aws-amplify/amplify-cli/commit/e34226dde30d7d345e3cc2e72e187b242a09c389))
+
+
+
+
+
+## [4.24.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.24.3...amplify-provider-awscloudformation@4.24.4) (2020-08-20)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.24.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.24.2...amplify-provider-awscloudformation@4.24.3) (2020-08-14)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.24.1...amplify-provider-awscloudformation@4.24.2) (2020-08-11)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.24.0...amplify-provider-awscloudformation@4.24.1) (2020-08-06)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [4.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.5...amplify-provider-awscloudformation@4.24.0) (2020-07-29)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** Stack delete condition ([#4465](https://github.com/aws-amplify/amplify-cli/issues/4465)) ([018bbab](https://github.com/aws-amplify/amplify-cli/commit/018bbabab02389f28b9c8e2ea83faacce47c5eb4))
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([6d1c632](https://github.com/aws-amplify/amplify-cli/commit/6d1c632952a49cb56670c11c9cb0c3620d0eb332))
+
+
+
+
+
+# [4.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.5...amplify-provider-awscloudformation@4.23.0) (2020-07-23)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** Stack delete condition ([#4465](https://github.com/aws-amplify/amplify-cli/issues/4465)) ([aa04e88](https://github.com/aws-amplify/amplify-cli/commit/aa04e88d6efeb826e9820230e1a19d5db5024bad))
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([4639450](https://github.com/aws-amplify/amplify-cli/commit/463945029cfe861f74986d9a8b9af6b827d2063d))
+
+
+
+
+
+## [4.22.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.4...amplify-provider-awscloudformation@4.22.5) (2020-07-18)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix bug for no credential file ([#4310](https://github.com/aws-amplify/amplify-cli/issues/4310)) ([183e201](https://github.com/aws-amplify/amplify-cli/commit/183e20133eb938b596039ea63bd08e1c9b4c84e4)), closes [#4284](https://github.com/aws-amplify/amplify-cli/issues/4284)
+
+
+
+
+
+## [4.22.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.3...amplify-provider-awscloudformation@4.22.4) (2020-07-15)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.22.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.2...amplify-provider-awscloudformation@4.22.3) (2020-07-14)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.22.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.1...amplify-provider-awscloudformation@4.22.2) (2020-07-11)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.22.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.22.0...amplify-provider-awscloudformation@4.22.1) (2020-07-09)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+# [4.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.21.1...amplify-provider-awscloudformation@4.22.0) (2020-07-07)
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
+## [4.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.21.0...amplify-provider-awscloudformation@4.21.1) (2020-06-25)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** add missing require ([#4647](https://github.com/aws-amplify/amplify-cli/issues/4647)) ([17d70f1](https://github.com/aws-amplify/amplify-cli/commit/17d70f1c998c30c1fe0b61722c7e59b5e48b1041)), closes [#4398](https://github.com/aws-amplify/amplify-cli/issues/4398)
+
+
+### Reverts
+
+* Revert "fix: change scope of hashed files for AppSync (#4602)" ([73aaab1](https://github.com/aws-amplify/amplify-cli/commit/73aaab1a7b1f8b2de5fa22fa1ef9aeea7de35cb4)), closes [#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)
+
+
+
+
+
 # [4.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.20.4...amplify-provider-awscloudformation@4.21.0) (2020-06-18)
 
 

@@ -1,24 +1,24 @@
 import convertAssets from '../assets/convertQuestions';
 import getAllDefaults from '../default-values/convert-defaults';
 import regionMapper from '../assets/regionMapping';
+import { enableGuestAuth } from './enable-guest-auth';
 
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
-
+const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 // Predictions Info
 const category = 'predictions';
 const parametersFileName = 'parameters.json';
 const templateFilename = 'convert-template.json.ejs';
 const convertTypes = ['translateText', 'speechGenerator', 'transcription'];
 let service = '';
-
 // Needs Cognito Authentication
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt.run(
-        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?'
+      await context.amplify.confirmPrompt(
+        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
       try {
@@ -30,7 +30,8 @@ async function addWalkthrough(context) {
       }
       break;
     } else {
-      process.exit(0);
+      context.usageData.emitSuccess();
+      exitOnNextTick(0);
     }
   }
 
@@ -52,8 +53,10 @@ async function updateWalkthrough(context) {
     }
   });
   if (predictionsResources.length === 0) {
-    context.print.error('No resources to update. You need to add a resource.');
-    process.exit(0);
+    const errMessage = 'No resources to update. You need to add a resource.';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
     return;
   }
   let resourceObj = predictionsResources[0].value;
@@ -98,8 +101,10 @@ async function configure(context, resourceObj) {
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.convertType);
     if (resourceType) {
-      context.print.warning(`${resourceType} has already been added to this project.`);
-      process.exit(0);
+      const errMessage = `${resourceType} has already been added to this project.`;
+      context.print.warning(errMessage);
+      context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+      exitOnNextTick(0);
     }
 
     Object.assign(answers, await inquirer.prompt(convertAssets.setup.name(`${answers.convertType}${defaultValues.resourceName}`)));
@@ -137,7 +142,7 @@ async function configure(context, resourceObj) {
 }
 
 function addRegionMapping(context, resourceName, convertType) {
-  const regionMapping = regionMapper.getRegionMapping(service, convertType);
+  const regionMapping = regionMapper.getRegionMapping(context, service, convertType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
   const identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
@@ -224,26 +229,6 @@ function resourceAlreadyExists(context, convertType) {
     });
   }
   return type;
-}
-
-async function enableGuestAuth(context, resourceName, allowUnauthenticatedIdentities) {
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-  // enable allowUnauthenticatedIdentities
-  const identifyRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
-  // getting requirement satisfaction map
-  const satisfiedRequirements = await checkRequirements(identifyRequirements, context, 'predictions', resourceName);
-  // checking to see if any requirements are unsatisfied
-  const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
-
-  // if requirements are unsatisfied, trigger auth
-  if (foundUnmetRequirements) {
-    try {
-      await externalAuthEnable(context, 'predictions', resourceName, identifyRequirements);
-    } catch (e) {
-      context.print.error(e);
-      throw e;
-    }
-  }
 }
 
 function checkIfAuthExists(context) {

@@ -1,5 +1,5 @@
 const codeGen = require('../../src');
-
+const { exitOnNextTick } = require('amplify-cli-core');
 const featureName = 'types';
 
 module.exports = {
@@ -10,7 +10,8 @@ module.exports = {
       await codeGen.generateTypes(context, forceDownloadSchema);
     } catch (ex) {
       context.print.info(ex.message);
-      process.exit(1);
+      context.usageData.emitError(ex);
+      exitOnNextTick(1);
     }
   },
 };

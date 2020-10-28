@@ -1,7 +1,7 @@
 import { Context } from '../../domain/context';
 import { verifyPlugin } from '../../plugin-manager';
 
-export async function run(context: Context) {
+export const run = async (context: Context) => {
   context.print.warning('Run this command at the root directory of the plugin package.');
   const verificatonResult = await verifyPlugin(process.cwd());
   if (verificatonResult.verified) {
@@ -12,4 +12,4 @@ export async function run(context: Context) {
     context.print.info(`Error code: ${verificatonResult.error}`);
     context.print.info('');
   }
-}
+};

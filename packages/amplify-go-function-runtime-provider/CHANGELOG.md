@@ -3,6 +3,87 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.3.0...amplify-go-function-runtime-provider@1.3.1) (2020-10-27)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
+# [1.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.2.5...amplify-go-function-runtime-provider@1.3.0) (2020-10-22)
+
+
+### Bug Fixes
+
+* use correct version of amplify-cli-core ([#5661](https://github.com/aws-amplify/amplify-cli/issues/5661)) ([c8c2e1a](https://github.com/aws-amplify/amplify-cli/commit/c8c2e1a9242e2096484f194b9e1944bf34840c51))
+
+
+### Features
+
+* update post-install to copy executable assets to .amplify ([#5595](https://github.com/aws-amplify/amplify-cli/issues/5595)) ([53a23a0](https://github.com/aws-amplify/amplify-cli/commit/53a23a07cbb9e09566c1f0f577ba2b7488bc2eae))
+
+
+
+
+
+## [1.2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.2.4...amplify-go-function-runtime-provider@1.2.5) (2020-10-09)
+
+
+### Bug Fixes
+
+* use go lambda zip tool for packaging go lambda on win ([#5475](https://github.com/aws-amplify/amplify-cli/issues/5475)) ([c932d6f](https://github.com/aws-amplify/amplify-cli/commit/c932d6f264b4260a98ed8f8975a67e47c4c47c85))
+
+
+
+
+
+## [1.2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.2.3...amplify-go-function-runtime-provider@1.2.4) (2020-09-25)
+
+
+### Bug Fixes
+
+* enable building multiple go files, .exe extension for local invoke on Windows only ([#5262](https://github.com/aws-amplify/amplify-cli/issues/5262)) ([1936591](https://github.com/aws-amplify/amplify-cli/commit/1936591b0abfdc04f1172c88c554463c6aeb0877))
+
+
+
+
+
+## [1.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.2.2...amplify-go-function-runtime-provider@1.2.3) (2020-08-31)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
+## [1.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.2.0...amplify-go-function-runtime-provider@1.2.2) (2020-07-29)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
+## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.2.0...amplify-go-function-runtime-provider@1.2.1) (2020-07-23)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
+# [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.1.1...amplify-go-function-runtime-provider@1.2.0) (2020-07-07)
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
 ## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.1.0...amplify-go-function-runtime-provider@1.1.1) (2020-05-08)
 
 

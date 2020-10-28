@@ -3,6 +3,127 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.15...graphql-key-transformer@2.19.16) (2020-10-27)
+
+
+### Bug Fixes
+
+* sync resolver for mock ([#5684](https://github.com/aws-amplify/amplify-cli/issues/5684)) ([80e2cd4](https://github.com/aws-amplify/amplify-cli/commit/80e2cd44bde1021d4415c6c3b670f44ec1bcae3c))
+
+
+
+
+
+## [2.19.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.14...graphql-key-transformer@2.19.15) (2020-10-22)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.13...graphql-key-transformer@2.19.14) (2020-10-17)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.12...graphql-key-transformer@2.19.13) (2020-10-01)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.11...graphql-key-transformer@2.19.12) (2020-09-16)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.10...graphql-key-transformer@2.19.11) (2020-09-02)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** support model without id ([#4570](https://github.com/aws-amplify/amplify-cli/issues/4570)) ([7cb0648](https://github.com/aws-amplify/amplify-cli/commit/7cb064874d95527882eb58b1a18fa99dd2377ca7))
+
+
+
+
+
+## [2.19.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.9...graphql-key-transformer@2.19.10) (2020-08-31)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.8...graphql-key-transformer@2.19.9) (2020-08-14)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.7...graphql-key-transformer@2.19.8) (2020-08-11)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.5...graphql-key-transformer@2.19.7) (2020-07-29)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.5...graphql-key-transformer@2.19.6) (2020-07-23)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.4...graphql-key-transformer@2.19.5) (2020-07-18)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.3...graphql-key-transformer@2.19.4) (2020-07-15)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.2...graphql-key-transformer@2.19.3) (2020-06-25)
+
+
+### Reverts
+
+* Revert "fix: change scope of hashed files for AppSync (#4602)" ([73aaab1](https://github.com/aws-amplify/amplify-cli/commit/73aaab1a7b1f8b2de5fa22fa1ef9aeea7de35cb4)), closes [#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)
+
+
+
+
+
 ## [2.19.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.1...graphql-key-transformer@2.19.2) (2020-06-18)
 
 

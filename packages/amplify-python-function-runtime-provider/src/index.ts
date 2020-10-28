@@ -3,6 +3,9 @@ import { pythonBuild } from './util/buildUtils';
 import { pythonPackage } from './util/packageUtils';
 import { pythonInvoke } from './util/invokeUtil';
 import { checkDeps } from './util/depUtils';
+import path from 'path';
+import { relativeShimPath } from './constants';
+import { GetPackageAssetPaths } from 'amplify-cli-core';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
@@ -17,6 +20,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'python',
           cloudTemplateValue: 'python3.8',
           defaultHandler: 'index.handler',
+          layerExecutablePath: path.join('python', 'lib', 'python3.8', 'site-packages'),
         },
       });
     },
@@ -26,3 +30,5 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     invoke: request => pythonBuild(request).then(() => pythonInvoke(context, request)),
   };
 };
+
+export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativeShimPath];

@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const ora = require('ora');
 const fs = require('fs-extra');
-
+const { exitOnNextTick } = require('amplify-cli-core');
 const channelName = 'APNS';
 const spinner = ora('');
 
@@ -71,7 +71,8 @@ async function enable(context, successMessage) {
     }
   } catch (err) {
     context.print.error(err.message);
-    process.exit(1);
+    context.usageData.emitError(err);
+    exitOnNextTick(1);
   }
 
   spinner.start('Updating APNS Channel.');

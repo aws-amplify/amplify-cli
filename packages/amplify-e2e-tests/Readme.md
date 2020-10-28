@@ -56,3 +56,16 @@ describe('amplify your test', () => {
   });
 });
 ```
+
+## Warning on running init-special-case test locally
+
+The test `init-special-case` tests a special use case when the aws config and credential files, `~/.aws/config` and `~/.aws/credentials`, do not exist, and the user executes the `amplify init` command on a project using command line input to provide the aws credentials.
+
+When the test starts, it first checks for the existence of the two files. If they exist, the test will rename them with an appendix ".hide" to file names to simulate the real execution environment. Then when the test is completed, successful or failed, the two files will be renamed back to their original names.
+
+There are two scenarios when this approach can cause trouble:
+
+1. Locally running two or more test suites in parallel with this test included, the other tests might fail because test project can not be init'ed when the above mentioned config and credential files are missing.
+2. In the middle of execution, the test is interrupted by Ctrl+C, then the hidden config and credential files are not renamed back.
+
+So, You should NOT run multiple tests in parallel locally with the `init-special-case` test included. And, if you use Ctrl+C to interrupt the `init-special-case` test, you need to go to the `~/.aws/c` folder and rename the config and credential files to their original names.

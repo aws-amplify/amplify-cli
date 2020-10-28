@@ -1,5 +1,3 @@
-const inquirer = require('inquirer');
-
 export const EXPAND = ' >';
 
 export type InquirerOption = {
@@ -7,5 +5,3 @@ export type InquirerOption = {
   value: any;
   short: string;
 };
-
-export default inquirer;

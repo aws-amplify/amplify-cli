@@ -13,6 +13,17 @@ describe('execute', () => {
       ).resolves.toMatchSnapshot();
     });
 
+    it('should succeed with a returned large payload', async () => {
+      await expect(
+        invokeFunction({
+          packageFolder: __dirname,
+          handler: 'handlers.asyncHandlerLargeData',
+          event: '{"succeed": true}',
+          environment: {},
+        }),
+      ).resolves.toMatchSnapshot();
+    });
+
     it('should fail when throwing an error', async () => {
       await expect(
         invokeFunction({

@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.3.0...amplify-python-function-runtime-provider@1.3.1) (2020-10-27)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+# [1.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.2.3...amplify-python-function-runtime-provider@1.3.0) (2020-10-22)
+
+
+### Bug Fixes
+
+* use correct version of amplify-cli-core ([#5661](https://github.com/aws-amplify/amplify-cli/issues/5661)) ([c8c2e1a](https://github.com/aws-amplify/amplify-cli/commit/c8c2e1a9242e2096484f194b9e1944bf34840c51))
+
+
+### Features
+
+* update post-install to copy executable assets to .amplify ([#5595](https://github.com/aws-amplify/amplify-cli/issues/5595)) ([53a23a0](https://github.com/aws-amplify/amplify-cli/commit/53a23a07cbb9e09566c1f0f577ba2b7488bc2eae))
+
+
+
+
+
+## [1.2.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.2.2...amplify-python-function-runtime-provider@1.2.3) (2020-08-31)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [1.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.2.1...amplify-python-function-runtime-provider@1.2.2) (2020-08-20)
+
+
+### Bug Fixes
+
+* trim process stdout in python runtime provider ([#5135](https://github.com/aws-amplify/amplify-cli/issues/5135)) ([dc23ce3](https://github.com/aws-amplify/amplify-cli/commit/dc23ce31da4892172e70292c29c005e75bba7494))
+
+
+
+
+
+## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.2.0...amplify-python-function-runtime-provider@1.2.1) (2020-07-14)
+
+
+### Bug Fixes
+
+* **amplify-python-function-runtime-provider:** change exec to execa ([#4673](https://github.com/aws-amplify/amplify-cli/issues/4673)) ([56771d9](https://github.com/aws-amplify/amplify-cli/commit/56771d91eeed76a23a1dbf1e0d1d038070c37ad1))
+
+
+
+
+
+# [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.1.1...amplify-python-function-runtime-provider@1.2.0) (2020-07-07)
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
 ## [1.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.1.0...amplify-python-function-runtime-provider@1.1.1) (2020-05-08)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider

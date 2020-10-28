@@ -1,6 +1,6 @@
 import { PluginFunction, Types } from '@graphql-codegen/plugin-helpers';
 import { GraphQLSchema, parse, visit } from 'graphql';
-import { printSchemaWithDirectives } from '@graphql-toolkit/common';
+import { printSchemaWithDirectives } from '@graphql-tools/utils';
 import { AppSyncSwiftVisitor } from './visitors/appsync-swift-visitor';
 import { RawAppSyncModelConfig } from './visitors/appsync-visitor';
 import { AppSyncJSONVisitor } from './visitors/appsync-json-metadata-visitor';

@@ -1,5 +1,5 @@
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 
 function getResourceDirPath(context, category, resource) {
   const { projectPath } = context.migrationInfo || context.amplify.getEnvInfo();

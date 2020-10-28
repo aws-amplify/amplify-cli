@@ -1,17 +1,22 @@
-import { join, normalize } from 'path';
+import * as path from 'path';
 
 // parse the request url to get the path and storing in the request.params.path  with the prefix if present
 
 export function parseUrl(request, route: String) {
-  request.url = normalize(decodeURIComponent(request.url));
+  request.url = path.normalize(decodeURIComponent(request.url));
   const temp = request.url.split(route);
   request.params.path = '';
 
-  if (request.query.prefix !== undefined) request.params.path = request.query.prefix + '/';
+  if (request.query.prefix !== undefined) {
+    request.params.path = request.query.prefix + '/';
+  }
 
-  if (temp[1] !== undefined) request.params.path = normalize(join(request.params.path, temp[1].split('?')[0]));
-  // change for IOS as no bucket name is present in the original url
-  else request.params.path = normalize(join(request.params.path, temp[0].split('?')[0]));
+  if (temp[1] !== undefined) {
+    request.params.path = path.normalize(path.join(request.params.path, temp[1].split('?')[0]));
+  } else {
+    // change for IOS as no bucket name is present in the original url
+    request.params.path = path.normalize(path.join(request.params.path, temp[0].split('?')[0]));
+  }
 
   if (request.params.path[0] == '/' || request.params.path[0] == '.') {
     request.params.path = request.params.path.substring(1);
@@ -23,7 +28,7 @@ export function parseUrl(request, route: String) {
   }
 
   if (request.method === 'GET') {
-    if (request.query.prefix !== undefined || (temp[1] === '' && temp[0] === '')) {
+    if (request.query.prefix !== undefined || (temp[1] === '' && temp[0] === '') || (temp[1] === '/' && temp[0] === '')) {
       request.method = 'LIST';
     }
   }

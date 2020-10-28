@@ -5,3 +5,10 @@ export const envVarPrintoutPrefix =
 const topLevelCommentBlockTitle = 'Amplify Params - DO NOT EDIT';
 export const topLevelCommentPrefix = `/* ${topLevelCommentBlockTitle}\n\t`;
 export const topLevelCommentSuffix = `\n${topLevelCommentBlockTitle} */`;
+
+export enum CRUDOperation {
+  CREATE = 'create',
+  READ = 'read',
+  UPDATE = 'update',
+  DELETE = 'delete',
+}

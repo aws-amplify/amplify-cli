@@ -1,4 +1,4 @@
-import { FunctionTemplateParameters, ContributionRequest } from 'amplify-function-plugin-interface';
+import { FunctionTemplateParameters, TemplateContributionRequest } from 'amplify-function-plugin-interface';
 import { commonFiles, templateRoot } from '../utils/constants';
 import { getDstMap } from '../utils/destFileMapper';
 import path from 'path';
@@ -7,7 +7,7 @@ import { askDynamoDBQuestions, getTableParameters } from '../utils/dynamoDBWalkt
 const pathToTemplateFiles = path.join(templateRoot, 'lambda');
 
 // copied from legacy lambda-walkthrough with slight modifications for typescript and refactored FunctionParameters object
-export async function provideCrud(request: ContributionRequest, context: any): Promise<FunctionTemplateParameters> {
+export async function provideCrud(request: TemplateContributionRequest, context: any): Promise<FunctionTemplateParameters> {
   const dynamoResource = await askDynamoDBQuestions(context);
 
   const tableParameters = await getTableParameters(context, dynamoResource);
@@ -34,7 +34,7 @@ export async function provideCrud(request: ContributionRequest, context: any): P
       destMap: {
         ...getDstMap(commonFiles),
         'Crud/aws-lambda-tools-defaults.json.ejs': path.join('src', 'aws-lambda-tools-defaults.json'),
-        'Crud/Function.csproj.ejs': path.join('src', `${request.contributionContext.functionName}.csproj`),
+        'Crud/Function.csproj.ejs': path.join('src', `${request.contributionContext.resourceName}.csproj`),
         'Crud/FunctionHandler.cs.ejs': handlerSource,
         'Crud/event.json.ejs': path.join('src', 'event.json'),
       },

@@ -36,7 +36,7 @@ export async function check(
     cantAddAndRemoveGSIAtSameTime,
   ];
   // Project rules run on the full set of diffs, the current build, and the next build.
-  const projectRules: ProjectRule[] = [cantHaveMoreThan200Resources];
+  const projectRules: ProjectRule[] = [cantHaveMoreThan200Resources, cantMutateMultipleGSIAtUpdateTime];
   if (cloudBackendDirectoryExists && buildDirectoryExists) {
     const current = await loadDiffableProject(currentCloudBackendDir, rootStackName);
     const next = await loadDiffableProject(buildDirectory, rootStackName);
@@ -139,7 +139,7 @@ export function cantEditGSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
     const newIndexes = get(nextBuild, pathToGSIs);
     const oldIndexesDiffable = keyBy(oldIndexes, 'IndexName');
     const newIndexesDiffable = keyBy(newIndexes, 'IndexName');
-    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable);
+    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable) || [];
     // We must look at this inner diff or else we could confuse a situation
     // where the user adds a GSI to the beginning of the GlobalSecondaryIndexes list in CFN.
     // We re-key the indexes list so we can determine if a change occurred to an index that
@@ -192,7 +192,7 @@ export function cantAddAndRemoveGSIAtSameTime(diff: Diff, currentBuild: Diffable
     const newIndexes = get(nextBuild, pathToGSIs);
     const oldIndexesDiffable = keyBy(oldIndexes, 'IndexName');
     const newIndexesDiffable = keyBy(newIndexes, 'IndexName');
-    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable);
+    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable) || [];
     let sawDelete = false;
     let sawNew = false;
     for (const diff of innerDiffs) {
@@ -208,6 +208,46 @@ export function cantAddAndRemoveGSIAtSameTime(diff: Diff, currentBuild: Diffable
       const stackName = basename(diff.path[1], '.json');
       const tableName = diff.path[3];
       throwError(stackName, tableName);
+    }
+  }
+}
+
+/**
+ * Throws a helpful error when a customer is trying to complete an invalid migration.
+ * Users are unable to add multiple GSIs at the same time in update stage.
+ * @param diffs The set of diffs between currentBuild and nextBuild.
+ * @param currentBuild The last deployed build.
+ * @param nextBuild The next build.
+ */
+export function cantMutateMultipleGSIAtUpdateTime(diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) {
+  function throwError(stackName: string, tableName: string) {
+    throw new InvalidMigrationError(
+      `Attempting to mutate more than 1 global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
+      'You may only mutate one global secondary index in a single CloudFormation stack update. ',
+      'If using @key, include one @key at a time. ' +
+        'If using @connection, just add one new @connection which is using @key, run `amplify push`, ',
+    );
+  }
+
+  if (diffs) {
+    let gsiCount: number = 0; // max gsiCountAdded = 1 // for update flow
+    for (const diff of diffs) {
+      if (
+        // implies a field was changed in a GSI after it was created.
+        // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes", ... ]
+        diff.kind === 'A' &&
+        diff.path.length >= 6 &&
+        diff.path[5] === 'GlobalSecondaryIndexes'
+      ) {
+        if (diff.item.kind === 'N' || diff.item.kind === 'D') {
+          gsiCount += 1;
+        }
+        if (gsiCount > 1) {
+          const stackName = basename(diff.path[1], '.json');
+          const tableName = diff.path[3];
+          throwError(stackName, tableName);
+        }
+      }
     }
   }
 }
@@ -233,7 +273,7 @@ export function cantEditLSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
     const newIndexes = get(nextBuild, pathToGSIs);
     const oldIndexesDiffable = keyBy(oldIndexes, 'IndexName');
     const newIndexesDiffable = keyBy(newIndexes, 'IndexName');
-    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable);
+    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable) || [];
     // We must look at this inner diff or else we could confuse a situation
     // where the user adds a LSI to the beginning of the LocalSecondaryIndex list in CFN.
     // We re-key the indexes list so we can determine if a change occurred to an index that

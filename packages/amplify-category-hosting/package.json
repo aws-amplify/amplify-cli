@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-hosting",
-  "version": "2.3.3",
+  "version": "2.4.6",
   "description": "amplify-cli hosting plugin",
   "repository": {
     "type": "git",
@@ -15,13 +15,12 @@
     "aws"
   ],
   "scripts": {
-    "test": "jest --coverage",
-    "test-ci": "jest --ci -i"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.3",
+    "inquirer": "^7.3.3",
     "mime-types": "^2.1.26",
     "minimatch": "^3.0.4",
     "moment": "^2.24.0",

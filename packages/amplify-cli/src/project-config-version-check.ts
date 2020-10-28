@@ -1,26 +1,29 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as inquirer from 'inquirer';
 import { Context } from './domain/context';
-import inquirer from './domain/inquirer-helper';
+import { ConfirmQuestion } from 'inquirer';
+import { pathManager, stateManager } from 'amplify-cli-core';
 
 const prevLambdaRuntimeVersions = ['nodejs8.10'];
 const lambdaRuntimeVersion = 'nodejs10.x';
-const jsonIndentation = 4;
 
 export async function checkProjectConfigVersion(context: Context): Promise<void> {
-  const { pathManager, readJsonFile, constants } = context.amplify;
-  const projectPath = pathManager.searchProjectRootPath();
-  if (projectPath) {
-    const projectConfigFilePath = pathManager.getProjectConfigFilePath(projectPath);
-    if (fs.existsSync(projectConfigFilePath)) {
-      const projectConfig = readJsonFile(projectConfigFilePath);
-      if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
-        await checkLambdaCustomResourceNodeVersion(context, projectPath);
+  const { constants } = context.amplify;
+  const projectPath = pathManager.findProjectRoot();
 
-        projectConfig.version = constants.PROJECT_CONFIG_VERSION;
-        const jsonString = JSON.stringify(projectConfig, null, jsonIndentation);
-        fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
-      }
+  if (projectPath) {
+    const projectConfig = stateManager.getProjectConfig(projectPath, {
+      throwIfNotExist: false,
+      default: {},
+    });
+
+    if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
+      await checkLambdaCustomResourceNodeVersion(context, projectPath);
+
+      projectConfig.version = constants.PROJECT_CONFIG_VERSION;
+
+      stateManager.setProjectConfig(projectPath, projectConfig);
     }
   }
 }
@@ -124,7 +127,7 @@ async function promptForConfirmation(context: Context, filesToUpdate: string[]):
 
   context.print.info('');
 
-  const question = {
+  const question: ConfirmQuestion = {
     type: 'confirm',
     name: 'confirmUpdateNodeVersion',
     message: 'Confirm to update the NodeJS runtime version to 10.x',

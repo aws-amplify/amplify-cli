@@ -161,7 +161,7 @@ func main() {
 			Payload: payload,
 		})
 
-		json.Unmarshal(response, &responseString)
+		responseString = string(response)
 
 		if err != nil {
 			errorString = fmt.Sprintf(":%s", err)

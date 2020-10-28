@@ -47,6 +47,7 @@ beforeAll(async () => {
   const validSchema = `
     type Query {
         echo(msg: String!): Context @function(name: "${ECHO_FUNCTION_NAME}")
+        e_cho(msg: String!): Context @function(name: "${ECHO_FUNCTION_NAME}")
         echoEnv(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-\${env}-${BUILD_TIMESTAMP}")
         duplicate(msg: String!): Context @function(name: "long-prefix-e2e-test-functions-echo-dev-${BUILD_TIMESTAMP}")
         pipeline(msg: String!): String
@@ -69,6 +70,7 @@ beforeAll(async () => {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
   } catch (e) {
     console.warn(`Could not create bucket: ${e}`);
+    expect(true).toEqual(false);
   }
   try {
     const role = await IAM_HELPER.createLambdaExecutionRole(LAMBDA_EXECUTION_ROLE_NAME);
@@ -82,6 +84,7 @@ beforeAll(async () => {
     await LAMBDA_HELPER.createFunction(HELLO_FUNCTION_NAME, role.Role.Arn, 'hello');
   } catch (e) {
     console.warn(`Could not setup function: ${e}`);
+    expect(true).toEqual(false);
   }
   const transformer = new GraphQLTransform({
     transformers: [

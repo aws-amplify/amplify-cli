@@ -1,12 +1,12 @@
-const { spawn } = require('child_process');
 const chalk = require('chalk');
-
+const { command: executeCommand } = require('execa');
 const fs = require('fs-extra');
+const path = require('path');
 const archiver = require('archiver');
 
 const DIR_NOT_FOUND_ERROR_MESSAGE = 'Please ensure your build artifacts path exists.';
 
-function zipFile(sourceDir, destFilePath) {
+function zipFile(sourceDir, destFilePath, extraFiles) {
   return new Promise((resolve, reject) => {
     if (!fs.pathExistsSync(sourceDir)) {
       reject(DIR_NOT_FOUND_ERROR_MESSAGE);
@@ -24,6 +24,15 @@ function zipFile(sourceDir, destFilePath) {
     });
     archive.pipe(output);
     archive.directory(sourceDir, false);
+
+    if (extraFiles && extraFiles.length && extraFiles.length > 0) {
+      for (const filePath of extraFiles) {
+        const fileName = path.basename(filePath);
+
+        archive.file(filePath, { name: fileName });
+      }
+    }
+
     archive.finalize();
   });
 }
@@ -34,10 +43,7 @@ function run(command, projectDirectory) {
   }
 
   return new Promise((resolve, reject) => {
-    let args = command.split(/\s+/);
-    const cmd = args[0];
-    args = args.slice(1);
-    const execution = spawn(cmd, args, { cwd: projectDirectory, env: process.env, stdio: 'inherit' });
+    const execution = executeCommand(command, { cwd: projectDirectory, env: process.env, stdio: 'inherit' });
 
     let rejectFlag = false;
     execution.on('exit', code => {

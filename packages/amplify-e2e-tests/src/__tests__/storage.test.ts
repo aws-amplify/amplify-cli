@@ -10,6 +10,7 @@ import {
   addS3WithGuestAccess,
   addS3WithGroupAccess,
   addS3WithTrigger,
+  updateS3AddTrigger,
 } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from 'amplify-e2e-core';
 
@@ -62,6 +63,15 @@ describe('amplify add/update storage(S3)', () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addS3WithTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await validate(projRoot);
+  });
+
+  it('init a project and add S3 bucket with user pool groups and then update S3 bucket to add trigger', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithGroupsAndAdminAPI(projRoot, {});
+    await addS3WithGroupAccess(projRoot, {});
+    await updateS3AddTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     await validate(projRoot);
   });

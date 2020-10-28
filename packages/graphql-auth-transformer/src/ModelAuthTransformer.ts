@@ -41,7 +41,7 @@ import {
 import { Expression, print, raw, iff, forEach, set, ref, list, compoundExpression, newline, comment, not } from 'graphql-mapping-template';
 import { ModelDirectiveConfiguration, ModelDirectiveOperationType, ModelSubscriptionLevel } from './ModelDirectiveConfiguration';
 
-import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD } from './constants';
+import { OWNER_AUTH_STRATEGY, GROUPS_AUTH_STRATEGY, DEFAULT_OWNER_FIELD, AUTH_NON_MODEL_TYPES } from './constants';
 
 /**
  * Implements the ModelAuthTransformer.
@@ -265,6 +265,9 @@ export class ModelAuthTransformer extends Transformer {
     ctx.mergeOutputs(template.Outputs);
     ctx.mergeConditions(template.Conditions);
     this.updateAPIAuthentication(ctx);
+    if (!ctx.metadata.has(AUTH_NON_MODEL_TYPES)) {
+      ctx.metadata.set(AUTH_NON_MODEL_TYPES, new Set<string>());
+    }
   };
 
   public after = (ctx: TransformerContext): void => {
@@ -347,6 +350,9 @@ export class ModelAuthTransformer extends Transformer {
     // Assign default providers to rules where no provider was explicitly defined
     this.ensureDefaultAuthProviderAssigned(rules);
     this.validateRules(rules);
+
+    // add owner fields to type that may not been only present in auth rules.
+    this.addOwnerFieldsToObject(ctx, def.name.value, rules);
     // Check the rules if we've to generate IAM policies for Unauth role or not
     this.setAuthPolicyFlag(rules);
     this.setUnauthPolicyFlag(rules);
@@ -451,6 +457,10 @@ Static group authorization should perform as expected.`,
 
     // Get and validate the auth rules.
     const rules = this.getAuthRulesFromDirective(directive);
+    if (!isParentTypeBuiltinType) {
+      // add owner fields to the type
+      this.addOwnerFieldsToObject(ctx, parent.name.value, rules);
+    }
     // Assign default providers to rules where no provider was explicitly defined
     this.ensureDefaultAuthProviderAssigned(rules);
     this.validateFieldRules(rules, isParentTypeBuiltinType, modelDirective !== undefined);
@@ -521,34 +531,36 @@ Static group authorization should perform as expected.`,
   };
 
   private propagateAuthDirectivesToNestedTypes(type: ObjectTypeDefinitionNode, rules: AuthRule[], ctx: TransformerContext) {
+    const seenNonModelTypes: Set<string> = ctx.metadata.get(AUTH_NON_MODEL_TYPES);
+
     const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
       if (fieldType) {
         if (fieldType.kind !== 'ObjectTypeDefinition') {
           return undefined;
         }
-
         const typeModel = fieldType.directives.find(dir => dir.name.value === 'model');
         return typeModel !== undefined ? undefined : fieldType;
       }
-
       return fieldType;
     };
-
     const nonModelFieldTypes = type.fields.map(f => ctx.getType(getBaseType(f.type)) as TypeDefinitionNode).filter(nonModelTypePredicate);
-
     for (const nonModelFieldType of nonModelFieldTypes) {
-      const directives = this.getDirectivesForRules(rules, false);
+      if (!seenNonModelTypes.has(nonModelFieldType.name.value)) {
+        // add to the set of seen non model types
+        seenNonModelTypes.add(nonModelFieldType.name.value);
+        const directives = this.getDirectivesForRules(rules, false);
+        // Add the directives to the Type node itself
+        if (directives.length > 0) {
+          this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
+        }
+        const hasIAM = directives.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
+        if (hasIAM) {
+          this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+          this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+        }
 
-      // Add the directives to the Type node itself
-      if (directives.length > 0) {
-        this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
-      }
-
-      const hasIAM = directives.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
-
-      if (hasIAM) {
-        this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
-        this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
+        // Recursively process the nested types if there is any
+        this.propagateAuthDirectivesToNestedTypes(<ObjectTypeDefinitionNode>nonModelFieldType, rules, ctx);
       }
 
       // Recursively process the nested types if there is any
@@ -574,9 +586,26 @@ Static group authorization should perform as expected.`,
       const staticGroupAuthorizationRules = this.getStaticGroupRules(staticGroupRules);
       const staticGroupAuthorizationExpression = this.resources.staticGroupAuthorizationExpression(staticGroupAuthorizationRules, field);
       const throwIfUnauthorizedExpression = this.resources.throwIfStaticGroupUnauthorized(field);
-      const authCheckExpressions = [staticGroupAuthorizationExpression, newline(), throwIfUnauthorizedExpression];
 
-      templateParts.push(print(compoundExpression(authCheckExpressions)));
+      // If other authModes (aside from userPools) are included then add the authMode check block
+      // to the start of the resolver
+      const authModesToCheck = new Set<AuthProvider>();
+      const expressions: Array<Expression> = new Array();
+      if (staticGroupAuthorizationRules.find(r => r.provider === 'userPools')) {
+        authModesToCheck.add('userPools');
+      }
+      if (staticGroupAuthorizationRules.find(r => r.provider === 'oidc')) {
+        authModesToCheck.add('oidc');
+      }
+      if (authModesToCheck.size > 0) {
+        const isUserPoolTheDefault = this.configuredAuthProviders.default === 'userPools';
+        expressions.push(this.resources.getAuthModeDeterminationExpression(authModesToCheck, isUserPoolTheDefault));
+      }
+      const authCheckExpressions = [staticGroupAuthorizationExpression, newline(), throwIfUnauthorizedExpression];
+      // Create the authMode if block and add it to the resolver
+      expressions.push(this.resources.getAuthModeCheckWrappedExpression(authModesToCheck, compoundExpression(authCheckExpressions)));
+
+      templateParts.push(print(compoundExpression(expressions)));
     }
 
     // if the field resolver does not exist create it
@@ -588,9 +617,8 @@ Static group authorization should perform as expected.`,
       if (!noneDS) {
         ctx.setResource(ResourceConstants.RESOURCES.NoneDataSource, this.resources.noneDataSource());
       }
-    } else {
-      templateParts.push(fieldResolverResource.Properties.RequestMappingTemplate);
     }
+    templateParts.push(fieldResolverResource.Properties.RequestMappingTemplate);
     fieldResolverResource.Properties.RequestMappingTemplate = templateParts.join('\n\n');
     ctx.setResource(resolverResourceId, fieldResolverResource);
   }
@@ -1085,7 +1113,7 @@ operations will be generated by the CLI.`,
       // to the start of the resolver.
       const authModesToCheck = new Set<AuthProvider>();
       const expressions: Array<Expression> = new Array();
-
+      expressions.push(this.resources.returnIfEmpty(objectPath));
       if (
         ownerAuthorizationRules.find(r => r.provider === 'userPools') ||
         staticGroupAuthorizationRules.find(r => r.provider === 'userPools') ||
@@ -1860,14 +1888,17 @@ operations will be generated by the CLI.`,
         // check if owner is enabled in auth
         const ownerRules = rules.filter(rule => rule.allow === OWNER_AUTH_STRATEGY);
         const needsDefaultOwnerField = ownerRules.find(rule => !rule.ownerField);
-        const hasStaticGroupAuth = rules.find(rule => rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField);
+        // if there are any public, private, and/or static group rules then the owner argument is optional
+        const needsOwnerArgument = rules.find(
+          rule => (rule.allow === GROUPS_AUTH_STRATEGY && !rule.groupsField) || rule.allow === 'private' || rule.allow === 'public',
+        );
         if (ownerRules) {
           // if there is an owner rule without ownerField add the owner field in the type
           if (needsDefaultOwnerField) {
             this.addOwner(ctx, parent.name.value);
           }
           // If static group is specified in any of the rules then it would specify the owner arg(s) as optional
-          const makeNonNull = hasStaticGroupAuth ? false : true;
+          const makeNonNull = needsOwnerArgument ? false : true;
           this.addSubscriptionOwnerArgument(ctx, resolver, ownerRules, makeNonNull);
         }
       }
@@ -1901,7 +1932,34 @@ operations will be generated by the CLI.`,
     ctx.putType(subscription);
   }
 
+  /**
+   * Add owner fields to the type to make the owners accessible in selection set
+   * @param ctx TransformerContext
+   * @param object ObjectDefinitionNode
+   * @param rules Authorization rules
+   */
+  private addOwnerFieldsToObject(ctx: TransformerContext, typeName: string, rules: AuthRule[]): void {
+    if (ctx.featureFlags.getBoolean('addMissingOwnerFields', true)) {
+      const object = ctx.getObject(typeName);
+      const ownerRules = rules.filter(rule => rule.allow === 'owner');
+      const existingFields = Object.keys(getFieldArguments(object));
+      const ownerFields = Array.from(new Set(ownerRules.map(rule => rule.ownerField || DEFAULT_OWNER_FIELD)).values());
+      const fieldsToAdd = ownerFields.filter(field => !existingFields.includes(field));
+      const modelType: any = ctx.getType(object.name.value);
+      if (fieldsToAdd.length) {
+        for (let ownerField of fieldsToAdd) {
+          modelType.fields.push(makeField(ownerField, [], makeNamedType('String')));
+        }
+        ctx.putType(modelType);
+      }
+    }
+  }
+
   private addOwner(ctx: TransformerContext, parent: string) {
+    if (ctx.featureFlags.getBoolean('addMissingOwnerFields', true)) {
+      // owner field is already added, return
+      return;
+    }
     const modelType: any = ctx.getType(parent);
     const fields = getFieldArguments(modelType);
     if (!('owner' in fields)) {
@@ -2274,7 +2332,7 @@ found '${rule.provider}' assigned.`,
   }
 
   private isOperationExpressionSet(operationTypeName: string, template: string): boolean {
-    return template.includes(`$context.result.operation = "${operationTypeName}"`);
+    return template.includes(`$ctx.result.put("operation", "${operationTypeName}")`);
   }
 
   private updateMutationConditionInput(ctx: TransformerContext, type: ObjectTypeDefinitionNode, rules: Array<AuthRule>): void {

@@ -3,6 +3,107 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.8...amplify-codegen-appsync-model-plugin@1.20.9) (2020-10-22)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:** add field level [@auth](https://github.com/auth) process ([#5543](https://github.com/aws-amplify/amplify-cli/issues/5543)) ([1340343](https://github.com/aws-amplify/amplify-cli/commit/1340343c18e2a155bdb35321a2915d910f1f851e))
+* **amplify-codegen-appsync-model-plugin:** generate nullable types for list ([#5493](https://github.com/aws-amplify/amplify-cli/issues/5493)) ([8b5043c](https://github.com/aws-amplify/amplify-cli/commit/8b5043c9e26ecb157ea3159e4e13dae097215301))
+* **amplify-codegen-appsync-model-plugin:** refactor the build step in java modelgen ([#5500](https://github.com/aws-amplify/amplify-cli/issues/5500)) ([95838c7](https://github.com/aws-amplify/amplify-cli/commit/95838c71c340584314bd3502219234c7de114719))
+
+
+
+
+
+## [1.20.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.7...amplify-codegen-appsync-model-plugin@1.20.8) (2020-10-07)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:** add ownerField to modelgen… ([#5455](https://github.com/aws-amplify/amplify-cli/issues/5455)) ([763f4af](https://github.com/aws-amplify/amplify-cli/commit/763f4af9238729894e5c95eba298d3c1b08a33db))
+
+
+
+
+
+## [1.20.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.6...amplify-codegen-appsync-model-plugin@1.20.7) (2020-10-01)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:** DataStore Array Support ([#5327](https://github.com/aws-amplify/amplify-cli/issues/5327)) ([c88bee1](https://github.com/aws-amplify/amplify-cli/commit/c88bee1a4eed9aafca0e764fb2867176eed1c8e2)), closes [#5139](https://github.com/aws-amplify/amplify-cli/issues/5139)
+* **amplify-codegen-appsync-model-plugin:** fix nullable lists ([#5450](https://github.com/aws-amplify/amplify-cli/issues/5450)) ([ec02076](https://github.com/aws-amplify/amplify-cli/commit/ec02076e9a4aab119a8a85e729b19fb4727607f4))
+
+
+
+
+
+## [1.20.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.5...amplify-codegen-appsync-model-plugin@1.20.6) (2020-09-25)
+
+
+### Bug Fixes
+
+* add owner field if owner auth is included in auth rules ([#5335](https://github.com/aws-amplify/amplify-cli/issues/5335)) ([2200f51](https://github.com/aws-amplify/amplify-cli/commit/2200f51c70ffa6c3fe88efa6b563e962668da3e0))
+
+
+
+
+
+## [1.20.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.4...amplify-codegen-appsync-model-plugin@1.20.5) (2020-08-31)
+
+**Note:** Version bump only for package amplify-codegen-appsync-model-plugin
+
+
+
+
+
+## [1.20.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.3...amplify-codegen-appsync-model-plugin@1.20.4) (2020-08-20)
+
+
+### Bug Fixes
+
+* bug in CopyofBuilder class with no nullable and non nullable fields ([#5108](https://github.com/aws-amplify/amplify-cli/issues/5108)) ([646435a](https://github.com/aws-amplify/amplify-cli/commit/646435adf35ab057f8c19b35eb86bab077a36a80))
+
+
+
+
+
+## [1.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.2...amplify-codegen-appsync-model-plugin@1.20.3) (2020-08-06)
+
+**Note:** Version bump only for package amplify-codegen-appsync-model-plugin
+
+
+
+
+
+## [1.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.0...amplify-codegen-appsync-model-plugin@1.20.2) (2020-07-29)
+
+**Note:** Version bump only for package amplify-codegen-appsync-model-plugin
+
+
+
+
+
+## [1.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.0...amplify-codegen-appsync-model-plugin@1.20.1) (2020-07-23)
+
+**Note:** Version bump only for package amplify-codegen-appsync-model-plugin
+
+
+
+
+
+# [1.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.2...amplify-codegen-appsync-model-plugin@1.20.0) (2020-07-07)
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([c55b2e0](https://github.com/aws-amplify/amplify-cli/commit/c55b2e0c3377127aaf887591d7bc20d7240ef11d))
+
+
+
+
+
 ## [1.19.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.19.1...amplify-codegen-appsync-model-plugin@1.19.2) (2020-06-18)
 
 

@@ -5,7 +5,7 @@ import glob from 'glob';
 
 export async function pythonBuild(params: BuildRequest): Promise<BuildResult> {
   if (!params.lastBuildTimestamp || isBuildStale(params.srcRoot, params.lastBuildTimestamp)) {
-    const pipenvLogs = await execAsStringPromise('pipenv install', { cwd: params.srcRoot }, undefined, true);
+    const pipenvLogs = await execAsStringPromise('pipenv install', { cwd: params.srcRoot });
     console.log(pipenvLogs);
     return Promise.resolve({ rebuilt: true });
   }

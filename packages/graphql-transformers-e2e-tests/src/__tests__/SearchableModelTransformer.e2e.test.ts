@@ -123,6 +123,12 @@ beforeAll(async () => {
       createdAt: AWSDateTime
       description: String
     }
+
+    type Comment @model @key(name: "commentByVersion", fields: ["version", "id"]) @searchable{
+      id: ID!
+      version: Int!
+      content: String!
+    }
     `;
   const transformer = new GraphQLTransform({
     transformers: [
@@ -268,6 +274,49 @@ test('Test searchPosts with sort field on a string field', async () => {
   expect(thirdQuery.data.searchPosts).toBeDefined();
   const firstItemOfThirdQuery = thirdQuery.data.searchPosts.items[0];
   expect(firstItemOfThirdQuery).toEqual(fourthItemOfFirstQuery);
+});
+
+test('Test searchPosts with offset pagination', async () => {
+  const firstQuery = await runQuery(
+    `query {
+        searchPosts(from: 0, limit: 999, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+            total
+          }
+    }`,
+    'Test searchPosts with offset pagination ',
+  );
+  expect(firstQuery).toBeDefined();
+  expect(firstQuery.data.searchPosts).toBeDefined();
+  const firstLength = firstQuery.data.searchPosts.items.length;
+  const secondQuery = await runQuery(
+    `query {
+        searchPosts(from: 2, limit: 999, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+            total
+          }
+    }`,
+    'Test searchPosts with offset pagination 2 ',
+  );
+  expect(secondQuery).toBeDefined();
+  expect(secondQuery.data.searchPosts).toBeDefined();
+  const secondLength = secondQuery.data.searchPosts.items.length;
+  expect(secondLength).toEqual(firstLength - 2);
+  const firstItem = firstQuery.data.searchPosts.items[0];
+  const secondItems = secondQuery.data.searchPosts.items;
+  expect(secondItems.find(i => i.id === firstItem.id)).not.toBeDefined();
 });
 
 test('Test searchPosts with sort on date type', async () => {
@@ -867,6 +916,59 @@ test('test searches with datastore enabled types', async () => {
   expect(searchTodoResponse.data.searchTodos.items.length).toEqual(1);
   expect(searchTodoResponse.data.searchTodos.items[0].name).toEqual(todoName);
   expect(searchTodoResponse.data.searchTodos.items[0]._version).toEqual(todoVersion);
+});
+
+// Test for issue https://github.com/aws-amplify/amplify-cli/issues/5140
+test('test searches with @key with integer field', async () => {
+  const comment = await GRAPHQL_CLIENT.query(
+    `mutation createComment($createCommentInput: CreateCommentInput!){
+    createComment(input: $createCommentInput) {
+      id,
+      content,
+      version
+    }
+  }`,
+    {
+      createCommentInput: {
+        id: 1,
+        version: 1,
+        content: 'Content',
+      },
+    },
+  );
+  expect(comment.data).toBeDefined();
+  expect(comment.data.createComment).toEqual({
+    id: '1',
+    content: 'Content',
+    version: 1,
+  });
+
+  // Wait for the Comment to sync to Elasticsearch
+  await cf.wait(10, () => Promise.resolve());
+  let searchCommentResponse = await GRAPHQL_CLIENT.query(
+    `query searchComment {
+    searchComments {
+      items {
+        id,
+        version,
+        content
+      }
+    }
+  }`,
+    {},
+  );
+  expect(searchCommentResponse).toBeDefined();
+  expect(searchCommentResponse.data).toEqual({
+    searchComments: {
+      items: [
+        {
+          id: '1',
+          version: 1,
+          content: 'Content',
+        },
+      ],
+    },
+  });
 });
 
 type TodoInput = {

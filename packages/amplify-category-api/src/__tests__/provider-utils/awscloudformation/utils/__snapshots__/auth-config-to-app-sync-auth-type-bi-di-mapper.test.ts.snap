@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppSyncAuthType to authConfig maps AMAZON_COGNITO_USER_POOLS correctly 1`] = `
+Object {
+  "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+  "userPoolConfig": Object {
+    "userPoolId": "someID",
+  },
+}
+`;
+
+exports[`AppSyncAuthType to authConfig maps API_KEY correctly 1`] = `
+Object {
+  "apiKeyConfig": Object {
+    "apiKeyExpirationDays": 120,
+    "description": undefined,
+  },
+  "authenticationType": "API_KEY",
+}
+`;
+
+exports[`AppSyncAuthType to authConfig maps AWS_IAM correctly 1`] = `
+Object {
+  "authenticationType": "AWS_IAM",
+}
+`;
+
+exports[`AppSyncAuthType to authConfig maps OPENID_CONNECT correctly 1`] = `
+Object {
+  "authenticationType": "OPENID_CONNECT",
+  "openIDConnectConfig": Object {
+    "authTTL": undefined,
+    "clientId": "client id",
+    "iatTTL": undefined,
+    "issuerUrl": "issuer url",
+    "name": "providerName",
+  },
+}
+`;
+
+exports[`authConfig to AppSyncAuthType maps AMAZON_COGNITO_USER_POOLS auth correctly 1`] = `
+Object {
+  "cognitoUserPoolId": "userPoolId",
+  "mode": "AMAZON_COGNITO_USER_POOLS",
+}
+`;
+
+exports[`authConfig to AppSyncAuthType maps API_KEY auth correctly 1`] = `
+Object {
+  "expirationTime": 120,
+  "keyDescription": "api key description",
+  "mode": "API_KEY",
+}
+`;
+
+exports[`authConfig to AppSyncAuthType maps AWS_IAM auth correctly 1`] = `
+Object {
+  "mode": "AWS_IAM",
+}
+`;
+
+exports[`authConfig to AppSyncAuthType maps OPENID_CONNECT auth correclty 1`] = `
+Object {
+  "mode": "OPENID_CONNECT",
+  "openIDAuthTTL": "auth TTL",
+  "openIDClientID": "client id",
+  "openIDIatTTL": "iat TTL",
+  "openIDIssuerURL": "issuer url",
+  "openIDProviderName": "openid name",
+}
+`;

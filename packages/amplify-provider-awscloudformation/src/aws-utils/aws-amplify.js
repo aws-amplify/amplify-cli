@@ -1,6 +1,6 @@
 const aws = require('aws-sdk');
 const proxyAgent = require('proxy-agent');
-const configurationManager = require('../../lib/configuration-manager');
+const configurationManager = require('../configuration-manager');
 
 const amplifyServiceRegions = [
   'us-east-1',
@@ -14,6 +14,7 @@ const amplifyServiceRegions = [
   'ap-south-1',
   'ap-southeast-1',
   'ap-southeast-2',
+  'ca-central-1',
 ];
 
 async function getConfiguredAmplifyClient(context, options = {}) {

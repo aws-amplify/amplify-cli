@@ -577,7 +577,7 @@ describe(`Deployed Mutation Condition tests`, () => {
   const customS3Client = new S3Client(REGION);
   const awsS3Client = new S3({ region: REGION });
 
-  const conditionRegexMatch = /GraphQL error: The conditional request failed \(Service: AmazonDynamoDBv2; Status Code: 400; Error Code: ConditionalCheckFailedException; .*/gm;
+  const conditionRegexMatch = /GraphQL error: The conditional request failed \(Service: \w*DynamoD\w*\,?\;? Status Code: 400\,?\;? [a-zA-Z0-9:;, ]*\)/gm;
 
   function outputValueSelector(key: string) {
     return (outputs: Output[]) => {

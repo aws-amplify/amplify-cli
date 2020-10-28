@@ -3,6 +3,124 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.15...graphql-connection-transformer@4.18.16) (2020-10-27)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.14...graphql-connection-transformer@4.18.15) (2020-10-22)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.13...graphql-connection-transformer@4.18.14) (2020-10-17)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.12...graphql-connection-transformer@4.18.13) (2020-10-01)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.11...graphql-connection-transformer@4.18.12) (2020-09-16)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.10...graphql-connection-transformer@4.18.11) (2020-09-02)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.9...graphql-connection-transformer@4.18.10) (2020-08-31)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.8...graphql-connection-transformer@4.18.9) (2020-08-14)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.7...graphql-connection-transformer@4.18.8) (2020-08-11)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.5...graphql-connection-transformer@4.18.7) (2020-07-29)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.5...graphql-connection-transformer@4.18.6) (2020-07-23)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.4...graphql-connection-transformer@4.18.5) (2020-07-18)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.3...graphql-connection-transformer@4.18.4) (2020-07-15)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** error if field not in relatedType ([#4481](https://github.com/aws-amplify/amplify-cli/issues/4481)) ([0a6a7ea](https://github.com/aws-amplify/amplify-cli/commit/0a6a7eabbe726d7add52b8a8811c54f7257d176f)), closes [#4236](https://github.com/aws-amplify/amplify-cli/issues/4236)
+
+
+
+
+
+## [4.18.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.2...graphql-connection-transformer@4.18.3) (2020-06-25)
+
+
+### Reverts
+
+* Revert "fix: change scope of hashed files for AppSync (#4602)" ([73aaab1](https://github.com/aws-amplify/amplify-cli/commit/73aaab1a7b1f8b2de5fa22fa1ef9aeea7de35cb4)), closes [#4602](https://github.com/aws-amplify/amplify-cli/issues/4602)
+
+
+
+
+
 ## [4.18.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.1...graphql-connection-transformer@4.18.2) (2020-06-18)
 
 

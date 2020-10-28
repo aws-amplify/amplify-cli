@@ -1,5 +1,4 @@
 /* eslint-disable no-multi-str */
-import chalkpipe from 'chalk-pipe';
 import chalk from 'chalk';
 
 const inquirer = require('inquirer');
@@ -42,7 +41,7 @@ Interpret allows you to analyze text for language, entities (places, people), ke
 Infer allows you to perform inference against a cloud endpoint. It’s an advanced feature using Amazon SageMaker, where you have more control over your models.\n\
 Learn More: https://docs.amplify.aws/lib/predictions/intro/q/platform/js';
     helpText = `\n${helpText.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
-    questions[0].prefix = chalkpipe(null, chalk.green)(helpText);
+    questions[0].prefix = chalk.green(helpText);
   }
   return questions;
 }

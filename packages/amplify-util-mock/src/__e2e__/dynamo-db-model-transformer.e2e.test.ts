@@ -178,6 +178,36 @@ test('Test createPost mutation', async () => {
   }
 });
 
+test('Test query on get query with null field', async () => {
+  const createResponse = await GRAPHQL_CLIENT.query(`
+    mutation {
+      createPost(input: { title: "Cool Post" }) {
+        id
+        title
+        createdAt
+        updatedAt
+      }
+    }`, {});
+  expect(createResponse.data.createPost.id).toBeDefined();
+  expect(createResponse.data.createPost.title).toEqual('Cool Post');
+  const postID = createResponse.data.createPost.id;
+  try {
+    const queryResponse = await GRAPHQL_CLIENT.query(`
+    query {
+      getPost(id: "${postID}") {
+        id
+        title
+        episode
+      }
+    }`, {});
+    expect(queryResponse.data.getPost.id).toEqual(postID);
+    expect(queryResponse.data.getPost.episode).toBeNull();
+  } catch (err) {
+    logDebug(err);
+    expect(err).toBeUndefined();
+  }
+});
+
 test('Test updatePost mutation', async () => {
   try {
     const createResponse = await GRAPHQL_CLIENT.query(

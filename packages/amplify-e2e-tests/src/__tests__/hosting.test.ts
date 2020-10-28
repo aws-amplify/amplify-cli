@@ -19,13 +19,9 @@ describe('amplify add hosting', () => {
   afterAll(async () => {
     await removeHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
-    await deleteProject(projRoot, true);
+    await deleteProject(projRoot);
     deleteProjectDir(projRoot);
   });
-
-  beforeEach(async () => {});
-
-  afterEach(async () => {});
 
   it('push creates correct amplify artifacts', async () => {
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
@@ -34,7 +30,7 @@ describe('amplify add hosting', () => {
     expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();
   });
 
-  it('publish successfuly', async () => {
+  it('publish successfully', async () => {
     let error;
     try {
       await amplifyPublishWithoutUpdate(projRoot);

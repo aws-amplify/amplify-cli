@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`awscloudformation function provider opens the correct service console 1`] = `"https://myMockRegion.console.aws.amazon.com/lambda/home?region=myMockRegion#/functions"`;
+
+exports[`awscloudformation function provider opens the correct service console 2`] = `"https://myMockRegion.console.aws.amazon.com/lambda/home?region=myMockRegion#/layers"`;

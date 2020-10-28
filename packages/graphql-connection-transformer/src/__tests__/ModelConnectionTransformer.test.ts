@@ -93,6 +93,31 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
   expect(connectionUpdateId).toBeTruthy();
 });
 
+test('Test that ModelConnection Transformer throws error when the field in connection is not found in the related Type', () => {
+  const invalidSchema = `
+  type Post @model {
+    name: String!
+    teamID: ID!
+    team: Team @connection(fields: ["teamID"])
+  }
+
+  type Team @model {
+    name: [String!]!
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+  });
+  try {
+    transformer.transform(invalidSchema);
+    expect(true).toEqual(false);
+  } catch (e) {
+    console.log(e);
+    expect(e).toBeTruthy();
+    expect(e.name).toEqual('InvalidDirectiveError');
+  }
+});
+
 test('Test ModelConnectionTransformer simple one to many happy case with custom keyField', () => {
   const validSchema = `
     type Post @model {

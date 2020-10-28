@@ -209,7 +209,8 @@ beforeAll(async () => {
 
     type Post @model
         @auth(rules: [
-            {allow: owner, ownerField: "postOwner"}
+            { allow: owner, ownerField: "postOwner" }
+            { allow: private, operations: [read], provider: iam }
         ])
     {
         id: ID!
@@ -849,7 +850,7 @@ test('authorized group is allowed to listen to onUpdate', async done => {
   updateMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
 });
 
-test('authoirzed group is allowed to listen to onDelete', async done => {
+test('authorized group is allowed to listen to onDelete', async done => {
   const memberID = '001';
   const memberName = 'newUsername';
   const observer = GRAPHQL_CLIENT_2.subscribe({
@@ -904,7 +905,66 @@ test('Test subscription onCreatePost with ownerField', async done => {
   });
 });
 
+test('Test onCreatePost with optional argument', async done => {
+  const failedObserver = GRAPHQL_CLIENT_1.subscribe({
+    query: gql`
+      subscription OnCreatePost {
+        onCreatePost {
+          id
+          title
+          postOwner
+        }
+      }
+    `,
+  });
+  const subscription = failedObserver.subscribe(
+    event => {},
+    err => {
+      expect(err).toHaveProperty('graphQLErrors');
+      const gqlErrors = err.graphQLErrors;
+      subscription.unsubscribe();
+      expect(gqlErrors[0].message).toEqual('Not Authorized to access onCreatePost on type Subscription');
+      expect(gqlErrors[0].errorType).toEqual('Unauthorized');
+      done();
+    },
+  );
+});
+
 // iam tests
+test('Test that IAM can listen and read to onCreatePost', async done => {
+  const postID = 'subscriptionID';
+  const postTitle = 'titleMadeByPostOwner';
+  const observer = GRAPHQL_IAM_AUTH_CLIENT.subscribe({
+    query: gql`
+      subscription OnCreatePost {
+        onCreatePost {
+          id
+          title
+          postOwner
+        }
+      }
+    `,
+  });
+  const subscription = observer.subscribe(
+    (event: any) => {
+      const post = event.data.onCreatePost;
+      console.log(post, null, 4);
+      subscription.unsubscribe();
+      expect(post).toBeDefined();
+      expect(post.id).toEqual(postID);
+      expect(post.title).toEqual(postTitle);
+      expect(post.postOwner).toEqual(USERNAME1);
+      done();
+    },
+    err => {
+      console.error(JSON.stringify(err, null, 4));
+    },
+  );
+  await new Promise(res => setTimeout(() => res(), SUBSCRIPTION_DELAY));
+
+  createPost(GRAPHQL_CLIENT_1, { id: postID, title: postTitle, postOwner: USERNAME1 });
+});
+
 test('test that subcsription with apiKey', async done => {
   const observer = GRAPHQL_APIKEY_CLIENT.subscribe({
     query: gql`

@@ -113,7 +113,7 @@ describe('Unit resolver', () => {
       const result = await resolver.resolve(source, args, context, info);
       expect(result).toEqual(RESPONSE_TEMPLATE_RESULT);
       expect(templates.request.render).toHaveBeenCalledWith({ source, arguments: args }, context, info);
-      expect(dataFetcher).toHaveBeenCalledWith(REQUEST_TEMPLATE_RESULT);
+      expect(dataFetcher).toHaveBeenCalledWith(REQUEST_TEMPLATE_RESULT, { source, args, context, info });
       expect(getDataLoader).toBeCalledWith('TodoTable');
       expect(templates.response.render).toHaveBeenCalledWith({ source, arguments: args, result: DATA_FROM_DATA_SOURCE }, context, info);
     });
@@ -125,7 +125,7 @@ describe('Unit resolver', () => {
 
       await expect(() => resolver.resolve(source, args, context, info)).rejects.toThrowError('Some request template error');
       expect(templates.request.render).toHaveBeenCalledWith({ source, arguments: args }, context, info);
-      expect(dataFetcher).toHaveBeenCalledWith(REQUEST_TEMPLATE_RESULT);
+      expect(dataFetcher).toHaveBeenCalledWith(REQUEST_TEMPLATE_RESULT, { source, args, context, info });
       expect(getDataLoader).toBeCalledWith('TodoTable');
       expect(templates.response.render).not.toHaveBeenCalled();
     });
@@ -139,7 +139,7 @@ describe('Unit resolver', () => {
       const result = await resolver.resolve(source, args, context, info);
       expect(result).toEqual(RESPONSE_TEMPLATE_RESULT);
       expect(templates.request.render).toHaveBeenCalledWith({ source, arguments: args }, context, info);
-      expect(dataFetcher).toHaveBeenCalledWith(REQUEST_TEMPLATE_RESULT);
+      expect(dataFetcher).toHaveBeenCalledWith(REQUEST_TEMPLATE_RESULT, { source, args, context, info });
       expect(getDataLoader).toBeCalledWith('TodoTable');
       expect(templates.response.render).toHaveBeenCalledWith({ source, arguments: args, error: error, result: null }, context, info);
     });
@@ -155,7 +155,7 @@ describe('Unit resolver', () => {
       const result = await resolver.resolve(source, args, context, info);
       expect(result).toEqual(REQUEST_TEMPLATE_RESULT.result);
       expect(templates.request.render).toHaveBeenCalledWith({ source, arguments: args }, context, info);
-      expect(dataFetcher).not.toHaveBeenCalledWith(REQUEST_TEMPLATE_RESULT);
+      expect(dataFetcher).not.toHaveBeenCalledWith(REQUEST_TEMPLATE_RESULT, { source, args, context, info });
       expect(templates.response.render).not.toHaveBeenCalled();
     });
 

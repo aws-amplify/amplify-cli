@@ -12,7 +12,7 @@ import {
   ResolverResourceIDs,
   getBaseType,
 } from 'graphql-transformer-common';
-import { getDirectiveArguments, gql, Transformer, TransformerContext, SyncConfig } from 'graphql-transformer-core';
+import { getDirectiveArguments, gql, Transformer, TransformerContext, SyncConfig, InvalidDirectiveError } from 'graphql-transformer-core';
 import {
   getNonModelObjectArray,
   makeCreateInputObject,
@@ -116,11 +116,16 @@ export class DynamoDBModelTransformer extends Transformer {
     // append hoisted initalization code to the top of request mapping template
     const ddbMetata = ctx.metadata.get(METADATA_KEY);
     if (ddbMetata) {
-      Object.entries(ddbMetata.hoistedRequestMappingContent || {}).forEach(([resourceId, hoistedContent]) => {
-        const resource: AppSync.Resolver = ctx.getResource(resourceId) as any;
-        resource.Properties.RequestMappingTemplate = [hoistedContent, resource.Properties.RequestMappingTemplate].join('\n');
-        ctx.setResource(resourceId, resource);
-      });
+      Object.entries(ddbMetata.hoistedRequestMappingContent || {}).forEach(
+        ([resourceId, hoistedContentGenerator]: [string, () => string | void]) => {
+          const hoistedContent = hoistedContentGenerator();
+          if (hoistedContent) {
+            const resource: AppSync.Resolver = ctx.getResource(resourceId) as any;
+            resource.Properties.RequestMappingTemplate = [hoistedContent, resource.Properties.RequestMappingTemplate].join('\n');
+            ctx.setResource(resourceId, resource);
+          }
+        },
+      );
     }
   };
 
@@ -130,6 +135,17 @@ export class DynamoDBModelTransformer extends Transformer {
    * @param ctx The accumulated context for the transform.
    */
   public object = (def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void => {
+    const isTypeNameReserved =
+      def.name.value === ctx.getQueryTypeName() ||
+      def.name.value === ctx.getMutationTypeName() ||
+      def.name.value === ctx.getSubscriptionTypeName();
+
+    if (isTypeNameReserved) {
+      throw new InvalidDirectiveError(
+        `'${def.name.value}' is a reserved type name and currently in use within the default schema element.`,
+      );
+    }
+
     // Add a stack mapping so that all model resources are pulled
     // into their own stack at the end of the transformation.
     const stackName = def.name.value;
@@ -142,6 +158,8 @@ export class DynamoDBModelTransformer extends Transformer {
         ctx.addInput(nonModelObject);
       }
     });
+
+    this.addIdField(def, directive, ctx);
 
     // Set Sync Config if it exists
 
@@ -240,6 +258,19 @@ export class DynamoDBModelTransformer extends Transformer {
     ctx.updateObject(newObj);
   }
 
+  // Add ID field to type when does not have id
+  private addIdField(def: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContext): void {
+    const hasIdField = def.fields.find(f => f.name.value === 'id');
+    if (!hasIdField) {
+      const obj = ctx.getObject(def.name.value);
+      const newObj: ObjectTypeDefinitionNode = {
+        ...obj,
+        fields: [makeField('id', [], wrapNonNull(makeNamedType('ID'))), ...obj.fields],
+      };
+      ctx.updateObject(newObj);
+    }
+  }
+
   private createMutations = (
     def: ObjectTypeDefinitionNode,
     directive: DirectiveNode,
@@ -313,7 +344,13 @@ export class DynamoDBModelTransformer extends Transformer {
       });
       const hositedInitalization = this.resources.initalizeDefaultInputForCreateMutation(createInput, timestampFields);
       const resourceId = ResolverResourceIDs.DynamoDBCreateResolverResourceID(typeName);
-      this.addInitalizationMetadata(ctx, resourceId, hositedInitalization);
+      this.addInitalizationMetadata(ctx, resourceId, () => {
+        const inputObj = ctx.getType(createInput.name.value) as InputObjectTypeDefinitionNode;
+        if (inputObj) {
+          return this.resources.initalizeDefaultInputForCreateMutation(inputObj, timestampFields);
+        }
+      });
+
       ctx.setResource(resourceId, createResolver);
       ctx.mapResourceToStack(typeName, resourceId);
       const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(createInput.name.value)))];
@@ -409,8 +446,9 @@ export class DynamoDBModelTransformer extends Transformer {
       }
     }
 
-    // Create sync query
+    // Create sync query if @model present for datastore
     if (isSyncEnabled) {
+      // change here for selective Sync for @model (Just add the queryMap for table and query expression)
       const syncResolver = this.resources.makeSyncResolver(typeName);
       const syncResourceID = ResolverResourceIDs.SyncResolverResourceID(typeName);
       ctx.setResource(syncResourceID, syncResolver);
@@ -605,6 +643,12 @@ export class DynamoDBModelTransformer extends Transformer {
     }
   }
 
+  /**
+   * Generate Predicate type for Sync Query for DataStore
+   * @param ctx : transformer context
+   * @param def : ObjectTypeDefinition
+   */
+
   private generateConditionInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
     const scalarFilters = makeScalarFilterInputs(this.supportsConditions(ctx));
     for (const filter of scalarFilters) {
@@ -708,11 +752,11 @@ export class DynamoDBModelTransformer extends Transformer {
     return true;
   }
 
-  private addInitalizationMetadata(ctx: TransformerContext, resourceId: string, initCode: string): void {
+  private addInitalizationMetadata(ctx: TransformerContext, resourceId: string, initCodeGenerator: () => string | void): void {
     const ddbMetadata = ctx.metadata.has(METADATA_KEY) ? ctx.metadata.get(METADATA_KEY) : {};
     ddbMetadata.hoistedRequestMappingContent = {
       ...ddbMetadata?.hoistedRequestMappingContent,
-      [resourceId]: initCode,
+      [resourceId]: initCodeGenerator,
     };
     ctx.metadata.set(METADATA_KEY, ddbMetadata);
   }

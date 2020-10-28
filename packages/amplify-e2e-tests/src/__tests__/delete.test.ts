@@ -12,14 +12,14 @@ import {
   bucketNotExists,
   deleteS3Bucket,
 } from 'amplify-e2e-core';
-import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/add-env';
+import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import { addApiWithoutSchema } from 'amplify-e2e-core';
 import { addCodegen } from '../codegen/add';
 import { addS3 } from 'amplify-e2e-core';
 import { amplifyPushWithoutCodegen } from 'amplify-e2e-core';
 import { addAuthWithDefault } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
-import { initProject, addPinpointAnalytics, pushToCloud, pinpointAppExist, amplifyDelete } from 'amplify-e2e-core';
+import { initProjectForPinpoint, addPinpointAnalytics, pushToCloud, pinpointAppExist, amplifyDelete } from 'amplify-e2e-core';
 import { getAWSExportsPath } from '../aws-exports/awsExports';
 import _ from 'lodash';
 
@@ -49,7 +49,7 @@ describe('amplify delete', () => {
   });
 
   it('should delete pinpoint project', async () => {
-    await initProject(projRoot);
+    await initProjectForPinpoint(projRoot);
     const pinpointResourceName = await addPinpointAnalytics(projRoot);
     await pushToCloud(projRoot);
     const amplifyMeta = getProjectMeta(projRoot);
@@ -110,7 +110,7 @@ async function testDeletion(projRoot: string, settings: { ios?: Boolean; android
   expect(await bucketExists(deploymentBucketName1)).toBe(true);
   expect(await bucketExists(deploymentBucketName2)).toBe(true);
   if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(true);
-  await deleteProject(projRoot, true);
+  await deleteProject(projRoot);
   if (meta.AmplifyAppId) expect(await appExists(meta.AmplifyAppId, meta.Region)).toBe(false);
   expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
   expect(await bucketNotExists(deploymentBucketName2)).toBe(true);

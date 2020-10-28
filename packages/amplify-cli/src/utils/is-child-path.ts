@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path';
 
 export default function isChildPath(child: string, parent: string): boolean {
   if (child === parent) {

@@ -1,6 +1,7 @@
 import inquirer from 'inquirer';
 import path from 'path';
 const TransformPackage = require('graphql-transformer-core');
+const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 
 export async function askDynamoDBQuestions(context: any, currentProjectOnly = false): Promise<{ resourceName: string }> {
   const dynamoDbTypeQuestion = {
@@ -103,10 +104,12 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
 
   let targetResourceName: any;
   if (appSyncResources.length === 0) {
-    context.print.error(`
+    const errMessage = `
       No AppSync resources have been configured in the API category.
-      Please use "amplify add api" command to create a new appsync resource`);
-    process.exit(0);
+      Please use "amplify add api" command to create a new appsync resource`;
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(1);
   } else if (appSyncResources.length === 1) {
     targetResourceName = appSyncResources[0].resourceName;
     context.print.success(`Selected resource ${targetResourceName}`);

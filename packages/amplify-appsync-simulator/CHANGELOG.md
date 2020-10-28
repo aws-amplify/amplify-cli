@@ -3,6 +3,125 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.7...amplify-appsync-simulator@1.23.8) (2020-10-27)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** handle Lexical error correctly ([#5622](https://github.com/aws-amplify/amplify-cli/issues/5622)) ([22209c4](https://github.com/aws-amplify/amplify-cli/commit/22209c465b147913bb034c054e85a2e1de4246ff)), closes [#5621](https://github.com/aws-amplify/amplify-cli/issues/5621)
+
+
+
+
+
+## [1.23.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.6...amplify-appsync-simulator@1.23.7) (2020-10-22)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+## [1.23.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.5...amplify-appsync-simulator@1.23.6) (2020-10-15)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** make ExpressionAttributeNames optional ([#5575](https://github.com/aws-amplify/amplify-cli/issues/5575)) ([35af053](https://github.com/aws-amplify/amplify-cli/commit/35af053de048875ea946b4467804f5f9c317a130)), closes [#5573](https://github.com/aws-amplify/amplify-cli/issues/5573)
+* **amplify-velocity-template:** expression not equals works unproperly ([#5571](https://github.com/aws-amplify/amplify-cli/issues/5571)) ([7bc5051](https://github.com/aws-amplify/amplify-cli/commit/7bc5051f8713b3d3b945e35e5138c4146be26e01)), closes [#5570](https://github.com/aws-amplify/amplify-cli/issues/5570)
+
+
+
+
+
+## [1.23.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.4...amplify-appsync-simulator@1.23.5) (2020-10-13)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+## [1.23.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.3...amplify-appsync-simulator@1.23.4) (2020-10-07)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+## [1.23.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.2...amplify-appsync-simulator@1.23.3) (2020-10-01)
+
+
+### Bug Fixes
+
+* [#5372](https://github.com/aws-amplify/amplify-cli/issues/5372) - cut signing url ending slash when matching in mock ([#5434](https://github.com/aws-amplify/amplify-cli/issues/5434)) ([dfff875](https://github.com/aws-amplify/amplify-cli/commit/dfff87538dd5cb4cd932c9b141c9549e740e9942))
+
+
+
+
+
+## [1.23.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.1...amplify-appsync-simulator@1.23.2) (2020-08-20)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** fix returning null on nonexistent fields ([#5093](https://github.com/aws-amplify/amplify-cli/issues/5093)) ([a0439db](https://github.com/aws-amplify/amplify-cli/commit/a0439db462e8189d7b158472f269326e2c6bdb8d)), closes [#5003](https://github.com/aws-amplify/amplify-cli/issues/5003)
+
+
+
+
+
+## [1.23.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.0...amplify-appsync-simulator@1.23.1) (2020-08-06)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+# [1.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.21.1...amplify-appsync-simulator@1.23.0) (2020-07-29)
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([6d1c632](https://github.com/aws-amplify/amplify-cli/commit/6d1c632952a49cb56670c11c9cb0c3620d0eb332))
+* **amplify-appsync-simulator:** implement BatchInvoke ([#4421](https://github.com/aws-amplify/amplify-cli/issues/4421)) ([a330274](https://github.com/aws-amplify/amplify-cli/commit/a330274f1595f438ca7d234e2c964a633b1608b7)), closes [#4404](https://github.com/aws-amplify/amplify-cli/issues/4404)
+
+
+
+
+
+# [1.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.21.1...amplify-appsync-simulator@1.22.0) (2020-07-23)
+
+
+### Features
+
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([4639450](https://github.com/aws-amplify/amplify-cli/commit/463945029cfe861f74986d9a8b9af6b827d2063d))
+
+
+
+
+
+## [1.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.21.0...amplify-appsync-simulator@1.21.1) (2020-07-18)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+# [1.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.3...amplify-appsync-simulator@1.21.0) (2020-07-07)
+
+
+### Features
+
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([30a7fe7](https://github.com/aws-amplify/amplify-cli/commit/30a7fe70f5838a766631befcc720a721e801bc5f))
+
+
+
+
+
 ## [1.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.20.2...amplify-appsync-simulator@1.20.3) (2020-06-02)
 
 

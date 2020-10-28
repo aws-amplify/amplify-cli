@@ -132,6 +132,16 @@ export const getFunction = async (functionName: string, region: string) => {
   return await service.getFunction({ FunctionName: functionName }).promise();
 };
 
+export const getLayerVersion = async (functionArn: string, region: string) => {
+  const service = new Lambda({ region });
+  return await service.getLayerVersionByArn({ Arn: functionArn }).promise();
+};
+
+export const listVersions = async (layerName: string, region: string) => {
+  const service = new Lambda({ region });
+  return await service.listLayerVersions({ LayerName: layerName }).promise();
+};
+
 export const invokeFunction = async (functionName: string, payload: string, region: string) => {
   const service = new Lambda({ region });
   return await service.invoke({ FunctionName: functionName, Payload: payload }).promise();
@@ -181,8 +191,8 @@ export const getCloudWatchLogs = async (region: string, logGroupName: string, lo
   return logsResp.events || [];
 };
 
-export const describeCloudFormationStack = async (stackName: string, region: string) => {
-  const service = new CloudFormation({ region });
+export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: any) => {
+  const service = profileConfig ? new CloudFormation(profileConfig) : new CloudFormation({ region });
   return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(stack => stack.StackName === stackName);
 };
 

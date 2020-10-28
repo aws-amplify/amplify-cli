@@ -1,6 +1,6 @@
 {
   "name": "amplify-codegen-appsync-model-plugin",
-  "version": "1.19.2",
+  "version": "1.20.9",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",
@@ -19,13 +19,12 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test-watch": "jest --watch",
-    "test": "jest",
-    "test-ci": "jest --ci"
+    "test": "jest"
   },
   "dependencies": {
     "@graphql-codegen/plugin-helpers": "^1.12.2",
     "@graphql-codegen/visitor-plugin-common": "1.12.2",
-    "@graphql-toolkit/common": "0.9.7",
+    "@graphql-tools/utils": "^6.0.18",
     "chalk": "^3.0.0",
     "change-case": "^4.1.1",
     "lower-case-first": "^2.0.1",

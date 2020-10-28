@@ -4,6 +4,9 @@ import { packageResource } from './utils/package';
 import { checkJava, checkJavaCompiler, checkGradle } from './utils/detect';
 import { invokeResource } from './utils/invoke';
 import { CheckDependenciesResult } from 'amplify-function-plugin-interface/src';
+import path from 'path';
+import { relativeShimSrcPath } from './utils/constants';
+import { GetPackageAssetPaths } from 'amplify-cli-core';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
@@ -20,6 +23,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'java',
           cloudTemplateValue: 'java11',
           defaultHandler: 'example.LambdaRequestHandler::handleRequest',
+          layerExecutablePath: path.join('java', 'lib'),
         },
       });
     },
@@ -61,3 +65,5 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     invoke: params => invokeResource(params, context),
   };
 };
+
+export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativeShimSrcPath];
