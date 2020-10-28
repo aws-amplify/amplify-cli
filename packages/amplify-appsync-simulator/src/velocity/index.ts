@@ -114,7 +114,13 @@ export class VelocityTemplate {
       result: convertToJavaTypes(result),
       // surfacing the errorType to ensure the type is included in $ctx.error
       // Mapping Template Errors: https://docs.aws.amazon.com/appsync/latest/devguide/troubleshooting-and-common-mistakes.html#mapping-template-errors
-      error: error ? { ...error, type: error.extensions.errorType } : error,
+      error: error
+        ? {
+            ...error,
+            type: error.extensions?.errorType || 'UnknowErrorType',
+            message: error.message || `Error: ${error}`,
+          }
+        : error,
     };
 
     if (typeof prevResult !== 'undefined') {
