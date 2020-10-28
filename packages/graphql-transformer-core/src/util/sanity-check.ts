@@ -139,7 +139,7 @@ export function cantEditGSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
     const newIndexes = get(nextBuild, pathToGSIs);
     const oldIndexesDiffable = keyBy(oldIndexes, 'IndexName');
     const newIndexesDiffable = keyBy(newIndexes, 'IndexName');
-    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable);
+    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable) || [];
     // We must look at this inner diff or else we could confuse a situation
     // where the user adds a GSI to the beginning of the GlobalSecondaryIndexes list in CFN.
     // We re-key the indexes list so we can determine if a change occurred to an index that
@@ -192,7 +192,7 @@ export function cantAddAndRemoveGSIAtSameTime(diff: Diff, currentBuild: Diffable
     const newIndexes = get(nextBuild, pathToGSIs);
     const oldIndexesDiffable = keyBy(oldIndexes, 'IndexName');
     const newIndexesDiffable = keyBy(newIndexes, 'IndexName');
-    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable);
+    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable) || [];
     let sawDelete = false;
     let sawNew = false;
     for (const diff of innerDiffs) {
@@ -273,7 +273,7 @@ export function cantEditLSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
     const newIndexes = get(nextBuild, pathToGSIs);
     const oldIndexesDiffable = keyBy(oldIndexes, 'IndexName');
     const newIndexesDiffable = keyBy(newIndexes, 'IndexName');
-    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable);
+    const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable) || [];
     // We must look at this inner diff or else we could confuse a situation
     // where the user adds a LSI to the beginning of the LocalSecondaryIndex list in CFN.
     // We re-key the indexes list so we can determine if a change occurred to an index that
