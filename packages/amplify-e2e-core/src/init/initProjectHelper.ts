@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, singleSelect } from '../../src';
+import { nspawn as spawn, getCLIPath, singleSelect } from '..';
 
 const defaultSettings = {
   name: '\r',

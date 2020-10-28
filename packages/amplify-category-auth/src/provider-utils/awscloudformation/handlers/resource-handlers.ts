@@ -36,7 +36,7 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
 
 export const getUpdateAuthHandler = (context: any) => async (request: ServiceQuestionsResult) => {
   const { cfnFilename, defaultValuesFilename, provider } = supportedServices[request.serviceName];
-  const requestWithDefaults = await getUpdateAuthDefaultsApplier(defaultValuesFilename, context.updatingAuth)(request);
+  const requestWithDefaults = await getUpdateAuthDefaultsApplier(context, defaultValuesFilename, context.updatingAuth)(request);
   await getResourceUpdater(
     context,
     cfnFilename,

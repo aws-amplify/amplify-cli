@@ -11,7 +11,7 @@ const learnMoreOption = [
   },
 ];
 
-const defaultPrompMap = [
+const defaultPromptMap = [
   {
     name: 'Default configuration',
     value: 'default',
@@ -572,7 +572,7 @@ const getAllMaps = edit => {
     mfaOptions,
     mfaMethods,
     emailRegistration,
-    defaultPrompMap,
+    defaultPromptMap,
     booleanOptions,
     signInOptions,
     socialLoginOptions,
@@ -596,7 +596,7 @@ module.exports = {
   mfaOptions,
   mfaMethods,
   emailRegistration,
-  defaultPrompMap,
+  defaultPromptMap,
   booleanOptions,
   signInOptions,
   socialLoginOptions,

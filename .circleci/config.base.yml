@@ -114,6 +114,26 @@ jobs:
           no_output_timeout: 90m
       - store_test_results:
           path: packages/graphql-transformers-e2e-tests/
+  amplify_sudo_install_test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
+      - run:
+          name: Start verdaccio and Install Amplify CLI as sudo
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setSudoNpmRegistryUrlToLocal
+            changeSudoNpmGlobalPath
+            sudo npm install -g @aws-amplify/cli
+            unsetSudoNpmRegistryUrl
+            amplify version
 
   amplify_e2e_tests:
     <<: *defaults
@@ -666,6 +686,7 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - graphql_e2e_testing
+                - feat-import
           requires:
             - build
             - mock_e2e_tests
@@ -676,6 +697,7 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - beta
+                - feat-import
           requires:
             - build
             - mock_e2e_tests
@@ -686,14 +708,23 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - beta
+                - feat-import
           requires:
             - build
+      - amplify_sudo_install_test:
+          requires:
+            - publish_to_local_registry
+          filters:
+            branches:
+              only:
+                - master
       - amplify_e2e_tests:
           filters:
             branches:
               only:
                 - master
                 - graphqlschemae2e
+                - feat-import
           requires:
             - publish_to_local_registry
       - amplify_migration_tests_latest:
@@ -702,6 +733,7 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
+                - feat-import
           requires:
             - build
       - amplify_migration_tests_v4:
@@ -710,6 +742,7 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
+                - feat-import
           requires:
             - build
       - amplify_console_integration_tests:
@@ -717,6 +750,7 @@ workflows:
             branches:
               only:
                 - beta
+                - feat-import
           requires:
             - build
             - publish_to_local_registry
@@ -728,6 +762,7 @@ workflows:
             - graphql_e2e_tests
             - integration_test
             - amplify_e2e_tests
+            - amplify_sudo_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
@@ -737,6 +772,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - feat-import
       # - integration_test_js:
       #     filters:
       #       branches:

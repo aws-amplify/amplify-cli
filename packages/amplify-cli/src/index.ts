@@ -17,6 +17,7 @@ import { notify } from './version-notifier';
 import { EventEmitter } from 'events';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
+import { postInstallInitialization } from './utils/post-install-initialization';
 EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
@@ -126,8 +127,7 @@ function boundErrorHandler(this: Context, e: Error) {
 
 function sigIntHandler(this: Context, e: any) {
   this.usageData.emitAbort();
-  this.print.warn('^Aborted!');
-  //exit on abort
+  this.print.warning('^Aborted!');
   exitOnNextTick(2);
 }
 

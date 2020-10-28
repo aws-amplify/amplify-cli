@@ -85,7 +85,7 @@ export class AppSyncModelTypeScriptVisitor<
     modelObj.fields.forEach((field: CodeGenField) => {
       modelDeclarations.addProperty(this.getFieldName(field), this.getNativeType(field), undefined, 'DEFAULT', {
         readonly: true,
-        optional: field.isNullable,
+        optional: field.isList ? field.isListNullable : field.isNullable,
       });
     });
 
@@ -202,7 +202,11 @@ export class AppSyncModelTypeScriptVisitor<
   }
 
   protected getListType(typeStr: string, field: CodeGenField): string {
-    return `${typeStr}[]`;
+    let type: string = typeStr;
+    if (field.isNullable) {
+      type = `(${type} | null)`;
+    }
+    return `${type}[]`;
   }
 
   protected getNativeType(field: CodeGenField): string {

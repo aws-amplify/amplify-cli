@@ -9,11 +9,7 @@ export async function analyzeProject(context) {
     defaultEditor = await getEditor(context);
   }
 
-  if ((context.exeInfo.inputParams && context.exeInfo.inputParams.yes) || context.parameters.options.forcePush) {
-    context.exeInfo.forcePush = true;
-  } else {
-    context.exeInfo.forcePush = false;
-  }
+  context.exeInfo.forcePush = !!context?.parameters?.options?.forcePush;
 
   context.exeInfo.projectConfig.version = amplifyCLIConstants.PROJECT_CONFIG_VERSION;
 

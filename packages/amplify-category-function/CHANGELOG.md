@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.25.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.25.5...amplify-category-function@2.25.6) (2020-10-27)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [2.25.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.25.4...amplify-category-function@2.25.5) (2020-10-22)
+
+
+### Bug Fixes
+
+* refactor mobile hub migration checks ([#5632](https://github.com/aws-amplify/amplify-cli/issues/5632)) ([b796eb8](https://github.com/aws-amplify/amplify-cli/commit/b796eb8303bb903f5f531506254441a63eba2962))
+
+
+
+
+
+## [2.25.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.25.3...amplify-category-function@2.25.4) (2020-10-17)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [2.25.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.25.2...amplify-category-function@2.25.3) (2020-10-07)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** fix update permission bug ([#5421](https://github.com/aws-amplify/amplify-cli/issues/5421)) ([f1194fd](https://github.com/aws-amplify/amplify-cli/commit/f1194fdd0aacbd2c316545422ad5e659d7042118)), closes [#5333](https://github.com/aws-amplify/amplify-cli/issues/5333)
+
+
+
+
+
 ## [2.25.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.25.1...amplify-category-function@2.25.2) (2020-10-01)
 
 

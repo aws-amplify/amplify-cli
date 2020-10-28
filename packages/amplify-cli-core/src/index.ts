@@ -1,13 +1,17 @@
+import { ServiceSelection } from './serviceSelection';
+
 export * from './cliContext';
 export * from './cliContextEnvironmentProvider';
 export * from './cliEnvironmentProvider';
 export * from './feature-flags';
 export * from './jsonUtilities';
 export * from './jsonValidationError';
+export * from './serviceSelection';
 export * from './state-manager';
 export * from './tags';
 export * from './errors';
 export * from './exitOnNextTick';
+export * from './isPackaged';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -26,7 +30,59 @@ export type $TSContext = {
   parameters: $TSAny;
   usageData: $TSAny;
   runtime: $TSAny;
+  pluginPlatform: IPluginPlatform;
 };
+
+export type IPluginPlatform = {
+  pluginDirectories: string[];
+  pluginPrefixes: string[];
+  userAddedLocations: string[];
+  lastScanTime: Date;
+  maxScanIntervalInSeconds: Number;
+  plugins: IPluginCollection;
+  excluded: IPluginCollection;
+};
+
+export type IPluginCollection = {
+  [pluginType: string]: IPluginInfo[];
+};
+
+export type IPluginInfo = {
+  packageName: string;
+  packageVersion: string;
+  packageLocation: string;
+  manifest: $IPluginManifest;
+};
+
+/**
+ * Plugins or other packages bundled with the CLI that pass a file to a system command or execute a binary file must export a function named
+ * "getPackageAssetPaths" of this type.
+ *
+ * The function must return the relative paths of all files and folders that the package passes into a system command.
+ * If the package is an Amplify plugin, the path must be relative to the location of the amplify-plugin.json file
+ * If the package is not an Amplify plugin, the path must be relative to the location of require.resolve('your-package')
+ *
+ * This function will be executed by the CLI during installation.
+ *
+ * At runtime, the assets can be retrieved at path.join(pathManager.getAmplifyPackageLibDirPath(packageName), relativePath)
+ * where "pathManager" is the PathManager instance exported by this package,
+ * "packageName" is the name of your package (used as a key to locate the assets),
+ * and "relativePath" is the path to the asset relative to the root of the package.
+ *
+ * For example, suppose you have a package called "my-fancy-package".
+ * This package expects at runtime to have access to all of the binary files in the folder "<package-root>/resources/binaries"
+ * as well as access to a jar file at "<package-root>/resources/jars/myJar.jar"
+ *
+ * In that case, this package will export the following function:
+ *
+ * export const getPackageAssetPaths = () => ['resources/binaries', 'resources/jars/myJar.jar'];
+ *
+ * A binary could then be accessed at path.join(pathManager.getAmplifyPackageLibDirPath('my-fancy-package'), 'resources/binaries', 'myBinary')
+ * Likewise the jar can be retrieved at path.join(pathManager.getAmplifyPackageLibDirPath('my-fancy-package'), 'resources/jars/myJar.jar')
+ */
+export type GetPackageAssetPaths = () => Promise<string[]>;
+
+export type $IPluginManifest = $TSAny;
 
 // Use it for all file content read from amplify-meta.json
 export type $TSMeta = any;
@@ -66,7 +122,7 @@ interface AmplifyToolkit {
   listCategories: () => $TSAny;
   makeId: () => $TSAny;
   openEditor: () => $TSAny;
-  onCategoryOutputsChange: (context: $TSContext, amplifyMeta: $TSMeta) => $TSAny;
+  onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
   pathManager: () => $TSAny;
   pressEnterToContinue: () => $TSAny;
   pushResources: () => $TSAny;
@@ -79,20 +135,31 @@ interface AmplifyToolkit {
   showHelp: () => $TSAny;
   showHelpfulProviderLinks: () => $TSAny;
   showResourceTable: () => $TSAny;
-  serviceSelectionPrompt: () => $TSAny;
+  serviceSelectionPrompt: (
+    context: $TSContext,
+    category: string,
+    servicesMetadata: $TSAny,
+    customQuestion?: $TSAny,
+  ) => Promise<ServiceSelection>;
   updateProjectConfig: () => $TSAny;
   updateamplifyMetaAfterResourceUpdate: () => $TSAny;
-  updateamplifyMetaAfterResourceAdd: () => $TSAny;
+  updateamplifyMetaAfterResourceAdd: (
+    category: string,
+    resourceName: string,
+    metaResourceData: $TSAny,
+    backendResourceData?: $TSAny,
+    overwriteObjectIfExists?: boolean,
+  ) => $TSAny;
   updateamplifyMetaAfterResourceDelete: () => $TSAny;
   updateProvideramplifyMeta: () => $TSAny;
   updateamplifyMetaAfterPush: () => $TSAny;
   updateamplifyMetaAfterBuild: () => $TSAny;
   updateAmplifyMetaAfterPackage: () => $TSAny;
-  updateBackendConfigAfterResourceAdd: () => $TSAny;
+  updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSAny) => $TSAny;
   updateBackendConfigAfterResourceUpdate: () => $TSAny;
   updateBackendConfigAfterResourceRemove: () => $TSAny;
-  loadEnvResourceParameters: () => $TSAny;
-  saveEnvResourceParameters: () => $TSAny;
+  loadEnvResourceParameters: (context: $TSContext, category: string, resourceName: string) => $TSAny;
+  saveEnvResourceParameters: (context: $TSContext, category: string, resourceName: string, envSpecificParams: $TSObject) => $TSAny;
   removeResourceParameters: () => $TSAny;
   triggerFlow: () => $TSAny;
   addTrigger: () => $TSAny;
@@ -112,4 +179,14 @@ interface AmplifyToolkit {
   leaveBreadcrumbs: () => $TSAny;
   readBreadcrumbs: () => $TSAny;
   loadRuntimePlugin: () => $TSAny;
+  getImportedAuthProperties: (
+    context: $TSContext,
+  ) => {
+    imported: boolean;
+    userPoolId?: string;
+    authRoleArn?: string;
+    authRoleName?: string;
+    unauthRoleArn?: string;
+    unauthRoleName?: string;
+  };
 }

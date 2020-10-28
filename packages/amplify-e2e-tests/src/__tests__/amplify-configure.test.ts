@@ -55,7 +55,7 @@ function testAmplifyConfigureValidation() {
       .wait('You must enter a valid secretAccessKey')
       .sendLine(validMockAWSSecretAccessKey)
       .wait('Profile Name:')
-      .sendCarriageReturn()
+      .sendLine('config-test')
       .wait('Successfully set up the new user.')
       .run((err: Error) => {
         if (!err) {

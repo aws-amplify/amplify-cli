@@ -311,6 +311,40 @@ describe('AppSyncModelVisitor', () => {
       expect(groupRule.groupClaim).toEqual('cognito:groups');
       expect(groupRule.operations).toEqual(['create', 'update', 'delete', 'read']);
     });
+
+    it('should process field level auth with default owner authorization', () => {
+      const schema = /* GraphQL*/ `
+        type Employee @model
+          @auth(rules: [
+              { allow: owner },
+              { allow: groups, groups: ["Admins"] }
+          ]) {
+            id: ID!
+            name: String!
+            address: String!
+            ssn: String @auth(rules: [{allow: owner}])
+        }
+      `;
+      const ast = parse(schema);
+      const builtSchema = buildSchemaWithDirectives(schema);
+      const visitor = new AppSyncModelVisitor(builtSchema, { directives, target: 'android', generate: CodeGenGenerateEnum.code }, {});
+      visit(ast, { leave: visitor });
+      visitor.generate();
+
+      const ssnField = visitor.models.Employee.fields.find(f => f.name === 'ssn');
+      const authDirective = ssnField.directives.find(d => d.name === 'auth');
+      expect(authDirective).toBeDefined();
+      const authRules = authDirective!.arguments.rules;
+      expect(authRules).toBeDefined();
+      expect(authRules).toHaveLength(1);
+      const ownerRule = authRules[0];
+      expect(ownerRule).toBeDefined();
+
+      expect(ownerRule.provider).toEqual('userPools');
+      expect(ownerRule.identityClaim).toEqual('cognito:username');
+      expect(ownerRule.ownerField).toEqual('owner');
+      expect(ownerRule.operations).toEqual(['create', 'update', 'delete', 'read']);
+    });
   });
   describe('model less type', () => {
     let visitor;

@@ -1,6 +1,8 @@
 import { FunctionRuntimeContributorFactory } from 'amplify-function-plugin-interface';
 import { checkDependencies, packageResource, buildResource } from './runtime';
 import { localInvoke } from './localinvoke';
+import { relativeShimSrcPath } from './constants';
+import { GetPackageAssetPaths } from 'amplify-cli-core';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
@@ -24,3 +26,5 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     invoke: request => localInvoke(request, context),
   };
 };
+
+export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativeShimSrcPath];

@@ -1,6 +1,11 @@
 const ddbSimulator = require('..');
 const fs = require('fs-extra');
-const { execSync } = require('child_process');
+
+jest.mock('amplify-cli-core', () => ({
+  pathManager: {
+    getAmplifyPackageLibDirPath: jest.fn().mockReturnValue('./'),
+  },
+}));
 
 describe('emulator operations', () => {
   const dbPath = `${__dirname}/dynamodb-data/${process.pid}`;

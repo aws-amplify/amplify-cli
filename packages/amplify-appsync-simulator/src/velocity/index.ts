@@ -39,7 +39,7 @@ export class VelocityTemplate {
       });
       this.template = template;
     } catch (e) {
-      const lineDetails = `${e.hash.line}:${e.hash.loc.first_column}`;
+      const lineDetails = `${e.hash.line}:${e.hash.loc?.first_column ? e.hash.loc.first_column : ''}`;
       const fileName = template.path ? `${template.path}:${lineDetails}` : lineDetails;
       const templateError = new VelocityTemplateParseError(`Error:Parse error on ${fileName} \n${e.message}`);
       templateError.stack = e.stack;
@@ -114,7 +114,13 @@ export class VelocityTemplate {
       result: convertToJavaTypes(result),
       // surfacing the errorType to ensure the type is included in $ctx.error
       // Mapping Template Errors: https://docs.aws.amazon.com/appsync/latest/devguide/troubleshooting-and-common-mistakes.html#mapping-template-errors
-      error: error ? { ...error, type: error.extensions.errorType } : error,
+      error: error
+        ? {
+            ...error,
+            type: error.extensions?.errorType || 'UnknowErrorType',
+            message: error.message || `Error: ${error}`,
+          }
+        : error,
     };
 
     if (typeof prevResult !== 'undefined') {

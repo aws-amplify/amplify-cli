@@ -8,9 +8,10 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import { readFromPath, writeToPath, throwIfNotJSONExt, emptyDirectory, handleFile, FileHandler } from './fileUtils';
 import { writeConfig, TransformConfig, TransformMigrationConfig, loadProject, readSchema, loadConfig } from './transformConfig';
 import * as Sanity from './sanity-check';
+import { FeatureFlagProvider } from '../FeatureFlags';
 
-const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
-const PARAMETERS_FILE_NAME = 'parameters.json';
+export const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
+export const PARAMETERS_FILE_NAME = 'parameters.json';
 
 export interface ProjectOptions {
   projectDirectory?: string;
@@ -24,6 +25,7 @@ export interface ProjectOptions {
   disableResolverOverrides?: boolean;
   buildParameters?: Object;
   minify?: boolean;
+  featureFlags: FeatureFlagProvider;
 }
 
 export async function buildProject(opts: ProjectOptions) {
@@ -59,6 +61,7 @@ async function _buildProject(opts: ProjectOptions) {
     transformers,
     stackMapping,
     transformConfig: userProjectConfig.config,
+    featureFlags: opts.featureFlags,
   });
   let transformOutput = transform.transform(userProjectConfig.schema.toString());
   if (userProjectConfig.config && userProjectConfig.config.Migration) {

@@ -1,5 +1,5 @@
 import { Pinpoint } from 'aws-sdk';
-import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions } from '../../src';
+import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions } from '..';
 import _ from 'lodash';
 
 const settings = {

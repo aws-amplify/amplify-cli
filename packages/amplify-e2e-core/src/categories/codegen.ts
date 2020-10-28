@@ -1,4 +1,4 @@
-import { getCLIPath, nspawn as spawn } from '../../src';
+import { getCLIPath, nspawn as spawn } from '..';
 
 export function generateModels(cwd: string) {
   return new Promise((resolve, reject) => {

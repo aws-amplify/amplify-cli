@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.16.1...amplify-category-notifications@2.16.2) (2020-10-27)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
+## [2.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.16.0...amplify-category-notifications@2.16.1) (2020-10-22)
+
+
+### Bug Fixes
+
+* refactor mobile hub migration checks ([#5632](https://github.com/aws-amplify/amplify-cli/issues/5632)) ([b796eb8](https://github.com/aws-amplify/amplify-cli/commit/b796eb8303bb903f5f531506254441a63eba2962))
+
+
+
+
+
+# [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.27...amplify-category-notifications@2.16.0) (2020-10-17)
+
+
+### Features
+
+* support importing of auth resources ([#5591](https://github.com/aws-amplify/amplify-cli/issues/5591)) ([7903246](https://github.com/aws-amplify/amplify-cli/commit/790324680544fe18481f91390001f9f07a144203))
+
+
+
+
+
+## [2.15.27](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.26...amplify-category-notifications@2.15.27) (2020-10-07)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
 ## [2.15.26](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.15.25...amplify-category-notifications@2.15.26) (2020-10-01)
 
 
