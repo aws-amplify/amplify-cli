@@ -353,19 +353,17 @@ function packageResources(context, resources) {
             };
           }
         } else {
-          Object.values(cfnMeta.Resources).forEach(value => {
-            if (value.Type === 'AWS::Serverless::Function' && typeof value.Properties.CodeUri === 'object') {
-              value.Properties.CodeUri = {
-                Bucket: s3Bucket,
-                Key: s3Key,
-              };
-            } else if (value.Type === 'AWS::Lambda::Function' && typeof value.Properties.Code === 'object') {
-              value.Properties.Code = {
-                S3Bucket: s3Bucket,
-                S3Key: s3Key,
-              };
-            }
-          });
+          if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
+            cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
+              Bucket: s3Bucket,
+              Key: s3Key,
+            };
+          } else {
+            cfnMeta.Resources.LambdaFunction.Properties.Code = {
+              S3Bucket: s3Bucket,
+              S3Key: s3Key,
+            };
+          }
         }
         context.amplify.writeObjectAsJson(cfnFilePath, cfnMeta, true);
       });
