@@ -106,7 +106,11 @@ export const localInvoke = async (request: InvocationRequest, context: any) => {
     const lambdaResult: LambdaResult = JSON.parse(processResult.stdout);
 
     if (lambdaResult.Response) {
-      return lambdaResult.Response;
+      try {
+        return JSON.parse(lambdaResult.Response);
+      } catch {
+        return lambdaResult.Response;
+      }
     } else {
       throw new Error(lambdaResult.Error || UNKNOWN_ERROR);
     }
