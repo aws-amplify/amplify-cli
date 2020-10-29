@@ -44,6 +44,7 @@ async function run(context, resourceDefinition) {
     }
     let projectDetails = context.amplify.getProjectDetails();
 
+    await checkVpcCreation(context, resources);
     validateCfnTemplates(context, resources);
 
     await packageResources(context, resources);
@@ -59,6 +60,7 @@ async function run(context, resourceDefinition) {
     await updateS3Templates(context, resources, projectDetails.amplifyMeta);
     // upload custom awaiter code
     await uploadAwaiterZipFile(context);
+
     spinner.start();
 
     projectDetails = context.amplify.getProjectDetails();
@@ -167,6 +169,44 @@ async function run(context, resourceDefinition) {
     spinner.fail('An error occurred when pushing the resources to the cloud');
     throw err;
   }
+}
+
+async function checkVpcCreation(context) {
+  const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
+  const nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
+
+  const vpcRequired = isVpcRequired(context);
+
+  context.print.info('creating vpc...');
+
+  // TODO: add vpc to root stackß
+}
+
+function isVpcRequired(context) {
+  const functionsObj = context.amplify.getProjectMeta().function;
+  const apiObj = context.amplify.getProjectMeta().api;
+
+  if (functionsObj) {
+    Object.keys(functionsObj).forEach(key => {
+      const functionObj = functionsObj[key];
+      if (functionObj.providerPlugin === providerName && functionObj.service === 'ElasticContainer') {
+            if (functionObj.scheduleOptions && functionObj.scheduleOptions.cloudwatchRule) {
+              return true;
+            }
+          }
+    });
+  }
+
+  if (apiObj) {
+    Object.keys(apiObj).forEach(key => {
+      const apiObj = apiObj[key];
+      if (apiObj.providerPlugin === providerName && apiObj.service === 'ElasticContainer') {
+        return true;
+      }
+    });
+  }
+
+  return false;
 }
 
 async function uploadAwaiterZipFile(context) {
