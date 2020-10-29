@@ -184,22 +184,7 @@ input SearchableStringFilterInput {
   exists: Boolean
   wildcard: String
   regexp: String
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
+  range: [String]
 }
 
 input SearchableIntFilterInput {
@@ -225,6 +210,23 @@ input SearchableFloatFilterInput {
 input SearchableBooleanFilterInput {
   eq: Boolean
   ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
 }
 
 input SearchablePostFilterInput {
@@ -434,22 +436,7 @@ input SearchableStringFilterInput {
   exists: Boolean
   wildcard: String
   regexp: String
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
+  range: [String]
 }
 
 input SearchableIntFilterInput {
@@ -475,6 +462,23 @@ input SearchableFloatFilterInput {
 input SearchableBooleanFilterInput {
   eq: Boolean
   ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
 }
 
 input SearchablePostFilterInput {
@@ -650,22 +654,7 @@ input SearchableStringFilterInput {
   exists: Boolean
   wildcard: String
   regexp: String
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
+  range: [String]
 }
 
 input SearchableIntFilterInput {
@@ -691,6 +680,23 @@ input SearchableFloatFilterInput {
 input SearchableBooleanFilterInput {
   eq: Boolean
   ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
 }
 
 input SearchablePostFilterInput {
@@ -857,22 +863,7 @@ input SearchableStringFilterInput {
   exists: Boolean
   wildcard: String
   regexp: String
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
+  range: [String]
 }
 
 input SearchableIntFilterInput {
@@ -898,6 +889,23 @@ input SearchableFloatFilterInput {
 input SearchableBooleanFilterInput {
   eq: Boolean
   ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
 }
 
 input SearchablePostFilterInput {
@@ -1064,22 +1072,7 @@ input SearchableStringFilterInput {
   exists: Boolean
   wildcard: String
   regexp: String
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
+  range: [String]
 }
 
 input SearchableIntFilterInput {
@@ -1105,6 +1098,23 @@ input SearchableFloatFilterInput {
 input SearchableBooleanFilterInput {
   eq: Boolean
   ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
 }
 
 input SearchablePostFilterInput {
