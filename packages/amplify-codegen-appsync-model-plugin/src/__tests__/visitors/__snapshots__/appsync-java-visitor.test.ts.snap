@@ -30,11 +30,9 @@ public final class customClaim implements Model {
   public static final QueryField ID = field(\\"id\\");
   public static final QueryField NAME = field(\\"name\\");
   public static final QueryField BAR = field(\\"bar\\");
-  public static final QueryField OWNER = field(\\"owner\\");
   private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
   private final @ModelField(targetType=\\"String\\") String name;
   private final @ModelField(targetType=\\"String\\") String bar;
-  private final @ModelField(targetType=\\"String\\") String owner;
   public String getId() {
       return id;
   }
@@ -47,15 +45,10 @@ public final class customClaim implements Model {
       return bar;
   }
   
-  public String getOwner() {
-      return owner;
-  }
-  
-  private customClaim(String id, String name, String bar, String owner) {
+  private customClaim(String id, String name, String bar) {
     this.id = id;
     this.name = name;
     this.bar = bar;
-    this.owner = owner;
   }
   
   @Override
@@ -68,8 +61,7 @@ public final class customClaim implements Model {
       customClaim customClaim = (customClaim) obj;
       return ObjectsCompat.equals(getId(), customClaim.getId()) &&
               ObjectsCompat.equals(getName(), customClaim.getName()) &&
-              ObjectsCompat.equals(getBar(), customClaim.getBar()) &&
-              ObjectsCompat.equals(getOwner(), customClaim.getOwner());
+              ObjectsCompat.equals(getBar(), customClaim.getBar());
       }
   }
   
@@ -79,7 +71,6 @@ public final class customClaim implements Model {
       .append(getId())
       .append(getName())
       .append(getBar())
-      .append(getOwner())
       .toString()
       .hashCode();
   }
@@ -90,8 +81,7 @@ public final class customClaim implements Model {
       .append(\\"customClaim {\\")
       .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
       .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
-      .append(\\"bar=\\" + String.valueOf(getBar()) + \\", \\")
-      .append(\\"owner=\\" + String.valueOf(getOwner()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
       .append(\\"}\\")
       .toString();
   }
@@ -122,7 +112,6 @@ public final class customClaim implements Model {
     return new customClaim(
       id,
       null,
-      null,
       null
     );
   }
@@ -130,15 +119,13 @@ public final class customClaim implements Model {
   public CopyOfBuilder copyOfBuilder() {
     return new CopyOfBuilder(id,
       name,
-      bar,
-      owner);
+      bar);
   }
   public interface BuildStep {
     customClaim build();
     BuildStep id(String id) throws IllegalArgumentException;
     BuildStep name(String name);
     BuildStep bar(String bar);
-    BuildStep owner(String owner);
   }
   
 
@@ -146,7 +133,6 @@ public final class customClaim implements Model {
     private String id;
     private String name;
     private String bar;
-    private String owner;
     @Override
      public customClaim build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
@@ -154,8 +140,7 @@ public final class customClaim implements Model {
         return new customClaim(
           id,
           name,
-          bar,
-          owner);
+          bar);
     }
     
     @Override
@@ -167,12 +152,6 @@ public final class customClaim implements Model {
     @Override
      public BuildStep bar(String bar) {
         this.bar = bar;
-        return this;
-    }
-    
-    @Override
-     public BuildStep owner(String owner) {
-        this.owner = owner;
         return this;
     }
     
@@ -199,11 +178,10 @@ public final class customClaim implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String name, String bar, String owner) {
+    private CopyOfBuilder(String id, String name, String bar) {
       super.id(id);
       super.name(name)
-        .bar(bar)
-        .owner(owner);
+        .bar(bar);
     }
     
     @Override
@@ -214,11 +192,6 @@ public final class customClaim implements Model {
     @Override
      public CopyOfBuilder bar(String bar) {
       return (CopyOfBuilder) super.bar(bar);
-    }
-    
-    @Override
-     public CopyOfBuilder owner(String owner) {
-      return (CopyOfBuilder) super.owner(owner);
     }
   }
   
@@ -457,14 +430,12 @@ public final class Employee implements Model {
   public static final QueryField NAME = field(\\"name\\");
   public static final QueryField ADDRESS = field(\\"address\\");
   public static final QueryField SSN = field(\\"ssn\\");
-  public static final QueryField OWNER = field(\\"owner\\");
   private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
   private final @ModelField(targetType=\\"String\\", isRequired = true) String name;
   private final @ModelField(targetType=\\"String\\", isRequired = true) String address;
   private final @ModelField(targetType=\\"String\\", authRules = {
     @AuthRule(allow = AuthStrategy.OWNER, ownerField = \\"owner\\", identityClaim = \\"cognito:username\\", operations = { ModelOperation.CREATE, ModelOperation.UPDATE, ModelOperation.DELETE, ModelOperation.READ })
   }) String ssn;
-  private final @ModelField(targetType=\\"String\\") String owner;
   public String getId() {
       return id;
   }
@@ -481,16 +452,11 @@ public final class Employee implements Model {
       return ssn;
   }
   
-  public String getOwner() {
-      return owner;
-  }
-  
-  private Employee(String id, String name, String address, String ssn, String owner) {
+  private Employee(String id, String name, String address, String ssn) {
     this.id = id;
     this.name = name;
     this.address = address;
     this.ssn = ssn;
-    this.owner = owner;
   }
   
   @Override
@@ -504,8 +470,7 @@ public final class Employee implements Model {
       return ObjectsCompat.equals(getId(), employee.getId()) &&
               ObjectsCompat.equals(getName(), employee.getName()) &&
               ObjectsCompat.equals(getAddress(), employee.getAddress()) &&
-              ObjectsCompat.equals(getSsn(), employee.getSsn()) &&
-              ObjectsCompat.equals(getOwner(), employee.getOwner());
+              ObjectsCompat.equals(getSsn(), employee.getSsn());
       }
   }
   
@@ -516,7 +481,6 @@ public final class Employee implements Model {
       .append(getName())
       .append(getAddress())
       .append(getSsn())
-      .append(getOwner())
       .toString()
       .hashCode();
   }
@@ -528,8 +492,7 @@ public final class Employee implements Model {
       .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
       .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
       .append(\\"address=\\" + String.valueOf(getAddress()) + \\", \\")
-      .append(\\"ssn=\\" + String.valueOf(getSsn()) + \\", \\")
-      .append(\\"owner=\\" + String.valueOf(getOwner()))
+      .append(\\"ssn=\\" + String.valueOf(getSsn()))
       .append(\\"}\\")
       .toString();
   }
@@ -561,7 +524,6 @@ public final class Employee implements Model {
       id,
       null,
       null,
-      null,
       null
     );
   }
@@ -570,8 +532,7 @@ public final class Employee implements Model {
     return new CopyOfBuilder(id,
       name,
       address,
-      ssn,
-      owner);
+      ssn);
   }
   public interface NameStep {
     AddressStep name(String name);
@@ -587,7 +548,6 @@ public final class Employee implements Model {
     Employee build();
     BuildStep id(String id) throws IllegalArgumentException;
     BuildStep ssn(String ssn);
-    BuildStep owner(String owner);
   }
   
 
@@ -596,7 +556,6 @@ public final class Employee implements Model {
     private String name;
     private String address;
     private String ssn;
-    private String owner;
     @Override
      public Employee build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
@@ -605,8 +564,7 @@ public final class Employee implements Model {
           id,
           name,
           address,
-          ssn,
-          owner);
+          ssn);
     }
     
     @Override
@@ -626,12 +584,6 @@ public final class Employee implements Model {
     @Override
      public BuildStep ssn(String ssn) {
         this.ssn = ssn;
-        return this;
-    }
-    
-    @Override
-     public BuildStep owner(String owner) {
-        this.owner = owner;
         return this;
     }
     
@@ -658,12 +610,11 @@ public final class Employee implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String name, String address, String ssn, String owner) {
+    private CopyOfBuilder(String id, String name, String address, String ssn) {
       super.id(id);
       super.name(name)
         .address(address)
-        .ssn(ssn)
-        .owner(owner);
+        .ssn(ssn);
     }
     
     @Override
@@ -679,11 +630,6 @@ public final class Employee implements Model {
     @Override
      public CopyOfBuilder ssn(String ssn) {
       return (CopyOfBuilder) super.ssn(ssn);
-    }
-    
-    @Override
-     public CopyOfBuilder owner(String owner) {
-      return (CopyOfBuilder) super.owner(owner);
     }
   }
   
@@ -920,11 +866,9 @@ public final class simpleOwnerAuth implements Model {
   public static final QueryField ID = field(\\"id\\");
   public static final QueryField NAME = field(\\"name\\");
   public static final QueryField BAR = field(\\"bar\\");
-  public static final QueryField OWNER = field(\\"owner\\");
   private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
   private final @ModelField(targetType=\\"String\\") String name;
   private final @ModelField(targetType=\\"String\\") String bar;
-  private final @ModelField(targetType=\\"String\\") String owner;
   public String getId() {
       return id;
   }
@@ -937,15 +881,10 @@ public final class simpleOwnerAuth implements Model {
       return bar;
   }
   
-  public String getOwner() {
-      return owner;
-  }
-  
-  private simpleOwnerAuth(String id, String name, String bar, String owner) {
+  private simpleOwnerAuth(String id, String name, String bar) {
     this.id = id;
     this.name = name;
     this.bar = bar;
-    this.owner = owner;
   }
   
   @Override
@@ -958,8 +897,7 @@ public final class simpleOwnerAuth implements Model {
       simpleOwnerAuth simpleOwnerAuth = (simpleOwnerAuth) obj;
       return ObjectsCompat.equals(getId(), simpleOwnerAuth.getId()) &&
               ObjectsCompat.equals(getName(), simpleOwnerAuth.getName()) &&
-              ObjectsCompat.equals(getBar(), simpleOwnerAuth.getBar()) &&
-              ObjectsCompat.equals(getOwner(), simpleOwnerAuth.getOwner());
+              ObjectsCompat.equals(getBar(), simpleOwnerAuth.getBar());
       }
   }
   
@@ -969,7 +907,6 @@ public final class simpleOwnerAuth implements Model {
       .append(getId())
       .append(getName())
       .append(getBar())
-      .append(getOwner())
       .toString()
       .hashCode();
   }
@@ -980,8 +917,7 @@ public final class simpleOwnerAuth implements Model {
       .append(\\"simpleOwnerAuth {\\")
       .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
       .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
-      .append(\\"bar=\\" + String.valueOf(getBar()) + \\", \\")
-      .append(\\"owner=\\" + String.valueOf(getOwner()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
       .append(\\"}\\")
       .toString();
   }
@@ -1012,7 +948,6 @@ public final class simpleOwnerAuth implements Model {
     return new simpleOwnerAuth(
       id,
       null,
-      null,
       null
     );
   }
@@ -1020,15 +955,13 @@ public final class simpleOwnerAuth implements Model {
   public CopyOfBuilder copyOfBuilder() {
     return new CopyOfBuilder(id,
       name,
-      bar,
-      owner);
+      bar);
   }
   public interface BuildStep {
     simpleOwnerAuth build();
     BuildStep id(String id) throws IllegalArgumentException;
     BuildStep name(String name);
     BuildStep bar(String bar);
-    BuildStep owner(String owner);
   }
   
 
@@ -1036,7 +969,6 @@ public final class simpleOwnerAuth implements Model {
     private String id;
     private String name;
     private String bar;
-    private String owner;
     @Override
      public simpleOwnerAuth build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
@@ -1044,8 +976,7 @@ public final class simpleOwnerAuth implements Model {
         return new simpleOwnerAuth(
           id,
           name,
-          bar,
-          owner);
+          bar);
     }
     
     @Override
@@ -1057,12 +988,6 @@ public final class simpleOwnerAuth implements Model {
     @Override
      public BuildStep bar(String bar) {
         this.bar = bar;
-        return this;
-    }
-    
-    @Override
-     public BuildStep owner(String owner) {
-        this.owner = owner;
         return this;
     }
     
@@ -1089,11 +1014,10 @@ public final class simpleOwnerAuth implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String name, String bar, String owner) {
+    private CopyOfBuilder(String id, String name, String bar) {
       super.id(id);
       super.name(name)
-        .bar(bar)
-        .owner(owner);
+        .bar(bar);
     }
     
     @Override
@@ -1104,11 +1028,6 @@ public final class simpleOwnerAuth implements Model {
     @Override
      public CopyOfBuilder bar(String bar) {
       return (CopyOfBuilder) super.bar(bar);
-    }
-    
-    @Override
-     public CopyOfBuilder owner(String owner) {
-      return (CopyOfBuilder) super.owner(owner);
     }
   }
   
@@ -1146,11 +1065,9 @@ public final class allowRead implements Model {
   public static final QueryField ID = field(\\"id\\");
   public static final QueryField NAME = field(\\"name\\");
   public static final QueryField BAR = field(\\"bar\\");
-  public static final QueryField OWNER = field(\\"owner\\");
   private final @ModelField(targetType=\\"ID\\", isRequired = true) String id;
   private final @ModelField(targetType=\\"String\\") String name;
   private final @ModelField(targetType=\\"String\\") String bar;
-  private final @ModelField(targetType=\\"String\\") String owner;
   public String getId() {
       return id;
   }
@@ -1163,15 +1080,10 @@ public final class allowRead implements Model {
       return bar;
   }
   
-  public String getOwner() {
-      return owner;
-  }
-  
-  private allowRead(String id, String name, String bar, String owner) {
+  private allowRead(String id, String name, String bar) {
     this.id = id;
     this.name = name;
     this.bar = bar;
-    this.owner = owner;
   }
   
   @Override
@@ -1184,8 +1096,7 @@ public final class allowRead implements Model {
       allowRead allowRead = (allowRead) obj;
       return ObjectsCompat.equals(getId(), allowRead.getId()) &&
               ObjectsCompat.equals(getName(), allowRead.getName()) &&
-              ObjectsCompat.equals(getBar(), allowRead.getBar()) &&
-              ObjectsCompat.equals(getOwner(), allowRead.getOwner());
+              ObjectsCompat.equals(getBar(), allowRead.getBar());
       }
   }
   
@@ -1195,7 +1106,6 @@ public final class allowRead implements Model {
       .append(getId())
       .append(getName())
       .append(getBar())
-      .append(getOwner())
       .toString()
       .hashCode();
   }
@@ -1206,8 +1116,7 @@ public final class allowRead implements Model {
       .append(\\"allowRead {\\")
       .append(\\"id=\\" + String.valueOf(getId()) + \\", \\")
       .append(\\"name=\\" + String.valueOf(getName()) + \\", \\")
-      .append(\\"bar=\\" + String.valueOf(getBar()) + \\", \\")
-      .append(\\"owner=\\" + String.valueOf(getOwner()))
+      .append(\\"bar=\\" + String.valueOf(getBar()))
       .append(\\"}\\")
       .toString();
   }
@@ -1238,7 +1147,6 @@ public final class allowRead implements Model {
     return new allowRead(
       id,
       null,
-      null,
       null
     );
   }
@@ -1246,15 +1154,13 @@ public final class allowRead implements Model {
   public CopyOfBuilder copyOfBuilder() {
     return new CopyOfBuilder(id,
       name,
-      bar,
-      owner);
+      bar);
   }
   public interface BuildStep {
     allowRead build();
     BuildStep id(String id) throws IllegalArgumentException;
     BuildStep name(String name);
     BuildStep bar(String bar);
-    BuildStep owner(String owner);
   }
   
 
@@ -1262,7 +1168,6 @@ public final class allowRead implements Model {
     private String id;
     private String name;
     private String bar;
-    private String owner;
     @Override
      public allowRead build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
@@ -1270,8 +1175,7 @@ public final class allowRead implements Model {
         return new allowRead(
           id,
           name,
-          bar,
-          owner);
+          bar);
     }
     
     @Override
@@ -1283,12 +1187,6 @@ public final class allowRead implements Model {
     @Override
      public BuildStep bar(String bar) {
         this.bar = bar;
-        return this;
-    }
-    
-    @Override
-     public BuildStep owner(String owner) {
-        this.owner = owner;
         return this;
     }
     
@@ -1315,11 +1213,10 @@ public final class allowRead implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String name, String bar, String owner) {
+    private CopyOfBuilder(String id, String name, String bar) {
       super.id(id);
       super.name(name)
-        .bar(bar)
-        .owner(owner);
+        .bar(bar);
     }
     
     @Override
@@ -1330,11 +1227,6 @@ public final class allowRead implements Model {
     @Override
      public CopyOfBuilder bar(String bar) {
       return (CopyOfBuilder) super.bar(bar);
-    }
-    
-    @Override
-     public CopyOfBuilder owner(String owner) {
-      return (CopyOfBuilder) super.owner(owner);
     }
   }
   
