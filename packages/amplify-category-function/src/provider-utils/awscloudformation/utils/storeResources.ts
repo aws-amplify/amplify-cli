@@ -10,15 +10,21 @@ import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './layer
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { saveLayerRuntimes } from './layerRuntimes';
 import { containerTemplate as containerCfn, containerFiles } from './container-resource-template';
+import { getNewCFNParameters } from './cloudformationHelpers';
 
 const DEFAULT_CONTAINER_PORT = 8080;
-export function createContainerResources(context: any, parameters: ContainerParameters) {
+export function createContainerResources(context: any, parameters: ContainerParameters): {resourceDirPath: string}  {
+  
   context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.resourceName, {
     container: true,
     build: true,
     providerPlugin: 'awscloudformation',
     service: 'ElasticContainer',
-    dependsOn: [],
+    dependsOn: parameters.dependsOn,
+    githubPath: parameters.githubPath,
+    scheduleOptions: parameters.scheduleOptions,
+    deploymentMechanism: parameters.deploymentMechanism,
+    mutableParametersState: parameters.mutableParametersState,
   });
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, parameters.resourceName);
@@ -35,8 +41,68 @@ export function createContainerResources(context: any, parameters: ContainerPara
   Object.entries(containerFiles).forEach(([fileName, fileContents]) => {
     fs.writeFileSync(path.join(resourceDirPath, 'src', fileName), fileContents);
   });
+
+  if (!containerCfn.Resources['AmplifyResourcesPolicy']) {
+    containerCfn.Resources['AmplifyResourcesPolicy'] = {
+      DependsOn: ['MyTaskExecutionRoleD2FEFCB2'], // Hardcoded on the template
+      Type: 'AWS::IAM::Policy',
+      Properties: {
+        PolicyName: 'amplify-container-execution-policy',
+        Roles: [
+          {
+            Ref: 'MyTaskExecutionRoleD2FEFCB2', // Hardcoded on the template
+          },
+        ],
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [],
+        },
+      },
+    };
+  }
+
+  if (!parameters.categoryPolicies || parameters.categoryPolicies.length === 0) {
+    delete containerCfn.Resources['AmplifyResourcesPolicy'];
+  } else {
+    containerCfn.Resources['AmplifyResourcesPolicy'].Properties.PolicyDocument.Statement = parameters.categoryPolicies;
+  }
+
+  if (parameters.environmentMap && Object.keys(parameters.environmentMap).length > 0) {
+    const mapArray: Array<{Name: string, Value: string}> = [];
+    Object.keys(parameters.environmentMap).forEach(key => {
+      mapArray.push({
+        Name: key,
+        Value: parameters.environmentMap[key]
+      });
+    });
+
+    containerCfn.Resources.MyTaskF5748B4B.Properties.ContainerDefinitions[0]['Environment'] = mapArray;
+  }
+
+  const dependsOnParams = { env: { Type: 'String' } };
+
+  Object.keys(parameters.environmentMap)
+      .filter(key => key !== 'ENV')
+      .filter(key => key !== 'REGION')
+      .filter(resourceProperty => 'Ref' in parameters.environmentMap[resourceProperty])
+      .forEach(resourceProperty => {
+        dependsOnParams[parameters.environmentMap[resourceProperty].Ref] = {
+          Type: 'String',
+          Default: parameters.environmentMap[resourceProperty].Ref,
+        };
+      });
+
+  containerCfn.Parameters = getNewCFNParameters(
+    containerCfn.Parameters, 
+    {}, 
+    dependsOnParams,
+    {}
+    );
+
   JSONUtilities.writeJson(path.join(resourceDirPath, 'container-template.json'), containerCfn);
   JSONUtilities.writeJson(path.join(resourceDirPath, 'parameters.json'), templateParameters);
+
+  return { resourceDirPath }
 }
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack

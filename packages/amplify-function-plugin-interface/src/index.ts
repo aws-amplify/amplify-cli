@@ -154,8 +154,13 @@ export interface ContainerParameters {
   dependsOn?: FunctionDependency[]; // resources this function depends on
   functionTemplate?: FunctionTemplate; // fully describes the template that will be used
   categoryPolicies?: object[]; // IAM policies that should be applied to this lambda
-  byoc?: boolean; // flag to identify is bringing their own container
-  template?: boolean; // flag to indicate has to create a new container from template
+  imageTemplate?: string; // What kind of template will be used could be custom if customer provider 
+  deploymentMechanism?: 'FULLY_MANAGED' | 'INDEPENDENTLY' | 'ADVANCE'; 
+  githubPath?: string; // github path for container
+  scheduleOptions?: any; // Check this type
+  environmentMap?: Record<string, any>; // Existing function environment variable map. Should refactor to use dependsOn directly
+  mutableParametersState?: any; // Contains the object that is written to function-parameters.json. Kindof a hold-over from older code
+
 }
 
 export interface ProviderContext {

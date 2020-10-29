@@ -34,7 +34,7 @@ const supportedServices: SupportedServices = {
 
 if (FeatureFlags.getBoolean('advancedCompute.enabled')) {
   supportedServices.ElasticContainer = {
-    alias: 'Elastic Container Service (ECS)',
+    alias: 'Fargate task (container-based)',
     walkthroughs: {
       createWalkthrough: createContainerWalkthrough,
       updateWalkthrough: updateContainerWalkthrough,
