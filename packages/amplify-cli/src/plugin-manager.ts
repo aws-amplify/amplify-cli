@@ -1,20 +1,21 @@
+import * as inquirer from 'inquirer';
 import { PluginPlatform } from './domain/plugin-platform';
 import { PluginInfo } from './domain/plugin-info';
-import { readPluginsJsonFileSync, writePluginsJsonFileSync } from './plugin-helpers/access-plugins-file';
+import { readPluginsJsonFile, writePluginsJsonFile } from './plugin-helpers/access-plugins-file';
 import {
   scanPluginPlatform,
   getCorePluginDirPath,
   getCorePluginVersion,
   isUnderScanCoverageSync,
 } from './plugin-helpers/scan-plugin-platform';
-import { verifyPlugin, verifyPluginSync } from './plugin-helpers/verify-plugin';
+import { verifyPlugin } from './plugin-helpers/verify-plugin';
 import createNewPlugin from './plugin-helpers/create-new-plugin';
 import { AddPluginResult, AddPluginError } from './domain/add-plugin-result';
 import { twoPluginsAreTheSame } from './plugin-helpers/compare-plugins';
 import { AmplifyEvent } from './domain/amplify-event';
-import inquirer from './domain/inquirer-helper';
 import { constants } from './domain/constants';
 import { print } from './context-extensions';
+import { postInstallInitialization } from './utils/post-install-initialization';
 
 export async function getPluginPlatform(): Promise<PluginPlatform> {
   // This function is called at the beginning of each command execution
@@ -24,7 +25,8 @@ export async function getPluginPlatform(): Promise<PluginPlatform> {
   // 3. re-scan if needed.
   // 4. write to update the plugins.json file if re-scan is performed
   // 5. return the pluginsInfo object
-  let pluginPlatform = readPluginsJsonFileSync();
+  let pluginPlatform = readPluginsJsonFile();
+
   if (pluginPlatform) {
     if (isCoreMatching(pluginPlatform)) {
       const lastScanTime = new Date(pluginPlatform.lastScanTime);
@@ -35,9 +37,13 @@ export async function getPluginPlatform(): Promise<PluginPlatform> {
         pluginPlatform = await scan();
       }
     } else {
+      // new CLI version detected
+      await postInstallInitialization();
       pluginPlatform = await scan();
     }
   } else {
+    // first CLI install detected
+    await postInstallInitialization();
     pluginPlatform = await scan();
   }
 
@@ -134,6 +140,7 @@ export async function scan(pluginPlatform?: PluginPlatform): Promise<PluginPlatf
     return result;
   } catch (e) {
     print.error('Plugin scan failed.');
+    print.info(e);
     throw new Error('Plugin scan failed.');
   }
 }
@@ -154,16 +161,16 @@ export async function confirmAndScan(pluginPlatform: PluginPlatform) {
   }
 }
 
-export function addUserPluginPackage(pluginPlatform: PluginPlatform, pluginDirPath: string): AddPluginResult {
+export const addUserPluginPackage = async (pluginPlatform: PluginPlatform, pluginDirPath: string): Promise<AddPluginResult> => {
   return addPluginPackage(pluginPlatform, pluginDirPath);
-}
+};
 
-export function addExcludedPluginPackage(pluginPlatform: PluginPlatform, pluginInfo: PluginInfo): AddPluginResult {
+export const addExcludedPluginPackage = async (pluginPlatform: PluginPlatform, pluginInfo: PluginInfo): Promise<AddPluginResult> => {
   return addPluginPackage(pluginPlatform, pluginInfo.packageLocation);
-}
+};
 
-export function addPluginPackage(pluginPlatform: PluginPlatform, pluginDirPath: string): AddPluginResult {
-  const pluginVerificationResult = verifyPluginSync(pluginDirPath);
+export const addPluginPackage = async (pluginPlatform: PluginPlatform, pluginDirPath: string): Promise<AddPluginResult> => {
+  const pluginVerificationResult = await verifyPlugin(pluginDirPath);
   const result = new AddPluginResult(false, pluginVerificationResult);
 
   if (pluginVerificationResult.verified) {
@@ -203,13 +210,14 @@ export function addPluginPackage(pluginPlatform: PluginPlatform, pluginDirPath: 
     }
 
     // write the plugins.json file
-    writePluginsJsonFileSync(pluginPlatform);
+    writePluginsJsonFile(pluginPlatform);
+
     result.isAdded = true;
   } else {
     result.error = AddPluginError.FailedVerification;
   }
   return result;
-}
+};
 
 // remove: select from the plugins only,
 // if the location belongs to the scan directories, put the info inside the excluded.
@@ -246,5 +254,6 @@ export function removePluginPackage(pluginPlatform: PluginPlatform, pluginInfo: 
     pluginPlatform.excluded[pluginInfo.manifest.name] = pluginPlatform.excluded[pluginInfo.manifest.name] || [];
     pluginPlatform.excluded[pluginInfo.manifest.name].push(pluginInfo);
   }
-  writePluginsJsonFileSync(pluginPlatform);
+
+  writePluginsJsonFile(pluginPlatform);
 }

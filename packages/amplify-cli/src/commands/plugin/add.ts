@@ -1,18 +1,19 @@
-import os from 'os';
-import fs from 'fs-extra';
-import path from 'path';
+import * as os from 'os';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as inquirer from 'inquirer';
 import { Context } from '../../domain/context';
 import { PluginInfo } from '../../domain/plugin-info';
 import { constants } from '../../domain/constants';
 import { addUserPluginPackage, addExcludedPluginPackage as addFromExcluded, confirmAndScan } from '../../plugin-manager';
-import inquirer, { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
+import { InquirerOption, EXPAND } from '../../domain/inquirer-helper';
 import { AddPluginError } from '../../domain/add-plugin-result';
 import { normalizePluginDirectory } from '../../plugin-helpers/scan-plugin-platform';
 
 const NEW_PLUGIN_PACKAGE = 'A new plugin package';
 const CANCEL = 'cancel';
 
-export async function run(context: Context) {
+export const run = async (context: Context) => {
   if (context.input.subCommands && context.input.subCommands.length > 1) {
     const input = context.input.subCommands[1];
     const { excluded } = context.pluginPlatform;
@@ -34,7 +35,7 @@ export async function run(context: Context) {
   } else {
     await promptAndAdd(context);
   }
-}
+};
 
 async function resolvePluginPathAndAdd(context: Context, inputPath: string) {
   const pluginDirPath = await resolvePluginPackagePath(context, inputPath);
@@ -156,7 +157,7 @@ async function promptForPluginPath(): Promise<string> {
 
 async function addNewPluginPackage(context: Context, pluginDirPath: string) {
   try {
-    const addUserPluginResult = addUserPluginPackage(context.pluginPlatform, pluginDirPath.trim());
+    const addUserPluginResult = await addUserPluginPackage(context.pluginPlatform, pluginDirPath.trim());
     if (addUserPluginResult.isAdded) {
       context.print.success('Successfully added plugin package.');
       await confirmAndScan(context.pluginPlatform);

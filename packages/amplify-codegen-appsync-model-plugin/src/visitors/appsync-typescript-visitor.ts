@@ -1,6 +1,5 @@
 import { indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { TypeScriptDeclarationBlock } from '../languages/typescript-declaration-block';
-import { camelCase } from 'change-case';
 import {
   AppSyncModelVisitor,
   CodeGenEnum,
@@ -41,15 +40,19 @@ export class AppSyncModelTypeScriptVisitor<
       .map(enumObj => this.generateEnumDeclarations(enumObj))
       .join('\n\n');
 
-    const modelDeclarations = Object.values(this.typeMap)
+    const modelDeclarations = Object.values(this.modelMap)
       .map(typeObj => this.generateModelDeclaration(typeObj))
       .join('\n\n');
 
-    const modelInitialization = this.generateModelInitialization(Object.values(this.typeMap));
+    const nonModelDeclarations = Object.values(this.nonModelMap)
+      .map(typeObj => this.generateModelDeclaration(typeObj))
+      .join('\n\n');
 
-    const modelExports = this.generateExports(Object.values(this.typeMap));
+    const modelInitialization = this.generateModelInitialization([...Object.values(this.modelMap), ...Object.values(this.nonModelMap)]);
 
-    return [imports, '', enumDeclarations, '', modelDeclarations, '', modelInitialization, '', modelExports].join('\n');
+    const modelExports = this.generateExports(Object.values(this.modelMap));
+
+    return [imports, enumDeclarations, modelDeclarations, nonModelDeclarations, modelInitialization, modelExports].join('\n\n');
   }
 
   protected generateImports(): string {
@@ -82,7 +85,7 @@ export class AppSyncModelTypeScriptVisitor<
     modelObj.fields.forEach((field: CodeGenField) => {
       modelDeclarations.addProperty(this.getFieldName(field), this.getNativeType(field), undefined, 'DEFAULT', {
         readonly: true,
-        optional: field.isNullable,
+        optional: field.isList ? field.isListNullable : field.isNullable,
       });
     });
 
@@ -98,27 +101,29 @@ export class AppSyncModelTypeScriptVisitor<
         },
       ],
       'DEFAULT',
-      {}
+      {},
     );
 
     // copyOf method
-    modelDeclarations.addClassMethod(
-      'copyOf',
-      modelName,
-      null,
-      [
-        {
-          name: 'source',
-          type: modelName,
-        },
-        {
-          name: 'mutator',
-          type: `(draft: MutableModel<${modelName}>) => MutableModel<${modelName}> | void`,
-        },
-      ],
-      'DEFAULT',
-      { static: true }
-    );
+    if (Object.values(this.modelMap).includes(modelObj)) {
+      modelDeclarations.addClassMethod(
+        'copyOf',
+        modelName,
+        null,
+        [
+          {
+            name: 'source',
+            type: modelName,
+          },
+          {
+            name: 'mutator',
+            type: `(draft: MutableModel<${modelName}>) => MutableModel<${modelName}> | void`,
+          },
+        ],
+        'DEFAULT',
+        { static: true },
+      );
+    }
     return modelDeclarations.string;
   }
 
@@ -197,13 +202,17 @@ export class AppSyncModelTypeScriptVisitor<
   }
 
   protected getListType(typeStr: string, field: CodeGenField): string {
-    return `${typeStr}[]`;
+    let type: string = typeStr;
+    if (field.isNullable) {
+      type = `(${type} | null)`;
+    }
+    return `${type}[]`;
   }
 
   protected getNativeType(field: CodeGenField): string {
     const typeName = field.type;
     if (this.isModelType(field)) {
-      const modelType = this.typeMap[typeName];
+      const modelType = this.modelMap[typeName];
       const typeNameStr = this.generateModelTypeDeclarationName(modelType);
       return field.isList ? this.getListType(typeNameStr, field) : typeNameStr;
     }

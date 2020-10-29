@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "strict": false, // TODO enable
     "rootDir": "src",
@@ -8,6 +8,6 @@
   "references": [
     {"path": "../graphql-mapping-template"},
     {"path": "../graphql-transformer-common"},
-    {"path": "../graphql-transformer-core"}
+    {"path": "../graphql-transformer-core"},
   ]
 }

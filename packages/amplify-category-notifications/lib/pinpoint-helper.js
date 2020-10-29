@@ -115,7 +115,7 @@ async function createPinpointApp(context, resourceName) {
   context.exeInfo.pinpointApp = pinpointApp; // needed for authHelper.ensureAuth(context);
 
   context.print.info('');
-  await authHelper.ensureAuth(context);
+  await authHelper.ensureAuth(context, resourceName);
   context.print.info('');
 
   return resourceName;
@@ -246,10 +246,10 @@ function console(context) {
   }
 }
 
-async function getPinpointClient(context, action) {
+async function getPinpointClient(context, action, envName) {
   const providerPlugins = context.amplify.getProviderPlugins(context);
   const provider = require(providerPlugins[providerName]);
-  return provider.getConfiguredPinpointClient(context, constants.CategoryName, action);
+  return provider.getConfiguredPinpointClient(context, constants.CategoryName, action, envName);
 }
 
 function isAnalyticsAdded(context) {

@@ -32,7 +32,7 @@ async function invalidate(context) {
       context.print.info(chalk.green(CloudFrontSecureURL));
       context.exeInfo.cftInvalidationData = data;
     } catch (err) {
-      context.print.error('Error occured when invalidating the Amazon CloudFront distribution');
+      context.print.error('Error occurred when invalidating the Amazon CloudFront distribution');
       context.print.info(err);
       throw err;
     }

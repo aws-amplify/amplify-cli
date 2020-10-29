@@ -2,10 +2,11 @@ import open from 'open';
 import inferAssets from '../assets/inferQuestions';
 import getAllDefaults from '../default-values/infer-defaults';
 import regionMapper from '../assets/regionMapping';
-
+import { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
+import { enableGuestAuth } from './enable-guest-auth';
 
 // Predictions Info
 const category = 'predictions';
@@ -17,8 +18,8 @@ const service = 'SageMaker';
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt.run(
-        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?'
+      await context.amplify.confirmPrompt(
+        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
       try {
@@ -26,11 +27,14 @@ async function addWalkthrough(context) {
         await add(context);
       } catch (e) {
         context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
+        context.usageData.emitError(e);
+        exitOnNextTick(1);
         break;
       }
       break;
     } else {
-      process.exit(0);
+      context.usageData.emitSuccess();
+      exitOnNextTick(0);
     }
   }
 
@@ -52,8 +56,10 @@ async function updateWalkthrough(context) {
     }
   });
   if (predictionsResources.length === 0) {
-    context.print.error('No resources to update. You need to add a resource.');
-    process.exit(0);
+    const errMessage = 'No resources to update. You need to add a resource.';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
     return;
   }
   let resourceObj = predictionsResources[0].value;
@@ -96,14 +102,16 @@ async function configure(context, resourceObj) {
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.inferType);
     if (resourceType) {
-      context.print.warning(`${resourceType} has already been added to this project.`);
-      process.exit(0);
+      const errMessage = `${resourceType} has already been added to this project.`;
+      context.print.warning(errMessage);
+      context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+      exitOnNextTick(0);
     }
 
     Object.assign(answers, await inquirer.prompt(inferAssets.setup.name(`${answers.inferType}${defaultValues.resourceName}`)));
     inferType = answers.inferType;
     if (inferType === 'modelInfer') {
-      defaultValues.region = regionMapper.getAvailableRegion('SageMaker', defaultValues.region);
+      defaultValues.region = regionMapper.getAvailableRegion(context, 'SageMaker', defaultValues.region);
     }
   }
 
@@ -139,7 +147,7 @@ async function configure(context, resourceObj) {
 }
 
 function addRegionMapping(context, resourceName, inferType) {
-  const regionMapping = regionMapper.getRegionMapping(service, inferType);
+  const regionMapping = regionMapper.getRegionMapping(context, service, inferType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
   const identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
@@ -199,26 +207,6 @@ function checkIfAuthExists(context) {
   return authExists;
 }
 
-async function enableGuestAuth(context, resourceName, allowUnauthenticatedIdentities) {
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-  // enable allowUnauthenticatedIdentities
-  const identifyRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
-  // getting requirement satisfaction map
-  const satisfiedRequirements = await checkRequirements(identifyRequirements, context, 'predictions', resourceName);
-  // checking to see if any requirements are unsatisfied
-  const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
-
-  // if requirements are unsatisfied, trigger auth
-  if (foundUnmetRequirements) {
-    try {
-      await externalAuthEnable(context, 'predictions', resourceName, identifyRequirements);
-    } catch (e) {
-      context.print.error(e);
-      throw e;
-    }
-  }
-}
-
 function resourceAlreadyExists(context, inferType) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
@@ -244,8 +232,10 @@ async function getEndpoints(context, questionObj, params) {
     endpointMap[endpoint.EndpointName] = { endpointName: endpoint.EndpointName, endpointARN: endpoint.EndpointArn };
   });
   if (endpoints.length < 1) {
-    context.print.error('No existing endpoints!');
-    process.exit(0);
+    const errMessage = 'No existing endpoints!';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
   }
   const { endpoint } = await inquirer.prompt(questionObj.importPrompt({ ...params, endpoints }));
   return endpointMap[endpoint];

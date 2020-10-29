@@ -123,7 +123,7 @@ yargs
       };
 
       generate(inputPaths, argv.schema, argv.output, argv.only, argv.target, argv.tagName, options);
-    }
+    },
   )
   .fail(function(message, error) {
     handleError(error ? error : new ToolError(message));

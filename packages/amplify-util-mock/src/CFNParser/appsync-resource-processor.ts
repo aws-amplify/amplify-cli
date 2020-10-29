@@ -29,8 +29,10 @@ export function processApiResources(
       case 'AWS::AppSync::Resolver':
         appSyncConfig.resolvers.push({
           ...result,
-          requestMappingTemplateLocation: result.requestMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
-          responseMappingTemplateLocation: result.responseMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
+          requestMappingTemplateLocation:
+            result.requestMappingTemplateLocation && result.requestMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
+          responseMappingTemplateLocation:
+            result.responseMappingTemplateLocation && result.responseMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
         });
         break;
       case 'AWS::DynamoDB::Table':
@@ -39,8 +41,10 @@ export function processApiResources(
       case 'AWS::AppSync::FunctionConfiguration':
         appSyncConfig.functions.push({
           ...result,
-          requestMappingTemplateLocation: result.requestMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
-          responseMappingTemplateLocation: result.responseMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
+          requestMappingTemplateLocation:
+            result.requestMappingTemplateLocation && result.requestMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
+          responseMappingTemplateLocation:
+            result.responseMappingTemplateLocation && result.responseMappingTemplateLocation.replace(RESOLVER_TEMPLATE_LOCATION_PREFIX, ''),
         });
         break;
       case 'AWS::AppSync::GraphQLSchema':

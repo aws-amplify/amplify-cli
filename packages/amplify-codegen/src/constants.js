@@ -40,9 +40,9 @@ module.exports = {
   ERROR_APPSYNC_API_NOT_FOUND:
     'Could not find the AppSync API. If you have removed the AppSync API in the console run amplify codegen remove',
   MSG_CODEGEN_PENDING_API_PUSH: `${chalk.bold(
-    'WARNING:'
+    'WARNING:',
   )} You have modified your schema locally and not pushed to the cloud, which may result in incomplete type generation.\nWe recommend you first run ${chalk.underline(
-    '$amplify push'
+    '$amplify push',
   )}`,
   INFO_AUTO_SELECTED_API: 'Using AppSync API:',
   INFO_MSG_REMOVE_API_SUCCESS: 'removed project',
@@ -54,6 +54,4 @@ module.exports = {
   INFO_MESSAGE_OPS_GEN: 'Generating GraphQL operations',
   INFO_MESSAGE_OPS_GEN_SUCCESS: 'Generated GraphQL operations successfully and saved at ',
   INFO_MESSAGE_ADD_ERROR: 'amplify codegen add takes only apiId as parameter. \n$ amplify codegen add [--apiId <API_ID>]',
-  ERROR_NOT_AMPLIFY_PROJECT:
-    "You are not working inside a valid amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify",
 };

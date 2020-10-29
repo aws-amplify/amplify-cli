@@ -1,5 +1,5 @@
 const aws = require('./aws.js');
-const configurationManager = require('../../lib/configuration-manager');
+const configurationManager = require('../configuration-manager');
 
 class DynamoDB {
   constructor(context, options = {}) {

@@ -14,35 +14,31 @@ export enum RESOLVER_KIND {
   UNIT = 'UNIT',
   PIPELINE = 'PIPELINE',
 }
+
 export interface AppSyncSimulatorBaseResolverConfig {
-  kind: RESOLVER_KIND;
-  fieldName: string;
-  typeName: string;
-  requestMappingTemplateLocation: string;
-  responseMappingTemplateLocation: string;
+  requestMappingTemplateLocation?: string;
+  responseMappingTemplateLocation?: string;
+  requestMappingTemplate?: string;
+  responseMappingTemplate?: string;
 }
 export interface AppSyncSimulatorUnitResolverConfig extends AppSyncSimulatorBaseResolverConfig {
   kind: RESOLVER_KIND.UNIT;
   fieldName: string;
   typeName: string;
-  requestMappingTemplateLocation: string;
-  responseMappingTemplateLocation: string;
   dataSourceName: string;
 }
 export interface AppSyncSimulatorPipelineResolverConfig extends AppSyncSimulatorBaseResolverConfig {
-  requestMappingTemplateLocation: string;
-  responseMappingTemplateLocation: string;
+  kind: RESOLVER_KIND.PIPELINE;
   typeName: string;
   fieldName: string;
   functions: string[];
 }
-export interface AppSyncSimulatorFunctionResolverConfig {
+export interface AppSyncSimulatorFunctionResolverConfig extends AppSyncSimulatorBaseResolverConfig {
   dataSourceName: string;
-  requestMappingTemplateLocation: string;
-  responseMappingTemplateLocation: string;
 }
 export type AppSyncSimulatorMappingTemplate = AppSyncMockFile;
 export type AppSyncSimulatorTable = string;
+
 export interface AppSyncSimulatorUnitResolver extends AppSyncSimulatorUnitResolverConfig {
   datSourceName: string;
 }
@@ -122,7 +118,7 @@ export type AmplifyAppSyncAPIConfig = {
 
 export type AmplifyAppSyncSimulatorConfig = {
   schema: AppSyncSimulatorSchemaConfig;
-  resolvers?: AppSyncSimulatorBaseResolverConfig[];
+  resolvers?: (AppSyncSimulatorUnitResolverConfig | AppSyncSimulatorPipelineResolverConfig)[];
   functions?: AppSyncSimulatorFunctionsConfig[];
   dataSources?: AppSyncSimulatorDataSourceConfig[];
   mappingTemplates?: AppSyncSimulatorMappingTemplate[];

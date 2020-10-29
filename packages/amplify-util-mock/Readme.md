@@ -11,5 +11,6 @@ The current set of commands supported by the Amplify Mock Util Plugin
 | --- | --- |
 | amplify mock | Run mock server for supported categories   |
 | amplify mock api | Run mock GraphQL server to simulate AppSync  |
+| amplify mock function | Locally test/invoke the function in your local backend.  |
 | amplify mock storage | Run mock server to simulate S3  |
 

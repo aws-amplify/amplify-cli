@@ -10,6 +10,8 @@ module.exports = {
     return amplify.pushResources(context, category, resourceName).catch(err => {
       context.print.info(err.stack);
       context.print.error('There was an error pushing the interactions resource');
+      context.usageData.emitError(err);
+      process.exitCode = 1;
     });
   },
 };

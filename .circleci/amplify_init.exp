@@ -28,5 +28,5 @@ expect "secretAccessKey:"
 send -- "$env(AWS_SECRET_ACCESS_KEY)\r"
 expect -exact "region:"
 log_user 1;
-send -- "\r"
+send -- "j\r"
 interact;

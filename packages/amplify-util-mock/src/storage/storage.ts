@@ -1,11 +1,10 @@
 import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from '../utils';
+import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
-import { invoke } from 'amplify-category-function';
-
-const category = 'function';
+import { getInvoker } from 'amplify-category-function';
+import { loadMinimalLambdaConfig } from '../utils/lambda/loadMinimal';
 
 const port = 20005; // port for S3
 
@@ -37,7 +36,7 @@ export class StorageTest {
     let localDirS3 = this.createLocalStorage(context, `${storageParams.bucketName}`);
 
     try {
-      addCleanupTask(context, async context => {
+      context.amplify.addCleanUpTask(async context => {
         await this.stop(context);
       });
       this.configOverrideManager = ConfigOverrideManager.getInstance(context);
@@ -59,7 +58,7 @@ export class StorageTest {
   // to fire s3 triggers attached on the bucket
   async trigger(context) {
     let region = this.storageRegion;
-    this.storageSimulator.getServer.on('event', (eventObj: any) => {
+    this.storageSimulator.getServer.on('event', async (eventObj: any) => {
       const meta = context.amplify.getProjectDetails().amplifyMeta;
       const existingStorage = meta.storage;
       let backendPath = context.amplify.pathManager.getBackendDirPath();
@@ -113,16 +112,9 @@ export class StorageTest {
         }
       }
 
-      const srcDir = path.normalize(path.join(backendPath, category, String(triggerName), 'src'));
-      const event = eventObj;
-
-      const invokeOptions = {
-        packageFolder: srcDir,
-        fileName: `${srcDir}/index.js`,
-        handler: 'handler',
-        event,
-      };
-      invoke(invokeOptions);
+      const config = loadMinimalLambdaConfig(context, triggerName);
+      const invoker = await getInvoker(context, { handler: config.handler, resourceName: triggerName });
+      await invoker({ event: eventObj });
     });
   }
 

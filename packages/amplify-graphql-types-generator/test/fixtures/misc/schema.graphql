@@ -63,6 +63,7 @@ type Query {
   unionTest: UnionTestCase
   scalarTest: Boolean!
   arrayTest: [QueryObject]
+  echo(msg: String): String
 }
 
 type QueryObject {

@@ -1,25 +1,24 @@
-import * as nexpect from 'nexpect';
-import { getCLIPath, isCI } from '../utils';
+import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
 
-export function addCodegen(cwd: string, settings: any, verbose: boolean = !isCI()) {
+export function addCodegen(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
-    const run = nexpect.spawn(getCLIPath(), ['codegen', 'add'], { cwd, stripColors: true, verbose });
+    const run = spawn(getCLIPath(), ['codegen', 'add'], { cwd, stripColors: true });
     if (!(settings.ios || settings.android)) {
-      run.wait('Choose the code generation language target').sendline('');
+      run.wait('Choose the code generation language target').sendCarriageReturn();
     }
     run
       .wait('Enter the file name pattern of graphql queries, mutations and subscriptions')
-      .sendline('\r')
+      .sendCarriageReturn()
       .wait('Do you want to generate/update all possible GraphQL operations')
-      .sendline('Yes')
+      .sendLine('y')
       .wait('Enter maximum statement depth [increase from default if your schema is deeply')
-      .sendline('\r');
+      .sendCarriageReturn();
     if (settings.ios) {
       run
         .wait('Enter the file name for the generated code')
-        .sendline('\r')
+        .sendCarriageReturn()
         .wait('Do you want to generate code for your newly created GraphQL API')
-        .sendline('\r');
+        .sendCarriageReturn();
     }
     run.run((err: Error) => {
       if (!err) {

@@ -5,14 +5,20 @@ import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-c
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 
-import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from '../utils';
+import { getAmplifyMeta, getMockDataDirectory, hydrateAllEnvVars } from '../utils';
+import { checkJavaVersion } from '../utils/index';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
 import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
-import { configureDDBDataSource, ensureDynamoDBTables } from '../utils/ddb-utils';
-import { invoke } from '../utils/lambda/invoke';
+import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
+import { getMockConfig } from '../utils/mock-config-file';
 import { getAllLambdaFunctions } from '../utils/lambda/load';
+import { getInvoker } from 'amplify-category-function';
+import { keys } from 'lodash';
+import { LambdaFunctionConfig } from '../CFNParser/lambda-resource-processor';
+import { lambdaArnToConfig } from './lambda-arn-to-config';
+import { timeConstrainedInvoker } from '../func';
 
 export class APITest {
   private apiName: string;
@@ -29,11 +35,13 @@ export class APITest {
 
   async start(context, port: number = 20002, wsPort: number = 20003) {
     try {
-      addCleanupTask(context, async context => {
+      context.amplify.addCleanUpTask(async context => {
         await this.stop(context);
       });
       this.projectRoot = context.amplify.getEnvInfo().projectPath;
       this.configOverrideManager = ConfigOverrideManager.getInstance(context);
+      // check java version
+      await checkJavaVersion(context);
       this.apiName = await this.getAppSyncAPI(context);
       this.ddbClient = await this.startDynamoDBLocalServer(context);
       const resolverDirectory = await this.getResolverTemplateDirectory(context);
@@ -50,7 +58,7 @@ export class APITest {
       this.appSyncSimulator.init(appSyncConfig);
 
       await this.generateTestFrontendExports(context);
-      await this.generateCode(context);
+      await this.generateCode(context, appSyncConfig);
 
       context.print.info(`AppSync Mock endpoint is running at ${this.appSyncSimulator.url}`);
     } catch (e) {
@@ -83,18 +91,18 @@ export class APITest {
     let config: any = processAppSyncResources(transformerOutput, parameters);
     await this.ensureDDBTables(config);
     config = this.configureDDBDataSource(config);
-    this.transformerResult = this.configureLambdaDataSource(context, config);
+    this.transformerResult = await this.configureLambdaDataSource(context, config);
     const overriddenTemplates = await this.resolverOverrideManager.sync(this.transformerResult.mappingTemplates);
     return { ...this.transformerResult, mappingTemplates: overriddenTemplates };
   }
 
-  private async generateCode(context, transformerOutput = null) {
+  private async generateCode(context: any, config: AmplifyAppSyncSimulatorConfig = null) {
     try {
       context.print.info('Running GraphQL codegen');
       const { projectPath } = context.amplify.getEnvInfo();
       const schemaPath = path.join(projectPath, 'amplify', 'backend', 'api', this.apiName, 'build', 'schema.graphql');
-      if (transformerOutput) {
-        fs.writeFileSync(schemaPath, transformerOutput.schema);
+      if (config && config.schema) {
+        fs.writeFileSync(schemaPath, config.schema.content);
       }
       if (!isCodegenConfigured(context, this.apiName)) {
         await add(context);
@@ -110,6 +118,7 @@ export class APITest {
   private async reload(context, filePath, action) {
     const apiDir = await this.getAPIBackendDirectory(context);
     const inputSchemaPath = path.join(apiDir, 'schema');
+    const customStackPath = path.join(apiDir, 'stacks');
     const parameterFilePath = await this.getAPIParameterFilePath(context);
     try {
       let shouldReload;
@@ -136,15 +145,23 @@ export class APITest {
         }
       } else if (filePath.includes(inputSchemaPath)) {
         context.print.info('GraphQL Schema change detected. Reloading...');
-        const config = await this.runTransformer(context, this.apiParameters);
+        const config: AmplifyAppSyncSimulatorConfig = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
-        await this.generateCode(context);
+        await this.generateCode(context, config);
       } else if (filePath.includes(parameterFilePath)) {
-        context.print.info('API Parameter change detected. Reloading...');
-        this.apiParameters = await this.loadAPIParameters(context);
+        const apiParameters = await this.loadAPIParameters(context);
+        if (JSON.stringify(apiParameters) !== JSON.stringify(this.apiParameters)) {
+          context.print.info('API Parameter change detected. Reloading...');
+          this.apiParameters = apiParameters;
+          const config = await this.runTransformer(context, this.apiParameters);
+          await this.appSyncSimulator.reload(config);
+          await this.generateCode(context, config);
+        }
+      } else if (filePath.includes(customStackPath)) {
+        context.print.info('Custom stack change detected. Reloading...');
         const config = await this.runTransformer(context, this.apiParameters);
         await this.appSyncSimulator.reload(config);
-        await this.generateCode(context);
+        await this.generateCode(context, config);
       }
     } catch (e) {
       context.print.info(`Reloading failed with error\n${e}`);
@@ -163,10 +180,10 @@ export class APITest {
   }
   private async ensureDDBTables(config) {
     const tables = config.tables.map(t => t.Properties);
-    await ensureDynamoDBTables(this.ddbClient, config);
+    await createAndUpdateTable(this.ddbClient, config);
   }
 
-  private configureLambdaDataSource(context, config) {
+  private async configureLambdaDataSource(context, config) {
     const lambdaDataSources = config.dataSources.filter(d => d.type === 'AWS_LAMBDA');
     if (lambdaDataSources.length === 0) {
       return config;
@@ -175,43 +192,31 @@ export class APITest {
 
     return {
       ...config,
-      dataSources: config.dataSources.map(d => {
-        if (d.type !== 'AWS_LAMBDA') {
-          return d;
-        }
-        const arn = d.LambdaFunctionArn;
-        const arnParts = arn.split(':');
-        let functionName = arnParts[arnParts.length - 1];
-        if (functionName.endsWith('-${env}')) {
-          functionName = functionName.replace('-${env}', '');
-          const lambdaConfig = provisionedLambdas.find(fn => fn.name === functionName);
-          if (!lambdaConfig) {
-            throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
+      dataSources: await Promise.all(
+        config.dataSources.map(async d => {
+          if (d.type !== 'AWS_LAMBDA') {
+            return d;
           }
-          const [fileName, handlerFn] = lambdaConfig.handler.split('.');
-
-          const lambdaPath = path.join(lambdaConfig.basePath, `${fileName}.js`);
-          if (!fs.existsSync(lambdaPath)) {
-            throw new Error(`Lambda function ${functionName} does not exist in your project. \nPlease run amplify add function`);
-          }
+          const lambdaConfig = lambdaArnToConfig(d.LambdaFunctionArn, provisionedLambdas);
+          const envVars = await this.hydrateLambdaEnvVars(context, lambdaConfig.environment, config);
+          const invoker = await getInvoker(context, {
+            resourceName: lambdaConfig.name,
+            handler: lambdaConfig.handler,
+            envVars,
+          });
           return {
             ...d,
             invoke: payload => {
-              return invoke({
-                packageFolder: lambdaConfig.basePath,
-                handler: handlerFn,
-                fileName: `${fileName}.js`,
-                event: payload,
-                environment: lambdaConfig.environment,
-              });
+              return timeConstrainedInvoker(
+                invoker({
+                  event: payload,
+                }),
+                context.input.options,
+              );
             },
           };
-        } else {
-          throw new Error(
-            'Local mocking does not support AWS_LAMBDA data source that is not provisioned in the project.\nEnsure that the environment is specified as described in https://aws-amplify.github.io/docs/cli-toolchain/graphql#function',
-          );
-        }
-      }),
+        }),
+      ),
     };
   }
 
@@ -255,9 +260,11 @@ export class APITest {
     const { projectPath } = context.amplify.getEnvInfo();
     const dbPath = path.join(await getMockDataDirectory(context), 'dynamodb');
     fs.ensureDirSync(dbPath);
+    const mockConfig = await getMockConfig(context);
     this.ddbEmulator = await dynamoEmulator.launch({
       dbPath,
       port: null,
+      ...mockConfig,
     });
     return dynamoEmulator.getClient(this.ddbEmulator);
   }
@@ -332,5 +339,17 @@ export class APITest {
 
     this.configOverrideManager.addOverride('api', override);
     await this.configOverrideManager.generateOverriddenFrontendExports(context);
+  }
+
+  private async hydrateLambdaEnvVars(context, sourceEnvVars: Record<string, any>, config): Promise<Record<string, any>> {
+    const resources = await context.amplify.getResourceStatus();
+    const allResources = resources.allResources;
+    return hydrateAllEnvVars(allResources, sourceEnvVars, {
+      apiId: 'fake-api-id',
+      apiKey: config.appSync.apiKey,
+      apiName: this.apiName,
+      url: `${this.appSyncSimulator.url}/graphql`,
+      dataSources: config.dataSources,
+    });
   }
 }

@@ -17,6 +17,8 @@ import {
   makeModelSortDirectionEnumObject,
   SortKeyFieldInfoTypeName,
   CONDITIONS_MINIMUM_VERSION,
+  makeAttributeTypeEnum,
+  makeEnumFilterInputObjects,
 } from 'graphql-dynamodb-transformer';
 import {
   getBaseType,
@@ -41,6 +43,7 @@ const CONNECTION_STACK_NAME = 'ConnectionStack';
 interface RelationArguments {
   keyName?: string;
   fields: string[];
+  limit?: number;
 }
 
 function makeConnectionAttributeName(type: string, field?: string) {
@@ -85,27 +88,31 @@ function validateKeyFieldConnectionWithKey(field: FieldDefinitionNode, ctx: Tran
  * @param fields Array of FieldDefinitionNodes to search within.
  * @param fieldName Name of the field whose type is to be fetched.
  */
-function getFieldType(fields: ReadonlyArray<FieldDefinitionNode>, fieldName: string) {
-  return fields.find(f => f.name.value === fieldName).type;
+function getFieldType(relatedType: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, fieldName: string) {
+  const foundField = relatedType.fields.find(f => f.name.value === fieldName);
+  if (!foundField) {
+    throw new InvalidDirectiveError(`${fieldName} is not defined in ${relatedType.name.value}.`);
+  }
+  return foundField.type;
 }
 
 /**
  * Checks that the fields being used to query match the expected key types for the index being used.
- * @param parentFields: All fields of the parent object.
+ * @param parent: All fields of the parent object.
  * @param relatedTypeFields: All fields of the related object.
  * @param inputFieldNames: The fields passed in to the @connection directive.
  * @param keySchema: The key schema for the index being used.
  */
 function checkFieldsAgainstIndex(
-  parentFields: ReadonlyArray<FieldDefinitionNode>,
-  relatedTypeFields: ReadonlyArray<FieldDefinitionNode>,
+  parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
+  relatedType: ObjectTypeDefinitionNode,
   inputFieldNames: string[],
   keySchema: KeySchema[],
   field: Readonly<FieldDefinitionNode>,
 ): void {
   const hashAttributeName = keySchema[0].AttributeName;
-  const tablePKType = getFieldType(relatedTypeFields, String(hashAttributeName));
-  const queryPKType = getFieldType(parentFields, inputFieldNames[0]);
+  const tablePKType = getFieldType(relatedType, String(hashAttributeName));
+  const queryPKType = getFieldType(parent, inputFieldNames[0]);
   const numFields = inputFieldNames.length;
 
   if (getBaseType(tablePKType) !== getBaseType(queryPKType)) {
@@ -124,17 +131,17 @@ function checkFieldsAgainstIndex(
   }
   if (numFields === 2) {
     const sortAttributeName = String(keySchema[1].AttributeName).split(ModelResourceIDs.ModelCompositeKeySeparator())[0];
-    const tableSKType = getFieldType(relatedTypeFields, String(sortAttributeName));
-    const querySKType = getFieldType(parentFields, inputFieldNames[1]);
+    const tableSKType = getFieldType(relatedType, String(sortAttributeName));
+    const querySKType = getFieldType(parent, inputFieldNames[1]);
 
     if (getBaseType(tableSKType) !== getBaseType(querySKType)) {
       throw new InvalidDirectiveError(`${inputFieldNames[1]} field is not of type ${getBaseType(tableSKType)}`);
     }
   } else if (numFields > 2) {
     const tableSortFields = String(keySchema[1].AttributeName).split(ModelResourceIDs.ModelCompositeKeySeparator());
-    const tableSortKeyTypes = tableSortFields.map(name => getFieldType(relatedTypeFields, name));
+    const tableSortKeyTypes = tableSortFields.map(name => getFieldType(relatedType, name));
     const querySortFields = inputFieldNames.slice(1);
-    const querySortKeyTypes = querySortFields.map(name => getFieldType(parentFields, name));
+    const querySortKeyTypes = querySortFields.map(name => getFieldType(parent, name));
 
     // Check that types of each attribute match types of the fields that make up the composite sort key for the
     // table or index being queried.
@@ -562,7 +569,7 @@ export class ModelConnectionTransformer extends Transformer {
     // If no index is provided use the default index for the related model type and
     // check that the query fields match the PK/SK of the table. Else confirm that index exists.
     if (!args.keyName) {
-      checkFieldsAgainstIndex(parent.fields, relatedType.fields, args.fields, <KeySchema[]>tableResource.Properties.KeySchema, field);
+      checkFieldsAgainstIndex(parent, relatedType, args.fields, <KeySchema[]>tableResource.Properties.KeySchema, field);
     } else {
       index =
         (tableResource.Properties.GlobalSecondaryIndexes
@@ -578,7 +585,7 @@ export class ModelConnectionTransformer extends Transformer {
       // check the arity
 
       // Confirm that types of query fields match types of PK/SK of the index being queried.
-      checkFieldsAgainstIndex(parent.fields, relatedType.fields, args.fields, <KeySchema[]>index.KeySchema, field);
+      checkFieldsAgainstIndex(parent, relatedType, args.fields, <KeySchema[]>index.KeySchema, field);
     }
 
     // If the related type is not a list, the index has to be the default index and the fields provided must match the PK/SK of the index.
@@ -610,6 +617,7 @@ export class ModelConnectionTransformer extends Transformer {
         args.fields,
         keySchema,
         index ? String(index.IndexName) : undefined,
+        args.limit,
       );
 
       ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), queryResolver);
@@ -677,10 +685,25 @@ export class ModelConnectionTransformer extends Transformer {
       }
     }
 
+    // Create the Enum filters
+    const enumFilters = makeEnumFilterInputObjects(field, ctx, this.supportsConditions(ctx));
+    for (const filter of enumFilters) {
+      if (!this.typeExist(filter.name.value, ctx)) {
+        ctx.addInput(filter);
+      }
+    }
+
     // Create the ModelXFilterInput
     const tableXQueryFilterInput = makeModelXFilterInputObject(field, ctx, this.supportsConditions(ctx));
     if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
       ctx.addInput(tableXQueryFilterInput);
+    }
+
+    if (this.supportsConditions(ctx)) {
+      const attributeTypeEnum = makeAttributeTypeEnum();
+      if (!this.typeExist(attributeTypeEnum.name.value, ctx)) {
+        ctx.addType(attributeTypeEnum);
+      }
     }
 
     // Create sort key condition inputs for valid sort key types

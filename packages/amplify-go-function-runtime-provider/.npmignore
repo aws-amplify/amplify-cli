@@ -1,0 +1,9 @@
+**/__mocks__/**
+**/__tests__/**
+src
+tsconfig.json
+tsconfig.tsbuildinfo
+bin
+resources/localinvoke/go.sum
+resources/localinvoke/main
+resources/localinvoke/main.exe

@@ -3,6 +3,197 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.16...amplify-app@2.17.17) (2020-10-27)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.15...amplify-app@2.17.16) (2020-10-22)
+
+
+### Bug Fixes
+
+* **amplify-app:** initialize feature flag  ([#5643](https://github.com/aws-amplify/amplify-cli/issues/5643)) ([9608b56](https://github.com/aws-amplify/amplify-cli/commit/9608b5616c2b92417a1b559f41f5d3f8f42f97e5))
+
+
+
+
+
+## [2.17.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.14...amplify-app@2.17.15) (2020-10-17)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.13...amplify-app@2.17.14) (2020-10-07)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.12...amplify-app@2.17.13) (2020-09-25)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.11...amplify-app@2.17.12) (2020-09-16)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.10...amplify-app@2.17.11) (2020-09-09)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.9...amplify-app@2.17.10) (2020-09-03)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.8...amplify-app@2.17.9) (2020-09-02)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.7...amplify-app@2.17.8) (2020-08-31)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.6...amplify-app@2.17.7) (2020-08-20)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.4...amplify-app@2.17.6) (2020-07-29)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.4...amplify-app@2.17.5) (2020-07-23)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.3...amplify-app@2.17.4) (2020-06-25)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.2...amplify-app@2.17.3) (2020-06-18)
+
+
+### Bug Fixes
+
+* do not remove resources group ([#4571](https://github.com/aws-amplify/amplify-cli/issues/4571)) ([3ad26bb](https://github.com/aws-amplify/amplify-cli/commit/3ad26bb2a0d7beabfcfbf84d394705477682ec56)), closes [#4518](https://github.com/aws-amplify/amplify-cli/issues/4518)
+
+
+
+
+
+## [2.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.1...amplify-app@2.17.2) (2020-06-11)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+## [2.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.0...amplify-app@2.17.1) (2020-05-26)
+
+
+### Bug Fixes
+
+* update amplify app package dependencies to latest ([#4374](https://github.com/aws-amplify/amplify-cli/issues/4374)) ([c908891](https://github.com/aws-amplify/amplify-cli/commit/c908891e8408e1285b31e962c898e7e5072ec339))
+
+
+
+
+
+# [2.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.16.0...amplify-app@2.17.0) (2020-05-26)
+
+
+### Bug Fixes
+
+* fix amplify-app ios when not in xcode project ([#4344](https://github.com/aws-amplify/amplify-cli/issues/4344)) ([f74a45d](https://github.com/aws-amplify/amplify-cli/commit/f74a45d0eb94e180440b2639211e43eafacee43e))
+
+
+### Features
+
+* **amplify-app:** group amplify files in xcode integration ([#4268](https://github.com/aws-amplify/amplify-cli/issues/4268)) ([73f3eab](https://github.com/aws-amplify/amplify-cli/commit/73f3eabc11def219faa1724fee93ce171949e40f))
+
+
+
+
+
+# [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.15.1...amplify-app@2.16.0) (2020-04-06)
+
+
+### Features
+
+* bump amplify cli version in amplify-app ([#3842](https://github.com/aws-amplify/amplify-cli/issues/3842)) ([18fa6cd](https://github.com/aws-amplify/amplify-cli/commit/18fa6cde44c4052bb888584f60baba83fe6e8487))
+
+
+
+
+
+## [2.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.13.4...amplify-app@2.15.1) (2020-03-07)
+
+
+### Bug Fixes
+
+* add configuration.json placeholders ([#3508](https://github.com/aws-amplify/amplify-cli/issues/3508)) ([44265c4](https://github.com/aws-amplify/amplify-cli/commit/44265c439d4b7764ff52ab5b82f5fd1c88af799e))
+
+
+
+
+
+## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.13.6-beta.0...amplify-app@2.14.1) (2020-03-05)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
 ## [2.13.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.13.3...amplify-app@2.13.4) (2020-02-19)
 
 

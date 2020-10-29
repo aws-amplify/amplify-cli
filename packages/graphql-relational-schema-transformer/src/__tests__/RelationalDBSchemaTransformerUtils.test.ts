@@ -14,6 +14,7 @@ import {
   getInputTypeDefinition,
   getArgumentNode,
   getGraphQLTypeFromMySQLType,
+  getSingletonListTypeNode,
 } from '../RelationalDBSchemaTransformerUtils';
 
 test('Test operation type node creation', () => {
@@ -45,6 +46,7 @@ test('Test input value definition node creation', () => {
   const inputDefinitionNode = getInputValueDefinition(nameNode, name);
   expect(inputDefinitionNode.kind).toEqual(Kind.INPUT_VALUE_DEFINITION);
   expect(inputDefinitionNode.type).toEqual(nameNode);
+  expect(inputDefinitionNode.directives).toEqual([]);
   expect(inputDefinitionNode.name.value).toEqual(name);
 });
 
@@ -56,6 +58,7 @@ test('Test operation field definition node creation', () => {
   expect(operationFieldDefinitionNode.kind).toEqual(Kind.FIELD_DEFINITION);
   expect(operationFieldDefinitionNode.type).toEqual(namedNode);
   expect(operationFieldDefinitionNode.arguments).toEqual(args);
+  expect(operationFieldDefinitionNode.directives).toEqual([]);
 });
 
 test('Test field definition node creation', () => {
@@ -64,6 +67,7 @@ test('Test field definition node creation', () => {
   const fieldDefinitionNode = getFieldDefinition(fieldName, namedNode);
   expect(fieldDefinitionNode.kind).toEqual(Kind.FIELD_DEFINITION);
   expect(fieldDefinitionNode.type).toEqual(namedNode);
+  expect(fieldDefinitionNode.directives).toEqual([]);
   expect(fieldDefinitionNode.name.value).toEqual(fieldName);
 });
 
@@ -72,6 +76,8 @@ test('Test type definition node creation', () => {
   const typeName = 'type name';
   const typeDefinitionNode = getTypeDefinition(fieldList, typeName);
   expect(typeDefinitionNode.kind).toEqual(Kind.OBJECT_TYPE_DEFINITION);
+  expect(typeDefinitionNode.directives).toEqual([]);
+  expect(typeDefinitionNode.interfaces).toEqual([]);
   expect(typeDefinitionNode.name.value).toEqual(typeName);
   expect(typeDefinitionNode.fields).toEqual(fieldList);
 });
@@ -88,6 +94,13 @@ test('Test list value node creation', () => {
   const listValueNode = getListValueNode(valueList);
   expect(listValueNode.kind).toEqual(Kind.LIST);
   expect(listValueNode.values).toEqual(valueList);
+});
+
+test('Test singleton list type node creation', () => {
+  const value = 'singleton';
+  const listTypeNode = getSingletonListTypeNode(value);
+  expect(listTypeNode.kind).toEqual(Kind.LIST_TYPE);
+  expect(listTypeNode.type).toEqual(getNamedType('singleton'));
 });
 
 test('Test object type node creation', () => {

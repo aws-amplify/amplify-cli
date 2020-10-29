@@ -4,6 +4,8 @@ export async function runTransformer(context: any) {
     forceCompile: true,
     dryRun: true,
     disableResolverOverrides: true,
+    disableFunctionOverrides: true,
+    disablePipelineFunctionOverrides: true,
   });
   return { transformerOutput };
 }

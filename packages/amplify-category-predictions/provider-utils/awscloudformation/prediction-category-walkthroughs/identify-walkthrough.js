@@ -9,12 +9,14 @@ import {
   removeTextractPolicies,
   addTextractPolicies,
 } from '../assets/identifyCFNGenerate';
-
+import { ServiceName as FunctionServiceName } from 'amplify-category-function';
+import { enableGuestAuth } from './enable-guest-auth';
+const { ResourceDoesNotExistError, ResourceAlreadyExistsError, exitOnNextTick } = require('amplify-cli-core');
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
+const os = require('os');
 const uuid = require('uuid');
-
 // Predictions Info
 const templateFilename = 'identify-template.json.ejs';
 const identifyTypes = ['identifyText', 'identifyEntities', 'identifyLabels'];
@@ -34,20 +36,23 @@ const prefixForAdminTrigger = 'protected/predictions/index-faces/';
 async function addWalkthrough(context) {
   while (!checkIfAuthExists(context)) {
     if (
-      await context.amplify.confirmPrompt.run(
-        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?'
+      await context.amplify.confirmPrompt(
+        'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
       try {
         const { add } = require('amplify-category-auth');
         await add(context);
       } catch (e) {
+        context.usageData.emitError(e);
         context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
+        exitOnNextTick(1);
         break;
       }
       break;
     } else {
-      process.exit(0);
+      context.usageData.emitSuccess();
+      exitOnNextTick(0);
     }
   }
 
@@ -69,9 +74,10 @@ async function updateWalkthrough(context) {
     }
   });
   if (predictionsResources.length === 0) {
-    context.print.error('No resources to update. You need to add a resource.');
-    process.exit(0);
-    return;
+    const errMessage = 'No resources to update. You need to add a resource.';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
   }
   let resourceObj = predictionsResources[0].value;
   if (predictionsResources.length > 1) {
@@ -115,8 +121,10 @@ async function configure(context, resourceObj) {
     // check if that type is already created
     const resourceType = resourceAlreadyExists(context, answers.identifyType);
     if (resourceType) {
-      context.print.warning(`${resourceType} has already been added to this project.`);
-      process.exit(0);
+      const errMessage = `${resourceType} has already been added to this project.`;
+      context.print.warning(errMessage);
+      context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+      exitOnNextTick(0);
     }
 
     Object.assign(answers, await inquirer.prompt(identifyAssets.setup.name(`${answers.identifyType}${defaultValues.resourceName}`)));
@@ -240,7 +248,7 @@ async function configure(context, resourceObj) {
 }
 
 function addRegionMapping(context, resourceName, identifyType) {
-  const regionMapping = regionMapper.getRegionMapping(service, identifyType);
+  const regionMapping = regionMapper.getRegionMapping(context, service, identifyType);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const identifyCFNFilePath = path.join(projectBackendDirPath, category, resourceName, `${resourceName}-template.json`);
   const identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
@@ -331,26 +339,6 @@ function checkIfAuthExists(context) {
   return authExists;
 }
 
-async function enableGuestAuth(context, resourceName, allowUnauthenticatedIdentities) {
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-  // enable allowUnauthenticatedIdentities
-  const identifyRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
-  // getting requirement satisfaction map
-  const satisfiedRequirements = await checkRequirements(identifyRequirements, context, 'predictions', resourceName);
-  // checking to see if any requirements are unsatisfied
-  const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
-
-  // if requirements are unsatisfied, trigger auth
-  if (foundUnmetRequirements) {
-    try {
-      await externalAuthEnable(context, 'predictions', resourceName, identifyRequirements);
-    } catch (e) {
-      context.print.error(e);
-      throw e;
-    }
-  }
-}
-
 function resourceAlreadyExists(context, identifyType) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
@@ -373,7 +361,6 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
   const defaultValues = getAllS3Defaults(context.amplify.getProjectDetails());
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
   const options = {
     providerPlugin: 'awscloudformation',
@@ -403,7 +390,7 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
     answers = { ...answers, bucketName };
   }
 
-  let allowUnauthenticatedIdentities = false;
+  let allowUnauthenticatedIdentities; // default to undefined since if S3 does not require unauth access the IdentityPool can still have that enabled
   if (answers.storageAccess === 'authAndGuest') {
     Object.assign(answers, getAllAuthAndGuestDefaults());
     allowUnauthenticatedIdentities = true;
@@ -413,24 +400,40 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
   const s3Resource = {
     resourceName: answers.resourceName,
   };
-  const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
   answers.adminTriggerFunction = await addTrigger(context, s3Resource, options, predictionsResourceName);
   answers.triggerFunction = 'NONE';
 
   // getting requirement satisfaction map
-  const satisfiedRequirements = await checkRequirements(storageRequirements, context, storageCategory, answers.resourceName);
-  // checking to see if any requirements are unsatisfied
-  const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
+  const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
 
-  // if requirements are unsatisfied, trigger auth
-  if (foundUnmetRequirements) {
+  const checkResult = await checkRequirements(storageRequirements, context, storageCategory, answers.resourceName);
+
+  // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
+  // configuration.
+  if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
+    throw new Error(checkResult.errors.join(os.EOL));
+  }
+
+  if (checkResult.errors && checkResult.errors.length > 0) {
+    context.print.warning(checkResult.errors.join(os.EOL));
+  }
+
+  // If auth is not imported and there were errors, adjust or enable auth configuration
+  if (!checkResult.authEnabled || !checkResult.requirementsMet) {
     try {
+      // If this is not set as requirement, then explicitly configure it to disabled.
+      if (storageRequirements.allowUnauthenticatedIdentities === undefined) {
+        storageRequirements.allowUnauthenticatedIdentities = false;
+      }
       await externalAuthEnable(context, storageCategory, answers.resourceName, storageRequirements);
-    } catch (e) {
-      context.print.error(e);
-      throw e;
+    } catch (error) {
+      context.print.error(error);
+      throw error;
     }
   }
+
+  // At this point we have a valid auth configuration either imported or added/updated.
 
   Object.assign(defaultValues, answers);
   const resource = defaultValues.resourceName;
@@ -597,7 +600,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
       projectBackendDirPath,
       category,
       predictionsResourceName,
-      `${predictionsResourceName}-template.json`
+      `${predictionsResourceName}-template.json`,
     );
     let identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
     identifyCFNFile = generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3ResourceName);
@@ -624,7 +627,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
   // Update amplify-meta and backend-config
 
   const backendConfigs = {
-    service: 'Lambda',
+    service: FunctionServiceName.LambdaFunction,
     providerPlugin: 'awscloudformation',
     build: true,
   };
@@ -641,7 +644,7 @@ function addStorageIAMResourcestoIdentifyCFNFile(context, predictionsResourceNam
     projectBackendDirPath,
     category,
     predictionsResourceName,
-    `${predictionsResourceName}-template.json`
+    `${predictionsResourceName}-template.json`,
   );
   let identifyCFNFile = context.amplify.readJsonFile(identifyCFNFilePath);
   identifyCFNFile = generateStorageAccessForRekognition(identifyCFNFile, s3ResourceName, prefixForAdminTrigger);

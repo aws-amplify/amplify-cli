@@ -1,5 +1,5 @@
-import path from 'path';
-import fs from 'fs-extra';
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import { PluginCollection } from '../domain/plugin-collection';
 import { PluginPlatform } from '../domain/plugin-platform';
 import { constants } from '../domain/constants';
@@ -10,11 +10,11 @@ import { verifyPlugin } from './verify-plugin';
 import { readPluginsJsonFile, writePluginsJsonFile } from './access-plugins-file';
 import { twoPluginsAreTheSame } from './compare-plugins';
 import { checkPlatformHealth } from './platform-health-check';
-import { readJsonFileSync } from '../utils/readJsonFile';
 import isChildPath from '../utils/is-child-path';
+import { JSONUtilities, $TSAny, isPackaged } from 'amplify-cli-core';
 
 export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {
-  pluginPlatform = pluginPlatform || (await readPluginsJsonFile()) || new PluginPlatform();
+  pluginPlatform = pluginPlatform || readPluginsJsonFile() || new PluginPlatform();
 
   pluginPlatform!.plugins = new PluginCollection();
 
@@ -30,9 +30,13 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
     });
 
     const scanUserLocationTasks = pluginPlatform!.userAddedLocations.map(pluginDirPath => async () =>
-      await verifyAndAdd(pluginPlatform!, pluginDirPath)
+      await verifyAndAdd(pluginPlatform!, pluginDirPath),
     );
     await sequential(scanUserLocationTasks);
+  }
+
+  if (isPackaged) {
+    pluginPlatform!.pluginDirectories.push(constants.PackagedNodeModules);
   }
 
   if (pluginPlatform!.pluginDirectories.length > 0 && pluginPlatform!.pluginPrefixes.length > 0) {
@@ -58,7 +62,7 @@ export async function scanPluginPlatform(pluginPlatform?: PluginPlatform): Promi
   }
 
   pluginPlatform!.lastScanTime = new Date();
-  await writePluginsJsonFile(pluginPlatform!);
+  writePluginsJsonFile(pluginPlatform!);
 
   await checkPlatformHealth(pluginPlatform);
 
@@ -70,8 +74,8 @@ export function getCorePluginDirPath(): string {
 }
 
 export function getCorePluginVersion(): string {
-  const packageJsonFilePath = path.normalize(path.join(__dirname, '../../package.json'));
-  const packageJson = readJsonFileSync(packageJsonFilePath);
+  const packageJsonFilePath = path.normalize(path.join(__dirname, '..', '..', 'package.json'));
+  const packageJson = JSONUtilities.readJson<$TSAny>(packageJsonFilePath);
   return packageJson.version;
 }
 
@@ -91,15 +95,18 @@ async function addCore(pluginPlatform: PluginPlatform) {
 }
 
 export function normalizePluginDirectory(directory: string): string {
-  let result = directory;
-  if (directory === constants.LocalNodeModules) {
-    result = path.normalize(path.join(__dirname, '../../node_modules'));
-  } else if (directory === constants.ParentDirectory) {
-    result = path.normalize(path.join(__dirname, '../../../'));
-  } else if (directory === constants.GlobalNodeModules) {
-    result = getGlobalNodeModuleDirPath();
+  switch (directory) {
+    case constants.PackagedNodeModules:
+      return path.normalize(path.join(__dirname, '../../../..'));
+    case constants.LocalNodeModules:
+      return path.normalize(path.join(__dirname, '../../node_modules'));
+    case constants.ParentDirectory:
+      return path.normalize(path.join(__dirname, '../../../'));
+    case constants.GlobalNodeModules:
+      return getGlobalNodeModuleDirPath();
+    default:
+      return directory;
   }
-  return result;
 }
 
 function isMatchingNamePattern(pluginPrefixes: string[], pluginDirName: string): boolean {

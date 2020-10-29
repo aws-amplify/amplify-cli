@@ -1,8 +1,4 @@
-type Todo @model
-  @key(fields: ["id", "name2"])
-  @key(name: "SomeLSI", fields: ["id", "name"])
-  @key(name: "SomeGSI", fields: ["name", "id"])
-{
+type Todo @model @key(fields: ["id", "name2"]) @key(name: "SomeLSI", fields: ["id", "name"]) @key(name: "SomeGSI", fields: ["name", "id"]) {
   id: ID!
   id2: ID!
   name: String!

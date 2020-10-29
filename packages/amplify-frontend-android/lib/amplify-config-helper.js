@@ -1,4 +1,4 @@
-function generateConfig(context, amplifyConfig) {
+function generateConfig(context, amplifyConfig, newAWSConfig) {
   const metadata = context.amplify.getProjectMeta();
   amplifyConfig = amplifyConfig || {
     UserAgent: 'aws-amplify-cli/2.0',
@@ -6,10 +6,22 @@ function generateConfig(context, amplifyConfig) {
   };
   constructAnalytics(metadata, amplifyConfig);
   constructApi(metadata, amplifyConfig);
+  // Auth plugin with entire awsconfiguration contained required for Native GA release
+  constructAuth(metadata, amplifyConfig, newAWSConfig);
   constructPredictions(metadata, amplifyConfig);
   constructStorage(metadata, amplifyConfig);
 
   return amplifyConfig;
+}
+
+function constructAuth(metadata, amplifyConfig, awsConfig) {
+  const categoryName = 'auth';
+  const pluginName = 'awsCognitoAuthPlugin';
+  if (metadata[categoryName]) {
+    amplifyConfig[categoryName] = {};
+    amplifyConfig[categoryName].plugins = {};
+    amplifyConfig[categoryName].plugins[pluginName] = awsConfig;
+  }
 }
 
 function constructAnalytics(metadata, amplifyConfig) {

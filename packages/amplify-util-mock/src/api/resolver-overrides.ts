@@ -8,8 +8,8 @@ export class ResolverOverrides {
 
   constructor(
     private _rootFolder: string,
-    private _foldersToWatch: string[] = ['resolvers', 'pipelineFunctions'],
-    private fileExtensions: string[] = ['.vtl']
+    private _foldersToWatch: string[] = ['resolvers', 'pipelineFunctions', 'functions'],
+    private fileExtensions: string[] = ['.vtl'],
   ) {
     this.overrides = new Set();
     this.contentMap = new Map();

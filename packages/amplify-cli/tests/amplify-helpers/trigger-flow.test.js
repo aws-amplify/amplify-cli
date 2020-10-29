@@ -39,7 +39,7 @@ describe('TriggerFlow:  ', () => {
       },
       amplify: {
         readJsonFile: jest.fn().mockReturnValue({ Lambda: {} }),
-        getCategoryPlugins: jest.fn().mockReturnValue({ category: './' }),
+        getCategoryPluginInfo: jest.fn().mockReturnValue({ packageLocation: './' }),
         updateamplifyMetaAfterResourceAdd: jest.fn(),
         pathManager: {
           getBackendDirPath: jest.fn(),

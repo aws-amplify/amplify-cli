@@ -33,6 +33,10 @@ async function handleAmplifyEvent(context, args) {
   await eventHandlerModule.run(context, args);
 }
 
+async function createAWSExports(context, newOutputsForFrontend, cloudOutputsForFrontend) {
+  // to be implemented
+}
+
 module.exports = {
   scanProject,
   init,

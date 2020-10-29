@@ -5,8 +5,8 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "outDir": "lib",
-    "lib": ["dom", "es2015", "es2016.array.include", "esnext.asynciterable"],
+    "lib": ["es2015", "es2016.array.include", "esnext.asynciterable"],
     "declaration": true
   },
-  "exclude": ["node_modules", "lib"]
+  "exclude": ["node_modules", "lib", "**/__mocks__/**/*", "**/__tests__/**/*"]
 }

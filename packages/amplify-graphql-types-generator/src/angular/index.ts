@@ -1,4 +1,4 @@
-import { GraphQLNonNull, GraphQLType, isScalarType, isListType } from 'graphql';
+import { GraphQLNonNull, GraphQLType, isScalarType } from 'graphql';
 import * as prettier from 'prettier';
 import { LegacyCompilerContext, LegacyOperation, LegacyInlineFragment, LegacyField } from '../compiler/legacyIR';
 
@@ -13,6 +13,7 @@ import {
 } from '../typescript/codeGeneration';
 import { typeNameFromGraphQLType } from '../typescript/types';
 import { Property, interfaceDeclaration } from '../typescript/language';
+import { isList } from '../utilities/graphql';
 
 export function generateSource(context: LegacyCompilerContext) {
   const generator = new CodeGenerator<LegacyCompilerContext>(context);
@@ -22,10 +23,9 @@ export function generateSource(context: LegacyCompilerContext) {
   generator.printOnNewline('//  This file was automatically generated and should not be edited.');
 
   generator.printOnNewline(`import { Injectable } from '@angular/core';`);
-  generator.printOnNewline(`import API, { graphqlOperation } from '@aws-amplify/api';`);
-  generator.printOnNewline(`import { GraphQLResult } from "@aws-amplify/api/lib/types";`);
+  generator.printOnNewline(`import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api-graphql';`);
 
-  generator.printOnNewline(`import * as Observable from 'zen-observable';`);
+  generator.printOnNewline(`import { Observable } from 'zen-observable-ts';`);
   generator.printNewline();
 
   generateTypes(generator, context);
@@ -36,6 +36,15 @@ export function generateSource(context: LegacyCompilerContext) {
 }
 
 function generateTypes(generator: CodeGenerator, context: LegacyCompilerContext) {
+  // if subscription operations exist create subscriptionResponse interface
+  // https://github.com/aws-amplify/amplify-cli/issues/5284
+  if (context.schema.getSubscriptionType()) {
+    generator.printOnNewline(`
+    export interface SubscriptionResponse<T> {
+      value: GraphQLResult<T>;
+    }`);
+    generator.printNewline();
+  }
   context.typesUsed.forEach(type => typeDeclarationForGraphQLType(generator, type));
 
   Object.values(context.operations).forEach(operation => {
@@ -75,13 +84,13 @@ function interfaceDeclarationForOperation(generator: CodeGenerator, { operationN
       },
       () => {
         propertyDeclarations(generator, properties);
-      }
+      },
     );
   }
 }
 
 function getOperationResultField(operation: LegacyOperation): LegacyField | void {
-  if (operation.fields.length && operation.fields[0].fields) {
+  if (operation.fields.length) {
     return operation.fields[0];
   }
 }
@@ -93,7 +102,7 @@ function getReturnTypeName(generator: CodeGenerator, op: LegacyOperation): Strin
     return typeNameFromGraphQLType(generator.context, type);
   } else {
     let returnType = interfaceNameFromOperation({ operationName, operationType });
-    if (isListType(type)) {
+    if (isList(type)) {
       returnType = `Array<${returnType}>`;
     }
     return returnType;
@@ -127,7 +136,7 @@ function generateSubscriptionOperation(generator: CodeGenerator, op: LegacyOpera
   generator.printNewline();
   const subscriptionName = `${operationName}Listener`;
   generator.print(
-    `${subscriptionName}: Observable<${returnType}> = API.graphql(graphqlOperation(\n\`${statement}\`)) as Observable<${returnType}>`
+    `${subscriptionName}: Observable<SubscriptionResponse<${returnType}>> = API.graphql(graphqlOperation(\n\`${statement}\`)) as Observable<SubscriptionResponse<${returnType}>>`,
   );
   generator.printNewline();
 }
@@ -167,7 +176,7 @@ export function variablesFromField(
     fragmentSpreads?: any;
     inlineFragments?: LegacyInlineFragment[];
     fieldName?: string;
-  }[]
+  }[],
 ) {
   return fields.map(field => propertyFromVar(context, field));
 }
@@ -183,7 +192,7 @@ export function propertyFromVar(
     fragmentSpreads?: any;
     inlineFragments?: LegacyInlineFragment[];
     fieldName?: string;
-  }
+  },
 ): Property {
   let { name: fieldName, type: fieldType } = field;
   fieldName = fieldName || field.responseName;
@@ -242,7 +251,7 @@ function variableAssignmentToInput(generator: CodeGenerator, vars: Property[]) {
           });
       },
       '{',
-      '}'
+      '}',
     );
     // null able arguments
     vars
@@ -254,7 +263,7 @@ function variableAssignmentToInput(generator: CodeGenerator, vars: Property[]) {
             generator.printOnNewline(`gqlAPIServiceArguments.${v.fieldName} = ${v.fieldName}`);
           },
           '{',
-          '}'
+          '}',
         );
       });
   }

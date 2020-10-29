@@ -190,7 +190,7 @@ test('Test that only Admins can create Employee records.', async () => {
           salary
       }
   }`,
-    {}
+    {},
   );
   logDebug(createUser1);
   expect(createUser1.data.createEmployee.email).toEqual('user2@test.com');
@@ -204,7 +204,7 @@ test('Test that only Admins can create Employee records.', async () => {
           salary
       }
   }`,
-    {}
+    {},
   );
   logDebug(tryToCreateAsNonAdmin);
   expect(tryToCreateAsNonAdmin.data.createEmployee).toBeNull();
@@ -218,7 +218,7 @@ test('Test that only Admins can create Employee records.', async () => {
           salary
       }
   }`,
-    {}
+    {},
   );
   logDebug(tryToCreateAsNonAdmin2);
   expect(tryToCreateAsNonAdmin2.data.createEmployee).toBeNull();
@@ -234,7 +234,7 @@ test('Test that only Admins may update salary & email.', async () => {
           salary
       }
   }`,
-    {}
+    {},
   );
   logDebug(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
@@ -250,7 +250,7 @@ test('Test that only Admins may update salary & email.', async () => {
           salary
       }
   }`,
-    {}
+    {},
   );
   logDebug(tryToUpdateAsNonAdmin);
   expect(tryToUpdateAsNonAdmin.data.updateEmployee).toBeNull();
@@ -264,7 +264,7 @@ test('Test that only Admins may update salary & email.', async () => {
           salary
       }
   }`,
-    {}
+    {},
   );
   logDebug(tryToUpdateAsNonAdmin2);
   expect(tryToUpdateAsNonAdmin2.data.updateEmployee).toBeNull();
@@ -278,7 +278,7 @@ test('Test that only Admins may update salary & email.', async () => {
           salary
       }
   }`,
-    {}
+    {},
   );
   logDebug(tryToUpdateAsNonAdmin3);
   expect(tryToUpdateAsNonAdmin3.data.updateEmployee).toBeNull();
@@ -292,7 +292,7 @@ test('Test that only Admins may update salary & email.', async () => {
           salary
       }
   }`,
-    {}
+    {},
   );
   logDebug(updateAsAdmin);
   expect(updateAsAdmin.data.updateEmployee.email).toEqual('someonelese@gmail.com');
@@ -306,7 +306,7 @@ test('Test that only Admins may update salary & email.', async () => {
           salary
       }
   }`,
-    {}
+    {},
   );
   logDebug(updateAsAdmin2);
   expect(updateAsAdmin2.data.updateEmployee.email).toEqual('someonelese@gmail.com');
@@ -322,7 +322,7 @@ test('Test that owners may update their bio.', async () => {
           salary
       }
   }`,
-    {}
+    {},
   );
   logDebug(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
@@ -339,7 +339,7 @@ test('Test that owners may update their bio.', async () => {
           bio
       }
   }`,
-    {}
+    {},
   );
   logDebug(tryToUpdateAsNonAdmin);
   expect(tryToUpdateAsNonAdmin.data.updateEmployee.bio).toEqual('Does cool stuff.');
@@ -357,7 +357,7 @@ test('Test that everyone may view employee bios.', async () => {
           bio
       }
   }`,
-    {}
+    {},
   );
   logDebug(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
@@ -374,7 +374,7 @@ test('Test that everyone may view employee bios.', async () => {
           bio
       }
   }`,
-    {}
+    {},
   );
   logDebug(getAsNonAdmin);
   // Should not be able to view the email as the non owner
@@ -392,7 +392,7 @@ test('Test that everyone may view employee bios.', async () => {
           }
       }
   }`,
-    {}
+    {},
   );
   logDebug(listAsNonAdmin);
   expect(listAsNonAdmin.data.listEmployees.items.length).toBeGreaterThan(1);
@@ -416,7 +416,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
           notes
       }
   }`,
-    {}
+    {},
   );
   logDebug(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
@@ -432,7 +432,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
           notes
       }
   }`,
-    {}
+    {},
   );
   logDebug(tryToDeleteUserNotes);
   expect(tryToDeleteUserNotes.data.updateEmployee).toBeNull();
@@ -445,7 +445,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
           notes
       }
   }`,
-    {}
+    {},
   );
   expect(updateNewsWithNotes.data.updateEmployee.notes).toEqual('something else');
 
@@ -456,7 +456,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
           notes
       }
   }`,
-    {}
+    {},
   );
   expect(updateAsAdmin.data.updateEmployee).toBeNull();
   expect(updateAsAdmin.errors).toHaveLength(1);
@@ -468,7 +468,7 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
           notes
       }
   }`,
-    {}
+    {},
   );
   expect(deleteNotes.data.updateEmployee.notes).toBeNull();
 });
@@ -489,7 +489,7 @@ test('Test with auth with subscriptions on default behavior', async () => {
           owner
       }
   }`,
-    {}
+    {},
   );
   logDebug(createStudent2);
   expect(createStudent2.data.createStudent.id).toBeDefined();
@@ -507,7 +507,7 @@ test('Test with auth with subscriptions on default behavior', async () => {
           owner
       }
   }`,
-    {}
+    {},
   );
   logDebug(queryForStudent2);
   expect(queryForStudent2.data.getStudent.notes).toEqual(secureNote1);
@@ -523,7 +523,7 @@ test('Test with auth with subscriptions on default behavior', async () => {
           owner
       }
   }`,
-    {}
+    {},
   );
   console.log(JSON.stringify(queryAsStudent1));
   expect(queryAsStudent1.data.getStudent.notes).toBeNull();
@@ -552,6 +552,7 @@ test('AND per-field dynamic auth rule test', async () => {
     }
     `);
   logDebug(badUpdatePostResponse);
+  expect(badUpdatePostResponse.errors[0].data).toBeNull();
   expect(badUpdatePostResponse.errors[0].errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 
   const correctUpdatePostResponse = await GRAPHQL_CLIENT_1.query(`mutation UpdatePost {

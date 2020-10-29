@@ -2,9 +2,11 @@ import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common'
 import { camelCase } from 'change-case';
 import { lowerCaseFirst } from 'lower-case-first';
 import { schemaTypeMap } from '../configs/swift-config';
-import { SwiftDeclarationBlock } from '../languages/swift-declaration-block';
+import { SwiftDeclarationBlock, escapeKeywords, ListType } from '../languages/swift-declaration-block';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { AppSyncModelVisitor, CodeGenField, CodeGenGenerateEnum, CodeGenModel } from './appsync-visitor';
+import { AuthDirective, AuthStrategy } from '../utils/process-auth';
+import { printWarning } from '../utils/warn';
 
 export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   protected modelExtensionImports: string[] = ['import Amplify', 'import Foundation'];
@@ -18,6 +20,8 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       code.push(this.generateClassLoader());
     } else if (this.selectedTypeIsEnum()) {
       code.push(this.generateEnums());
+    } else if (this.selectedTypeIsNonModel()) {
+      code.push(this.generateNonModelType());
     } else {
       code.push(this.generateStruct());
     }
@@ -33,11 +37,13 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       Object.entries(obj.fields).forEach(([fieldName, field]) => {
         const fieldType = this.getNativeType(field);
         const isVariable = field.name !== 'id';
+        const listType: ListType = field.connectionInfo ? ListType.LIST : ListType.ARRAY;
         structBlock.addProperty(this.getFieldName(field), fieldType, undefined, 'public', {
           optional: !this.isFieldRequired(field),
           isList: field.isList,
           variable: isVariable,
           isEnum: this.isEnumType(field),
+          listType: field.isList ? listType : undefined,
         });
       });
       const initImpl: string = this.getInitBody(obj.fields);
@@ -45,12 +51,20 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
         'init',
         null,
         initImpl,
-        obj.fields.map(field => ({
-          name: this.getFieldName(field),
-          type: this.getNativeType(field),
-          value: field.name === 'id' ? 'UUID().uuidString' : undefined,
-          flags: { optional: field.isNullable, isList: field.isList, isEnum: this.isEnumType(field) },
-        })),
+        obj.fields.map(field => {
+          const listType: ListType = field.connectionInfo ? ListType.LIST : ListType.ARRAY;
+          return {
+            name: this.getFieldName(field),
+            type: this.getNativeType(field),
+            value: field.name === 'id' ? 'UUID().uuidString' : undefined,
+            flags: {
+              optional: field.isNullable,
+              isList: field.isList,
+              isEnum: this.isEnumType(field),
+              listType: field.isList ? listType : undefined,
+            },
+          };
+        }),
         'public',
         {},
       );
@@ -64,7 +78,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       const enumDeclaration = new SwiftDeclarationBlock()
         .asKind('enum')
         .access('public')
-        .withProtocols(['String'])
+        .withProtocols(['String', 'EnumPersistable'])
         .withName(this.getEnumName(enumValue));
 
       Object.entries(enumValue.values).forEach(([name, value]) => {
@@ -72,6 +86,27 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       });
 
       result.push(enumDeclaration.string);
+    });
+    return result.join('\n');
+  }
+  generateNonModelType(): string {
+    let result: string[] = [...this.imports, ''];
+    Object.entries(this.getSelectedNonModels()).forEach(([name, obj]) => {
+      const structBlock: SwiftDeclarationBlock = new SwiftDeclarationBlock()
+        .withName(this.getModelName(obj))
+        .access('public')
+        .withProtocols(['Embeddable']);
+      Object.values(obj.fields).forEach(field => {
+        const fieldType = this.getNativeType(field);
+        structBlock.addProperty(this.getFieldName(field), fieldType, undefined, 'DEFAULT', {
+          optional: !this.isFieldRequired(field),
+          isList: field.isList,
+          variable: true,
+          isEnum: this.isEnumType(field),
+          listType: field.isList ? ListType.ARRAY : undefined,
+        });
+      });
+      result.push(structBlock.string);
     });
     return result.join('\n');
   }
@@ -89,6 +124,15 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
         result.push(schemaDeclarations.string);
       });
+
+    Object.values(this.getSelectedNonModels()).forEach(model => {
+      const schemaDeclarations = new SwiftDeclarationBlock().asKind('extension').withName(this.getNonModelName(model));
+
+      this.generateCodingKeys(this.getNonModelName(model), model, schemaDeclarations),
+        this.generateModelSchema(this.getNonModelName(model), model, schemaDeclarations);
+
+      result.push(schemaDeclarations.string);
+    });
     return result.join('\n');
   }
 
@@ -116,11 +160,12 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     const fields = model.fields.map(field => {
       return this.generateFieldSchema(field, keysName);
     });
-
+    const authRules = this.generateAuthRules(model);
     const closure = [
       '{ model in',
       `let ${keysName} = ${this.getModelName(model)}.keys`,
       '',
+      ...(authRules.length ? [`model.authRules = ${authRules}`, ''] : []),
       `model.pluralName = "${this.pluralizeModelName(model)}"`,
       '',
       'model.fields(',
@@ -139,7 +184,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
   }
 
   protected generateClassLoader(): string {
-    const structList = Object.values(this.typeMap).map(typeObj => {
+    const structList = Object.values(this.modelMap).map(typeObj => {
       return `${this.getModelName(typeObj)}.self`;
     });
 
@@ -170,7 +215,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
 
   private getInitBody(fields: CodeGenField[]): string {
     let result = fields.map(field => {
-      const fieldName = this.getFieldName(field);
+      const fieldName = escapeKeywords(this.getFieldName(field));
       return indent(`self.${fieldName} = ${fieldName}`);
     });
 
@@ -187,6 +232,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     let ofType;
     const isEnumType = this.isEnumType(field);
     const isModelType = this.isModelType(field);
+    const isNonModelType = this.isNonModelType(field);
     const name = `${modelKeysName}.${this.getFieldName(field)}`;
     const typeName = this.getSwiftModelTypeName(field);
     const { connectionInfo } = field;
@@ -209,12 +255,18 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
     }
 
     if (field.isList) {
-      ofType = `.collection(of: ${this.getSwiftModelTypeName(field)})`;
+      if (isModelType) {
+        ofType = `.collection(of: ${this.getSwiftModelTypeName(field)})`;
+      } else {
+        ofType = `.embeddedCollection(of: ${this.getSwiftModelTypeName(field)})`;
+      }
     } else {
       if (isEnumType) {
-        ofType = `.enum(${typeName})`;
+        ofType = `.enum(type: ${typeName})`;
       } else if (isModelType) {
         ofType = `.model(${typeName})`;
+      } else if (isNonModelType) {
+        ofType = `.embedded(type: ${typeName})`;
       } else {
         ofType = typeName;
       }
@@ -229,9 +281,15 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       return `${this.getEnumName(field.type)}.self`;
     }
     if (this.isModelType(field)) {
-      return `${this.getModelName(this.typeMap[field.type])}.self`;
+      return `${this.getModelName(this.modelMap[field.type])}.self`;
+    }
+    if (this.isNonModelType(field)) {
+      return `${this.getNonModelName(this.nonModelMap[field.type])}.self`;
     }
     if (field.type in schemaTypeMap) {
+      if (field.isList) {
+        return `${this.getNativeType(field)}.self`;
+      }
       return schemaTypeMap[field.type];
     }
     // TODO: investigate if returning string is acceptable or should throw an exception
@@ -255,5 +313,40 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       return false;
     }
     return !field.isNullable;
+  }
+
+  protected generateAuthRules(model: CodeGenModel): string {
+    const authDirectives: AuthDirective[] = (model.directives.filter(d => d.name === 'auth') as any) as AuthDirective[];
+    const rules: string[] = [];
+    authDirectives.forEach(directive => {
+      directive.arguments?.rules.forEach(rule => {
+        const authRule = [];
+        switch (rule.allow) {
+          case AuthStrategy.owner:
+            authRule.push('allow: .owner');
+            authRule.push(`ownerField: "${rule.ownerField}"`);
+            authRule.push(`identityClaim: "${rule.identityClaim}"`);
+            break;
+          case AuthStrategy.groups:
+            authRule.push('allow: .groups');
+            authRule.push(`groupClaim: "${rule.groupClaim}"`);
+            if (rule.groups) {
+              authRule.push(`groups: [${rule.groups?.map(group => `"${group}"`).join(', ')}]`);
+            } else {
+              authRule.push(`groupsField: "${rule.groupField}"`);
+            }
+            break;
+          default:
+            printWarning(`Model ${model.name} has auth with authStrategy ${rule.allow} of which is not yet supported in DataStore.`);
+            return;
+        }
+        authRule.push(`operations: [${rule.operations?.map(op => `.${op}`).join(', ')}]`);
+        rules.push(`rule(${authRule.join(', ')})`);
+      });
+    });
+    if (rules.length) {
+      return ['[', `${indentMultiline(rules.join(',\n'))}`, ']'].join('\n');
+    }
+    return '';
   }
 }

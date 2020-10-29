@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const ora = require('ora');
 const fs = require('fs-extra');
-
+const { exitOnNextTick } = require('amplify-cli-core');
 const channelName = 'APNS';
 const spinner = ora('');
 
@@ -71,8 +71,11 @@ async function enable(context, successMessage) {
     }
   } catch (err) {
     context.print.error(err.message);
-    process.exit(1);
+    context.usageData.emitError(err);
+    exitOnNextTick(1);
   }
+
+  spinner.start('Updating APNS Channel.');
 
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
@@ -82,22 +85,30 @@ async function enable(context, successMessage) {
     },
   };
 
-  spinner.start('Updating APNS Channel.');
-  return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateApnsChannel(params, (err, data) => {
-      if (err) {
-        spinner.fail('update channel error');
-        reject(err);
-      } else {
-        if (!successMessage) {
-          successMessage = `The ${channelName} channel has been successfully enabled.`;
-        }
-        spinner.succeed(successMessage);
-        context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
-        resolve(data);
-      }
-    });
-  });
+  const sandboxParams = {
+    ApplicationId: context.exeInfo.serviceMeta.output.Id,
+    APNSSandboxChannelRequest: {
+      ...answers,
+      Enabled: true,
+    },
+  };
+
+  let data;
+  try {
+    data = await context.exeInfo.pinpointClient.updateApnsChannel(params).promise();
+    await context.exeInfo.pinpointClient.updateApnsSandboxChannel(sandboxParams).promise();
+    context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
+  } catch (e) {
+    spinner.fail(`Failed to update the ${channelName} channel.`);
+    throw e;
+  }
+
+  if (!successMessage) {
+    successMessage = `The ${channelName} channel has been successfully enabled.`;
+  }
+  spinner.succeed(successMessage);
+
+  return data;
 }
 
 function validateInputParams(channelInput) {
@@ -127,26 +138,35 @@ function validateInputParams(channelInput) {
   return channelInput;
 }
 
-function disable(context) {
+async function disable(context) {
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     APNSChannelRequest: {
       Enabled: false,
     },
   };
+
+  const sandboxParams = {
+    ApplicationId: context.exeInfo.serviceMeta.output.Id,
+    APNSSandboxChannelRequest: {
+      Enabled: false,
+    },
+  };
+
   spinner.start('Updating APNS Channel.');
-  return new Promise((resolve, reject) => {
-    context.exeInfo.pinpointClient.updateApnsChannel(params, (err, data) => {
-      if (err) {
-        spinner.fail('update channel error');
-        reject(err);
-      } else {
-        spinner.succeed(`The ${channelName} channel has been disabled.`);
-        context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
-        resolve(data);
-      }
-    });
-  });
+
+  let data;
+  try {
+    data = await context.exeInfo.pinpointClient.updateApnsChannel(params).promise();
+    await context.exeInfo.pinpointClient.updateApnsSandboxChannel(sandboxParams).promise();
+  } catch (e) {
+    spinner.fail(`Failed to update the ${channelName} channel.`);
+    throw e;
+  }
+
+  spinner.succeed(`The ${channelName} channel has been disabled.`);
+  context.exeInfo.serviceMeta.output[channelName] = data.APNSChannelResponse;
+  return data;
 }
 
 function pull(context, pinpointApp) {

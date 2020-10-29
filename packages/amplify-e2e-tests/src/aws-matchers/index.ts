@@ -1,2 +1,2 @@
-import './iamMatcher';
-import './s3matcher';
+export * from './iamMatcher';
+export * from './s3matcher';

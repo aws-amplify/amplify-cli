@@ -62,6 +62,7 @@ describe('process connection', () => {
 
         expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
         expect(connectionInfo.associatedWith).toEqual(modelMap.Comment.fields[0]);
+        expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(true);
       });
 
       it('should return BELONGS_TO for Comment.post field connection info', () => {
@@ -70,6 +71,7 @@ describe('process connection', () => {
         expect(connectionInfo).toBeDefined();
 
         expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+        expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(true);
       });
     });
     describe('One:One connection', () => {
@@ -123,6 +125,7 @@ describe('process connection', () => {
         expect(connectionInfo).toBeDefined();
         expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_ONE);
         expect(connectionInfo.associatedWith).toEqual(modelMap.License.fields[0]);
+        expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(true);
       });
 
       it('should return BELONGS_TO License.person field', () => {
@@ -130,6 +133,7 @@ describe('process connection', () => {
         const connectionInfo = (processConnections(personField, modelMap.License, modelMap) as any) as CodeGenFieldConnectionBelongsTo;
         expect(connectionInfo).toBeDefined();
         expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+        expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(true);
       });
 
       it('should throw error when the One:One connection has optional field on both sides', () => {
@@ -199,6 +203,7 @@ describe('process connection', () => {
         directives: [],
         isNullable: true,
       });
+      expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(true);
     });
 
     it('should return BELONGS_TO for Comment.post', () => {
@@ -208,6 +213,7 @@ describe('process connection', () => {
 
       expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
       expect(connectionInfo.targetName).toEqual('commentPostId');
+      expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(true);
     });
   });
 
@@ -271,22 +277,10 @@ describe('process connection', () => {
         },
       };
     });
-    it('should support connection with keyName on HAS_MANY side', () => {
-      const commentsField = modelMap.Post.fields[0];
-      const connectionInfo = (processConnections(commentsField, modelMap.Post, modelMap) as any) as CodeGenFieldConnectionHasMany;
-      expect(connectionInfo).toBeDefined();
-      expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
-      expect(connectionInfo.associatedWith).toEqual(modelMap.Comment.fields[2]);
-    });
 
-    it('should support connection with keyName on HAS_MANY side with no corresponding connection on other side ', () => {
-      // remove post: Post @connection(fields:['postID']) field
-      modelMap.Comment.fields.splice(2);
+    it('should not throw error if connection directive has keyName', () => {
       const commentsField = modelMap.Post.fields[0];
-      const connectionInfo = (processConnections(commentsField, modelMap.Post, modelMap) as any) as CodeGenFieldConnectionHasMany;
-      expect(connectionInfo).toBeDefined();
-      expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_MANY);
-      expect(connectionInfo.associatedWith).toEqual(modelMap.Comment.fields[0]);
+      expect(() => processConnections(commentsField, modelMap.Post, modelMap)).not.toThrowError();
     });
 
     it('should support connection with @key on BELONGS_TO side', () => {
@@ -295,6 +289,7 @@ describe('process connection', () => {
       expect(connectionInfo).toBeDefined();
       expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
       expect(connectionInfo.targetName).toEqual(modelMap.Comment.fields[0].name);
+      expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(false);
     });
   });
   describe('getConnectedField', () => {
@@ -342,6 +337,7 @@ describe('process connection', () => {
           },
         };
       });
+
       it('should return connected field when connection is Many to one', () => {
         const commentsField = modelMap.Post.fields[0];
         const postField = modelMap.Comment.fields[0];

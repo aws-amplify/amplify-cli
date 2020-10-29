@@ -989,7 +989,8 @@ export const reviewAdded = /* GraphQL */ \`
 `;
 
 exports[`end 2 end tests should generate statements in Typescript 1`] = `
-"// tslint:disable
+"/* tslint:disable */
+/* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
 export const hero = /* GraphQL */ \`

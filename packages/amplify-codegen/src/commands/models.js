@@ -20,7 +20,7 @@ async function generateModels(context) {
 
   const allApiResources = await context.amplify.getResourceStatus('api');
   const apiResource = allApiResources.allResources.find(
-    resource => resource.service === 'AppSync' && resource.providerPlugin === 'awscloudformation'
+    resource => resource.service === 'AppSync' && resource.providerPlugin === 'awscloudformation',
   );
 
   if (!apiResource) {
@@ -103,9 +103,13 @@ function getModelOutputPath(context) {
   const projectConfig = context.amplify.getProjectConfig();
   switch (projectConfig.frontend) {
     case 'javascript':
-      return 'src';
+      return projectConfig.javascript && projectConfig.javascript.config && projectConfig.javascript.config.SourceDir
+        ? path.normalize(projectConfig.javascript.config.SourceDir)
+        : 'src';
     case 'android':
-      return 'app/src/main/java/';
+      return projectConfig.android && projectConfig.android.config && projectConfig.android.config.ResDir
+        ? path.normalize(path.join(projectConfig.android.config.ResDir, '..', 'java'))
+        : path.join('app', 'src', 'main', 'java');
     case 'ios':
       return 'amplify/generated/models';
     default:

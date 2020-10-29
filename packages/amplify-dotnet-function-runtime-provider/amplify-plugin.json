@@ -1,0 +1,19 @@
+{
+  "name": "functionRuntime",
+  "type": "util",
+  "commands": [],
+  "eventHandlers": [],
+  "functionRuntime": {
+    "pluginId": "amplify-dotnet-function-runtime-provider",
+    "conditions": {
+      "provider": "awscloudformation",
+      "services": ["Lambda"]
+    },
+    "runtimes": [
+      {
+        "name": ".NET Core 3.1",
+        "value": "dotnetcore3.1"
+      }
+    ]
+  }
+}

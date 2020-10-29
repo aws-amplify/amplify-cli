@@ -1,26 +1,29 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as inquirer from 'inquirer';
 import { Context } from './domain/context';
-import inquirer from './domain/inquirer-helper';
+import { ConfirmQuestion } from 'inquirer';
+import { pathManager, stateManager } from 'amplify-cli-core';
 
 const prevLambdaRuntimeVersions = ['nodejs8.10'];
 const lambdaRuntimeVersion = 'nodejs10.x';
-const jsonIndentation = 4;
 
 export async function checkProjectConfigVersion(context: Context): Promise<void> {
-  const { pathManager, readJsonFile, constants } = context.amplify;
-  const projectPath = pathManager.searchProjectRootPath();
-  if (projectPath) {
-    const projectConfigFilePath = pathManager.getProjectConfigFilePath(projectPath);
-    if (fs.existsSync(projectConfigFilePath)) {
-      const projectConfig = readJsonFile(projectConfigFilePath);
-      if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
-        await checkLambdaCustomResourceNodeVersion(context, projectPath);
+  const { constants } = context.amplify;
+  const projectPath = pathManager.findProjectRoot();
 
-        projectConfig.version = constants.PROJECT_CONFIG_VERSION;
-        const jsonString = JSON.stringify(projectConfig, null, jsonIndentation);
-        fs.writeFileSync(projectConfigFilePath, jsonString, 'utf8');
-      }
+  if (projectPath) {
+    const projectConfig = stateManager.getProjectConfig(projectPath, {
+      throwIfNotExist: false,
+      default: {},
+    });
+
+    if (projectConfig.version !== constants.PROJECT_CONFIG_VERSION) {
+      await checkLambdaCustomResourceNodeVersion(context, projectPath);
+
+      projectConfig.version = constants.PROJECT_CONFIG_VERSION;
+
+      stateManager.setProjectConfig(projectPath, projectConfig);
     }
   }
 }
@@ -111,7 +114,7 @@ async function promptForConfirmation(context: Context, filesToUpdate: string[]):
   context.print.info('In response to the Lambda Runtime support deprecation schedule');
   context.print.green('https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html');
   context.print.warning(
-    `Nodejs runtime need to be updated from ${prevLambdaRuntimeVersions}  to ${lambdaRuntimeVersion} in the following template files:`
+    `Nodejs runtime need to be updated from ${prevLambdaRuntimeVersions}  to ${lambdaRuntimeVersion} in the following template files:`,
   );
   filesToUpdate.forEach(filePath => {
     context.print.info(filePath);
@@ -119,12 +122,12 @@ async function promptForConfirmation(context: Context, filesToUpdate: string[]):
   context.print.info('');
 
   context.print.warning(
-    `Please test the changes in a test environment before pushing these changes to production. There might be a need to update your Lambda function source code due to the NodeJS runtime update. Please take a look at https://aws-amplify.github.io/docs/cli/lambda-node-version-update for more information`
+    `Please test the changes in a test environment before pushing these changes to production. There might be a need to update your Lambda function source code due to the NodeJS runtime update. Please take a look at https://docs.amplify.aws/cli/migration/lambda-node-version-update for more information`,
   );
 
   context.print.info('');
 
-  const question = {
+  const question: ConfirmQuestion = {
     type: 'confirm',
     name: 'confirmUpdateNodeVersion',
     message: 'Confirm to update the NodeJS runtime version to 10.x',
@@ -137,7 +140,7 @@ Lambda might retire it completely at any time by disabling invocation. \
 Deprecated runtimes aren't eligible for security updates or technical support. \
 Before retiring a runtime, Lambda sends additional notifications to affected customers.`;
     context.print.warning(warningMessage);
-    context.print.info('You will need to manually update the NodeJS runtime in the template files and push the udpates to the cloud.');
+    context.print.info('You will need to manually update the NodeJS runtime in the template files and push the updates to the cloud.');
   }
 
   return answer.confirmUpdateNodeVersion;

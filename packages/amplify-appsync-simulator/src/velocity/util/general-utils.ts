@@ -30,7 +30,7 @@ export const generalUtils = {
     return JSON.parse(value);
   },
   toJson(value) {
-    return JSON.stringify(value);
+    return value ? JSON.stringify(value) : JSON.stringify(null);
   },
   autoId() {
     return autoId();

@@ -1,4 +1,4 @@
-const { invokeWalkthroughRun } = require('amplify-category-function');
+import { func } from '../../lib';
 module.exports = {
   name: 'function',
   run: async function(context) {
@@ -9,7 +9,7 @@ module.exports = {
       return;
     }
     try {
-      await invokeWalkthroughRun(context);
+      await func.start(context);
     } catch (e) {
       context.print.error(e.message);
     }

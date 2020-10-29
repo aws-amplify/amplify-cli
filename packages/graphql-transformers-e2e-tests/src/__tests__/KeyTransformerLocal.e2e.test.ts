@@ -67,6 +67,87 @@ test('Test that a primary @key with 2 fields changes the hash and sort key.', ()
   expectArguments(getTestField, ['email', 'kind']);
 });
 
+test('Test that a primary @key with id as hashKey does not have it required in createInput', () => {
+  const validSchema = `
+    type Test @model @key(fields: ["id", "kind"]) {
+        id: ID!
+        email: String!
+        kind: Int!
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+
+  const out = transformer.transform(validSchema);
+  const schema = parse(out.schema);
+  const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput') as ObjectTypeDefinitionNode;
+  expectNonNullFields(createInput, ['kind', 'email']);
+  expectNullableFields(createInput, ['id']);
+
+  const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput') as ObjectTypeDefinitionNode;
+  expectNonNullFields(updateInput, ['id', 'kind']);
+  expectNullableFields(updateInput, ['email']);
+
+  const deleteInput = schema.definitions.find((def: any) => def.name && def.name.value === 'DeleteTestInput') as ObjectTypeDefinitionNode;
+  expectNonNullFields(deleteInput, ['id', 'kind']);
+});
+
+test('Test that a primary @key with id and createdAt it is not a required in createInput', () => {
+  const validSchema = `
+    type Test @model @key(fields: ["id", "createdAt"]) {
+        id: ID!
+        email: String!
+        createdAt: AWSDateTime!
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+
+  const out = transformer.transform(validSchema);
+  const schema = parse(out.schema);
+  const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput') as ObjectTypeDefinitionNode;
+  expectNonNullFields(createInput, ['email']);
+  expectNullableFields(createInput, ['id', 'createdAt']);
+
+  const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput') as ObjectTypeDefinitionNode;
+  expectNonNullFields(updateInput, ['id', 'createdAt']);
+  expectNullableFields(updateInput, ['email']);
+
+  const deleteInput = schema.definitions.find((def: any) => def.name && def.name.value === 'DeleteTestInput') as ObjectTypeDefinitionNode;
+  expectNonNullFields(deleteInput, ['id', 'createdAt']);
+});
+
+test('Test that a primary @key with emailId and location makes it a required in createInput', () => {
+  const validSchema = `
+    type Test @model @key(fields: ["emailId", "location"]) {
+        emailId: AWSEmail!
+        location: String!
+        name: String
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+
+  const out = transformer.transform(validSchema);
+  const schema = parse(out.schema);
+  const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput') as ObjectTypeDefinitionNode;
+  expectNonNullFields(createInput, ['emailId', 'location']);
+  expectNullableFields(createInput, ['name']);
+
+  const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput') as ObjectTypeDefinitionNode;
+  expectNonNullFields(updateInput, ['emailId', 'location']);
+  expectNullableFields(updateInput, ['name']);
+
+  const deleteInput = schema.definitions.find((def: any) => def.name && def.name.value === 'DeleteTestInput') as ObjectTypeDefinitionNode;
+  expectNonNullFields(deleteInput, ['emailId', 'location']);
+});
+
 test('Test that a primary @key with 3 fields changes the hash and sort keys.', () => {
   const validSchema = `
     type Test @model @key(fields: ["email", "kind", "date"]) {
@@ -190,7 +271,7 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
     type Test @model @key(fields: ["email", "createdAt"])
     @key(name: "CategoryGSI", fields: ["category", "createdAt"], queryField: "testsByCategory") {
         email: String!
-        createdAt: String!
+        createdAt: AWSDateTime!
         category: String!
         description: String
     }
@@ -223,7 +304,7 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
 
   // Check the create, update, delete inputs.
   const createInput = schema.definitions.find((def: any) => def.name && def.name.value === 'CreateTestInput') as ObjectTypeDefinitionNode;
-  expectNonNullFields(createInput, ['email', 'createdAt', 'category']);
+  expectNonNullFields(createInput, ['email', 'category']);
   expectNullableFields(createInput, ['description']);
   expect(createInput.fields).toHaveLength(4);
   const updateInput = schema.definitions.find((def: any) => def.name && def.name.value === 'UpdateTestInput') as ObjectTypeDefinitionNode;
@@ -241,8 +322,8 @@ test('Test that a secondary @key with a multiple field adds an LSI.', () => {
         @model @key(fields: ["email", "createdAt"])
         @key(name: "GSI_Email_UpdatedAt", fields: ["email", "updatedAt"], queryField: "testsByEmailByUpdatedAt") {
         email: String!
-        createdAt: String!
-        updatedAt: String!
+        createdAt: AWSDateTime!
+        updatedAt: AWSDateTime!
     }
     `;
 
@@ -294,13 +375,13 @@ test('Test that a primary @key with complex fields will update the input objects
   expect(tableResource.Properties.AttributeDefinitions[0].AttributeType).toEqual('S');
   const schema = parse(out.schema);
   const createInput = schema.definitions.find(
-    (def: any) => def.name && def.name.value === 'CreateTestInput'
+    (def: any) => def.name && def.name.value === 'CreateTestInput',
   ) as InputObjectTypeDefinitionNode;
   const updateInput = schema.definitions.find(
-    (def: any) => def.name && def.name.value === 'UpdateTestInput'
+    (def: any) => def.name && def.name.value === 'UpdateTestInput',
   ) as InputObjectTypeDefinitionNode;
   const deleteInput = schema.definitions.find(
-    (def: any) => def.name && def.name.value === 'DeleteTestInput'
+    (def: any) => def.name && def.name.value === 'DeleteTestInput',
   ) as InputObjectTypeDefinitionNode;
   expect(createInput).toBeDefined();
   expectNonNullInputValues(createInput, ['email', 'nonNullListInput', 'nonNullListInputOfNonNullStrings']);
@@ -352,7 +433,7 @@ test('Test that connection type is generated for custom query when queries is se
   const out = transformer.transform(validSchema);
   const schema = parse(out.schema);
   const modelContentCategoryConnection = schema.definitions.find(
-    (def: any) => def.name && def.name.value === 'ModelContentCategoryConnection'
+    (def: any) => def.name && def.name.value === 'ModelContentCategoryConnection',
   ) as ObjectTypeDefinitionNode;
 
   expect(modelContentCategoryConnection).toBeDefined();

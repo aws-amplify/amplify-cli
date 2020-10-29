@@ -7,6 +7,7 @@ export function getAllLambdaFunctions(context, backendPath: string): LambdaFunct
   const lambdaCategoryPath = path.join(backendPath, 'function');
   if (fs.existsSync(lambdaCategoryPath) && fs.lstatSync(lambdaCategoryPath).isDirectory) {
     fs.readdirSync(lambdaCategoryPath)
+      .filter(p => !p.startsWith('.'))
       .filter(p => {
         const lambdaDir = path.join(lambdaCategoryPath, p);
         return fs.existsSync(lambdaDir) && fs.lstatSync(lambdaDir).isDirectory;
@@ -19,7 +20,7 @@ export function getAllLambdaFunctions(context, backendPath: string): LambdaFunct
           const lambdaCfn = context.amplify.readJsonFile(cfnPath);
           const lambdaCfnParams = fs.existsSync(cfnParams) ? context.amplify.readJsonFile(cfnParams) : {};
           const lambdaConfig = processResources(lambdaCfn.Resources, {}, { ...lambdaCfnParams, env: 'NONE' });
-          lambdaConfig.basePath = path.join(lambdaDir, 'src');
+          lambdaConfig.basePath = lambdaDir;
           lambdas.push(lambdaConfig);
         } catch (e) {
           context.print.error(`Failed to parse Lambda function cloudformation in ${cfnPath}`);

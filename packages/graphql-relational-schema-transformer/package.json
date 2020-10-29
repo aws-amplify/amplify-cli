@@ -1,6 +1,6 @@
 {
   "name": "graphql-relational-schema-transformer",
-  "version": "2.13.3",
+  "version": "2.15.17",
   "description": "An AppSync model transform that takes a relational database and turns that into a GraphQL API.",
   "repository": {
     "type": "git",
@@ -17,22 +17,21 @@
     "aws"
   ],
   "scripts": {
-    "test-ci": "jest --ci --coverage",
     "test": "jest --coverage",
     "build": "tsc",
     "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "cloudform": "^4.1.0",
-    "cloudform-types": "^4.1.0",
+    "cloudform": "^4.2.0",
+    "cloudform-types": "^4.2.0",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
-    "graphql-mapping-template": "4.13.3",
-    "graphql-transformer-common": "4.13.3"
+    "graphql-mapping-template": "4.15.3",
+    "graphql-transformer-common": "4.17.11"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",
-    "aws-sdk": "^2.608.0"
+    "aws-sdk": "^2.765.0"
   },
   "jest": {
     "collectCoverage": true,

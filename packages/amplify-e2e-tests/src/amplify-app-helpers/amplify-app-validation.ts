@@ -1,8 +1,10 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { pathManager } from 'amplify-cli-core';
 
 function validateProject(projRoot: string, platform: string) {
   expect(fs.existsSync(path.join(projRoot, 'amplify'))).toBeTruthy();
+  expect(fs.existsSync(path.join(projRoot, '.gitignore'))).toBeTruthy();
   switch (platform) {
     case 'android':
       expect(fs.existsSync(path.join(projRoot, 'amplify-gradle-config.json'))).toBeTruthy();
@@ -10,7 +12,7 @@ function validateProject(projRoot: string, platform: string) {
       expect(fs.existsSync(path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'amplifyconfiguration.json'))).toBeTruthy();
       break;
     case 'ios':
-      expect(fs.existsSync(path.join(projRoot, 'amplifyxc.config'))).toBeTruthy();
+      expect(fs.existsSync(path.join(projRoot, 'amplifytools.xcconfig'))).toBeTruthy();
       expect(fs.existsSync(path.join(projRoot, 'amplifyconfiguration.json'))).toBeTruthy();
       expect(fs.existsSync(path.join(projRoot, 'awsconfiguration.json'))).toBeTruthy();
       break;
@@ -82,4 +84,17 @@ function validateAmplifyPush(projRoot: string) {
   expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'amplify-meta.json'))).toBeTruthy();
 }
 
-export { validateProject, validateProjectConfig, validateApi, validateBackendConfig, validateModelgen, validateAmplifyPush };
+function validateFeatureFlags(projRoot: string) {
+  const testCLIJSONPath = pathManager.getCLIJSONFilePath(projRoot);
+  expect(fs.existsSync(testCLIJSONPath)).toBeTruthy();
+}
+
+export {
+  validateProject,
+  validateProjectConfig,
+  validateApi,
+  validateBackendConfig,
+  validateModelgen,
+  validateAmplifyPush,
+  validateFeatureFlags,
+};

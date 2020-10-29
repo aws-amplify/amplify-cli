@@ -1,5 +1,5 @@
 import { ResourceConstants } from 'graphql-transformer-common';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform, ConflictHandlerType } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
@@ -114,6 +114,21 @@ beforeAll(async () => {
       name: String!
       genre: String!
     }
+
+    type Todo
+    @model
+    @searchable {
+      id: ID
+      name: String!
+      createdAt: AWSDateTime
+      description: String
+    }
+
+    type Comment @model @key(name: "commentByVersion", fields: ["version", "id"]) @searchable{
+      id: ID!
+      version: Int!
+      content: String!
+    }
     `;
   const transformer = new GraphQLTransform({
     transformers: [
@@ -129,6 +144,17 @@ beforeAll(async () => {
       }),
       new SearchableModelTransformer(),
     ],
+    // only enable datastore features on todo
+    transformConfig: {
+      ResolverConfig: {
+        models: {
+          Todo: {
+            ConflictHandler: ConflictHandlerType.AUTOMERGE,
+            ConflictDetection: 'VERSION',
+          },
+        },
+      },
+    },
   });
   try {
     await awsS3Client.createBucket({ Bucket: BUCKET_NAME }).promise();
@@ -248,6 +274,49 @@ test('Test searchPosts with sort field on a string field', async () => {
   expect(thirdQuery.data.searchPosts).toBeDefined();
   const firstItemOfThirdQuery = thirdQuery.data.searchPosts.items[0];
   expect(firstItemOfThirdQuery).toEqual(fourthItemOfFirstQuery);
+});
+
+test('Test searchPosts with offset pagination', async () => {
+  const firstQuery = await runQuery(
+    `query {
+        searchPosts(from: 0, limit: 999, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+            total
+          }
+    }`,
+    'Test searchPosts with offset pagination ',
+  );
+  expect(firstQuery).toBeDefined();
+  expect(firstQuery.data.searchPosts).toBeDefined();
+  const firstLength = firstQuery.data.searchPosts.items.length;
+  const secondQuery = await runQuery(
+    `query {
+        searchPosts(from: 2, limit: 999, sort: {
+            field: id
+            direction: desc
+        }){
+            items{
+              ...FullPost
+            }
+            nextToken
+            total
+          }
+    }`,
+    'Test searchPosts with offset pagination 2 ',
+  );
+  expect(secondQuery).toBeDefined();
+  expect(secondQuery.data.searchPosts).toBeDefined();
+  const secondLength = secondQuery.data.searchPosts.items.length;
+  expect(secondLength).toEqual(firstLength - 2);
+  const firstItem = firstQuery.data.searchPosts.items[0];
+  const secondItems = secondQuery.data.searchPosts.items;
+  expect(secondItems.find(i => i.id === firstItem.id)).not.toBeDefined();
 });
 
 test('Test searchPosts with sort on date type', async () => {
@@ -817,6 +886,140 @@ test('query for books by Agatha Christie with model using @key', async () => {
     expect(expectedBookNames).toContain(item.name);
   });
 });
+
+test('test searches with datastore enabled types', async () => {
+  const createTodoResponse = await createTodo({ id: '001', name: 'get milk' });
+  expect(createTodoResponse).toBeDefined();
+  let todoName = createTodoResponse.data.createTodo.name;
+  let todoVersion = createTodoResponse.data.createTodo._version;
+
+  // Wait for the Todo to sync to Elasticsearch
+  await cf.wait(10, () => Promise.resolve());
+
+  let searchTodoResponse = await searchTodos();
+  expect(searchTodoResponse).toBeDefined();
+  expect(searchTodoResponse.data.searchTodos.items.length).toEqual(1);
+  expect(searchTodoResponse.data.searchTodos.items[0].name).toEqual(todoName);
+  expect(searchTodoResponse.data.searchTodos.items[0]._version).toEqual(todoVersion);
+  todoName = 'get soy milk';
+
+  const updateTodoResponse = await updateTodo({ id: '001', name: todoName, _version: todoVersion });
+  expect(updateTodoResponse).toBeDefined();
+  todoVersion += 1;
+  expect(updateTodoResponse.data.updateTodo.name).toEqual(todoName);
+  expect(updateTodoResponse.data.updateTodo._version).toEqual(todoVersion);
+
+  // Wait for the Todo to sync to Elasticsearch
+  await cf.wait(10, () => Promise.resolve());
+
+  searchTodoResponse = await searchTodos();
+  expect(searchTodoResponse.data.searchTodos.items.length).toEqual(1);
+  expect(searchTodoResponse.data.searchTodos.items[0].name).toEqual(todoName);
+  expect(searchTodoResponse.data.searchTodos.items[0]._version).toEqual(todoVersion);
+});
+
+// Test for issue https://github.com/aws-amplify/amplify-cli/issues/5140
+test('test searches with @key with integer field', async () => {
+  const comment = await GRAPHQL_CLIENT.query(
+    `mutation createComment($createCommentInput: CreateCommentInput!){
+    createComment(input: $createCommentInput) {
+      id,
+      content,
+      version
+    }
+  }`,
+    {
+      createCommentInput: {
+        id: 1,
+        version: 1,
+        content: 'Content',
+      },
+    },
+  );
+  expect(comment.data).toBeDefined();
+  expect(comment.data.createComment).toEqual({
+    id: '1',
+    content: 'Content',
+    version: 1,
+  });
+
+  // Wait for the Comment to sync to Elasticsearch
+  await cf.wait(10, () => Promise.resolve());
+  let searchCommentResponse = await GRAPHQL_CLIENT.query(
+    `query searchComment {
+    searchComments {
+      items {
+        id,
+        version,
+        content
+      }
+    }
+  }`,
+    {},
+  );
+  expect(searchCommentResponse).toBeDefined();
+  expect(searchCommentResponse.data).toEqual({
+    searchComments: {
+      items: [
+        {
+          id: '1',
+          version: 1,
+          content: 'Content',
+        },
+      ],
+    },
+  });
+});
+
+type TodoInput = {
+  id?: string;
+  name: string;
+  createdAt?: string;
+  description?: string;
+  _version?: number;
+};
+
+async function createTodo(input: TodoInput) {
+  const createTodoMutation = `
+  mutation (
+    $input: CreateTodoInput!
+  ) {
+    createTodo(input: $input) {
+      id
+      name
+      _version
+    }
+  }`;
+  return await GRAPHQL_CLIENT.query(createTodoMutation, { input });
+}
+
+async function updateTodo(input: TodoInput) {
+  const updateTodoMutation = `
+    mutation (
+      $input: UpdateTodoInput!
+    ){
+      updateTodo(input: $input) {
+        id
+        name
+        _version
+      }
+    }`;
+  return await GRAPHQL_CLIENT.query(updateTodoMutation, { input });
+}
+
+async function searchTodos() {
+  const searchTodosQuery = `
+  query SearchTodos {
+    searchTodos {
+      items {
+        id
+        name
+        _version
+      }
+    }
+  }`;
+  return await GRAPHQL_CLIENT.query(searchTodosQuery, {});
+}
 
 function getCreatePostsMutation(
   author: string,

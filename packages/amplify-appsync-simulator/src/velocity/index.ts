@@ -4,6 +4,8 @@ import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from '.
 import { create as createUtil, TemplateSentError } from './util';
 import { map as convertToJavaTypes, map } from './value-mapper/mapper';
 import { GraphQLResolveInfo } from 'graphql';
+import { createInfo } from './util/info';
+import { AppSyncGraphQLExecutionContext } from '../utils/graphql-runner';
 
 export type AppSyncSimulatorRequestContext = {
   jwt?: {
@@ -37,7 +39,7 @@ export class VelocityTemplate {
       });
       this.template = template;
     } catch (e) {
-      const lineDetails = `${e.hash.line}:${e.hash.loc.first_column}`;
+      const lineDetails = `${e.hash.line}:${e.hash.loc?.first_column ? e.hash.loc.first_column : ''}`;
       const fileName = template.path ? `${template.path}:${lineDetails}` : lineDetails;
       const templateError = new VelocityTemplateParseError(`Error:Parse error on ${fileName} \n${e.message}`);
       templateError.stack = e.stack;
@@ -46,7 +48,7 @@ export class VelocityTemplate {
   }
   render(
     ctxValues: AppSyncVTLRenderContext,
-    requestContext: AppSyncSimulatorRequestContext,
+    requestContext: AppSyncGraphQLExecutionContext,
     info?: GraphQLResolveInfo,
   ): { result; stash; errors; isReturn: boolean } {
     const context = this.buildRenderContext(ctxValues, requestContext, info);
@@ -67,13 +69,14 @@ export class VelocityTemplate {
     }
   }
 
-  private buildRenderContext(ctxValues: AppSyncVTLRenderContext, requestContext: any, info: GraphQLResolveInfo): any {
+  private buildRenderContext(
+    ctxValues: AppSyncVTLRenderContext,
+    requestContext: AppSyncGraphQLExecutionContext,
+    info: GraphQLResolveInfo,
+  ): any {
     const { source, arguments: argument, result, stash, prevResult, error } = ctxValues;
-
-    const {
-      jwt: { iss: issuer, sub, 'cognito:username': cognitoUserName, username },
-      request,
-    } = requestContext;
+    const { jwt } = requestContext;
+    const { iss: issuer, sub, 'cognito:username': cognitoUserName, username } = jwt || {};
 
     const util = createUtil([], new Date(Date.now()), info);
     const args = convertToJavaTypes(argument);
@@ -91,7 +94,7 @@ export class VelocityTemplate {
         issuer,
         'cognito:username': cognitoUserName,
         username: username || cognitoUserName,
-        sourceIp: this.getRemoteIpAddress(requestContext.request),
+        sourceIp: requestContext.sourceIp,
         claims: requestContext.jwt,
         ...(this.simulatorContext.appSyncConfig.defaultAuthenticationType.authenticationType ===
         AmplifyAppSyncSimulatorAuthenticationType.AMAZON_COGNITO_USER_POOLS
@@ -103,12 +106,21 @@ export class VelocityTemplate {
     const vtlContext = {
       arguments: args,
       args,
-      request: request ? { headers: request.headers } : {},
+      info: createInfo(info),
+      request: { headers: requestContext.headers },
       identity,
       stash: convertToJavaTypes(stash || {}),
       source: convertToJavaTypes(source),
       result: convertToJavaTypes(result),
-      error,
+      // surfacing the errorType to ensure the type is included in $ctx.error
+      // Mapping Template Errors: https://docs.aws.amazon.com/appsync/latest/devguide/troubleshooting-and-common-mistakes.html#mapping-template-errors
+      error: error
+        ? {
+            ...error,
+            type: error.extensions?.errorType || 'UnknowErrorType',
+            message: error.message || `Error: ${error}`,
+          }
+        : error,
     };
 
     if (typeof prevResult !== 'undefined') {

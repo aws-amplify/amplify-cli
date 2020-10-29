@@ -1,0 +1,7 @@
+**/__mocks__/**
+**/__tests__/**
+src
+tsconfig.json
+tsconfig.tsbuildinfo
+resources/localinvoke/bin
+resources/localinvoke/obj

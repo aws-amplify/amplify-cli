@@ -86,7 +86,7 @@ describe('process auth directive', () => {
       const processedAuthDirective = processAuthDirective(directives);
       expect(processedAuthDirective[0].arguments.rules[0]).toEqual({
         ...ownerAuthRule,
-        operations: [AuthModelOperation.create, AuthModelOperation.update, AuthModelOperation.delete],
+        operations: [AuthModelOperation.create, AuthModelOperation.update, AuthModelOperation.delete, AuthModelOperation.read],
       });
     });
 
@@ -164,7 +164,7 @@ describe('process auth directive', () => {
       const processedAuthDirective = processAuthDirective(directives);
       expect(processedAuthDirective[0].arguments.rules[0]).toEqual({
         ...groupsAuthRule,
-        operations: [AuthModelOperation.create, AuthModelOperation.update, AuthModelOperation.delete],
+        operations: [AuthModelOperation.create, AuthModelOperation.update, AuthModelOperation.delete, AuthModelOperation.read],
       });
     });
   });

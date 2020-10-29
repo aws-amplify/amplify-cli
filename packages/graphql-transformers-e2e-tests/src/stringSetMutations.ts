@@ -33,7 +33,7 @@ $util.qr($context.args.input.put("__typename", "Class"))
 } )
 #end
 {
-  "version": "2017-02-28",
+  "version": "2018-05-29",
   "operation": "PutItem",
   "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   "id":   $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.args.input.id, $util.autoId()))
@@ -172,7 +172,7 @@ $util.qr($update.put("expression", "$expression"))
   $util.qr($update.put("expressionValues", $expValues))
 #end
 {
-  "version": "2017-02-28",
+  "version": "2018-05-29",
   "operation": "UpdateItem",
   "key": #if( $modelObjectKey ) $util.toJson($modelObjectKey) #else {
   "id": {

@@ -1,5 +1,5 @@
 import { ResourceConstants } from 'graphql-transformer-common';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform, DeploymentResources } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
@@ -25,7 +25,7 @@ const BUCKET_NAME = `appsync-new-connection-transformer-test-${BUILD_TIMESTAMP}`
 const LOCAL_FS_BUILD_DIR = '/tmp/new_connection_transform_tests/';
 const S3_ROOT_DIR_KEY = 'deployments';
 
-let GRAPHQL_CLIENT = undefined;
+let GRAPHQL_CLIENT: GraphQLClient = undefined;
 
 function outputValueSelector(key: string) {
   return (outputs: Output[]) => {
@@ -108,8 +108,7 @@ type Post @model {
 	id: ID!
 	authorID: ID!
 	postContents: [String]
-
-	authors: [User] @connection(fields: ["authorID"])
+	authors: [User] @connection(fields: ["authorID"], limit: 50)
 }
 
 type PostAuthor
@@ -123,23 +122,28 @@ type PostAuthor
     post: Post @connection(fields: ["postID"])
 }
 `;
-  const transformer = new GraphQLTransform({
-    transformers: [
-      new DynamoDBModelTransformer(),
-      new KeyTransformer(),
-      new ModelConnectionTransformer(),
-      new ModelAuthTransformer({
-        authConfig: {
-          defaultAuthentication: {
-            authenticationType: 'API_KEY',
+  let out: DeploymentResources = undefined;
+  try {
+    const transformer = new GraphQLTransform({
+      transformers: [
+        new DynamoDBModelTransformer(),
+        new KeyTransformer(),
+        new ModelConnectionTransformer(),
+        new ModelAuthTransformer({
+          authConfig: {
+            defaultAuthentication: {
+              authenticationType: 'API_KEY',
+            },
+            additionalAuthenticationProviders: [],
           },
-          additionalAuthenticationProviders: [],
-        },
-      }),
-    ],
-  });
-  const out = transformer.transform(validSchema);
-  // fs.writeFileSync('./out.json', JSON.stringify(out, null, 4));
+        }),
+      ],
+    });
+    out = transformer.transform(validSchema);
+  } catch (e) {
+    console.error(`Failed to transform schema: ${e}`);
+    expect(true).toEqual(false);
+  }
   try {
     await awsS3Client
       .createBucket({
@@ -148,6 +152,7 @@ type PostAuthor
       .promise();
   } catch (e) {
     console.error(`Failed to create S3 bucket: ${e}`);
+    expect(true).toEqual(false);
   }
   try {
     console.log('Creating Stack ' + STACK_NAME);
@@ -438,6 +443,39 @@ test('Test PostModel.authors query with composite sortkey', async () => {
   expect(items[1].name).toEqual(createUser2.data.createUserModel.name);
 });
 
+test(`Test the default limit.`, async () => {
+  for (let i = 0; i < 51; i++) {
+    await GRAPHQL_CLIENT.query(
+      `mutation {
+          createUser(input: { id: "11", name: "user${i}", surname: "sub${i}" }) {
+            id
+            name
+            surname
+          }
+        }`,
+      {},
+    );
+  };
+
+  const createResponse = await GRAPHQL_CLIENT.query(`
+    mutation {
+      createPost(input: {authorID: "11", postContents: "helloWorld"}) {
+        authorID
+        id
+        authors {
+          items {
+            name
+            surname
+            id
+          }
+        }
+      }
+    }`,{});
+  expect(createResponse).toBeDefined();
+  expect(createResponse.data.createPost.authorID).toEqual("11");
+  expect(createResponse.data.createPost.authors.items.length).toEqual(50);
+});
+
 test('Test PostModel.authors query with composite sortkey passed as arg.', async () => {
   const createUser = await GRAPHQL_CLIENT.query(
     `mutation {
@@ -494,7 +532,7 @@ test('Test User.authorPosts.posts query followed by getItem (intermediary model)
             authorID
             postID
         }
-    }`);
+    }`, {});
   expect(createPostAuthor.data.createPostAuthor.id).toBeDefined();
   expect(createPostAuthor.data.createPostAuthor.authorID).toEqual('123');
   expect(createPostAuthor.data.createPostAuthor.postID).toEqual('321');

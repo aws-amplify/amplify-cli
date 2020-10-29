@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-core",
-  "version": "6.13.3",
+  "version": "6.21.7",
   "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
   "repository": {
     "type": "git",
@@ -18,17 +18,17 @@
   ],
   "scripts": {
     "test": "jest",
-    "test-ci": "jest --ci -i",
     "build": "tsc",
     "watch": "tsc -w",
     "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "cloudform-types": "^4.1.0",
+    "cloudform-types": "^4.2.0",
     "deep-diff": "^1.0.2",
     "fs-extra": "^8.1.0",
+    "glob": "^7.1.6",
     "graphql": "^14.5.8",
-    "graphql-transformer-common": "4.13.3"
+    "graphql-transformer-common": "4.17.11"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",

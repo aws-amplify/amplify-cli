@@ -8,8 +8,8 @@ import {
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
 } from 'graphql';
-import { GraphQLTransform } from 'graphql-transformer-core';
-import { ResolverResourceIDs, ModelResourceIDs } from 'graphql-transformer-common';
+import { GraphQLTransform, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
+import { ResolverResourceIDs, ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer';
 
@@ -91,6 +91,31 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
   const commentUpdateInput = getInputType(schemaDoc, ModelResourceIDs.ModelUpdateInputObjectName('Comment'));
   const connectionUpdateId = commentUpdateInput.fields.find(f => f.name.value === 'postId');
   expect(connectionUpdateId).toBeTruthy();
+});
+
+test('Test that ModelConnection Transformer throws error when the field in connection is not found in the related Type', () => {
+  const invalidSchema = `
+  type Post @model {
+    name: String!
+    teamID: ID!
+    team: Team @connection(fields: ["teamID"])
+  }
+
+  type Team @model {
+    name: [String!]!
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+  });
+  try {
+    transformer.transform(invalidSchema);
+    expect(true).toEqual(false);
+  } catch (e) {
+    console.log(e);
+    expect(e).toBeTruthy();
+    expect(e.name).toEqual('InvalidDirectiveError');
+  }
 });
 
 test('Test ModelConnectionTransformer simple one to many happy case with custom keyField', () => {
@@ -572,7 +597,114 @@ test('Test ModelConnectionTransformer uses the default limit', () => {
   expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy();
 
   // Post.comments field
-  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 10) )');
+  expect(out.resolvers['Post.comments.req.vtl']).toContain(
+    `#set( $limit = $util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT}) )`,
+  );
+});
+
+test('Test ModelConnectionTransformer with keyField overrides the default limit', () => {
+  const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(limit: 50, fields: ["id"])
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+  });
+
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy();
+
+  // Post.comments field
+  expect(out.resolvers['Post.comments.req.vtl']).toContain('#set( $limit = $util.defaultIfNull($context.args.limit, 50) )');
+});
+
+test('Test ModelConnectionTransformer with keyField uses the default limit', () => {
+  const validSchema = `
+    type Post @model {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection(fields: ["id"])
+    }
+    type Comment @model {
+        id: ID!
+        content: String
+    }
+    `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Post', 'comments')]).toBeTruthy();
+
+  // Post.comments field
+  expect(out.resolvers['Post.comments.req.vtl']).toContain(
+    `#set( $limit = $util.defaultIfNull($context.args.limit, ${ResourceConstants.DEFAULT_PAGE_LIMIT}) )`,
+  );
+});
+
+test('Connection on models with no codegen includes AttributeTypeEnum', () => {
+  const validSchema = `
+    type Post @model(queries: null, mutations: null, subscriptions: null) {
+        id: ID!
+        title: String!
+        comments: [Comment] @connection
+    }
+    type Comment @model(queries: null, mutations: null, subscriptions: null) {
+        id: ID!
+        content: String
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    transformConfig: {
+      Version: TRANSFORM_CURRENT_VERSION,
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+
+  expect(out.schema).toMatchSnapshot();
+});
+
+test('Connection on models with no codegen includes custom enum filters', () => {
+  const validSchema = `
+    type Cart @model(queries: null, mutations: null, subscriptions: null) {
+      id: ID!,
+      cartItems: [CartItem] @connection(name: "CartCartItem")
+    }
+    
+    type CartItem @model(queries: null, mutations: null, subscriptions: null) {
+      id: ID!
+      productType: PRODUCT_TYPE!
+      cart: Cart @connection(name: "CartCartItem")
+    }
+    
+    enum PRODUCT_TYPE {
+      UNIT
+      PACKAGE
+    }
+  `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    transformConfig: {
+      Version: TRANSFORM_CURRENT_VERSION,
+    },
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  expect(out.schema).toMatchSnapshot();
 });
 
 function expectFields(type: ObjectTypeDefinitionNode, fields: string[]) {

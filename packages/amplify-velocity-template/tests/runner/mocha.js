@@ -439,7 +439,7 @@
           if ('test' == key) return;
           return val;
         },
-        2
+        2,
       );
     };
   }); // module: context.js
@@ -1780,61 +1780,6 @@
     Dot.prototype.constructor = Dot;
   }); // module: reporters/dot.js
 
-  require.register('reporters/html-cov.js', function(module, exports, require) {
-    /**
-     * Module dependencies.
-     */
-
-    var JSONCov = require('./json-cov'),
-      fs = require('browser/fs');
-
-    /**
-     * Expose `HTMLCov`.
-     */
-
-    exports = module.exports = HTMLCov;
-
-    /**
-     * Initialize a new `JsCoverage` reporter.
-     *
-     * @param {Runner} runner
-     * @api public
-     */
-
-    function HTMLCov(runner) {
-      var jade = require('jade'),
-        file = __dirname + '/templates/coverage.jade',
-        str = fs.readFileSync(file, 'utf8'),
-        fn = jade.compile(str, { filename: file }),
-        self = this;
-
-      JSONCov.call(this, runner, false);
-
-      runner.on('end', function() {
-        process.stdout.write(
-          fn({
-            cov: self.cov,
-            coverageClass: coverageClass,
-          })
-        );
-      });
-    }
-
-    /**
-     * Return coverage class for `n`.
-     *
-     * @return {String}
-     * @api private
-     */
-
-    function coverageClass(n) {
-      if (n >= 75) return 'high';
-      if (n >= 50) return 'medium';
-      if (n >= 25) return 'low';
-      return 'terrible';
-    }
-  }); // module: reporters/html-cov.js
-
   require.register('reporters/html.js', function(module, exports, require) {
     /**
      * Module dependencies.
@@ -1977,7 +1922,7 @@
             test.speed,
             test.title,
             test.duration,
-            encodeURIComponent(test.fullTitle())
+            encodeURIComponent(test.fullTitle()),
           );
         } else if (test.pending) {
           var el = fragment('<li class="test pass pending"><h2>%e</h2></li>', test.title);
@@ -1985,7 +1930,7 @@
           var el = fragment(
             '<li class="test fail"><h2>%e <a href="?grep=%e" class="replay">‣</a></h2></li>',
             test.title,
-            encodeURIComponent(test.fullTitle())
+            encodeURIComponent(test.fullTitle()),
           );
           var str = test.err.stack || test.err.toString();
 
@@ -2119,7 +2064,6 @@
     exports.Progress = require('./progress');
     exports.Landing = require('./landing');
     exports.JSONCov = require('./json-cov');
-    exports.HTMLCov = require('./html-cov');
     exports.JSONStream = require('./json-stream');
     exports.Teamcity = require('./teamcity');
   }); // module: reporters/index.js
@@ -3337,8 +3281,8 @@
               timestamp: new Date().toUTCString(),
               time: stats.duration / 1000,
             },
-            false
-          )
+            false,
+          ),
         );
 
         tests.forEach(test);
@@ -3529,7 +3473,7 @@
           if ('ctx' == key) return '#<Context>';
           return val;
         },
-        2
+        2,
       );
     };
 
@@ -3770,7 +3714,7 @@
         function(arr) {
           this._globals.push(arr);
         },
-        this
+        this,
       );
       return this;
     };
@@ -4442,7 +4386,7 @@
           function(sum, suite) {
             return sum + suite.total();
           },
-          0
+          0,
         ) + this.tests.length
       );
     };
@@ -4748,7 +4692,7 @@
           obj[key] = decodeURIComponent(val);
           return obj;
         },
-        {}
+        {},
       );
     };
 
@@ -4825,7 +4769,7 @@
           if (timeouts.length) timeouts.shift()();
         }
       },
-      true
+      true,
     );
 
     return function(fn) {

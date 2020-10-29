@@ -1,6 +1,7 @@
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
+const os = require('os');
 
 const providerName = 'awscloudformation';
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
@@ -8,13 +9,16 @@ const category = 'analytics';
 const parametersFileName = 'parameters.json';
 const serviceName = 'Pinpoint';
 const templateFileName = 'pinpoint-cloudformation-template.json';
+import { ResourceAlreadyExistsError, exitOnNextTick } from 'amplify-cli-core';
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
-    context.print.warning('Pinpoint analytics have already been added to your project.');
-    process.exit(0);
+    const errMessage = 'Pinpoint analytics have already been added to your project.';
+    context.print.warning(errMessage);
+    context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    exitOnNextTick(0);
   } else {
     return configure(context, defaultValuesFilename, serviceMetadata);
   }
@@ -63,7 +67,7 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
           type: 'list',
           choices: inputs[i].options,
         },
-        question
+        question,
       );
     } else if (inputs[i].type && inputs[i].type === 'multiselect') {
       question = Object.assign(
@@ -71,14 +75,14 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
           type: 'checkbox',
           choices: inputs[i].options,
         },
-        question
+        question,
       );
     } else {
       question = Object.assign(
         {
           type: 'input',
         },
-        question
+        question,
       );
     }
     questions.push(question);
@@ -90,44 +94,54 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     const resource = defaultValues.resourceName;
 
     // Check for authorization rules and settings
-
     const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
-    const apiRequirements = {
+    const analyticsRequirements = {
       authSelections: 'identityPoolOnly',
       allowUnauthenticatedIdentities: true,
     };
-    // getting requirement satisfaction map
-    const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', answers.resourceName);
-    // checking to see if any requirements are unsatisfied
-    const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
-    if (foundUnmetRequirements) {
+    const checkResult = await checkRequirements(analyticsRequirements, context, 'analytics', answers.resourceName);
+
+    // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
+    // configuration.
+    if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
+      throw new Error(checkResult.errors.join(os.EOL));
+    }
+
+    if (checkResult.errors && checkResult.errors.length > 0) {
+      context.print.warning(checkResult.errors.join(os.EOL));
+    }
+
+    // If auth is not imported and there were errors, adjust or enable auth configuration
+    if (!checkResult.authEnabled || !checkResult.requirementsMet) {
       context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
       if (
-        await amplify.confirmPrompt.run(
-          'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)'
+        await amplify.confirmPrompt(
+          'Apps need authorization to send analytics events. Do you want to allow guests and unauthenticated users to send analytics events? (we recommend you allow this when getting started)',
         )
       ) {
         try {
-          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-        } catch (e) {
-          context.print.error(e);
-          throw e;
+          await externalAuthEnable(context, 'analytics', answers.resourceName, analyticsRequirements);
+        } catch (error) {
+          context.print.error(error);
+          throw error;
         }
       } else {
         try {
           context.print.warning(
-            'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.'
+            'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
           );
-          apiRequirements.allowUnauthenticatedIdentities = false;
-          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-        } catch (e) {
-          context.print.error(e);
-          throw e;
+          analyticsRequirements.allowUnauthenticatedIdentities = false;
+          await externalAuthEnable(context, 'analytics', answers.resourceName, analyticsRequirements);
+        } catch (error) {
+          context.print.error(error);
+          throw error;
         }
       }
     }
+
+    // At this point we have a valid auth configuration either imported or added/updated.
 
     const resourceDirPath = path.join(projectBackendDirPath, category, resource);
     delete defaultValues.resourceName;
@@ -383,6 +397,24 @@ function getIAMPolicies(resourceName, crudOptions) {
             {
               Ref: `${category}${resourceName}Id`,
             },
+          ],
+        ],
+      },
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:mobiletargeting:',
+            {
+              Ref: `${category}${resourceName}Region`,
+            },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':apps/',
+            {
+              Ref: `${category}${resourceName}Id`,
+            },
+            '/*',
           ],
         ],
       },

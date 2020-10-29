@@ -1,0 +1,9 @@
+{
+  "name": "jsonmock-server",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "aws-serverless-express": "^3.3.8",
+    "json-server": "^0.16.1"
+  }
+}

@@ -1,8 +1,8 @@
-import path from 'path';
+import * as path from 'path';
 import chalk from 'chalk';
 import { PluginInfo } from '../domain/plugin-info';
 import { PluginPlatform } from '../domain/plugin-platform';
-import { readJsonFileSync } from '../utils/readJsonFile';
+import { JSONUtilities, $TSAny } from 'amplify-cli-core';
 
 export type PluginDescription = {
   name: string;
@@ -15,27 +15,43 @@ const indent = '    ';
 
 export async function checkPlatformHealth(pluginPlatform: PluginPlatform): Promise<boolean> {
   const activePlugins = pluginPlatform.plugins;
-  const officialPlugins: { [key: string]: PluginDescription } = getOfficialPlugins();
+  const officialPlugins: { [key: string]: PluginDescription | Array<PluginDescription> } = getOfficialPlugins();
   const missingOfficialPlugins: Array<PluginDescription> = [];
   const mismatchedOfficialPlugins: Array<PluginDescription> = [];
 
-  Object.keys(officialPlugins).forEach((plugin: string) => {
-    const officialPluginDescription = officialPlugins[plugin];
-    if (activePlugins[officialPluginDescription.name]) {
-      let isPackageMatching = false;
-      activePlugins[officialPluginDescription.name].every((pluginInfo: PluginInfo) => {
-        if (isMatching(officialPluginDescription, pluginInfo)) {
-          isPackageMatching = true;
-          return false;
-        }
-        return true;
-      });
-
-      if (!isPackageMatching) {
-        mismatchedOfficialPlugins.push(officialPluginDescription);
-      }
+  Object.keys(officialPlugins).forEach((pluginName: string) => {
+    let officialArray: Array<PluginDescription> = [];
+    if (!Array.isArray(officialPlugins[pluginName])) {
+      officialArray.push(officialPlugins[pluginName] as PluginDescription);
     } else {
-      missingOfficialPlugins.push(officialPluginDescription);
+      officialArray = officialPlugins[pluginName] as Array<PluginDescription>;
+    }
+
+    if (activePlugins[pluginName]) {
+      const activeArray = activePlugins[pluginName];
+
+      officialArray.forEach((officialPlugin: PluginDescription) => {
+        let matchLevel = 0; //0: missing, 1: found package but failed matching test, 2 found matching package
+        for (let i = 0; i < activeArray.length; i++) {
+          const activePlugin = activeArray[i];
+          if (activePlugin.packageName === officialPlugin.packageName) {
+            if (isMatching(officialPlugin, activePlugin)) {
+              matchLevel = 2;
+              break;
+            } else {
+              matchLevel = 1;
+            }
+          }
+        }
+        if (matchLevel === 0) {
+          missingOfficialPlugins.push(officialPlugin);
+        }
+        if (matchLevel === 1) {
+          mismatchedOfficialPlugins.push(officialPlugin);
+        }
+      });
+    } else {
+      missingOfficialPlugins.push(...officialArray);
     }
   });
 
@@ -76,9 +92,8 @@ function isMatching(pluginDescription: PluginDescription, pluginInfo: PluginInfo
 
 export function getOfficialPlugins() {
   const packageJsonFilePath = path.normalize(path.join(__dirname, '../../package.json'));
-  const packageJson = readJsonFileSync(packageJsonFilePath);
+  const packageJson = JSONUtilities.readJson<$TSAny>(packageJsonFilePath);
   const { officialPlugins } = packageJson.amplify;
-
 
   const dependencies: { [key: string]: string } = packageJson.dependencies;
 

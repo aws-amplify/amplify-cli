@@ -20,6 +20,7 @@ const getAllDefaults = project => {
     appName,
     resourceName: appName,
     roleName: `pinpointLambdaRole${shortId}`,
+    cloudformationPolicyName: `cloudformationPolicy${shortId}`,
     cloudWatchPolicyName: `cloudWatchPolicy${shortId}`,
     pinpointPolicyName: `pinpointPolicy${shortId}`,
     authPolicyName: `pinpoint_amplify_${shortId}`,

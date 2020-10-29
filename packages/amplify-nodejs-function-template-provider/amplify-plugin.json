@@ -1,0 +1,31 @@
+{
+  "name": "functionTemplate",
+  "type": "util",
+  "commands": [],
+  "eventHandlers": [],
+  "functionTemplate": {
+    "conditions": {
+      "provider": "awscloudformation",
+      "services": ["Lambda"],
+      "runtime": "nodejs"
+    },
+    "templates": [
+      {
+        "name": "Hello World",
+        "value": "hello-world"
+      },
+      {
+        "name": "CRUD function for DynamoDB (Integration with API Gateway)",
+        "value": "crud"
+      },
+      {
+        "name": "Serverless ExpressJS function (Integration with API Gateway)",
+        "value": "serverless"
+      },
+      {
+        "name": "Lambda trigger",
+        "value": "trigger"
+      }
+    ]
+  }
+}
