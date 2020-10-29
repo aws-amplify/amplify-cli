@@ -151,7 +151,6 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   }
   context.print.info('');
 
-  // TODO format weekly, monthly and yearly crons
   // Provide scheduling information
   const cfnParameters = context.amplify.readJsonFile(path.join(resourceDirPath, parametersFileName), undefined, false) || {};
   const scheduleParameters = {
