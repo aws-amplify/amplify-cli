@@ -213,10 +213,12 @@ export class TransformerResolver implements TransformerResolverProvider {
         dedent`
       $util.qr($ctx.stash.put("typeName", "${this.typeName}"))
       $util.qr($ctx.stash.put("fieldName", "${this.fieldName}"))
-      $util.qr($ctx.stash.put("metadata", $util.defaultIfNull($ctx.stash.metadata, {})))
+      $util.qr($ctx.stash.put("conditions", []))
+      $util.qr($ctx.stash.put("metadata", {}))
       $util.qr($ctx.stash.metadata.put("dataSourceType", "${dataSourceType}"))
       $util.qr($ctx.stash.metadata.put("apiId", "${api.apiId}"))
       ${dataSource}
+      $util.toJson({})
       `,
       ),
       MappingTemplate.inlineTemplateFromString('$util.toJson($ctx.prev.result)'),
@@ -235,7 +237,7 @@ export class TransformerResolver implements TransformerResolverProvider {
         // Create individual functions
         let index = 0;
         for (let slotItem of slotEntries!) {
-          const name = `${this.typeName}.${this.fieldName}.${slotName}${index++}Function`;
+          const name = `${this.typeName}${this.fieldName}${slotName}${index++}Function`;
           const { requestMappingTemplate, responseMappingTemplate, dataSource } = slotItem;
           const fn = api.addAppSyncFunction(
             name,

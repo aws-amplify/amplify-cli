@@ -37,6 +37,13 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
     fieldName: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
+  generateCreateResolver: (
+    ctx: TransformerContextProvider,
+    type: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+    directive?: DirectiveDefinitionNode,
+  ) => TransformerResolverProvider;
   generateUpdateResolver: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,

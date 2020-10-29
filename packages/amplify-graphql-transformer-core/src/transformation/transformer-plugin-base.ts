@@ -67,6 +67,13 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     fieldName: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
+  abstract generateCreateResolver: (
+    ctx: TransformerContextProvider,
+    type: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+    directive?: DirectiveDefinitionNode,
+  ) => TransformerResolverProvider;
   abstract generateUpdateResolver: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
