@@ -4,10 +4,7 @@
   "MODULES" is a comma-delimmited string.
 */
 const moduleNames = process.env.MODULES.split(',');
-const modules = [];
-for (let i = 0; i < moduleNames.length; i += 1) {
-  modules.push(require(`./${moduleNames[i]}`));
-}
+const modules = moduleNames.map(name => require(`./${name}`));
 
 exports.handler = (event, context, callback) => {
   for (let i = 0; i < modules.length; i += 1) {
