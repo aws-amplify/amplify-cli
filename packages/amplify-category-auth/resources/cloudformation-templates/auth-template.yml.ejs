@@ -305,6 +305,7 @@ Resources:
       <% } %>
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
+      PreventUserExistenceErrors: ENABLED
     DependsOn: UserPool
   UserPoolClient:
   # Created provide application access to user pool
@@ -319,6 +320,7 @@ Resources:
       GenerateSecret: !Ref userpoolClientGenerateSecret
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
+      PreventUserExistenceErrors: ENABLED
     DependsOn: UserPool
   # BEGIN USER POOL LAMBDA RESOURCES
   UserPoolClientRole:
@@ -367,7 +369,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt 
         - UserPoolClientRole
@@ -493,7 +495,7 @@ Resources:
 
 
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt 
         - UserPoolClientRole
@@ -622,7 +624,7 @@ Resources:
             - '} '
 
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt 
         - UserPoolClientRole
@@ -721,7 +723,7 @@ Resources:
             - '}'
 
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt 
         - UserPoolClientRole
@@ -842,7 +844,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt 
         - MFALambdaRole
@@ -1002,7 +1004,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt 
         - OpenIdLambdaRole
