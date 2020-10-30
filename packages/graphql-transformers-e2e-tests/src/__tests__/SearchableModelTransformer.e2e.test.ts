@@ -828,7 +828,7 @@ test('query using string range between names', async () => {
   });
 });
 
-test('query using date range for createdAt', async () => {
+test('query using date range using lte and gte for createdAt', async () => {
   const expectedDates = ['2017-06-10', '2017-08-22'];
   const expectedLength = 2;
   const searchResponse = await GRAPHQL_CLIENT.query(
@@ -878,7 +878,11 @@ test('query using date range for createdAt', async () => {
   const items = searchResponse.data.searchUsers.items;
   expect(items.length).toEqual(expectLenghth);
   expect(items).toMatch(
-    expect.arrayContaining([expect.objectContaining({ createdAt: '2017-06-10' }), expect.objectContaining({ createdAt: '2017-08-22' })]),
+    expect.arrayContaining([
+      expect.objectContaining({ createdAt: '2016-07-20' }),
+      expect.objectContaining({ createdAt: '2017-06-10' }),
+      expect.objectContaining({ createdAt: '2017-08-22' }),
+    ]),
   );
 });
 
