@@ -11991,6 +11991,11 @@ graphql-mapping-template@4.15.1:
   resolved "https://registry.yarnpkg.com/graphql-mapping-template/-/graphql-mapping-template-4.15.1.tgz#aa273094fede4ab677e438163bdcf58775586f06"
   integrity sha512-qYXINF2kHP5v0G40xF9Iirv4MbP/I+OrE9d/Bmy/W7hLa/4paUnkB2aw0TYtT69yEoHarwPgGQICKz8UCcQ0tw==
 
+graphql-mapping-template@4.15.2:
+  version "4.15.2"
+  resolved "https://registry.yarnpkg.com/graphql-mapping-template/-/graphql-mapping-template-4.15.2.tgz#ce05d1de3fbd3f8cccd9e8bd111fd5181eb8bdcc"
+  integrity sha512-ZXoole9jGXiezFz6gjABNsAAIFcsmPHaC5Yhm40LPaFD8vXi90qO7fF/gIW+p0AnwJQ9kxTaYJ5ZJO8X8hpgFA==
+
 graphql-request@^1.5.0:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-1.8.2.tgz#398d10ae15c585676741bde3fc01d5ca948f8fbe"
@@ -12068,6 +12073,15 @@ graphql-transformer-common@4.13.1:
   dependencies:
     graphql "^14.5.8"
     graphql-mapping-template "4.13.1"
+    md5 "^2.2.1"
+
+graphql-transformer-common@4.17.10:
+  version "4.17.10"
+  resolved "https://registry.yarnpkg.com/graphql-transformer-common/-/graphql-transformer-common-4.17.10.tgz#0772d2de04b3f94a7edf613d7b2e8a5a7705045c"
+  integrity sha512-/pg4KoP0gb5ll+jSiAHn3eHfNwOMkfczd/Ij5u7+X71p41kX0wo14FH36DOlW0COCNwmIrIxT7LPiQ93fjWl6g==
+  dependencies:
+    graphql "^14.5.8"
+    graphql-mapping-template "4.15.2"
     md5 "^2.2.1"
 
 graphql-transformer-common@4.17.8:

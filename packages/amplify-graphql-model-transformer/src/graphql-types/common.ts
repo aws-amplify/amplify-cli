@@ -3,20 +3,17 @@ import {
   EnumTypeDefinitionNode,
   FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
-  Kind,
   ObjectTypeDefinitionNode,
-  TypeDefinitionNode,
+  TypeDefinitionNode
 } from 'graphql';
 import {
   DEFAULT_SCALARS,
-  graphqlName,
   makeArgument,
   makeDirective,
   makeField,
   makeNamedType,
   makeValueNode,
-  ModelResourceIDs,
-  toPascalCase,
+  toPascalCase
 } from 'graphql-transformer-common';
 import {
   ATTRIBUTE_TYPES,
@@ -30,14 +27,13 @@ import {
   INT_FUNCTIONS,
   SIZE_CONDITIONS,
   STRING_CONDITIONS,
-  STRING_FUNCTIONS,
+  STRING_FUNCTIONS
 } from '../definitions';
-import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
 import {
   EnumWrapper,
   InputFieldWraper,
   InputObjectDefinationWrapper,
-  ObjectDefinationWrapper,
+  ObjectDefinationWrapper
 } from '../wrappers/object-defination-wrapper';
 
 /**
