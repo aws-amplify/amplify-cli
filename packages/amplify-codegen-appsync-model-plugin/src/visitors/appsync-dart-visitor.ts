@@ -2,7 +2,19 @@ import { AppSyncModelVisitor, ParsedAppSyncModelConfig, RawAppSyncModelConfig, C
 import { DartDeclarationBlock } from '../languages/dart-declaration-block';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
+import { AuthDirective, AuthStrategy } from '../utils/process-auth';
+import { printWarning } from '../utils/warn';
 
+const typeToEnumMap: { [name: string] : string} = {
+  String: 'string',
+  Int: 'int',
+  Float: 'double',
+  Boolean: 'bool',
+  AWSDate: 'date',
+  AWSDateTime: 'dateTime',
+  AWSTime: 'time',
+  AWSTimestamp: 'timestamp',
+};
 export class AppSyncModelDartVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
   TPluginConfig extends ParsedAppSyncModelConfig = ParsedAppSyncModelConfig
@@ -93,6 +105,12 @@ export class AppSyncModelDartVisitor<
       .asKind('extension')
       .withName(`${this.getModelName(model)}Schema`)
       .extensionOn(this.getModelName(model));
+    //QueryField
+    model.fields.forEach(field => {
+      this.generateQueryField(field, classDeclarationBlock);
+    });
+    //schema
+    this.generateSchemaField(model, classDeclarationBlock);
     return classDeclarationBlock.string;
   }
 
@@ -211,7 +229,7 @@ export class AppSyncModelDartVisitor<
         ...fields.map((field, index) => {
           const fieldDelimiter = ', ';
           const fieldName = this.getFieldName(field);
-          const toStringVal = this.isModelType(field) ? `${fieldName}.toString()` : fieldName;
+          const toStringVal = this.getNativeType(field) === 'String' ? fieldName : `${fieldName}.toString()`;
           if (index !== fields.length -1) {
             return `buffer.write("${fieldName}=" + ${toStringVal} + "${fieldDelimiter}");`;
           }
@@ -296,6 +314,147 @@ export class AppSyncModelDartVisitor<
       deserializationImpl,
       { isBlock: false }
     );
+  }
+
+  protected generateQueryField(field: CodeGenField, declarationBlock: DartDeclarationBlock) : void {
+    const fieldName = this.getFieldName(field);
+    let value = `QueryField(fieldName: "${fieldName}")`;
+    if (this.isModelType(field)) {
+      value = [
+        'QueryField(',
+        indent(`fieldName: "${fieldName}",`),
+        indent(`fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: "${this.getNativeType({...field, isList: false})}"))`)
+      ].join('\n');
+    }
+    declarationBlock.addClassMember(
+      fieldName,
+      'QueryField',
+      value,
+      { static: true, final: true }
+    );
+  }
+
+  protected generateSchemaField(model: CodeGenModel, declarationBlock: DartDeclarationBlock) : void {
+    const schema = [
+      'Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {',
+      indentMultiline([
+        `modelSchemaDefinition.name = "${this.getModelName(model)}";\nmodelSchemaDefinition.pluralName = "${this.pluralizeModelName(model)}";`,
+        this.generateAuthRules(model),
+        this.generateAddFields(model)
+      ].filter(f => f).join('\n\n')),
+      '})'
+    ].join('\n');
+    declarationBlock.addClassMember(
+      'schema',
+      '',
+      schema,
+      { static: true, var: true }
+    );
+  }
+
+  protected generateAuthRules(model: CodeGenModel) : string {
+    const authDirectives: AuthDirective[] = model.directives.filter(d => d.name === 'auth') as AuthDirective[];
+    if (authDirectives.length) {
+      const rules: string[] = [];
+      authDirectives.forEach(directive => {
+        directive.arguments?.rules.forEach(rule => {
+          const authRule : string[] = [];
+          switch (rule.allow) {
+            case AuthStrategy.owner:
+              authRule.push('allow: AuthStrategy.owner');
+              authRule.push(`ownerField: "${rule.ownerField}"`);
+              authRule.push(`identityClain: "${rule.identityClaim}"`);
+              break;
+            case AuthStrategy.private:
+              authRule.push('allow: AuthStrategy.private');
+              break;
+            case AuthStrategy.public:
+              authRule.push('allow: AuthStrategy.public');
+              break;
+            case AuthStrategy.groups:
+              authRule.push('allow: AuthStrategy.groups');
+              authRule.push(`groupClaim: "${rule.groupClaim}"`);
+              if (rule.groups) {
+                authRule.push(`groups: [ ${rule.groups?.map(group => `"${group}"`).join(', ')} ]`);
+              } else {
+                authRule.push(`groupsField: "${rule.groupField}"`);
+              }
+              break;
+            default:
+              printWarning(`Model has auth with authStrategy ${rule.allow} of which is not yet supported`);
+              return '';
+          }
+          authRule.push(['operations: [',
+                          indentMultiline(rule.operations.map(op => `ModelOperation.${op}`).join(',\n')),
+                          ']'
+                        ].join('\n'));
+          rules.push(`AuthRule(\n${indentMultiline(authRule.join(',\n'))})`);
+        })
+      })
+      if (rules.length) {
+        return ['modelSchemaDefinition.authRules = [', indentMultiline(rules.join(',\n')), '];'].join('\n');
+      }
+    }
+    return '';
+  }
+
+  protected generateAddFields(model: CodeGenModel) : string {
+    if (model.fields.length) {
+      const fieldsToAdd : string[] = [];
+      model.fields.forEach(field => {
+        const fieldName = this.getFieldName(field);
+        const modelName = this.getModelName(model);
+        let fieldParam: string = '';
+        //field id
+        if (fieldName === 'id') {
+          fieldsToAdd.push('ModelFieldDefinition.id()');
+        }
+        //field with @connection
+        else if (field.connectionInfo) {
+          const connectedModelName = this.getNativeType({...field, isList: false});
+          switch (field.connectionInfo.kind) {
+            case CodeGenConnectionType.HAS_ONE:
+              fieldParam = [
+                `key: ${modelName}Schema.${fieldName}`,
+                `isRequired: ${!field.isNullable}`,
+                `ofModelName: ${connectedModelName}.classType.getTypeName()`,
+                `associatedKey: ${connectedModelName}Schema.${this.getFieldName(field.connectionInfo.associatedWith)}`
+              ].join(',\n');
+              fieldsToAdd.push(['ModelFieldDeinition.hasOne(', indentMultiline(fieldParam), ')'].join('\n'));
+              break;
+            case CodeGenConnectionType.HAS_MANY:
+              fieldParam = [
+                `key: ${modelName}Schema.${fieldName}`,
+                `isRequired: ${!field.isNullable}`,
+                `ofModelName: ${connectedModelName}.classType.getTypeName()`,
+                `associatedKey: ${connectedModelName}Schema.${this.getFieldName(field.connectionInfo.associatedWith)}`
+              ].join(',\n');
+              fieldsToAdd.push(['ModelFieldDeinition.hasMany(', indentMultiline(fieldParam), ')'].join('\n'));
+              break;
+            case CodeGenConnectionType.BELONGS_TO:
+              fieldParam = [
+                `key: ${modelName}Schema.${fieldName}`,
+                `isRequired: ${!field.isNullable}`,
+                `targetName: "${field.connectionInfo.targetName}"`,
+                `ofModelName: ${connectedModelName}.classType.getTypeName()`
+              ].join(',\n');
+              fieldsToAdd.push(['ModelFieldDeinition.belongsTo(', indentMultiline(fieldParam), ')'].join('\n'));
+              break;
+          }
+        }
+        //field with regular types
+        else {
+          fieldParam = [
+            `key: ${modelName}Schema.${fieldName}`,
+            `isRequired: ${!field.isNullable}`,
+            `ofType: ModelFieldType(ModelFieldTypeEnum.${typeToEnumMap[field.type]})`
+          ].join(',\n');
+          fieldsToAdd.push(['ModelFieldDeinition.field(', indentMultiline(fieldParam), ')'].join('\n'));
+        }
+      });
+      return fieldsToAdd.map(field => `modelSchemaDefinition.addField(${field});`).join('\n\n');
+    }
+    return '';
   }
 
       /**
