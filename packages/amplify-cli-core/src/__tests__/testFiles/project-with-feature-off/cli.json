@@ -1,0 +1,7 @@
+{
+  "features": {
+    "graphqltransformer": {
+      "validateTypeNameReservedWords": false
+    }
+  }
+}

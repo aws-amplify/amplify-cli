@@ -140,7 +140,7 @@ export class DynamoDBModelTransformer extends Transformer {
       def.name.value === ctx.getMutationTypeName() ||
       def.name.value === ctx.getSubscriptionTypeName();
 
-    if (isTypeNameReserved) {
+    if (isTypeNameReserved && ctx.featureFlags.getBoolean('validateTypeNameReservedWords', true)) {
       throw new InvalidDirectiveError(
         `'${def.name.value}' is a reserved type name and currently in use within the default schema element.`,
       );
