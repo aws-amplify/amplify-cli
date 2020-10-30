@@ -83,6 +83,8 @@ export function matchDirective(definition: DirectiveDefinitionNode, directive: D
       case `INPUT_FIELD_DEFINITION`:
         isValidLocation = (node.kind as string) === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
         break;
+      default:
+        break;
     }
   }
   return isValidLocation;
@@ -95,10 +97,11 @@ export function matchFieldDirective(definition: DirectiveDefinitionNode, directi
   }
   let isValidLocation = false;
   for (const location of definition.locations) {
-    // tslint:disable-next-line: switch-default
     switch (location.value) {
       case `FIELD_DEFINITION`:
         isValidLocation = node.kind === Kind.FIELD_DEFINITION || isValidLocation;
+        break;
+      default:
         break;
     }
   }
@@ -112,10 +115,11 @@ export function matchInputFieldDirective(definition: DirectiveDefinitionNode, di
   }
   let isValidLocation = false;
   for (const location of definition.locations) {
-    // tslint:disable-next-line: switch-default
     switch (location.value) {
       case `INPUT_FIELD_DEFINITION`:
         isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
+        break;
+      default:
         break;
     }
   }
@@ -129,10 +133,11 @@ export function matchArgumentDirective(definition: DirectiveDefinitionNode, dire
   }
   let isValidLocation = false;
   for (const location of definition.locations) {
-    // tslint:disable-next-line: switch-default
     switch (location.value) {
       case `ARGUMENT_DEFINITION`:
         isValidLocation = node.kind === Kind.INPUT_VALUE_DEFINITION || isValidLocation;
+        break;
+      default:
         break;
     }
   }
@@ -146,10 +151,11 @@ export function matchEnumValueDirective(definition: DirectiveDefinitionNode, dir
   }
   let isValidLocation = false;
   for (const location of definition.locations) {
-    // tslint:disable-next-line: switch-default
     switch (location.value) {
       case `ENUM_VALUE`:
         isValidLocation = node.kind === Kind.ENUM_VALUE_DEFINITION || isValidLocation;
+        break;
+      default:
         break;
     }
   }

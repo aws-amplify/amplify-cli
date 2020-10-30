@@ -5,6 +5,7 @@ import { StackManager } from './stack-manager';
 
 export class TransformerResourceHelper implements TransformerResourceHelperProvider {
   private api?: GraphQLApiProvider;
+  // eslint-disable-next-line no-useless-constructor
   constructor(private stackManager: StackManager) {}
   public generateResourceName = (name: string): string => {
     if (!this.api) {

@@ -25,7 +25,7 @@ export {
   TransformConfig,
   TransformerProjectConfig,
 } from './config/index';
-export { collectDirectives, collectDirectivesByTypeNames } from './utils/';
+export { collectDirectives, collectDirectivesByTypeNames } from './utils';
 export { TransformerModelBase, TransformerModelEnhancerBase, TransformerPluginBase } from './transformation/transformer-plugin-base';
 /**
  * Returns the extra set of directives that are supported by AppSync service

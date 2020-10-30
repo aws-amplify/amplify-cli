@@ -5,9 +5,10 @@ import {
   TransformerResolversManagerProvider,
   AppSyncFunctionConfigurationProvider,
   MappingTemplateProvider,
+  GraphQLApiProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack, isResolvableObject } from '@aws-cdk/core';
-import { GraphQLApiProvider } from '@aws-amplify/graphql-transformer-interfaces';
+
 import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { StackManager } from './stack-manager';
 import assert from 'assert';
@@ -88,14 +89,14 @@ export class ResolverManager implements TransformerResolversManagerProvider {
   getResolver = (typeName: string, fieldName: string): TransformerResolverProvider | void => {
     const key = `${typeName}.${fieldName}`;
     if (this.resolvers.has(key)) {
-      return <TransformerResolverProvider>this.resolvers.get(key);
+      return this.resolvers.get(key) as TransformerResolverProvider;
     }
   };
 
   removeResolver = (typeName: string, fieldName: string): TransformerResolverProvider => {
     const key = `${typeName}.${fieldName}`;
     if (this.resolvers.has(key)) {
-      const resolver = <TransformerResolverProvider>this.resolvers.get(key);
+      const resolver = this.resolvers.get(key) as TransformerResolverProvider;
       this.resolvers.delete(key);
       return resolver;
     }
@@ -172,7 +173,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     let dataSourceType = 'NONE';
     let dataSource = '';
     if (this.datasource) {
-      this.datasource.ds.type;
+      dataSourceType = this.datasource.ds.type;
       switch (dataSourceType) {
         case 'AMAZON_DYNAMODB':
           if (this.datasource.ds.dynamoDbConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig)) {
@@ -208,6 +209,8 @@ export class TransformerResolver implements TransformerResolverProvider {
             dataSource = `$util.qr($ctx.stash.metadata.put("databaseName", "${databaseName}"))`;
           }
           break;
+        default:
+          throw new Error('Unknow DataSource type');
       }
     }
     api.addResolver(
@@ -244,6 +247,7 @@ export class TransformerResolver implements TransformerResolverProvider {
           const name = `${this.typeName}${this.fieldName}${slotName}${index++}Function`;
           const { requestMappingTemplate, responseMappingTemplate, dataSource } = slotItem;
           this.substitueSlotInfo(requestMappingTemplate, slotName, index);
+          // eslint-disable-next-line no-unused-expressions
           responseMappingTemplate && this.substitueSlotInfo(responseMappingTemplate, slotName, index);
           const fn = api.addAppSyncFunction(
             name,

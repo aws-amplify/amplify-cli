@@ -23,6 +23,7 @@
         "clean": "rimraf ./lib"
     },
     "dependencies": {
+        "@aws-amplify/graphql-transformer-interfaces": "1.0.0",
         "@aws-amplify/graphql-transformer-core": "^0.0.1",
         "@aws-cdk/aws-dynamodb": "~1.67.0",
         "@aws-cdk/aws-applicationautoscaling": "~1.67.0",
@@ -51,12 +52,12 @@
         "constructs": "^3.0.12",
         "graphql": "^14.5.8",
         "graphql-transformer-common": "^4.17.10",
-        "graphql-mapping-template":"4.15.3"
+        "graphql-mapping-template":"4.15.3",
+        "lodash": "^4.17.19"
     },
     "devDependencies": {
         "@types/fs-extra": "^8.0.1",
-        "@types/node": "^10.17.13",
-        "@aws-amplify/graphql-transformer-interfaces": "1.0.0"
+        "@types/node": "^10.17.13"
     },
     "jest": {
         "transform": {

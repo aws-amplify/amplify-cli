@@ -7,7 +7,7 @@ import { FileAsset } from './file-asset';
 export class TransformerSchema {
   private asset?: FileAsset;
   private api?: GraphQLApi;
-  private definition: string = '';
+  private definition = '';
 
   private schemaConstruct?: CfnGraphQLSchema;
   bind = (api: GraphQLApi): CfnGraphQLSchema => {

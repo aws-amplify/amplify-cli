@@ -161,7 +161,7 @@ export const generateCreateRequestTemplate = (modelName: string): string => {
     comment('set the typename'),
     qref(methodCall(ref('mergedValues.put'), str('__typename'), str(modelName))),
 
-    //Set PutObject
+    // Set PutObject
     set(
       ref('PutObject'),
       obj({

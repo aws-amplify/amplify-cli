@@ -52,6 +52,7 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
 export class InlineTemplate implements InlineMappingTemplateProvider {
   public readonly type = MappingTemplateType.INLINE;
 
+  // eslint-disable-next-line no-useless-constructor
   constructor(private content: string) {}
   bind(scope: cdk.Construct): string {
     return this.content;

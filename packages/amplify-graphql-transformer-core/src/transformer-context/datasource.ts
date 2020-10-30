@@ -7,7 +7,7 @@ export class TransformerDataSourceManager implements TransformerDataSourceManage
   add = (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, dataSourceInstance: BackedDataSource) => {
     const key = type.name.value;
     if (this.dataSourceMap.has(key)) {
-      throw new Error(`DataSource already exists for type ${name}`);
+      throw new Error(`DataSource already exists for type ${key}`);
     }
     this.dataSourceMap.set(key, dataSourceInstance);
   };
@@ -15,7 +15,7 @@ export class TransformerDataSourceManager implements TransformerDataSourceManage
   get = (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode): BackedDataSource => {
     const key = type.name.value;
     if (!this.dataSourceMap.has(key)) {
-      throw new Error(`DataSource for type ${name} does not exist`);
+      throw new Error(`DataSource for type ${key} does not exist`);
     }
     return this.dataSourceMap.get(key)!;
   };

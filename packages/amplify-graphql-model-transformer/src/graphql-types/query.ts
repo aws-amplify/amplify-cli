@@ -1,8 +1,7 @@
 import { TranformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { outputFile } from 'fs-extra';
 import { InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { FieldWrapper, ObjectDefinationWrapper } from '../wrappers/object-defination-wrapper';
-import { generateModelScalarFilterInputName, makeConditionFilterInput } from './common';
+import { makeConditionFilterInput } from './common';
 export const makeListQueryFilterInput = (
   ctx: TranformerTransformSchemaStepContextProvider,
   name: string,

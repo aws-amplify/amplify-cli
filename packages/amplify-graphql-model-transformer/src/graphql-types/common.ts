@@ -93,7 +93,7 @@ export const addModelConditionInputs = (ctx: TranformerTransformSchemaStepContex
  * @param typeName Name of the scarlar type
  * @param includeFilter add filter suffix to input
  */
-export function generateModelScalarFilterInputName(typeName: string, includeFilter: Boolean): string {
+export function generateModelScalarFilterInputName(typeName: string, includeFilter: boolean): string {
   const nameOverride = DEFAULT_SCALARS[typeName];
   if (nameOverride) {
     return `Model${nameOverride}${includeFilter ? 'Filter' : ''}Input`;
@@ -119,7 +119,7 @@ export const createEnumModelFilters = (
  * @param type scalar type name
  * @param supportsConditions add filter suffix to input
  */
-export function makeModelScalarFilterInputObject(type: string, supportsConditions: Boolean): InputObjectTypeDefinitionNode {
+export function makeModelScalarFilterInputObject(type: string, supportsConditions: boolean): InputObjectTypeDefinitionNode {
   const name = generateModelScalarFilterInputName(type, !supportsConditions);
   const conditions = getScalarConditions(type);
   const scalarConditionInput = InputObjectDefinationWrapper.create(name);

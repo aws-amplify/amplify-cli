@@ -1,3 +1,3 @@
 export interface TransformerResourceHelperProvider {
-  generateResourceName(name: string): string
+  generateResourceName(name: string): string;
 }

@@ -292,7 +292,7 @@ export class TransformerOutput implements TransformerContextOutputProvider {
       throw new Error(`Cannot extend nonexistent type '${obj.name.value}'.`);
     }
     // AppSync does not yet understand type extensions so fold the types in.
-    const oldNode = <ObjectTypeDefinitionNode>this.getObject(obj.name.value);
+    const oldNode = this.getObject(obj.name.value);
     const newDirs = [];
     const oldDirs = oldNode?.directives || [];
 

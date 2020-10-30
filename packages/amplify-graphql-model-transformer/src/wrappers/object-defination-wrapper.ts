@@ -15,9 +15,7 @@ import {
   ListTypeNode,
   InputObjectTypeDefinitionNode,
   NamedTypeNode,
-  EnumTypeDefinitionNode,
-  Kind
-} from 'graphql';
+  EnumTypeDefinitionNode} from 'graphql';
 import { DEFAULT_SCALARS } from 'graphql-transformer-common';
 
 import { merge } from 'lodash';
@@ -90,7 +88,7 @@ export class GenericFieldWrapper {
 
   makeNullable = (): boolean => {
     if (this.isNonNullable()) {
-      this.type = (<NonNullTypeNode>this.type).type;
+      this.type = (this.type as NonNullTypeNode).type;
       return true;
     }
     return false;
@@ -98,7 +96,7 @@ export class GenericFieldWrapper {
 
   makeNonNullable = (): boolean => {
     if (!this.isNonNullable()) {
-      this.type = <NonNullTypeNode>{ kind: 'NonNullType', type: this.type };
+      this.type = { kind: 'NonNullType', type: this.type } as NonNullTypeNode;
       return true;
     }
     return false;
@@ -116,7 +114,7 @@ export class GenericFieldWrapper {
 
   unWrapListType = (): boolean => {
     if (!this.isList()) {
-      this.type = (<ListTypeNode>this.type).type;
+      this.type = (this.type as ListTypeNode).type;
       return true;
     }
     return false;
@@ -188,7 +186,7 @@ export class InputFieldWraper extends GenericFieldWrapper {
       type: field.type,
     });
   };
-  static create = (name: string, type: string, isNullable: boolean = false, isList: boolean = false): InputFieldWraper => {
+  static create = (name: string, type: string, isNullable = false, isList = false): InputFieldWraper => {
     const field = new InputFieldWraper({
       kind: 'InputValueDefinition',
       name: {
@@ -236,7 +234,7 @@ export class FieldWrapper extends GenericFieldWrapper {
     };
   };
 
-  static create = (name: string, type: string, isNullable: boolean = false, isList: boolean = false): FieldWrapper => {
+  static create = (name: string, type: string, isNullable = false, isList = false): FieldWrapper => {
     const field = new FieldWrapper({
       kind: 'FieldDefinition',
       name: {

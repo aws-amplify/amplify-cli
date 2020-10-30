@@ -1,35 +1,33 @@
-import { CfnResource, Construct, Duration, Stack, Token } from '@aws-cdk/core';
+import { APIIAMResourceProvider, GraphQLApiProvider, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
-  CfnResolver,
-  DynamoDbDataSource,
-  HttpDataSource,
-  BaseDataSource,
-  NoneDataSource,
-  LambdaDataSource,
-  DataSourceOptions,
-  HttpDataSourceOptions,
-  AuthorizationType,
-  CfnGraphQLSchema,
-  CfnGraphQLApi,
-  GraphqlApiBase,
-  CfnApiKey,
-  AuthorizationMode,
-  UserPoolDefaultAction,
-  UserPoolConfig,
-  OpenIdConnectConfig,
   ApiKeyConfig,
-  LogConfig,
-  Schema,
   AuthorizationConfig,
+  AuthorizationMode,
+  AuthorizationType,
+  BaseDataSource,
+  CfnApiKey,
+  CfnGraphQLApi,
+  CfnGraphQLSchema,
+  CfnResolver,
+  DataSourceOptions,
+  DynamoDbDataSource,
+  GraphqlApiBase,
+  HttpDataSource,
+  HttpDataSourceOptions,
+  LambdaDataSource,
+  LogConfig,
+  NoneDataSource,
+  OpenIdConnectConfig,
+  UserPoolConfig,
+  UserPoolDefaultAction,
 } from '@aws-cdk/aws-appsync';
 import { ITable } from '@aws-cdk/aws-dynamodb';
+import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { GraphQLApiProvider, MappingTemplateProvider, APIIAMResourceProvider } from '@aws-amplify/graphql-transformer-interfaces';
-
+import { CfnResource, Construct, Duration, Stack, Token } from '@aws-cdk/core';
+import { toCamelCase } from 'graphql-transformer-common';
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { TransformerSchema } from './cdk-compat/schema-asset';
-import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { toCamelCase } from 'graphql-transformer-common';
 import { InlineTemplate } from './cdk-compat/template-asset';
 
 export interface GraphqlApiProps {
@@ -326,7 +324,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
   }
 
   public getDefaultAuthorization() {
-    this.authorizationConfig?.defaultAuthorization!;
+    return this.authorizationConfig?.defaultAuthorization!;
   }
 
   public addResolver(
@@ -460,7 +458,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
     });
   }
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
-    modes.map(mode => {
+    modes.forEach(mode => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
         throw new Error('Missing default OIDC Configuration');
       }

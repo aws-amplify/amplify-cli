@@ -38,6 +38,8 @@ export function collectDirectives(sdl: string): DirectiveNode[] {
       case Kind.SCALAR_TYPE_DEFINITION:
         directives = directives.concat(collectScalarDirectives(def));
         break;
+      default:
+        // left blank
     }
   }
   return directives;
@@ -82,6 +84,8 @@ export function collectDirectivesByType(sdl: string): Record<string, DirectiveNo
       case Kind.SCALAR_TYPE_DEFINITION:
         types[def.name.value] = [...(types[def.name.value] || []), ...collectScalarDirectives(def)];
         break;
+      default:
+      // left blank
     }
   }
   return types;

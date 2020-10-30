@@ -35,6 +35,8 @@ export function stripDirectives(doc: DocumentNode, except: string[] = []): Docum
       case Kind.SCALAR_TYPE_DEFINITION:
         definitions.push(stripScalarDirectives(def));
         break;
+      default:
+        // left blank
     }
   }
 

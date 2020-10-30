@@ -1,19 +1,19 @@
-import { ObjectTypeDefinitionNode, InputValueDefinitionNode, InputObjectTypeDefinitionNode, DirectiveNode } from 'graphql';
-import { camelCase } from 'change-case';
+import { MappingTemplate, TransformerModelBase } from '@aws-amplify/graphql-transformer-core';
 import {
   AppSyncDataSourceType,
+  DataSourceInstance,
   DataSourceProvider,
+  MutationFieldType,
   QueryFieldType,
+  SubscriptionFieldType,
+  TranformerTransformSchemaStepContextProvider,
   TransformerContextProvider,
   TransformerModelProvider,
   TransformerResolverProvider,
-  MutationFieldType,
-  SubscriptionFieldType,
-  DataSourceInstance,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AttributeType, ITable, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
-import { TransformerModelBase, MappingTemplate } from '@aws-amplify/graphql-transformer-core';
-import { TranformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { RemovalPolicy } from '@aws-cdk/core';
+import { DirectiveNode, InputObjectTypeDefinitionNode, InputValueDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
   getBaseType,
   isScalar,
@@ -27,22 +27,15 @@ import {
   toCamelCase,
   toPascalCase,
 } from 'graphql-transformer-common';
-import { RemovalPolicy } from '@aws-cdk/core';
-import {
-  DirectiveWrapper,
-  FieldWrapper,
-  InputObjectDefinationWrapper,
-  ObjectDefinationWrapper,
-} from './wrappers/object-defination-wrapper';
 import {
   addModelConditionInputs,
   createEnumModelFilters,
   makeCreateInputField,
   makeDeleteInputField,
-  makeUpdateInputField,
-  makeMutationConditionInput,
   makeListQueryFilterInput,
   makeListQueryModel,
+  makeMutationConditionInput,
+  makeUpdateInputField,
 } from './graphql-types';
 import {
   generateCreateInitSlotTemplate,
@@ -56,6 +49,12 @@ import {
   generateUpdateRequestTemplate,
 } from './resolvers';
 import { generateGetRequestTemplate, generateListRequestTemplate } from './resolvers/query';
+import {
+  DirectiveWrapper,
+  FieldWrapper,
+  InputObjectDefinationWrapper,
+  ObjectDefinationWrapper,
+} from './wrappers/object-defination-wrapper';
 
 export type Nullable<T> = T | null;
 export type OptionalAndNullable<T> = Partial<T>;
@@ -137,7 +136,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     // todo: get model configuration with default values and store it in the map
     const typeName = definition.name.value;
     const directiveWrapped: DirectiveWrapper = new DirectiveWrapper(directive);
-    const options = <ModelDirectiveConfiguration>directiveWrapped.getArguments({
+    const options = directiveWrapped.getArguments({
       queries: {
         get: toCamelCase(['get', typeName]),
         list: toCamelCase(['list', `${typeName}s`]), // Existing implementation suffixes `s` at the end
@@ -280,6 +279,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
             break;
           case QueryFieldType.SYNC:
             resolver = this.generateSyncResolver(context, def!, query.typeName, query.fieldName);
+            break;
+          default:
+            throw new Error('Unkown query field type');
         }
 
         resolver.mapToStack(stack);
@@ -299,6 +301,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           case MutationFieldType.UPDATE:
             resolver = this.generateUpdateResolver(context, def!, mutation.typeName, mutation.fieldName);
             break;
+          default:
+            throw new Error('Unkown query field type');
         }
         resolver.mapToStack(stack);
         context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
@@ -317,6 +321,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           case SubscriptionFieldType.ON_UPDATE:
             resolver = this.generateOnUpdateResolver(context, def!, subscription.typeName, subscription.fieldName);
             break;
+          default:
+            throw new Error('Unkown query field type');
         }
         resolver.mapToStack(stack);
         context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
@@ -418,7 +424,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const dataSource = this.datasourceMap[typeName];
     const resolverKey = `OnCreate${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateSubscriptionResolver(
@@ -436,7 +441,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const dataSource = this.datasourceMap[typeName];
     const resolverKey = `OnUpdate${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
       this.resolverMap[resolverKey] = ctx.resolvers.generateSubscriptionResolver(
@@ -642,7 +646,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     // Todo: return fields bassed on operation
     const knownModels = this.typesWithModelDirective;
     let conditionInput: InputObjectTypeDefinitionNode;
-    if ([MutationFieldType.CREATE, MutationFieldType.DELETE, MutationFieldType.UPDATE].includes(<MutationFieldType>operation.type)) {
+    if ([MutationFieldType.CREATE, MutationFieldType.DELETE, MutationFieldType.UPDATE].includes(operation.type as MutationFieldType)) {
       const condtionTypeName = toPascalCase(['Model', type.name.value, 'ConditionInput']);
 
       const filterInputs = createEnumModelFilters(ctx, type);
@@ -708,6 +712,9 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           makeInputValueDefinition('input', makeNonNullType(makeNamedType(updateInputTypeName))),
           makeInputValueDefinition('condition', makeNamedType(conditionInput!.name.value)),
         ];
+
+      default:
+        throw new Error('Unkown operation type');
     }
     return [];
   };

@@ -1,9 +1,8 @@
-import { Construct } from '@aws-cdk/core';
-import { CfnFunctionConfiguration, BaseDataSource, BackedDataSource } from '@aws-cdk/aws-appsync';
 import { MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { BackedDataSource, BaseDataSource, CfnFunctionConfiguration } from '@aws-cdk/aws-appsync';
+import { Construct } from '@aws-cdk/core';
+import { InlineTemplate } from './cdk-compat/template-asset';
 import { GraphQLApi } from './graphql-api';
-import { TemplateType } from '@aws-amplify/graphql-transformer-interfaces/lib/graphql-api-provider';
-import { InlineTemplate, S3MappingTemplate } from './cdk-compat/template-asset';
 export interface BaseFunctionConfigurationProps {
   /**
    * The request mapping template for this resolver

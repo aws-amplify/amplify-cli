@@ -1,3 +1,8 @@
+/* eslint-disable no-new */
+import { FeatureFlagProvider, GraphQLApiProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
+import { App, Aws, CfnOutput, Fn } from '@aws-cdk/core';
+import assert from 'assert';
 import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
@@ -7,37 +12,30 @@ import {
   InterfaceTypeDefinitionNode,
   Kind,
   ObjectTypeDefinitionNode,
+  parse,
   ScalarTypeDefinitionNode,
   TypeDefinitionNode,
   TypeExtensionNode,
   UnionTypeDefinitionNode,
-  parse,
 } from 'graphql';
 import { InvalidTransformerError, SchemaValidationError, UnknownDirectiveError } from '../errors';
+import { GraphQLApi } from '../graphql-api';
+import { TransformerContext } from '../transformer-context';
+import { TransformerOutput } from '../transformer-context/output';
+import { StackManager } from '../transformer-context/stack-manager';
+import { adoptAuthModes } from '../utils/authType';
+import { AppSyncAuthConfiguration, TransformConfig } from './transformer-config';
+import Template, { DeploymentResources } from './types';
 import {
   makeSeenTransformationKey,
   matchArgumentDirective,
   matchDirective,
   matchEnumValueDirective,
   matchFieldDirective,
-  sortTransformerPlugins,
   matchInputFieldDirective,
+  sortTransformerPlugins,
 } from './utils';
-import { TransformerContext } from '../transformer-context';
-import assert from 'assert';
-
-import { FeatureFlagProvider, GraphQLApiProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
-
-import { AppSyncAuthConfiguration, TransformConfig } from './transformer-config';
 import { validateModelSchema } from './validation';
-import { GraphQLApi } from '../graphql-api';
-import { StackManager } from '../transformer-context/stack-manager';
-import { TransformerOutput } from '../transformer-context/output';
-import Template, { DeploymentResources } from './types';
-import { App, Aws, CfnOutput, CfnParameter, Fn } from '@aws-cdk/core';
-import { TransformerRootStack } from '../cdk-compat';
-import { adoptAuthModes } from '../utils/authType';
-import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 
 function isFunction(obj: any): obj is Function {
   return obj && typeof obj === 'function';
@@ -70,7 +68,6 @@ export class GraphQLTransform {
   private stackMappingOverrides: StackMapping;
   private app: App | undefined;
   private readonly authConfig: AppSyncAuthConfiguration;
-  private readonly customStacks?: Record<string, Template>;
   private readonly buildParameters: Record<string, any>;
 
   // A map from `${directive}.${typename}.${fieldName?}`: true
@@ -96,7 +93,6 @@ export class GraphQLTransform {
       additionalAuthenticationProviders: [],
     };
 
-    this.customStacks = options.stacks;
     this.buildParameters = options.buildParameters || {};
     this.stackMappingOverrides = options.stackMapping || {};
   }
@@ -245,12 +241,12 @@ export class GraphQLTransform {
   }
 
   private generateGraphQlApi(stackManager: StackManager, output: TransformerOutput) {
-    //Todo: Move this to its own transformer plugin to support modifying the API
+    // Todo: Move this to its own transformer plugin to support modifying the API
     // Like setting the auth mode and enabling logging and such
 
     const rootStack = stackManager.rootStack;
     const authorizationConfig = adoptAuthModes(stackManager, this.authConfig);
-    const apiName = stackManager.addParameter('AppSyncApiName', { type: 'String'}).valueAsString;
+    const apiName = stackManager.addParameter('AppSyncApiName', { type: 'String' }).valueAsString;
     const envName = stackManager.getParameter('env');
     assert(envName);
     const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
@@ -275,7 +271,6 @@ export class GraphQLTransform {
       const apiKey = api.createAPIKey({
         description: apiKeyDescription,
         expires: apiKeyExpirationDays,
-
       });
 
       new CfnOutput(rootStack, 'GraphQLAPIKeyOutput', {
@@ -302,6 +297,7 @@ export class GraphQLTransform {
 
   private synthesize(context: TransformerContext): DeploymentResources {
     const stackManager: StackManager = context.stackManager as StackManager;
+    // eslint-disable-next-line no-unused-expressions
     this.app?.synth({ force: true, skipValidation: true });
 
     const templates = stackManager.getCloudFormationTemplates();

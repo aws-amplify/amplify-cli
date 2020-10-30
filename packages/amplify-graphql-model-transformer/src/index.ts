@@ -1,1 +1,1 @@
-export { ModelTransformer } from './graphql-model-transformer'
+export { ModelTransformer } from './graphql-model-transformer';
