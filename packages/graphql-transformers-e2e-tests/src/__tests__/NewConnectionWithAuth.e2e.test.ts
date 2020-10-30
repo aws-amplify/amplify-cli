@@ -12,13 +12,11 @@ import { CreateBucketRequest } from 'aws-sdk/clients/s3';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
-import { deploy } from '../deployNestedStacks';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
-import emptyBucket from '../emptyBucket';
 import {
   createUserPool,
   createUserPoolClient,
-  deleteUserPool,
   signupAndAuthenticateUser,
   createGroup,
   addUserToGroup,
@@ -179,7 +177,6 @@ beforeAll(async () => {
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs);
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
@@ -223,27 +220,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  try {
-    console.log('Deleting stack ' + STACK_NAME);
-    await cf.deleteStack(STACK_NAME);
-    await deleteUserPool(cognitoClient, USER_POOL_ID);
-    await cf.waitForStack(STACK_NAME);
-    console.log('Successfully deleted stack ' + STACK_NAME);
-  } catch (e) {
-    if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-      // The stack was deleted. This is good.
-      expect(true).toEqual(true);
-      console.log('Successfully deleted stack ' + STACK_NAME);
-    } else {
-      console.error(e);
-      throw e;
-    }
-  }
-  try {
-    await emptyBucket(BUCKET_NAME);
-  } catch (e) {
-    console.error(`Failed to empty S3 bucket: ${e}`);
-  }
+  await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
 });
 
 /**
@@ -258,7 +235,6 @@ test('Test creating a post and immediately view it via the User.posts connection
     }`,
     {},
   );
-  console.log(createUser1);
   expect(createUser1.data.createUser.id).toEqual('user1@test.com');
 
   const response = await GRAPHQL_CLIENT_1.query(
@@ -271,7 +247,6 @@ test('Test creating a post and immediately view it via the User.posts connection
     }`,
     {},
   );
-  console.log(response);
   expect(response.data.createPost.id).toBeDefined();
   expect(response.data.createPost.title).toEqual('Hello, World!');
   expect(response.data.createPost.owner).toBeDefined();
@@ -293,7 +268,6 @@ test('Test creating a post and immediately view it via the User.posts connection
     }`,
     {},
   );
-  console.log(JSON.stringify(getResponse, null, 4));
   expect(getResponse.data.getUser.posts.items[0].id).toBeDefined();
   expect(getResponse.data.getUser.posts.items[0].title).toEqual('Hello, World!');
   expect(getResponse.data.getUser.posts.items[0].owner).toEqual('user1@test.com');
@@ -311,7 +285,6 @@ test('Testing reading an owner protected field as a non owner', async () => {
     }`,
     {},
   );
-  console.log(response1);
   expect(response1.data.createFieldProtected.id).toEqual('1');
   expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1);
   expect(response1.data.createFieldProtected.ownerOnly).toEqual(null);
@@ -326,7 +299,6 @@ test('Testing reading an owner protected field as a non owner', async () => {
     }`,
     {},
   );
-  console.log(response2);
   expect(response2.data.getFieldProtected.ownerOnly).toBeNull();
   expect(response2.errors).toHaveLength(1);
 
@@ -340,7 +312,6 @@ test('Testing reading an owner protected field as a non owner', async () => {
     }`,
     {},
   );
-  console.log(response3);
   expect(response3.data.getFieldProtected.id).toEqual('1');
   expect(response3.data.getFieldProtected.owner).toEqual(USERNAME1);
   expect(response3.data.getFieldProtected.ownerOnly).toEqual('owner-protected');
@@ -357,7 +328,6 @@ test('Test that @connection resolvers respect @model read operations.', async ()
     }`,
     {},
   );
-  console.log(response1);
   expect(response1.data.createOpenTopLevel.id).toEqual('1');
   expect(response1.data.createOpenTopLevel.owner).toEqual(USERNAME1);
   expect(response1.data.createOpenTopLevel.name).toEqual('open');
@@ -373,7 +343,6 @@ test('Test that @connection resolvers respect @model read operations.', async ()
     }`,
     {},
   );
-  console.log(response2);
   expect(response2.data.createConnectionProtected.id).toEqual('1');
   expect(response2.data.createConnectionProtected.owner).toEqual(USERNAME2);
   expect(response2.data.createConnectionProtected.name).toEqual('closed');
@@ -393,7 +362,6 @@ test('Test that @connection resolvers respect @model read operations.', async ()
     }`,
     {},
   );
-  console.log(response3);
   expect(response3.data.getOpenTopLevel.id).toEqual('1');
   expect(response3.data.getOpenTopLevel.protected.items).toHaveLength(0);
 
@@ -412,7 +380,6 @@ test('Test that @connection resolvers respect @model read operations.', async ()
     }`,
     {},
   );
-  console.log(response4);
   expect(response4.data.getOpenTopLevel.id).toEqual('1');
   expect(response4.data.getOpenTopLevel.protected.items).toHaveLength(1);
 });
@@ -429,7 +396,6 @@ test('Test that owners cannot set the field of a FieldProtected object unless au
     }`,
     {},
   );
-  console.log(JSON.stringify(response1));
   expect(response1.data.createFieldProtected.id).toEqual('2');
   expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1);
   expect(response1.data.createFieldProtected.ownerOnly).toEqual(null);
@@ -444,7 +410,6 @@ test('Test that owners cannot set the field of a FieldProtected object unless au
     }`,
     {},
   );
-  console.log(response2);
   expect(response2.data.createFieldProtected).toBeNull();
   expect(response2.errors).toHaveLength(1);
 
@@ -460,7 +425,6 @@ test('Test that owners cannot set the field of a FieldProtected object unless au
     }`,
     {},
   );
-  console.log(response3);
   expect(response3.data.createFieldProtected.id).toEqual('4');
   expect(response3.data.createFieldProtected.owner).toEqual(USERNAME2);
   // The length is one because the 'ownerOnly' field is protected on reads.
@@ -480,7 +444,6 @@ test('Test that owners cannot update the field of a FieldProtected object unless
     }`,
     {},
   );
-  console.log(JSON.stringify(response1));
   expect(response1.data.createFieldProtected.id).not.toBeNull();
   expect(response1.data.createFieldProtected.owner).toEqual(USERNAME1);
   expect(response1.data.createFieldProtected.ownerOnly).toEqual(null);
@@ -495,7 +458,6 @@ test('Test that owners cannot update the field of a FieldProtected object unless
     }`,
     {},
   );
-  console.log(response2);
   expect(response2.data.updateFieldProtected).toBeNull();
   expect(response2.errors).toHaveLength(1);
 
@@ -511,7 +473,6 @@ test('Test that owners cannot update the field of a FieldProtected object unless
     }`,
     {},
   );
-  console.log(response3);
   const resposne3ID = response3.data.updateFieldProtected.id;
   expect(resposne3ID).toEqual(response1.data.createFieldProtected.id);
   expect(response3.data.updateFieldProtected.owner).toEqual(USERNAME1);
@@ -536,7 +497,6 @@ test('Test that owners cannot update the field of a FieldProtected object unless
     }`,
     {},
   );
-  console.log(response4);
   expect(response4.data.updateFieldProtected.id).toEqual(response1.data.createFieldProtected.id);
   expect(response4.data.updateFieldProtected.owner).toEqual(USERNAME3);
   expect(response4.data.updateFieldProtected.ownerOnly).toBeNull();
@@ -551,6 +511,5 @@ test('Test that owners cannot update the field of a FieldProtected object unless
     }`,
     {},
   );
-  console.log(response5);
   expect(response5.data.getFieldProtected.ownerOnly).toEqual('updated');
 });

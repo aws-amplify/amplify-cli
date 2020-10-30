@@ -20,5 +20,5 @@
     { "path": "../graphql-transformer-core" },
     { "path": "../graphql-versioned-transformer" }
   ],
-  "exclude": ["**/lib/**/*"]
+  "exclude": ["**/lib/**/*", "resources/**/*"]
 }

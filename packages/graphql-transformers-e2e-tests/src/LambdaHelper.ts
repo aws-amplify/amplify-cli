@@ -12,7 +12,6 @@ export class LambdaHelper {
 
   async createFunction(name: string, roleArn: string, filePrefix: string) {
     const filePath = path.join(__dirname, 'testfunctions', `${filePrefix}.zip`);
-    console.log(`Uploading lambda from path: ${filePath}`);
     const zipContents = fs.readFileSync(filePath);
     return await this.client
       .createFunction({

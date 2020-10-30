@@ -13,14 +13,12 @@ import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
 import gql from 'graphql-tag';
 import { S3Client } from '../S3Client';
-import { deploy } from '../deployNestedStacks';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
-import emptyBucket from '../emptyBucket';
 import { IAM as cfnIAM, Cognito as cfnCognito } from 'cloudform-types';
 import {
   createUserPool,
   createUserPoolClient,
-  deleteUserPool,
   signupAndAuthenticateUser,
   createGroup,
   addUserToGroup,
@@ -493,19 +491,13 @@ beforeAll(async () => {
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
     GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs);
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     const apiKey = getApiKey(finishedStack.Outputs);
-    console.log(`API KEY: ${apiKey}`);
     expect(apiKey).toBeTruthy();
 
     const getIdentityPoolId = outputValueSelector('IdentityPoolId');
     const identityPoolId = getIdentityPoolId(finishedStack.Outputs);
     expect(identityPoolId).toBeTruthy();
-    console.log(`Identity Pool Id: ${identityPoolId}`);
-
-    console.log(`User pool Id: ${USER_POOL_ID}`);
-    console.log(`User pool ClientId: ${userPoolClientId}`);
 
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
@@ -608,27 +600,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  try {
-    console.log('Deleting stack ' + STACK_NAME);
-    await cf.deleteStack(STACK_NAME);
-    await deleteUserPool(cognitoClient, USER_POOL_ID);
-    await cf.waitForStack(STACK_NAME);
-    console.log('Successfully deleted stack ' + STACK_NAME);
-  } catch (e) {
-    if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-      // The stack was deleted. This is good.
-      expect(true).toEqual(true);
-      console.log('Successfully deleted stack ' + STACK_NAME);
-    } else {
-      console.error(e);
-      throw e;
-    }
-  }
-  try {
-    await emptyBucket(BUCKET_NAME);
-  } catch (e) {
-    console.error(`Failed to empty S3 bucket: ${e}`);
-  }
+  await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
 });
 
 /**
@@ -652,7 +624,6 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     `,
   });
   const subscription = observer.subscribe((event: any) => {
-    console.log('subscription event: ', event);
     const student = event.data.onCreateStudent;
     subscription.unsubscribe();
     expect(student.name).toEqual('student1');
@@ -688,7 +659,6 @@ test('Test that an user not in the group is not allowed to view the subscription
   });
   observer.subscribe({
     error: (err: any) => {
-      console.log(err.graphQLErrors[0]);
       expect(err.graphQLErrors[0].message).toEqual('Not Authorized to access onCreateStudent on type Subscription');
       expect(err.graphQLErrors[0].errorType).toEqual('Unauthorized');
       done();
@@ -948,7 +918,6 @@ test('Test that IAM can listen and read to onCreatePost', async done => {
   const subscription = observer.subscribe(
     (event: any) => {
       const post = event.data.onCreatePost;
-      console.log(post, null, 4);
       subscription.unsubscribe();
       expect(post).toBeDefined();
       expect(post.id).toEqual(postID);

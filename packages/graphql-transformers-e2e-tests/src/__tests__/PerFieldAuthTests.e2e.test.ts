@@ -11,13 +11,11 @@ import { CreateBucketRequest } from 'aws-sdk/clients/s3';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { GraphQLClient } from '../GraphQLClient';
 import { S3Client } from '../S3Client';
-import { deploy } from '../deployNestedStacks';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
-import emptyBucket from '../emptyBucket';
 import {
   createUserPool,
   createUserPoolClient,
-  deleteUserPool,
   signupAndAuthenticateUser,
   createGroup,
   addUserToGroup,
@@ -202,7 +200,6 @@ beforeAll(async () => {
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs);
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
@@ -248,27 +245,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  try {
-    console.log('Deleting stack ' + STACK_NAME);
-    await cf.deleteStack(STACK_NAME);
-    await deleteUserPool(cognitoClient, USER_POOL_ID);
-    await cf.waitForStack(STACK_NAME);
-    console.log('Successfully deleted stack ' + STACK_NAME);
-  } catch (e) {
-    if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-      // The stack was deleted. This is good.
-      expect(true).toEqual(true);
-      console.log('Successfully deleted stack ' + STACK_NAME);
-    } else {
-      console.error(e);
-      throw e;
-    }
-  }
-  try {
-    await emptyBucket(BUCKET_NAME);
-  } catch (e) {
-    console.error(`Failed to empty S3 bucket: ${e}`);
-  }
+  await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
 });
 
 /**
@@ -285,7 +262,6 @@ test('Test that only Admins can create Employee records.', async () => {
     }`,
     {},
   );
-  console.log(createUser1);
   expect(createUser1.data.createEmployee.e_mail).toEqual('user2@test.com');
   expect(createUser1.data.createEmployee.salary).toEqual(100);
 
@@ -299,7 +275,6 @@ test('Test that only Admins can create Employee records.', async () => {
     }`,
     {},
   );
-  console.log(tryToCreateAsNonAdmin);
   expect(tryToCreateAsNonAdmin.data.createEmployee).toBeNull();
   expect(tryToCreateAsNonAdmin.errors).toHaveLength(1);
 
@@ -313,7 +288,6 @@ test('Test that only Admins can create Employee records.', async () => {
     }`,
     {},
   );
-  console.log(tryToCreateAsNonAdmin2);
   expect(tryToCreateAsNonAdmin2.data.createEmployee).toBeNull();
   expect(tryToCreateAsNonAdmin2.errors).toHaveLength(1);
 });
@@ -329,7 +303,6 @@ test('Test that only Admins may update salary & e_mail.', async () => {
     }`,
     {},
   );
-  console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
   expect(createUser1.data.createEmployee.e_mail).toEqual('user2@test.com');
@@ -345,7 +318,6 @@ test('Test that only Admins may update salary & e_mail.', async () => {
     }`,
     {},
   );
-  console.log(tryToUpdateAsNonAdmin);
   expect(tryToUpdateAsNonAdmin.data.updateEmployee).toBeNull();
   expect(tryToUpdateAsNonAdmin.errors).toHaveLength(1);
 
@@ -359,7 +331,6 @@ test('Test that only Admins may update salary & e_mail.', async () => {
     }`,
     {},
   );
-  console.log(tryToUpdateAsNonAdmin2);
   expect(tryToUpdateAsNonAdmin2.data.updateEmployee).toBeNull();
   expect(tryToUpdateAsNonAdmin2.errors).toHaveLength(1);
 
@@ -373,7 +344,6 @@ test('Test that only Admins may update salary & e_mail.', async () => {
     }`,
     {},
   );
-  console.log(tryToUpdateAsNonAdmin3);
   expect(tryToUpdateAsNonAdmin3.data.updateEmployee).toBeNull();
   expect(tryToUpdateAsNonAdmin3.errors).toHaveLength(1);
 
@@ -387,7 +357,6 @@ test('Test that only Admins may update salary & e_mail.', async () => {
     }`,
     {},
   );
-  console.log(updateAsAdmin);
   expect(updateAsAdmin.data.updateEmployee.e_mail).toEqual('someonelese@gmail.com');
   expect(updateAsAdmin.data.updateEmployee.salary).toEqual(100);
 
@@ -401,7 +370,6 @@ test('Test that only Admins may update salary & e_mail.', async () => {
     }`,
     {},
   );
-  console.log(updateAsAdmin2);
   expect(updateAsAdmin2.data.updateEmployee.e_mail).toEqual('someonelese@gmail.com');
   expect(updateAsAdmin2.data.updateEmployee.salary).toEqual(99);
 });
@@ -417,7 +385,6 @@ test('Test that owners may update their bio.', async () => {
     }`,
     {},
   );
-  console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
   expect(createUser1.data.createEmployee.e_mail).toEqual('user2@test.com');
@@ -434,7 +401,6 @@ test('Test that owners may update their bio.', async () => {
     }`,
     {},
   );
-  console.log(tryToUpdateAsNonAdmin);
   expect(tryToUpdateAsNonAdmin.data.updateEmployee.bio).toEqual('Does cool stuff.');
   expect(tryToUpdateAsNonAdmin.data.updateEmployee.e_mail).toEqual('user2@test.com');
   expect(tryToUpdateAsNonAdmin.data.updateEmployee.salary).toEqual(100);
@@ -452,7 +418,6 @@ test('Test that everyone may view employee bios.', async () => {
     }`,
     {},
   );
-  console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
   expect(createUser1.data.createEmployee.e_mail).toEqual('user3@test.com');
@@ -469,7 +434,6 @@ test('Test that everyone may view employee bios.', async () => {
     }`,
     {},
   );
-  console.log(getAsNonAdmin);
   // Should not be able to view the e_mail as the non owner
   expect(getAsNonAdmin.data.getEmployee.e_mail).toBeNull();
   // Should be able to view the bio.
@@ -487,7 +451,6 @@ test('Test that everyone may view employee bios.', async () => {
     }`,
     {},
   );
-  console.log(listAsNonAdmin);
   expect(listAsNonAdmin.data.listEmployees.items.length).toBeGreaterThan(1);
   let seenId = false;
   for (const item of listAsNonAdmin.data.listEmployees.items) {
@@ -511,7 +474,6 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
     }`,
     {},
   );
-  console.log(createUser1);
   const employeeId = createUser1.data.createEmployee.id;
   expect(employeeId).not.toBeNull();
   expect(createUser1.data.createEmployee.e_mail).toEqual('user3@test.com');
@@ -527,7 +489,6 @@ test('Test that only owners may "delete" i.e. update the field to null.', async 
     }`,
     {},
   );
-  console.log(tryToDeleteUserNotes);
   expect(tryToDeleteUserNotes.data.updateEmployee).toBeNull();
   expect(tryToDeleteUserNotes.errors).toHaveLength(1);
 
@@ -584,7 +545,6 @@ test('Test with auth with subscriptions on default behavior', async () => {
     }`,
     {},
   );
-  console.log(createStudent2);
   expect(createStudent2.data.createStudent.id).toBeDefined();
   const createStudent1queryID = createStudent2.data.createStudent.id;
   expect(createStudent2.data.createStudent.bio).toEqual('bio1');
@@ -602,7 +562,6 @@ test('Test with auth with subscriptions on default behavior', async () => {
     }`,
     {},
   );
-  console.log(queryForStudent2);
   expect(queryForStudent2.data.getStudent.notes).toEqual(secureNote1);
 
   // running query as username3 should return the type though return notes as null
@@ -618,7 +577,6 @@ test('Test with auth with subscriptions on default behavior', async () => {
     }`,
     {},
   );
-  console.log(queryAsStudent1);
   expect(queryAsStudent1.data.getStudent.notes).toBeNull();
 });
 
@@ -630,7 +588,6 @@ test('AND per-field dynamic auth rule test', async () => {
           owner1
         }
       }`);
-  console.log(createPostResponse);
   const postID1 = createPostResponse.data.createPost.id;
   expect(postID1).toBeDefined();
   expect(createPostResponse.data.createPost.text).toEqual('mytext');
@@ -644,7 +601,6 @@ test('AND per-field dynamic auth rule test', async () => {
         }
       }
       `);
-  console.log(badUpdatePostResponse);
   expect(badUpdatePostResponse.errors[0].data).toBeNull();
   expect(badUpdatePostResponse.errors[0].errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
 
@@ -655,7 +611,6 @@ test('AND per-field dynamic auth rule test', async () => {
           text
         }
       }`);
-  console.log(correctUpdatePostResponse);
   expect(correctUpdatePostResponse.data.updatePost.owner1).toEqual(USERNAME1);
   expect(correctUpdatePostResponse.data.updatePost.text).toEqual('newText');
 });
