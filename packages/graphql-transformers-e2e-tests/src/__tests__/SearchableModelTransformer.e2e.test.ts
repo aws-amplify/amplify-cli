@@ -859,7 +859,7 @@ test('query using date range using lte and gte for createdAt', async () => {
 });
 
 test('query using date range for createdAt', async () => {
-  const expectLenghth = 2;
+  const expectLength = 3;
   const searchResponse = await GRAPHQL_CLIENT.query(
     `query {
       searchUsers(filter: {createdAt: {range: ["2016", "2019"]}}) {
@@ -876,7 +876,7 @@ test('query using date range for createdAt', async () => {
   );
   expect(searchResponse).toBeDefined();
   const items = searchResponse.data.searchUsers.items;
-  expect(items.length).toEqual(expectLenghth);
+  expect(items.length).toEqual(expectLength);
   expect(items).toMatch(
     expect.arrayContaining([
       expect.objectContaining({ createdAt: '2016-07-20' }),
