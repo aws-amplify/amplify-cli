@@ -1,5 +1,3 @@
-import { TranformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, TypeDefinitionNode } from 'graphql';
 import {
   CompoundExpressionNode,
   Expression,
@@ -18,8 +16,6 @@ import {
   printBlock,
   toJson,
 } from 'graphql-mapping-template';
-import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
-import { FieldWrapper, ObjectDefinationWrapper } from '../wrappers/object-defination-wrapper';
 
 /**
  * Helper method to genrate code that converts DynamoDB condition object to condtion

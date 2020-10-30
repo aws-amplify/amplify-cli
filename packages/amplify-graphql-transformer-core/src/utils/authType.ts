@@ -1,6 +1,6 @@
 import { AuthorizationConfig, AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { UserPool } from '@aws-cdk/aws-cognito';
-import { Duration, Expiration, Stack } from '@aws-cdk/core';
+import { Duration, Expiration } from '@aws-cdk/core';
 import { AppSyncAuthConfiguration, AppSyncAuthConfigurationEntry, AppSyncAuthMode } from '../transformation';
 import { StackManager } from '../transformer-context/stack-manager';
 

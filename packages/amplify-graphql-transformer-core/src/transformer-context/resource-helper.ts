@@ -1,5 +1,4 @@
 import { GraphQLApiProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { GraphqlApi } from '@aws-cdk/aws-appsync';
 import { CfnParameter } from '@aws-cdk/core';
 import { StackManager } from './stack-manager';
 

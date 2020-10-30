@@ -208,6 +208,7 @@ module.exports = {
     {
       files: ['packages/amplify-graphql-transformer-*/**/*.ts', 'packages/amplify-graphql-model-transformer/**/*.ts'],
       rules: {
+        '@typescript-eslint/no-unused-vars': 'error',
         '@typescript-eslint/no-inferrable-types': 'error',
         '@typescript-eslint/ban-types': 'error',
         '@typescript-eslint/prefer-namespace-keyword': 'error',

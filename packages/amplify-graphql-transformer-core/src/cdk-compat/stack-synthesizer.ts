@@ -1,4 +1,4 @@
-import { ISynthesisSession, Stack, LegacyStackSynthesizer, FileAssetSource, FileAssetLocation, CfnParameter, Fn } from '@aws-cdk/core';
+import { ISynthesisSession, Stack, LegacyStackSynthesizer, FileAssetSource, FileAssetLocation, CfnParameter } from '@aws-cdk/core';
 import Template from '../transformation/types';
 import { TransformerRootStack } from './root-stack';
 

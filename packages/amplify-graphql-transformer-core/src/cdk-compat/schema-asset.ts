@@ -1,5 +1,4 @@
-import { GraphQLApiProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { CfnGraphQLSchema, GraphqlApi, Schema } from '@aws-cdk/aws-appsync';
+import { CfnGraphQLSchema } from '@aws-cdk/aws-appsync';
 import { Lazy } from '@aws-cdk/core';
 import { GraphQLApi } from '../graphql-api';
 import { FileAsset } from './file-asset';

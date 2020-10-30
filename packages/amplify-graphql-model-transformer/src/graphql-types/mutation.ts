@@ -1,6 +1,6 @@
 import { TranformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
-import { toPascalCase, getBaseType } from 'graphql-transformer-common';
+import { ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
+import { toPascalCase } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
 import { ObjectDefinationWrapper, InputObjectDefinationWrapper, InputFieldWraper } from '../wrappers/object-defination-wrapper';
 import { makeConditionFilterInput } from './common';

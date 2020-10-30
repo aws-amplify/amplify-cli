@@ -1,7 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import * as crypto from 'crypto';
 import {
-  MappingTemplateProvider,
   S3MappingTemplateProvider,
   InlineMappingTemplateProvider,
   MappingTemplateType,
@@ -12,7 +11,7 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
   private name: string;
   private asset?: FileAsset;
   public readonly type = MappingTemplateType.S3_LOCATION;
-  static fromFile(path: string, templateName: string): S3MappingTemplate {
+  static fromFile(): S3MappingTemplate {
     throw new Error('Not implemented');
   }
 
@@ -54,7 +53,7 @@ export class InlineTemplate implements InlineMappingTemplateProvider {
 
   // eslint-disable-next-line no-useless-constructor
   constructor(private content: string) {}
-  bind(scope: cdk.Construct): string {
+  bind(): string {
     return this.content;
   }
 }

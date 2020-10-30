@@ -6,7 +6,7 @@ import {
   TransformerContextProvider,
   TransformerDataSourceManagerProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { App, Stack } from '@aws-cdk/core';
+import { App } from '@aws-cdk/core';
 import { DocumentNode } from 'graphql';
 import { GraphQLApi } from '../graphql-api';
 import { TransformerDataSourceManager } from './datasource';

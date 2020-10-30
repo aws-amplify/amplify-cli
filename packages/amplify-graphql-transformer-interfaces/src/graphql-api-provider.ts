@@ -5,8 +5,6 @@ import {
   LambdaDataSource,
   BaseDataSource,
   CfnResolver,
-  AuthorizationMode,
-  IamResource,
 } from '@aws-cdk/aws-appsync';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { ITable } from '@aws-cdk/aws-dynamodb';
