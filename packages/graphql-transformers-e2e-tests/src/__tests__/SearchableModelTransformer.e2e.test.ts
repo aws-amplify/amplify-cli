@@ -877,13 +877,7 @@ test('query using date range for createdAt', async () => {
   expect(searchResponse).toBeDefined();
   const items = searchResponse.data.searchUsers.items;
   expect(items.length).toEqual(expectLength);
-  expect(items).toMatch(
-    expect.arrayContaining([
-      expect.objectContaining({ createdAt: '2016-07-20' }),
-      expect.objectContaining({ createdAt: '2017-06-10' }),
-      expect.objectContaining({ createdAt: '2017-08-22' }),
-    ]),
-  );
+  expect(items.map(item => item.createdAt).sort()).toEqual(['2016-07-20', '2017-06-10', '2017-08-22']);
 });
 
 test('query for books by Agatha Christie with model using @key', async () => {
