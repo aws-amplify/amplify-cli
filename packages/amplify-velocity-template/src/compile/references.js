@@ -226,26 +226,10 @@ module.exports = function(Velocity, utils) {
       var id = property.id;
       var ret = '';
 
-      // getter 处理
-      if (id.indexOf('get') === 0 && !(id in baseRef)) {
-        if (id.length === 3) {
-          // get('address')
-          ret = getter(baseRef, this.getLiteral(property.args[0]));
-        } else {
-          // getAddress()
-          ret = getter(baseRef, id.slice(3));
-        }
-
-        return ret;
-
-        // setter 处理
-      } else if (id.indexOf('set') === 0 && !baseRef[id]) {
-        baseRef[id.slice(3)] = this.getLiteral(property.args[0]);
-        // $page.setName(123)
-        baseRef.toString = function() {
-          return '';
-        };
-        return baseRef;
+      if (id === 'get' && !baseRef[id]) {
+        return baseRef[this.getLiteral(property.args[0])];
+      } else if (id === 'set' && !baseRef[id] && typeof baseRef.splice === 'function') {
+        return baseRef[this.getLiteral(property.args[0])] = this.getLiteral(property.args[1]);
       } else if (id.indexOf('is') === 0 && !(id in baseRef)) {
         return getter(baseRef, id.slice(2));
       } else if (id === 'keySet' && !baseRef[id]) {
