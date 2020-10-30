@@ -15,6 +15,11 @@ const typeToEnumMap: { [name: string] : string} = {
   AWSTime: 'time',
   AWSTimestamp: 'timestamp',
 };
+const BASE_IMPORT_PACKAGES = [
+  'package:flutter/foundation.dart',
+  'package:flutter_modelschema/src/ModelSchema/types.dart'
+];
+const COLLECTION_PACKAGE = 'package:collection/collection.dart'
 export class AppSyncModelDartVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
   TPluginConfig extends ParsedAppSyncModelConfig = ParsedAppSyncModelConfig
@@ -30,6 +35,8 @@ export class AppSyncModelDartVisitor<
    */
   protected generateModelClasses(): string {
     const result: string[] = [];
+    const packageImports = this.generatePackageHeader();
+    result.push(packageImports);
     Object.entries(this.getSelectedModels()).forEach(([name, model]) => {
       const modelDeclaration = this.generateModelClass(model);
       const modelType = this.generateModelType(model);
@@ -40,6 +47,28 @@ export class AppSyncModelDartVisitor<
       result.push(modelSchema)
     });
     return result.join('\n');
+  }
+
+  protected generatePackageHeader(): string {
+    const additionalPackages: Set<string> = new Set();
+    let usingCollection = false;
+    const selectedModelTypes = Object.keys(this.getSelectedModels());
+    Object.entries(this.getSelectedModels()).forEach(([name, model]) => {
+      model.fields.forEach(f => {
+        if (f.isList) {
+          usingCollection = true;
+        }
+        if (this.isModelType(f) && !(f.type in selectedModelTypes)) {
+          additionalPackages.add(f.type);
+        }
+      });
+    });
+    const baseImport = [
+      ...BASE_IMPORT_PACKAGES,
+      usingCollection ? COLLECTION_PACKAGE : ''
+    ].filter(f => f).map(pckg => `import '${pckg}';`).join('\n');
+    const additionalImport = Array.from(additionalPackages).map(name => `import '${name}.dart';`).join('\n');
+    return [baseImport, additionalImport].filter(f => f).join('\n\n') + '\n';
   }
 
   protected generateModelClass(model: CodeGenModel): string {
@@ -55,7 +84,7 @@ export class AppSyncModelDartVisitor<
       'classType',
       '',
       `${this.getModelName(model)}Type()`,
-      { static: true, const: true}
+      { static: true, const: true }
     );
     //model fields
     model.fields.forEach(field => {
@@ -447,7 +476,7 @@ export class AppSyncModelDartVisitor<
           fieldParam = [
             `key: ${modelName}Schema.${fieldName}`,
             `isRequired: ${!field.isNullable}`,
-            `ofType: ModelFieldType(ModelFieldTypeEnum.${typeToEnumMap[field.type]})`
+            `ofType: ModelFieldType(ModelFieldTypeEnum.${field.type in typeToEnumMap ? typeToEnumMap[field.type] : 'string'})`
           ].join(',\n');
           fieldsToAdd.push(['ModelFieldDeinition.field(', indentMultiline(fieldParam), ')'].join('\n'));
         }
