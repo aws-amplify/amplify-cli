@@ -8,7 +8,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack, isResolvableObject } from '@aws-cdk/core';
 import { GraphQLApiProvider } from '@aws-amplify/graphql-transformer-interfaces';
-import { MappingTemplate } from '../cdk-compat';
+import { MappingTemplate, S3MappingTemplate } from '../cdk-compat';
 import { StackManager } from './stack-manager';
 import assert from 'assert';
 import { toPascalCase } from 'graphql-transformer-common';
@@ -35,11 +35,11 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     return new TransformerResolver(
       typeName,
       fieldName,
-      dataSource,
       requestMappingTemplate,
       responseMappingTemplate,
       ['init', 'preAuth', 'auth', 'postAuth', 'preDataLoad'],
       ['postDataLoad', 'finish'],
+      dataSource,
     );
   };
 
@@ -53,25 +53,23 @@ export class ResolverManager implements TransformerResolversManagerProvider {
     return new TransformerResolver(
       typeName,
       fieldName,
-      dataSource,
       requestMappingTemplate,
       responseMappingTemplate,
       ['init', 'preAuth', 'auth', 'postAuth', 'preUpdate'],
       ['postUpdate', 'finish'],
+      dataSource,
     );
   };
 
   generateSubscriptionResolver = (
     typeName: string,
     fieldName: string,
-    dataSource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
   ): TransformerResolver => {
     return new TransformerResolver(
       typeName,
       fieldName,
-      dataSource,
       requestMappingTemplate,
       responseMappingTemplate,
       ['init', 'preAuth', 'auth', 'postAuth', 'preSubscribe'],
@@ -115,15 +113,14 @@ export class TransformerResolver implements TransformerResolverProvider {
   constructor(
     private typeName: string,
     private fieldName: string,
-    private datasource: DataSourceProvider,
     private requestMappingTemplate: MappingTemplateProvider,
     private responseMappingTemplate: MappingTemplateProvider,
     private requestSlots: string[],
     private responseSlots: string[],
+    private datasource?: DataSourceProvider,
   ) {
     assert(typeName, 'typeName is required');
     assert(fieldName, 'fieldName is required');
-    assert(datasource, 'dataSourceName is required');
     assert(requestMappingTemplate, 'requestMappingTemplate is required');
     assert(responseMappingTemplate, 'responseMappingTemplate is required');
     this.slotNames = new Set([...requestSlots, ...responseSlots]);
@@ -161,50 +158,57 @@ export class TransformerResolver implements TransformerResolverProvider {
     this.ensureNoneDataSource(api);
     const requestFns = this.synthesizePipelineFunctions(stack, api, this.requestSlots);
     const responseFns = this.synthesizePipelineFunctions(stack, api, this.responseSlots);
+    // substitue template name values
+    [this.requestMappingTemplate, this.requestMappingTemplate].map(template => this.substitueSlotInfo(template, 'main', 0));
+
     const dataSourceProviderFn = api.addAppSyncFunction(
       toPascalCase([this.typeName, this.fieldName, 'DataResolverFn']),
       this.requestMappingTemplate,
       this.responseMappingTemplate,
-      this.datasource.name,
+      this.datasource?.name || NONE_DATA_SOURCE_NAME,
       stack,
     );
-    const dataSourceType = this.datasource.ds.type;
+
+    let dataSourceType = 'NONE';
     let dataSource = '';
-    switch (dataSourceType) {
-      case 'AMAZON_DYNAMODB':
-        if (this.datasource.ds.dynamoDbConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig)) {
-          const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
-          dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
-        }
-        break;
-      case 'AMAZON_ELASTICSEARCH':
-        if (this.datasource.ds.elasticsearchConfig && !isResolvableObject(this.datasource.ds.elasticsearchConfig)) {
-          const endpoint = this.datasource.ds.elasticsearchConfig?.endpoint;
-          dataSource = `$util.qr($ctx.stash.put("endpoint", "${endpoint}"))`;
-        }
-        break;
-      case 'AWS_LAMBDA':
-        if (this.datasource.ds.lambdaConfig && !isResolvableObject(this.datasource.ds.lambdaConfig)) {
-          const lambdaFunctionArn = this.datasource.ds.lambdaConfig?.lambdaFunctionArn;
-          dataSource = `$util.qr($ctx.stash.put("lambdaFunctionArn", "${lambdaFunctionArn}"))`;
-        }
-        break;
-      case 'HTTP':
-        if (this.datasource.ds.httpConfig && !isResolvableObject(this.datasource.ds.httpConfig)) {
-          const endpoint = this.datasource.ds.httpConfig?.endpoint;
-          dataSource = `$util.qr($ctx.stash.put("endpoint", "${endpoint}"))`;
-        }
-        break;
-      case 'RELATIONAL_DATABASE':
-        if (
-          this.datasource.ds.relationalDatabaseConfig &&
-          !isResolvableObject(this.datasource.ds.relationalDatabaseConfig) &&
-          !isResolvableObject(this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig)
-        ) {
-          const databaseName = this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig!.databaseName;
-          dataSource = `$util.qr($ctx.stash.metadata.put("databaseName", "${databaseName}"))`;
-        }
-        break;
+    if (this.datasource) {
+      this.datasource.ds.type;
+      switch (dataSourceType) {
+        case 'AMAZON_DYNAMODB':
+          if (this.datasource.ds.dynamoDbConfig && !isResolvableObject(this.datasource.ds.dynamoDbConfig)) {
+            const tableName = this.datasource.ds.dynamoDbConfig?.tableName;
+            dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
+          }
+          break;
+        case 'AMAZON_ELASTICSEARCH':
+          if (this.datasource.ds.elasticsearchConfig && !isResolvableObject(this.datasource.ds.elasticsearchConfig)) {
+            const endpoint = this.datasource.ds.elasticsearchConfig?.endpoint;
+            dataSource = `$util.qr($ctx.stash.put("endpoint", "${endpoint}"))`;
+          }
+          break;
+        case 'AWS_LAMBDA':
+          if (this.datasource.ds.lambdaConfig && !isResolvableObject(this.datasource.ds.lambdaConfig)) {
+            const lambdaFunctionArn = this.datasource.ds.lambdaConfig?.lambdaFunctionArn;
+            dataSource = `$util.qr($ctx.stash.put("lambdaFunctionArn", "${lambdaFunctionArn}"))`;
+          }
+          break;
+        case 'HTTP':
+          if (this.datasource.ds.httpConfig && !isResolvableObject(this.datasource.ds.httpConfig)) {
+            const endpoint = this.datasource.ds.httpConfig?.endpoint;
+            dataSource = `$util.qr($ctx.stash.put("endpoint", "${endpoint}"))`;
+          }
+          break;
+        case 'RELATIONAL_DATABASE':
+          if (
+            this.datasource.ds.relationalDatabaseConfig &&
+            !isResolvableObject(this.datasource.ds.relationalDatabaseConfig) &&
+            !isResolvableObject(this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig)
+          ) {
+            const databaseName = this.datasource.ds.relationalDatabaseConfig?.rdsHttpEndpointConfig!.databaseName;
+            dataSource = `$util.qr($ctx.stash.metadata.put("databaseName", "${databaseName}"))`;
+          }
+          break;
+      }
     }
     api.addResolver(
       this.typeName,
@@ -239,6 +243,8 @@ export class TransformerResolver implements TransformerResolverProvider {
         for (let slotItem of slotEntries!) {
           const name = `${this.typeName}${this.fieldName}${slotName}${index++}Function`;
           const { requestMappingTemplate, responseMappingTemplate, dataSource } = slotItem;
+          this.substitueSlotInfo(requestMappingTemplate, slotName, index);
+          responseMappingTemplate && this.substitueSlotInfo(responseMappingTemplate, slotName, index);
           const fn = api.addAppSyncFunction(
             name,
             requestMappingTemplate,
@@ -252,6 +258,12 @@ export class TransformerResolver implements TransformerResolverProvider {
     }
     return appSyncFunctions;
   };
+
+  private substitueSlotInfo(template: MappingTemplateProvider, slotName: string, index: number) {
+    if (template instanceof S3MappingTemplate) {
+      template.substitueValues({ slotName, slotIndex: index, typeName: this.typeName, fieldName: this.fieldName });
+    }
+  }
 
   private ensureNoneDataSource(api: GraphQLApiProvider) {
     if (!api.hasDataSource(NONE_DATA_SOURCE_NAME)) {

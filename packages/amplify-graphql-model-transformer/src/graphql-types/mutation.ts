@@ -1,7 +1,9 @@
+import { TranformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode, FieldDefinitionNode } from 'graphql';
 import { toPascalCase, getBaseType } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
 import { ObjectDefinationWrapper, InputObjectDefinationWrapper, InputFieldWraper } from '../wrappers/object-defination-wrapper';
+import { makeConditionFilterInput } from './common';
 
 /**
  * Generate input used for update mutation
@@ -121,6 +123,19 @@ export const makeCreateInputField = (
         timestampField.makeNullable();
       }
     }
+  }
+  return input.serialize();
+};
+
+export const makeMutationConditionInput = (
+  ctx: TranformerTransformSchemaStepContextProvider,
+  name: string,
+  object: ObjectTypeDefinitionNode,
+): InputObjectTypeDefinitionNode => {
+  const input = makeConditionFilterInput(ctx, name, object);
+  const idField = input.fields.find(f => f.name === 'id' && f.getTypeName() === 'ID')
+  if(idField) {
+    input.removeField(idField)
   }
   return input.serialize();
 };

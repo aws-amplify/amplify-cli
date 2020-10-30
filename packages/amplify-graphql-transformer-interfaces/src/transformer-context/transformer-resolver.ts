@@ -34,7 +34,6 @@ export interface TransformerResolversManagerProvider {
   generateSubscriptionResolver: (
     typeName: string,
     fieldName: string,
-    dataSource: DataSourceProvider,
     requestMappingTemplate: MappingTemplateProvider,
     responseMappingTemplate: MappingTemplateProvider,
   ) => TransformerResolverProvider;

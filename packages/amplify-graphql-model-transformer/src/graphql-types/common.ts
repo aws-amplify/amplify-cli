@@ -33,26 +33,30 @@ import {
   STRING_FUNCTIONS,
 } from '../definitions';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
-import { EnumWrapper, InputFieldWraper, InputObjectDefinationWrapper, ObjectDefinationWrapper } from '../wrappers/object-defination-wrapper';
+import {
+  EnumWrapper,
+  InputFieldWraper,
+  InputObjectDefinationWrapper,
+  ObjectDefinationWrapper,
+} from '../wrappers/object-defination-wrapper';
 
 /**
- * Creates the condition input for a model
+ * Creates the condition/filter input for a model
  * @param ctx TransformerContext
  * @param name model name
  * @param object ModelObjectDefination
  */
-export const makeMutationConditionInput = (
+export const makeConditionFilterInput = (
   ctx: TranformerTransformSchemaStepContextProvider,
   name: string,
   object: ObjectTypeDefinitionNode,
-): InputObjectTypeDefinitionNode => {
+): InputObjectDefinationWrapper => {
   const input = InputObjectDefinationWrapper.create(name);
   const wrappedObject = new ObjectDefinationWrapper(object);
   for (let field of wrappedObject.fields) {
     const fieldType = ctx.output.getType(field.getTypeName());
     const isEnumType = fieldType && fieldType.kind === 'EnumTypeDefinition';
-    const idField = field.name === 'id' && field.getTypeName() === 'ID';
-    if (!idField && (field.isScalar() || isEnumType)) {
+    if (field.isScalar() || isEnumType) {
       const fieldTypeName = field.getTypeName();
       const nameOverride = DEFAULT_SCALARS[fieldTypeName] || fieldTypeName;
       const conditionTypeName = isEnumType && field.isList() ? `Model${nameOverride}ListInput` : `Model${nameOverride}Input`;
@@ -71,7 +75,7 @@ export const makeMutationConditionInput = (
     const inputField = InputFieldWraper.create(additionalField, name, true, false);
     input.addField(inputField);
   }
-  return input.serialize();
+  return input;
 };
 
 export const addModelConditionInputs = (ctx: TranformerTransformSchemaStepContextProvider): void => {
@@ -120,7 +124,7 @@ export const createEnumModelFilters = (
  * @param supportsConditions add filter suffix to input
  */
 export function makeModelScalarFilterInputObject(type: string, supportsConditions: Boolean): InputObjectTypeDefinitionNode {
-  const name = ModelResourceIDs.ModelFilterScalarInputTypeName(type, !supportsConditions);
+  const name = generateModelScalarFilterInputName(type, !supportsConditions);
   const conditions = getScalarConditions(type);
   const scalarConditionInput = InputObjectDefinationWrapper.create(name);
   for (let condition of conditions) {
@@ -229,25 +233,6 @@ export function makeEnumFilterInput(name: string): InputObjectTypeDefinitionNode
 }
 
 export function makeModelSortDirectionEnumObject(): EnumTypeDefinitionNode {
-  const name = graphqlName('ModelSortDirection');
-  return {
-    kind: Kind.ENUM_TYPE_DEFINITION,
-    name: {
-      kind: 'Name',
-      value: name,
-    },
-    values: [
-      {
-        kind: Kind.ENUM_VALUE_DEFINITION,
-        name: { kind: 'Name', value: 'ASC' },
-        directives: [],
-      },
-      {
-        kind: Kind.ENUM_VALUE_DEFINITION,
-        name: { kind: 'Name', value: 'DESC' },
-        directives: [],
-      },
-    ],
-    directives: [],
-  };
+  const name = 'ModelSortDirection';
+  return EnumWrapper.create(name, ['ASC', 'DSC']).serialize();
 }

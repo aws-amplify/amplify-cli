@@ -14,11 +14,9 @@ import {
   NonNullTypeNode,
   ListTypeNode,
   InputObjectTypeDefinitionNode,
-  isScalarType,
   NamedTypeNode,
-  isEnumType,
-  Kind,
   EnumTypeDefinitionNode,
+  Kind
 } from 'graphql';
 import { DEFAULT_SCALARS } from 'graphql-transformer-common';
 
@@ -29,7 +27,6 @@ import { merge } from 'lodash';
 export class ArgumentWrapper {
   public readonly name: NameNode;
   public readonly value: ValueNode;
-  private location?: Location;
   constructor(argument: ArgumentNode) {
     this.name = argument.name;
     this.value = argument.value;
@@ -42,6 +39,7 @@ export class ArgumentWrapper {
     };
   };
 }
+
 
 export class DirectiveWrapper {
   private arguments: ArgumentWrapper[] = [];
@@ -106,15 +104,14 @@ export class GenericFieldWrapper {
     return false;
   };
 
-  wrapListType = (): boolean => {
+  wrapListType = (): GenericFieldWrapper => {
     if (!this.isList()) {
       this.type = {
         kind: 'ListType',
         type: this.type,
       };
-      return true;
     }
-    return false;
+    return this;
   };
 
   unWrapListType = (): boolean => {
@@ -306,6 +303,15 @@ export class ObjectDefinationWrapper {
     this.fields.push(field);
   };
 
+  removeField = (field: FieldWrapper): void => {
+    if (this.hasField(field.name)) {
+      throw new Error(`type ${this.name} does not have the field with name ${field.name}`);
+    }
+    const index = this.fields.indexOf(field);
+
+    this.fields.splice(index, 1);
+  };
+
   static create = (name: string, fields: FieldDefinitionNode[] = [], directives: DirectiveNode[] = []): ObjectDefinationWrapper => {
     return new ObjectDefinationWrapper({
       kind: 'ObjectTypeDefinition',
@@ -354,6 +360,15 @@ export class InputObjectDefinationWrapper {
       throw new Error(`type ${this.name} has already a field with name ${field.name}`);
     }
     this.fields.push(field);
+  };
+
+  removeField = (field: InputFieldWraper): void => {
+    if (this.hasField(field.name)) {
+      throw new Error(`type ${this.name} does not have the field with name ${field.name}`);
+    }
+    const index = this.fields.indexOf(field);
+
+    this.fields.splice(index, 1);
   };
 
   static create = (

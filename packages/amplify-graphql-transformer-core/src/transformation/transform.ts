@@ -24,6 +24,7 @@ import {
   matchInputFieldDirective,
 } from './utils';
 import { TransformerContext } from '../transformer-context';
+import assert from 'assert';
 
 import { FeatureFlagProvider, GraphQLApiProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
@@ -218,7 +219,6 @@ export class GraphQLTransform {
     // Syth the API and make it available to allow transformer plugins to manipulate the API
 
     const stackManager = context.stackManager as StackManager;
-    const rootStack = stackManager.rootStack;
     const output: TransformerOutput = context.output as TransformerOutput;
 
     const api = this.generateGraphQlApi(stackManager, output);
@@ -251,8 +251,10 @@ export class GraphQLTransform {
     const rootStack = stackManager.rootStack;
     const authorizationConfig = adoptAuthModes(stackManager, this.authConfig);
     const apiName = stackManager.addParameter('AppSyncApiName', { type: 'String'}).valueAsString;
-    const api = new GraphQLApi(rootStack, 'api', {
-      name: apiName,
+    const envName = stackManager.getParameter('env');
+    assert(envName);
+    const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
+      name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(

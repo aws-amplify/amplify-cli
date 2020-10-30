@@ -119,6 +119,16 @@ export interface TransformerModelProvider extends TransformerPluginProvider {
       type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
     },
   ) => InputValueDefinitionNode[];
+
+  getOutputType: (
+    ctx: TransformerContextProvider,
+    type: ObjectTypeDefinitionNode,
+    operation: {
+      fieldName: string;
+      typeName: string;
+      type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
+    },
+  ) => ObjectTypeDefinitionNode;
 }
 
 export interface TransformerModelEnhancementProvider extends Partial<TransformerModelProvider> {}

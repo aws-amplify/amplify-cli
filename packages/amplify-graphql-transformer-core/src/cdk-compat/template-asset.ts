@@ -39,6 +39,14 @@ export class S3MappingTemplate implements S3MappingTemplateProvider {
     }
     return this.asset.s3Url;
   }
+  substitueValues(values: Record<string, string|number>): void {
+    let name = this.name;
+    Object.entries(values).forEach(([key, value]) => {
+      const regex = new RegExp(`({${key}})`, 'g');
+      name = name.replace(regex, `${value}`);
+    });
+    this.name = name;
+  }
 }
 
 export class InlineTemplate implements InlineMappingTemplateProvider {

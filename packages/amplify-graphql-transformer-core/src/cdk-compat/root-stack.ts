@@ -1,11 +1,12 @@
 import { CfnElement, Stack, CfnResource, ISynthesisSession } from '@aws-cdk/core';
 
 export class TransformerRootStack extends Stack {
-  private readonly resoureTypeWithLogicalName: string[] = [
+  private readonly resourceTypeToPreserveLogicalName: string[] = [
     'AWS::DynamoDB::Table',
     'AWS::Elasticsearch::Domain',
     'AWS::RDS::DBCluster',
     'AWS::CloudFormation::Stack',
+    'AWS::AppSync::GraphQLApi',
   ];
 
   /**
@@ -17,7 +18,7 @@ export class TransformerRootStack extends Stack {
 
   protected allocateLogicalId = (cfnElement: CfnElement): string => {
     const regExPattern = /[^A-Za-z0-9]/g;
-    if (cfnElement instanceof CfnResource && this.resoureTypeWithLogicalName.includes(cfnElement.cfnResourceType)) {
+    if (cfnElement instanceof CfnResource && this.resourceTypeToPreserveLogicalName.includes(cfnElement.cfnResourceType)) {
       // Each L2 Construct creates a lower level CFN socpe with name Resource. We want to get the id of the parent scope
       const scope = cfnElement.node.scopes.reverse().find(scope => scope.node.id !== 'Resource');
       if (scope) {

@@ -1,9 +1,4 @@
-import {
-  ObjectTypeDefinitionNode,
-  InputValueDefinitionNode,
-  InputObjectTypeDefinitionNode,
-  DirectiveNode,
-} from 'graphql';
+import { ObjectTypeDefinitionNode, InputValueDefinitionNode, InputObjectTypeDefinitionNode, DirectiveNode } from 'graphql';
 import { camelCase } from 'change-case';
 import {
   AppSyncDataSourceType,
@@ -22,10 +17,13 @@ import { TranformerTransformSchemaStepContextProvider } from '@aws-amplify/graph
 import {
   getBaseType,
   isScalar,
+  makeArgument,
+  makeDirective,
   makeField,
   makeInputValueDefinition,
   makeNamedType,
   makeNonNullType,
+  makeValueNode,
   toCamelCase,
   toPascalCase,
 } from 'graphql-transformer-common';
@@ -36,17 +34,28 @@ import {
   InputObjectDefinationWrapper,
   ObjectDefinationWrapper,
 } from './wrappers/object-defination-wrapper';
-import { addModelConditionInputs, createEnumModelFilters, makeCreateInputField, makeDeleteInputField, makeMutationConditionInput, makeUpdateInputField } from './input-types';
+import {
+  addModelConditionInputs,
+  createEnumModelFilters,
+  makeCreateInputField,
+  makeDeleteInputField,
+  makeUpdateInputField,
+  makeMutationConditionInput,
+  makeListQueryFilterInput,
+  makeListQueryModel,
+} from './graphql-types';
 import {
   generateCreateInitSlotTemplate,
   generateCreateRequestTemplate,
   generateDefaultResponseMappingTemplate,
   generateDeleteRequestTemplate,
   generateResolverKey,
+  generateSubscriptionRequestTemplate,
+  generateSubscriptionResponseTemplate,
   generateUpdateInitSlotTemplate,
   generateUpdateRequestTemplate,
 } from './resolvers';
-import { generateGetRequestTemplate } from './resolvers/query';
+import { generateGetRequestTemplate, generateListRequestTemplate } from './resolvers/query';
 
 export type Nullable<T> = T | null;
 export type OptionalAndNullable<T> = Partial<T>;
@@ -124,76 +133,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     super('amplify-model-transformer', directiveDefinition);
   }
 
-  generateGetResolver = (
-    ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
-    typeName: string,
-    fieldName: string,
-  ): TransformerResolverProvider => {
-    const dataSource = this.datasourceMap[type.name.value];
-    const resolverKey = `Get${generateResolverKey(typeName, fieldName)}`;
-    if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
-        typeName,
-        fieldName,
-        dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateGetRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
-      );
-    }
-    return this.resolverMap[resolverKey];
-  };
-
-  generateListResolver = (
-    ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
-    typeName: string,
-    fieldName: string,
-  ): TransformerResolverProvider => {
-    // Todo: Update VTL code to generate for getResolver
-    const dataSource = this.datasourceMap[typeName];
-    const resolverKey = `List${generateResolverKey(typeName, fieldName)}`;
-    if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
-        typeName,
-        fieldName,
-        dataSource,
-        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.res.vtl`),
-      );
-    }
-    return this.resolverMap[resolverKey];
-  };
-
-  generateUpdateResolver = (
-    ctx: TransformerContextProvider,
-    type: ObjectTypeDefinitionNode,
-    typeName: string,
-    fieldName: string,
-  ): TransformerResolverProvider => {
-    const dataSource = this.datasourceMap[type.name.value];
-    const resolverKey = `Update${generateResolverKey(typeName, fieldName)}`;
-    if (!this.resolverMap[resolverKey]) {
-      const resolver = ctx.resolvers.generateMutationResolver(
-        typeName,
-        fieldName,
-        dataSource,
-        MappingTemplate.s3MappingTemplateFromString(generateUpdateRequestTemplate(typeName), `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
-      );
-      // Todo: get the slot index from the resolver to keep the name unique and show the order of functions
-      resolver.addToSlot(
-        'init',
-        MappingTemplate.s3MappingTemplateFromString(
-          generateUpdateInitSlotTemplate(type.name.value, this.modelDirectiveConfig.get(type.name.value)!),
-          `${typeName}.${fieldName}.init.1.req.vtl`,
-        ),
-      );
-      this.resolverMap[resolverKey] = resolver;
-    }
-    return this.resolverMap[resolverKey];
-  };
-
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode): void => {
     // todo: get model configuration with default values and store it in the map
     const typeName = definition.name.value;
@@ -237,16 +176,18 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       // add Non Model type inputs
       this.createNonModelInputs(ctx, def);
       const queryFields = this.getQueryFieldNames(ctx, def!);
-      const mutationFields = this.getMutationFieldNames(ctx, def!);
       for (let queryField of queryFields.values()) {
+        const outputType = this.getOutputType(ctx, def, queryField);
         const args = this.getInputs(ctx, def!, {
           fieldName: queryField.fieldName,
           typeName: queryField.typeName,
           type: queryField.type,
         });
-        const field = makeField(queryField.fieldName, args, makeNamedType(def!.name.value));
-        ctx.output.addQueryFields([field]);
+        const getField = makeField(queryField.fieldName, args, makeNamedType(outputType.name.value));
+        ctx.output.addQueryFields([getField]);
       }
+
+      const mutationFields = this.getMutationFieldNames(ctx, def!);
       for (let mutationField of mutationFields) {
         const args = this.getInputs(ctx, def!, {
           fieldName: mutationField.fieldName,
@@ -254,10 +195,42 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           type: mutationField.type,
         });
 
-        // Todo use FieldWrapper and add support for arguments
-        // const field = FieldWrapper.create(mutationField.fieldName, def.name.value).serialize();
         const field = makeField(mutationField.fieldName, args, makeNamedType(def!.name.value));
         ctx.output.addMutationFields([field]);
+      }
+
+      const getMutationName = (
+        subscriptionType: SubscriptionFieldType,
+        mutationMap: Set<{
+          fieldName: string;
+          typeName: string;
+          type: MutationFieldType;
+        }>,
+      ): string => {
+        const mutationToSubscriptionTypeMap = {
+          [SubscriptionFieldType.ON_CREATE]: MutationFieldType.CREATE,
+          [SubscriptionFieldType.ON_UPDATE]: MutationFieldType.UPDATE,
+          [SubscriptionFieldType.ON_DELETE]: MutationFieldType.DELETE,
+        };
+        const mutation = Array.from(mutationMap).find(m => m.type == mutationToSubscriptionTypeMap[subscriptionType]);
+        if (mutation) {
+          return mutation.fieldName;
+        }
+        throw new Error('Unknow Subscription type');
+      };
+
+      const subscriptionsFields = this.getSubscriptionFieldNames(ctx, def!);
+      for (let subscriptionsField of subscriptionsFields) {
+        const args = this.getInputs(ctx, def!, {
+          fieldName: subscriptionsField.fieldName,
+          typeName: subscriptionsField.typeName,
+          type: subscriptionsField.type,
+        });
+        const mutationName = getMutationName(subscriptionsField.type, mutationFields);
+        // Todo use directive wrapper to build the directrive node
+        const directive = makeDirective('aws_subscribe', [makeArgument('mutations', makeValueNode([mutationName]))]);
+        const field = makeField(subscriptionsField.fieldName, args, makeNamedType(def!.name.value), [directive]);
+        ctx.output.addSubscriptionFields([field]);
       }
 
       // Update the field with auto generatable Fields
@@ -268,9 +241,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   generateResolvers = (context: TransformerContextProvider): void => {
     for (let type of this.typesWithModelDirective) {
       const def = context.output.getObject(type);
-      const queryFields = this.getQueryFieldNames(context, def!);
-      const mutationFields = this.getMutationFieldNames(context, def!);
-
       // add the table
       const tableLogicalName = `${def!.name.value}Table`;
       const tableName = context.resourceHelper.generateResourceName(def!.name.value);
@@ -296,35 +266,131 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       );
       // add the data source
       context.dataSources.add(def!, dataSource);
+
+      const queryFields = this.getQueryFieldNames(context, def!);
       this.datasourceMap[def!.name.value] = dataSource;
-      // add the resolvers
-      for (let queryField of queryFields.values()) {
-        const resolver = this.generateGetResolver(context, def!, queryField.typeName, queryField.fieldName);
+      for (let query of queryFields.values()) {
+        let resolver;
+        switch (query.type) {
+          case QueryFieldType.GET:
+            resolver = this.generateGetResolver(context, def!, query.typeName, query.fieldName);
+            break;
+          case QueryFieldType.LIST:
+            resolver = this.generateListResolver(context, def!, query.typeName, query.fieldName);
+            break;
+          case QueryFieldType.SYNC:
+            resolver = this.generateSyncResolver(context, def!, query.typeName, query.fieldName);
+        }
+
         resolver.mapToStack(stack);
-        context.resolvers.addResolver(queryField.typeName, queryField.fieldName, resolver);
+        context.resolvers.addResolver(query.typeName, query.fieldName, resolver);
       }
 
-      for (let mutationField of mutationFields.values()) {
+      const mutationFields = this.getMutationFieldNames(context, def!);
+      for (let mutation of mutationFields.values()) {
         let resolver;
-        switch (mutationField.type) {
+        switch (mutation.type) {
           case MutationFieldType.CREATE:
-            resolver = this.generateCreateResolver(context, def!, mutationField.typeName, mutationField.fieldName);
-            resolver.mapToStack(stack);
-            context.resolvers.addResolver(mutationField.typeName, mutationField.fieldName, resolver);
+            resolver = this.generateCreateResolver(context, def!, mutation.typeName, mutation.fieldName);
             break;
           case MutationFieldType.DELETE:
-            resolver = this.generateDeleteResolver(context, def!, mutationField.typeName, mutationField.fieldName);
-            resolver.mapToStack(stack);
-            context.resolvers.addResolver(mutationField.typeName, mutationField.fieldName, resolver);
+            resolver = this.generateDeleteResolver(context, def!, mutation.typeName, mutation.fieldName);
             break;
           case MutationFieldType.UPDATE:
-            resolver = this.generateUpdateResolver(context, def!, mutationField.typeName, mutationField.fieldName);
-            resolver.mapToStack(stack);
-            context.resolvers.addResolver(mutationField.typeName, mutationField.fieldName, resolver);
+            resolver = this.generateUpdateResolver(context, def!, mutation.typeName, mutation.fieldName);
             break;
         }
+        resolver.mapToStack(stack);
+        context.resolvers.addResolver(mutation.typeName, mutation.fieldName, resolver);
+      }
+
+      const subscriptionsFields = this.getSubscriptionFieldNames(context, def!);
+      for (let subscription of subscriptionsFields.values()) {
+        let resolver;
+        switch (subscription.type) {
+          case SubscriptionFieldType.ON_CREATE:
+            resolver = this.generateOnCreateResolver(context, def!, subscription.typeName, subscription.fieldName);
+            break;
+          case SubscriptionFieldType.ON_DELETE:
+            resolver = this.generateOnDeleteResolver(context, def!, subscription.typeName, subscription.fieldName);
+            break;
+          case SubscriptionFieldType.ON_UPDATE:
+            resolver = this.generateOnUpdateResolver(context, def!, subscription.typeName, subscription.fieldName);
+            break;
+        }
+        resolver.mapToStack(stack);
+        context.resolvers.addResolver(subscription.typeName, subscription.fieldName, resolver);
       }
     }
+  };
+
+  generateGetResolver = (
+    ctx: TransformerContextProvider,
+    type: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+  ): TransformerResolverProvider => {
+    const dataSource = this.datasourceMap[type.name.value];
+    const resolverKey = `Get${generateResolverKey(typeName, fieldName)}`;
+    if (!this.resolverMap[resolverKey]) {
+      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+        typeName,
+        fieldName,
+        dataSource,
+        MappingTemplate.s3MappingTemplateFromString(generateGetRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
+      );
+    }
+    return this.resolverMap[resolverKey];
+  };
+
+  generateListResolver = (
+    ctx: TransformerContextProvider,
+    type: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+  ): TransformerResolverProvider => {
+    const dataSource = this.datasourceMap[type.name.value];
+    const resolverKey = `List${generateResolverKey(typeName, fieldName)}`;
+    if (!this.resolverMap[resolverKey]) {
+      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+        typeName,
+        fieldName,
+        dataSource,
+        MappingTemplate.s3MappingTemplateFromString(generateListRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
+      );
+    }
+    return this.resolverMap[resolverKey];
+  };
+
+  generateUpdateResolver = (
+    ctx: TransformerContextProvider,
+    type: ObjectTypeDefinitionNode,
+    typeName: string,
+    fieldName: string,
+  ): TransformerResolverProvider => {
+    const dataSource = this.datasourceMap[type.name.value];
+    const resolverKey = `Update${generateResolverKey(typeName, fieldName)}`;
+    if (!this.resolverMap[resolverKey]) {
+      const resolver = ctx.resolvers.generateMutationResolver(
+        typeName,
+        fieldName,
+        dataSource,
+        MappingTemplate.s3MappingTemplateFromString(generateUpdateRequestTemplate(typeName), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
+      );
+      // Todo: get the slot index from the resolver to keep the name unique and show the order of functions
+      resolver.addToSlot(
+        'init',
+        MappingTemplate.s3MappingTemplateFromString(
+          generateUpdateInitSlotTemplate(type.name.value, this.modelDirectiveConfig.get(type.name.value)!),
+          `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
+        ),
+      );
+      this.resolverMap[resolverKey] = resolver;
+    }
+    return this.resolverMap[resolverKey];
   };
   generateDeleteResolver = (
     ctx: TransformerContextProvider,
@@ -355,12 +421,11 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[typeName];
     const resolverKey = `OnCreate${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+      this.resolverMap[resolverKey] = ctx.resolvers.generateSubscriptionResolver(
         typeName,
         fieldName,
-        dataSource,
-        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateSubscriptionRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateSubscriptionResponseTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
     }
     return this.resolverMap[resolverKey];
@@ -374,12 +439,11 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     const dataSource = this.datasourceMap[typeName];
     const resolverKey = `OnUpdate${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+      this.resolverMap[resolverKey] = ctx.resolvers.generateSubscriptionResolver(
         typeName,
         fieldName,
-        dataSource,
-        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateSubscriptionRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateSubscriptionResponseTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
     }
     return this.resolverMap[resolverKey];
@@ -390,15 +454,13 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     typeName: string,
     fieldName: string,
   ): TransformerResolverProvider => {
-    const dataSource = this.datasourceMap[typeName];
     const resolverKey = `OnDelete${generateResolverKey(typeName, fieldName)}`;
     if (!this.resolverMap[resolverKey]) {
-      this.resolverMap[resolverKey] = ctx.resolvers.generateQueryResolver(
+      this.resolverMap[resolverKey] = ctx.resolvers.generateSubscriptionResolver(
         typeName,
         fieldName,
-        dataSource,
-        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.req.vtl`),
-        MappingTemplate.s3MappingTemplateFromString('{}', `${typeName}.${fieldName}.res.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateSubscriptionRequestTemplate(), `${typeName}.${fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(generateSubscriptionResponseTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
     }
     return this.resolverMap[resolverKey];
@@ -427,22 +489,25 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     ctx: TranformerTransformSchemaStepContextProvider,
     type: ObjectTypeDefinitionNode,
   ): Set<{ fieldName: string; typeName: string; type: QueryFieldType }> => {
-    // Todo: take name from the directive
     const typeName = type.name.value;
     const fields: Set<{ fieldName: string; typeName: string; type: QueryFieldType }> = new Set();
+    const modelDirectiveConfig = this.modelDirectiveConfig.get(type.name.value);
+    if (modelDirectiveConfig?.queries?.get) {
+      fields.add({
+        typeName: 'Query',
+        fieldName: modelDirectiveConfig.queries.get || toCamelCase(['get', typeName]),
+        type: QueryFieldType.GET,
+      });
+    }
 
-    fields.add({
-      typeName: 'Query',
-      fieldName: camelCase(`get ${typeName}`),
-      type: QueryFieldType.GET,
-    });
-
-    // fields.add({
-    //   typeName: 'Query',
-    //   fieldName: camelCase(`list ${typeName}`),
-    //   type: QueryFieldType.LIST,
-    // });
-
+    if (modelDirectiveConfig?.queries?.list) {
+      fields.add({
+        typeName: 'Query',
+        fieldName: modelDirectiveConfig.queries.list || toCamelCase(['list', typeName]),
+        type: QueryFieldType.LIST,
+      });
+    }
+    // check if this API is sync enabled and then if the model is sync enabled
     // fields.add({
     //   typeName: 'Query',
     //   fieldName: camelCase(`sync ${typeName}`),
@@ -486,7 +551,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   getSubscriptionFieldNames = (
-    ctx: TransformerContextProvider,
+    ctx: TranformerTransformSchemaStepContextProvider,
     type: ObjectTypeDefinitionNode,
   ): Set<{
     fieldName: string;
@@ -498,11 +563,37 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       typeName: string;
       type: SubscriptionFieldType;
     }> = new Set();
+
+    const modelDirectiveConfig = this.modelDirectiveConfig.get(type.name.value);
+    if (modelDirectiveConfig?.subscriptions?.level !== SubscriptionLevel.off) {
+      if (modelDirectiveConfig?.subscriptions?.onCreate && modelDirectiveConfig.mutations?.create) {
+        fields.add({
+          typeName: 'Subscription',
+          fieldName: modelDirectiveConfig.subscriptions.onCreate!,
+          type: SubscriptionFieldType.ON_CREATE,
+        });
+      }
+      if (modelDirectiveConfig?.subscriptions?.onUpdate && modelDirectiveConfig.mutations?.update) {
+        fields.add({
+          typeName: 'Subscription',
+          fieldName: modelDirectiveConfig.subscriptions.onUpdate!,
+          type: SubscriptionFieldType.ON_UPDATE,
+        });
+      }
+
+      if (modelDirectiveConfig?.subscriptions?.onDelete && modelDirectiveConfig.mutations?.delete) {
+        fields.add({
+          typeName: 'Subscription',
+          fieldName: modelDirectiveConfig.subscriptions.onDelete!,
+          type: SubscriptionFieldType.ON_DELETE,
+        });
+      }
+    }
     return fields;
   };
 
   getDataSourceResource = (ctx: TransformerContextProvider, type: ObjectTypeDefinitionNode): DataSourceInstance => {
-    // Todo: add sanity check to ebsure the type has an table
+    // Todo: add sanity check to ensure the type has an table
     return this.ddbTableMap[type.name.value];
   };
 
@@ -532,7 +623,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         'init',
         MappingTemplate.s3MappingTemplateFromString(
           generateCreateInitSlotTemplate(type.name.value, this.modelDirectiveConfig.get(type.name.value)!),
-          `${typeName}.${fieldName}.init.1.req.vtl`,
+          `${typeName}.${fieldName}.{slotName}.{slotIndex}.req.vtl`,
         ),
       );
     }
@@ -569,7 +660,19 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         return [makeInputValueDefinition('id', makeNonNullType(makeNamedType('ID')))];
 
       case QueryFieldType.LIST:
-        return [];
+        const filterInputName = toPascalCase(['Model', type.name.value, 'FilterInput']);
+        const filterInputs = makeListQueryFilterInput(ctx, filterInputName, type);
+        for (let input of [filterInputs]) {
+          const conditionInputName = input.name.value;
+          if (!ctx.output.getType(conditionInputName)) {
+            ctx.output.addInput(input);
+          }
+        }
+        return [
+          makeInputValueDefinition('filter', makeNamedType(filterInputName)),
+          makeInputValueDefinition('limit', makeNamedType('Int')),
+          makeInputValueDefinition('nextToken', makeNamedType('String')),
+        ];
       case QueryFieldType.SYNC:
         return [];
 
@@ -609,6 +712,39 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     return [];
   };
 
+  getOutputType = (
+    ctx: TranformerTransformSchemaStepContextProvider,
+    type: ObjectTypeDefinitionNode,
+    operation: {
+      fieldName: string;
+      typeName: string;
+      type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
+    },
+  ): ObjectTypeDefinitionNode => {
+    let outputType: ObjectTypeDefinitionNode;
+    switch (operation.type) {
+      case MutationFieldType.CREATE:
+      case MutationFieldType.UPDATE:
+      case MutationFieldType.DELETE:
+      case QueryFieldType.GET:
+      case SubscriptionFieldType.ON_CREATE:
+      case SubscriptionFieldType.ON_DELETE:
+      case SubscriptionFieldType.ON_UPDATE:
+        outputType = type;
+        break;
+      case QueryFieldType.LIST:
+        const connectionFieldName = toPascalCase(['Model', type.name.value, 'Connection']);
+        outputType = makeListQueryModel(type, connectionFieldName);
+        break;
+      default:
+        throw new Error(`${operation.type} not supported`);
+    }
+    if (!ctx.output.getObject(outputType.name.value)) {
+      ctx.output.addObject(outputType);
+    }
+    return outputType;
+  };
+
   private createNonModelInputs = (ctx: TranformerTransformSchemaStepContextProvider, obj: ObjectTypeDefinitionNode): void => {
     for (let field of obj.fields || []) {
       if (!isScalar(field.type)) {
@@ -626,7 +762,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   private isModelField = (name: string): boolean => {
     return this.typesWithModelDirective.has(name) ? true : false;
   };
-
 
   private getNonModelInputObjectName = (name: string): string => {
     return `${name}Input`;

@@ -149,6 +149,16 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
       type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
     },
   ) => InputValueDefinitionNode[];
+
+  abstract getOutputType: (
+    ctx: TransformerContextProvider,
+    type: ObjectTypeDefinitionNode,
+    operation: {
+      fieldName: string;
+      typeName: string;
+      type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
+    },
+  ) => ObjectTypeDefinitionNode;
 }
 
 export abstract class TransformerModelEnhancerBase extends TransformerModelBase implements TransformerModelEnhancementProvider {
