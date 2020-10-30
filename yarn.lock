@@ -11986,16 +11986,6 @@ graphql-mapping-template@4.13.1:
   resolved "https://registry.yarnpkg.com/graphql-mapping-template/-/graphql-mapping-template-4.13.1.tgz#338176ad42b0f7c9d67e0b7acd79172c4a34ed93"
   integrity sha512-V2q2qV4egFMhRZhGQdzalEZlki/uCtGLTANOd6fpqw+StqTco8PmwXQkaSLt14ZGB2sKfFWOPvSmlpLz60A6dg==
 
-graphql-mapping-template@4.15.1:
-  version "4.15.1"
-  resolved "https://registry.yarnpkg.com/graphql-mapping-template/-/graphql-mapping-template-4.15.1.tgz#aa273094fede4ab677e438163bdcf58775586f06"
-  integrity sha512-qYXINF2kHP5v0G40xF9Iirv4MbP/I+OrE9d/Bmy/W7hLa/4paUnkB2aw0TYtT69yEoHarwPgGQICKz8UCcQ0tw==
-
-graphql-mapping-template@4.15.2:
-  version "4.15.2"
-  resolved "https://registry.yarnpkg.com/graphql-mapping-template/-/graphql-mapping-template-4.15.2.tgz#ce05d1de3fbd3f8cccd9e8bd111fd5181eb8bdcc"
-  integrity sha512-ZXoole9jGXiezFz6gjABNsAAIFcsmPHaC5Yhm40LPaFD8vXi90qO7fF/gIW+p0AnwJQ9kxTaYJ5ZJO8X8hpgFA==
-
 graphql-request@^1.5.0:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-1.8.2.tgz#398d10ae15c585676741bde3fc01d5ca948f8fbe"
@@ -12075,24 +12065,6 @@ graphql-transformer-common@4.13.1:
     graphql-mapping-template "4.13.1"
     md5 "^2.2.1"
 
-graphql-transformer-common@4.17.10:
-  version "4.17.10"
-  resolved "https://registry.yarnpkg.com/graphql-transformer-common/-/graphql-transformer-common-4.17.10.tgz#0772d2de04b3f94a7edf613d7b2e8a5a7705045c"
-  integrity sha512-/pg4KoP0gb5ll+jSiAHn3eHfNwOMkfczd/Ij5u7+X71p41kX0wo14FH36DOlW0COCNwmIrIxT7LPiQ93fjWl6g==
-  dependencies:
-    graphql "^14.5.8"
-    graphql-mapping-template "4.15.2"
-    md5 "^2.2.1"
-
-graphql-transformer-common@4.17.8:
-  version "4.17.8"
-  resolved "https://registry.yarnpkg.com/graphql-transformer-common/-/graphql-transformer-common-4.17.8.tgz#7fe278991c934846f3ab4dd1682d4f30cbefe64b"
-  integrity sha512-t62j+YumHgYPNujIZksGc3ee+ULmhM2VYMZJusDV9FR4Rs8QHO8zxA7kv4v7omqV4XUi5ycR9uBs7KkBw1grBQ==
-  dependencies:
-    graphql "^14.5.8"
-    graphql-mapping-template "4.15.1"
-    md5 "^2.2.1"
-
 graphql-transformer-core@6.13.1:
   version "6.13.1"
   resolved "https://registry.yarnpkg.com/graphql-transformer-core/-/graphql-transformer-core-6.13.1.tgz#083203889192ada1bdbe399cc92e10fd70f3307d"
@@ -12103,18 +12075,6 @@ graphql-transformer-core@6.13.1:
     fs-extra "^8.1.0"
     graphql "^14.5.8"
     graphql-transformer-common "4.13.1"
-
-graphql-transformer-core@6.21.5:
-  version "6.21.5"
-  resolved "https://registry.yarnpkg.com/graphql-transformer-core/-/graphql-transformer-core-6.21.5.tgz#b05656580d7d8823a2c469a0e03e2c1991066544"
-  integrity sha512-Z1xkebjl8ULv3B3mXB/Tga90eiCQiEiSt9IiEUtBUo7+DkXuQUAx7lXWEFXZ1H/LcqAk6+ltEv2Xo+K4EPWxXQ==
-  dependencies:
-    cloudform-types "^4.2.0"
-    deep-diff "^1.0.2"
-    fs-extra "^8.1.0"
-    glob "^7.1.6"
-    graphql "^14.5.8"
-    graphql-transformer-common "4.17.10"
 
 graphql-type-json@^0.3.1:
   version "0.3.2"
