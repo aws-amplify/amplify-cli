@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.8.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.18...graphql-elasticsearch-transformer@4.8.0) (2020-10-30)
+
+
+### Features
+
+* **graphql-elasticsearch-transformer:** add 'from' query parameter ([#5098](https://github.com/aws-amplify/amplify-cli/issues/5098)) ([d52a804](https://github.com/aws-amplify/amplify-cli/commit/d52a804c25df63cd1cee1a72bb99286ecfe54ed5))
+
+
+
+
+
 ## [4.7.18](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.7.17...graphql-elasticsearch-transformer@4.7.18) (2020-10-22)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer

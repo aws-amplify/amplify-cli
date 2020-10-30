@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-analytics",
-  "version": "2.18.2",
+  "version": "2.18.3",
   "description": "amplify-cli analytics plugin",
   "repository": {
     "type": "git",
@@ -15,7 +15,7 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-category-auth": "2.21.2",
+    "amplify-category-auth": "2.22.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "open": "^7.0.0",

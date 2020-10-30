@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "2.27.1",
+  "version": "2.27.2",
   "description": "",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "amplify-cli-core": "1.5.1",
-    "amplify-e2e-core": "1.8.2",
+    "amplify-e2e-core": "1.8.3",
     "aws-amplify": "^3.0.8",
     "aws-appsync": "^2.0.2",
     "aws-sdk": "^2.765.0",
@@ -31,7 +31,7 @@
     "fs-extra": "^8.1.0",
     "graphql-schema-diff": "^2.1.0",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "6.21.7",
+    "graphql-transformer-core": "6.21.8",
     "lodash": "^4.17.19",
     "promise-sequential": "^1.1.1",
     "rimraf": "^3.0.0",

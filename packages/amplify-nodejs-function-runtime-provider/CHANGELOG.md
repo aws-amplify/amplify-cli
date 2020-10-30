@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.1.5...amplify-nodejs-function-runtime-provider@1.1.6) (2020-10-30)
+
+
+### Bug Fixes
+
+* **amplify-nodejs-function-runtime-provider:** change the exit status appropriately ([#5608](https://github.com/aws-amplify/amplify-cli/issues/5608)) ([2db83ab](https://github.com/aws-amplify/amplify-cli/commit/2db83aba05f62d9a7927da580d85bfe31a3a1d7a))
+* parse appSync go function resolvers to JOSN ([#5297](https://github.com/aws-amplify/amplify-cli/issues/5297)) ([43c6e82](https://github.com/aws-amplify/amplify-cli/commit/43c6e8247210446b133fef799ff21cd70ad9e022))
+* **amplify-nodejs-function-runtime-provider:** invoke waits close event before rejects ([#5498](https://github.com/aws-amplify/amplify-cli/issues/5498)) ([cafefd6](https://github.com/aws-amplify/amplify-cli/commit/cafefd65a54fcd8b06ccdc1fb2362eeeff3122d5))
+
+
+
+
+
 ## [1.1.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.1.4...amplify-nodejs-function-runtime-provider@1.1.5) (2020-09-16)
 
 **Note:** Version bump only for package amplify-nodejs-function-runtime-provider

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.21.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.21.7...graphql-transformer-core@6.21.8) (2020-10-30)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** "innerDiffs is not iterable" on push ([#5587](https://github.com/aws-amplify/amplify-cli/issues/5587)) ([baa711d](https://github.com/aws-amplify/amplify-cli/commit/baa711d16c5d0e83a6e7ba65fdf3176b9feb186d))
+
+
+
+
+
 ## [6.21.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.21.6...graphql-transformer-core@6.21.7) (2020-10-22)
 
 **Note:** Version bump only for package graphql-transformer-core

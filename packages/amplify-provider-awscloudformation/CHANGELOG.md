@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.28.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.28.1...amplify-provider-awscloudformation@4.28.2) (2020-10-30)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** add new error message ([#4976](https://github.com/aws-amplify/amplify-cli/issues/4976)) ([8560096](https://github.com/aws-amplify/amplify-cli/commit/856009670e72aee2782f480991bc1e959857f65e))
+
+
+### Reverts
+
+* Revert "enhance(amplify-provider-awscloudformation): support multiple Lambdas in a function resource (#5032)" (#5725) ([3f496ab](https://github.com/aws-amplify/amplify-cli/commit/3f496ab726ecc50a7c5ebb830ea9543cd3f28a66)), closes [#5032](https://github.com/aws-amplify/amplify-cli/issues/5032) [#5725](https://github.com/aws-amplify/amplify-cli/issues/5725)
+
+
+
+
+
 ## [4.28.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.28.0...amplify-provider-awscloudformation@4.28.1) (2020-10-27)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

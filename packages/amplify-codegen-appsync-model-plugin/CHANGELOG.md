@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.9...amplify-codegen-appsync-model-plugin@1.20.10) (2020-10-30)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:** revert changes of adding ownerField for implicit cases for [@auth](https://github.com/auth) ([#5682](https://github.com/aws-amplify/amplify-cli/issues/5682)) ([85c9c93](https://github.com/aws-amplify/amplify-cli/commit/85c9c931408cc9ac3bd93f36481181829b882753))
+
+
+
+
+
 ## [1.20.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.8...amplify-codegen-appsync-model-plugin@1.20.9) (2020-10-22)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.18](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.15.17...graphql-relational-schema-transformer@2.15.18) (2020-10-30)
+
+
+### Bug Fixes
+
+* **graphql-relational-schema-transformer:** escape SQL reserved keywords ([#5529](https://github.com/aws-amplify/amplify-cli/issues/5529)) ([9c0408a](https://github.com/aws-amplify/amplify-cli/commit/9c0408adf0a3541ca30b9547c6b84d28b7709783))
+
+
+
+
+
 ## [2.15.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.15.16...graphql-relational-schema-transformer@2.15.17) (2020-10-22)
 
 **Note:** Version bump only for package graphql-relational-schema-transformer

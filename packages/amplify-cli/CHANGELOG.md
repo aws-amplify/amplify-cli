@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.32.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.31.1...@aws-amplify/cli@4.32.0) (2020-10-30)
+
+
+### Features
+
+* add env to retain amplify app ([#5714](https://github.com/aws-amplify/amplify-cli/issues/5714)) ([d3b4948](https://github.com/aws-amplify/amplify-cli/commit/d3b4948b39f2c1e0f4d7674aceda313f31cb189e))
+* **amplify-cli-core:** visually hide "immutable files" for VSCode users ([#5321](https://github.com/aws-amplify/amplify-cli/issues/5321)) ([01d4cdb](https://github.com/aws-amplify/amplify-cli/commit/01d4cdb2265fa74a169ff7ba12551b69709f129d))
+
+
+
+
+
 ## [4.31.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.31.0...@aws-amplify/cli@4.31.1) (2020-10-27)
 
 

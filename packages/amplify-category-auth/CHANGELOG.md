@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.21.2...amplify-category-auth@2.22.0) (2020-10-30)
+
+
+### Features
+
+* add support for listing Amazon Cognito groups ([#5109](https://github.com/aws-amplify/amplify-cli/issues/5109)) ([3157652](https://github.com/aws-amplify/amplify-cli/commit/3157652ecf51171b1a7375351bee1ba4af9d5f18))
+
+
+### Reverts
+
+* Revert "For the better security best practice, added PreventUserExistenceErrors: ENABLED. (#3534)" (#5736) ([3423228](https://github.com/aws-amplify/amplify-cli/commit/34232287c2e4dc466866528065c1900ac2954512)), closes [#3534](https://github.com/aws-amplify/amplify-cli/issues/3534) [#5736](https://github.com/aws-amplify/amplify-cli/issues/5736)
+
+
+
+
+
 ## [2.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.21.1...amplify-category-auth@2.21.2) (2020-10-27)
 
 **Note:** Version bump only for package amplify-category-auth

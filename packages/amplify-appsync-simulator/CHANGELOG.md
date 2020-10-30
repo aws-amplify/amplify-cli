@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.8...amplify-appsync-simulator@1.23.9) (2020-10-30)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** appsync scalars ([#5705](https://github.com/aws-amplify/amplify-cli/issues/5705)) ([edd8e68](https://github.com/aws-amplify/amplify-cli/commit/edd8e68e36600834ef9eaab6911e4a1111e90238))
+* **amplify-appsync-simulator:** velocity template handles unknown type errors ([#5503](https://github.com/aws-amplify/amplify-cli/issues/5503)) ([64d48a4](https://github.com/aws-amplify/amplify-cli/commit/64d48a4152ad99b77ed6a54f272072af5f418d23))
+
+
+
+
+
 ## [1.23.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.7...amplify-appsync-simulator@1.23.8) (2020-10-27)
 
 
