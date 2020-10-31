@@ -29,7 +29,7 @@ describe('Compile', function() {
             address: 'bar',
             Address: 'foo',
           },
-        })
+        }),
       );
 
       assert.equal('bar bar', render(vm1, { customer: { address: 'bar' } }));
@@ -40,7 +40,7 @@ describe('Compile', function() {
             Address: 'bar',
             address: 'foo',
           },
-        })
+        }),
       );
     });
 
@@ -52,7 +52,7 @@ describe('Compile', function() {
           foo: function() {
             return { bar: 'hello' };
           },
-        })
+        }),
       );
 
       assert.equal(
@@ -61,7 +61,7 @@ describe('Compile', function() {
           foo: function() {
             return 'foo';
           },
-        })
+        }),
       );
     });
 
@@ -214,7 +214,7 @@ describe('Compile', function() {
             values.push(value);
             return 'foo';
           },
-        }
+        },
       );
       assert.deepEqual(values, ['bar']);
       assert.equal(ret.trim(), 'foo');
@@ -471,7 +471,7 @@ describe('Compile', function() {
 
       assert.throws(function() {
         compile.render(context);
-      }, /Line number 3:0/);
+      }, /L\/N 3:0/);
     });
 
     it('print error stack of user-defined macro', function() {
@@ -601,7 +601,7 @@ describe('Compile', function() {
         '\nThis content is ignored. $val\n',
         render(vm, {
           val: 'foo',
-        })
+        }),
       );
     });
 
@@ -611,7 +611,7 @@ describe('Compile', function() {
         'This content is ignored. $val\na',
         render(vm, {
           val: 'foo',
-        })
+        }),
       );
     });
   });
@@ -639,7 +639,7 @@ describe('Compile', function() {
             },
           },
         }).trim(),
-        expected
+        expected,
       );
     });
   });
@@ -770,7 +770,7 @@ describe('Compile', function() {
             key3: { key4: 'value4' },
           },
         }),
-        expected
+        expected,
       );
     });
 

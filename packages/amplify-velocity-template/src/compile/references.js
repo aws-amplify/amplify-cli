@@ -83,7 +83,7 @@ module.exports = function(Velocity, utils) {
         function(key) {
           this.config.unescape[key] = true;
         },
-        this
+        this,
       );
     },
 
@@ -132,7 +132,7 @@ module.exports = function(Velocity, utils) {
             // 第三个参数，返回后面的参数ast
             ret = this.getAttributes(property, ret, ast);
           },
-          this
+          this,
         );
       }
 
@@ -164,7 +164,7 @@ module.exports = function(Velocity, utils) {
 
           return false;
         },
-        this
+        this,
       );
 
       return {
@@ -226,20 +226,23 @@ module.exports = function(Velocity, utils) {
       var id = property.id;
       var ret = '';
 
-      // getter 处理
+      // get(xxx)
+      if (id === 'get' && !(id in baseRef)) {
+        return getter(baseRef, this.getLiteral(property.args[0]));
+      }
+
+      if (id === 'set' && !(id in baseRef)) {
+        baseRef[this.getLiteral(property.args[0])] = this.getLiteral(property.args[1]);
+        return '';
+      }
+
+      // getter for example: getAddress()
       if (id.indexOf('get') === 0 && !(id in baseRef)) {
-        if (id.length === 3) {
-          // get('address')
-          ret = getter(baseRef, this.getLiteral(property.args[0]));
-        } else {
-          // getAddress()
-          ret = getter(baseRef, id.slice(3));
-        }
+        return getter(baseRef, id.slice(3));
+      }
 
-        return ret;
-
-        // setter 处理
-      } else if (id.indexOf('set') === 0 && !baseRef[id]) {
+      // setter 处理
+      if (id.indexOf('set') === 0 && !baseRef[id]) {
         baseRef[id.slice(3)] = this.getLiteral(property.args[0]);
         // $page.setName(123)
         baseRef.toString = function() {
@@ -263,6 +266,24 @@ module.exports = function(Velocity, utils) {
         return (baseRef[this.getLiteral(property.args[0])] = this.getLiteral(property.args[1]));
       } else if (id === 'add' && !baseRef[id] && typeof baseRef.push === 'function') {
         return baseRef.push(this.getLiteral(property.args[0]));
+      } else if (id === 'remove') {
+        if (utils.isArray(baseRef)) {
+          if (typeof index === 'number') {
+            var index = this.getLiteral(property.args[0]);
+          } else {
+            var index = baseRef.indexOf(this.getLiteral(property.args[0]));
+          }
+
+          ret = baseRef[index];
+          baseRef.splice(index, 1);
+          return ret;
+        } else if (utils.isObject(baseRef)) {
+          ret = baseRef[this.getLiteral(property.args[0])];
+          delete baseRef[this.getLiteral(property.args[0])];
+          return ret;
+        }
+
+        return undefined;
       } else if (id === 'subList' && !baseRef[id]) {
         return baseRef.slice(this.getLiteral(property.args[0]), this.getLiteral(property.args[1]));
       } else {
@@ -274,7 +295,7 @@ module.exports = function(Velocity, utils) {
           function(exp) {
             args.push(this.getLiteral(exp));
           },
-          this
+          this,
         );
 
         if (ret && ret.call) {
@@ -291,10 +312,10 @@ module.exports = function(Velocity, utils) {
           } catch (e) {
             var pos = ast.pos;
             var text = Velocity.Helper.getRefText(ast);
-            var err = ' on ' + text + ' at Line number ' + pos.first_line + ':' + pos.first_column;
+            var err = ' on ' + text + ' at L/N ' + pos.first_line + ':' + pos.first_column;
             e.name = '';
             e.message += err;
-            throw e;
+            throw new Error(e);
           }
         } else {
           this._throw(ast, property, 'TypeError');
