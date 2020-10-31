@@ -9,25 +9,29 @@ function downloadZip(s3, tempDir, zipFileName, envName) {
         Key: zipFileName,
       },
       envName,
-    ).then((objectResult, objectError) => {
-      if (objectError) {
-        reject(objectError);
-        return;
-      }
-
-      fs.ensureDirSync(tempDir);
-
-      const buff = Buffer.from(objectResult);
-      const tempfile = `${tempDir}/${zipFileName}`;
-
-      fs.writeFile(tempfile, buff, err => {
-        if (err) {
-          reject(err);
+    )
+      .then((objectResult, objectError) => {
+        if (objectError) {
+          reject(objectError);
           return;
         }
-        resolve(tempfile);
+
+        fs.ensureDirSync(tempDir);
+
+        const buff = Buffer.from(objectResult);
+        const tempfile = `${tempDir}/${zipFileName}`;
+
+        fs.writeFile(tempfile, buff, err => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(tempfile);
+        });
+      })
+      .catch(e => {
+        reject(e);
       });
-    });
   });
 }
 
