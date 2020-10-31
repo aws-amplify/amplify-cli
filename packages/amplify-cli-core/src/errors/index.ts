@@ -10,3 +10,4 @@ export class NonEmptyDirectoryError extends Error {}
 export class InvalidEnvironmentNameError extends Error {}
 export class InvalidSubCommandError extends Error {}
 export class FrontendBuildError extends Error {}
+export class MigrateError extends Error {}

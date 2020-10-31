@@ -1,8 +1,10 @@
 import _ from 'lodash';
 import { getEnvInfo } from './get-env-info';
 import { $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
+import { getAmplifyAppId } from './get-amplify-appId';
 
 const CATEGORIES = 'categories';
+const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
 function isMigrationContext(context: $TSContext) {
   return 'migrationInfo' in context;
@@ -62,20 +64,45 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
   const teamProviderInfo = getApplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
   const resources = getOrCreateSubObject(teamProviderInfo, [currentEnv, CATEGORIES, category]);
-
-  resources[resource] = _.assign(resources[resource], parameters);
+  const { hostedUIProviderCreds, ...otherParameters } = parameters;
+  resources[resource] = _.assign(resources[resource], otherParameters);
 
   if (!isMigrationContext(context)) {
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+    // write hostedUIProviderCreds to deploymentSecrets
+    if (hostedUIProviderCreds) {
+      const deploymentSecrets = stateManager.getDeploymentSecrets();
+      const appId = getAmplifyAppId();
+      const newDeploymentSecrets = getOrCreateSubObject(deploymentSecrets, [appId, currentEnv, category, resource]);
+      newDeploymentSecrets[hostedUIProviderCredsField] = hostedUIProviderCreds;
+      stateManager.setDeploymentSecrets(deploymentSecrets);
+    }
   }
 }
 
 export function loadEnvResourceParameters(context: $TSContext, category: string, resource: string) {
-  const teamProviderInfo = getApplicableTeamProviderInfo(context);
+  const envParameters = {
+    ...loadEnvResourceParametersFromDeploymentSecrets(context, category, resource),
+    ...loadEnvResourceParametersFromTeamprovider(context, category, resource),
+  };
+  return envParameters;
+}
 
+function loadEnvResourceParametersFromDeploymentSecrets(context: $TSContext, category: string, resource: string) {
   try {
     const currentEnv = getCurrentEnvName(context);
-
+    const deploymentSecrets = stateManager.getDeploymentSecrets();
+    const appId = getAmplifyAppId();
+    const val = getOrCreateSubObject(deploymentSecrets, [appId, currentEnv, category, resource]);
+    return val;
+  } catch (e) {
+    return {};
+  }
+}
+function loadEnvResourceParametersFromTeamprovider(context: $TSContext, category: string, resource: string) {
+  try {
+    const teamProviderInfo = getApplicableTeamProviderInfo(context);
+    const currentEnv = getCurrentEnvName(context);
     return getOrCreateSubObject(teamProviderInfo, [currentEnv, CATEGORIES, category, resource]);
   } catch (e) {
     return {};
@@ -85,10 +112,21 @@ export function loadEnvResourceParameters(context: $TSContext, category: string,
 export function removeResourceParameters(context: $TSContext, category: string, resource: string) {
   const teamProviderInfo = getApplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
-
   removeObjectRecursively(teamProviderInfo, [currentEnv, CATEGORIES, category, resource]);
 
   if (!isMigrationContext(context)) {
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+    removeDeploymentSecrets(context, category, resource);
+  }
+}
+// removes deployment secrets
+// called after remove and push
+export function removeDeploymentSecrets(context: $TSContext, category: string, resource: string) {
+  const currentEnv = getCurrentEnvName(context);
+  const deploymentSecrets = stateManager.getDeploymentSecrets();
+  const appId = getAmplifyAppId();
+  removeObjectRecursively(deploymentSecrets, [appId, currentEnv, category, resource, hostedUIProviderCredsField]);
+  if (!isMigrationContext(context)) {
+    stateManager.setDeploymentSecrets(deploymentSecrets);
   }
 }

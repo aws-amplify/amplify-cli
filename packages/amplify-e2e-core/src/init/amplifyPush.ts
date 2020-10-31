@@ -36,9 +36,9 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean
   });
 }
 
-export function amplifyPushWithoutCodegen(cwd: string) {
+export function amplifyPushWithoutCodegen(cwd: string, testingWithLatestCodebase: boolean = false) {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendCarriageReturn()
       .run((err: Error) => {

@@ -1,5 +1,7 @@
 import * as path from 'path';
+import * as os from 'os';
 import * as fs from 'fs-extra';
+import _ from 'lodash';
 
 function getAWSConfigAndroidPath(projRoot: string): string {
   return path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'awsconfiguration.json');
@@ -69,6 +71,20 @@ function getAwsIOSConfig(projectRoot: string) {
   return JSON.parse(fs.readFileSync(configPath, 'utf8'));
 }
 
+function getDeploymentSecrets(): any {
+  const deploymentSecretsPath = path.join(os.homedir(), '.aws', 'amplify', 'deployment-secrets.json');
+  if (!fs.existsSync(deploymentSecretsPath)) return {};
+  return JSON.parse(fs.readFileSync(deploymentSecretsPath, 'utf8'));
+}
+
+function isDeploymentSecretForEnvExists(projRoot: string, envName: string) {
+  const teamproviderInfo = getTeamProviderInfo(projRoot);
+  const ampilfyAppId = teamproviderInfo[envName].awscloudformation.AmplifyAppId;
+  const resource = _.first(Object.keys(teamproviderInfo[envName].categories.auth));
+  const path = [ampilfyAppId, envName, 'auth', resource, 'hostedUIProviderCreds'];
+  return _.get(getDeploymentSecrets(), path);
+}
+
 export {
   getProjectMeta,
   getProjectTags,
@@ -79,6 +95,8 @@ export {
   getAmplifyConfigAndroidPath,
   getAmplifyConfigIOSPath,
   getAWSConfigIOSPath,
+  getDeploymentSecrets,
+  isDeploymentSecretForEnvExists,
   getS3StorageBucketName,
   getAmplifyDirPath,
   getBackendConfig,

@@ -58,6 +58,7 @@ export class AmplifyToolkit {
   private _loadEnvResourceParameters: any;
   private _saveEnvResourceParameters: any;
   private _removeResourceParameters: any;
+  private _removeDeploymentSecrets: any;
   private _triggerFlow: any;
   private _addTrigger: any;
   private _updateTrigger: any;
@@ -350,6 +351,12 @@ export class AmplifyToolkit {
     this._removeResourceParameters =
       this._removeResourceParameters || require(path.join(this._amplifyHelpersDirPath, 'envResourceParams')).removeResourceParameters;
     return this._removeResourceParameters;
+  }
+
+  get removeDeploymentSecrets(): any {
+    this._removeDeploymentSecrets =
+      this._removeDeploymentSecrets || require(path.join(this._amplifyHelpersDirPath, 'envResourceParams')).removeDeploymentSecrets;
+    return this._removeDeploymentSecrets;
   }
 
   get triggerFlow(): any {

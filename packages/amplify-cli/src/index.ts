@@ -1,6 +1,14 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { $TSContext, CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, exitOnNextTick } from 'amplify-cli-core';
+import {
+  $TSContext,
+  CLIContextEnvironmentProvider,
+  FeatureFlags,
+  pathManager,
+  stateManager,
+  exitOnNextTick,
+  MigrateError,
+} from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
@@ -17,7 +25,7 @@ import { notify } from './version-notifier';
 import { EventEmitter } from 'events';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
-import { postInstallInitialization } from './utils/post-install-initialization';
+import { MigrateTeamProvider } from './utils/team-provider-migrate';
 EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
@@ -71,6 +79,10 @@ export async function run() {
 
     await attachUsageData(context);
 
+    if (!(await MigrateTeamProvider(context))) {
+      context.usageData.emitError(new MigrateError());
+      return 1;
+    }
     errorHandler = boundErrorHandler.bind(context);
     process.on('SIGINT', sigIntHandler.bind(context));
 

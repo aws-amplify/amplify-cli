@@ -3,12 +3,13 @@ import { pathManager } from './pathManager';
 import { $TSMeta, $TSTeamProviderInfo, $TSAny } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { Tag, ReadValidateTags } from '../tags';
-
+import _ from 'lodash';
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
   preserveComments?: boolean;
   default?: T;
 };
+const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
 export class StateManager {
   metaFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getAmplifyMetaFilePath(projectPath));
@@ -27,6 +28,11 @@ export class StateManager {
 
   currentMetaFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getCurrentAmplifyMetaFilePath(projectPath));
 
+  setDeploymentSecrets = (deploymentSecrets: $TSAny): void => {
+    const path = pathManager.getDeploymentSecrets();
+    JSONUtilities.writeJson(path, deploymentSecrets, { mode: 0o600 }); //set deployment secret file permissions to -rw-------
+  };
+
   getCurrentMeta = (projectPath?: string, options?: GetOptions<$TSMeta>): $TSMeta => {
     const filePath = pathManager.getCurrentAmplifyMetaFilePath(projectPath);
     const mergedOptions = {
@@ -39,11 +45,54 @@ export class StateManager {
     return data;
   };
 
+  getDeploymentSecrets = (): $TSAny => {
+    return (
+      JSONUtilities.readJson<$TSAny>(pathManager.getDeploymentSecrets(), {
+        throwIfNotExist: false,
+      }) || {}
+    );
+  };
+
   getProjectTags = (projectPath?: string): Tag[] => ReadValidateTags(pathManager.getTagFilePath(projectPath));
 
   getCurrentProjectTags = (projectPath?: string): Tag[] => ReadValidateTags(pathManager.getCurrentTagFilePath(projectPath));
 
   teamProviderInfoExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getTeamProviderInfoFilePath(projectPath));
+
+  teamProviderInfoHasAuthSecrets = (projectPath?: string): any => {
+    if (this.teamProviderInfoExists(projectPath)) {
+      const teamProviderInfo = this.getTeamProviderInfo(projectPath);
+      const { envName } = this.getLocalEnvInfo();
+      const envTeamProvider = teamProviderInfo[envName];
+      if (envTeamProvider && envTeamProvider.categories && envTeamProvider.categories.auth) {
+        return _.some(Object.keys(envTeamProvider.categories.auth), resource => {
+          return envTeamProvider.categories.auth[resource][hostedUIProviderCredsField];
+        });
+      }
+    }
+    return false;
+  };
+
+  moveSecretsFromDeploymentToTeamProvider = (projectPath?: string): void => {
+    const { envName } = this.getLocalEnvInfo(projectPath);
+    let teamProviderInfo = this.getTeamProviderInfo();
+    const envTeamProvider = teamProviderInfo[envName];
+    const amplifyAppId = envTeamProvider.awscloudformation.AmplifyAppId;
+    let secrets = {};
+    Object.keys(envTeamProvider.categories).forEach(category => {
+      if (category === 'auth') {
+        Object.keys(envTeamProvider.categories.auth).forEach(resourceName => {
+          if (envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField]) {
+            const teamProviderSecrets = envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField];
+            delete envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField];
+            secrets = _.set(secrets, [amplifyAppId, envName, 'auth', resourceName, hostedUIProviderCredsField], teamProviderSecrets);
+          }
+        });
+      }
+    });
+    this.setTeamProviderInfo(undefined, teamProviderInfo);
+    this.setDeploymentSecrets(secrets);
+  };
 
   getTeamProviderInfo = (projectPath?: string, options?: GetOptions<$TSTeamProviderInfo>): $TSTeamProviderInfo => {
     const filePath = pathManager.getTeamProviderInfoFilePath(projectPath);
