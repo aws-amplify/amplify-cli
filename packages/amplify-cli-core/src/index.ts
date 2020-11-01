@@ -12,6 +12,7 @@ export * from './tags';
 export * from './errors';
 export * from './exitOnNextTick';
 export * from './isPackaged';
+export * from './cliConstants';
 
 // Temporary types until we can finish full type definition across the whole CLI
 

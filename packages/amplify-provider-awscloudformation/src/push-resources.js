@@ -159,7 +159,9 @@ async function run(context, resourceDefinition) {
     await storeCurrentCloudBackend(context);
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
     //check for auth resources and remove deployment secret for push
-    const authResources = resources.filter(resource => resource.category === 'auth');
+    const authResources = resources.filter(
+      resource => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation',
+    );
     if (authResources.length > 0) {
       for (let i = 0; i < authResources.length; i++) {
         const authResource = authResources[i];

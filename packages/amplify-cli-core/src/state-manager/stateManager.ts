@@ -4,6 +4,7 @@ import { $TSMeta, $TSTeamProviderInfo, $TSAny } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { Tag, ReadValidateTags } from '../tags';
 import _ from 'lodash';
+import { SecretFileMode } from '../cliConstants';
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
   preserveComments?: boolean;
@@ -30,7 +31,7 @@ export class StateManager {
 
   setDeploymentSecrets = (deploymentSecrets: $TSAny): void => {
     const path = pathManager.getDeploymentSecrets();
-    JSONUtilities.writeJson(path, deploymentSecrets, { mode: 0o600 }); //set deployment secret file permissions to -rw-------
+    JSONUtilities.writeJson(path, deploymentSecrets, { mode: SecretFileMode }); //set deployment secret file permissions to -rw-------
   };
 
   getCurrentMeta = (projectPath?: string, options?: GetOptions<$TSMeta>): $TSMeta => {
@@ -73,7 +74,7 @@ export class StateManager {
     return false;
   };
 
-  moveSecretsFromDeploymentToTeamProvider = (projectPath?: string): void => {
+  moveSecretsFromTeamProviderToDeployment = (projectPath?: string): void => {
     const { envName } = this.getLocalEnvInfo(projectPath);
     let teamProviderInfo = this.getTeamProviderInfo();
     const envTeamProvider = teamProviderInfo[envName];

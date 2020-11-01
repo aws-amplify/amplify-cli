@@ -102,7 +102,7 @@ describe('test migration code', () => {
     const mockteamProviderInfoHasAuthSecrets = jest.fn().mockReturnValue(true);
     jest.setMock('amplify-cli-core', {
       stateManager: {
-        moveSecretsFromDeploymentToTeamProvider: mockMoveSecrets,
+        moveSecretsFromTeamProviderToDeployment: mockMoveSecrets,
         teamProviderInfoHasAuthSecrets: mockteamProviderInfoHasAuthSecrets,
       },
       pathManager: {

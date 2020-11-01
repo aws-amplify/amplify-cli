@@ -102,7 +102,7 @@ describe('test move secrests to deployment', () => {
   const setTeamProviderInfo = jest.spyOn(stateManager, 'setTeamProviderInfo').mockImplementation();
   const setDeploymentSecrets = jest.spyOn(stateManager, 'setDeploymentSecrets').mockImplementation();
   it('test with migrate', () => {
-    stateManager.moveSecretsFromDeploymentToTeamProvider();
+    stateManager.moveSecretsFromTeamProviderToDeployment();
     expect(setTeamProviderInfo).toBeCalledWith(undefined, teamProviderInfoWithoutSecrets);
     expect(setDeploymentSecrets).toBeCalledWith(secrets);
     expect(mockGetLocalEnvInfo).toBeCalled();
