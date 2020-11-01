@@ -20,6 +20,8 @@ const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('./utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const { stateManager } = require('amplify-cli-core');
+const { constant } = require('lodash');
+const constants = require('./constants');
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaLayer = 'LambdaLayer';
@@ -172,14 +174,44 @@ async function run(context, resourceDefinition) {
 }
 
 async function checkVpcCreation(context) {
-  const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
-  const nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
+  const cfnFile = 'networkingStackTemplate.json';
+  const networkingStackTemplateFilePath = path.join(__dirname, '..', 'resources', cfnFile);
+  // const nestedStack = context.amplify.readJsonFile(networkingStackTemplateFilePath);
 
   const vpcRequired = isVpcRequired(context);
 
+  if (!vpcRequired) {
+    context.amplify.updateProvideramplifyMeta(providerName, {
+      VpcCfnFile: undefined,
+      ParamAz1Cidr: undefined,
+      ParamAz2Cidr: undefined,
+      ParamAz3Cidr: undefined,
+    });
+    return;
+  }
+
+  const s3 = await S3.getInstance(context);
+
+  const s3Params = {
+    Body: fs.createReadStream(networkingStackTemplateFilePath),
+    Key: `amplify-cfn-templates/${cfnFile}`,
+  };
+
+  const projectBucket = await s3.uploadFile(s3Params);
+  const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${cfnFile}`;
+
+  const networkOptions = {
+    VpcCfnFile: templateURL,
+    ParamAz1Cidr: '10.0.0.0/24',
+    ParamAz2Cidr: '10.0.1.0/24',
+    ParamAz3Cidr: '10.0.2.0/24',
+  };
+
+  context.amplify.updateProvideramplifyMeta(providerName, networkOptions);
+  
   context.print.info('creating vpc...');
 
-  // TODO: add vpc to root stackß
+  // TODO: add vpc to root stack
 }
 
 function isVpcRequired(context) {
@@ -187,7 +219,7 @@ function isVpcRequired(context) {
   const apiObj = context.amplify.getProjectMeta().api;
 
   if (functionsObj) {
-    Object.keys(functionsObj).forEach(key => {
+    const found = Object.keys(functionsObj).some(key => {
       const functionObj = functionsObj[key];
       if (functionObj.providerPlugin === providerName && functionObj.service === 'ElasticContainer') {
             if (functionObj.scheduleOptions && functionObj.scheduleOptions.cloudwatchRule) {
@@ -195,15 +227,23 @@ function isVpcRequired(context) {
             }
           }
     });
+
+    if(found) {
+      return true;
+    }
   }
 
   if (apiObj) {
-    Object.keys(apiObj).forEach(key => {
+    const found = Object.keys(apiObj).some(key => {
       const apiObj = apiObj[key];
       if (apiObj.providerPlugin === providerName && apiObj.service === 'ElasticContainer') {
         return true;
       }
     });
+
+    if(found) {
+      return true;
+    }
   }
 
   return false;
@@ -567,6 +607,29 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
   const nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
   const { amplifyMeta } = projectDetails;
   let authResourceName;
+
+  const { VpcCfnFile } = amplifyMeta.providers[constants.ProviderName];
+  
+  if (VpcCfnFile) {
+    const { ParamVpcId = '', ParamIgwId = '', ParamAz1Cidr = '', ParamAz2Cidr = '', ParamAz3Cidr = '' } = amplifyMeta.providers[
+      constants.ProviderName
+    ];
+
+    nestedStack.Resources.NetworkStack = {
+      Type: 'AWS::CloudFormation::Stack',
+      Properties: {
+        TemplateURL: VpcCfnFile,
+        Parameters: {
+          ParamVpcId,
+          ParamIgwId,
+          ParamAz1Cidr,
+          ParamAz2Cidr,
+          ParamAz3Cidr,
+        },
+      },
+    };
+  }
+
   let categories = Object.keys(amplifyMeta);
   categories = categories.filter(category => category !== 'provider');
   categories.forEach(category => {

@@ -1,10 +1,10 @@
+import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 import inquirer from "inquirer";
 
 const category = 'api';
 const serviceName = 'CloudFront';
 const parametersFileName = 'container-params.json';
 const cfnParametersFilename = 'container-parameters.json';
-import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 
 
 export async function serviceWalkthrough(context, defaultValuesFilename) {
@@ -23,7 +23,7 @@ export async function serviceWalkthrough(context, defaultValuesFilename) {
 
   const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
   // getting requirement satisfaction map
-  const satisfiedRequirements = await checkRequirements(apiRequirements, context);
+  const satisfiedRequirements = await checkRequirements(apiRequirements, context, category, resourceName);
   // checking to see if any requirements are unsatisfied
   const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 

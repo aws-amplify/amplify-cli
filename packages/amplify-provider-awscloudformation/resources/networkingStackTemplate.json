@@ -1,0 +1,599 @@
+{
+    "Parameters": {
+        "ParamVpcId": {
+            "Type": "String"
+        },
+        "ParamIgwId": {
+            "Type": "String"
+        },
+        "ParamAz1Cidr": {
+            "Type": "String"
+        },
+        "ParamAz2Cidr": {
+            "Type": "String"
+        },
+        "ParamAz3Cidr": {
+            "Type": "String"
+        }
+    },
+    "Conditions": {
+        "UseNewVpcCondition": {
+            "Fn::And": [
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "ParamVpcId"
+                        },
+                        ""
+                    ]
+                },
+                {
+                    "Fn::Equals": [
+                        {
+                            "Ref": "ParamIgwId"
+                        },
+                        ""
+                    ]
+                }
+            ]
+        }
+    },
+    "Resources": {
+        "AmplifyVPCBE51B063": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": "10.0.0.0/16",
+                "EnableDnsHostnames": true,
+                "EnableDnsSupport": true,
+                "InstanceTenancy": "default",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "SubnettingTestEnvStack/AmplifyVPC"
+                    }
+                ]
+            },
+            "DeletionPolicy": "Retain",
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/AmplifyVPC/Resource"
+            },
+            "Condition": "UseNewVpcCondition"
+        },
+        "AmplifyIG": {
+            "Type": "AWS::EC2::InternetGateway",
+            "DeletionPolicy": "Retain",
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/AmplifyIG"
+            },
+            "Condition": "UseNewVpcCondition"
+        },
+        "VPCGW": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {
+                    "Ref": "AmplifyVPCBE51B063"
+                },
+                "InternetGatewayId": {
+                    "Ref": "AmplifyIG"
+                }
+            },
+            "DeletionPolicy": "Retain",
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/VPCGW"
+            },
+            "Condition": "UseNewVpcCondition"
+        },
+        "env1Nacl97F794D4": {
+            "Type": "AWS::EC2::NetworkAcl",
+            "Properties": {
+                "VpcId": {
+                    "Fn::If": [
+                        "UseNewVpcCondition",
+                        {
+                            "Ref": "AmplifyVPCBE51B063"
+                        },
+                        {
+                            "Ref": "ParamVpcId"
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1Nacl/Resource"
+            }
+        },
+        "env1NaclEgress09221ACC": {
+            "Type": "AWS::EC2::NetworkAclEntry",
+            "Properties": {
+                "NetworkAclId": {
+                    "Ref": "env1Nacl97F794D4"
+                },
+                "Protocol": -1,
+                "RuleAction": "allow",
+                "RuleNumber": 100,
+                "CidrBlock": "0.0.0.0/0",
+                "Egress": true
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1Nacl/Egress/Resource"
+            }
+        },
+        "env1NaclIngressEnv1E8F87368": {
+            "Type": "AWS::EC2::NetworkAclEntry",
+            "Properties": {
+                "NetworkAclId": {
+                    "Ref": "env1Nacl97F794D4"
+                },
+                "Protocol": -1,
+                "RuleAction": "allow",
+                "RuleNumber": 100,
+                "CidrBlock": {
+                    "Ref": "ParamAz1Cidr"
+                },
+                "Egress": false
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1Nacl/IngressEnv1/Resource"
+            }
+        },
+        "env1NaclIngressEnv2E6286ABF": {
+            "Type": "AWS::EC2::NetworkAclEntry",
+            "Properties": {
+                "NetworkAclId": {
+                    "Ref": "env1Nacl97F794D4"
+                },
+                "Protocol": -1,
+                "RuleAction": "allow",
+                "RuleNumber": 101,
+                "CidrBlock": {
+                    "Ref": "ParamAz2Cidr"
+                },
+                "Egress": false
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1Nacl/IngressEnv2/Resource"
+            }
+        },
+        "env1NaclIngressEnv3E932A080": {
+            "Type": "AWS::EC2::NetworkAclEntry",
+            "Properties": {
+                "NetworkAclId": {
+                    "Ref": "env1Nacl97F794D4"
+                },
+                "Protocol": -1,
+                "RuleAction": "allow",
+                "RuleNumber": 102,
+                "CidrBlock": {
+                    "Ref": "ParamAz3Cidr"
+                },
+                "Egress": false
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1Nacl/IngressEnv3/Resource"
+            }
+        },
+        "env1NaclIngressVPC56B7CFD3": {
+            "Type": "AWS::EC2::NetworkAclEntry",
+            "Properties": {
+                "NetworkAclId": {
+                    "Ref": "env1Nacl97F794D4"
+                },
+                "Protocol": -1,
+                "RuleAction": "deny",
+                "RuleNumber": 200,
+                "CidrBlock": "10.0.0.0/16",
+                "Egress": false
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1Nacl/IngressVPC/Resource"
+            }
+        },
+        "env1NaclIngressInternet71BC35B6": {
+            "Type": "AWS::EC2::NetworkAclEntry",
+            "Properties": {
+                "NetworkAclId": {
+                    "Ref": "env1Nacl97F794D4"
+                },
+                "Protocol": -1,
+                "RuleAction": "allow",
+                "RuleNumber": 300,
+                "CidrBlock": "0.0.0.0/0",
+                "Egress": false
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1Nacl/IngressInternet/Resource"
+            }
+        },
+        "env1NaclSubnettingTestEnvStackenv1PublicSubnet1CA147934C5F78F11": {
+            "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+            "Properties": {
+                "NetworkAclId": {
+                    "Ref": "env1Nacl97F794D4"
+                },
+                "SubnetId": {
+                    "Ref": "env1PublicSubnet1SubnetD774E525"
+                }
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1Nacl/SubnettingTestEnvStackenv1PublicSubnet1CA147934/Resource"
+            }
+        },
+        "env1NaclSubnettingTestEnvStackenv1PublicSubnet2EA78D6023AEE9C7B": {
+            "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+            "Properties": {
+                "NetworkAclId": {
+                    "Ref": "env1Nacl97F794D4"
+                },
+                "SubnetId": {
+                    "Ref": "env1PublicSubnet2Subnet6F5E19E7"
+                }
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1Nacl/SubnettingTestEnvStackenv1PublicSubnet2EA78D602/Resource"
+            }
+        },
+        "env1NaclSubnettingTestEnvStackenv1PublicSubnet34BCFB9CFC41C8489": {
+            "Type": "AWS::EC2::SubnetNetworkAclAssociation",
+            "Properties": {
+                "NetworkAclId": {
+                    "Ref": "env1Nacl97F794D4"
+                },
+                "SubnetId": {
+                    "Ref": "env1PublicSubnet3Subnet58FF8609"
+                }
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1Nacl/SubnettingTestEnvStackenv1PublicSubnet34BCFB9CF/Resource"
+            }
+        },
+        "env1PublicSubnet1SubnetD774E525": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "ParamAz1Cidr"
+                },
+                "VpcId": {
+                    "Fn::If": [
+                        "UseNewVpcCondition",
+                        {
+                            "Ref": "AmplifyVPCBE51B063"
+                        },
+                        {
+                            "Ref": "ParamVpcId"
+                        }
+                    ]
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        0,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "MapPublicIpOnLaunch": true,
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "SubnettingTestEnvStack/env1PublicSubnet1"
+                    }
+                ]
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1PublicSubnet1/Subnet"
+            }
+        },
+        "env1PublicSubnet1RouteTableEE620D48": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Fn::If": [
+                        "UseNewVpcCondition",
+                        {
+                            "Ref": "AmplifyVPCBE51B063"
+                        },
+                        {
+                            "Ref": "ParamVpcId"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "SubnettingTestEnvStack/env1PublicSubnet1"
+                    }
+                ]
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1PublicSubnet1/RouteTable"
+            }
+        },
+        "env1PublicSubnet1RouteTableAssociation67DAC109": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "env1PublicSubnet1RouteTableEE620D48"
+                },
+                "SubnetId": {
+                    "Ref": "env1PublicSubnet1SubnetD774E525"
+                }
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1PublicSubnet1/RouteTableAssociation"
+            }
+        },
+        "env1DefaultRoute1": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "env1PublicSubnet1RouteTableEE620D48"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Fn::If": [
+                        "UseNewVpcCondition",
+                        {
+                            "Ref": "AmplifyIG"
+                        },
+                        {
+                            "Ref": "ParamIgwId"
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1DefaultRoute1"
+            }
+        },
+        "env1PublicSubnet2Subnet6F5E19E7": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "ParamAz2Cidr"
+                },
+                "VpcId": {
+                    "Fn::If": [
+                        "UseNewVpcCondition",
+                        {
+                            "Ref": "AmplifyVPCBE51B063"
+                        },
+                        {
+                            "Ref": "ParamVpcId"
+                        }
+                    ]
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        1,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "MapPublicIpOnLaunch": true,
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "SubnettingTestEnvStack/env1PublicSubnet2"
+                    }
+                ]
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1PublicSubnet2/Subnet"
+            }
+        },
+        "env1PublicSubnet2RouteTable12AC75C2": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Fn::If": [
+                        "UseNewVpcCondition",
+                        {
+                            "Ref": "AmplifyVPCBE51B063"
+                        },
+                        {
+                            "Ref": "ParamVpcId"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "SubnettingTestEnvStack/env1PublicSubnet2"
+                    }
+                ]
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1PublicSubnet2/RouteTable"
+            }
+        },
+        "env1PublicSubnet2RouteTableAssociation51AD60AE": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "env1PublicSubnet2RouteTable12AC75C2"
+                },
+                "SubnetId": {
+                    "Ref": "env1PublicSubnet2Subnet6F5E19E7"
+                }
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1PublicSubnet2/RouteTableAssociation"
+            }
+        },
+        "env1DefaultRoute2": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "env1PublicSubnet2RouteTable12AC75C2"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Fn::If": [
+                        "UseNewVpcCondition",
+                        {
+                            "Ref": "AmplifyIG"
+                        },
+                        {
+                            "Ref": "ParamIgwId"
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1DefaultRoute2"
+            }
+        },
+        "env1PublicSubnet3Subnet58FF8609": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "ParamAz3Cidr"
+                },
+                "VpcId": {
+                    "Fn::If": [
+                        "UseNewVpcCondition",
+                        {
+                            "Ref": "AmplifyVPCBE51B063"
+                        },
+                        {
+                            "Ref": "ParamVpcId"
+                        }
+                    ]
+                },
+                "AvailabilityZone": {
+                    "Fn::Select": [
+                        2,
+                        {
+                            "Fn::GetAZs": ""
+                        }
+                    ]
+                },
+                "MapPublicIpOnLaunch": true,
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "SubnettingTestEnvStack/env1PublicSubnet3"
+                    }
+                ]
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1PublicSubnet3/Subnet"
+            }
+        },
+        "env1PublicSubnet3RouteTable8B487A6D": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {
+                    "Fn::If": [
+                        "UseNewVpcCondition",
+                        {
+                            "Ref": "AmplifyVPCBE51B063"
+                        },
+                        {
+                            "Ref": "ParamVpcId"
+                        }
+                    ]
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "SubnettingTestEnvStack/env1PublicSubnet3"
+                    }
+                ]
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1PublicSubnet3/RouteTable"
+            }
+        },
+        "env1PublicSubnet3RouteTableAssociationA245E6FE": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "env1PublicSubnet3RouteTable8B487A6D"
+                },
+                "SubnetId": {
+                    "Ref": "env1PublicSubnet3Subnet58FF8609"
+                }
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1PublicSubnet3/RouteTableAssociation"
+            }
+        },
+        "env1DefaultRoute3": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "env1PublicSubnet3RouteTable8B487A6D"
+                },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Fn::If": [
+                        "UseNewVpcCondition",
+                        {
+                            "Ref": "AmplifyIG"
+                        },
+                        {
+                            "Ref": "ParamIgwId"
+                        }
+                    ]
+                }
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/env1DefaultRoute3"
+            }
+        },
+        "CDKMetadata": {
+            "Type": "AWS::CDK::Metadata",
+            "Properties": {
+                "Modules": "aws-cdk=1.70.0,@aws-cdk/assets=1.70.0,@aws-cdk/aws-cloudwatch=1.70.0,@aws-cdk/aws-ec2=1.70.0,@aws-cdk/aws-events=1.70.0,@aws-cdk/aws-iam=1.70.0,@aws-cdk/aws-kms=1.70.0,@aws-cdk/aws-logs=1.70.0,@aws-cdk/aws-s3=1.70.0,@aws-cdk/aws-s3-assets=1.70.0,@aws-cdk/aws-ssm=1.70.0,@aws-cdk/cloud-assembly-schema=1.70.0,@aws-cdk/core=1.70.0,@aws-cdk/cx-api=1.70.0,@aws-cdk/region-info=1.70.0,jsii-runtime=node.js/v12.16.1"
+            },
+            "Metadata": {
+                "aws:cdk:path": "SubnettingTestEnvStack/CDKMetadata/Default"
+            }
+        }
+    },
+    "Outputs": {
+        "Vpc": {
+            "Value": {
+                "Fn::If": [
+                    "UseNewVpcCondition",
+                    {
+                        "Ref": "AmplifyVPCBE51B063"
+                    },
+                    {
+                        "Ref": "ParamVpcId"
+                    }
+                ]
+            }
+        },
+        "Igw": {
+            "Value": {
+                "Fn::If": [
+                    "UseNewVpcCondition",
+                    {
+                        "Ref": "AmplifyIG"
+                    },
+                    {
+                        "Ref": "ParamIgwId"
+                    }
+                ]
+            }
+        },
+        "Az1Subnet": {
+            "Value": {
+                "Ref": "env1PublicSubnet1SubnetD774E525"
+            }
+        },
+        "Az2Subnet": {
+            "Value": {
+                "Ref": "env1PublicSubnet2Subnet6F5E19E7"
+            }
+        },
+        "Az3Subnet": {
+            "Value": {
+                "Ref": "env1PublicSubnet3Subnet58FF8609"
+            }
+        }
+    }
+}
