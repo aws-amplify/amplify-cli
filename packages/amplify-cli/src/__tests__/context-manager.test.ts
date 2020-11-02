@@ -19,6 +19,7 @@ jest.mock('../domain/amplify-usageData/', () => {
         init: jest.fn(),
       },
     },
+    createSaltedUniqueIdentifier: jest.fn().mockReturnValue('key'),
   };
 });
 jest.mock('../app-config');
@@ -34,11 +35,6 @@ describe('test attachUsageData', () => {
   ]);
   mockContext.pluginPlatform = new PluginPlatform();
   mockContext.pluginPlatform.plugins['core'] = [new PluginInfo('', version, '', new PluginManifest('', ''))];
-
-  beforeAll(() => {});
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
 
   it('constructContext', () => {
     const context = constructContext(mockContext.pluginPlatform, mockContext.input);
@@ -59,7 +55,12 @@ describe('test attachUsageData', () => {
     const mockedInit = appConfig.init as jest.Mock;
     mockedInit.mockReturnValue(returnValue);
     attachUsageData(mockContext);
-    expect(UsageData.UsageData.Instance.init).toBeCalledWith(returnValue.usageDataConfig.installationUuid, version, mockContext.input);
+    expect(UsageData.UsageData.Instance.init).toBeCalledWith(
+      returnValue.usageDataConfig.installationUuid,
+      version,
+      mockContext.input,
+      'key',
+    );
   });
 
   it('test with usage data enabled', () => {
@@ -73,6 +74,11 @@ describe('test attachUsageData', () => {
     const mockedInit = appConfig.init as jest.Mock;
     mockedInit.mockReturnValue(returnValue);
     attachUsageData(mockContext);
-    expect(UsageData.NoUsageData.Instance.init).toBeCalledWith(returnValue.usageDataConfig.installationUuid, version, mockContext.input);
+    expect(UsageData.NoUsageData.Instance.init).toBeCalledWith(
+      returnValue.usageDataConfig.installationUuid,
+      version,
+      mockContext.input,
+      'key',
+    );
   });
 });

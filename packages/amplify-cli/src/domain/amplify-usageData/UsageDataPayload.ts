@@ -15,7 +15,16 @@ export class UsageDataPayload {
   nodeVersion: string;
   state: string;
   isCi: boolean;
-  constructor(sessionUuid: string, installationUuid: string, version: string, input: Input, error: Error | null, state: string) {
+  uniqueIdentifier?: string;
+  constructor(
+    sessionUuid: string,
+    installationUuid: string,
+    version: string,
+    input: Input,
+    error: Error | null,
+    state: string,
+    uniqueIdentifier?: string,
+  ) {
     this.sessionUuid = sessionUuid;
     this.installationUuid = installationUuid;
     this.amplifyCliVersion = version;
@@ -27,6 +36,7 @@ export class UsageDataPayload {
     this.state = state;
     this.payloadVersion = getLatestPayloadVersion();
     this.isCi = ci.isCI;
+    this.uniqueIdentifier = uniqueIdentifier;
     if (error) {
       this.error = new SerializableError(error);
     }

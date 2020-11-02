@@ -5,5 +5,5 @@ export interface IUsageData {
   emitInvoke(): Promise<void>;
   emitAbort(): Promise<void>;
   emitSuccess(): Promise<void>;
-  init(installationUuid: String, version: String, input: Input): void;
+  init(installationUuid: string, version: string, input: Input, uniqueIdentifier?: string): void;
 }

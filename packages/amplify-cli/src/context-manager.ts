@@ -3,7 +3,7 @@ import { Input } from './domain/input';
 import { PluginPlatform } from './domain/plugin-platform';
 import { attachExtentions } from './context-extensions';
 import { init } from './app-config';
-import { UsageData, NoUsageData } from './domain/amplify-usageData';
+import { UsageData, NoUsageData, createSaltedUniqueIdentifier } from './domain/amplify-usageData';
 
 export function constructContext(pluginPlatform: PluginPlatform, input: Input): Context {
   const context = new Context(pluginPlatform, input);
@@ -22,7 +22,12 @@ export function attachUsageData(context: Context) {
   } else {
     context.usageData = NoUsageData.Instance;
   }
-  context.usageData.init(config.usageDataConfig.installationUuid, getVersion(context), context.input);
+  context.usageData.init(
+    config.usageDataConfig.installationUuid,
+    getVersion(context),
+    context.input,
+    createSaltedUniqueIdentifier(context),
+  );
 }
 
 const getVersion = (context: Context) => context.pluginPlatform.plugins.core[0].packageVersion;

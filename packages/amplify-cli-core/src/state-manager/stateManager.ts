@@ -89,6 +89,12 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
+  getCurrentProfileName = (projectPath?: string): string => {
+    const { envName } = this.getLocalEnvInfo(projectPath);
+    const localAWSInfo = this.getLocalAWSInfo(projectPath);
+    return localAWSInfo[envName].profileName;
+  };
+
   backendConfigFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getBackendConfigFilePath(projectPath));
 
   getBackendConfig = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {

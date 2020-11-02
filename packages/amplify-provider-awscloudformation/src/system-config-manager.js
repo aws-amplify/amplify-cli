@@ -312,8 +312,13 @@ function getNamedProfiles() {
   return namedProfiles;
 }
 
+function getProfileAccessKeyId(profileName) {
+  return getProfileCredentials(profileName).accessKeyId;
+}
+
 module.exports = {
   setProfile,
+  getProfileAccessKeyId,
   getProfiledAwsConfig,
   getProfileCredentials,
   getProfileRegion,

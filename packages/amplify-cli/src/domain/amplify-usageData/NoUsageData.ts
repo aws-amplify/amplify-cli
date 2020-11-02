@@ -13,7 +13,7 @@ export class NoUsageData implements IUsageData {
   emitSuccess(): Promise<void> {
     return Promise.resolve();
   }
-  init(installationUuid: String, version: String, input: any): void {}
+  init(installationUuid: String, version: String, input: any, uniqueIdentifier?: string): void {}
 
   private static instance: NoUsageData;
   static get Instance(): IUsageData {
