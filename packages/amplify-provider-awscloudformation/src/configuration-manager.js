@@ -10,6 +10,7 @@ const constants = require('./constants');
 const setupNewUser = require('./setup-new-user');
 const obfuscateUtil = require('./utility-obfuscate');
 const systemConfigManager = require('./system-config-manager');
+const { doAdminCredentialsExist } = require('./utils/amplify-admin-helpers');
 
 const { stateManager } = require('amplify-cli-core');
 
@@ -386,7 +387,14 @@ function validateConfig(context) {
 }
 
 function persistLocalEnvConfig(context) {
-  const { awsConfigInfo } = context.exeInfo;
+  let { awsConfigInfo } = context.exeInfo;
+
+  if (context.parameters?.options?.appId && doAdminCredentialsExist(context.parameters.options.appId)) {
+    awsConfigInfo = {
+      configLevel: 'amplifyAdmin',
+      config: {},
+    };
+  }
 
   const awsInfo = {
     configLevel: awsConfigInfo.configLevel,
@@ -394,6 +402,8 @@ function persistLocalEnvConfig(context) {
 
   if (awsConfigInfo.configLevel === 'general') {
     awsInfo.configLevel = 'general';
+  } else if (awsConfigInfo.configLevel === 'amplifyAdmin') {
+    awsInfo.configLevel = 'amplifyAdmin';
   } else {
     awsInfo.configLevel = 'project';
     if (awsConfigInfo.config.useProfile) {
@@ -551,23 +561,24 @@ function isJwtExpired(token) {
   return secSinceEpoch >= expiration - 60;
 }
 
-async function loadConfigurationForEnv(context, env) {
+async function loadConfigurationForEnv(context, env, appId) {
   const projectConfigInfo = getConfigForEnv(context, env);
   const { print } = context;
   let awsConfig;
-  if (projectConfigInfo.configLevel === 'amplifyAdmin') {
-    const amplifyMeta = stateManager.getMeta();
-    const appId = amplifyMeta.providers.awscloudformation.AmplifyAppId;
-    // load and token and check expiry, refresh if needed
-    const authConfig = stateManager.getAmplifyAdminConfigEntry(appId);
-    if (!authConfig) {
+  if (projectConfigInfo.configLevel === 'amplifyAdmin' || appId) {
+    projectConfigInfo.configLevel = 'amplifyAdmin';
+    appId = appId || stateManager.getMeta().providers.awscloudformation.AmplifyAppId;
+
+    if (!doAdminCredentialsExist(appId)) {
       print.info('');
       print.error(`No credentials found for appId: ${appId}`);
       print.info(`If the appId is correct, try running amplify configure --appId ${appId}`);
       process.exit(1);
     }
 
-    // use tokens to get creds and assign to config
+    // load token, check expiry, refresh if needed
+    const authConfig = stateManager.getAmplifyAdminConfigEntry(appId);
+
     if (isJwtExpired(authConfig.idToken)) {
       const refreshedTokens = await refreshJWTs(authConfig, print);
       // Refresh stored tokens
@@ -576,6 +587,7 @@ async function loadConfigurationForEnv(context, env) {
       stateManager.setAmplifyAdminConfigEntry(appId, authConfig);
     }
     try {
+      // use tokens to get creds and assign to config
       const { idToken, IdentityId, region } = authConfig;
       let credentials = (await getAdminCredentials(idToken, IdentityId, region)).Credentials;
 

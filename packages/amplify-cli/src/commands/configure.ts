@@ -10,6 +10,7 @@ import { normalizeInputParams } from '../input-params-manager';
 import { write } from '../app-config';
 import { Context } from '../domain/context';
 import { AdminLoginServer } from '../app-config/adminLoginServer';
+import { amplifyAdminUrl, originUrl } from './helpers/constants';
 
 export const run = async (context: Context) => {
   if (context.parameters.options['usage-data-off']) {
@@ -23,18 +24,18 @@ export const run = async (context: Context) => {
     return;
   }
 
-  if (context.parameters.options.appId) {
-    const { appId } = context.parameters.options;
-    const URL = `https://www.dracarys.app.com/verify/${appId}`;
+  if (context.parameters.options.appId && context.parameters.options.envName) {
+    const { appId, envName } = context.parameters.options;
+    const URL = amplifyAdminUrl(appId, envName);
     context.print.info(`Opening link: ${URL}`);
     await open(URL, { wait: false }).catch(e => {
       context.print.error('Failed to open web browser.');
       return;
     });
-    // spawn express server locally to get credentials from redirect
-    const spinner = ora('Starting localhost:4242\n').start();
+    const spinner = ora('Continue in browser to log in…\n').start();
     try {
-      const adminLoginServer = new AdminLoginServer(appId, URL, () => {
+      // spawn express server locally to get credentials from redirect
+      const adminLoginServer = new AdminLoginServer(appId, originUrl, () => {
         adminLoginServer.shutdown();
         spinner.stop();
         context.print.info('Successfully received Amplify Admin tokens.');

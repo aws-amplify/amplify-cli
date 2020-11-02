@@ -114,10 +114,11 @@ export class StateManager {
     };
 
     return this.getData<$TSAny>(filePath, mergedOptions);
-  }
+  };
 
   getAmplifyAdminConfigEntry = (appId: string) => {
-    return (JSONUtilities.readJson(pathManager.getAmplifyAdminConfigFilePath()) as any)[appId];
+    const adminConfig = (JSONUtilities.readJson(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) || {}) as any;
+    return adminConfig[appId];
   };
 
   removeAmplifyAdminConfigEntry = (appId: string) => {
