@@ -178,7 +178,6 @@ export async function signInUser2(username: string, realPw: string) {
   });
   const user = Amplify.Auth.createCognitoUser(username);
   const authRes: any = await authenticateUser(user, authDetails, realPw);
-  console.log(`Logged in ${username} \n${authRes.getIdToken().getJwtToken()}`);
   return user;
 }
 

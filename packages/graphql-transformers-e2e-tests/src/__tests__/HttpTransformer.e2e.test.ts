@@ -7,8 +7,7 @@ import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
 import { default as moment } from 'moment';
-import emptyBucket from '../emptyBucket';
-import { deploy } from '../deployNestedStacks';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { deployJsonServer, destroyJsonServer } from '../cdkUtils';
@@ -122,8 +121,6 @@ beforeAll(async () => {
     // Arbitrary wait to make sure everything is ready.
     await cf.wait(5, () => Promise.resolve());
 
-    console.log('Successfully created stack ' + STACK_NAME);
-    console.log(finishedStack);
     expect(finishedStack).toBeDefined();
 
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
@@ -142,31 +139,9 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  try {
-    console.log('Deleting json server deployment');
-    destroyJsonServer();
+  destroyJsonServer();
 
-    console.log('Deleting stack ' + STACK_NAME);
-
-    await cf.deleteStack(STACK_NAME);
-    await cf.waitForStack(STACK_NAME);
-    console.log('Successfully deleted stack ' + STACK_NAME);
-  } catch (e) {
-    if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-      // The stack was deleted. This is good.
-      expect(true).toEqual(true);
-      console.log('Successfully deleted stack ' + STACK_NAME);
-    } else {
-      console.error(e);
-      expect(true).toEqual(false);
-    }
-  }
-
-  try {
-    await emptyBucket(BUCKET_NAME);
-  } catch (e) {
-    console.error(`Failed to empty S3 bucket: ${e}`);
-  }
+  await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf);
 });
 
 /**
@@ -434,7 +409,9 @@ test('Test that GET errors when missing a required Query input object', async ()
     expect(response.data).toBeNull();
     expect(response.errors).toBeDefined();
     expect(response.errors).toHaveLength(1);
-    expect(response.errors[0].message).toEqual('Validation error of type MissingFieldArgument: Missing field argument query @ \'createComment/complexGet\'');
+    expect(response.errors[0].message).toEqual(
+      "Validation error of type MissingFieldArgument: Missing field argument query @ 'createComment/complexGet'",
+    );
   } catch (e) {
     console.error(e);
     // fail
@@ -467,7 +444,9 @@ test('Test that POST errors when missing a non-null arg in query/body', async ()
     expect(response.data.createComment.complexPost).toBeNull();
     expect(response.errors).toBeDefined();
     expect(response.errors).toHaveLength(1);
-    expect(response.errors[0].message).toEqual('An argument you marked as Non-Null is not present in the query nor the body of your request.');
+    expect(response.errors[0].message).toEqual(
+      'An argument you marked as Non-Null is not present in the query nor the body of your request.',
+    );
   } catch (e) {
     console.error(e);
     // fail

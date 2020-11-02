@@ -78,7 +78,7 @@ export async function signupAndAuthenticateUser(userPoolId: string, username: st
     // Sign up then login user 1.ß
     await signupUser(userPoolId, username, tmpPw);
   } catch (e) {
-    console.log(`Trying to login with temp password`);
+    console.error(`Trying to login with temp password`, e);
   }
 
   try {
@@ -90,7 +90,7 @@ export async function signupAndAuthenticateUser(userPoolId: string, username: st
     const authRes = await authenticateUser(user, authDetails, realPw);
     return authRes;
   } catch (e) {
-    console.log(`Trying to login with real password`);
+    console.error(`Trying to login with real password`, e);
   }
 
   try {
@@ -100,11 +100,9 @@ export async function signupAndAuthenticateUser(userPoolId: string, username: st
     });
     const user = Amplify.Auth.createCognitoUser(username);
     const authRes: any = await authenticateUser(user, authDetails, realPw);
-    console.log(`Logged in ${username} \n${authRes.getIdToken().getJwtToken()}`);
     return authRes;
   } catch (e) {
-    console.error(`Failed to login.\n`);
-    console.error(e);
+    console.error(`Failed to login`, e);
   }
 }
 

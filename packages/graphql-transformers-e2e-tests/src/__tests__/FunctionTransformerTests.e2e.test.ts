@@ -7,8 +7,7 @@ import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
 import { default as moment } from 'moment';
-import emptyBucket from '../emptyBucket';
-import { deploy } from '../deployNestedStacks';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { LambdaHelper } from '../LambdaHelper';
@@ -114,8 +113,6 @@ beforeAll(async () => {
   );
   // Arbitrary wait to make sure everything is ready.
   await cf.wait(5, () => Promise.resolve());
-  console.log('Successfully created stack ' + STACK_NAME);
-  console.log(finishedStack);
   expect(finishedStack).toBeDefined();
   const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
   const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
@@ -127,26 +124,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  try {
-    console.log('Deleting stack ' + STACK_NAME);
-    await cf.deleteStack(STACK_NAME);
-    await cf.waitForStack(STACK_NAME);
-    console.log('Successfully deleted stack ' + STACK_NAME);
-  } catch (e) {
-    if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-      // The stack was deleted. This is good.
-      expect(true).toEqual(true);
-      console.log('Successfully deleted stack ' + STACK_NAME);
-    } else {
-      console.error(e);
-      expect(true).toEqual(false);
-    }
-  }
-  try {
-    await emptyBucket(BUCKET_NAME);
-  } catch (e) {
-    console.warn(`Error during bucket cleanup: ${e}`);
-  }
+  await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf);
+
   try {
     await LAMBDA_HELPER.deleteFunction(ECHO_FUNCTION_NAME);
   } catch (e) {
@@ -190,7 +169,6 @@ test('Test simple echo function', async () => {
     }`,
     {},
   );
-  console.log(JSON.stringify(response, null, 4));
   expect(response.data.echo.arguments.msg).toEqual('Hello');
   expect(response.data.echo.typeName).toEqual('Query');
   expect(response.data.echo.fieldName).toEqual('echo');
@@ -209,7 +187,6 @@ test('Test simple echoEnv function', async () => {
     }`,
     {},
   );
-  console.log(JSON.stringify(response, null, 4));
   expect(response.data.echoEnv.arguments.msg).toEqual('Hello');
   expect(response.data.echoEnv.typeName).toEqual('Query');
   expect(response.data.echoEnv.fieldName).toEqual('echoEnv');
@@ -228,7 +205,6 @@ test('Test simple duplicate function', async () => {
     }`,
     {},
   );
-  console.log(JSON.stringify(response, null, 4));
   expect(response.data.duplicate.arguments.msg).toEqual('Hello');
   expect(response.data.duplicate.typeName).toEqual('Query');
   expect(response.data.duplicate.fieldName).toEqual('duplicate');
@@ -241,7 +217,6 @@ test('Test pipeline of @function(s)', async () => {
     }`,
     {},
   );
-  console.log(JSON.stringify(response, null, 4));
   expect(response.data.pipeline).toEqual('Hello, world!');
 });
 
@@ -258,7 +233,6 @@ test('Test pipelineReverse of @function(s)', async () => {
     }`,
     {},
   );
-  console.log(JSON.stringify(response, null, 4));
   expect(response.data.pipelineReverse.arguments.msg).toEqual('Hello');
   expect(response.data.pipelineReverse.typeName).toEqual('Query');
   expect(response.data.pipelineReverse.fieldName).toEqual('pipelineReverse');
