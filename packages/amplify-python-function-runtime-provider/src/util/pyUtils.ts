@@ -55,13 +55,13 @@ export const getPythonBinaryName = (): string | undefined => {
   const executables = ['python3', 'python'];
   let executablePath: string | null;
 
-  for (let i = 0; i < executables.length; i++) {
-    executablePath = which.sync(executables[i], {
+  for (const executable of executables) {
+    executablePath = which.sync(executable, {
       nothrow: true,
     });
 
     if (executablePath !== null) {
-      return executables[i];
+      return executable;
     }
   }
 };
