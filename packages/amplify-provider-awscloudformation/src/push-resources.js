@@ -20,8 +20,9 @@ const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('./utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const { stateManager } = require('amplify-cli-core');
-const { constant } = require('lodash');
 const constants = require('./constants');
+const { NetworkStack } = require('./network/stack');
+const { getEnvironmentNetworkInfo } = require('./network/environment-info');
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaLayer = 'LambdaLayer';
@@ -174,26 +175,46 @@ async function run(context, resourceDefinition) {
 }
 
 async function checkVpcCreation(context) {
-  const cfnFile = 'networkingStackTemplate.json';
-  const networkingStackTemplateFilePath = path.join(__dirname, '..', 'resources', cfnFile);
-  // const nestedStack = context.amplify.readJsonFile(networkingStackTemplateFilePath);
-
   const vpcRequired = isVpcRequired(context);
 
   if (!vpcRequired) {
     context.amplify.updateProvideramplifyMeta(providerName, {
       VpcCfnFile: undefined,
-      ParamAz1Cidr: undefined,
-      ParamAz2Cidr: undefined,
-      ParamAz3Cidr: undefined,
     });
     return;
   }
 
+  const { StackName: stackName, Region: region } = context.amplify.getProjectMeta().providers[constants.ProviderName];
+
+  const {
+    vpcId,
+    internetGatewayId,
+    subnetCidrs
+  } = await getEnvironmentNetworkInfo({ 
+    stackName,
+    region,
+    vpcName: 'Amplify/VPC',
+    vpcCidr: '10.0.0.0/16',
+    subnetsCount: 3,
+    subnetMask: 24,
+  });
+
+  context.print.info(`Setting up network ${JSON.stringify({vpcId, internetGatewayId, subnetCidrs: Array.from(subnetCidrs)})}`);
+
+  const stack = new NetworkStack(undefined, 'Amplify', {
+    stackName,
+    vpcId,
+    internetGatewayId,
+    subnetCidrs,
+  });
+  const cfn = stack._toCloudFormation();
+
+  const cfnFile = 'networkingStackTemplate.json';
+
   const s3 = await S3.getInstance(context);
 
   const s3Params = {
-    Body: fs.createReadStream(networkingStackTemplateFilePath),
+    Body: JSON.stringify(cfn, null, 2),
     Key: `amplify-cfn-templates/${cfnFile}`,
   };
 
@@ -202,16 +223,9 @@ async function checkVpcCreation(context) {
 
   const networkOptions = {
     VpcCfnFile: templateURL,
-    ParamAz1Cidr: '10.0.0.0/24',
-    ParamAz2Cidr: '10.0.1.0/24',
-    ParamAz3Cidr: '10.0.2.0/24',
   };
 
   context.amplify.updateProvideramplifyMeta(providerName, networkOptions);
-  
-  context.print.info('creating vpc...');
-
-  // TODO: add vpc to root stack
 }
 
 function isVpcRequired(context) {
@@ -222,13 +236,13 @@ function isVpcRequired(context) {
     const found = Object.keys(functionsObj).some(key => {
       const functionObj = functionsObj[key];
       if (functionObj.providerPlugin === providerName && functionObj.service === 'ElasticContainer') {
-            if (functionObj.scheduleOptions && functionObj.scheduleOptions.cloudwatchRule) {
-              return true;
-            }
-          }
+        if (functionObj.scheduleOptions && functionObj.scheduleOptions.cloudwatchRule) {
+          return true;
+        }
+      }
     });
 
-    if(found) {
+    if (found) {
       return true;
     }
   }
@@ -241,7 +255,7 @@ function isVpcRequired(context) {
       }
     });
 
-    if(found) {
+    if (found) {
       return true;
     }
   }
@@ -609,23 +623,12 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
   let authResourceName;
 
   const { VpcCfnFile } = amplifyMeta.providers[constants.ProviderName];
-  
-  if (VpcCfnFile) {
-    const { ParamVpcId = '', ParamIgwId = '', ParamAz1Cidr = '', ParamAz2Cidr = '', ParamAz3Cidr = '' } = amplifyMeta.providers[
-      constants.ProviderName
-    ];
 
+  if (VpcCfnFile) {
     nestedStack.Resources.NetworkStack = {
       Type: 'AWS::CloudFormation::Stack',
       Properties: {
         TemplateURL: VpcCfnFile,
-        Parameters: {
-          ParamVpcId,
-          ParamIgwId,
-          ParamAz1Cidr,
-          ParamAz2Cidr,
-          ParamAz3Cidr,
-        },
       },
     };
   }

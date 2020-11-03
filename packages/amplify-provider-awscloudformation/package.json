@@ -22,6 +22,9 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
+    "@aws-cdk/aws-ec2": "~1.67.0",
+    "@aws-cdk/aws-iam": "~1.67.0",
+    "@aws-cdk/core": "~1.67.0",
     "@aws-amplify/graphql-model-transformer": "0.1.0",
     "@aws-amplify/graphql-transformer-core": "0.1.0",
     "@aws-amplify/graphql-transformer-interfaces": "1.1.0",
@@ -57,6 +60,7 @@
     "inquirer": "^7.3.3",
     "lodash": "^4.17.19",
     "moment": "^2.24.0",
+    "netmask": "^1.0.6",
     "open": "^7.0.0",
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
