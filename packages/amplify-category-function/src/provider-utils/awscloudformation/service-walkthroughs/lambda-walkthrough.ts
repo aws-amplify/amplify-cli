@@ -80,6 +80,54 @@ export async function createWalkthrough(
 
   return templateParameters;
 }
+
+function provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters) {
+  // Provide general information
+  context.print.success('General information');
+  context.print.info('| Name: '.concat(lambdaToUpdate));
+  context.print.info('| Runtime: '.concat(functionRuntime));
+  context.print.info('');
+
+  // Provide resource access permission information
+  context.print.success('Resource access permission');
+  const currentCategoryPermissions = fetchPermissionCategories(currentParameters.permissions);
+  if (currentCategoryPermissions.length) {
+    currentCategoryPermissions.forEach(category => {
+      const currentResources = fetchPermissionResourcesForCategory(currentParameters.permissions, category);
+      currentResources.forEach(resource => {
+        const currentPermissions = fetchPermissionsForResourceInCategory(currentParameters.permissions, category, resource);
+        const formattedCurrentPermissions = ' ('.concat(currentPermissions.join(', ').concat(')'));
+        context.print.info('- '.concat(resource).concat(formattedCurrentPermissions));
+      });
+    });
+  } else {
+    context.print.info('- Not configured');
+  }
+  context.print.info('');
+
+  // Provide scheduling information
+  context.print.success('Scheduled recurring invocation');
+  if (scheduleParameters.cloudwatchRule && scheduleParameters.cloudwatchRule !== 'NONE') {
+    context.print.info('| '.concat(scheduleParameters.cloudwatchRule));
+    context.print.info('');
+  } else {
+    context.print.info('| Not configured');
+    context.print.info('');
+  }
+
+  // Provide lambda layer information
+  context.print.success('Lambda layers');
+  if (currentParameters.lambdaLayers.length) {
+    currentParameters.lambdaLayers.forEach(layer => {
+      context.print.info('- '.concat(layer.arn));
+    });
+    context.print.info('');
+  } else {
+    context.print.info('- Not configured');
+    context.print.info('');
+  }
+}
+
 /**
  * TODO this function needs to be refactored so it doesn't have side-effects of writing to CFN files
  */
@@ -128,55 +176,13 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const currentParameters = loadFunctionParameters(context, resourceDirPath);
   const functionRuntime = context.amplify.readBreadcrumbs(context, category, functionParameters.resourceName).functionRuntime as string;
 
-  // Provide general information
-  context.print.success('General information');
-  context.print.info('| Name: '.concat(lambdaToUpdate));
-  context.print.info('| Runtime: '.concat(functionRuntime));
-  context.print.info('');
-
-  // Provide resource access permission information
-  context.print.success('Resource access permission');
-  const currentCategoryPermissions = fetchPermissionCategories(currentParameters.permissions);
-  if (currentCategoryPermissions.length) {
-    currentCategoryPermissions.forEach(category => {
-      const currentResources = fetchPermissionResourcesForCategory(currentParameters.permissions, category);
-      currentResources.forEach(resource => {
-        const currentPermissions = fetchPermissionsForResourceInCategory(currentParameters.permissions, category, resource);
-        const formattedCurrentPermissions = ' ('.concat(currentPermissions.join(', ').concat(')'));
-        context.print.info('- '.concat(resource).concat(formattedCurrentPermissions));
-      });
-    });
-  } else {
-    context.print.info('- Not configured');
-  }
-  context.print.info('');
-
-  // Provide scheduling information
   const cfnParameters = context.amplify.readJsonFile(path.join(resourceDirPath, parametersFileName), undefined, false) || {};
   const scheduleParameters = {
     cloudwatchRule: cfnParameters.CloudWatchRule,
     resourceName: functionParameters.resourceName,
   };
-  context.print.success('Scheduled recurring invocation');
-  if (scheduleParameters.cloudwatchRule && scheduleParameters.cloudwatchRule !== 'NONE') {
-    context.print.info('| '.concat(scheduleParameters.cloudwatchRule));
-    context.print.info('');
-  } else {
-    context.print.info('| Not configured');
-    context.print.info('');
-  }
 
-  // Provide lambda layer information
-  context.print.success('Lambda layers');
-  if (currentParameters.lambdaLayers.length) {
-    currentParameters.lambdaLayers.forEach(layer => {
-      context.print.info('- '.concat(layer.arn));
-    });
-    context.print.info('');
-  } else {
-    context.print.info('- Not configured');
-    context.print.info('');
-  }
+  provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters);
 
   // Determine which settings need to be updated
   const { selectedSettings }: any = await settingsUpdateSelection();

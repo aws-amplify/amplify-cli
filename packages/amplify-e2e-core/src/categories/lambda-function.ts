@@ -58,7 +58,6 @@ const additionalPermissions = (chain: ExecutionContext, settings: any) => {
 };
 
 const updateFunctionCore = (chain: ExecutionContext, settings: any) => {
-  console.log('update!');
   singleSelect(
     chain.wait('Which setting do you want to update?'),
     settings.additionalPermissions
@@ -70,7 +69,6 @@ const updateFunctionCore = (chain: ExecutionContext, settings: any) => {
   );
   if (settings.additionalPermissions) {
     // update permissions
-    console.log('permissions!');
     additionalPermissions(chain, settings);
   } else if (settings.schedulePermissions) {
     // update scheduling
@@ -144,7 +142,6 @@ const coreFunction = (
 
     // advanced settings flow
     if (action === 'create') {
-      console.log('create!');
       chain.wait('Do you want to configure advanced settings?');
 
       if (settings.additionalPermissions || settings.schedulePermissions || settings.layerOptions) {
