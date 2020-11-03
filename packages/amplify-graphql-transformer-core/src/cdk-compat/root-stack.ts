@@ -1,4 +1,4 @@
-import { CfnElement, Stack, CfnResource } from '@aws-cdk/core';
+import { CfnElement, Stack, CfnResource, ISynthesisSession } from '@aws-cdk/core';
 
 export class TransformerRootStack extends Stack {
   private readonly resourceTypeToPreserveLogicalName: string[] = [
@@ -36,7 +36,8 @@ export class TransformerRootStack extends Stack {
    * of stack sythesize to support that.
    * @param session
    */
-  public renderCloudFormationTemplate = (): string => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public renderCloudFormationTemplate = (_:ISynthesisSession): string => {
     return JSON.stringify((this as any)._toCloudFormation(), undefined, 2);
   };
 }
