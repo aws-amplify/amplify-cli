@@ -3,7 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-<<<<<<< HEAD
 # [2.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.25.3...amplify-e2e-tests@2.26.0) (2020-10-17)
 
 
@@ -125,9 +124,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 ## [2.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.1...amplify-e2e-tests@2.21.2) (2020-08-11)
-=======
-## [2.21.1-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.1-frntndFeat.0...amplify-e2e-tests@2.21.1-flutter-preview.0) (2020-08-17)
->>>>>>> 41fcb8275... chore(release): Publish [ci skip]
 
 **Note:** Version bump only for package amplify-e2e-tests
 
@@ -135,11 +131,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-<<<<<<< HEAD
 ## [2.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.0...amplify-e2e-tests@2.21.1) (2020-08-06)
-=======
-## [2.21.1-frntndFeat.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.21.0...amplify-e2e-tests@2.21.1-frntndFeat.0) (2020-08-06)
->>>>>>> 41fcb8275... chore(release): Publish [ci skip]
 
 
 ### Bug Fixes

@@ -3,7 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-<<<<<<< HEAD
 # [4.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.26.7...amplify-provider-awscloudformation@4.27.0) (2020-10-17)
 
 
@@ -157,9 +156,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 ## [4.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.24.1...amplify-provider-awscloudformation@4.24.2) (2020-08-11)
-=======
-## [4.24.1-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.24.1-frntndFeat.0...amplify-provider-awscloudformation@4.24.1-flutter-preview.0) (2020-08-17)
->>>>>>> 41fcb8275... chore(release): Publish [ci skip]
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
 
@@ -167,11 +163,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-<<<<<<< HEAD
 ## [4.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.24.0...amplify-provider-awscloudformation@4.24.1) (2020-08-06)
-=======
-## [4.24.1-frntndFeat.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.24.0...amplify-provider-awscloudformation@4.24.1-frntndFeat.0) (2020-08-06)
->>>>>>> 41fcb8275... chore(release): Publish [ci skip]
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
 

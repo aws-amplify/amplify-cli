@@ -118,11 +118,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-<<<<<<< HEAD
 ## [2.4.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.4.7...amplify-category-predictions@2.4.8) (2020-08-06)
-=======
-## [2.4.8-frntndFeat.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.4.7...amplify-category-predictions@2.4.8-frntndFeat.0) (2020-08-06)
->>>>>>> 41fcb8275... chore(release): Publish [ci skip]
 
 **Note:** Version bump only for package amplify-category-predictions
 

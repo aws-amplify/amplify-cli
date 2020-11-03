@@ -185,11 +185,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-<<<<<<< HEAD
 # [4.27.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.26.0...@aws-amplify/cli@4.27.0) (2020-08-06)
-=======
-## [4.26.1-frntndFeat.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.26.0...@aws-amplify/cli@4.26.1-frntndFeat.0) (2020-08-06)
->>>>>>> 41fcb8275... chore(release): Publish [ci skip]
 
 
 ### Features
