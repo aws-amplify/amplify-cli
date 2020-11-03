@@ -64,7 +64,7 @@ function buildResources(context, category, resourceName) {
 async function getConfiguredAWSClient(context, category, action) {
   await aws.configureWithCreds(context);
   category = category || 'missing';
-  action = action || 'missing';
+  action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
   aws.config.update({
     customUserAgent: formUserAgentParam(context, userAgentAction),

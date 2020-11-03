@@ -130,6 +130,23 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
+  getAmplifyAdminConfigEntry = (appId: string) => {
+    const adminConfig = (JSONUtilities.readJson(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) || {}) as any;
+    return adminConfig[appId];
+  };
+
+  removeAmplifyAdminConfigEntry = (appId: string) => {
+    const adminConfig: $TSAny = JSONUtilities.readJson(pathManager.getAmplifyAdminConfigFilePath());
+    delete adminConfig[appId];
+    JSONUtilities.writeJson(pathManager.getAmplifyAdminConfigFilePath(), adminConfig, { secureFile: true });
+  };
+
+  setAmplifyAdminConfigEntry = (appId: string, config: $TSAny) => {
+    const adminConfig: $TSAny = JSONUtilities.readJson(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) || {};
+    adminConfig[appId] = config;
+    JSONUtilities.writeJson(pathManager.getAmplifyAdminConfigFilePath(), adminConfig, { secureFile: true });
+  };
+
   setLocalEnvInfo = (projectPath: string | undefined, localEnvInfo: $TSAny): void => {
     const filePath = pathManager.getLocalEnvFilePath(projectPath);
 

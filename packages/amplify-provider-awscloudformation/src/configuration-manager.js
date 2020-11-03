@@ -1,3 +1,5 @@
+const aws = require('aws-sdk');
+const _ = require('lodash');
 const path = require('path');
 const fs = require('fs-extra');
 const chalk = require('chalk');
@@ -8,6 +10,9 @@ const constants = require('./constants');
 const setupNewUser = require('./setup-new-user');
 const obfuscateUtil = require('./utility-obfuscate');
 const systemConfigManager = require('./system-config-manager');
+const { doAdminCredentialsExist } = require('./utils/amplify-admin-helpers');
+
+const { stateManager } = require('amplify-cli-core');
 
 const defaultAWSConfig = {
   useProfile: true,
@@ -65,8 +70,7 @@ function normalizeInputParams(context) {
     if (context.exeInfo.inputParams[constants.Label]) {
       inputParams = context.exeInfo.inputParams[constants.Label];
     } else {
-      for (let i = 0; i < constants.Aliases.length; i++) {
-        const alias = constants.Aliases[i];
+      for (let alias of constants.Aliases) {
         if (context.exeInfo.inputParams[alias]) {
           inputParams = context.exeInfo.inputParams[alias];
           break;
@@ -383,7 +387,14 @@ function validateConfig(context) {
 }
 
 function persistLocalEnvConfig(context) {
-  const { awsConfigInfo } = context.exeInfo;
+  let { awsConfigInfo } = context.exeInfo;
+
+  if (context.parameters?.options?.appId && doAdminCredentialsExist(context.parameters.options.appId)) {
+    awsConfigInfo = {
+      configLevel: 'amplifyAdmin',
+      config: {},
+    };
+  }
 
   const awsInfo = {
     configLevel: awsConfigInfo.configLevel,
@@ -391,6 +402,8 @@ function persistLocalEnvConfig(context) {
 
   if (awsConfigInfo.configLevel === 'general') {
     awsInfo.configLevel = 'general';
+  } else if (awsConfigInfo.configLevel === 'amplifyAdmin') {
+    awsInfo.configLevel = 'amplifyAdmin';
   } else {
     awsInfo.configLevel = 'project';
     if (awsConfigInfo.config.useProfile) {
@@ -447,7 +460,7 @@ function getConfigForEnv(context, envName) {
     try {
       const configInfo = context.amplify.readJsonFile(configInfoFilePath, 'utf8')[envName];
 
-      if (configInfo && configInfo.configLevel !== 'general') {
+      if (configInfo && configInfo.configLevel !== 'general' && configInfo.configLevel !== 'amplifyAdmin') {
         if (configInfo.useProfile && configInfo.profileName) {
           projectConfigInfo.config.useProfile = configInfo.useProfile;
           projectConfigInfo.config.profileName = configInfo.profileName;
@@ -462,6 +475,8 @@ function getConfigForEnv(context, envName) {
           throw new Error(`Corrupt file contents in ${configInfoFilePath}`);
         }
         projectConfigInfo.configLevel = 'project';
+      } else if (configInfo) {
+        projectConfigInfo.configLevel = configInfo.configLevel;
       }
     } catch (e) {
       throw e;
@@ -499,6 +514,7 @@ async function loadConfiguration(context) {
   const config = await loadConfigurationForEnv(context, envName);
   return config;
 }
+
 function loadConfigFromPath(context, profilePath) {
   if (fs.existsSync(profilePath)) {
     const config = context.amplify.readJsonFile(profilePath);
@@ -509,18 +525,113 @@ function loadConfigFromPath(context, profilePath) {
   throw new Error(`Invalid config ${profilePath}`);
 }
 
-async function loadConfigurationForEnv(context, env) {
+async function getAdminCredentials(idToken, identityId, region) {
+  const cognitoIdentity = new aws.CognitoIdentity({ region });
+  const login = idToken.payload.iss.replace('https://', '');
+  return cognitoIdentity
+    .getCredentialsForIdentity({
+      IdentityId: identityId,
+      Logins: {
+        [login]: idToken.jwtToken,
+      },
+    })
+    .promise();
+}
+
+async function refreshJWTs(authConfig, print) {
+  const CognitoISP = new aws.CognitoIdentityServiceProvider({ region: authConfig.region });
+  try {
+    const result = await CognitoISP.initiateAuth({
+      AuthFlow: 'REFRESH_TOKEN',
+      AuthParameters: {
+        REFRESH_TOKEN: authConfig.refreshToken.token,
+      },
+      ClientId: authConfig.accessToken.payload.client_id, // App client id from identityPool
+    }).promise();
+    return result.AuthenticationResult;
+  } catch (e) {
+    print.error('Failed to refresh tokens.');
+    throw e;
+  }
+}
+
+function isJwtExpired(token) {
+  const expiration = _.get(token, ['payload', 'exp'], 0);
+  const secSinceEpoch = Math.round(new Date().getTime() / 1000);
+  return secSinceEpoch >= expiration - 60;
+}
+
+async function loadConfigurationForEnv(context, env, appId) {
   const projectConfigInfo = getConfigForEnv(context, env);
-  if (projectConfigInfo.configLevel === 'project') {
+  const { print } = context;
+  let awsConfig;
+  if (projectConfigInfo.configLevel === 'amplifyAdmin' || appId) {
+    projectConfigInfo.configLevel = 'amplifyAdmin';
+    appId = appId || stateManager.getMeta().providers.awscloudformation.AmplifyAppId;
+
+    if (!doAdminCredentialsExist(appId)) {
+      print.info('');
+      print.error(`No credentials found for appId: ${appId}`);
+      print.info(`If the appId is correct, try running amplify configure --appId ${appId}`);
+      process.exit(1);
+    }
+
+    // load token, check expiry, refresh if needed
+    const authConfig = stateManager.getAmplifyAdminConfigEntry(appId);
+
+    if (isJwtExpired(authConfig.idToken)) {
+      const refreshedTokens = await refreshJWTs(authConfig, print);
+      // Refresh stored tokens
+      authConfig.idToken.jwtToken = refreshedTokens.IdToken;
+      authConfig.accessToken.jwtToken = refreshedTokens.AccessToken;
+      stateManager.setAmplifyAdminConfigEntry(appId, authConfig);
+    }
+    try {
+      // use tokens to get creds and assign to config
+      const { idToken, IdentityId, region } = authConfig;
+      let credentials = (await getAdminCredentials(idToken, IdentityId, region)).Credentials;
+
+      awsConfig = {
+        accessKeyId: credentials.AccessKeyId,
+        expiration: credentials.Expiration,
+        region,
+        secretAccessKey: credentials.SecretKey,
+        sessionToken: credentials.SessionToken,
+      };
+
+      aws.config.update(awsConfig);
+
+      const sts = new aws.STS();
+      credentials = (
+        await sts
+          .assumeRole({
+            RoleArn: idToken.payload['cognito:preferred_role'],
+            RoleSessionName: 'amplifyadmin',
+          })
+          .promise()
+      ).Credentials;
+
+      awsConfig = {
+        accessKeyId: credentials.AccessKeyId,
+        expiration: credentials.Expiration,
+        region,
+        secretAccessKey: credentials.SecretAccessKey,
+        sessionToken: credentials.SessionToken,
+      };
+    } catch (e) {
+      print.info('');
+      print.error('Failed to get credentials.');
+      process.exit(1);
+    }
+  } else if (projectConfigInfo.configLevel === 'project') {
     const { config } = projectConfigInfo;
-    let awsConfig;
     if (config.useProfile) {
       awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
     } else {
       awsConfig = loadConfigFromPath(context, config.awsConfigFilePath);
     }
-    return awsConfig;
   }
+  return awsConfig;
 }
 
 async function resetCache(context) {
@@ -617,6 +728,8 @@ function getConfigLevel(context) {
         // configLevel is 'general' only when it's explicitly set so
         if (envConfigInfo.configLevel === 'general') {
           configLevel = 'general';
+        } else if (envConfigInfo.configLevel === 'amplifyAdmin') {
+          configLevel = 'amplifyAdmin';
         } else if (envConfigInfo.useProfile && envConfigInfo.profileName && namedProfiles && namedProfiles[envConfigInfo.profileName]) {
           configLevel = 'project';
         } else if (envConfigInfo.awsConfigFilePath && fs.existsSync(envConfigInfo.awsConfigFilePath)) {
