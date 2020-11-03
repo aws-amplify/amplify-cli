@@ -117,7 +117,7 @@ function provideInformation(context, lambdaToUpdate, functionRuntime, currentPar
 
   // Provide lambda layer information
   context.print.success('Lambda layers');
-  if (currentParameters.lambdaLayers.length) {
+  if (currentParameters.lambdaLayers && currentParameters.lambdaLayers.length) {
     currentParameters.lambdaLayers.forEach(layer => {
       context.print.info('- '.concat(layer.arn));
     });
