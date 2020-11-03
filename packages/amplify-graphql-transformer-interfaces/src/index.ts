@@ -23,11 +23,11 @@ export {
   SubscriptionFieldType,
   TransformerModelEnhancementProvider,
   TransformerModelProvider,
-} from './transformer-model';
-export { FeatureFlagProvider } from './featuer-flags';
+} from './transformer-model-provider';
+export { FeatureFlagProvider } from './feature-flag-provider';
 
 export {
-  GraphQLApiProvider,
+  GraphQLAPIProvider,
   AppSyncFunctionConfigurationProvider,
   DataSourceOptions,
   MappingTemplateProvider,

@@ -1,34 +1,32 @@
 // Sync Config
 export const enum ConflictHandlerType {
-  OPTIMISTIC = 'OPTIMISTIC_CONCURRENCY',
-  AUTOMERGE = 'AUTOMERGE',
-  LAMBDA = 'LAMBDA',
+  Optimistic = 'OPTIMISTIC_CONCURRENCY',
+  Automerge = 'AUTOMERGE',
+  Lambda = 'LAMBDA',
 }
 export type ConflictDetectionType = 'VERSION' | 'NONE';
-export type SyncConfigOPTIMISTIC = {
+export type SyncConfigOptimistic = {
   ConflictDetection: ConflictDetectionType;
-  ConflictHandler: ConflictHandlerType.OPTIMISTIC;
+  ConflictHandler: ConflictHandlerType.Optimistic;
 };
-export type SyncConfigSERVER = {
+export type SyncConfigServer = {
   ConflictDetection: ConflictDetectionType;
-  ConflictHandler: ConflictHandlerType.AUTOMERGE;
+  ConflictHandler: ConflictHandlerType.Automerge;
 };
-export type SyncConfigLAMBDA = {
+export type SyncConfigLambda = {
   ConflictDetection: ConflictDetectionType;
-  ConflictHandler: ConflictHandlerType.LAMBDA;
+  ConflictHandler: ConflictHandlerType.Lambda;
   LambdaConflictHandler: {
     name: string;
     region?: string;
     lambdaArn?: any;
   };
 };
-export type SyncConfig = SyncConfigOPTIMISTIC | SyncConfigSERVER | SyncConfigLAMBDA;
+export type SyncConfig = SyncConfigOptimistic | SyncConfigServer | SyncConfigLambda;
 
 export type ResolverConfig = {
   project?: SyncConfig;
-  models?: {
-    [key: string]: SyncConfig;
-  };
+  models?: Record<string,SyncConfig>;
 };
 /**
  * The transform config is specified in transform.conf.json within an Amplify
@@ -46,9 +44,7 @@ export interface TransformConfig {
    * overrides to get specific behavior out of the transformer. Users may
    * override the default stack mapping to customize behavior.
    */
-  StackMapping?: {
-    [resourceId: string]: string;
-  };
+  StackMapping?: Record<string, string>;
 
   /**
    * Provide build time options to GraphQL Transformer constructor functions.
@@ -56,9 +52,7 @@ export interface TransformConfig {
    * need to be set at build time. E.G. DeletionPolicies cannot depend on parameters.
    */
   TransformerOptions?: {
-    [transformer: string]: {
-      [option: string]: any;
-    };
+    [transformer: string]: Record<string, any>;
   };
 
   /**

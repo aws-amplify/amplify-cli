@@ -323,7 +323,7 @@ export class ObjectDefinationWrapper {
   };
 }
 
-export class InputObjectDefinationWrapper {
+export class InputObjectDefinitionWrapper {
   public readonly directives?: DirectiveWrapper[];
   public readonly fields: InputFieldWraper[];
   public readonly name: string;
@@ -373,8 +373,8 @@ export class InputObjectDefinationWrapper {
     name: string,
     fields: InputValueDefinitionNode[] = [],
     directives: DirectiveNode[] = [],
-  ): InputObjectDefinationWrapper => {
-    const wrappedObj = new InputObjectDefinationWrapper({
+  ): InputObjectDefinitionWrapper => {
+    const wrappedObj = new InputObjectDefinitionWrapper({
       kind: 'InputObjectTypeDefinition',
       name: {
         kind: 'Name',
@@ -390,14 +390,14 @@ export class InputObjectDefinationWrapper {
     return wrappedObj;
   };
 
-  static fromObject = (name: string, def: ObjectTypeDefinitionNode): InputObjectDefinationWrapper => {
+  static fromObject = (name: string, def: ObjectTypeDefinitionNode): InputObjectDefinitionWrapper => {
     const inputObj: InputObjectTypeDefinitionNode = {
       kind: 'InputObjectTypeDefinition',
       name: { kind: 'Name', value: name },
       fields: [],
       directives: [],
     };
-    const wrappedInput = new InputObjectDefinationWrapper(inputObj);
+    const wrappedInput = new InputObjectDefinitionWrapper(inputObj);
     for (let f of def.fields || []) {
       const wrappedField = new InputFieldWraper({
         kind: 'InputValueDefinition',

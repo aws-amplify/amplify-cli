@@ -5,7 +5,7 @@ export {
   ConflictHandlerType,
   ResolverConfig,
   SyncConfig,
-  SyncConfigLAMBDA,
-  SyncConfigOPTIMISTIC,
-  SyncConfigSERVER,
+  SyncConfigLambda ,
+  SyncConfigOptimistic,
+  SyncConfigServer,
 } from './transformer-config';

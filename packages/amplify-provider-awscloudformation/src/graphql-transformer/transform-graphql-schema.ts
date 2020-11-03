@@ -19,7 +19,7 @@ import { loadProject as readTransformerConfiguration } from './transform-config'
 import { loadProject } from 'graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
-import { NewFeatureFlagProvider } from '../utils/transfomer-feature-flag-adapter';
+import { AmplifyCLIFeatureFlagAdapter  } from '../utils/amplify-cli-feature-flag-adapter';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -402,6 +402,7 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     authConfig: opts.authConfig,
     buildParameters: opts.buildParameters,
     stacks: opts.projectConfig.stacks || {},
+    featuerFlags: new AmplifyCLIFeatureFlagAdapter(),
   });
   return transform.transform(userProjectConfig.schema.toString());
 }

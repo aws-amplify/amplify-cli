@@ -14,7 +14,7 @@ import { HttpTransformer } from 'graphql-http-transformer';
 import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ProviderName as providerName } from './constants';
-import { AmplifyCLIFeatureFlagAdapter } from './utils/transfomer-feature-flag-adapter';
+import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 
 import {
   collectDirectivesByTypeNames,
@@ -277,8 +277,8 @@ async function migrateProject(context, options) {
 }
 
 export async function transformGraphQLSchema(context, options) {
-  const transformerVersion = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
-  if (transformerVersion) {
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+  if (useExperimentalPipelineTransformer) {
     return transformGraphQLSchemaV6(context, options);
   }
   const backEndDir = context.amplify.pathManager.getBackendDirPath();

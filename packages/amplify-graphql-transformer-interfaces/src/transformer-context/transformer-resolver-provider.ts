@@ -1,11 +1,11 @@
 import { Stack } from '@aws-cdk/core';
-import { GraphQLApiProvider, MappingTemplateProvider } from '../graphql-api-provider';
-import { DataSourceProvider } from './datasource';
-import { TransformerContextProvider } from './transformer-context';
+import { GraphQLAPIProvider, MappingTemplateProvider } from '../graphql-api-provider';
+import { DataSourceProvider } from './transformer-datasource-provider';
+import { TransformerContextProvider } from './transformer-context-provider';
 
 export interface TransformerResolverProvider {
   addToSlot: (slotName: string, requestMappingTemplate: MappingTemplateProvider, responseMappingTemplate?: MappingTemplateProvider, dataSource?: DataSourceProvider) => void;
-  synthesize: (context: TransformerContextProvider, api: GraphQLApiProvider) => void;
+  synthesize: (context: TransformerContextProvider, api: GraphQLAPIProvider) => void;
   mapToStack:(stack: Stack) => void;
 }
 

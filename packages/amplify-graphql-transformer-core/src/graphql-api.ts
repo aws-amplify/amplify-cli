@@ -1,4 +1,4 @@
-import { APIIAMResourceProvider, GraphQLApiProvider, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { APIIAMResourceProvider, GraphQLAPIProvider, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
@@ -110,7 +110,7 @@ export class IamResource implements APIIAMResourceProvider {
    *
    * @param api The GraphQL API to give permissions
    */
-  public resourceArns(api: GraphQLApiProvider): string[] {
+  public resourceArns(api: GraphQLAPIProvider): string[] {
     return this.arns.map(arn =>
       Stack.of(api).formatArn({
         service: 'appsync',
@@ -125,7 +125,7 @@ export class IamResource implements APIIAMResourceProvider {
 export type TransformerAPIProps = GraphqlApiProps & {
   readonly createApiKey?: boolean;
 };
-export class GraphQLApi extends GraphqlApiBase implements GraphQLApiProvider {
+export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
    * an unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'

@@ -32,9 +32,9 @@ import {
 import {
   EnumWrapper,
   InputFieldWraper,
-  InputObjectDefinationWrapper,
+  InputObjectDefinitionWrapper,
   ObjectDefinationWrapper
-} from '../wrappers/object-defination-wrapper';
+} from '../wrappers/object-definition-wrapper';
 
 /**
  * Creates the condition/filter input for a model
@@ -46,8 +46,8 @@ export const makeConditionFilterInput = (
   ctx: TranformerTransformSchemaStepContextProvider,
   name: string,
   object: ObjectTypeDefinitionNode,
-): InputObjectDefinationWrapper => {
-  const input = InputObjectDefinationWrapper.create(name);
+): InputObjectDefinitionWrapper => {
+  const input = InputObjectDefinitionWrapper.create(name);
   const wrappedObject = new ObjectDefinationWrapper(object);
   for (let field of wrappedObject.fields) {
     const fieldType = ctx.output.getType(field.getTypeName());
@@ -122,7 +122,7 @@ export const createEnumModelFilters = (
 export function makeModelScalarFilterInputObject(type: string, supportsConditions: boolean): InputObjectTypeDefinitionNode {
   const name = generateModelScalarFilterInputName(type, !supportsConditions);
   const conditions = getScalarConditions(type);
-  const scalarConditionInput = InputObjectDefinationWrapper.create(name);
+  const scalarConditionInput = InputObjectDefinitionWrapper.create(name);
   for (let condition of conditions) {
     let typeName;
     switch (condition) {
@@ -208,7 +208,7 @@ export function makeSubscriptionField(fieldName: string, returnTypeName: string,
 
 export function makeSizeInputType(): InputObjectTypeDefinitionNode {
   const name = 'ModelSizeInput';
-  const input = InputObjectDefinationWrapper.create(name);
+  const input = InputObjectDefinitionWrapper.create(name);
 
   for (let condition of SIZE_CONDITIONS) {
     const field = InputFieldWraper.create(condition, 'Int', true);
@@ -220,7 +220,7 @@ export function makeSizeInputType(): InputObjectTypeDefinitionNode {
 
 export function makeEnumFilterInput(name: string): InputObjectTypeDefinitionNode {
   const inputName = toPascalCase(['Model', name, 'Input']);
-  const input = InputObjectDefinationWrapper.create(inputName);
+  const input = InputObjectDefinitionWrapper.create(inputName);
   ['eq', 'ne'].forEach(fieldName => {
     const field = InputFieldWraper.create(fieldName, name, true);
     input.addField(field);

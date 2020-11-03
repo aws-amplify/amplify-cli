@@ -477,14 +477,6 @@ export class FeatureFlags {
   // DEVS: Register feature flags here
   private registerFlags = (): void => {
     // Examples:
-    this.registerFlag('graphQLTransformer', [
-      {
-        name: 'useExperimentalPipelinedTransformer',
-        type: 'boolean',
-        defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
-      },
-    ]);
     // this.registerFlag('keyTransformer', [
     //   {
     //     name: 'defaultQuery',
@@ -505,6 +497,12 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: true,
         defaultValueForNewProjects: true,
+      },
+      {
+        name: 'useExperimentalPipelinedTransformer',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
       },
     ]);
   };

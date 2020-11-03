@@ -1,5 +1,5 @@
 import { InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
-import { TransformerModelProvider, TransformerModelEnhancementProvider } from '../transformer-model';
+import { TransformerModelProvider, TransformerModelEnhancementProvider } from '../transformer-model-provider';
 
 export interface TransformerProviderRegistry {
   registerDataSourceProvider: (type: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode, provider: TransformerModelProvider) => void;

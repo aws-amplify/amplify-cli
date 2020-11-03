@@ -36,7 +36,7 @@ export class FileAsset extends cdk.Construct implements cdk.IAsset {
       this.s3ObjectKey = asset.objectKey;
       this.s3Url = asset.s3ObjectUrl
     } else {
-      // TODO: handle generic synthesizer by creating a asset in output path
+      // TODO: handle a generic synthesizer by creating a asset in output path
       throw new Error('Template asset can be used only with TransformerStackSynthesizer');
     }
   }

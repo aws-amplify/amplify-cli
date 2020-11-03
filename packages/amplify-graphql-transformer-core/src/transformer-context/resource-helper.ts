@@ -1,9 +1,9 @@
-import { GraphQLApiProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { GraphQLAPIProvider, TransformerResourceHelperProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { CfnParameter } from '@aws-cdk/core';
 import { StackManager } from './stack-manager';
 
 export class TransformerResourceHelper implements TransformerResourceHelperProvider {
-  private api?: GraphQLApiProvider;
+  private api?: GraphQLAPIProvider;
   // eslint-disable-next-line no-useless-constructor
   constructor(private stackManager: StackManager) {}
   public generateResourceName = (name: string): string => {
@@ -16,7 +16,7 @@ export class TransformerResourceHelper implements TransformerResourceHelperProvi
     return `${name}-${apiId}-${env}`;
   };
 
-  bind(api: GraphQLApiProvider) {
+  bind(api: GraphQLAPIProvider) {
     this.api = api;
   }
 

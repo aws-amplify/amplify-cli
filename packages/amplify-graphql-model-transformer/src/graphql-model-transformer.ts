@@ -9,6 +9,7 @@ import {
   TranformerTransformSchemaStepContextProvider,
   TransformerContextProvider,
   TransformerModelProvider,
+  TransformerPrepareStepContextProvider,
   TransformerResolverProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { AttributeType, ITable, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
@@ -52,9 +53,9 @@ import { generateGetRequestTemplate, generateListRequestTemplate } from './resol
 import {
   DirectiveWrapper,
   FieldWrapper,
-  InputObjectDefinationWrapper,
+  InputObjectDefinitionWrapper,
   ObjectDefinationWrapper,
-} from './wrappers/object-defination-wrapper';
+} from './wrappers/object-definition-wrapper';
 
 export type Nullable<T> = T | null;
 export type OptionalAndNullable<T> = Partial<T>;
@@ -162,7 +163,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
   };
 
   validate = () => {};
-  prepare = () => {};
+  prepare = (context: TransformerPrepareStepContextProvider) => {
+    for (const modelTypeName of this.typesWithModelDirective) {
+      const type = context.output.getObject(modelTypeName);
+      context.providerRegistry.registerDataSourceProvider(type!, this);
+    }
+  };
 
   transformSchema = (ctx: TranformerTransformSchemaStepContextProvider): void => {
     // Create Non Model input types
@@ -170,12 +176,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
     // add the model input conditions
     addModelConditionInputs(ctx);
 
-    for (let type of this.typesWithModelDirective) {
+    for (const type of this.typesWithModelDirective) {
       const def = ctx.output.getObject(type)!;
       // add Non Model type inputs
       this.createNonModelInputs(ctx, def);
       const queryFields = this.getQueryFieldNames(ctx, def!);
-      for (let queryField of queryFields.values()) {
+      for (const queryField of queryFields.values()) {
         const outputType = this.getOutputType(ctx, def, queryField);
         const args = this.getInputs(ctx, def!, {
           fieldName: queryField.fieldName,
@@ -187,7 +193,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       }
 
       const mutationFields = this.getMutationFieldNames(ctx, def!);
-      for (let mutationField of mutationFields) {
+      for (const mutationField of mutationFields) {
         const args = this.getInputs(ctx, def!, {
           fieldName: mutationField.fieldName,
           typeName: mutationField.typeName,
@@ -219,7 +225,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       };
 
       const subscriptionsFields = this.getSubscriptionFieldNames(ctx, def!);
-      for (let subscriptionsField of subscriptionsFields) {
+      for (const subscriptionsField of subscriptionsFields) {
         const args = this.getInputs(ctx, def!, {
           fieldName: subscriptionsField.fieldName,
           typeName: subscriptionsField.typeName,
@@ -622,7 +628,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         MappingTemplate.s3MappingTemplateFromString(generateDefaultResponseMappingTemplate(), `${typeName}.${fieldName}.res.vtl`),
       );
       this.resolverMap[resolverKey] = resolver;
-      // Todo: get the slot index from the resolver to keep the name unique and show the order of functions
       resolver.addToSlot(
         'init',
         MappingTemplate.s3MappingTemplateFromString(
@@ -643,7 +648,6 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       type: QueryFieldType | MutationFieldType | SubscriptionFieldType;
     },
   ): InputValueDefinitionNode[] => {
-    // Todo: return fields bassed on operation
     const knownModels = this.typesWithModelDirective;
     let conditionInput: InputObjectTypeDefinitionNode;
     if ([MutationFieldType.CREATE, MutationFieldType.DELETE, MutationFieldType.UPDATE].includes(operation.type as MutationFieldType)) {
@@ -750,7 +754,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         outputType = makeListQueryModel(type, connectionFieldName);
         break;
       default:
-        throw new Error(`${operation.type} not supported`);
+        throw new Error(`${operation.type} not supported for ${type.name.value}`);
     }
     if (!ctx.output.getObject(outputType.name.value)) {
       ctx.output.addObject(outputType);
@@ -765,7 +769,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         if (def && def.kind == 'ObjectTypeDefinition' && !this.isModelField(def.name.value)) {
           const name = this.getNonModelInputObjectName(def.name.value);
           if (!ctx.output.getType(name)) {
-            const inputObj = InputObjectDefinationWrapper.fromObject(name, def);
+            const inputObj = InputObjectDefinitionWrapper.fromObject(name, def);
             ctx.output.addInput(inputObj.serialize());
           }
         }

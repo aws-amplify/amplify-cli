@@ -1,5 +1,4 @@
-import { TransformConfig } from './transformer-config'
-// Todo: Cast this to proper CFN template type
+import { TransformConfig } from './transformer-config';
 export type Template = {
   Parameters: Record<string, any>;
   Resources: Record<string, any>;
@@ -9,18 +8,10 @@ export type Template = {
 
 export interface TransformerProjectConfig {
   schema: string;
-  functions: {
-    [k: string]: string;
-  };
-  pipelineFunctions: {
-    [k: string]: string;
-  };
-  resolvers: {
-    [k: string]: string;
-  };
-  stacks: {
-    [k: string]: Template;
-  };
+  functions: Record<string, string>;
+  pipelineFunctions: Record<string, string>;
+  resolvers: Record<string, string>;
+  stacks: Record<string, Template>;
   config: TransformConfig;
   // Custom transformer plugins
   transformers?: string[];

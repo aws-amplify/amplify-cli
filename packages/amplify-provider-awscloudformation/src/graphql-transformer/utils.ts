@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import * as path from 'path';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
+import { JSONUtilities } from 'amplify-cli-core';
 
 
 const PARAMETERS_FILE_NAME = 'parameters.json';
@@ -59,9 +60,7 @@ export async function writeDeploymentToDisk(
     stackString =
       typeof stackString === 'string'
         ? deployment.stacks[stackFileName]
-        : minify
-        ? JSON.stringify(deployment.stacks[stackFileName])
-        : JSON.stringify(deployment.stacks[stackFileName], null, 4);
+        : JSONUtilities.stringify(deployment.stacks[stackFileName], { minify });
     fs.writeFileSync(fullStackPath, stackString);
   }
 
@@ -103,7 +102,7 @@ function initStacksAndResolversDirectories(directory: string) {
 }
 
 function pipelineFunctionDirectoryPath(rootPath: string) {
-  return path.normalize(rootPath + `/pipelineFunctions`);
+  return path.normalize(path.join(rootPath, 'pipelineFunctions'));
 }
 
 function resolverDirectoryPath(rootPath: string) {
@@ -113,7 +112,6 @@ function resolverDirectoryPath(rootPath: string) {
 function stacksDirectoryPath(rootPath: string) {
   return path.normalize(rootPath + `/stacks`);
 }
-
 
 export function throwIfNotJSONExt(stackFile: string) {
   const extension = path.extname(stackFile);

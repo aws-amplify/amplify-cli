@@ -40,7 +40,7 @@ export class TransformerNestedStack extends TransformerRootStack {
 
     this._rootStack = rootStack;
 
-    const parentScope = new Construct(scope, id + '.NestedStack');
+    const parentScope = new Construct(scope, `${id}.NestedStack`);
     // Transformer synthesizes the stack in memory and stack names are going to be unique
     this.templateFile = `stacks/${id}.json`;
 

@@ -19,7 +19,7 @@ import {
   TransformerSchemaVisitStepContextProvider,
   TransformerValidationStepContextProvider,
   TranformerTransformSchemaStepContextProvider,
-} from './transformer-context/transformer-context';
+} from './transformer-context/transformer-context-provider';
 
 export enum TransformerPluginType {
   DATA_SOURCE_PROVIDER = 'DATA_SOURCE_PROVIDER',

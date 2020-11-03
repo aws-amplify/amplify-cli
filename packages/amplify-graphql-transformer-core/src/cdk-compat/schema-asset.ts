@@ -35,7 +35,6 @@ export class TransformerSchema {
     }
     return this.asset;
   };
-  // Todo: subsclass with proper implementation of all the methods.
   addToSchema = (addition: string, delimiter: string): void => {
     const sep = delimiter ?? '';
     this.definition = `${this.definition}${sep}${addition}\n`;

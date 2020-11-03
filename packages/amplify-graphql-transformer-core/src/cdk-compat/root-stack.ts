@@ -10,7 +10,7 @@ export class TransformerRootStack extends Stack {
   ];
 
   /**
-   * Allocate logical id based on the resource presense in the stack mapping. If an resource is already
+   * Allocate a logical id based on the resource presense in the stack mapping. If an resource is already
    * created using older version of the transformer, then keep the name the same. Otherwiser use the CDK
    * stack naming convention to avoid logical name collision
    * @param cfnElement

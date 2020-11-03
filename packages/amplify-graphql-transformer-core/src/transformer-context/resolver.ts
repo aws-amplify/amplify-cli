@@ -5,7 +5,7 @@ import {
   TransformerResolversManagerProvider,
   AppSyncFunctionConfigurationProvider,
   MappingTemplateProvider,
-  GraphQLApiProvider,
+  GraphQLAPIProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { Stack, isResolvableObject } from '@aws-cdk/core';
 
@@ -154,7 +154,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     this.slotMap.set(slotName, slotEntry);
   };
 
-  synthesize = (context: TransformerContextProvider, api: GraphQLApiProvider): void => {
+  synthesize = (context: TransformerContextProvider, api: GraphQLAPIProvider): void => {
     const stack = this.stack || (context.stackManager as StackManager).rootStack;
     this.ensureNoneDataSource(api);
     const requestFns = this.synthesizePipelineFunctions(stack, api, this.requestSlots);
@@ -235,7 +235,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     );
   };
 
-  synthesizePipelineFunctions = (stack: Stack, api: GraphQLApiProvider, slotsNames: string[]): AppSyncFunctionConfigurationProvider[] => {
+  synthesizePipelineFunctions = (stack: Stack, api: GraphQLAPIProvider, slotsNames: string[]): AppSyncFunctionConfigurationProvider[] => {
     const appSyncFunctions: AppSyncFunctionConfigurationProvider[] = [];
 
     for (let slotName of slotsNames) {
@@ -269,7 +269,7 @@ export class TransformerResolver implements TransformerResolverProvider {
     }
   }
 
-  private ensureNoneDataSource(api: GraphQLApiProvider) {
+  private ensureNoneDataSource(api: GraphQLAPIProvider) {
     if (!api.hasDataSource(NONE_DATA_SOURCE_NAME)) {
       api.addNoneDataSource(NONE_DATA_SOURCE_NAME, {
         name: NONE_DATA_SOURCE_NAME,

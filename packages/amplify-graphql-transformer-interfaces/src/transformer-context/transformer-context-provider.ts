@@ -1,12 +1,12 @@
-import { TransformerResolversManagerProvider } from './transformer-resolver';
-import { TransformerDataSourceManagerProvider } from './datasource';
-import { TransformerProviderRegistry } from './provider-registry';
+import { TransformerResolversManagerProvider } from './transformer-resolver-provider';
+import { TransformerDataSourceManagerProvider } from './transformer-datasource-provider';
+import { TransformerProviderRegistry } from './transformer-provider-registry';
 import { DocumentNode } from 'graphql';
-import { TransformerContextOutputProvider } from './output';
-import { StackManagerProvider } from './stacks';
-import { GraphQLApiProvider } from '../graphql-api-provider';
-import { TransformerResourceHelperProvider } from './resource-helper'
-import { FeatureFlagProvider } from '../featuer-flags';
+import { TransformerContextOutputProvider } from './transformer-context-output-provider';
+import { StackManagerProvider } from './stack-manager-provider';
+import { GraphQLAPIProvider } from '../graphql-api-provider';
+import { TransformerResourceProvider } from './resource-resource-provider'
+import { FeatureFlagProvider } from '../feature-flag-provider';
 
 export interface TransformerContextProvider {
   resolvers: TransformerResolversManagerProvider;
@@ -16,8 +16,8 @@ export interface TransformerContextProvider {
   inputDocument: DocumentNode;
   output: TransformerContextOutputProvider;
   stackManager: StackManagerProvider;
-  api: GraphQLApiProvider;
-  resourceHelper: TransformerResourceHelperProvider;
+  api: GraphQLAPIProvider;
+  resourceHelper: TransformerResourceProvider;
   featureFlags: FeatureFlagProvider;
 }
 

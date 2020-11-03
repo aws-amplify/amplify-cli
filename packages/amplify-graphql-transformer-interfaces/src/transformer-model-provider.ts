@@ -1,8 +1,6 @@
 import { ObjectTypeDefinitionNode, DirectiveDefinitionNode, InputValueDefinitionNode } from 'graphql';
 import { TransformerPluginProvider } from './transformer-plugin-provider';
-import { AppSyncDataSourceType, DataSourceInstance } from './transformer-context/datasource';
-import { TransformerContextProvider } from './transformer-context/transformer-context';
-import { TransformerResolverProvider } from './transformer-context/transformer-resolver';
+import { TransformerResolverProvider, TransformerContextProvider, AppSyncDataSourceType, DataSourceInstance } from './transformer-context';
 
 export enum QueryFieldType {
   GET = 'GET',

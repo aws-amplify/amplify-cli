@@ -47,7 +47,7 @@ export interface S3MappingTemplateProvider {
 
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
 
-export interface GraphQLApiProvider {
+export interface GraphQLAPIProvider {
   readonly apiId: string;
   addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource;
   addDynamoDbDataSource(name: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource;
@@ -109,5 +109,5 @@ export interface APIIAMResourceProvider {
    *
    * @param api The GraphQL API to give permissions
    */
-  resourceArns(api: GraphQLApiProvider): string[];
+  resourceArns(api: GraphQLAPIProvider): string[];
 }

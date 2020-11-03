@@ -53,6 +53,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     super(name, document, type);
   }
   abstract getDataSourceType: () => AppSyncDataSourceType;
+
   abstract generateGetResolver: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
@@ -60,6 +61,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     fieldName: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
+
   abstract generateListResolver: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
@@ -67,6 +69,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     fieldName: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
+
   abstract generateCreateResolver: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
@@ -74,6 +77,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     fieldName: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
+
   abstract generateUpdateResolver: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
@@ -81,6 +85,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     fieldName: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
+
   abstract generateDeleteResolver: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
@@ -88,6 +93,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     fieldName: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
+
   abstract generateOnCreateResolver?: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
@@ -95,6 +101,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     fieldName: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
+
   abstract generateOnUpdateResolver?: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
@@ -102,6 +109,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     fieldName: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
+
   abstract generateOnDeleteResolver?: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
@@ -109,6 +117,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     fieldName: string,
     directive?: DirectiveDefinitionNode,
   ) => TransformerResolverProvider;
+
   abstract generateSyncResolver?: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,
@@ -127,6 +136,7 @@ export abstract class TransformerModelBase extends TransformerPluginBase impleme
     type: ObjectTypeDefinitionNode,
     directive?: DirectiveDefinitionNode,
   ) => Set<{ fieldName: string; typeName: string; type: MutationFieldType }>;
+
   abstract getSubscriptionFieldNames: (
     ctx: TransformerContextProvider,
     type: ObjectTypeDefinitionNode,

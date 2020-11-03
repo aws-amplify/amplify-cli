@@ -2,7 +2,7 @@ import { TranformerTransformSchemaStepContextProvider } from '@aws-amplify/graph
 import { ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
 import { toPascalCase } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
-import { ObjectDefinationWrapper, InputObjectDefinationWrapper, InputFieldWraper } from '../wrappers/object-defination-wrapper';
+import { ObjectDefinationWrapper, InputObjectDefinitionWrapper, InputFieldWraper } from '../wrappers/object-definition-wrapper';
 import { makeConditionFilterInput } from './common';
 
 /**
@@ -17,11 +17,11 @@ export const makeUpdateInputField = (
   knownModelTypes: Set<string>,
 ): InputObjectTypeDefinitionNode => {
   // sync related things
-  const objectWrpped = new ObjectDefinationWrapper(obj);
-  const typeName = objectWrpped.name;
+  const objectWrapped = new ObjectDefinationWrapper(obj);
+  const typeName = objectWrapped.name;
   const name = toPascalCase([`Update`, typeName, 'Input']);
-  const hasIdField = objectWrpped.hasField('id');
-  const fieldsToRemove = objectWrpped
+  const hasIdField = objectWrapped.hasField('id');
+  const fieldsToRemove = objectWrapped
     .fields!.filter(field => {
       if (knownModelTypes.has(field.getTypeName())) {
         return true;
@@ -32,7 +32,7 @@ export const makeUpdateInputField = (
       return field.getTypeName();
     });
 
-  const input = InputObjectDefinationWrapper.fromObject(name, {
+  const input = InputObjectDefinitionWrapper.fromObject(name, {
     ...obj,
     fields: obj.fields?.filter(f => !fieldsToRemove.includes(f.name.value)),
   });
@@ -68,7 +68,7 @@ export const makeUpdateInputField = (
  */
 export const makeDeleteInputField = (type: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode => {
   const name = toPascalCase(['Delete', type.name.value, 'input']);
-  const inputField = InputObjectDefinationWrapper.create(name);
+  const inputField = InputObjectDefinitionWrapper.create(name);
   const idField = InputFieldWraper.create('id', 'ID', false, false);
   inputField.addField(idField);
   return inputField.serialize();
@@ -86,11 +86,11 @@ export const makeCreateInputField = (
   knownModelTypes: Set<string>,
 ): InputObjectTypeDefinitionNode => {
   // sync related things
-  const objectWrpped = new ObjectDefinationWrapper(obj);
-  const typeName = objectWrpped.name;
+  const objectWrapped = new ObjectDefinationWrapper(obj);
+  const typeName = objectWrapped.name;
   const name = toPascalCase([`Create`, typeName, 'Input']);
-  const hasIdField = objectWrpped.hasField('id');
-  const fieldsToRemove = objectWrpped
+  const hasIdField = objectWrapped.hasField('id');
+  const fieldsToRemove = objectWrapped
     .fields!.filter(field => {
       if (knownModelTypes.has(field.getTypeName())) {
         return true;
@@ -101,7 +101,7 @@ export const makeCreateInputField = (
       return field.getTypeName();
     });
 
-  const input = InputObjectDefinationWrapper.fromObject(name, {
+  const input = InputObjectDefinitionWrapper.fromObject(name, {
     ...obj,
     fields: obj.fields?.filter(f => !fieldsToRemove.includes(f.name.value)),
   });

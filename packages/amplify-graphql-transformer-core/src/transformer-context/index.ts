@@ -1,6 +1,6 @@
 import {
   FeatureFlagProvider,
-  GraphQLApiProvider,
+  GraphQLAPIProvider,
   StackManagerProvider,
   TransformerContextOutputProvider,
   TransformerContextProvider,
@@ -25,7 +25,7 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly stackManager: StackManagerProvider;
   public readonly resourceHelper: TransformerResourceHelper;
   public readonly featureFlags: FeatureFlagProvider;
-  public _api?: GraphQLApiProvider;
+  public _api?: GraphQLAPIProvider;
   constructor(app: App, public readonly inputDocument: DocumentNode, stackMapping: Record<string, string>, featuerFlags?: FeatureFlagProvider) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
@@ -46,7 +46,7 @@ export class TransformerContext implements TransformerContextProvider {
     this._api = api;
     this.resourceHelper.bind(api);
   }
-  public get api(): GraphQLApiProvider {
+  public get api(): GraphQLAPIProvider {
     if (!this._api) {
       throw new Error('API is not initialized till generateResolver step');
     }

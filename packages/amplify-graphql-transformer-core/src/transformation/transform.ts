@@ -1,5 +1,5 @@
 /* eslint-disable no-new */
-import { FeatureFlagProvider, GraphQLApiProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FeatureFlagProvider, GraphQLAPIProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { App, Aws, CfnOutput, Fn } from '@aws-cdk/core';
 import assert from 'assert';
@@ -332,7 +332,7 @@ export class GraphQLTransform {
     };
   }
 
-  private collectResolvers(context: TransformerContext, api: GraphQLApiProvider): void {
+  private collectResolvers(context: TransformerContext, api: GraphQLAPIProvider): void {
     const resolverEntries = context.resolvers.collectResolvers();
     for (let [, resolver] of resolverEntries) {
       resolver.synthesize(context, api);
