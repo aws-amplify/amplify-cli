@@ -28,6 +28,7 @@ You will notice the extra actions carried out when you run the `git commit` or `
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-push": "npm run lint && npm run test-changed",
       "pre-commit": "yarn split-e2e-tests && pretty-quick --staged"
+    }
   }
 ```
 
