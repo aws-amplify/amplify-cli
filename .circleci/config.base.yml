@@ -687,6 +687,7 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - beta
+                - functionDXChangesTest
           requires:
             - build
       - amplify_e2e_tests:
@@ -695,6 +696,7 @@ workflows:
               only:
                 - master
                 - graphqlschemae2e
+                - functionDXChangesTest
           requires:
             - publish_to_local_registry
       - amplify_migration_tests_latest:
