@@ -7,6 +7,7 @@ export const PathConstants = {
   DotAWSDir: '.aws',
   AWSCredentials: 'credentials',
   AWSConfig: 'config',
+  AmplifyAdminDir: 'admin',
 
   // in project root
   AmplifyDirName: 'amplify',
@@ -18,6 +19,8 @@ export const PathConstants = {
   CurrentCloudBackendDirName: '#current-cloud-backend',
 
   // FileNames
+  AmplifyAdminConfigFileName: 'config.json',
+
   AmplifyRcFileName: '.amplifyrc',
   GitIgnoreFileName: '.gitignore',
   ProjectConfigFileName: 'project-config.json',
@@ -55,6 +58,11 @@ export class PathManager {
   getAmplifyLibRoot = (): string => path.join(this.getHomeDotAmplifyDirPath(), 'lib');
 
   getHomeDotAmplifyDirPath = (): string => this.homeDotAmplifyDirPath;
+
+  getAmplifyAdminDirPath = (): string => this.constructPath(this.getHomeDotAmplifyDirPath(), [PathConstants.AmplifyAdminDir]);
+
+  getAmplifyAdminConfigFilePath = (): string =>
+    this.constructPath(this.getAmplifyAdminDirPath(), [PathConstants.AmplifyAdminConfigFileName]);
 
   getAmplifyDirPath = (projectPath?: string): string => this.constructPath(projectPath, [PathConstants.AmplifyDirName]);
 
