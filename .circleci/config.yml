@@ -1223,6 +1223,7 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - beta
+                - functionDXChangesTest
           requires:
             - build
             - mock_e2e_tests
