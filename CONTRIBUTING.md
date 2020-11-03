@@ -29,8 +29,8 @@ You will notice the extra actions carried out when you run the `git commit` or `
       "pre-push": "npm run lint && npm run test-changed",
       "pre-commit": "yarn split-e2e-tests && pretty-quick --staged"
   }
-
 ```
+
 ### Requirement: 
 To ensure those git hooks properly execute, run `yarn` or `npm install` at the root of this monorepo to install the neccessary dev dependency packages.
 
