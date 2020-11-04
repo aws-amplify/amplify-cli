@@ -87,5 +87,5 @@ else
   fi
 fi
 
-$BINARY_PATH post-install
+$BINARY_PATH plugin scan
 printf "$green\nSuccessfully installed the Amplify CLI.\nRun '$BINARY_NAME help' to get started!$reset\n"

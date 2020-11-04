@@ -41,7 +41,7 @@ if errorlevel 1 (
     echo %yellow%Added %binaries_dir_path% to user PATH%reset%
 )
 
-%binary_path% post-install
+%binary_path% plugin scan
 echo.
 echo %green%Successfully installed the Amplify CLI.
 echo.
