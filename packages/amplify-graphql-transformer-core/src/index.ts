@@ -19,9 +19,9 @@ export {
   ConflictHandlerType,
   ResolverConfig,
   SyncConfig,
-  SyncConfigLAMBDA,
-  SyncConfigOPTIMISTIC,
-  SyncConfigSERVER,
+  SyncConfigLambda,
+  SyncConfigOptimistic,
+  SyncConfigServer,
   TransformConfig,
   TransformerProjectConfig,
 } from './config/index';
