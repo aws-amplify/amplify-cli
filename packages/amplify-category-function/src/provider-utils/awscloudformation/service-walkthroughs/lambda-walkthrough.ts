@@ -119,7 +119,9 @@ function provideInformation(context, lambdaToUpdate, functionRuntime, currentPar
   context.print.success('Lambda layers');
   if (currentParameters.lambdaLayers && currentParameters.lambdaLayers.length) {
     currentParameters.lambdaLayers.forEach(layer => {
-      context.print.info('- '.concat(layer.arn));
+      if (layer.arn) {
+        context.print.info('- '.concat(layer.arn));
+      }
     });
     context.print.info('');
   } else {
