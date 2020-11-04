@@ -9,6 +9,7 @@ type ClassMember = {
   type: string;
   value: string;
   flags: MemberFlags;
+  annotations: string[];
 }
 type ClassMethod = {
   name: string;
@@ -83,6 +84,7 @@ export class DartDeclarationBlock {
     type: string,
     value: string,
     flags: MemberFlags = {},
+    annotations: string[] = []
   ): DartDeclarationBlock {
     this._members.push({
       name,
@@ -90,7 +92,8 @@ export class DartDeclarationBlock {
       value,
       flags: {
         ...flags,
-      }
+      },
+      annotations
     });
     return this;
   }
@@ -169,6 +172,11 @@ export class DartDeclarationBlock {
 
   private printMember(member: Partial<ClassMember>): string {
     const flags = member.flags || {};
+    const annotations = member.annotations || [];
+    let annotatesStr = '';
+    if (annotations.length) {
+      annotatesStr = annotations.map(a => `@${a}`).join('\n') + '\n';
+    }
     const components = [
       flags.static ? 'static' : null,
       flags.final ? 'final' : null,
@@ -177,7 +185,7 @@ export class DartDeclarationBlock {
       member.type,
       member.name,
     ].filter(f => f);
-    return components.join(' ') + (member.value ? ` = ${member.value}` : '');
+    return annotatesStr + components.join(' ') + (member.value ? ` = ${member.value}` : '');
   }
 
   private printMethod(method: ClassMethod): string {

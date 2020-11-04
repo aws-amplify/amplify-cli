@@ -1,25 +1,16 @@
-import { AppSyncModelVisitor, ParsedAppSyncModelConfig, RawAppSyncModelConfig, CodeGenModel, CodeGenField } from './appsync-visitor';
+import { AppSyncModelVisitor, ParsedAppSyncModelConfig, RawAppSyncModelConfig, CodeGenModel, CodeGenField, CodeGenGenerateEnum } from './appsync-visitor';
 import { DartDeclarationBlock } from '../languages/dart-declaration-block';
 import { CodeGenConnectionType } from '../utils/process-connections';
 import { indent, indentMultiline } from '@graphql-codegen/visitor-plugin-common';
 import { AuthDirective, AuthStrategy } from '../utils/process-auth';
 import { printWarning } from '../utils/warn';
+import {
+  LOADER_CLASS_NAME,
+  BASE_IMPORT_PACKAGES,
+  COLLECTION_PACKAGE,
+  typeToEnumMap,
+} from '../configs/dart-config';
 
-const typeToEnumMap: { [name: string] : string} = {
-  String: 'string',
-  Int: 'int',
-  Float: 'double',
-  Boolean: 'bool',
-  AWSDate: 'date',
-  AWSDateTime: 'dateTime',
-  AWSTime: 'time',
-  AWSTimestamp: 'timestamp',
-};
-const BASE_IMPORT_PACKAGES = [
-  'package:flutter/foundation.dart',
-  'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart'
-];
-const COLLECTION_PACKAGE = 'package:collection/collection.dart'
 export class AppSyncModelDartVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
   TPluginConfig extends ParsedAppSyncModelConfig = ParsedAppSyncModelConfig
@@ -27,7 +18,56 @@ export class AppSyncModelDartVisitor<
 
   generate() : string {
     this.processDirectives();
+    if (this._parsedConfig.generate === CodeGenGenerateEnum.loader) {
+      return this.generateClassLoader();
+    }
     return this.generateModelClasses();
+  }
+
+  protected generateClassLoader(): string {
+    const result: string[] = [];
+    const modelNames: string[] = Object.keys(this.modelMap);
+    //Packages for import
+    const packageImports: string[] = [
+      'package: amplify_datastore_plugin_interface/amplify_datastore_plugin_interface',
+      ...modelNames
+    ];
+    //Block body
+    const classDeclarationBlock = new DartDeclarationBlock()
+      .asKind('class')
+      .withName(LOADER_CLASS_NAME)
+      .implements([`${LOADER_CLASS_NAME}Interface`])
+      .addClassMember(
+        'version',
+        'String',
+        `"${this.computeVersion()}"`,
+        undefined,
+        ['override']
+      )
+      .addClassMember(
+        'modelSchemas',
+        'List<ModelSchema>',
+        `[${modelNames.map(m => `${m}.schema`).join(', ')}]`,
+        undefined,
+        ['override']
+      )
+      .addClassMember(
+        '_instance',
+        LOADER_CLASS_NAME,
+        `${LOADER_CLASS_NAME}()`,
+        { static: true, final: true }
+      )
+      .addClassMethod(
+        'get instance',
+        LOADER_CLASS_NAME,
+        [],
+        ' => _instance;',
+        { isBlock: false, isGetter: true, static: true }
+      );
+
+    result.push(packageImports.map(p => `import '${p}.dart';`).join('\n'));
+    result.push(classDeclarationBlock.string);
+    return result.join('\n\n');
   }
 
   /**
@@ -349,10 +389,11 @@ export class AppSyncModelDartVisitor<
     const queryFieldName = this.getQueryFieldName(field);
     let value = `QueryField(fieldName: "${fieldName}")`;
     if (this.isModelType(field)) {
+      const modelName = this.getNativeType({...field, isList: false});
       value = [
         'QueryField(',
         indent(`fieldName: "${fieldName}",`),
-        indent(`fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: "${this.getNativeType({...field, isList: false})}"))`)
+        indent(`fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (${modelName}).toString()))`)
       ].join('\n');
     }
     declarationBlock.addClassMember(

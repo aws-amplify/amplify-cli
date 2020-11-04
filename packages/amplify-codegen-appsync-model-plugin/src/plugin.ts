@@ -42,6 +42,7 @@ export const plugin: PluginFunction<RawAppSyncModelConfig> = (
     case 'flutter':
       visitor = new AppSyncModelDartVisitor(schema, config, {
         selectedType: config.selectedType,
+        generate: config.generate,
       });
       break;
     default:
