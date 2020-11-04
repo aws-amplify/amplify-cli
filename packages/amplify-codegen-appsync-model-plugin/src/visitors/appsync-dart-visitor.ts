@@ -17,7 +17,7 @@ const typeToEnumMap: { [name: string] : string} = {
 };
 const BASE_IMPORT_PACKAGES = [
   'package:flutter/foundation.dart',
-  'package:flutter_modelschema/src/ModelSchema/types.dart'
+  'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart'
 ];
 const COLLECTION_PACKAGE = 'package:collection/collection.dart'
 export class AppSyncModelDartVisitor<
@@ -40,13 +40,11 @@ export class AppSyncModelDartVisitor<
     Object.entries(this.getSelectedModels()).forEach(([name, model]) => {
       const modelDeclaration = this.generateModelClass(model);
       const modelType = this.generateModelType(model);
-      const modelSchema = this.generateModelSchema(model);
 
       result.push(modelDeclaration);
       result.push(modelType);
-      result.push(modelSchema)
     });
-    return result.join('\n');
+    return result.join('\n\n');
   }
 
   protected generatePackageHeader(): string {
@@ -104,6 +102,8 @@ export class AppSyncModelDartVisitor<
     this.generateCopyWithMethod(model, classDeclarationBlock);
     //de/serialization method
     this.generateSerializationMethod(model, classDeclarationBlock);
+    //generate model schema
+    this.generateModelSchema(model, classDeclarationBlock);
     return classDeclarationBlock.string;
   }
 
@@ -121,25 +121,13 @@ export class AppSyncModelDartVisitor<
       { const: true, isBlock: false }
     );
     classDeclarationBlock.addClassMethod(
-      'createInstance',
+      'fromJson',
       modelName,
-      [],
-      `return ${modelName}();`
+      [{name: 'jsonData', type: 'Map<String, dynamic>'}],
+      `return ${modelName}.fromJson(jsonData);`,
+      undefined,
+      ['override']
     );
-    return classDeclarationBlock.string;
-  }
-
-  protected generateModelSchema(model: CodeGenModel): string {
-    const classDeclarationBlock = new DartDeclarationBlock()
-      .asKind('extension')
-      .withName(`${this.getModelName(model)}Schema`)
-      .extensionOn(this.getModelName(model));
-    //QueryField
-    model.fields.forEach(field => {
-      this.generateQueryField(field, classDeclarationBlock);
-    });
-    //schema
-    this.generateSchemaField(model, classDeclarationBlock);
     return classDeclarationBlock.string;
   }
 
@@ -345,8 +333,20 @@ export class AppSyncModelDartVisitor<
     );
   }
 
+  protected generateModelSchema(model: CodeGenModel, classDeclarationBlock: DartDeclarationBlock): void {
+    const schemaDeclarationBlock = new DartDeclarationBlock();
+    //QueryField
+    model.fields.forEach(field => {
+      this.generateQueryField(field, schemaDeclarationBlock);
+    });
+    //schema
+    this.generateSchemaField(model, schemaDeclarationBlock);
+    classDeclarationBlock.addBlock(schemaDeclarationBlock);
+  }
+
   protected generateQueryField(field: CodeGenField, declarationBlock: DartDeclarationBlock) : void {
     const fieldName = this.getFieldName(field);
+    const queryFieldName = this.getQueryFieldName(field);
     let value = `QueryField(fieldName: "${fieldName}")`;
     if (this.isModelType(field)) {
       value = [
@@ -356,11 +356,15 @@ export class AppSyncModelDartVisitor<
       ].join('\n');
     }
     declarationBlock.addClassMember(
-      fieldName,
+      queryFieldName,
       'QueryField',
       value,
       { static: true, final: true }
     );
+  }
+
+  protected getQueryFieldName(field: CodeGenField): string {
+    return this.getFieldName(field).toUpperCase();
   }
 
   protected generateSchemaField(model: CodeGenModel, declarationBlock: DartDeclarationBlock) : void {
@@ -388,20 +392,19 @@ export class AppSyncModelDartVisitor<
       authDirectives.forEach(directive => {
         directive.arguments?.rules.forEach(rule => {
           const authRule : string[] = [];
+          const authStrategy = `authStrategy: AuthStrategy.${rule.allow.toUpperCase()}`;
           switch (rule.allow) {
             case AuthStrategy.owner:
-              authRule.push('allow: AuthStrategy.owner');
+              authRule.push(authStrategy);
               authRule.push(`ownerField: "${rule.ownerField}"`);
               authRule.push(`identityClain: "${rule.identityClaim}"`);
               break;
             case AuthStrategy.private:
-              authRule.push('allow: AuthStrategy.private');
-              break;
             case AuthStrategy.public:
-              authRule.push('allow: AuthStrategy.public');
+              authRule.push(authStrategy);
               break;
             case AuthStrategy.groups:
-              authRule.push('allow: AuthStrategy.groups');
+              authRule.push(authStrategy);
               authRule.push(`groupClaim: "${rule.groupClaim}"`);
               if (rule.groups) {
                 authRule.push(`groups: [ ${rule.groups?.map(group => `"${group}"`).join(', ')} ]`);
@@ -414,7 +417,7 @@ export class AppSyncModelDartVisitor<
               return '';
           }
           authRule.push(['operations: [',
-                          indentMultiline(rule.operations.map(op => `ModelOperation.${op}`).join(',\n')),
+                          indentMultiline(rule.operations.map(op => `ModelOperation.${op.toUpperCase()}`).join(',\n')),
                           ']'
                         ].join('\n'));
           rules.push(`AuthRule(\n${indentMultiline(authRule.join(',\n'))})`);
@@ -433,6 +436,7 @@ export class AppSyncModelDartVisitor<
       model.fields.forEach(field => {
         const fieldName = this.getFieldName(field);
         const modelName = this.getModelName(model);
+        const queryFieldName = this.getQueryFieldName(field);
         let fieldParam: string = '';
         //field id
         if (fieldName === 'id') {
@@ -444,28 +448,28 @@ export class AppSyncModelDartVisitor<
           switch (field.connectionInfo.kind) {
             case CodeGenConnectionType.HAS_ONE:
               fieldParam = [
-                `key: ${modelName}Schema.${fieldName}`,
+                `key: ${modelName}.${queryFieldName}`,
                 `isRequired: ${!field.isNullable}`,
-                `ofModelName: ${connectedModelName}.classType.getTypeName()`,
-                `associatedKey: ${connectedModelName}Schema.${this.getFieldName(field.connectionInfo.associatedWith)}`
+                `ofModelName: (${connectedModelName}).toString()`,
+                `associatedKey: ${connectedModelName}.${this.getQueryFieldName(field.connectionInfo.associatedWith)}`
               ].join(',\n');
               fieldsToAdd.push(['ModelFieldDeinition.hasOne(', indentMultiline(fieldParam), ')'].join('\n'));
               break;
             case CodeGenConnectionType.HAS_MANY:
               fieldParam = [
-                `key: ${modelName}Schema.${fieldName}`,
+                `key: ${modelName}.${queryFieldName}`,
                 `isRequired: ${!field.isNullable}`,
-                `ofModelName: ${connectedModelName}.classType.getTypeName()`,
-                `associatedKey: ${connectedModelName}Schema.${this.getFieldName(field.connectionInfo.associatedWith)}`
+                `ofModelName: (${connectedModelName}).toString()`,
+                `associatedKey: ${connectedModelName}.${this.getQueryFieldName(field.connectionInfo.associatedWith)}`
               ].join(',\n');
               fieldsToAdd.push(['ModelFieldDeinition.hasMany(', indentMultiline(fieldParam), ')'].join('\n'));
               break;
             case CodeGenConnectionType.BELONGS_TO:
               fieldParam = [
-                `key: ${modelName}Schema.${fieldName}`,
+                `key: ${modelName}.${queryFieldName}`,
                 `isRequired: ${!field.isNullable}`,
                 `targetName: "${field.connectionInfo.targetName}"`,
-                `ofModelName: ${connectedModelName}.classType.getTypeName()`
+                `ofModelName: (${connectedModelName}).toString()`
               ].join(',\n');
               fieldsToAdd.push(['ModelFieldDeinition.belongsTo(', indentMultiline(fieldParam), ')'].join('\n'));
               break;
@@ -474,7 +478,7 @@ export class AppSyncModelDartVisitor<
         //field with regular types
         else {
           fieldParam = [
-            `key: ${modelName}Schema.${fieldName}`,
+            `key: ${modelName}.${queryFieldName}`,
             `isRequired: ${!field.isNullable}`,
             `ofType: ModelFieldType(ModelFieldTypeEnum.${field.type in typeToEnumMap ? typeToEnumMap[field.type] : 'string'})`
           ].join(',\n');

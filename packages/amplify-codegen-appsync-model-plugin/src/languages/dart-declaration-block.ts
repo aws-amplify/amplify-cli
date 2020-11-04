@@ -26,7 +26,7 @@ type MethodFlags = MemberFlags & {
 
 export class DartDeclarationBlock {
   _name: string | null = null;
-  _kind: Kind = 'class';
+  _kind: Kind | null = null;
   _implementsStr: string[] = [];
   _extendStr: string[] = [];
   _extensionType: string | null = null;
@@ -34,6 +34,12 @@ export class DartDeclarationBlock {
   _annotations: string[] = [];
   _members: ClassMember[] = [];
   _methods: ClassMethod[] = [];
+  _blocks: DartDeclarationBlock[] = [];
+
+  addBlock(block: DartDeclarationBlock) {
+    this._blocks.push(block);
+    return this;
+  }
 
   annotate(annotations: string[]): DartDeclarationBlock {
     this._annotations = annotations;
@@ -96,8 +102,6 @@ export class DartDeclarationBlock {
     implementation: string,
     flags: MethodFlags = {},
     annotations: string[] = [],
-    isBlock: boolean = true,
-    isGetter: boolean = false,
     comment: string = '',
   ) : DartDeclarationBlock {
     this._methods.push({
@@ -153,12 +157,14 @@ export class DartDeclarationBlock {
       const methods = this._methods.length
         ? indentMultiline(stripIndent(this._methods.map(method => this.printMethod(method)).join('\n\n')))
         : null;
-      const before = '{';
-      const after = '}';
-      const block = [before, members, methods, after].filter(f => f).join('\n');
-      result += block;
+      const blocks = this._blocks.length ? this._blocks.map(b =>
+          b._kind ? indentMultiline(b.string) : b.string).join('\n\n') : null;
+      const before = this._kind ? '{' : '';
+      const after = this._kind ? '}' : '';
+      const blockStr = [members, methods, blocks].filter(f => f).join('\n\n');
+      result += [before, blockStr, after].filter(f => f).join('\n');
 
-      return (this._comment ? this._comment : '') + result + '\n';
+      return (this._comment ? this._comment : '') + result;
   }
 
   private printMember(member: Partial<ClassMember>): string {
