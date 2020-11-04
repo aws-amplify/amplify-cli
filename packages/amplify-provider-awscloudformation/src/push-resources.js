@@ -21,7 +21,7 @@ const archiver = require('./utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const { stateManager } = require('amplify-cli-core');
 const constants = require('./constants');
-const { NetworkStack } = require('./network/stack');
+const { NetworkStack, NETWORK_STACK_LOGICAL_ID } = require('./network/stack');
 const { getEnvironmentNetworkInfo } = require('./network/environment-info');
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
@@ -234,9 +234,9 @@ function isVpcRequired(context) {
 
   if (functionsObj) {
     const found = Object.keys(functionsObj).some(key => {
-      const functionObj = functionsObj[key];
-      if (functionObj.providerPlugin === providerName && functionObj.service === 'ElasticContainer') {
-        if (functionObj.scheduleOptions && functionObj.scheduleOptions.cloudwatchRule) {
+      const func = functionsObj[key];
+      if (func.providerPlugin === providerName && func.service === 'ElasticContainer') {
+        if (func.scheduleOptions && func.scheduleOptions.cloudwatchRule) {
           return true;
         }
       }
@@ -249,8 +249,8 @@ function isVpcRequired(context) {
 
   if (apiObj) {
     const found = Object.keys(apiObj).some(key => {
-      const apiObj = apiObj[key];
-      if (apiObj.providerPlugin === providerName && apiObj.service === 'ElasticContainer') {
+      const api = apiObj[key];
+      if (api.providerPlugin === providerName && api.service === 'Containers') {
         return true;
       }
     });
@@ -625,7 +625,7 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
   const { VpcCfnFile } = amplifyMeta.providers[constants.ProviderName];
 
   if (VpcCfnFile) {
-    nestedStack.Resources.NetworkStack = {
+    nestedStack.Resources[NETWORK_STACK_LOGICAL_ID] = {
       Type: 'AWS::CloudFormation::Stack',
       Properties: {
         TemplateURL: VpcCfnFile,
@@ -658,11 +658,11 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
 
               const dependentResource = _.get(amplifyMeta, [dependsOn[i].category, dependsOn[i].resourceName], undefined);
 
-              if (!dependentResource) {
+              if (!dependentResource && dependsOn[i].category) {
                 throw new Error(`Cannot get resource: ${dependsOn[i].resourceName} from '${dependsOn[i].category}' category.`);
               }
 
-              if (dependentResource.serviceType === 'imported') {
+              if (dependentResource && dependentResource.serviceType === 'imported') {
                 const outputAttributeValue = _.get(dependentResource, ['output', dependsOn[i].attributes[j]], undefined);
 
                 if (!outputAttributeValue) {

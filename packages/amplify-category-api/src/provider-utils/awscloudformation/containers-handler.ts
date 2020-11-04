@@ -1,10 +1,9 @@
 import { serviceMetadataFor } from './utils/dynamic-imports';
 import fs from 'fs-extra';
 import path from 'path';
-import { parametersFileName, cfnParametersFilename, rootAssetDir } from './aws-constants';
+import { EcsStack } from './ecs-stack';
 
 export const addResource = async (serviceWalkthroughPromise: Promise<any>, context, category, service, options) => {
-    let { cfnFilename } = await serviceMetadataFor(service);
     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
     const walkthroughOptions = await serviceWalkthroughPromise;
 
@@ -12,6 +11,20 @@ export const addResource = async (serviceWalkthroughPromise: Promise<any>, conte
 
     const dependsOn = [];
 
+    // TODO: Find a place to put this
+    // for now copied from NETWORK_STACK_LOGICAL_ID (amplify-provider-awscloudformation/src/network/stack.ts)
+    const x = 'NetworkStack';
+    dependsOn.push(
+        {
+            "category": "",
+            "resourceName": x,
+            "attributes": [
+                "VpcId",
+                "SubnetIds"
+            ]
+        });
+
+    // TODO: conditional, depends on access !== public
     dependsOn.push(
         {
             "category": "auth",
@@ -33,37 +46,24 @@ export const addResource = async (serviceWalkthroughPromise: Promise<any>, conte
 
     options = { resourceName, containerName, dependsOn, ...options };
 
-    const containerTemplateFilePath = path.join(rootAssetDir, 'cloudformation-templates', cfnFilename);
-    const containerTemplate = JSON.parse(fs.readFileSync(containerTemplateFilePath, 'utf8'));
-
-    const functionFullName = `function${containerName}TaskDefinitionArn`
-    containerTemplate['Parameters'][functionFullName] = {
-        "Type": "String"
-    }
-    containerTemplate['Resources']['MyServiceB4132EDA']['Properties']['TaskDefinition'] = {
-        "Ref": functionFullName
-    }
-
     const authFullName = `auth${authName}UserPoolId`;
-    containerTemplate['Parameters'][authFullName] = {
-        "Type": "String"
-    }
-    containerTemplate['Resources']['MyAuthorizer']['Properties']['ProviderARNs'][0]['Fn::Join'][1].push({
-        "Ref": authFullName
-    })
+    const functionFullName = `function${containerName}TaskDefinitionArn`;
 
-    containerTemplate['Outputs']['ApiName']['Value'] = resourceName;
+    const stack = new EcsStack(undefined, "ContainersStack", {
+        containerPort: 8080,
+        authFullName,
+        functionFullName,
+    });
+    const cfn = (stack as any)._toCloudFormation();
 
-    const parametersObj = {
-        "ParamContainerPort": 8080
-    }
+    // TODO: Add this output to stack
+    // containerTemplate['Outputs']['ApiName']['Value'] = resourceName;
 
     const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
 
     fs.ensureDirSync(resourceDirPath);
     
-    fs.writeFileSync(path.join(resourceDirPath, 'container-template.json'), JSON.stringify(containerTemplate, null, 2));
-    fs.writeFileSync(path.join(resourceDirPath, 'parameters.json'), JSON.stringify(parametersObj, null, 2));
+    fs.writeFileSync(path.join(resourceDirPath, 'container-template.json'), JSON.stringify(cfn, null, 2));
 
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
 

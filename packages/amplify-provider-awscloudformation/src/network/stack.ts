@@ -8,6 +8,8 @@ type NetworkStackProps = {
     subnetCidrs: ReadonlyMap<string, string>
 };
 
+export const NETWORK_STACK_LOGICAL_ID = 'NetworkStack';
+
 export class NetworkStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props: NetworkStackProps) {
         super(scope, id);
@@ -38,7 +40,7 @@ function createVpc(scope: cdk.Construct, vpcId: string, internetGatewayId: strin
     cfnVpc.cfnOptions.condition = condition;
 
     const outputVpc = cdk.Fn.conditionIf(condition.logicalId, vpc.vpcId, vpcId);
-    new cdk.CfnOutput(scope, 'Vpc', {
+    new cdk.CfnOutput(scope, 'VpcId', {
         value: outputVpc as any,
     });
 
@@ -136,9 +138,8 @@ function createAmplifyEnv(scope: cdk.Construct, envName: string, vpcId: string, 
         publicSubnet.associateNetworkAcl('', pubNacl);
 
         subnets.push(publicSubnet);
-
-        new cdk.CfnOutput(scope, `Az${azId}Subnet`, {
-            value: publicSubnet.subnetId,
-        });
+    });
+    new cdk.CfnOutput(scope, 'SubnetIds', {
+        value: subnets.map(({subnetId}) => subnetId).join(','),
     });
 }
