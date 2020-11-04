@@ -189,13 +189,6 @@ export class GraphQLTransform {
       }
     }
 
-    // transform schema
-    for (const transformer of this.transformers) {
-      if (isFunction(transformer.prepare)) {
-        transformer.prepare(context);
-      }
-    }
-
     // Prepare
     for (const transformer of this.transformers) {
       if (isFunction(transformer.prepare)) {
