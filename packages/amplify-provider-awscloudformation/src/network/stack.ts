@@ -126,7 +126,6 @@ function createAmplifyEnv(scope: cdk.Construct, envName: string, vpcId: string, 
 
         const cdfnPublicSubnet = (publicSubnet.node.defaultChild as ec2.CfnSubnet);
         cdfnPublicSubnet.tags.setTag('amplify-env', envName);
-        cdfnPublicSubnet.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN;
 
         new ec2.CfnRoute(scope, `DefaultRoute${azId}`, {
             routeTableId: publicSubnet.routeTable.routeTableId,

@@ -118,11 +118,6 @@ export class EcsStack extends cdk.Stack {
         });
         service.addDependsOn(listener);
 
-        const vpcLink = new apigw.CfnVpcLink(this, "VpcLink", {
-            name: 'VpcLink',
-            targetArns: [cdk.Fn.ref(loadBalancer.logicalId)]
-        });
-
         const api = new apigw.CfnRestApi(this, "Api", {
             name: "Api" // TODO: get friendly name
         });
@@ -135,6 +130,7 @@ export class EcsStack extends cdk.Stack {
             restApiId: cdk.Fn.ref(api.logicalId),
             authorizationType: 'NONE',
             integration: {
+                type: 'MOCK',
                 integrationResponses: [{
                     statusCode: "204",
                     responseParameters: {
@@ -180,10 +176,8 @@ export class EcsStack extends cdk.Stack {
             restApiId: cdk.Fn.ref(api.logicalId),
             authorizationScopes: ["aws.cognito.signin.user.admin"],
             authorizationType: 'COGNITO_USER_POOLS',
-            authorizerId: authorizer.logicalId,
+            authorizerId: cdk.Fn.ref(authorizer.logicalId),
             integration: {
-                connectionId: vpcLink.logicalId,
-                connectionType: 'VPC_LINK',
                 integrationHttpMethod: 'ANY',
                 type: 'HTTP_PROXY',
                 uri: cdk.Fn.join(':', [
@@ -191,10 +185,10 @@ export class EcsStack extends cdk.Stack {
                         'http://',
                         loadBalancer.attrDnsName // TODO: Only NLB!!! :(
                     ]),
-                    `${containerPort}`,
+                    `80`,
                 ])
             }
-        })
+        });
 
         const deployment = new apigw.CfnDeployment(this, "Deployment", {
             restApiId: cdk.Fn.ref(api.logicalId),
@@ -209,5 +203,21 @@ export class EcsStack extends cdk.Stack {
         });
 
         // TODO: Outputs
+        new cdk.CfnOutput(this, "ApiName", {
+            value: 'blebleble' // TODO: customer friendly name
+        });
+        new cdk.CfnOutput(this, "RootUrl", {
+            value: cdk.Fn.join('', [
+                "https://",
+                cdk.Fn.ref(api.logicalId),
+                ".execute-api.",
+                cdk.Aws.REGION,
+                ".",
+                cdk.Aws.URL_SUFFIX,
+                "/",
+                cdk.Fn.ref(stage.logicalId),
+                "/"
+            ])
+        });
     }
 }
