@@ -713,6 +713,12 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           makeInputValueDefinition('condition', makeNamedType(conditionInput!.name.value)),
         ];
 
+      case SubscriptionFieldType.ON_CREATE:
+      case SubscriptionFieldType.ON_DELETE:
+      case SubscriptionFieldType.ON_UPDATE:
+        return [];
+        break;
+
       default:
         throw new Error('Unkown operation type');
     }
