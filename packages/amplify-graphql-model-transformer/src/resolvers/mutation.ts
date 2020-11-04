@@ -191,7 +191,7 @@ export const generateCreateRequestTemplate = (modelName: string): string => {
     comment('End - KeyCondition'),
     // Generate conditions
     generateConditionSlot('ctx.stash.conditions', 'Conditions'),
-    iff(ref('Conditions'), qref(methodCall(ref('UpdateItem.put'), str('condition'), ref('Conditions')))),
+    iff(ref('Conditions'), qref(methodCall(ref('PutObject.put'), str('condition'), ref('Conditions')))),
     ifElse(
       ref('ctx.stash.metadata.modelObject'),
       methodCall(ref('PutObject.put'), str('id'), ref('ctx.stash.metadata.modelObject')),
