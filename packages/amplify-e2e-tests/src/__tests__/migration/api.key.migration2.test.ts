@@ -77,6 +77,17 @@ describe('amplify add api', () => {
     ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
+  it('init project, allow updated two types with new GSIs', async () => {
+      const projectName = 'twoTypeGSI';
+      const initialSchema = 'migrations_key/two_key_model_schema.graphql';
+      const nextSchema = 'migrations_key/four_key_model_schema.graphql';
+      await initJSProjectWithProfile(projRoot, { name: projectName });
+      await addApiWithSchema(projRoot, initialSchema);
+      await amplifyPush(projRoot);
+      updateApiSchema(projRoot, projectName, nextSchema);
+      await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
+    });
+
   it('init project, run valid migration adding a GSI', async () => {
     const projectName = 'validaddinggsi';
     const initialSchema = 'migrations_key/initial_schema.graphql';
