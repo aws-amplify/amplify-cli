@@ -245,7 +245,6 @@ function getCacheFilePath(context) {
 function getProfileConfig(profileName) {
   let profileConfig;
   if (fs.existsSync(configFilePath)) {
-    makeFileOwnerReadWrite(configFilePath);
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
     Object.keys(config).forEach(key => {
       const keyName = key.replace('profile', '').trim();
@@ -260,7 +259,6 @@ function getProfileConfig(profileName) {
 function getProfileCredentials(profileName) {
   let profileCredentials;
   if (fs.existsSync(credentialsFilePath)) {
-    makeFileOwnerReadWrite(credentialsFilePath);
     const credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
 
     Object.keys(credentials).forEach(key => {
@@ -299,7 +297,6 @@ function getProfileRegion(profileName) {
 function getNamedProfiles() {
   let namedProfiles;
   if (fs.existsSync(configFilePath)) {
-    makeFileOwnerReadWrite(configFilePath);
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
     namedProfiles = {};
     Object.keys(config).forEach(key => {
