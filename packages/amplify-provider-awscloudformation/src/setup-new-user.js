@@ -49,75 +49,79 @@ async function run(context) {
   open(deepLinkURL, { wait: false }).catch(() => {});
   await context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
 
-  context.print.info('Enter the access key of the newly created user:');
-  const accountDetails = await inquirer.prompt([
+  context.print.info('Configure the profile to use for the new user:');
+  const profileDetails = await inquirer.prompt([
     {
-      type: 'password',
-      mask: '*',
-      name: 'accessKeyId',
-      message: 'accessKeyId: ',
-      default: awsConfig.accessKeyId,
-      transformer: obfuscationUtil.transform,
-      validate: input => {
-        if (input === constants.DefaultAWSAccessKeyId || input.length < 16 || input.length > 128 || !/^[\w]+$/.test(input)) {
-          let message = 'You must enter a valid accessKeyId';
-          if (input.length < 16) {
-            message += ': Minimum length is 16';
-          } else if (input.length > 128) {
-            message += ': Maximun length is 128';
-          } else if (!/^[\w]+$/.test(input)) {
-            message += ': It can only contain letter, number or underscore characters';
-          }
-          return message;
-        }
-        return true;
-      },
-    },
-    {
-      type: 'password',
-      mask: '*',
-      name: 'secretAccessKey',
-      message: 'secretAccessKey: ',
-      default: awsConfig.secretAccessKey,
-      transformer: obfuscationUtil.transform,
-      validate: input => {
-        if (input === constants.DefaultAWSSecretAccessKey || input.trim().length === 0) {
-          return 'You must enter a valid secretAccessKey';
-        }
-        return true;
-      },
+      type: 'input',
+      name: 'pn',
+      message: 'Profile Name (will be created if needed): ',
+      default: 'default',
     },
   ]);
 
-  if (accountDetails.accessKeyId) {
-    awsConfig.accessKeyId = accountDetails.accessKeyId.trim();
-  }
-  if (accountDetails.secretAccessKey) {
-    awsConfig.secretAccessKey = accountDetails.secretAccessKey.trim();
-  }
+  const profileName = profileDetails.pn.trim();
 
-  if (validateAWSConfig(awsConfig)) {
-    let profileName = 'default';
-    context.print.warning('This would update/create the AWS Profile in your local machine');
-    const profileDetails = await inquirer.prompt([
+  // Check whether the profile exists, and if so use it. Otherwise require credentials for it, and create it.
+  const profileCredentials = systemConfigManager.getProfileCredentials(profileName);
+  if (!profileCredentials) {
+    const accountDetails = await inquirer.prompt([
       {
-        type: 'input',
-        name: 'pn',
-        message: 'Profile Name: ',
-        default: 'default',
+        type: 'password',
+        mask: '*',
+        name: 'accessKeyId',
+        message: 'accessKeyId: ',
+        default: awsConfig.accessKeyId,
+        transformer: obfuscationUtil.transform,
+        validate: input => {
+          if (input === constants.DefaultAWSAccessKeyId || input.length < 16 || input.length > 128 || !/^[\w]+$/.test(input)) {
+            let message = 'You must enter a valid accessKeyId';
+            if (input.length < 16) {
+              message += ': Minimum length is 16';
+            } else if (input.length > 128) {
+              message += ': Maximun length is 128';
+            } else if (!/^[\w]+$/.test(input)) {
+              message += ': It can only contain letter, number or underscore characters';
+            }
+            return message;
+          }
+          return true;
+        },
+      },
+      {
+        type: 'password',
+        mask: '*',
+        name: 'secretAccessKey',
+        message: 'secretAccessKey: ',
+        default: awsConfig.secretAccessKey,
+        transformer: obfuscationUtil.transform,
+        validate: input => {
+          if (input === constants.DefaultAWSSecretAccessKey || input.trim().length === 0) {
+            return 'You must enter a valid secretAccessKey';
+          }
+          return true;
+        },
       },
     ]);
 
-    profileName = profileDetails.pn.trim();
+    if (accountDetails.accessKeyId) {
+      awsConfig.accessKeyId = accountDetails.accessKeyId.trim();
+    }
+    if (accountDetails.secretAccessKey) {
+      awsConfig.secretAccessKey = accountDetails.secretAccessKey.trim();
+    }
+
+    if (!validateAWSConfig(awsConfig)) {
+      context.print.info('');
+      context.print.info('You did NOT enter valid keys.');
+      throw new Error('New user setup failed.');
+    }
 
     systemConfigManager.setProfile(awsConfig, profileName);
     context.print.info('');
     context.print.success('Successfully set up the new user.');
-    return profileName;
   }
-  context.print.info('');
-  context.print.info('You did NOT enter valid keys.');
-  throw new Error('New user setup failed.');
+
+  return profileName;
 }
 
 function validateAWSConfig(awsConfig) {
