@@ -6,12 +6,47 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as custom from '@aws-cdk/custom-resources';
 
-type ContainerStackProps = {
-    deploymentBucket: string;
-    containerPort: number;
-    awaiterZipPath: string;
-};
+class PipelineAwaiter extends cdk.CustomResource {
+    constructor(
+        scope: cdk.Construct,
+        id: string,
+        pipeline: codepipeline.Pipeline,
+    ) {
+        const onEventHandler = new lambda.Function(scope, "CustomEventHandler", {
+            runtime: lambda.Runtime.NODEJS_12_X,
+            handler: "index.handler",
+            code: lambda.Code.fromInline(`exports.handler = function (event) {};`),
+            timeout: cdk.Duration.minutes(5),
+        });
+
+        const isCompleteHandler = new lambda.Function(scope, "CustomCompleteHandler", {
+            runtime: lambda.Runtime.NODEJS_12_X,
+            handler: "index.handler",
+            timeout: cdk.Duration.seconds(25),
+            code: lambda.Code.fromInline('const AWS=require("aws-sdk"),codePipeline=new AWS.CodePipeline;exports.handler=async function({RequestType:e}){if(console.log({RequestType:e}),"Delete"===e)return{IsComplete:!0};const{PIPELINE_NAME:i}=process.env,{pipelineExecutionSummaries:[s]}=await codePipeline.listPipelineExecutions({pipelineName:i}).promise();console.log(s);const{status:o}=s||{};if(void 0===o)return{IsComplete:!1};let t=!1;switch(o){case"Failed":case"Stopped":throw new Error("The execution didn\'t succeed");case"Succeeded":t=!0}return{IsComplete:t}};'),
+            environment: {
+                PIPELINE_NAME: pipeline.pipelineName
+            },
+        });
+        isCompleteHandler.addToRolePolicy(new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: ['codepipeline:ListPipelineExecutions'],
+            resources: [pipeline.pipelineArn],
+        }))
+
+        const myProvider = new custom.Provider(scope, "MyProvider", {
+            onEventHandler,
+            isCompleteHandler,
+        });
+
+        super(scope, id, {
+            serviceToken: myProvider.serviceToken,
+        });
+    }
+}
 
 class PipelineWithAwaiter extends cdk.Construct {
     constructor(
@@ -43,16 +78,7 @@ class PipelineWithAwaiter extends cdk.Construct {
             },
         });
 
-        const pipelineRole = new iam.Role(this, "Bleble", {
-            assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
-        });
-
-        // We add and remove a statement so CDK creates the policy to pass later to addDependsOn
-        const policy = pipelineRole.addToPrincipalPolicy(new iam.PolicyStatement()).policyDependable as iam.Policy;
-        (policy.document as any).statements = [];
-
         const pipeline = new codepipeline.Pipeline(this, 'MyPipeline', {
-            role: pipelineRole,
             crossAccountKeys: false,
             artifactBucket: bucket,
             stages: [
@@ -107,11 +133,6 @@ class PipelineWithAwaiter extends cdk.Construct {
                 .filter(Boolean),
         });
 
-        // For some reason, CDK doesn't add these automatically
-        const x =  (pipeline.node.defaultChild as codepipeline.CfnPipeline);
-        x.addDependsOn(((pipeline.role as iam.Role).node.defaultChild as iam.CfnRole));
-        x.addDependsOn(policy.node.defaultChild as any);
-
         if (codebuildproject.role) {
             // https://t.corp.amazon.com/V260327869/communication
             codebuildproject.role.addToPrincipalPolicy(
@@ -132,22 +153,24 @@ class PipelineWithAwaiter extends cdk.Construct {
             );
         }
 
-        // const pipelineAwaiter = new PipelineAwaiter(this, "MyAwaiter", {
-        //     queue: queue,
-        //     bucketKey,
-        // });
-
-        // (pipelineAwaiter.node.defaultChild as CfnCustomResource).addDependsOn(
-        //     pipeline.node.defaultChild as CfnPipeline
-        // );
+        const pipelineAwaiter = new PipelineAwaiter(this, "MyAwaiter", pipeline);
+        (pipelineAwaiter.node.defaultChild as cdk.CfnCustomResource).addDependsOn(
+            pipeline.node.defaultChild as codepipeline.CfnPipeline
+        );
     }
 }
 
+type ContainerStackProps = {
+    deploymentBucket: string;
+    containerPort: number;
+    awaiterZipPath: string;
+    synthesizer?: cdk.IStackSynthesizer;
+};
 export class ContainerStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props: ContainerStackProps) {
-        super(scope, id);
-
-        const { deploymentBucket, containerPort, awaiterZipPath } = props;
+        const { deploymentBucket, containerPort, awaiterZipPath, synthesizer } = props;
+        
+        super(scope, id, {synthesizer});
 
         new cdk.CfnParameter(this, 'env', { type: 'String' });
 

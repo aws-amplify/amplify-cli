@@ -12,6 +12,7 @@ import { saveLayerRuntimes } from './layerRuntimes';
 import { containerFiles } from './container-resource-template';
 import { getNewCFNParameters } from './cloudformationHelpers';
 import { ContainerStack } from './container-stack';
+import { prepareApp } from "@aws-cdk/core/lib/private/prepare-app";
 
 const DEFAULT_CONTAINER_PORT = 8080;
 export function createContainerResources(context: any, parameters: ContainerParameters): {resourceDirPath: string}  {
@@ -41,9 +42,26 @@ export function createContainerResources(context: any, parameters: ContainerPara
   const stack = new ContainerStack(undefined, "Container", {
     deploymentBucket,
     containerPort: DEFAULT_CONTAINER_PORT,
-    awaiterZipPath: ''
+    awaiterZipPath: '',
   });
+
+  // TODO: Move these lines to a function for reuse
+  prepareApp(stack);
   const containerCfn = (stack as any)._toCloudFormation();
+
+  Object.keys(containerCfn.Parameters).forEach(k => {
+    if(k.startsWith('AssetParameters')) {
+      let value = '';
+      
+      if(k.includes('Bucket')) {
+        value = deploymentBucket;
+      } else if (k.includes('VersionKey')) {
+        value = 'custom-resource-pipeline-awaiter.zip||';
+      }
+
+      containerCfn.Parameters[k].Default = value;
+    }
+  });
 
   if (!containerCfn.Resources['AmplifyResourcesPolicy']) {
     containerCfn.Resources['AmplifyResourcesPolicy'] = {
