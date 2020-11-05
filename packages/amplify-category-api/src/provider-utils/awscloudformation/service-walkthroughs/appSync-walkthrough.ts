@@ -258,7 +258,7 @@ async function askAdditionalQuestions(context, authConfig, defaultAuthType, mode
   const advancedSettingsQuestion = {
     type: 'list',
     name: 'advancedSettings',
-    message: 'Do you want to configure advanced settings for the GraphQL API',
+    message: 'Do you want to configure advanced settings for the GraphQL API? (including enabling Amplify DataStore)',
     choices: [
       {
         name: 'No, I am done.',
@@ -284,7 +284,7 @@ async function askAdditionalQuestions(context, authConfig, defaultAuthType, mode
 async function askResolverConflictQuestion(context, modelTypes?) {
   let resolverConfig: any = {};
 
-  if (await context.prompt.confirm('Configure conflict detection?')) {
+  if (await context.prompt.confirm('Configure conflict detection ? (required for Amplify DataStore)')) {
     const askConflictResolutionStrategy = async msg => {
       let conflictResolutionStrategy;
 
