@@ -472,11 +472,11 @@ function packageResources(context, resources) {
             };
           }
         } else if (resource.service === FunctionServiceName.ElasticContainer) {
+          const cfnParams = {
+            ParamZipPath: s3Key,
+          };
+
           const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
-          const cfnParams = context.amplify.readJsonFile(cfnParamsFilePath);
-
-          _.set(cfnParams, ['ParamZipPath'], s3Key);
-
           context.amplify.writeObjectAsJson(cfnParamsFilePath, cfnParams, true);
         }
         else {

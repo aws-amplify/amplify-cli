@@ -9,8 +9,9 @@ import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './layerParams';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { saveLayerRuntimes } from './layerRuntimes';
-import { containerTemplate as containerCfn, containerFiles } from './container-resource-template';
+import { containerFiles } from './container-resource-template';
 import { getNewCFNParameters } from './cloudformationHelpers';
+import { ContainerStack } from './container-stack';
 
 const DEFAULT_CONTAINER_PORT = 8080;
 export function createContainerResources(context: any, parameters: ContainerParameters): {resourceDirPath: string}  {
@@ -30,17 +31,19 @@ export function createContainerResources(context: any, parameters: ContainerPara
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, parameters.resourceName);
 
   fs.ensureDirSync(path.join(resourceDirPath, 'src'));
-
-  const templateParameters = {
-    ParamRepositoryName: parameters.resourceName,
-    ParamZipPath: '', // TBD after push
-    ParamDeploymentBucket: `${context.amplify.getProjectMeta().providers[provider].DeploymentBucketName}`,
-    ParamContainerPort: DEFAULT_CONTAINER_PORT,
-  };
-
+  
   Object.entries(containerFiles).forEach(([fileName, fileContents]) => {
     fs.writeFileSync(path.join(resourceDirPath, 'src', fileName), fileContents);
+  });  
+
+  const deploymentBucket = `${context.amplify.getProjectMeta().providers[provider].DeploymentBucketName}`;
+  
+  const stack = new ContainerStack(undefined, "Container", {
+    deploymentBucket,
+    containerPort: DEFAULT_CONTAINER_PORT,
+    awaiterZipPath: ''
   });
+  const containerCfn = (stack as any)._toCloudFormation();
 
   if (!containerCfn.Resources['AmplifyResourcesPolicy']) {
     containerCfn.Resources['AmplifyResourcesPolicy'] = {
@@ -99,8 +102,8 @@ export function createContainerResources(context: any, parameters: ContainerPara
     {}
     );
 
-  JSONUtilities.writeJson(path.join(resourceDirPath, 'container-template.json'), containerCfn);
-  JSONUtilities.writeJson(path.join(resourceDirPath, 'parameters.json'), templateParameters);
+  const cfnFileName = `${parameters.resourceName}-cloudformation-template.json`;
+  JSONUtilities.writeJson(path.join(resourceDirPath, cfnFileName), containerCfn);
 
   return { resourceDirPath }
 }

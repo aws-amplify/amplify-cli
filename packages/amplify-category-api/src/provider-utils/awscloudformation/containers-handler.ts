@@ -63,7 +63,8 @@ export const addResource = async (serviceWalkthroughPromise: Promise<any>, conte
 
     fs.ensureDirSync(resourceDirPath);
     
-    fs.writeFileSync(path.join(resourceDirPath, 'container-template.json'), JSON.stringify(cfn, null, 2));
+    const cfnFileName = `${resourceName}-cloudformation-template.json`;
+    fs.writeFileSync(path.join(resourceDirPath, cfnFileName), JSON.stringify(cfn, null, 2));
 
     context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
 
