@@ -284,7 +284,7 @@ async function askAdditionalQuestions(context, authConfig, defaultAuthType, mode
 async function askResolverConflictQuestion(context, modelTypes?) {
   let resolverConfig: any = {};
 
-  if (await context.prompt.confirm('Configure conflict detection ? (required for Amplify DataStore)')) {
+  if (await context.prompt.confirm('Configure conflict detection? (required for DataStore)')) {
     const askConflictResolutionStrategy = async msg => {
       let conflictResolutionStrategy;
 
