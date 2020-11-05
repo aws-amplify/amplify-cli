@@ -410,12 +410,9 @@ const addCron = (chain: ExecutionContext, settings: any) => {
   return chain;
 };
 
-export const functionMockAssert = (
-  cwd: string,
-  settings: { friendlyName?: string; funcName: string; successString: string; eventFile: string },
-) => {
+export const functionMockAssert = (cwd: string, settings: { funcName: string; successString: string; eventFile: string }) => {
   return new Promise((resolve, reject) => {
-    const lookupName = settings.friendlyName ? settings.friendlyName : settings.funcName;
+    const lookupName = settings.funcName;
     spawn(getCLIPath(), ['mock', 'function', lookupName, '--event', settings.eventFile], { cwd, stripColors: true })
       .wait('Result:')
       .wait(settings.successString)
@@ -427,10 +424,10 @@ export const functionMockAssert = (
 
 export const functionCloudInvoke = async (
   cwd: string,
-  settings: { friendlyName?: string; funcName: string; payload: string },
+  settings: { funcName: string; payload: string },
 ): Promise<Lambda.InvocationResponse> => {
   const meta = getProjectMeta(cwd);
-  const lookupName = settings.friendlyName ? settings.friendlyName : settings.funcName;
+  const lookupName = settings.funcName;
   expect(meta.function[lookupName]).toBeDefined();
   const { Name: functionName, Region: region } = meta.function[lookupName].output;
   expect(functionName).toBeDefined();
