@@ -7,7 +7,7 @@ import { JWK, JWKS, JWT } from 'jose';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 
-import { TokenPayload, CognitoIdToken, CognitoAccessToken } from '../utils/cognitoJwtTypes';
+import { TokenPayload, CognitoIdToken, CognitoAccessToken } from './cognitoJwtTypes';
 
 export class AdminLoginServer {
   private port = 4242; // placeholder
@@ -21,7 +21,7 @@ export class AdminLoginServer {
     allowedHeaders: string;
   };
 
-  constructor(appId: string, originUrl: string, callback: () => void) {
+  constructor(appId: string, originUrl: string) {
     this.appId = appId;
     this.corsOptions = {
       origin: [originUrl],
@@ -31,6 +31,9 @@ export class AdminLoginServer {
     this.app = express();
     this.app.use(cors(this.corsOptions));
     this.app.use(bodyParser.json());
+  }
+
+  public async startServer(callback: () => void) {
     this.setupRoute(callback);
     this.server = this.app.listen(this.getPort());
   }
