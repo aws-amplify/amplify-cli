@@ -5,6 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import * as apigw from '@aws-cdk/aws-apigateway';
 
 type EcsStackProps = {
+    apiName: string;
     containerPort: number;
     authFullName: string;
     functionFullName: string;
@@ -15,6 +16,7 @@ export class EcsStack extends cdk.Stack {
         super(scope, id);
 
         const {
+            apiName,
             containerPort,
             authFullName,
             functionFullName
@@ -34,6 +36,10 @@ export class EcsStack extends cdk.Stack {
             type: 'CommaDelimitedList'
         });
 
+        const paramClusterName = new cdk.CfnParameter(this, 'NetworkStackClusterName', {
+            type: 'String'
+        });
+
         const paramAuthFullName = new cdk.CfnParameter(this, authFullName, {
             type: 'String'
         });
@@ -44,8 +50,6 @@ export class EcsStack extends cdk.Stack {
 
         const vpcId = paramVpcId.valueAsString;
         const subnets = paramSubnetIds.valueAsList;
-
-        const cluster = new ecs.CfnCluster(this, 'Cluster');
 
         // TODO: WAF
 
@@ -99,7 +103,7 @@ export class EcsStack extends cdk.Stack {
             }]
         });
         const service = new ecs.CfnService(this, "Service", {
-            cluster: cdk.Fn.ref(cluster.logicalId),
+            cluster: paramClusterName.valueAsString,
             launchType: 'FARGATE',
             desiredCount: subnets.length, // TODO: check this assumption
             loadBalancers: [{
@@ -202,9 +206,11 @@ export class EcsStack extends cdk.Stack {
             deploymentId: cdk.Fn.ref(deployment.logicalId),
         });
 
-        // TODO: Outputs
+        new cdk.CfnOutput(this, "ServiceArn", {
+            value: cdk.Fn.ref(service.logicalId)
+        });
         new cdk.CfnOutput(this, "ApiName", {
-            value: 'blebleble' // TODO: customer friendly name
+            value: apiName
         });
         new cdk.CfnOutput(this, "RootUrl", {
             value: cdk.Fn.join('', [

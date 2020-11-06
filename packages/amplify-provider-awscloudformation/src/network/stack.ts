@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import * as ecs from '@aws-cdk/aws-ecs';
 
 type NetworkStackProps = {
     stackName: string;
@@ -69,6 +70,12 @@ function createVpc(scope: cdk.Construct, vpcId: string, internetGatewayId: strin
 }
 
 function createAmplifyEnv(scope: cdk.Construct, envName: string, vpcId: string, vpcCidrBlock: string, igwId: string, subnetCidrs: ReadonlyMap<string, string>) {
+    const cluster = new ecs.CfnCluster(scope, 'Cluster');
+
+    new cdk.CfnOutput(scope, "ClusterName", { 
+        value: cdk.Fn.ref(cluster.logicalId)
+    });
+
     const azSubnetMap = new cdk.CfnMapping(scope, "AzsMap");
     subnetCidrs.forEach((cidr, az) => {
         azSubnetMap.setValue(az, 'SubnetCidrBlock', cidr);

@@ -19,6 +19,7 @@ export const addResource = async (serviceWalkthroughPromise: Promise<any>, conte
             "category": "",
             "resourceName": x,
             "attributes": [
+                "ClusterName",
                 "VpcId",
                 "SubnetIds"
             ]
@@ -50,6 +51,7 @@ export const addResource = async (serviceWalkthroughPromise: Promise<any>, conte
     const functionFullName = `function${containerName}TaskDefinitionArn`;
 
     const stack = new EcsStack(undefined, "ContainersStack", {
+        apiName: resourceName,
         containerPort: 8080,
         authFullName,
         functionFullName,
