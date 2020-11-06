@@ -10,7 +10,7 @@ const constants = require('./constants');
 const setupNewUser = require('./setup-new-user');
 const obfuscateUtil = require('./utility-obfuscate');
 const systemConfigManager = require('./system-config-manager');
-const { doAdminCredentialsExist } = require('./utils/amplify-admin-helpers');
+const { doAdminCredentialsExist } = require('./utils/admin-helpers');
 
 const { stateManager } = require('amplify-cli-core');
 
