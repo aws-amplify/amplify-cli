@@ -18,6 +18,7 @@ const { loadResourceParameters, saveResourceParameters } = require('./resourcePa
 const { formUserAgentParam } = require('./aws-utils/user-agent');
 const predictionsRegionMap = require('./aws-predictions-regions');
 
+import { adminLoginFlow } from './admin-login';
 import { CognitoUserPoolService, createCognitoUserPoolService } from './aws-utils/CognitoUserPoolService';
 import { IdentityPoolService, createIdentityPoolService } from './aws-utils/IdentityPoolService';
 
@@ -95,6 +96,7 @@ function openConsole(context) {
 }
 
 module.exports = {
+  adminLoginFlow,
   console: openConsole,
   attachBackend,
   init,
