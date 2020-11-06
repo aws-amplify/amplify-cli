@@ -105,7 +105,7 @@ interface AmplifyToolkit {
   executeProviderUtils: () => $TSAny;
   getAllEnvs: () => $TSAny;
   getPlugin: () => $TSAny;
-  getCategoryPluginInfo: (context: $TSContext) => $TSAny;
+  getCategoryPluginInfo: (context: $TSContext, category?: string, service?: string) => $TSAny;
   getAllCategoryPluginInfo: (context: $TSContext) => $TSAny;
   getFrontendPlugins: () => $TSAny;
   getEnvDetails: () => $TSAny;
@@ -189,4 +189,5 @@ interface AmplifyToolkit {
     unauthRoleArn?: string;
     unauthRoleName?: string;
   };
+  invokePluginMethod: <T>(context: $TSContext, category: string, service: string | null, method: string, args: any[]) => Promise<T>;
 }

@@ -81,4 +81,5 @@ module.exports = {
   console,
   executeAmplifyCommand,
   handleAmplifyEvent,
+  printRekognitionUploadUrl: predictionsConsole.printRekognitionUploadUrl,
 };

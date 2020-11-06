@@ -21,7 +21,6 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-category-storage": "2.8.3",
     "amplify-cli-core": "1.5.1",
     "amplify-function-plugin-interface": "1.4.1",
     "cloudform-types": "4.2.0",

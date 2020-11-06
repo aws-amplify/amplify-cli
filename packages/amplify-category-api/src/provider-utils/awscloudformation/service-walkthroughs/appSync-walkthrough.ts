@@ -506,13 +506,7 @@ async function askUserPoolQuestions(context) {
   let authResourceName = checkIfAuthExists(context);
 
   if (!authResourceName) {
-    try {
-      const { add } = require('amplify-category-auth');
-
-      authResourceName = await add(context);
-    } catch (e) {
-      context.print.error('Auth plugin not installed in the CLI. You need to install it to use this feature.');
-    }
+    authResourceName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
   } else {
     context.print.info('Use a Cognito user pool configured as a part of this project.');
   }

@@ -21,8 +21,6 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-category-auth": "2.22.0",
-    "amplify-category-function": "2.25.7",
     "amplify-cli-core": "1.5.1",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",

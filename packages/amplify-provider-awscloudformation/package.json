@@ -22,9 +22,6 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "amplify-category-auth": "2.22.0",
-    "amplify-category-function": "2.25.7",
-    "amplify-category-predictions": "2.5.3",
     "amplify-cli-core": "1.5.1",
     "amplify-codegen": "2.16.2",
     "amplify-util-import": "1.1.2",

@@ -4,8 +4,10 @@ const fs = require('fs-extra');
 const os = require('os');
 const _ = require('lodash');
 const uuid = require('uuid');
-const { ServiceName: FunctionServiceName } = require('amplify-category-function');
 const { ResourceDoesNotExistError, ResourceAlreadyExistsError, exitOnNextTick } = require('amplify-cli-core');
+
+// keep in sync with ServiceName in amplify-category-function, but probably it will not change
+const FunctionServiceNameLambdaFunction = 'Lambda';
 
 const category = 'storage';
 const parametersFileName = 'parameters.json';
@@ -28,14 +30,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, o
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
-      try {
-        const { add } = require('amplify-category-auth');
-        await add(context);
-      } catch (e) {
-        context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
-        context.usageData.emitError(e);
-        exitOnNextTick(1);
-      }
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
       break;
     } else {
       context.usageData.emitSuccess();
@@ -90,8 +85,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   const defaultValues = getAllDefaults(amplify.getProjectDetails());
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
   let parameters = {};
   let storageParams = {};
@@ -413,7 +406,12 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
 
-  const checkResult = await checkRequirements(storageRequirements, context, 'storage', answers.resourceName);
+  const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+    storageRequirements,
+    context,
+    'storage',
+    answers.resourceName,
+  ]);
 
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
@@ -433,7 +431,12 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         storageRequirements.allowUnauthenticatedIdentities = false;
       }
 
-      await externalAuthEnable(context, category, answers.resourceName, storageRequirements);
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        context,
+        category,
+        answers.resourceName,
+        storageRequirements,
+      ]);
     } catch (error) {
       context.print.error(error);
       throw error;
@@ -788,7 +791,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
     // Update amplify-meta and backend-config
 
     const backendConfigs = {
-      service: FunctionServiceName.LambdaFunction,
+      service: FunctionServiceNameLambdaFunction,
       providerPlugin: 'awscloudformation',
       build: true,
     };
@@ -1044,7 +1047,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
 async function getLambdaFunctions(context) {
   const { allResources } = await context.amplify.getResourceStatus();
   const lambdaResources = allResources
-    .filter(resource => resource.service === FunctionServiceName.LambdaFunction)
+    .filter(resource => resource.service === FunctionServiceNameLambdaFunction)
     .map(resource => resource.resourceName);
 
   return lambdaResources;

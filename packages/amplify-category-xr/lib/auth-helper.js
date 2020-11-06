@@ -1,11 +1,15 @@
 const os = require('os');
 const constants = require('./constants');
-const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
 
 async function ensureAuth(context, resourceName) {
   const xrRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
 
-  const checkResult = await checkRequirements(xrRequirements, context, constants.CategoryName, resourceName);
+  const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+    xrRequirements,
+    context,
+    constants.CategoryName,
+    resourceName,
+  ]);
 
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
@@ -22,7 +26,12 @@ async function ensureAuth(context, resourceName) {
     context.print.warning('Adding XR to your project requires the Auth category for managing authentication rules.');
 
     try {
-      await externalAuthEnable(context, constants.CategoryName, constants.ServiceName, xrRequirements);
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        context,
+        constants.CategoryName,
+        constants.ServiceName,
+        xrRequirements,
+      ]);
     } catch (error) {
       context.print.error(error);
       throw error;

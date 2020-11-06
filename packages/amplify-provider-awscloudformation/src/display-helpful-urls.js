@@ -1,5 +1,4 @@
 const chalk = require('chalk');
-const { predictionsConsole } = require('amplify-category-predictions');
 
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
@@ -8,7 +7,7 @@ async function displayHelpfulURLs(context, resourcesToBeCreated) {
   showRestAPIURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
   showHostedUIURLs(context, resourcesToBeCreated);
-  showRekognitionURLS(context, resourcesToBeCreated);
+  await showRekognitionURLS(context, resourcesToBeCreated);
   context.print.info('');
 }
 
@@ -149,7 +148,13 @@ async function showRekognitionURLS(context, resourcesToBeCreated) {
     if (!amplifyMeta[category][resourceName].output) {
       return;
     }
-    await predictionsConsole.printRekognitionUploadUrl(context, resourceName, amplifyMeta, true);
+
+    await context.amplify.invokePluginMethod(context, 'predictions', undefined, 'printRekognitionUploadUrl', [
+      context,
+      resourceName,
+      amplifyMeta,
+      true,
+    ]);
   }
 }
 
