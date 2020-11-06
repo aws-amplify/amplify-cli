@@ -108,6 +108,7 @@ export type CircleCIConfig = {
   jobs: {
     [name: string]: {
       steps: Record<string, any>;
+      environment: Record<string, string>;
     };
   };
   workflows: {
@@ -156,6 +157,7 @@ function splitTests(
     const newJob = {
       ...job,
       environment: {
+        ...job.environment,
         TEST_SUITE: suite,
         CLI_REGION: testRegion,
       },
@@ -295,13 +297,20 @@ function saveConfig(config: CircleCIConfig): void {
 }
 function main(): void {
   const config = loadConfig();
-  const splitConfig = splitTests(
+  const splitNodeTests = splitTests(
     config,
     'amplify_e2e_tests',
     'build_test_deploy',
     join(process.cwd(), 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
-  saveConfig(splitConfig);
+  const splitPkgTests = splitTests(
+    splitNodeTests,
+    'amplify_e2e_tests_pkg_linux',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-e2e-tests'),
+    CONCURRENCY,
+  );
+  saveConfig(splitPkgTests);
 }
 main();
