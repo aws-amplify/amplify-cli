@@ -276,8 +276,6 @@ export function addRestApi(cwd: string, settings: any) {
       } else {
         chain
           .sendCarriageReturn() // Create new Lambda function
-          .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
-          .sendCarriageReturn()
           .wait('Provide an AWS Lambda function name')
           .sendCarriageReturn();
 
@@ -297,11 +295,7 @@ export function addRestApi(cwd: string, settings: any) {
         }
 
         chain
-          .wait('Do you want to access other resources in this project from your Lambda function')
-          .sendLine('n')
-          .wait('Do you want to invoke this function on a recurring schedule?')
-          .sendLine('n')
-          .wait('Do you want to configure Lambda layers for this function?')
+          .wait('Do you want to configure advanced settings?')
           .sendLine('n')
           .wait('Do you want to edit the local lambda function now')
           .sendLine('n');
