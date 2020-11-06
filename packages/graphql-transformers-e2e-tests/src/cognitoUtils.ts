@@ -77,20 +77,22 @@ export async function signupAndAuthenticateUser(userPoolId: string, username: st
   try {
     // Sign up then login user 1.ß
     await signupUser(userPoolId, username, tmpPw);
+    // 2. Sign in and change password if its an new user
+    try {
+      const authDetails = new AuthenticationDetails({
+        Username: username,
+        Password: tmpPw,
+      });
+      const user = Amplify.Auth.createCognitoUser(username);
+      const authRes = await authenticateUser(user, authDetails, realPw);
+      return authRes;
+    } catch (e) {
+      if (e.code !== 'NotAuthorizedException') console.error(`Failed to login with temp password`, e);
+    }
   } catch (e) {
-    console.error(`Trying to login with temp password`, e);
-  }
-
-  try {
-    const authDetails = new AuthenticationDetails({
-      Username: username,
-      Password: tmpPw,
-    });
-    const user = Amplify.Auth.createCognitoUser(username);
-    const authRes = await authenticateUser(user, authDetails, realPw);
-    return authRes;
-  } catch (e) {
-    console.error(`Trying to login with real password`, e);
+    if (e.code !== 'UsernameExistsException') {
+      console.error(`Failed when signing up user`, e);
+    }
   }
 
   try {
