@@ -115,7 +115,7 @@ const coreFunction = (
       chain
         .wait('Select which capability you want to add:')
         .sendCarriageReturn() // lambda function
-        .wait('Provide the AWS Lambda function name:')
+        .wait('Provide an AWS Lambda function name:')
         .sendLine(settings.name || '');
 
       selectRuntime(chain, runtime);

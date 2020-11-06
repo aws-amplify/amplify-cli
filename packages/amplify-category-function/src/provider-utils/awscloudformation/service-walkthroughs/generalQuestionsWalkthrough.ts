@@ -16,7 +16,7 @@ function generalQuestions(context: any): object[] {
     {
       type: 'input',
       name: 'functionName',
-      message: 'Provide the AWS Lambda function name:',
+      message: 'Provide an AWS Lambda function name:',
       validate: context.amplify.inputValidation({
         operator: 'regex',
         value: '^[a-zA-Z0-9._-]+$',

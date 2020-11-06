@@ -278,7 +278,7 @@ export function addRestApi(cwd: string, settings: any) {
           .sendCarriageReturn() // Create new Lambda function
           .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
           .sendCarriageReturn()
-          .wait('Provide the AWS Lambda function name')
+          .wait('Provide an AWS Lambda function name')
           .sendCarriageReturn();
 
         selectRuntime(chain, 'nodejs');

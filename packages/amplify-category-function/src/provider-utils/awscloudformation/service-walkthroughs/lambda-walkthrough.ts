@@ -29,6 +29,7 @@ import {
   fetchPermissionResourcesForCategory,
   fetchPermissionsForResourceInCategory,
 } from '../utils/permissionMapUtils';
+import { JSONUtilities } from 'amplify-cli-core';
 
 /**
  * Starting point for CLI walkthrough that generates a lambda function
@@ -178,7 +179,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const currentParameters = loadFunctionParameters(context, resourceDirPath);
   const functionRuntime = context.amplify.readBreadcrumbs(context, category, functionParameters.resourceName).functionRuntime as string;
 
-  const cfnParameters = context.amplify.readJsonFile(path.join(resourceDirPath, parametersFileName), undefined, false) || {};
+  const cfnParameters: any = JSONUtilities.readJson(path.join(resourceDirPath, parametersFileName), { throwIfNotExist: false }) || {};
   const scheduleParameters = {
     cloudwatchRule: cfnParameters.CloudWatchRule,
     resourceName: functionParameters.resourceName,
@@ -211,7 +212,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
 
     const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);
-    const cfnContent = context.amplify.readJsonFile(cfnFilePath);
+    const cfnContent: any = JSONUtilities.readJson(cfnFilePath);
     const dependsOnParams = { env: { Type: 'String' } };
 
     Object.keys(functionParameters.environmentMap)
@@ -278,8 +279,8 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
 
   // ask lambdalayer questions and merge results
   if (selectedSettings.includes(lambdaLayerSetting)) {
-    const currentFunctionParameters =
-      context.amplify.readJsonFile(path.join(resourceDirPath, functionParametersFileName), undefined, false) || {};
+    const currentFunctionParameters: any =
+      JSONUtilities.readJson(path.join(resourceDirPath, functionParametersFileName), { throwIfNotExist: false }) || {};
     merge(
       functionParameters,
       await addLayersToFunctionWalkthrough(context, { value: functionRuntime }, currentFunctionParameters.lambdaLayers, true),
@@ -287,7 +288,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     // writing to the CFN here because it's done above for the schedule and the permissions but we should really pull all of it into another function
     const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);
-    const cfnContent = context.amplify.readJsonFile(cfnFilePath);
+    const cfnContent: any = JSONUtilities.readJson(cfnFilePath);
 
     // check for layer parameters if not added
     functionParameters.lambdaLayers.forEach(layer => {
@@ -316,7 +317,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
 export function migrate(context, projectPath, resourceName) {
   const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
-  const oldCfn = context.amplify.readJsonFile(cfnFilePath);
+  const oldCfn: any = JSONUtilities.readJson(cfnFilePath);
   const newCfn: any = {};
   Object.assign(newCfn, oldCfn);
 
