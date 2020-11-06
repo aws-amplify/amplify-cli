@@ -282,6 +282,7 @@ export class AppSyncModelDartVisitor<
       [],
       [
         'var buffer = new StringBuffer();',
+        '',
         `buffer.write("${this.getModelName(model)} {");`,
         ...fields.map((field, index) => {
           const fieldDelimiter = ', ';
@@ -293,6 +294,7 @@ export class AppSyncModelDartVisitor<
           return `buffer.write("${fieldName}=" + ${toStringVal});`;
         }),
         `buffer.write("}");`,
+        '',
         'return buffer.toString();'
       ].join('\n'),
       undefined,
@@ -438,7 +440,7 @@ export class AppSyncModelDartVisitor<
             case AuthStrategy.owner:
               authRule.push(authStrategy);
               authRule.push(`ownerField: "${rule.ownerField}"`);
-              authRule.push(`identityClain: "${rule.identityClaim}"`);
+              authRule.push(`identityClaim: "${rule.identityClaim}"`);
               break;
             case AuthStrategy.private:
             case AuthStrategy.public:

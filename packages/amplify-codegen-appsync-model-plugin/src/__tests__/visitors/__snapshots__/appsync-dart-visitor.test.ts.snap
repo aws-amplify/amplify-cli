@@ -61,11 +61,13 @@ class SimpleModel extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"SimpleModel {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -163,11 +165,13 @@ class SimpleModel extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"SimpleModel {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -268,12 +272,14 @@ class customClaim extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"customClaim {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar + \\", \\");
     buffer.write(\\"owner=\\" + owner);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -306,7 +312,7 @@ class customClaim extends Model {
       AuthRule(
         authStrategy: AuthStrategy.OWNER,
         ownerField: \\"owner\\",
-        identityClain: \\"user_id\\",
+        identityClaim: \\"user_id\\",
         operations: [
           ModelOperation.CREATE,
           ModelOperation.UPDATE,
@@ -393,11 +399,13 @@ class customClaim extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"customClaim {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -508,11 +516,13 @@ class dynamicGroups extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"dynamicGroups {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -626,12 +636,14 @@ class simpleOwnerAuth extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"simpleOwnerAuth {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar + \\", \\");
     buffer.write(\\"owner=\\" + owner);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -664,7 +676,7 @@ class simpleOwnerAuth extends Model {
       AuthRule(
         authStrategy: AuthStrategy.OWNER,
         ownerField: \\"owner\\",
-        identityClain: \\"cognito:username\\",
+        identityClaim: \\"cognito:username\\",
         operations: [
           ModelOperation.CREATE,
           ModelOperation.UPDATE,
@@ -754,12 +766,14 @@ class allowRead extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"allowRead {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar + \\", \\");
     buffer.write(\\"owner=\\" + owner);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -792,7 +806,7 @@ class allowRead extends Model {
       AuthRule(
         authStrategy: AuthStrategy.OWNER,
         ownerField: \\"owner\\",
-        identityClain: \\"cognito:username\\",
+        identityClaim: \\"cognito:username\\",
         operations: [
           ModelOperation.CREATE,
           ModelOperation.DELETE,
@@ -878,11 +892,13 @@ class privateType extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"privateType {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -991,11 +1007,13 @@ class publicType extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"publicType {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -1104,11 +1122,13 @@ class staticGroups extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"staticGroups {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -1219,11 +1239,13 @@ class Post extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"Post {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"title=\\" + title + \\", \\");
     buffer.write(\\"author=\\" + author);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -1253,7 +1275,7 @@ class Post extends Model {
       AuthRule(
         authStrategy: AuthStrategy.OWNER,
         ownerField: \\"author\\",
-        identityClain: \\"cognito:username\\",
+        identityClaim: \\"cognito:username\\",
         operations: [
           ModelOperation.CREATE,
           ModelOperation.UPDATE,
@@ -1334,11 +1356,13 @@ class Post extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"Post {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"title=\\" + title + \\", \\");
     buffer.write(\\"owner=\\" + owner);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -1378,7 +1402,7 @@ class Post extends Model {
       AuthRule(
         authStrategy: AuthStrategy.OWNER,
         ownerField: \\"owner\\",
-        identityClain: \\"cognito:username\\",
+        identityClaim: \\"cognito:username\\",
         operations: [
           ModelOperation.CREATE,
           ModelOperation.UPDATE
@@ -1465,9 +1489,11 @@ class Todo extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"Todo {\\");
     buffer.write(\\"id=\\" + id);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -1568,12 +1594,14 @@ class Task extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"Task {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"todo=\\" + todo.toString() + \\", \\");
     buffer.write(\\"time=\\" + time.toString() + \\", \\");
     buffer.write(\\"createdOn=\\" + createdOn.toString());
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -1691,11 +1719,13 @@ class Blog extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"Blog {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"test=\\" + test.toString());
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -1811,11 +1841,13 @@ class Comment extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"Comment {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"post=\\" + post.toString() + \\", \\");
     buffer.write(\\"content=\\" + content);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -1925,11 +1957,13 @@ class Post extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"Post {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"title=\\" + title + \\", \\");
     buffer.write(\\"blog=\\" + blog.toString());
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
@@ -2054,6 +2088,7 @@ class authorBook extends Model {
   @override
   String toString() {
     var buffer = new StringBuffer();
+    
     buffer.write(\\"authorBook {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"author_id=\\" + author_id + \\", \\");
@@ -2061,6 +2096,7 @@ class authorBook extends Model {
     buffer.write(\\"author=\\" + author + \\", \\");
     buffer.write(\\"book=\\" + book);
     buffer.write(\\"}\\");
+    
     return buffer.toString();
   }
   
