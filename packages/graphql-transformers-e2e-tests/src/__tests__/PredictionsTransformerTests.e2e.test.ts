@@ -115,7 +115,7 @@ test('test translate and convert text to speech', async () => {
 });
 
 test('test translate text individually', async () => {
-  const germanTranslation = 'Dies ist ein Sprachtest';
+  const germanTranslation = /ist ein Sprachtest$/;
   const response = await GRAPHQL_CLIENT.query(
     `query TranslateThis($input: TranslateThisInput!) {
       translateThis(input: $input)
