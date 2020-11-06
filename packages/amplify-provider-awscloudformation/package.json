@@ -68,6 +68,9 @@
   "devDependencies": {
     "@types/node": "^12.12.6"
   },
+  "devDependencies": {
+    "@types/node": "^12.12.6"
+  },
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
