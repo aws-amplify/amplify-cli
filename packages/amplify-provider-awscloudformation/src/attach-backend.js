@@ -9,24 +9,38 @@ const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const constants = require('./constants');
-const { doAdminCredentialsExist } = require('./utils/amplify-admin-helpers');
+const { doAdminCredentialsExist, isAmplifyAdminApp } = require('./utils/admin-helpers');
+const { adminLoginFlow } = require('./admin-login');
 
 async function run(context) {
   let awsConfig;
+  let isAdminApp = false;
   if (context.parameters?.options?.appId && context.parameters?.options?.envName) {
-    const { appId, envName, login } = context.parameters.options;
+    const { appId, envName } = context.parameters.options;
     // Check for existing Amplify Admin tokens
     if (doAdminCredentialsExist(appId)) {
-      awsConfig = await configurationManager.loadConfigurationForEnv(context, envName, appId);
-      context.exeInfo.awsConfig = {
-        ...context.exeInfo.awsConfig,
-        configLevel: 'amplifyAdmin',
-      };
-    } else if (login) {
-      // TODO
-      context.print.info('TODO');
-      process.exit(1);
+      isAdminApp = true;
+    } else {
+      // Check if this is a Amplify Admin appId
+      isAdminApp = await isAmplifyAdminApp(appId);
+      if (isAdminApp) {
+        // Admin app, go through login flow
+        try {
+          await adminLoginFlow(context, appId, envName);
+        } catch (e) {
+          context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
+        }
+      }
     }
+  }
+
+  if (isAdminApp) {
+    const { appId, envName } = context.parameters.options;
+    awsConfig = await configurationManager.loadConfigurationForEnv(context, envName, appId);
+    context.exeInfo.awsConfig = {
+      ...context.exeInfo.awsConfig,
+      configLevel: 'amplifyAdmin',
+    };
   } else {
     await configurationManager.init(context);
     awsConfig = await configurationManager.getAwsConfig(context);
