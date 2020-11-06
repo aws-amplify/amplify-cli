@@ -84,7 +84,6 @@
     "global-prefix": "^3.0.0",
     "ini": "^1.3.5",
     "inquirer": "^7.3.3",
-    "jose": "^2.0.2",
     "lodash": "^4.17.19",
     "node-fetch": "^2.6.1",
     "open": "^7.0.0",
