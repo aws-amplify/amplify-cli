@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.29.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.28.2...amplify-provider-awscloudformation@4.29.0-beta.0) (2020-11-07)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fix unhandled promise rejection ([#5746](https://github.com/aws-amplify/amplify-cli/issues/5746)) ([dcb056c](https://github.com/aws-amplify/amplify-cli/commit/dcb056cf86cdf43d76d4d410a49e884e30dac4ac)), closes [#4880](https://github.com/aws-amplify/amplify-cli/issues/4880)
+
+
+### Features
+
+* transformer redesign ([#5534](https://github.com/aws-amplify/amplify-cli/issues/5534)) ([a93c685](https://github.com/aws-amplify/amplify-cli/commit/a93c6852f6588898ebc52b0574f4fcc3d2e87948))
+
+
+
+
+
 ## [4.28.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.28.1...amplify-provider-awscloudformation@4.28.2) (2020-10-30)
 
 

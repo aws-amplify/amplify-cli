@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.20.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.19.17...graphql-dynamodb-transformer@6.20.0-beta.0) (2020-11-07)
+
+
+### Features
+
+* ff to turn off schema reserve word validation ([#5745](https://github.com/aws-amplify/amplify-cli/issues/5745)) ([de79514](https://github.com/aws-amplify/amplify-cli/commit/de79514c18bea7236a05f0658513b95318501d16))
+
+
+
+
+
 ## [6.19.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.19.16...graphql-dynamodb-transformer@6.19.17) (2020-10-30)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer
