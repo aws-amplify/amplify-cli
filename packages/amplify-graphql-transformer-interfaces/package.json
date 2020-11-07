@@ -57,5 +57,8 @@
             "node"
         ],
         "collectCoverage": true
+    },
+    "publishConfig": {
+       "access": "public"
     }
 }
