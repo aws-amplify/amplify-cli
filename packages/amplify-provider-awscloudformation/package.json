@@ -22,6 +22,9 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
+    "@aws-amplify/graphql-model-transformer": "0.0.1",
+    "@aws-amplify/graphql-transformer-core": "0.0.1",
+    "@aws-amplify/graphql-transformer-interfaces": "1.0.0",
     "amplify-category-auth": "2.22.0",
     "amplify-category-function": "2.25.7",
     "amplify-category-predictions": "2.5.3",
@@ -39,7 +42,6 @@
     "folder-hash": "^3.3.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
-    "graphql": "^14.5.8",
     "graphql-auth-transformer": "6.21.0",
     "graphql-connection-transformer": "4.18.17",
     "graphql-dynamodb-transformer": "6.19.17",
@@ -50,6 +52,7 @@
     "graphql-predictions-transformer": "2.3.23",
     "graphql-transformer-core": "6.21.8",
     "graphql-versioned-transformer": "4.15.24",
+    "graphql": "^14.5.8",
     "ignore": "^5.1.8",
     "import-from": "^3.0.0",
     "import-global": "^0.1.0",
@@ -60,7 +63,8 @@
     "open": "^7.0.0",
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
-    "proxy-agent": "^3.1.1"
+    "proxy-agent": "^3.1.1",
+    "rimraf": "^3.0.0"
   },
   "jest": {
     "transform": {

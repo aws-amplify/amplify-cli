@@ -1,0 +1,62 @@
+{
+    "name": "@aws-amplify/graphql-transformer-interfaces",
+    "version": "1.0.0",
+    "description": "Amplify GraphQL transformer interface definitions",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/aws-amplify/amplify-cli.git",
+        "directory": "packages/amplify-graphql-transformer-interfaces"
+    },
+    "author": "Amazon Web Services",
+    "license": "Apache-2.0",
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "keywords": [
+        "graphql",
+        "cloudformation",
+        "aws",
+        "amplify"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "watch": "tsc -w",
+        "clean": "rimraf ./lib"
+    },
+    "dependencies": {
+        "graphql": "^14.5.8",
+        "@aws-cdk/aws-dynamodb": "~1.67.0",
+        "@aws-cdk/aws-elasticsearch": "~1.67.0",
+        "@aws-cdk/aws-appsync": "~1.67.0",
+        "@aws-cdk/core": "~1.67.0",
+        "@aws-cdk/aws-lambda": "~1.67.0",
+        "@aws-cdk/aws-rds": "~1.67.0",
+        "constructs": "^3.0.12",
+        "@aws-cdk/aws-cloudwatch": "~1.67.0",
+        "@aws-cdk/aws-ec2": "~1.67.0",
+        "@aws-cdk/aws-events": "~1.67.0",
+        "@aws-cdk/aws-iam": "~1.67.0",
+        "@aws-cdk/aws-kms": "~1.67.0",
+        "@aws-cdk/aws-logs": "~1.67.0",
+        "@aws-cdk/aws-secretsmanager": "~1.67.0",
+        "@aws-cdk/aws-s3": "~1.67.0",
+        "@aws-cdk/aws-sam": "~1.67.0",
+        "@aws-cdk/custom-resources":"~1.67.0"
+    },
+    "devDependencies": {},
+    "jest": {
+        "transform": {
+            "^.+\\.tsx?$": "ts-jest"
+        },
+        "testURL": "http://localhost",
+        "testRegex": "(src/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "js",
+            "jsx",
+            "json",
+            "node"
+        ],
+        "collectCoverage": true
+    }
+}
