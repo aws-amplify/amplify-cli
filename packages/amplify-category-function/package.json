@@ -22,6 +22,7 @@
     "aws"
   ],
   "dependencies": {
+    "amplify-util-import": "1.1.2",
     "@aws-cdk/aws-codebuild": "~1.67.0",
     "@aws-cdk/aws-codepipeline": "~1.67.0",
     "@aws-cdk/aws-codepipeline-actions": "~1.67.0",

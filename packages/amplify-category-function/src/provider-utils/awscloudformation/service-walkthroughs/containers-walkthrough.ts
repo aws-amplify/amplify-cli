@@ -107,7 +107,7 @@ export async function createContainerWalkthrough(
     ])
   } while (deploymentMechanismQuestion.deploymentMechanism === 'Learn More')
 
-  let githubPath;
+  let githubPath, githubToken;
 
   if (deploymentMechanismQuestion.deploymentMechanism === 'INDEPENDENTLY') {
     print.info('We need a Github Personal Access Token to automatically build & deploy your Fargate task on every Github commit.');
@@ -126,6 +126,7 @@ export async function createContainerWalkthrough(
     ]);
 
     githubPath = githubQuestions.github_path;
+    githubToken = githubQuestions.github_access_token;
   }
 
   let rolePermissions;
@@ -139,6 +140,7 @@ export async function createContainerWalkthrough(
     imageTemplate: imageTemplate.imageSource,
     resourceName: resourceNameQuestion.resourceName,
     githubPath,
+    githubToken,
     deploymentMechanism: deploymentMechanismQuestion.deploymentMechanism,
     categoryPolicies: rolePermissions? rolePermissions.categoryPolicies : [],
     scheduleOptions,

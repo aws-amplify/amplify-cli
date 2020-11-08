@@ -6,8 +6,16 @@ const serviceName = 'CloudFront';
 const parametersFileName = 'container-params.json';
 const cfnParametersFilename = 'container-parameters.json';
 
+export type ServiceConfiguration = { 
+  resourceName: string, 
+  imageTemplate: string, 
+  githubPath: string,
+  authName: string,
+  githubToken: string;
+  deploymentMechanism: string;
+}
 
-export async function serviceWalkthrough(context, defaultValuesFilename) {
+export async function serviceWalkthrough(context, defaultValuesFilename): Promise<Partial<ServiceConfiguration>> {
   const { checkRequirements, externalAuthEnable } = await import('amplify-category-auth');
 
   const { amplify, print } = context;
@@ -17,7 +25,7 @@ export async function serviceWalkthrough(context, defaultValuesFilename) {
 
   const resourceName = await askResourceName(context, getAllDefaults);
 
-  const containerName = await askContainerSource(context);
+  const containerInfo = await askContainerSource(context);
 
   let authName;
 
@@ -28,7 +36,7 @@ export async function serviceWalkthrough(context, defaultValuesFilename) {
   const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
   // if requirements are unsatisfied, trigger auth
-  
+
 
   if (foundUnmetRequirements) {
     try {
@@ -41,7 +49,7 @@ export async function serviceWalkthrough(context, defaultValuesFilename) {
     [authName] = Object.keys(context.amplify.getProjectDetails().amplifyMeta.auth);
   }
 
-  return { resourceName, containerName, authName };
+  return { resourceName, ...containerInfo, authName };
 }
 
 async function askResourceName(context, getAllDefaults) {
@@ -67,93 +75,107 @@ async function askResourceName(context, getAllDefaults) {
   return resourceName;
 }
 
-async function askContainerSource(context) {
-  const containerQuestionChoices = createContainerQuestionChoices(context);
-
-  const { containerFrom } = await inquirer.prompt({
-    type: 'list',
-    name: 'containerFrom',
-    message: 'Choose where you want to get your container',
-    choices: containerQuestionChoices
-  });
-
-  switch (containerFrom) {
-    case 'newContainer':
-      return newContainer(context);
-    case 'projectContainer':
-      return askContainerFromProject(context);
-    default:
-      throw new Error('Not supported');
-  }
+async function askContainerSource(context): Promise<Partial<ServiceConfiguration>> {
+  return newContainer(context);
 }
 
-function createContainerQuestionChoices(context) {
-  const containerQuestionChoices = [
+async function newContainer(context): Promise<Partial<ServiceConfiguration>> {
+  let imageTemplate;
+  do {
+    imageTemplate = await inquirer.prompt([
+      {
+        name: 'imageSource',
+        type: 'list',
+        message: 'What image would you like to use',
+        choices: [
+          {
+            name: 'ExpressJS - Hello World sample',
+            value: 'express_hello_world'
+          },
+          {
+            name: 'ExpressJS - REST',
+            value: 'express_rest'
+          },
+          {
+            name: 'ExpressJS - GraphQL',
+            value: 'express_graphql'
+          },
+          {
+            name: 'Custom (bring your own Dockerfile or docker-compose.yml)',
+            value: 'custom'
+          },
+          {
+            name: 'Learn More',
+            value: 'Learn More',
+          },
+        ],
+        default: 'express_hello_world'
+      }
+    ]);
+  } while (imageTemplate.imageSource === 'Learn More')
+
+  let deploymentMechanismQuestion;
+
+  const deploymentMechanismChoices = [
     {
-      name: 'Create a new container',
-      value: 'newContainer'
+      name: 'On every "amplify push" (Fully managed container source)',
+      value: 'FULLY_MANAGED'
     }
   ];
 
-  if (hasContainers(context)) {
-    containerQuestionChoices.push({
-      name: 'Use a container from the current project',
-      value: 'projectContainer'
-    })
+  if (imageTemplate.imageSource === 'custom') {
+    deploymentMechanismChoices.push(
+      {
+        name: 'On every Github commit (Independently managed container source)',
+        value: 'INDEPENDENTLY'
+      }
+    );
   }
 
-  return containerQuestionChoices;
-}
+  deploymentMechanismChoices.push({
+    name: 'Advanced: Self-managed (Learn more: docs.amplify.aws/function/container#...)',
+    value: 'ADVANCE'
+  });
 
-function hasContainers(context) {
-  if (!context.amplify.getProjectDetails().amplifyMeta.function) {
-    return false;
+  do {
+    deploymentMechanismQuestion = await inquirer.prompt([
+      {
+        name: 'deploymentMechanism',
+        type: 'list',
+        message: 'When do you want to build & deploy the Fargate task',
+        choices: deploymentMechanismChoices
+      }
+    ])
+  } while (deploymentMechanismQuestion.deploymentMechanism === 'Learn More')
+
+  let githubPath, githubToken;
+
+  if (deploymentMechanismQuestion.deploymentMechanism === 'INDEPENDENTLY') {
+    context.print.info('We need a Github Personal Access Token to automatically build & deploy your Fargate task on every Github commit.');
+
+    const githubQuestions = await inquirer.prompt([
+      {
+        name: 'github_access_token',
+        type: 'input',
+        message: 'GitHub Personal Access Token:',
+      },
+      {
+        name: 'github_path',
+        type: 'input',
+        message: 'Path to your repo:',
+      }
+    ]);
+
+    githubPath = githubQuestions.github_path;
+    githubToken = githubQuestions.github_access_token;
   }
 
-  return containerList(context).length > 0;
-}
-
-function containerList(context) {
-  const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
-  const containersFound = [];
-
-  Object.keys(functionResources).forEach(resourceName => {
-    if (functionResources[resourceName].service === FunctionServiceName.ElasticContainer) {
-      containersFound.push(resourceName);
-    }
-  });
-
-  return containersFound;
-}
-
-async function newContainer(context) {
-  let add;
-  try {
-    ({ add } = await import('amplify-category-function'));
-  } catch (e) {
-    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
+  return {
+    imageTemplate: imageTemplate.imageSource,
+    githubPath,
+    githubToken,
+    deploymentMechanism: deploymentMechanismQuestion.deploymentMechanism
   }
-
-  return add(context, 'awscloudformation', FunctionServiceName.ElasticContainer, {}).then(resourceName => {
-    context.print.success('Succesfully added the Lambda function locally');
-    return resourceName;
-  });
-}
-
-async function askContainerFromProject(context) {
-  const containerListChoices = containerList(context).map(resourceName => ({
-    name: resourceName,
-    value: resourceName
-  }));
-
-  const { containerName } = await inquirer.prompt({
-    choices: containerListChoices,
-    message: 'Select the container you want to use',
-    type: 'list',
-    name: 'containerName'
-  });
-
-  return containerName;
 }
 
 export async function updateWalkthrough(context, defaultValuesFilename) {

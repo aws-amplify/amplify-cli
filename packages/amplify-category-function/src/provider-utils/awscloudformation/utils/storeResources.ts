@@ -24,6 +24,7 @@ export function createContainerResources(context: any, parameters: ContainerPara
     service: 'ElasticContainer',
     dependsOn: parameters.dependsOn,
     githubPath: parameters.githubPath,
+    githubToken: parameters.githubToken, // Use secrets manager and keep key here instead
     scheduleOptions: parameters.scheduleOptions,
     deploymentMechanism: parameters.deploymentMechanism,
     mutableParametersState: parameters.mutableParametersState,
@@ -39,10 +40,14 @@ export function createContainerResources(context: any, parameters: ContainerPara
 
   const deploymentBucket = `${context.amplify.getProjectMeta().providers[provider].DeploymentBucketName}`;
   
+  // Put token on secrets manager
+
   const stack = new ContainerStack(undefined, "Container", {
     deploymentBucket,
     containerPort: DEFAULT_CONTAINER_PORT,
     awaiterZipPath: '',
+    githubPath: parameters.githubPath,
+    githubTokenSecretsManagerArn: 'arn:aws:secretsmanager:us-west-2:660457156595:secret:github-access-token-wB6AcW',
   });
 
   // TODO: Move these lines to a function for reuse

@@ -1,14 +1,19 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as elb from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
 import * as apigw from '@aws-cdk/aws-apigateway';
+import { GitHubSourceActionInfo, PipelineWithAwaiter } from './PipelineWithAwaiter';
 
 type EcsStackProps = {
     apiName: string;
     containerPort: number;
     authFullName: string;
-    functionFullName: string;
+    githubSourceActionInfo?: GitHubSourceActionInfo;
+    deploymentMechanism: string;
+    deploymentBucket: string;
 };
 
 export class EcsStack extends cdk.Stack {
@@ -19,13 +24,17 @@ export class EcsStack extends cdk.Stack {
             apiName,
             containerPort,
             authFullName,
-            functionFullName
+            deploymentMechanism,
+            githubSourceActionInfo,
+            deploymentBucket
         } = props;
 
         // Unused, needed for now
         new cdk.CfnParameter(this, 'env', {
             type: 'String'
         });
+
+        const paramZipPath = new cdk.CfnParameter(this, 'ParamZipPath', { type: 'String' });
 
         // TODO: use some sort of constant like NETWORK_STACK_LOGICAL_ID for 'NetworkStack'
         const paramVpcId = new cdk.CfnParameter(this, 'NetworkStackVpcId', {
@@ -44,12 +53,32 @@ export class EcsStack extends cdk.Stack {
             type: 'String'
         });
 
-        const paramTaskDefinitionArn = new cdk.CfnParameter(this, functionFullName, {
-            type: 'String'
-        });
-
         const vpcId = paramVpcId.valueAsString;
         const subnets = paramSubnetIds.valueAsList;
+
+        // ECR
+        const repository = new ecr.Repository(this, 'Repository', {});
+        (repository.node.defaultChild as ecr.CfnRepository).overrideLogicalId('Repository');
+
+        // Task (role, definition, execution role, policy)
+        const task = new ecs.TaskDefinition(this, 'TaskDefinition', {
+            compatibility: ecs.Compatibility.FARGATE,
+            cpu: '256',
+            memoryMiB: '512',
+        });
+        (task.node.defaultChild as ecs.CfnTaskDefinition).overrideLogicalId('TaskDefinition');
+
+        // Needed because the image will be pulled from ecr repository later
+        repository.grantPull(task.obtainExecutionRole());
+
+        const container = task.addContainer(`Container${apiName}`, {
+            image: ecs.ContainerImage.fromRegistry('alpine')
+        });
+
+        container.addPortMappings({
+            containerPort,
+            protocol: ecs.Protocol.TCP,
+        });
 
         // TODO: WAF
 
@@ -102,12 +131,14 @@ export class EcsStack extends cdk.Stack {
                 sourceSecurityGroupId: loadBalancerSG.attrGroupId,
             }]
         });
+
         const service = new ecs.CfnService(this, "Service", {
+            serviceName: `${apiName}Service`,
             cluster: paramClusterName.valueAsString,
             launchType: 'FARGATE',
             desiredCount: subnets.length, // TODO: check this assumption
             loadBalancers: [{
-                containerName: 'MyContainer', // TODO: Why this? defined in function
+                containerName: container.containerName, // TODO: Why this? defined in function
                 containerPort,
                 targetGroupArn: cdk.Fn.ref(targetGroup.logicalId),
             }],
@@ -118,12 +149,25 @@ export class EcsStack extends cdk.Stack {
                     subnets,
                 }
             },
-            taskDefinition: paramTaskDefinitionArn.valueAsString,
+            taskDefinition: task.taskDefinitionArn,
         });
         service.addDependsOn(listener);
 
+        // Pipeline with awaiter
+
+        const pipeline = new PipelineWithAwaiter(this, 'ApiPipeline', {
+            container,
+            repository,
+            service,
+            bucket: s3.Bucket.fromBucketName(this, 'Bucket', deploymentBucket),
+            s3SourceActionKey: paramZipPath.valueAsString,
+            githubSourceActionInfo
+        })
+
+        pipeline.node.addDependency(service);
+
         const api = new apigw.CfnRestApi(this, "Api", {
-            name: "Api" // TODO: get friendly name
+            name: apiName
         });
 
         // TODO: cloudwatch role for api

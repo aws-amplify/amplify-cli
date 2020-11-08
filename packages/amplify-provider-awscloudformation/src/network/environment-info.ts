@@ -1,5 +1,6 @@
 import { EC2 } from "aws-sdk";
 import { Netmask } from "netmask";
+import configurationManager from '../configuration-manager';
 
 const SUBNETS = 3;
 type GetEnvironmentNetworkInfoParams = {
@@ -11,7 +12,7 @@ type GetEnvironmentNetworkInfoParams = {
     subnetsCount: number,
 };
 
-export async function getEnvironmentNetworkInfo(params: GetEnvironmentNetworkInfoParams) {
+export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentNetworkInfoParams) {
     const {
         stackName,
         region,
@@ -23,7 +24,14 @@ export async function getEnvironmentNetworkInfo(params: GetEnvironmentNetworkInf
 
     const [, vpcMask] = vpcCidr.split('/');
 
-    const ec2 = new EC2({ region });
+    let cred = {};
+      try {
+        cred = await configurationManager.loadConfiguration(context);
+      } catch (e) {
+        // ignore missing config
+      }
+
+    const ec2 = new EC2({ ...cred });
 
     const { AvailabilityZones } = await ec2.describeAvailabilityZones().promise();
 

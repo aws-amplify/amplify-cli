@@ -688,7 +688,7 @@
     "@aws-cdk/cloud-assembly-schema" "1.65.0"
     semver "^7.3.2"
 
-"@aws-cdk/cx-api@1.67.0", "@aws-cdk/cx-api@~1.67.0":
+"@aws-cdk/cx-api@1.67.0":
   version "1.67.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/cx-api/-/cx-api-1.67.0.tgz#20f43bdd1c0175b4cd068a4be45fdae8881b740a"
   integrity sha512-uTeEy6OmGSUS09BhHsZUJjalWGblODZS0nfwws0qE/XG6ue3KNQ2vkOwO3f1pT3a3Ntn8SDO52gMFp7Nu8UC7g==

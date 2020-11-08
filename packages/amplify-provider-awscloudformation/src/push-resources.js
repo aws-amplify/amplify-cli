@@ -184,15 +184,14 @@ async function checkVpcCreation(context) {
     return;
   }
 
-  const { StackName: stackName, Region: region } = context.amplify.getProjectMeta().providers[constants.ProviderName];
+  const { StackName: stackName } = context.amplify.getProjectMeta().providers[constants.ProviderName];
 
   const {
     vpcId,
     internetGatewayId,
     subnetCidrs
-  } = await getEnvironmentNetworkInfo({ 
+  } = await getEnvironmentNetworkInfo(context, { 
     stackName,
-    region,
     vpcName: 'Amplify/VPC',
     vpcCidr: '10.0.0.0/16',
     subnetsCount: 3,
@@ -250,7 +249,7 @@ function isVpcRequired(context) {
   if (apiObj) {
     const found = Object.keys(apiObj).some(key => {
       const api = apiObj[key];
-      if (api.providerPlugin === providerName && api.service === 'Containers') {
+      if (api.providerPlugin === providerName && api.service === 'ElasticContainer') {
         return true;
       }
     });
