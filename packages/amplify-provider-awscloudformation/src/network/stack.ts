@@ -1,6 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as discovery from "@aws-cdk/aws-servicediscovery";
+import * as apigw2 from '@aws-cdk/aws-apigatewayv2';
 
 type NetworkStackProps = {
     stackName: string;
@@ -70,21 +72,26 @@ function createVpc(scope: cdk.Construct, vpcId: string, internetGatewayId: strin
 }
 
 function createAmplifyEnv(scope: cdk.Construct, envName: string, vpcId: string, vpcCidrBlock: string, igwId: string, subnetCidrs: ReadonlyMap<string, string>) {
-    const cluster = new ecs.CfnCluster(scope, 'Cluster');
-
-    new cdk.CfnOutput(scope, "ClusterName", { 
-        value: cdk.Fn.ref(cluster.logicalId)
-    });
+    const availabilityZones = [];
 
     const azSubnetMap = new cdk.CfnMapping(scope, "AzsMap");
     subnetCidrs.forEach((cidr, az) => {
+        availabilityZones.push(az);
         azSubnetMap.setValue(az, 'SubnetCidrBlock', cidr);
+    });
+
+    const vpc = ec2.Vpc.fromVpcAttributes(scope, 'vpc', { vpcId, availabilityZones });
+
+    const cluster = new ecs.CfnCluster(scope, 'Cluster');
+
+    new cdk.CfnOutput(scope, "ClusterName", {
+        value: cdk.Fn.ref(cluster.logicalId)
     });
 
     const subnets: ec2.ISubnet[] = [];
 
     const pubNacl = new ec2.NetworkAcl(scope, 'Nacl', {
-        vpc: { vpcId } as any,
+        vpc,
     });
     pubNacl.addEntry('Egress', {
         cidr: ec2.AclCidr.anyIpv4(),
@@ -111,7 +118,7 @@ function createAmplifyEnv(scope: cdk.Construct, envName: string, vpcId: string, 
     });
 
     Array.from(subnetCidrs.keys()).sort().forEach((az, i) => {
-        const [,,azId] = az.split('-');
+        const [, , azId] = az.split('-');
 
         const cidr = azSubnetMap.findInMap(az, 'SubnetCidrBlock');
 
@@ -145,7 +152,24 @@ function createAmplifyEnv(scope: cdk.Construct, envName: string, vpcId: string, 
 
         subnets.push(publicSubnet);
     });
+
+    const subnetIds = subnets.map(({ subnetId }) => subnetId);
+
     new cdk.CfnOutput(scope, 'SubnetIds', {
-        value: subnets.map(({subnetId}) => subnetId).join(','),
+        value: subnetIds.join(','),
     });
+
+    const vpcLink = new apigw2.CfnVpcLink(scope, "VpcLink", {
+        name: `${envName}VpcLink`,
+        subnetIds
+    });
+
+    new cdk.CfnOutput(scope, "VpcLinkId", { value: cdk.Fn.ref(vpcLink.logicalId) });
+
+    const namespace = new discovery.PrivateDnsNamespace(scope, "Namespace", {
+        vpc,
+        name: envName,
+    });
+
+    new cdk.CfnOutput(scope, "CloudMapNamespaceId", { value: namespace.namespaceId });
 }

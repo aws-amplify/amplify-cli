@@ -25,7 +25,9 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
             "attributes": [
                 "ClusterName",
                 "VpcId",
-                "SubnetIds"
+                "SubnetIds",
+                "VpcLinkId",
+                "CloudMapNamespaceId"
             ]
         });
 
@@ -35,7 +37,8 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
             "category": "auth",
             "resourceName": authName,
             "attributes": [
-                "UserPoolId"
+                "UserPoolId",
+                "AppClientIDWeb"
             ]
         });
 
@@ -49,7 +52,8 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
     };
     
     // TODO: only if required
-    const authFullName = `auth${authName}UserPoolId`; 
+    const authUserPoolIdParamName = `auth${authName}UserPoolId`; 
+    const authAppClientIdWebParamName = `auth${authName}AppClientIDWeb`; 
 
     const deploymentBucket = `${context.amplify.getProjectMeta().providers[provider].DeploymentBucketName}`;
 
@@ -58,7 +62,8 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
     const stack = new EcsStack(undefined, "ContainersStack", {
         apiName: resourceName,
         containerPort: 8080,
-        authFullName,
+        authUserPoolIdParamName,
+        authAppClientIdWebParamName,
         githubSourceActionInfo: githubPath && { path: githubPath, tokenSecretArn},
         deploymentMechanism,
         deploymentBucket

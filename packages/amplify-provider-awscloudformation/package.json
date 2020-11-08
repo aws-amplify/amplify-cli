@@ -22,9 +22,10 @@
     "watch": "tsc --watch"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "~1.67.0",
-    "@aws-cdk/aws-iam": "~1.67.0",
-    "@aws-cdk/core": "~1.67.0",
+    "@aws-cdk/aws-ec2": "~1.72.0",
+    "@aws-cdk/aws-iam": "~1.72.0",
+    "@aws-cdk/aws-servicediscovery": "~1.72.0",
+    "@aws-cdk/core": "~1.72.0",
     "@aws-amplify/graphql-model-transformer": "0.1.0",
     "@aws-amplify/graphql-transformer-core": "0.1.0",
     "@aws-amplify/graphql-transformer-interfaces": "1.1.0",

@@ -23,6 +23,7 @@ const { stateManager } = require('amplify-cli-core');
 const constants = require('./constants');
 const { NetworkStack, NETWORK_STACK_LOGICAL_ID } = require('./network/stack');
 const { getEnvironmentNetworkInfo } = require('./network/environment-info');
+import { prepareApp } from "@aws-cdk/core/lib/private/prepare-app";
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaLayer = 'LambdaLayer';
@@ -47,7 +48,8 @@ async function run(context, resourceDefinition) {
     }
     let projectDetails = context.amplify.getProjectDetails();
 
-    await checkVpcCreation(context, resources);
+    await createEnvLevelConstructs(context, resources);
+
     validateCfnTemplates(context, resources);
 
     await packageResources(context, resources);
@@ -174,17 +176,24 @@ async function run(context, resourceDefinition) {
   }
 }
 
-async function checkVpcCreation(context) {
-  const vpcRequired = isVpcRequired(context);
-
-  if (!vpcRequired) {
-    context.amplify.updateProvideramplifyMeta(providerName, {
-      VpcCfnFile: undefined,
-    });
-    return;
-  }
-
+async function createEnvLevelConstructs(context) {
   const { StackName: stackName } = context.amplify.getProjectMeta().providers[constants.ProviderName];
+
+  const hasContainers = envHasContainers(context);
+
+  const updatedMeta = {};
+
+  Object.assign(updatedMeta, await createNetworkResources(context, stackName, hasContainers));
+
+  context.amplify.updateProvideramplifyMeta(providerName, updatedMeta);
+}
+
+async function createNetworkResources(context, stackName, needsVpc) {
+  if (!needsVpc) {
+    return {
+      NetworkStackS3Url: undefined,
+    };
+  }
 
   const {
     vpcId,
@@ -206,6 +215,7 @@ async function checkVpcCreation(context) {
     internetGatewayId,
     subnetCidrs,
   });
+  prepareApp(stack);
   const cfn = stack._toCloudFormation();
 
   const cfnFile = 'networkingStackTemplate.json';
@@ -220,14 +230,12 @@ async function checkVpcCreation(context) {
   const projectBucket = await s3.uploadFile(s3Params);
   const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${cfnFile}`;
 
-  const networkOptions = {
-    VpcCfnFile: templateURL,
+  return {
+    NetworkStackS3Url: templateURL,
   };
-
-  context.amplify.updateProvideramplifyMeta(providerName, networkOptions);
 }
 
-function isVpcRequired(context) {
+function envHasContainers(context) {
   const functionsObj = context.amplify.getProjectMeta().function;
   const apiObj = context.amplify.getProjectMeta().api;
 
@@ -621,13 +629,13 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
   const { amplifyMeta } = projectDetails;
   let authResourceName;
 
-  const { VpcCfnFile } = amplifyMeta.providers[constants.ProviderName];
+  const { NetworkStackS3Url } = amplifyMeta.providers[constants.ProviderName];
 
-  if (VpcCfnFile) {
+  if (NetworkStackS3Url) {
     nestedStack.Resources[NETWORK_STACK_LOGICAL_ID] = {
       Type: 'AWS::CloudFormation::Stack',
       Properties: {
-        TemplateURL: VpcCfnFile,
+        TemplateURL: NetworkStackS3Url,
       },
     };
   }

@@ -1,16 +1,17 @@
+import * as apigw2 from '@aws-cdk/aws-apigatewayv2';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as s3 from '@aws-cdk/aws-s3';
-import * as elb from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-import * as apigw from '@aws-cdk/aws-apigateway';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './PipelineWithAwaiter';
 
 type EcsStackProps = {
     apiName: string;
     containerPort: number;
-    authFullName: string;
+    authUserPoolIdParamName: string;
+    authAppClientIdWebParamName: string;
     githubSourceActionInfo?: GitHubSourceActionInfo;
     deploymentMechanism: string;
     deploymentBucket: string;
@@ -23,7 +24,8 @@ export class EcsStack extends cdk.Stack {
         const {
             apiName,
             containerPort,
-            authFullName,
+            authUserPoolIdParamName,
+            authAppClientIdWebParamName,
             deploymentMechanism,
             githubSourceActionInfo,
             deploymentBucket
@@ -49,14 +51,40 @@ export class EcsStack extends cdk.Stack {
             type: 'String'
         });
 
-        const paramAuthFullName = new cdk.CfnParameter(this, authFullName, {
+        const paramVpcLinkId = new cdk.CfnParameter(this, 'NetworkStackVpcLinkId', {
+            type: 'String'
+        });
+
+        const paramCloudMapNamespaceId = new cdk.CfnParameter(this, 'NetworkStackCloudMapNamespaceId', {
+            type: 'String'
+        });
+
+        const paramUserPoolId = new cdk.CfnParameter(this, authUserPoolIdParamName, {
+            type: 'String'
+        });
+
+        const paramAppClientIdWeb = new cdk.CfnParameter(this, authAppClientIdWebParamName, {
             type: 'String'
         });
 
         const vpcId = paramVpcId.valueAsString;
         const subnets = paramSubnetIds.valueAsList;
 
-        // ECR
+        //#region CloudMap
+        const cloudmapService = new cloudmap.CfnService(this, "CloudmapService", {
+            name: apiName,
+            dnsConfig: {
+                dnsRecords: [{
+                    ttl: 60,
+                    type: cloudmap.DnsRecordType.SRV,
+                }],
+                namespaceId: paramCloudMapNamespaceId.valueAsString,
+                routingPolicy: cloudmap.RoutingPolicy.MULTIVALUE,
+            }
+        });
+        //#endregion
+
+        //#region ECS
         const repository = new ecr.Repository(this, 'Repository', {});
         (repository.node.defaultChild as ecr.CfnRepository).overrideLogicalId('Repository');
 
@@ -80,42 +108,6 @@ export class EcsStack extends cdk.Stack {
             protocol: ecs.Protocol.TCP,
         });
 
-        // TODO: WAF
-
-        const loadBalancerSG = new ec2.CfnSecurityGroup(this, "LoadBalancerSG", {
-            vpcId,
-            groupDescription: 'Allow access from the internet',
-            securityGroupIngress: [{
-                ipProtocol: 'tcp',
-                fromPort: 80,
-                toPort: 80,
-                cidrIp: '0.0.0.0/0',
-            }]
-        });
-        const loadBalancer = new elb.CfnLoadBalancer(this, 'LoadBalancer', {
-            type: 'application',
-            subnets: subnets,
-            securityGroups: [loadBalancerSG.attrGroupId]
-        });
-
-        const targetGroup = new elb.CfnTargetGroup(this, "TargetGroup", {
-            vpcId,
-            targetType: 'ip',
-            protocol: 'HTTP',
-            port: containerPort,
-        });
-
-        const listener = new elb.CfnListener(this, "Listener", {
-            defaultActions: [{
-                type: 'forward',
-                targetGroupArn: cdk.Fn.ref(targetGroup.logicalId),
-            }],
-            loadBalancerArn: cdk.Fn.ref(loadBalancer.logicalId),
-            port: 80, // TODO: SSL - 443?
-            protocol: 'HTTP',
-            // certificates // TODO: SSL?
-        });
-
         const serviceSecurityGroup = new ec2.CfnSecurityGroup(this, "ServiceSG", {
             vpcId,
             groupDescription: 'Service SecurityGroup',
@@ -128,19 +120,18 @@ export class EcsStack extends cdk.Stack {
                 ipProtocol: 'tcp',
                 fromPort: containerPort,
                 toPort: containerPort,
-                sourceSecurityGroupId: loadBalancerSG.attrGroupId,
+                cidrIp: '0.0.0.0/0', // TODO: Restrict to vpc subnets
             }]
         });
-
         const service = new ecs.CfnService(this, "Service", {
             serviceName: `${apiName}Service`,
             cluster: paramClusterName.valueAsString,
             launchType: 'FARGATE',
             desiredCount: subnets.length, // TODO: check this assumption
-            loadBalancers: [{
-                containerName: container.containerName, // TODO: Why this? defined in function
+            serviceRegistries: [{
+                containerName: container.containerName,
                 containerPort,
-                targetGroupArn: cdk.Fn.ref(targetGroup.logicalId),
+                registryArn: cloudmapService.attrArn,
             }],
             networkConfiguration: {
                 awsvpcConfiguration: {
@@ -151,10 +142,9 @@ export class EcsStack extends cdk.Stack {
             },
             taskDefinition: task.taskDefinitionArn,
         });
-        service.addDependsOn(listener);
+        //#endregion
 
-        // Pipeline with awaiter
-
+        //#region Pipeline with awaiter
         const pipeline = new PipelineWithAwaiter(this, 'ApiPipeline', {
             container,
             repository,
@@ -165,109 +155,78 @@ export class EcsStack extends cdk.Stack {
         })
 
         pipeline.node.addDependency(service);
+        //#endregion
 
-        const api = new apigw.CfnRestApi(this, "Api", {
-            name: apiName
-        });
-
-        // TODO: cloudwatch role for api
-
-        const optionsMethod = new apigw.CfnMethod(this, "OptionsMethod", {
-            httpMethod: 'OPTIONS',
-            resourceId: api.attrRootResourceId,
-            restApiId: cdk.Fn.ref(api.logicalId),
-            authorizationType: 'NONE',
-            integration: {
-                type: 'MOCK',
-                integrationResponses: [{
-                    statusCode: "204",
-                    responseParameters: {
-                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-                        "method.response.header.Access-Control-Allow-Origin": "'*'",
-                        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
-                    }
-                }],
-                requestTemplates: {
-                    "application/json": "{ statusCode: 200 }"
-                }
+        //#region Api Gateway
+        const api = new apigw2.CfnApi(this, "Api", {
+            name: apiName,
+            protocolType: 'HTTP',
+            corsConfiguration: {
+                allowHeaders: ["*"],
+                allowOrigins: ["*"],
+                allowMethods: Object.values(apigw2.HttpMethod).filter(
+                    (m) => m !== apigw2.HttpMethod.ANY
+                ),
             },
-            methodResponses: [{
-                statusCode: "204",
-                responseParameters: {
-                    "method.response.header.Access-Control-Allow-Headers": true,
-                    "method.response.header.Access-Control-Allow-Origin": true,
-                    "method.response.header.Access-Control-Allow-Methods": true,
-                }
-            }]
         });
 
-        const authorizer = new apigw.CfnAuthorizer(this, "Authorizer", {
-            restApiId: cdk.Fn.ref(api.logicalId),
-            type: 'COGNITO_USER_POOLS',
-            identitySource: "method.request.header.Authorization",
-            name: 'DefaultAuthorizer',
-            providerArns: [cdk.Fn.join('', [
-                'arn:',
-                cdk.Aws.PARTITION,
-                ":cognito-idp:",
-                cdk.Aws.REGION,
-                ':',
-                cdk.Aws.ACCOUNT_ID,
-                ":userpool/",
-                paramAuthFullName.valueAsString
-            ])]
+        new apigw2.CfnStage(this, 'Stage', {
+            apiId: cdk.Fn.ref(api.logicalId),
+            stageName: '$default',
+            autoDeploy: true,
         });
 
-        const anyMethod = new apigw.CfnMethod(this, "AnyMethod", {
-            httpMethod: 'ANY',
-            resourceId: api.attrRootResourceId,
-            restApiId: cdk.Fn.ref(api.logicalId),
-            authorizationScopes: ["aws.cognito.signin.user.admin"],
-            authorizationType: 'COGNITO_USER_POOLS',
-            authorizerId: cdk.Fn.ref(authorizer.logicalId),
-            integration: {
-                integrationHttpMethod: 'ANY',
-                type: 'HTTP_PROXY',
-                uri: cdk.Fn.join(':', [
-                    cdk.Fn.join('', [
-                        'http://',
-                        loadBalancer.attrDnsName // TODO: Only NLB!!! :(
-                    ]),
-                    `80`,
+        const integration = new apigw2.CfnIntegration(this, 'ANYIntegration', {
+            apiId: cdk.Fn.ref(api.logicalId),
+            integrationType: apigw2.HttpIntegrationType.HTTP_PROXY,
+            connectionId: paramVpcLinkId.valueAsString,
+            connectionType: apigw2.HttpConnectionType.VPC_LINK,
+            integrationMethod: 'ANY',
+            integrationUri: cloudmapService.attrArn,
+            payloadFormatVersion: '1.0',
+        });
+
+        const authorizer = new apigw2.CfnAuthorizer(this, 'Authorizer', {
+            name: `${apiName}Authorizer`,
+            apiId: cdk.Fn.ref(api.logicalId),
+            authorizerType: 'JWT',
+            jwtConfiguration: {
+                audience: [paramAppClientIdWeb.valueAsString],
+                issuer: cdk.Fn.join('', [
+                    'https://cognito-idp.',
+                    cdk.Aws.REGION,
+                    '.amazonaws.com/',
+                    paramUserPoolId.valueAsString
                 ])
-            }
+            },
+            identitySource: ['$request.header.Authorization'],
         });
 
-        const deployment = new apigw.CfnDeployment(this, "Deployment", {
-            restApiId: cdk.Fn.ref(api.logicalId),
+        new apigw2.CfnRoute(this, 'DefaultRoute', {
+            apiId: cdk.Fn.ref(api.logicalId),
+            routeKey: '$default',
+            target: cdk.Fn.join('', [
+                'integrations/',
+                cdk.Fn.ref(integration.logicalId),
+            ]),
+            authorizationScopes: [], // TODO: ask them?
+            authorizationType: 'JWT',
+            authorizerId: cdk.Fn.ref(authorizer.logicalId)
         });
-        deployment.addDependsOn(optionsMethod);
-        deployment.addDependsOn(anyMethod);
 
-        const stage = new apigw.CfnStage(this, "Stage", {
-            restApiId: cdk.Fn.ref(api.logicalId),
-            stageName: 'prod', // TODO: check if this should be env param
-            deploymentId: cdk.Fn.ref(deployment.logicalId),
+        new apigw2.CfnRoute(this, 'OptionsRoute', {
+            apiId: cdk.Fn.ref(api.logicalId),
+            routeKey: 'OPTIONS /{proxy+}',
+            target: cdk.Fn.join('', [
+                'integrations/',
+                cdk.Fn.ref(integration.logicalId),
+            ]),
         });
 
-        new cdk.CfnOutput(this, "ServiceArn", {
-            value: cdk.Fn.ref(service.logicalId)
-        });
-        new cdk.CfnOutput(this, "ApiName", {
-            value: apiName
-        });
-        new cdk.CfnOutput(this, "RootUrl", {
-            value: cdk.Fn.join('', [
-                "https://",
-                cdk.Fn.ref(api.logicalId),
-                ".execute-api.",
-                cdk.Aws.REGION,
-                ".",
-                cdk.Aws.URL_SUFFIX,
-                "/",
-                cdk.Fn.ref(stage.logicalId),
-                "/"
-            ])
-        });
+        //#endregion
+
+        new cdk.CfnOutput(this, "ServiceArn", { value: cdk.Fn.ref(service.logicalId) });
+        new cdk.CfnOutput(this, "ApiName", { value: api.name });
+        new cdk.CfnOutput(this, "RootUrl", { value: api.attrApiEndpoint });
     }
 }
