@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.15.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.15.1...amplify-dynamodb-simulator@1.15.2) (2020-11-08)
+
+**Note:** Version bump only for package amplify-dynamodb-simulator
+
+
+
+
+
 ## [1.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.15.0...amplify-dynamodb-simulator@1.15.1) (2020-10-27)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

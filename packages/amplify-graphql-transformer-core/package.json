@@ -1,6 +1,6 @@
 {
     "name": "@aws-amplify/graphql-transformer-core",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
     "repository": {
         "type": "git",
@@ -23,7 +23,7 @@
         "clean": "rimraf ./lib"
     },
     "dependencies": {
-        "@aws-amplify/graphql-transformer-interfaces": "1.0.0",
+        "@aws-amplify/graphql-transformer-interfaces": "1.1.0",
         "@aws-cdk/assets": "~1.67.0",
         "@aws-cdk/aws-applicationautoscaling": "~1.67.0",
         "@aws-cdk/aws-appsync": "~1.67.0",
@@ -40,8 +40,8 @@
         "@aws-cdk/aws-lambda": "~1.67.0",
         "@aws-cdk/aws-logs": "~1.67.0",
         "@aws-cdk/aws-route53": "~1.67.0",
-        "@aws-cdk/aws-s3-assets": "~1.67.0",
         "@aws-cdk/aws-s3": "~1.67.0",
+        "@aws-cdk/aws-s3-assets": "~1.67.0",
         "@aws-cdk/aws-sqs": "~1.67.0",
         "@aws-cdk/aws-ssm": "~1.67.0",
         "@aws-cdk/cloud-assembly-schema": "~1.67.0",
@@ -54,8 +54,8 @@
         "deep-diff": "^1.0.2",
         "fs-extra": "^8.1.0",
         "glob": "^7.1.6",
-        "graphql-transformer-common": "4.17.11",
         "graphql": "^14.5.8",
+        "graphql-transformer-common": "4.17.11",
         "ts-dedent": "^2.0.0"
     },
     "devDependencies": {
