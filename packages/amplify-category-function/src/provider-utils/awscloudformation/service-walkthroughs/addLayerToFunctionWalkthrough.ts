@@ -10,17 +10,19 @@ const confirmationPrompt = 'Do you want to configure Lambda layers for this func
  * @param context Amplify platform context
  * @param runtime Runtime of the function that is being modified
  * @param previousSelections Array of layers already added to this function (if any)
+ * @param defaultConfirm Determines whether the confirmation question defaults to yes or no
  */
 export const addLayersToFunctionWalkthrough = async (
   context,
   runtime: Pick<FunctionRuntime, 'value'>,
   previousSelections: LambdaLayer[] = [],
+  defaultConfirm = false,
 ): Promise<Required<Pick<FunctionParameters, 'lambdaLayers' | 'dependsOn'>>> => {
   let lambdaLayers: LambdaLayer[] = [];
   let dependsOn: FunctionDependency[] = [];
 
   // ask initial confirmation
-  if (!(await context.amplify.confirmPrompt(confirmationPrompt, false))) {
+  if (!(await context.amplify.confirmPrompt(confirmationPrompt, defaultConfirm))) {
     return { lambdaLayers: previousSelections, dependsOn };
   }
 

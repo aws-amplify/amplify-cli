@@ -222,7 +222,7 @@ export async function updateFunctionResource(context, category, service, paramet
   if (!parameters || (parameters && !parameters.skipEdit)) {
     const breadcrumb = context.amplify.readBreadcrumbs(context, categoryName, parameters.resourceName);
     const displayName = 'trigger' in parameters ? parameters.resourceName : undefined;
-    await openEditor(context, category, parameters.resourceName, { defaultEditorFile: breadcrumb.defaultEditorFile }, displayName);
+    await openEditor(context, category, parameters.resourceName, { defaultEditorFile: breadcrumb.defaultEditorFile }, displayName, false);
   }
 
   return parameters.resourceName;
@@ -253,9 +253,16 @@ function printLayerSuccessMessages(context: any, parameters: LayerParameters, ac
   print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');
 }
 
-async function openEditor(context, category: string, resourceName: string, template: Partial<FunctionTemplate>, displayName = 'local') {
+async function openEditor(
+  context,
+  category: string,
+  resourceName: string,
+  template: Partial<FunctionTemplate>,
+  displayName = 'local',
+  defaultConfirm = true,
+) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  if (await context.amplify.confirmPrompt(`Do you want to edit the ${displayName} lambda function now?`)) {
+  if (await context.amplify.confirmPrompt(`Do you want to edit the ${displayName} lambda function now?`, defaultConfirm)) {
     let targetFile = '';
 
     // try to load the default editor file from the function template

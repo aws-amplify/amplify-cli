@@ -13,6 +13,7 @@ const categoryName = 'function';
 export async function scheduleWalkthrough(
   context: any,
   params: Partial<FunctionParameters>,
+  defaultConfirm = false,
 ): Promise<Pick<FunctionParameters, 'cloudwatchRule'>> {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, params.resourceName);
@@ -20,7 +21,7 @@ export async function scheduleWalkthrough(
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
   let scheduleParams = params;
   if (params.cloudwatchRule === undefined || params.cloudwatchRule === 'NONE') {
-    if (await context.amplify.confirmPrompt('Do you want to invoke this function on a recurring schedule?', false)) {
+    if (await context.amplify.confirmPrompt('Do you want to invoke this function on a recurring schedule?', defaultConfirm)) {
       try {
         let cloudWatchRule = await cronServiceWalkthrough(context);
         scheduleParams.cloudwatchRule = cloudWatchRule;
@@ -35,7 +36,7 @@ export async function scheduleWalkthrough(
       }
     }
   } else {
-    if (await context.amplify.confirmPrompt(`Do you want to update or remove the function's schedule?`, false)) {
+    if (await context.amplify.confirmPrompt(`Do you want to update or remove the function's schedule?`, defaultConfirm)) {
       const cfnContent = context.amplify.readJsonFile(cfnFilePath);
       const scheduleEventOperationQuestion = {
         type: 'list',
