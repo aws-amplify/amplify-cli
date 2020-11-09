@@ -17,6 +17,7 @@ import {
   deleteProjectDir,
   getSocialProviders,
   getAmplifyDirPath,
+  isDeploymentSecretForEnvExists,
 } from 'amplify-e2e-core';
 import { headlessInit } from '../src/pullAndInit/initProject';
 import { headlessPull, authConfigPull } from '../src/pullAndInit/pullProject';
@@ -201,7 +202,9 @@ describe('amplify app console tests', () => {
       AMAZON_APP_SECRET,
     } = getSocialProviders();
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: 'authConsoleTest', envName });
+    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeDefined();
     await addAuthWithDefaultSocial(projRoot, {});
+    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeUndefined();
     await amplifyPushAuth(projRoot);
     let teamInfo = getTeamProviderInfo(projRoot);
     expect(teamInfo).toBeDefined();
@@ -212,7 +215,7 @@ describe('amplify app console tests', () => {
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
     let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
 
     deleteAmplifyDir(projRoot);
 
@@ -233,7 +236,7 @@ describe('amplify app console tests', () => {
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
     authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
 
     // with frontend
     const frontendConfig = deleteAmplifyDir(projRoot);
@@ -295,7 +298,7 @@ describe('amplify app console tests', () => {
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
     let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
 
     deleteAmplifyDir(projRoot);
 
@@ -307,6 +310,6 @@ describe('amplify app console tests', () => {
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
     authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
   });
 });

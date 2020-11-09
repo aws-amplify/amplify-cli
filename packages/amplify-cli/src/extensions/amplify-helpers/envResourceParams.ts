@@ -61,6 +61,7 @@ function removeObjectRecursively(obj, keys) {
 }
 
 export function saveEnvResourceParameters(context: $TSContext, category: string, resource: string, parameters: $TSObject) {
+  if (!parameters) return;
   const teamProviderInfo = getApplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
   const resources = getOrCreateSubObject(teamProviderInfo, [currentEnv, CATEGORIES, category]);
