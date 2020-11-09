@@ -22,6 +22,11 @@ Parameters:
   <% if (typeof Object.values(props)[i] === 'string' || (Object.values(props)[i] && Object.values(props)[i].value)) { %>
   <%=Object.keys(props)[i]%>:
     Type: String
+    <% if(Object.keys(props)[i] === 'hostedUIProviderMeta' && !Object.keys(props).includes('hostedUIProviderCreds')) { %>
+  hostedUIProviderCreds:
+    Type: String
+    Default: '[]'
+    <% } -%>
   <% } -%>
   <% if (typeof Object.values(props)[i] === 'boolean') { %>
   <%=Object.keys(props)[i]%>:
@@ -43,7 +48,6 @@ Parameters:
 
 Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
-  HasHostedUIProviderCreds: !Not [ !Equals [ !Ref hostedUIProviderCreds, NONE ]]
 
 Resources:
   <%if (props.verificationBucketName) { %>
@@ -676,7 +680,7 @@ Resources:
       ServiceToken: !GetAtt HostedUIProvidersCustomResource.Arn
       userPoolId: !Ref UserPool
       hostedUIProviderMeta: !Ref hostedUIProviderMeta
-      hostedUIProviderCreds: !If [HasHostedUIProviderCreds, !Ref hostedUIProviderCreds, "[]" ]
+      hostedUIProviderCreds: !Ref hostedUIProviderCreds
     DependsOn: HostedUIProvidersCustomResourceLogPolicy
   <% } %>
   <%if (props.oAuthMetadata) { %>
