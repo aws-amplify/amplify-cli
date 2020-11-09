@@ -4,6 +4,7 @@ import { isEmpty, merge } from 'lodash';
 import { structureOAuthMetadata } from '../service-walkthroughs/auth-questions';
 import { removeDeprecatedProps } from './synthesize-resources';
 import { immutableAttributes, safeDefaults } from '../constants';
+import { FeatureFlags } from 'amplify-cli-core';
 
 /**
  * Factory function that returns a function that applies default values to a ServiceQuestionsResult request.
@@ -22,6 +23,12 @@ export const getAddAuthDefaultsApplier = (context: any, defaultValuesFilename: s
   await verificationBucketName(result);
 
   structureOAuthMetadata(result, context, getAllDefaults, context.amplify); // adds "oauthMetadata" to result
+
+  // Make the usernames for Cognito case-insensitive by default when it is created, if feature flag
+  // is enabled.
+  if (FeatureFlags.getBoolean('auth.enableCaseInsensitivity')) {
+    result.usernameCaseSensitive = false;
+  }
 
   /* merge actual answers object into props object,
    * ensuring that manual entries override defaults */
