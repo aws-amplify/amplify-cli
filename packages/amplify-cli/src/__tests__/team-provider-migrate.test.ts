@@ -110,6 +110,9 @@ describe('test migration code', () => {
       },
     });
     const mockContext: Context = jest.genMockFromModule('../domain/context');
+    mockContext.exeInfo = {
+      inputParams: {},
+    };
     mockContext.prompt = {
       confirm: promptConfirm,
     };

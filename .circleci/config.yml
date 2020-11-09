@@ -2028,6 +2028,15 @@ workflows:
                 - master
           requires:
             - build
+      - amplify_migration_tests_v4_30_0:
+          filters:
+            branches:
+              only:
+                - master
+                - graphqlschemae2e
+                - feat-import
+          requires:
+            - build
       - amplify_console_integration_tests:
           filters:
             branches:
