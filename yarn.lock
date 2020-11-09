@@ -6024,6 +6024,51 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
+amplify-app@2.17.17:
+  version "2.17.17"
+  resolved "https://registry.npmjs.org/amplify-app/-/amplify-app-2.17.17.tgz#4ca6339d36604c3a74f132e3be249afaedd15302"
+  integrity sha512-wSdlr8SyzMHupydbSsb8o0StXrBZD9uMmwBQuc4SQNM23JrRULzLqoHWqPu9fjxQ5wQo4lidgzIoneJQe9mI5w==
+  dependencies:
+    amplify-frontend-android "2.13.5"
+    amplify-frontend-ios "2.13.8"
+    amplify-frontend-javascript "2.17.2"
+    chalk "^3.0.0"
+    fs-extra "^8.1.0"
+    graphql "^14.5.8"
+    ini "^1.3.5"
+    inquirer "^7.3.3"
+    node-emoji "^1.10.0"
+    rimraf "^3.0.0"
+    semver "^7.1.1"
+    strip-ansi "^6.0.0"
+    xcode "^2.1.0"
+    yargs "^15.1.0"
+
+amplify-cli-core@1.5.1:
+  version "1.5.1"
+  resolved "https://registry.npmjs.org/amplify-cli-core/-/amplify-cli-core-1.5.1.tgz#7c5d2b460ef5cc6ec23292d864378098bed5503b"
+  integrity sha512-gzUNO/AiPGtowYgyVO20ofMZXukcbyK5908QlBYaStsUOqL71zzeK8H+S5n6nHAgiMAB/C+hr51mVlzCaoqp5Q==
+  dependencies:
+    ajv "^6.12.3"
+    dotenv "^8.2.0"
+    fs-extra "^8.1.0"
+    hjson "^3.2.1"
+    lodash "^4.17.19"
+
+amplify-frontend-javascript@2.17.2:
+  version "2.17.2"
+  resolved "https://registry.npmjs.org/amplify-frontend-javascript/-/amplify-frontend-javascript-2.17.2.tgz#275b0490b8c8596c32da7675af74985d480e32c5"
+  integrity sha512-mZDD9SYVjzGJiEhMXu8lv7M71U0D383PujODBGkc2QP5yc4BYMnAE74dp7MONEZQcgsJ3nMgsDjYsuhGJn8C1A==
+  dependencies:
+    amplify-cli-core "1.5.1"
+    chalk "^3.0.0"
+    execa "^4.0.0"
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+    inquirer "^7.3.3"
+    lodash "^4.17.19"
+    promise-sequential "^1.1.1"
+
 ansi-align@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-3.0.0.tgz#b536b371cf687caaef236c18d3e21fe3797467cb"
@@ -21941,6 +21986,11 @@ uuid@^8.2.0:
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.0.tgz#ab738085ca22dc9a8c92725e459b1d507df5d6ea"
   integrity sha512-fX6Z5o4m6XsXBdli9g7DtWgAx+osMsRRZFKma1mIUsLCz6vRvv+pz5VNbyu9UEDzpMWulZfvpgb/cmDXVulYFQ==
+
+uuid@^8.3.0:
+  version "8.3.1"
+  resolved "https://registry.npmjs.org/uuid/-/uuid-8.3.1.tgz#2ba2e6ca000da60fce5a196954ab241131e05a31"
+  integrity sha512-FOmRr+FmWEIG8uhZv6C2bTgEVXsHk08kE7mPlrBbEe+c3r9pjceVPgupIfNIhc4yx55H69OXANrUaSuu9eInKg==
 
 v8-compile-cache@^2.0.3:
   version "2.1.1"
