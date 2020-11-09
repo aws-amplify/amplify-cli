@@ -56,7 +56,7 @@
 		"s3PermissionsGuestPublic": {
 			"Type": "String",
 			"Default" : "DISALLOW"
-		},	
+		},
 		"s3PermissionsGuestUploads": {
 			"Type": "String",
 			"Default" : "DISALLOW"		},
@@ -171,7 +171,7 @@
 	"Resources": {
 		"S3Bucket": {
 			"Type": "AWS::S3::Bucket",
-		    <% if (props.triggerFunction && props.triggerFunction != "NONE") { %> 
+		    <% if (props.triggerFunction && props.triggerFunction != "NONE") { %>
             "DependsOn": [
 				"TriggerPermissions"
 			],
@@ -213,7 +213,7 @@
                         }
                     ]
                 },
-                <% if (props.triggerFunction && props.triggerFunction != "NONE") { %> 
+                <% if (props.triggerFunction && props.triggerFunction != "NONE") { %>
                 "NotificationConfiguration": {
                     "LambdaConfigurations": [
                         {
@@ -299,14 +299,33 @@
 	                      ]
 	                  }
 	              ]
-	            }
+              }
+              <% if (props.groupPolicyMap[props.groupList[i]].includes('s3:ListBucket')) { %>
+              ,{
+                "Effect": "Allow",
+                "Action": ["s3:ListBucket"],
+                "Resource": [
+                    {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "arn:aws:s3:::",
+                                {
+                                    "Ref": "S3Bucket"
+                                }
+                            ]
+                        ]
+                    }
+                ]
+              }
+              <% } %>
 	          ]
 	        }
 	      }
 	    },
       <% } %>
       <% } %>
-	    <% if (props.triggerFunction && props.triggerFunction != "NONE") { %> 
+	    <% if (props.triggerFunction && props.triggerFunction != "NONE") { %>
 	    "TriggerPermissions": {
           "Type": "AWS::Lambda::Permission",
           "Properties": {
@@ -429,7 +448,7 @@
 							"Action": {
 								"Fn::Split" : [ "," , {
 									"Ref": "s3PermissionsAuthenticatedPublic"
-								} ] 
+								} ]
 							},
 							"Resource": [
 								{
@@ -473,7 +492,7 @@
 							"Action": {
 								"Fn::Split" : [ "," , {
 									"Ref": "s3PermissionsAuthenticatedProtected"
-								} ] 
+								} ]
 							},
 							"Resource": [
 								{
@@ -517,7 +536,7 @@
 							"Action": {
 								"Fn::Split" : [ "," , {
 									"Ref": "s3PermissionsAuthenticatedPrivate"
-								} ] 
+								} ]
 							},
 							"Resource": [
 								{
@@ -561,7 +580,7 @@
 							"Action": {
 								"Fn::Split" : [ "," , {
 									"Ref": "s3PermissionsAuthenticatedUploads"
-								} ] 
+								} ]
 							},
 							"Resource": [
 								{
@@ -678,7 +697,7 @@
 							"Action": {
 								"Fn::Split" : [ "," , {
 									"Ref": "s3PermissionsGuestPublic"
-								} ] 
+								} ]
 							},
 							"Resource": [
 								{
@@ -722,7 +741,7 @@
 							"Action": {
 								"Fn::Split" : [ "," , {
 									"Ref": "s3PermissionsGuestUploads"
-								} ] 
+								} ]
 							},
 							"Resource": [
 								{

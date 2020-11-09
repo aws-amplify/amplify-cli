@@ -24,6 +24,8 @@
     {"path": "../graphql-key-transformer"},
     {"path": "../graphql-predictions-transformer"},
     {"path": "../graphql-transformer-core"},
-    {"path": "../graphql-versioned-transformer"}
+    {"path": "../graphql-versioned-transformer"},
+    { "path": "../amplify-graphql-transformer-interfaces" },
+    { "path": "../amplify-graphql-transformer-core" }
   ]
 }
