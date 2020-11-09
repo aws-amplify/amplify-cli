@@ -16,8 +16,8 @@ class ModelProvider implements ModelProviderInterface {
 `;
 
 exports[`AppSync Dart Visitor Model Directive should generate a class for a Simple Model 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the SimpleModel type in your schema. */
@@ -120,8 +120,8 @@ class SimpleModelType extends ModelType<SimpleModel> {
 `;
 
 exports[`AppSync Dart Visitor Model Directive should generate a class for a model with all optional fields 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the SimpleModel type in your schema. */
@@ -224,8 +224,8 @@ class SimpleModelType extends ModelType<SimpleModel> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with custom claims 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the customClaim type in your schema. */
@@ -354,8 +354,8 @@ class customClaimType extends ModelType<customClaim> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with custom group claims 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the customClaim type in your schema. */
@@ -471,8 +471,8 @@ class customClaimType extends ModelType<customClaim> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with dynamic groups 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the dynamicGroups type in your schema. */
@@ -588,8 +588,8 @@ class dynamicGroupsType extends ModelType<dynamicGroups> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with owner auth 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the simpleOwnerAuth type in your schema. */
@@ -718,8 +718,8 @@ class simpleOwnerAuthType extends ModelType<simpleOwnerAuth> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with owner auth allowing others to read: 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the allowRead type in your schema. */
@@ -847,8 +847,8 @@ class allowReadType extends ModelType<allowRead> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with private authorization 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the privateType type in your schema. */
@@ -962,8 +962,8 @@ class privateTypeType extends ModelType<privateType> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with public authorization 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the publicType type in your schema. */
@@ -1077,8 +1077,8 @@ class publicTypeType extends ModelType<publicType> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with static groups 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the staticGroups type in your schema. */
@@ -1194,8 +1194,8 @@ class staticGroupsType extends ModelType<staticGroups> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should include authRules in schema when owner auth is used with ownerField 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the Post type in your schema. */
@@ -1311,8 +1311,8 @@ class PostType extends ModelType<Post> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should support multiple auth rules 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the Post type in your schema. */
@@ -1444,9 +1444,9 @@ class PostType extends ModelType<Post> {
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should generate classes for models with one to many connection 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 
 import 'Task.dart';
 
@@ -1544,8 +1544,8 @@ class TodoType extends ModelType<Todo> {
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should generate classes for models with one to many connection 2`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 import 'Todo.dart';
 
@@ -1668,9 +1668,9 @@ class TaskType extends ModelType<Task> {
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should support connection directive with keyName and fields 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 
 import 'Post.dart';
 
@@ -1794,8 +1794,8 @@ class BlogType extends ModelType<Blog> {
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should support connection directive with keyName and fields 2`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 import 'Post.dart';
 
@@ -1905,9 +1905,9 @@ class CommentType extends ModelType<Comment> {
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should support connection directive with keyName and fields 3`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 
 import 'Blog.dart';
 import 'Comment.dart';
@@ -2037,8 +2037,8 @@ class PostType extends ModelType<Post> {
 `;
 
 exports[`AppSync Dart Visitor Model with Key Directive should generate a class for model with key directive 1`] = `
-"import 'package:flutter/foundation.dart';
-import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the authorBook type in your schema. */

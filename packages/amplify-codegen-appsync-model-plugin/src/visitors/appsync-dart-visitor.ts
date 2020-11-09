@@ -26,7 +26,7 @@ export class AppSyncModelDartVisitor<
 
   protected generateClassLoader(): string {
     const result: string[] = [];
-    const modelNames: string[] = Object.keys(this.modelMap);
+    const modelNames: string[] = Object.keys(this.modelMap).sort();
     //Packages for import
     const packageImports: string[] = [
       'package: amplify_datastore_plugin_interface/amplify_datastore_plugin_interface',
@@ -104,8 +104,8 @@ export class AppSyncModelDartVisitor<
     const baseImport = [
       ...BASE_IMPORT_PACKAGES,
       usingCollection ? COLLECTION_PACKAGE : ''
-    ].filter(f => f).map(pckg => `import '${pckg}';`).join('\n');
-    const additionalImport = Array.from(additionalPackages).map(name => `import '${name}.dart';`).join('\n');
+    ].filter(f => f).sort().map(pckg => `import '${pckg}';`).join('\n');
+    const additionalImport = Array.from(additionalPackages).sort().map(name => `import '${name}.dart';`).join('\n');
     return [baseImport, additionalImport].filter(f => f).join('\n\n') + '\n';
   }
 
