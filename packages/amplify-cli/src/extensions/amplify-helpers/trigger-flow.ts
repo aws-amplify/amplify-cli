@@ -4,8 +4,10 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
 import { JSONUtilities, $TSAny } from 'amplify-cli-core';
-import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 import Separator from 'inquirer/lib/objects/separator';
+
+// keep in sync with ServiceName in amplify-category-function, but probably it will not change
+const FunctionServiceNameLambdaFunction = 'Lambda';
 
 /** ADD A TRIGGER
  * @function addTrigger
@@ -44,39 +46,37 @@ export const addTrigger = async triggerOptions => {
     skipEdit,
   } = triggerOptions;
 
-  let add;
-  try {
-    ({ add } = require('amplify-category-function'));
-  } catch (e) {
-    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
-  }
-
-  await add(context, 'awscloudformation', FunctionServiceName.LambdaFunction, {
-    trigger: true,
-    cloudResourceTemplatePath: path.join(triggerDir, 'cloudformation-templates', triggerTemplate),
-    functionTemplate: {
-      sourceRoot: path.join(triggerDir, 'function-template-dir'),
-      sourceFiles: ['trigger-index.js', 'package.json.ejs', 'event.json'],
-      destMap: {
-        'trigger-index.js': path.join('src', 'index.js'),
-        'package.json.ejs': path.join('src', 'package.json'),
-        'event.json': path.join('src', 'event.json'),
+  await context.amplify.invokePluginMethod(context, 'function', undefined, 'add', [
+    context,
+    'awscloudformation',
+    FunctionServiceNameLambdaFunction,
+    {
+      trigger: true,
+      cloudResourceTemplatePath: path.join(triggerDir, 'cloudformation-templates', triggerTemplate),
+      functionTemplate: {
+        sourceRoot: path.join(triggerDir, 'function-template-dir'),
+        sourceFiles: ['trigger-index.js', 'package.json.ejs', 'event.json'],
+        destMap: {
+          'trigger-index.js': path.join('src', 'index.js'),
+          'package.json.ejs': path.join('src', 'package.json'),
+          'event.json': path.join('src', 'event.json'),
+        },
       },
+      modules: values,
+      parentResource,
+      functionName,
+      resourceName: functionName,
+      parentStack,
+      triggerEnvs: JSONUtilities.stringify(triggerEnvs[key]),
+      triggerIndexPath,
+      triggerPackagePath,
+      triggerDir,
+      triggerTemplate,
+      triggerEventPath,
+      roleName: functionName,
+      skipEdit,
     },
-    modules: values,
-    parentResource,
-    functionName,
-    resourceName: functionName,
-    parentStack,
-    triggerEnvs: JSONUtilities.stringify(triggerEnvs[key]),
-    triggerIndexPath,
-    triggerPackagePath,
-    triggerDir,
-    triggerTemplate,
-    triggerEventPath,
-    roleName: functionName,
-    skipEdit,
-  });
+  ]);
   context.print.success('Successfully added the Lambda function locally');
   if (values && values.length > 0) {
     for (let v = 0; v < values.length; v += 1) {
@@ -124,17 +124,12 @@ export const updateTrigger = async triggerOptions => {
     triggerEventPath,
     skipEdit,
   } = triggerOptions;
-  let update;
+
   try {
-    ({ update } = require('amplify-category-function'));
-  } catch (e) {
-    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
-  }
-  try {
-    await update(
+    await context.amplify.invokePluginMethod(context, 'function', undefined, 'update', [
       context,
       'awscloudformation',
-      FunctionServiceName.LambdaFunction,
+      FunctionServiceNameLambdaFunction,
       {
         trigger: true,
         modules: values,
@@ -151,7 +146,7 @@ export const updateTrigger = async triggerOptions => {
         skipEdit,
       },
       functionName,
-    );
+    ]);
     if (values && values.length > 0) {
       for (let v = 0; v < values.length; v += 1) {
         await copyFunctions(key, values[v], category, context, targetPath);

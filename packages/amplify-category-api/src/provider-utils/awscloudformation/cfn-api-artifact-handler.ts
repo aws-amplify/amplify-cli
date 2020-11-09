@@ -15,9 +15,11 @@ import { conflictResolutionToResolverConfig } from './utils/resolver-config-to-c
 import { appSyncAuthTypeToAuthConfig } from './utils/auth-config-to-app-sync-auth-type-bi-di-mapper';
 import uuid from 'uuid';
 import _ from 'lodash';
-import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 import { getAppSyncResourceName, getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from './utils/amplify-meta-utils';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
+
+// keep in sync with ServiceName in amplify-category-function, but probably it will not change
+const FunctionServiceNameLambdaFunction = 'Lambda';
 
 export const getCfnApiArtifactHandler = (context): ApiArtifactHandler => {
   return new CfnApiArtifactHandler(context);
@@ -240,7 +242,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     await this.context.amplify.copyBatch(this.context, copyJobs, functionProps, true);
 
     const backendConfigs = {
-      service: FunctionServiceName.LambdaFunction,
+      service: FunctionServiceNameLambdaFunction,
       providerPlugin: provider,
       build: true,
     };

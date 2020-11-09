@@ -19,7 +19,6 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "amplify-category-auth": "2.22.1",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",

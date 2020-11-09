@@ -12,7 +12,6 @@
     "src/__tests__"
   ],
   "references": [
-    {"path": "../amplify-category-auth"},
     {"path": "../amplify-headless-interface"},
     {"path": "../graphql-transformer-core"},
     {"path": "../amplify-util-headless-input"},

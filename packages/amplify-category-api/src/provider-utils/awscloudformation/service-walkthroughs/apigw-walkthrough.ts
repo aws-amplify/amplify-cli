@@ -5,8 +5,10 @@ import os from 'os';
 import uuid from 'uuid';
 import { rootAssetDir } from '../aws-constants';
 import { checkForPathOverlap, validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
-import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+
+// keep in sync with ServiceName in amplify-category-function, but probably it will not change
+const FunctionServiceNameLambdaFunction = 'Lambda';
 
 const category = 'api';
 const serviceName = 'API Gateway';
@@ -213,7 +215,6 @@ async function askPrivacy(context, answers, currentPath) {
 
     let permissionSelected = 'Auth/Guest Users';
     const privacy: any = {};
-    const { checkRequirements, externalAuthEnable } = await import('amplify-category-auth');
 
     if (userPoolGroupList.length > 0) {
       do {
@@ -280,7 +281,7 @@ async function askPrivacy(context, answers, currentPath) {
 
         const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
 
-        await ensureAuth(checkRequirements, externalAuthEnable, context, apiRequirements, answers.resourceName);
+        await ensureAuth(context, apiRequirements, answers.resourceName);
       }
 
       if (answer.privacy === 'protected') {
@@ -288,7 +289,7 @@ async function askPrivacy(context, answers, currentPath) {
         privacy.unauth = await askReadWrite('Guest', context, unauthPrivacy);
         const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
 
-        await ensureAuth(checkRequirements, externalAuthEnable, context, apiRequirements, answers.resourceName);
+        await ensureAuth(context, apiRequirements, answers.resourceName);
       }
     }
 
@@ -297,7 +298,7 @@ async function askPrivacy(context, answers, currentPath) {
 
       const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
 
-      await ensureAuth(checkRequirements, externalAuthEnable, context, apiRequirements, answers.resourceName);
+      await ensureAuth(context, apiRequirements, answers.resourceName);
 
       // Get Auth resource name
       const authResourceName = await getAuthResourceName(context);
@@ -347,8 +348,13 @@ async function askPrivacy(context, answers, currentPath) {
   }
 }
 
-async function ensureAuth(checkRequirements, externalAuthEnable, context, apiRequirements, resourceName) {
-  const checkResult = await checkRequirements(apiRequirements, context, 'api', resourceName);
+async function ensureAuth(context, apiRequirements, resourceName) {
+  const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+    apiRequirements,
+    context,
+    'api',
+    resourceName,
+  ]);
 
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
@@ -363,7 +369,12 @@ async function ensureAuth(checkRequirements, externalAuthEnable, context, apiReq
   // If auth is not imported and there were errors, adjust or enable auth configuration
   if (!checkResult.authEnabled || !checkResult.requirementsMet) {
     try {
-      await externalAuthEnable(context, 'api', resourceName, apiRequirements);
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        context,
+        'api',
+        resourceName,
+        apiRequirements,
+      ]);
     } catch (error) {
       context.print.error(error);
       throw error;
@@ -571,7 +582,7 @@ function functionsExist(context) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
-    if (functionResources[resourceName].service === FunctionServiceName.LambdaFunction) {
+    if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
       lambdaFunctions.push(resourceName);
     }
   });
@@ -597,12 +608,6 @@ async function askLambdaSource(context, functionType, path, currentPath) {
 }
 
 async function newLambdaFunction(context, path) {
-  let add;
-  try {
-    ({ add } = await import('amplify-category-function'));
-  } catch (e) {
-    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
-  }
   context.api = {
     path,
     // ExpressJS represents path parameters as /:param instead of /{param}. This expression performs this replacement.
@@ -618,17 +623,23 @@ async function newLambdaFunction(context, path) {
     },
   };
 
-  return add(context, 'awscloudformation', FunctionServiceName.LambdaFunction, params).then(resourceName => {
-    context.print.success('Succesfully added the Lambda function locally');
-    return { lambdaFunction: resourceName };
-  });
+  const resourceName = await context.amplify.invokePluginMethod(context, 'function', undefined, 'add', [
+    context,
+    'awscloudformation',
+    FunctionServiceNameLambdaFunction,
+    params,
+  ]);
+
+  context.print.success('Succesfully added the Lambda function locally');
+
+  return { lambdaFunction: resourceName };
 }
 
 async function askLambdaFromProject(context, currentPath) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
-    if (functionResources[resourceName].service === FunctionServiceName.LambdaFunction) {
+    if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
       lambdaFunctions.push(resourceName);
     }
   });

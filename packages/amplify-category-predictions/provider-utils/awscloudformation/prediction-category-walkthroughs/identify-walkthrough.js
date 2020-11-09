@@ -9,7 +9,6 @@ import {
   removeTextractPolicies,
   addTextractPolicies,
 } from '../assets/identifyCFNGenerate';
-import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 import { enableGuestAuth } from './enable-guest-auth';
 const { ResourceDoesNotExistError, ResourceAlreadyExistsError, exitOnNextTick } = require('amplify-cli-core');
 const inquirer = require('inquirer');
@@ -17,6 +16,10 @@ const path = require('path');
 const fs = require('fs-extra');
 const os = require('os');
 const uuid = require('uuid');
+
+// keep in sync with ServiceName in amplify-category-function, but probably it will not change
+const FunctionServiceNameLambdaFunction = 'Lambda';
+
 // Predictions Info
 const templateFilename = 'identify-template.json.ejs';
 const identifyTypes = ['identifyText', 'identifyEntities', 'identifyLabels'];
@@ -40,15 +43,7 @@ async function addWalkthrough(context) {
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
-      try {
-        const { add } = require('amplify-category-auth');
-        await add(context);
-      } catch (e) {
-        context.usageData.emitError(e);
-        context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
-        exitOnNextTick(1);
-        break;
-      }
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
       break;
     } else {
       context.usageData.emitSuccess();
@@ -404,10 +399,14 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
   answers.triggerFunction = 'NONE';
 
   // getting requirement satisfaction map
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
   const storageRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
 
-  const checkResult = await checkRequirements(storageRequirements, context, storageCategory, answers.resourceName);
+  const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+    storageRequirements,
+    context,
+    storageCategory,
+    answers.resourceName,
+  ]);
 
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
@@ -426,7 +425,12 @@ async function addS3ForIdentity(context, storageAccess, bucketName, predictionsR
       if (storageRequirements.allowUnauthenticatedIdentities === undefined) {
         storageRequirements.allowUnauthenticatedIdentities = false;
       }
-      await externalAuthEnable(context, storageCategory, answers.resourceName, storageRequirements);
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        context,
+        storageCategory,
+        answers.resourceName,
+        storageRequirements,
+      ]);
     } catch (error) {
       context.print.error(error);
       throw error;
@@ -627,7 +631,7 @@ async function createNewFunction(context, predictionsResourceName, s3ResourceNam
   // Update amplify-meta and backend-config
 
   const backendConfigs = {
-    service: FunctionServiceName.LambdaFunction,
+    service: FunctionServiceNameLambdaFunction,
     providerPlugin: 'awscloudformation',
     build: true,
   };
