@@ -10,6 +10,87 @@ defaults: &defaults
         username: $DOCKERHUB_USERNAME
         password: $DOCKERHUB_ACCESS_TOKEN
   resource_class: large
+update_os_packages: &update_os_packages
+  name: Update OS Packages
+  command: |
+    sudo apt-get update
+    sudo apt-get install xdg-utils
+install_java: &install_java
+  name: Install Java
+  command: |
+    curl -O https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+    tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
+    sudo mv jdk-11* /usr/local/
+    echo "export JAVA_HOME=/usr/local/jdk-11.0.2" >> $BASH_ENV
+    echo "export PATH=$PATH:/usr/local/jdk-11.0.2/bin" >> $BASH_ENV
+    source $BASH_ENV
+    java -version
+install_gradle: &install_gradle
+  name: Install Gradle
+  command: |
+    wget https://services.gradle.org/distributions/gradle-6.3-bin.zip -P /tmp
+    sudo unzip -d /opt/gradle /tmp/gradle-*.zip
+    echo "export GRADLE_HOME=/opt/gradle/gradle-6.3" >> $BASH_ENV
+    echo "export PATH=$PATH:/opt/gradle/gradle-6.3/bin" >> $BASH_ENV
+    source $BASH_ENV
+    gradle --version
+install_go: &install_go
+  name: Install Go
+  command: |
+    curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+    sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
+    rm go1.14.1.linux-amd64.tar.gz
+    echo "export PATH=$PATH:/usr/local/go/bin" >> $BASH_ENV
+    source $BASH_ENV
+    go version
+install_python: &install_python
+  name: Install Python
+  command: |
+    sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl
+    curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
+    sudo tar -C /usr/local -xf Python-3.8.2.tar.xz
+    cd /usr/local/Python-3.8.2
+    sudo ./configure
+    sudo make -j 4
+    sudo make install
+    sudo apt install python3-pip
+    pip3 install --user pipenv
+    python3 --version
+    pipenv --version
+install_dotnet: &install_dotnet
+  name: Install .NET
+  command: |
+    sudo apt-get install apt-transport-https ca-certificates
+    wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
+    sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
+    wget https://packages.microsoft.com/config/debian/9/prod.list
+    sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
+    sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
+    sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
+
+    sudo apt-get update
+    sudo apt-get install apt-transport-https
+    sudo apt-get update
+    sudo apt-get install dotnet-sdk-3.1
+    dotnet --version
+    dotnet tool install -g amazon.lambda.tools
+    dotnet tool install -g amazon.lambda.testtool-3.1
+    echo "export PATH=$PATH:$HOME/.dotnet/tools" >> $BASH_ENV
+    source $BASH_ENV
+    dotnet tool list -g
+run_e2e_tests: &run_e2e_tests
+  name: Run Amplify end-to-end tests
+  command: |
+    source .circleci/local_publish_helpers.sh
+    changeNpmGlobalPath
+    amplify -v
+    amplify-app --version
+    startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+    setNpmRegistryUrlToLocal
+    cd packages/amplify-e2e-tests
+    yarn run e2e --maxWorkers=3 $TEST_SUITE
+    unsetNpmRegistryUrl
+  no_output_timeout: 90m
 
 jobs:
   build:
@@ -41,16 +122,7 @@ jobs:
       - run:
           name: Update OS Packages
           command: sudo apt-get update
-      - run:
-          name: Install Java
-          command: |
-            curl -O https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
-            tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
-            sudo mv jdk-11* /usr/local/
-            echo "export JAVA_HOME=/usr/local/jdk-11.0.2" >> $BASH_ENV
-            echo "export PATH=$PATH:/usr/local/jdk-11.0.2/bin" >> $BASH_ENV
-            source $BASH_ENV
-            java -version
+      - run: *install_java
       - run:
           name: Lint
           command: yarn lint
@@ -68,9 +140,7 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
-          name: Update OS Packages
-          command: sudo apt-get update
+      - run: *update_os_packages
       - run:
           name: Install Java
           command: sudo apt-get install default-jdk
@@ -103,6 +173,30 @@ jobs:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/verdaccio-cache/
+
+  build_pkg_binaries:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run: *update_os_packages
+      - run:
+          name: Start verdaccio and package CLI
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            yarn pkg-all
+            unsetNpmRegistryUrl
+      - save_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+          paths:
+            - ~/repo/out
 
   graphql_e2e_tests:
     <<: *defaults
@@ -145,74 +239,14 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+      - run: *update_os_packages
+      - run: *install_java
+      - run: *install_gradle
+      - run: *install_go
+      - run: *install_python
+      - run: *install_dotnet
       - run:
-          name: Update OS Packages
-          command: sudo apt-get update
-      - run:
-          name: Install Java
-          command: |
-            curl -O https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
-            tar zxvf openjdk-11.0.2_linux-x64_bin.tar.gz
-            sudo mv jdk-11* /usr/local/
-            echo "export JAVA_HOME=/usr/local/jdk-11.0.2" >> $BASH_ENV
-            echo "export PATH=$PATH:/usr/local/jdk-11.0.2/bin" >> $BASH_ENV
-            source $BASH_ENV
-            java -version
-      - run:
-          name: Install Gradle
-          command: |
-            wget https://services.gradle.org/distributions/gradle-6.3-bin.zip -P /tmp
-            sudo unzip -d /opt/gradle /tmp/gradle-*.zip
-            echo "export GRADLE_HOME=/opt/gradle/gradle-6.3" >> $BASH_ENV
-            echo "export PATH=$PATH:/opt/gradle/gradle-6.3/bin" >> $BASH_ENV
-            source $BASH_ENV
-            gradle --version
-      - run:
-          name: Install Go
-          command: |
-            curl -O https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
-            sudo tar -C /usr/local -xzf go1.14.1.linux-amd64.tar.gz
-            rm go1.14.1.linux-amd64.tar.gz
-            echo "export PATH=$PATH:/usr/local/go/bin" >> $BASH_ENV
-            source $BASH_ENV
-            go version
-      - run:
-          name: Install Python
-          command: |
-            sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl
-            curl -O https://www.python.org/ftp/python/3.8.2/Python-3.8.2.tar.xz
-            sudo tar -C /usr/local -xf Python-3.8.2.tar.xz
-            cd /usr/local/Python-3.8.2
-            sudo ./configure
-            sudo make -j 4
-            sudo make install
-            sudo apt install python3-pip
-            pip3 install --user pipenv
-            python3 --version
-            pipenv --version
-      - run:
-          name: Install .NET
-          command: |
-            sudo apt-get install apt-transport-https ca-certificates
-            wget -O- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
-            sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
-            wget https://packages.microsoft.com/config/debian/9/prod.list
-            sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
-            sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
-            sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
-
-            sudo apt-get update
-            sudo apt-get install apt-transport-https
-            sudo apt-get update
-            sudo apt-get install dotnet-sdk-3.1
-            dotnet --version
-            dotnet tool install -g amazon.lambda.tools
-            dotnet tool install -g amazon.lambda.testtool-3.1
-            echo "export PATH=$PATH:$HOME/.dotnet/tools" >> $BASH_ENV
-            source $BASH_ENV
-            dotnet tool list -g
-      - run:
-          name: Start verdaccio and Install Amplify CLI
+          name: Start verdaccio, install node CLI and amplify-app
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -221,24 +255,62 @@ jobs:
             npm install -g @aws-amplify/cli
             npm install -g amplify-app
             unsetNpmRegistryUrl
-      - run:
-          name: Run Amplify end-to-end tests
-          command: |
-            source .circleci/local_publish_helpers.sh
-            changeNpmGlobalPath
-            amplify -v
-            amplify-app --version
-            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
-            setNpmRegistryUrlToLocal
-            cd packages/amplify-e2e-tests
-            yarn run e2e --maxWorkers=3 $TEST_SUITE
-            unsetNpmRegistryUrl
-          no_output_timeout: 90m
+      - run: *run_e2e_tests
       - store_test_results:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
-    working_directory: ~/repo
+
+  done_with_node_e2e_tests:
+    <<: *defaults
+    steps:
+      - run: echo 'Done with Node CLI E2E Tests'
+
+  done_with_pkg_linux_e2e_tests:
+    <<: *defaults
+    steps:
+      - run: echo 'Done with pkg CLI E2E Tests'
+
+  amplify_e2e_tests_pkg_linux:
+    <<: *defaults
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - restore_cache:
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+      - run: *update_os_packages
+      - run: *install_java
+      - run: *install_gradle
+      - run: *install_go
+      - run: *install_python
+      - run: *install_dotnet
+      - run:
+          name: Symlink Amplify packaged CLI
+          command: |
+            cd out
+            ln -sf amplify-pkg-linux amplify
+            echo "export PATH=$AMPLIFY_DIR:$PATH" >> $BASH_ENV
+            source $BASH_ENV
+            amplify version
+      - run:
+          name: Start verdaccio and install amplify-app
+          command: |
+            source .circleci/local_publish_helpers.sh
+            startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
+            setNpmRegistryUrlToLocal
+            changeNpmGlobalPath
+            npm install -g amplify-app
+            unsetNpmRegistryUrl
+      - run: *run_e2e_tests
+      - store_test_results:
+          path: packages/amplify-e2e-tests/
+      - store_artifacts:
+          path: packages/amplify-e2e-tests/amplify-e2e-reports
 
   amplify_migration_tests_v4:
     <<: *defaults
@@ -247,9 +319,7 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
-          name: Update OS Packages
-          command: sudo apt-get update
+      - run: *update_os_packages
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -271,9 +341,7 @@ jobs:
           at: ./
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
-      - run:
-          name: Update OS Packages
-          command: sudo apt-get update
+      - run: *update_os_packages
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -663,7 +731,6 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
     jobs:
       - build
       - publish_to_local_registry:
@@ -687,9 +754,6 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
-                - graphql_e2e_testing
-                - feat-import
           requires:
             - build
             - mock_e2e_tests
@@ -698,9 +762,7 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
                 - beta
-                - feat-import
           requires:
             - build
             - mock_e2e_tests
@@ -709,11 +771,12 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
                 - beta
-                - feat-import
           requires:
             - build
+      - build_pkg_binaries:
+          requires:
+            - publish_to_local_registry
       - amplify_sudo_install_test:
           requires:
             - publish_to_local_registry
@@ -726,17 +789,23 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
-                - feat-import
           requires:
             - publish_to_local_registry
+      - done_with_node_e2e_tests:
+          requires:
+            - amplify_e2e_tests
+      - amplify_e2e_tests_pkg_linux:
+          requires:
+            - done_with_node_e2e_tests
+            - build_pkg_binaries
+      - done_with_pkg_linux_e2e_tests:
+          requires:
+            - amplify_e2e_tests_pkg_linux
       - amplify_migration_tests_latest:
           filters:
             branches:
               only:
                 - master
-                - graphqlschemae2e
-                - feat-import
           requires:
             - build
       - amplify_migration_tests_v4:
@@ -744,8 +813,6 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
-                - feat-import
           requires:
             - build
       - amplify_console_integration_tests:
@@ -753,18 +820,16 @@ workflows:
             branches:
               only:
                 - beta
-                - feat-import
           requires:
             - build
             - publish_to_local_registry
       - deploy:
           requires:
-            - build
             - test
             - mock_e2e_tests
             - graphql_e2e_tests
             - integration_test
-            - amplify_e2e_tests
+            - done_with_pkg_linux_e2e_tests
             - amplify_sudo_install_test
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
@@ -775,22 +840,3 @@ workflows:
                 - release
                 - master
                 - beta
-                - feat-import
-      # - integration_test_js:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      #     requires:
-      #       - build
-      #       - test
-      #       - mock_e2e_tests
-      # - integration_test_ios:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - master
-      #     requires:
-      #       - build
-      #       - test
-      #       - mock_e2e_tests

@@ -1,5 +1,9 @@
 **/.DS_Store
+build
 node_modules
+out
+pkg/node_modules
+pkg/yarn.lock
 lerna-debug.log
 npm-debug.log
 yarn-error.log
