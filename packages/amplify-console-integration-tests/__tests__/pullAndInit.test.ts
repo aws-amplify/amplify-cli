@@ -202,10 +202,10 @@ describe('amplify app console tests', () => {
       AMAZON_APP_SECRET,
     } = getSocialProviders();
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: 'authConsoleTest', envName });
-    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeDefined();
     await addAuthWithDefaultSocial(projRoot, {});
-    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeUndefined();
+    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeDefined();
     await amplifyPushAuth(projRoot);
+    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeUndefined();
     let teamInfo = getTeamProviderInfo(projRoot);
     expect(teamInfo).toBeDefined();
     let appId = teamInfo[envName].awscloudformation.AmplifyAppId;
