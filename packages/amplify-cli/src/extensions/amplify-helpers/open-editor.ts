@@ -43,7 +43,7 @@ export async function openEditor(context, filePath, waitToContinue = true) {
 
         subProcess.on('error', err => {
           context.print.error(
-            `Selected  editor ${editorSelected} was not found in your machine. Please manually edit the file created at ${filePath}`,
+            `Selected editor ${editorSelected} was not found in your machine. Please manually edit the file created at ${filePath}`,
           );
         });
 
