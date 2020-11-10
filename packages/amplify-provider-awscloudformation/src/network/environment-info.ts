@@ -5,7 +5,6 @@ import configurationManager from '../configuration-manager';
 const SUBNETS = 3;
 type GetEnvironmentNetworkInfoParams = {
     stackName: string,
-    region: string,
     vpcName: string,
     vpcCidr: string,
     subnetMask: number
@@ -15,7 +14,6 @@ type GetEnvironmentNetworkInfoParams = {
 export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentNetworkInfoParams) {
     const {
         stackName,
-        region,
         vpcName,
         vpcCidr,
         subnetsCount = SUBNETS,
@@ -25,11 +23,11 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
     const [, vpcMask] = vpcCidr.split('/');
 
     let cred = {};
-      try {
+    try {
         cred = await configurationManager.loadConfiguration(context);
-      } catch (e) {
+    } catch (e) {
         // ignore missing config
-      }
+    }
 
     const ec2 = new EC2({ ...cred });
 
@@ -39,7 +37,7 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
         const subnets = subnetsCount;
         const AZs = AvailabilityZones.length;
 
-        throw new Error(`The requested number of subnets exceeds the number of AZs for the region. ${JSON.stringify({ region, subnets, azs: AZs })}`);
+        throw new Error(`The requested number of subnets exceeds the number of AZs for the region. ${JSON.stringify({ subnets, azs: AZs })}`);
     }
 
     const { Vpcs } = await ec2

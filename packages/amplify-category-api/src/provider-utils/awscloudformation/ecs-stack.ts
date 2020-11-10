@@ -6,15 +6,19 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './PipelineWithAwaiter';
+import Container from './docker-compose/ecs-objects/Container';
 
 type EcsStackProps = {
+    envName: string;
+    categoryName: string;
     apiName: string;
-    containerPort: number;
+    servicePort: number;
     authUserPoolIdParamName: string;
     authAppClientIdWebParamName: string;
     githubSourceActionInfo?: GitHubSourceActionInfo;
     deploymentMechanism: string;
     deploymentBucket: string;
+    containers: Container[];
 };
 
 export class EcsStack extends cdk.Stack {
@@ -22,13 +26,16 @@ export class EcsStack extends cdk.Stack {
         super(scope, id);
 
         const {
+            envName,
+            categoryName,
             apiName,
-            containerPort,
+            servicePort,
             authUserPoolIdParamName,
             authAppClientIdWebParamName,
             deploymentMechanism,
             githubSourceActionInfo,
-            deploymentBucket
+            deploymentBucket,
+            containers,
         } = props;
 
         // Unused, needed for now
@@ -85,27 +92,59 @@ export class EcsStack extends cdk.Stack {
         //#endregion
 
         //#region ECS
-        const repository = new ecr.Repository(this, 'Repository', {});
-        (repository.node.defaultChild as ecr.CfnRepository).overrideLogicalId('Repository');
-
         // Task (role, definition, execution role, policy)
         const task = new ecs.TaskDefinition(this, 'TaskDefinition', {
             compatibility: ecs.Compatibility.FARGATE,
             cpu: '256',
             memoryMiB: '512',
+            family: apiName,
         });
         (task.node.defaultChild as ecs.CfnTaskDefinition).overrideLogicalId('TaskDefinition');
 
-        // Needed because the image will be pulled from ecr repository later
-        repository.grantPull(task.obtainExecutionRole());
+        const serviceRegistries: ecs.CfnService.ServiceRegistryProperty[] = [];
 
-        const container = task.addContainer(`Container${apiName}`, {
-            image: ecs.ContainerImage.fromRegistry('alpine')
-        });
+        const containersInfo: {
+            container: ecs.ContainerDefinition;
+            repository: ecr.Repository;
+        }[] = [];
 
-        container.addPortMappings({
-            containerPort,
-            protocol: ecs.Protocol.TCP,
+        containers.forEach(({ name, image, build, portMappings }) => {
+            const container = task.addContainer(name, {
+                image: ecs.ContainerImage.fromRegistry(image ?? 'nginx:latest'),
+            });
+
+            if (build) {
+                const logicalId = `${name}Repository`;
+
+                const repository = new ecr.Repository(this, logicalId, {
+                    repositoryName: `${envName}-${categoryName}-${apiName}-${name}`,
+                    removalPolicy: cdk.RemovalPolicy.DESTROY, // TODO: ????
+                });
+                (repository.node.defaultChild as ecr.CfnRepository).overrideLogicalId(logicalId);
+
+
+                // Needed because the image will be pulled from ecr repository later
+                repository.grantPull(task.obtainExecutionRole());
+
+                containersInfo.push({
+                    container,
+                    repository
+                });
+            }
+
+            // TODO: whould we use hostPort too? check network mode
+            portMappings?.forEach(({ containerPort, protocol, hostPort }) => {
+                container.addPortMappings({
+                    containerPort,
+                    protocol: ecs.Protocol.TCP,
+                });
+
+                serviceRegistries.push({
+                    containerName: container.containerName,
+                    containerPort,
+                    registryArn: cloudmapService.attrArn,
+                });
+            });
         });
 
         const serviceSecurityGroup = new ec2.CfnSecurityGroup(this, "ServiceSG", {
@@ -118,21 +157,17 @@ export class EcsStack extends cdk.Stack {
             }],
             securityGroupIngress: [{
                 ipProtocol: 'tcp',
-                fromPort: containerPort,
-                toPort: containerPort,
+                fromPort: servicePort,
+                toPort: servicePort,
                 cidrIp: '0.0.0.0/0', // TODO: Restrict to vpc subnets
             }]
         });
         const service = new ecs.CfnService(this, "Service", {
-            serviceName: `${apiName}Service`,
+            serviceName: `${apiName}Service-${Date.now()}`,
             cluster: paramClusterName.valueAsString,
             launchType: 'FARGATE',
             desiredCount: subnets.length, // TODO: check this assumption
-            serviceRegistries: [{
-                containerName: container.containerName,
-                containerPort,
-                registryArn: cloudmapService.attrArn,
-            }],
+            serviceRegistries,
             networkConfiguration: {
                 awsvpcConfiguration: {
                     assignPublicIp: 'ENABLED',
@@ -145,9 +180,9 @@ export class EcsStack extends cdk.Stack {
         //#endregion
 
         //#region Pipeline with awaiter
+
         const pipeline = new PipelineWithAwaiter(this, 'ApiPipeline', {
-            container,
-            repository,
+            containersInfo,
             service,
             bucket: s3.Bucket.fromBucketName(this, 'Bucket', deploymentBucket),
             s3SourceActionKey: paramZipPath.valueAsString,

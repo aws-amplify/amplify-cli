@@ -9,7 +9,6 @@ import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './layerParams';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { saveLayerRuntimes } from './layerRuntimes';
-import { containerFiles } from './container-resource-template';
 import { getNewCFNParameters } from './cloudformationHelpers';
 import { ContainerStack } from './container-stack';
 import { prepareApp } from "@aws-cdk/core/lib/private/prepare-app";
@@ -34,17 +33,14 @@ export function createContainerResources(context: any, parameters: ContainerPara
 
   fs.ensureDirSync(path.join(resourceDirPath, 'src'));
   
-  Object.entries(containerFiles).forEach(([fileName, fileContents]) => {
-    fs.writeFileSync(path.join(resourceDirPath, 'src', fileName), fileContents);
-  });  
-
   const deploymentBucket = `${context.amplify.getProjectMeta().providers[provider].DeploymentBucketName}`;
   
   // Put token on secrets manager
 
   const stack = new ContainerStack(undefined, "Container", {
     deploymentBucket,
-    containerPort: DEFAULT_CONTAINER_PORT,
+    // TODO: Remove this, functions are only for crons, no ports
+    containerPort: DEFAULT_CONTAINER_PORT, 
     awaiterZipPath: '',
     githubPath: parameters.githubPath,
     githubTokenSecretsManagerArn: 'arn:aws:secretsmanager:us-west-2:660457156595:secret:github-access-token-wB6AcW',

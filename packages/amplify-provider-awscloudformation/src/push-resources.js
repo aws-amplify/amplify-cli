@@ -1,3 +1,4 @@
+// @ts-check
 const _ = require('lodash');
 const fs = require('fs-extra');
 const path = require('path');
@@ -8,6 +9,7 @@ const ora = require('ora');
 const { S3 } = require('./aws-utils/aws-s3');
 const Cloudformation = require('./aws-utils/aws-cfn');
 const providerName = require('./constants').ProviderName;
+// @ts-ignore
 const { buildResource } = require('./build-resources');
 const { uploadAppSyncFiles } = require('./upload-appsync-files');
 const { prePushGraphQLCodegen, postPushGraphQLCodegen } = require('./graphql-codegen');
@@ -19,6 +21,8 @@ const { loadResourceParameters } = require('./resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('./utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
+const { isMultiEnvLayer, packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
+const { ServiceName: ApiServiceName, Richard, EcsStack } = require('amplify-category-api');
 const { stateManager } = require('amplify-cli-core');
 const constants = require('./constants');
 const { NetworkStack, NETWORK_STACK_LOGICAL_ID } = require('./network/stack');
@@ -48,9 +52,15 @@ async function run(context, resourceDefinition) {
     }
     let projectDetails = context.amplify.getProjectDetails();
 
-    await createEnvLevelConstructs(context, resources);
+    await createEnvLevelConstructs(context);
 
     validateCfnTemplates(context, resources);
+
+    resources
+      .filter(resource => resource.service === ApiServiceName.ElasticContainer)
+      .forEach(resource => {
+        generateContainersArtifacts(context, resource);
+      });
 
     await packageResources(context, resources);
 
@@ -199,7 +209,7 @@ async function createNetworkResources(context, stackName, needsVpc) {
     vpcId,
     internetGatewayId,
     subnetCidrs
-  } = await getEnvironmentNetworkInfo(context, { 
+  } = await getEnvironmentNetworkInfo(context, {
     stackName,
     vpcName: 'Amplify/VPC',
     vpcCidr: '10.0.0.0/16',
@@ -207,7 +217,7 @@ async function createNetworkResources(context, stackName, needsVpc) {
     subnetMask: 24,
   });
 
-  context.print.info(`Setting up network ${JSON.stringify({vpcId, internetGatewayId, subnetCidrs: Array.from(subnetCidrs)})}`);
+  context.print.info(`Setting up network ${JSON.stringify({ vpcId, internetGatewayId, subnetCidrs: Array.from(subnetCidrs) })}`);
 
   const stack = new NetworkStack(undefined, 'Amplify', {
     stackName,
@@ -216,6 +226,7 @@ async function createNetworkResources(context, stackName, needsVpc) {
     subnetCidrs,
   });
   prepareApp(stack);
+  // @ts-ignore
   const cfn = stack._toCloudFormation();
 
   const cfnFile = 'networkingStackTemplate.json';
@@ -478,7 +489,7 @@ function packageResources(context, resources) {
               S3Key: s3Key,
             };
           }
-        } else if (resource.service === FunctionServiceName.ElasticContainer) {
+        } else if (resource.service === ApiServiceName.ElasticContainer) {
           const cfnParams = {
             ParamZipPath: s3Key,
           };
@@ -509,6 +520,120 @@ function packageResources(context, resources) {
   }
 
   return Promise.all(promises);
+}
+
+function generateContainersArtifacts(context, resource) {
+  const {
+    category: categoryName,
+    resourceName,
+    githubInfo,
+    deploymentMechanism,
+  } = resource;
+  const backEndDir = context.amplify.pathManager.getBackendDirPath();
+  const resourceDir = path.normalize(path.join(backEndDir, categoryName, resourceName));
+
+  const {
+    auth = {},
+    providers: { [constants.ProviderName]: provider },
+  } = context.amplify.getProjectMeta();
+
+  const {
+    StackName: envName,
+    DeploymentBucketName: deploymentBucket,
+  } = provider;
+
+  const [authName] = Object.keys(auth);
+
+  const srcPath = path.join(resourceDir, 'src');
+
+  const dockerComposeFilename = 'docker-compose.yml';
+  const dockerfileFilename = 'Dockerfile';
+
+  const containerDefinitionFileNames = [dockerComposeFilename, dockerfileFilename]
+
+  /** @type Record<string, string> */
+  const containerDefinitionFiles = containerDefinitionFileNames
+    .reduce((acc, fileName) => {
+      const filePath = path.normalize(path.join(srcPath, fileName));
+
+      if (fs.existsSync(filePath)) {
+        acc[fileName] = fs.readFileSync(filePath);
+      }
+
+      return acc;
+    }, {});
+
+  const noDefinitionAvailable = Object.keys(containerDefinitionFiles).length === 0;
+
+  if (noDefinitionAvailable) {
+    throw new Error('No definition available (docker-compose.yaml / Dockerfile)');
+  }
+
+  let composeContents = containerDefinitionFiles[dockerComposeFilename];
+
+  if (composeContents === undefined) {
+    // TODO: parse dockerfileContents to get port
+    const { [dockerfileFilename]: dockerfileContents } = containerDefinitionFiles;
+    const port = 8080;
+
+    composeContents = `version: "3"
+services:
+  api:
+    build: .
+    ports:
+    - '${port}:${port}'
+`;
+  }
+
+  const {
+    buildspec,
+    containers,
+  } = Richard.getContainers(composeContents);
+
+  console.log(buildspec);
+  console.log(containers);
+
+  fs.ensureDirSync(srcPath);
+  fs.writeFileSync(path.join(srcPath, 'buildspec.yml'), buildspec);
+
+  // TODO: only if required
+  const authUserPoolIdParamName = `auth${authName}UserPoolId`;
+  const authAppClientIdWebParamName = `auth${authName}AppClientIDWeb`;
+
+  const stack = new EcsStack(undefined, "ContainersStack", {
+    envName,
+    categoryName,
+    apiName: resourceName,
+    servicePort: 8080,
+    authUserPoolIdParamName,
+    authAppClientIdWebParamName,
+    githubSourceActionInfo: githubInfo,
+    deploymentMechanism,
+    deploymentBucket,
+    containers
+  });
+
+  prepareApp(stack);
+
+  // @ts-ignore
+  const cfn = stack._toCloudFormation();
+
+  Object.keys(cfn.Parameters).forEach(k => {
+    if (k.startsWith('AssetParameters')) {
+      let value = '';
+
+      if (k.includes('Bucket')) {
+        value = deploymentBucket;
+      } else if (k.includes('VersionKey')) {
+        value = 'custom-resource-pipeline-awaiter.zip||';
+      }
+
+      cfn.Parameters[k].Default = value;
+    }
+  });
+
+  const cfnFileName = `${resourceName}-cloudformation-template.json`;
+  context.amplify.writeObjectAsJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn, true);
 }
 
 async function updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated) {

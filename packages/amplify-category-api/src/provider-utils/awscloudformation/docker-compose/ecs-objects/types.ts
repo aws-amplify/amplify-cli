@@ -1,13 +1,10 @@
-import { type } from 'os';
 import { ListOrDict } from '../compose-spec/v2';
-import Container from './Container';
 
 export interface IServiceDefinition {
   containers: IContainerDefinitions[];
   cpu?: number | string;
   memory?: number | string;
   tags?: string[];
-  // volumes?: string[];
 }
 
 export interface IContainerDefinitions {
@@ -37,8 +34,8 @@ export interface IBuildConfig {
 export type PortMappings = IPortMappingItem[];
 
 interface IPortMappingItem {
-  containerPort: string | number;
-  hostPort?: string | number;
+  containerPort: number;
+  hostPort?: number;
   protocol: string;
 }
 
@@ -80,11 +77,5 @@ interface IContainerConfig {
   cpu: number;
 }
 
-export interface IBuildHashMap {
-  [key: string]: tuple;
-}
+export type BuildHashMap = Record<string, string>;
 
-interface tuple {
-  buildPath: string;
-  registryArn: string;
-}

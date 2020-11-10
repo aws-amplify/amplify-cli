@@ -1,38 +1,6 @@
-const buildspec = `version: 0.2
-phases:
-  install:
-    runtime-versions:
-      docker: 19
-  pre_build:
-    commands:
-      - echo Logging in to Amazon ECR...
-      - aws --version
-      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-      # - REPOSITORY_URI=694883026597.dkr.ecr.us-east-1.amazonaws.com/docker-on-aws/nodejs
-      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - IMAGE_TAG=\${COMMIT_HASH:=latest}
-  build:
-    commands:
-      - echo Build started on \`date\`
-      - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI:latest .
-      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
-  post_build:
-    commands:
-      - echo Build completed on \`date\`
-      - echo Pushing the Docker images...
-      - docker push $REPOSITORY_URI:latest
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
-      - echo Writing image definitions file...
-      - printf '[{"name":"%s","imageUri":"%s"}]' $CONTAINER_NAME $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
-artifacts:
-    files: imagedefinitions.json
-    `;
-    
 export const containerFiles = {
-    'buildspec.yml': buildspec,
     Dockerfile: `
-  FROM node:alpine
+  FROM node:node
   
   ENV PORT=8080
   EXPOSE \${PORT}

@@ -113,16 +113,17 @@ export class PipelineWithAwaiter extends cdk.Construct {
             bucket,
             s3SourceActionKey,
             service,
-            repository,
-            container,
             githubSourceActionInfo,
+            containersInfo,
         }: {
             bucket: s3.IBucket;
             s3SourceActionKey?: string;
             githubSourceActionInfo?: GitHubSourceActionInfo;
             service: ecs.CfnService;
-            repository: ecr.Repository;
-            container: ecs.ContainerDefinition;
+            containersInfo: {
+                container: ecs.ContainerDefinition;
+                repository: ecr.Repository
+            }[];
         },
     ) {
         super(scope, id);
@@ -181,6 +182,15 @@ export class PipelineWithAwaiter extends cdk.Construct {
             sourceOutput
         });
 
+        const environmentVariables = containersInfo.reduce((acc, c) => {
+            acc[`${c.container.containerName}_REPOSITORY_URI`] = {
+                type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+                value: c.repository.repositoryUri,
+            };
+
+            return acc;
+        }, {} as Record<string, codebuild.BuildEnvironmentVariable>);
+
         const stagesWithDeploy = [
             sourceStageUpdate,
             {
@@ -193,16 +203,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
                         project: codebuildproject,
                         input: sourceOutput,
                         outputs: [buildOutput],
-                        environmentVariables: {
-                            REPOSITORY_URI: {
-                                type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-                                value: repository.repositoryUri,
-                            },
-                            CONTAINER_NAME: {
-                                type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-                                value: container.containerName,
-                            },
-                        },
+                        environmentVariables,
                     }),
                 ],
             },
@@ -237,7 +238,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
             role,
         });
 
-        pipeline.node.addDependency(service); 
+        pipeline.node.addDependency(service);
 
         const pipelineAwaiter = new PipelineAwaiter(scope, 'Awaiter', {
             pipeline,
