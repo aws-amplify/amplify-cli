@@ -230,7 +230,8 @@ export function cantMutateMultipleGSIAtUpdateTime(diffs: Diff[], currentBuild: D
   }
 
   if (diffs) {
-    let gsiCount: number = 0; // max gsiCountAdded = 1 // for update flow
+    // update flow counting the tables which need more than one gsi update
+    let seenTables: Set<String> = new Set();
     for (const diff of diffs) {
       if (
         // implies a field was changed in a GSI after it was created.
@@ -239,13 +240,12 @@ export function cantMutateMultipleGSIAtUpdateTime(diffs: Diff[], currentBuild: D
         diff.path.length >= 6 &&
         diff.path[5] === 'GlobalSecondaryIndexes'
       ) {
-        if (diff.item.kind === 'N' || diff.item.kind === 'D') {
-          gsiCount += 1;
-        }
-        if (gsiCount > 1) {
+        let diffTableName = diff.path[3];
+        if ((diff.item.kind === 'N' || diff.item.kind === 'D') && !seenTables.has(diffTableName)) {
+          seenTables.add(diffTableName);
+        } else if (seenTables.has(diffTableName)) {
           const stackName = basename(diff.path[1], '.json');
-          const tableName = diff.path[3];
-          throwError(stackName, tableName);
+          throwError(stackName, diffTableName);
         }
       }
     }
