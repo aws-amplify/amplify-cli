@@ -28,7 +28,7 @@ def main():
     args.sk = args.sk or credentials.secret_key
     args.ak = args.ak or credentials.access_key
 
-  client = boto3.client('lambda', region_name=args.rn)
+  client = boto3.client('lambda', aws_access_key_id=args.ak, aws_secret_access_key=args.sk, region_name=args.rn)
   import_dynamodb_items_to_es(args.tn, args.sk, args.ak, args.rn, args.esarn, args.lf, scan_limit)
 
 def import_dynamodb_items_to_es(table_name, aws_secret, aws_access, aws_region, event_source_arn, lambda_f, scan_limit):
