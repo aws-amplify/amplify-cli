@@ -22,7 +22,7 @@ const amplifyTestsDir = 'amplify-e2e-tests';
 
 export function getCLIPath(testingWithLatestCodebase = false) {
   if (isCI() && !testingWithLatestCodebase) {
-    return process.env.AMPLIFY_PATH || 'amplify';
+    return process.env.AMPLIFY_PATH || '/home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify';
   }
   return path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
 }
