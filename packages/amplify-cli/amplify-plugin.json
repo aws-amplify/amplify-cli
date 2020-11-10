@@ -16,6 +16,7 @@
     "pull",
     "run",
     "status",
+    "uninstall",
     "version"
   ],
   "commandAliases": {
