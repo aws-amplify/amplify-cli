@@ -18,5 +18,5 @@ export async function MigrateTeamProvider(context: Context): Promise<boolean> {
 }
 
 function checkIfHeadless(context: Context): boolean {
-  return context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
+  return context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
 }

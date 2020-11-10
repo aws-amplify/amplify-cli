@@ -379,6 +379,8 @@ jobs:
     working_directory: ~/repo
     docker: *ref_0
     resource_class: large
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - attach_workspace:
           at: ./
