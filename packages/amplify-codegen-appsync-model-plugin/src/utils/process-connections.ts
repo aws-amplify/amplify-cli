@@ -164,6 +164,7 @@ export function processConnections(
             person: Person!
           }
           */
+
           return {
             kind: CodeGenConnectionType.BELONGS_TO,
             connectedModel: otherSide,
@@ -181,12 +182,24 @@ export function processConnections(
             license: License;
           }
           */
-          return {
-            kind: CodeGenConnectionType.HAS_ONE,
-            associatedWith: otherSideField,
-            connectedModel: otherSide,
-            isConnectingFieldAutoCreated,
-          };
+          switch (connectionFields.length) {
+            case 0:
+              return {
+                kind: CodeGenConnectionType.HAS_ONE,
+                associatedWith: otherSideField,
+                connectedModel: otherSide,
+                isConnectingFieldAutoCreated,
+              };
+            case 1:
+              return {
+                kind: CodeGenConnectionType.BELONGS_TO,
+                connectedModel: otherSide,
+                isConnectingFieldAutoCreated,
+                targetName: connectionFields[0] || makeConnectionAttributeName(model.name, field.name),
+              };
+            default:
+              throw new Error('DataStore only support one key in field');
+          }
         } else {
           /*
           # model

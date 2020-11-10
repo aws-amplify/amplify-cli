@@ -145,7 +145,103 @@ describe('process connection', () => {
         }).toThrowError('DataStore does not support 1 to 1 connection with both sides of connection as optional field');
       });
     });
+
+    describe('One:One connection with field passed', () => {
+      let modelMap: CodeGenModelMap;
+      beforeEach(() => {
+        const schema = /* GraphQL */ `
+          type Person @model {
+            licenseId: ID!
+            license: License @connection(fields: ["licenseId"])
+          }
+
+          type License @model {
+            id: ID!
+            holder: Person! @connection
+          }
+        `;
+
+        modelMap = {
+          License: {
+            name: 'License',
+            type: 'model',
+            directives: [],
+            fields: [
+              {
+                type: 'ID',
+                isNullable: false,
+                isList: false,
+                name: 'id',
+                directives: [],
+              },
+              {
+                type: 'Person',
+                isNullable: false,
+                isList: false,
+                name: 'holder',
+                directives: [{ name: 'connection', arguments: { name: 'person-license' } }],
+              },
+            ],
+          },
+          Person: {
+            name: 'Person',
+            type: 'model',
+            directives: [],
+            fields: [
+              {
+                type: 'ID',
+                isNullable: false,
+                isList: false,
+                name: 'id',
+                directives: [],
+              },
+              {
+                type: 'ID',
+                isNullable: false,
+                isList: false,
+                name: 'licenseId',
+                directives: [],
+              },
+              {
+                type: 'License',
+                isNullable: true,
+                isList: false,
+                name: 'license',
+                directives: [{ name: 'connection', arguments: { name: 'person-license', fields: ['licenseId'] } }],
+              },
+            ],
+          },
+        };
+      });
+      it('should return BELONGS_TO Person.license field', () => {
+        const licenseField = modelMap.Person.fields[2];
+        const connectionInfo = (processConnections(licenseField, modelMap.Person, modelMap) as any) as CodeGenFieldConnectionBelongsTo;
+        expect(connectionInfo).toBeDefined();
+        expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+        expect(connectionInfo.targetName).toEqual(modelMap.Person.fields[1].name);
+        expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(false);
+      });
+
+      it('should return BELONGS_TO License.person field', () => {
+        const personField = modelMap.License.fields[1];
+        const connectionInfo = (processConnections(personField, modelMap.License, modelMap) as any) as CodeGenFieldConnectionBelongsTo;
+        expect(connectionInfo).toBeDefined();
+        expect(connectionInfo.kind).toEqual(CodeGenConnectionType.BELONGS_TO);
+        expect(connectionInfo.targetName).toEqual('licenseHolderId');
+        expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(true);
+      });
+
+      it('should throw error when the One:One connection has optional field on both sides', () => {
+        const personField = modelMap.License.fields[1];
+        // Make person field optional
+        personField.isNullable = true;
+        expect(() => {
+          processConnections(personField, modelMap.License, modelMap);
+        }).toThrowError('DataStore does not support 1 to 1 connection with both sides of connection as optional field');
+      });
+    });
   });
+
   describe('Uni-directional connection (unnamed connection)', () => {
     let modelMap: CodeGenModelMap;
     beforeEach(() => {
