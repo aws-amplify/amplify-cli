@@ -8,6 +8,12 @@ import * as cdk from '@aws-cdk/core';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './PipelineWithAwaiter';
 import Container from './docker-compose/ecs-objects/Container';
 
+export enum DEPLOYMENT_MECHANISM {
+    FULLY_MANAGED = 'FULLY_MANAGED', // on every amplify push
+    INDENPENDENTLY_MANAGED = 'INDENPENDENTLY_MANAGED', // on every github push
+    SELF_MANAGED = 'SELF_MANAGED' // manually push by the customer to ECR
+}
+
 type EcsStackProps = {
     envName: string;
     categoryName: string;
@@ -18,7 +24,7 @@ type EcsStackProps = {
         authAppClientIdWebParamName: string;
     };
     githubSourceActionInfo?: GitHubSourceActionInfo;
-    deploymentMechanism: string;
+    deploymentMechanism: DEPLOYMENT_MECHANISM;
     deploymentBucket: string;
     containers: Container[];
 };

@@ -2,6 +2,8 @@ import fs from 'fs-extra';
 import path from 'path';
 import { ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
 import { containerFiles } from './container-artifacts';
+import { DEPLOYMENT_MECHANISM } from './ecs-stack';
+import { GitHubSourceActionInfo } from './PipelineWithAwaiter';
 
 export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConfiguration>, context, category, service, options) => {
   const { checkRequirements, externalAuthEnable } = await import('amplify-category-auth');
@@ -63,18 +65,24 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
   }
 
   //#region Add token to secrets manager and get arn
-  const { envName, region } = context.amplify.getEnvInfo();
-
-  const {ARN: secretArn } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'newSecret', {
+  const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'];
+  
+  const secretName = `${StackName}-${category}-${resourceName}-github-token`;
+  const { ARN: secretArn } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'newSecret', {
     secret: githubToken,
     description: 'GitHub OAuth token',
-    // TODO: use correct attributes for name
-    name: `${envName}-${region}-github-token`
+    name: secretName,
+    version: secretName
   });
+  
+  const githubTokenSecretArn = secretArn;
+
+  const githubInfo: GitHubSourceActionInfo = deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED ? {
+    path: githubPath,
+    tokenSecretArn: githubTokenSecretArn
+  } : undefined;
 
   //#endregion
-
-  const githubTokenSecretArn = secretArn;
 
   options = {
     resourceName,
@@ -83,10 +91,7 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
     build: true,
     providerPlugin: 'awscloudformation',
     service: 'ElasticContainer',
-    githubInfo: {
-      path: githubPath,
-      tokenSecretArn: githubTokenSecretArn
-    },
+    githubInfo,
     authName
   };
 

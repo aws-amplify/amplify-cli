@@ -6,6 +6,7 @@ import * as apigw2 from '@aws-cdk/aws-apigatewayv2';
 
 type NetworkStackProps = {
     stackName: string;
+    vpcName: string;
     vpcId: string;
     internetGatewayId: string;
     subnetCidrs: ReadonlyMap<string, string>
@@ -17,26 +18,25 @@ export class NetworkStack extends cdk.Stack {
     constructor(scope: cdk.Construct, id: string, props: NetworkStackProps) {
         super(scope, id);
 
-        const { stackName, vpcId = '', internetGatewayId = '', subnetCidrs = new Map<string, string>() } = props;
+        const { stackName, vpcId = '', vpcName, internetGatewayId = '', subnetCidrs = new Map<string, string>() } = props;
 
-        const { outputVpc, outputIgw, vpcCidrBlock } = createVpc(this, vpcId, internetGatewayId);
+        const { outputVpc, outputIgw, vpcCidrBlock } = createVpc(this, vpcId, vpcName, internetGatewayId);
 
         createAmplifyEnv(this, stackName, outputVpc as any, vpcCidrBlock, outputIgw as any, subnetCidrs);
     }
 }
 
-function createVpc(scope: cdk.Construct, vpcId: string, internetGatewayId: string) {
+function createVpc(scope: cdk.Construct, vpcId: string, vpcName: string, internetGatewayId: string) {
     const vpcCidrBlock = '10.0.0.0/16';
     const condition = new cdk.CfnCondition(scope, 'UseNewVpcCondition', {
         expression: cdk.Fn.conditionAnd(cdk.Fn.conditionEquals(vpcId, ''), cdk.Fn.conditionEquals(internetGatewayId, '')),
     });
 
-    const vpcName = 'VPC';
     const vpc = new ec2.Vpc(scope, vpcName, {
         cidr: vpcCidrBlock,
         subnetConfiguration: [],
     });
-    (vpc.node.defaultChild as ec2.CfnVPC).tags.setTag('Name', `${scope.node.id}/${vpcName}`);
+    (vpc.node.defaultChild as ec2.CfnVPC).tags.setTag('Name', vpcName);
 
     const cfnVpc = <ec2.CfnVPC>vpc.node.defaultChild;
     cfnVpc.cfnOptions.deletionPolicy = cdk.CfnDeletionPolicy.RETAIN;

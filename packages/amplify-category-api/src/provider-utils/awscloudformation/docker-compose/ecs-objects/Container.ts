@@ -5,9 +5,9 @@ class Container implements IContainerDefinitions {
   readonly defaultLogConfiguration = {
     logDriver: 'awslogs',
     options: {
-      awslogs_group: '/ecs/fargate-task-definition', //change _ to - later
-      awslogs_region: 'us-east-1',
-      awslogs_stream_prefix: 'ecs',
+      'awslogs-group': '/ecs/fargate-task-definition', 
+      'awslogs-region': 'us-east-1', // TODO: project region
+      'awslogs-stream-prefix': 'ecs', // use cluster name
     },
   };
 

@@ -28,12 +28,13 @@ module.exports = {
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
   },
   newSecret: async (context, options) => {
-    const { description, secret, name} = options;
+    const { description, secret, name, version } = options;
     const client = await new SecretsManager(context);
     const response = await client.secretsManager.createSecret({
       Description: description,
       Name: name,
-      SecretString: secret
+      SecretString: secret,
+      ClientRequestToken: version
     }).promise();
 
     return response;

@@ -204,23 +204,23 @@ async function createNetworkResources(context, stackName, needsVpc) {
       NetworkStackS3Url: undefined,
     };
   }
-
+  const vpcName = 'Amplify/VPC-do-not-delete';
+  
   const {
     vpcId,
     internetGatewayId,
     subnetCidrs
   } = await getEnvironmentNetworkInfo(context, {
     stackName,
-    vpcName: 'Amplify/VPC',
+    vpcName,
     vpcCidr: '10.0.0.0/16',
     subnetsCount: 3,
     subnetMask: 24,
   });
 
-  context.print.info(`Setting up network ${JSON.stringify({ vpcId, internetGatewayId, subnetCidrs: Array.from(subnetCidrs) })}`);
-
   const stack = new NetworkStack(undefined, 'Amplify', {
     stackName,
+    vpcName,
     vpcId,
     internetGatewayId,
     subnetCidrs,

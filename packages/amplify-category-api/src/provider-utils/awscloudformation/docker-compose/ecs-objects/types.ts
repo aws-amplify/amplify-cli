@@ -19,9 +19,9 @@ export interface IContainerDefinitions {
 export interface ILogConfiguration {
   logDriver: string;
   options: {
-    awslogs_group: string;
-    awslogs_region: string;
-    awslogs_stream_prefix: string;
+    'awslogs-group': string;
+    'awslogs-region': string;
+    'awslogs-stream-prefix': string;
   };
 }
 

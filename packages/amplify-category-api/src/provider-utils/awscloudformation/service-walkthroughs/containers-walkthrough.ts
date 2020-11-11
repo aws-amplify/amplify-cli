@@ -1,5 +1,6 @@
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 import inquirer from "inquirer";
+import { DEPLOYMENT_MECHANISM } from '../ecs-stack';
 
 const category = 'api';
 const serviceName = 'CloudFront';
@@ -12,7 +13,7 @@ export type ServiceConfiguration = {
   githubPath: string,
   authName: string,
   githubToken: string;
-  deploymentMechanism: string;
+  deploymentMechanism: DEPLOYMENT_MECHANISM;
   restrictAccess: boolean;
 }
 
@@ -98,7 +99,7 @@ async function newContainer(context): Promise<Partial<ServiceConfiguration>> {
   const deploymentMechanismChoices = [
     {
       name: 'On every "amplify push" (Fully managed container source)',
-      value: 'FULLY_MANAGED'
+      value: DEPLOYMENT_MECHANISM.FULLY_MANAGED
     }
   ];
 
@@ -106,14 +107,14 @@ async function newContainer(context): Promise<Partial<ServiceConfiguration>> {
     deploymentMechanismChoices.push(
       {
         name: 'On every Github commit (Independently managed container source)',
-        value: 'INDEPENDENTLY'
+        value: DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED
       }
     );
   }
 
   deploymentMechanismChoices.push({
     name: 'Advanced: Self-managed (Learn more: docs.amplify.aws/function/container#...)',
-    value: 'ADVANCE'
+    value: DEPLOYMENT_MECHANISM.SELF_MANAGED
   });
 
   do {
@@ -129,7 +130,7 @@ async function newContainer(context): Promise<Partial<ServiceConfiguration>> {
 
   let githubPath, githubToken;
 
-  if (deploymentMechanismQuestion.deploymentMechanism === 'INDEPENDENTLY') {
+  if (deploymentMechanismQuestion.deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     context.print.info('We need a Github Personal Access Token to automatically build & deploy your Fargate task on every Github commit.');
 
     const githubQuestions = await inquirer.prompt([

@@ -11,7 +11,7 @@ class SecretsManager {
                 // ignore missing config
             }
             this.context = context;
-            console.log({aws});
+            
             this.secretsManager = new aws.SecretsManager({ ...cred, ...options });
             return this;
         })();
