@@ -7,6 +7,7 @@ const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
 const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
 const { updateStackForAPIMigration } = require('./push-resources');
+const SecretsManager = require('./aws-utils/aws-secretsmanager');
 
 module.exports = {
   compileSchema: async (context, options) => {
@@ -25,6 +26,17 @@ module.exports = {
     }
 
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
+  },
+  newSecret: async (context, options) => {
+    const { description, secret, name} = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager.createSecret({
+      Description: description,
+      Name: name,
+      SecretString: secret
+    }).promise();
+
+    return response;
   },
   getTransformerDirectives: async (context, options) => {
     const { resourceDir } = options;

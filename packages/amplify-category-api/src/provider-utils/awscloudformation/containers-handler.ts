@@ -62,7 +62,19 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
       });
   }
 
-  const githubTokenSecretArn = 'arn:aws:secretsmanager:us-west-2:660457156595:secret:github-access-token-wB6AcW';
+  //#region Add token to secrets manager and get arn
+  const { envName, region } = context.amplify.getEnvInfo();
+
+  const {ARN: secretArn } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'newSecret', {
+    secret: githubToken,
+    description: 'GitHub OAuth token',
+    // TODO: use correct attributes for name
+    name: `${envName}-${region}-github-token`
+  });
+
+  //#endregion
+
+  const githubTokenSecretArn = secretArn;
 
   options = {
     resourceName,
