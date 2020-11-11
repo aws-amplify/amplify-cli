@@ -46,6 +46,9 @@ function createVpc(scope: cdk.Construct, vpcId: string, internetGatewayId: strin
     new cdk.CfnOutput(scope, 'VpcId', {
         value: outputVpc as any,
     });
+    new cdk.CfnOutput(scope, 'VpcCidrBlock', {
+        value: vpcCidrBlock as any,
+    });
 
     const igw = new ec2.CfnInternetGateway(scope, 'InternetGateway');
     igw.tags.setTag('Name', `${scope.node.id}/${igw.logicalId}`);

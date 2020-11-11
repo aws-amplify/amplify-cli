@@ -12,9 +12,11 @@ type EcsStackProps = {
     envName: string;
     categoryName: string;
     apiName: string;
-    servicePort: number;
-    authUserPoolIdParamName: string;
-    authAppClientIdWebParamName: string;
+    taskPorts: number[];
+    userPoolInfo?: {
+        authUserPoolIdParamName: string;
+        authAppClientIdWebParamName: string;
+    };
     githubSourceActionInfo?: GitHubSourceActionInfo;
     deploymentMechanism: string;
     deploymentBucket: string;
@@ -29,9 +31,11 @@ export class EcsStack extends cdk.Stack {
             envName,
             categoryName,
             apiName,
-            servicePort,
-            authUserPoolIdParamName,
-            authAppClientIdWebParamName,
+            taskPorts,
+            userPoolInfo: {
+                authUserPoolIdParamName,
+                authAppClientIdWebParamName
+            } = {},
             deploymentMechanism,
             githubSourceActionInfo,
             deploymentBucket,
@@ -47,6 +51,10 @@ export class EcsStack extends cdk.Stack {
 
         // TODO: use some sort of constant like NETWORK_STACK_LOGICAL_ID for 'NetworkStack'
         const paramVpcId = new cdk.CfnParameter(this, 'NetworkStackVpcId', {
+            type: 'String'
+        });
+
+        const paramVpcCidrBlock = new cdk.CfnParameter(this, 'NetworkStackVpcCidrBlock', {
             type: 'String'
         });
 
@@ -66,13 +74,32 @@ export class EcsStack extends cdk.Stack {
             type: 'String'
         });
 
-        const paramUserPoolId = new cdk.CfnParameter(this, authUserPoolIdParamName, {
-            type: 'String'
+        let paramUserPoolId: cdk.CfnParameter, paramAppClientIdWeb: cdk.CfnParameter;
+
+
+        if (authUserPoolIdParamName && authAppClientIdWebParamName) {
+            paramUserPoolId = new cdk.CfnParameter(this, authUserPoolIdParamName, {
+                type: 'String',
+                default: ''
+            });
+
+            paramAppClientIdWeb = new cdk.CfnParameter(this, authAppClientIdWebParamName, {
+                type: 'String',
+                default: ''
+            });
+        }
+
+        // TODO: rename
+        const cosaCondition = new cdk.CfnCondition(this, 'cosaCondition', {
+            expression: cdk.Fn.conditionAnd(
+                cdk.Fn.conditionEquals(paramUserPoolId ? paramUserPoolId.valueAsString : '', ''),
+                cdk.Fn.conditionEquals(paramAppClientIdWeb ? paramAppClientIdWeb.valueAsString : '', ''),
+                )
         });
 
-        const paramAppClientIdWeb = new cdk.CfnParameter(this, authAppClientIdWebParamName, {
-            type: 'String'
-        });
+        const notCosaCondition = new cdk.CfnCondition(this, 'notCosaCondition', {
+            expression: cdk.Fn.conditionNot(cosaCondition)
+        })
 
         const vpcId = paramVpcId.valueAsString;
         const subnets = paramSubnetIds.valueAsList;
@@ -155,13 +182,14 @@ export class EcsStack extends cdk.Stack {
                 cidrIp: '0.0.0.0/0',
                 ipProtocol: '-1',
             }],
-            securityGroupIngress: [{
+            securityGroupIngress: taskPorts.map(servicePort => ({
                 ipProtocol: 'tcp',
                 fromPort: servicePort,
                 toPort: servicePort,
-                cidrIp: '0.0.0.0/0', // TODO: Restrict to vpc subnets
-            }]
+                cidrIp: paramVpcCidrBlock.valueAsString,
+            }))
         });
+
         const service = new ecs.CfnService(this, "Service", {
             serviceName: `${apiName}Service-${Date.now()}`,
             cluster: paramClusterName.valueAsString,
@@ -226,18 +254,21 @@ export class EcsStack extends cdk.Stack {
             apiId: cdk.Fn.ref(api.logicalId),
             authorizerType: 'JWT',
             jwtConfiguration: {
-                audience: [paramAppClientIdWeb.valueAsString],
+                audience: [paramAppClientIdWeb && paramAppClientIdWeb.valueAsString],
                 issuer: cdk.Fn.join('', [
                     'https://cognito-idp.',
                     cdk.Aws.REGION,
                     '.amazonaws.com/',
-                    paramUserPoolId.valueAsString
+                    paramUserPoolId && paramUserPoolId.valueAsString
                 ])
             },
             identitySource: ['$request.header.Authorization'],
         });
 
-        new apigw2.CfnRoute(this, 'DefaultRoute', {
+        authorizer.cfnOptions.condition = notCosaCondition;
+
+
+        const routeWithAuth = new apigw2.CfnRoute(this, 'DefaultRouteWithAuth', {
             apiId: cdk.Fn.ref(api.logicalId),
             routeKey: '$default',
             target: cdk.Fn.join('', [
@@ -248,6 +279,19 @@ export class EcsStack extends cdk.Stack {
             authorizationType: 'JWT',
             authorizerId: cdk.Fn.ref(authorizer.logicalId)
         });
+
+        routeWithAuth.cfnOptions.condition = notCosaCondition;
+
+        const routeWithoutAuth = new apigw2.CfnRoute(this, 'DefaultRouteNoAuth', {
+            apiId: cdk.Fn.ref(api.logicalId),
+            routeKey: '$default',
+            target: cdk.Fn.join('', [
+                'integrations/',
+                cdk.Fn.ref(integration.logicalId),
+            ]),
+        });
+
+        routeWithoutAuth.cfnOptions.condition = cosaCondition;
 
         new apigw2.CfnRoute(this, 'OptionsRoute', {
             apiId: cdk.Fn.ref(api.logicalId),

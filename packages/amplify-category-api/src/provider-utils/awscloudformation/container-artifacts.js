@@ -1,18 +1,17 @@
 export const containerFiles = {
     Dockerfile: `
-  FROM node:node
-  
-  ENV PORT=8080
-  EXPOSE \${PORT}
-  
-  WORKDIR /usr/src/app
-  
-  COPY index.js ./
-  COPY package.json ./
-  
-  RUN npm i
-  
-  CMD [ "node", "index.js" ]
+FROM node:alpine
+
+EXPOSE 8080
+
+WORKDIR /usr/src/app
+
+COPY index.js ./
+COPY package.json ./
+
+RUN npm i
+
+CMD [ "node", "index.js" ]
     `,
     'package.json': `
     {

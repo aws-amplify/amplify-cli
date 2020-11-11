@@ -13,6 +13,7 @@ export type ServiceConfiguration = {
   authName: string,
   githubToken: string;
   deploymentMechanism: string;
+  restrictAccess: boolean;
 }
 
 export async function serviceWalkthrough(context, defaultValuesFilename): Promise<Partial<ServiceConfiguration>> {
@@ -27,29 +28,7 @@ export async function serviceWalkthrough(context, defaultValuesFilename): Promis
 
   const containerInfo = await askContainerSource(context);
 
-  let authName;
-
-  const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
-  // getting requirement satisfaction map
-  const satisfiedRequirements = await checkRequirements(apiRequirements, context, category, resourceName);
-  // checking to see if any requirements are unsatisfied
-  const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
-
-  // if requirements are unsatisfied, trigger auth
-
-
-  if (foundUnmetRequirements) {
-    try {
-      authName = await externalAuthEnable(context, 'api', resourceName, apiRequirements);
-    } catch (e) {
-      context.print.error(e);
-      throw e;
-    }
-  } else {
-    [authName] = Object.keys(context.amplify.getProjectDetails().amplifyMeta.auth);
-  }
-
-  return { resourceName, ...containerInfo, authName };
+  return { resourceName, ...containerInfo };
 }
 
 async function askResourceName(context, getAllDefaults) {
@@ -170,11 +149,19 @@ async function newContainer(context): Promise<Partial<ServiceConfiguration>> {
     githubToken = githubQuestions.github_access_token;
   }
 
+  const restrictApiQuestion = await inquirer.prompt({
+    name: 'rescrict_access',
+    type: 'confirm',
+    message: 'Do you want to restrict API access',
+    default: true
+  })
+
   return {
     imageTemplate: imageTemplate.imageSource,
     githubPath,
     githubToken,
-    deploymentMechanism: deploymentMechanismQuestion.deploymentMechanism
+    deploymentMechanism: deploymentMechanismQuestion.deploymentMechanism,
+    restrictAccess: restrictApiQuestion.rescrict_access
   }
 }
 

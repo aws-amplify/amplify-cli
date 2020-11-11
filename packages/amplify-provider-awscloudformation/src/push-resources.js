@@ -528,12 +528,13 @@ function generateContainersArtifacts(context, resource) {
     resourceName,
     githubInfo,
     deploymentMechanism,
+    authName,
+    restrictAccess
   } = resource;
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, categoryName, resourceName));
 
   const {
-    auth = {},
     providers: { [constants.ProviderName]: provider },
   } = context.amplify.getProjectMeta();
 
@@ -541,8 +542,6 @@ function generateContainersArtifacts(context, resource) {
     StackName: envName,
     DeploymentBucketName: deploymentBucket,
   } = provider;
-
-  const [authName] = Object.keys(auth);
 
   const srcPath = path.join(resourceDir, 'src');
 
@@ -557,7 +556,7 @@ function generateContainersArtifacts(context, resource) {
       const filePath = path.normalize(path.join(srcPath, fileName));
 
       if (fs.existsSync(filePath)) {
-        acc[fileName] = fs.readFileSync(filePath);
+        acc[fileName] = fs.readFileSync(filePath).toString();
       }
 
       return acc;
@@ -570,43 +569,38 @@ function generateContainersArtifacts(context, resource) {
   }
 
   let composeContents = containerDefinitionFiles[dockerComposeFilename];
-
-  if (composeContents === undefined) {
-    // TODO: parse dockerfileContents to get port
-    const { [dockerfileFilename]: dockerfileContents } = containerDefinitionFiles;
-    const port = 8080;
-
-    composeContents = `version: "3"
-services:
-  api:
-    build: .
-    ports:
-    - '${port}:${port}'
-`;
-  }
+  const { [dockerfileFilename]: dockerfileContents } = containerDefinitionFiles;
 
   const {
     buildspec,
     containers,
-  } = Richard.getContainers(composeContents);
-
-  console.log(buildspec);
-  console.log(containers);
+  } = Richard.getContainers(composeContents, dockerfileContents);
+  
+  const containersPorts = containers.reduce((acc, container) =>
+  [].concat(acc, container.portMappings.map(({ containerPort }) => containerPort)), []);
+  
+  if (containersPorts.length === 0) {
+    throw new Error('Service requires at least one exposed port');
+  }
 
   fs.ensureDirSync(srcPath);
   fs.writeFileSync(path.join(srcPath, 'buildspec.yml'), buildspec);
 
-  // TODO: only if required
+
   const authUserPoolIdParamName = `auth${authName}UserPoolId`;
   const authAppClientIdWebParamName = `auth${authName}AppClientIDWeb`;
+
+  const userPoolInfo = restrictAccess ? {
+    authUserPoolIdParamName,
+    authAppClientIdWebParamName
+  } : undefined;
 
   const stack = new EcsStack(undefined, "ContainersStack", {
     envName,
     categoryName,
     apiName: resourceName,
-    servicePort: 8080,
-    authUserPoolIdParamName,
-    authAppClientIdWebParamName,
+    taskPorts: containersPorts,
+    userPoolInfo,
     githubSourceActionInfo: githubInfo,
     deploymentMechanism,
     deploymentBucket,

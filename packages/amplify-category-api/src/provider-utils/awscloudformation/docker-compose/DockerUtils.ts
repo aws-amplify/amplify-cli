@@ -3,7 +3,7 @@ import * as v1Types from './compose-spec/v1';
 import * as v2Types from './compose-spec/v2';
 import { BuildHashMap } from './ecs-objects/types';
 
-const dockerComposeToObject = (yamlFileContents: string): v2Types.ConfigSchemaV24Json | v1Types.ConfigSchemaV1Json => {
+export const dockerComposeToObject = (yamlFileContents: string): v2Types.ConfigSchemaV24Json | v1Types.ConfigSchemaV1Json => {
   try {
     const doc = yaml.safeLoad(yamlFileContents);
     return doc as v2Types.ConfigSchemaV24Json | v1Types.ConfigSchemaV1Json;
@@ -14,7 +14,23 @@ const dockerComposeToObject = (yamlFileContents: string): v2Types.ConfigSchemaV2
   }
 };
 
-const generateBuildSpec = (containerMap: BuildHashMap) => {
+export const dockerfileToObject = (dockerfileContents: string): v2Types.ConfigSchemaV24Json | v1Types.ConfigSchemaV1Json => {
+  const lines = dockerfileContents?.split('\n') ?? [];
+  const ports = lines.filter(line => /^\s*EXPOSE\s+/.test(line)).map(line => line.match(/\s+(\d+)/)[1]);
+
+  const composeContents = `version: "3"
+services:
+  api:
+    build: .${ports.length > 0 ? `
+    ports: ${ports.map(port => `
+      - '${port}:${port}'`).join('')
+      }` : ``}
+`;
+
+  return dockerComposeToObject(composeContents);
+}
+
+export const generateBuildSpec = (containerMap: BuildHashMap) => {
   return `version: 0.2
 
 phases:
@@ -41,14 +57,12 @@ phases:
       - echo Pushing the Docker images..${Object.keys(containerMap).map(item => `
       - docker push $${item}_REPOSITORY_URI:latest
       - docker push $${item}_REPOSITORY_URI:$IMAGE_TAG`)}
-      - "echo \\"[${
-        Object.keys(containerMap)
-        .map(name => `{\\\\\\\"name\\\\\\\":\\\\\\\"${name}\\\\\\\", \\\\\\\"imageUri\\\\\\\":\\\\\\\"$${name}_REPOSITORY_URI\\\\\\\"}`)
-        .join(',')
-      }]\\" > imagedefinitions.json"
+      - "echo \\"[${Object.keys(containerMap)
+      .map(name => `{\\\\\\\"name\\\\\\\":\\\\\\\"${name}\\\\\\\", \\\\\\\"imageUri\\\\\\\":\\\\\\\"$${name}_REPOSITORY_URI\\\\\\\"}`)
+      .join(',')
+    }]\\" > imagedefinitions.json"
 artifacts:
   files: imagedefinitions.json
 `;
 };
 
-export { dockerComposeToObject, generateBuildSpec };

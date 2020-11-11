@@ -4,10 +4,12 @@ import { ServiceConfiguration } from './service-walkthroughs/containers-walkthro
 import { containerFiles } from './container-artifacts';
 
 export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConfiguration>, context, category, service, options) => {
+  const { checkRequirements, externalAuthEnable } = await import('amplify-category-auth');
+
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const walkthroughOptions = await serviceWalkthroughPromise;
 
-  const { resourceName, authName, imageTemplate, githubPath, githubToken, deploymentMechanism } = walkthroughOptions;
+  const { resourceName, restrictAccess, imageTemplate, githubPath, githubToken, deploymentMechanism } = walkthroughOptions;
   const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
 
   const dependsOn = [];
@@ -22,22 +24,43 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
       "attributes": [
         "ClusterName",
         "VpcId",
+        "VpcCidrBlock",
         "SubnetIds",
         "VpcLinkId",
         "CloudMapNamespaceId"
       ]
     });
 
-  // TODO: conditional, depends on access !== public
-  dependsOn.push(
-    {
-      "category": "auth",
-      "resourceName": authName,
-      "attributes": [
-        "UserPoolId",
-        "AppClientIDWeb"
-      ]
-    });
+  let authName;
+
+  if (restrictAccess) {
+
+    const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
+    // getting requirement satisfaction map
+    const satisfiedRequirements = await checkRequirements(apiRequirements, context, category, resourceName);
+    // checking to see if any requirements are unsatisfied
+    const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+
+    if (foundUnmetRequirements) {
+      try {
+        authName = await externalAuthEnable(context, 'api', resourceName, apiRequirements);
+      } catch (e) {
+        context.print.error(e);
+        throw e;
+      }
+    } else {
+      [authName] = Object.keys(context.amplify.getProjectDetails().amplifyMeta.auth);
+    }
+    dependsOn.push(
+      {
+        "category": "auth",
+        "resourceName": authName,
+        "attributes": [
+          "UserPoolId",
+          "AppClientIDWeb"
+        ]
+      });
+  }
 
   const githubTokenSecretArn = 'arn:aws:secretsmanager:us-west-2:660457156595:secret:github-access-token-wB6AcW';
 
@@ -51,7 +74,8 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
     githubInfo: {
       path: githubPath,
       tokenSecretArn: githubTokenSecretArn
-    }
+    },
+    authName
   };
 
   fs.ensureDirSync(resourceDirPath);

@@ -6,7 +6,7 @@
 import * as v1Types from './compose-spec/v1';
 import * as v2Types from './compose-spec/v2';
 import * as v38Types from './compose-spec/v3.8';
-import { dockerComposeToObject, generateBuildSpec } from './DockerUtils';
+import { dockerComposeToObject, dockerfileToObject, generateBuildSpec } from './DockerUtils';
 import Container from './ecs-objects/Container';
 import { BuildHashMap, PortMappings } from './ecs-objects/types';
 
@@ -103,11 +103,11 @@ type DockerServiceInfo = {
   buildspec: string;
   containers: Container[];
 };
-export function getContainers(yamlFileContents: string): DockerServiceInfo {
+export function getContainers(composeContents?: string, dockerfileContents?: string): DockerServiceInfo {
   //Step 1: Detect if there is a docker-compose or just a Dockerfile.
   //        Just Dockerfile-> create registry using function name, buildspec, zip and put on S3
   //        Compose file -> Begin by parsing it:
-  const dockerCompose = dockerComposeToObject(yamlFileContents);
+  const dockerCompose = composeContents ? dockerComposeToObject(composeContents): dockerfileToObject(dockerfileContents);
 
   //Step 2: Take compose object and pull all the containers out:
   const containers = convertDockerObjectToContainerArray(dockerCompose);
