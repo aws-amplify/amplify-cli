@@ -62,7 +62,7 @@ describe('amplify add api', () => {
   });
 
   it('init project, run invalid migration when adding more than one gsi on the same table', async () => {
-    const projectName = 'invalidMigrationGSI';
+    const projectName = 'invalidgsiupdate';
     const initialSchema = 'migrations_key/simple_key.graphql';
     const nextSchema = 'migrations_key/cant_add_multiple_gsi.graphql';
     await initJSProjectWithProfile(projRoot, { name: projectName });
@@ -78,7 +78,7 @@ describe('amplify add api', () => {
   });
 
   it('init project, allow updated two types with new GSIs', async () => {
-    const projectName = 'twoTypeGSI';
+    const projectName = 'twotableupdategsi';
     const initialSchema = 'migrations_key/two_key_model_schema.graphql';
     const nextSchema = 'migrations_key/four_key_model_schema.graphql';
     await initJSProjectWithProfile(projRoot, { name: projectName });
