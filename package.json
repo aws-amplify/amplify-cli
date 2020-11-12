@@ -29,7 +29,6 @@
     "pkg-all": "yarn pkg-install && yarn pkg-transpile && yarn pkg-build",
     "publish:master": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --yes",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --yes",
-    "publish:frntndFeat": "lerna publish prerelease --conventional-commits --yes --exact --dist-tag=flutter-preview --preid=flutter-preview --message 'chore(release): Publish [ci skip]'",
     "publish:release": "lerna publish --conventional-commits --exact --yes --message 'chore(release): Publish [ci skip]'",
     "publish:backendManager": "lerna publish --force-publish --preid=backend --dist-tag=backend --exact --include-merged-tags --conventional-prerelease --yes",
     "postpublish:release": "git fetch . release:master && git push origin master",
