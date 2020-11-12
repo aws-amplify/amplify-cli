@@ -144,6 +144,11 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       .withProtocols(['String', 'ModelKey'])
       .withComment('MARK: - CodingKeys');
 
+    codingKeyEnum.addProperty('modelName', 'String', undefined, 'public', {
+      static: false,
+      variable: true,
+    }, undefined, `"${name}"`);
+
     // AddEnums.name
     model.fields.forEach(field => codingKeyEnum.addEnumValue(this.getFieldName(field), field.name));
     extensionDeclaration.appendBlock(codingKeyEnum.string);

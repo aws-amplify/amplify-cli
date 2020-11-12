@@ -64,6 +64,10 @@ describe('AppSyncSwiftVisitor', () => {
           case id
           case name
           case bar
+          
+          public var modelName: String   {
+              \\"SimpleModel\\" 
+            }
         }
         
         public static let keys = CodingKeys.self
@@ -153,6 +157,10 @@ describe('AppSyncSwiftVisitor', () => {
          public enum CodingKeys: String, ModelKey {
           case id
           case name
+          
+          public var modelName: String   {
+              \\"snake_case\\" 
+            }
         }
         
         public static let keys = CodingKeys.self
@@ -253,6 +261,10 @@ describe('AppSyncSwiftVisitor', () => {
           case book_id
           case author
           case book
+          
+          public var modelName: String   {
+              \\"authorBook\\" 
+            }
         }
         
         public static let keys = CodingKeys.self
@@ -354,6 +366,10 @@ describe('AppSyncSwiftVisitor', () => {
               case version
               case value
               case tasks
+              
+              public var modelName: String   {
+                  \\"Todo\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -427,6 +443,10 @@ describe('AppSyncSwiftVisitor', () => {
               case todo
               case time
               case createdOn
+              
+              public var modelName: String   {
+                  \\"task\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -544,6 +564,10 @@ describe('AppSyncSwiftVisitor', () => {
               case id
               case title
               case editors
+              
+              public var modelName: String   {
+                  \\"Post\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -596,6 +620,10 @@ describe('AppSyncSwiftVisitor', () => {
               case id
               case title
               case editors
+              
+              public var modelName: String   {
+                  \\"Post\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -684,6 +712,10 @@ describe('AppSyncSwiftVisitor', () => {
           case boolArr
           case dateArr
           case enumArr
+          
+          public var modelName: String   {
+              \\"ObjectWithNativeTypes\\" 
+            }
         }
         
         public static let keys = CodingKeys.self
@@ -779,6 +811,10 @@ describe('AppSyncSwiftVisitor', () => {
           case status
           case statusHistory
           case tags
+          
+          public var modelName: String   {
+              \\"Attraction\\" 
+            }
         }
         
         public static let keys = CodingKeys.self
@@ -839,6 +875,10 @@ describe('AppSyncSwiftVisitor', () => {
           case lat
           case lang
           case tags
+          
+          public var modelName: String   {
+              \\"Location\\" 
+            }
         }
         
         public static let keys = CodingKeys.self
@@ -1000,6 +1040,10 @@ describe('AppSyncSwiftVisitor', () => {
               case id
               case title
               case owner
+              
+              public var modelName: String   {
+                  \\"Post\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -1045,6 +1089,10 @@ describe('AppSyncSwiftVisitor', () => {
               case id
               case title
               case author
+              
+              public var modelName: String   {
+                  \\"Post\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -1091,6 +1139,10 @@ describe('AppSyncSwiftVisitor', () => {
               case id
               case title
               case author
+              
+              public var modelName: String   {
+                  \\"Post\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -1137,6 +1189,10 @@ describe('AppSyncSwiftVisitor', () => {
               case id
               case title
               case author
+              
+              public var modelName: String   {
+                  \\"Post\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -1180,6 +1236,10 @@ describe('AppSyncSwiftVisitor', () => {
              public enum CodingKeys: String, ModelKey {
               case id
               case title
+              
+              public var modelName: String   {
+                  \\"Post\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -1222,6 +1282,10 @@ describe('AppSyncSwiftVisitor', () => {
              public enum CodingKeys: String, ModelKey {
               case id
               case title
+              
+              public var modelName: String   {
+                  \\"Post\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -1270,6 +1334,10 @@ describe('AppSyncSwiftVisitor', () => {
               case title
               case author
               case editors
+              
+              public var modelName: String   {
+                  \\"Post\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -1319,6 +1387,10 @@ describe('AppSyncSwiftVisitor', () => {
               case name
               case address
               case ssn
+              
+              public var modelName: String   {
+                  \\"Employee\\" 
+                }
             }
             
             public static let keys = CodingKeys.self
@@ -1367,6 +1439,10 @@ describe('AppSyncSwiftVisitor', () => {
            public enum CodingKeys: String, ModelKey {
             case id
             case title
+            
+            public var modelName: String   {
+                \\"Post\\" 
+              }
           }
           
           public static let keys = CodingKeys.self
@@ -1411,6 +1487,10 @@ describe('AppSyncSwiftVisitor', () => {
             case id
             case title
             case groups
+            
+            public var modelName: String   {
+                \\"Post\\" 
+              }
           }
           
           public static let keys = CodingKeys.self
@@ -1455,6 +1535,10 @@ describe('AppSyncSwiftVisitor', () => {
            public enum CodingKeys: String, ModelKey {
             case id
             case title
+            
+            public var modelName: String   {
+                \\"Post\\" 
+              }
           }
           
           public static let keys = CodingKeys.self
@@ -1498,6 +1582,10 @@ describe('AppSyncSwiftVisitor', () => {
            public enum CodingKeys: String, ModelKey {
             case id
             case title
+            
+            public var modelName: String   {
+                \\"Post\\" 
+              }
           }
           
           public static let keys = CodingKeys.self
@@ -1551,6 +1639,10 @@ describe('AppSyncSwiftVisitor', () => {
           case id
           case title
           case owner
+          
+          public var modelName: String   {
+              \\"Post\\" 
+            }
         }
         
         public static let keys = CodingKeys.self

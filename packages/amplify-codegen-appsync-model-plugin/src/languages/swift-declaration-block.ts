@@ -290,8 +290,9 @@ export class SwiftDeclarationBlock {
       ),
       false,
     );
+    const properties = this.mergeSections([...this._properties.map(prop => this.generatePropertiesStr(prop))], false);
     const declarationFoot = '}';
-    return this.mergeSections([declarationHead, indentMultiline(enumValues), declarationFoot], false);
+    return this.mergeSections([declarationHead, indentMultiline(this.mergeSections([enumValues, properties])), declarationFoot], false);
   }
 
   private generateStructOrExtensionStr(): string {
