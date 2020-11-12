@@ -10,7 +10,7 @@ const constants = require('./constants');
 const setupNewUser = require('./setup-new-user');
 const obfuscateUtil = require('./utility-obfuscate');
 const systemConfigManager = require('./system-config-manager');
-const { doAdminCredentialsExist } = require('./utils/admin-helpers');
+const { doAdminCredentialsExist, isAmplifyAdminApp, getRefreshedTokens } = require('./utils/admin-helpers');
 
 const { stateManager } = require('amplify-cli-core');
 
@@ -24,11 +24,21 @@ async function init(context) {
     return context;
   }
   normalizeInputParams(context);
-  context.exeInfo.awsConfigInfo = {
-    configLevel: 'project',
-    config: defaultAWSConfig,
-  };
-  await newUserCheck(context);
+
+  const meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
+  if (meta?.providers?.awscloudformation && isAmplifyAdminApp(meta.providers.awscloudformation.AmplifyAppId)) {
+    context.exeInfo.awsConfigInfo = {
+      configLevel: 'amplifyAdmin',
+      config: {},
+    };
+  } else {
+    context.exeInfo.awsConfigInfo = {
+      configLevel: 'project',
+      config: defaultAWSConfig,
+    };
+    await newUserCheck(context);
+  }
+
   printInfo(context);
   context.exeInfo.awsConfigInfo.action = 'init';
 
@@ -366,7 +376,7 @@ async function promptForProjectConfigConfirmation(context) {
 function validateConfig(context) {
   const { awsConfigInfo } = context.exeInfo;
   awsConfigInfo.configValidated = false;
-  if (awsConfigInfo.configLevel === 'general') {
+  if (awsConfigInfo.configLevel === 'general' || awsConfigInfo.configLevel === 'amplifyAdmin') {
     awsConfigInfo.configValidated = true;
   } else if (awsConfigInfo.config) {
     if (awsConfigInfo.config.useProfile) {
@@ -484,6 +494,7 @@ function getConfigForEnv(context, envName) {
   }
   return projectConfigInfo;
 }
+
 function updateProjectConfig(context) {
   removeProjectConfig(context);
   persistLocalEnvConfig(context);
@@ -538,29 +549,6 @@ async function getAdminCredentials(idToken, identityId, region) {
     .promise();
 }
 
-async function refreshJWTs(authConfig, print) {
-  const CognitoISP = new aws.CognitoIdentityServiceProvider({ region: authConfig.region });
-  try {
-    const result = await CognitoISP.initiateAuth({
-      AuthFlow: 'REFRESH_TOKEN',
-      AuthParameters: {
-        REFRESH_TOKEN: authConfig.refreshToken.token,
-      },
-      ClientId: authConfig.accessToken.payload.client_id, // App client id from identityPool
-    }).promise();
-    return result.AuthenticationResult;
-  } catch (e) {
-    print.error('Failed to refresh tokens.');
-    throw e;
-  }
-}
-
-function isJwtExpired(token) {
-  const expiration = _.get(token, ['payload', 'exp'], 0);
-  const secSinceEpoch = Math.round(new Date().getTime() / 1000);
-  return secSinceEpoch >= expiration - 60;
-}
-
 async function loadConfigurationForEnv(context, env, appId) {
   const projectConfigInfo = getConfigForEnv(context, env);
   const { print } = context;
@@ -576,19 +564,10 @@ async function loadConfigurationForEnv(context, env, appId) {
       process.exit(1);
     }
 
-    // load token, check expiry, refresh if needed
-    const authConfig = stateManager.getAmplifyAdminConfigEntry(appId);
-
-    if (isJwtExpired(authConfig.idToken)) {
-      const refreshedTokens = await refreshJWTs(authConfig, print);
-      // Refresh stored tokens
-      authConfig.idToken.jwtToken = refreshedTokens.IdToken;
-      authConfig.accessToken.jwtToken = refreshedTokens.AccessToken;
-      stateManager.setAmplifyAdminConfigEntry(appId, authConfig);
-    }
     try {
-      // use tokens to get creds and assign to config
+      const authConfig = await getRefreshedTokens(appId, context.printappId, print);
       const { idToken, IdentityId, region } = authConfig;
+      // use tokens to get creds and assign to config
       let credentials = (await getAdminCredentials(idToken, IdentityId, region)).Credentials;
 
       awsConfig = {
@@ -757,6 +736,16 @@ async function getAwsConfig(context) {
         secretAccessKey: awsConfigInfo.config.secretAccessKey,
         region: awsConfigInfo.config.region,
       };
+    }
+  } else if (awsConfigInfo.configLevel === 'amplifyAdmin') {
+    try {
+      const meta = stateManager.getMeta();
+      const appId = _.get(meta, ['providers', 'awscloudformation', 'AmplifyAppId']);
+      const authConfig = await getRefreshedTokens(appId, context.print);
+      const { idToken, IdentityId, region } = authConfig;
+      awsConfig = (await getAdminCredentials(idToken, IdentityId, region)).Credentials;
+    } catch (e) {
+      throw new Error('Failed to get Amplify Admin credentials.');
     }
   }
 
