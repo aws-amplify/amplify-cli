@@ -1,9 +1,9 @@
-lll# Change Log
+# Change Log
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [3.du.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.25.2...amplify-util-mock@3.25.3) (2020-11-08)
+## [3.25.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.25.2...amplify-util-mock@3.25.3) (2020-11-08)
 
 **Note:** Version bump only for package amplify-util-mock
 
