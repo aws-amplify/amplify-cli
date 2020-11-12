@@ -43,7 +43,7 @@ export class AdminLoginServer {
     return this.port;
   }
 
-  private async getAdminCredentials(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> {
+  private async getIdentityId(idToken: CognitoIdToken, IdentityPoolId: string, region: string): Promise<string> {
     const cognitoIdentity = new CognitoIdentity({ region });
     const login = idToken.payload.iss.replace('https://', '');
     const logins = {
@@ -107,7 +107,7 @@ export class AdminLoginServer {
       keyStore,
     );
     if (areTokensValid) {
-      const IdentityId = await this.getAdminCredentials(payload.idToken, payload.IdentityPoolId, payload.region);
+      const IdentityId = await this.getIdentityId(payload.idToken, payload.IdentityPoolId, payload.region);
       const config = { ...payload, IdentityId };
       stateManager.setAmplifyAdminConfigEntry(appId, config);
     }
