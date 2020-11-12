@@ -209,10 +209,24 @@ jobs:
             loginToLocalRegistry
             yarn publish-to-verdaccio
             unsetNpmRegistryUrl
+      - run:
+          name: Generate unified changelog
+          command: yarn ts-node scripts/unified-changelog.ts
+      - run:
+          name: Save new amplify GitHub tag
+          command: node scripts/echo-current-cli-version.js > .amplify-pkg-version
       - save_cache:
           key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
           paths:
             - ~/verdaccio-cache/
+      - save_cache:
+          key: 'amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}'
+          paths:
+            - ~/repo/UNIFIED_CHANGELOG.md
+      - save_cache:
+          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+          paths:
+            - ~/repo/.amplify-pkg-version
   build_pkg_binaries:
     working_directory: ~/repo
     docker: *ref_0
@@ -554,7 +568,6 @@ jobs:
       - restore_cache:
           keys:
             - 'amplify-cli-ssh-deps-{{ .Branch }}'
-            - 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
       - run:
           name: Authenticate with npm
           command: 'echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc'
@@ -568,6 +581,52 @@ jobs:
             else
               echo "Skipping deploy."
             fi
+  github_prerelease:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: 'amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}'
+      - restore_cache:
+          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+      - restore_cache:
+          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+      - run:
+          name: Publish Amplify CLI GitHub prerelease
+          command: |
+            version=$(cat .amplify-pkg-version)
+            yarn ts-node scripts/github-prerelease.ts $version
+  github_prerelease_install_sanity_check:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps:
+      - restore_cache:
+          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+      - run:
+          name: Install packaged Amplify CLI
+          command: |
+            version=$(cat .amplify-pkg-version)
+            curl -sL https://aws-amplify.github.io/amplify-cli/install | bash
+  github_release:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+      - restore_cache:
+          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+      - run:
+          name: Publish Amplify CLI GitHub release
+          command: |
+            version=$(cat .amplify-pkg-version)
+            yarn ts-node scripts/github-release.ts $version
   integration_test_js:
     working_directory: ~/repo
     docker:
@@ -1858,6 +1917,7 @@ workflows:
               only:
                 - master
                 - beta
+                - backendManager
           requires:
             - build
       - build_pkg_binaries:
@@ -1952,6 +2012,20 @@ workflows:
           requires:
             - build
             - publish_to_local_registry
+      - github_prerelease:
+          requires:
+            - build_pkg_binaries
+          filters:
+            branches:
+              only:
+                - backendManager
+      - github_prerelease_install_sanity_check:
+          requires:
+            - github_prerelease
+          filters:
+            branches:
+              only:
+                - backendManager
       - deploy:
           requires:
             - test
@@ -1963,12 +2037,21 @@ workflows:
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
+            - github_prerelease_install_sanity_check
           filters:
             branches:
               only:
                 - release
                 - master
                 - beta
+                - backendManager
+      - github_release:
+          requires:
+            - deploy
+          filters:
+            branches:
+              only:
+                - backendManager
       - plugin-amplify_e2e_tests:
           filters: &ref_10
             branches:
@@ -2210,238 +2293,294 @@ workflows:
             - publish_to_local_registry
             - function_3-amplify_e2e_tests
       - plugin-amplify_e2e_tests_pkg_linux:
+          filters: &ref_11
+            branches:
+              only:
+                - master
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - schema-data-access-patterns-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - predictions-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - schema-auth-3-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - schema-auth-7-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - plugin-amplify_e2e_tests_pkg_linux
       - env-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - schema-data-access-patterns-amplify_e2e_tests_pkg_linux
       - function_4-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - predictions-amplify_e2e_tests_pkg_linux
       - api_1-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - schema-auth-3-amplify_e2e_tests_pkg_linux
       - init-special-case-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - interactions-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - hostingPROD-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - delete-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - schema-auth-8-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - init-special-case-amplify_e2e_tests_pkg_linux
       - auth_2-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - interactions-amplify_e2e_tests_pkg_linux
       - schema-function-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - hostingPROD-amplify_e2e_tests_pkg_linux
       - schema-auth-5-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - delete-amplify_e2e_tests_pkg_linux
       - datastore-modelgen-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - schema-predictions-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - schema-auth-10-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - function_2-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - schema-searchable-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - datastore-modelgen-amplify_e2e_tests_pkg_linux
       - schema-auth-9-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - schema-predictions-amplify_e2e_tests_pkg_linux
       - schema-model-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - schema-auth-10-amplify_e2e_tests_pkg_linux
       - storage-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - function_2-amplify_e2e_tests_pkg_linux
       - amplify-configure-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - amplify-app-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - schema-key-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - auth_3-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - schema-auth-4-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - amplify-configure-amplify_e2e_tests_pkg_linux
       - schema-auth-11-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - amplify-app-amplify_e2e_tests_pkg_linux
       - migration-api-connection-migration-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - schema-key-amplify_e2e_tests_pkg_linux
       - api_2-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - auth_3-amplify_e2e_tests_pkg_linux
       - init-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - hosting-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - auth_1-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - layer-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - api_3-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - init-amplify_e2e_tests_pkg_linux
       - migration-api-key-migration2-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - hosting-amplify_e2e_tests_pkg_linux
       - schema-connection-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - auth_1-amplify_e2e_tests_pkg_linux
       - tags-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - analytics-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - auth_5-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - migration-api-key-migration1-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - import_auth_1-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - tags-amplify_e2e_tests_pkg_linux
       - function_1-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - analytics-amplify_e2e_tests_pkg_linux
       - schema-auth-6-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - auth_5-amplify_e2e_tests_pkg_linux
       - schema-versioned-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - feature-flags-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - function_3-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - auth_4-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - import_auth_2-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - schema-versioned-amplify_e2e_tests_pkg_linux
       - schema-auth-1-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - feature-flags-amplify_e2e_tests_pkg_linux
       - schema-auth-2-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries

@@ -10,6 +10,7 @@ yarn-error.log
 coverage
 .nyc_output
 .env
+UNIFIED_CHANGELOG.md
 package-lock.json
 packages/amplify-cli/amplify/.config/
 packages/amplify-appsync-simulator/public
