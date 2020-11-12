@@ -5,6 +5,7 @@ import { gt } from 'semver';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import ora from 'ora';
+import { oldVersionPath } from '../utils/win-utils';
 
 const binUrl = (version: string, platform: 'macos' | 'win.exe' | 'linux') =>
   `https://github.com/aws-amplify/amplify-cli/releases/download/v${version}/amplify-pkg-${platform}`;
@@ -13,7 +14,7 @@ const latestVersionUrl = 'https://api.github.com/repos/aws-amplify/amplify-cli/r
 export const run = async (context: $TSContext) => {
   const { version: thisVersion } = require('../../package.json');
   if (typeof thisVersion !== 'string') {
-    throw new Error('Cannot determine current CLI version. Try manually re-installing the CLI.');
+    throw new Error('Cannot determine current CLI version. Try uninstalling and reinstalling the CLI.');
   }
   const latestVersion = await getLatestVersion();
   if (gt(latestVersion, thisVersion)) {
@@ -25,11 +26,16 @@ export const run = async (context: $TSContext) => {
 };
 
 const upgradePackagedCli = async (version: string) => {
-  const platform = process.platform === 'darwin' ? 'macos' : process.platform.startsWith('win') ? 'win.exe' : 'linux';
-  const binName = process.platform.startsWith('win') ? 'amplify.exe' : 'amplify';
-  const installLocation = path.join(pathManager.getHomeDotAmplifyDirPath(), 'bin', binName);
-  const url = binUrl(version, platform);
+  const isWin = process.platform.startsWith('win');
+  const binPath = path.join(pathManager.getHomeDotAmplifyDirPath(), 'bin', isWin ? 'amplify.exe' : 'amplify');
+  const platformSuffix = isWin ? 'win.exe' : process.platform === 'darwin' ? 'macos' : 'linux';
+  const url = binUrl(version, platformSuffix);
   const spinner = ora();
+
+  if (isWin) {
+    await fs.move(binPath, oldVersionPath);
+  }
+
   spinner.start('Downloading latest Amplify CLI version...');
   const response = await fetch(url);
   if (response.status >= 400) {
@@ -37,8 +43,8 @@ const upgradePackagedCli = async (version: string) => {
   }
   const bin = await response.buffer();
   spinner.succeed('Download complete!');
-  await fs.writeFile(installLocation, bin);
-  await fs.chmod(installLocation, '700');
+  await fs.writeFile(binPath, bin);
+  await fs.chmod(binPath, '700');
 };
 
 const upgradeNodeCli = async () => {
