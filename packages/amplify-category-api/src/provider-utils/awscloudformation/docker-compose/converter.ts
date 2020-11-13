@@ -107,7 +107,7 @@ export function getContainers(composeContents?: string, dockerfileContents?: str
   //Step 1: Detect if there is a docker-compose or just a Dockerfile.
   //        Just Dockerfile-> create registry using function name, buildspec, zip and put on S3
   //        Compose file -> Begin by parsing it:
-  const dockerCompose = composeContents ? dockerComposeToObject(composeContents): dockerfileToObject(dockerfileContents);
+  const dockerCompose = composeContents ? dockerComposeToObject(composeContents) : dockerfileToObject(dockerfileContents);
 
   //Step 2: Take compose object and pull all the containers out:
   const containers = convertDockerObjectToContainerArray(dockerCompose);
@@ -124,7 +124,12 @@ export function getContainers(composeContents?: string, dockerfileContents?: str
     //Step 4: Create ECR Entry if build is specified - TODO with Francisco..... - this will go in registryArn
     if (res.build != undefined) {
       let buildContext: string = '';
-      typeof res.build === 'object' && (buildContext = res.build.context!);
+
+      if (typeof res.build === 'object') {
+        buildContext = res.build.context!;
+      } else {
+        buildContext = res.build;
+      }
 
       //Wont need this if statement later, just using for testing
       /** This will look like this for each container where res.build != undefined:
@@ -140,6 +145,6 @@ export function getContainers(composeContents?: string, dockerfileContents?: str
 
   return {
     buildspec,
-    containers
+    containers,
   };
 }

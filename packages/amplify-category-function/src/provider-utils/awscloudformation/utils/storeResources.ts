@@ -11,11 +11,10 @@ import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { saveLayerRuntimes } from './layerRuntimes';
 import { getNewCFNParameters } from './cloudformationHelpers';
 import { ContainerStack } from './container-stack';
-import { prepareApp } from "@aws-cdk/core/lib/private/prepare-app";
+import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 
 const DEFAULT_CONTAINER_PORT = 8080;
-export function createContainerResources(context: any, parameters: ContainerParameters): {resourceDirPath: string}  {
-  
+export function createContainerResources(context: any, parameters: ContainerParameters): { resourceDirPath: string } {
   context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.resourceName, {
     container: true,
     build: true,
@@ -23,7 +22,6 @@ export function createContainerResources(context: any, parameters: ContainerPara
     service: 'ElasticContainer',
     dependsOn: parameters.dependsOn,
     githubPath: parameters.githubPath,
-    githubToken: parameters.githubToken, // Use secrets manager and keep key here instead
     scheduleOptions: parameters.scheduleOptions,
     deploymentMechanism: parameters.deploymentMechanism,
     mutableParametersState: parameters.mutableParametersState,
@@ -32,15 +30,15 @@ export function createContainerResources(context: any, parameters: ContainerPara
   const resourceDirPath = path.join(projectBackendDirPath, categoryName, parameters.resourceName);
 
   fs.ensureDirSync(path.join(resourceDirPath, 'src'));
-  
+
   const deploymentBucket = `${context.amplify.getProjectMeta().providers[provider].DeploymentBucketName}`;
-  
+
   // Put token on secrets manager
 
-  const stack = new ContainerStack(undefined, "Container", {
+  const stack = new ContainerStack(undefined, 'Container', {
     deploymentBucket,
     // TODO: Remove this, functions are only for crons, no ports
-    containerPort: DEFAULT_CONTAINER_PORT, 
+    containerPort: DEFAULT_CONTAINER_PORT,
     awaiterZipPath: '',
     githubPath: parameters.githubPath,
     githubTokenSecretsManagerArn: 'arn:aws:secretsmanager:us-west-2:660457156595:secret:github-access-token-wB6AcW',
@@ -51,10 +49,10 @@ export function createContainerResources(context: any, parameters: ContainerPara
   const containerCfn = (stack as any)._toCloudFormation();
 
   Object.keys(containerCfn.Parameters).forEach(k => {
-    if(k.startsWith('AssetParameters')) {
+    if (k.startsWith('AssetParameters')) {
       let value = '';
-      
-      if(k.includes('Bucket')) {
+
+      if (k.includes('Bucket')) {
         value = deploymentBucket;
       } else if (k.includes('VersionKey')) {
         value = 'custom-resource-pipeline-awaiter.zip||';
@@ -90,11 +88,11 @@ export function createContainerResources(context: any, parameters: ContainerPara
   }
 
   if (parameters.environmentMap && Object.keys(parameters.environmentMap).length > 0) {
-    const mapArray: Array<{Name: string, Value: string}> = [];
+    const mapArray: Array<{ Name: string; Value: string }> = [];
     Object.keys(parameters.environmentMap).forEach(key => {
       mapArray.push({
         Name: key,
-        Value: parameters.environmentMap[key]
+        Value: parameters.environmentMap[key],
       });
     });
 
@@ -104,27 +102,22 @@ export function createContainerResources(context: any, parameters: ContainerPara
   const dependsOnParams = { env: { Type: 'String' } };
 
   Object.keys(parameters.environmentMap)
-      .filter(key => key !== 'ENV')
-      .filter(key => key !== 'REGION')
-      .filter(resourceProperty => 'Ref' in parameters.environmentMap[resourceProperty])
-      .forEach(resourceProperty => {
-        dependsOnParams[parameters.environmentMap[resourceProperty].Ref] = {
-          Type: 'String',
-          Default: parameters.environmentMap[resourceProperty].Ref,
-        };
-      });
+    .filter(key => key !== 'ENV')
+    .filter(key => key !== 'REGION')
+    .filter(resourceProperty => 'Ref' in parameters.environmentMap[resourceProperty])
+    .forEach(resourceProperty => {
+      dependsOnParams[parameters.environmentMap[resourceProperty].Ref] = {
+        Type: 'String',
+        Default: parameters.environmentMap[resourceProperty].Ref,
+      };
+    });
 
-  containerCfn.Parameters = getNewCFNParameters(
-    containerCfn.Parameters, 
-    {}, 
-    dependsOnParams,
-    {}
-    );
+  containerCfn.Parameters = getNewCFNParameters(containerCfn.Parameters, {}, dependsOnParams, {});
 
   const cfnFileName = `${parameters.resourceName}-cloudformation-template.json`;
   JSONUtilities.writeJson(path.join(resourceDirPath, cfnFileName), containerCfn);
 
-  return { resourceDirPath }
+  return { resourceDirPath };
 }
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack

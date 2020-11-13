@@ -1,5 +1,5 @@
 import { ServiceName as FunctionServiceName } from 'amplify-category-function';
-import inquirer from "inquirer";
+import inquirer from 'inquirer';
 import { DEPLOYMENT_MECHANISM } from '../ecs-stack';
 
 const category = 'api';
@@ -7,15 +7,15 @@ const serviceName = 'CloudFront';
 const parametersFileName = 'container-params.json';
 const cfnParametersFilename = 'container-parameters.json';
 
-export type ServiceConfiguration = { 
-  resourceName: string, 
-  imageTemplate: string, 
-  githubPath: string,
-  authName: string,
+export type ServiceConfiguration = {
+  resourceName: string;
+  imageSource: { type: IMAGE_SOURCE_TYPE; template?: string };
+  githubPath: string;
+  authName: string;
   githubToken: string;
   deploymentMechanism: DEPLOYMENT_MECHANISM;
   restrictAccess: boolean;
-}
+};
 
 export async function serviceWalkthrough(context, defaultValuesFilename): Promise<Partial<ServiceConfiguration>> {
   const { checkRequirements, externalAuthEnable } = await import('amplify-category-auth');
@@ -59,10 +59,16 @@ async function askContainerSource(context): Promise<Partial<ServiceConfiguration
   return newContainer(context);
 }
 
+export enum IMAGE_SOURCE_TYPE {
+  TEMPLATE = 'TEMPLATE',
+  CUSTOM = 'CUSTOM',
+}
+
 async function newContainer(context): Promise<Partial<ServiceConfiguration>> {
-  let imageTemplate;
+  let imageSource: { type: IMAGE_SOURCE_TYPE; template?: string };
+
   do {
-    imageTemplate = await inquirer.prompt([
+    ({ imageSource } = await inquirer.prompt([
       {
         name: 'imageSource',
         type: 'list',
@@ -70,51 +76,49 @@ async function newContainer(context): Promise<Partial<ServiceConfiguration>> {
         choices: [
           {
             name: 'ExpressJS - Hello World sample',
-            value: 'express_hello_world'
+            value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_hello_world' },
           },
           {
             name: 'ExpressJS - REST',
-            value: 'express_rest'
+            value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_rest' },
           },
           {
             name: 'ExpressJS - GraphQL',
-            value: 'express_graphql'
+            value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_graphql' },
           },
           {
             name: 'Custom (bring your own Dockerfile or docker-compose.yml)',
-            value: 'custom'
+            value: { type: IMAGE_SOURCE_TYPE.CUSTOM },
           },
           {
             name: 'Learn More',
-            value: 'Learn More',
+            value: undefined,
           },
         ],
-        default: 'express_hello_world'
-      }
-    ]);
-  } while (imageTemplate.imageSource === 'Learn More')
+        default: 'express_hello_world',
+      },
+    ]));
+  } while (imageSource === undefined);
 
   let deploymentMechanismQuestion;
 
   const deploymentMechanismChoices = [
     {
       name: 'On every "amplify push" (Fully managed container source)',
-      value: DEPLOYMENT_MECHANISM.FULLY_MANAGED
-    }
+      value: DEPLOYMENT_MECHANISM.FULLY_MANAGED,
+    },
   ];
 
-  if (imageTemplate.imageSource === 'custom') {
-    deploymentMechanismChoices.push(
-      {
-        name: 'On every Github commit (Independently managed container source)',
-        value: DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED
-      }
-    );
+  if (imageSource.type === IMAGE_SOURCE_TYPE.CUSTOM) {
+    deploymentMechanismChoices.push({
+      name: 'On every Github commit (Independently managed container source)',
+      value: DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED,
+    });
   }
 
   deploymentMechanismChoices.push({
     name: 'Advanced: Self-managed (Learn more: docs.amplify.aws/function/container#...)',
-    value: DEPLOYMENT_MECHANISM.SELF_MANAGED
+    value: DEPLOYMENT_MECHANISM.SELF_MANAGED,
   });
 
   do {
@@ -123,10 +127,10 @@ async function newContainer(context): Promise<Partial<ServiceConfiguration>> {
         name: 'deploymentMechanism',
         type: 'list',
         message: 'When do you want to build & deploy the Fargate task',
-        choices: deploymentMechanismChoices
-      }
-    ])
-  } while (deploymentMechanismQuestion.deploymentMechanism === 'Learn More')
+        choices: deploymentMechanismChoices,
+      },
+    ]);
+  } while (deploymentMechanismQuestion.deploymentMechanism === 'Learn More');
 
   let githubPath, githubToken;
 
@@ -136,14 +140,14 @@ async function newContainer(context): Promise<Partial<ServiceConfiguration>> {
     const githubQuestions = await inquirer.prompt([
       {
         name: 'github_access_token',
-        type: 'input',
+        type: 'password',
         message: 'GitHub Personal Access Token:',
       },
       {
         name: 'github_path',
         type: 'input',
         message: 'Path to your repo:',
-      }
+      },
     ]);
 
     githubPath = githubQuestions.github_path;
@@ -154,16 +158,16 @@ async function newContainer(context): Promise<Partial<ServiceConfiguration>> {
     name: 'rescrict_access',
     type: 'confirm',
     message: 'Do you want to restrict API access',
-    default: true
-  })
+    default: true,
+  });
 
   return {
-    imageTemplate: imageTemplate.imageSource,
+    imageSource,
     githubPath,
     githubToken,
     deploymentMechanism: deploymentMechanismQuestion.deploymentMechanism,
-    restrictAccess: restrictApiQuestion.rescrict_access
-  }
+    restrictAccess: restrictApiQuestion.rescrict_access,
+  };
 }
 
 export async function updateWalkthrough(context, defaultValuesFilename) {
@@ -175,5 +179,4 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
   const resources = allResources
     .filter(resource => resource.service === serviceName && !!resource.providerPlugin)
     .map(resource => resource.resourceName);
-
 }

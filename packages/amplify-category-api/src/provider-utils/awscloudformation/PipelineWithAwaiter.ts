@@ -10,36 +10,31 @@ import * as cdk from '@aws-cdk/core';
 import * as custom from '@aws-cdk/custom-resources';
 import fs from 'fs-extra';
 import path from 'path';
+import { DEPLOYMENT_MECHANISM } from './ecs-stack';
+import { getGitHubOwnerRepoFromPath } from './utils/github';
 
 type PipelineAwaiterProps = {
-    pipeline: codepipeline.Pipeline,
-    artifactBucketName?: string,
-    artifactKey?: string,
+  pipeline: codepipeline.Pipeline;
+  artifactBucketName?: string;
+  artifactKey?: string;
+  deploymentMechanism: DEPLOYMENT_MECHANISM;
 };
 
 export type GitHubSourceActionInfo = {
-    path: string;
-    tokenSecretArn: string;
-}
+  path: string;
+  tokenSecretArn: string;
+};
 
 class PipelineAwaiter extends cdk.Construct {
-    constructor(
-        scope: cdk.Construct,
-        id: string,
-        props: PipelineAwaiterProps
-    ) {
-        const {
-            pipeline,
-            artifactBucketName,
-            artifactKey,
-        } = props;
+  constructor(scope: cdk.Construct, id: string, props: PipelineAwaiterProps) {
+    const { pipeline, artifactBucketName, artifactKey, deploymentMechanism } = props;
 
-        const { pipelineArn, pipelineName } = pipeline;
+    const { pipelineArn, pipelineName } = pipeline;
 
-        const onEventHandler = new lambda.Function(scope, `${id}CustomEventHandler`, {
-            runtime: lambda.Runtime.NODEJS_12_X,
-            handler: "index.handler",
-            code: lambda.Code.fromInline(`exports.handler = async function ({ RequestType, PhysicalResourceId, ResourceProperties }) {
+    const onEventHandler = new lambda.Function(scope, `${id}CustomEventHandler`, {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline(`exports.handler = async function ({ RequestType, PhysicalResourceId, ResourceProperties }) {
                 switch (RequestType) {
                     case 'Delete':
                     case 'Update':
@@ -54,284 +49,298 @@ class PipelineAwaiter extends cdk.Construct {
 
                 return result;
             };`),
-            timeout: cdk.Duration.minutes(5),
-        });
+      timeout: cdk.Duration.minutes(5),
+    });
 
-        const containerTemplateFilePath = path.join(__dirname, 'awaiter', 'pipeline.js');
-        const isCompleteHandlerCode = fs.readFileSync(containerTemplateFilePath, 'utf8');
+    const containerTemplateFilePath = path.join(__dirname, 'awaiter', 'pipeline.js');
+    const isCompleteHandlerCode = fs.readFileSync(containerTemplateFilePath, 'utf8');
 
-        const isCompleteHandler = new lambda.Function(scope, `${id}CustomCompleteHandler`, {
-            runtime: lambda.Runtime.NODEJS_12_X,
-            handler: "index.handler",
-            timeout: cdk.Duration.seconds(25),
-            code: lambda.Code.fromInline(isCompleteHandlerCode),
-            environment: { // TODO: Move to custom resource properties
-                PIPELINE_NAME: pipelineName,
-                ARTIFACT_BUCKET_NAME: artifactBucketName,
-                ARTIFACT_KEY: artifactKey,
-            },
-        });
-        isCompleteHandler.addToRolePolicy(new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: [
-                'codepipeline:GetPipeline',
-                'codepipeline:ListPipelineExecutions',
-            ],
-            resources: [pipelineArn],
-        }));
-        isCompleteHandler.addToRolePolicy(new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: [
-                'cloudformation:DescribeStacks',
-            ],
-            resources: [cdk.Stack.of(scope).stackId],
-        }));
+    const isCompleteHandler = new lambda.Function(scope, `${id}CustomCompleteHandler`, {
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+      timeout: cdk.Duration.seconds(25),
+      code: lambda.Code.fromInline(isCompleteHandlerCode),
+      environment: {
+        // TODO: Move to custom resource properties
+        PIPELINE_NAME: pipelineName,
+        ARTIFACT_BUCKET_NAME: artifactBucketName,
+        ARTIFACT_KEY: artifactKey,
+        DEPLOYMENT_MECHANISM: deploymentMechanism,
+      },
+    });
+    isCompleteHandler.addToRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['codepipeline:GetPipeline', 'codepipeline:ListPipelineExecutions'],
+        resources: [pipelineArn],
+      }),
+    );
+    isCompleteHandler.addToRolePolicy(
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: ['cloudformation:DescribeStacks'],
+        resources: [cdk.Stack.of(scope).stackId],
+      }),
+    );
 
-        const myProvider = new custom.Provider(scope, `${id}MyProvider`, {
-            onEventHandler,
-            isCompleteHandler,
-            queryInterval: cdk.Duration.seconds(10),
-        });
+    const myProvider = new custom.Provider(scope, `${id}MyProvider`, {
+      onEventHandler,
+      isCompleteHandler,
+      queryInterval: cdk.Duration.seconds(10),
+    });
 
-        const customResource = new cdk.CustomResource(scope, `Deployment${id}`, {
-            serviceToken: myProvider.serviceToken,
-            properties: {
-                artifactKey,
-                pipelineName,
-            },
-        });
+    const customResource = new cdk.CustomResource(scope, `Deployment${id}`, {
+      serviceToken: myProvider.serviceToken,
+      properties: {
+        artifactKey,
+        pipelineName,
+      },
+    });
 
-        super(scope, id);
-    }
+    super(scope, id);
+  }
 }
 
 export class PipelineWithAwaiter extends cdk.Construct {
-    constructor(
-        scope: cdk.Construct,
-        id: string,
-        {
-            bucket,
-            s3SourceActionKey,
-            service,
-            githubSourceActionInfo,
-            containersInfo,
-        }: {
-            bucket: s3.IBucket;
-            s3SourceActionKey?: string;
-            githubSourceActionInfo?: GitHubSourceActionInfo;
-            service: ecs.CfnService;
-            containersInfo: {
-                container: ecs.ContainerDefinition;
-                repository: ecr.Repository
-            }[];
-        },
-    ) {
-        super(scope, id);
+  constructor(
+    scope: cdk.Construct,
+    id: string,
+    {
+      bucket,
+      s3SourceActionKey,
+      service,
+      deploymentMechanism,
+      githubSourceActionInfo,
+      containersInfo,
+    }: {
+      bucket: s3.IBucket;
+      s3SourceActionKey?: string;
+      deploymentMechanism: DEPLOYMENT_MECHANISM;
+      githubSourceActionInfo?: GitHubSourceActionInfo;
+      service: ecs.CfnService;
+      containersInfo: {
+        container: ecs.ContainerDefinition;
+        repository: ecr.Repository;
+      }[];
+    },
+  ) {
+    super(scope, id);
 
-        const sourceOutput = new codepipeline.Artifact('SourceArtifact');
-        const buildOutput = new codepipeline.Artifact('BuildArtifact');
+    const sourceOutput = new codepipeline.Artifact('SourceArtifact');
+    const buildOutput = new codepipeline.Artifact('BuildArtifact');
 
-        const codebuildproject = new codebuild.PipelineProject(scope, `${id}CodeBuildProject`, {
+    const codebuildproject = new codebuild.PipelineProject(scope, `${id}CodeBuildProject`, {
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+        privileged: true,
+      },
+    });
 
-            environment: {
-                buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
-                privileged: true,
-            },
-        });
-
-        if (githubSourceActionInfo) {
-            codebuildproject.addToRolePolicy(
-                new iam.PolicyStatement({
-                    effect: iam.Effect.ALLOW,
-                    actions: [
-                        'secretsmanager:GetRandomPassword',
-                        'secretsmanager:GetResourcePolicy',
-                        'secretsmanager:GetSecretValue',
-                        'secretsmanager:DescribeSecret',
-                        'secretsmanager:ListSecretVersionIds',
-                    ],
-                    resources: [githubSourceActionInfo.tokenSecretArn],
-                })
-            )
-        }
-
-        if (codebuildproject.role) {
-            codebuildproject.role.addToPrincipalPolicy(
-                new iam.PolicyStatement({
-                    resources: ['*'],
-                    actions: [
-                        'ecr:GetAuthorizationToken',
-                        'ecr:BatchGetImage',
-                        'ecr:BatchGetDownloadUrlForLayer',
-                        'ecr:InitiateLayerUpload',
-                        'ecr:BatchCheckLayerAvailability',
-                        'ecr:UploadLayerPart',
-                        'ecr:CompleteLayerUpload',
-                        'ecr:PutImage',
-                    ],
-                    effect: iam.Effect.ALLOW,
-                }),
-            );
-        }
-
-        const sourceStageUpdate = createSourceStage(scope, {
-            bucket,
-            s3SourceActionKey,
-            githubSourceActionInfo,
-            roleName: 'UpdateSource',
-            sourceOutput
-        });
-
-        const environmentVariables = containersInfo.reduce((acc, c) => {
-            acc[`${c.container.containerName}_REPOSITORY_URI`] = {
-                type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-                value: c.repository.repositoryUri,
-            };
-
-            return acc;
-        }, {} as Record<string, codebuild.BuildEnvironmentVariable>);
-
-        const stagesWithDeploy = [
-            sourceStageUpdate,
-            {
-                stageName: 'Build',
-                actions: [
-                    new codepipelineactions.CodeBuildAction({
-                        role: getRole(scope, 'UpdateBuild'),
-                        actionName: 'Build',
-                        type: codepipelineactions.CodeBuildActionType.BUILD,
-                        project: codebuildproject,
-                        input: sourceOutput,
-                        outputs: [buildOutput],
-                        environmentVariables,
-                    }),
-                ],
-            },
-            {
-                stageName: 'Deploy',
-                actions: [
-                    new codepipelineactions.EcsDeployAction({
-                        role: getRole(scope, 'UpdateDeploy'),
-                        actionName: 'Deploy',
-                        service: new class extends cdk.Construct implements ecs.IBaseService {
-                            cluster = {
-                                clusterName: service.cluster,
-                                env: {},
-                            } as ecs.ICluster;
-                            serviceArn = cdk.Fn.ref(service.serviceArn);
-                            serviceName = service.serviceName;
-                            stack = cdk.Stack.of(this);
-                            env = {} as any;
-                            node = service.node;
-                        }(this, 'tmpService'), // TODO: clean this,
-                        input: buildOutput,
-                    }),
-                ],
-            }];
-
-        const role = getRole(scope, `Pipeline`, new iam.ServicePrincipal('codepipeline.amazonaws.com'));
-
-        const pipeline = new codepipeline.Pipeline(scope, `${id}Pipeline`, {
-            crossAccountKeys: false,
-            artifactBucket: bucket,
-            stages: stagesWithDeploy,
-            role,
-        });
-
-        pipeline.node.addDependency(service);
-
-        const pipelineAwaiter = new PipelineAwaiter(scope, 'Awaiter', {
-            pipeline,
-            artifactBucketName: bucket.bucketName,
-            artifactKey: s3SourceActionKey
-        });
+    if (githubSourceActionInfo) {
+      codebuildproject.addToRolePolicy(
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: [
+            'secretsmanager:GetRandomPassword',
+            'secretsmanager:GetResourcePolicy',
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+            'secretsmanager:ListSecretVersionIds',
+          ],
+          resources: [githubSourceActionInfo.tokenSecretArn],
+        }),
+      );
     }
+
+    if (codebuildproject.role) {
+      codebuildproject.role.addToPrincipalPolicy(
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: [
+            'ecr:GetAuthorizationToken',
+            'ecr:BatchGetImage',
+            'ecr:BatchGetDownloadUrlForLayer',
+            'ecr:InitiateLayerUpload',
+            'ecr:BatchCheckLayerAvailability',
+            'ecr:UploadLayerPart',
+            'ecr:CompleteLayerUpload',
+            'ecr:PutImage',
+          ],
+          effect: iam.Effect.ALLOW,
+        }),
+      );
+    }
+
+    const preBuildStages = createPreBuildStages(scope, {
+      bucket,
+      s3SourceActionKey,
+      githubSourceActionInfo,
+      roleName: 'UpdateSource',
+      sourceOutput,
+    });
+
+    const environmentVariables = containersInfo.reduce((acc, c) => {
+      acc[`${c.container.containerName}_REPOSITORY_URI`] = {
+        type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+        value: c.repository.repositoryUri,
+      };
+
+      return acc;
+    }, {} as Record<string, codebuild.BuildEnvironmentVariable>);
+
+    const stagesWithDeploy = ([] as codepipeline.StageOptions[]).concat(preBuildStages, [
+      {
+        stageName: 'Build',
+        actions: [
+          new codepipelineactions.CodeBuildAction({
+            role: getRole(scope, 'UpdateBuild'),
+            actionName: 'Build',
+            type: codepipelineactions.CodeBuildActionType.BUILD,
+            project: codebuildproject,
+            input: sourceOutput,
+            outputs: [buildOutput],
+            environmentVariables,
+          }),
+        ],
+      },
+      {
+        stageName: 'Deploy',
+        actions: [
+          new codepipelineactions.EcsDeployAction({
+            role: getRole(scope, 'UpdateDeploy'),
+            actionName: 'Deploy',
+            service: new (class extends cdk.Construct implements ecs.IBaseService {
+              cluster = {
+                clusterName: service.cluster,
+                env: {},
+              } as ecs.ICluster;
+              serviceArn = cdk.Fn.ref(service.serviceArn);
+              serviceName = service.serviceName;
+              stack = cdk.Stack.of(this);
+              env = {} as any;
+              node = service.node;
+            })(this, 'tmpService'), // TODO: clean this,
+            input: buildOutput,
+          }),
+        ],
+      },
+    ]);
+
+    const role = getRole(scope, `Pipeline`, new iam.ServicePrincipal('codepipeline.amazonaws.com'));
+
+    const pipeline = new codepipeline.Pipeline(scope, `${id}Pipeline`, {
+      crossAccountKeys: false,
+      artifactBucket: bucket,
+      stages: stagesWithDeploy,
+      role,
+    });
+
+    pipeline.node.addDependency(service);
+
+    const pipelineAwaiter = new PipelineAwaiter(scope, 'Awaiter', {
+      pipeline,
+      artifactBucketName: bucket.bucketName,
+      artifactKey: s3SourceActionKey,
+      deploymentMechanism,
+    });
+  }
 }
 
-function createSourceStage(scope: cdk.Construct, {
+function createPreBuildStages(
+  scope: cdk.Construct,
+  {
     bucket,
     s3SourceActionKey,
     githubSourceActionInfo,
     sourceOutput,
-    roleName
-}: {
-    bucket: s3.IBucket,
-    s3SourceActionKey: string,
-    githubSourceActionInfo?: GitHubSourceActionInfo,
-    sourceOutput: codepipeline.Artifact,
-    roleName: string,
-}) {
-    const stage = {
-        stageName: 'Source',
-        actions: []
-    };
+    roleName,
+  }: {
+    bucket: s3.IBucket;
+    s3SourceActionKey: string;
+    githubSourceActionInfo?: GitHubSourceActionInfo;
+    sourceOutput: codepipeline.Artifact;
+    roleName: string;
+  },
+) {
+  const stages: codepipeline.StageOptions[] = [];
 
-    if (githubSourceActionInfo && githubSourceActionInfo.path) {
-        const { path, tokenSecretArn } = githubSourceActionInfo;
-        const { githubOwner, githubRepo } = getGitHubOwnerRepoFromPath(path);
-        stage.actions = [
-            new codepipelineactions.GitHubSourceAction({
-                actionName: 'Source',
-                oauthToken: cdk.SecretValue.secretsManager(tokenSecretArn),
-                owner: githubOwner,
-                repo: githubRepo,
-                output: sourceOutput,
+  const stage = {
+    stageName: 'Source',
+    actions: [],
+  };
 
-            })
-        ];
-    } else {
-        stage.actions = [
-            new codepipelineactions.S3SourceAction({
-                role: getRole(scope, roleName),
-                actionName: 'Source',
-                bucket,
-                bucketKey: s3SourceActionKey,
-                output: sourceOutput,
-            }),
-        ];
-    }
+  stages.push(stage);
 
-    return stage;
-}
+  if (githubSourceActionInfo && githubSourceActionInfo.path) {
+    const { path, tokenSecretArn } = githubSourceActionInfo;
+    const { owner, repo, branch } = getGitHubOwnerRepoFromPath(path);
 
-function getGitHubOwnerRepoFromPath(path: string) {
-    if (!path.startsWith('https://github.com/')) {
-        throw Error(`Invalid Repo Path ${path}`);
-    }
+    const preBuildOutput = new codepipeline.Artifact('PreBuildArtifact');
 
-    const [githubOwner, githubRepo] = path.substring(19).split('/'); // https://github.com/<owner>/<repo> 
+    stage.actions = [
+      new codepipelineactions.GitHubSourceAction({
+        actionName: 'Source',
+        oauthToken: cdk.SecretValue.secretsManager(tokenSecretArn),
+        owner,
+        repo,
+        branch,
+        output: preBuildOutput,
+      }),
+    ];
 
-    return {
-        githubOwner,
-        githubRepo // get branch from GitHub path
-    }
-}
-
-function getRole(
-    scope: cdk.Construct,
-    prefix: string,
-    assumedBy?: iam.IPrincipal,
-): iam.Role {
-    const role = new iam.Role(scope, `${prefix}Role`, {
-        assumedBy: assumedBy ?? new iam.AccountRootPrincipal(),
+    stages.push({
+      stageName: 'PreBuild',
+      actions: [
+        new codepipelineactions.LambdaInvokeAction({
+          actionName: 'PreBuild',
+          lambda: new lambda.Function(scope, 'PreBuildLambda', {
+            code: lambda.S3Code.fromBucket(bucket, 'codepipeline-action-buildspec-generator-lambda.zip'),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.NODEJS_12_X,
+          }),
+          inputs: [preBuildOutput],
+          outputs: [sourceOutput],
+        }),
+      ],
     });
+  } else {
+    stage.actions = [
+      new codepipelineactions.S3SourceAction({
+        role: getRole(scope, roleName),
+        actionName: 'Source',
+        bucket,
+        bucketKey: s3SourceActionKey,
+        output: sourceOutput,
+      }),
+    ];
+  }
 
-    const cfnRole = role.node.defaultChild as iam.CfnRole;
+  return stages;
+}
 
-    // We add a dummy statement that we immediately remove so CDK creates a policy to which we can add a condition
-    const defaultPolicy = role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['*'],
-        effect: iam.Effect.DENY,
-    })).policyDependable as iam.Policy;
-    (defaultPolicy.document as any).statements = [];
+function getRole(scope: cdk.Construct, prefix: string, assumedBy?: iam.IPrincipal): iam.Role {
+  const role = new iam.Role(scope, `${prefix}Role`, {
+    assumedBy: assumedBy ?? new iam.AccountRootPrincipal(),
+  });
 
-    return role;
-};
+  const cfnRole = role.node.defaultChild as iam.CfnRole;
+
+  // We add a dummy statement that we immediately remove so CDK creates a policy to which we can add a condition
+  const defaultPolicy = role.addToPrincipalPolicy(
+    new iam.PolicyStatement({
+      actions: ['*'],
+      effect: iam.Effect.DENY,
+    }),
+  ).policyDependable as iam.Policy;
+  (defaultPolicy.document as any).statements = [];
+
+  return role;
+}
 
 export type ContainerStackProps = {
-    deploymentBucket: string;
-    containerPort: number;
-    awaiterZipPath: string;
-    githubPath?: string;
-    githubTokenSecretsManagerArn: string;
+  deploymentBucket: string;
+  containerPort: number;
+  awaiterZipPath: string;
+  githubPath?: string;
+  githubTokenSecretsManagerArn: string;
 };

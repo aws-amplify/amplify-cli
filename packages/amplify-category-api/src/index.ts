@@ -4,9 +4,10 @@ import path from 'path';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 
-export { EcsStack } from './provider-utils/awscloudformation/ecs-stack'
+export { EcsStack } from './provider-utils/awscloudformation/ecs-stack';
+export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
 
-import {getContainers} from './provider-utils/awscloudformation/docker-compose';
+import { getContainers } from './provider-utils/awscloudformation/docker-compose';
 
 export const Richard = { getContainers };
 
@@ -15,7 +16,7 @@ const category = 'api';
 const categories = 'categories';
 
 export const enum ServiceName {
-  ElasticContainer = 'ElasticContainer'
+  ElasticContainer = 'ElasticContainer',
 }
 
 export async function console(context) {

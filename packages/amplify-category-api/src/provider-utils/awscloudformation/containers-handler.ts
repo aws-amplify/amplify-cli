@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
+import { IMAGE_SOURCE_TYPE, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
 import { containerFiles } from './container-artifacts';
 import { DEPLOYMENT_MECHANISM } from './ecs-stack';
 import { GitHubSourceActionInfo } from './PipelineWithAwaiter';
@@ -11,7 +11,7 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const walkthroughOptions = await serviceWalkthroughPromise;
 
-  const { resourceName, restrictAccess, imageTemplate, githubPath, githubToken, deploymentMechanism } = walkthroughOptions;
+  const { resourceName, restrictAccess, imageSource, githubPath, githubToken, deploymentMechanism } = walkthroughOptions;
   const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
 
   const dependsOn = [];
@@ -19,24 +19,15 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
   // TODO: Find a place to put this
   // for now copied from NETWORK_STACK_LOGICAL_ID (amplify-provider-awscloudformation/src/network/stack.ts)
   const x = 'NetworkStack';
-  dependsOn.push(
-    {
-      "category": "",
-      "resourceName": x,
-      "attributes": [
-        "ClusterName",
-        "VpcId",
-        "VpcCidrBlock",
-        "SubnetIds",
-        "VpcLinkId",
-        "CloudMapNamespaceId"
-      ]
-    });
+  dependsOn.push({
+    category: '',
+    resourceName: x,
+    attributes: ['ClusterName', 'VpcId', 'VpcCidrBlock', 'SubnetIds', 'VpcLinkId', 'CloudMapNamespaceId'],
+  });
 
   let authName;
 
   if (restrictAccess) {
-
     const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
     // getting requirement satisfaction map
     const satisfiedRequirements = await checkRequirements(apiRequirements, context, category, resourceName);
@@ -53,56 +44,62 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
     } else {
       [authName] = Object.keys(context.amplify.getProjectDetails().amplifyMeta.auth);
     }
-    dependsOn.push(
-      {
-        "category": "auth",
-        "resourceName": authName,
-        "attributes": [
-          "UserPoolId",
-          "AppClientIDWeb"
-        ]
-      });
+    dependsOn.push({
+      category: 'auth',
+      resourceName: authName,
+      attributes: ['UserPoolId', 'AppClientIDWeb'],
+    });
   }
 
   //#region Add token to secrets manager and get arn
   const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'];
-  
+
   const secretName = `${StackName}-${category}-${resourceName}-github-token`;
   const { ARN: secretArn } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'newSecret', {
     secret: githubToken,
     description: 'GitHub OAuth token',
     name: secretName,
-    version: secretName
+    version: secretName,
   });
-  
+
   const githubTokenSecretArn = secretArn;
 
-  const githubInfo: GitHubSourceActionInfo = deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED ? {
-    path: githubPath,
-    tokenSecretArn: githubTokenSecretArn
-  } : undefined;
+  const githubInfo: GitHubSourceActionInfo =
+    deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED
+      ? {
+          path: githubPath,
+          tokenSecretArn: githubTokenSecretArn,
+        }
+      : undefined;
 
   //#endregion
+
+  const build = deploymentMechanism === DEPLOYMENT_MECHANISM.FULLY_MANAGED;
 
   options = {
     resourceName,
     dependsOn,
-    ...walkthroughOptions,
-    build: true,
+    deploymentMechanism,
+    imageSource,
+    restrictAccess,
+    build,
     providerPlugin: 'awscloudformation',
     service: 'ElasticContainer',
     githubInfo,
-    authName
+    authName,
   };
 
   fs.ensureDirSync(resourceDirPath);
-  fs.ensureDirSync(path.join(resourceDirPath, 'src'));
 
-  Object.entries(containerFiles).forEach(([fileName, fileContents]) => {
-    fs.writeFileSync(path.join(resourceDirPath, 'src', fileName), fileContents);
-  });
+  if (imageSource.type === IMAGE_SOURCE_TYPE.TEMPLATE) {
+    fs.ensureDirSync(path.join(resourceDirPath, 'src'));
+
+    Object.entries(containerFiles).forEach(([fileName, fileContents]) => {
+      fs.writeFileSync(path.join(resourceDirPath, 'src', fileName), fileContents);
+    });
+  }
 
   context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
 
   return resourceName;
-}
+};

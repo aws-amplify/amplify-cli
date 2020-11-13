@@ -18,5 +18,11 @@
   },
   "jest.enableInlineErrorMessages": true,
   "jest.showCoverageOnLoad": true,
-  "jest.runAllTestsFirst": false
+  "jest.runAllTestsFirst": false,
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  }
 }

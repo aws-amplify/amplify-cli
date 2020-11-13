@@ -22,12 +22,14 @@ const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('./utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const { isMultiEnvLayer, packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
-const { ServiceName: ApiServiceName, Richard, EcsStack } = require('amplify-category-api');
+const { ServiceName: ApiServiceName, Richard, EcsStack, getGitHubOwnerRepoFromPath } = require('amplify-category-api');
 const { stateManager } = require('amplify-cli-core');
 const constants = require('./constants');
 const { NetworkStack, NETWORK_STACK_LOGICAL_ID } = require('./network/stack');
 const { getEnvironmentNetworkInfo } = require('./network/environment-info');
-import { prepareApp } from "@aws-cdk/core/lib/private/prepare-app";
+import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
+import { DEPLOYMENT_MECHANISM } from 'amplify-category-api/lib/provider-utils/awscloudformation/ecs-stack'; // TODO: properly export this
+import { Octokit } from '@octokit/rest';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaLayer = 'LambdaLayer';
@@ -56,11 +58,11 @@ async function run(context, resourceDefinition) {
 
     validateCfnTemplates(context, resources);
 
-    resources
-      .filter(resource => resource.service === ApiServiceName.ElasticContainer)
-      .forEach(resource => {
-        generateContainersArtifacts(context, resource);
-      });
+    for await (const resource of resources) {
+      if (resource.service === ApiServiceName.ElasticContainer) {
+        await generateContainersArtifacts(context, resource);
+      }
+    }
 
     await packageResources(context, resources);
 
@@ -73,8 +75,15 @@ async function run(context, resourceDefinition) {
     await prePushAuthTransform(context, resources);
     await prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated);
     await updateS3Templates(context, resources, projectDetails.amplifyMeta);
-    // upload custom awaiter code
-    await uploadAwaiterZipFile(context);
+
+    // TODO: only upload these if resource is a container api
+    // upload custom awaiter code and codepipeline action lambdas
+    const uploadResourcesPromises = [
+      'custom-resource-pipeline-awaiter.zip',
+      'codepipeline-action-buildspec-generator-lambda.zip',
+    ].map(file => uploadResourceFile(context, file));
+
+    await Promise.all(uploadResourcesPromises);
 
     spinner.start();
 
@@ -205,12 +214,8 @@ async function createNetworkResources(context, stackName, needsVpc) {
     };
   }
   const vpcName = 'Amplify/VPC-do-not-delete';
-  
-  const {
-    vpcId,
-    internetGatewayId,
-    subnetCidrs
-  } = await getEnvironmentNetworkInfo(context, {
+
+  const { vpcId, internetGatewayId, subnetCidrs } = await getEnvironmentNetworkInfo(context, {
     stackName,
     vpcName,
     vpcCidr: '10.0.0.0/16',
@@ -281,18 +286,18 @@ function envHasContainers(context) {
   return false;
 }
 
-async function uploadAwaiterZipFile(context) {
-  const customerAwaiterFileName = 'custom-resource-pipeline-awaiter.zip';
-  const customAwaiterZipFilePath = path.join(__dirname, '..', 'resources', customerAwaiterFileName);
+async function uploadResourceFile(context, fileName) {
+  const filePath = path.join(__dirname, '..', 'resources', fileName);
+
+  // TODO: check if already exists
 
   return S3.getInstance(context).then(s3 => {
     const s3Params = {
-      Body: fs.createReadStream(customAwaiterZipFilePath),
-      Key: customerAwaiterFileName,
+      Body: fs.createReadStream(filePath),
+      Key: fileName,
     };
     return s3.uploadFile(s3Params);
   });
-
 }
 
 async function updateStackForAPIMigration(context, category, resourceName, options) {
@@ -496,8 +501,7 @@ function packageResources(context, resources) {
 
           const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
           context.amplify.writeObjectAsJson(cfnParamsFilePath, cfnParams, true);
-        }
-        else {
+        } else {
           if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
             cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
               Bucket: s3Bucket,
@@ -522,15 +526,10 @@ function packageResources(context, resources) {
   return Promise.all(promises);
 }
 
-function generateContainersArtifacts(context, resource) {
-  const {
-    category: categoryName,
-    resourceName,
-    githubInfo,
-    deploymentMechanism,
-    authName,
-    restrictAccess
-  } = resource;
+async function generateContainersArtifacts(context, resource) {
+  /** @type {{ category: string, resourceName: string, githubInfo: {path: string, tokenSecretArn: string}, deploymentMechanism: DEPLOYMENT_MECHANISM, authName: string, restrictAccess: boolean }} */
+  const { category: categoryName, resourceName, githubInfo, deploymentMechanism, authName, restrictAccess } = resource;
+
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, categoryName, resourceName));
 
@@ -538,29 +537,72 @@ function generateContainersArtifacts(context, resource) {
     providers: { [constants.ProviderName]: provider },
   } = context.amplify.getProjectMeta();
 
-  const {
-    StackName: envName,
-    DeploymentBucketName: deploymentBucket,
-  } = provider;
+  const { StackName: envName, DeploymentBucketName: deploymentBucket } = provider;
 
   const srcPath = path.join(resourceDir, 'src');
 
   const dockerComposeFilename = 'docker-compose.yml';
   const dockerfileFilename = 'Dockerfile';
 
-  const containerDefinitionFileNames = [dockerComposeFilename, dockerfileFilename]
+  const containerDefinitionFileNames = [dockerComposeFilename, dockerfileFilename];
 
   /** @type Record<string, string> */
-  const containerDefinitionFiles = containerDefinitionFileNames
-    .reduce((acc, fileName) => {
-      const filePath = path.normalize(path.join(srcPath, fileName));
+  const containerDefinitionFiles = {};
 
-      if (fs.existsSync(filePath)) {
-        acc[fileName] = fs.readFileSync(filePath).toString();
+  for await (const fileName of containerDefinitionFileNames) {
+    switch (deploymentMechanism) {
+      case DEPLOYMENT_MECHANISM.FULLY_MANAGED:
+      case DEPLOYMENT_MECHANISM.SELF_MANAGED:
+        const filePath = path.normalize(path.join(srcPath, fileName));
+
+        if (fs.existsSync(filePath)) {
+          containerDefinitionFiles[fileName] = fs.readFileSync(filePath).toString();
+        }
+        break;
+      case DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED:
+        const { path: repoUri, tokenSecretArn } = githubInfo;
+
+        const { SecretString: githubToken } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'retrieveSecret', {
+          secretArn: tokenSecretArn,
+        });
+
+        const octokit = new Octokit({ auth: githubToken });
+
+        const { owner, repo, branch, path: pathInRepo } = getGitHubOwnerRepoFromPath(repoUri);
+
+        try {
+          const {
+            data: { content, encoding },
+          } = await octokit.repos.getContent({
+            owner,
+            repo,
+            ...(branch ? { ref: branch } : undefined), // only include branch if not undefined
+            path: path.join(pathInRepo, fileName),
+          });
+
+          containerDefinitionFiles[fileName] = Buffer.from(content, encoding).toString('utf8');
+        } catch (error) {
+          const { status } = error;
+
+          // It is ok if the file doesn't exist, we skip it
+          if (status !== 404) {
+            throw error;
+          }
+        }
+        break;
+      default: {
+        exhaustiveCheck(deploymentMechanism);
+
+        /**
+         *
+         * @param {never} obj
+         */
+        function exhaustiveCheck(obj) {
+          throw new Error(`Invalid deploymentMechanism : ${obj}`);
+        }
       }
-
-      return acc;
-    }, {});
+    }
+  }
 
   const noDefinitionAvailable = Object.keys(containerDefinitionFiles).length === 0;
 
@@ -571,14 +613,17 @@ function generateContainersArtifacts(context, resource) {
   let composeContents = containerDefinitionFiles[dockerComposeFilename];
   const { [dockerfileFilename]: dockerfileContents } = containerDefinitionFiles;
 
-  const {
-    buildspec,
-    containers,
-  } = Richard.getContainers(composeContents, dockerfileContents);
-  
-  const containersPorts = containers.reduce((acc, container) =>
-  [].concat(acc, container.portMappings.map(({ containerPort }) => containerPort)), []);
-  
+  const { buildspec, containers } = Richard.getContainers(composeContents, dockerfileContents);
+
+  const containersPorts = containers.reduce(
+    (acc, container) =>
+      [].concat(
+        acc,
+        container.portMappings.map(({ containerPort }) => containerPort),
+      ),
+    [],
+  );
+
   if (containersPorts.length === 0) {
     throw new Error('Service requires at least one exposed port');
   }
@@ -586,16 +631,17 @@ function generateContainersArtifacts(context, resource) {
   fs.ensureDirSync(srcPath);
   fs.writeFileSync(path.join(srcPath, 'buildspec.yml'), buildspec);
 
-
   const authUserPoolIdParamName = `auth${authName}UserPoolId`;
   const authAppClientIdWebParamName = `auth${authName}AppClientIDWeb`;
 
-  const userPoolInfo = restrictAccess ? {
-    authUserPoolIdParamName,
-    authAppClientIdWebParamName
-  } : undefined;
+  const userPoolInfo = restrictAccess
+    ? {
+        authUserPoolIdParamName,
+        authAppClientIdWebParamName,
+      }
+    : undefined;
 
-  const stack = new EcsStack(undefined, "ContainersStack", {
+  const stack = new EcsStack(undefined, 'ContainersStack', {
     envName,
     categoryName,
     apiName: resourceName,
@@ -604,7 +650,7 @@ function generateContainersArtifacts(context, resource) {
     githubSourceActionInfo: githubInfo,
     deploymentMechanism,
     deploymentBucket,
-    containers
+    containers,
   });
 
   prepareApp(stack);

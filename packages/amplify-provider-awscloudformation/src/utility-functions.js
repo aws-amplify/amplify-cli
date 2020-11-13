@@ -30,12 +30,29 @@ module.exports = {
   newSecret: async (context, options) => {
     const { description, secret, name, version } = options;
     const client = await new SecretsManager(context);
-    const response = await client.secretsManager.createSecret({
-      Description: description,
-      Name: name,
-      SecretString: secret,
-      ClientRequestToken: version
-    }).promise();
+    const response = await client.secretsManager
+      .createSecret({
+        Description: description,
+        Name: name,
+        SecretString: secret,
+        ClientRequestToken: version,
+      })
+      .promise();
+
+    return response;
+  },
+  /**
+   * @param {any} context
+   * @param {{secretArn: string}} options
+   */
+  retrieveSecret: async (context, options) => {
+    const { secretArn: SecretId } = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager
+      .getSecretValue({
+        SecretId,
+      })
+      .promise();
 
     return response;
   },

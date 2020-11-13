@@ -1,7 +1,8 @@
 export const containerFiles = {
-    Dockerfile: `
+  Dockerfile: `
 FROM node:alpine
 
+ENV PORT=8080
 EXPOSE 8080
 
 WORKDIR /usr/src/app
@@ -13,7 +14,7 @@ RUN npm i
 
 CMD [ "node", "index.js" ]
     `,
-    'package.json': `
+  'package.json': `
     {
       "name": "express-lasagna",
       "version": "1.0.0",
@@ -30,7 +31,7 @@ CMD [ "node", "index.js" ]
       }
     }  
     `,
-    'index.js': `
+  'index.js': `
     const express = require("express");
     const app = express();
     const port = process.env.PORT;
@@ -60,5 +61,4 @@ CMD [ "node", "index.js" ]
       console.log(\`Example app listening at http://localhost:\${port}\`);
     });  
     `,
-  };
-  
+};
