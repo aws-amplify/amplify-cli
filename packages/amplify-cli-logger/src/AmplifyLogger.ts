@@ -5,15 +5,15 @@ import { constants } from './constants';
 import { IAmplifyLogger } from './IAmplifyLogger';
 import { getLogFilePath, getLocalLogFilePath, getLogAuditFilePath, getLocalAuditLogFile } from './getLogFilePath';
 import { LocalProjectData, LogPayload, LogErrorPayload } from './Types';
-
+const { combine, timestamp, splat, printf } = format;
 export class AmplifyLogger implements IAmplifyLogger {
   logger: Logger;
-  format: winston.Logform.Format;
+  loggerFormat: winston.Logform.Format;
   localProjectData!: LocalProjectData;
-  disabledAmplifyLogging: boolean = !!process.env.AMPLIFY_CLI_DISABLE_LOGGING;
+  disabledAmplifyLogging: boolean = process.env.AMPLIFY_CLI_DISABLE_LOGGING === 'true';
   constructor() {
     this.logger = winston.createLogger();
-    this.format = format.combine(format.timestamp(), format.splat(), format.printf(this.formatter));
+    this.loggerFormat = combine(timestamp(), splat(), printf(this.formatter));
     if (!this.disabledAmplifyLogging) {
       this.logger.add(
         new winstonDailyRotateFile({
@@ -22,7 +22,7 @@ export class AmplifyLogger implements IAmplifyLogger {
           datePattern: constants.DATE_PATTERN,
           maxFiles: constants.MAX_FILE_DAYS,
           handleExceptions: false,
-          format: this.format,
+          format: this.loggerFormat,
         }),
       );
     } else {
@@ -32,6 +32,10 @@ export class AmplifyLogger implements IAmplifyLogger {
         }),
       );
     }
+  }
+
+  loggerEnd(): void {
+    this.logger.end();
   }
 
   private formatter(info: winston.Logform.TransformableInfo): string {
@@ -52,7 +56,7 @@ export class AmplifyLogger implements IAmplifyLogger {
           datePattern: constants.DATE_PATTERN,
           maxFiles: constants.MAX_FILE_DAYS,
           handleExceptions: false,
-          format: this.format,
+          format: this.loggerFormat,
         }),
       );
     }
