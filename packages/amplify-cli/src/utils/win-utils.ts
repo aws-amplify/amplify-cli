@@ -1,15 +1,9 @@
-import * as path from 'path';
-import { pathManager } from 'amplify-cli-core';
-import { homedir, tmpdir } from 'os';
 import * as fs from 'fs-extra';
 import { command } from 'execa';
-
-export const oldVersionPath = path.join(pathManager.getHomeDotAmplifyDirPath(), 'bin', 'amplify-old.exe');
-export const pendingDeletePath = path.join(homedir(), '.amplify-pending-delete.exe');
+import { oldVersionPath, pendingDeletePath, tmpRegPath } from './win-constants';
 
 const regPath = 'HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager';
 const regKey = 'PendingFileRenameOperations';
-const tmpRegPath = path.join(tmpdir(), 'tmp.reg');
 const regPreamble = `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager]

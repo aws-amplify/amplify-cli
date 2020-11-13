@@ -1,8 +1,6 @@
 import * as fs from 'fs-extra';
-import { deleteOldVersion, setRegPendingDelete, pendingDeletePath } from '../../utils/win-utils';
+import { deleteOldVersion, setRegPendingDelete } from '../../utils/win-utils';
 import execa from 'execa';
-import { tmpdir } from 'os';
-import path from 'path';
 
 // save original process.platform
 const originalPlatform = process.platform;
@@ -15,6 +13,12 @@ jest.mock('amplify-cli-core', () => ({
   pathManager: {
     getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir/.amplify'),
   },
+}));
+
+jest.mock('../../utils/win-constants', () => ({
+  oldVersionPath: 'homedir/.amplify/bin/amplify-old.exe',
+  pendingDeletePath: 'homedir/pending-delete.exe',
+  tmpRegPath: '/tmp/path',
 }));
 
 jest.mock('execa');
@@ -124,7 +128,7 @@ describe('set registry pending delete', () => {
     });
 
     await setRegPendingDelete();
-    const tmpRegPath = path.join(tmpdir(), 'tmp.reg');
+    const tmpRegPath = '/tmp/path';
     expect(fs_mock.writeFile.mock.calls[0][0]).toEqual(tmpRegPath);
     expect(fs_mock.writeFile.mock.calls[0][1]).toMatchSnapshot();
     expect(execa_mock.command.mock.calls[1][0]).toEqual(`reg import "${tmpRegPath}"`);
