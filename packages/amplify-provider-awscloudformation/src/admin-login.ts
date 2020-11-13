@@ -14,7 +14,7 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
   });
   const spinner = ora('Continue in browser to log in…\n').start();
   try {
-    // spawn express server locally to get credentials from redirect
+    // spawn express server locally to get credentials
     const adminLoginServer = new AdminLoginServer(appId, originUrl);
     await new Promise(resolve =>
       adminLoginServer.startServer(() => {
