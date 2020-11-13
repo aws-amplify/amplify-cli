@@ -17,6 +17,7 @@ describe('test SIGINT with execute', () => {
       },
       exitOnNextTick: mockExit,
       pathManager: {
+        getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir/.amplify'),
         getAWSCredentialsFilePath: jest.fn(),
         getAWSConfigFilePath: jest.fn(),
         findProjectRoot: jest.fn(),
