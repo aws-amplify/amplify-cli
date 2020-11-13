@@ -1,11 +1,11 @@
-import { isPackaged, pathManager } from 'amplify-cli-core';
+import { $TSContext, isPackaged, pathManager } from 'amplify-cli-core';
 import execa from 'execa';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { pendingDeletePath, setRegPendingDelete } from '../utils/win-utils';
 import { hideSync } from 'hidefile';
 
-export const run = async context => {
+export const run = async (context: $TSContext) => {
   if (
     !context?.input?.options?.yes &&
     !(await context.amplify.confirmPrompt('Are you sure you want to uninstall the Amplify CLI?', false))

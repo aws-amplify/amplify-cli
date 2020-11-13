@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { pathManager } from 'amplify-cli-core';
-import { homedir } from 'os';
+import { homedir, tmpdir } from 'os';
 import * as fs from 'fs-extra';
 import { command } from 'execa';
 
@@ -9,7 +9,7 @@ export const pendingDeletePath = path.join(homedir(), '.amplify-pending-delete.e
 
 const regPath = 'HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager';
 const regKey = 'PendingFileRenameOperations';
-const tmpRegPath = 'C:\\Users\\Administrator\\tmp.reg';
+const tmpRegPath = path.join(tmpdir(), 'tmp.reg');
 const regPreamble = `Windows Registry Editor Version 5.00
 
 [HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager]
@@ -82,7 +82,7 @@ const strToLittleEndianHex = (str: string) => {
         hexArr.push(`0${hexCode[0]}`);
         break;
       case 4:
-        hexArr.push(hexCode.slice(3));
+        hexArr.push(hexCode.slice(2));
         hexArr.push(hexCode.slice(0, 2));
         break;
       default:
