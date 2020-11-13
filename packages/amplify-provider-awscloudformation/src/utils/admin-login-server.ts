@@ -64,6 +64,7 @@ export class AdminLoginServer {
   private async setupRoute(callback) {
     this.app.post('/amplifyadmin/', async (req, res) => {
       if (!req.body || req.body.error) {
+        this.shutdown();
         if (req.body.error === 'CANCELLED') {
           console.log('Login cancelled');
           process.exit(1);
