@@ -16,14 +16,12 @@ export const plugin: PluginFunction<RawAppSyncModelConfig> = (
   let visitor;
   switch (config.target) {
     case 'swift':
-    case 'ios':
       visitor = new AppSyncSwiftVisitor(schema, config, {
         selectedType: config.selectedType,
         generate: config.generate,
       });
       break;
     case 'java':
-    case 'android':
       visitor = new AppSyncModelJavaVisitor(schema, config, {
         selectedType: config.selectedType,
         generate: config.generate,
@@ -39,7 +37,6 @@ export const plugin: PluginFunction<RawAppSyncModelConfig> = (
       visitor = new AppSyncModelJavascriptVisitor(schema, config, {});
       break;
     case 'dart':
-    case 'flutter':
       visitor = new AppSyncModelDartVisitor(schema, config, {
         selectedType: config.selectedType,
         generate: config.generate,
