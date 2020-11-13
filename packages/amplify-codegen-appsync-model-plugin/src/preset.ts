@@ -4,7 +4,7 @@ import { join } from 'path';
 import { JAVA_SCALAR_MAP, SWIFT_SCALAR_MAP, TYPESCRIPT_SCALAR_MAP, DART_SCALAR_MAP } from './scalars';
 import { LOADER_CLASS_NAME, GENERATED_PACKAGE_NAME } from './configs/java-config';
 
-const APPSYNC_DATA_STORE_CODEGEN_TARGETS = ['java', 'android', 'swift', 'ios', 'javascript', 'typescript', 'flutter', 'dart'];
+const APPSYNC_DATA_STORE_CODEGEN_TARGETS = ['java', 'swift', 'javascript', 'typescript', 'dart'];
 
 export type AppSyncModelCodeGenPresetConfig = {
   /**
@@ -227,16 +227,13 @@ export const preset: Types.OutputPreset<AppSyncModelCodeGenPresetConfig> = {
 
     switch (codeGenTarget) {
       case 'java':
-      case 'android':
         return generateJavaPreset(options, models);
       case 'swift':
-      case 'ios':
         return generateSwiftPreset(options, models);
       case 'javascript':
         return generateJavasScriptPreset(options, models);
       case 'typescript':
         return generateTypeScriptPreset(options, models);
-      case 'flutter':
       case 'dart':
         return generateDartPreset(options, models);
       default:
