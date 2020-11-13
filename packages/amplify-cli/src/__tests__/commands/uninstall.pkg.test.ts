@@ -34,8 +34,10 @@ jest.mock('amplify-cli-core', () => ({
 }));
 
 jest.mock('../../utils/win-utils', () => ({
-  pendingDeletePath: 'a/test/path/.amplify-pending-delete.exe',
   setRegPendingDelete: jest.fn(),
+}));
+jest.mock('../../utils/win-constants', () => ({
+  pendingDeletePath: 'a/test/path/.amplify-pending-delete.exe',
 }));
 const setRegPendingDelete_mock = setRegPendingDelete as jest.MockedFunction<typeof setRegPendingDelete>;
 

@@ -2,7 +2,8 @@ import { $TSContext, isPackaged, pathManager } from 'amplify-cli-core';
 import execa from 'execa';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { pendingDeletePath, setRegPendingDelete } from '../utils/win-utils';
+import { setRegPendingDelete } from '../utils/win-utils';
+import { pendingDeletePath } from '../utils/win-constants';
 import { hideSync } from 'hidefile';
 
 export const run = async (context: $TSContext) => {

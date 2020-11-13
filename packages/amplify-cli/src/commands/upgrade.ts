@@ -5,7 +5,7 @@ import { gt } from 'semver';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import ora from 'ora';
-import { oldVersionPath } from '../utils/win-utils';
+import { oldVersionPath } from '../utils/win-constants';
 
 const binUrl = (version: string, platform: 'macos' | 'win.exe' | 'linux') =>
   `https://github.com/aws-amplify/amplify-cli/releases/download/v${version}/amplify-pkg-${platform}`;
