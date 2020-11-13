@@ -6,7 +6,8 @@ const message = `Amplify auth will be modified to mangage secrets from deploymen
 
 export async function MigrateTeamProvider(context: Context): Promise<boolean> {
   // check if command executed in proj root and team provider has secrets
-  if (pathManager.findProjectRoot() && stateManager.teamProviderInfoHasAuthSecrets()) {
+
+  if (!isPulling(context) && pathManager.findProjectRoot() && stateManager.teamProviderInfoHasAuthSecrets()) {
     if (checkIfHeadless(context) || (await context.prompt.confirm(message))) {
       stateManager.moveSecretsFromTeamProviderToDeployment();
       externalAuthEnable(context, undefined, undefined, { authSelections: 'identityPoolAndUserPool' });
@@ -15,6 +16,15 @@ export async function MigrateTeamProvider(context: Context): Promise<boolean> {
     }
   }
   return true;
+}
+function isPulling(context: Context): boolean {
+  const isPulling =
+    context.input.command === 'pull' ||
+    (context.input.command === 'env' &&
+      !!context.input.subCommands &&
+      context.input.subCommands.length > 0 &&
+      context.input.subCommands[0] === 'pull');
+  return isPulling;
 }
 
 function checkIfHeadless(context: Context): boolean {

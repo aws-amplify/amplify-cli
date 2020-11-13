@@ -116,6 +116,10 @@ describe('test migration code', () => {
     mockContext.prompt = {
       confirm: promptConfirm,
     };
+    mockContext.input = {
+      argv: [],
+      command: 'status',
+    };
     const migrated = await require('../utils/team-provider-migrate').MigrateTeamProvider(mockContext);
     expect(migrated).toEqual(true);
     expect(mockMoveSecrets).toBeCalled();
