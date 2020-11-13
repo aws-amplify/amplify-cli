@@ -34,7 +34,7 @@ export class AdminLoginServer {
   }
 
   public async startServer(callback: () => void) {
-    this.setupRoute(callback);
+    await this.setupRoute(callback);
     this.server = this.app.listen(this.getPort());
   }
 
@@ -63,6 +63,13 @@ export class AdminLoginServer {
 
   private async setupRoute(callback) {
     this.app.post('/amplifyadmin/', async (req, res) => {
+      if (!req.body || req.body.error) {
+        if (req.body.error === 'CANCELLED') {
+          console.log('Login cancelled');
+          process.exit(1);
+        }
+        throw new Error('Failed to receive expected authentication tokens.');
+      }
       try {
         await this.storeTokens(req.body, this.appId);
         delete req.body;
