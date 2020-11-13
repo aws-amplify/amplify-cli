@@ -202,8 +202,6 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
         });
         if (updatedDependency) {
           updatedDependency.attributes = _.uniqWith(updatedDependency.attributes.concat(dependency.attributes), _.isEqual);
-        } else {
-          additionalParameters.dependsOn.push(dependency);
         }
       });
     }
