@@ -2321,7 +2321,7 @@ workflows:
             branches:
               only:
                 - backendManager
-      - plugin-amplify_e2e_tests:
+      - uninstall-amplify_e2e_tests:
           filters: &ref_10
             branches:
               only:
@@ -2581,23 +2581,34 @@ workflows:
           filters: *ref_10
 =======
       - uninstall-amplify_e2e_tests_pkg_linux:
+<<<<<<< HEAD
 >>>>>>> feat: amplify uninstall command
+=======
+          filters: &ref_11
+            branches:
+              only:
+                - master
+>>>>>>> fix: path prefix and hide file
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - schema-versioned-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - feature-flags-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - function_3-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - auth_4-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
 <<<<<<< HEAD
             - publish_to_local_registry
@@ -2614,26 +2625,29 @@ workflows:
             - build_pkg_binaries
             - uninstall-amplify_e2e_tests_pkg_linux
       - import_auth_2-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - schema-versioned-amplify_e2e_tests_pkg_linux
       - schema-auth-1-amplify_e2e_tests_pkg_linux:
+<<<<<<< HEAD
 >>>>>>> feat: amplify uninstall command
+=======
+          filters: *ref_11
+>>>>>>> fix: path prefix and hide file
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - feature-flags-amplify_e2e_tests_pkg_linux
       - schema-auth-2-amplify_e2e_tests_pkg_linux:
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - function_3-amplify_e2e_tests_pkg_linux
       - plugin-amplify_e2e_tests_pkg_linux:
-          filters: &ref_11
-            branches:
-              only:
-                - master
+          filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
@@ -2890,6 +2904,7 @@ workflows:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - auth_5-amplify_e2e_tests_pkg_linux
+<<<<<<< HEAD
       - api_2-amplify_e2e_tests_pkg_linux:
           filters: *ref_11
           requires:
@@ -2934,3 +2949,5 @@ workflows:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - function_3-amplify_e2e_tests_pkg_linux
+=======
+>>>>>>> fix: path prefix and hide file

@@ -3,6 +3,7 @@ import execa from 'execa';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { pendingDeletePath, setRegPendingDelete } from '../utils/win-utils';
+import { hideSync } from 'hidefile';
 
 export const run = async context => {
   if (
@@ -16,7 +17,19 @@ export const run = async context => {
     await uninstallNodeCli();
   } else if (process.platform.startsWith('win')) {
     const binPath = path.join(pathManager.getHomeDotAmplifyDirPath(), 'bin', 'amplify.exe');
-    fs.move(binPath, pendingDeletePath);
+    try {
+      await fs.move(binPath, pendingDeletePath, { overwrite: true });
+    } catch (err) {
+      throw new Error(
+        `Unable to move binary out of .amplify directory. You can manually remove [${pathManager.getHomeDotAmplifyDirPath()}]`,
+      );
+    }
+    try {
+      hideSync(pendingDeletePath);
+    } catch (err) {
+      // swallow this error
+      // hiding the file is a nice-to-have, don't need to fail on it
+    }
     try {
       await setRegPendingDelete();
     } catch (err) {

@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 import { command } from 'execa';
 
 export const oldVersionPath = path.join(pathManager.getHomeDotAmplifyDirPath(), 'bin', 'amplify-old.exe');
-export const pendingDeletePath = path.join(homedir(), 'amplify-pending-delete.exe');
+export const pendingDeletePath = path.join(homedir(), '.amplify-pending-delete.exe');
 
 const regPath = 'HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager';
 const regKey = 'PendingFileRenameOperations';
@@ -52,7 +52,7 @@ export const setRegPendingDelete = async () => {
     .trim()
     .split('\\0')
     .filter(p => !!p);
-  const newPaths = currentPaths.concat(pendingDeletePath);
+  const newPaths = currentPaths.concat(`\\??\\${pendingDeletePath}`);
   const newHex = newPaths
     .map(strToLittleEndianHex)
     .map(hexArr => hexArr.join(','))
