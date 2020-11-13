@@ -23,7 +23,7 @@ export type AppSyncModelCodeGenPresetConfig = {
    *    - amplify-codegen-appsync-model-plugin
    * ```
    */
-  target: 'java' | 'android' | 'ios' | 'swift' | 'javascript' | 'typescript' | 'flutter' | 'dart';
+  target: 'java' | 'swift' | 'javascript' | 'typescript' | 'dart';
 };
 
 const generateJavaPreset = (
