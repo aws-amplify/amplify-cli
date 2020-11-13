@@ -13,7 +13,7 @@ const getVisitor = (schema: string, selectedType?: string, generate: CodeGenGene
   const builtSchema = buildSchemaWithDirectives(schema);
   const visitor = new AppSyncModelDartVisitor(
     builtSchema,
-    { directives, target: 'dart',  scalars: DART_SCALAR_MAP },
+    { directives, target: 'dart', scalars: DART_SCALAR_MAP },
     { selectedType, generate },
   );
   visit(ast, { leave: visitor });
@@ -21,7 +21,6 @@ const getVisitor = (schema: string, selectedType?: string, generate: CodeGenGene
 };
 
 describe('AppSync Dart Visitor', () => {
-
   describe('Model Directive', () => {
     it('should generate a class for a Simple Model', () => {
       const schema = /* GraphQL */ `
@@ -33,7 +32,7 @@ describe('AppSync Dart Visitor', () => {
       `;
       const visitor = getVisitor(schema);
       const generatedCode = visitor.generate();
-      expect(generatedCode).toMatchSnapshot();  
+      expect(generatedCode).toMatchSnapshot();
     });
 
     it('should generate a class for a model with all optional fields', () => {
@@ -52,14 +51,12 @@ describe('AppSync Dart Visitor', () => {
   describe('Model with Key Directive', () => {
     it('should generate a class for model with key directive', () => {
       const schema = /* GraphQL */ `
-        type authorBook @model 
-          @key(name: "byAuthor", fields: ["author_id"])
-          @key(name: "byBook", fields: ["book_id"]) {
-            id: ID!
-            author_id: ID!
-            book_id: ID!
-            author: String
-            book: String
+        type authorBook @model @key(name: "byAuthor", fields: ["author_id"]) @key(name: "byBook", fields: ["book_id"]) {
+          id: ID!
+          author_id: ID!
+          book_id: ID!
+          author: String
+          book: String
         }
       `;
       const visitor = getVisitor(schema);
@@ -165,15 +162,15 @@ describe('AppSync Dart Visitor', () => {
         type Post
           @model
           @auth(
-              rules: [
+            rules: [
               { allow: groups, groups: ["admin"] }
               { allow: owner, operations: ["create", "update"] }
               { allow: public, operation: ["read"] }
-              ]
+            ]
           ) {
-              id: ID!
-              title: String!
-              owner: String!
+          id: ID!
+          title: String!
+          owner: String!
         }
       `;
       const visitor = getVisitor(schema);
@@ -215,12 +212,12 @@ describe('AppSync Dart Visitor', () => {
           id: ID!
           tasks: [Task] @connection(name: "TodoTasks")
         }
-      
+
         type Task @model {
-            id: ID
-            todo: Todo @connection(name: "TodoTasks")
-            time: AWSTime
-            createdOn: AWSDate
+          id: ID
+          todo: Todo @connection(name: "TodoTasks")
+          time: AWSTime
+          createdOn: AWSDate
         }
       `;
       const outputModels: string[] = ['Todo', 'Task'];
@@ -272,6 +269,29 @@ describe('AppSync Dart Visitor', () => {
       const generatedCode = visitor.generate();
       expect(generatedCode).toMatchSnapshot();
     });
-  });
 
+    it('should throw error when a reserved word of dart is used in graphql schema field name', () => {
+      const schema = /* GraphQL */ `
+        type ReservedWord @model {
+          class: String!
+        }
+      `;
+      const visitor = getVisitor(schema);
+      expect(visitor.generate).toThrowErrorMatchingInlineSnapshot(
+        `"Field name 'class' in type 'ReservedWord' is a reserved word in dart. Please use a non-reserved name instead."`,
+      );
+    });
+
+    it('should throw error when a reserved word of dart is used in graphql schema type name', () => {
+      const schema = /* GraphQL */ `
+        type class @model {
+          name: String!
+        }
+      `;
+      const visitor = getVisitor(schema);
+      expect(visitor.generate).toThrowErrorMatchingInlineSnapshot(
+        `"Type name 'class' is a reserved word in dart. Please use a non-reserved name instead."`,
+      );
+    });
+  });
 });

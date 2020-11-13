@@ -8,6 +8,7 @@ import {
   LOADER_CLASS_NAME,
   BASE_IMPORT_PACKAGES,
   COLLECTION_PACKAGE,
+  DART_RESERVED_KEYWORDS,
   typeToEnumMap,
 } from '../configs/dart-config';
 
@@ -18,10 +19,25 @@ export class AppSyncModelDartVisitor<
 
   generate() : string {
     this.processDirectives();
+    this.validateReservedKeywords();
     if (this._parsedConfig.generate === CodeGenGenerateEnum.loader) {
       return this.generateClassLoader();
     }
     return this.generateModelClasses();
+  }
+
+  protected validateReservedKeywords(): void {
+    Object.entries({...this.models, ...this.nonModels}).forEach(([name, obj]) => {
+      if (DART_RESERVED_KEYWORDS.includes(name)) {
+        throw new Error(`Type name '${name}' is a reserved word in dart. Please use a non-reserved name instead.`);
+      }
+      obj.fields.forEach(field => {
+        const fieldName = this.getFieldName(field);
+        if (DART_RESERVED_KEYWORDS.includes(fieldName)) {
+          throw new Error(`Field name '${fieldName}' in type '${name}' is a reserved word in dart. Please use a non-reserved name instead.`);
+        }
+      })
+    });
   }
 
   protected generateClassLoader(): string {
@@ -116,7 +132,7 @@ export class AppSyncModelDartVisitor<
       .withName(this.getModelName(model))
       .extends(['Model'])
       .withComment(`This is an auto generated class representing the ${model.name} type in your schema.`)
-      .annotate(['immutalbe']);
+      .annotate(['immutable']);
     //model type field
     classDeclarationBlock.addClassMember(
       'classType',
@@ -533,14 +549,16 @@ export class AppSyncModelDartVisitor<
     return '';
   }
 
-      /**
+  /**
    * Get the list of fields that can be are writeable. These fields should exclude the following
    * fields that are connected and are either HAS_ONE or HAS_MANY
    * @param model
    */
   protected getNonConnectedField(model: CodeGenModel): CodeGenField[] {
     return model.fields.filter(f => {
-      if (!f.connectionInfo) return true;
+      if (!f.connectionInfo) {
+        return true;
+      }
       if (f.connectionInfo.kind == CodeGenConnectionType.BELONGS_TO) {
         return true;
       }

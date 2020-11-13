@@ -21,7 +21,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the SimpleModel type in your schema. */
-@immutalbe
+@immutable
 class SimpleModel extends Model {
   static const classType = SimpleModelType();
   final String id;
@@ -125,7 +125,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the SimpleModel type in your schema. */
-@immutalbe
+@immutable
 class SimpleModel extends Model {
   static const classType = SimpleModelType();
   final String id;
@@ -229,7 +229,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the customClaim type in your schema. */
-@immutalbe
+@immutable
 class customClaim extends Model {
   static const classType = customClaimType();
   final String id;
@@ -359,7 +359,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the customClaim type in your schema. */
-@immutalbe
+@immutable
 class customClaim extends Model {
   static const classType = customClaimType();
   final String id;
@@ -476,7 +476,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the dynamicGroups type in your schema. */
-@immutalbe
+@immutable
 class dynamicGroups extends Model {
   static const classType = dynamicGroupsType();
   final String id;
@@ -593,7 +593,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the simpleOwnerAuth type in your schema. */
-@immutalbe
+@immutable
 class simpleOwnerAuth extends Model {
   static const classType = simpleOwnerAuthType();
   final String id;
@@ -723,7 +723,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the allowRead type in your schema. */
-@immutalbe
+@immutable
 class allowRead extends Model {
   static const classType = allowReadType();
   final String id;
@@ -852,7 +852,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the privateType type in your schema. */
-@immutalbe
+@immutable
 class privateType extends Model {
   static const classType = privateTypeType();
   final String id;
@@ -967,7 +967,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the publicType type in your schema. */
-@immutalbe
+@immutable
 class publicType extends Model {
   static const classType = publicTypeType();
   final String id;
@@ -1082,7 +1082,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the staticGroups type in your schema. */
-@immutalbe
+@immutable
 class staticGroups extends Model {
   static const classType = staticGroupsType();
   final String id;
@@ -1199,7 +1199,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the Post type in your schema. */
-@immutalbe
+@immutable
 class Post extends Model {
   static const classType = PostType();
   final String id;
@@ -1316,7 +1316,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the Post type in your schema. */
-@immutalbe
+@immutable
 class Post extends Model {
   static const classType = PostType();
   final String id;
@@ -1452,7 +1452,7 @@ import 'Task.dart';
 
 
 /** This is an auto generated class representing the Todo type in your schema. */
-@immutalbe
+@immutable
 class Todo extends Model {
   static const classType = TodoType();
   final String id;
@@ -1551,7 +1551,7 @@ import 'Todo.dart';
 
 
 /** This is an auto generated class representing the Task type in your schema. */
-@immutalbe
+@immutable
 class Task extends Model {
   static const classType = TaskType();
   final String id;
@@ -1676,7 +1676,7 @@ import 'Post.dart';
 
 
 /** This is an auto generated class representing the Blog type in your schema. */
-@immutalbe
+@immutable
 class Blog extends Model {
   static const classType = BlogType();
   final String id;
@@ -1801,7 +1801,7 @@ import 'Post.dart';
 
 
 /** This is an auto generated class representing the Comment type in your schema. */
-@immutalbe
+@immutable
 class Comment extends Model {
   static const classType = CommentType();
   final String id;
@@ -1914,7 +1914,7 @@ import 'Comment.dart';
 
 
 /** This is an auto generated class representing the Post type in your schema. */
-@immutalbe
+@immutable
 class Post extends Model {
   static const classType = PostType();
   final String id;
@@ -2042,7 +2042,7 @@ import 'package:flutter/foundation.dart';
 
 
 /** This is an auto generated class representing the authorBook type in your schema. */
-@immutalbe
+@immutable
 class authorBook extends Model {
   static const classType = authorBookType();
   final String id;
