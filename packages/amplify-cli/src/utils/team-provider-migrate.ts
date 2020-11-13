@@ -20,6 +20,7 @@ export async function MigrateTeamProvider(context: Context): Promise<boolean> {
 function isPulling(context: Context): boolean {
   const isPulling =
     context.input.command === 'pull' ||
+    context.input.command === 'init' ||
     (context.input.command === 'env' &&
       !!context.input.subCommands &&
       context.input.subCommands.length > 0 &&
