@@ -34,7 +34,7 @@ async function askForProfile(namedProfiles) {
     choices: Object.keys(namedProfiles),
   };
   const profileAnswer = await inquirer.prompt(profileQuestion);
-  return profileAnswer;
+  return profileAnswer.profile;
 }
 
 async function getValidProfile(profileToUse) {
