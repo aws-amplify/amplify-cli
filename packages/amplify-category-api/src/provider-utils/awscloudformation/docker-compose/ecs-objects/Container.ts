@@ -1,11 +1,11 @@
-import { IContainerDefinitions, PortMappings, IBuildConfig, ContainerHealthCheck } from './types';
+import { IContainerDefinitions, PortMappings, IBuildConfig, ContainerHealthCheck, IContainerHealthCheckItem } from './types';
 import { ListOrDict } from '../compose-spec/v1';
 
 class Container implements IContainerDefinitions {
   readonly defaultLogConfiguration = {
     logDriver: 'awslogs',
     options: {
-      'awslogs-group': '/ecs/fargate-task-definition', 
+      'awslogs-group': '/ecs/fargate-task-definition',
       'awslogs-region': 'us-east-1', // TODO: project region
       'awslogs-stream-prefix': 'ecs', // use cluster name
     },
@@ -16,14 +16,14 @@ class Container implements IContainerDefinitions {
   portMappings: PortMappings;
   logConfiguration = this.defaultLogConfiguration;
 
-  command?: string | string[] | undefined;
-  entrypoint?: string | string[] | undefined;
-  env_file?: string | string[] | undefined;
-  environment?: ListOrDict | undefined;
-  image?: string | undefined;
+  command?: string[];
+  entrypoint?: string[];
+  env_file?: string[];
+  environment?: Record<string, string>;
+  image?: string;
   healthcheck?: ContainerHealthCheck;
-  working_dir?: string | undefined;
-  user?: string | undefined;
+  working_dir?: string;
+  user?: string;
 
   constructor(
     build: string | IBuildConfig | undefined, //Really for CodeBuild. Do we need in this class?
@@ -34,22 +34,50 @@ class Container implements IContainerDefinitions {
     env_file?: string | string[] | undefined,
     environment?: ListOrDict | undefined,
     image?: string | undefined,
-    healthcheck?: ContainerHealthCheck | undefined,
+    healthcheck?: IContainerHealthCheckItem | undefined,
     working_dir?: string | undefined,
     user?: string | undefined,
   ) {
     this.build = build;
     this.name = name;
     this.portMappings = portMappings;
-    this.command = command;
-    this.entrypoint = entrypoint;
-    this.env_file = env_file;
-    this.environment = environment;
+    this.command = [].concat(command);
+    this.entrypoint = [].concat(entrypoint);
+    this.env_file = [].concat(env_file);
+    this.environment = Array.isArray(environment)
+      ? environment.reduce((acc, element) => {
+          const [key, value] = element.split('=');
+
+          acc[key] = value;
+          return acc;
+        }, {} as Record<string, string>)
+      : (environment as Record<string, string>);
     this.image = image;
-    this.healthcheck = healthcheck;
+
+    this.healthcheck = (({ interval, command, start_period, timeout, retries }) =>
+      command
+        ? {
+            interval: toSeconds(interval),
+            command: [].concat(command),
+            start_period: toSeconds(start_period),
+            timeout: toSeconds(timeout),
+            retries,
+          }
+        : undefined)(healthcheck); // ? Object.assign(healthcheck, { command: [].concat(healthcheck.command) }) : healthcheck;
+
     this.working_dir = working_dir;
     this.user = user;
   }
+}
+
+function toSeconds(str: string | number): number {
+  const [, seconds] = `${str}`.match(/^(\d+)s\s*$/) || [];
+
+  if (seconds === undefined) {
+    return undefined;
+  }
+
+  return parseInt(seconds, 10);
 }
 
 export default Container;

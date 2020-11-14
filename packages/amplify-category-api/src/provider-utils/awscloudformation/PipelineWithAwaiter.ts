@@ -52,8 +52,8 @@ class PipelineAwaiter extends cdk.Construct {
       timeout: cdk.Duration.minutes(5),
     });
 
-    const containerTemplateFilePath = path.join(__dirname, 'awaiter', 'pipeline.js');
-    const isCompleteHandlerCode = fs.readFileSync(containerTemplateFilePath, 'utf8');
+    const pipelineCodeFilePath = path.join(__dirname, 'lambdas', 'pipeline.js');
+    const isCompleteHandlerCode = fs.readFileSync(pipelineCodeFilePath, 'utf8');
 
     const isCompleteHandler = new lambda.Function(scope, `${id}CustomCompleteHandler`, {
       runtime: lambda.Runtime.NODEJS_12_X,
@@ -112,6 +112,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
       deploymentMechanism,
       githubSourceActionInfo,
       containersInfo,
+      desiredCount,
     }: {
       bucket: s3.IBucket;
       s3SourceActionKey?: string;
@@ -122,6 +123,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
         container: ecs.ContainerDefinition;
         repository: ecr.Repository;
       }[];
+      desiredCount: number;
     },
   ) {
     super(scope, id);
@@ -200,6 +202,41 @@ export class PipelineWithAwaiter extends cdk.Construct {
             input: sourceOutput,
             outputs: [buildOutput],
             environmentVariables,
+          }),
+        ],
+      },
+      {
+        stageName: 'PreDeploy',
+        actions: [
+          new codepipelineactions.LambdaInvokeAction({
+            actionName: 'PreDeploy',
+            lambda: (() => {
+              const preDeployCodeFilePath = path.join(__dirname, 'lambdas', 'predeploy.js');
+              const lambdaHandlerCode = fs.readFileSync(preDeployCodeFilePath, 'utf8');
+
+              const action = new lambda.Function(scope, 'PreDeployLambda', {
+                code: lambda.InlineCode.fromInline(lambdaHandlerCode),
+                handler: 'index.handler',
+                runtime: lambda.Runtime.NODEJS_12_X,
+                environment: {
+                  DESIRED_COUNT: `${desiredCount}`,
+                  CLUSTER_NAME: service.cluster,
+                  SERVICE_NAME: service.serviceName,
+                },
+              });
+
+              action.addToRolePolicy(
+                new iam.PolicyStatement({
+                  actions: ['ecs:UpdateService'],
+                  effect: iam.Effect.ALLOW,
+                  resources: [cdk.Fn.ref(service.logicalId)],
+                }),
+              );
+
+              return action;
+            })(),
+            inputs: [],
+            outputs: [],
           }),
         ],
       },

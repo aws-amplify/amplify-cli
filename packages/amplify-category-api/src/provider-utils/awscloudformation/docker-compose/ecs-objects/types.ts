@@ -7,13 +7,30 @@ export interface IServiceDefinition {
   tags?: string[];
 }
 
+export type ContainerHealthCheck = {
+  command?: string[];
+  interval?: number;
+  retries?: number;
+  start_period?: number;
+  timeout?: number;
+};
+
 export interface IContainerDefinitions {
   build: string | IBuildConfig | undefined;
   image?: string;
   name: string;
-  entrypoint?: string | string[] | undefined;
+  // entrypoint?: string | string[] | undefined;
   logConfiguration: ILogConfiguration;
   portMappings: PortMappings;
+
+  command?: string[] | undefined;
+  entrypoint?: string[] | undefined;
+  env_file?: string[] | undefined;
+  environment?: Record<string, string> | undefined;
+  // image?: string | undefined;
+  healthcheck?: ContainerHealthCheck;
+  working_dir?: string;
+  user?: string;
 }
 
 export interface ILogConfiguration {
@@ -39,9 +56,7 @@ interface IPortMappingItem {
   protocol: string;
 }
 
-export type ContainerHealthCheck = IContainerHealthCheckItem;
-
-interface IContainerHealthCheckItem {
+export interface IContainerHealthCheckItem {
   command?: string | string[];
   interval?: number | string;
   retries?: number;
@@ -78,4 +93,3 @@ interface IContainerConfig {
 }
 
 export type BuildHashMap = Record<string, string>;
-

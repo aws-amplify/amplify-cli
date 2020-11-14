@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './PipelineWithAwaiter';
@@ -36,6 +37,7 @@ type EcsStackProps = {
   deploymentMechanism: DEPLOYMENT_MECHANISM;
   deploymentBucket: string;
   containers: Container[];
+  desiredCount: number;
 };
 
 export class EcsStack extends cdk.Stack {
@@ -52,6 +54,7 @@ export class EcsStack extends cdk.Stack {
       githubSourceActionInfo,
       deploymentBucket,
       containers,
+      desiredCount,
     } = props;
 
     // Unused, needed for now
@@ -152,43 +155,93 @@ export class EcsStack extends cdk.Stack {
       repository: ecr.Repository;
     }[] = [];
 
-    containers.forEach(({ name, image, build, portMappings }) => {
-      const container = task.addContainer(name, {
-        image: ecs.ContainerImage.fromRegistry(image ?? 'nginx:latest'),
-      });
-
-      if (build) {
-        const logicalId = `${name}Repository`;
-
-        const repository = new ecr.Repository(this, logicalId, {
-          repositoryName: `${envName}-${categoryName}-${apiName}-${name}`,
-          removalPolicy: cdk.RemovalPolicy.DESTROY, // TODO: ????
-        });
-        (repository.node.defaultChild as ecr.CfnRepository).overrideLogicalId(logicalId);
-
-        // Needed because the image will be pulled from ecr repository later
-        repository.grantPull(task.obtainExecutionRole());
-
-        containersInfo.push({
-          container,
-          repository,
-        });
-      }
-
-      // TODO: should we use hostPort too? check network mode
-      portMappings?.forEach(({ containerPort, protocol, hostPort }) => {
-        container.addPortMappings({
-          containerPort,
-          protocol: ecs.Protocol.TCP,
+    containers.forEach(
+      ({
+        name,
+        image,
+        build,
+        portMappings,
+        logConfiguration,
+        environment,
+        entrypoint: entryPoint,
+        command,
+        working_dir: workingDirectory,
+        healthcheck: healthCheck,
+      }) => {
+        const logGroup = new logs.LogGroup(this, 'ContainerLogGroup', {
+          logGroupName: `/ecs/${envName}-${apiName}`,
+          retention: logs.RetentionDays.ONE_MONTH,
         });
 
-        serviceRegistries.push({
-          containerName: container.containerName,
-          containerPort,
-          registryArn: cloudmapService.attrArn,
+        const {
+          logDriver,
+          options: {
+            'awslogs-stream-prefix': streamPrefix,
+            // "awslogs-group": logGroup,
+            // awslogs-region intentionally ignored since it will use the stack's region by default
+          } = {},
+        } = logConfiguration;
+
+        const logging: ecs.LogDriver =
+          logDriver === 'awslogs'
+            ? ecs.LogDriver.awsLogs({
+                streamPrefix,
+                logGroup: logs.LogGroup.fromLogGroupName(this, 'logGroup', logGroup.logGroupName),
+              })
+            : undefined;
+
+        let repository: ecr.Repository;
+        if (build) {
+          const logicalId = `${name}Repository`;
+
+          repository = new ecr.Repository(this, logicalId, {
+            repositoryName: `${envName}-${categoryName}-${apiName}-${name}`,
+            removalPolicy: cdk.RemovalPolicy.DESTROY, // TODO: ????
+          });
+          (repository.node.defaultChild as ecr.CfnRepository).overrideLogicalId(logicalId);
+
+          // Needed because the image will be pulled from ecr repository later
+          repository.grantPull(task.obtainExecutionRole());
+        }
+
+        const container = task.addContainer(name, {
+          image: repository ? ecs.ContainerImage.fromEcrRepository(repository) : ecs.ContainerImage.fromRegistry(image),
+          logging,
+          environment,
+          entryPoint,
+          command,
+          workingDirectory,
+          healthCheck: healthCheck && {
+            command: healthCheck.command,
+            interval: cdk.Duration.seconds(healthCheck.interval ?? 30),
+            retries: healthCheck.retries,
+            timeout: cdk.Duration.seconds(healthCheck.timeout ?? 5),
+            startPeriod: cdk.Duration.seconds(healthCheck.start_period ?? 0),
+          },
         });
-      });
-    });
+
+        if (build) {
+          containersInfo.push({
+            container,
+            repository,
+          });
+        }
+
+        // TODO: should we use hostPort too? check network mode
+        portMappings?.forEach(({ containerPort, protocol, hostPort }) => {
+          container.addPortMappings({
+            containerPort,
+            protocol: ecs.Protocol.TCP,
+          });
+
+          serviceRegistries.push({
+            containerName: container.containerName,
+            containerPort,
+            registryArn: cloudmapService.attrArn,
+          });
+        });
+      },
+    );
 
     const serviceSecurityGroup = new ec2.CfnSecurityGroup(this, 'ServiceSG', {
       vpcId,
@@ -212,7 +265,7 @@ export class EcsStack extends cdk.Stack {
       serviceName: `${apiName}Service-${Date.now()}`,
       cluster: paramClusterName.valueAsString,
       launchType: 'FARGATE',
-      desiredCount: subnets.length, // TODO: check this assumption
+      desiredCount: 0, // This is later adjusted by the PreDeploy action in the codepipeline
       serviceRegistries,
       networkConfiguration: {
         awsvpcConfiguration: {
@@ -234,6 +287,7 @@ export class EcsStack extends cdk.Stack {
       s3SourceActionKey: paramZipPath.valueAsString,
       deploymentMechanism,
       githubSourceActionInfo,
+      desiredCount,
     });
 
     pipeline.node.addDependency(service);

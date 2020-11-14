@@ -613,7 +613,7 @@ async function generateContainersArtifacts(context, resource) {
   let composeContents = containerDefinitionFiles[dockerComposeFilename];
   const { [dockerfileFilename]: dockerfileContents } = containerDefinitionFiles;
 
-  const { buildspec, containers } = Richard.getContainers(composeContents, dockerfileContents);
+  const { buildspec, containers, service } = Richard.getContainers(composeContents, dockerfileContents);
 
   const containersPorts = containers.reduce(
     (acc, container) =>
@@ -651,6 +651,7 @@ async function generateContainersArtifacts(context, resource) {
     deploymentMechanism,
     deploymentBucket,
     containers,
+    desiredCount: service?.replicas ?? 1, // TODO: 1 should be from meta
   });
 
   prepareApp(stack);

@@ -92,6 +92,7 @@ const findServiceDeployment = (
     const { deploy } = v;
 
     if (deploy !== undefined) {
+      // TODO: This is returning the deploy obj of the last service that had it, it should probably be an array
       result = deploy!;
     }
   });
@@ -101,6 +102,7 @@ const findServiceDeployment = (
 
 type DockerServiceInfo = {
   buildspec: string;
+  service: v38Types.DefinitionsDeployment;
   containers: Container[];
 };
 export function getContainers(composeContents?: string, dockerfileContents?: string): DockerServiceInfo {
@@ -143,8 +145,11 @@ export function getContainers(composeContents?: string, dockerfileContents?: str
   //Step 5: Generate the buildfiles
   const buildspec = generateBuildSpec(buildmapping);
 
+  const service = findServiceDeployment(dockerCompose);
+
   return {
     buildspec,
+    service,
     containers,
   };
 }
