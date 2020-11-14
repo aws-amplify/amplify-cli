@@ -142,8 +142,8 @@ export class EcsStack extends cdk.Stack {
     // Task (role, definition, execution role, policy)
     const task = new ecs.TaskDefinition(this, 'TaskDefinition', {
       compatibility: ecs.Compatibility.FARGATE,
-      cpu: '256',
-      memoryMiB: '512',
+      memoryMiB: '1024',
+      cpu: '512',
       family: apiName,
     });
     (task.node.defaultChild as ecs.CfnTaskDefinition).overrideLogicalId('TaskDefinition');
