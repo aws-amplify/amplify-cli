@@ -9,6 +9,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './PipelineWithAwaiter';
 import Container from './docker-compose/ecs-objects/Container';
+import { Duration } from '@aws-cdk/core';
 
 export enum DEPLOYMENT_MECHANISM {
   /**
@@ -205,6 +206,11 @@ export class EcsStack extends cdk.Stack {
           repository = new ecr.Repository(this, logicalId, {
             repositoryName: `${envName}-${categoryName}-${apiName}-${name}`,
             removalPolicy: cdk.RemovalPolicy.DESTROY, // TODO: ????
+            lifecycleRules: [
+              {
+                maxImageAge: Duration.days(7),
+              },
+            ],
           });
           (repository.node.defaultChild as ecr.CfnRepository).overrideLogicalId(logicalId);
 
