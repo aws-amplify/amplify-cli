@@ -11,10 +11,19 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const walkthroughOptions = await serviceWalkthroughPromise;
 
-  const { resourceName, restrictAccess, imageSource, githubPath, githubToken, deploymentMechanism } = walkthroughOptions;
+  const {
+    resourceName,
+    restrictAccess,
+    imageSource,
+    githubPath,
+    githubToken,
+    deploymentMechanism,
+    categoryPolicies,
+    environmentMap,
+    dependsOn,
+    mutableParametersState,
+  } = walkthroughOptions;
   const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);
-
-  const dependsOn = [];
 
   // TODO: Find a place to put this
   // for now copied from NETWORK_STACK_LOGICAL_ID (amplify-provider-awscloudformation/src/network/stack.ts)
@@ -87,6 +96,9 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
     service: 'ElasticContainer',
     githubInfo,
     authName,
+    environmentMap,
+    categoryPolicies,
+    mutableParametersState,
   };
 
   fs.ensureDirSync(resourceDirPath);

@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { Octokit } from '@octokit/rest';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
@@ -8,6 +9,7 @@ import { provider as cloudformationProviderName } from './provider-utils/awsclou
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { getContainers } from './provider-utils/awscloudformation/docker-compose';
 import { DEPLOYMENT_MECHANISM, EcsStack } from './provider-utils/awscloudformation/ecs-stack';
+import { ResourceDependency } from './provider-utils/awscloudformation/service-walkthroughs/containers-walkthrough';
 import { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
 
 export { EcsStack } from './provider-utils/awscloudformation/ecs-stack';
@@ -216,9 +218,35 @@ export async function handleAmplifyEvent(context, args) {
   context.print.info(`Received event args ${args}`);
 }
 
-export async function generateContainersArtifacts(context, resource) {
-  /** @type {{ category: string, resourceName: string, githubInfo: {path: string, tokenSecretArn: string}, deploymentMechanism: DEPLOYMENT_MECHANISM, authName: string, restrictAccess: boolean }} */
-  const { category: categoryName, resourceName, githubInfo, deploymentMechanism, authName, restrictAccess, lastPushTimeStamp } = resource;
+type ApiResource = {
+  category: string;
+  resourceName: string;
+  githubInfo: {
+    path: string;
+    tokenSecretArn: string;
+  };
+  deploymentMechanism: DEPLOYMENT_MECHANISM;
+  authName: string;
+  restrictAccess: boolean;
+  lastPushTimeStamp: string;
+  dependsOn: ResourceDependency[];
+  environmentMap: Record<string, string>;
+  categoryPolicies: any[];
+  mutableParametersState: any;
+};
+
+export async function generateContainersArtifacts(context: any, resource: ApiResource) {
+  const {
+    category: categoryName,
+    resourceName,
+    githubInfo,
+    deploymentMechanism,
+    lastPushTimeStamp,
+    categoryPolicies,
+    dependsOn,
+    environmentMap,
+    mutableParametersState,
+  } = resource;
 
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, categoryName, resourceName));
@@ -321,16 +349,6 @@ export async function generateContainersArtifacts(context, resource) {
   fs.ensureDirSync(srcPath);
   fs.writeFileSync(path.join(srcPath, 'buildspec.yml'), buildspec);
 
-  const authUserPoolIdParamName = `auth${authName}UserPoolId`;
-  const authAppClientIdWebParamName = `auth${authName}AppClientIDWeb`;
-
-  const userPoolInfo = restrictAccess
-    ? {
-        authUserPoolIdParamName,
-        authAppClientIdWebParamName,
-      }
-    : undefined;
-
   const desiredCount = service?.replicas ?? 1; // TODO: 1 should be from meta
   const isInitialDeploy = lastPushTimeStamp === undefined;
 
@@ -339,7 +357,19 @@ export async function generateContainersArtifacts(context, resource) {
     categoryName,
     apiName: resourceName,
     taskPorts: containersPorts,
-    userPoolInfo,
+    dependsOn,
+    policies: (() => {
+      const result = categoryPolicies.map(x => {
+        return {
+          toStatementJson() {
+            return x;
+          },
+        } as iam.PolicyStatement;
+      });
+
+      return result;
+    })(),
+    taskEnvironmentVariables: environmentMap,
     githubSourceActionInfo: githubInfo,
     deploymentMechanism,
     deploymentBucket,

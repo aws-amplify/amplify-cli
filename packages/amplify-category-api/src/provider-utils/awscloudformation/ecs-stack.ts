@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as apigw2 from '@aws-cdk/aws-apigatewayv2';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
@@ -29,16 +30,19 @@ type EcsStackProps = {
   categoryName: string;
   apiName: string;
   taskPorts: number[];
-  userPoolInfo?: {
-    authUserPoolIdParamName: string;
-    authAppClientIdWebParamName: string;
-  };
+  dependsOn: {
+    category: string;
+    resourceName: string;
+    attributes: string[];
+  }[];
+  taskEnvironmentVariables?: Record<string, any>;
   githubSourceActionInfo?: GitHubSourceActionInfo;
   deploymentMechanism: DEPLOYMENT_MECHANISM;
   deploymentBucket: string;
   containers: Container[];
   isInitialDeploy: boolean;
   desiredCount: number;
+  policies?: iam.PolicyStatement[];
 };
 
 export class EcsStack extends cdk.Stack {
@@ -50,13 +54,15 @@ export class EcsStack extends cdk.Stack {
       categoryName,
       apiName,
       taskPorts,
-      userPoolInfo: { authUserPoolIdParamName, authAppClientIdWebParamName } = {},
+      dependsOn,
       deploymentMechanism,
       githubSourceActionInfo,
       deploymentBucket,
       containers,
       isInitialDeploy,
       desiredCount,
+      policies = [],
+      taskEnvironmentVariables = {},
     } = props;
 
     // Unused, needed for now
@@ -70,50 +76,47 @@ export class EcsStack extends cdk.Stack {
       default: deploymentMechanism === DEPLOYMENT_MECHANISM.FULLY_MANAGED ? undefined : '',
     });
 
+    const parameters: Map<string, cdk.CfnParameter> = new Map();
+
+    const authParams: {
+      UserPoolId?: cdk.CfnParameter;
+      AppClientIDWeb?: cdk.CfnParameter;
+    } = {};
+
+    const paramTypes: Record<string, string> = {
+      NetworkStackSubnetIds: 'CommaDelimitedList',
+    };
+
+    dependsOn.forEach(({ category, resourceName, attributes }) => {
+      attributes.forEach(attrib => {
+        const paramName = [category, resourceName, attrib].join('');
+
+        const type = paramTypes[paramName] ?? 'String';
+        const param = new cdk.CfnParameter(this, paramName, { type });
+
+        parameters.set(paramName, param);
+
+        if (category === 'auth') {
+          authParams[attrib as keyof typeof authParams] = param;
+        }
+      });
+    });
+
     // TODO: use some sort of constant like NETWORK_STACK_LOGICAL_ID for 'NetworkStack'
-    const paramVpcId = new cdk.CfnParameter(this, 'NetworkStackVpcId', {
-      type: 'String',
-    });
+    const paramVpcId = parameters.get('NetworkStackVpcId');
+    const paramVpcCidrBlock = parameters.get('NetworkStackVpcCidrBlock');
+    const paramSubnetIds = parameters.get('NetworkStackSubnetIds');
+    const paramClusterName = parameters.get('NetworkStackClusterName');
+    const paramVpcLinkId = parameters.get('NetworkStackVpcLinkId');
+    const paramCloudMapNamespaceId = parameters.get('NetworkStackCloudMapNamespaceId');
 
-    const paramVpcCidrBlock = new cdk.CfnParameter(this, 'NetworkStackVpcCidrBlock', {
-      type: 'String',
-    });
-
-    const paramSubnetIds = new cdk.CfnParameter(this, 'NetworkStackSubnetIds', {
-      type: 'CommaDelimitedList',
-    });
-
-    const paramClusterName = new cdk.CfnParameter(this, 'NetworkStackClusterName', {
-      type: 'String',
-    });
-
-    const paramVpcLinkId = new cdk.CfnParameter(this, 'NetworkStackVpcLinkId', {
-      type: 'String',
-    });
-
-    const paramCloudMapNamespaceId = new cdk.CfnParameter(this, 'NetworkStackCloudMapNamespaceId', {
-      type: 'String',
-    });
-
-    let paramUserPoolId: cdk.CfnParameter, paramAppClientIdWeb: cdk.CfnParameter;
-
-    if (authUserPoolIdParamName && authAppClientIdWebParamName) {
-      paramUserPoolId = new cdk.CfnParameter(this, authUserPoolIdParamName, {
-        type: 'String',
-        default: '',
-      });
-
-      paramAppClientIdWeb = new cdk.CfnParameter(this, authAppClientIdWebParamName, {
-        type: 'String',
-        default: '',
-      });
-    }
+    const { UserPoolId: paramUserPoolId, AppClientIDWeb: paramAppClientIdWeb } = authParams;
 
     // TODO: rename
     const cosaCondition = new cdk.CfnCondition(this, 'cosaCondition', {
       expression: cdk.Fn.conditionAnd(
-        cdk.Fn.conditionEquals(paramUserPoolId ? paramUserPoolId.valueAsString : '', ''),
-        cdk.Fn.conditionEquals(paramAppClientIdWeb ? paramAppClientIdWeb.valueAsString : '', ''),
+        cdk.Fn.conditionEquals(authParams.UserPoolId ?? '', ''),
+        cdk.Fn.conditionEquals(authParams.AppClientIDWeb ?? '', ''),
       ),
     });
 
@@ -149,6 +152,9 @@ export class EcsStack extends cdk.Stack {
       family: apiName,
     });
     (task.node.defaultChild as ecs.CfnTaskDefinition).overrideLogicalId('TaskDefinition');
+    policies.forEach(policy => {
+      task.addToTaskRolePolicy(policy);
+    });
 
     const serviceRegistries: ecs.CfnService.ServiceRegistryProperty[] = [];
 
@@ -209,7 +215,10 @@ export class EcsStack extends cdk.Stack {
         const container = task.addContainer(name, {
           image: repository ? ecs.ContainerImage.fromEcrRepository(repository) : ecs.ContainerImage.fromRegistry(image),
           logging,
-          environment,
+          environment: {
+            ...taskEnvironmentVariables,
+            ...environment,
+          },
           entryPoint,
           command,
           workingDirectory,
