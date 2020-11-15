@@ -20,7 +20,7 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
     deploymentMechanism,
     categoryPolicies,
     environmentMap,
-    dependsOn,
+    dependsOn = [],
     mutableParametersState,
   } = walkthroughOptions;
   const resourceDirPath = path.join(projectBackendDirPath, category, resourceName);

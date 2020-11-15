@@ -175,7 +175,7 @@ async function newContainer(context, resourceName: string): Promise<Partial<Serv
     githubToken = githubQuestions.github_access_token;
   }
 
-  let rolePermissions;
+  let rolePermissions: any = {};
   if (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?')) {
     rolePermissions = await context.amplify.invokePluginMethod(context, 'function', undefined, 'askExecRolePermissionsQuestions', [
       context,

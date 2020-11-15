@@ -242,7 +242,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     githubInfo,
     deploymentMechanism,
     lastPushTimeStamp,
-    categoryPolicies,
+    categoryPolicies = [],
     dependsOn,
     environmentMap,
     mutableParametersState,
