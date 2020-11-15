@@ -37,6 +37,7 @@ type EcsStackProps = {
   deploymentMechanism: DEPLOYMENT_MECHANISM;
   deploymentBucket: string;
   containers: Container[];
+  isInitialDeploy: boolean;
   desiredCount: number;
 };
 
@@ -54,6 +55,7 @@ export class EcsStack extends cdk.Stack {
       githubSourceActionInfo,
       deploymentBucket,
       containers,
+      isInitialDeploy,
       desiredCount,
     } = props;
 
@@ -262,10 +264,10 @@ export class EcsStack extends cdk.Stack {
     });
 
     const service = new ecs.CfnService(this, 'Service', {
-      serviceName: `${apiName}Service-${Date.now()}`,
+      serviceName: `${apiName}-service`,
       cluster: paramClusterName.valueAsString,
       launchType: 'FARGATE',
-      desiredCount: 0, // This is later adjusted by the PreDeploy action in the codepipeline
+      desiredCount: isInitialDeploy ? 0 : desiredCount, // This is later adjusted by the PreDeploy action in the codepipeline
       serviceRegistries,
       networkConfiguration: {
         awsvpcConfiguration: {

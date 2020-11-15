@@ -1,23 +1,22 @@
-import { run } from './commands/api/console';
+import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
+import { Octokit } from '@octokit/rest';
+import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import fs from 'fs-extra';
 import path from 'path';
+import { run } from './commands/api/console';
+import { provider as cloudformationProviderName } from './provider-utils/awscloudformation/aws-constants';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
-import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
+import { getContainers } from './provider-utils/awscloudformation/docker-compose';
+import { DEPLOYMENT_MECHANISM, EcsStack } from './provider-utils/awscloudformation/ecs-stack';
+import { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
 
 export { EcsStack } from './provider-utils/awscloudformation/ecs-stack';
 export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
-
-import { getContainers } from './provider-utils/awscloudformation/docker-compose';
-
-export const Richard = { getContainers };
+const Richard = { getContainers };
 
 const category = 'api';
 
 const categories = 'categories';
-
-export const enum ServiceName {
-  ElasticContainer = 'ElasticContainer',
-}
 
 export async function console(context) {
   await run(context);
@@ -215,4 +214,159 @@ export const executeAmplifyHeadlessCommand = async (context, headlessPayload: st
 export async function handleAmplifyEvent(context, args) {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
+}
+
+export async function generateContainersArtifacts(context, resource) {
+  /** @type {{ category: string, resourceName: string, githubInfo: {path: string, tokenSecretArn: string}, deploymentMechanism: DEPLOYMENT_MECHANISM, authName: string, restrictAccess: boolean }} */
+  const { category: categoryName, resourceName, githubInfo, deploymentMechanism, authName, restrictAccess, lastPushTimeStamp } = resource;
+
+  const backEndDir = context.amplify.pathManager.getBackendDirPath();
+  const resourceDir = path.normalize(path.join(backEndDir, categoryName, resourceName));
+
+  const {
+    providers: { [cloudformationProviderName]: provider },
+  } = context.amplify.getProjectMeta();
+
+  const { StackName: envName, DeploymentBucketName: deploymentBucket } = provider;
+
+  const srcPath = path.join(resourceDir, 'src');
+
+  const dockerComposeFilename = 'docker-compose.yml';
+  const dockerfileFilename = 'Dockerfile';
+
+  const containerDefinitionFileNames = [dockerComposeFilename, dockerfileFilename];
+
+  /** @type Record<string, string> */
+  const containerDefinitionFiles: Record<string, string> = {};
+
+  for await (const fileName of containerDefinitionFileNames) {
+    switch (deploymentMechanism) {
+      case DEPLOYMENT_MECHANISM.FULLY_MANAGED:
+      case DEPLOYMENT_MECHANISM.SELF_MANAGED:
+        const filePath = path.normalize(path.join(srcPath, fileName));
+
+        if (fs.existsSync(filePath)) {
+          containerDefinitionFiles[fileName] = fs.readFileSync(filePath).toString();
+        }
+        break;
+      case DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED:
+        const { path: repoUri, tokenSecretArn } = githubInfo;
+
+        const { SecretString: githubToken } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'retrieveSecret', {
+          secretArn: tokenSecretArn,
+        });
+
+        const octokit = new Octokit({ auth: githubToken });
+
+        const { owner, repo, branch, path: pathInRepo } = getGitHubOwnerRepoFromPath(repoUri);
+
+        try {
+          const {
+            data: { content, encoding },
+          } = await octokit.repos.getContent({
+            owner,
+            repo,
+            ...(branch ? { ref: branch } : undefined), // only include branch if not undefined
+            path: path.join(pathInRepo, fileName),
+          });
+
+          containerDefinitionFiles[fileName] = Buffer.from(content, encoding).toString('utf8');
+        } catch (error) {
+          const { status } = error;
+
+          // It is ok if the file doesn't exist, we skip it
+          if (status !== 404) {
+            throw error;
+          }
+        }
+        break;
+      default: {
+        exhaustiveCheck(deploymentMechanism);
+
+        /**
+         *
+         * @param {never} obj
+         */
+        function exhaustiveCheck(obj) {
+          throw new Error(`Invalid deploymentMechanism : ${obj}`);
+        }
+      }
+    }
+  }
+
+  const noDefinitionAvailable = Object.keys(containerDefinitionFiles).length === 0;
+
+  if (noDefinitionAvailable) {
+    throw new Error('No definition available (docker-compose.yaml / Dockerfile)');
+  }
+
+  let composeContents = containerDefinitionFiles[dockerComposeFilename];
+  const { [dockerfileFilename]: dockerfileContents } = containerDefinitionFiles;
+
+  const { buildspec, containers, service } = Richard.getContainers(composeContents, dockerfileContents);
+
+  const containersPorts = containers.reduce(
+    (acc, container) =>
+      [].concat(
+        acc,
+        container.portMappings.map(({ containerPort }) => containerPort),
+      ),
+    [],
+  );
+
+  if (containersPorts.length === 0) {
+    throw new Error('Service requires at least one exposed port');
+  }
+
+  fs.ensureDirSync(srcPath);
+  fs.writeFileSync(path.join(srcPath, 'buildspec.yml'), buildspec);
+
+  const authUserPoolIdParamName = `auth${authName}UserPoolId`;
+  const authAppClientIdWebParamName = `auth${authName}AppClientIDWeb`;
+
+  const userPoolInfo = restrictAccess
+    ? {
+        authUserPoolIdParamName,
+        authAppClientIdWebParamName,
+      }
+    : undefined;
+
+  const desiredCount = service?.replicas ?? 1; // TODO: 1 should be from meta
+  const isInitialDeploy = lastPushTimeStamp === undefined;
+
+  const stack = new EcsStack(undefined, 'ContainersStack', {
+    envName,
+    categoryName,
+    apiName: resourceName,
+    taskPorts: containersPorts,
+    userPoolInfo,
+    githubSourceActionInfo: githubInfo,
+    deploymentMechanism,
+    deploymentBucket,
+    containers,
+    isInitialDeploy,
+    desiredCount,
+  });
+
+  prepareApp(stack);
+
+  // @ts-ignore
+  const cfn = stack._toCloudFormation();
+
+  Object.keys(cfn.Parameters).forEach(k => {
+    if (k.startsWith('AssetParameters')) {
+      let value = '';
+
+      if (k.includes('Bucket')) {
+        value = deploymentBucket;
+      } else if (k.includes('VersionKey')) {
+        value = 'custom-resource-pipeline-awaiter.zip||';
+      }
+
+      cfn.Parameters[k].Default = value;
+    }
+  });
+
+  const cfnFileName = `${resourceName}-cloudformation-template.json`;
+  context.amplify.writeObjectAsJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn, true);
 }
