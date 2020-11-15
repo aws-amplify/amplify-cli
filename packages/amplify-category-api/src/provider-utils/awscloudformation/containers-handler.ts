@@ -99,6 +99,7 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
     environmentMap,
     categoryPolicies,
     mutableParametersState,
+    skipHashing: true,
   };
 
   fs.ensureDirSync(resourceDirPath);
