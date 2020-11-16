@@ -42,24 +42,23 @@ describe('amplify add auth...', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should init a project and add auth with defaults', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
+  it('...should init a Flutter project and add auth with defaults', async () => {
+    await initFlutterProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
-    await runAmplifyAuthConsole(projRoot);
     const meta = getProjectMeta(projRoot);
     const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
+    expect(fs.existsSync(path.join(projRoot, 'lib', 'amplifyconfiguration.dart'))).toBe(true);
   });
 
-  it('should init with a long env name and add default auth', async () => {
-    await initJSProjectWithProfile(projRoot, { ...defaultsSettings, envName: 'longenviro' });
+  it('...should init a project and add auth with defaults and then remove auth and add another auth and push', async () => {
+    await initFlutterProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
     await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-    const id = Object.keys(meta.auth).map(key => meta.auth[key])[0].output.UserPoolId;
-    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
-    expect(userPool.UserPool).toBeDefined();
+    await removeAuthWithDefault(projRoot);
+    await addAuthWithDefault(projRoot, {});
+    await amplifyPushAuth(projRoot);
   });
 });

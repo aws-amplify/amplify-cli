@@ -48,7 +48,7 @@ async function confirmConfiguration(context) {
     context.print.warning('⚠️  Flutter project support in the Amplify CLI is in DEVELOPER PREVIEW.');
     context.print.warning('Only the following categories are supported:');
     context.print.warning(' * Auth');
-    context.print.warning(' * Analytics');
+    context.print.warning(' * Analytics (Pinpoint only)');
     context.print.warning(' * Storage');
 
     const configurationSettings = [

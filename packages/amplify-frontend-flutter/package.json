@@ -19,7 +19,7 @@
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
-    "inquirer": "^7.0.3",
+    "inquirer": "^7.3.3",
     "promise-sequential": "^1.1.1"
   }
 }

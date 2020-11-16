@@ -5,10 +5,8 @@ function generateConfig(context, amplifyConfig, newAWSConfig) {
     Version: '1.0',
   };
   constructAnalytics(metadata, amplifyConfig);
-  constructApi(metadata, amplifyConfig);
   // Auth plugin with entire awsconfiguration contained required for Native GA release
   constructAuth(metadata, amplifyConfig, newAWSConfig);
-  constructPredictions(metadata, amplifyConfig);
   constructStorage(metadata, amplifyConfig);
 
   return amplifyConfig;
@@ -44,101 +42,6 @@ function constructAnalytics(metadata, amplifyConfig) {
       };
     }
   }
-}
-
-function constructApi(metadata, amplifyConfig) {
-  const categoryName = 'api';
-  const pluginName = 'awsAPIPlugin';
-  const region = metadata.providers.awscloudformation.Region;
-  if (metadata[categoryName]) {
-    Object.keys(metadata[categoryName]).forEach(r => {
-      const resourceMeta = metadata[categoryName][r];
-      if (resourceMeta.output) {
-        amplifyConfig[categoryName] = amplifyConfig[categoryName] || {};
-        amplifyConfig[categoryName].plugins = amplifyConfig[categoryName].plugins || {};
-        amplifyConfig[categoryName].plugins[pluginName] = amplifyConfig[categoryName].plugins[pluginName] || {};
-
-        if (resourceMeta.service === 'AppSync') {
-          let authorizationType;
-          if (resourceMeta.output.authConfig && resourceMeta.output.authConfig.defaultAuthentication) {
-            authorizationType = resourceMeta.output.authConfig.defaultAuthentication.authenticationType;
-          } else if (resourceMeta.output.securityType) {
-            authorizationType = resourceMeta.output.securityType;
-          }
-          amplifyConfig[categoryName].plugins[pluginName][r] = {
-            endpointType: 'GraphQL',
-            endpoint: resourceMeta.output.GraphQLAPIEndpointOutput,
-            region,
-            authorizationType,
-            apiKey: resourceMeta.output.GraphQLAPIKeyOutput,
-          };
-        } else if (resourceMeta.service === 'API Gateway') {
-          amplifyConfig[categoryName].plugins[pluginName][r] = {
-            endpointType: 'REST',
-            endpoint: resourceMeta.output.RootUrl,
-            region,
-            authorizationType: 'AWS_IAM',
-          };
-        }
-      }
-    });
-  }
-}
-
-function constructPredictions(metadata, amplifyConfig) {
-  const categoryName = 'predictions';
-  const pluginName = 'awsPredictionsPlugin';
-  const region = metadata.providers.awscloudformation.Region;
-  if (metadata[categoryName]) {
-    Object.keys(metadata[categoryName]).forEach(r => {
-      const resourceMeta = metadata[categoryName][r];
-      if (resourceMeta.output) {
-        amplifyConfig[categoryName] = amplifyConfig[categoryName] || {};
-        amplifyConfig[categoryName].plugins = amplifyConfig[categoryName].plugins || {};
-        amplifyConfig[categoryName].plugins[pluginName] = amplifyConfig[categoryName].plugins[pluginName] || {};
-        amplifyConfig[categoryName].plugins[pluginName].defaultRegion =
-          amplifyConfig[categoryName].plugins[pluginName].defaultRegion || region;
-
-        const { serviceGroup, serviceType } = getPredictionsResourceNameAndType(resourceMeta);
-        if (serviceGroup && serviceType) {
-          amplifyConfig[categoryName].plugins[pluginName][serviceGroup] =
-            amplifyConfig[categoryName].plugins[pluginName][serviceGroup] || {};
-
-          let defaultNetworkPolicy = 'auto';
-          if (
-            amplifyConfig[categoryName].plugins[pluginName][serviceGroup][serviceType] &&
-            amplifyConfig[categoryName].plugins[pluginName][serviceGroup][serviceType].defaultNetworkPolicy
-          ) {
-            // eslint-disable-next-line
-            defaultNetworkPolicy = amplifyConfig[categoryName].plugins[pluginName][serviceGroup][serviceType].defaultNetworkPolicy;
-          }
-
-          amplifyConfig[categoryName].plugins[pluginName][serviceGroup][serviceType] = resourceMeta.output;
-          amplifyConfig[categoryName].plugins[pluginName][serviceGroup][serviceType].defaultNetworkPolicy = defaultNetworkPolicy;
-        }
-      }
-    });
-  }
-}
-
-function getPredictionsResourceNameAndType(resourceMeta) {
-  const result = {};
-
-  if (resourceMeta.identifyType) {
-    result.serviceGroup = 'identify';
-    result.serviceType = resourceMeta.identifyType;
-  } else if (resourceMeta.interpretType) {
-    result.serviceGroup = 'interpret';
-    result.serviceType = resourceMeta.interpretType;
-  } else if (resourceMeta.convertType) {
-    result.serviceGroup = 'convert';
-    result.serviceType = resourceMeta.convertType;
-  } else if (resourceMeta.inferType) {
-    result.serviceGroup = 'infer';
-    result.serviceType = resourceMeta.inferType;
-  }
-
-  return result;
 }
 
 function constructStorage(metadata, amplifyConfig) {
