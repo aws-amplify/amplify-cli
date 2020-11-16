@@ -542,14 +542,13 @@ jobs:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Install packaged Amplify CLI
-          # replace command with curl -sL https://aws-amplify.github.io/amplify-cli/install | version=v$version bash before pushing
           command: |
             version=$(cat .amplify-pkg-version)
-            curl -sL https://aws-amplify.github.io/amplify-cli/install | bash
-      # TODO enable this check once the packaged CLI is renamed to amplify from amp
-      # - run:
-      #     name: Sanity check install
-      #     command: amplify version
+            curl -sL https://aws-amplify.github.io/amplify-cli/install | version=v$version bash
+      - run:
+          name: Sanity check install
+          # TODO change to `amplify version` once the install script is modified to install to "amplify"
+          command: amp version
   github_release:
     <<: *defaults
     steps:
