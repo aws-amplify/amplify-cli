@@ -12,14 +12,14 @@ class ModelProvider implements ModelProviderInterface {
   static final ModelProvider _instance = ModelProvider();
 
   static ModelProvider get instance => _instance;
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model Directive should generate a class for a Simple Model 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
-
 /** This is an auto generated class representing the SimpleModel type in your schema. */
 @immutable
 class SimpleModel extends Model {
@@ -32,98 +32,92 @@ class SimpleModel extends Model {
   String getId() {
     return id;
   }
-  
+
   const SimpleModel._internal({@required this.id, this.name, this.bar});
-  
+
   factory SimpleModel({@required String id, String name, String bar}) {
     return SimpleModel._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      bar: bar);
+        id: id == null ? UUID.getUUID() : id, name: name, bar: bar);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is SimpleModel &&
-      id == other.id &&
-      name == other.name &&
-      bar == other.bar;
+        id == other.id &&
+        name == other.name &&
+        bar == other.bar;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"SimpleModel {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
+
   SimpleModel copyWith({@required String id, String name, String bar}) {
     return SimpleModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      bar: bar ?? this.bar);
+        id: id ?? this.id, name: name ?? this.name, bar: bar ?? this.bar);
   }
-  
-  SimpleModel.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      name = json['name'],
-      bar = json['bar'];
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'name': name, 'bar': bar};
+
+  SimpleModel.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        bar = json['bar'];
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"SimpleModel\\";
     modelSchemaDefinition.pluralName = \\"SimpleModels\\";
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: SimpleModel.NAME,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: SimpleModel.NAME,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: SimpleModel.BAR,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: SimpleModel.BAR,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class SimpleModelType extends ModelType<SimpleModel> {
   const SimpleModelType();
-  
+
   @override
   SimpleModel fromJson(Map<String, dynamic> jsonData) {
     return SimpleModel.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model Directive should generate a class for a model with all optional fields 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
-
 /** This is an auto generated class representing the SimpleModel type in your schema. */
 @immutable
 class SimpleModel extends Model {
@@ -136,97 +130,91 @@ class SimpleModel extends Model {
   String getId() {
     return id;
   }
-  
+
   const SimpleModel._internal({@required this.id, this.name, this.bar});
-  
+
   factory SimpleModel({@required String id, String name, String bar}) {
     return SimpleModel._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      bar: bar);
+        id: id == null ? UUID.getUUID() : id, name: name, bar: bar);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is SimpleModel &&
-      id == other.id &&
-      name == other.name &&
-      bar == other.bar;
+        id == other.id &&
+        name == other.name &&
+        bar == other.bar;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"SimpleModel {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
+
   SimpleModel copyWith({@required String id, String name, String bar}) {
     return SimpleModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      bar: bar ?? this.bar);
+        id: id ?? this.id, name: name ?? this.name, bar: bar ?? this.bar);
   }
-  
-  SimpleModel.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      name = json['name'],
-      bar = json['bar'];
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'name': name, 'bar': bar};
+
+  SimpleModel.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        bar = json['bar'];
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"SimpleModel\\";
     modelSchemaDefinition.pluralName = \\"SimpleModels\\";
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: SimpleModel.NAME,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: SimpleModel.NAME,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: SimpleModel.BAR,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: SimpleModel.BAR,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class SimpleModelType extends ModelType<SimpleModel> {
   const SimpleModelType();
-  
+
   @override
   SimpleModel fromJson(Map<String, dynamic> jsonData) {
     return SimpleModel.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with custom claims 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
 
 /** This is an auto generated class representing the customClaim type in your schema. */
 @immutable
@@ -241,122 +229,123 @@ class customClaim extends Model {
   String getId() {
     return id;
   }
-  
-  const customClaim._internal({@required this.id, this.name, this.bar, this.owner});
-  
-  factory customClaim({@required String id, String name, String bar, String owner}) {
+
+  const customClaim._internal(
+      {@required this.id, this.name, this.bar, this.owner});
+
+  factory customClaim(
+      {@required String id, String name, String bar, String owner}) {
     return customClaim._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      bar: bar,
-      owner: owner);
+        id: id == null ? UUID.getUUID() : id,
+        name: name,
+        bar: bar,
+        owner: owner);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is customClaim &&
-      id == other.id &&
-      name == other.name &&
-      bar == other.bar &&
-      owner == other.owner;
+        id == other.id &&
+        name == other.name &&
+        bar == other.bar &&
+        owner == other.owner;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"customClaim {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar + \\", \\");
     buffer.write(\\"owner=\\" + owner);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
-  customClaim copyWith({@required String id, String name, String bar, String owner}) {
+
+  customClaim copyWith(
+      {@required String id, String name, String bar, String owner}) {
     return customClaim(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      bar: bar ?? this.bar,
-      owner: owner ?? this.owner);
+        id: id ?? this.id,
+        name: name ?? this.name,
+        bar: bar ?? this.bar,
+        owner: owner ?? this.owner);
   }
-  
-  customClaim.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      name = json['name'],
-      bar = json['bar'],
-      owner = json['owner'];
-  
+
+  customClaim.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        bar = json['bar'],
+        owner = json['owner'];
+
   Map<String, dynamic> toJson() =>
-    {'id': id, 'name': name, 'bar': bar, 'owner': owner};
+      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static final QueryField OWNER = QueryField(fieldName: \\"owner\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"customClaim\\";
     modelSchemaDefinition.pluralName = \\"customClaims\\";
-    
+
     modelSchemaDefinition.authRules = [
       AuthRule(
-        authStrategy: AuthStrategy.OWNER,
-        ownerField: \\"owner\\",
-        identityClaim: \\"user_id\\",
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ])
+          authStrategy: AuthStrategy.OWNER,
+          ownerField: \\"owner\\",
+          identityClaim: \\"user_id\\",
+          operations: [
+            ModelOperation.CREATE,
+            ModelOperation.UPDATE,
+            ModelOperation.DELETE,
+            ModelOperation.READ
+          ])
     ];
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: customClaim.NAME,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: customClaim.NAME,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: customClaim.BAR,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: customClaim.BAR,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: customClaim.OWNER,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: customClaim.OWNER,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class customClaimType extends ModelType<customClaim> {
   const customClaimType();
-  
+
   @override
   customClaim fromJson(Map<String, dynamic> jsonData) {
     return customClaim.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with custom group claims 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
 
 /** This is an auto generated class representing the customClaim type in your schema. */
 @immutable
@@ -370,110 +359,106 @@ class customClaim extends Model {
   String getId() {
     return id;
   }
-  
+
   const customClaim._internal({@required this.id, this.name, this.bar});
-  
+
   factory customClaim({@required String id, String name, String bar}) {
     return customClaim._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      bar: bar);
+        id: id == null ? UUID.getUUID() : id, name: name, bar: bar);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is customClaim &&
-      id == other.id &&
-      name == other.name &&
-      bar == other.bar;
+        id == other.id &&
+        name == other.name &&
+        bar == other.bar;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"customClaim {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
+
   customClaim copyWith({@required String id, String name, String bar}) {
     return customClaim(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      bar: bar ?? this.bar);
+        id: id ?? this.id, name: name ?? this.name, bar: bar ?? this.bar);
   }
-  
-  customClaim.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      name = json['name'],
-      bar = json['bar'];
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'name': name, 'bar': bar};
+
+  customClaim.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        bar = json['bar'];
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"customClaim\\";
     modelSchemaDefinition.pluralName = \\"customClaims\\";
-    
+
     modelSchemaDefinition.authRules = [
       AuthRule(
-        authStrategy: AuthStrategy.GROUPS,
-        groupClaim: \\"user_groups\\",
-        groups: [ \\"Moderator\\" ],
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ])
+          authStrategy: AuthStrategy.GROUPS,
+          groupClaim: \\"user_groups\\",
+          groups: [
+            \\"Moderator\\"
+          ],
+          operations: [
+            ModelOperation.CREATE,
+            ModelOperation.UPDATE,
+            ModelOperation.DELETE,
+            ModelOperation.READ
+          ])
     ];
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: customClaim.NAME,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: customClaim.NAME,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: customClaim.BAR,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: customClaim.BAR,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class customClaimType extends ModelType<customClaim> {
   const customClaimType();
-  
+
   @override
   customClaim fromJson(Map<String, dynamic> jsonData) {
     return customClaim.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with dynamic groups 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
 
 /** This is an auto generated class representing the dynamicGroups type in your schema. */
 @immutable
@@ -487,110 +472,104 @@ class dynamicGroups extends Model {
   String getId() {
     return id;
   }
-  
+
   const dynamicGroups._internal({@required this.id, this.name, this.bar});
-  
+
   factory dynamicGroups({@required String id, String name, String bar}) {
     return dynamicGroups._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      bar: bar);
+        id: id == null ? UUID.getUUID() : id, name: name, bar: bar);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is dynamicGroups &&
-      id == other.id &&
-      name == other.name &&
-      bar == other.bar;
+        id == other.id &&
+        name == other.name &&
+        bar == other.bar;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"dynamicGroups {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
+
   dynamicGroups copyWith({@required String id, String name, String bar}) {
     return dynamicGroups(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      bar: bar ?? this.bar);
+        id: id ?? this.id, name: name ?? this.name, bar: bar ?? this.bar);
   }
-  
-  dynamicGroups.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      name = json['name'],
-      bar = json['bar'];
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'name': name, 'bar': bar};
+
+  dynamicGroups.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        bar = json['bar'];
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"dynamicGroups\\";
     modelSchemaDefinition.pluralName = \\"dynamicGroups\\";
-    
+
     modelSchemaDefinition.authRules = [
       AuthRule(
-        authStrategy: AuthStrategy.GROUPS,
-        groupClaim: \\"cognito:groups\\",
-        groupsField: \\"groups\\",
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ])
+          authStrategy: AuthStrategy.GROUPS,
+          groupClaim: \\"cognito:groups\\",
+          groupsField: \\"groups\\",
+          operations: [
+            ModelOperation.CREATE,
+            ModelOperation.UPDATE,
+            ModelOperation.DELETE,
+            ModelOperation.READ
+          ])
     ];
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: dynamicGroups.NAME,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: dynamicGroups.NAME,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: dynamicGroups.BAR,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: dynamicGroups.BAR,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class dynamicGroupsType extends ModelType<dynamicGroups> {
   const dynamicGroupsType();
-  
+
   @override
   dynamicGroups fromJson(Map<String, dynamic> jsonData) {
     return dynamicGroups.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with owner auth 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
 
 /** This is an auto generated class representing the simpleOwnerAuth type in your schema. */
 @immutable
@@ -605,122 +584,123 @@ class simpleOwnerAuth extends Model {
   String getId() {
     return id;
   }
-  
-  const simpleOwnerAuth._internal({@required this.id, this.name, this.bar, this.owner});
-  
-  factory simpleOwnerAuth({@required String id, String name, String bar, String owner}) {
+
+  const simpleOwnerAuth._internal(
+      {@required this.id, this.name, this.bar, this.owner});
+
+  factory simpleOwnerAuth(
+      {@required String id, String name, String bar, String owner}) {
     return simpleOwnerAuth._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      bar: bar,
-      owner: owner);
+        id: id == null ? UUID.getUUID() : id,
+        name: name,
+        bar: bar,
+        owner: owner);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is simpleOwnerAuth &&
-      id == other.id &&
-      name == other.name &&
-      bar == other.bar &&
-      owner == other.owner;
+        id == other.id &&
+        name == other.name &&
+        bar == other.bar &&
+        owner == other.owner;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"simpleOwnerAuth {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar + \\", \\");
     buffer.write(\\"owner=\\" + owner);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
-  simpleOwnerAuth copyWith({@required String id, String name, String bar, String owner}) {
+
+  simpleOwnerAuth copyWith(
+      {@required String id, String name, String bar, String owner}) {
     return simpleOwnerAuth(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      bar: bar ?? this.bar,
-      owner: owner ?? this.owner);
+        id: id ?? this.id,
+        name: name ?? this.name,
+        bar: bar ?? this.bar,
+        owner: owner ?? this.owner);
   }
-  
-  simpleOwnerAuth.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      name = json['name'],
-      bar = json['bar'],
-      owner = json['owner'];
-  
+
+  simpleOwnerAuth.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        bar = json['bar'],
+        owner = json['owner'];
+
   Map<String, dynamic> toJson() =>
-    {'id': id, 'name': name, 'bar': bar, 'owner': owner};
+      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static final QueryField OWNER = QueryField(fieldName: \\"owner\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"simpleOwnerAuth\\";
     modelSchemaDefinition.pluralName = \\"simpleOwnerAuths\\";
-    
+
     modelSchemaDefinition.authRules = [
       AuthRule(
-        authStrategy: AuthStrategy.OWNER,
-        ownerField: \\"owner\\",
-        identityClaim: \\"cognito:username\\",
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ])
+          authStrategy: AuthStrategy.OWNER,
+          ownerField: \\"owner\\",
+          identityClaim: \\"cognito:username\\",
+          operations: [
+            ModelOperation.CREATE,
+            ModelOperation.UPDATE,
+            ModelOperation.DELETE,
+            ModelOperation.READ
+          ])
     ];
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: simpleOwnerAuth.NAME,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: simpleOwnerAuth.NAME,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: simpleOwnerAuth.BAR,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: simpleOwnerAuth.BAR,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: simpleOwnerAuth.OWNER,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: simpleOwnerAuth.OWNER,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class simpleOwnerAuthType extends ModelType<simpleOwnerAuth> {
   const simpleOwnerAuthType();
-  
+
   @override
   simpleOwnerAuth fromJson(Map<String, dynamic> jsonData) {
     return simpleOwnerAuth.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with owner auth allowing others to read: 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
 
 /** This is an auto generated class representing the allowRead type in your schema. */
 @immutable
@@ -735,121 +715,122 @@ class allowRead extends Model {
   String getId() {
     return id;
   }
-  
-  const allowRead._internal({@required this.id, this.name, this.bar, this.owner});
-  
-  factory allowRead({@required String id, String name, String bar, String owner}) {
+
+  const allowRead._internal(
+      {@required this.id, this.name, this.bar, this.owner});
+
+  factory allowRead(
+      {@required String id, String name, String bar, String owner}) {
     return allowRead._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      bar: bar,
-      owner: owner);
+        id: id == null ? UUID.getUUID() : id,
+        name: name,
+        bar: bar,
+        owner: owner);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is allowRead &&
-      id == other.id &&
-      name == other.name &&
-      bar == other.bar &&
-      owner == other.owner;
+        id == other.id &&
+        name == other.name &&
+        bar == other.bar &&
+        owner == other.owner;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"allowRead {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar + \\", \\");
     buffer.write(\\"owner=\\" + owner);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
-  allowRead copyWith({@required String id, String name, String bar, String owner}) {
+
+  allowRead copyWith(
+      {@required String id, String name, String bar, String owner}) {
     return allowRead(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      bar: bar ?? this.bar,
-      owner: owner ?? this.owner);
+        id: id ?? this.id,
+        name: name ?? this.name,
+        bar: bar ?? this.bar,
+        owner: owner ?? this.owner);
   }
-  
-  allowRead.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      name = json['name'],
-      bar = json['bar'],
-      owner = json['owner'];
-  
+
+  allowRead.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        bar = json['bar'],
+        owner = json['owner'];
+
   Map<String, dynamic> toJson() =>
-    {'id': id, 'name': name, 'bar': bar, 'owner': owner};
+      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static final QueryField OWNER = QueryField(fieldName: \\"owner\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"allowRead\\";
     modelSchemaDefinition.pluralName = \\"allowReads\\";
-    
+
     modelSchemaDefinition.authRules = [
       AuthRule(
-        authStrategy: AuthStrategy.OWNER,
-        ownerField: \\"owner\\",
-        identityClaim: \\"cognito:username\\",
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.DELETE,
-          ModelOperation.UPDATE
-        ])
+          authStrategy: AuthStrategy.OWNER,
+          ownerField: \\"owner\\",
+          identityClaim: \\"cognito:username\\",
+          operations: [
+            ModelOperation.CREATE,
+            ModelOperation.DELETE,
+            ModelOperation.UPDATE
+          ])
     ];
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: allowRead.NAME,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: allowRead.NAME,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: allowRead.BAR,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: allowRead.BAR,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: allowRead.OWNER,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: allowRead.OWNER,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class allowReadType extends ModelType<allowRead> {
   const allowReadType();
-  
+
   @override
   allowRead fromJson(Map<String, dynamic> jsonData) {
     return allowRead.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with private authorization 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
 
 /** This is an auto generated class representing the privateType type in your schema. */
 @immutable
@@ -863,108 +844,100 @@ class privateType extends Model {
   String getId() {
     return id;
   }
-  
+
   const privateType._internal({@required this.id, this.name, this.bar});
-  
+
   factory privateType({@required String id, String name, String bar}) {
     return privateType._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      bar: bar);
+        id: id == null ? UUID.getUUID() : id, name: name, bar: bar);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is privateType &&
-      id == other.id &&
-      name == other.name &&
-      bar == other.bar;
+        id == other.id &&
+        name == other.name &&
+        bar == other.bar;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"privateType {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
+
   privateType copyWith({@required String id, String name, String bar}) {
     return privateType(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      bar: bar ?? this.bar);
+        id: id ?? this.id, name: name ?? this.name, bar: bar ?? this.bar);
   }
-  
-  privateType.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      name = json['name'],
-      bar = json['bar'];
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'name': name, 'bar': bar};
+
+  privateType.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        bar = json['bar'];
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"privateType\\";
     modelSchemaDefinition.pluralName = \\"privateTypes\\";
-    
+
     modelSchemaDefinition.authRules = [
-      AuthRule(
-        authStrategy: AuthStrategy.PRIVATE,
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ])
+      AuthRule(authStrategy: AuthStrategy.PRIVATE, operations: [
+        ModelOperation.CREATE,
+        ModelOperation.UPDATE,
+        ModelOperation.DELETE,
+        ModelOperation.READ
+      ])
     ];
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: privateType.NAME,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: privateType.NAME,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: privateType.BAR,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: privateType.BAR,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class privateTypeType extends ModelType<privateType> {
   const privateTypeType();
-  
+
   @override
   privateType fromJson(Map<String, dynamic> jsonData) {
     return privateType.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with public authorization 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
 
 /** This is an auto generated class representing the publicType type in your schema. */
 @immutable
@@ -978,108 +951,100 @@ class publicType extends Model {
   String getId() {
     return id;
   }
-  
+
   const publicType._internal({@required this.id, this.name, this.bar});
-  
+
   factory publicType({@required String id, String name, String bar}) {
     return publicType._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      bar: bar);
+        id: id == null ? UUID.getUUID() : id, name: name, bar: bar);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is publicType &&
-      id == other.id &&
-      name == other.name &&
-      bar == other.bar;
+        id == other.id &&
+        name == other.name &&
+        bar == other.bar;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"publicType {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
+
   publicType copyWith({@required String id, String name, String bar}) {
     return publicType(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      bar: bar ?? this.bar);
+        id: id ?? this.id, name: name ?? this.name, bar: bar ?? this.bar);
   }
-  
-  publicType.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      name = json['name'],
-      bar = json['bar'];
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'name': name, 'bar': bar};
+
+  publicType.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        bar = json['bar'];
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"publicType\\";
     modelSchemaDefinition.pluralName = \\"publicTypes\\";
-    
+
     modelSchemaDefinition.authRules = [
-      AuthRule(
-        authStrategy: AuthStrategy.PUBLIC,
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ])
+      AuthRule(authStrategy: AuthStrategy.PUBLIC, operations: [
+        ModelOperation.CREATE,
+        ModelOperation.UPDATE,
+        ModelOperation.DELETE,
+        ModelOperation.READ
+      ])
     ];
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: publicType.NAME,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: publicType.NAME,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: publicType.BAR,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: publicType.BAR,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class publicTypeType extends ModelType<publicType> {
   const publicTypeType();
-  
+
   @override
   publicType fromJson(Map<String, dynamic> jsonData) {
     return publicType.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with static groups 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
 
 /** This is an auto generated class representing the staticGroups type in your schema. */
 @immutable
@@ -1093,110 +1058,106 @@ class staticGroups extends Model {
   String getId() {
     return id;
   }
-  
+
   const staticGroups._internal({@required this.id, this.name, this.bar});
-  
+
   factory staticGroups({@required String id, String name, String bar}) {
     return staticGroups._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      bar: bar);
+        id: id == null ? UUID.getUUID() : id, name: name, bar: bar);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is staticGroups &&
-      id == other.id &&
-      name == other.name &&
-      bar == other.bar;
+        id == other.id &&
+        name == other.name &&
+        bar == other.bar;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"staticGroups {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
+
   staticGroups copyWith({@required String id, String name, String bar}) {
     return staticGroups(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      bar: bar ?? this.bar);
+        id: id ?? this.id, name: name ?? this.name, bar: bar ?? this.bar);
   }
-  
-  staticGroups.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      name = json['name'],
-      bar = json['bar'];
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'name': name, 'bar': bar};
+
+  staticGroups.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        bar = json['bar'];
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"staticGroups\\";
     modelSchemaDefinition.pluralName = \\"staticGroups\\";
-    
+
     modelSchemaDefinition.authRules = [
       AuthRule(
-        authStrategy: AuthStrategy.GROUPS,
-        groupClaim: \\"cognito:groups\\",
-        groups: [ \\"Admin\\" ],
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ])
+          authStrategy: AuthStrategy.GROUPS,
+          groupClaim: \\"cognito:groups\\",
+          groups: [
+            \\"Admin\\"
+          ],
+          operations: [
+            ModelOperation.CREATE,
+            ModelOperation.UPDATE,
+            ModelOperation.DELETE,
+            ModelOperation.READ
+          ])
     ];
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: staticGroups.NAME,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: staticGroups.NAME,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: staticGroups.BAR,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: staticGroups.BAR,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class staticGroupsType extends ModelType<staticGroups> {
   const staticGroupsType();
-  
+
   @override
   staticGroups fromJson(Map<String, dynamic> jsonData) {
     return staticGroups.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should include authRules in schema when owner auth is used with ownerField 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
 
 /** This is an auto generated class representing the Post type in your schema. */
 @immutable
@@ -1210,110 +1171,109 @@ class Post extends Model {
   String getId() {
     return id;
   }
-  
-  const Post._internal({@required this.id, @required this.title, @required this.author});
-  
-  factory Post({@required String id, @required String title, @required String author}) {
+
+  const Post._internal(
+      {@required this.id, @required this.title, @required this.author});
+
+  factory Post(
+      {@required String id, @required String title, @required String author}) {
     return Post._internal(
-      id: id == null ? UUID.getUUID() : id,
-      title: title,
-      author: author);
+        id: id == null ? UUID.getUUID() : id, title: title, author: author);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Post &&
-      id == other.id &&
-      title == other.title &&
-      author == other.author;
+        id == other.id &&
+        title == other.title &&
+        author == other.author;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"Post {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"title=\\" + title + \\", \\");
     buffer.write(\\"author=\\" + author);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
-  Post copyWith({@required String id, @required String title, @required String author}) {
+
+  Post copyWith(
+      {@required String id, @required String title, @required String author}) {
     return Post(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      author: author ?? this.author);
+        id: id ?? this.id,
+        title: title ?? this.title,
+        author: author ?? this.author);
   }
-  
-  Post.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      title = json['title'],
-      author = json['author'];
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'title': title, 'author': author};
+
+  Post.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        title = json['title'],
+        author = json['author'];
+
+  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'author': author};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
   static final QueryField AUTHOR = QueryField(fieldName: \\"author\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"Post\\";
     modelSchemaDefinition.pluralName = \\"Posts\\";
-    
+
     modelSchemaDefinition.authRules = [
       AuthRule(
-        authStrategy: AuthStrategy.OWNER,
-        ownerField: \\"author\\",
-        identityClaim: \\"cognito:username\\",
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ])
+          authStrategy: AuthStrategy.OWNER,
+          ownerField: \\"author\\",
+          identityClaim: \\"cognito:username\\",
+          operations: [
+            ModelOperation.CREATE,
+            ModelOperation.UPDATE,
+            ModelOperation.DELETE,
+            ModelOperation.READ
+          ])
     ];
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: Post.TITLE,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: Post.TITLE,
+        isRequired: true,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: Post.AUTHOR,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: Post.AUTHOR,
+        isRequired: true,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class PostType extends ModelType<Post> {
   const PostType();
-  
+
   @override
   Post fromJson(Map<String, dynamic> jsonData) {
     return Post.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should support multiple auth rules 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
 
 /** This is an auto generated class representing the Post type in your schema. */
 @immutable
@@ -1327,120 +1287,117 @@ class Post extends Model {
   String getId() {
     return id;
   }
-  
-  const Post._internal({@required this.id, @required this.title, @required this.owner});
-  
-  factory Post({@required String id, @required String title, @required String owner}) {
+
+  const Post._internal(
+      {@required this.id, @required this.title, @required this.owner});
+
+  factory Post(
+      {@required String id, @required String title, @required String owner}) {
     return Post._internal(
-      id: id == null ? UUID.getUUID() : id,
-      title: title,
-      owner: owner);
+        id: id == null ? UUID.getUUID() : id, title: title, owner: owner);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Post &&
-      id == other.id &&
-      title == other.title &&
-      owner == other.owner;
+        id == other.id &&
+        title == other.title &&
+        owner == other.owner;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"Post {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"title=\\" + title + \\", \\");
     buffer.write(\\"owner=\\" + owner);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
-  Post copyWith({@required String id, @required String title, @required String owner}) {
+
+  Post copyWith(
+      {@required String id, @required String title, @required String owner}) {
     return Post(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      owner: owner ?? this.owner);
+        id: id ?? this.id,
+        title: title ?? this.title,
+        owner: owner ?? this.owner);
   }
-  
-  Post.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      title = json['title'],
-      owner = json['owner'];
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'title': title, 'owner': owner};
+
+  Post.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        title = json['title'],
+        owner = json['owner'];
+
+  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'owner': owner};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
   static final QueryField OWNER = QueryField(fieldName: \\"owner\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"Post\\";
     modelSchemaDefinition.pluralName = \\"Posts\\";
-    
+
     modelSchemaDefinition.authRules = [
       AuthRule(
-        authStrategy: AuthStrategy.GROUPS,
-        groupClaim: \\"cognito:groups\\",
-        groups: [ \\"admin\\" ],
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ]),
+          authStrategy: AuthStrategy.GROUPS,
+          groupClaim: \\"cognito:groups\\",
+          groups: [
+            \\"admin\\"
+          ],
+          operations: [
+            ModelOperation.CREATE,
+            ModelOperation.UPDATE,
+            ModelOperation.DELETE,
+            ModelOperation.READ
+          ]),
       AuthRule(
-        authStrategy: AuthStrategy.OWNER,
-        ownerField: \\"owner\\",
-        identityClaim: \\"cognito:username\\",
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE
-        ]),
-      AuthRule(
-        authStrategy: AuthStrategy.PUBLIC,
-        operations: [
-          ModelOperation.CREATE,
-          ModelOperation.UPDATE,
-          ModelOperation.DELETE,
-          ModelOperation.READ
-        ])
+          authStrategy: AuthStrategy.OWNER,
+          ownerField: \\"owner\\",
+          identityClaim: \\"cognito:username\\",
+          operations: [ModelOperation.CREATE, ModelOperation.UPDATE]),
+      AuthRule(authStrategy: AuthStrategy.PUBLIC, operations: [
+        ModelOperation.CREATE,
+        ModelOperation.UPDATE,
+        ModelOperation.DELETE,
+        ModelOperation.READ
+      ])
     ];
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: Post.TITLE,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: Post.TITLE,
+        isRequired: true,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: Post.OWNER,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: Post.OWNER,
+        isRequired: true,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class PostType extends ModelType<Post> {
   const PostType();
-  
+
   @override
   Post fromJson(Map<String, dynamic> jsonData) {
     return Post.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should generate classes for models with one to many connection 1`] = `
@@ -1449,7 +1406,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 import 'Task.dart';
-
 
 /** This is an auto generated class representing the Todo type in your schema. */
 @immutable
@@ -1462,85 +1418,85 @@ class Todo extends Model {
   String getId() {
     return id;
   }
-  
+
   const Todo._internal({@required this.id, this.tasks});
-  
+
   factory Todo({@required String id, List<Task> tasks}) {
     return Todo._internal(
-      id: id == null ? UUID.getUUID() : id,
-      tasks: tasks != null ? List.unmodifiable(tasks) : tasks);
+        id: id == null ? UUID.getUUID() : id,
+        tasks: tasks != null ? List.unmodifiable(tasks) : tasks);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Todo &&
-      id == other.id &&
-      DeepCollectionEquality().equals(tasks, other.tasks);
+        id == other.id &&
+        DeepCollectionEquality().equals(tasks, other.tasks);
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"Todo {\\");
     buffer.write(\\"id=\\" + id);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
+
   Todo copyWith({@required String id, List<Task> tasks}) {
-    return Todo(
-      id: id ?? this.id,
-      tasks: tasks ?? this.tasks);
+    return Todo(id: id ?? this.id, tasks: tasks ?? this.tasks);
   }
-  
-  Todo.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      tasks = json['tasks'] is List
-        ? (json['tasks'] as List)
-          .map((e) => Task.fromJson(e as Map<String, dynamic>))
-          .toList()
-        : null;
-  
+
+  Todo.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        tasks = json['tasks'] is List
+            ? (json['tasks'] as List)
+                .map((e) => Task.fromJson(e as Map<String, dynamic>))
+                .toList()
+            : null;
+
   Map<String, dynamic> toJson() =>
-    {'id': id, 'tasks': tasks.map((e) => e.toJson())};
+      {'id': id, 'tasks': tasks.map((e) => e.toJson())};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField TASKS = QueryField(
-    fieldName: \\"tasks\\",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Task).toString()));
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+      fieldName: \\"tasks\\",
+      fieldType: ModelFieldType(ModelFieldTypeEnum.model,
+          ofModelName: (Task).toString()));
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"Todo\\";
     modelSchemaDefinition.pluralName = \\"Todos\\";
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.hasMany(
-      key: Todo.TASKS,
-      isRequired: false,
-      ofModelName: (Task).toString(),
-      associatedKey: Task.TODO
-    ));
+        key: Todo.TASKS,
+        isRequired: false,
+        ofModelName: (Task).toString(),
+        associatedKey: Task.TODO));
   });
 }
 
 class TodoType extends ModelType<Todo> {
   const TodoType();
-  
+
   @override
   Todo fromJson(Map<String, dynamic> jsonData) {
     return Todo.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should generate classes for models with one to many connection 2`] = `
@@ -1548,7 +1504,6 @@ exports[`AppSync Dart Visitor Model with Connection Directive should generate cl
 import 'package:flutter/foundation.dart';
 
 import 'Todo.dart';
-
 
 /** This is an auto generated class representing the Task type in your schema. */
 @immutable
@@ -1563,108 +1518,111 @@ class Task extends Model {
   String getId() {
     return id;
   }
-  
-  const Task._internal({@required this.id, this.todo, this.time, this.createdOn});
-  
-  factory Task({@required String id, Todo todo, DateTime time, DateTime createdOn}) {
+
+  const Task._internal(
+      {@required this.id, this.todo, this.time, this.createdOn});
+
+  factory Task(
+      {@required String id, Todo todo, DateTime time, DateTime createdOn}) {
     return Task._internal(
-      id: id == null ? UUID.getUUID() : id,
-      todo: todo,
-      time: time,
-      createdOn: createdOn);
+        id: id == null ? UUID.getUUID() : id,
+        todo: todo,
+        time: time,
+        createdOn: createdOn);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Task &&
-      id == other.id &&
-      todo == other.todo &&
-      time == other.time &&
-      createdOn == other.createdOn;
+        id == other.id &&
+        todo == other.todo &&
+        time == other.time &&
+        createdOn == other.createdOn;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"Task {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"todo=\\" + todo.toString() + \\", \\");
     buffer.write(\\"time=\\" + time.toString() + \\", \\");
     buffer.write(\\"createdOn=\\" + createdOn.toString());
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
-  Task copyWith({@required String id, Todo todo, DateTime time, DateTime createdOn}) {
+
+  Task copyWith(
+      {@required String id, Todo todo, DateTime time, DateTime createdOn}) {
     return Task(
-      id: id ?? this.id,
-      todo: todo ?? this.todo,
-      time: time ?? this.time,
-      createdOn: createdOn ?? this.createdOn);
+        id: id ?? this.id,
+        todo: todo ?? this.todo,
+        time: time ?? this.time,
+        createdOn: createdOn ?? this.createdOn);
   }
-  
-  Task.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      todo = json['todo'] is Map<String, dynamic>
-        ? Todo.fromJson(json['todo'] as Map<String, dynamic>)
-        : null,
-      time = json['time'],
-      createdOn = json['createdOn'];
-  
+
+  Task.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        todo = json['todo'] is Map<String, dynamic>
+            ? Todo.fromJson(json['todo'] as Map<String, dynamic>)
+            : null,
+        time = json['time'],
+        createdOn = json['createdOn'];
+
   Map<String, dynamic> toJson() =>
-    {'id': id, 'todo': todo.toJson(), 'time': time, 'createdOn': createdOn};
+      {'id': id, 'todo': todo.toJson(), 'time': time, 'createdOn': createdOn};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField TODO = QueryField(
-    fieldName: \\"todo\\",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Todo).toString()));
+      fieldName: \\"todo\\",
+      fieldType: ModelFieldType(ModelFieldTypeEnum.model,
+          ofModelName: (Todo).toString()));
   static final QueryField TIME = QueryField(fieldName: \\"time\\");
   static final QueryField CREATEDON = QueryField(fieldName: \\"createdOn\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"Task\\";
     modelSchemaDefinition.pluralName = \\"Tasks\\";
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.belongsTo(
-      key: Task.TODO,
-      isRequired: false,
-      targetName: \\"taskTodoId\\",
-      ofModelName: (Todo).toString()
-    ));
-    
+        key: Task.TODO,
+        isRequired: false,
+        targetName: \\"taskTodoId\\",
+        ofModelName: (Todo).toString()));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: Task.TIME,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.time)
-    ));
-    
+        key: Task.TIME,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.time)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: Task.CREATEDON,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.date)
-    ));
+        key: Task.CREATEDON,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.date)));
   });
 }
 
 class TaskType extends ModelType<Task> {
   const TaskType();
-  
+
   @override
   Task fromJson(Map<String, dynamic> jsonData) {
     return Task.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should support connection directive with keyName and fields 1`] = `
@@ -1673,7 +1631,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 import 'Post.dart';
-
 
 /** This is an auto generated class representing the Blog type in your schema. */
 @immutable
@@ -1688,109 +1645,122 @@ class Blog extends Model {
   String getId() {
     return id;
   }
-  
-  const Blog._internal({@required this.id, @required this.name, this.posts, this.test});
-  
-  factory Blog({@required String id, @required String name, List<Post> posts, List<String> test}) {
+
+  const Blog._internal(
+      {@required this.id, @required this.name, this.posts, this.test});
+
+  factory Blog(
+      {@required String id,
+      @required String name,
+      List<Post> posts,
+      List<String> test}) {
     return Blog._internal(
-      id: id == null ? UUID.getUUID() : id,
-      name: name,
-      posts: posts != null ? List.unmodifiable(posts) : posts,
-      test: test != null ? List.unmodifiable(test) : test);
+        id: id == null ? UUID.getUUID() : id,
+        name: name,
+        posts: posts != null ? List.unmodifiable(posts) : posts,
+        test: test != null ? List.unmodifiable(test) : test);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Blog &&
-      id == other.id &&
-      name == other.name &&
-      DeepCollectionEquality().equals(posts, other.posts) &&
-      DeepCollectionEquality().equals(test, other.test);
+        id == other.id &&
+        name == other.name &&
+        DeepCollectionEquality().equals(posts, other.posts) &&
+        DeepCollectionEquality().equals(test, other.test);
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"Blog {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
     buffer.write(\\"test=\\" + test.toString());
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
-  Blog copyWith({@required String id, @required String name, List<Post> posts, List<String> test}) {
+
+  Blog copyWith(
+      {@required String id,
+      @required String name,
+      List<Post> posts,
+      List<String> test}) {
     return Blog(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      posts: posts ?? this.posts,
-      test: test ?? this.test);
+        id: id ?? this.id,
+        name: name ?? this.name,
+        posts: posts ?? this.posts,
+        test: test ?? this.test);
   }
-  
-  Blog.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      name = json['name'],
-      posts = json['posts'] is List
-        ? (json['posts'] as List)
-          .map((e) => Post.fromJson(e as Map<String, dynamic>))
-          .toList()
-        : null,
-      test = json['test'];
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'name': name, 'posts': posts.map((e) => e.toJson()), 'test': test};
+
+  Blog.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        name = json['name'],
+        posts = json['posts'] is List
+            ? (json['posts'] as List)
+                .map((e) => Post.fromJson(e as Map<String, dynamic>))
+                .toList()
+            : null,
+        test = json['test'];
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'posts': posts.map((e) => e.toJson()),
+        'test': test
+      };
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField POSTS = QueryField(
-    fieldName: \\"posts\\",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Post).toString()));
+      fieldName: \\"posts\\",
+      fieldType: ModelFieldType(ModelFieldTypeEnum.model,
+          ofModelName: (Post).toString()));
   static final QueryField TEST = QueryField(fieldName: \\"test\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"Blog\\";
     modelSchemaDefinition.pluralName = \\"Blogs\\";
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: Blog.NAME,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: Blog.NAME,
+        isRequired: true,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.hasMany(
-      key: Blog.POSTS,
-      isRequired: false,
-      ofModelName: (Post).toString(),
-      associatedKey: Post.BLOG
-    ));
-    
+        key: Blog.POSTS,
+        isRequired: false,
+        ofModelName: (Post).toString(),
+        associatedKey: Post.BLOG));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: Blog.TEST,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: Blog.TEST,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class BlogType extends ModelType<Blog> {
   const BlogType();
-  
+
   @override
   Blog fromJson(Map<String, dynamic> jsonData) {
     return Blog.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should support connection directive with keyName and fields 2`] = `
@@ -1798,7 +1768,6 @@ exports[`AppSync Dart Visitor Model with Connection Directive should support con
 import 'package:flutter/foundation.dart';
 
 import 'Post.dart';
-
 
 /** This is an auto generated class representing the Comment type in your schema. */
 @immutable
@@ -1812,96 +1781,96 @@ class Comment extends Model {
   String getId() {
     return id;
   }
-  
-  const Comment._internal({@required this.id, this.post, @required this.content});
-  
+
+  const Comment._internal(
+      {@required this.id, this.post, @required this.content});
+
   factory Comment({@required String id, Post post, @required String content}) {
     return Comment._internal(
-      id: id == null ? UUID.getUUID() : id,
-      post: post,
-      content: content);
+        id: id == null ? UUID.getUUID() : id, post: post, content: content);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Comment &&
-      id == other.id &&
-      post == other.post &&
-      content == other.content;
+        id == other.id &&
+        post == other.post &&
+        content == other.content;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"Comment {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"post=\\" + post.toString() + \\", \\");
     buffer.write(\\"content=\\" + content);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
+
   Comment copyWith({@required String id, Post post, @required String content}) {
     return Comment(
-      id: id ?? this.id,
-      post: post ?? this.post,
-      content: content ?? this.content);
+        id: id ?? this.id,
+        post: post ?? this.post,
+        content: content ?? this.content);
   }
-  
-  Comment.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      post = json['post'] is Map<String, dynamic>
-        ? Post.fromJson(json['post'] as Map<String, dynamic>)
-        : null,
-      content = json['content'];
-  
+
+  Comment.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        post = json['post'] is Map<String, dynamic>
+            ? Post.fromJson(json['post'] as Map<String, dynamic>)
+            : null,
+        content = json['content'];
+
   Map<String, dynamic> toJson() =>
-    {'id': id, 'post': post.toJson(), 'content': content};
+      {'id': id, 'post': post.toJson(), 'content': content};
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField POST = QueryField(
-    fieldName: \\"post\\",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Post).toString()));
+      fieldName: \\"post\\",
+      fieldType: ModelFieldType(ModelFieldTypeEnum.model,
+          ofModelName: (Post).toString()));
   static final QueryField CONTENT = QueryField(fieldName: \\"content\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"Comment\\";
     modelSchemaDefinition.pluralName = \\"Comments\\";
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.belongsTo(
-      key: Comment.POST,
-      isRequired: false,
-      targetName: \\"postID\\",
-      ofModelName: (Post).toString()
-    ));
-    
+        key: Comment.POST,
+        isRequired: false,
+        targetName: \\"postID\\",
+        ofModelName: (Post).toString()));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: Comment.CONTENT,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: Comment.CONTENT,
+        isRequired: true,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class CommentType extends ModelType<Comment> {
   const CommentType();
-  
+
   @override
   Comment fromJson(Map<String, dynamic> jsonData) {
     return Comment.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should support connection directive with keyName and fields 3`] = `
@@ -1911,7 +1880,6 @@ import 'package:flutter/foundation.dart';
 
 import 'Blog.dart';
 import 'Comment.dart';
-
 
 /** This is an auto generated class representing the Post type in your schema. */
 @immutable
@@ -1926,120 +1894,133 @@ class Post extends Model {
   String getId() {
     return id;
   }
-  
-  const Post._internal({@required this.id, @required this.title, this.blog, this.comments});
-  
-  factory Post({@required String id, @required String title, Blog blog, List<Comment> comments}) {
+
+  const Post._internal(
+      {@required this.id, @required this.title, this.blog, this.comments});
+
+  factory Post(
+      {@required String id,
+      @required String title,
+      Blog blog,
+      List<Comment> comments}) {
     return Post._internal(
-      id: id == null ? UUID.getUUID() : id,
-      title: title,
-      blog: blog,
-      comments: comments != null ? List.unmodifiable(comments) : comments);
+        id: id == null ? UUID.getUUID() : id,
+        title: title,
+        blog: blog,
+        comments: comments != null ? List.unmodifiable(comments) : comments);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is Post &&
-      id == other.id &&
-      title == other.title &&
-      blog == other.blog &&
-      DeepCollectionEquality().equals(comments, other.comments);
+        id == other.id &&
+        title == other.title &&
+        blog == other.blog &&
+        DeepCollectionEquality().equals(comments, other.comments);
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"Post {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"title=\\" + title + \\", \\");
     buffer.write(\\"blog=\\" + blog.toString());
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
-  Post copyWith({@required String id, @required String title, Blog blog, List<Comment> comments}) {
+
+  Post copyWith(
+      {@required String id,
+      @required String title,
+      Blog blog,
+      List<Comment> comments}) {
     return Post(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      blog: blog ?? this.blog,
-      comments: comments ?? this.comments);
+        id: id ?? this.id,
+        title: title ?? this.title,
+        blog: blog ?? this.blog,
+        comments: comments ?? this.comments);
   }
-  
-  Post.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      title = json['title'],
-      blog = json['blog'] is Map<String, dynamic>
-        ? Blog.fromJson(json['blog'] as Map<String, dynamic>)
-        : null,
-      comments = json['comments'] is List
-        ? (json['comments'] as List)
-          .map((e) => Comment.fromJson(e as Map<String, dynamic>))
-          .toList()
-        : null;
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'title': title, 'blog': blog.toJson(), 'comments': comments.map((e) => e.toJson())};
+
+  Post.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        title = json['title'],
+        blog = json['blog'] is Map<String, dynamic>
+            ? Blog.fromJson(json['blog'] as Map<String, dynamic>)
+            : null,
+        comments = json['comments'] is List
+            ? (json['comments'] as List)
+                .map((e) => Comment.fromJson(e as Map<String, dynamic>))
+                .toList()
+            : null;
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'blog': blog.toJson(),
+        'comments': comments.map((e) => e.toJson())
+      };
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
   static final QueryField BLOG = QueryField(
-    fieldName: \\"blog\\",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Blog).toString()));
+      fieldName: \\"blog\\",
+      fieldType: ModelFieldType(ModelFieldTypeEnum.model,
+          ofModelName: (Blog).toString()));
   static final QueryField COMMENTS = QueryField(
-    fieldName: \\"comments\\",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Comment).toString()));
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+      fieldName: \\"comments\\",
+      fieldType: ModelFieldType(ModelFieldTypeEnum.model,
+          ofModelName: (Comment).toString()));
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"Post\\";
     modelSchemaDefinition.pluralName = \\"Posts\\";
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: Post.TITLE,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: Post.TITLE,
+        isRequired: true,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.belongsTo(
-      key: Post.BLOG,
-      isRequired: false,
-      targetName: \\"blogID\\",
-      ofModelName: (Blog).toString()
-    ));
-    
+        key: Post.BLOG,
+        isRequired: false,
+        targetName: \\"blogID\\",
+        ofModelName: (Blog).toString()));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.hasMany(
-      key: Post.COMMENTS,
-      isRequired: false,
-      ofModelName: (Comment).toString(),
-      associatedKey: Comment.POST
-    ));
+        key: Post.COMMENTS,
+        isRequired: false,
+        ofModelName: (Comment).toString(),
+        associatedKey: Comment.POST));
   });
 }
 
 class PostType extends ModelType<Post> {
   const PostType();
-  
+
   @override
   Post fromJson(Map<String, dynamic> jsonData) {
     return Post.fromJson(jsonData);
   }
-}"
+}
+"
 `;
 
 exports[`AppSync Dart Visitor Model with Key Directive should generate a class for model with key directive 1`] = `
 "import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
 
 /** This is an auto generated class representing the authorBook type in your schema. */
 @immutable
@@ -2055,40 +2036,50 @@ class authorBook extends Model {
   String getId() {
     return id;
   }
-  
-  const authorBook._internal({@required this.id, @required this.author_id, @required this.book_id, this.author, this.book});
-  
-  factory authorBook({@required String id, @required String author_id, @required String book_id, String author, String book}) {
+
+  const authorBook._internal(
+      {@required this.id,
+      @required this.author_id,
+      @required this.book_id,
+      this.author,
+      this.book});
+
+  factory authorBook(
+      {@required String id,
+      @required String author_id,
+      @required String book_id,
+      String author,
+      String book}) {
     return authorBook._internal(
-      id: id == null ? UUID.getUUID() : id,
-      author_id: author_id,
-      book_id: book_id,
-      author: author,
-      book: book);
+        id: id == null ? UUID.getUUID() : id,
+        author_id: author_id,
+        book_id: book_id,
+        author: author,
+        book: book);
   }
-  
+
   bool equals(Object other) {
     return this == other;
   }
-  
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is authorBook &&
-      id == other.id &&
-      author_id == other.author_id &&
-      book_id == other.book_id &&
-      author == other.author &&
-      book == other.book;
+        id == other.id &&
+        author_id == other.author_id &&
+        book_id == other.book_id &&
+        author == other.author &&
+        book == other.book;
   }
-  
+
   @override
   int get hashCode => toString().hashCode;
-  
+
   @override
   String toString() {
     var buffer = new StringBuffer();
-    
+
     buffer.write(\\"authorBook {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"author_id=\\" + author_id + \\", \\");
@@ -2096,72 +2087,80 @@ class authorBook extends Model {
     buffer.write(\\"author=\\" + author + \\", \\");
     buffer.write(\\"book=\\" + book);
     buffer.write(\\"}\\");
-    
+
     return buffer.toString();
   }
-  
-  authorBook copyWith({@required String id, @required String author_id, @required String book_id, String author, String book}) {
+
+  authorBook copyWith(
+      {@required String id,
+      @required String author_id,
+      @required String book_id,
+      String author,
+      String book}) {
     return authorBook(
-      id: id ?? this.id,
-      author_id: author_id ?? this.author_id,
-      book_id: book_id ?? this.book_id,
-      author: author ?? this.author,
-      book: book ?? this.book);
+        id: id ?? this.id,
+        author_id: author_id ?? this.author_id,
+        book_id: book_id ?? this.book_id,
+        author: author ?? this.author,
+        book: book ?? this.book);
   }
-  
-  authorBook.fromJson(Map<String, dynamic> json)  
-    : id = json['id'],
-      author_id = json['author_id'],
-      book_id = json['book_id'],
-      author = json['author'],
-      book = json['book'];
-  
-  Map<String, dynamic> toJson() =>
-    {'id': id, 'author_id': author_id, 'book_id': book_id, 'author': author, 'book': book};
+
+  authorBook.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        author_id = json['author_id'],
+        book_id = json['book_id'],
+        author = json['author'],
+        book = json['book'];
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'author_id': author_id,
+        'book_id': book_id,
+        'author': author,
+        'book': book
+      };
 
   static final QueryField ID = QueryField(fieldName: \\"id\\");
   static final QueryField AUTHOR_ID = QueryField(fieldName: \\"author_id\\");
   static final QueryField BOOK_ID = QueryField(fieldName: \\"book_id\\");
   static final QueryField AUTHOR = QueryField(fieldName: \\"author\\");
   static final QueryField BOOK = QueryField(fieldName: \\"book\\");
-  static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"authorBook\\";
     modelSchemaDefinition.pluralName = \\"authorBooks\\";
-    
+
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
-    
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: authorBook.AUTHOR_ID,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: authorBook.AUTHOR_ID,
+        isRequired: true,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: authorBook.BOOK_ID,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: authorBook.BOOK_ID,
+        isRequired: true,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: authorBook.AUTHOR,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
-    
+        key: authorBook.AUTHOR,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
+
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
-      key: authorBook.BOOK,
-      isRequired: false,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
-    ));
+        key: authorBook.BOOK,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
 }
 
 class authorBookType extends ModelType<authorBook> {
   const authorBookType();
-  
+
   @override
   authorBook fromJson(Map<String, dynamic> jsonData) {
     return authorBook.fromJson(jsonData);
   }
-}"
+}
+"
 `;

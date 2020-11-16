@@ -11,6 +11,7 @@ import {
   DART_RESERVED_KEYWORDS,
   typeToEnumMap,
 } from '../configs/dart-config';
+import dartStyle from 'dart-style';
 
 export class AppSyncModelDartVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
@@ -83,7 +84,7 @@ export class AppSyncModelDartVisitor<
 
     result.push(packageImports.map(p => `import '${p}.dart';`).join('\n'));
     result.push(classDeclarationBlock.string);
-    return result.join('\n\n');
+    return this.formatDartCode(result.join('\n\n'));
   }
 
   /**
@@ -100,7 +101,7 @@ export class AppSyncModelDartVisitor<
       result.push(modelDeclaration);
       result.push(modelType);
     });
-    return result.join('\n\n');
+    return this.formatDartCode(result.join('\n\n'));
   }
 
   protected generatePackageHeader(): string {
@@ -563,5 +564,17 @@ export class AppSyncModelDartVisitor<
         return true;
       }
     });
+  }
+
+  /**
+   * Format the code following Dart style guidelines
+   * @param dartCode
+   */
+  protected formatDartCode(dartCode: string) : string {
+    const result = dartStyle.formatCode(dartCode);
+    if (result.error) {
+      throw new Error(result.error);
+    }
+    return result.code || '';
   }
 }
