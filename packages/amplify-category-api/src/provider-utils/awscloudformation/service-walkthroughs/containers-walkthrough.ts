@@ -175,8 +175,15 @@ async function newContainer(context, resourceName: string): Promise<Partial<Serv
     githubToken = githubQuestions.github_access_token;
   }
 
+  const meta = context.amplify.getProjectDetails().amplifyMeta;
+  const hasAccessableResources = ['storage', 'function'].some(categoryName => {
+    return Object.keys(meta[categoryName] ?? {}).length > 0;
+  });
   let rolePermissions: any = {};
-  if (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?')) {
+  if (
+    hasAccessableResources &&
+    (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))
+  ) {
     rolePermissions = await context.amplify.invokePluginMethod(context, 'function', undefined, 'askExecRolePermissionsQuestions', [
       context,
       resourceName,
