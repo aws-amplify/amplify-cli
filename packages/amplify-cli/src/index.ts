@@ -7,7 +7,7 @@ import {
   pathManager,
   stateManager,
   exitOnNextTick,
-  MigrateError,
+  TeamProviderInfoMigrateError,
 } from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
@@ -25,7 +25,7 @@ import { notify } from './version-notifier';
 import { EventEmitter } from 'events';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
-import { MigrateTeamProvider } from './utils/team-provider-migrate';
+import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
@@ -79,8 +79,8 @@ export async function run() {
 
     await attachUsageData(context);
 
-    if (!(await MigrateTeamProvider(context))) {
-      context.usageData.emitError(new MigrateError());
+    if (!(await migrateTeamProviderInfo(context))) {
+      context.usageData.emitError(new TeamProviderInfoMigrateError());
       return 1;
     }
     errorHandler = boundErrorHandler.bind(context);

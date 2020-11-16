@@ -60,37 +60,23 @@ export class StateManager {
 
   teamProviderInfoExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getTeamProviderInfoFilePath(projectPath));
 
-  teamProviderInfoHasAuthSecrets = (projectPath?: string): any => {
-    if (this.teamProviderInfoExists(projectPath)) {
-      const teamProviderInfo = this.getTeamProviderInfo(projectPath);
-      const { envName } = this.getLocalEnvInfo();
-      const envTeamProvider = teamProviderInfo[envName];
-      if (envTeamProvider && envTeamProvider.categories && envTeamProvider.categories.auth) {
-        return _.some(Object.keys(envTeamProvider.categories.auth), resource => {
-          return envTeamProvider.categories.auth[resource][hostedUIProviderCredsField];
-        });
-      }
-    }
-    return false;
-  };
-
   moveSecretsFromTeamProviderToDeployment = (projectPath?: string): void => {
     const { envName } = this.getLocalEnvInfo(projectPath);
     let teamProviderInfo = this.getTeamProviderInfo();
     const envTeamProvider = teamProviderInfo[envName];
     const amplifyAppId = envTeamProvider.awscloudformation.AmplifyAppId;
-    let secrets = {};
-    Object.keys(envTeamProvider.categories).forEach(category => {
-      if (category === 'auth') {
+    const secrets = {};
+    Object.keys(envTeamProvider.categories)
+      .filter(category => category === 'auth')
+      .forEach(() => {
         Object.keys(envTeamProvider.categories.auth).forEach(resourceName => {
           if (envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField]) {
             const teamProviderSecrets = envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField];
             delete envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField];
-            secrets = _.set(secrets, [amplifyAppId, envName, 'auth', resourceName, hostedUIProviderCredsField], teamProviderSecrets);
+            _.set(secrets, [amplifyAppId, envName, 'auth', resourceName, hostedUIProviderCredsField], teamProviderSecrets);
           }
         });
-      }
-    });
+      });
     this.setTeamProviderInfo(undefined, teamProviderInfo);
     this.setDeploymentSecrets(secrets);
   };

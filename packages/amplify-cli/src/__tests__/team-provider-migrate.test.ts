@@ -99,14 +99,25 @@ describe('test migration code', () => {
   it('case: test for teamprovide with secrets', async () => {
     const promptConfirm = jest.fn().mockReturnValue(true);
     const mockMoveSecrets = jest.fn();
-    const mockteamProviderInfoHasAuthSecrets = jest.fn().mockReturnValue(true);
+    const mockteamProviderInfoExists = jest.fn().mockReturnValue(true);
+    const mockGetTeamProviderInfo = jest.fn().mockReturnValue(teamProviderInfoSecrets);
+    const mockGetLocalEnvInfo = jest.fn().mockReturnValue({ envName: 'dev' });
+    jest.setMock('amplify-category-auth', {
+      externalAuthEnable: jest.fn(),
+    });
     jest.setMock('amplify-cli-core', {
       stateManager: {
         moveSecretsFromTeamProviderToDeployment: mockMoveSecrets,
-        teamProviderInfoHasAuthSecrets: mockteamProviderInfoHasAuthSecrets,
+        teamProviderInfoExists: mockteamProviderInfoExists,
+        getTeamProviderInfo: mockGetTeamProviderInfo,
+        getLocalEnvInfo: mockGetLocalEnvInfo,
       },
       pathManager: {
         findProjectRoot: jest.fn().mockReturnValue(true),
+      },
+      PathConstants: {
+        TeamProviderFileName: 'team-provider-info.json',
+        DeploymentSecretsFileName: 'deployment-secrets.json',
       },
     });
     const mockContext: Context = jest.genMockFromModule('../domain/context');
@@ -120,9 +131,9 @@ describe('test migration code', () => {
       argv: [],
       command: 'status',
     };
-    const migrated = await require('../utils/team-provider-migrate').MigrateTeamProvider(mockContext);
+    const migrated = await require('../utils/team-provider-migrate').migrateTeamProviderInfo(mockContext);
     expect(migrated).toEqual(true);
     expect(mockMoveSecrets).toBeCalled();
-    expect(mockteamProviderInfoHasAuthSecrets).toBeCalled();
+    expect(mockteamProviderInfoExists).toBeCalled();
   });
 });

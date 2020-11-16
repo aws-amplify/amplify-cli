@@ -1,4 +1,4 @@
-import { StateManager } from '../../lib';
+import { StateManager } from '../state-manager';
 
 const teamProviderInfoSecrets = {
   dev: {
@@ -105,7 +105,7 @@ describe('test move secrests to deployment', () => {
     stateManager.moveSecretsFromTeamProviderToDeployment();
     expect(setTeamProviderInfo).toBeCalledWith(undefined, teamProviderInfoWithoutSecrets);
     expect(setDeploymentSecrets).toBeCalledWith(secrets);
-    expect(mockGetLocalEnvInfo).toBeCalled();
+    expect(mockGetTeamProviderInfo).toBeCalled();
     expect(mockGetLocalEnvInfo).toBeCalled();
   });
 });

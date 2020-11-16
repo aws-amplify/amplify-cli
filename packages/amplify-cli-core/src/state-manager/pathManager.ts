@@ -7,7 +7,7 @@ export const PathConstants = {
   DotAWSDir: '.aws',
   AWSCredentials: 'credentials',
   AWSConfig: 'config',
-  DeploymentSecrets: 'deployment-secrets.json',
+  DeploymentSecretsFileName: 'deployment-secrets.json',
 
   // in project root
   AmplifyDirName: 'amplify',
@@ -133,7 +133,7 @@ export class PathManager {
 
   getDotAWSAmplifyDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDir, PathConstants.AmplifyDirName));
 
-  getDeploymentSecrets = (): string => path.normalize(path.join(this.getDotAWSAmplifyDirPath(), PathConstants.DeploymentSecrets));
+  getDeploymentSecrets = (): string => path.normalize(path.join(this.getDotAWSAmplifyDirPath(), PathConstants.DeploymentSecretsFileName));
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {

@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as os from 'os';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
+import { JSONUtilities } from 'amplify-cli-core';
 
 function getAWSConfigAndroidPath(projRoot: string): string {
   return path.join(projRoot, 'app', 'src', 'main', 'res', 'raw', 'awsconfiguration.json');
@@ -73,8 +74,9 @@ function getAwsIOSConfig(projectRoot: string) {
 
 function getDeploymentSecrets(): any {
   const deploymentSecretsPath = path.join(os.homedir(), '.aws', 'amplify', 'deployment-secrets.json');
-  if (!fs.existsSync(deploymentSecretsPath)) return {};
-  return JSON.parse(fs.readFileSync(deploymentSecretsPath, 'utf8'));
+  return JSONUtilities.readJson(deploymentSecretsPath, {
+    throwIfNotExist: false,
+  });
 }
 
 function isDeploymentSecretForEnvExists(projRoot: string, envName: string) {

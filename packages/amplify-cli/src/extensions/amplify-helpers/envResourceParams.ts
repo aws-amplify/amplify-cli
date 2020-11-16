@@ -61,7 +61,10 @@ function removeObjectRecursively(obj, keys) {
 }
 
 export function saveEnvResourceParameters(context: $TSContext, category: string, resource: string, parameters: $TSObject) {
-  if (!parameters) return;
+  if (!parameters) {
+    return;
+  }
+
   const teamProviderInfo = getApplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
   const resources = getOrCreateSubObject(teamProviderInfo, [currentEnv, CATEGORIES, category]);
@@ -84,7 +87,7 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
 export function loadEnvResourceParameters(context: $TSContext, category: string, resource: string) {
   const envParameters = {
     ...loadEnvResourceParametersFromDeploymentSecrets(context, category, resource),
-    ...loadEnvResourceParametersFromTeamprovider(context, category, resource),
+    ...loadEnvResourceParametersFromTeamproviderInfo(context, category, resource),
   };
   return envParameters;
 }
@@ -100,7 +103,8 @@ function loadEnvResourceParametersFromDeploymentSecrets(context: $TSContext, cat
     return {};
   }
 }
-function loadEnvResourceParametersFromTeamprovider(context: $TSContext, category: string, resource: string) {
+
+function loadEnvResourceParametersFromTeamproviderInfo(context: $TSContext, category: string, resource: string) {
   try {
     const teamProviderInfo = getApplicableTeamProviderInfo(context);
     const currentEnv = getCurrentEnvName(context);
