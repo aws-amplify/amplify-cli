@@ -16,7 +16,7 @@ function getMaxVersion(previousValue: string, currentValue: string, _: number, _
   return previousValue;
 }
 
-export function getLatestPayloadVersion(): String {
+export function getLatestPayloadVersion(): string {
   const versions = APIVersionToPayloadVersion.get(getLatestApiVersion());
   if (!versions) throw new Error(`No Payload Versions mapped to API Version ${getLatestApiVersion}`);
   return versions.reduce(getMaxVersion, '0');

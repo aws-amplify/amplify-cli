@@ -17,7 +17,6 @@ import { notify } from './version-notifier';
 import { EventEmitter } from 'events';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
-import { conditionalLoggingInit } from './conditional-local-logging-init';
 EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
@@ -47,6 +46,7 @@ export async function run() {
       input = getCommandLineInput(pluginPlatform);
       verificationResult = verifyInput(pluginPlatform, input);
     }
+
     if (!verificationResult.verified) {
       if (verificationResult.helpCommandAvailable) {
         input.command = constants.HELP;
@@ -54,9 +54,8 @@ export async function run() {
         throw new Error(verificationResult.message);
       }
     }
-
     rewireDeprecatedCommands(input);
-    conditionalLoggingInit(input);
+
     const context = constructContext(pluginPlatform, input);
 
     // Initialize feature flags
@@ -79,10 +78,10 @@ export async function run() {
     context.usageData.emitInvoke();
 
     // For mobile hub migrated project validate project and command to be executed
-    // if (!ensureMobileHubCommandCompatibility((context as unknown) as $TSContext)) {
-    //   // Double casting until we have properly typed context
-    //   return 1;
-    // }
+    if (!ensureMobileHubCommandCompatibility((context as unknown) as $TSContext)) {
+      // Double casting until we have properly typed context
+      return 1;
+    }
 
     await executeCommand(context);
 

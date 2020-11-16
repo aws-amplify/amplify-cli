@@ -248,7 +248,6 @@ module.exports = {
     '/packages/amplify-*-function-*/lib',
     '/packages/amplify-cli/lib',
     '/packages/amplify-cli-core/lib',
-    '/packages/amplify-cli-logger/lib',
     '/packages/amplify-codegen-appsync-model-plugin/lib',
     '/packages/amplify-e2e-core/lib',
     '/packages/amplify-migration-tests/lib',

@@ -59,7 +59,7 @@ export async function createWalkthrough(
  */
 export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const lambdaFuncResourceNames = ((await context.amplify.getResourceStatus()).allResources as any[])
-    .filter(resource => resource.service === ServiceName.LambdaFunction && !!resource.providerPlugin)
+    .filter(resource => resource.service === ServiceName.LambdaFunction && resource.mobileHubMigrated !== true)
     .map(resource => resource.resourceName);
 
   if (lambdaFuncResourceNames.length === 0) {

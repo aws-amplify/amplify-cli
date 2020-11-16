@@ -24,7 +24,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const dynamoDbResources = {};
 
   Object.keys(amplifyMeta[category]).forEach(resourceName => {
-    if (amplifyMeta[category][resourceName].service === serviceName && !!amplifyMeta[category][resourceName].providerPlugin) {
+    if (amplifyMeta[category][resourceName].service === serviceName && amplifyMeta[category][resourceName].mobileHubMigrated !== true) {
       dynamoDbResources[resourceName] = amplifyMeta[category][resourceName];
     }
   });

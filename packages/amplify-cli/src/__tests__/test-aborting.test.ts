@@ -14,7 +14,6 @@ describe('test SIGINT with execute', () => {
           name: 'cli',
           version: '12.12.1',
         }),
-        stringify: jest.fn().mockReturnValue(''),
       },
       exitOnNextTick: mockExit,
       pathManager: {

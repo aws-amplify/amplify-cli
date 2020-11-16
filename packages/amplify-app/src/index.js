@@ -14,6 +14,7 @@ const { engines } = require('../package.json');
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
+const amplifyDev = /^win/.test(process.platform) ? 'amplify-dev.cmd' : 'amplify-dev';
 const amplifyCliPackageName = '@aws-amplify/cli';
 
 function run() {
@@ -105,7 +106,8 @@ async function createAmplifySkeletonProject() {
     console.log(`${emoji.get('guitar')} Creating base Amplify project`);
 
     return new Promise((resolve, reject) => {
-      const createSkeletonAmplifyProject = spawn(amplify, ['init', '--quickstart'], {
+      const amplifyCmd = path.basename(process.argv[1]) === 'amplify-app-dev' ? amplifyDev : amplify;
+      const createSkeletonAmplifyProject = spawn(amplifyCmd, ['init', '--quickstart'], {
         cwd: process.cwd(),
         env: process.env,
         stdio: 'inherit',

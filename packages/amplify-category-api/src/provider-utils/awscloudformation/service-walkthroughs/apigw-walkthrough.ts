@@ -36,7 +36,7 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
   const { getAllDefaults } = await import(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
   const resources = allResources
-    .filter(resource => resource.service === serviceName && !!resource.providerPlugin)
+    .filter(resource => resource.service === serviceName && resource.mobileHubMigrated !== true)
     .map(resource => resource.resourceName);
 
   // There can only be one appsync resource

@@ -61,7 +61,7 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetada) {
   const storageResources = {};
 
   Object.keys(amplifyMeta[category]).forEach(resourceName => {
-    if (amplifyMeta[category][resourceName].service === serviceName && !!amplifyMeta[category][resourceName].providerPlugin) {
+    if (amplifyMeta[category][resourceName].service === serviceName && amplifyMeta[category][resourceName].mobileHubMigrated !== true) {
       storageResources[resourceName] = amplifyMeta[category][resourceName];
     }
   });
