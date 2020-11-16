@@ -1,6 +1,4 @@
-import { FeatureFlags } from "amplify-cli-core";
-
- const supportedServices = {
+export const supportedServices = {
   AppSync: {
     inputs: [
       {
@@ -152,15 +150,3 @@ import { FeatureFlags } from "amplify-cli-core";
     provider: 'awscloudformation',
   },
 };
-
-if (FeatureFlags.getBoolean('advancedCompute.enabled')) {
-  supportedServices['Containers'] = {
-    alias: 'Containers',
-    defaultValuesFilename: 'containers-defaults.js',
-    serviceWalkthroughFilename: 'containers-walkthrough.js',
-    cfnFilename: 'containers-template.json',
-    provider: 'awscloudformation',
-  }
-}
-
-export { supportedServices };

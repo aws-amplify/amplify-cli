@@ -5,8 +5,9 @@ import { legacyAddResource } from './legacy-add-resource';
 import { legacyUpdateResource } from './legacy-update-resource';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { editSchemaFlow } from './utils/edit-schema-flow';
-import { NotImplementedError, exitOnNextTick } from 'amplify-cli-core';
+import { NotImplementedError, exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
 import { addResource as addContainer } from './containers-handler';
+import inquirer from 'inquirer';
 
 export async function console(context, service) {
   const { serviceWalkthroughFilename } = await serviceMetadataFor(service);
@@ -23,7 +24,19 @@ export async function console(context, service) {
   return openConsole(context);
 }
 
-export async function addResource(context, category, service, options) {
+async function addContainerResource(context, category, service, options) {
+  const serviceMetadata = await serviceMetadataFor(service);
+  const serviceWalkthroughFilename = 'containers-walkthrough.js';
+  const defaultValuesFilename = 'containers-defaults.js'
+
+  const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
+  const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, serviceMetadata);
+
+  return await addContainer(serviceWalkthroughPromise, context, category, service, options);
+
+}
+
+async function addNonContainerResource(context, category, service, options) {
   const serviceMetadata = await serviceMetadataFor(service);
   const { serviceWalkthroughFilename, defaultValuesFilename } = serviceMetadata;
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
@@ -38,12 +51,75 @@ export async function addResource(context, category, service, options) {
         await editSchemaFlow(context, apiName);
       }
       return apiName;
-    case 'Containers':      
-      const resourceName = await addContainer(serviceWalkthroughPromise, context, category, service, options);
-      return resourceName;
     default:
       return legacyAddResource(serviceWalkthroughPromise, context, category, service, options);
   }
+}
+
+export async function addResource(context, category, service, options) {
+  let useContainerResource = false;
+
+  if (isAdvanceComputeEnabled(context)) {
+    switch(service) {
+      case 'AppSync': 
+        useContainerResource = await askGraphQLOptions(context);
+        break;
+      case 'API Gateway': 
+        useContainerResource = await askRestOptions(context);
+        break;
+      default: 
+        throw new Error(`${service} not exists`);
+    }
+  }
+
+  return useContainerResource ? addContainerResource(context, category, service, options) : addNonContainerResource(context, category, service, options);
+}
+
+function isAdvanceComputeEnabled(context) {
+  // TODO: Change this to project setting
+  return FeatureFlags.getBoolean('advancedCompute.enabled');
+}
+
+async function askGraphQLOptions(context): Promise<boolean> {
+  context.print.info('askGraphqlOptions');
+  const { graphqlSelection } = await inquirer.prompt({
+    name: 'graphqlSelection',
+    message: 'Which service would you like to use',
+    type: 'list',
+    choices: [
+      {
+        name: 'AppSync',
+        value: false
+      },
+      {
+        name: 'Elastic Container Service',
+        value: true
+      }
+    ]
+  });
+  
+
+  return graphqlSelection;
+}
+
+async function askRestOptions(context) {
+  const { restSelection } = await inquirer.prompt({
+    name: 'restSelection',
+    message: 'Which service would you like to use',
+    type: 'list',
+    choices: [
+      {
+        name: 'API Gateway + Lambda',
+        value: false
+      },
+      {
+        name: 'API Gateway + Elastic Container Service',
+        value: true
+      }
+    ]
+  });
+
+  return restSelection;
 }
 
 export async function updateResource(context, category, service) {
