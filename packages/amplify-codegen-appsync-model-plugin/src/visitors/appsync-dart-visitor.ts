@@ -12,6 +12,8 @@ import {
   typeToEnumMap,
 } from '../configs/dart-config';
 import dartStyle from 'dart-style';
+import { generateLicense } from '../utils/generateLicense';
+import { lowerCaseFirst } from 'lower-case-first';
 
 export class AppSyncModelDartVisitor<
   TRawConfig extends RawAppSyncModelConfig = RawAppSyncModelConfig,
@@ -44,6 +46,9 @@ export class AppSyncModelDartVisitor<
   protected generateClassLoader(): string {
     const result: string[] = [];
     const modelNames: string[] = Object.keys(this.modelMap).sort();
+    //License
+    const license = generateLicense();
+    result.push(license);
     //Packages for import
     const packageImports: string[] = [
       'package: amplify_datastore_plugin_interface/amplify_datastore_plugin_interface',
@@ -92,8 +97,13 @@ export class AppSyncModelDartVisitor<
    */
   protected generateModelClasses(): string {
     const result: string[] = [];
+    //License
+    const license = generateLicense();
+    result.push(license);
+    //Imports
     const packageImports = this.generatePackageHeader();
     result.push(packageImports);
+    //Model
     Object.entries(this.getSelectedModels()).forEach(([name, model]) => {
       const modelDeclaration = this.generateModelClass(model);
       const modelType = this.generateModelType(model);
@@ -138,13 +148,22 @@ export class AppSyncModelDartVisitor<
     classDeclarationBlock.addClassMember(
       'classType',
       '',
-      `${this.getModelName(model)}Type()`,
+      `const ${this.getModelName(model)}Type()`,
       { static: true, const: true }
     );
     //model fields
     model.fields.forEach(field => {
       this.generateModelField(field, '', classDeclarationBlock);
     });
+    //getInstanceType
+    classDeclarationBlock.addClassMethod(
+      'getInstanceType',
+      '',
+      [],
+      ' => classType;',
+      { isBlock: false },
+      ['override']
+    );
     //getId
     this.generateGetIdMethod(model, classDeclarationBlock);
     //constructor
@@ -348,7 +367,7 @@ export class AppSyncModelDartVisitor<
             return [
               `${fieldName} = json['${fieldName}'] is List`,
               indent(`? (json['${fieldName}'] as List)`),
-              indent(`.map((e) => ${this.getNativeType({...field, isList: false})}.fromJson(e as Map<String, dynamic>))`, 2),
+              indent(`.map((e) => ${this.getNativeType({...field, isList: false})}.fromJson(new Map<String, dynamic>.from(e)))`, 2),
               indent(`.toList()`, 2),
               indent(`: null`)
             ].join('\n');
@@ -396,14 +415,14 @@ export class AppSyncModelDartVisitor<
     const schemaDeclarationBlock = new DartDeclarationBlock();
     //QueryField
     model.fields.forEach(field => {
-      this.generateQueryField(field, schemaDeclarationBlock);
+      this.generateQueryField(model, field, schemaDeclarationBlock);
     });
     //schema
     this.generateSchemaField(model, schemaDeclarationBlock);
     classDeclarationBlock.addBlock(schemaDeclarationBlock);
   }
 
-  protected generateQueryField(field: CodeGenField, declarationBlock: DartDeclarationBlock) : void {
+  protected generateQueryField(model: CodeGenModel, field: CodeGenField, declarationBlock: DartDeclarationBlock) : void {
     const fieldName = this.getFieldName(field);
     const queryFieldName = this.getQueryFieldName(field);
     let value = `QueryField(fieldName: "${fieldName}")`;
@@ -414,6 +433,8 @@ export class AppSyncModelDartVisitor<
         indent(`fieldName: "${fieldName}",`),
         indent(`fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (${modelName}).toString()))`)
       ].join('\n');
+    } else if (fieldName === 'id') {
+      value = `QueryField(fieldName: "${lowerCaseFirst(model.name)}.id")`
     }
     declarationBlock.addClassMember(
       queryFieldName,
@@ -540,7 +561,7 @@ export class AppSyncModelDartVisitor<
           fieldParam = [
             `key: ${modelName}.${queryFieldName}`,
             `isRequired: ${!field.isNullable}`,
-            `ofType: ModelFieldType(ModelFieldTypeEnum.${field.type in typeToEnumMap ? typeToEnumMap[field.type] : 'string'})`
+            `ofType: ModelFieldType(ModelFieldTypeEnum${field.type in typeToEnumMap ? typeToEnumMap[field.type] : '.string'})`
           ].join(',\n');
           fieldsToAdd.push(['ModelFieldDeinition.field(', indentMultiline(fieldParam), ')'].join('\n'));
         }

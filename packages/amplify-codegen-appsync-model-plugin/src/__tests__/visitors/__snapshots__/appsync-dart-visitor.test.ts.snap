@@ -1,7 +1,22 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AppSync Dart Visitor Dart Specific Tests should generate the model provider 1`] = `
-"import 'package: amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package: amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'SimpleModel.dart';
 
 class ModelProvider implements ModelProviderInterface {
@@ -17,16 +32,34 @@ class ModelProvider implements ModelProviderInterface {
 `;
 
 exports[`AppSync Dart Visitor Model Directive should generate a class for a Simple Model 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the SimpleModel type in your schema. */
 @immutable
 class SimpleModel extends Model {
-  static const classType = SimpleModelType();
+  static const classType = const SimpleModelType();
   final String id;
   final String name;
   final String bar;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -81,7 +114,7 @@ class SimpleModel extends Model {
 
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"simpleModel.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static var schema =
@@ -115,16 +148,34 @@ class SimpleModelType extends ModelType<SimpleModel> {
 `;
 
 exports[`AppSync Dart Visitor Model Directive should generate a class for a model with all optional fields 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the SimpleModel type in your schema. */
 @immutable
 class SimpleModel extends Model {
-  static const classType = SimpleModelType();
+  static const classType = const SimpleModelType();
   final String id;
   final String name;
   final String bar;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -179,7 +230,7 @@ class SimpleModel extends Model {
 
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"simpleModel.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static var schema =
@@ -213,17 +264,35 @@ class SimpleModelType extends ModelType<SimpleModel> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with custom claims 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the customClaim type in your schema. */
 @immutable
 class customClaim extends Model {
-  static const classType = customClaimType();
+  static const classType = const customClaimType();
   final String id;
   final String name;
   final String bar;
   final String owner;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -291,7 +360,7 @@ class customClaim extends Model {
   Map<String, dynamic> toJson() =>
       {'id': id, 'name': name, 'bar': bar, 'owner': owner};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"customClaim.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static final QueryField OWNER = QueryField(fieldName: \\"owner\\");
@@ -344,16 +413,34 @@ class customClaimType extends ModelType<customClaim> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with custom group claims 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the customClaim type in your schema. */
 @immutable
 class customClaim extends Model {
-  static const classType = customClaimType();
+  static const classType = const customClaimType();
   final String id;
   final String name;
   final String bar;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -408,7 +495,7 @@ class customClaim extends Model {
 
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"customClaim.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static var schema =
@@ -457,16 +544,34 @@ class customClaimType extends ModelType<customClaim> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with dynamic groups 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the dynamicGroups type in your schema. */
 @immutable
 class dynamicGroups extends Model {
-  static const classType = dynamicGroupsType();
+  static const classType = const dynamicGroupsType();
   final String id;
   final String name;
   final String bar;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -521,7 +626,7 @@ class dynamicGroups extends Model {
 
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"dynamicGroups.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static var schema =
@@ -568,17 +673,35 @@ class dynamicGroupsType extends ModelType<dynamicGroups> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with owner auth 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the simpleOwnerAuth type in your schema. */
 @immutable
 class simpleOwnerAuth extends Model {
-  static const classType = simpleOwnerAuthType();
+  static const classType = const simpleOwnerAuthType();
   final String id;
   final String name;
   final String bar;
   final String owner;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -646,7 +769,7 @@ class simpleOwnerAuth extends Model {
   Map<String, dynamic> toJson() =>
       {'id': id, 'name': name, 'bar': bar, 'owner': owner};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"simpleOwnerAuth.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static final QueryField OWNER = QueryField(fieldName: \\"owner\\");
@@ -699,17 +822,35 @@ class simpleOwnerAuthType extends ModelType<simpleOwnerAuth> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with owner auth allowing others to read: 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the allowRead type in your schema. */
 @immutable
 class allowRead extends Model {
-  static const classType = allowReadType();
+  static const classType = const allowReadType();
   final String id;
   final String name;
   final String bar;
   final String owner;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -777,7 +918,7 @@ class allowRead extends Model {
   Map<String, dynamic> toJson() =>
       {'id': id, 'name': name, 'bar': bar, 'owner': owner};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"allowRead.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static final QueryField OWNER = QueryField(fieldName: \\"owner\\");
@@ -829,16 +970,34 @@ class allowReadType extends ModelType<allowRead> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with private authorization 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the privateType type in your schema. */
 @immutable
 class privateType extends Model {
-  static const classType = privateTypeType();
+  static const classType = const privateTypeType();
   final String id;
   final String name;
   final String bar;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -893,7 +1052,7 @@ class privateType extends Model {
 
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"privateType.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static var schema =
@@ -936,16 +1095,34 @@ class privateTypeType extends ModelType<privateType> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with public authorization 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the publicType type in your schema. */
 @immutable
 class publicType extends Model {
-  static const classType = publicTypeType();
+  static const classType = const publicTypeType();
   final String id;
   final String name;
   final String bar;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -1000,7 +1177,7 @@ class publicType extends Model {
 
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"publicType.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static var schema =
@@ -1043,16 +1220,34 @@ class publicTypeType extends ModelType<publicType> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should generate class with static groups 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the staticGroups type in your schema. */
 @immutable
 class staticGroups extends Model {
-  static const classType = staticGroupsType();
+  static const classType = const staticGroupsType();
   final String id;
   final String name;
   final String bar;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -1107,7 +1302,7 @@ class staticGroups extends Model {
 
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"staticGroups.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
   static var schema =
@@ -1156,16 +1351,34 @@ class staticGroupsType extends ModelType<staticGroups> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should include authRules in schema when owner auth is used with ownerField 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the Post type in your schema. */
 @immutable
 class Post extends Model {
-  static const classType = PostType();
+  static const classType = const PostType();
   final String id;
   final String title;
   final String author;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -1225,7 +1438,7 @@ class Post extends Model {
 
   Map<String, dynamic> toJson() => {'id': id, 'title': title, 'author': author};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"post.id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
   static final QueryField AUTHOR = QueryField(fieldName: \\"author\\");
   static var schema =
@@ -1272,16 +1485,34 @@ class PostType extends ModelType<Post> {
 `;
 
 exports[`AppSync Dart Visitor Model with Auth Directive should support multiple auth rules 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the Post type in your schema. */
 @immutable
 class Post extends Model {
-  static const classType = PostType();
+  static const classType = const PostType();
   final String id;
   final String title;
   final String owner;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -1341,7 +1572,7 @@ class Post extends Model {
 
   Map<String, dynamic> toJson() => {'id': id, 'title': title, 'owner': owner};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"post.id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
   static final QueryField OWNER = QueryField(fieldName: \\"owner\\");
   static var schema =
@@ -1401,7 +1632,22 @@ class PostType extends ModelType<Post> {
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should generate classes for models with one to many connection 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
@@ -1410,9 +1656,12 @@ import 'Task.dart';
 /** This is an auto generated class representing the Todo type in your schema. */
 @immutable
 class Todo extends Model {
-  static const classType = TodoType();
+  static const classType = const TodoType();
   final String id;
   final List<Task> tasks;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -1461,14 +1710,14 @@ class Todo extends Model {
       : id = json['id'],
         tasks = json['tasks'] is List
             ? (json['tasks'] as List)
-                .map((e) => Task.fromJson(e as Map<String, dynamic>))
+                .map((e) => Task.fromJson(new Map<String, dynamic>.from(e)))
                 .toList()
             : null;
 
   Map<String, dynamic> toJson() =>
       {'id': id, 'tasks': tasks.map((e) => e.toJson())};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"todo.id\\");
   static final QueryField TASKS = QueryField(
       fieldName: \\"tasks\\",
       fieldType: ModelFieldType(ModelFieldTypeEnum.model,
@@ -1500,7 +1749,22 @@ class TodoType extends ModelType<Todo> {
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should generate classes for models with one to many connection 2`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 import 'Todo.dart';
@@ -1508,11 +1772,14 @@ import 'Todo.dart';
 /** This is an auto generated class representing the Task type in your schema. */
 @immutable
 class Task extends Model {
-  static const classType = TaskType();
+  static const classType = const TaskType();
   final String id;
   final Todo todo;
   final DateTime time;
   final DateTime createdOn;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -1582,7 +1849,7 @@ class Task extends Model {
   Map<String, dynamic> toJson() =>
       {'id': id, 'todo': todo.toJson(), 'time': time, 'createdOn': createdOn};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"task.id\\");
   static final QueryField TODO = QueryField(
       fieldName: \\"todo\\",
       fieldType: ModelFieldType(ModelFieldTypeEnum.model,
@@ -1610,7 +1877,7 @@ class Task extends Model {
     modelSchemaDefinition.addField(ModelFieldDeinition.field(
         key: Task.CREATEDON,
         isRequired: false,
-        ofType: ModelFieldType(ModelFieldTypeEnum.date)));
+        ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)));
   });
 }
 
@@ -1626,7 +1893,22 @@ class TaskType extends ModelType<Task> {
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should support connection directive with keyName and fields 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
@@ -1635,11 +1917,14 @@ import 'Post.dart';
 /** This is an auto generated class representing the Blog type in your schema. */
 @immutable
 class Blog extends Model {
-  static const classType = BlogType();
+  static const classType = const BlogType();
   final String id;
   final String name;
   final List<Post> posts;
   final List<String> test;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -1708,7 +1993,7 @@ class Blog extends Model {
         name = json['name'],
         posts = json['posts'] is List
             ? (json['posts'] as List)
-                .map((e) => Post.fromJson(e as Map<String, dynamic>))
+                .map((e) => Post.fromJson(new Map<String, dynamic>.from(e)))
                 .toList()
             : null,
         test = json['test'];
@@ -1720,7 +2005,7 @@ class Blog extends Model {
         'test': test
       };
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"blog.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField POSTS = QueryField(
       fieldName: \\"posts\\",
@@ -1764,7 +2049,22 @@ class BlogType extends ModelType<Blog> {
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should support connection directive with keyName and fields 2`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 import 'Post.dart';
@@ -1772,10 +2072,13 @@ import 'Post.dart';
 /** This is an auto generated class representing the Comment type in your schema. */
 @immutable
 class Comment extends Model {
-  static const classType = CommentType();
+  static const classType = const CommentType();
   final String id;
   final Post post;
   final String content;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -1836,7 +2139,7 @@ class Comment extends Model {
   Map<String, dynamic> toJson() =>
       {'id': id, 'post': post.toJson(), 'content': content};
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"comment.id\\");
   static final QueryField POST = QueryField(
       fieldName: \\"post\\",
       fieldType: ModelFieldType(ModelFieldTypeEnum.model,
@@ -1874,7 +2177,22 @@ class CommentType extends ModelType<Comment> {
 `;
 
 exports[`AppSync Dart Visitor Model with Connection Directive should support connection directive with keyName and fields 3`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
@@ -1884,11 +2202,14 @@ import 'Comment.dart';
 /** This is an auto generated class representing the Post type in your schema. */
 @immutable
 class Post extends Model {
-  static const classType = PostType();
+  static const classType = const PostType();
   final String id;
   final String title;
   final Blog blog;
   final List<Comment> comments;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -1960,7 +2281,7 @@ class Post extends Model {
             : null,
         comments = json['comments'] is List
             ? (json['comments'] as List)
-                .map((e) => Comment.fromJson(e as Map<String, dynamic>))
+                .map((e) => Comment.fromJson(new Map<String, dynamic>.from(e)))
                 .toList()
             : null;
 
@@ -1971,7 +2292,7 @@ class Post extends Model {
         'comments': comments.map((e) => e.toJson())
       };
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"post.id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
   static final QueryField BLOG = QueryField(
       fieldName: \\"blog\\",
@@ -2019,18 +2340,36 @@ class PostType extends ModelType<Post> {
 `;
 
 exports[`AppSync Dart Visitor Model with Key Directive should generate a class for model with key directive 1`] = `
-"import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
 
 /** This is an auto generated class representing the authorBook type in your schema. */
 @immutable
 class authorBook extends Model {
-  static const classType = authorBookType();
+  static const classType = const authorBookType();
   final String id;
   final String author_id;
   final String book_id;
   final String author;
   final String book;
+
+  @override
+  getInstanceType() => classType;
 
   @override
   String getId() {
@@ -2120,7 +2459,7 @@ class authorBook extends Model {
         'book': book
       };
 
-  static final QueryField ID = QueryField(fieldName: \\"id\\");
+  static final QueryField ID = QueryField(fieldName: \\"authorBook.id\\");
   static final QueryField AUTHOR_ID = QueryField(fieldName: \\"author_id\\");
   static final QueryField BOOK_ID = QueryField(fieldName: \\"book_id\\");
   static final QueryField AUTHOR = QueryField(fieldName: \\"author\\");

@@ -6,14 +6,19 @@ export const BASE_IMPORT_PACKAGES = [
 export const COLLECTION_PACKAGE = 'package:collection/collection.dart';
 
 export const typeToEnumMap: Record<string, string> = {
-  String: 'string',
-  Int: 'int',
-  Float: 'double',
-  Boolean: 'bool',
-  AWSDate: 'date',
-  AWSDateTime: 'dateTime',
-  AWSTime: 'time',
-  AWSTimestamp: 'timestamp',
+  String: '.string',
+  Int: '.int',
+  Float: '.double',
+  Boolean: '.bool',
+  AWSDate: '.dateTime',
+  AWSDateTime: '.dateTime',
+  AWSTime: '.time',
+  AWSTimestamp: '.int',
+  AWSEmail: '.string',
+  AWSJSON: '.string',
+  AWSURL: '.string',
+  AWSPhone: '.string',
+  AWSIPAddress: '.string',
 };
 
 export const DART_RESERVED_KEYWORDS = [
