@@ -3,22 +3,20 @@ import * as fs from 'fs-extra';
 import { join, parse, sep } from 'path';
 import { unifiedChangelogPath } from './constants';
 /**
- * This script is intended to be run after running `yarn publish-to-verdaccio` when all CHANGELOG file changes are staged but not committed
- * It will scan all staged CHANGELOG.md files and merge them into a single UNIFIED_CHANGELOG file
+ * This script is intended to be run after running `yarn publish-to-verdaccio` when all CHANGELOG file changes are in the latest commit added by lerna
+ * It will scan all CHANGELOG.md files in the latest commit and merge them into a single UNIFIED_CHANGELOG file
  */
 const packageRoot = join(__dirname, '..');
 // exported because this path is also referenced in github-prerelease.ts
 
 const getChangelogPaths = async (): Promise<string[]> => {
   console.log('Getting staged CHANGELOG files');
-  const { stdout: statusResult, stderr } = await execa.command('git status --porcelain', { cwd: packageRoot });
+  const { stdout: statusResult, stderr } = await execa.command('git diff --name-only HEAD HEAD~1', { cwd: packageRoot });
   if (stderr) {
     throw new Error(`git status failed with error [${stderr}]`);
   }
   const changelogPaths = statusResult
     .split('\n')
-    .filter(item => item.startsWith(' M '))
-    .map(item => item.slice(3)) // get rid of ' M ' prefix
     .filter(item => item.endsWith('CHANGELOG.md'))
     .map(item => join(packageRoot, item));
   return changelogPaths;
