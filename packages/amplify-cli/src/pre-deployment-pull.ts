@@ -4,8 +4,8 @@ import path from 'path';
 import fs from 'fs-extra';
 import { spawn } from 'child_process';
 
-export async function preDeployPullBackend(context, backendManagerAppId: string) {
-  const url = `https://rh2kdo2x79.execute-api.us-east-1.amazonaws.com/gamma/AppState/${backendManagerAppId}`;
+export async function preDeployPullBackend(context, sandboxId: string) {
+  const url = `https://rh2kdo2x79.execute-api.us-east-1.amazonaws.com/gamma/AppState/${sandboxId}`;
 
   // Fetch schema
   const res = await fetch(`${url}`);

@@ -10,8 +10,8 @@ export const run = async context => {
   const inputParams = constructInputParams(context);
   const projectPath = process.cwd();
 
-  if (inputParams.backendManagerAppId) {
-    preDeployPullBackend(context, inputParams.backendManagerAppId);
+  if (inputParams.sandboxId) {
+    preDeployPullBackend(context, inputParams.sandboxId);
     return;
   }
 
