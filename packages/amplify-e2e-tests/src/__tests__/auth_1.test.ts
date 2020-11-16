@@ -62,4 +62,13 @@ describe('amplify add auth...', () => {
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
   });
+
+  it('...should init a project and add auth with defaults and then remove auth and add another auth and push', async () => {
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthWithDefault(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    await removeAuthWithDefault(projRoot);
+    await addAuthWithDefault(projRoot, {});
+    await amplifyPushAuth(projRoot);
+  });
 });
