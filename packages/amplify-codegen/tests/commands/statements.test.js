@@ -14,9 +14,7 @@ const MOCK_CONTEXT = {
   amplify: {
     getEnvInfo: jest.fn(),
     getProjectMeta: jest.fn(),
-    executeProviderUtils: jest.fn(),
   },
-  input: {},
 };
 
 jest.mock('amplify-graphql-docs-generator');

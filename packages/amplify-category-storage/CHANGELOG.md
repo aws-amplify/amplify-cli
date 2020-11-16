@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.3...amplify-category-storage@2.8.4) (2020-11-08)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.8.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.2...amplify-category-storage@2.8.3) (2020-10-30)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.8.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.1...amplify-category-storage@2.8.2) (2020-10-27)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.8.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.0...amplify-category-storage@2.8.1) (2020-10-22)
+
+
+### Bug Fixes
+
+* refactor mobile hub migration checks ([#5632](https://github.com/aws-amplify/amplify-cli/issues/5632)) ([b796eb8](https://github.com/aws-amplify/amplify-cli/commit/b796eb8303bb903f5f531506254441a63eba2962))
+
+
+
+
+
 # [2.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.7.11...amplify-category-storage@2.8.0) (2020-10-17)
 
 

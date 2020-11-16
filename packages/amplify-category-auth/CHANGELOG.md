@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.22.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.22.0...amplify-category-auth@2.22.1) (2020-11-08)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+# [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.21.2...amplify-category-auth@2.22.0) (2020-10-30)
+
+
+### Features
+
+* add support for listing Amazon Cognito groups ([#5109](https://github.com/aws-amplify/amplify-cli/issues/5109)) ([3157652](https://github.com/aws-amplify/amplify-cli/commit/3157652ecf51171b1a7375351bee1ba4af9d5f18))
+
+
+### Reverts
+
+* Revert "For the better security best practice, added PreventUserExistenceErrors: ENABLED. (#3534)" (#5736) ([3423228](https://github.com/aws-amplify/amplify-cli/commit/34232287c2e4dc466866528065c1900ac2954512)), closes [#3534](https://github.com/aws-amplify/amplify-cli/issues/3534) [#5736](https://github.com/aws-amplify/amplify-cli/issues/5736)
+
+
+
+
+
+## [2.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.21.1...amplify-category-auth@2.21.2) (2020-10-27)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+## [2.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.21.0...amplify-category-auth@2.21.1) (2020-10-22)
+
+
+### Bug Fixes
+
+* refactor mobile hub migration checks ([#5632](https://github.com/aws-amplify/amplify-cli/issues/5632)) ([b796eb8](https://github.com/aws-amplify/amplify-cli/commit/b796eb8303bb903f5f531506254441a63eba2962))
+* update current-cloud backend-config on resource removal ([#5658](https://github.com/aws-amplify/amplify-cli/issues/5658)) ([592f694](https://github.com/aws-amplify/amplify-cli/commit/592f694530dd61302ff790fbcf5b3ea135812c47))
+
+
+
+
+
 # [2.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.20.2...amplify-category-auth@2.21.0) (2020-10-17)
 
 

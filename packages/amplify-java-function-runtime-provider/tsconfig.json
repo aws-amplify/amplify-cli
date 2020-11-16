@@ -5,6 +5,7 @@
     "rootDir": "./src",
   },
   "references": [
+    { "path": "../amplify-cli-core"},
     { "path": "../amplify-function-plugin-interface" }
   ]
 }

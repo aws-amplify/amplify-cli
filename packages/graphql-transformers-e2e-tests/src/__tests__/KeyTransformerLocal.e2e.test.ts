@@ -200,7 +200,6 @@ test('Test that a secondary @key with 3 fields changes the hash and sort keys an
   });
 
   const out = transformer.transform(validSchema);
-  console.log(out.schema);
   let tableResource = out.stacks.Test.Resources.TestTable;
   expect(tableResource).toBeDefined();
   const hashKey = tableResource.Properties.KeySchema.find(o => o.KeyType === 'HASH');

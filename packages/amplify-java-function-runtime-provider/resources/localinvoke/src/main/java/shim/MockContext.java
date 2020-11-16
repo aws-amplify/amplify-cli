@@ -4,12 +4,10 @@ import com.amazonaws.services.lambda.runtime.ClientContext;
 import com.amazonaws.services.lambda.runtime.CognitoIdentity;
 import com.amazonaws.services.lambda.runtime.Context;
 
-import java.util.Map;
-
 public class MockContext implements Context {
-    public String AwsRequestId = " ";
+    public String AwsRequestId = "mockAwsRequestId";
     public ClientContext ClientContext =  null;
-    public String FunctionName = "<%= props.functionName %>" ;
+    public String FunctionName = "mockFunctionName" ;
     public CognitoIdentity Identity = null;
     public MockLogger Logger = new MockLogger();
     public String LogGroupName = "YourCloudWatchLogGroupName";

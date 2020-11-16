@@ -41,6 +41,11 @@ function getBackendConfig(projectRoot: string) {
   return JSON.parse(fs.readFileSync(backendFConfigFilePath, 'utf8'));
 }
 
+function getCloudBackendConfig(projectRoot: string) {
+  const currentCloudPath = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'backend-config.json');
+  return JSON.parse(fs.readFileSync(currentCloudPath, 'utf8'));
+}
+
 function getTeamProviderInfo(projectRoot: string) {
   const teamProviderFilePath = path.join(projectRoot, 'amplify', 'team-provider-info.json');
   return JSON.parse(fs.readFileSync(teamProviderFilePath, 'utf8'));
@@ -78,4 +83,5 @@ export {
   getAmplifyDirPath,
   getBackendConfig,
   getTeamProviderInfo,
+  getCloudBackendConfig,
 };

@@ -440,7 +440,7 @@ test('Test describe table', async () => {
 
   const MockRDSClient = jest.fn<any>(() => ({
     executeStatement: jest.fn((params: DataApiParams) => {
-      if (params.sql == `DESCRIBE ${tableAName}`) {
+      if (params.sql == `DESCRIBE \`${tableAName}\``) {
         return rdsPromise;
       }
       throw new Error('Incorrect SQL given.');
@@ -457,7 +457,7 @@ test('Test describe table', async () => {
   Params.secretArn = secretStoreArn;
   Params.resourceArn = clusterArn;
   Params.database = databaseName;
-  Params.sql = `DESCRIBE ${tableAName}`;
+  Params.sql = `DESCRIBE \`${tableAName}\``;
   expect(mockRDS.executeStatement).toHaveBeenCalledWith(Params);
   expect(columnDescriptions.length).toEqual(3);
   // TODO: the rest of these tests

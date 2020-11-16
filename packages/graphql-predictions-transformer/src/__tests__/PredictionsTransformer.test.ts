@@ -9,7 +9,7 @@ test('lambda function is added to pipeline when lambda dependent action is added
     }
   `;
   const transformer = new GraphQLTransform({
-    transformers: [new PredictionsTransformer({ bucketName: "myStorage${hash}-${env}" })]
+    transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
   });
 
   const out = transformer.transform(validSchema);
@@ -28,25 +28,24 @@ test('lambda function is added to pipeline when lambda dependent action is added
    *  - lambda IAM Role
    * Lambda Function x1
    *  - predictionsLambda
-   * 
+   *
    * Total : 8
    */
   expect(Object.keys(out.stacks.PredictionsDirectiveStack.Resources).length).toEqual(8);
 
-
   // Schema Validation
   expect(out.schema).toMatchSnapshot();
-  
+
   // Expect Schema for Query operation to return a string
   expect(out.schema).toContain('speakTranslatedText(input: SpeakTranslatedTextInput!): String');
-  
+
   // IAM role
   const iamRoleResource = out.stacks.PredictionsDirectiveStack.Resources.predictionsIAMRole;
   expect(iamRoleResource).toBeDefined();
   expect(iamRoleResource.Properties.AssumeRolePolicyDocument.Statement[0].Principal.Service).toEqual('appsync.amazonaws.com');
   expect(iamRoleResource.Properties.AssumeRolePolicyDocument.Statement[0].Action).toEqual('sts:AssumeRole');
-  iamRoleResource.Properties.Policies.forEach( (policy: any) => {
-    expect(['translate:TranslateText', 'lambda:InvokeFunction', 's3:GetObject' ]).toContain(policy.PolicyDocument.Statement[0].Action[0]);
+  iamRoleResource.Properties.Policies.forEach((policy: any) => {
+    expect(['translate:TranslateText', 'lambda:InvokeFunction', 's3:GetObject']).toContain(policy.PolicyDocument.Statement[0].Action[0]);
   });
 
   // Resolver
@@ -58,7 +57,6 @@ test('lambda function is added to pipeline when lambda dependent action is added
   expect(resolverResource.Properties.PipelineConfig.Functions.length).toEqual(2);
 });
 
-
 test('return type is a list based on the action', () => {
   const validSchema = `
     type Query {
@@ -66,7 +64,7 @@ test('return type is a list based on the action', () => {
     }
   `;
   const transformer = new GraphQLTransform({
-    transformers: [new PredictionsTransformer({ bucketName: "myStorage${hash}-${env}" })]
+    transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -82,7 +80,28 @@ test('return type is a list based on the action', () => {
   expect(iamRoleResource).toBeDefined();
   expect(iamRoleResource.Properties.AssumeRolePolicyDocument.Statement[0].Principal.Service).toEqual('appsync.amazonaws.com');
   expect(iamRoleResource.Properties.AssumeRolePolicyDocument.Statement[0].Action).toEqual('sts:AssumeRole');
-  iamRoleResource.Properties.Policies.forEach( (policy: any) => {
+  iamRoleResource.Properties.Policies.forEach((policy: any) => {
     expect(['translate:TranslateText', 'rekognition:DetectLabels', 's3:GetObject']).toContain(policy.PolicyDocument.Statement[0].Action[0]);
   });
+});
+
+test('snapshot test to check generated function resolvers', () => {
+  const validSchema = `
+    type Query {
+      speakTranslatedImageText: String @predictions(actions: [
+        identifyText
+        translateText
+        convertTextToSpeech
+      ])
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new PredictionsTransformer({ bucketName: 'myStorage${hash}-${env}' })],
+  });
+  const out = transformer.transform(validSchema);
+  expect(out.schema).toBeDefined();
+  expect(out.stacks['PredictionsDirectiveStack'].Resources['QueryspeakTranslatedImageTextResolver']).toMatchSnapshot();
+  expect(out.pipelineFunctions['convertTextToSpeechFunction.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['identifyTextFunction.req.vtl']).toMatchSnapshot();
+  expect(out.pipelineFunctions['translateTextFunction.req.vtl']).toMatchSnapshot();
 });

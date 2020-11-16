@@ -1,4 +1,6 @@
 import * as inquirer from 'inquirer';
+import { JSONUtilities } from 'amplify-cli-core';
+import { merge } from 'lodash';
 
 export const editors = [
   {
@@ -44,6 +46,8 @@ export async function editorSelection(defaultEditor?) {
 
   const { editorSelected } = await inquirer.prompt(editorQuestion);
 
+  hideNoManualEdit(editorSelected);
+
   return editorSelected;
 }
 
@@ -63,4 +67,40 @@ export function normalizeEditor(editor) {
   }
 
   return editor;
+}
+
+/**
+ * @description Appends the settings file for a given text editor so that state files are visually hidden from the file browser.
+ * @abstract When new users are stuck, many will try to edit these files and often end up creating more state management issues. This is a bad UX. Visually hiding them from their text editor will help mitigate this. Users always have the option of changing this default after project initialization.
+ * @param  {} editor - text editor value code
+ *
+ */
+function hideNoManualEdit(editor) {
+  switch (editor) {
+    case 'vscode':
+      const workspaceSettingsPath = '.vscode/settings.json';
+      const exclusionRules = {
+        'files.exclude': {
+          'amplify/.config': true,
+          'amplify/**/*-parameters.json': true,
+          'amplify/**/amplify.state': true,
+          'amplify/**/transform.conf.json': true,
+          'amplify/#current-cloud-backend': true,
+          'amplify/backend/amplify-meta.json': true,
+          'amplify/backend/awscloudformation': true,
+        },
+      };
+      try {
+        // If settings file exists, safely add exclude settings to it.
+        const settings = JSONUtilities.readJson(workspaceSettingsPath);
+        JSONUtilities.writeJson(workspaceSettingsPath, merge(exclusionRules, settings));
+      } catch (error) {
+        // Workspace settings file does not exist.
+        // Let's create it with exclude settings.
+        JSONUtilities.writeJson(workspaceSettingsPath, exclusionRules);
+      }
+      break;
+    default:
+      break;
+  }
 }

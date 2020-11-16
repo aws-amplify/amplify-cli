@@ -23,6 +23,7 @@ const {
   enableUser,
   getUser,
   listUsers,
+  listGroups,
   listGroupsForUser,
   listUsersInGroup,
   signUserOut,
@@ -168,6 +169,22 @@ app.get('/listUsers', async (req, res, next) => {
       response = await listUsers((Limit = req.query.limit));
     } else {
       response = await listUsers();
+    }
+    res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/listGroups', async (req, res, next) => {
+  try {
+    let response;
+    if (req.query.token) {
+      response = await listGroups(req.query.limit || 25, req.query.token);
+    } else if (req.query.limit) {
+      response = await listGroups((Limit = req.query.limit));
+    } else {
+      response = await listGroups();
     }
     res.status(200).json(response);
   } catch (err) {

@@ -19,8 +19,10 @@ const { loadResourceParameters } = require('./resourceParams');
 const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('./utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
-const { isMultiEnvLayer, packageLayer, ServiceName: FunctionServiceName } = require('amplify-category-function');
 const { stateManager } = require('amplify-cli-core');
+
+// keep in sync with ServiceName in amplify-category-function, but probably it will not change
+const FunctionServiceNameLambdaLayer = 'LambdaLayer';
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
@@ -68,7 +70,7 @@ async function run(context, resourceDefinition) {
     await postPushGraphQLCodegen(context);
     await amplifyServiceManager.postPushCheck(context);
 
-    if (resources.length > 0) {
+    if (resources.concat(resourcesToBeDeleted).length > 0) {
       await context.amplify.updateamplifyMetaAfterPush(resources);
     }
 
@@ -159,7 +161,7 @@ async function run(context, resourceDefinition) {
 
     spinner.succeed('All resources are updated in the cloud');
 
-    displayHelpfulURLs(context, resources);
+    await displayHelpfulURLs(context, resources);
   } catch (err) {
     spinner.fail('An error occurred when pushing the resources to the cloud');
     throw err;
@@ -295,7 +297,10 @@ function packageResources(context, resources) {
 
   const packageResource = (context, resource) => {
     let s3Key;
-    return (resource.service === FunctionServiceName.LambdaLayer ? packageLayer(context, resource) : buildResource(context, resource))
+    return (resource.service === FunctionServiceNameLambdaLayer
+      ? context.amplify.invokePluginMethod(context, 'function', undefined, 'packageLayer', [context, resource])
+      : buildResource(context, resource)
+    )
       .then(result => {
         // Upload zip file to S3
         s3Key = `amplify-builds/${result.zipFilename}`;
@@ -307,7 +312,7 @@ function packageResources(context, resources) {
           return s3.uploadFile(s3Params);
         });
       })
-      .then(s3Bucket => {
+      .then(async s3Bucket => {
         // Update cfn template
         const { category, resourceName } = resource;
         const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -319,17 +324,26 @@ function packageResources(context, resources) {
         });
 
         if (cfnFiles.length !== 1) {
-          context.print.error('Only one CloudFormation template is allowed in the resource directory');
+          const errorMessage =
+            cfnFiles.length > 1
+              ? 'Only one CloudFormation template is allowed in the resource directory'
+              : 'CloudFormation template is missing in the resource directory';
+          context.print.error(errorMessage);
           context.print.error(resourceDir);
-          throw new Error('Only one CloudFormation template is allowed in the resource directory');
+          throw new Error(errorMessage);
         }
 
         const cfnFile = cfnFiles[0];
         const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
         const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
 
-        if (resource.service === FunctionServiceName.LambdaLayer) {
-          if (isMultiEnvLayer(context, resourceName)) {
+        if (resource.service === FunctionServiceNameLambdaLayer) {
+          const isMultiEnvLayer = await context.amplify.invokePluginMethod(context, 'function', undefined, 'isMultiEnvLayer', [
+            context,
+            resourceName,
+          ]);
+
+          if (isMultiEnvLayer) {
             const amplifyMeta = stateManager.getMeta();
             const teamProviderInfo = stateManager.getTeamProviderInfo();
             _.set(teamProviderInfo, [context.amplify.getEnvInfo().envName, 'categories', 'function', resourceName], {

@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.16.0...graphql-mapping-template@4.17.0) (2020-11-08)
+
+
+### Features
+
+* transformer redesign ([#5534](https://github.com/aws-amplify/amplify-cli/issues/5534)) ([a93c685](https://github.com/aws-amplify/amplify-cli/commit/a93c6852f6588898ebc52b0574f4fcc3d2e87948))
+
+
+
+
+
+# [4.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.15.3...graphql-mapping-template@4.16.0) (2020-10-30)
+
+
+### Features
+
+* **graphql-elasticsearch-transformer:** add 'from' query parameter ([#5098](https://github.com/aws-amplify/amplify-cli/issues/5098)) ([d52a804](https://github.com/aws-amplify/amplify-cli/commit/d52a804c25df63cd1cee1a72bb99286ecfe54ed5))
+
+
+
+
+
+## [4.15.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.15.2...graphql-mapping-template@4.15.3) (2020-10-22)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
 ## [4.15.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.15.1...graphql-mapping-template@4.15.2) (2020-08-31)
 
 

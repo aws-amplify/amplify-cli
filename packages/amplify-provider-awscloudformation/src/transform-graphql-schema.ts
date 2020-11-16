@@ -14,7 +14,7 @@ import { HttpTransformer } from 'graphql-http-transformer';
 import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ProviderName as providerName } from './constants';
-import { AmplifyCLIFeatureFlagAdapter } from './utils/transfomer-feature-flag-adapter';
+import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 
 import {
   collectDirectivesByTypeNames,
@@ -33,7 +33,9 @@ import {
 
 import { print } from 'graphql';
 import { hashDirectory } from './upload-appsync-files';
-import { exitOnNextTick } from 'amplify-cli-core';
+import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
+import { transformGraphQLSchema as transformGraphQLSchemaV6  } from './graphql-transformer/transform-graphql-schema';
+
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -275,6 +277,10 @@ async function migrateProject(context, options) {
 }
 
 export async function transformGraphQLSchema(context, options) {
+  const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
+  if (useExperimentalPipelineTransformer) {
+    return transformGraphQLSchemaV6(context, options);
+  }
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
   const flags = context.parameters.options;
   if (flags['no-gql-override']) {

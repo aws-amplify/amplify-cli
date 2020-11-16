@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.3.3...amplify-graphiql-explorer@1.3.4) (2020-10-22)
+
+
+### Bug Fixes
+
+* updated react-scripts module ([#5653](https://github.com/aws-amplify/amplify-cli/issues/5653)) ([a8118f2](https://github.com/aws-amplify/amplify-cli/commit/a8118f28e440c9febd58269bd6e08425dd81f00c))
+
+
+
+
+
 ## [1.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.3.2...amplify-graphiql-explorer@1.3.3) (2020-10-07)
 
 **Note:** Version bump only for package amplify-graphiql-explorer

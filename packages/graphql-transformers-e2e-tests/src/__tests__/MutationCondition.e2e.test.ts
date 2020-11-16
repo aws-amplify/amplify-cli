@@ -15,21 +15,17 @@ import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 
-import { Auth } from 'aws-amplify';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 import { ResourceConstants } from 'graphql-transformer-common';
-import * as fs from 'fs';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as CognitoClient } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { S3Client } from '../S3Client';
-import * as path from 'path';
-import { deploy } from '../deployNestedStacks';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
-import emptyBucket from '../emptyBucket';
-import { createUserPool, createUserPoolClient, deleteUserPool, signupAndAuthenticateUser, configureAmplify } from '../cognitoUtils';
+import { createUserPool, createUserPoolClient, signupAndAuthenticateUser, configureAmplify } from '../cognitoUtils';
 import Role from 'cloudform-types/types/iam/role';
 import UserPoolClient from 'cloudform-types/types/cognito/userPoolClient';
 import IdentityPool from 'cloudform-types/types/cognito/identityPool';
@@ -881,19 +877,13 @@ describe(`Deployed Mutation Condition tests`, () => {
       const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
       const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
       GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs);
-      console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
       const apiKey = getApiKey(finishedStack.Outputs);
-      console.log(`API KEY: ${apiKey}`);
       expect(apiKey).toBeTruthy();
 
       const getIdentityPoolId = outputValueSelector('IdentityPoolId');
       const identityPoolId = getIdentityPoolId(finishedStack.Outputs);
       expect(identityPoolId).toBeTruthy();
-      console.log(`Identity Pool Id: ${identityPoolId}`);
-
-      console.log(`User pool Id: ${USER_POOL_ID}`);
-      console.log(`User pool ClientId: ${userPoolClientId}`);
 
       // Verify we have all the details
       expect(GRAPHQL_ENDPOINT).toBeTruthy();
@@ -958,27 +948,7 @@ describe(`Deployed Mutation Condition tests`, () => {
   });
 
   afterAll(async () => {
-    try {
-      console.log('Deleting stack ' + STACK_NAME);
-      await cf.deleteStack(STACK_NAME);
-      await deleteUserPool(cognitoClient, USER_POOL_ID);
-      await cf.waitForStack(STACK_NAME);
-      console.log('Successfully deleted stack ' + STACK_NAME);
-    } catch (e) {
-      if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-        // The stack was deleted. This is good.
-        expect(true).toEqual(true);
-        console.log('Successfully deleted stack ' + STACK_NAME);
-      } else {
-        console.error(e);
-        expect(true).toEqual(false);
-      }
-    }
-    try {
-      await emptyBucket(BUCKET_NAME);
-    } catch (e) {
-      console.error(`Failed to empty S3 bucket: ${e}`);
-    }
+    await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
   });
 
   it('Create Mutation with failing condition', async () => {

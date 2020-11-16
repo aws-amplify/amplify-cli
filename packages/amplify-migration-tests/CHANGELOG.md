@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.10...amplify-migration-tests@2.18.11) (2020-11-08)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.9...amplify-migration-tests@2.18.10) (2020-10-30)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.8...amplify-migration-tests@2.18.9) (2020-10-27)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.7...amplify-migration-tests@2.18.8) (2020-10-22)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
 ## [2.18.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.6...amplify-migration-tests@2.18.7) (2020-10-17)
 
 **Note:** Version bump only for package amplify-migration-tests

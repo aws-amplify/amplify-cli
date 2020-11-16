@@ -220,12 +220,10 @@ export class FeatureFlags {
     }
 
     // Check if effective values has a value for the requested flag
-    if (this.effectiveFlags[parts[0]] && this.effectiveFlags[parts[0]][parts[1]]) {
-      value = <T>this.effectiveFlags[parts[0]][parts[1]];
-    }
+    value = <T>this.effectiveFlags[parts[0]]?.[parts[1]];
 
     // If there is no value, return the registered defaults for existing projects
-    if (!value) {
+    if (value === undefined) {
       if (this.useNewDefaults) {
         value = <T>(flagRegistrationEntry.defaultValueForNewProjects as unknown);
       } else {
@@ -479,14 +477,6 @@ export class FeatureFlags {
   // DEVS: Register feature flags here
   private registerFlags = (): void => {
     // Examples:
-    // this.registerFlag('graphQLTransformer', [
-    //   {
-    //     name: 'transformerVersion',
-    //     type: 'number',
-    //     defaultValueForExistingProjects: 4,
-    //     defaultValueForNewProjects: 5,
-    //   },
-    // ]);
     // this.registerFlag('keyTransformer', [
     //   {
     //     name: 'defaultQuery',
@@ -501,6 +491,18 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
+      },
+      {
+        name: 'validateTypeNameReservedWords',
+        type: 'boolean',
+        defaultValueForExistingProjects: true,
+        defaultValueForNewProjects: true,
+      },
+      {
+        name: 'useExperimentalPipelinedTransformer',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
       },
     ]);
   };

@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.3.2...amplify-go-function-runtime-provider@1.3.3) (2020-11-08)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
+## [1.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.3.1...amplify-go-function-runtime-provider@1.3.2) (2020-10-30)
+
+
+### Bug Fixes
+
+* parse appSync go function resolvers to JOSN ([#5297](https://github.com/aws-amplify/amplify-cli/issues/5297)) ([43c6e82](https://github.com/aws-amplify/amplify-cli/commit/43c6e8247210446b133fef799ff21cd70ad9e022))
+
+
+
+
+
+## [1.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.3.0...amplify-go-function-runtime-provider@1.3.1) (2020-10-27)
+
+**Note:** Version bump only for package amplify-go-function-runtime-provider
+
+
+
+
+
+# [1.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.2.5...amplify-go-function-runtime-provider@1.3.0) (2020-10-22)
+
+
+### Bug Fixes
+
+* use correct version of amplify-cli-core ([#5661](https://github.com/aws-amplify/amplify-cli/issues/5661)) ([c8c2e1a](https://github.com/aws-amplify/amplify-cli/commit/c8c2e1a9242e2096484f194b9e1944bf34840c51))
+
+
+### Features
+
+* update post-install to copy executable assets to .amplify ([#5595](https://github.com/aws-amplify/amplify-cli/issues/5595)) ([53a23a0](https://github.com/aws-amplify/amplify-cli/commit/53a23a07cbb9e09566c1f0f577ba2b7488bc2eae))
+
+
+
+
+
 ## [1.2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.2.4...amplify-go-function-runtime-provider@1.2.5) (2020-10-09)
 
 

@@ -6,6 +6,7 @@ import {
   addHeadlessAuth,
   updateHeadlessAuth,
   removeHeadlessAuth,
+  getCloudBackendConfig,
 } from 'amplify-e2e-core';
 import { addAuthWithDefault, getBackendAmplifyMeta } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool } from 'amplify-e2e-core';
@@ -85,10 +86,17 @@ describe('headless auth', () => {
   it('removes auth resource', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefault(projRoot, {});
+    await amplifyPushAuth(projRoot);
     const { auth: authBefore } = getBackendAmplifyMeta(projRoot);
     const authResourceName = _.keys(authBefore).find(() => true); // first element or undefined
+    expect(authResourceName).toBeDefined();
+    const { auth: authBackendConfigBefore } = getCloudBackendConfig(projRoot);
+    expect(_.isEmpty(authBackendConfigBefore)).toBe(false);
     await removeHeadlessAuth(projRoot, authResourceName);
+    await amplifyPushAuth(projRoot);
     const { auth: authAfter } = getBackendAmplifyMeta(projRoot);
     expect(_.isEmpty(authAfter)).toBe(true);
+    const { auth: authBackendConfigAfter } = getCloudBackendConfig(projRoot);
+    expect(_.isEmpty(authBackendConfigAfter)).toBe(true);
   });
 });

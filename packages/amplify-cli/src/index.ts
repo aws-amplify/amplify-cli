@@ -17,6 +17,7 @@ import { notify } from './version-notifier';
 import { EventEmitter } from 'events';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
+import { postInstallInitialization } from './utils/post-install-initialization';
 EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
@@ -124,8 +125,13 @@ function boundErrorHandler(this: Context, e: Error) {
   this.usageData.emitError(e);
 }
 
-function sigIntHandler(this: Context, e: any) {
+async function sigIntHandler(this: Context, e: any) {
   this.usageData.emitAbort();
+  try {
+    await this.amplify.runCleanUpTasks(this);
+  } catch (err) {
+    this.print.warning(`Could not run clean up tasks\nError: ${err.message}`);
+  }
   this.print.warning('^Aborted!');
   exitOnNextTick(2);
 }

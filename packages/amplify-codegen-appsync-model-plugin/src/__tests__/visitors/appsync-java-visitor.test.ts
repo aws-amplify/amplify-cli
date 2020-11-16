@@ -148,6 +148,31 @@ describe('AppSyncModelVisitor', () => {
     expect(generatedCode).toMatchSnapshot();
   });
 
+  it('should generate model with non-camel case field', () => {
+    const schema = /* GraphQL */ `
+      type NonCamelCaseField @model {
+        id: ID!
+        employeePID: String
+      }
+    `;
+    const visitor = getVisitor(schema, 'NonCamelCaseField');
+    const generatedCode = visitor.generate();
+    expect(() => validateJava(generatedCode)).not.toThrow();
+    expect(generatedCode).toMatchSnapshot();
+  });
+
+  it('should throw error if two fields have the same camel field', () => {
+    const schema = /* GraphQL */ `
+      type sameCamelCaseField @model {
+        id: ID!
+        subjectName: String
+        subject_name: String
+      }
+    `;
+    const visitor = getVisitor(schema, 'sameCamelCaseField');
+    expect(visitor.generate).toThrowErrorMatchingSnapshot();
+  });
+
   it('should generate model with key directive', () => {
     const schema = /* GraphQL */ `
       type authorBook @model @key(name: "byAuthor", fields: ["author_id"]) @key(name: "byBook", fields: ["book_id"]) {

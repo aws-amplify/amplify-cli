@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.19.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.19.0...graphql-transformers-e2e-tests@6.19.1) (2020-11-08)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+# [6.19.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.19...graphql-transformers-e2e-tests@6.19.0) (2020-10-30)
+
+
+### Features
+
+* **graphql-elasticsearch-transformer:** add 'from' query parameter ([#5098](https://github.com/aws-amplify/amplify-cli/issues/5098)) ([d52a804](https://github.com/aws-amplify/amplify-cli/commit/d52a804c25df63cd1cee1a72bb99286ecfe54ed5))
+
+
+
+
+
+## [6.18.19](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.18...graphql-transformers-e2e-tests@6.18.19) (2020-10-27)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.18.18](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.17...graphql-transformers-e2e-tests@6.18.18) (2020-10-22)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
 ## [6.18.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.18.16...graphql-transformers-e2e-tests@6.18.17) (2020-10-17)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

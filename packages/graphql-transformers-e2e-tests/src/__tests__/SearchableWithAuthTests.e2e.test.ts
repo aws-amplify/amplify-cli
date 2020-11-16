@@ -15,13 +15,11 @@ import { AWS } from '@aws-amplify/core';
 import { Auth } from 'aws-amplify';
 import gql from 'graphql-tag';
 import { S3Client } from '../S3Client';
-import { deploy } from '../deployNestedStacks';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { default as moment } from 'moment';
-import emptyBucket from '../emptyBucket';
 import {
   createUserPool,
   createUserPoolClient,
-  deleteUserPool,
   addIAMRolesToCFNStack,
   signupAndAuthenticateUser,
   createGroup,
@@ -219,19 +217,13 @@ beforeAll(async () => {
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
     GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs);
-    console.log(`Using graphql url: ${GRAPHQL_ENDPOINT}`);
 
     const apiKey = getApiKey(finishedStack.Outputs);
-    console.log(`API KEY: ${apiKey}`);
     expect(apiKey).toBeTruthy();
 
     const getIdentityPoolId = outputValueSelector('IdentityPoolId');
     const identityPoolId = getIdentityPoolId(finishedStack.Outputs);
     expect(identityPoolId).toBeTruthy();
-    console.log(`Identity Pool Id: ${identityPoolId}`);
-
-    console.log(`User pool Id: ${USER_POOL_ID}`);
-    console.log(`User pool ClientId: ${userPoolClientId}`);
 
     // Verify we have all the details
     expect(GRAPHQL_ENDPOINT).toBeTruthy();
@@ -330,27 +322,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  try {
-    console.log('Deleting stack ' + STACK_NAME);
-    await cf.deleteStack(STACK_NAME);
-    await deleteUserPool(cognitoClient, USER_POOL_ID);
-    await cf.waitForStack(STACK_NAME);
-    console.log('Successfully deleted stack ' + STACK_NAME);
-  } catch (e) {
-    if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-      // The stack was deleted. This is good.
-      expect(true).toEqual(true);
-      console.log('Successfully deleted stack ' + STACK_NAME);
-    } else {
-      console.error(e);
-      throw e;
-    }
-  }
-  try {
-    await emptyBucket(BUCKET_NAME);
-  } catch (e) {
-    console.error(`Failed to empty S3 bucket: ${e}`);
-  }
+  await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
 });
 
 /**
@@ -541,7 +513,6 @@ test('test post as an cognito user that is not allowed in this schema', async ()
       `,
     });
   } catch (err) {
-    console.log(err);
     expect(err.graphQLErrors[0].errorType).toEqual('Unauthorized');
     expect(err.graphQLErrors[0].message).toEqual('Not Authorized to access searchPosts on type Query');
   }
@@ -587,46 +558,38 @@ async function createPost(client: AWSAppSyncClient<any>, input: CreatePostInput)
 }
 
 async function createRecords() {
-  console.log('create records');
-  try {
-    // create a comment as an owner not in the writer group
-    const ownerCreate = await createComment(GRAPHQL_CLIENT_1, {
-      content: 'ownerContent',
-    });
-    console.log(ownerCreate);
-    // create comments as user 2 that is in the writer group
-    const createCommentList: CreateCommentInput[] = [{ content: 'content1' }, { content: 'content2' }, { content: 'content3' }];
-    createCommentList.forEach(async (commentInput: CreateCommentInput) => {
-      await createComment(GRAPHQL_CLIENT_2, commentInput);
-    });
-    // create todos as user in the admin group
-    const createTodoList: CreateTodoInput[] = [
-      { groups: 'admin', content: 'adminContent1' },
-      { groups: 'admin', content: 'adminContent2' },
-      { groups: 'admin', content: 'adminContent3' },
-    ];
-    createTodoList.forEach(async (todoInput: CreateTodoInput) => {
-      await createTodo(GRAPHQL_CLIENT_2, todoInput);
-    });
-    // create a post as a user with the apiKey
-    const apiKeyResponse = await createPost(GRAPHQL_APIKEY_CLIENT, {
-      content: 'publicPost',
-      secret: 'notViewableToPublic',
-    });
-    console.log(apiKeyResponse);
-    // create posts as user that has auth role
-    const createPostList: CreatePostInput[] = [
-      { content: 'post1', secret: 'post1secret' },
-      { content: 'post2', secret: 'post2secret' },
-      { content: 'post3', secret: 'post3secret' },
-    ];
-    createPostList.forEach(async (postInput: CreatePostInput) => {
-      await createPost(GRAPHQL_IAM_AUTH_CLIENT, postInput);
-    });
-    // Waiting for the ES Cluster + Streaming Lambda infra to be setup
-    console.log('Waiting for the ES Cluster + Streaming Lambda infra to be setup');
-    await cf.wait(120, () => Promise.resolve());
-  } catch (err) {
-    console.log(err);
-  }
+  // create a comment as an owner not in the writer group
+  const ownerCreate = await createComment(GRAPHQL_CLIENT_1, {
+    content: 'ownerContent',
+  });
+  // create comments as user 2 that is in the writer group
+  const createCommentList: CreateCommentInput[] = [{ content: 'content1' }, { content: 'content2' }, { content: 'content3' }];
+  createCommentList.forEach(async (commentInput: CreateCommentInput) => {
+    await createComment(GRAPHQL_CLIENT_2, commentInput);
+  });
+  // create todos as user in the admin group
+  const createTodoList: CreateTodoInput[] = [
+    { groups: 'admin', content: 'adminContent1' },
+    { groups: 'admin', content: 'adminContent2' },
+    { groups: 'admin', content: 'adminContent3' },
+  ];
+  createTodoList.forEach(async (todoInput: CreateTodoInput) => {
+    await createTodo(GRAPHQL_CLIENT_2, todoInput);
+  });
+  // create a post as a user with the apiKey
+  const apiKeyResponse = await createPost(GRAPHQL_APIKEY_CLIENT, {
+    content: 'publicPost',
+    secret: 'notViewableToPublic',
+  });
+  // create posts as user that has auth role
+  const createPostList: CreatePostInput[] = [
+    { content: 'post1', secret: 'post1secret' },
+    { content: 'post2', secret: 'post2secret' },
+    { content: 'post3', secret: 'post3secret' },
+  ];
+  createPostList.forEach(async (postInput: CreatePostInput) => {
+    await createPost(GRAPHQL_IAM_AUTH_CLIENT, postInput);
+  });
+  // Waiting for the ES Cluster + Streaming Lambda infra to be setup
+  await cf.wait(120, () => Promise.resolve());
 }

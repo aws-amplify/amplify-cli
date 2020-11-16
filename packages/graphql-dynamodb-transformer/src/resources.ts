@@ -649,6 +649,7 @@ export class ResourceFactory {
       ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(true)),
     });
   }
+
   /**
    * Create a resolver that queries an item in DynamoDB.
    * @param type

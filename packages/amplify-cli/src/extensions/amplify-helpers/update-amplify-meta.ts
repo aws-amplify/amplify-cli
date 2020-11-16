@@ -53,7 +53,10 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
 
     fs.ensureDirSync(targetDir);
 
-    fs.copySync(sourceDir, targetDir);
+    // in the case that the resource is being deleted, the sourceDir won't exist
+    if (fs.pathExistsSync(sourceDir)) {
+      fs.copySync(sourceDir, targetDir);
+    }
   }
 
   fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
@@ -137,10 +140,12 @@ export async function updateamplifyMetaAfterPush(resources) {
     // Skip hash calculation for imported resources
     if (resources[i].serviceType !== 'imported') {
       const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resources[i].category, resources[i].resourceName));
-      const hashDir = await getHashForResourceDir(sourceDir);
-
-      amplifyMeta[resources[i].category][resources[i].resourceName].lastPushDirHash = hashDir;
-      amplifyMeta[resources[i].category][resources[i].resourceName].lastPushTimeStamp = currentTimestamp;
+      // skip hashing deleted resources
+      if (fs.pathExistsSync(sourceDir)) {
+        const hashDir = await getHashForResourceDir(sourceDir);
+        amplifyMeta[resources[i].category][resources[i].resourceName].lastPushDirHash = hashDir;
+        amplifyMeta[resources[i].category][resources[i].resourceName].lastPushTimeStamp = currentTimestamp;
+      }
     }
 
     // If the operation was a remove-sync then for imported resources we cannot set timestamp

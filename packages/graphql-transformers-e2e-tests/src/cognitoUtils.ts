@@ -77,20 +77,22 @@ export async function signupAndAuthenticateUser(userPoolId: string, username: st
   try {
     // Sign up then login user 1.ß
     await signupUser(userPoolId, username, tmpPw);
+    // 2. Sign in and change password if its an new user
+    try {
+      const authDetails = new AuthenticationDetails({
+        Username: username,
+        Password: tmpPw,
+      });
+      const user = Amplify.Auth.createCognitoUser(username);
+      const authRes = await authenticateUser(user, authDetails, realPw);
+      return authRes;
+    } catch (e) {
+      if (e.code !== 'NotAuthorizedException') console.error(`Failed to login with temp password`, e);
+    }
   } catch (e) {
-    console.log(`Trying to login with temp password`);
-  }
-
-  try {
-    const authDetails = new AuthenticationDetails({
-      Username: username,
-      Password: tmpPw,
-    });
-    const user = Amplify.Auth.createCognitoUser(username);
-    const authRes = await authenticateUser(user, authDetails, realPw);
-    return authRes;
-  } catch (e) {
-    console.log(`Trying to login with real password`);
+    if (e.code !== 'UsernameExistsException') {
+      console.error(`Failed when signing up user`, e);
+    }
   }
 
   try {
@@ -100,11 +102,9 @@ export async function signupAndAuthenticateUser(userPoolId: string, username: st
     });
     const user = Amplify.Auth.createCognitoUser(username);
     const authRes: any = await authenticateUser(user, authDetails, realPw);
-    console.log(`Logged in ${username} \n${authRes.getIdToken().getJwtToken()}`);
     return authRes;
   } catch (e) {
-    console.error(`Failed to login.\n`);
-    console.error(e);
+    console.error(`Failed to login`, e);
   }
 }
 

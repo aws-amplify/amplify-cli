@@ -50,17 +50,15 @@ export async function askDynamoDBQuestions(context: any, currentProjectOnly = fa
         return { resourceName: dynamoResourceAnswer.dynamoDbResources as string };
       }
       case 'newResource': {
-        let add;
-        try {
-          ({ add } = require('amplify-category-storage'));
-        } catch (e) {
-          context.print.error('Storage plugin is not installed in the CLI. You must install it to use this feature.');
-          break;
-        }
-        return add(context, 'awscloudformation', 'DynamoDB').then((resourceName: any) => {
-          context.print.success('Successfully added DynamoDb table locally');
-          return { resourceName };
-        });
+        const resourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 'add', [
+          context,
+          'awscloudformation',
+          'DynamoDB',
+        ]);
+
+        context.print.success('Successfully added DynamoDb table locally');
+
+        return { resourceName };
       }
       default:
         context.print.error('Invalid option selected');

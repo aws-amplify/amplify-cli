@@ -32,6 +32,72 @@ const nodeJSTemplateChoices = [
 
 const pythonTemplateChoices = ['Hello World'];
 
+const additionalPermissions = (chain: ExecutionContext, settings: any) => {
+  multiSelect(
+    chain.sendLine('y').wait('Select the category'),
+    settings.additionalPermissions.permissions,
+    settings.additionalPermissions.choices,
+  );
+  // when single resource, it gets autoselected
+  if (settings.additionalPermissions.resources.length > 1) {
+    multiSelect(
+      chain.wait('Select the one you would like your'),
+      settings.additionalPermissions.resources,
+      settings.additionalPermissions.resourceChoices,
+    );
+  }
+  // n-resources repeated questions
+  settings.additionalPermissions.resources.forEach(elem =>
+    multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
+      'create',
+      'read',
+      'update',
+      'delete',
+    ]),
+  );
+};
+
+const updateFunctionCore = (chain: ExecutionContext, settings: any) => {
+  singleSelect(
+    chain.wait('Which setting do you want to update?'),
+    settings.additionalPermissions
+      ? 'Resource access permissions'
+      : settings.schedulePermissions
+      ? 'Scheduled recurring invocation'
+      : 'Lambda layers configuration',
+    ['Resource access permissions', 'Scheduled recurring invocation', 'Lambda layers configuration'],
+  );
+  if (settings.additionalPermissions) {
+    // update permissions
+    additionalPermissions(chain, settings);
+  } else if (settings.schedulePermissions) {
+    // update scheduling
+    if (
+      settings.schedulePermissions === undefined ||
+      (settings.schedulePermissions && settings.schedulePermissions.noScheduleAdd === 'true')
+    ) {
+      chain.wait('Do you want to invoke this function on a recurring schedule?');
+    } else {
+      chain.wait(`Do you want to update or remove the function's schedule?`);
+    }
+    if (settings.schedulePermissions === undefined) {
+      chain.sendLine('n');
+    } else {
+      chain.sendLine('y');
+      cronWalkthrough(chain, settings, 'update');
+    }
+  } else {
+    // update layers
+    chain.wait('Do you want to configure Lambda layers for this function?');
+    if (settings.layerOptions === undefined) {
+      chain.sendLine('n');
+    } else {
+      chain.sendLine('y');
+      addLayerWalkthrough(chain, settings.layerOptions);
+    }
+  }
+};
+
 const coreFunction = (
   cwd: string,
   settings: any,
@@ -49,9 +115,7 @@ const coreFunction = (
       chain
         .wait('Select which capability you want to add:')
         .sendCarriageReturn() // lambda function
-        .wait('Provide a friendly name for your resource to be used as a label')
-        .sendLine(settings.friendlyName || settings.name || '')
-        .wait('Provide the AWS Lambda function name:')
+        .wait('Provide an AWS Lambda function name:')
         .sendLine(settings.name || '');
 
       selectRuntime(chain, runtime);
@@ -76,69 +140,42 @@ const coreFunction = (
       return;
     }
 
-    // other permissions flow
-    chain.wait(
-      action === 'create'
-        ? 'Do you want to access other resources in this project from your Lambda function?'
-        : 'Do you want to update the Lambda function permissions to access other resources in this project?',
-    );
-
-    if (settings.additionalPermissions) {
-      multiSelect(
-        chain.sendLine('y').wait('Select the category'),
-        settings.additionalPermissions.permissions,
-        settings.additionalPermissions.choices,
-      );
-      // when single resource, it gets autoselected
-      if (settings.additionalPermissions.resources.length > 1) {
-        multiSelect(
-          chain.wait('Select the one you would like your'),
-          settings.additionalPermissions.resources,
-          settings.additionalPermissions.resourceChoices,
-        );
-      }
-
-      // n-resources repeated questions
-      settings.additionalPermissions.resources.forEach(elem =>
-        multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
-          'create',
-          'read',
-          'update',
-          'delete',
-        ]),
-      );
-    } else {
-      chain.sendLine('n');
-    }
-
-    //scheduling questions
+    // advanced settings flow
     if (action === 'create') {
-      chain.wait('Do you want to invoke this function on a recurring schedule?');
-    } else {
-      if (
-        settings.schedulePermissions === undefined ||
-        (settings.schedulePermissions && settings.schedulePermissions.noScheduleAdd === 'true')
-      ) {
+      chain.wait('Do you want to configure advanced settings?');
+
+      if (settings.additionalPermissions || settings.schedulePermissions || settings.layerOptions) {
+        chain.sendLine('y').wait('Do you want to access other resources in this project from your Lambda function?');
+        if (settings.additionalPermissions) {
+          // other permissions flow
+          additionalPermissions(chain, settings);
+        } else {
+          chain.sendLine('n');
+        }
+
+        //scheduling questions
         chain.wait('Do you want to invoke this function on a recurring schedule?');
+
+        if (settings.schedulePermissions === undefined) {
+          chain.sendLine('n');
+        } else {
+          chain.sendLine('y');
+          cronWalkthrough(chain, settings, action);
+        }
+
+        // lambda layers question
+        chain.wait('Do you want to configure Lambda layers for this function?');
+        if (settings.layerOptions === undefined) {
+          chain.sendLine('n');
+        } else {
+          chain.sendLine('y');
+          addLayerWalkthrough(chain, settings.layerOptions);
+        }
       } else {
-        chain.wait(`Do you want to update or remove the function's schedule?`);
+        chain.sendLine('n');
       }
-    }
-
-    if (settings.schedulePermissions === undefined) {
-      chain.sendLine('n');
     } else {
-      chain.sendLine('y');
-      cronWalkthrough(chain, settings, action);
-    }
-
-    // lambda layers question
-    chain.wait('Do you want to configure Lambda layers for this function?');
-    if (settings.layerOptions === undefined) {
-      chain.sendLine('n');
-    } else {
-      chain.sendLine('y');
-      addLayerWalkthrough(chain, settings.layerOptions);
+      updateFunctionCore(chain, settings);
     }
 
     // edit function question
@@ -373,12 +410,9 @@ const addCron = (chain: ExecutionContext, settings: any) => {
   return chain;
 };
 
-export const functionMockAssert = (
-  cwd: string,
-  settings: { friendlyName?: string; funcName: string; successString: string; eventFile: string },
-) => {
+export const functionMockAssert = (cwd: string, settings: { funcName: string; successString: string; eventFile: string }) => {
   return new Promise((resolve, reject) => {
-    const lookupName = settings.friendlyName ? settings.friendlyName : settings.funcName;
+    const lookupName = settings.funcName;
     spawn(getCLIPath(), ['mock', 'function', lookupName, '--event', settings.eventFile], { cwd, stripColors: true })
       .wait('Result:')
       .wait(settings.successString)
@@ -390,10 +424,10 @@ export const functionMockAssert = (
 
 export const functionCloudInvoke = async (
   cwd: string,
-  settings: { friendlyName?: string; funcName: string; payload: string },
+  settings: { funcName: string; payload: string },
 ): Promise<Lambda.InvocationResponse> => {
   const meta = getProjectMeta(cwd);
-  const lookupName = settings.friendlyName ? settings.friendlyName : settings.funcName;
+  const lookupName = settings.funcName;
   expect(meta.function[lookupName]).toBeDefined();
   const { Name: functionName, Region: region } = meta.function[lookupName].output;
   expect(functionName).toBeDefined();

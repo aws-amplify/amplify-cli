@@ -93,15 +93,17 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
     Object.assign(defaultValues, answers);
     const resource = defaultValues.resourceName;
 
-    // Check for authorization rules and settings
-    const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-
     const analyticsRequirements = {
       authSelections: 'identityPoolOnly',
       allowUnauthenticatedIdentities: true,
     };
 
-    const checkResult = await checkRequirements(analyticsRequirements, context, 'analytics', answers.resourceName);
+    const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+      analyticsRequirements,
+      context,
+      'analytics',
+      answers.resourceName,
+    ]);
 
     // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
     // configuration.
@@ -122,7 +124,12 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
         )
       ) {
         try {
-          await externalAuthEnable(context, 'analytics', answers.resourceName, analyticsRequirements);
+          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+            context,
+            'analytics',
+            answers.resourceName,
+            analyticsRequirements,
+          ]);
         } catch (error) {
           context.print.error(error);
           throw error;
@@ -133,7 +140,12 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
             'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
           );
           analyticsRequirements.allowUnauthenticatedIdentities = false;
-          await externalAuthEnable(context, 'analytics', answers.resourceName, analyticsRequirements);
+          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+            context,
+            'analytics',
+            answers.resourceName,
+            analyticsRequirements,
+          ]);
         } catch (error) {
           context.print.error(error);
           throw error;
