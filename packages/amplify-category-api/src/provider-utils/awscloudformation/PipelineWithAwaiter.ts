@@ -266,6 +266,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
     const role = getRole(scope, `Pipeline`, new iam.ServicePrincipal('codepipeline.amazonaws.com'));
 
     const pipeline = new codepipeline.Pipeline(scope, `${id}Pipeline`, {
+      pipelineName: `codepipeline-amplify-${service.serviceName}`,
       crossAccountKeys: false,
       artifactBucket: bucket,
       stages: stagesWithDeploy,
