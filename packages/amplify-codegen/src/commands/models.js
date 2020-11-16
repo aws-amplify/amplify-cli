@@ -3,7 +3,11 @@ const { parse } = require('graphql');
 const { readFileSync, writeFileSync, ensureFileSync, pathExistsSync, lstatSync, readdirSync } = require('fs-extra');
 const gqlCodeGen = require('@graphql-codegen/core');
 
-const appSyncDataStoreCodeGen = require('amplify-codegen-appsync-model-plugin');
+const { FeatureFlags } = require('amplify-cli-core');
+
+const appSyncDataStoreCodeGen = FeatureFlags.getBoolean('codegenPackageMigration.useAppSyncModelgenPlugin')
+  ? require('@aws-amplify/app-sync-model-gen-plugin')
+  : require('amplify-codegen-appsync-model-plugin');
 
 async function generateModels(context) {
   // steps:
