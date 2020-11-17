@@ -113,16 +113,15 @@ export class EcsStack extends cdk.Stack {
 
     const { UserPoolId: paramUserPoolId, AppClientIDWeb: paramAppClientIdWeb } = authParams;
 
-    // TODO: rename
-    const cosaCondition = new cdk.CfnCondition(this, 'cosaCondition', {
+    const isUnAuthCondition = new cdk.CfnCondition(this, 'cosaCondition', {
       expression: cdk.Fn.conditionAnd(
         cdk.Fn.conditionEquals(authParams.UserPoolId ?? '', ''),
         cdk.Fn.conditionEquals(authParams.AppClientIDWeb ?? '', ''),
       ),
     });
 
-    const notCosaCondition = new cdk.CfnCondition(this, 'notCosaCondition', {
-      expression: cdk.Fn.conditionNot(cosaCondition),
+    const isAuthCondition = new cdk.CfnCondition(this, 'notCosaCondition', {
+      expression: cdk.Fn.conditionNot(isUnAuthCondition),
     });
 
     const vpcId = paramVpcId.valueAsString;
@@ -354,7 +353,7 @@ export class EcsStack extends cdk.Stack {
       identitySource: ['$request.header.Authorization'],
     });
 
-    authorizer.cfnOptions.condition = notCosaCondition;
+    authorizer.cfnOptions.condition = isAuthCondition;
 
     const routeWithAuth = new apigw2.CfnRoute(this, 'DefaultRouteWithAuth', {
       apiId: cdk.Fn.ref(api.logicalId),
@@ -365,7 +364,7 @@ export class EcsStack extends cdk.Stack {
       authorizerId: cdk.Fn.ref(authorizer.logicalId),
     });
 
-    routeWithAuth.cfnOptions.condition = notCosaCondition;
+    routeWithAuth.cfnOptions.condition = isAuthCondition;
 
     const routeWithoutAuth = new apigw2.CfnRoute(this, 'DefaultRouteNoAuth', {
       apiId: cdk.Fn.ref(api.logicalId),
@@ -373,7 +372,7 @@ export class EcsStack extends cdk.Stack {
       target: cdk.Fn.join('', ['integrations/', cdk.Fn.ref(integration.logicalId)]),
     });
 
-    routeWithoutAuth.cfnOptions.condition = cosaCondition;
+    routeWithoutAuth.cfnOptions.condition = isUnAuthCondition;
 
     new apigw2.CfnRoute(this, 'OptionsRoute', {
       apiId: cdk.Fn.ref(api.logicalId),
