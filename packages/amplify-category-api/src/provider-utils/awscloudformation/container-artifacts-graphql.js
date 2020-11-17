@@ -51,7 +51,7 @@ app.listen(PORT, () => console.log('Listening on localhost:' + PORT + '/graphql'
     "graphql": "^15.4.0"
   }
 }
-      `
+      `,
       'resolvers.js': `
 const AWS = require('aws-sdk');
 const docClient = new AWS.DynamoDB.DocumentClient();
