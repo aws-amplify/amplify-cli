@@ -2,12 +2,20 @@ import fs from 'fs-extra';
 import path from 'path';
 import { API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
 import { containerFiles as containerFilesREST } from './container-artifacts';
-import { containerFiles as containerFilesGraphQL} from './container-artifacts-graphql';
+import { containerFiles as containerFilesGraphQL } from './container-artifacts-graphql';
 import { DEPLOYMENT_MECHANISM } from './ecs-stack';
 import { GitHubSourceActionInfo } from './PipelineWithAwaiter';
 import uuid from 'uuid';
+import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 
-export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConfiguration>, context, category, service, options, apiType: API_TYPE) => {
+export const addResource = async (
+  serviceWalkthroughPromise: Promise<ServiceConfiguration>,
+  context,
+  category,
+  service,
+  options,
+  apiType: API_TYPE,
+) => {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const walkthroughOptions = await serviceWalkthroughPromise;
 
@@ -75,8 +83,8 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
   if (imageSource.type === IMAGE_SOURCE_TYPE.TEMPLATE) {
     fs.ensureDirSync(path.join(resourceDirPath, 'src'));
 
-    // TODO: Include this files into another package
-    switch(apiType) {
+    // TODO: Move this to resources
+    switch (apiType) {
       case API_TYPE.GRAPHQL:
         Object.entries(containerFilesGraphQL).forEach(([fileName, fileContents]) => {
           fs.writeFileSync(path.join(resourceDirPath, 'src', fileName), fileContents);
@@ -89,9 +97,10 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
         break;
       default:
         exhaustiveCheck(apiType);
-        function exhaustiveCheck(obj: never) { throw new Error(`${obj} invalid API Type`) }
+        function exhaustiveCheck(obj: never) {
+          throw new Error(`${obj} invalid API Type`);
+        }
     }
-    
   }
 
   context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
@@ -99,25 +108,27 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
   return resourceName;
 };
 
-const getResourceDependencies = async ({ restrictAccess, dependsOn, context, resourceName, category }
-  : {
-    restrictAccess: boolean,
-    dependsOn: ResourceDependency[],
-    context: any,
-    category: string,
-    resourceName: string
-  }) => {
+const getResourceDependencies = async ({
+  restrictAccess,
+  dependsOn,
+  context,
+  resourceName,
+  category,
+}: {
+  restrictAccess: boolean;
+  dependsOn: ResourceDependency[];
+  context: any;
+  category: string;
+  resourceName: string;
+}) => {
   const { checkRequirements, externalAuthEnable } = await import('amplify-category-auth');
 
   let authName;
   const updatedDependsOn: ResourceDependency[] = [].concat(dependsOn);
 
-  // TODO: Find a place to put this
-  // for now copied from NETWORK_STACK_LOGICAL_ID (amplify-provider-awscloudformation/src/network/stack.ts)
-  const networkStack = 'NetworkStack';
   updatedDependsOn.push({
     category: '',
-    resourceName: networkStack,
+    resourceName: NETWORK_STACK_LOGICAL_ID,
     attributes: ['ClusterName', 'VpcId', 'VpcCidrBlock', 'SubnetIds', 'VpcLinkId', 'CloudMapNamespaceId'],
   });
 
@@ -143,10 +154,9 @@ const getResourceDependencies = async ({ restrictAccess, dependsOn, context, res
       resourceName: authName,
       attributes: ['UserPoolId', 'AppClientIDWeb'],
     });
-
   }
-  return [authName, updatedDependsOn]
-}
+  return [authName, updatedDependsOn];
+};
 
 export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceConfiguration>, context, category) => {
   const options = await serviceWalkthroughPromise;
@@ -160,16 +170,15 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
     githubInfo,
     mutableParametersState,
     categoryPolicies,
-    environmentMap
+    environmentMap,
   } = options;
-
 
   let [authName, updatedDependsOn] = await getResourceDependencies({ dependsOn, restrictAccess, category, resourceName, context });
 
   let newGithubInfo: GitHubSourceActionInfo = {
     path: githubPath,
-    tokenSecretArn: githubInfo && githubInfo.tokenSecretArn
-  }
+    tokenSecretArn: githubInfo && githubInfo.tokenSecretArn,
+  };
   if (githubToken) {
     //#region Add token to secrets manager and get arn
     const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'];
@@ -193,4 +202,4 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
   context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'dependsOn', updatedDependsOn);
   context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'mutableParametersState', mutableParametersState);
   context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'categoryPolicies', categoryPolicies);
-}
+};
