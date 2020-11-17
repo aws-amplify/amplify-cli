@@ -1,10 +1,9 @@
-import { ContainerParameters, FunctionParameters } from 'amplify-function-plugin-interface';
+import { FunctionParameters } from 'amplify-function-plugin-interface';
 import { LayerParameters } from './awscloudformation/utils/layerParams';
 
 export interface SupportedServices {
   Lambda: ServiceConfig<FunctionParameters>;
   LambdaLayer: ServiceConfig<LayerParameters>;
-  ElasticContainer?: ServiceConfig<ContainerParameters>;
 }
 
 export interface ServiceConfig<T> {

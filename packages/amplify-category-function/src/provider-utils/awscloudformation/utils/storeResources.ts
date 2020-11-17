@@ -1,5 +1,5 @@
 import { JSONUtilities } from 'amplify-cli-core';
-import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs, ContainerParameters } from 'amplify-function-plugin-interface';
+import { FunctionParameters, FunctionTriggerParameters, FunctionBreadcrumbs } from 'amplify-function-plugin-interface';
 import _ from 'lodash';
 import fs from 'fs-extra';
 import path from 'path';
@@ -9,137 +9,21 @@ import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './layerParams';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { saveLayerRuntimes } from './layerRuntimes';
-import { getNewCFNParameters } from './cloudformationHelpers';
-import { ContainerStack } from './container-stack';
-import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-
-const DEFAULT_CONTAINER_PORT = 8080;
-export function createContainerResources(context: any, parameters: ContainerParameters): { resourceDirPath: string } {
-  context.amplify.updateamplifyMetaAfterResourceAdd(categoryName, parameters.resourceName, {
-    container: true,
-    build: true,
-    providerPlugin: 'awscloudformation',
-    service: 'ElasticContainer',
-    dependsOn: parameters.dependsOn,
-    githubPath: parameters.githubPath,
-    scheduleOptions: parameters.scheduleOptions,
-    deploymentMechanism: parameters.deploymentMechanism,
-    mutableParametersState: parameters.mutableParametersState,
-  });
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(projectBackendDirPath, categoryName, parameters.resourceName);
-
-  fs.ensureDirSync(path.join(resourceDirPath, 'src'));
-
-  const deploymentBucket = `${context.amplify.getProjectMeta().providers[provider].DeploymentBucketName}`;
-
-  // Put token on secrets manager
-
-  const stack = new ContainerStack(undefined, 'Container', {
-    deploymentBucket,
-    // TODO: Remove this, functions are only for crons, no ports
-    containerPort: DEFAULT_CONTAINER_PORT,
-    awaiterZipPath: '',
-    githubPath: parameters.githubPath,
-    githubTokenSecretsManagerArn: 'arn:aws:secretsmanager:us-west-2:660457156595:secret:github-access-token-wB6AcW',
-  });
-
-  // TODO: Move these lines to a function for reuse
-  prepareApp(stack);
-  const containerCfn = (stack as any)._toCloudFormation();
-
-  Object.keys(containerCfn.Parameters).forEach(k => {
-    if (k.startsWith('AssetParameters')) {
-      let value = '';
-
-      if (k.includes('Bucket')) {
-        value = deploymentBucket;
-      } else if (k.includes('VersionKey')) {
-        value = 'custom-resource-pipeline-awaiter.zip||';
-      }
-
-      containerCfn.Parameters[k].Default = value;
-    }
-  });
-
-  if (!containerCfn.Resources['AmplifyResourcesPolicy']) {
-    containerCfn.Resources['AmplifyResourcesPolicy'] = {
-      DependsOn: ['MyTaskExecutionRoleD2FEFCB2'], // Hardcoded on the template
-      Type: 'AWS::IAM::Policy',
-      Properties: {
-        PolicyName: 'amplify-container-execution-policy',
-        Roles: [
-          {
-            Ref: 'MyTaskExecutionRoleD2FEFCB2', // Hardcoded on the template
-          },
-        ],
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [],
-        },
-      },
-    };
-  }
-
-  if (!parameters.categoryPolicies || parameters.categoryPolicies.length === 0) {
-    delete containerCfn.Resources['AmplifyResourcesPolicy'];
-  } else {
-    containerCfn.Resources['AmplifyResourcesPolicy'].Properties.PolicyDocument.Statement = parameters.categoryPolicies;
-  }
-
-  if (parameters.environmentMap && Object.keys(parameters.environmentMap).length > 0) {
-    const mapArray: Array<{ Name: string; Value: string }> = [];
-    Object.keys(parameters.environmentMap).forEach(key => {
-      mapArray.push({
-        Name: key,
-        Value: parameters.environmentMap[key],
-      });
-    });
-
-    containerCfn.Resources.MyTaskF5748B4B.Properties.ContainerDefinitions[0]['Environment'] = mapArray;
-  }
-
-  const dependsOnParams = { env: { Type: 'String' } };
-
-  Object.keys(parameters.environmentMap)
-    .filter(key => key !== 'ENV')
-    .filter(key => key !== 'REGION')
-    .filter(resourceProperty => 'Ref' in parameters.environmentMap[resourceProperty])
-    .forEach(resourceProperty => {
-      dependsOnParams[parameters.environmentMap[resourceProperty].Ref] = {
-        Type: 'String',
-        Default: parameters.environmentMap[resourceProperty].Ref,
-      };
-    });
-
-  containerCfn.Parameters = getNewCFNParameters(containerCfn.Parameters, {}, dependsOnParams, {});
-
-  const cfnFileName = `${parameters.resourceName}-cloudformation-template.json`;
-  JSONUtilities.writeJson(path.join(resourceDirPath, cfnFileName), containerCfn);
-
-  return { resourceDirPath };
-}
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
 export function createFunctionResources(context: any, parameters: FunctionParameters | FunctionTriggerParameters) {
-  context.print.info('before update meta');
   context.amplify.updateamplifyMetaAfterResourceAdd(
     categoryName,
     parameters.resourceName || parameters.functionName,
     translateFuncParamsToResourceOpts(parameters),
   );
 
-  context.print.info('after update meta');
   // copy template, CFN and parameter files
   copyTemplateFiles(context, parameters);
-  context.print.info('after copy template meta');
   saveMutableState(context, parameters);
-  context.print.info('after save mutable state');
   saveCFNParameters(context, parameters);
-  context.print.info('after save CFN parameters');
   context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
-  context.print.info('after leave breadcrumbs');
 }
 
 export const createLayerArtifacts = (context, parameters: LayerParameters, latestVersion: number = 1): string => {

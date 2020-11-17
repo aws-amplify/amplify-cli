@@ -131,7 +131,6 @@ async function getSelectionsFromContributors<T>(
     context.print.error(notFoundSuffix);
     throw new Error('No plugins found for function configuration');
   }
-  // TODO: container plugin
 
   // load the selections contributed from each provider, constructing a map of selection to provider as we go
   const selectionMap: Map<string, { path: string; pluginId: string }> = new Map();

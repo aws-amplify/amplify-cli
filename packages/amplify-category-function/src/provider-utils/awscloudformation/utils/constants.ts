@@ -16,7 +16,6 @@ export const lambdaLayerSetting = 'Lambda layers configuration';
 export const enum ServiceName {
   LambdaFunction = 'Lambda',
   LambdaLayer = 'LambdaLayer',
-  ElasticContainer = 'ElasticContainer'
 }
 
 export const enum CronExpressionsMode {

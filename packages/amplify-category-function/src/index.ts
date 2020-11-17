@@ -9,10 +9,9 @@ import { supportedServices } from './provider-utils/supported-services';
 import _ from 'lodash';
 export { packageLayer, hashLayerResource } from './provider-utils/awscloudformation/utils/packageLayer';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
-export { ServiceName };
+export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
-export { isMultiEnvLayer };
-export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
+export { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 
 export async function add(context, providerName, service, parameters) {
   const options = {

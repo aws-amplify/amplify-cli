@@ -14,7 +14,6 @@ import {
   resourceAccessSetting,
   cronJobSetting,
   lambdaLayerSetting,
-  categoryName,
 } from '../utils/constants';
 import { category } from '../../../constants';
 import { getNewCFNParameters, getNewCFNEnvVariables } from '../utils/cloudformationHelpers';
@@ -69,14 +68,7 @@ export async function createWalkthrough(
     if (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your Lambda function?')) {
       templateParameters = merge(
         templateParameters,
-        await askExecRolePermissionsQuestions(
-          context,
-          templateParameters.functionName,
-          categoryName,
-          ServiceName.LambdaFunction,
-          undefined,
-          templateParameters.environmentMap,
-        ),
+        await askExecRolePermissionsQuestions(context, templateParameters.functionName, undefined, templateParameters.environmentMap),
       );
     }
 
@@ -199,15 +191,9 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const { selectedSettings }: any = await settingsUpdateSelection();
 
   if (selectedSettings.includes(resourceAccessSetting)) {
-    const additionalParameters = await askExecRolePermissionsQuestions(
-      context,
-      lambdaToUpdate,
-      categoryName,
-      ServiceName.LambdaFunction,
-      currentParameters.permissions,
-    );
+    const additionalParameters = await askExecRolePermissionsQuestions(context, lambdaToUpdate, currentParameters.permissions);
 
-    const currentDependsOn = _.get(context.amplify.getProjectMeta(), [categoryName, lambdaToUpdate, 'dependsOn'], []);
+    const currentDependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
     if (currentDependsOn.length > 0) {
       additionalParameters.dependsOn = additionalParameters.dependsOn || [];
       currentDependsOn.forEach(dependency => {
@@ -283,7 +269,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     tryUpdateTopLevelComment(resourceDirPath, _.keys(functionParameters.environmentMap));
   } else {
     // Need to load previous dependsOn
-    functionParameters.dependsOn = _.get(context.amplify.getProjectMeta(), [categoryName, lambdaToUpdate, 'dependsOn'], []);
+    functionParameters.dependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
   }
 
   // ask scheduling Lambda questions and merge in results

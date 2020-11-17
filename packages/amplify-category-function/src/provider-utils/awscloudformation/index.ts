@@ -1,4 +1,4 @@
-import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext, ContainerParameters } from 'amplify-function-plugin-interface';
+import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext } from 'amplify-function-plugin-interface';
 import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './utils/layerParams';
 import { chooseParamsOnEnvInit } from './utils/layerHelpers';
 import { supportedServices } from '../supported-services';
@@ -10,7 +10,6 @@ import {
   saveCFNParameters,
   createLayerArtifacts,
   updateLayerArtifacts,
-  createContainerResources
 } from './utils/storeResources';
 import { getLayerRuntimes } from './utils/layerRuntimes';
 import { ServiceConfig } from '../supportedServicesType';
@@ -37,7 +36,7 @@ export async function addResource(
   parameters?: Partial<FunctionParameters> | FunctionTriggerParameters | Partial<LayerParameters>,
 ): Promise<string> {
   // load the service config for this service
-  const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> | ServiceConfig<ContainerParameters> = supportedServices[service];
+  const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
   const BAD_SERVICE_ERR = new Error(`amplify-category-function is not configured to provide service type ${service}`);
   if (!serviceConfig) {
     throw BAD_SERVICE_ERR;
@@ -46,47 +45,10 @@ export async function addResource(
     case ServiceName.LambdaFunction:
       return addFunctionResource(context, category, service, serviceConfig, parameters);
     case ServiceName.LambdaLayer:
-      return addLayerResource(context, service, serviceConfig as ServiceConfig<LayerParameters>, parameters as LayerParameters);
-    case ServiceName.ElasticContainer:
-      return addContainerResource(context, category, service, serviceConfig, parameters as ContainerParameters);
+      return addLayerResource(context, service, serviceConfig, parameters as LayerParameters);
     default:
       throw BAD_SERVICE_ERR;
   }
-}
-
-export async function addContainerResource(
-  context,
-  category,
-  service,
-  serviceConfig,
-  parameters: Partial<ContainerParameters>
-): Promise<string> {
-  const { print } = context;
-  const containerConfig: Partial<ContainerParameters> = await serviceConfig.walkthroughs.createWalkthrough(context, parameters);
-
-  let completeParams: ContainerParameters = {
-    parentStack: 'idk',
-    resourceName: containerConfig.resourceName,
-    ...containerConfig
-  };
-
-  const { resourceDirPath } = createContainerResources(context, completeParams);
-
-  print.success(`Successfully created ${completeParams.resourceName} locally.`);
-  print.info('');
-  print.success('Next steps:');
-
-  if (containerConfig.imageTemplate === 'custom' && containerConfig.deploymentMechanism === 'FULLY_MANAGED') {
-    print.info(`- Place your Dockerfile, docker-compose.yml and any related container source files in this directory: ${resourceDirPath}/src`)
-  } else if (containerConfig.imageTemplate === 'custom' && containerConfig.deploymentMechanism === 'INDEPENDENTLY') {
-    print.info(`- Ensure you have the Dockerfile, docker-compose.yml and any relatied container source files in your Github path: ${containerConfig.githubPath}`)
-  }
-
-  print.info(`- Amplify CLI infers many configuration settings from the "docker-compose.yml" file. Learn more: docs.amplify.aws/cli/function/container`)
-  print.info('');
-  print.info('Run "amplify push" to build your image into ECR.');
-
-  return completeParams.resourceName;
 }
 
 export async function addFunctionResource(
@@ -185,7 +147,7 @@ export async function updateResource(
   resourceToUpdate?,
 ) {
   // load the service config for this service
-  const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> | ServiceConfig<ContainerParameters> = supportedServices[service];
+  const serviceConfig: ServiceConfig<FunctionParameters> | ServiceConfig<LayerParameters> = supportedServices[service];
   const BAD_SERVICE_ERR = new Error(`amplify-category-function is not configured to provide service type ${service}`);
   if (!serviceConfig) {
     throw BAD_SERVICE_ERR;
@@ -194,22 +156,9 @@ export async function updateResource(
     case ServiceName.LambdaFunction:
       return updateFunctionResource(context, category, service, parameters, resourceToUpdate);
     case ServiceName.LambdaLayer:
-      return updateLayerResource(context, service, serviceConfig as ServiceConfig<LayerParameters>, parameters as LayerParameters);
-    case ServiceName.ElasticContainer:
-      return updateContainerResource(context, service, serviceConfig as ServiceConfig<ContainerParameters>, parameters as ContainerParameters);
+      return updateLayerResource(context, service, serviceConfig, parameters as LayerParameters);
     default:
       throw BAD_SERVICE_ERR;
-  }
-}
-
-export async function updateContainerResource(
-  context,
-  service,
-  serviceConfig: ServiceConfig<ContainerParameters>,
-  parameters: Partial<ContainerParameters>
-): Promise<void> {
-  if (!serviceConfig) {
-    throw `amplify-category-function is not configured to provide service type ${service}`;
   }
 }
 
