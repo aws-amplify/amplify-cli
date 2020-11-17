@@ -67,10 +67,8 @@ export class EcsStack extends cdk.Stack {
       taskEnvironmentVariables = {},
     } = props;
 
-    // Unused, needed for now
-    new cdk.CfnParameter(this, 'env', {
-      type: 'String',
-    });
+    // Unused in the stack, but required by the root stack
+    new cdk.CfnParameter(this, 'env', { type: 'String' });
 
     const paramZipPath = new cdk.CfnParameter(this, 'ParamZipPath', {
       type: 'String',
@@ -143,8 +141,7 @@ export class EcsStack extends cdk.Stack {
     });
     //#endregion
 
-    //#region ECS
-    // Task (role, definition, execution role, policy)
+    //#region ECS (task, role, definition, execution role, policy)
     const task = new ecs.TaskDefinition(this, 'TaskDefinition', {
       compatibility: ecs.Compatibility.FARGATE,
       memoryMiB: '1024',
@@ -182,14 +179,7 @@ export class EcsStack extends cdk.Stack {
           removalPolicy: cdk.RemovalPolicy.DESTROY,
         });
 
-        const {
-          logDriver,
-          options: {
-            'awslogs-stream-prefix': streamPrefix,
-            // "awslogs-group": logGroup,
-            // awslogs-region intentionally ignored since it will use the stack's region by default
-          } = {},
-        } = logConfiguration;
+        const { logDriver, options: { 'awslogs-stream-prefix': streamPrefix } = {} } = logConfiguration;
 
         const logging: ecs.LogDriver =
           logDriver === 'awslogs'
@@ -359,7 +349,7 @@ export class EcsStack extends cdk.Stack {
       apiId: cdk.Fn.ref(api.logicalId),
       routeKey: '$default',
       target: cdk.Fn.join('', ['integrations/', cdk.Fn.ref(integration.logicalId)]),
-      authorizationScopes: [], // TODO: ask them?
+      authorizationScopes: [],
       authorizationType: 'JWT',
       authorizerId: cdk.Fn.ref(authorizer.logicalId),
     });
