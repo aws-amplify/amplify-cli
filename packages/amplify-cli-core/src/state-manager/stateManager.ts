@@ -29,7 +29,7 @@ export class StateManager {
 
   currentMetaFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getCurrentAmplifyMetaFilePath(projectPath));
 
-  setDeploymentSecrets = (deploymentSecrets: $TSAny): void => {
+  setDeploymentSecrets = (deploymentSecrets: unknown): void => {
     const path = pathManager.getDeploymentSecrets();
     JSONUtilities.writeJson(path, deploymentSecrets, { mode: SecretFileMode }); //set deployment secret file permissions to -rw-------
   };

@@ -285,7 +285,7 @@ export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, te
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(testingWithLatestCodebase), ['status'], { cwd, stripColors: true })
-      .wait('Amplify auth will be modified to mangage secrets from deployment-secret')
+      .wait('Amplify has been upgraded to handle secrets more securely by migrating some values')
       .sendConfirmYes()
       .wait(regex)
       .sendLine('\r')

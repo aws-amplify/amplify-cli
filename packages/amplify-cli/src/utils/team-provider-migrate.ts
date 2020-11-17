@@ -40,10 +40,10 @@ function teamProviderInfoHasAuthSecrets(): boolean {
   if (stateManager.teamProviderInfoExists()) {
     const teamProviderInfo = stateManager.getTeamProviderInfo();
     const { envName } = stateManager.getLocalEnvInfo();
-    const envTeamProvider = teamProviderInfo[envName];
-    if (envTeamProvider && envTeamProvider.categories && envTeamProvider.categories.auth) {
-      return _.some(Object.keys(envTeamProvider.categories.auth), resource => {
-        return !!envTeamProvider.categories.auth[resource][hostedUIProviderCredsField];
+    const authResources = _.get(teamProviderInfo, [envName, 'categories', 'auth']);
+    if (authResources) {
+      return _.some(Object.keys(authResources), resource => {
+        return _.has(authResources, [resource, hostedUIProviderCredsField]);
       });
     }
   }
