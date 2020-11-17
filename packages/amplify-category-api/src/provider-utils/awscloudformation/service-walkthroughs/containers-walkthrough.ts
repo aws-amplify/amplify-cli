@@ -1,6 +1,8 @@
 import inquirer from 'inquirer';
 import { DEPLOYMENT_MECHANISM } from '../ecs-stack';
 import { category } from '../../../category-constants';
+import { exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
+import { GitHubSourceActionInfo } from '../PipelineWithAwaiter';
 
 const serviceName = 'ElasticContainer';
 const parametersFileName = 'container-params.json';
@@ -24,6 +26,11 @@ export interface ResourceDependency {
   attributeEnvMap?: { [name: string]: string }; // optional attributes to environment variable names map that will be exposed to the function
 }
 
+export enum API_TYPE {
+  GRAPHQL,
+  REST
+}
+
 export type ServiceConfiguration = {
   resourceName: string;
   imageSource: { type: IMAGE_SOURCE_TYPE; template?: string };
@@ -36,11 +43,10 @@ export type ServiceConfiguration = {
   categoryPolicies?: any[]; // IAM policies that should be applied to this lambda
   mutableParametersState?: any; // Contains the object that is written to function-parameters.json. Kindof a hold-over from older code
   environmentMap?: Record<string, any>; // Existing function environment variable map. Should refactor to use dependsOn directly,
+  githubInfo?: GitHubSourceActionInfo;
 };
 
-export async function serviceWalkthrough(context, defaultValuesFilename): Promise<Partial<ServiceConfiguration>> {
-  const { checkRequirements, externalAuthEnable } = await import('amplify-category-auth');
-
+export async function serviceWalkthrough(context, defaultValuesFilename, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
   const { amplify, print } = context;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = await import(defaultValuesSrc);
@@ -48,7 +54,7 @@ export async function serviceWalkthrough(context, defaultValuesFilename): Promis
 
   const resourceName = await askResourceName(context, getAllDefaults);
 
-  const containerInfo = await askContainerSource(context, resourceName);
+  const containerInfo = await askContainerSource(context, resourceName, apiType);
 
   return { resourceName, ...containerInfo };
 }
@@ -76,8 +82,8 @@ async function askResourceName(context, getAllDefaults) {
   return resourceName;
 }
 
-async function askContainerSource(context, resourceName: string): Promise<Partial<ServiceConfiguration>> {
-  return newContainer(context, resourceName);
+async function askContainerSource(context, resourceName: string, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
+  return newContainer(context, resourceName, apiType);
 }
 
 export enum IMAGE_SOURCE_TYPE {
@@ -85,8 +91,34 @@ export enum IMAGE_SOURCE_TYPE {
   CUSTOM = 'CUSTOM',
 }
 
-async function newContainer(context, resourceName: string): Promise<Partial<ServiceConfiguration>> {
+async function newContainer(context, resourceName: string, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
   let imageSource: { type: IMAGE_SOURCE_TYPE; template?: string };
+  let choices = []
+
+  if (apiType === API_TYPE.GRAPHQL) {
+    choices.push({
+      name: 'ExpressJS',
+      value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_graphql' },
+    });
+  }
+
+  if (apiType === API_TYPE.REST) {
+    choices.push({
+      name: 'ExpressJS',
+        value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_rest' },
+    });
+  }
+
+  choices = choices.concat([
+    {
+      name: 'Custom (bring your own Dockerfile or docker-compose.yml)',
+      value: { type: IMAGE_SOURCE_TYPE.CUSTOM },
+    },
+    {
+      name: 'Learn More',
+      value: undefined,
+    }
+  ]);
 
   do {
     ({ imageSource } = await inquirer.prompt([
@@ -94,28 +126,7 @@ async function newContainer(context, resourceName: string): Promise<Partial<Serv
         name: 'imageSource',
         type: 'list',
         message: 'What image would you like to use',
-        choices: [
-          {
-            name: 'ExpressJS - Hello World sample',
-            value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_hello_world' },
-          },
-          {
-            name: 'ExpressJS - REST',
-            value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_rest' },
-          },
-          {
-            name: 'ExpressJS - GraphQL',
-            value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_graphql' },
-          },
-          {
-            name: 'Custom (bring your own Dockerfile or docker-compose.yml)',
-            value: { type: IMAGE_SOURCE_TYPE.CUSTOM },
-          },
-          {
-            name: 'Learn More',
-            value: undefined,
-          },
-        ],
+        choices,
         default: 'express_hello_world',
       },
     ]));
@@ -221,6 +232,113 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
   const { getAllDefaults } = await import(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
   const resources = allResources
-    .filter(resource => resource.service === serviceName && !!resource.providerPlugin)
+    .filter(resource => resource.category === category && resource.service === serviceName && !!resource.providerPlugin)
     .map(resource => resource.resourceName);
+
+  // There can only be one appsync resource
+  if (resources.length === 0) {
+    const errMessage = 'No REST API resource to update. Please use "amplify add api" command to create a new REST API';
+    context.print.error(errMessage);
+    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
+    return;
+  }
+
+  const question = [
+    {
+      name: 'resourceName',
+      message: 'Please select the API you would want to update',
+      type: 'list',
+      choices: resources,
+    }
+  ];
+
+  const { resourceName } = await inquirer.prompt(question);
+
+  const resourceSettings = allResources.find(resource =>
+    resource.resourceName === resourceName &&
+    resource.category === category &&
+    resource.service === serviceName
+    && !!resource.providerPlugin
+  );
+
+  let { githubInfo: { path = undefined } = {} } = resourceSettings;
+  let githubToken;
+
+  if (resourceSettings.deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
+    if (await confirm('Would you like to change your GitHub access token')) {
+      const githubQuestion = await inquirer.prompt(
+        {
+          name: 'githubAccessToken',
+          type: 'password',
+          message: 'GitHub Personal Access Token:',
+        }
+      );
+      githubToken = githubQuestion.githubAccessToken;
+    }
+
+    if (await confirm('Would you like to change your GitHub Path to your repo')) {
+      const githubQuestion = await inquirer.prompt(
+        {
+          name: 'githubPath',
+          type: 'input',
+          message: 'Path to your repo:',
+          default: path
+        }
+      );
+      path = githubQuestion.githubPath;
+    }
+  }
+
+  const { environmentMap = {}, mutableParametersState = {} } = resourceSettings;
+
+  const meta = context.amplify.getProjectDetails().amplifyMeta;
+  const hasAccessableResources = ['storage', 'function'].some(categoryName => {
+    return Object.keys(meta[categoryName] ?? {}).length > 0;
+  });
+  let rolePermissions: any = {};
+  if (
+    hasAccessableResources &&
+    (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your api?'))
+  ) {
+    rolePermissions = await context.amplify.invokePluginMethod(context, 'function', undefined, 'askExecRolePermissionsQuestions', [
+      context,
+      resourceName,
+      category,
+      serviceName,
+      mutableParametersState.permissions,
+      environmentMap,
+    ]);
+  }
+
+  const { categoryPolicies = [], environmentMap: newEnvironmentMap, dependsOn: newDependsOn = [], mutableParametersState: newMutableParametersState } = rolePermissions;
+
+  const { restrict_access: restrictAccess } = await inquirer.prompt({
+    name: 'restrict_access',
+    type: 'confirm',
+    message: 'Do you want to restrict API access',
+    default: resourceSettings.restrictAccess,
+  });
+
+  return {
+    ...resourceSettings,
+    restrictAccess,
+    environmentMap: newEnvironmentMap,
+    mutableParametersState: newMutableParametersState,
+    dependsOn: newDependsOn,
+    categoryPolicies,
+    githubPath: path,
+    githubToken,
+  };
+}
+
+async function confirm(question: string) {
+  const { confirm } = await inquirer.prompt({
+    type: 'confirm',
+    default: false,
+    message: question,
+    name: 'confirm'
+  });
+
+  return confirm;
 }

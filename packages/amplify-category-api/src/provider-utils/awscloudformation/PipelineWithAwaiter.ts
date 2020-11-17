@@ -138,7 +138,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
       },
     });
 
-    if (githubSourceActionInfo) {
+    if (githubSourceActionInfo && githubSourceActionInfo.tokenSecretArn) {
       codebuildproject.addToRolePolicy(
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,

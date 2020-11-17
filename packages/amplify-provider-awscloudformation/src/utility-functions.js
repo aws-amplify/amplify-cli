@@ -41,6 +41,20 @@ module.exports = {
 
     return response;
   },
+  updateSecret: async (context, options) => {
+    const { description, secret, name, version } = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager
+      .updateSecret({
+        SecretId: name,
+        Description: description,
+        SecretString: secret,
+        ClientRequestToken: version
+      })
+      .promise();
+
+    return response;
+  },
   /**
    * @param {any} context
    * @param {{secretArn: string}} options
