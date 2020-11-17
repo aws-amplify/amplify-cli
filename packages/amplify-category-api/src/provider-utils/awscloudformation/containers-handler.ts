@@ -61,25 +61,26 @@ export const addResource = async (serviceWalkthroughPromise: Promise<ServiceConf
   }
 
   //#region Add token to secrets manager and get arn
-  const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'];
+  let githubInfo: GitHubSourceActionInfo;
 
-  const secretName = `${StackName}-${category}-${resourceName}-github-token`;
-  const { ARN: secretArn } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'newSecret', {
-    secret: githubToken,
-    description: 'GitHub OAuth token',
-    name: secretName,
-    version: secretName,
-  });
+  if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
+    const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'];
 
-  const githubTokenSecretArn = secretArn;
+    const secretName = `${StackName}-${category}-${resourceName}-github-token`;
+    const { ARN: secretArn } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'newSecret', {
+      secret: githubToken,
+      description: 'GitHub OAuth token',
+      name: secretName,
+      version: secretName,
+    });
 
-  const githubInfo: GitHubSourceActionInfo =
-    deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED
-      ? {
-          path: githubPath,
-          tokenSecretArn: githubTokenSecretArn,
-        }
-      : undefined;
+    const githubTokenSecretArn = secretArn;
+
+    githubInfo = {
+      path: githubPath,
+      tokenSecretArn: githubTokenSecretArn,
+    };
+  }
 
   //#endregion
 
