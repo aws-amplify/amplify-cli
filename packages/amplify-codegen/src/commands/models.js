@@ -5,10 +5,6 @@ const gqlCodeGen = require('@graphql-codegen/core');
 
 const { FeatureFlags } = require('amplify-cli-core');
 
-const appSyncDataStoreCodeGen = FeatureFlags.getBoolean('codegenPackageMigration.useAppSyncModelgenPlugin')
-  ? require('@aws-amplify/app-sync-model-gen-plugin')
-  : require('amplify-codegen-appsync-model-plugin');
-
 async function generateModels(context) {
   // steps:
   // 1. Load the schema and validate using transformer
@@ -44,6 +40,10 @@ async function generateModels(context) {
   const outputPath = path.join(projectRoot, getModelOutputPath(context));
   const schema = parse(schemaContent);
   const projectConfig = context.amplify.getProjectConfig();
+
+  const appSyncDataStoreCodeGen = FeatureFlags.getBoolean('codegenPackageMigration.useAppSyncModelgenPlugin')
+    ? require('@aws-amplify/app-sync-model-gen-plugin')
+    : require('amplify-codegen-appsync-model-plugin');
 
   const appsyncLocalConfig = await appSyncDataStoreCodeGen.preset.buildGeneratesSection({
     baseOutputDir: outputPath,
