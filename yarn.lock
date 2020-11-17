@@ -87,6 +87,23 @@
     "@aws-amplify/api-graphql" "^1.2.5"
     "@aws-amplify/api-rest" "^1.2.5"
 
+"@aws-amplify/appsync-modelgen-plugin@^1.20.12-dev.136":
+  version "1.20.12-dev.136"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.20.12-dev.136.tgz#0a6e4d5e1174777391c13cddf2b4cb7f0cfb1429"
+  integrity sha512-VmtHH9UEwWaEEzGNAfJdpIx1sv7DAcISigtQOmfgiuJkMR5McG6p//cCxMiGRCR9zVeMxDornnmLNT/lRNMWVg==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^1.12.2"
+    "@graphql-codegen/visitor-plugin-common" "1.12.2"
+    "@graphql-tools/utils" "^6.0.18"
+    "@types/node" "^14.14.6"
+    "@types/pluralize" "0.0.29"
+    chalk "^3.0.0"
+    change-case "^4.1.1"
+    lower-case-first "^2.0.1"
+    pluralize "^8.0.0"
+    strip-indent "^3.0.0"
+    ts-dedent "^1.1.0"
+
 "@aws-amplify/auth@^2.1.8":
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/@aws-amplify/auth/-/auth-2.1.8.tgz#5f0db9146c2a46e0788ce8e1426cefe0cefcbf07"
@@ -5896,7 +5913,7 @@
     "@types/pino-std-serializers" "*"
     "@types/sonic-boom" "*"
 
-"@types/pluralize@^0.0.29":
+"@types/pluralize@0.0.29", "@types/pluralize@^0.0.29":
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/pluralize/-/pluralize-0.0.29.tgz#6ffa33ed1fc8813c469b859681d09707eb40d03c"
   integrity sha512-BYOID+l2Aco2nBik+iYS4SZX0Lf20KPILP5RGmM1IgzdwNdTs0eebiFriOPcej1sX9mLnSoiNte5zcFxssgpGA==
