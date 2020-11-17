@@ -5,8 +5,15 @@ import * as path from 'path';
 import { setRegPendingDelete } from '../utils/win-utils';
 import { pendingDeletePath } from '../utils/win-constants';
 import { hideSync } from 'hidefile';
+import chalk from 'chalk';
 
 export const run = async (context: $TSContext) => {
+  if (!isPackaged) {
+    context.print.warning(
+      `"uninstall" is not available in this installation of Amplify.\nUse ${chalk.blueBright('npm uninstall -g @aws-amplify/cli')}`,
+    );
+    return;
+  }
   if (
     !context?.input?.options?.yes &&
     !(await context.amplify.confirmPrompt('Are you sure you want to uninstall the Amplify CLI?', false))
@@ -14,9 +21,7 @@ export const run = async (context: $TSContext) => {
     context.print.warning('Not removing the Amplify CLI.');
     return;
   }
-  if (!isPackaged) {
-    await uninstallNodeCli();
-  } else if (process.platform.startsWith('win')) {
+  if (process.platform.startsWith('win')) {
     const binPath = path.join(pathManager.getHomeDotAmplifyDirPath(), 'bin', 'amplify.exe');
     try {
       await fs.move(binPath, pendingDeletePath, { overwrite: true });
@@ -42,14 +47,6 @@ export const run = async (context: $TSContext) => {
   }
   await removeHomeDotAmplifyDir();
   context.print.success('Uninstalled the Amplify CLI');
-};
-
-const uninstallNodeCli = async () => {
-  const command = 'npm uninstall -g @aws-amplify/cli';
-  const { stderr } = await execa.command(command, { stdio: 'inherit' });
-  if (stderr) {
-    throw new Error(`[${command}] failed with [${stderr}]\nYou'll need to manually uninstall the CLI using npm.`);
-  }
 };
 
 const removeHomeDotAmplifyDir = async () => {

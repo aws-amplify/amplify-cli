@@ -6,12 +6,19 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import ora from 'ora';
 import { oldVersionPath } from '../utils/win-constants';
+import chalk from 'chalk';
 
 const binUrl = (version: string, platform: 'macos' | 'win.exe' | 'linux') =>
   `https://github.com/aws-amplify/amplify-cli/releases/download/v${version}/amplify-pkg-${platform}`;
 const latestVersionUrl = 'https://api.github.com/repos/aws-amplify/amplify-cli/releases/latest';
 
 export const run = async (context: $TSContext) => {
+  if (!isPackaged) {
+    context.print.warning(
+      `"upgrade" is not supported in this installation of Amplify.\nUse ${chalk.blueBright('npm i -g @aws-amplify/cli')}`,
+    );
+    return;
+  }
   const { version: thisVersion } = require('../../package.json');
   if (typeof thisVersion !== 'string') {
     throw new Error('Cannot determine current CLI version. Try uninstalling and reinstalling the CLI.');
@@ -25,7 +32,7 @@ export const run = async (context: $TSContext) => {
   }
 };
 
-const upgradePackagedCli = async (version: string) => {
+const upgradeCli = async (version: string) => {
   const isWin = process.platform.startsWith('win');
   const binPath = path.join(pathManager.getHomeDotAmplifyDirPath(), 'bin', isWin ? 'amplify.exe' : 'amplify');
   const platformSuffix = isWin ? 'win.exe' : process.platform === 'darwin' ? 'macos' : 'linux';
@@ -47,16 +54,7 @@ const upgradePackagedCli = async (version: string) => {
   await fs.chmod(binPath, '700');
 };
 
-const upgradeNodeCli = async () => {
-  await execa.command('npm i -g @aws-amplify/cli', { stdio: 'inherit' });
-};
-
-const getLatestNodeVersion = async (): Promise<string> => {
-  const { stdout: version } = await execa.command('npm show @aws-amplify/cli version');
-  return version.trim();
-};
-
-const getLatestPackagedVersion = async (): Promise<string> => {
+const getLatestVersion = async (): Promise<string> => {
   const response = await fetch(latestVersionUrl);
   if (response.status === 204) return '';
   const result = await response.json();
@@ -65,6 +63,3 @@ const getLatestPackagedVersion = async (): Promise<string> => {
   }
   return (result.tag_name as string).slice(1).trim(); // strip of leading 'v' from tag to convert to semver string
 };
-
-const getLatestVersion = isPackaged ? getLatestPackagedVersion : getLatestNodeVersion;
-const upgradeCli = isPackaged ? upgradePackagedCli : upgradeNodeCli;
