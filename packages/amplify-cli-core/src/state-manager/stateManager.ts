@@ -1,9 +1,10 @@
 import * as fs from 'fs-extra';
 import { pathManager } from './pathManager';
-import { $TSMeta, $TSTeamProviderInfo, $TSAny } from '..';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, $DeploymentSecrets } from '..';
+import { mergeDeploymentSecrets } from '../deploymentSecrestHelper';
 import { JSONUtilities } from '../jsonUtilities';
 import { Tag, ReadValidateTags } from '../tags';
-import _ from 'lodash';
+import _, { fromPairs } from 'lodash';
 import { SecretFileMode } from '../cliConstants';
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -29,7 +30,7 @@ export class StateManager {
 
   currentMetaFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getCurrentAmplifyMetaFilePath(projectPath));
 
-  setDeploymentSecrets = (deploymentSecrets: unknown): void => {
+  setDeploymentSecrets = (deploymentSecrets: $DeploymentSecrets): void => {
     const path = pathManager.getDeploymentSecrets();
     JSONUtilities.writeJson(path, deploymentSecrets, { mode: SecretFileMode }); //set deployment secret file permissions to -rw-------
   };
@@ -46,11 +47,11 @@ export class StateManager {
     return data;
   };
 
-  getDeploymentSecrets = (): $TSAny => {
+  getDeploymentSecrets = (): $DeploymentSecrets => {
     return (
-      JSONUtilities.readJson<$TSAny>(pathManager.getDeploymentSecrets(), {
+      JSONUtilities.readJson<$DeploymentSecrets>(pathManager.getDeploymentSecrets(), {
         throwIfNotExist: false,
-      }) || {}
+      }) || { appSecrets: [] }
     );
   };
 
@@ -65,7 +66,7 @@ export class StateManager {
     let teamProviderInfo = this.getTeamProviderInfo();
     const envTeamProvider = teamProviderInfo[envName];
     const amplifyAppId = envTeamProvider.awscloudformation.AmplifyAppId;
-    const secrets = {};
+    let secrets = this.getDeploymentSecrets();
     Object.keys(envTeamProvider.categories)
       .filter(category => category === 'auth')
       .forEach(() => {
@@ -73,7 +74,15 @@ export class StateManager {
           if (envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField]) {
             const teamProviderSecrets = envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField];
             delete envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField];
-            _.set(secrets, [amplifyAppId, envName, 'auth', resourceName, hostedUIProviderCredsField], teamProviderSecrets);
+            secrets = mergeDeploymentSecrets({
+              currentDeploymentSecrets: secrets,
+              category: 'auth',
+              amplifyAppId,
+              envName,
+              resource: resourceName,
+              keyName: hostedUIProviderCredsField,
+              value: teamProviderSecrets,
+            });
           }
         });
       });

@@ -11,12 +11,12 @@ const teamProviderInfoSecrets = {
       UnauthRoleName: 'amplify-teamprovider-dev-134909-unauthRole',
       StackName: 'amplify-teamprovider-dev-134909',
       StackId: 'arn:aws:cloudformation:us-east-1:1234567891011:stack/amplify-teamprovider-dev-134909/df33f4d0-1895-11eb-a8b4-0e706f74ed45',
-      AmplifyAppId: 'd1gmlw7l76gj9',
+      AmplifyAppId: 'd3h26vjc54v5ze',
     },
     categories: {
       auth: {
-        teamprovider1819bdce: {
-          hostedUIProviderCreds: '[{"ProviderName":"Facebook","client_id":"asdasdasdasd","client_secret":"asdasdasd"}]',
+        tagseb306692: {
+          hostedUIProviderCreds: '[{"ProviderName":"Facebook","client_id":"asd","client_secret":"asd"}]',
         },
       },
     },
@@ -31,7 +31,7 @@ const teamProviderInfoSecrets = {
       UnauthRoleName: 'amplify-teamprovider-prod-164239-unauthRole',
       StackName: 'amplify-teamprovider-prod-164239',
       StackId: 'arn:aws:cloudformation:us-east-1:1234567891011:stack/amplify-teamprovider-prod-164239/1b625f60-18ae-11eb-9e65-0ab042f700a7',
-      AmplifyAppId: 'd1gmlw7l76gj9',
+      AmplifyAppId: 'd3h26vjc54v5ze',
     },
     categories: {
       auth: {
@@ -54,11 +54,11 @@ const teamProviderInfoWithoutSecrets = {
       UnauthRoleName: 'amplify-teamprovider-dev-134909-unauthRole',
       StackName: 'amplify-teamprovider-dev-134909',
       StackId: 'arn:aws:cloudformation:us-east-1:1234567891011:stack/amplify-teamprovider-dev-134909/df33f4d0-1895-11eb-a8b4-0e706f74ed45',
-      AmplifyAppId: 'd1gmlw7l76gj9',
+      AmplifyAppId: 'd3h26vjc54v5ze',
     },
     categories: {
       auth: {
-        teamprovider1819bdce: {},
+        tagseb306692: {},
       },
     },
   },
@@ -72,7 +72,7 @@ const teamProviderInfoWithoutSecrets = {
       UnauthRoleName: 'amplify-teamprovider-prod-164239-unauthRole',
       StackName: 'amplify-teamprovider-prod-164239',
       StackId: 'arn:aws:cloudformation:us-east-1:1234567891011:stack/amplify-teamprovider-prod-164239/1b625f60-18ae-11eb-9e65-0ab042f700a7',
-      AmplifyAppId: 'd1gmlw7l76gj9',
+      AmplifyAppId: 'd3h26vjc54v5ze',
     },
     categories: {
       auth: {
@@ -84,15 +84,20 @@ const teamProviderInfoWithoutSecrets = {
   },
 };
 const secrets = {
-  d1gmlw7l76gj9: {
-    dev: {
-      auth: {
-        teamprovider1819bdce: {
-          hostedUIProviderCreds: '[{"ProviderName":"Facebook","client_id":"asdasdasdasd","client_secret":"asdasdasd"}]',
+  appSecrets: [
+    {
+      amplifyAppId: 'd3h26vjc54v5ze',
+      environments: {
+        dev: {
+          auth: {
+            tagseb306692: {
+              hostedUIProviderCreds: '[{"ProviderName":"Facebook","client_id":"asd","client_secret":"asd"}]',
+            },
+          },
         },
       },
     },
-  },
+  ],
 };
 
 describe('test move secrests to deployment', () => {
