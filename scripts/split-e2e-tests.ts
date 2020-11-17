@@ -59,6 +59,8 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/api_3.test.ts',
   'src/__tests__/import_auth_1.test.ts',
   'src/__tests__/import_auth_2.test.ts',
+  'src/__tests__/import_s3_1.test.ts',
+  'src/__tests__/import_dynamodb_1.test.ts',
   //<40m
   'src/__tests__/env.test.ts',
   'src/__tests__/auth_2.test.ts',

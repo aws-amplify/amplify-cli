@@ -18,7 +18,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   return configure(context, defaultValuesFilename, serviceMetadata);
 }
 
-function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
+async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   // const resourceName = resourceAlreadyExists(context);
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
@@ -26,7 +26,11 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const dynamoDbResources = {};
 
   Object.keys(amplifyMeta[category]).forEach(resourceName => {
-    if (amplifyMeta[category][resourceName].service === serviceName && amplifyMeta[category][resourceName].mobileHubMigrated !== true) {
+    if (
+      amplifyMeta[category][resourceName].service === serviceName &&
+      amplifyMeta[category][resourceName].mobileHubMigrated !== true &&
+      amplifyMeta[category][answer.resourceName].serviceType !== 'imported'
+    ) {
       dynamoDbResources[resourceName] = amplifyMeta[category][resourceName];
     }
   });
@@ -50,7 +54,9 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetadata) {
     },
   ];
 
-  return inquirer.prompt(question).then(answer => configure(context, defaultValuesFilename, serviceMetadata, answer.resourceName));
+  const answer = await inquirer.prompt(question);
+
+  return await configure(context, defaultValuesFilename, serviceMetadata, answer.resourceName);
 }
 
 async function configure(context, defaultValuesFilename, serviceMetadata, resourceName) {

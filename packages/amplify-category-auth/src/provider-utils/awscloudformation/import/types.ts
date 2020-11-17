@@ -96,8 +96,6 @@ export type UserPoolChoice = {
   value: string;
 };
 
-// type Choices = [{ name?: string; value?: string; display?: string }];
-
 export type ImportParameters = {
   providerName: string;
   userPoolList: UserPoolChoice[];
