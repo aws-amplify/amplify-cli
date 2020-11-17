@@ -177,9 +177,10 @@ export class EcsStack extends cdk.Stack {
         working_dir: workingDirectory,
         healthcheck: healthCheck,
       }) => {
-        const logGroup = new logs.LogGroup(this, 'ContainerLogGroup', {
-          logGroupName: `/ecs/${envName}-${apiName}`,
+        const logGroup = new logs.LogGroup(this, `${name}ContainerLogGroup`, {
+          logGroupName: `/ecs/${envName}-${apiName}-${name}`,
           retention: logs.RetentionDays.ONE_MONTH,
+          removalPolicy: cdk.RemovalPolicy.DESTROY,
         });
 
         const {
@@ -194,9 +195,9 @@ export class EcsStack extends cdk.Stack {
         const logging: ecs.LogDriver =
           logDriver === 'awslogs'
             ? ecs.LogDriver.awsLogs({
-                streamPrefix,
-                logGroup: logs.LogGroup.fromLogGroupName(this, 'logGroup', logGroup.logGroupName),
-              })
+              streamPrefix,
+              logGroup: logs.LogGroup.fromLogGroupName(this, `${name}logGroup`, logGroup.logGroupName),
+            })
             : undefined;
 
         let repository: ecr.Repository;
