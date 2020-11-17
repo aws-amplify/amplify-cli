@@ -233,6 +233,7 @@ type ApiResource = {
   environmentMap: Record<string, string>;
   categoryPolicies: any[];
   mutableParametersState: any;
+  output?: Record<string, any>;
 };
 
 export async function generateContainersArtifacts(context: any, resource: ApiResource) {
@@ -241,7 +242,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     resourceName,
     githubInfo,
     deploymentMechanism,
-    lastPushTimeStamp,
+    output,
     categoryPolicies = [],
     dependsOn,
     environmentMap,
@@ -349,8 +350,8 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   fs.ensureDirSync(srcPath);
   fs.writeFileSync(path.join(srcPath, 'buildspec.yml'), buildspec);
 
-  const desiredCount = service?.replicas ?? 1; // TODO: 1 should be from meta
-  const isInitialDeploy = lastPushTimeStamp === undefined;
+  const desiredCount = service?.replicas ?? 1; // TODO: 1 should be from meta (HA setting)
+  const isInitialDeploy = Object.keys(output ?? {}).length > 0;
 
   const stack = new EcsStack(undefined, 'ContainersStack', {
     envName,
