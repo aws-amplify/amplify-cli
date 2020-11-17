@@ -1,5 +1,5 @@
 import { Context } from '../domain/context';
-import { stateManager, pathManager, PathConstants, mergeDeploymentSecrets } from 'amplify-cli-core';
+import { stateManager, pathManager, PathConstants } from 'amplify-cli-core';
 import _ from 'lodash';
 import { externalAuthEnable } from 'amplify-category-auth';
 import { isYesFlagSet } from './headless-input-utils';

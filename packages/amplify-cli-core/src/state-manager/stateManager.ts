@@ -1,17 +1,15 @@
 import * as fs from 'fs-extra';
 import { pathManager } from './pathManager';
 import { $TSMeta, $TSTeamProviderInfo, $TSAny, $DeploymentSecrets } from '..';
-import { mergeDeploymentSecrets } from '../deploymentSecrestHelper';
 import { JSONUtilities } from '../jsonUtilities';
 import { Tag, ReadValidateTags } from '../tags';
-import _, { fromPairs } from 'lodash';
+import _ from 'lodash';
 import { SecretFileMode } from '../cliConstants';
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
   preserveComments?: boolean;
   default?: T;
 };
-const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
 export class StateManager {
   metaFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getAmplifyMetaFilePath(projectPath));
