@@ -10,6 +10,7 @@ import * as cdk from '@aws-cdk/core';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './PipelineWithAwaiter';
 import Container from './docker-compose/ecs-objects/Container';
 import { Duration } from '@aws-cdk/core';
+import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 
 export enum DEPLOYMENT_MECHANISM {
   /**
@@ -103,13 +104,12 @@ export class EcsStack extends cdk.Stack {
       });
     });
 
-    // TODO: use some sort of constant like NETWORK_STACK_LOGICAL_ID for 'NetworkStack'
-    const paramVpcId = parameters.get('NetworkStackVpcId');
-    const paramVpcCidrBlock = parameters.get('NetworkStackVpcCidrBlock');
-    const paramSubnetIds = parameters.get('NetworkStackSubnetIds');
-    const paramClusterName = parameters.get('NetworkStackClusterName');
-    const paramVpcLinkId = parameters.get('NetworkStackVpcLinkId');
-    const paramCloudMapNamespaceId = parameters.get('NetworkStackCloudMapNamespaceId');
+    const paramVpcId = parameters.get(`${NETWORK_STACK_LOGICAL_ID}VpcId`);
+    const paramVpcCidrBlock = parameters.get(`${NETWORK_STACK_LOGICAL_ID}VpcCidrBlock`);
+    const paramSubnetIds = parameters.get(`${NETWORK_STACK_LOGICAL_ID}SubnetIds`);
+    const paramClusterName = parameters.get(`${NETWORK_STACK_LOGICAL_ID}ClusterName`);
+    const paramVpcLinkId = parameters.get(`${NETWORK_STACK_LOGICAL_ID}VpcLinkId`);
+    const paramCloudMapNamespaceId = parameters.get(`${NETWORK_STACK_LOGICAL_ID}CloudMapNamespaceId`);
 
     const { UserPoolId: paramUserPoolId, AppClientIDWeb: paramAppClientIdWeb } = authParams;
 
@@ -195,9 +195,9 @@ export class EcsStack extends cdk.Stack {
         const logging: ecs.LogDriver =
           logDriver === 'awslogs'
             ? ecs.LogDriver.awsLogs({
-              streamPrefix,
-              logGroup: logs.LogGroup.fromLogGroupName(this, `${name}logGroup`, logGroup.logGroupName),
-            })
+                streamPrefix,
+                logGroup: logs.LogGroup.fromLogGroupName(this, `${name}logGroup`, logGroup.logGroupName),
+              })
             : undefined;
 
         let repository: ecr.Repository;
