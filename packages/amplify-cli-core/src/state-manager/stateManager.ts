@@ -61,35 +61,6 @@ export class StateManager {
 
   teamProviderInfoExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getTeamProviderInfoFilePath(projectPath));
 
-  moveSecretsFromTeamProviderToDeployment = (projectPath?: string): void => {
-    const { envName } = this.getLocalEnvInfo(projectPath);
-    let teamProviderInfo = this.getTeamProviderInfo();
-    const envTeamProvider = teamProviderInfo[envName];
-    const amplifyAppId = envTeamProvider.awscloudformation.AmplifyAppId;
-    let secrets = this.getDeploymentSecrets();
-    Object.keys(envTeamProvider.categories)
-      .filter(category => category === 'auth')
-      .forEach(() => {
-        Object.keys(envTeamProvider.categories.auth).forEach(resourceName => {
-          if (envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField]) {
-            const teamProviderSecrets = envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField];
-            delete envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField];
-            secrets = mergeDeploymentSecrets({
-              currentDeploymentSecrets: secrets,
-              category: 'auth',
-              amplifyAppId,
-              envName,
-              resource: resourceName,
-              keyName: hostedUIProviderCredsField,
-              value: teamProviderSecrets,
-            });
-          }
-        });
-      });
-    this.setTeamProviderInfo(undefined, teamProviderInfo);
-    this.setDeploymentSecrets(secrets);
-  };
-
   getTeamProviderInfo = (projectPath?: string, options?: GetOptions<$TSTeamProviderInfo>): $TSTeamProviderInfo => {
     const filePath = pathManager.getTeamProviderInfoFilePath(projectPath);
     const mergedOptions = {

@@ -1,9 +1,10 @@
 import { Context } from '../domain/context';
-import { stateManager, pathManager, PathConstants } from 'amplify-cli-core';
+import { stateManager, pathManager, PathConstants, mergeDeploymentSecrets } from 'amplify-cli-core';
 import _ from 'lodash';
 import { externalAuthEnable } from 'amplify-category-auth';
 import { isYesFlagSet } from './headless-input-utils';
 import chalk from 'chalk';
+import { moveSecretsFromTeamProviderToDeployment } from './move-secrets-to-deployment';
 
 const message = `Amplify has been upgraded to handle secrets more securely by migrating some values in ${chalk.red(
   PathConstants.TeamProviderInfoFileName,
@@ -15,7 +16,7 @@ export const migrateTeamProviderInfo = async (context: Context): Promise<boolean
   // check if command executed in proj root and team provider has secrets
   if (!isPulling(context) && pathManager.findProjectRoot() && teamProviderInfoHasAuthSecrets()) {
     if (isYesFlagSet(context) || (await context.prompt.confirm(message))) {
-      stateManager.moveSecretsFromTeamProviderToDeployment();
+      moveSecretsFromTeamProviderToDeployment();
       await externalAuthEnable(context, undefined, undefined, { authSelections: 'identityPoolAndUserPool' });
     } else {
       return false;

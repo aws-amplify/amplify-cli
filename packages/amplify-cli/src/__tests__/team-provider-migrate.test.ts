@@ -105,9 +105,12 @@ describe('test migration code', () => {
     jest.setMock('amplify-category-auth', {
       externalAuthEnable: jest.fn(),
     });
+
+    jest.setMock('../utils/move-secrets-to-deployment', {
+      moveSecretsFromTeamProviderToDeployment: mockMoveSecrets,
+    });
     jest.setMock('amplify-cli-core', {
       stateManager: {
-        moveSecretsFromTeamProviderToDeployment: mockMoveSecrets,
         teamProviderInfoExists: mockteamProviderInfoExists,
         getTeamProviderInfo: mockGetTeamProviderInfo,
         getLocalEnvInfo: mockGetLocalEnvInfo,

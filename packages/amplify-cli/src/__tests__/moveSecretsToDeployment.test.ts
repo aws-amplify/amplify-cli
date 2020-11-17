@@ -1,5 +1,3 @@
-import { StateManager } from '../state-manager';
-
 const teamProviderInfoSecrets = {
   dev: {
     awscloudformation: {
@@ -101,13 +99,23 @@ const secrets = {
 };
 
 describe('test move secrests to deployment', () => {
-  const stateManager = new StateManager();
-  const mockGetLocalEnvInfo = jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ envName: 'dev' });
-  const mockGetTeamProviderInfo = jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue(teamProviderInfoSecrets);
-  const setTeamProviderInfo = jest.spyOn(stateManager, 'setTeamProviderInfo').mockImplementation();
-  const setDeploymentSecrets = jest.spyOn(stateManager, 'setDeploymentSecrets').mockImplementation();
+  const mockGetLocalEnvInfo = jest.fn().mockReturnValue({ envName: 'dev' });
+  const mockGetTeamProviderInfo = jest.fn().mockReturnValue(teamProviderInfoSecrets);
+  const setTeamProviderInfo = jest.fn();
+  const setDeploymentSecrets = jest.fn();
+  const getDeploymentSecrets = jest.fn().mockReturnValue({ appSecrets: [] });
+  jest.setMock('amplify-cli-core', {
+    stateManager: {
+      getLocalEnvInfo: mockGetLocalEnvInfo,
+      getTeamProviderInfo: mockGetTeamProviderInfo,
+      setTeamProviderInfo: setTeamProviderInfo,
+      setDeploymentSecrets: setDeploymentSecrets,
+      getDeploymentSecrets,
+    },
+    mergeDeploymentSecrets: jest.fn().mockReturnValue(secrets),
+  });
   it('test with migrate', () => {
-    stateManager.moveSecretsFromTeamProviderToDeployment();
+    require('../utils/move-secrets-to-deployment.ts').moveSecretsFromTeamProviderToDeployment();
     expect(setTeamProviderInfo).toBeCalledWith(undefined, teamProviderInfoWithoutSecrets);
     expect(setDeploymentSecrets).toBeCalledWith(secrets);
     expect(mockGetTeamProviderInfo).toBeCalled();
