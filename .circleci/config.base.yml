@@ -572,10 +572,12 @@ jobs:
           command: |
             version=$(cat .amplify-pkg-version)
             curl -sL https://aws-amplify.github.io/amplify-cli/install | version=v$version bash
+            echo "export PATH=$PATH:$HOME/.amplify/bin" >> $BASH_ENV
       - run:
           name: Sanity check install
           # TODO change to `amplify version` once the install script is modified to install to "amplify"
-          command: amp version
+          command: |
+            amp version
   github_release:
     <<: *defaults
     steps:
