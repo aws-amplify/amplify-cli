@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import { pathManager } from './pathManager';
-import { $TSMeta, $TSTeamProviderInfo, $TSAny, $DeploymentSecrets } from '..';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { Tag, ReadValidateTags } from '../tags';
 import _ from 'lodash';
@@ -28,7 +28,7 @@ export class StateManager {
 
   currentMetaFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getCurrentAmplifyMetaFilePath(projectPath));
 
-  setDeploymentSecrets = (deploymentSecrets: $DeploymentSecrets): void => {
+  setDeploymentSecrets = (deploymentSecrets: DeploymentSecrets): void => {
     const path = pathManager.getDeploymentSecrets();
     JSONUtilities.writeJson(path, deploymentSecrets, { mode: SecretFileMode }); //set deployment secret file permissions to -rw-------
   };
@@ -45,9 +45,9 @@ export class StateManager {
     return data;
   };
 
-  getDeploymentSecrets = (): $DeploymentSecrets => {
+  getDeploymentSecrets = (): DeploymentSecrets => {
     return (
-      JSONUtilities.readJson<$DeploymentSecrets>(pathManager.getDeploymentSecrets(), {
+      JSONUtilities.readJson<DeploymentSecrets>(pathManager.getDeploymentSecrets(), {
         throwIfNotExist: false,
       }) || { appSecrets: [] }
     );

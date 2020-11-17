@@ -13,7 +13,7 @@ export * from './errors';
 export * from './exitOnNextTick';
 export * from './isPackaged';
 export * from './cliConstants';
-export * from './deploymentSecrestHelper';
+export * from './deploymentSecretsHelper';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -56,7 +56,7 @@ export type IPluginInfo = {
   manifest: $IPluginManifest;
 };
 
-export type $DeploymentSecrets = {
+export type DeploymentSecrets = {
   appSecrets: Array<{
     amplifyAppId: string;
     environments: { [env: string]: { [category: string]: { [resourceName: string]: { [key: string]: string } } } };

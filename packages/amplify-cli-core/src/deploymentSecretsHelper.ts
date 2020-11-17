@@ -1,7 +1,7 @@
-import { $DeploymentSecrets } from '.';
+import { DeploymentSecrets } from '.';
 import _ from 'lodash';
 
-export const mergeDeploymentSecrets = (deploymentSecretsModifier: deploymentSecretMerge): $DeploymentSecrets => {
+export const mergeDeploymentSecrets = (deploymentSecretsModifier: deploymentSecretMerge): DeploymentSecrets => {
   const { currentDeploymentSecrets, category, amplifyAppId, envName, resource, keyName, value } = deploymentSecretsModifier;
   const newDeploymentAppSecret = _.find(currentDeploymentSecrets.appSecrets, appSecret => appSecret.amplifyAppId === amplifyAppId) || {
     amplifyAppId,
@@ -16,7 +16,7 @@ export const mergeDeploymentSecrets = (deploymentSecretsModifier: deploymentSecr
   };
 };
 
-export const removeFromDeploymentSecrets = (deploymentSecretsModifier: deploymentSecretsRemove): $DeploymentSecrets => {
+export const removeFromDeploymentSecrets = (deploymentSecretsModifier: deploymentSecretsRemove): DeploymentSecrets => {
   const { currentDeploymentSecrets, category, amplifyAppId, envName, resource, keyName } = deploymentSecretsModifier;
   const secretsByAppId = _.find(currentDeploymentSecrets.appSecrets, secrets => secrets.amplifyAppId === amplifyAppId);
   if (secretsByAppId) {
@@ -44,7 +44,7 @@ const recursiveOmit = (obj: any, path: Array<string>): void => {
 type deploymentSecretMerge = deploymentSecretsRemove & { value: string };
 
 type deploymentSecretsRemove = {
-  currentDeploymentSecrets: $DeploymentSecrets;
+  currentDeploymentSecrets: DeploymentSecrets;
   category: string;
   amplifyAppId: string;
   envName: string;

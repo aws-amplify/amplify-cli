@@ -12,6 +12,8 @@ const message = `Amplify has been upgraded to handle secrets more securely by mi
 You can create a back up of the ${chalk.red(PathConstants.TeamProviderInfoFileName)} file before proceeding.`;
 const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
+// return true if the current state of the app does not contain secrets in the team provider info
+// if the state of the app is not without secrets in team-provider-info it return false
 export const migrateTeamProviderInfo = async (context: Context): Promise<boolean> => {
   // check if command executed in proj root and team provider has secrets
   if (!isPulling(context) && pathManager.findProjectRoot() && teamProviderInfoHasAuthSecrets()) {
