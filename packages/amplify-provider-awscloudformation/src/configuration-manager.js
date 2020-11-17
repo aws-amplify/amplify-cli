@@ -25,7 +25,12 @@ async function init(context) {
   }
   normalizeInputParams(context);
 
-  const meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
+  let meta = undefined;
+  try {
+    meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
+  } catch {
+    // swallow the error. We handle undefined meta below
+  }
   if (meta?.providers?.awscloudformation && isAmplifyAdminApp(meta.providers.awscloudformation.AmplifyAppId)) {
     context.exeInfo.awsConfigInfo = {
       configLevel: 'amplifyAdmin',
