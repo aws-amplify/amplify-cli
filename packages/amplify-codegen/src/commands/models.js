@@ -70,7 +70,7 @@ async function generateModels(context) {
     ensureFileSync(outPutPath);
     writeFileSync(outPutPath, generatedCode[idx]);
   });
-  context.print.info(`Successfully generated models. Generated models can be found ${outputPath}`);
+  context.print.info(`Successfully generated models. Generated models can be found in ${outputPath}`);
 }
 
 async function validateSchema(context) {
