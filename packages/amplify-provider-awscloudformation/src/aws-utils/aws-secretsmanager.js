@@ -4,8 +4,8 @@ const configurationManager = require('../configuration-manager');
 
 class SecretsManager {
   constructor(context, options = {}) {
-    // @ts-ignore
-    return (async () => {
+    /** @type {any} */
+    const instancePromise = (async () => {
       let cred = {};
       try {
         cred = await configurationManager.loadConfiguration(context);
@@ -19,6 +19,8 @@ class SecretsManager {
 
       return this;
     })();
+
+    return instancePromise;
   }
 }
 

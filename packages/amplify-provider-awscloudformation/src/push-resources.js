@@ -9,7 +9,6 @@ const ora = require('ora');
 const { S3 } = require('./aws-utils/aws-s3');
 const Cloudformation = require('./aws-utils/aws-cfn');
 const providerName = require('./constants').ProviderName;
-// @ts-ignore
 const { buildResource } = require('./build-resources');
 const { uploadAppSyncFiles } = require('./upload-appsync-files');
 const { prePushGraphQLCodegen, postPushGraphQLCodegen } = require('./graphql-codegen');

@@ -16,7 +16,7 @@ async function run(context, category, resourceName) {
 
 // This function is a translation layer around the previous buildResource
 // For legacy purposes, the method builds and packages the resource
-async function buildResource(context, resource) {
+export async function buildResource(context, resource) {
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
   let breadcrumbs = context.amplify.readBreadcrumbs(context, resource.category, resource.resourceName);
 

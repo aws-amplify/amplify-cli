@@ -164,7 +164,8 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
     ]);
   } while (deploymentMechanismQuestion.deploymentMechanism === 'Learn More');
 
-  let githubPath, githubToken;
+  let githubPath: string;
+  let githubToken: string;
 
   if (deploymentMechanismQuestion.deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     context.print.info('We need a Github Personal Access Token to automatically build & deploy your Fargate task on every Github commit.');

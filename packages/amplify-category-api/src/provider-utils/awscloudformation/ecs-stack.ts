@@ -373,7 +373,6 @@ export class EcsStack extends cdk.Stack {
   toCloudFormation() {
     prepareApp(this);
 
-    // @ts-ignore
     const cfn = this._toCloudFormation();
 
     Object.keys(cfn.Parameters).forEach(k => {

@@ -7,7 +7,7 @@ const { DESIRED_COUNT: desiredCountStr, CLUSTER_NAME: cluster, SERVICE_NAME: ser
 
 const desiredCount = parseInt(desiredCountStr, 10);
 
-exports.handler = async function({ ['CodePipeline.job']: { id: jobId } }) {
+exports.handler = async function({ 'CodePipeline.job': { id: jobId } }) {
   await ecs
     .updateService({
       service,

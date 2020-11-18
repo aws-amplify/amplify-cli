@@ -28,13 +28,12 @@ export async function console(context, service) {
 async function addContainerResource(context, category, service, options, apiType) {
   const serviceMetadata = await serviceMetadataFor(service);
   const serviceWalkthroughFilename = 'containers-walkthrough.js';
-  const defaultValuesFilename = 'containers-defaults.js'
+  const defaultValuesFilename = 'containers-defaults.js';
 
   const serviceWalkthrough = await getServiceWalkthrough(serviceWalkthroughFilename);
   const serviceWalkthroughPromise: Promise<any> = serviceWalkthrough(context, defaultValuesFilename, apiType);
 
   return await addContainer(serviceWalkthroughPromise, context, category, service, options, apiType);
-
 }
 
 async function addNonContainerResource(context, category, service, options) {
@@ -62,21 +61,23 @@ export async function addResource(context, category, service, options) {
   let apiType = API_TYPE.GRAPHQL;
 
   if (isAdvanceComputeEnabled(context)) {
-    switch(service) {
-      case 'AppSync': 
+    switch (service) {
+      case 'AppSync':
         useContainerResource = await askGraphQLOptions(context);
         apiType = API_TYPE.GRAPHQL;
         break;
-      case 'API Gateway': 
+      case 'API Gateway':
         useContainerResource = await askRestOptions(context);
         apiType = API_TYPE.REST;
         break;
-      default: 
+      default:
         throw new Error(`${service} not exists`);
     }
   }
 
-  return useContainerResource ? addContainerResource(context, category, service, options, apiType) : addNonContainerResource(context, category, service, options);
+  return useContainerResource
+    ? addContainerResource(context, category, service, options, apiType)
+    : addNonContainerResource(context, category, service, options);
 }
 
 function isAdvanceComputeEnabled(context) {
@@ -93,15 +94,14 @@ async function askGraphQLOptions(context): Promise<boolean> {
     choices: [
       {
         name: 'AppSync',
-        value: false
+        value: false,
       },
       {
         name: 'Elastic Container Service',
-        value: true
-      }
-    ]
+        value: true,
+      },
+    ],
   });
-  
 
   return graphqlSelection;
 }
@@ -114,43 +114,44 @@ async function askRestOptions(context) {
     choices: [
       {
         name: 'API Gateway + Lambda',
-        value: false
+        value: false,
       },
       {
         name: 'API Gateway + Elastic Container Service',
-        value: true
-      }
-    ]
+        value: true,
+      },
+    ],
   });
 
   return restSelection;
 }
 
-
 export async function updateResource(context, category, service, options) {
   let useContainerResource = false;
 
   if (isAdvanceComputeEnabled(context)) {
-    switch(service) {
-      case 'AppSync': 
+    switch (service) {
+      case 'AppSync':
         useContainerResource = await askGraphQLOptions(context);
         break;
-      case 'API Gateway': 
+      case 'API Gateway':
         useContainerResource = await askRestOptions(context);
         break;
-      default: 
+      default:
         throw new Error(`${service} not exists`);
     }
   }
 
-  return useContainerResource ? updateContainerResource(context, category, service) : updateNonContainerResource(context, category, service);
+  return useContainerResource
+    ? updateContainerResource(context, category, service)
+    : updateNonContainerResource(context, category, service);
 }
 
 async function updateContainerResource(context, category, service) {
   const serviceMetadata = await serviceMetadataFor(service);
   const serviceWalkthroughFilename = 'containers-walkthrough';
-  const defaultValuesFilename = 'containers-defaults.js'
-  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`
+  const defaultValuesFilename = 'containers-defaults.js';
+  const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
   const { updateWalkthrough } = require(serviceWalkthroughSrc);
 
   if (!updateWalkthrough) {
@@ -162,7 +163,7 @@ async function updateContainerResource(context, category, service) {
 
   const updateWalkthroughPromise: Promise<ServiceConfiguration> = updateWalkthrough(context, defaultValuesFilename, serviceMetadata);
 
-  updateContainer(updateWalkthroughPromise, context, category, )
+  updateContainer(updateWalkthroughPromise, context, category);
 }
 
 async function updateNonContainerResource(context, category, service) {
