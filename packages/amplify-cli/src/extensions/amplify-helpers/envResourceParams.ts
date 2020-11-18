@@ -1,8 +1,10 @@
 import _ from 'lodash';
 import { getEnvInfo } from './get-env-info';
-import { $TSContext, $TSObject, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, mergeDeploymentSecrets, removeFromDeploymentSecrets } from 'amplify-cli-core';
+import { getRootStackId } from './get-root-stack-id';
 
 const CATEGORIES = 'categories';
+const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
 function isMigrationContext(context: $TSContext) {
   return 'migrationInfo' in context;
@@ -59,23 +61,62 @@ function removeObjectRecursively(obj, keys) {
 }
 
 export function saveEnvResourceParameters(context: $TSContext, category: string, resource: string, parameters: $TSObject) {
+  if (!parameters) {
+    return;
+  }
+
   const teamProviderInfo = getApplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
   const resources = getOrCreateSubObject(teamProviderInfo, [currentEnv, CATEGORIES, category]);
-
-  resources[resource] = _.assign(resources[resource], parameters);
+  const { hostedUIProviderCreds, ...otherParameters } = parameters;
+  resources[resource] = _.assign(resources[resource], otherParameters);
 
   if (!isMigrationContext(context)) {
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+    // write hostedUIProviderCreds to deploymentSecrets
+    if (hostedUIProviderCreds) {
+      const deploymentSecrets = stateManager.getDeploymentSecrets();
+      const rootStackId = getRootStackId();
+      stateManager.setDeploymentSecrets(
+        mergeDeploymentSecrets({
+          currentDeploymentSecrets: deploymentSecrets,
+          rootStackId,
+          category,
+          envName: currentEnv,
+          keyName: hostedUIProviderCredsField,
+          value: hostedUIProviderCreds,
+          resource,
+        }),
+      );
+    }
   }
 }
 
 export function loadEnvResourceParameters(context: $TSContext, category: string, resource: string) {
-  const teamProviderInfo = getApplicableTeamProviderInfo(context);
+  const envParameters = {
+    ...loadEnvResourceParametersFromDeploymentSecrets(context, category, resource),
+    ...loadEnvResourceParametersFromTeamproviderInfo(context, category, resource),
+  };
+  return envParameters;
+}
 
+function loadEnvResourceParametersFromDeploymentSecrets(context: $TSContext, category: string, resource: string) {
   try {
     const currentEnv = getCurrentEnvName(context);
+    const deploymentSecrets = stateManager.getDeploymentSecrets();
+    const rootStackId = getRootStackId();
+    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
+    if (deploymentSecretByAppId) {
+      return _.get(deploymentSecretByAppId.environments, [currentEnv, category, resource]);
+    }
+  } catch (e) {}
+  return {};
+}
 
+function loadEnvResourceParametersFromTeamproviderInfo(context: $TSContext, category: string, resource: string) {
+  try {
+    const teamProviderInfo = getApplicableTeamProviderInfo(context);
+    const currentEnv = getCurrentEnvName(context);
     return getOrCreateSubObject(teamProviderInfo, [currentEnv, CATEGORIES, category, resource]);
   } catch (e) {
     return {};
@@ -85,10 +126,30 @@ export function loadEnvResourceParameters(context: $TSContext, category: string,
 export function removeResourceParameters(context: $TSContext, category: string, resource: string) {
   const teamProviderInfo = getApplicableTeamProviderInfo(context);
   const currentEnv = getCurrentEnvName(context);
-
   removeObjectRecursively(teamProviderInfo, [currentEnv, CATEGORIES, category, resource]);
 
   if (!isMigrationContext(context)) {
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+    removeDeploymentSecrets(context, category, resource);
+  }
+}
+// removes deployment secrets
+// called after remove and push
+export function removeDeploymentSecrets(context: $TSContext, category: string, resource: string) {
+  const currentEnv = getCurrentEnvName(context);
+  const deploymentSecrets = stateManager.getDeploymentSecrets();
+  const rootStackId = getRootStackId();
+
+  if (!isMigrationContext(context)) {
+    stateManager.setDeploymentSecrets(
+      removeFromDeploymentSecrets({
+        currentDeploymentSecrets: deploymentSecrets,
+        rootStackId,
+        envName: currentEnv,
+        category: category,
+        resource: resource,
+        keyName: hostedUIProviderCredsField,
+      }),
+    );
   }
 }

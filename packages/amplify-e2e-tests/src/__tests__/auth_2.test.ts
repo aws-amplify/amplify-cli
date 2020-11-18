@@ -1,18 +1,12 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import {
-  addAuthWithDefault,
-  removeAuthWithDefault,
-  addAuthWithDefaultSocial,
-  addAuthWithGroupTrigger,
-  addAuthWithRecaptchaTrigger,
-  addAuthViaAPIWithTrigger,
-} from 'amplify-e2e-core';
+import { addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger } from 'amplify-e2e-core';
 import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
+  isDeploymentSecretForEnvExists,
   getLambdaFunction,
 } from 'amplify-e2e-core';
 
@@ -34,9 +28,10 @@ describe('amplify add auth...', () => {
   it('...should init a project and add auth with defaultSocial', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefaultSocial(projRoot, {});
+    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeDefined();
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-
+    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeUndefined();
     const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);

@@ -1,4 +1,5 @@
 import readline from 'readline';
+import { Context } from '../domain/context';
 
 const headlessPayloadReadTimeoutMillis = 2000;
 
@@ -27,3 +28,5 @@ export const readHeadlessPayload = async (): Promise<string> => {
     rl.on('close', () => reject(new Error('No input received on stdin')));
   });
 };
+
+export const isYesFlagSet = (context: Context): boolean => context?.exeInfo?.inputParams?.yes;

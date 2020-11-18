@@ -23,6 +23,7 @@ Parameters:
   <%=Object.keys(props)[i]%>:
     Type: String
   <% } -%>
+
   <% if (typeof Object.values(props)[i] === 'boolean') { %>
   <%=Object.keys(props)[i]%>:
     Type: String
@@ -39,6 +40,11 @@ Parameters:
   <%=Object.keys(props)[i]%>:
     Type: CommaDelimitedList
   <% } -%>
+  <% } -%>
+  <% if(Object.keys(props).includes('hostedUIProviderMeta') && !Object.keys(props).includes('hostedUIProviderCreds')) { %>
+  hostedUIProviderCreds:
+    Type: String
+    Default: '[]'
   <% } -%>
 
 Conditions:
@@ -562,6 +568,9 @@ Resources:
             - ' const userPoolId = event.ResourceProperties.userPoolId;'
             - ' let hostedUIProviderMeta = JSON.parse(event.ResourceProperties.hostedUIProviderMeta);'
             - ' let hostedUIProviderCreds = JSON.parse(event.ResourceProperties.hostedUIProviderCreds);'
+            - ' if(hostedUIProviderCreds.length === 0) {'
+            - '  response.send(event, context, response.SUCCESS, {});'
+            - ' }'
             - ' if (event.RequestType == ''Delete'') {'
             - '  response.send(event, context, response.SUCCESS, {});'
             - ' }'
