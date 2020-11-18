@@ -912,6 +912,7 @@ workflows:
                 - master
                 - graphqlschemae2e
                 - feat-import
+                - test-fix-status
           requires:
             - build
       - amplify_console_integration_tests:
