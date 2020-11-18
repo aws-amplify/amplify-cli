@@ -28,10 +28,10 @@ describe('amplify add auth...', () => {
   it('...should init a project and add auth with defaultSocial', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefaultSocial(projRoot, {});
-    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeDefined();
+    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeTruthy();
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeUndefined();
+    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeFalsy();
     const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
