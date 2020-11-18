@@ -19,9 +19,11 @@ import { stateManager } from 'amplify-cli-core';
  */
 export const askExecRolePermissionsQuestions = async (
   context,
-  lambdaFunctionToUpdate: string,
+  resourceNameToUpdate: string,
   currentPermissionMap?,
   currentEnvMap?,
+  category?: string,
+  serviceName?: string,
 ): Promise<ExecRolePermissionsResponse> => {
   const amplifyMeta = stateManager.getMeta();
 
@@ -53,9 +55,9 @@ export const askExecRolePermissionsQuestions = async (
 
   const backendDir = context.amplify.pathManager.getBackendDirPath();
 
-  for (let category of selectedCategories) {
-    let resourcesList = category in amplifyMeta ? Object.keys(amplifyMeta[category]) : [];
-    if (category === 'storage' && 'api' in amplifyMeta) {
+  for (const selectedCategory of selectedCategories) {
+    let resourcesList = selectedCategory in amplifyMeta ? Object.keys(amplifyMeta[selectedCategory]) : [];
+    if (selectedCategory === 'storage' && 'api' in amplifyMeta) {
       if (appsyncResourceName) {
         const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
         const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
@@ -65,17 +67,16 @@ export const askExecRolePermissionsQuestions = async (
           .map(modelName => `${modelName}:${appsyncTableSuffix}`);
         resourcesList.push(...modelNames);
       }
-    } else if (category === 'function') {
+    } else if (selectedCategory === category) {
       // A Lambda function cannot depend on itself
       // Lambda layer dependencies are handled seperately
       resourcesList = resourcesList.filter(
-        resourceName =>
-          resourceName !== lambdaFunctionToUpdate && amplifyMeta[category][resourceName].service === ServiceName.LambdaFunction,
+        resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service === serviceName,
       );
     }
 
     if (resourcesList.length === 0) {
-      context.print.warning(`No resources found for ${category}`);
+      context.print.warning(`No resources found for ${selectedCategory}`);
       continue;
     }
 
@@ -83,15 +84,14 @@ export const askExecRolePermissionsQuestions = async (
       let selectedResources: any = [];
 
       if (resourcesList.length === 1) {
-        context.print.info(`${capitalizeFirstLetter(category)} category has a resource called ${resourcesList[0]}`);
+        context.print.info(`${capitalizeFirstLetter(selectedCategory)} category has a resource called ${resourcesList[0]}`);
         selectedResources = [resourcesList[0]];
       } else {
         const resourceQuestion = {
           type: 'checkbox',
           name: 'resources',
-          message: `${capitalizeFirstLetter(category)} has ${
-            resourcesList.length
-          } resources in this project. Select the one you would like your Lambda to access`,
+          message: `${capitalizeFirstLetter(selectedCategory)} has ${resourcesList.length
+            } resources in this project. Select the one you would like your Lambda to access`,
           choices: resourcesList,
           validate: value => {
             if (value.length === 0) {
@@ -99,7 +99,7 @@ export const askExecRolePermissionsQuestions = async (
             }
             return true;
           },
-          default: fetchPermissionResourcesForCategory(currentPermissionMap, category),
+          default: fetchPermissionResourcesForCategory(currentPermissionMap, selectedCategory),
         };
 
         const resourceAnswer = await inquirer.prompt([resourceQuestion]);
@@ -109,11 +109,11 @@ export const askExecRolePermissionsQuestions = async (
       for (let resourceName of selectedResources) {
         if (
           // In case of some resources they are not in the meta file so check for resource existence as well
-          amplifyMeta[category] &&
-          amplifyMeta[category][resourceName] &&
-          amplifyMeta[category][resourceName].mobileHubMigrated === true
+          amplifyMeta[selectedCategory] &&
+          amplifyMeta[selectedCategory][resourceName] &&
+          amplifyMeta[selectedCategory][resourceName].mobileHubMigrated === true
         ) {
-          context.print.warning(`Policies cannot be added for ${category}/${resourceName}, since it is a MobileHub imported resource.`);
+          context.print.warning(`Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`);
           continue;
         } else {
           const crudPermissionQuestion = {
@@ -128,7 +128,7 @@ export const askExecRolePermissionsQuestions = async (
 
               return true;
             },
-            default: fetchPermissionsForResourceInCategory(currentPermissionMap, category, resourceName),
+            default: fetchPermissionsForResourceInCategory(currentPermissionMap, selectedCategory, resourceName),
           };
 
           const crudPermissionAnswer = await inquirer.prompt([crudPermissionQuestion]);
@@ -154,7 +154,7 @@ export const askExecRolePermissionsQuestions = async (
 
           const { permissionPolicies, resourceAttributes } = await context.amplify.invokePluginMethod(
             context,
-            category,
+            selectedCategory,
             resourceName,
             'getPermissionPolicies',
             [context, { [resourceName]: resourcePolicy }],
@@ -162,40 +162,40 @@ export const askExecRolePermissionsQuestions = async (
 
           categoryPolicies = categoryPolicies.concat(permissionPolicies);
 
-          if (!permissions[category]) {
-            permissions[category] = {};
+          if (!permissions[selectedCategory]) {
+            permissions[selectedCategory] = {};
           }
-          permissions[category][resourceName] = resourcePolicy;
+          permissions[selectedCategory][resourceName] = resourcePolicy;
 
           // replace resource attributes for @model-backed dynamoDB tables
           resources = resources.concat(
             resourceAttributes.map(attributes =>
               attributes.resourceName && attributes.resourceName.endsWith(appsyncTableSuffix)
                 ? {
-                    resourceName: appsyncResourceName,
-                    category: 'api',
-                    attributes: ['GraphQLAPIIdOutput'],
-                    needsAdditionalDynamoDBResourceProps: true,
-                    // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
-                    _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
-                    _cfJoinComponentTableName: constructCFModelTableNameComponent(
-                      appsyncResourceName,
-                      attributes.resourceName,
-                      appsyncTableSuffix,
-                    ),
-                    _cfJoinComponentTableArn: constructCFModelTableArnComponent(
-                      appsyncResourceName,
-                      attributes.resourceName,
-                      appsyncTableSuffix,
-                    ),
-                  }
+                  resourceName: appsyncResourceName,
+                  category: 'api',
+                  attributes: ['GraphQLAPIIdOutput'],
+                  needsAdditionalDynamoDBResourceProps: true,
+                  // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
+                  _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
+                  _cfJoinComponentTableName: constructCFModelTableNameComponent(
+                    appsyncResourceName,
+                    attributes.resourceName,
+                    appsyncTableSuffix,
+                  ),
+                  _cfJoinComponentTableArn: constructCFModelTableArnComponent(
+                    appsyncResourceName,
+                    attributes.resourceName,
+                    appsyncTableSuffix,
+                  ),
+                }
                 : attributes,
             ),
           );
         }
       }
     } catch (e) {
-      context.print.warning(`Policies cannot be added for ${category}`);
+      context.print.warning(`Policies cannot be added for ${selectedCategory}`);
       context.print.info(e.stack);
       context.usageData.emitError(e);
       process.exitCode = 1;

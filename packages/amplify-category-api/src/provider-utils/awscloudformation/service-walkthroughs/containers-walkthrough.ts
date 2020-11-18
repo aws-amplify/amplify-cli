@@ -198,6 +198,8 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
     rolePermissions = await context.amplify.invokePluginMethod(context, 'function', undefined, 'askExecRolePermissionsQuestions', [
       context,
       resourceName,
+      undefined,
+      undefined,
       category,
       serviceName,
     ]);
@@ -301,10 +303,10 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
     rolePermissions = await context.amplify.invokePluginMethod(context, 'function', undefined, 'askExecRolePermissionsQuestions', [
       context,
       resourceName,
-      category,
-      serviceName,
       mutableParametersState.permissions,
       environmentMap,
+      category,
+      serviceName,
     ]);
   }
 
