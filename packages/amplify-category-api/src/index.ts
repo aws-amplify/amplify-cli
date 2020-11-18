@@ -342,7 +342,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   fs.writeFileSync(path.join(srcPath, 'buildspec.yml'), buildspec);
 
   const desiredCount = service?.replicas ?? 1; // TODO: 1 should be from meta (HA setting)
-  const isInitialDeploy = Object.keys(output ?? {}).length > 0;
+  const isInitialDeploy = Object.keys(output ?? {}).length === 0;
 
   const stack = new EcsStack(undefined, 'ContainersStack', {
     envName,
