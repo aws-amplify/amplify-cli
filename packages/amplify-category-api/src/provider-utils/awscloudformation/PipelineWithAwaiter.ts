@@ -129,6 +129,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
     const codebuildproject = new codebuild.PipelineProject(scope, `${id}CodeBuildProject`, {
       environment: {
         buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+        // See: https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-cannot-connect-to-docker-daemon
         privileged: true,
       },
     });
