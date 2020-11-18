@@ -1,3 +1,4 @@
+// @ts-check
 const AWS = require('aws-sdk');
 
 const stageName = 'Source';
@@ -7,7 +8,9 @@ const codePipeline = new AWS.CodePipeline();
 const cloudFormation = new AWS.CloudFormation();
 
 exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
-  console.log({ RequestType: RequestType, ResourceProperties });
+  const { pipelineName, artifactBucketName, artifactKey, deploymentMechanism } = ResourceProperties;
+
+  console.log('Properties', ResourceProperties);
 
   switch (RequestType) {
     case 'Delete':
@@ -21,13 +24,6 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
         return { IsComplete: true };
       }
   }
-
-  const {
-    PIPELINE_NAME: pipelineName,
-    ARTIFACT_BUCKET_NAME: artifactBucketName,
-    ARTIFACT_KEY: artifactKey,
-    DEPLOYMENT_MECHANISM: deploymentMechanism,
-  } = process.env;
 
   let stages;
 

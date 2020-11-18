@@ -60,13 +60,6 @@ class PipelineAwaiter extends cdk.Construct {
       handler: 'index.handler',
       timeout: cdk.Duration.seconds(25),
       code: lambda.Code.fromInline(isCompleteHandlerCode),
-      environment: {
-        // TODO: Move to custom resource properties
-        PIPELINE_NAME: pipelineName,
-        ARTIFACT_BUCKET_NAME: artifactBucketName,
-        ARTIFACT_KEY: artifactKey,
-        DEPLOYMENT_MECHANISM: deploymentMechanism,
-      },
     });
     isCompleteHandler.addToRolePolicy(
       new iam.PolicyStatement({
@@ -92,8 +85,10 @@ class PipelineAwaiter extends cdk.Construct {
     const customResource = new cdk.CustomResource(scope, `Deployment${id}`, {
       serviceToken: myProvider.serviceToken,
       properties: {
+        artifactBucketName,
         artifactKey,
         pipelineName,
+        deploymentMechanism,
       },
     });
 
