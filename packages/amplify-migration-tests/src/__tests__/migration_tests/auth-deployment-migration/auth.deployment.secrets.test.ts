@@ -31,7 +31,7 @@ describe('amplify auth add with social', () => {
     await amplifyPushWithoutCodegen(projRoot);
     expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeFalsy();
 
-    await amplifyStatusWithMigrate(projRoot, 'No Change', true);
+    await amplifyStatusWithMigrate(projRoot, 'Update', true);
     expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeTruthy();
     await amplifyStatus(projRoot, 'Update', true);
     await amplifyPushWithoutCodegen(projRoot, true);
