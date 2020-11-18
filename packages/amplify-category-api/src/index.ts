@@ -263,7 +263,6 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
 
   const containerDefinitionFileNames = [dockerComposeFilename, dockerfileFilename];
 
-  /** @type Record<string, string> */
   const containerDefinitionFiles: Record<string, string> = {};
 
   for await (const fileName of containerDefinitionFileNames) {
@@ -351,17 +350,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     apiName: resourceName,
     taskPorts: containersPorts,
     dependsOn,
-    policies: (() => {
-      const result = categoryPolicies.map(x => {
-        return {
-          toStatementJson() {
-            return x;
-          },
-        } as iam.PolicyStatement;
-      });
-
-      return result;
-    })(),
+    policies: wrapJsonPoliciesInCdkPolicies(categoryPolicies),
     taskEnvironmentVariables: environmentMap,
     githubSourceActionInfo: githubInfo,
     deploymentMechanism,
@@ -375,4 +364,23 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
 
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   context.amplify.writeObjectAsJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn, true);
+}
+
+/**
+ * Wraps an array of JSON IAM statements in a {iam.PolicyStatement} array.
+ * This allow us tu pass the statements in a way that CDK can use when synthesizing
+ *
+ * CDK looks for a toStatementJson function
+ *
+ * @param policies JSON object with IAM statements
+ * @returns {iam.PolicyStatement} CDK compatible policy statement
+ */
+function wrapJsonPoliciesInCdkPolicies(policies: Record<string, any>[] = []): iam.PolicyStatement[] {
+  return policies.map(statement => {
+    return {
+      toStatementJson() {
+        return statement;
+      },
+    } as iam.PolicyStatement;
+  });
 }
