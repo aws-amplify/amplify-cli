@@ -2,8 +2,6 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
   initJSProjectWithProfile,
-  initAndroidProjectWithProfile,
-  initIosProjectWithProfile,
   initFlutterProjectWithProfile,
   deleteProject,
   amplifyPushAuth,
@@ -13,18 +11,12 @@ import {
   addAuthWithDefault,
   runAmplifyAuthConsole,
   removeAuthWithDefault,
-  addAuthWithDefaultSocial,
-  addAuthWithGroupTrigger,
-  addAuthWithRecaptchaTrigger,
-  addAuthViaAPIWithTrigger,
 } from 'amplify-e2e-core';
 import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
-  getUserPool,
-  getUserPoolClients,
-  getLambdaFunction,
+  getUserPool
 } from 'amplify-e2e-core';
 
 const defaultsSettings = {
