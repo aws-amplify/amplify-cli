@@ -50,8 +50,10 @@ async function executeAmplifyCommand(context) {
 }
 
 async function handleAmplifyEvent(context, args) {
-  context.print.info(`${pluginName} handleAmplifyEvent to be implemented`);
-  context.print.info(`Received event args ${args}`);
+  const eventHandlersDirPath = path.normalize(path.join(__dirname, 'event-handlers'));
+  const eventHandlerPath = path.join(eventHandlersDirPath, `handle-${args.event}`);
+  const eventHandlerModule = require(eventHandlerPath);
+  await eventHandlerModule.run(context, args);
 }
 
 module.exports = {

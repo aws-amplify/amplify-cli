@@ -6,8 +6,6 @@ function run(context) {
 }
 
 function onInitSuccessful(context) {
-  console.log('amplify-frontend-ios successful');
-  // amplifyApp.run();
   return configurationManager.onInitSuccessful(context);
 }
 
