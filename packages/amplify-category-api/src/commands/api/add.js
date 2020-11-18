@@ -1,5 +1,3 @@
-const { FeatureFlags } = require("amplify-cli-core");
-
 const subcommand = 'add';
 const category = 'api';
 
