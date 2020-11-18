@@ -121,8 +121,6 @@ const getResourceDependencies = async ({
   category: string;
   resourceName: string;
 }) => {
-  const { checkRequirements, externalAuthEnable } = await import('amplify-category-auth');
-
   let authName;
   const updatedDependsOn: ResourceDependency[] = [].concat(dependsOn);
 
@@ -135,13 +133,23 @@ const getResourceDependencies = async ({
   if (restrictAccess) {
     const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
     // getting requirement satisfaction map
-    const satisfiedRequirements = await checkRequirements(apiRequirements, context, category, resourceName);
+    const satisfiedRequirements = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+      apiRequirements,
+      context,
+      'api',
+      resourceName,
+    ]);
     // checking to see if any requirements are unsatisfied
     const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
     if (foundUnmetRequirements) {
       try {
-        authName = await externalAuthEnable(context, 'api', resourceName, apiRequirements);
+        authName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+          context,
+          'api',
+          resourceName,
+          apiRequirements,
+        ]);
       } catch (e) {
         context.print.error(e);
         throw e;
