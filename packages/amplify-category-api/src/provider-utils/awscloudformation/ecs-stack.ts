@@ -198,7 +198,7 @@ export class EcsStack extends cdk.Stack {
 
           repository = new ecr.Repository(this, logicalId, {
             repositoryName: `${envName}-${categoryName}-${apiName}-${name}`,
-            removalPolicy: cdk.RemovalPolicy.DESTROY, // TODO: ????
+            removalPolicy: isInitialDeploy ? cdk.RemovalPolicy.DESTROY : cdk.RemovalPolicy.RETAIN,
             lifecycleRules: [
               {
                 maxImageAge: Duration.days(7),
