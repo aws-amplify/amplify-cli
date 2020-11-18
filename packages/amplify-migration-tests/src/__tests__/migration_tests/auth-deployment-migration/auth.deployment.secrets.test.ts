@@ -27,14 +27,14 @@ describe('amplify auth add with social', () => {
     await amplifyVersion(projRoot, '4.30.0', false);
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefaultSocial(projRoot, {});
-    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeUndefined();
+    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeFalsy();
     await amplifyPushWithoutCodegen(projRoot);
-    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeUndefined();
+    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeFalsy();
 
     await amplifyStatusWithMigrate(projRoot, 'No Change', true);
-    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeDefined();
+    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeTruthy();
     await amplifyStatus(projRoot, 'Update', true);
     await amplifyPushWithoutCodegen(projRoot, true);
-    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeUndefined();
+    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeFalsy();
   });
 });
