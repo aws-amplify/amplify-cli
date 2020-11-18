@@ -48,6 +48,7 @@ type EcsStackProps = {
   isInitialDeploy: boolean;
   desiredCount: number;
   policies?: iam.PolicyStatement[];
+  restrictAccess: boolean;
 };
 
 export class EcsStack extends cdk.Stack {
@@ -68,6 +69,7 @@ export class EcsStack extends cdk.Stack {
       desiredCount,
       policies = [],
       taskEnvironmentVariables = {},
+      restrictAccess,
     } = props;
 
     // Unused in this stack, but required by the root stack
@@ -113,16 +115,13 @@ export class EcsStack extends cdk.Stack {
     const paramCloudMapNamespaceId = parameters.get(`${NETWORK_STACK_LOGICAL_ID}CloudMapNamespaceId`);
 
     const { UserPoolId: paramUserPoolId, AppClientIDWeb: paramAppClientIdWeb } = authParams;
-
-    const isUnAuthCondition = new cdk.CfnCondition(this, 'isUnAuthCondition', {
-      expression: cdk.Fn.conditionAnd(
-        cdk.Fn.conditionEquals(authParams.UserPoolId ?? '', ''),
-        cdk.Fn.conditionEquals(authParams.AppClientIDWeb ?? '', ''),
-      ),
-    });
-
+    
     const isAuthCondition = new cdk.CfnCondition(this, 'isAuthCondition', {
-      expression: cdk.Fn.conditionNot(isUnAuthCondition),
+      expression: cdk.Fn.conditionAnd(
+        cdk.Fn.conditionEquals(restrictAccess, true),
+        cdk.Fn.conditionNot(cdk.Fn.conditionEquals(authParams.UserPoolId ?? '', '')),
+        cdk.Fn.conditionNot(cdk.Fn.conditionEquals(authParams.AppClientIDWeb ?? '', '')),
+      ),
     });
 
     const vpcId = paramVpcId.valueAsString;

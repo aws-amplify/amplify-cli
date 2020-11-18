@@ -163,11 +163,23 @@ const getResourceDependencies = async ({
     } else {
       [authName] = Object.keys(context.amplify.getProjectDetails().amplifyMeta.auth);
     }
-    updatedDependsOn.push({
-      category: 'auth',
-      resourceName: authName,
-      attributes: ['UserPoolId', 'AppClientIDWeb'],
-    });
+
+    // get auth dependency if exists to avoid duplication
+    const authDependency = updatedDependsOn.find(dependency => dependency.category === 'auth');
+
+    if (authDependency === undefined) {
+      updatedDependsOn.push({
+        category: 'auth',
+        resourceName: authName,
+        attributes: ['UserPoolId', 'AppClientIDWeb'],
+      });
+    } else {
+      const existingAttributes = authDependency.attributes;
+
+      const newAttributes = new Set([...existingAttributes, 'UserPoolId', 'AppClientIDWeb']);
+
+      authDependency.attributes = Array.from(newAttributes);
+    }
   }
   return [authName, updatedDependsOn];
 };

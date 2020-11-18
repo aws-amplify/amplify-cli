@@ -244,7 +244,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     categoryPolicies = [],
     dependsOn,
     environmentMap,
-    mutableParametersState,
+    restrictAccess,
   } = resource;
 
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -358,6 +358,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     containers,
     isInitialDeploy,
     desiredCount,
+    restrictAccess
   });
 
   const cfn = stack.toCloudFormation();
