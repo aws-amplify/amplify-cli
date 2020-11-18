@@ -216,10 +216,10 @@ export async function handleAmplifyEvent(context, args) {
   context.print.info(`Received event args ${args}`);
 }
 
-type ApiResource = {
+export type ApiResource = {
   category: string;
   resourceName: string;
-  githubInfo: {
+  githubInfo?: {
     path: string;
     tokenSecretArn: string;
   };

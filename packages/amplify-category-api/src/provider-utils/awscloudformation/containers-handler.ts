@@ -7,6 +7,7 @@ import { DEPLOYMENT_MECHANISM } from './ecs-stack';
 import { GitHubSourceActionInfo } from './PipelineWithAwaiter';
 import uuid from 'uuid';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
+import { generateContainersArtifacts, ApiResource } from '../..';
 
 export const addResource = async (
   serviceWalkthroughPromise: Promise<ServiceConfiguration>,
@@ -103,7 +104,12 @@ export const addResource = async (
     }
   }
 
-  context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
+  await context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
+
+  const apiResource = await context.amplify.getProjectMeta().api[resourceName] as ApiResource;
+  apiResource.category = category;
+
+  await generateContainersArtifacts(context, apiResource);
 
   return resourceName;
 };
@@ -179,6 +185,7 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
     mutableParametersState,
     categoryPolicies,
     environmentMap,
+    deploymentMechanism
   } = options;
 
   let [authName, updatedDependsOn] = await getResourceDependencies({ dependsOn, restrictAccess, category, resourceName, context });
@@ -203,11 +210,19 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
     //#endregion
   }
 
-  context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'githubInfo', newGithubInfo);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'restrictAccess', restrictAccess);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'authName', authName);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'environmentMap', environmentMap);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'dependsOn', updatedDependsOn);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'mutableParametersState', mutableParametersState);
-  context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'categoryPolicies', categoryPolicies);
+  if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
+    await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'githubInfo', newGithubInfo);
+  }
+
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'restrictAccess', restrictAccess);
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'authName', authName);
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'environmentMap', environmentMap);
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'dependsOn', updatedDependsOn);
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'mutableParametersState', mutableParametersState);
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'categoryPolicies', categoryPolicies);
+
+  const apiResource = await context.amplify.getProjectMeta().api[options.resourceName] as ApiResource;
+  apiResource.category = category;
+
+  await generateContainersArtifacts(context, apiResource);
 };
