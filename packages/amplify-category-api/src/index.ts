@@ -1,5 +1,4 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { Octokit } from '@octokit/rest';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import fs from 'fs-extra';
@@ -14,7 +13,6 @@ import { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/u
 
 export { EcsStack } from './provider-utils/awscloudformation/ecs-stack';
 export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
-const Richard = { getContainers };
 
 const category = 'api';
 
@@ -310,15 +308,9 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
         }
         break;
       default: {
-        exhaustiveCheck(deploymentMechanism);
-
-        /**
-         *
-         * @param {never} obj
-         */
-        function exhaustiveCheck(obj) {
-          throw new Error(`Invalid deploymentMechanism : ${obj}`);
-        }
+        (function exhaustiveCheck(obj: never) {
+          throw new Error(`Invalid deploymentMechanism: ${obj}`);
+        })(deploymentMechanism);
       }
     }
   }
@@ -332,7 +324,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   let composeContents = containerDefinitionFiles[dockerComposeFilename];
   const { [dockerfileFilename]: dockerfileContents } = containerDefinitionFiles;
 
-  const { buildspec, containers, service } = Richard.getContainers(composeContents, dockerfileContents);
+  const { buildspec, containers, service } = getContainers(composeContents, dockerfileContents);
 
   const containersPorts = containers.reduce(
     (acc, container) =>
@@ -379,24 +371,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     desiredCount,
   });
 
-  prepareApp(stack);
-
-  // @ts-ignore
-  const cfn = stack._toCloudFormation();
-
-  Object.keys(cfn.Parameters).forEach(k => {
-    if (k.startsWith('AssetParameters')) {
-      let value = '';
-
-      if (k.includes('Bucket')) {
-        value = deploymentBucket;
-      } else if (k.includes('VersionKey')) {
-        value = 'custom-resource-pipeline-awaiter.zip||';
-      }
-
-      cfn.Parameters[k].Default = value;
-    }
-  });
+  const cfn = stack.toCloudFormation();
 
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   context.amplify.writeObjectAsJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn, true);

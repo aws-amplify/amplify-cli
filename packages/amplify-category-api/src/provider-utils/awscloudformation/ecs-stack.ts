@@ -1,16 +1,19 @@
-import * as iam from '@aws-cdk/aws-iam';
 import * as apigw2 from '@aws-cdk/aws-apigatewayv2';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as s3 from '@aws-cdk/aws-s3';
+import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-import { GitHubSourceActionInfo, PipelineWithAwaiter } from './PipelineWithAwaiter';
-import Container from './docker-compose/ecs-objects/Container';
 import { Duration } from '@aws-cdk/core';
+import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
+import Container from './docker-compose/ecs-objects/Container';
+import { GitHubSourceActionInfo, PipelineWithAwaiter } from './PipelineWithAwaiter';
+
+const PIPELINE_AWAITER_ZIP = 'custom-resource-pipeline-awaiter.zip';
 
 export enum DEPLOYMENT_MECHANISM {
   /**
@@ -48,7 +51,7 @@ type EcsStackProps = {
 };
 
 export class EcsStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props: EcsStackProps) {
+  constructor(scope: cdk.Construct, id: string, private readonly props: EcsStackProps) {
     super(scope, id);
 
     const {
@@ -67,7 +70,7 @@ export class EcsStack extends cdk.Stack {
       taskEnvironmentVariables = {},
     } = props;
 
-    // Unused in the stack, but required by the root stack
+    // Unused in this stack, but required by the root stack
     new cdk.CfnParameter(this, 'env', { type: 'String' });
 
     const paramZipPath = new cdk.CfnParameter(this, 'ParamZipPath', {
@@ -375,5 +378,28 @@ export class EcsStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'ServiceArn', { value: cdk.Fn.ref(service.logicalId) });
     new cdk.CfnOutput(this, 'ApiName', { value: api.name });
     new cdk.CfnOutput(this, 'RootUrl', { value: api.attrApiEndpoint });
+  }
+
+  toCloudFormation() {
+    prepareApp(this);
+
+    // @ts-ignore
+    const cfn = this._toCloudFormation();
+
+    Object.keys(cfn.Parameters).forEach(k => {
+      if (k.startsWith('AssetParameters')) {
+        let value = '';
+
+        if (k.includes('Bucket')) {
+          value = this.props.deploymentBucket;
+        } else if (k.includes('VersionKey')) {
+          value = `${PIPELINE_AWAITER_ZIP}||`;
+        }
+
+        cfn.Parameters[k].Default = value;
+      }
+    });
+
+    return cfn;
   }
 }
