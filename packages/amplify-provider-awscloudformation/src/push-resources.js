@@ -510,10 +510,9 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
 function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName, skipEnv) {
   /* eslint-enable */
   const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
-  const nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
-
+  let nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
   // Track Amplify Console generated stacks
-  if (process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
+  if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
     nestedStack.Description = 'Root Stack for AWS Amplify Console';
   }
 
