@@ -25,7 +25,6 @@ const { stateManager } = require('amplify-cli-core');
 const constants = require('./constants');
 const { NetworkStack, NETWORK_STACK_LOGICAL_ID } = require('./network/stack');
 const { getEnvironmentNetworkInfo } = require('./network/environment-info');
-import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaLayer = 'LambdaLayer';
@@ -228,9 +227,8 @@ async function createNetworkResources(context, stackName, needsVpc) {
     internetGatewayId,
     subnetCidrs,
   });
-  prepareApp(stack);
-  // @ts-ignore
-  const cfn = stack._toCloudFormation();
+
+  const cfn = stack.toCloudFormation();
 
   const cfnFile = 'networkingStackTemplate.json';
 

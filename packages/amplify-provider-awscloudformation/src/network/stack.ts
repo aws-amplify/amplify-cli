@@ -1,8 +1,9 @@
+import * as apigw2 from '@aws-cdk/aws-apigatewayv2';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as discovery from '@aws-cdk/aws-servicediscovery';
-import * as apigw2 from '@aws-cdk/aws-apigatewayv2';
+import * as cdk from '@aws-cdk/core';
+import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 
 type NetworkStackProps = {
   stackName: string;
@@ -23,6 +24,14 @@ export class NetworkStack extends cdk.Stack {
     const { outputVpc, outputIgw, vpcCidrBlock } = createVpc(this, vpcId, vpcName, internetGatewayId);
 
     createAmplifyEnv(this, stackName, outputVpc as any, vpcCidrBlock, outputIgw as any, subnetCidrs);
+  }
+
+  toCloudFormation() {
+    prepareApp(this);
+
+    const cfn = this._toCloudFormation();
+
+    return cfn;
   }
 }
 
