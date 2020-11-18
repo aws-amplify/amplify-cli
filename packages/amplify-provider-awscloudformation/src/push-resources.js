@@ -514,7 +514,7 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
 
   // Track Amplify Console generated stacks
   if (process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
-    nestedStack.Description = 'Root stack created by AWS Amplify Console';
+    nestedStack.Description = 'Root Stack for AWS Amplify Console';
   }
 
   const { amplifyMeta } = projectDetails;
