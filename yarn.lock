@@ -297,7 +297,7 @@
     "@aws-cdk/cx-api" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-apigateway@1.72.0", "@aws-cdk/aws-apigateway@~1.72.0":
+"@aws-cdk/aws-apigateway@1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-apigateway/-/aws-apigateway-1.72.0.tgz#8d0a20f235d899f771d53320029b69b4fe324e39"
   integrity sha512-ga+xnpReN2m8DsQJ7MA1cpXDGy3ZUWFuwbEX+/Yjtdo9IXjfyjFNGchPu4uptca9pmi47MbYKytPTDYaITfxwQ==

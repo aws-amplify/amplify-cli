@@ -17,7 +17,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@aws-cdk/aws-apigateway": "~1.72.0",
     "@aws-cdk/aws-apigatewayv2": "~1.72.0",
     "@aws-cdk/aws-ec2": "~1.72.0",
     "@aws-cdk/aws-ecs": "~1.72.0",
