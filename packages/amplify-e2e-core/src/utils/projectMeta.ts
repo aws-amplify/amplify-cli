@@ -74,9 +74,11 @@ function getAwsIOSConfig(projectRoot: string) {
 
 function getDeploymentSecrets(): any {
   const deploymentSecretsPath = path.join(os.homedir(), '.aws', 'amplify', 'deployment-secrets.json');
-  return JSONUtilities.readJson(deploymentSecretsPath, {
-    throwIfNotExist: false,
-  });
+  return (
+    JSONUtilities.readJson(deploymentSecretsPath, {
+      throwIfNotExist: false,
+    }) || { appSecrets: [] }
+  );
 }
 
 function isDeploymentSecretForEnvExists(projRoot: string, envName: string) {
