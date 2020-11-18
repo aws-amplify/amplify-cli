@@ -1,7 +1,7 @@
 import { Context } from '../domain/context';
 import { stateManager, pathManager, PathConstants } from 'amplify-cli-core';
 import _ from 'lodash';
-import { externalAuthEnable } from 'amplify-category-auth';
+import { externalAuthEnable, migrate } from 'amplify-category-auth';
 import { isYesFlagSet } from './headless-input-utils';
 import chalk from 'chalk';
 import { moveSecretsFromTeamProviderToDeployment } from './move-secrets-to-deployment';
@@ -16,10 +16,14 @@ const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 // if the state of the app is not without secrets in team-provider-info it return false
 export const migrateTeamProviderInfo = async (context: Context): Promise<boolean> => {
   // check if command executed in proj root and team provider has secrets
-  if (!isPulling(context) && pathManager.findProjectRoot() && teamProviderInfoHasAuthSecrets()) {
+
+  if (!isPulling(context) && pathManager.findProjectRoot()) {
+    const authResourceName = teamProviderInfoGetAuthResourceNameHasSecrets();
+    if (!authResourceName) return true;
     if (isYesFlagSet(context) || (await context.prompt.confirm(message))) {
+      const authParams = stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
       moveSecretsFromTeamProviderToDeployment();
-      await externalAuthEnable(context, undefined, undefined, { authSelections: 'identityPoolAndUserPool' });
+      await externalAuthEnable(context, undefined, undefined, authParams);
     } else {
       return false;
     }
@@ -39,16 +43,14 @@ function isPulling(context: Context): boolean {
   return isPulling;
 }
 
-function teamProviderInfoHasAuthSecrets(): boolean {
+function teamProviderInfoGetAuthResourceNameHasSecrets(): any | undefined {
   if (stateManager.teamProviderInfoExists()) {
     const teamProviderInfo = stateManager.getTeamProviderInfo();
     const { envName } = stateManager.getLocalEnvInfo();
     const authResources = _.get(teamProviderInfo, [envName, 'categories', 'auth']);
     if (authResources) {
-      return _.some(Object.keys(authResources), resource => {
-        return _.has(authResources, [resource, hostedUIProviderCredsField]);
-      });
+      return _.find(Object.keys(authResources), resource => _.has(authResources, [resource, hostedUIProviderCredsField]));
     }
   }
-  return false;
+  return;
 }

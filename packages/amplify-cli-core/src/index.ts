@@ -58,7 +58,8 @@ export type IPluginInfo = {
 
 export type DeploymentSecrets = {
   appSecrets: Array<{
-    amplifyAppId: string;
+    rootStackId: string;
+
     environments: { [env: string]: { [category: string]: { [resourceName: string]: { [key: string]: string } } } };
   }>;
 };

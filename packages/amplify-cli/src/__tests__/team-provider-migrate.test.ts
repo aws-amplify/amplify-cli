@@ -102,6 +102,9 @@ describe('test migration code', () => {
     const mockteamProviderInfoExists = jest.fn().mockReturnValue(true);
     const mockGetTeamProviderInfo = jest.fn().mockReturnValue(teamProviderInfoSecrets);
     const mockGetLocalEnvInfo = jest.fn().mockReturnValue({ envName: 'dev' });
+    const mockGetResourceParameterJson = jest.fn().mockReturnValue({
+      authSelections: 'identityPoolAndUserPool',
+    });
     jest.setMock('amplify-category-auth', {
       externalAuthEnable: jest.fn(),
     });
@@ -114,6 +117,7 @@ describe('test migration code', () => {
         teamProviderInfoExists: mockteamProviderInfoExists,
         getTeamProviderInfo: mockGetTeamProviderInfo,
         getLocalEnvInfo: mockGetLocalEnvInfo,
+        getResourceParametersJson: mockGetResourceParameterJson,
       },
       pathManager: {
         findProjectRoot: jest.fn().mockReturnValue(true),

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { getEnvInfo } from './get-env-info';
 import { $TSContext, $TSObject, stateManager, mergeDeploymentSecrets, removeFromDeploymentSecrets } from 'amplify-cli-core';
-import { getAmplifyAppId } from './get-amplify-appId';
+import { getRootStackId } from './get-root-stack-id';
 
 const CATEGORIES = 'categories';
 const hostedUIProviderCredsField = 'hostedUIProviderCreds';
@@ -76,11 +76,11 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
     // write hostedUIProviderCreds to deploymentSecrets
     if (hostedUIProviderCreds) {
       const deploymentSecrets = stateManager.getDeploymentSecrets();
-      const appId = getAmplifyAppId();
+      const rootStackId = getRootStackId();
       stateManager.setDeploymentSecrets(
         mergeDeploymentSecrets({
           currentDeploymentSecrets: deploymentSecrets,
-          amplifyAppId: appId,
+          rootStackId,
           category,
           envName: currentEnv,
           keyName: hostedUIProviderCredsField,
@@ -104,8 +104,8 @@ function loadEnvResourceParametersFromDeploymentSecrets(context: $TSContext, cat
   try {
     const currentEnv = getCurrentEnvName(context);
     const deploymentSecrets = stateManager.getDeploymentSecrets();
-    const appId = getAmplifyAppId();
-    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.amplifyAppId === appId);
+    const rootStackId = getRootStackId();
+    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
     if (deploymentSecretByAppId) {
       return _.get(deploymentSecretByAppId.environments, [currentEnv, category, resource]);
     }
@@ -138,13 +138,13 @@ export function removeResourceParameters(context: $TSContext, category: string, 
 export function removeDeploymentSecrets(context: $TSContext, category: string, resource: string) {
   const currentEnv = getCurrentEnvName(context);
   const deploymentSecrets = stateManager.getDeploymentSecrets();
-  const appId = getAmplifyAppId();
+  const rootStackId = getRootStackId();
 
   if (!isMigrationContext(context)) {
     stateManager.setDeploymentSecrets(
       removeFromDeploymentSecrets({
         currentDeploymentSecrets: deploymentSecrets,
-        amplifyAppId: appId,
+        rootStackId,
         envName: currentEnv,
         category: category,
         resource: resource,

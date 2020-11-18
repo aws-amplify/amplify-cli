@@ -2,27 +2,24 @@ import { DeploymentSecrets } from '.';
 import _ from 'lodash';
 
 export const mergeDeploymentSecrets = (deploymentSecretsModifier: deploymentSecretMerge): DeploymentSecrets => {
-  const { currentDeploymentSecrets, category, amplifyAppId, envName, resource, keyName, value } = deploymentSecretsModifier;
-  const newDeploymentAppSecret = _.find(currentDeploymentSecrets.appSecrets, appSecret => appSecret.amplifyAppId === amplifyAppId) || {
-    amplifyAppId,
+  const { currentDeploymentSecrets, category, rootStackId, envName, resource, keyName, value } = deploymentSecretsModifier;
+  const newDeploymentAppSecret = _.find(currentDeploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId) || {
+    rootStackId,
     environments: {},
   };
   _.set(newDeploymentAppSecret, ['environments', envName, category, resource, keyName], value);
   return {
-    appSecrets: [
-      ...currentDeploymentSecrets.appSecrets.filter(appSecret => appSecret.amplifyAppId !== amplifyAppId),
-      newDeploymentAppSecret,
-    ],
+    appSecrets: [...currentDeploymentSecrets.appSecrets.filter(appSecret => appSecret.rootStackId !== rootStackId), newDeploymentAppSecret],
   };
 };
 
 export const removeFromDeploymentSecrets = (deploymentSecretsModifier: deploymentSecretsRemove): DeploymentSecrets => {
-  const { currentDeploymentSecrets, category, amplifyAppId, envName, resource, keyName } = deploymentSecretsModifier;
-  const secretsByAppId = _.find(currentDeploymentSecrets.appSecrets, secrets => secrets.amplifyAppId === amplifyAppId);
+  const { currentDeploymentSecrets, category, rootStackId, envName, resource, keyName } = deploymentSecretsModifier;
+  const secretsByAppId = _.find(currentDeploymentSecrets.appSecrets, secrets => secrets.rootStackId === rootStackId);
   if (secretsByAppId) {
     recursiveOmit(secretsByAppId.environments, [envName, category, resource, keyName]);
     if (Object.keys(secretsByAppId.environments).length === 0) {
-      currentDeploymentSecrets.appSecrets = currentDeploymentSecrets.appSecrets.filter(r => r.amplifyAppId !== amplifyAppId);
+      currentDeploymentSecrets.appSecrets = currentDeploymentSecrets.appSecrets.filter(r => r.rootStackId !== rootStackId);
     }
   }
   return currentDeploymentSecrets;
@@ -46,7 +43,7 @@ type deploymentSecretMerge = deploymentSecretsRemove & { value: string };
 type deploymentSecretsRemove = {
   currentDeploymentSecrets: DeploymentSecrets;
   category: string;
-  amplifyAppId: string;
+  rootStackId: string;
   envName: string;
   resource: string;
   keyName: string;

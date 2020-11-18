@@ -111,6 +111,7 @@ describe('test move secrests to deployment', () => {
       setTeamProviderInfo: setTeamProviderInfo,
       setDeploymentSecrets: setDeploymentSecrets,
       getDeploymentSecrets,
+      metaFileExists: jest.fn().mockReturnValue(true),
     },
     mergeDeploymentSecrets: jest.fn().mockReturnValue(secrets),
   });
