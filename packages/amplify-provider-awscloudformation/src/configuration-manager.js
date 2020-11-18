@@ -31,7 +31,7 @@ async function init(context) {
   } catch {
     // swallow the error. We handle undefined meta below
   }
-  if (meta?.providers?.awscloudformation && isAmplifyAdminApp(meta.providers.awscloudformation.AmplifyAppId)) {
+  if (meta?.providers?.awscloudformation && (await isAmplifyAdminApp(meta.providers.awscloudformation.AmplifyAppId))) {
     context.exeInfo.awsConfigInfo = {
       configLevel: 'amplifyAdmin',
       config: {},
