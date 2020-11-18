@@ -28,7 +28,7 @@ export interface ResourceDependency {
 
 export enum API_TYPE {
   GRAPHQL,
-  REST
+  REST,
 }
 
 export type ServiceConfiguration = {
@@ -52,14 +52,14 @@ export async function serviceWalkthrough(context, defaultValuesFilename, apiType
   const { getAllDefaults } = await import(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
 
-  const resourceName = await askResourceName(context, getAllDefaults);
+  const resourceName = await askResourceName(context, allDefaultValues);
 
   const containerInfo = await askContainerSource(context, resourceName, apiType);
 
   return { resourceName, ...containerInfo };
 }
 
-async function askResourceName(context, getAllDefaults) {
+async function askResourceName(context, allDefaultValues) {
   const { amplify } = context;
 
   const { resourceName } = await inquirer.prompt([
@@ -67,7 +67,7 @@ async function askResourceName(context, getAllDefaults) {
       name: 'resourceName',
       type: 'input',
       message: 'Provide a friendly name for your resource to be used as a label for this category in the project:',
-      default: getAllDefaults.resourceName,
+      default: allDefaultValues.resourceName,
       validate: amplify.inputValidation({
         validation: {
           operator: 'regex',
@@ -93,7 +93,7 @@ export enum IMAGE_SOURCE_TYPE {
 
 async function newContainer(context, resourceName: string, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
   let imageSource: { type: IMAGE_SOURCE_TYPE; template?: string };
-  let choices = []
+  let choices = [];
 
   if (apiType === API_TYPE.GRAPHQL) {
     choices.push({
@@ -105,7 +105,7 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
   if (apiType === API_TYPE.REST) {
     choices.push({
       name: 'ExpressJS',
-        value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_rest' },
+      value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_rest' },
     });
   }
 
@@ -117,7 +117,7 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
     {
       name: 'Learn More',
       value: undefined,
-    }
+    },
   ]);
 
   do {
@@ -250,16 +250,17 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
       message: 'Please select the API you would want to update',
       type: 'list',
       choices: resources,
-    }
+    },
   ];
 
   const { resourceName } = await inquirer.prompt(question);
 
-  const resourceSettings = allResources.find(resource =>
-    resource.resourceName === resourceName &&
-    resource.category === category &&
-    resource.service === serviceName
-    && !!resource.providerPlugin
+  const resourceSettings = allResources.find(
+    resource =>
+      resource.resourceName === resourceName &&
+      resource.category === category &&
+      resource.service === serviceName &&
+      !!resource.providerPlugin,
   );
 
   let { githubInfo: { path = undefined } = {} } = resourceSettings;
@@ -267,25 +268,21 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
 
   if (resourceSettings.deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     if (await confirm('Would you like to change your GitHub access token')) {
-      const githubQuestion = await inquirer.prompt(
-        {
-          name: 'githubAccessToken',
-          type: 'password',
-          message: 'GitHub Personal Access Token:',
-        }
-      );
+      const githubQuestion = await inquirer.prompt({
+        name: 'githubAccessToken',
+        type: 'password',
+        message: 'GitHub Personal Access Token:',
+      });
       githubToken = githubQuestion.githubAccessToken;
     }
 
     if (await confirm('Would you like to change your GitHub Path to your repo')) {
-      const githubQuestion = await inquirer.prompt(
-        {
-          name: 'githubPath',
-          type: 'input',
-          message: 'Path to your repo:',
-          default: path
-        }
-      );
+      const githubQuestion = await inquirer.prompt({
+        name: 'githubPath',
+        type: 'input',
+        message: 'Path to your repo:',
+        default: path,
+      });
       path = githubQuestion.githubPath;
     }
   }
@@ -311,7 +308,12 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
     ]);
   }
 
-  const { categoryPolicies = [], environmentMap: newEnvironmentMap, dependsOn: newDependsOn = [], mutableParametersState: newMutableParametersState } = rolePermissions;
+  const {
+    categoryPolicies = [],
+    environmentMap: newEnvironmentMap,
+    dependsOn: newDependsOn = [],
+    mutableParametersState: newMutableParametersState,
+  } = rolePermissions;
 
   const { restrict_access: restrictAccess } = await inquirer.prompt({
     name: 'restrict_access',
@@ -337,7 +339,7 @@ async function confirm(question: string) {
     type: 'confirm',
     default: false,
     message: question,
-    name: 'confirm'
+    name: 'confirm',
   });
 
   return confirm;
