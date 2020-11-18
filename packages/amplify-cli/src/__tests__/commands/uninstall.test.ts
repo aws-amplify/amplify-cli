@@ -28,6 +28,10 @@ jest.mock('amplify-cli-core', () => ({
   isPackaged: false,
 }));
 
+jest.mock('chalk', () => ({
+  blueBright: jest.fn().mockImplementation(input => input),
+}));
+
 const context_stub_typed = (context_stub as unknown) as $TSContext;
 
 describe('uninstall node CLI', () => {
@@ -39,7 +43,7 @@ describe('uninstall node CLI', () => {
 
     expect(context_stub.print.warning.mock.calls[0][0]).toMatchInlineSnapshot(`
       "\\"uninstall\\" is not available in this installation of Amplify.
-      Use [94mnpm uninstall -g @aws-amplify/cli[39m"
+      Use npm uninstall -g @aws-amplify/cli"
     `);
   });
 });

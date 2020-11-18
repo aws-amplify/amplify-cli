@@ -18,6 +18,10 @@ jest.mock('amplify-cli-core', () => ({
   isPackaged: false,
 }));
 
+jest.mock('chalk', () => ({
+  blueBright: jest.fn().mockImplementation(input => input),
+}));
+
 const context_stub_typed = context_stub as $TSContext;
 
 describe('run upgrade using node CLI', () => {
@@ -34,7 +38,7 @@ describe('run upgrade using node CLI', () => {
     // validate
     expect(context_stub.print.warning.mock.calls[0][0]).toMatchInlineSnapshot(`
       "\\"upgrade\\" is not supported in this installation of Amplify.
-      Use [94mnpm i -g @aws-amplify/cli[39m"
+      Use npm i -g @aws-amplify/cli"
     `);
   });
 });

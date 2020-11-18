@@ -1,5 +1,4 @@
 import { $TSContext, isPackaged, pathManager } from 'amplify-cli-core';
-import execa from 'execa';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { setRegPendingDelete } from '../utils/win-utils';
