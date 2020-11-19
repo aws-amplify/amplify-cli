@@ -557,6 +557,13 @@ jobs:
       - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
+          name: Compress binaries
+          command: |
+            cd out
+            tar zcvf amplify-pkg-macos.tgz amplify-pkg-macos
+            tar zcvf amplify-pkg-linux.tgz amplify-pkg-linux
+            tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win.exe
+      - run:
           name: Publish Amplify CLI GitHub prerelease
           command: |
             version=$(cat .amplify-pkg-version)
