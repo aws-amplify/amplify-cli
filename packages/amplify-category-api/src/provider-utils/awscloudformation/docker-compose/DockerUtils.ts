@@ -49,14 +49,14 @@ phases:
       - echo Build started on \`date\`
       - echo Building the Docker image...${Object.keys(containerMap).map(item => `
       - docker build -t $${item}_REPOSITORY_URI:latest ./${containerMap[item]}
-      - docker tag $${item}_REPOSITORY_URI:latest $${item}_REPOSITORY_URI:$IMAGE_TAG`)
+      - docker tag $${item}_REPOSITORY_URI:latest $${item}_REPOSITORY_URI:$IMAGE_TAG`).join('\n')
     }
   post_build:
     commands:
       - echo Build completed on \`date\`
       - echo Pushing the Docker images..${Object.keys(containerMap).map(item => `
       - docker push $${item}_REPOSITORY_URI:latest
-      - docker push $${item}_REPOSITORY_URI:$IMAGE_TAG`)}
+      - docker push $${item}_REPOSITORY_URI:$IMAGE_TAG`).join('\n')}
       - "echo \\"[${Object.keys(containerMap)
       .map(name => `{\\\\\\\"name\\\\\\\":\\\\\\\"${name}\\\\\\\", \\\\\\\"imageUri\\\\\\\":\\\\\\\"$${name}_REPOSITORY_URI\\\\\\\"}`)
       .join(',')
