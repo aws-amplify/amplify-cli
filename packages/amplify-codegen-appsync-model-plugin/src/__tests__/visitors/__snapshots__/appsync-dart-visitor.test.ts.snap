@@ -16,7 +16,7 @@ exports[`AppSync Dart Visitor Dart Specific Tests should generate the model prov
 * permissions and limitations under the License.
 */
 
-import 'package: amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'SimpleModel.dart';
 
 class ModelProvider implements ModelProviderInterface {
@@ -124,12 +124,12 @@ class SimpleModel extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: SimpleModel.NAME,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: SimpleModel.BAR,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -240,12 +240,12 @@ class SimpleModel extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: SimpleModel.NAME,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: SimpleModel.BAR,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -384,17 +384,17 @@ class customClaim extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: customClaim.NAME,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: customClaim.BAR,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: customClaim.OWNER,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -520,12 +520,12 @@ class customClaim extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: customClaim.NAME,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: customClaim.BAR,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -649,12 +649,12 @@ class dynamicGroups extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: dynamicGroups.NAME,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: dynamicGroups.BAR,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -793,17 +793,17 @@ class simpleOwnerAuth extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: simpleOwnerAuth.NAME,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: simpleOwnerAuth.BAR,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: simpleOwnerAuth.OWNER,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -941,17 +941,17 @@ class allowRead extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: allowRead.NAME,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: allowRead.BAR,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: allowRead.OWNER,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -1071,12 +1071,12 @@ class privateType extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: privateType.NAME,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: privateType.BAR,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -1196,12 +1196,12 @@ class publicType extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: publicType.NAME,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: publicType.BAR,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -1327,12 +1327,12 @@ class staticGroups extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: staticGroups.NAME,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: staticGroups.BAR,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -1461,12 +1461,12 @@ class Post extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: Post.TITLE,
         isRequired: true,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: Post.AUTHOR,
         isRequired: true,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -1608,12 +1608,12 @@ class Post extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: Post.TITLE,
         isRequired: true,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: Post.OWNER,
         isRequired: true,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -1729,7 +1729,7 @@ class Todo extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.hasMany(
+    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
         key: Todo.TASKS,
         isRequired: false,
         ofModelName: (Task).toString(),
@@ -1840,14 +1840,14 @@ class Task extends Model {
 
   Task.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        todo = json['todo'] is Map<String, dynamic>
-            ? Todo.fromJson(json['todo'] as Map<String, dynamic>)
+        todo = json['todo'] != null
+            ? Todo.fromJson(new Map<String, dynamic>.from(json['todo']))
             : null,
         time = json['time'],
         createdOn = json['createdOn'];
 
   Map<String, dynamic> toJson() =>
-      {'id': id, 'todo': todo.toJson(), 'time': time, 'createdOn': createdOn};
+      {'id': id, 'todo': todo?.toJson(), 'time': time, 'createdOn': createdOn};
 
   static final QueryField ID = QueryField(fieldName: \\"task.id\\");
   static final QueryField TODO = QueryField(
@@ -1863,18 +1863,18 @@ class Task extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.belongsTo(
+    modelSchemaDefinition.addField(ModelFieldDefinition.belongsTo(
         key: Task.TODO,
         isRequired: false,
         targetName: \\"taskTodoId\\",
         ofModelName: (Todo).toString()));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: Task.TIME,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.time)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: Task.CREATEDON,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)));
@@ -2019,18 +2019,18 @@ class Blog extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: Blog.NAME,
         isRequired: true,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.hasMany(
+    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
         key: Blog.POSTS,
         isRequired: false,
         ofModelName: (Post).toString(),
         associatedKey: Post.BLOG));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: Blog.TEST,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -2131,13 +2131,13 @@ class Comment extends Model {
 
   Comment.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        post = json['post'] is Map<String, dynamic>
-            ? Post.fromJson(json['post'] as Map<String, dynamic>)
+        post = json['post'] != null
+            ? Post.fromJson(new Map<String, dynamic>.from(json['post']))
             : null,
         content = json['content'];
 
   Map<String, dynamic> toJson() =>
-      {'id': id, 'post': post.toJson(), 'content': content};
+      {'id': id, 'post': post?.toJson(), 'content': content};
 
   static final QueryField ID = QueryField(fieldName: \\"comment.id\\");
   static final QueryField POST = QueryField(
@@ -2152,13 +2152,13 @@ class Comment extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.belongsTo(
+    modelSchemaDefinition.addField(ModelFieldDefinition.belongsTo(
         key: Comment.POST,
         isRequired: false,
         targetName: \\"postID\\",
         ofModelName: (Post).toString()));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: Comment.CONTENT,
         isRequired: true,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
@@ -2276,8 +2276,8 @@ class Post extends Model {
   Post.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         title = json['title'],
-        blog = json['blog'] is Map<String, dynamic>
-            ? Blog.fromJson(json['blog'] as Map<String, dynamic>)
+        blog = json['blog'] != null
+            ? Blog.fromJson(new Map<String, dynamic>.from(json['blog']))
             : null,
         comments = json['comments'] is List
             ? (json['comments'] as List)
@@ -2288,7 +2288,7 @@ class Post extends Model {
   Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,
-        'blog': blog.toJson(),
+        'blog': blog?.toJson(),
         'comments': comments.map((e) => e.toJson())
       };
 
@@ -2309,18 +2309,18 @@ class Post extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: Post.TITLE,
         isRequired: true,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.belongsTo(
+    modelSchemaDefinition.addField(ModelFieldDefinition.belongsTo(
         key: Post.BLOG,
         isRequired: false,
         targetName: \\"blogID\\",
         ofModelName: (Blog).toString()));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.hasMany(
+    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
         key: Post.COMMENTS,
         isRequired: false,
         ofModelName: (Comment).toString(),
@@ -2471,22 +2471,22 @@ class authorBook extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: authorBook.AUTHOR_ID,
         isRequired: true,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: authorBook.BOOK_ID,
         isRequired: true,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: authorBook.AUTHOR,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
 
-    modelSchemaDefinition.addField(ModelFieldDeinition.field(
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: authorBook.BOOK,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));

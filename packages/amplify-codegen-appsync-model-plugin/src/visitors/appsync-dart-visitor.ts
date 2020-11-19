@@ -51,7 +51,7 @@ export class AppSyncModelDartVisitor<
     result.push(license);
     //Packages for import
     const packageImports: string[] = [
-      'package: amplify_datastore_plugin_interface/amplify_datastore_plugin_interface',
+      'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface',
       ...modelNames
     ];
     //Block body
@@ -373,8 +373,8 @@ export class AppSyncModelDartVisitor<
             ].join('\n');
           }
           return [
-            `${fieldName} = json['${fieldName}'] is Map<String, dynamic>`,
-            indent(`? ${this.getNativeType(field)}.fromJson(json['${fieldName}'] as Map<String, dynamic>)`),
+            `${fieldName} = json['${fieldName}'] != null`,
+            indent(`? ${this.getNativeType(field)}.fromJson(new Map<String, dynamic>.from(json['${fieldName}']))`),
             indent(`: null`)
           ].join('\n');
         }
@@ -396,7 +396,7 @@ export class AppSyncModelDartVisitor<
             if (field.isList) {
               return `'${fieldName}': ${fieldName}.map((e) => e.toJson())`
             }
-            return `'${fieldName}': ${fieldName}.toJson()`;
+            return `'${fieldName}': ${fieldName}?.toJson()`;
           }
           return `'${fieldName}': ${fieldName}`;
         }).join(', ')
@@ -534,7 +534,7 @@ export class AppSyncModelDartVisitor<
                 `ofModelName: (${connectedModelName}).toString()`,
                 `associatedKey: ${connectedModelName}.${this.getQueryFieldName(field.connectionInfo.associatedWith)}`
               ].join(',\n');
-              fieldsToAdd.push(['ModelFieldDeinition.hasOne(', indentMultiline(fieldParam), ')'].join('\n'));
+              fieldsToAdd.push(['ModelFieldDefinition.hasOne(', indentMultiline(fieldParam), ')'].join('\n'));
               break;
             case CodeGenConnectionType.HAS_MANY:
               fieldParam = [
@@ -543,7 +543,7 @@ export class AppSyncModelDartVisitor<
                 `ofModelName: (${connectedModelName}).toString()`,
                 `associatedKey: ${connectedModelName}.${this.getQueryFieldName(field.connectionInfo.associatedWith)}`
               ].join(',\n');
-              fieldsToAdd.push(['ModelFieldDeinition.hasMany(', indentMultiline(fieldParam), ')'].join('\n'));
+              fieldsToAdd.push(['ModelFieldDefinition.hasMany(', indentMultiline(fieldParam), ')'].join('\n'));
               break;
             case CodeGenConnectionType.BELONGS_TO:
               fieldParam = [
@@ -552,7 +552,7 @@ export class AppSyncModelDartVisitor<
                 `targetName: "${field.connectionInfo.targetName}"`,
                 `ofModelName: (${connectedModelName}).toString()`
               ].join(',\n');
-              fieldsToAdd.push(['ModelFieldDeinition.belongsTo(', indentMultiline(fieldParam), ')'].join('\n'));
+              fieldsToAdd.push(['ModelFieldDefinition.belongsTo(', indentMultiline(fieldParam), ')'].join('\n'));
               break;
           }
         }
@@ -563,7 +563,7 @@ export class AppSyncModelDartVisitor<
             `isRequired: ${!field.isNullable}`,
             `ofType: ModelFieldType(ModelFieldTypeEnum${field.type in typeToEnumMap ? typeToEnumMap[field.type] : '.string'})`
           ].join(',\n');
-          fieldsToAdd.push(['ModelFieldDeinition.field(', indentMultiline(fieldParam), ')'].join('\n'));
+          fieldsToAdd.push(['ModelFieldDefinition.field(', indentMultiline(fieldParam), ')'].join('\n'));
         }
       });
       return fieldsToAdd.map(field => `modelSchemaDefinition.addField(${field});`).join('\n\n');
