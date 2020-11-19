@@ -4,8 +4,9 @@ const inquirer = require('inquirer');
 const sequential = require('promise-sequential');
 const { S3 } = require('./aws-utils/aws-s3');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
-const constants = require('./constants');
+const { ProviderName, AmplifyAppIdLabel } = require('./constants');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
+const { stateManager } = require('amplify-cli-core');
 
 async function init(amplifyServiceParams) {
   const { context, awsConfig, projectName, envName, stackName } = amplifyServiceParams;
@@ -54,28 +55,19 @@ async function init(amplifyServiceParams) {
 
   if (!amplifyAppId) {
     // in the "amplify env add" workflow, there might be other envs, new env can be added to existing appId
-    let teamProviderFilePath;
-    try {
-      teamProviderFilePath = context.amplify.pathManager.getProviderInfoFilePath();
-    } catch (e) {
-      // do nothing
-    }
-
-    if (teamProviderFilePath && fs.existsSync(teamProviderFilePath)) {
-      const teamProviderInfo = context.amplify.readJsonFile(teamProviderFilePath);
-
+    if (stateManager.teamProviderInfoExists()) {
+      const teamProviderInfo = stateManager.getTeamProviderInfo();
       const envList = Object.keys(teamProviderInfo);
 
       let appIdsInTheSameLocalProjectAndRegion = [];
-      for (let i = 0; i < envList.length; i++) {
-        const env = envList[i];
+      for (let env of envList) {
         if (
           env !== envName &&
-          teamProviderInfo[env][constants.ProviderName].Region === awsConfig.region &&
-          teamProviderInfo[env][constants.ProviderName][constants.AmplifyAppIdLabel] &&
-          !appIdsInTheSameLocalProjectAndRegion.includes(teamProviderInfo[env][constants.ProviderName][constants.AmplifyAppIdLabel])
+          teamProviderInfo[env][ProviderName].Region === awsConfig.region &&
+          teamProviderInfo[env][ProviderName][AmplifyAppIdLabel] &&
+          !appIdsInTheSameLocalProjectAndRegion.includes(teamProviderInfo[env][ProviderName][AmplifyAppIdLabel])
         ) {
-          appIdsInTheSameLocalProjectAndRegion.push(teamProviderInfo[env][constants.ProviderName][constants.AmplifyAppIdLabel]);
+          appIdsInTheSameLocalProjectAndRegion.push(teamProviderInfo[env][ProviderName][AmplifyAppIdLabel]);
         }
       }
 
@@ -175,13 +167,12 @@ async function init(amplifyServiceParams) {
 }
 
 async function deleteEnv(context, envName, awsConfig) {
-  const teamProviderFilePath = context.amplify.pathManager.getProviderInfoFilePath();
-  if (fs.existsSync(teamProviderFilePath)) {
-    const teamProviderInfo = context.amplify.readJsonFile(teamProviderFilePath);
+  if (stateManager.teamProviderInfoExists()) {
+    const teamProviderInfo = stateManager.getTeamProviderInfo();
     if (
       teamProviderInfo[envName] &&
-      teamProviderInfo[envName][constants.ProviderName] &&
-      teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel]
+      teamProviderInfo[envName][ProviderName] &&
+      teamProviderInfo[envName][ProviderName][AmplifyAppIdLabel]
     ) {
       const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
       if (!amplifyClient) {
@@ -194,7 +185,7 @@ async function deleteEnv(context, envName, awsConfig) {
         return;
       }
 
-      const amplifyAppId = teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel];
+      const amplifyAppId = teamProviderInfo[envName][ProviderName][AmplifyAppIdLabel];
       const deleteEnvParams = {
         appId: amplifyAppId,
         environmentName: envName,
@@ -208,10 +199,10 @@ async function postPushCheck(context) {
   const { projectConfig, amplifyMeta, localEnvInfo, teamProviderInfo } = context.amplify.getProjectDetails();
 
   const { envName } = localEnvInfo;
-  const stackName = teamProviderInfo[envName][constants.ProviderName].StackName;
-  const region = teamProviderInfo[envName][constants.ProviderName].Region;
+  const stackName = teamProviderInfo[envName][ProviderName].StackName;
+  const region = teamProviderInfo[envName][ProviderName].Region;
 
-  if (!teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel]) {
+  if (!teamProviderInfo[envName][ProviderName][AmplifyAppIdLabel]) {
     let amplifyAppId;
 
     const amplifyClient = await getConfiguredAmplifyClient(context);
@@ -233,14 +224,13 @@ async function postPushCheck(context) {
       const envList = Object.keys(teamProviderInfo);
 
       let appIdsInTheSameLocalProjectAndRegion = [];
-      for (let i = 0; i < envList.length; i++) {
-        const env = envList[i];
+      for (const env of envList) {
         if (
           env !== envName &&
-          teamProviderInfo[env][constants.ProviderName].Region === region &&
-          teamProviderInfo[env][constants.ProviderName][constants.AmplifyAppIdLabel]
+          teamProviderInfo[env][ProviderName].Region === region &&
+          teamProviderInfo[env][ProviderName][AmplifyAppIdLabel]
         ) {
-          appIdsInTheSameLocalProjectAndRegion.push(teamProviderInfo[env][constants.ProviderName][constants.AmplifyAppIdLabel]);
+          appIdsInTheSameLocalProjectAndRegion.push(teamProviderInfo[env][ProviderName][AmplifyAppIdLabel]);
         }
       }
 
@@ -286,23 +276,18 @@ async function postPushCheck(context) {
       const createEnvParams = {
         appId: amplifyAppId,
         environmentName: envName,
-        stackName: teamProviderInfo[envName][constants.ProviderName].StackName,
-        deploymentArtifacts: teamProviderInfo[envName][constants.ProviderName].DeploymentBucketName,
+        stackName: teamProviderInfo[envName][ProviderName].StackName,
+        deploymentArtifacts: teamProviderInfo[envName][ProviderName].DeploymentBucketName,
       };
 
       await amplifyClient.createBackendEnvironment(createEnvParams).promise();
     }
 
-    teamProviderInfo[envName][constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
-    amplifyMeta.providers[constants.ProviderName][constants.AmplifyAppIdLabel] = amplifyAppId;
+    teamProviderInfo[envName][ProviderName][AmplifyAppIdLabel] = amplifyAppId;
+    amplifyMeta.providers[ProviderName][AmplifyAppIdLabel] = amplifyAppId;
 
-    const amplifyMetaFilePath = context.amplify.pathManager.getAmplifyMetaFilePath();
-    let jsonString = JSON.stringify(amplifyMeta, null, 4);
-    fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
-
-    const teamProviderInfoFilePath = context.amplify.pathManager.getProviderInfoFilePath();
-    jsonString = JSON.stringify(teamProviderInfo, null, 4);
-    fs.writeFileSync(teamProviderInfoFilePath, jsonString, 'utf8');
+    stateManager.setMeta(undefined, amplifyMeta);
+    stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
   }
 }
 

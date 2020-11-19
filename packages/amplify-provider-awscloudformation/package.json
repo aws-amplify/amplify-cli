@@ -35,6 +35,7 @@
     "chalk": "^3.0.0",
     "cloudform": "^4.2.0",
     "columnify": "^1.5.4",
+    "cors": "^2.8.5",
     "extract-zip": "^2.0.1",
     "folder-hash": "^3.3.0",
     "fs-extra": "^8.1.0",
