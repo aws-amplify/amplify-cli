@@ -25,6 +25,7 @@ export const PathConstants = {
   AmplifyMetaFileName: 'amplify-meta.json',
   TagsFileName: 'tags.json',
   ParametersJsonFileName: 'parameters.json',
+  ReadMeFileName: 'README.md',
 
   LocalEnvFileName: 'local-env-info.json',
   LocalAWSInfoFileName: 'local-aws-info.json',
@@ -104,6 +105,9 @@ export class PathManager {
       resourceName,
       PathConstants.ParametersJsonFileName,
     ]);
+
+  getReadMeFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.ReadMeFileName]);
 
   getCurrentAmplifyMetaFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [

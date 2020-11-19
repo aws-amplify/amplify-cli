@@ -4,6 +4,7 @@ import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager,
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
+import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';
 
 export async function onSuccess(context: $TSContext) {
@@ -106,6 +107,7 @@ function generateNonRuntimeFiles(context: $TSContext) {
   generateBackendConfigFile(context);
   generateTeamProviderInfoFile(context);
   generateGitIgnoreFile(context);
+  generateReadMeFile(context);
 }
 
 function generateProjectConfigFile(context: $TSContext) {
@@ -152,6 +154,12 @@ function generateGitIgnoreFile(context: $TSContext) {
 
     insertAmplifyIgnore(gitIgnoreFilePath);
   }
+}
+
+function generateReadMeFile(context: $TSContext) {
+  const { projectPath } = context.exeInfo.localEnvInfo;
+  const readMeFilePath = pathManager.getReadMeFilePath(projectPath);
+  writeReadMeFile(readMeFilePath);
 }
 
 function printWelcomeMessage(context: $TSContext) {
