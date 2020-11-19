@@ -12,6 +12,7 @@ import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import Container from './docker-compose/ecs-objects/Container';
 import { GitHubSourceActionInfo, PipelineWithAwaiter } from './PipelineWithAwaiter';
+import { API_TYPE } from './service-walkthroughs/containers-walkthrough';
 
 const PIPELINE_AWAITER_ZIP = 'custom-resource-pipeline-awaiter.zip';
 
@@ -49,6 +50,8 @@ type EcsStackProps = {
   desiredCount: number;
   policies?: iam.PolicyStatement[];
   restrictAccess: boolean;
+  apiType: API_TYPE;
+  exposedContainer: { name: string, port: number };
 };
 
 export class EcsStack extends cdk.Stack {
@@ -70,6 +73,8 @@ export class EcsStack extends cdk.Stack {
       policies = [],
       taskEnvironmentVariables = {},
       restrictAccess,
+      apiType,
+      exposedContainer
     } = props;
 
     // Unused in this stack, but required by the root stack
@@ -186,9 +191,9 @@ export class EcsStack extends cdk.Stack {
         const logging: ecs.LogDriver =
           logDriver === 'awslogs'
             ? ecs.LogDriver.awsLogs({
-                streamPrefix,
-                logGroup: logs.LogGroup.fromLogGroupName(this, `${name}logGroup`, logGroup.logGroupName),
-              })
+              streamPrefix,
+              logGroup: logs.LogGroup.fromLogGroupName(this, `${name}logGroup`, logGroup.logGroupName),
+            })
             : undefined;
 
         let repository: ecr.Repository;
@@ -243,14 +248,15 @@ export class EcsStack extends cdk.Stack {
             protocol: ecs.Protocol.TCP,
           });
 
-          serviceRegistries.push({
-            containerName: container.containerName,
-            containerPort,
-            registryArn: cloudmapService.attrArn,
-          });
         });
       },
     );
+
+    serviceRegistries.push({
+      containerName: exposedContainer.name,
+      containerPort: exposedContainer.port,
+      registryArn: cloudmapService.attrArn,
+    });
 
     const serviceSecurityGroup = new ec2.CfnSecurityGroup(this, 'ServiceSG', {
       vpcId,
@@ -367,6 +373,10 @@ export class EcsStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'ServiceArn', { value: cdk.Fn.ref(service.logicalId) });
     new cdk.CfnOutput(this, 'ApiName', { value: api.name });
     new cdk.CfnOutput(this, 'RootUrl', { value: api.attrApiEndpoint });
+
+    if (apiType === API_TYPE.GRAPHQL) {
+      new cdk.CfnOutput(this, 'GraphQLAPIEndpointOutput', { value: api.attrApiEndpoint });
+    }
   }
 
   toCloudFormation() {

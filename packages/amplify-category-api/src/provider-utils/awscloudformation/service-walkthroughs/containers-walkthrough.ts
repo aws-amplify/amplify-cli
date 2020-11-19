@@ -27,8 +27,8 @@ export interface ResourceDependency {
 }
 
 export enum API_TYPE {
-  GRAPHQL,
-  REST,
+  GRAPHQL = 'GRAPHQL',
+  REST = 'REST',
 }
 
 export type ServiceConfiguration = {

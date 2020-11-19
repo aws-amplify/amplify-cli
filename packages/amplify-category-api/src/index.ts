@@ -2,13 +2,15 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Octokit } from '@octokit/rest';
 import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import fs from 'fs-extra';
+import inquirer from 'inquirer';
 import path from 'path';
 import { run } from './commands/api/console';
 import { provider as cloudformationProviderName } from './provider-utils/awscloudformation/aws-constants';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
 import { getContainers } from './provider-utils/awscloudformation/docker-compose';
+import Container from './provider-utils/awscloudformation/docker-compose/ecs-objects/Container';
 import { DEPLOYMENT_MECHANISM, EcsStack } from './provider-utils/awscloudformation/ecs-stack';
-import { ResourceDependency } from './provider-utils/awscloudformation/service-walkthroughs/containers-walkthrough';
+import { API_TYPE, ResourceDependency } from './provider-utils/awscloudformation/service-walkthroughs/containers-walkthrough';
 import { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
 
 export { EcsStack } from './provider-utils/awscloudformation/ecs-stack';
@@ -232,9 +234,16 @@ export type ApiResource = {
   categoryPolicies: any[];
   mutableParametersState: any;
   output?: Record<string, any>;
+  apiType: API_TYPE;
+  exposedContainer?: { name: string, port: number };
 };
 
-export async function generateContainersArtifacts(context: any, resource: ApiResource) {
+type ExposedContainer = {
+  name: string;
+  port: number;
+};
+
+export async function generateContainersArtifacts(context: any, resource: ApiResource): Promise<{ exposedContainer: ExposedContainer }> {
   const {
     category: categoryName,
     resourceName,
@@ -245,6 +254,8 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     dependsOn,
     environmentMap,
     restrictAccess,
+    apiType,
+    exposedContainer: exposedContainerFromMeta
   } = resource;
 
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -258,10 +269,11 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
 
   const srcPath = path.join(resourceDir, 'src');
 
-  const dockerComposeFilename = 'docker-compose.yml';
-  const dockerfileFilename = 'Dockerfile';
+  const dockerComposeFileNameYaml = 'docker-compose.yaml';
+  const dockerComposeFileNameYml = 'docker-compose.yml';
+  const dockerfileFileName = 'Dockerfile';
 
-  const containerDefinitionFileNames = [dockerComposeFilename, dockerfileFilename];
+  const containerDefinitionFileNames = [dockerComposeFileNameYaml, dockerComposeFileNameYml, dockerfileFileName];
 
   const containerDefinitionFiles: Record<string, string> = {};
 
@@ -317,11 +329,15 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   const noDefinitionAvailable = Object.keys(containerDefinitionFiles).length === 0;
 
   if (noDefinitionAvailable) {
-    throw new Error('No definition available (docker-compose.yaml / Dockerfile)');
+    throw new Error('No definition available (docker-compose.yaml / docker-compose.yml / Dockerfile)');
   }
 
-  let composeContents = containerDefinitionFiles[dockerComposeFilename];
-  const { [dockerfileFilename]: dockerfileContents } = containerDefinitionFiles;
+  if (containerDefinitionFiles[dockerComposeFileNameYaml] && containerDefinitionFiles[dockerComposeFileNameYml]) {
+    throw new Error('There should be only one docker-compose.yaml / docker-compose.yml)');
+  }
+
+  let composeContents = containerDefinitionFiles[dockerComposeFileNameYaml] || containerDefinitionFiles[dockerComposeFileNameYml];
+  const { [dockerfileFileName]: dockerfileContents } = containerDefinitionFiles;
 
   const { buildspec, containers, service } = getContainers(composeContents, dockerfileContents);
 
@@ -334,8 +350,19 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     [],
   );
 
+  let exposedContainer: { name: string, port: number };
+
+  const containersExposed = containers.filter(container => container.portMappings.length > 0);
+
   if (containersPorts.length === 0) {
     throw new Error('Service requires at least one exposed port');
+  } else if (containersPorts.length > 1) {
+    exposedContainer = await checkContainerExposed(containersExposed, exposedContainerFromMeta);
+  } else {
+    exposedContainer = {
+      name: containersExposed[0].name,
+      port: containersExposed[0].portMappings[0].containerPort
+    }
   }
 
   fs.ensureDirSync(srcPath);
@@ -358,13 +385,38 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     containers,
     isInitialDeploy,
     desiredCount,
-    restrictAccess
+    restrictAccess,
+    apiType,
+    exposedContainer
   });
 
   const cfn = stack.toCloudFormation();
 
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   context.amplify.writeObjectAsJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn, true);
+
+  return { exposedContainer };
+}
+
+async function checkContainerExposed(containersExposed: Container[], exposedContainerFromMeta: { name: string, port: number } = { name: '', port: 0 }): Promise<{ name: string, port: number }> {
+  const containerExposed = containersExposed.find(container => container.name === exposedContainerFromMeta.name);
+
+  if (containerExposed?.portMappings.find(port => port.containerPort === exposedContainerFromMeta.port)) {
+    return { ...exposedContainerFromMeta };
+  } else {
+    const choices: { name: string, value: Container }[] = containersExposed.map(container => ({ name: container.name, value: container }));
+
+    const { containerToExpose } = await inquirer.prompt({
+      name: 'containerToExpose',
+      type: 'list',
+      choices
+    });
+
+    return {
+      name: containerToExpose.name,
+      port: containerToExpose.portMappings[0].containerPort
+    }
+  }
 }
 
 /**

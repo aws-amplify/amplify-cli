@@ -28,10 +28,9 @@ function showPinpointURL(context, resourcesToBeCreated) {
 }
 
 function showGraphQLURL(context, resourcesToBeCreated) {
-  const resources = resourcesToBeCreated.filter(resource => resource.service === 'AppSync');
-  // There can only be one appsync resource
-  if (resources.length > 0) {
-    const resource = resources[0];
+  const resources = resourcesToBeCreated.filter(resource => resource.service === 'AppSync' || (resource.service === 'ElasticContainer' && resource.apiType === 'GRAPHQL') );
+  
+  for (const resource of resources) {
     const { category, resourceName } = resource;
     const amplifyMeta = context.amplify.getProjectMeta();
     if (!amplifyMeta[category][resourceName].output) {
@@ -47,14 +46,15 @@ function showGraphQLURL(context, resourcesToBeCreated) {
 
     if (securityType) {
       hasApiKey = securityType === 'API_KEY';
-    } else {
+    } else if (authConfig) {
       const apiKeyProvider = [...(authConfig.additionalAuthenticationProviders || []), authConfig.defaultAuthentication].find(
         provider => provider.authenticationType === 'API_KEY',
       );
 
       hasApiKey = !!apiKeyProvider;
     }
-
+    
+    context.print.info();
     context.print.info(chalk`GraphQL endpoint: {blue.underline ${GraphQLAPIEndpointOutput}}`);
     if (hasApiKey) {
       if (GraphQLAPIKeyOutput) {
