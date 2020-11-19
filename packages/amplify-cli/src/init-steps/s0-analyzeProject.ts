@@ -27,8 +27,9 @@ function setExeInfo(context: $TSContext, projectPath: String, defaultEditor?: St
 export async function analyzeProjectHeadless(context: $TSContext) {
   const projectPath = process.cwd();
   const projectName = path.basename(projectPath);
+  const env = getDefaultEnv(context);
   setProjectConfig(context, projectName);
-  setExeInfo(context, projectPath);
+  setExeInfo(context, projectPath, undefined, env);
 }
 
 export async function analyzeProject(context): Promise<$TSContext> {
@@ -117,6 +118,14 @@ async function getEditor(context) {
 }
 /* End getEditor */
 
+function getDefaultEnv(context): string | undefined {
+  const defaultEnv = 'dev';
+  if (isNewProject(context) || !context.amplify.getAllEnvs().includes(defaultEnv)) {
+    return defaultEnv;
+  }
+  return undefined;
+}
+
 async function getEnvName(context) {
   let envName;
 
@@ -141,11 +150,7 @@ async function getEnvName(context) {
   }
 
   const newEnvQuestion = async () => {
-    let defaultEnvName;
-    if (isNewProject(context) || !context.amplify.getAllEnvs().includes('dev')) {
-      defaultEnvName = 'dev';
-    }
-
+    let defaultEnvName = getDefaultEnv(context);
     const envNameQuestion: inquirer.InputQuestion = {
       type: 'input',
       name: 'envName',
