@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-predictions",
-  "version": "2.5.4",
+  "version": "2.5.5",
   "description": "amplify-cli predictions plugin",
   "repository": {
     "type": "git",

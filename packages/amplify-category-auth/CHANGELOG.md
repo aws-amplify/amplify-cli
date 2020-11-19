@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.22.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.22.1...amplify-category-auth@2.22.2) (2020-11-19)
+
+
+### Bug Fixes
+
+* remove app client secret as best practice ([#5731](https://github.com/aws-amplify/amplify-cli/issues/5731)) ([8bc0dd2](https://github.com/aws-amplify/amplify-cli/commit/8bc0dd2434b93c9a2cb1ff3bfad9cedd2d356c30))
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+
+
 ## [2.22.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.22.0...amplify-category-auth@2.22.1) (2020-11-08)
 
 **Note:** Version bump only for package amplify-category-auth
