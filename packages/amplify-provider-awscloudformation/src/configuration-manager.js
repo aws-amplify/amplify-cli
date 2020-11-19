@@ -748,7 +748,10 @@ async function getAwsConfig(context) {
       const appId = _.get(meta, ['providers', 'awscloudformation', 'AmplifyAppId']);
       const authConfig = await getRefreshedTokens(appId, context.print);
       const { idToken, IdentityId, region } = authConfig;
-      awsConfig = (await getAdminCredentials(idToken, IdentityId, region)).Credentials;
+      awsConfig = {
+        ...(await getAdminCredentials(idToken, IdentityId, region)).Credentials,
+        region,
+      };
     } catch (e) {
       throw new Error('Failed to get Amplify Admin credentials.');
     }
