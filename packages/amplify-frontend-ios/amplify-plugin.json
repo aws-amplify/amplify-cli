@@ -4,5 +4,5 @@
     "commands": [
         "help"
     ],
-    "eventHandlers": ["PostCodegenModels"]
+    "eventHandlers": ["PostInit", "PostCodegenModels"]
 }

@@ -1,4 +1,3 @@
-const amplifyApp = require('amplify-app');
 const configurationManager = require('./configuration-manager');
 
 function run(context) {
