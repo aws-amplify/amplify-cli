@@ -80,12 +80,16 @@ export const addResource = async (
     apiType
   };
 
+  await context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
+
+  const apiResource = await context.amplify.getProjectMeta().api[resourceName] as ApiResource;
+  apiResource.category = category;
+
   fs.ensureDirSync(resourceDirPath);
 
-  if (imageSource.type === IMAGE_SOURCE_TYPE.TEMPLATE) {
-    fs.ensureDirSync(path.join(resourceDirPath, 'src'));
+  fs.ensureDirSync(path.join(resourceDirPath, 'src'));
 
-    // TODO: Move this to resources
+  if (imageSource.type === IMAGE_SOURCE_TYPE.TEMPLATE) {
     switch (apiType) {
       case API_TYPE.GRAPHQL:
         Object.entries(containerFilesGraphQL).forEach(([fileName, fileContents]) => {
@@ -105,14 +109,24 @@ export const addResource = async (
     }
   }
 
-  await context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
-
-  const apiResource = await context.amplify.getProjectMeta().api[resourceName] as ApiResource;
-  apiResource.category = category;
-
   if (imageSource.type === IMAGE_SOURCE_TYPE.TEMPLATE) {
     await generateContainersArtifacts(context, apiResource);
   }
+
+  context.print.success(`Successfully added resource ${resourceName} locally.`);
+  context.print.info('');
+  context.print.success('Next steps:');
+
+  if (deploymentMechanism === DEPLOYMENT_MECHANISM.FULLY_MANAGED) {
+    context.print.info(`Place your Dockerfile, docker-compose.yml and any related container source files in this directory: <project-dir>/amplify/backend/api/${resourceName}/src`);
+  } else if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
+    context.print.info(`Ensure you have the Dockerfile, docker-compose.yml and any related container source files in 
+    your Github path: ${githubInfo.path}`)
+  }
+
+  context.print.info('');
+  context.print.info(`Amplify CLI infers many configuration settings from the "docker-compose.yaml" file. \nLearn more: docs.amplify.aws/cli/function/container`)
+  context.print.info('Run "amplify push" to build and deploy your image');
 
   return resourceName;
 };

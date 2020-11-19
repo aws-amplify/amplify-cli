@@ -54,7 +54,6 @@ function showGraphQLURL(context, resourcesToBeCreated) {
       hasApiKey = !!apiKeyProvider;
     }
     
-    context.print.info();
     context.print.info(chalk`GraphQL endpoint: {blue.underline ${GraphQLAPIEndpointOutput}}`);
     if (hasApiKey) {
       if (GraphQLAPIKeyOutput) {
@@ -65,6 +64,8 @@ function showGraphQLURL(context, resourcesToBeCreated) {
         );
       }
     }
+
+    context.print.info();
   }
 }
 

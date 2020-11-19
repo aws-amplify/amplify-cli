@@ -56,8 +56,12 @@ async function run(context, resourceDefinition) {
 
     for await (const resource of resources) {
       if (resource.service === ApiServiceNameElasticContainer) {
-        const { exposedContainer } = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
+        const { exposedContainer, pipelineInfo: { consoleUrl } } = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
         await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'exposedContainer', exposedContainer);
+
+        context.print.info(`\nYou can check image build status for ${resource.resourceName}`);
+        
+        context.print.info(`${consoleUrl}\n`);
       }
     }
 

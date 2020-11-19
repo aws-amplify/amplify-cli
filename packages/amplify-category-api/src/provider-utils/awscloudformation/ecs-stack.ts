@@ -55,6 +55,7 @@ type EcsStackProps = {
 };
 
 export class EcsStack extends cdk.Stack {
+  pipeline: PipelineWithAwaiter;
   constructor(scope: cdk.Construct, id: string, private readonly props: EcsStackProps) {
     super(scope, id);
 
@@ -306,6 +307,8 @@ export class EcsStack extends cdk.Stack {
     });
 
     pipeline.node.addDependency(service);
+
+    this.pipeline = pipeline;
     //#endregion
 
     //#region Api Gateway
@@ -377,6 +380,11 @@ export class EcsStack extends cdk.Stack {
     if (apiType === API_TYPE.GRAPHQL) {
       new cdk.CfnOutput(this, 'GraphQLAPIEndpointOutput', { value: api.attrApiEndpoint });
     }
+  }
+
+  getPipelineConsoleUrl(region: string) {
+    const pipelineName = this.pipeline.getPipelineName();
+    return `https://${region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${pipelineName}/view`;
   }
 
   toCloudFormation() {

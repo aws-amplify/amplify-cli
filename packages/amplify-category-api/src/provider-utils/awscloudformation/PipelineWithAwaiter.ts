@@ -97,6 +97,7 @@ class PipelineAwaiter extends cdk.Construct {
 }
 
 export class PipelineWithAwaiter extends cdk.Construct {
+  pipelineName: string;
   constructor(
     scope: cdk.Construct,
     id: string,
@@ -261,8 +262,10 @@ export class PipelineWithAwaiter extends cdk.Construct {
 
     const role = getRole(scope, `Pipeline`, new iam.ServicePrincipal('codepipeline.amazonaws.com'));
 
+    this.pipelineName = `codepipeline-amplify-${service.serviceName}`;
+
     const pipeline = new codepipeline.Pipeline(scope, `${id}Pipeline`, {
-      pipelineName: `codepipeline-amplify-${service.serviceName}`,
+      pipelineName: this.pipelineName,
       crossAccountKeys: false,
       artifactBucket: bucket,
       stages: stagesWithDeploy,
@@ -277,6 +280,10 @@ export class PipelineWithAwaiter extends cdk.Construct {
       artifactKey: s3SourceActionKey,
       deploymentMechanism,
     });
+  }
+
+  getPipelineName(): string {
+    return this.pipelineName;
   }
 }
 

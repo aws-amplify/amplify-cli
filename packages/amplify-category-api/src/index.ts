@@ -243,7 +243,11 @@ type ExposedContainer = {
   port: number;
 };
 
-export async function generateContainersArtifacts(context: any, resource: ApiResource): Promise<{ exposedContainer: ExposedContainer }> {
+type ContainerArtifactsMetadata = { 
+  exposedContainer: ExposedContainer;
+  pipelineInfo: { consoleUrl: string};
+};
+export async function generateContainersArtifacts(context: any, resource: ApiResource): Promise<ContainerArtifactsMetadata> {
   const {
     category: categoryName,
     resourceName,
@@ -394,8 +398,8 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
 
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   context.amplify.writeObjectAsJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn, true);
-
-  return { exposedContainer };
+  
+  return { exposedContainer, pipelineInfo: { consoleUrl: stack.getPipelineConsoleUrl(provider.Region) } };
 }
 
 async function checkContainerExposed(containersExposed: Container[], exposedContainerFromMeta: { name: string, port: number } = { name: '', port: 0 }): Promise<{ name: string, port: number }> {
