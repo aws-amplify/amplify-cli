@@ -244,9 +244,9 @@ type ExposedContainer = {
   port: number;
 };
 
-type ContainerArtifactsMetadata = { 
+type ContainerArtifactsMetadata = {
   exposedContainer: ExposedContainer;
-  pipelineInfo: { consoleUrl: string};
+  pipelineInfo: { consoleUrl: string };
 };
 export async function generateContainersArtifacts(context: any, resource: ApiResource): Promise<ContainerArtifactsMetadata> {
   const {
@@ -471,7 +471,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
 
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   context.amplify.writeObjectAsJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn, true);
-  
+
   return { exposedContainer, pipelineInfo: { consoleUrl: stack.getPipelineConsoleUrl(provider.Region) } };
 }
 
