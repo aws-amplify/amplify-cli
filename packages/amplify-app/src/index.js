@@ -11,6 +11,7 @@ const ini = require('ini');
 const semver = require('semver');
 const stripAnsi = require('strip-ansi');
 const { engines } = require('../package.json');
+const { initializeAwsExports } = require('amplify-frontend-javascript');
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
@@ -119,6 +120,9 @@ async function createAmplifySkeletonProject() {
             .then(projectConfig => {
               const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
               fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
+              if (!!projectConfig.javascript) {
+                initializeAwsExports(path.resolve('src'));
+              }
               console.log(`${emoji.get('boom')} Successfully created base Amplify Project`);
               resolve(projectConfig.frontend);
             })
