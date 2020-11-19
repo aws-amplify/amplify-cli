@@ -190,7 +190,6 @@ async function guessPlatform() {
     validFrontends.forEach(key => {
       const { scanProject } = require(frontendPlugins[key]);
       const newScore = scanProject(process.cwd());
-      console.log("guessPlatform", key, newScore);
       if (newScore > fitToHandleScore) {
         fitToHandleScore = newScore;
         suitableFrontend = key;
