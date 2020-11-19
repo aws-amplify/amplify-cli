@@ -18,20 +18,34 @@ if %is64Bit% == '' (
     exit 1
 )
 
+set repo_owner=edwardfoyle
+set repo_name=amplify-cli
+
 if not defined version (
-    for /f delims^=^"^ tokens^=4 %%g in ('curl -sL https://api.github.com/repos/aws-amplify/amplify-cli/releases/latest ^| findstr tag_name') do (set version=%%g)
+    for /f delims^=^"^ tokens^=4 %%g in ('curl -sL https://api.github.com/repos/%repo_owner%/%repo_name%/releases/latest ^| findstr tag_name') do (set version=%%g)
 )
 
-set binary_url=https://github.com/aws-amplify/amplify-cli/releases/download/%version%/amplify-pkg-win.exe
+set exe_name=amplify-pkg-win.exe
+set tar_name=%exe_name%.tgz
+set binary_url=https://github.com/%repo_owner%/%repo_name%/releases/download/%version%/%tar_name%
 set binaries_dir_path=%userprofile%\.amplify\bin
 :: Binary name is amp for testing. Change to 'amplify' before launch
 set binary_base=amp
 set binary_name=%binary_base%.exe
 set binary_path=%binaries_dir_path%\%binary_name%
+set tar_path=%binaries_dir_path%\%tar_name%
+set extraction_path=%binaries_dir_path%\%exe_name%
 md %binaries_dir_path%
 
 echo %yellow%Downloading binary...%reset%
-curl -L -o %binary_path% %binary_url%
+curl -L -o %tar_path% %binary_url%
+echo %green%Download complete!%reset%
+
+echo %yello%Extracting binary...%reset%
+tar xzf %tar_path% -C %binaries_dir_path%
+move %extraction_path% %binary_path%
+del %tar_path%
+echo %green%Extraction complete!%reset%
 
 :: Add to user path
 %binary_name% > nul 2> nul

@@ -30,22 +30,36 @@ else
   exit 1
 fi
 
+REPO_OWNER=edwardfoyle
+REPO_NAME=amplify-cli
+
 if [[ -z "$version" ]]; then
   # if no version specified, look up the latest version
-  version=`curl -L --silent https://api.github.com/repos/aws-amplify/amplify-cli/releases/latest 2>&1 | grep 'tag_name' | grep -oE "v[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?"`
+  version=`curl -L --silent https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest 2>&1 | grep 'tag_name' | grep -oE "v[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?"`
 fi
 
-BINARY_URL=https://github.com/aws-amplify/amplify-cli/releases/download/$version/amplify-pkg-$PLATFORM
+BASE_NAME=amplify-pkg-$PLATFORM
+TAR_NAME=${BASE_NAME}.tgz
+BINARY_URL=https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/$version/$TAR_NAME
 
 # Dowload binary
 BINARIES_DIR_PATH=$HOME/.amplify/bin
 BINARY_NAME=amp # amd for testing. Change to 'amplify' before launch
 BINARY_PATH=$BINARIES_DIR_PATH/$BINARY_NAME
+TAR_PATH=$BINARIES_DIR_PATH/$TAR_NAME
+EXTRACTION_PATH=$BINARIES_DIR_PATH/$BASE_NAME
 mkdir -p $BINARIES_DIR_PATH
-printf "$yellow Downloading binary...$reset\n"
 
-curl -L -o $BINARY_PATH $BINARY_URL
+printf "$yellow Downloading binary...\n$reset"
+curl -L -o $TAR_PATH $BINARY_URL
+printf "$green Download complete!\n$reset"
+
+printf "$yellow Extracting binary...\n$reset"
+tar xzf $TAR_PATH -C $BINARIES_DIR_PATH
+mv $EXTRACTION_PATH $BINARY_PATH
 chmod +x $BINARY_PATH
+rm $TAR_PATH
+printf "$green Extraction complete!\n$reset"
 
 # Add to $PATH
 SOURCE_STR="# Added by Amplify CLI binary installer\nexport PATH=\"\$HOME/.amplify/bin:\$PATH\"\n"
