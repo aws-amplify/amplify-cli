@@ -12,6 +12,7 @@ import Container from './provider-utils/awscloudformation/docker-compose/ecs-obj
 import { DEPLOYMENT_MECHANISM, EcsStack } from './provider-utils/awscloudformation/ecs-stack';
 import { API_TYPE, ResourceDependency } from './provider-utils/awscloudformation/service-walkthroughs/containers-walkthrough';
 import { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
+import uuid from 'uuid';
 
 export { EcsStack } from './provider-utils/awscloudformation/ecs-stack';
 export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
@@ -235,7 +236,7 @@ export type ApiResource = {
   mutableParametersState: any;
   output?: Record<string, any>;
   apiType: API_TYPE;
-  exposedContainer?: { name: string, port: number };
+  exposedContainer?: { name: string; port: number };
 };
 
 type ExposedContainer = {
@@ -259,7 +260,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     environmentMap,
     restrictAccess,
     apiType,
-    exposedContainer: exposedContainerFromMeta
+    exposedContainer: exposedContainerFromMeta,
   } = resource;
 
   const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -270,6 +271,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   } = context.amplify.getProjectMeta();
 
   const { StackName: envName, DeploymentBucketName: deploymentBucket } = provider;
+  const isInitialDeploy = Object.keys(output ?? {}).length === 0;
 
   const srcPath = path.join(resourceDir, 'src');
 
@@ -343,7 +345,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   let composeContents = containerDefinitionFiles[dockerComposeFileNameYaml] || containerDefinitionFiles[dockerComposeFileNameYml];
   const { [dockerfileFileName]: dockerfileContents } = containerDefinitionFiles;
 
-  const { buildspec, containers, service } = getContainers(composeContents, dockerfileContents);
+  const { buildspec, containers, service, secrets } = getContainers(composeContents, dockerfileContents);
 
   const containersPorts = containers.reduce(
     (acc, container) =>
@@ -354,7 +356,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     [],
   );
 
-  let exposedContainer: { name: string, port: number };
+  let exposedContainer: { name: string; port: number };
 
   const containersExposed = containers.filter(container => container.portMappings.length > 0);
 
@@ -365,15 +367,85 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   } else {
     exposedContainer = {
       name: containersExposed[0].name,
-      port: containersExposed[0].portMappings[0].containerPort
-    }
+      port: containersExposed[0].portMappings[0].containerPort,
+    };
   }
 
   fs.ensureDirSync(srcPath);
   fs.writeFileSync(path.join(srcPath, 'buildspec.yml'), buildspec);
 
+  //#region Secrets handling
+
+  const secretsArns: Map<string, string> = new Map<string, string>();
+
+  if ((await shouldUpdateSecrets(context, secrets)) || isInitialDeploy) {
+    // Normalizes paths
+    // Validate secrets file paths, existence and prefixes
+    const errors = Object.entries(secrets).reduce((acc, [secretName, secretFilePath]) => {
+      const baseDir = path.isAbsolute(secretFilePath) ? '' : srcPath;
+      const normalizedFilePath = path.normalize(path.join(baseDir, secretFilePath));
+
+      secrets[secretName] = normalizedFilePath;
+
+      let canRead = true;
+
+      try {
+        const fd = fs.openSync(normalizedFilePath, 'r');
+
+        fs.closeSync(fd);
+      } catch (err) {
+        canRead = false;
+      }
+
+      if (!canRead) {
+        acc.push(`Secret file "${secretFilePath}" can't be read.`);
+        return acc;
+      }
+
+      const basename = path.basename(normalizedFilePath);
+      const hasCorrectPrefix = basename.startsWith('.secret-');
+
+      if (!hasCorrectPrefix) {
+        acc.push(`Secret file "${secretFilePath}" doesn't start with the ".secret-" prefix.`);
+        return acc;
+      }
+
+      const isInsideSrc = normalizedFilePath.startsWith(path.join(srcPath, path.sep));
+      if (isInsideSrc) {
+        acc.push(`Secret file "${secretFilePath}" should not be inside the "src" folder. The "src" folder will be uploaded to S3.`);
+        return acc;
+      }
+
+      return acc;
+    }, <string[]>[]);
+
+    if (errors.length > 0) {
+      throw new Error(['Error(s) in secret file(s):'].concat(errors).join('\n'));
+    }
+
+    for await (const entries of Object.entries(secrets)) {
+      const [secretName, secretFilePath] = entries;
+
+      const contents = fs.readFileSync(secretFilePath).toString();
+
+      const ssmSecretName = `${envName}-${resourceName}-${secretName}`;
+
+      const { ARN: secretArn } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'upsertSecretValue', {
+        secret: contents,
+        description: `Secret for ${resourceName}`,
+        name: ssmSecretName,
+        version: uuid(),
+      });
+
+      secretsArns.set(secretName, secretArn);
+    }
+  }
+
+  // throw new Error('siuuuuuu');
+
+  //#endregion
+
   const desiredCount = service?.replicas ?? 1; // TODO: 1 should be from meta (HA setting)
-  const isInitialDeploy = Object.keys(output ?? {}).length === 0;
 
   const stack = new EcsStack(undefined, 'ContainersStack', {
     envName,
@@ -391,7 +463,8 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     desiredCount,
     restrictAccess,
     apiType,
-    exposedContainer
+    exposedContainer,
+    secretsArns,
   });
 
   const cfn = stack.toCloudFormation();
@@ -402,24 +475,48 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   return { exposedContainer, pipelineInfo: { consoleUrl: stack.getPipelineConsoleUrl(provider.Region) } };
 }
 
-async function checkContainerExposed(containersExposed: Container[], exposedContainerFromMeta: { name: string, port: number } = { name: '', port: 0 }): Promise<{ name: string, port: number }> {
+async function shouldUpdateSecrets(context: any, secrets: Record<string, string>): Promise<boolean> {
+  const hasSecrets = Object.keys(secrets).length > 0;
+
+  if (!hasSecrets) {
+    return false;
+  }
+
+  if (context.exeInfo.inputParams.yes) {
+    return false;
+  }
+
+  const { update_secrets } = await inquirer.prompt({
+    name: 'update_secrets',
+    type: 'confirm',
+    message: 'Secret configuration detected. Do you wish to store new values in the cloud?',
+    default: false,
+  });
+
+  return update_secrets;
+}
+
+async function checkContainerExposed(
+  containersExposed: Container[],
+  exposedContainerFromMeta: { name: string; port: number } = { name: '', port: 0 },
+): Promise<{ name: string; port: number }> {
   const containerExposed = containersExposed.find(container => container.name === exposedContainerFromMeta.name);
 
   if (containerExposed?.portMappings.find(port => port.containerPort === exposedContainerFromMeta.port)) {
     return { ...exposedContainerFromMeta };
   } else {
-    const choices: { name: string, value: Container }[] = containersExposed.map(container => ({ name: container.name, value: container }));
+    const choices: { name: string; value: Container }[] = containersExposed.map(container => ({ name: container.name, value: container }));
 
     const { containerToExpose } = await inquirer.prompt({
       name: 'containerToExpose',
       type: 'list',
-      choices
+      choices,
     });
 
     return {
       name: containerToExpose.name,
-      port: containerToExpose.portMappings[0].containerPort
-    }
+      port: containerToExpose.portMappings[0].containerPort,
+    };
   }
 }
 

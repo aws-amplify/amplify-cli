@@ -18,6 +18,9 @@ const hasHealthCheck = (obj: any): obj is v2Types.DefinitionsHealthcheck => {
   return obj.healthcheck !== undefined;
 };
 
+function isV38Service(obj: any): obj is v38Types.DefinitionsService {
+  return obj && (<v38Types.DefinitionsService>obj).secrets !== undefined;
+}
 const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsService | v2Types.DefinitionsService]): Container => {
   const [k, v] = record;
 
@@ -47,6 +50,11 @@ const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsServic
     });
   });
 
+  const secrets = new Set<string>();
+  if (isV38Service(v)) {
+    v.secrets.filter(s => typeof s === 'string').forEach(s => secrets.add(<string>s));
+  }
+
   return new Container(
     build,
     name,
@@ -62,6 +70,7 @@ const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsServic
     },
     working_dir,
     user,
+    secrets,
   );
 };
 
@@ -104,12 +113,23 @@ type DockerServiceInfo = {
   buildspec: string;
   service: v38Types.DefinitionsDeployment;
   containers: Container[];
+  secrets: Record<string, string>;
 };
 export function getContainers(composeContents?: string, dockerfileContents?: string): DockerServiceInfo {
   //Step 1: Detect if there is a docker-compose or just a Dockerfile.
   //        Just Dockerfile-> create registry using function name, buildspec, zip and put on S3
   //        Compose file -> Begin by parsing it:
   const dockerCompose = composeContents ? dockerComposeToObject(composeContents) : dockerfileToObject(dockerfileContents);
+
+  const secrets: Record<string, string> = {};
+
+  const { secrets: composeSecrets = {} }: { secrets?: v38Types.PropertiesSecrets } = <any>dockerCompose;
+
+  for (const secretName of Object.keys(composeSecrets)) {
+    if (composeSecrets[secretName].file) {
+      secrets[composeSecrets[secretName].name ?? secretName] = composeSecrets[secretName].file;
+    }
+  }
 
   //Step 2: Take compose object and pull all the containers out:
   const containers = convertDockerObjectToContainerArray(dockerCompose);
@@ -151,5 +171,6 @@ export function getContainers(composeContents?: string, dockerfileContents?: str
     buildspec,
     service,
     containers,
+    secrets,
   };
 }

@@ -49,7 +49,42 @@ module.exports = {
         SecretId: name,
         Description: description,
         SecretString: secret,
-        ClientRequestToken: version
+        ClientRequestToken: version,
+      })
+      .promise();
+
+    return response;
+  },
+  upsertSecretValue: async (context, options) => {
+    const { name } = options;
+    const client = await new SecretsManager(context);
+
+    /** @type {string} */
+    let secretArn;
+
+    try {
+      ({ ARN: secretArn } = await client.secretsManager.describeSecret({ SecretId: name }).promise());
+    } catch (error) {
+      const { code } = error;
+
+      if (code !== 'ResourceNotFoundException') {
+        throw error;
+      }
+    }
+
+    if (secretArn === undefined) {
+      return await module.exports.newSecret(context, options);
+    } else {
+      return await module.exports.putSecretValue(context, options);
+    }
+  },
+  putSecretValue: async (context, options) => {
+    const { name, secret } = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager
+      .putSecretValue({
+        SecretId: name,
+        SecretString: secret,
       })
       .promise();
 

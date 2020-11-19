@@ -24,6 +24,7 @@ class Container implements IContainerDefinitions {
   healthcheck?: ContainerHealthCheck;
   working_dir?: string;
   user?: string;
+  secrets: Set<string>;
 
   constructor(
     build: string | IBuildConfig | undefined, //Really for CodeBuild. Do we need in this class?
@@ -37,6 +38,7 @@ class Container implements IContainerDefinitions {
     healthcheck?: IContainerHealthCheckItem | undefined,
     working_dir?: string | undefined,
     user?: string | undefined,
+    secrets?: Set<string> | undefined,
   ) {
     this.build = build;
     this.name = name;
@@ -67,6 +69,7 @@ class Container implements IContainerDefinitions {
 
     this.working_dir = working_dir;
     this.user = user;
+    this.secrets = secrets ?? new Set();
   }
 }
 

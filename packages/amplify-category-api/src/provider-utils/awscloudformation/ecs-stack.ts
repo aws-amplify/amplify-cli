@@ -5,6 +5,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as ssm from '@aws-cdk/aws-secretsmanager';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Duration } from '@aws-cdk/core';
@@ -51,7 +52,8 @@ type EcsStackProps = {
   policies?: iam.PolicyStatement[];
   restrictAccess: boolean;
   apiType: API_TYPE;
-  exposedContainer: { name: string, port: number };
+  exposedContainer: { name: string; port: number };
+  secretsArns?: Map<string, string>;
 };
 
 export class EcsStack extends cdk.Stack {
@@ -75,7 +77,8 @@ export class EcsStack extends cdk.Stack {
       taskEnvironmentVariables = {},
       restrictAccess,
       apiType,
-      exposedContainer
+      exposedContainer,
+      secretsArns = new Map<string, string>(),
     } = props;
 
     // Unused in this stack, but required by the root stack
@@ -121,7 +124,7 @@ export class EcsStack extends cdk.Stack {
     const paramCloudMapNamespaceId = parameters.get(`${NETWORK_STACK_LOGICAL_ID}CloudMapNamespaceId`);
 
     const { UserPoolId: paramUserPoolId, AppClientIDWeb: paramAppClientIdWeb } = authParams;
-    
+
     const isAuthCondition = new cdk.CfnCondition(this, 'isAuthCondition', {
       expression: cdk.Fn.conditionAnd(
         cdk.Fn.conditionEquals(restrictAccess, true),
@@ -180,6 +183,7 @@ export class EcsStack extends cdk.Stack {
         command,
         working_dir: workingDirectory,
         healthcheck: healthCheck,
+        secrets: containerSecrets,
       }) => {
         const logGroup = new logs.LogGroup(this, `${name}ContainerLogGroup`, {
           logGroupName: `/ecs/${envName}-${apiName}-${name}`,
@@ -192,9 +196,9 @@ export class EcsStack extends cdk.Stack {
         const logging: ecs.LogDriver =
           logDriver === 'awslogs'
             ? ecs.LogDriver.awsLogs({
-              streamPrefix,
-              logGroup: logs.LogGroup.fromLogGroupName(this, `${name}logGroup`, logGroup.logGroupName),
-            })
+                streamPrefix,
+                logGroup: logs.LogGroup.fromLogGroupName(this, `${name}logGroup`, logGroup.logGroupName),
+              })
             : undefined;
 
         let repository: ecr.Repository;
@@ -216,12 +220,23 @@ export class EcsStack extends cdk.Stack {
           repository.grantPull(task.obtainExecutionRole());
         }
 
+        const secrets: ecs.ContainerDefinitionOptions['secrets'] = {};
+        const environmentWithoutSecrets = environment || {};
+
+        containerSecrets.forEach((s, i) => {
+          if (secretsArns.has(s)) {
+            secrets[s] = ecs.Secret.fromSecretsManager(ssm.Secret.fromSecretCompleteArn(this, `${name}secret${i + 1}`, secretsArns.get(s)));
+          }
+
+          delete environmentWithoutSecrets[s];
+        });
+
         const container = task.addContainer(name, {
           image: repository ? ecs.ContainerImage.fromEcrRepository(repository) : ecs.ContainerImage.fromRegistry(image),
           logging,
           environment: {
             ...taskEnvironmentVariables,
-            ...environment,
+            ...environmentWithoutSecrets,
           },
           entryPoint,
           command,
@@ -233,6 +248,7 @@ export class EcsStack extends cdk.Stack {
             timeout: cdk.Duration.seconds(healthCheck.timeout ?? 5),
             startPeriod: cdk.Duration.seconds(healthCheck.start_period ?? 0),
           },
+          secrets,
         });
 
         if (build) {
@@ -248,7 +264,6 @@ export class EcsStack extends cdk.Stack {
             containerPort,
             protocol: ecs.Protocol.TCP,
           });
-
         });
       },
     );
