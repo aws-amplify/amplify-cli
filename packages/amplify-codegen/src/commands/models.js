@@ -1,6 +1,6 @@
 const path = require('path');
 const { parse } = require('graphql');
-const { readFileSync, writeFileSync, ensureFileSync, pathExistsSync, lstatSync, readdirSync } = require('fs-extra');
+const { readFileSync, writeFileSync, ensureFileSync, pathExistsSync, lstatSync, readdirSync, appendFileSync } = require('fs-extra');
 const gqlCodeGen = require('@graphql-codegen/core');
 
 const appSyncDataStoreCodeGen = require('amplify-codegen-appsync-model-plugin');
@@ -70,6 +70,7 @@ async function generateModels(context) {
     ensureFileSync(outPutPath);
     writeFileSync(outPutPath, generatedCode[idx]);
   });
+  generateEslintIgnore(context);
   context.print.info(`Successfully generated models. Generated models can be found ${outputPath}`);
 }
 
@@ -114,6 +115,28 @@ function getModelOutputPath(context) {
       return 'amplify/generated/models';
     default:
       return '.';
+  }
+}
+
+function generateEslintIgnore(context) {
+  const projectConfig = context.amplify.getProjectConfig();
+  if (projectConfig.frontend !== 'javascript') {
+    return;
+  }
+
+  const { projectPath } = context.amplify.getEnvInfo();
+  const eslintIgnorePath = path.join(projectPath, '.eslintignore');
+  const modelFolder = path.join(getModelOutputPath(context), 'models');
+
+  if (!pathExistsSync(eslintIgnorePath)) {
+    writeFileSync(eslintIgnorePath, modelFolder);
+    return;
+  }
+
+  const eslintContents = readFileSync(eslintIgnorePath);
+
+  if (!eslintContents.includes(modelFolder)) {
+    appendFileSync(eslintIgnorePath, `\n${modelFolder}`);
   }
 }
 module.exports = generateModels;
