@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs-extra');
 
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');
@@ -9,6 +10,8 @@ const constants = require('./lib/constants');
 const { createAWSExports, deleteAmplifyConfig } = require('./lib/frontend-config-creator');
 
 const pluginName = 'javascript';
+
+const emptyAwsExportsPath = path.join(__dirname, 'lib', 'aws-exports.empty.js');
 
 function scanProject(projectPath) {
   return projectScanner.run(projectPath);
@@ -28,6 +31,13 @@ async function createFrontendConfigs(context, amplifyResources, amplifyCloudReso
   // createAmplifyConfig(context, outputsByCategory);
   return await createAWSExports(context, newOutputsForFrontend, cloudOutputsForFrontend);
 }
+
+const initializeAwsExports = destDir => {
+  const dest = path.resolve(destDir, 'aws-exports.js');
+  if (!fs.existsSync(dest)) {
+    fs.copySync(emptyAwsExportsPath, dest);
+  }
+};
 
 function configure(context) {
   return configManager.configure(context);
@@ -67,6 +77,7 @@ module.exports = {
   publish,
   run,
   createFrontendConfigs,
+  initializeAwsExports,
   executeAmplifyCommand,
   handleAmplifyEvent,
   deleteConfig: deleteAmplifyConfig,
