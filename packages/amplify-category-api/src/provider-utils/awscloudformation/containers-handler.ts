@@ -77,6 +77,7 @@ export const addResource = async (
     categoryPolicies,
     mutableParametersState,
     skipHashing: true,
+    apiType
   };
 
   fs.ensureDirSync(resourceDirPath);
@@ -109,7 +110,9 @@ export const addResource = async (
   const apiResource = await context.amplify.getProjectMeta().api[resourceName] as ApiResource;
   apiResource.category = category;
 
-  await generateContainersArtifacts(context, apiResource);
+  if (imageSource.type === IMAGE_SOURCE_TYPE.TEMPLATE) {
+    await generateContainersArtifacts(context, apiResource);
+  }
 
   return resourceName;
 };
@@ -236,5 +239,9 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
   const apiResource = await context.amplify.getProjectMeta().api[options.resourceName] as ApiResource;
   apiResource.category = category;
 
-  await generateContainersArtifacts(context, apiResource);
+  try {
+    await generateContainersArtifacts(context, apiResource);
+  } catch(err) {
+    // Best effort to create templates
+  }
 };
