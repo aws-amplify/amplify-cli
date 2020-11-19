@@ -83,10 +83,10 @@ function getDeploymentSecrets(): any {
 
 function isDeploymentSecretForEnvExists(projRoot: string, envName: string) {
   const teamproviderInfo = getTeamProviderInfo(projRoot);
-  const ampilfyAppId = teamproviderInfo[envName].awscloudformation.AmplifyAppId;
+  const rootStackId = teamproviderInfo[envName].awscloudformation.StackId.split('/')[2];
   const resource = _.first(Object.keys(teamproviderInfo[envName].categories.auth));
   const deploymentSecrets = getDeploymentSecrets();
-  const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.amplifyAppId === ampilfyAppId);
+  const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
   if (deploymentSecretByAppId) {
     const path = [envName, 'auth', resource, 'hostedUIProviderCreds'];
     return _.has(deploymentSecretByAppId.environments, path);
