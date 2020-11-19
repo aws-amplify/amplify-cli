@@ -1,7 +1,8 @@
 const amplifyApp = require('amplify-app');
 
 async function run(context, args) {
-  await amplifyApp.run();
+  const { frontend } = context.exeInfo.projectConfig;
+  await amplifyApp.run({ skipEnvCheck: true, platform: frontend });
 }
 
 module.exports = {

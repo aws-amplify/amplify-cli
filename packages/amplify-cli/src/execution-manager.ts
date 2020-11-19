@@ -219,23 +219,26 @@ const legacyCommandExecutor = async (context: Context, plugin: PluginInfo) => {
   }
 };
 
+const PLUGINS_WITH_HANDLERS = new Set([constants.CORE, constants.CODEGEN]);
+
 async function raisePreEvent(context: Context) {
   const { command, plugin } = context.input;
-  if (plugin === constants.CORE || plugin === constants.CODEGEN) {
-    switch (command) {
-      case 'init':
-        await raisePreInitEvent(context);
-        break;
-      case 'push':
-        await raisePrePushEvent(context);
-        break;
-      case 'pull':
-        await raisePrePullEvent(context);
-        break;
-      case 'models':
-        await raisePreCodegenModelsEvent(context);
-        break;
-    }
+  if (!plugin || !PLUGINS_WITH_HANDLERS.has(plugin)) {
+    return;
+  }
+  switch (command) {
+    case 'init':
+      await raisePreInitEvent(context);
+      break;
+    case 'push':
+      await raisePrePushEvent(context);
+      break;
+    case 'pull':
+      await raisePrePullEvent(context);
+      break;
+    case 'models':
+      await raisePreCodegenModelsEvent(context);
+      break;
   }
 }
 
@@ -257,21 +260,22 @@ async function raisePreCodegenModelsEvent(context: Context) {
 
 async function raisePostEvent(context: Context) {
   const { command, plugin } = context.input;
-  if (plugin === constants.CORE || plugin === constants.CODEGEN) {
-    switch (command) {
-      case 'init':
-        await raisePostInitEvent(context);
-        break;
-      case 'push':
-        await raisePostPushEvent(context);
-        break;
-      case 'pull':
-        await raisePostPullEvent(context);
-        break;
-      case 'models':
-        await raisePostCodegenModelsEvent(context);
-        break;
-    }
+  if (!plugin || !PLUGINS_WITH_HANDLERS.has(plugin)) {
+    return;
+  }
+  switch (command) {
+    case 'init':
+      await raisePostInitEvent(context);
+      break;
+    case 'push':
+      await raisePostPushEvent(context);
+      break;
+    case 'pull':
+      await raisePostPullEvent(context);
+      break;
+    case 'models':
+      await raisePostCodegenModelsEvent(context);
+      break;
   }
 }
 
