@@ -19,6 +19,7 @@ const { formUserAgentParam } = require('./aws-utils/user-agent');
 const predictionsRegionMap = require('./aws-predictions-regions');
 
 import { adminLoginFlow } from './admin-login';
+import { doAdminCredentialsExist, isAmplifyAdminApp } from './utils/admin-helpers';
 import { CognitoUserPoolService, createCognitoUserPoolService } from './aws-utils/CognitoUserPoolService';
 import { IdentityPoolService, createIdentityPoolService } from './aws-utils/IdentityPoolService';
 
@@ -101,6 +102,7 @@ module.exports = {
   attachBackend,
   init,
   initEnv,
+  isAmplifyAdminApp,
   onInitSuccessful,
   configure,
   configureNewUser,
@@ -117,6 +119,7 @@ module.exports = {
   getConfiguredAmplifyClient,
   showHelpfulLinks,
   deleteEnv,
+  doAdminCredentialsExist,
   loadResourceParameters,
   saveResourceParameters,
   predictionsRegionMap,

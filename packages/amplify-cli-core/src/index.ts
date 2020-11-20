@@ -118,7 +118,7 @@ interface AmplifyToolkit {
   getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => $TSAny;
   getResourceOutputs: () => $TSAny;
   getWhen: () => $TSAny;
-  inputValidation: () => $TSAny;
+  inputValidation: (input: $TSAny) => $TSAny;
   listCategories: () => $TSAny;
   makeId: () => $TSAny;
   openEditor: () => $TSAny;

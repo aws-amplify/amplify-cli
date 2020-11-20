@@ -8,6 +8,7 @@ const { ENV_SPECIFIC_PARAMS, privateKeys } = require('./constants');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
 const { supportedServices } = require('../supported-services');
 const { importResource, importedAuthEnvInit } = require('./import');
+const { doAdminCredentialsExist } = require('amplify-provider-awscloudformation');
 
 function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -294,23 +295,32 @@ function getRequiredParamsForHeadlessInit(projectType, previousValues) {
 async function console(context, amplifyMeta) {
   const cognitoOutput = getCognitoOutput(amplifyMeta);
   if (cognitoOutput) {
-    const { Region } = amplifyMeta.providers.awscloudformation;
+    const { AmplifyAppId, Region } = amplifyMeta.providers.awscloudformation;
     if (cognitoOutput.UserPoolId && cognitoOutput.IdentityPoolId) {
+      let choices = ['User Pool', 'Identity Pool', 'User Pool and Identity Pool'];
+      let adminOption = doAdminCredentialsExist(AmplifyAppId);
+      if (adminOption) {
+        choices = ['Amplify admin UI', ...choices];
+      }
       const answer = await inquirer.prompt({
         name: 'selection',
         type: 'list',
         message: 'Which console',
-        choices: ['User Pool', 'Identity Pool', 'Both'],
-        default: 'Both',
+        choices,
+        default: adminOption ? 'Amplify admin UI' : 'User Pool and Identity Pool',
       });
 
       switch (answer.selection) {
+        case 'Amplify admin UI':
+          await openAdminUI(context, appId, Region);
+          break;
         case 'User Pool':
           await openUserPoolConsole(context, Region, cognitoOutput.UserPoolId);
           break;
         case 'Identity Pool':
           await openIdentityPoolConsole(context, Region, cognitoOutput.IdentityPoolId);
           break;
+        case 'User Pool and Identity Pool':
         default:
           await openUserPoolConsole(context, Region, cognitoOutput.UserPoolId);
           await openIdentityPoolConsole(context, Region, cognitoOutput.IdentityPoolId);
@@ -339,6 +349,14 @@ function getCognitoOutput(amplifyMeta) {
     }
   }
   return cognitoOutput;
+}
+
+async function openAdminUI(context, appId, region) {
+  // region will be needed in prod
+  const { envName } = context.amplify.getEnvInfo();
+  const adminUrl = `https://www.dracarys.app/admin/${appId}/${envName}`;
+  await open(adminUrl, { wait: false });
+  context.print.success(adminUrl);
 }
 
 async function openUserPoolConsole(context, region, userPoolId) {

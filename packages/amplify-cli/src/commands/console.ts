@@ -1,5 +1,7 @@
 import open from 'open';
+import { prompt } from 'enquirer';
 import { stateManager } from 'amplify-cli-core';
+const { doAdminCredentialsExist } = require('amplify-provider-awscloudformation');
 
 const providerName = 'awscloudformation';
 
@@ -22,6 +24,20 @@ export const run = async context => {
 
     if (envName && AmplifyAppId) {
       consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
+      if (doAdminCredentialsExist(AmplifyAppId)) {
+        const response: { choice: string } = await prompt({
+          type: 'select',
+          name: 'choice',
+          message: 'Which site do you want to open?',
+          choices: [
+            { name: 'admin', message: 'Amplify admin UI', value: 'admin' },
+            { name: 'console', message: 'Amplify console', value: 'console' },
+          ],
+        });
+        if (response.choice === 'admin') {
+          consoleUrl = constructAdminURL(Region, AmplifyAppId, envName);
+        }
+      }
     }
   } catch (e) {
     context.print.error(e.message);
@@ -30,6 +46,11 @@ export const run = async context => {
   context.print.green(consoleUrl);
   open(consoleUrl, { wait: false });
 };
+
+function constructAdminURL(region: string, appId: string, envName: string) {
+  const adminURL = `https://www.dracarys.app/admin/${appId}/${envName}/home`;
+  return adminURL;
+}
 
 function constructStatusURL(region, appId, envName) {
   const prodURL = `https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}/YmFja2VuZA/${envName}`; // eslint-disable-line

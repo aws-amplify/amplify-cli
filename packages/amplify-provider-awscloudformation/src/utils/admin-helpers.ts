@@ -12,6 +12,9 @@ export function doAdminCredentialsExist(appId: string): boolean {
 }
 
 export async function isAmplifyAdminApp(appId: string): Promise<boolean> {
+  if (doAdminCredentialsExist(appId)) {
+    return true;
+  }
   const url = `https://rh2kdo2x79.execute-api.us-east-1.amazonaws.com/gamma/AppState/?appId=${appId}`;
   const res = await fetch(`${url}`);
   const resJson = await res.json();
