@@ -65,7 +65,7 @@ class Container implements IContainerDefinitions {
             timeout: toSeconds(timeout),
             retries,
           }
-        : undefined)(healthcheck); // ? Object.assign(healthcheck, { command: [].concat(healthcheck.command) }) : healthcheck;
+        : undefined)(healthcheck);
 
     this.working_dir = working_dir;
     this.user = user;
