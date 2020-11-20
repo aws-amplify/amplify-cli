@@ -80,14 +80,14 @@ async function run(context, resourceDefinition) {
     await prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated);
     await updateS3Templates(context, resources, projectDetails.amplifyMeta);
 
-    // TODO: only upload these if resource is a container api
-    // upload custom awaiter code and codepipeline action lambdas
-    const uploadResourcesPromises = [
-      'custom-resource-pipeline-awaiter.zip',
-      'codepipeline-action-buildspec-generator-lambda.zip',
-    ].map(file => uploadResourceFile(context, file));
+    const hasContainers = envHasContainers(context);
 
-    await Promise.all(uploadResourcesPromises);
+    if (hasContainers) {
+      const containerResourcesFilenames = ['custom-resource-pipeline-awaiter.zip', 'codepipeline-action-buildspec-generator-lambda.zip'];
+      for (const file of containerResourcesFilenames) {
+        await uploadResourceFile(context, file);
+      }
+    }
 
     spinner.start();
 
