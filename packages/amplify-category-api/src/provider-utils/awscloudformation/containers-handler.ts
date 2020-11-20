@@ -7,7 +7,7 @@ import { DEPLOYMENT_MECHANISM } from './ecs-stack';
 import { GitHubSourceActionInfo } from './PipelineWithAwaiter';
 import uuid from 'uuid';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
-import { generateContainersArtifacts, ApiResource } from '../..';
+import { ApiResource, generateContainersArtifacts } from './utils/containers-artifacts';
 
 export const addResource = async (
   serviceWalkthroughPromise: Promise<ServiceConfiguration>,
@@ -78,12 +78,12 @@ export const addResource = async (
     mutableParametersState,
     skipHashing: true,
     apiType,
-    iamAccessUnavailable: true // this is because we dont support IAM access to the API yet
+    iamAccessUnavailable: true, // this is because we dont support IAM access to the API yet
   };
 
   await context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
 
-  const apiResource = await context.amplify.getProjectMeta().api[resourceName] as ApiResource;
+  const apiResource = (await context.amplify.getProjectMeta().api[resourceName]) as ApiResource;
   apiResource.category = category;
 
   fs.ensureDirSync(resourceDirPath);
@@ -119,13 +119,19 @@ export const addResource = async (
   context.print.success('Next steps:');
 
   if (deploymentMechanism === DEPLOYMENT_MECHANISM.FULLY_MANAGED) {
-    context.print.info(`Place your Dockerfile, docker-compose.yml and any related container source files in this directory: <project-dir>/amplify/backend/api/${resourceName}/src`);
+    context.print.info(
+      `Place your Dockerfile, docker-compose.yml and any related container source files in this directory: <project-dir>/amplify/backend/api/${resourceName}/src`,
+    );
   } else if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
-    context.print.info(`Ensure you have the Dockerfile, docker-compose.yml and any related container source files in your Github path: ${githubInfo.path}`)
+    context.print.info(
+      `Ensure you have the Dockerfile, docker-compose.yml and any related container source files in your Github path: ${githubInfo.path}`,
+    );
   }
 
   context.print.info('');
-  context.print.info(`Amplify CLI infers many configuration settings from the "docker-compose.yaml" file. \nLearn more: docs.amplify.aws/cli/function/container`)
+  context.print.info(
+    `Amplify CLI infers many configuration settings from the "docker-compose.yaml" file. \nLearn more: docs.amplify.aws/cli/function/container`,
+  );
   context.print.info('Run "amplify push" to build and deploy your image');
 
   return resourceName;
@@ -214,7 +220,7 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
     mutableParametersState,
     categoryPolicies,
     environmentMap,
-    deploymentMechanism
+    deploymentMechanism,
   } = options;
 
   let [authName, updatedDependsOn] = await getResourceDependencies({ dependsOn, restrictAccess, category, resourceName, context });
@@ -247,10 +253,15 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
   await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'authName', authName);
   await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'environmentMap', environmentMap);
   await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'dependsOn', updatedDependsOn);
-  await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'mutableParametersState', mutableParametersState);
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(
+    category,
+    options.resourceName,
+    'mutableParametersState',
+    mutableParametersState,
+  );
   await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'categoryPolicies', categoryPolicies);
 
-  const apiResource = await context.amplify.getProjectMeta().api[options.resourceName] as ApiResource;
+  const apiResource = (await context.amplify.getProjectMeta().api[options.resourceName]) as ApiResource;
   apiResource.category = category;
 
   try {
