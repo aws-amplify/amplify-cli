@@ -32,7 +32,7 @@ export enum DEPLOYMENT_MECHANISM {
   SELF_MANAGED = 'SELF_MANAGED',
 }
 
-type EcsStackProps = {
+type EcsStackProps = Readonly<{
   envName: string;
   categoryName: string;
   apiName: string;
@@ -54,7 +54,7 @@ type EcsStackProps = {
   apiType: API_TYPE;
   exposedContainer: { name: string; port: number };
   secretsArns?: Map<string, string>;
-};
+}>;
 
 export class EcsStack extends cdk.Stack {
   pipeline: PipelineWithAwaiter;

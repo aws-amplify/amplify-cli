@@ -5,13 +5,13 @@ import * as discovery from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 
-type NetworkStackProps = {
+type NetworkStackProps = Readonly<{
   stackName: string;
   vpcName: string;
   vpcId: string;
   internetGatewayId: string;
   subnetCidrs: ReadonlyMap<string, string>;
-};
+}>;
 
 export const NETWORK_STACK_LOGICAL_ID = 'NetworkStack';
 
