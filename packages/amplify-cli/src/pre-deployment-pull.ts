@@ -36,7 +36,9 @@ export async function preDeployPullBackend(context: $TSContext, sandboxId: strin
   }
 
   // Replace base schema with the schema configured in Backend-manager app
-  const schema = resJson.schema;
+  let schema = resJson.schema;
+  schema = schema.replace(/\@auth\(rules\: \[\{allow\: private\, provider\: iam\}\]\)/g, "");
+  
   replaceSchema(schema);
 
   // Generate models
