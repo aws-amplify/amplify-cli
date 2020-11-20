@@ -8,8 +8,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as custom from '@aws-cdk/custom-resources';
-import fs from 'fs-extra';
-import path from 'path';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { DEPLOYMENT_MECHANISM } from './ecs-stack';
 import { getGitHubOwnerRepoFromPath } from './utils/github';
 
