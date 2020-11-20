@@ -38,7 +38,7 @@ class PipelineAwaiter extends cdk.Construct {
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(onEventHandlerCode),
-      timeout: cdk.Duration.minutes(5),
+      timeout: cdk.Duration.seconds(15),
     });
 
     const pipelineCodeFilePath = path.join(__dirname, 'lambdas', 'pipeline.js');
@@ -47,7 +47,7 @@ class PipelineAwaiter extends cdk.Construct {
     const isCompleteHandler = new lambda.Function(scope, `${id}CustomCompleteHandler`, {
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
-      timeout: cdk.Duration.seconds(25),
+      timeout: cdk.Duration.seconds(15),
       code: lambda.Code.fromInline(isCompleteHandlerCode),
     });
     isCompleteHandler.addToRolePolicy(
@@ -209,6 +209,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
                   CLUSTER_NAME: service.cluster,
                   SERVICE_NAME: service.serviceName,
                 },
+                timeout: cdk.Duration.seconds(15),
               });
 
               action.addToRolePolicy(
@@ -327,6 +328,7 @@ function createPreBuildStages(
             code: lambda.S3Code.fromBucket(bucket, 'codepipeline-action-buildspec-generator-lambda.zip'),
             handler: 'index.handler',
             runtime: lambda.Runtime.NODEJS_12_X,
+            timeout: cdk.Duration.seconds(15),
           }),
           inputs: [preBuildOutput],
           outputs: [sourceOutput],

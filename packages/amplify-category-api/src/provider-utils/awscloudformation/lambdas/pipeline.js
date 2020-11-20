@@ -95,11 +95,6 @@ exports.handler = async function({ RequestType, ResourceProperties, StackId }) {
 
   const { status } = execution || {};
 
-  // TODO: remove?
-  // if (undefined === status) {
-  //     return { IsComplete: true };
-  // }
-
   let IsComplete = false;
 
   switch (status) {
