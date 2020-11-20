@@ -155,6 +155,12 @@ export class S3 {
     }
   }
 
+  public async emptyS3Bucket(bucketName) {
+    if (await this.ifBucketExists(bucketName)) {
+      await this.deleteAllObjects(bucketName);
+    }
+  }
+
   public async ifBucketExists(bucketName: string) {
     try {
       await this.s3

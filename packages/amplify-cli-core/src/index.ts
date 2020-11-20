@@ -150,6 +150,7 @@ interface AmplifyToolkit {
     category: string,
     servicesMetadata: $TSAny,
     customQuestion?: $TSAny,
+    optionNameOverrides?: Record<string, string>,
   ) => Promise<ServiceSelection>;
   updateProjectConfig: () => $TSAny;
   updateamplifyMetaAfterResourceUpdate: () => $TSAny;

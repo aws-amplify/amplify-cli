@@ -26,19 +26,20 @@ import {
   createUserPoolOnlyWithOAuthSettings,
   expectApiHasCorrectAuthConfig,
   expectLocalAndCloudMetaFilesMatching,
-  expectLocalAndOGMetaFilesOutputMatching,
+  expectAuthLocalAndOGMetaFilesOutputMatching,
   expectLocalAndPulledBackendConfigMatching,
   expectLocalTeamInfoHasNoCategories,
   expectNoAuthInMeta,
-  expectProjectDetailsMatch,
-  getOGProjectDetails,
-  getProjectDetails,
+  expectAuthProjectDetailsMatch,
+  getOGAuthProjectDetails,
+  getAuthProjectDetails,
   getShortId,
   importUserPoolOnly,
-  ProjectDetails,
+  AuthProjectDetails,
   readRootStack,
   removeImportedAuthWithDefault,
 } from '../import-helpers';
+import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 
 describe('auth import userpool only', () => {
   const projectPrefix = 'auimpup';
@@ -60,7 +61,7 @@ describe('auth import userpool only', () => {
   let ogProjectRoot: string;
   let ogShortId: string;
   let ogSettings: AddAuthUserPoolOnlyWithOAuthSettings;
-  let ogProjectDetails: ProjectDetails;
+  let ogProjectDetails: AuthProjectDetails;
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
@@ -79,7 +80,7 @@ describe('auth import userpool only', () => {
     await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
-    ogProjectDetails = getOGProjectDetails(ogProjectRoot);
+    ogProjectDetails = getOGAuthProjectDetails(ogProjectRoot);
 
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
     dummyOGShortId = getShortId();
@@ -121,9 +122,9 @@ describe('auth import userpool only', () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await importUserPoolOnly(projectRoot, ogSettings.userPoolName);
 
-    let projectDetails = getProjectDetails(projectRoot);
+    let projectDetails = getAuthProjectDetails(projectRoot);
 
-    expectProjectDetailsMatch(projectDetails, ogProjectDetails);
+    expectAuthProjectDetailsMatch(projectDetails, ogProjectDetails);
 
     await amplifyStatus(projectRoot, 'Import');
     await amplifyPushAuth(projectRoot);
@@ -131,9 +132,9 @@ describe('auth import userpool only', () => {
 
     expectLocalAndCloudMetaFilesMatching(projectRoot);
 
-    projectDetails = getProjectDetails(projectRoot);
+    projectDetails = getAuthProjectDetails(projectRoot);
 
-    expectProjectDetailsMatch(projectDetails, ogProjectDetails);
+    expectAuthProjectDetailsMatch(projectDetails, ogProjectDetails);
 
     await removeImportedAuthWithDefault(projectRoot);
     await amplifyStatus(projectRoot, 'Unlink');
@@ -179,7 +180,7 @@ describe('auth import userpool only', () => {
 
     await amplifyPushAuth(projectRoot);
 
-    const projectDetails = getProjectDetails(projectRoot);
+    const projectDetails = getAuthProjectDetails(projectRoot);
 
     // Verify that index.js gets the userpool env var name injected
     const amplifyBackendDirPath = path.join(projectRoot, 'amplify', 'backend');
@@ -201,7 +202,7 @@ describe('auth import userpool only', () => {
 
     // Verify userpool env var in function stack
     const functionStackFilePath = path.join(functionFilePath, `${functionName}-cloudformation-template.json`);
-    const functionStack = JSON.parse(fs.readFileSync(functionStackFilePath).toString());
+    const functionStack = JSONUtilities.readJson<$TSObject>(functionStackFilePath);
     expect(functionStack.Resources?.LambdaFunction?.Properties?.Environment?.Variables[userPoolIDEnvVarName].Ref).toEqual(
       authParameterName,
     );
@@ -212,7 +213,7 @@ describe('auth import userpool only', () => {
     );
   });
 
-  it('imported auth, s3 storage add should fail with error', async () => {
+  it('imported userpool only auth, s3 storage add should fail with error', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await importUserPoolOnly(projectRoot, ogSettings.userPoolName);
 
@@ -262,7 +263,7 @@ describe('auth import userpool only', () => {
 
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
-      expectLocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
+      expectAuthLocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
     } finally {
       deleteProjectDir(projectRootPull);
     }
@@ -293,7 +294,7 @@ describe('auth import userpool only', () => {
 
     // Meta is matching the data with the OG project's resources
     expectLocalAndCloudMetaFilesMatching(projectRoot);
-    expectLocalAndOGMetaFilesOutputMatching(projectRoot, ogProjectRoot);
+    expectAuthLocalAndOGMetaFilesOutputMatching(projectRoot, ogProjectRoot);
 
     await checkoutEnvironment(projectRoot, {
       envName: firstEnvName,

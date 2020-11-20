@@ -3,7 +3,8 @@ import { v4 as uuid } from 'uuid';
 import _ from 'lodash';
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import { getBackendAmplifyMeta, getTeamProviderInfo } from 'amplify-e2e-core';
-import { ProjectDetails } from '.';
+import { AuthProjectDetails, StorageProjectDetails } from '.';
+import { DynamoDBProjectDetails } from './types';
 
 export const getShortId = (): string => {
   const [shortId] = uuid().split('-');
@@ -11,7 +12,7 @@ export const getShortId = (): string => {
   return shortId;
 };
 
-export const getProjectDetails = (projectRoot: string): ProjectDetails => {
+export const getAuthProjectDetails = (projectRoot: string): AuthProjectDetails => {
   const meta = getBackendAmplifyMeta(projectRoot);
   const team = getTeamProviderInfo(projectRoot);
 
@@ -22,9 +23,9 @@ export const getProjectDetails = (projectRoot: string): ProjectDetails => {
   const authMeta = meta.auth[authMetaKey];
   const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
   const providerTeam = _.get(team, ['integtest', 'awscloudformation']);
-  const parameters = readAuthParametersJson(projectRoot, authMetaKey);
+  const parameters = readResourceParametersJson(projectRoot, 'auth', authMetaKey);
 
-  const result: ProjectDetails = {
+  const result: AuthProjectDetails = {
     authResourceName: authMetaKey,
     parameters: {
       authSelections: parameters.authSelections,
@@ -76,7 +77,7 @@ export const getProjectDetails = (projectRoot: string): ProjectDetails => {
   return result;
 };
 
-export const getOGProjectDetails = (projectRoot: string): ProjectDetails => {
+export const getOGAuthProjectDetails = (projectRoot: string): AuthProjectDetails => {
   const meta = getBackendAmplifyMeta(projectRoot);
   const team = getTeamProviderInfo(projectRoot);
 
@@ -86,7 +87,7 @@ export const getOGProjectDetails = (projectRoot: string): ProjectDetails => {
 
   const authMeta = meta.auth[authMetaKey];
   const authTeam = _.get(team, ['integtest', 'categories', 'auth', authMetaKey]);
-  const parameters = readAuthParametersJson(projectRoot, authMetaKey);
+  const parameters = readResourceParametersJson(projectRoot, 'auth', authMetaKey);
 
   return {
     authResourceName: authMetaKey,
@@ -113,15 +114,8 @@ export const getOGProjectDetails = (projectRoot: string): ProjectDetails => {
   };
 };
 
-export const readApiParametersJson = (projectRoot: string, projectPrefix: string): $TSObject => {
-  const parametersFilePath = path.join(projectRoot, 'amplify', 'backend', 'api', projectPrefix, 'parameters.json');
-  const parameters = JSONUtilities.readJson(parametersFilePath);
-
-  return parameters;
-};
-
-export const readAuthParametersJson = (projectRoot: string, resourceName: string): $TSObject => {
-  const parametersFilePath = path.join(projectRoot, 'amplify', 'backend', 'auth', resourceName, 'parameters.json');
+export const readResourceParametersJson = (projectRoot: string, category: string, resourceName: string): $TSObject => {
+  const parametersFilePath = path.join(projectRoot, 'amplify', 'backend', category, resourceName, 'parameters.json');
   const parameters = JSONUtilities.readJson(parametersFilePath);
 
   return parameters;
@@ -132,4 +126,140 @@ export const readRootStack = (projectRoot: string): $TSObject => {
   const rootStack = JSONUtilities.readJson(rootStackFilePath);
 
   return rootStack;
+};
+
+export const getOGStorageProjectDetails = (projectRoot: string): StorageProjectDetails => {
+  const meta = getBackendAmplifyMeta(projectRoot);
+
+  const storageMetaKey = Object.keys(meta.storage)
+    .filter(key => meta.storage[key].service === 'S3')
+    .map(key => key)[0];
+
+  const storageMeta = meta.storage[storageMetaKey];
+  const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
+
+  return {
+    storageResourceName: storageMetaKey,
+    parameters: {
+      resourceName: parameters.resourceName,
+    },
+    meta: {
+      BucketName: storageMeta.output.BucketName,
+      Region: storageMeta.output.Region,
+    },
+  };
+};
+
+export const getStorageProjectDetails = (projectRoot: string): StorageProjectDetails => {
+  const meta = getBackendAmplifyMeta(projectRoot);
+  const team = getTeamProviderInfo(projectRoot);
+
+  const storageMetaKey = Object.keys(meta.storage)
+    .filter(key => meta.storage[key].service === 'S3')
+    .map(key => key)[0];
+
+  const stoargeMeta = meta.storage[storageMetaKey];
+  const storageTeam = _.get(team, ['integtest', 'categories', 'storage', storageMetaKey]);
+  const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
+
+  const result: StorageProjectDetails = {
+    storageResourceName: storageMetaKey,
+    parameters: {
+      resourceName: parameters.userPoolName,
+    },
+    meta: {
+      BucketName: stoargeMeta.output.BucketName,
+      Region: stoargeMeta.output.Region,
+    },
+    team: {
+      bucketName: storageTeam.bucketName,
+      region: storageTeam.region,
+    },
+  };
+
+  return result;
+};
+
+export const getS3ResourceName = (projectRoot: string): string => {
+  const amplifyMeta = getBackendAmplifyMeta(projectRoot);
+  const s3ResourceName = Object.keys(amplifyMeta.storage).find((key: any) => {
+    return amplifyMeta.storage[key].service === 'S3';
+  }) as any;
+  return s3ResourceName;
+};
+
+export const getOGDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjectDetails => {
+  const meta = getBackendAmplifyMeta(projectRoot);
+
+  const storageMetaKey = Object.keys(meta.storage)
+    .filter(key => meta.storage[key].service === 'DynamoDB')
+    .map(key => key)[0];
+
+  const storageMeta = meta.storage[storageMetaKey];
+  const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
+
+  return {
+    storageResourceName: storageMetaKey,
+    parameters: {
+      resourceName: parameters.resourceName,
+    },
+    meta: {
+      Name: storageMeta.output.Name,
+      Region: storageMeta.output.Region,
+      PartitionKeyName: storageMeta.output.PartitionKeyName,
+      PartitionKeyType: storageMeta.output.PartitionKeyType,
+      SortKeyName: storageMeta.output.SortKeyName,
+      SortKeyType: storageMeta.output.SortKeyType,
+      Arn: storageMeta.output.Arn,
+      StreamArn: storageMeta.output.StreamArn,
+    },
+  };
+};
+
+export const getDynamoDBProjectDetails = (projectRoot: string): DynamoDBProjectDetails => {
+  const meta = getBackendAmplifyMeta(projectRoot);
+  const team = getTeamProviderInfo(projectRoot);
+
+  const storageMetaKey = Object.keys(meta.storage)
+    .filter(key => meta.storage[key].service === 'DynamoDB')
+    .map(key => key)[0];
+
+  const dynamodbMeta = meta.storage[storageMetaKey];
+  const storageTeam = _.get(team, ['integtest', 'categories', 'storage', storageMetaKey]);
+  const parameters = readResourceParametersJson(projectRoot, 'storage', storageMetaKey);
+
+  return {
+    storageResourceName: storageMetaKey,
+    parameters: {
+      resourceName: parameters.resourceName,
+    },
+    meta: {
+      Name: dynamodbMeta.output.Name,
+      Region: dynamodbMeta.output.Region,
+      PartitionKeyName: dynamodbMeta.output.PartitionKeyName,
+      PartitionKeyType: dynamodbMeta.output.PartitionKeyType,
+      SortKeyName: dynamodbMeta.output.SortKeyName,
+      SortKeyType: dynamodbMeta.output.SortKeyType,
+      Arn: dynamodbMeta.output.Arn,
+      StreamArn: dynamodbMeta.output.StreamArn,
+    },
+    team: {
+      tableName: storageTeam.tableName,
+      region: storageTeam.region,
+      partitionKeyName: storageTeam.partitionKeyName,
+      partitionKeyType: storageTeam.partitionKeyType,
+      sortKeyName: storageTeam.sortKeyName,
+      sortKeyType: storageTeam.sortKeyType,
+      arn: storageTeam.arn,
+      streamArn: storageTeam.streamArn,
+    },
+  };
+};
+
+export const getDynamoDBResourceName = (projectRoot: string): string => {
+  const amplifyMeta = getBackendAmplifyMeta(projectRoot);
+  const dynamoDBResourceName = Object.keys(amplifyMeta.storage).find((key: any) => {
+    return amplifyMeta.storage[key].service === 'DynamoDB';
+  }) as any;
+  return dynamoDBResourceName;
 };
