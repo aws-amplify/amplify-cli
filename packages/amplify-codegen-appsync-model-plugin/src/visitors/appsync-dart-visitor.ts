@@ -43,6 +43,16 @@ export class AppSyncModelDartVisitor<
         }
       });
     });
+    Object.entries(this.enums).forEach(([name, enumVal]) => {
+      if (DART_RESERVED_KEYWORDS.includes(name)) {
+        throw new Error(`Enum name '${name}' is a reserved word in dart. Please use a non-reserved name instead.`);
+      }
+      Object.values(enumVal.values).forEach(val => {
+        if (DART_RESERVED_KEYWORDS.includes(val)) {
+          throw new Error(`Enum value '${val}' in enum '${name}' is a reserved word in dart. Please use a non-reserved name instead.`);
+        }
+      })
+    });
   }
 
   protected generateClassLoader(): string {
@@ -103,7 +113,7 @@ export class AppSyncModelDartVisitor<
     Object.entries(this.getSelectedEnums()).forEach(([name, enumVal]) => {
       const body = Object.values(enumVal.values).join(',\n');
       result.push([
-        `enum ${this.getEnumName(enumVal)} {`,
+        `enum ${name} {`,
         indentMultiline(body),
         '}'
       ].join('\n'));
