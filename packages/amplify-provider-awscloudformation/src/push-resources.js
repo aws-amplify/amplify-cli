@@ -22,8 +22,8 @@ const archiver = require('./utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const { stateManager } = require('amplify-cli-core');
 const constants = require('./constants');
-const { NetworkStack, NETWORK_STACK_LOGICAL_ID } = require('./network/stack');
-const { getEnvironmentNetworkInfo } = require('./network/environment-info');
+const { createEnvLevelConstructs } = require('./utils/env-level-constructs');
+const { NETWORK_STACK_LOGICAL_ID } = require('./network/stack');
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaLayer = 'LambdaLayer';
@@ -79,15 +79,6 @@ async function run(context, resourceDefinition) {
     await prePushAuthTransform(context, resources);
     await prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated);
     await updateS3Templates(context, resources, projectDetails.amplifyMeta);
-
-    const hasContainers = envHasContainers(context);
-
-    if (hasContainers) {
-      const containerResourcesFilenames = ['custom-resource-pipeline-awaiter.zip', 'codepipeline-action-buildspec-generator-lambda.zip'];
-      for (const file of containerResourcesFilenames) {
-        await uploadResourceFile(context, file);
-      }
-    }
 
     spinner.start();
 
@@ -197,110 +188,6 @@ async function run(context, resourceDefinition) {
     spinner.fail('An error occurred when pushing the resources to the cloud');
     throw err;
   }
-}
-
-async function createEnvLevelConstructs(context) {
-  const { StackName: stackName } = context.amplify.getProjectMeta().providers[constants.ProviderName];
-
-  const hasContainers = envHasContainers(context);
-
-  const updatedMeta = {};
-
-  Object.assign(updatedMeta, await createNetworkResources(context, stackName, hasContainers));
-
-  context.amplify.updateProvideramplifyMeta(providerName, updatedMeta);
-}
-
-async function createNetworkResources(context, stackName, needsVpc) {
-  if (!needsVpc) {
-    return {
-      NetworkStackS3Url: undefined,
-    };
-  }
-  const vpcName = 'Amplify/VPC-do-not-delete';
-
-  const { vpcId, internetGatewayId, subnetCidrs } = await getEnvironmentNetworkInfo(context, {
-    stackName,
-    vpcName,
-    vpcCidr: '10.0.0.0/16',
-    subnetsCount: 3,
-    subnetMask: 24,
-  });
-
-  const stack = new NetworkStack(undefined, 'Amplify', {
-    stackName,
-    vpcName,
-    vpcId,
-    internetGatewayId,
-    subnetCidrs,
-  });
-
-  const cfn = stack.toCloudFormation();
-
-  const cfnFile = 'networkingStackTemplate.json';
-
-  const s3 = await S3.getInstance(context);
-
-  const s3Params = {
-    Body: JSON.stringify(cfn, null, 2),
-    Key: `amplify-cfn-templates/${cfnFile}`,
-  };
-
-  const projectBucket = await s3.uploadFile(s3Params);
-  const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${cfnFile}`;
-
-  return {
-    NetworkStackS3Url: templateURL,
-  };
-}
-
-function envHasContainers(context) {
-  const functionsObj = context.amplify.getProjectMeta().function;
-  const apiObj = context.amplify.getProjectMeta().api;
-
-  if (functionsObj) {
-    const found = Object.keys(functionsObj).some(key => {
-      const func = functionsObj[key];
-      if (func.providerPlugin === providerName && func.service === 'ElasticContainer') {
-        if (func.scheduleOptions && func.scheduleOptions.cloudwatchRule) {
-          return true;
-        }
-      }
-    });
-
-    if (found) {
-      return true;
-    }
-  }
-
-  if (apiObj) {
-    const found = Object.keys(apiObj).some(key => {
-      const api = apiObj[key];
-      if (api.providerPlugin === providerName && api.service === 'ElasticContainer') {
-        return true;
-      }
-    });
-
-    if (found) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-async function uploadResourceFile(context, fileName) {
-  const filePath = path.join(__dirname, '..', 'resources', fileName);
-
-  // TODO: check if already exists
-
-  return S3.getInstance(context).then(s3 => {
-    const s3Params = {
-      Body: fs.createReadStream(filePath),
-      Key: fileName,
-    };
-    return s3.uploadFile(s3Params);
-  });
 }
 
 async function updateStackForAPIMigration(context, category, resourceName, options) {
