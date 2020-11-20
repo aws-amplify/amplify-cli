@@ -181,7 +181,6 @@ export class PipelineWithAwaiter extends cdk.Construct {
         stageName: 'Build',
         actions: [
           new codepipelineactions.CodeBuildAction({
-            role: getRole(scope, 'UpdateBuild'),
             actionName: 'Build',
             type: codepipelineactions.CodeBuildActionType.BUILD,
             project: codebuildproject,
@@ -231,7 +230,6 @@ export class PipelineWithAwaiter extends cdk.Construct {
         stageName: 'Deploy',
         actions: [
           new codepipelineactions.EcsDeployAction({
-            role: getRole(scope, 'UpdateDeploy'),
             actionName: 'Deploy',
             service: new (class extends cdk.Construct implements ecs.IBaseService {
               cluster = {
@@ -250,8 +248,6 @@ export class PipelineWithAwaiter extends cdk.Construct {
       },
     ]);
 
-    const role = getRole(scope, `Pipeline`, new iam.ServicePrincipal('codepipeline.amazonaws.com'));
-
     this.pipelineName = `codepipeline-amplify-${service.serviceName}`;
 
     const pipeline = new codepipeline.Pipeline(scope, `${id}Pipeline`, {
@@ -259,7 +255,6 @@ export class PipelineWithAwaiter extends cdk.Construct {
       crossAccountKeys: false,
       artifactBucket: bucket,
       stages: stagesWithDeploy,
-      role,
     });
 
     pipeline.node.addDependency(service);
@@ -338,7 +333,6 @@ function createPreBuildStages(
   } else {
     stage.actions = [
       new codepipelineactions.S3SourceAction({
-        role: getRole(scope, roleName),
         actionName: 'Source',
         bucket,
         bucketKey: s3SourceActionKey,
@@ -348,25 +342,6 @@ function createPreBuildStages(
   }
 
   return stages;
-}
-
-function getRole(scope: cdk.Construct, prefix: string, assumedBy?: iam.IPrincipal): iam.Role {
-  const role = new iam.Role(scope, `${prefix}Role`, {
-    assumedBy: assumedBy ?? new iam.AccountRootPrincipal(),
-  });
-
-  const cfnRole = role.node.defaultChild as iam.CfnRole;
-
-  // We add a dummy statement that we immediately remove so CDK creates a policy to which we can add a condition
-  const defaultPolicy = role.addToPrincipalPolicy(
-    new iam.PolicyStatement({
-      actions: ['*'],
-      effect: iam.Effect.DENY,
-    }),
-  ).policyDependable as iam.Policy;
-  (defaultPolicy.document as any).statements = [];
-
-  return role;
 }
 
 export type ContainerStackProps = {
