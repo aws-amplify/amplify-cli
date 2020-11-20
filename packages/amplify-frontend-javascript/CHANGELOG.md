@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.17.3...amplify-frontend-javascript@2.17.6-beta.0) (2020-11-20)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
 ## [2.17.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.17.3...amplify-frontend-javascript@2.17.5) (2020-11-20)
 
 **Note:** Version bump only for package amplify-frontend-javascript

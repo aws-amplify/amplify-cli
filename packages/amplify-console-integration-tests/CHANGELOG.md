@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.36-beta.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.2.33...amplify-console-integration-tests@1.2.36-beta.0) (2020-11-20)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-console-integration-tests/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-console-integration-tests/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+
+
 ## [1.2.35](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.2.33...amplify-console-integration-tests@1.2.35) (2020-11-20)
 
 

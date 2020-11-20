@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.14-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.11...amplify-migration-tests@2.18.14-beta.0) (2020-11-20)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+
+
 ## [2.18.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.11...amplify-migration-tests@2.18.13) (2020-11-20)
 
 

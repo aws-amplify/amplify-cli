@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-notifications",
-  "version": "2.16.6",
+  "version": "2.16.7-beta.0",
   "description": "amplify-cli notifications plugin",
   "repository": {
     "type": "git",

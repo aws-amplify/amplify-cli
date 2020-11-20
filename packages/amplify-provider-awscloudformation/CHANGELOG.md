@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.30.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.29.0...amplify-provider-awscloudformation@4.30.0-beta.0) (2020-11-20)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+### Features
+
+* root-stack description change for console generated stacks ([#5900](https://github.com/aws-amplify/amplify-cli/issues/5900)) ([8ae6015](https://github.com/aws-amplify/amplify-cli/commit/8ae60157a1d443baffa6fd505cdb8358a0fc3142))
+
+
+
+
+
 ## [4.29.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.29.0...amplify-provider-awscloudformation@4.29.2) (2020-11-20)
 
 
