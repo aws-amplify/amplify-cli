@@ -31,24 +31,13 @@ class PipelineAwaiter extends cdk.Construct {
 
     const { pipelineArn, pipelineName } = pipeline;
 
+    const pipelineOnEventCodeFilePath = path.join(__dirname, 'lambdas', 'pipeline-on-event.js');
+    const onEventHandlerCode = fs.readFileSync(pipelineOnEventCodeFilePath, 'utf8');
+
     const onEventHandler = new lambda.Function(scope, `${id}CustomEventHandler`, {
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
-      code: lambda.Code.fromInline(`exports.handler = async function ({ RequestType, PhysicalResourceId, ResourceProperties }) {
-                switch (RequestType) {
-                    case 'Delete':
-                    case 'Update':
-                        return { PhysicalResourceId };
-                }
-
-                const { pipelineName } = ResourceProperties;
-
-                const result = {
-                    PhysicalResourceId: \`pipelineawaiter-\${pipelineName}\`
-                };
-
-                return result;
-            };`),
+      code: lambda.Code.fromInline(onEventHandlerCode),
       timeout: cdk.Duration.minutes(5),
     });
 
