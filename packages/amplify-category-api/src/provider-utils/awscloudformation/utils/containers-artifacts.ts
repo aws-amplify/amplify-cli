@@ -10,6 +10,7 @@ import Container from '../../../provider-utils/awscloudformation/docker-compose/
 import { DEPLOYMENT_MECHANISM, EcsStack } from '../../../provider-utils/awscloudformation/ecs-stack';
 import { API_TYPE, ResourceDependency } from '../../../provider-utils/awscloudformation/service-walkthroughs/containers-walkthrough';
 import { getGitHubOwnerRepoFromPath } from '../../../provider-utils/awscloudformation/utils/github';
+import { JSONUtilities } from 'amplify-cli-core';
 
 export type ApiResource = {
   category: string;
@@ -56,8 +57,8 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     exposedContainer: exposedContainerFromMeta,
   } = resource;
 
-  const backEndDir = context.amplify.pathManager.getBackendDirPath();
-  const resourceDir = path.normalize(path.join(backEndDir, categoryName, resourceName));
+  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const resourceDir = path.normalize(path.join(backendDir, categoryName, resourceName));
 
   const {
     providers: { [cloudformationProviderName]: provider },
@@ -125,9 +126,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     }
   }
 
-  const noDefinitionAvailable = Object.keys(containerDefinitionFiles).length === 0;
-
-  if (noDefinitionAvailable) {
+  if (Object.keys(containerDefinitionFiles).length === 0) {
     throw new Error('No definition available (docker-compose.yaml / docker-compose.yml / Dockerfile)');
   }
 
@@ -135,7 +134,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     throw new Error('There should be only one docker-compose.yaml / docker-compose.yml)');
   }
 
-  let composeContents = containerDefinitionFiles[dockerComposeFileNameYaml] || containerDefinitionFiles[dockerComposeFileNameYml];
+  const composeContents = containerDefinitionFiles[dockerComposeFileNameYaml] || containerDefinitionFiles[dockerComposeFileNameYml];
   const { [dockerfileFileName]: dockerfileContents } = containerDefinitionFiles;
 
   const { buildspec, containers, service, secrets } = getContainers(composeContents, dockerfileContents);
@@ -257,7 +256,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   const cfn = stack.toCloudFormation();
 
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
-  context.amplify.writeObjectAsJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn, true);
+  JSONUtilities.writeJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn);
 
   return { exposedContainer, pipelineInfo: { consoleUrl: stack.getPipelineConsoleUrl(provider.Region) } };
 }

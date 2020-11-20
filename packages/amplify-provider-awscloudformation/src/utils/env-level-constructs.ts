@@ -1,9 +1,9 @@
-const fs = require('fs-extra');
-const path = require('path');
-const { S3 } = require('../aws-utils/aws-s3');
-const constants = require('../constants');
-const { NetworkStack } = require('../network/stack');
-const { getEnvironmentNetworkInfo } = require('../network/environment-info');
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { S3 } from '../aws-utils/aws-s3';
+import constants from '../constants';
+import { NetworkStack } from '../network/stack';
+import { getEnvironmentNetworkInfo } from '../network/environment-info';
 
 const { ProviderName: providerName } = constants;
 
