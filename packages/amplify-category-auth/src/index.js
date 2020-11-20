@@ -159,7 +159,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     const action = authExists ? 'updated' : 'added';
     context.print.success(`Successfully ${action} auth resource locally.`);
 
-    return authProps.resourceName;
+    return requirements.resourceName;
   } catch (e) {
     context.print.error('Error updating Cognito resource');
     throw e;
