@@ -44,4 +44,14 @@ export class S3Service implements IS3Service {
     // If the return object has no keys then it means successful empty object was returned.
     return Object.keys(response).length === 0;
   }
+
+  public async getBucketLocation(bucketName: string): Promise<string> {
+    const response = await this.s3
+      .getBucketLocation({
+        Bucket: bucketName,
+      })
+      .promise();
+
+    return response.LocationConstraint!;
+  }
 }

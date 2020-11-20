@@ -212,7 +212,7 @@ export const importDynamoDBTable = (cwd: string, autoCompletePrefix: string) => 
       .send(autoCompletePrefix)
       .delay(500) // Some delay required for autocomplete and terminal to catch up
       .sendCarriageReturn()
-      .wait(`- This resource will be available for REST APIs ('amplify add api') and functions ('amplify add function')`)
+      .wait(`- This resource can now be accessed from REST APIs (‘amplify add api’) and Functions (‘amplify add function’)`)
       .sendEof()
       .run((err: Error) => {
         if (!err) {

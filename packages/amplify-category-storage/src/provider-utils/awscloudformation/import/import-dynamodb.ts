@@ -58,7 +58,7 @@ const printSuccess = (context: $TSContext, tableName: string) => {
   context.print.info(`✅ DynamoDB Table '${tableName}' was successfully imported.`);
   context.print.info('');
   context.print.info('Next steps:');
-  context.print.info(`- This resource will be available for REST APIs ('amplify add api') and functions ('amplify add function')`);
+  context.print.info(`- This resource can now be accessed from REST APIs (‘amplify add api’) and Functions (‘amplify add function’)`);
 };
 
 const importServiceWalkthrough = async (

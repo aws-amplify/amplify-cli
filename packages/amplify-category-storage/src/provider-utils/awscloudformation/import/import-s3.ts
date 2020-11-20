@@ -71,9 +71,8 @@ const printSuccess = (context: $TSContext, bucketName: string) => {
   context.print.info(`✅ S3 Bucket '${bucketName}' was successfully imported.`);
   context.print.info('');
   context.print.info('Next steps:');
-  context.print.info(`- This resource will be available for REST APIs ('amplify add api') and functions ('amplify add function')`);
-  context.print.info('- Use amplify libraries to add upload and download capabilities to your client');
-  context.print.info('  application.');
+  context.print.info(`- This resource can now be accessed from REST APIs (‘amplify add api’) and Functions (‘amplify add function’)`);
+  context.print.info('- Use Amplify Libraries to add, upload, and download objects to your frontend app');
   context.print.info('  - iOS: https://docs.amplify.aws/lib/storage/getting-started/q/platform/ios');
   context.print.info('  - Android: https://docs.amplify.aws/lib/storage/getting-started/q/platform/android');
   context.print.info('  - JavaScript: https://docs.amplify.aws/lib/storage/getting-started/q/platform/js');
@@ -97,7 +96,6 @@ const importServiceWalkthrough = async (
 
   const s3 = await providerUtils.createS3Service(context);
   const amplifyMeta = stateManager.getMeta();
-  const { Region } = amplifyMeta.providers[providerName];
 
   // Get list of user pools to see if there is anything to import
   const bucketList = await s3.listBuckets();
@@ -109,9 +107,6 @@ const importServiceWalkthrough = async (
   }
 
   const questionParameters: S3ImportParameters = createParameters(providerName, bucketList);
-
-  // Save the region as we need to store it in resource parameters
-  questionParameters.region = Region;
 
   const projectConfig = context.amplify.getProjectConfig();
   const [shortId] = uuid().split('-');
@@ -127,6 +122,7 @@ const importServiceWalkthrough = async (
 
   if (bucketList.length === 1) {
     answers.bucketName = bucketList[0].Name!;
+
     context.print.info(importMessages.OneBucket(answers.bucketName));
   } else {
     const bucketNameList = bucketList.map(b => b.Name!);
@@ -145,6 +141,9 @@ const importServiceWalkthrough = async (
 
     answers.bucketName = bucketName;
   }
+
+  // Save the region as we need to store it in resource parameters
+  questionParameters.region = await s3.getBucketLocation(answers.bucketName!);
 
   return {
     questionParameters,
@@ -179,17 +178,15 @@ const ensureAuth = async (context: $TSContext): Promise<void> => {
     const addOrImportAnswer: { addOrImport: 'add' | 'import' | 'cancel' } = await Enquirer.prompt(addOrImportQuestion as any); // any case needed because async validation TS definition is not up to date
 
     if (addOrImportAnswer.addOrImport === 'cancel') {
+      context.print.info('');
       context.usageData.emitSuccess();
       exitOnNextTick(0);
     } else {
       try {
-        const { add, importAuth } = require('amplify-category-auth');
-
         if (addOrImportAnswer.addOrImport === 'add') {
-          await add(context);
+          await context.amplify.invokePluginMethod(context, 'auth', null, 'add', [context]);
         } else {
-          // 'import'
-          await importAuth(context);
+          await context.amplify.invokePluginMethod(context, 'auth', null, 'importAuth', [context]);
         }
       } catch (e) {
         context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
@@ -290,8 +287,6 @@ export const importedS3EnvInit = async (
   headlessParams: ImportS3HeadlessParameters,
 ): Promise<{ doServiceWalkthrough?: boolean; succeeded?: boolean; envSpecificParameters?: S3EnvSpecificResourceParameters }> => {
   const s3 = await providerUtils.createS3Service(context);
-  const amplifyMeta = stateManager.getMeta();
-  const { Region } = amplifyMeta.providers[providerName];
   const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
   const isEnvAdd = context.input.command === 'env' && context.input.subCommands[0] === 'add';
 
@@ -357,7 +352,6 @@ export const importedS3EnvInit = async (
   const questionParameters: S3ImportParameters = {
     providerName,
     bucketList: [],
-    region: Region,
   };
 
   const answers: S3ImportAnswers = {
@@ -374,6 +368,9 @@ export const importedS3EnvInit = async (
       succeeded: false,
     };
   }
+
+  // Save the region as we need to store it in resource parameters
+  questionParameters.region = await s3.getBucketLocation(answers.bucketName!);
 
   const newState = await updateStateFiles(context, questionParameters, answers, false);
 
@@ -396,14 +393,11 @@ const headlessImport = async (
   const currentEnvSpecificParameters = ensureHeadlessParameters(resourceParameters, headlessParams);
 
   const amplifyMeta = stateManager.getMeta();
-  const { Region } = amplifyMeta.providers[providerName];
-  const projectConfig = context.amplify.getProjectConfig();
 
   // Validate the parameters, generate the missing ones and import the resource.
   const questionParameters: S3ImportParameters = {
     providerName,
     bucketList: [],
-    region: Region,
   };
 
   const answers: S3ImportAnswers = {
@@ -416,6 +410,9 @@ const headlessImport = async (
   if (!bucketExists) {
     throw new Error(importMessages.BucketNotFound(currentEnvSpecificParameters.bucketName));
   }
+
+  // Save the region as we need to store it in resource parameters
+  questionParameters.region = await s3.getBucketLocation(answers.bucketName!);
 
   const newState = await updateStateFiles(context, questionParameters, answers, false);
 
