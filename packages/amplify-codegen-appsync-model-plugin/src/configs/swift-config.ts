@@ -7,7 +7,7 @@ export const schemaTypeMap: Record<string, string> = {
   AWSDate: '.date',
   AWSTime: '.time',
   AWSDateTime: '.dateTime',
-  AWSTimestamp: '.int',
+  AWSTimestamp: '.timestamp',
   AWSEmail: '.string',
   AWSJSON: '.string',
   AWSURL: '.string',

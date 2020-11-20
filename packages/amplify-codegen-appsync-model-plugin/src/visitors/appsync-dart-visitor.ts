@@ -41,7 +41,7 @@ export class AppSyncModelDartVisitor<
         if (DART_RESERVED_KEYWORDS.includes(fieldName)) {
           throw new Error(`Field name '${fieldName}' in type '${name}' is a reserved word in dart. Please use a non-reserved name instead.`);
         }
-      })
+      });
     });
   }
 
