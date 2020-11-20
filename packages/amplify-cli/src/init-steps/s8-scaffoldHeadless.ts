@@ -1,11 +1,11 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
-  pathManager,
   $TSContext,
   CLIContextEnvironmentProvider,
   FeatureFlags,
   PathConstants,
+  PathManager,
 } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 
@@ -15,6 +15,9 @@ import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 export async function scaffoldProjectHeadless(context: $TSContext) {
   const projectPath = process.cwd();
   const { projectName, frontend } = context.exeInfo.projectConfig;
+
+  // temporary cast, remove once $TSContext has full type definitions
+  const pathManager = context.amplify.pathManager as unknown as PathManager;
 
   const skeletonLocalDir = path.join(__dirname, '..', '..', 'templates', 'amplify-skeleton');
 

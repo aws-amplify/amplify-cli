@@ -6,7 +6,7 @@ import { initFrontend } from '../init-steps/s1-initFrontend';
 import { initProviders } from '../init-steps/s2-initProviders';
 import { scaffoldProjectHeadless } from '../init-steps/s8-scaffoldHeadless';
 import { onFailure } from '../init-steps/s9-onFailure';
-import { onHeadlessSuccess as onSuccessHeadless, onSuccess } from '../init-steps/s9-onSuccess';
+import { onHeadlessSuccess, onSuccess } from '../init-steps/s9-onSuccess';
 import { constructInputParams } from '../amplify-service-helper';
 
 function constructExeInfo(context: $TSContext) {
@@ -22,7 +22,7 @@ const runStrategy = (context: $TSContext) => {
       analyzeProjectHeadless,
       initFrontend,
       scaffoldProjectHeadless,
-      onSuccessHeadless,
+      onHeadlessSuccess,
     ];
   }
   return [

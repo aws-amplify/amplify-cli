@@ -127,34 +127,31 @@ function getSchemaFile(rootDir) {
  * @param {string} rootDir
  * @param {string} schemaFile
  * @param {XcodeProj} xcodeProject
- * @returns {Promise<boolean>} returns true if models have been successufully added to the `xcodeProject`
+ * @returns {boolean} returns true if models have been successufully added to the `xcodeProject`
  */
-async function addAmplifyModels(rootDir, schemaFile, xcodeProject) {
-  return new Promise((resolve, reject) => {
-    let hasGeneratedFiles = false;
-    if (!schemaFile) {
-      Promise.resolve(hasGeneratedFiles);
-    }
+function addAmplifyModels(rootDir, schemaFile, xcodeProject) {
+  let hasGeneratedFiles = false;
+  if (!schemaFile) {
+    Promise.resolve(hasGeneratedFiles);
+  }
 
-    // add generated model
-    const modelsFilePattern = path.join(rootDir, 'amplify', 'generated', 'models', '*.swift');
-    const modelFiles = glob.sync(modelsFilePattern).map(file => {
-      return path.relative(rootDir, file);
-    });
-    console.log(modelsFilePattern);
-    if (modelFiles && modelFiles.length > 0) {
-      const modelsGroup = getOrCreateGroup(xcodeProject, 'AmplifyModels');
-      modelFiles.forEach(file => {
-        const { base: filename } = path.parse(file);
-        if (!groupHasFile(modelsGroup, filename)) {
-          console.log(`adding model source file... ${file}`);
-          xcodeProject.addSourceFile(file, {}, modelsGroup.uuid);
-          hasGeneratedFiles = true;
-        }
-      });
-    }
-    resolve(hasGeneratedFiles);
+  // add generated model
+  const modelsFilePattern = path.join(rootDir, 'amplify', 'generated', 'models', '*.swift');
+  const modelFiles = glob.sync(modelsFilePattern).map(file => {
+    return path.relative(rootDir, file);
   });
+  if (modelFiles && modelFiles.length > 0) {
+    const modelsGroup = getOrCreateGroup(xcodeProject, 'AmplifyModels');
+    modelFiles.forEach(file => {
+      const { base: filename } = path.parse(file);
+      if (!groupHasFile(modelsGroup, filename)) {
+        console.log(`adding model source file... ${file}`);
+        xcodeProject.addSourceFile(file, {}, modelsGroup.uuid);
+        hasGeneratedFiles = true;
+      }
+    });
+  }
+  return hasGeneratedFiles;
 }
 
 /**
