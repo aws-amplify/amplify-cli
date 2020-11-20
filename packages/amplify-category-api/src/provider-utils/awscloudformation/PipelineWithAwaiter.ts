@@ -25,13 +25,15 @@ export type GitHubSourceActionInfo = {
   tokenSecretArn: string;
 };
 
+const lambdasDir = path.resolve(__dirname, '../../../resources/awscloudformation/lambdas');
+
 class PipelineAwaiter extends cdk.Construct {
   constructor(scope: cdk.Construct, id: string, props: PipelineAwaiterProps) {
     const { pipeline, artifactBucketName, artifactKey, deploymentMechanism } = props;
 
     const { pipelineArn, pipelineName } = pipeline;
 
-    const pipelineOnEventCodeFilePath = path.join(__dirname, 'lambdas', 'pipeline-on-event.js');
+    const pipelineOnEventCodeFilePath = path.join(lambdasDir, 'pipeline-on-event.js');
     const onEventHandlerCode = fs.readFileSync(pipelineOnEventCodeFilePath, 'utf8');
 
     const onEventHandler = new lambda.Function(scope, `${id}CustomEventHandler`, {
@@ -41,7 +43,7 @@ class PipelineAwaiter extends cdk.Construct {
       timeout: cdk.Duration.seconds(15),
     });
 
-    const pipelineCodeFilePath = path.join(__dirname, 'lambdas', 'pipeline.js');
+    const pipelineCodeFilePath = path.join(lambdasDir, 'pipeline.js');
     const isCompleteHandlerCode = fs.readFileSync(pipelineCodeFilePath, 'utf8');
 
     const isCompleteHandler = new lambda.Function(scope, `${id}CustomCompleteHandler`, {
@@ -196,11 +198,11 @@ export class PipelineWithAwaiter extends cdk.Construct {
           new codepipelineactions.LambdaInvokeAction({
             actionName: 'PreDeploy',
             lambda: (() => {
-              const preDeployCodeFilePath = path.join(__dirname, 'lambdas', 'predeploy.js');
+              const preDeployCodeFilePath = path.join(lambdasDir, 'predeploy.js');
               const lambdaHandlerCode = fs.readFileSync(preDeployCodeFilePath, 'utf8');
 
               const action = new lambda.Function(scope, 'PreDeployLambda', {
-                code: lambda.InlineCode.fromInline(lambdaHandlerCode),
+                code: lambda.Code.fromInline(lambdaHandlerCode),
                 handler: 'index.handler',
                 runtime: lambda.Runtime.NODEJS_12_X,
                 environment: {

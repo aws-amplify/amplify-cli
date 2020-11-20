@@ -1,4 +1,3 @@
-// @ts-check
 const AWS = require('aws-sdk');
 
 const stageName = 'Source';

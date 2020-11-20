@@ -9,6 +9,7 @@
   "exclude": [
     "coverage",
     "lib",
+    "resources/awscloudformation/lambdas",
     "src/__tests__"
   ],
   "references": [
