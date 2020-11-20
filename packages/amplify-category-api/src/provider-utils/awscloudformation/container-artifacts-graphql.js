@@ -1,5 +1,5 @@
 export const containerFiles = {
-    Dockerfile: `FROM node:alpine
+  Dockerfile: `FROM node:alpine
 
 WORKDIR /usr/src/app
 COPY package*.json ./
@@ -10,7 +10,7 @@ EXPOSE 3000
 
 CMD ["node", "index.js"]
     `,
-    'index.js': `'use strict';
+  'index.js': `'use strict';
 
 const PORT = 3000;
 
@@ -36,7 +36,7 @@ app.use('/graphql', graphqlHTTP({
 }));
 
 app.listen(PORT, () => console.log('Listening on localhost:' + PORT + '/graphql'));`,
-    'package.json': `{
+  'package.json': `{
   "name": "graphql",
   "version": "1.0.0",
   "description": "Sample GraphQL server for Fargate",
@@ -51,8 +51,8 @@ app.listen(PORT, () => console.log('Listening on localhost:' + PORT + '/graphql'
     "graphql": "^15.4.0"
   }
 }
-      `,
-      'resolvers.js': `
+`,
+  'resolvers.js': `
 const AWS = require('aws-sdk');
 const docClient = new AWS.DynamoDB.DocumentClient();
 
@@ -111,7 +111,7 @@ var root = {
 };
 
 module.exports = root;`,
-      'schema.js': `module.exports = \`
+  'schema.js': `module.exports = \`
 type Query {
   getPost(id: Int!): Post
   posts: [Post]
@@ -126,7 +126,5 @@ type Post {
   description: String
   topic: String
 }
-      \`
-      `
-
-}
+\``,
+};
