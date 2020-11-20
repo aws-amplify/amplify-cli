@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.8.4...amplify-e2e-core@1.8.7) (2020-11-20)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+
+
 ## [1.8.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.8.4...amplify-e2e-core@1.8.6) (2020-11-20)
 
 
