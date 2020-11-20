@@ -149,21 +149,6 @@ export interface FunctionTriggerParameters {
   cloudResourceTemplatePath?: string;
 }
 
-export interface ContainerParameters {
-  resourceName: string;
-  parentStack: string;
-  dependsOn?: FunctionDependency[]; // resources this function depends on
-  functionTemplate?: FunctionTemplate; // fully describes the template that will be used
-  categoryPolicies?: object[]; // IAM policies that should be applied to this lambda
-  imageTemplate?: string; // What kind of template will be used could be custom if customer provider
-  deploymentMechanism?: 'FULLY_MANAGED' | 'INDEPENDENTLY' | 'ADVANCE';
-  githubPath?: string; // github path for container
-  githubToken?: string;
-  scheduleOptions?: any; // Check this type
-  environmentMap?: Record<string, any>; // Existing function environment variable map. Should refactor to use dependsOn directly
-  mutableParametersState?: any; // Contains the object that is written to function-parameters.json. Kindof a hold-over from older code
-}
-
 export interface ProviderContext {
   provider: string;
   service: string;

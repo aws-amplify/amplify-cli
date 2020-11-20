@@ -95,14 +95,14 @@ export class PipelineWithAwaiter extends cdk.Construct {
       s3SourceActionKey,
       service,
       deploymentMechanism,
-      githubSourceActionInfo,
+      gitHubSourceActionInfo,
       containersInfo,
       desiredCount,
     }: {
       bucket: s3.IBucket;
       s3SourceActionKey?: string;
       deploymentMechanism: DEPLOYMENT_MECHANISM;
-      githubSourceActionInfo?: GitHubSourceActionInfo;
+      gitHubSourceActionInfo?: GitHubSourceActionInfo;
       service: ecs.CfnService;
       containersInfo: {
         container: ecs.ContainerDefinition;
@@ -124,7 +124,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
       },
     });
 
-    if (githubSourceActionInfo && githubSourceActionInfo.tokenSecretArn) {
+    if (gitHubSourceActionInfo && gitHubSourceActionInfo.tokenSecretArn) {
       codebuildproject.addToRolePolicy(
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
@@ -135,7 +135,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
             'secretsmanager:DescribeSecret',
             'secretsmanager:ListSecretVersionIds',
           ],
-          resources: [githubSourceActionInfo.tokenSecretArn],
+          resources: [gitHubSourceActionInfo.tokenSecretArn],
         }),
       );
     }
@@ -162,7 +162,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
     const preBuildStages = createPreBuildStages(scope, {
       bucket,
       s3SourceActionKey,
-      githubSourceActionInfo,
+      gitHubSourceActionInfo,
       roleName: 'UpdateSource',
       sourceOutput,
     });
@@ -277,13 +277,13 @@ function createPreBuildStages(
   {
     bucket,
     s3SourceActionKey,
-    githubSourceActionInfo,
+    gitHubSourceActionInfo,
     sourceOutput,
     roleName,
   }: {
     bucket: s3.IBucket;
     s3SourceActionKey: string;
-    githubSourceActionInfo?: GitHubSourceActionInfo;
+    gitHubSourceActionInfo?: GitHubSourceActionInfo;
     sourceOutput: codepipeline.Artifact;
     roleName: string;
   },
@@ -297,8 +297,8 @@ function createPreBuildStages(
 
   stages.push(stage);
 
-  if (githubSourceActionInfo && githubSourceActionInfo.path) {
-    const { path, tokenSecretArn } = githubSourceActionInfo;
+  if (gitHubSourceActionInfo && gitHubSourceActionInfo.path) {
+    const { path, tokenSecretArn } = gitHubSourceActionInfo;
     const { owner, repo, branch } = getGitHubOwnerRepoFromPath(path);
 
     const preBuildOutput = new codepipeline.Artifact('PreBuildArtifact');
@@ -348,6 +348,6 @@ export type ContainerStackProps = {
   deploymentBucket: string;
   containerPort: number;
   awaiterZipPath: string;
-  githubPath?: string;
-  githubTokenSecretsManagerArn: string;
+  gitHubPath?: string;
+  gitHubTokenSecretsManagerArn: string;
 };

@@ -24,8 +24,8 @@ export const addResource = async (
     resourceName,
     restrictAccess,
     imageSource,
-    githubPath,
-    githubToken,
+    gitHubPath,
+    gitHubToken,
     deploymentMechanism,
     categoryPolicies,
     environmentMap,
@@ -36,29 +36,26 @@ export const addResource = async (
 
   let [authName, updatedDependsOn] = await getResourceDependencies({ dependsOn, restrictAccess, category, resourceName, context });
 
-  //#region Add token to secrets manager and get arn
-  let githubInfo: GitHubSourceActionInfo;
+  let gitHubInfo: GitHubSourceActionInfo;
 
   if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'];
 
     const secretName = `${StackName}-${category}-${resourceName}-github-token`;
     const { ARN: secretArn } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'newSecret', {
-      secret: githubToken,
+      secret: gitHubToken,
       description: 'GitHub OAuth token',
       name: secretName,
       version: secretName,
     });
 
-    const githubTokenSecretArn = secretArn;
+    const gitHubTokenSecretArn = secretArn;
 
-    githubInfo = {
-      path: githubPath,
-      tokenSecretArn: githubTokenSecretArn,
+    gitHubInfo = {
+      path: gitHubPath,
+      tokenSecretArn: gitHubTokenSecretArn,
     };
   }
-
-  //#endregion
 
   const build = deploymentMechanism === DEPLOYMENT_MECHANISM.FULLY_MANAGED;
 
@@ -71,7 +68,7 @@ export const addResource = async (
     build,
     providerPlugin: 'awscloudformation',
     service: 'ElasticContainer',
-    githubInfo,
+    gitHubInfo,
     authName,
     environmentMap,
     categoryPolicies,
@@ -124,7 +121,7 @@ export const addResource = async (
     );
   } else if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     context.print.info(
-      `Ensure you have the Dockerfile, docker-compose.yml and any related container source files in your Github path: ${githubInfo.path}`,
+      `Ensure you have the Dockerfile, docker-compose.yml and any related container source files in your Github path: ${gitHubInfo.path}`,
     );
   }
 
@@ -214,9 +211,9 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
     dependsOn,
     restrictAccess,
     resourceName,
-    githubPath,
-    githubToken,
-    githubInfo,
+    gitHubPath,
+    gitHubToken,
+    gitHubInfo,
     mutableParametersState,
     categoryPolicies,
     environmentMap,
@@ -226,16 +223,16 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
   let [authName, updatedDependsOn] = await getResourceDependencies({ dependsOn, restrictAccess, category, resourceName, context });
 
   let newGithubInfo: GitHubSourceActionInfo = {
-    path: githubPath,
-    tokenSecretArn: githubInfo && githubInfo.tokenSecretArn,
+    path: gitHubPath,
+    tokenSecretArn: gitHubInfo && gitHubInfo.tokenSecretArn,
   };
-  if (githubToken) {
+  if (gitHubToken) {
     //#region Add token to secrets manager and get arn
     const { StackName } = context.amplify.getProjectDetails().amplifyMeta.providers['awscloudformation'];
 
     const secretName = `${StackName}-${category}-${resourceName}-github-token`;
     const { ARN: secretArn } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'updateSecret', {
-      secret: githubToken,
+      secret: gitHubToken,
       description: 'GitHub OAuth token',
       name: secretName,
       version: uuid(),
@@ -246,7 +243,7 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
   }
 
   if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
-    await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'githubInfo', newGithubInfo);
+    await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'gitHubInfo', newGithubInfo);
   }
 
   await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'restrictAccess', restrictAccess);

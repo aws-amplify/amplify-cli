@@ -43,7 +43,7 @@ type EcsStackProps = Readonly<{
     attributes: string[];
   }[];
   taskEnvironmentVariables?: Record<string, any>;
-  githubSourceActionInfo?: GitHubSourceActionInfo;
+  gitHubSourceActionInfo?: GitHubSourceActionInfo;
   deploymentMechanism: DEPLOYMENT_MECHANISM;
   deploymentBucket: string;
   containers: Container[];
@@ -68,7 +68,7 @@ export class EcsStack extends cdk.Stack {
       taskPorts,
       dependsOn,
       deploymentMechanism,
-      githubSourceActionInfo,
+      gitHubSourceActionInfo,
       deploymentBucket,
       containers,
       isInitialDeploy,
@@ -317,7 +317,7 @@ export class EcsStack extends cdk.Stack {
       bucket: s3.Bucket.fromBucketName(this, 'Bucket', deploymentBucket),
       s3SourceActionKey: paramZipPath.valueAsString,
       deploymentMechanism,
-      githubSourceActionInfo,
+      gitHubSourceActionInfo,
       desiredCount,
     });
 

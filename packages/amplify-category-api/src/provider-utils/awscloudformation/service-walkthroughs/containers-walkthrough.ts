@@ -34,16 +34,16 @@ export enum API_TYPE {
 export type ServiceConfiguration = {
   resourceName: string;
   imageSource: { type: IMAGE_SOURCE_TYPE; template?: string };
-  githubPath: string;
+  gitHubPath: string;
   authName: string;
-  githubToken: string;
+  gitHubToken: string;
   deploymentMechanism: DEPLOYMENT_MECHANISM;
   restrictAccess: boolean;
   dependsOn?: ResourceDependency[]; // resources this function depends on
   categoryPolicies?: any[]; // IAM policies that should be applied to this lambda
   mutableParametersState?: any; // Contains the object that is written to function-parameters.json. Kindof a hold-over from older code
   environmentMap?: Record<string, any>; // Existing function environment variable map. Should refactor to use dependsOn directly,
-  githubInfo?: GitHubSourceActionInfo;
+  gitHubInfo?: GitHubSourceActionInfo;
 };
 
 export async function serviceWalkthrough(context, defaultValuesFilename, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
@@ -164,13 +164,13 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
     ]);
   } while (deploymentMechanismQuestion.deploymentMechanism === 'Learn More');
 
-  let githubPath: string;
-  let githubToken: string;
+  let gitHubPath: string;
+  let gitHubToken: string;
 
   if (deploymentMechanismQuestion.deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     context.print.info('We need a Github Personal Access Token to automatically build & deploy your Fargate task on every Github commit.');
 
-    const githubQuestions = await inquirer.prompt([
+    const gitHubQuestions = await inquirer.prompt([
       {
         name: 'github_access_token',
         type: 'password',
@@ -183,8 +183,8 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
       },
     ]);
 
-    githubPath = githubQuestions.github_path;
-    githubToken = githubQuestions.github_access_token;
+    gitHubPath = gitHubQuestions.github_path;
+    gitHubToken = gitHubQuestions.github_access_token;
   }
 
   const meta = context.amplify.getProjectDetails().amplifyMeta;
@@ -217,8 +217,8 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
 
   return {
     imageSource,
-    githubPath,
-    githubToken,
+    gitHubPath,
+    gitHubToken,
     deploymentMechanism: deploymentMechanismQuestion.deploymentMechanism,
     restrictAccess: restrictApiQuestion.rescrict_access,
     categoryPolicies,
@@ -263,27 +263,27 @@ export async function updateWalkthrough(context, defaultValuesFilename, apiType:
       !!resource.providerPlugin,
   );
 
-  let { githubInfo: { path = undefined } = {} } = resourceSettings;
-  let githubToken;
+  let { gitHubInfo: { path = undefined } = {} } = resourceSettings;
+  let gitHubToken;
 
   if (resourceSettings.deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     if (await confirm('Would you like to change your GitHub access token')) {
-      const githubQuestion = await inquirer.prompt({
-        name: 'githubAccessToken',
+      const gitHubQuestion = await inquirer.prompt({
+        name: 'gitHubAccessToken',
         type: 'password',
         message: 'GitHub Personal Access Token:',
       });
-      githubToken = githubQuestion.githubAccessToken;
+      gitHubToken = gitHubQuestion.gitHubAccessToken;
     }
 
     if (await confirm('Would you like to change your GitHub Path to your repo')) {
-      const githubQuestion = await inquirer.prompt({
-        name: 'githubPath',
+      const gitHubQuestion = await inquirer.prompt({
+        name: 'gitHubPath',
         type: 'input',
         message: 'Path to your repo:',
         default: path,
       });
-      path = githubQuestion.githubPath;
+      path = gitHubQuestion.gitHubPath;
     }
   }
 
@@ -329,8 +329,8 @@ export async function updateWalkthrough(context, defaultValuesFilename, apiType:
     mutableParametersState: newMutableParametersState,
     dependsOn: newDependsOn,
     categoryPolicies,
-    githubPath: path,
-    githubToken,
+    gitHubPath: path,
+    gitHubToken,
   };
 }
 

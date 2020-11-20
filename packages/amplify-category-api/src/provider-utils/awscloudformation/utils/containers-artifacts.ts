@@ -14,7 +14,7 @@ import { getGitHubOwnerRepoFromPath } from '../../../provider-utils/awscloudform
 export type ApiResource = {
   category: string;
   resourceName: string;
-  githubInfo?: {
+  gitHubInfo?: {
     path: string;
     tokenSecretArn: string;
   };
@@ -45,7 +45,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   const {
     category: categoryName,
     resourceName,
-    githubInfo,
+    gitHubInfo,
     deploymentMechanism,
     output,
     categoryPolicies = [],
@@ -87,13 +87,13 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
         }
         break;
       case DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED:
-        const { path: repoUri, tokenSecretArn } = githubInfo;
+        const { path: repoUri, tokenSecretArn } = gitHubInfo;
 
-        const { SecretString: githubToken } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'retrieveSecret', {
+        const { SecretString: gitHubToken } = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'retrieveSecret', {
           secretArn: tokenSecretArn,
         });
 
-        const octokit = new Octokit({ auth: githubToken });
+        const octokit = new Octokit({ auth: gitHubToken });
 
         const { owner, repo, branch, path: pathInRepo } = getGitHubOwnerRepoFromPath(repoUri);
 
@@ -242,7 +242,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     dependsOn,
     policies: wrapJsonPoliciesInCdkPolicies(categoryPolicies),
     taskEnvironmentVariables: environmentMap,
-    githubSourceActionInfo: githubInfo,
+    gitHubSourceActionInfo: gitHubInfo,
     deploymentMechanism,
     deploymentBucket,
     containers,
