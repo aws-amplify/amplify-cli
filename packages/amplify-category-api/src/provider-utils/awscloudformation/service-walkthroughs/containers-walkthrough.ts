@@ -228,19 +228,16 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
   };
 }
 
-export async function updateWalkthrough(context, defaultValuesFilename) {
-  const { amplify } = context;
+export async function updateWalkthrough(context, defaultValuesFilename, apiType: API_TYPE) {
   const { allResources } = await context.amplify.getResourceStatus();
-  const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
-  const { getAllDefaults } = await import(defaultValuesSrc);
-  const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
+
   const resources = allResources
-    .filter(resource => resource.category === category && resource.service === serviceName && !!resource.providerPlugin)
+    .filter(resource => resource.category === category && resource.service === serviceName && !!resource.providerPlugin && resource.apiType === apiType)
     .map(resource => resource.resourceName);
 
   // There can only be one appsync resource
   if (resources.length === 0) {
-    const errMessage = 'No REST API resource to update. Please use "amplify add api" command to create a new REST API';
+    const errMessage = `No ${apiType} API resource to update. Please use "amplify add api" command to create a new ${apiType} API`;
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
@@ -346,4 +343,8 @@ async function confirm(question: string) {
   });
 
   return confirm;
+}
+
+export async function getPermissionPolicies(context, service, resourceName, crudOptions) {
+  throw new Error('IAM access not available for this resource')
 }

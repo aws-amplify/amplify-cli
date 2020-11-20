@@ -248,6 +248,7 @@ type ContainerArtifactsMetadata = {
   exposedContainer: ExposedContainer;
   pipelineInfo: { consoleUrl: string };
 };
+
 export async function generateContainersArtifacts(context: any, resource: ApiResource): Promise<ContainerArtifactsMetadata> {
   const {
     category: categoryName,

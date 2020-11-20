@@ -70,9 +70,13 @@ export const askExecRolePermissionsQuestions = async (
     } else if (selectedCategory === category) {
       // A Lambda function cannot depend on itself
       // Lambda layer dependencies are handled seperately
-      resourcesList = resourcesList.filter(
-        resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service === serviceName,
-      );
+      if (serviceName === ServiceName.LambdaFunction) {
+        resourcesList = resourcesList.filter(
+          resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service === serviceName);
+      } else {
+        resourcesList = resourcesList.filter(resourceName => resourceName !== resourceNameToUpdate &&
+          !(amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable));
+      }
     }
 
     if (resourcesList.length === 0) {

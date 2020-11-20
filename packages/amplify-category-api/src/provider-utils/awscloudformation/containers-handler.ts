@@ -77,7 +77,8 @@ export const addResource = async (
     categoryPolicies,
     mutableParametersState,
     skipHashing: true,
-    apiType
+    apiType,
+    iamAccessUnavailable: true // this is because we dont support IAM access to the API yet
   };
 
   await context.amplify.updateamplifyMetaAfterResourceAdd(category, resourceName, options);
@@ -120,8 +121,7 @@ export const addResource = async (
   if (deploymentMechanism === DEPLOYMENT_MECHANISM.FULLY_MANAGED) {
     context.print.info(`Place your Dockerfile, docker-compose.yml and any related container source files in this directory: <project-dir>/amplify/backend/api/${resourceName}/src`);
   } else if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
-    context.print.info(`Ensure you have the Dockerfile, docker-compose.yml and any related container source files in 
-    your Github path: ${githubInfo.path}`)
+    context.print.info(`Ensure you have the Dockerfile, docker-compose.yml and any related container source files in your Github path: ${githubInfo.path}`)
   }
 
   context.print.info('');
