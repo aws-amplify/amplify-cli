@@ -30,7 +30,7 @@ else
   exit 1
 fi
 
-REPO_OWNER=edwardfoyle
+REPO_OWNER=aws-amplify
 REPO_NAME=amplify-cli
 
 if [[ -z "$version" ]]; then

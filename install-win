@@ -18,7 +18,7 @@ if %is64Bit% == '' (
     exit 1
 )
 
-set repo_owner=edwardfoyle
+set repo_owner=aws-amplify
 set repo_name=amplify-cli
 
 if not defined version (
