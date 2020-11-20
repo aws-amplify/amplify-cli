@@ -203,6 +203,7 @@ async function describeApiResourcesBySubCategory(context) {
     hasGraphqlContainerResource
   };
 }
+
 async function updateContainerResource(context, category, service, apiType: API_TYPE) {
   const serviceWalkthroughFilename = 'containers-walkthrough';
   const defaultValuesFilename = 'containers-defaults.js';
@@ -283,7 +284,6 @@ export async function getPermissionPolicies(context, service, resourceName, crud
   } else {
     return getPermissionPoliciesNonContainer(context, service, resourceName, crudOptions);
   }
-
 }
 
 async function getPermissionPoliciesContainer(context, service, resourceName, crudOptions) {

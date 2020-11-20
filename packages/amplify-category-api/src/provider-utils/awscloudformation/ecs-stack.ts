@@ -196,9 +196,9 @@ export class EcsStack extends cdk.Stack {
         const logging: ecs.LogDriver =
           logDriver === 'awslogs'
             ? ecs.LogDriver.awsLogs({
-                streamPrefix,
-                logGroup: logs.LogGroup.fromLogGroupName(this, `${name}logGroup`, logGroup.logGroupName),
-              })
+              streamPrefix,
+              logGroup: logs.LogGroup.fromLogGroupName(this, `${name}logGroup`, logGroup.logGroupName),
+            })
             : undefined;
 
         let repository: ecr.Repository;
@@ -293,7 +293,7 @@ export class EcsStack extends cdk.Stack {
     });
 
     const service = new ecs.CfnService(this, 'Service', {
-      serviceName: `${apiName}-service`,
+      serviceName: `${apiName}-service-${exposedContainer.name}-${exposedContainer.port}`,
       cluster: paramClusterName.valueAsString,
       launchType: 'FARGATE',
       desiredCount: isInitialDeploy ? 0 : desiredCount, // This is later adjusted by the PreDeploy action in the codepipeline
@@ -311,116 +311,120 @@ export class EcsStack extends cdk.Stack {
 
     //#region Pipeline with awaiter
 
-    const pipeline = new PipelineWithAwaiter(this, 'ApiPipeline', {
-      containersInfo,
-      service,
-      bucket: s3.Bucket.fromBucketName(this, 'Bucket', deploymentBucket),
-      s3SourceActionKey: paramZipPath.valueAsString,
-      deploymentMechanism,
-      gitHubSourceActionInfo,
-      desiredCount,
+    new cdk.CfnOutput(this, 'ContainerNames', {
+      value: cdk.Fn.join(',', containersInfo.map(containerInfo => containerInfo.container.containerName))
     });
 
-    pipeline.node.addDependency(service);
+  const pipeline = new PipelineWithAwaiter(this, 'ApiPipeline', {
+    containersInfo,
+    service,
+    bucket: s3.Bucket.fromBucketName(this, 'Bucket', deploymentBucket),
+    s3SourceActionKey: paramZipPath.valueAsString,
+    deploymentMechanism,
+    gitHubSourceActionInfo,
+    desiredCount,
+  });
+
+  pipeline.node.addDependency(service);
 
     this.pipeline = pipeline;
-    //#endregion
+//#endregion
 
-    //#region Api Gateway
-    const api = new apigw2.CfnApi(this, 'Api', {
-      name: apiName,
-      protocolType: 'HTTP',
-      corsConfiguration: {
-        allowHeaders: ['*'],
-        allowOrigins: ['*'],
-        allowMethods: Object.values(apigw2.HttpMethod).filter(m => m !== apigw2.HttpMethod.ANY),
-      },
-    });
+//#region Api Gateway
+const api = new apigw2.CfnApi(this, 'Api', {
+  name: apiName,
+  protocolType: 'HTTP',
+  corsConfiguration: {
+    allowHeaders: ['*'],
+    allowOrigins: ['*'],
+    allowMethods: Object.values(apigw2.HttpMethod).filter(m => m !== apigw2.HttpMethod.ANY),
+  },
+});
 
-    new apigw2.CfnStage(this, 'Stage', {
-      apiId: cdk.Fn.ref(api.logicalId),
-      stageName: '$default',
-      autoDeploy: true,
-    });
+new apigw2.CfnStage(this, 'Stage', {
+  apiId: cdk.Fn.ref(api.logicalId),
+  stageName: '$default',
+  autoDeploy: true,
+});
 
-    const integration = new apigw2.CfnIntegration(this, 'ANYIntegration', {
-      apiId: cdk.Fn.ref(api.logicalId),
-      integrationType: apigw2.HttpIntegrationType.HTTP_PROXY,
-      connectionId: paramVpcLinkId.valueAsString,
-      connectionType: apigw2.HttpConnectionType.VPC_LINK,
-      integrationMethod: 'ANY',
-      integrationUri: cloudmapService.attrArn,
-      payloadFormatVersion: '1.0',
-    });
+const integration = new apigw2.CfnIntegration(this, 'ANYIntegration', {
+  apiId: cdk.Fn.ref(api.logicalId),
+  integrationType: apigw2.HttpIntegrationType.HTTP_PROXY,
+  connectionId: paramVpcLinkId.valueAsString,
+  connectionType: apigw2.HttpConnectionType.VPC_LINK,
+  integrationMethod: 'ANY',
+  integrationUri: cloudmapService.attrArn,
+  payloadFormatVersion: '1.0',
+});
 
-    const authorizer = new apigw2.CfnAuthorizer(this, 'Authorizer', {
-      name: `${apiName}Authorizer`,
-      apiId: cdk.Fn.ref(api.logicalId),
-      authorizerType: 'JWT',
-      jwtConfiguration: {
-        audience: [paramAppClientIdWeb && paramAppClientIdWeb.valueAsString],
-        issuer: cdk.Fn.join('', [
-          'https://cognito-idp.',
-          cdk.Aws.REGION,
-          '.amazonaws.com/',
-          paramUserPoolId && paramUserPoolId.valueAsString,
-        ]),
-      },
-      identitySource: ['$request.header.Authorization'],
-    });
+const authorizer = new apigw2.CfnAuthorizer(this, 'Authorizer', {
+  name: `${apiName}Authorizer`,
+  apiId: cdk.Fn.ref(api.logicalId),
+  authorizerType: 'JWT',
+  jwtConfiguration: {
+    audience: [paramAppClientIdWeb && paramAppClientIdWeb.valueAsString],
+    issuer: cdk.Fn.join('', [
+      'https://cognito-idp.',
+      cdk.Aws.REGION,
+      '.amazonaws.com/',
+      paramUserPoolId && paramUserPoolId.valueAsString,
+    ]),
+  },
+  identitySource: ['$request.header.Authorization'],
+});
 
-    authorizer.cfnOptions.condition = isAuthCondition;
+authorizer.cfnOptions.condition = isAuthCondition;
 
-    new apigw2.CfnRoute(this, 'DefaultRoute', {
-      apiId: cdk.Fn.ref(api.logicalId),
-      routeKey: '$default',
-      target: cdk.Fn.join('', ['integrations/', cdk.Fn.ref(integration.logicalId)]),
-      authorizationScopes: [],
-      authorizationType: <any>cdk.Fn.conditionIf(isAuthCondition.logicalId, 'JWT', 'NONE'),
-      authorizerId: <any>cdk.Fn.conditionIf(isAuthCondition.logicalId, cdk.Fn.ref(authorizer.logicalId), ''),
-    });
+new apigw2.CfnRoute(this, 'DefaultRoute', {
+  apiId: cdk.Fn.ref(api.logicalId),
+  routeKey: '$default',
+  target: cdk.Fn.join('', ['integrations/', cdk.Fn.ref(integration.logicalId)]),
+  authorizationScopes: [],
+  authorizationType: <any>cdk.Fn.conditionIf(isAuthCondition.logicalId, 'JWT', 'NONE'),
+  authorizerId: <any>cdk.Fn.conditionIf(isAuthCondition.logicalId, cdk.Fn.ref(authorizer.logicalId), ''),
+});
 
-    new apigw2.CfnRoute(this, 'OptionsRoute', {
-      apiId: cdk.Fn.ref(api.logicalId),
-      routeKey: 'OPTIONS /{proxy+}',
-      target: cdk.Fn.join('', ['integrations/', cdk.Fn.ref(integration.logicalId)]),
-    });
+new apigw2.CfnRoute(this, 'OptionsRoute', {
+  apiId: cdk.Fn.ref(api.logicalId),
+  routeKey: 'OPTIONS /{proxy+}',
+  target: cdk.Fn.join('', ['integrations/', cdk.Fn.ref(integration.logicalId)]),
+});
 
-    //#endregion
+//#endregion
 
-    new cdk.CfnOutput(this, 'ServiceArn', { value: cdk.Fn.ref(service.logicalId) });
-    new cdk.CfnOutput(this, 'ApiName', { value: api.name });
-    new cdk.CfnOutput(this, 'RootUrl', { value: api.attrApiEndpoint });
+new cdk.CfnOutput(this, 'ServiceArn', { value: cdk.Fn.ref(service.logicalId) });
+new cdk.CfnOutput(this, 'ApiName', { value: api.name });
+new cdk.CfnOutput(this, 'RootUrl', { value: api.attrApiEndpoint });
 
-    if (apiType === API_TYPE.GRAPHQL) {
-      new cdk.CfnOutput(this, 'GraphQLAPIEndpointOutput', { value: api.attrApiEndpoint });
-    }
+if (apiType === API_TYPE.GRAPHQL) {
+  new cdk.CfnOutput(this, 'GraphQLAPIEndpointOutput', { value: api.attrApiEndpoint });
+}
   }
 
-  getPipelineConsoleUrl(region: string) {
-    const pipelineName = this.pipeline.getPipelineName();
-    return `https://${region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${pipelineName}/view`;
-  }
+getPipelineConsoleUrl(region: string) {
+  const pipelineName = this.pipeline.getPipelineName();
+  return `https://${region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${pipelineName}/view`;
+}
 
-  toCloudFormation() {
-    prepareApp(this);
+toCloudFormation() {
+  prepareApp(this);
 
-    const cfn = this._toCloudFormation();
+  const cfn = this._toCloudFormation();
 
-    Object.keys(cfn.Parameters).forEach(k => {
-      if (k.startsWith('AssetParameters')) {
-        let value = '';
+  Object.keys(cfn.Parameters).forEach(k => {
+    if (k.startsWith('AssetParameters')) {
+      let value = '';
 
-        if (k.includes('Bucket')) {
-          value = this.props.deploymentBucket;
-        } else if (k.includes('VersionKey')) {
-          value = `${PIPELINE_AWAITER_ZIP}||`;
-        }
-
-        cfn.Parameters[k].Default = value;
+      if (k.includes('Bucket')) {
+        value = this.props.deploymentBucket;
+      } else if (k.includes('VersionKey')) {
+        value = `${PIPELINE_AWAITER_ZIP}||`;
       }
-    });
 
-    return cfn;
-  }
+      cfn.Parameters[k].Default = value;
+    }
+  });
+
+  return cfn;
+}
 }

@@ -55,6 +55,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     restrictAccess,
     apiType,
     exposedContainer: exposedContainerFromMeta,
+    containers: currentContainers = [],
   } = resource;
 
   const backendDir = context.amplify.pathManager.getBackendDirPath();
@@ -65,7 +66,6 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   } = context.amplify.getProjectMeta();
 
   const { StackName: envName, DeploymentBucketName: deploymentBucket } = provider;
-  const isInitialDeploy = Object.keys(output ?? {}).length === 0;
 
   const srcPath = path.join(resourceDir, 'src');
 
@@ -147,6 +147,14 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
       ),
     [],
   );
+
+  const newContainersName = Array.from(new Set(containers.map(({ name }) => name)));
+  
+  let isInitialDeploy = Object.keys(output ?? {}).length === 0;
+  const currentContainersSet = new Set(output?.ContainerNames?.split(','));
+  // Service require all containers to exists
+  isInitialDeploy = isInitialDeploy ||
+    newContainersName.some(newContainer => !currentContainersSet.has(newContainer));
 
   let exposedContainer: { name: string; port: number };
 
@@ -258,7 +266,10 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
   JSONUtilities.writeJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn);
 
-  return { exposedContainer, pipelineInfo: { consoleUrl: stack.getPipelineConsoleUrl(provider.Region) } };
+  return {
+    exposedContainer,
+    pipelineInfo: { consoleUrl: stack.getPipelineConsoleUrl(provider.Region) },
+  };
 }
 
 async function shouldUpdateSecrets(context: any, secrets: Record<string, string>): Promise<boolean> {
