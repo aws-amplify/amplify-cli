@@ -55,7 +55,6 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     restrictAccess,
     apiType,
     exposedContainer: exposedContainerFromMeta,
-    containers: currentContainers = [],
   } = resource;
 
   const backendDir = context.amplify.pathManager.getBackendDirPath();
