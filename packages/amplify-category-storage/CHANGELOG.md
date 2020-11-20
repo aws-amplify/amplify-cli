@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.8.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.4...amplify-category-storage@2.8.6) (2020-11-20)
+
+
+### Bug Fixes
+
+* [#5794](https://github.com/aws-amplify/amplify-cli/issues/5794) - storage access problem with groups ([#5806](https://github.com/aws-amplify/amplify-cli/issues/5806)) ([26f6a7c](https://github.com/aws-amplify/amplify-cli/commit/26f6a7ced261bccc3e3fc01d97f24b1e92a600e8))
+
+
+
+
+
 ## [2.8.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.4...amplify-category-storage@2.8.5) (2020-11-19)
 
 
