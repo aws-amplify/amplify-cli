@@ -297,7 +297,7 @@
     "@aws-cdk/cx-api" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-apigateway@1.72.0":
+"@aws-cdk/aws-apigateway@1.72.0", "@aws-cdk/aws-apigateway@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-apigateway/-/aws-apigateway-1.72.0.tgz#8d0a20f235d899f771d53320029b69b4fe324e39"
   integrity sha512-ga+xnpReN2m8DsQJ7MA1cpXDGy3ZUWFuwbEX+/Yjtdo9IXjfyjFNGchPu4uptca9pmi47MbYKytPTDYaITfxwQ==
@@ -365,7 +365,7 @@
     "@aws-cdk/core" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-autoscaling-hooktargets@1.72.0":
+"@aws-cdk/aws-autoscaling-hooktargets@1.72.0", "@aws-cdk/aws-autoscaling-hooktargets@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-autoscaling-hooktargets/-/aws-autoscaling-hooktargets-1.72.0.tgz#6305c7ecda2ce3391479d22e8640f2d8d673fbf6"
   integrity sha512-jfGzthNNvGLtTfxTRIj89t+Gjilcx7T6rT2Z2kJHdc+Bnst5XVJovy24r/iNfNgwX2GFl1I6lV5baLS8Ury5xg==
@@ -380,7 +380,7 @@
     "@aws-cdk/core" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-autoscaling@1.72.0":
+"@aws-cdk/aws-autoscaling@1.72.0", "@aws-cdk/aws-autoscaling@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-autoscaling/-/aws-autoscaling-1.72.0.tgz#1c71e22677d66b83cd607f5ee12d99546db86231"
   integrity sha512-iI2QMIem3oQluAtfiMQmL84cx/MuzwX3Ckobxd3RpT50fV0DHqxCSSZhzL4dE5J8P42CZY0M3ubcDfFbcZ0LqA==
@@ -395,7 +395,7 @@
     "@aws-cdk/core" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-batch@1.72.0":
+"@aws-cdk/aws-batch@1.72.0", "@aws-cdk/aws-batch@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-batch/-/aws-batch-1.72.0.tgz#181796308a21acc2d6a265ab91e56a2143951175"
   integrity sha512-xJqU/th1FDhOnbtjOcQxUk123MKOr+etoqrJwnS1VqIFXpmdL9tVihsZslRcXdUMrBMRHW+NR8XfA6KA6g4l1A==
@@ -431,7 +431,7 @@
     "@aws-cdk/cx-api" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-cloudfront@1.72.0":
+"@aws-cdk/aws-cloudfront@1.72.0", "@aws-cdk/aws-cloudfront@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-cloudfront/-/aws-cloudfront-1.72.0.tgz#a1c5c5b2820f53ae9c12329a7b9867b49c5b949b"
   integrity sha512-ygJ9i2sQsLAH+zwn5OGoiFNH1SiuP+exnzAuBjZ7eP39m4skXtPpmTMANfUS4iIRNvqUG7+ghMzON3qwHTAjPQ==
@@ -474,7 +474,7 @@
     "@aws-cdk/region-info" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-codecommit@1.72.0":
+"@aws-cdk/aws-codecommit@1.72.0", "@aws-cdk/aws-codecommit@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-codecommit/-/aws-codecommit-1.72.0.tgz#a17656fa8398328dc5d3df5bd2b8db165538cf3c"
   integrity sha512-l4AlxnNxcywJSSZ/wXzH/G9uNsHYjXJmhAqXsrb5I/yn1tQAIrWer1hn6tXGrHHx6bqpVhpJKmMWKGJg5VtjxQ==
@@ -484,7 +484,7 @@
     "@aws-cdk/core" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-codedeploy@1.72.0":
+"@aws-cdk/aws-codedeploy@1.72.0", "@aws-cdk/aws-codedeploy@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-codedeploy/-/aws-codedeploy-1.72.0.tgz#821610a1e661246ed6aea11517e457d867f6d11e"
   integrity sha512-Xo5IdQ02vCF8U+Ir9uUY7WfHi35muWJ71jUsCXDZhpjAWsbsnS3wNU0iMbGs1IoFDh5P5b6LcVNScWsnpdfikA==
@@ -592,7 +592,7 @@
     "@aws-cdk/region-info" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-ecr-assets@1.72.0":
+"@aws-cdk/aws-ecr-assets@1.72.0", "@aws-cdk/aws-ecr-assets@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-ecr-assets/-/aws-ecr-assets-1.72.0.tgz#594b744282ee5a5b2a5aa888ed5ccf17d290823b"
   integrity sha512-0TqV4FQby8Jf9nlEoD02pEXNp5qvvPRhy+A2M2f/89+BRLd2kQ/jJoSTG4lPhrRF3iEwnq3SmApxK3hBy9F8Fg==
@@ -607,7 +607,7 @@
     constructs "^3.2.0"
     minimatch "^3.0.4"
 
-"@aws-cdk/aws-ecr@1.72.0":
+"@aws-cdk/aws-ecr@1.72.0", "@aws-cdk/aws-ecr@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-ecr/-/aws-ecr-1.72.0.tgz#0d4a3a2c32b532ea317ce998322c488558f7451f"
   integrity sha512-i+S50t8dJOpQ+01lls/VScbv3aKnO0uJiLIayvrO64LAkC4sSdjiSwHiaqilXGRLtxzRxgpm5fhGtZKPRnNl0A==
@@ -660,7 +660,7 @@
     "@aws-cdk/cx-api" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-elasticloadbalancing@1.72.0":
+"@aws-cdk/aws-elasticloadbalancing@1.72.0", "@aws-cdk/aws-elasticloadbalancing@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-elasticloadbalancing/-/aws-elasticloadbalancing-1.72.0.tgz#2f6817f45f107fa2ec53198190df589468a5e53a"
   integrity sha512-rv1a0LKanBfLROMfbCD8xcVOUXfQZJ2g611YXrN7lhUzT1/CIHwHngGvqjYlrzonJrG5e1vRzvaQXnHDjJqkCQ==
@@ -699,7 +699,7 @@
     "@aws-cdk/custom-resources" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-events-targets@1.72.0":
+"@aws-cdk/aws-events-targets@1.72.0", "@aws-cdk/aws-events-targets@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-events-targets/-/aws-events-targets-1.72.0.tgz#74e48909e706925da4519492d5f5b067eb006991"
   integrity sha512-Hz4WakEhiB9xrm5XiQq19TSoY/atM+WlaS10i9I8zEl1lqsu9k/mEN67uwrCvrfKzAGnciQ2KmnLCEKYjwdrWQ==
@@ -739,7 +739,7 @@
     "@aws-cdk/region-info" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-kinesis@1.72.0":
+"@aws-cdk/aws-kinesis@1.72.0", "@aws-cdk/aws-kinesis@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-kinesis/-/aws-kinesis-1.72.0.tgz#cdff493fc4ffb499f1670f9fcf044b9df798ab63"
   integrity sha512-EQYXyW5y+1Q3jQpPRuLPfUlKrf1HZCvRk27ZykExFT0vC0yRvCFhp9W4mukcn/L5ed331xEYKKiA37grnAaAHg==
@@ -750,7 +750,7 @@
     "@aws-cdk/core" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-kinesisfirehose@1.72.0":
+"@aws-cdk/aws-kinesisfirehose@1.72.0", "@aws-cdk/aws-kinesisfirehose@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-kinesisfirehose/-/aws-kinesisfirehose-1.72.0.tgz#338a24588fbc5e5a4fb88cf20dfb2c2e69821924"
   integrity sha512-FSrDMPhRO2EuE9Y5yl12a27POMSUKSqxaKrHIZRUAzD04FNTwNwBx0p9bnu5MBQ331bMnTVukQ+SofN5TLV/Ew==
@@ -814,7 +814,7 @@
     "@aws-cdk/core" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-route53-targets@1.72.0":
+"@aws-cdk/aws-route53-targets@1.72.0", "@aws-cdk/aws-route53-targets@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-route53-targets/-/aws-route53-targets-1.72.0.tgz#2ccfe13c3d1e46999f8281b28d12ce69336ab66f"
   integrity sha512-RfWSYAI4XvH8gS8QJfIdFMSYTkQb52C86QTa79yapZF/1FLO9pkcJUhWwydwXbm0AZzJRrPJgtt2tIQFhIDSJg==
@@ -888,7 +888,7 @@
     "@aws-cdk/core" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-servicecatalog@1.72.0":
+"@aws-cdk/aws-servicecatalog@1.72.0", "@aws-cdk/aws-servicecatalog@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-servicecatalog/-/aws-servicecatalog-1.72.0.tgz#a268347218d9212a8c9e392606f7a3cdcf3c06e4"
   integrity sha512-WyRES3wXBwiOodQOf/2z+UJq2iTjoJHk+HQIlexn9MFhqcOD7C3Mr9hCg+mj6wC+eEs71MSg09u8tDbX+cPWoQ==
@@ -907,7 +907,7 @@
     "@aws-cdk/core" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-sns-subscriptions@1.72.0":
+"@aws-cdk/aws-sns-subscriptions@1.72.0", "@aws-cdk/aws-sns-subscriptions@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-sns-subscriptions/-/aws-sns-subscriptions-1.72.0.tgz#5759101989c1024a10f2d03b750c71e8cc630e8b"
   integrity sha512-b3AyfqpXThMy+1LQBewnNSELQgcHC5lNds0ZKD+FzXb0aFrTkgjDs3S0REAkdkdJp1p5QpqKCP8Daez1XBaUuQ==
@@ -954,7 +954,7 @@
     "@aws-cdk/core" "1.72.0"
     constructs "^3.2.0"
 
-"@aws-cdk/aws-stepfunctions@1.72.0":
+"@aws-cdk/aws-stepfunctions@1.72.0", "@aws-cdk/aws-stepfunctions@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-stepfunctions/-/aws-stepfunctions-1.72.0.tgz#b17a2e90bb170cc487e885905ca9b90669f2f7f8"
   integrity sha512-YUwInpaVZz8v4pbO1XMsCp2lLBqAZt4AQwsANgiNRlzsv8H0pGElDc4MDmpjfyWxt4PVXIB2x4j0uxmjf9n2KA==
@@ -8977,6 +8977,11 @@ constructs@^3.2.0:
   version "3.2.27"
   resolved "https://registry.yarnpkg.com/constructs/-/constructs-3.2.27.tgz#8e17183bb7b298579d8afc09ce90e72eda6ad6e1"
   integrity sha512-wwR6Mlv6IZdv7BNlVDis6aCDcVncS58a2qsTGem36FHoGmxRgVZT+XO7XC9wbNbBf7VIJK9hOZ1UW/4XbRJTog==
+
+constructs@~3.2.0:
+  version "3.2.36"
+  resolved "https://registry.yarnpkg.com/constructs/-/constructs-3.2.36.tgz#4fdc28112bd0e2f58d3c095d0471a55b599c5e6e"
+  integrity sha512-9j7UNYVIpirS9AgCBNrhgAB7Sa2HZ1/Ykyt9C22ZPoeCUEohNoERLwEPORMgykayR2YJyRuxXwNsPCBTu/chQQ==
 
 contains-path@^0.1.0:
   version "0.1.0"
