@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.27.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.27.3...amplify-e2e-tests@2.27.6) (2020-11-20)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+## 4.32.1-alpha.0 (2020-11-11)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** fix gsi update sanity check ([#5776](https://github.com/aws-amplify/amplify-cli/issues/5776)) ([b82a3e5](https://github.com/aws-amplify/amplify-cli/commit/b82a3e5a5deb432e7283b902c8abe90dc27f0f46))
+
+
+
+
+
+## [2.27.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.27.3...amplify-e2e-tests@2.27.5) (2020-11-20)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+## 4.32.1-alpha.0 (2020-11-11)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** fix gsi update sanity check ([#5776](https://github.com/aws-amplify/amplify-cli/issues/5776)) ([b82a3e5](https://github.com/aws-amplify/amplify-cli/commit/b82a3e5a5deb432e7283b902c8abe90dc27f0f46))
+
+
+
+
+
+## [2.27.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.27.3...amplify-e2e-tests@2.27.4) (2020-11-19)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+## 4.32.1-alpha.0 (2020-11-11)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** fix gsi update sanity check ([#5776](https://github.com/aws-amplify/amplify-cli/issues/5776)) ([b82a3e5](https://github.com/aws-amplify/amplify-cli/commit/b82a3e5a5deb432e7283b902c8abe90dc27f0f46))
+
+
+
+
+
 ## [2.27.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.27.2...amplify-e2e-tests@2.27.3) (2020-11-08)
 
 **Note:** Version bump only for package amplify-e2e-tests

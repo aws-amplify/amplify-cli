@@ -397,6 +397,32 @@ jobs:
           path: packages/amplify-migration-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+  amplify_migration_tests_v4_30_0:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+      - run:
+          name: Update OS Packages
+          command: sudo apt-get update
+      - run:
+          name: Run tests migrating from CLI v4.30.0
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            cd packages/amplify-migration-tests
+            yarn run migration_v4.30.0_auth --maxWorkers=3
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
   amplify_migration_tests_latest:
     working_directory: ~/repo
     docker: *ref_0
@@ -2040,6 +2066,16 @@ workflows:
                 - master
           requires:
             - build
+      - amplify_migration_tests_v4_30_0:
+          filters:
+            branches:
+              only:
+                - master
+                - graphqlschemae2e
+                - feat-import
+                - test-fix-status
+          requires:
+            - build
       - amplify_console_integration_tests:
           filters:
             branches:
@@ -2073,6 +2109,7 @@ workflows:
             - amplify_console_integration_tests
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
+            - amplify_migration_tests_v4_30_0
             - github_prerelease_install_sanity_check
           filters:
             branches:

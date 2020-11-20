@@ -28,6 +28,10 @@ describe('test SIGINT with execute', () => {
       FeatureFlags: {
         initialize: jest.fn(),
       },
+      PathConstants: {
+        TeamProviderFileName: 'team-provider-info.json',
+        DeploymentSecretsFileName: 'deployment-secrets.json',
+      },
       CLIContextEnvironmentProvider: jest.fn(),
     });
     jest.setMock('../plugin-manager', {

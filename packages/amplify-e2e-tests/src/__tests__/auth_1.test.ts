@@ -1,21 +1,6 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import {
-  addAuthWithDefault,
-  runAmplifyAuthConsole,
-  removeAuthWithDefault,
-  addAuthWithDefaultSocial,
-  addAuthWithGroupTrigger,
-  addAuthWithRecaptchaTrigger,
-  addAuthViaAPIWithTrigger,
-} from 'amplify-e2e-core';
-import {
-  createNewProjectDir,
-  deleteProjectDir,
-  getProjectMeta,
-  getUserPool,
-  getUserPoolClients,
-  getLambdaFunction,
-} from 'amplify-e2e-core';
+import { addAuthWithDefault, runAmplifyAuthConsole, removeAuthWithDefault } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProjectDir, getProjectMeta, getUserPool } from 'amplify-e2e-core';
 
 const defaultsSettings = {
   name: 'authTest',

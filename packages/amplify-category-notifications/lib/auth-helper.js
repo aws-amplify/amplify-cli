@@ -116,7 +116,7 @@ function getPolicyDoc(context) {
     Statement: [
       {
         Effect: 'Allow',
-        Action: ['mobiletargeting:PutEvents', 'mobiletargeting:UpdateEndpoint', 'mobiletargeting:GetUserEndpoints'],
+        Action: ['mobiletargeting:PutEvents', 'mobiletargeting:UpdateEndpoint'],
         Resource: [`arn:aws:mobiletargeting:*:${accountNumber}:apps/${pinpointAppId}*`],
       },
     ],

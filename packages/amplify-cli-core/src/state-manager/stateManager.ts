@@ -1,9 +1,10 @@
 import * as fs from 'fs-extra';
 import { pathManager } from './pathManager';
-import { $TSMeta, $TSTeamProviderInfo, $TSAny } from '..';
+import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import { Tag, ReadValidateTags } from '../tags';
-
+import _ from 'lodash';
+import { SecretFileMode } from '../cliConstants';
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
   preserveComments?: boolean;
@@ -27,6 +28,11 @@ export class StateManager {
 
   currentMetaFileExists = (projectPath?: string): boolean => fs.existsSync(pathManager.getCurrentAmplifyMetaFilePath(projectPath));
 
+  setDeploymentSecrets = (deploymentSecrets: DeploymentSecrets): void => {
+    const path = pathManager.getDeploymentSecrets();
+    JSONUtilities.writeJson(path, deploymentSecrets, { mode: SecretFileMode }); //set deployment secret file permissions to -rw-------
+  };
+
   getCurrentMeta = (projectPath?: string, options?: GetOptions<$TSMeta>): $TSMeta => {
     const filePath = pathManager.getCurrentAmplifyMetaFilePath(projectPath);
     const mergedOptions = {
@@ -37,6 +43,14 @@ export class StateManager {
     const data = this.getData<$TSMeta>(filePath, mergedOptions);
 
     return data;
+  };
+
+  getDeploymentSecrets = (): DeploymentSecrets => {
+    return (
+      JSONUtilities.readJson<DeploymentSecrets>(pathManager.getDeploymentSecrets(), {
+        throwIfNotExist: false,
+      }) || { appSecrets: [] }
+    );
   };
 
   getProjectTags = (projectPath?: string): Tag[] => ReadValidateTags(pathManager.getTagFilePath(projectPath));

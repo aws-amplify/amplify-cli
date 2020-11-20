@@ -158,7 +158,16 @@ async function run(context, resourceDefinition) {
     // Store current cloud backend in S3 deployment bcuket
     await storeCurrentCloudBackend(context);
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
-
+    //check for auth resources and remove deployment secret for push
+    const authResources = resources.filter(
+      resource => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation',
+    );
+    if (authResources.length > 0) {
+      for (let i = 0; i < authResources.length; i++) {
+        const authResource = authResources[i];
+        context.amplify.removeDeploymentSecrets(context, authResource.category, authResource.resourceName);
+      }
+    }
     spinner.succeed('All resources are updated in the cloud');
 
     await displayHelpfulURLs(context, resources);
@@ -502,6 +511,12 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
   /* eslint-enable */
   const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
   const nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
+
+  // Track Amplify Console generated stacks
+  if (process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
+    nestedStack.Description = 'Root Stack for AWS Amplify Console';
+  }
+
   const { amplifyMeta } = projectDetails;
   let authResourceName;
   let categories = Object.keys(amplifyMeta);

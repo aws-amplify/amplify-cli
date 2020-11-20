@@ -24,7 +24,6 @@ export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails
   expect(projectDetails.team.userPoolId).toEqual(ogProjectDetails.team.userPoolId);
   expect(projectDetails.team.webClientId).toEqual(ogProjectDetails.team.webClientId);
   expect(projectDetails.team.nativeClientId).toEqual(ogProjectDetails.team.nativeClientId);
-  expect(projectDetails.team.hostedUIProviderCreds).toMatchObject(ogProjectDetails.team.hostedUIProviderCreds);
 };
 
 export const expectLocalAndCloudMetaFilesMatching = (projectRoot: string) => {

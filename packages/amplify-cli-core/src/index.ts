@@ -12,6 +12,8 @@ export * from './tags';
 export * from './errors';
 export * from './exitOnNextTick';
 export * from './isPackaged';
+export * from './cliConstants';
+export * from './deploymentSecretsHelper';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -52,6 +54,14 @@ export type IPluginInfo = {
   packageVersion: string;
   packageLocation: string;
   manifest: $IPluginManifest;
+};
+
+export type DeploymentSecrets = {
+  appSecrets: Array<{
+    rootStackId: string;
+
+    environments: { [env: string]: { [category: string]: { [resourceName: string]: { [key: string]: string } } } };
+  }>;
 };
 
 /**
