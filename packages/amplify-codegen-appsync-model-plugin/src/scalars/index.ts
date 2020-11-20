@@ -85,7 +85,7 @@ export const DART_SCALAR_MAP: NormalizedScalarsMap = {
   AWSDate: 'DateTime',
   AWSDateTime: 'DateTime',
   AWSTime: 'DateTime',
-  AWSTimestamp: 'int',
+  AWSTimestamp: 'String',
   AWSEmail: 'String',
   AWSJSON: 'String',
   AWSURL: 'String',

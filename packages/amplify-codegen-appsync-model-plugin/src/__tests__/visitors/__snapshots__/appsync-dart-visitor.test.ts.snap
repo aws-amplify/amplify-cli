@@ -31,6 +31,134 @@ class ModelProvider implements ModelProviderInterface {
 "
 `;
 
+exports[`AppSync Dart Visitor Enum Generation should generate a class for enum type 1`] = `
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
+import 'package:flutter/foundation.dart';
+
+import 'Status.dart';
+
+/** This is an auto generated class representing the SimpleModel type in your schema. */
+@immutable
+class SimpleModel extends Model {
+  static const classType = const SimpleModelType();
+  final String id;
+  final Status status;
+
+  @override
+  getInstanceType() => classType;
+
+  @override
+  String getId() {
+    return id;
+  }
+
+  const SimpleModel._internal({@required this.id, this.status});
+
+  factory SimpleModel({@required String id, Status status}) {
+    return SimpleModel._internal(
+        id: id == null ? UUID.getUUID() : id, status: status);
+  }
+
+  bool equals(Object other) {
+    return this == other;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is SimpleModel && id == other.id && status == other.status;
+  }
+
+  @override
+  int get hashCode => toString().hashCode;
+
+  @override
+  String toString() {
+    var buffer = new StringBuffer();
+
+    buffer.write(\\"SimpleModel {\\");
+    buffer.write(\\"id=\\" + id + \\", \\");
+    buffer.write(\\"status=\\" + describeEnum(status));
+    buffer.write(\\"}\\");
+
+    return buffer.toString();
+  }
+
+  SimpleModel copyWith({@required String id, Status status}) {
+    return SimpleModel(id: id ?? this.id, status: status ?? this.status);
+  }
+
+  SimpleModel.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        status = enumFromString<Status>(json['status'], Status.values);
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {'id': id, 'status': describeEnum(status)};
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
+
+  static final QueryField ID = QueryField(fieldName: \\"simpleModel.id\\");
+  static final QueryField STATUS = QueryField(fieldName: \\"status\\");
+  static var schema =
+      Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
+    modelSchemaDefinition.name = \\"SimpleModel\\";
+    modelSchemaDefinition.pluralName = \\"SimpleModels\\";
+
+    modelSchemaDefinition.addField(ModelFieldDefinition.id());
+
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+        key: SimpleModel.STATUS,
+        isRequired: false,
+        ofType: ModelFieldType(ModelFieldTypeEnum.enumeration)));
+  });
+}
+
+class SimpleModelType extends ModelType<SimpleModel> {
+  const SimpleModelType();
+
+  @override
+  SimpleModel fromJson(Map<String, dynamic> jsonData) {
+    return SimpleModel.fromJson(jsonData);
+  }
+}
+"
+`;
+
+exports[`AppSync Dart Visitor Enum Generation should generate a class for enum type 2`] = `
+"/*
+* Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+*
+* Licensed under the Apache License, Version 2.0 (the \\"License\\").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*  http://aws.amazon.com/apache2.0
+*
+* or in the \\"license\\" file accompanying this file. This file is distributed
+* on an \\"AS IS\\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
+
+enum Status { yes, no, maybe }
+"
+`;
+
 exports[`AppSync Dart Visitor Model Directive should generate a class for a Simple Model 1`] = `
 "/*
 * Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -112,7 +240,10 @@ class SimpleModel extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"simpleModel.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -228,7 +359,10 @@ class SimpleModel extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"simpleModel.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -357,8 +491,15 @@ class customClaim extends Model {
         bar = json['bar'],
         owner = json['owner'];
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'id': id,
+      'name': name,
+      'bar': bar,
+      'owner': owner
+    };
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"customClaim.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -493,7 +634,10 @@ class customClaim extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"customClaim.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -624,7 +768,10 @@ class dynamicGroups extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"dynamicGroups.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -766,8 +913,15 @@ class simpleOwnerAuth extends Model {
         bar = json['bar'],
         owner = json['owner'];
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'id': id,
+      'name': name,
+      'bar': bar,
+      'owner': owner
+    };
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"simpleOwnerAuth.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -915,8 +1069,15 @@ class allowRead extends Model {
         bar = json['bar'],
         owner = json['owner'];
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'id': id,
+      'name': name,
+      'bar': bar,
+      'owner': owner
+    };
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"allowRead.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -1050,7 +1211,10 @@ class privateType extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"privateType.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -1175,7 +1339,10 @@ class publicType extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"publicType.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -1300,7 +1467,10 @@ class staticGroups extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"staticGroups.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -1436,7 +1606,10 @@ class Post extends Model {
         title = json['title'],
         author = json['author'];
 
-  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'author': author};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {'id': id, 'title': title, 'author': author};
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"post.id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
@@ -1570,7 +1743,10 @@ class Post extends Model {
         title = json['title'],
         owner = json['owner'];
 
-  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'owner': owner};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {'id': id, 'title': title, 'owner': owner};
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"post.id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
@@ -1714,8 +1890,13 @@ class Todo extends Model {
                 .toList()
             : null;
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'tasks': tasks.map((e) => e.toJson())};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'id': id,
+      'tasks': tasks?.map((e) => e?.toJson())
+    };
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"todo.id\\");
   static final QueryField TASKS = QueryField(
@@ -1822,8 +2003,8 @@ class Task extends Model {
     buffer.write(\\"Task {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"todo=\\" + todo.toString() + \\", \\");
-    buffer.write(\\"time=\\" + time.toString() + \\", \\");
-    buffer.write(\\"createdOn=\\" + createdOn.toString());
+    buffer.write(\\"time=\\" + time?.toIso8601String() + \\", \\");
+    buffer.write(\\"createdOn=\\" + createdOn?.toIso8601String());
     buffer.write(\\"}\\");
 
     return buffer.toString();
@@ -1846,8 +2027,15 @@ class Task extends Model {
         time = json['time'],
         createdOn = json['createdOn'];
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'todo': todo?.toJson(), 'time': time, 'createdOn': createdOn};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'id': id,
+      'todo': todo?.toJson(),
+      'time': time?.toIso8601String(),
+      'createdOn': createdOn?.toIso8601String()
+    };
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"task.id\\");
   static final QueryField TODO = QueryField(
@@ -1998,12 +2186,15 @@ class Blog extends Model {
             : null,
         test = json['test'];
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'posts': posts.map((e) => e.toJson()),
-        'test': test
-      };
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'id': id,
+      'name': name,
+      'posts': posts?.map((e) => e?.toJson()),
+      'test': test
+    };
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"blog.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -2136,8 +2327,14 @@ class Comment extends Model {
             : null,
         content = json['content'];
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'post': post?.toJson(), 'content': content};
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'id': id,
+      'post': post?.toJson(),
+      'content': content
+    };
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"comment.id\\");
   static final QueryField POST = QueryField(
@@ -2285,12 +2482,15 @@ class Post extends Model {
                 .toList()
             : null;
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'blog': blog?.toJson(),
-        'comments': comments.map((e) => e.toJson())
-      };
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'id': id,
+      'title': title,
+      'blog': blog?.toJson(),
+      'comments': comments?.map((e) => e?.toJson())
+    };
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"post.id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
@@ -2451,13 +2651,16 @@ class authorBook extends Model {
         author = json['author'],
         book = json['book'];
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'author_id': author_id,
-        'book_id': book_id,
-        'author': author,
-        'book': book
-      };
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'id': id,
+      'author_id': author_id,
+      'book_id': book_id,
+      'author': author,
+      'book': book
+    };
+    return Map.from(map)..removeWhere((k, v) => v == null);
+  }
 
   static final QueryField ID = QueryField(fieldName: \\"authorBook.id\\");
   static final QueryField AUTHOR_ID = QueryField(fieldName: \\"author_id\\");

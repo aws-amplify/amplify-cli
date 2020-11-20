@@ -257,6 +257,27 @@ describe('AppSync Dart Visitor', () => {
     });
   });
 
+  describe('Enum Generation', () => {
+    it('should generate a class for enum type', () => {
+      const schema = /* GraphQL */ `
+        type SimpleModel @model {
+          id: ID!
+          status: Status
+        }
+        enum Status { 
+          yes,
+          no,
+          maybe
+        }
+      `;
+      const outputModels: string[] = ['SimpleModel', 'Status'];
+      outputModels.forEach(model => {
+        const generatedCode = getVisitor(schema, model).generate();
+        expect(generatedCode).toMatchSnapshot();
+      });
+    })
+  });
+
   describe('Dart Specific Tests', () => {
     it('should generate the model provider', () => {
       const schema = /* GraphQL */ `
