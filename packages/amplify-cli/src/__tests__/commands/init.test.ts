@@ -1,0 +1,118 @@
+import { execSync } from 'child_process';
+
+import { $TSContext, UnknownArgumentError } from 'amplify-cli-core';
+
+import { preInitSetup } from '../../init-steps/preInitSetup'
+import { analyzeProject } from '../../init-steps/s0-analyzeProject'
+import { initFrontend } from '../../init-steps/s1-initFrontend'
+
+jest.mock('child_process', () => ({ execSync: jest.fn() }));
+jest.mock('fs-extra', () => ({ 
+  readdirSync: () => [],
+  copy: jest.fn(),
+  ensureDirSync: jest.fn(),
+  writeFileSync: jest.fn(),
+  existsSync: jest.fn(),
+}));
+jest.mock('../../packageManagerHelpers', () => ({
+  getPackageManager: () => 'yarn',
+  normalizePackageManagerForOS: () => 'yarn',
+}));
+
+describe('amplify init: ', () => {
+  const mockExit = jest.fn();
+  const mockEmitError = jest.fn();
+  const mockEmitSuccess = jest.fn();
+  const mockPrint = jest.fn();
+  const mockMigrationInfo = jest.fn();
+  const mockprojectHasMobileHubResources = jest.fn();
+  const mockPrompt = jest.fn();
+  const mockGetProjectConfigFilePath = jest.fn();
+  const mockGetProjectConfig = jest.fn(() => ({}));
+  
+  const mockPathManager = {
+    getProjectConfigFilePath: mockGetProjectConfigFilePath,
+  };
+  
+  const mockContext = {
+    amplify: {
+      AmplifyToolkit: jest.fn(),
+      pathManager: mockPathManager,
+      getProjectConfig: mockGetProjectConfig,
+    },
+    parameters: {
+      options: {},
+    },
+    usageData: {
+      emitError: mockEmitError,
+      emitSuccess: mockEmitSuccess,
+    },
+    print: {
+      warning: mockPrint,
+      error: mockPrint,
+    },
+    migrationInfo: mockMigrationInfo,
+    projectHasMobileHubResources: mockprojectHasMobileHubResources,
+    prompt: mockPrompt,
+    exeInfo: {
+      inputParams: {
+        amplify: {
+        }
+      }
+    },
+    input: {},
+    runtime: {},
+    pluginPlatform: {},
+  } as unknown as $TSContext;
+  jest.mock('amplify-cli-core', () => ({
+    exitOnNextTick: mockExit,
+    UnknownArgumentError: UnknownArgumentError,
+  }));
+
+  const { run } = require('../../commands/init');
+  const initCommand = run;
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+
+  it('init run method should exist', () => {
+    expect(initCommand).toBeDefined();
+  });
+
+  describe('init:preInit', async () => {
+    it('should set up a sample app in an empty directory', async() => {
+      const appUrl = 'https://github.com/aws-samples/aws-amplify-graphql';
+      const context = {
+        ...mockContext,
+        parameters: {
+          options: {
+            app: appUrl,
+          }
+        },
+      };
+      await preInitSetup(context);
+      expect(execSync).toBeCalledWith(`git ls-remote ${appUrl}`, {'stdio': 'ignore'});
+      expect(execSync).toBeCalledWith(`git clone ${appUrl} .`, {'stdio': 'inherit'});
+      expect(execSync).toBeCalledWith('yarn install', {'stdio': 'inherit'});
+    });
+  });
+
+  describe('init:analyzeProject', async () => {
+    it('should initialize exeInfo', async () => {
+      const newContext = await analyzeProject(mockContext);
+      expect(newContext.exeInfo.projectConfig).not.toBeUndefined();
+      expect(newContext.exeInfo.localEnvInfo).not.toBeUndefined();
+      expect(newContext.exeInfo.teamProviderInfo).not.toBeUndefined();
+      expect(newContext.exeInfo.metaData).not.toBeUndefined();
+    });
+  });
+
+  describe('init:initFrontend', () => {
+    it('should use current project config if it is not a new project', async () => {
+      await initFrontend({ ...mockContext, exeInfo: { isNewProject: false }});
+      expect(mockGetProjectConfig).toBeCalled();
+    });
+  })
+});
