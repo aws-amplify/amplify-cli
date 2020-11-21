@@ -147,7 +147,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   );
 
   const newContainersName = Array.from(new Set(containers.map(({ name }) => name)));
-  
+
   let isInitialDeploy = Object.keys(output ?? {}).length === 0;
   const currentContainersSet = new Set(output?.ContainerNames?.split(','));
   // Service require all containers to exists
