@@ -36,7 +36,7 @@ function run(opts) {
 
   if (!opts.skipEnvCheck) {
     checkNodeVersion()
-    .then(() => amplifyCLIVersionCheck())
+    amplifyCLIVersionCheck()
     .catch(e => {
       console.error(e);
       process.exit(1);
@@ -59,20 +59,17 @@ function run(opts) {
 /**
  * Checks installed NodeJS version
  * @private
- * @returns {Promise<void>}
  */
-async function checkNodeVersion() {
-  return new Promise((resolve, reject) => {
-    const currentNodeVersion = process.versions.node;
-    const minNodeVersion = engines.node;
-    if (!semver.satisfies(currentNodeVersion, minNodeVersion)) {
-      const errorMsg = `You are running Node ${currentNodeVersion}.\n` +
-      `Amplify CLI requires Node ${minNodeVersion}. \n` +
-      `Please update your version of Node.`;
-      reject(new Error(errorMsg));
-    }
-    resolve();
-  });
+function checkNodeVersion() {
+  const currentNodeVersion = process.versions.node;
+  const minNodeVersion = engines.node;
+  if (!semver.satisfies(currentNodeVersion, minNodeVersion)) {
+    const errorMsg = `You are running Node ${currentNodeVersion}.\n` +
+    `Amplify CLI requires Node ${minNodeVersion}. \n` +
+    `Please update your version of Node.`;
+    console.error(errorMsg);
+    process.exit(1);
+  }
 }
 
 /**

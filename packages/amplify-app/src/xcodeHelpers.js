@@ -132,7 +132,7 @@ function getSchemaFile(rootDir) {
 function addAmplifyModels(rootDir, schemaFile, xcodeProject) {
   let hasGeneratedFiles = false;
   if (!schemaFile) {
-    Promise.resolve(hasGeneratedFiles);
+    return hasGeneratedFiles;
   }
 
   // add generated model
