@@ -1,6 +1,6 @@
 const amplifyApp = require('amplify-app');
 
-async function run(context, args) {
+async function run(context) {
   const { frontend } = context.exeInfo.projectConfig;
   await amplifyApp.run({ skipEnvCheck: true, platform: frontend });
 }
