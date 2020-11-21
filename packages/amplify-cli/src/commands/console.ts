@@ -25,7 +25,7 @@ export const run = async context => {
     if (envName && AmplifyAppId) {
       consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
       if (doAdminCredentialsExist(AmplifyAppId)) {
-        const response: { choice: string } = await prompt({
+        const { choice } = await prompt<{ choice: string }>({
           type: 'select',
           name: 'choice',
           message: 'Which site do you want to open?',
@@ -34,7 +34,7 @@ export const run = async context => {
             { name: 'console', message: 'Amplify console', value: 'console' },
           ],
         });
-        if (response.choice === 'admin') {
+        if (choice === 'admin') {
           consoleUrl = constructAdminURL(Region, AmplifyAppId, envName);
         }
       }
@@ -48,8 +48,7 @@ export const run = async context => {
 };
 
 function constructAdminURL(region: string, appId: string, envName: string) {
-  const adminURL = `https://www.dracarys.app/admin/${appId}/${envName}/home`;
-  return adminURL;
+  return `https://www.dracarys.app/admin/${appId}/${envName}/home`;
 }
 
 function constructStatusURL(region, appId, envName) {

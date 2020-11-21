@@ -186,7 +186,13 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, parameters);
   };
 
-  cliJSONFileExists = (projectPath: string, env?: string): boolean => this.doesExist(pathManager.getCLIJSONFilePath, projectPath);
+  cliJSONFileExists = (projectPath: string, env?: string): boolean => {
+    try {
+      return fs.existsSync(pathManager.getCLIJSONFilePath(projectPath, env));
+    } catch (e) {
+      return false;
+    }
+  };
 
   getCLIJSON = (projectPath: string, env?: string, options?: GetOptions<$TSAny>): $TSAny => {
     const filePath = pathManager.getCLIJSONFilePath(projectPath, env);
@@ -206,15 +212,15 @@ export class StateManager {
     });
   };
 
-  private doesExist = (filePathGetter: any, projectPath?: string): boolean => {
+  private doesExist = (filePathGetter: (projPath?: string) => string, projectPath?: string): boolean => {
     let path;
     try {
       // getting the file path can fail if we are not in a valid project
       path = filePathGetter(projectPath);
+      return fs.existsSync(path);
     } catch (e) {
       return false;
     }
-    return fs.existsSync(path);
   };
 
   private getData = <T>(filePath: string, options?: GetOptions<T>): T | undefined => {
