@@ -103,6 +103,18 @@ export type $TSTeamProviderInfo = any;
 // Use it for all object initializer usages: {}
 export type $TSObject = Record<string, $TSAny>;
 
+export enum AmplifyFrontend {
+  android = "android",
+  ios = "ios",
+  javascript = "javascript"
+}
+export interface AmplifyProjectConfig {
+  projectName: string,
+  version: string,
+  frontend: AmplifyFrontend,
+  providers: string[],
+}
+
 // Temporary interface until Context refactor
 interface AmplifyToolkit {
   buildResources: () => $TSAny;
