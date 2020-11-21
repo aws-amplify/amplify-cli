@@ -319,10 +319,6 @@ export class EcsStack extends cdk.Stack {
 
     //#region Pipeline with awaiter
 
-    new cdk.CfnOutput(this, 'ContainerNames', {
-      value: cdk.Fn.join(',', containersInfo.map(containerInfo => containerInfo.container.containerName))
-    });
-
     const pipeline = new PipelineWithAwaiter(this, 'ApiPipeline', {
       containersInfo,
       service,
@@ -401,6 +397,9 @@ export class EcsStack extends cdk.Stack {
 
     //#endregion
 
+    new cdk.CfnOutput(this, 'ContainerNames', {
+      value: cdk.Fn.join(',', containersInfo.map(containerInfo => containerInfo.container.containerName))
+    });
     new cdk.CfnOutput(this, 'ServiceArn', { value: cdk.Fn.ref(service.logicalId) });
     new cdk.CfnOutput(this, 'ApiName', { value: api.name });
     new cdk.CfnOutput(this, 'RootUrl', { value: api.attrApiEndpoint });
