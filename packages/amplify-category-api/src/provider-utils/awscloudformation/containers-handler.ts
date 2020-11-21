@@ -117,7 +117,7 @@ export const addResource = async (
 
   if (deploymentMechanism === DEPLOYMENT_MECHANISM.FULLY_MANAGED) {
     context.print.info(
-      `Place your Dockerfile, docker-compose.yml and any related container source files in this directory: <project-dir>/amplify/backend/api/${resourceName}/src`,
+      `Place your Dockerfile, docker-compose.yml and any related container source files in <project-dir>/amplify/backend/api/${resourceName}/src`,
     );
   } else if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     context.print.info(
