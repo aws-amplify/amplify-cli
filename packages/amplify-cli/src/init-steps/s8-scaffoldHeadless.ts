@@ -2,10 +2,12 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
   $TSContext,
+  AmplifyProjectConfig,
   CLIContextEnvironmentProvider,
   FeatureFlags,
+  JSONUtilities,
   PathConstants,
-  PathManager,
+  pathManager,
 } from 'amplify-cli-core';
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 
@@ -15,9 +17,6 @@ import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 export async function scaffoldProjectHeadless(context: $TSContext) {
   const projectPath = process.cwd();
   const { projectName, frontend } = context.exeInfo.projectConfig;
-
-  // temporary cast, remove once $TSContext has full type definitions
-  const pathManager = context.amplify.pathManager as unknown as PathManager;
 
   const skeletonLocalDir = path.join(__dirname, '..', '..', 'templates', 'amplify-skeleton');
 
@@ -29,11 +28,16 @@ export async function scaffoldProjectHeadless(context: $TSContext) {
   await fs.ensureDir(pathManager.getDotConfigDirPath(projectPath));
 
   // copy project-config.json file
-  const projectConfigFile = await fs.readJSON(
+  const projectConfigFile = JSONUtilities.readJson<AmplifyProjectConfig>(
     path.join(skeletonLocalDir, PathConstants.DotConfigDirName, `project-config__${frontend}.json`)
   );
+
+  if (!projectConfigFile) {
+    throw new Error(`project-config.json template not found for frontend: ${frontend}`);
+  }
+
   projectConfigFile['projectName'] = projectName;
-  await fs.writeJSON(pathManager.getProjectConfigFilePath(projectPath), projectConfigFile, { spaces: 4 });
+  JSONUtilities.writeJson(pathManager.getProjectConfigFilePath(projectPath), projectConfigFile);
 
   // copy backend folder
   await fs.copy(path.join(skeletonLocalDir, PathConstants.BackendDirName), pathManager.getBackendDirPath(projectPath))

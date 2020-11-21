@@ -1,6 +1,7 @@
 import { execSync } from 'child_process';
+import { ensureDir, existsSync, readFileSync, readJSON, readdirSync, } from 'fs-extra';
 
-import { $TSContext, UnknownArgumentError } from 'amplify-cli-core';
+import { $TSContext, pathManager } from 'amplify-cli-core';
 
 import { preInitSetup } from '../../init-steps/preInitSetup'
 import { analyzeProject } from '../../init-steps/s0-analyzeProject'
@@ -8,35 +9,29 @@ import { initFrontend } from '../../init-steps/s1-initFrontend'
 import { scaffoldProjectHeadless } from '../../init-steps/s8-scaffoldHeadless';
 
 jest.mock('child_process', () => ({ execSync: jest.fn() }));
-jest.mock('fs-extra', () => ({ 
-  readdirSync: () => [],
-  copy: jest.fn(),
-  ensureDirSync: jest.fn(),
-  ensureDir: jest.fn(() => Promise.resolve()),
-  writeFileSync: jest.fn(),
-  existsSync: jest.fn(),
-  writeJSON: jest.fn(),
-  readJSON: jest.fn(() => ({})),
-}));
+jest.mock('fs-extra');
+
+(readJSON as jest.Mock).mockReturnValue({});
+(ensureDir as jest.Mock).mockReturnValue(Promise.resolve());
+(readFileSync as jest.Mock).mockReturnValue('{}');
+(existsSync as jest.Mock).mockReturnValue(true);
+(readdirSync as jest.Mock).mockReturnValue([]);
+
+
+
 jest.mock('../../packageManagerHelpers', () => ({
   getPackageManager: () => 'yarn',
   normalizePackageManagerForOS: () => 'yarn',
 }));
 
 describe('amplify init: ', () => {
-  const mockExit = jest.fn();
-  const mockEmitError = jest.fn();
-  const mockEmitSuccess = jest.fn();
-  const mockPrint = jest.fn();
-  const mockMigrationInfo = jest.fn();
-  const mockprojectHasMobileHubResources = jest.fn();
-  const mockPrompt = jest.fn();
-  const mockGetProjectConfigFilePath = jest.fn();
+  const mockGetProjectConfigFilePath = jest.spyOn(pathManager, 'getProjectConfigFilePath');
+  const mockGetAmplifyDirPath = jest.spyOn(pathManager, 'getAmplifyDirPath');
+  const mockGetDotConfigDirPath = jest.spyOn(pathManager, 'getDotConfigDirPath');
+  const mockGetBackendDirPath = jest.spyOn(pathManager, 'getBackendDirPath');
+  const mockGetGitIgnoreFilePath = jest.spyOn(pathManager, 'getGitIgnoreFilePath');
+
   const mockGetProjectConfig = jest.fn(() => ({}));
-  const mockGetAmplifyDirPath = jest.fn(() => 'amplify-dir');
-  const mockGetDotConfigDirPath = jest.fn(() => 'amplify-dot-dir');
-  const mockGetBackendDirPath = jest.fn(() => 'backend');
-  const mockGetGitIgnoreFilePath = jest.fn(() => '.gitignore');
 
   const mockPathManager = {
     getProjectConfigFilePath: mockGetProjectConfigFilePath,
@@ -56,16 +51,16 @@ describe('amplify init: ', () => {
       options: {},
     },
     usageData: {
-      emitError: mockEmitError,
-      emitSuccess: mockEmitSuccess,
+      emitError: jest.fn(),
+      emitSuccess: jest.fn(),
     },
     print: {
-      warning: mockPrint,
-      error: mockPrint,
+      warning: jest.fn(),
+      error: jest.fn(),
     },
-    migrationInfo: mockMigrationInfo,
-    projectHasMobileHubResources: mockprojectHasMobileHubResources,
-    prompt: mockPrompt,
+    migrationInfo: jest.fn(),
+    projectHasMobileHubResources: jest.fn(),
+    prompt: jest.fn(),
     exeInfo: {
       inputParams: {
         amplify: {
@@ -77,8 +72,7 @@ describe('amplify init: ', () => {
     pluginPlatform: {},
   } as unknown as $TSContext;
   jest.mock('amplify-cli-core', () => ({
-    exitOnNextTick: mockExit,
-    UnknownArgumentError: UnknownArgumentError,
+    exitOnNextTick: jest.fn(),
   }));
 
   const { run } = require('../../commands/init');

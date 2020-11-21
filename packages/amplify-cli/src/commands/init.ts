@@ -15,17 +15,14 @@ function constructExeInfo(context: $TSContext) {
   };
 }
 
-const runStrategy = (context: $TSContext) => {
-  if (context.parameters.options.quickstart) {
-    return [
-      preInitSetup,
-      analyzeProjectHeadless,
-      initFrontend,
-      scaffoldProjectHeadless,
-      onHeadlessSuccess,
-    ];
-  }
-  return [
+const runStrategy = (quickstart: boolean) => {
+  return quickstart ? [
+    preInitSetup,
+    analyzeProjectHeadless,
+    initFrontend,
+    scaffoldProjectHeadless,
+    onHeadlessSuccess,
+  ] : [
     preInitSetup,
     analyzeProject,
     initFrontend,
@@ -37,7 +34,7 @@ const runStrategy = (context: $TSContext) => {
 
 export const run = async (context: $TSContext) => {
   constructExeInfo(context);
-  const steps = runStrategy(context);
+  const steps = runStrategy(context?.parameters?.options?.quickstart);
   try {
     for (const step of steps) {
       await step(context);

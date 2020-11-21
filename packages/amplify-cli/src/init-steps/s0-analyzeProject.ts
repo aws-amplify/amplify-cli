@@ -6,24 +6,6 @@ import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
 
-function setProjectConfig(context: $TSContext, projectName: string) {
-  context.exeInfo.isNewProject = isNewProject(context);
-  context.exeInfo.projectConfig = {
-    projectName,
-    version: amplifyCLIConstants.PROJECT_CONFIG_VERSION,
-  };
-}
-
-function setExeInfo(context: $TSContext, projectPath: String, defaultEditor?: String, envName?: String) {
-  context.exeInfo.localEnvInfo = {
-    projectPath,
-    defaultEditor,
-    envName,
-  };
-  context.exeInfo.teamProviderInfo = {};
-  context.exeInfo.metaData = {};
-}
-
 export async function analyzeProjectHeadless(context: $TSContext) {
   const projectPath = process.cwd();
   const projectName = path.basename(projectPath);
@@ -66,6 +48,24 @@ export async function analyzeProject(context): Promise<$TSContext> {
   setExeInfo(context, projectPath, defaultEditor, envName);
 
   return context;
+}
+
+function setProjectConfig(context: $TSContext, projectName: string) {
+  context.exeInfo.isNewProject = isNewProject(context);
+  context.exeInfo.projectConfig = {
+    projectName,
+    version: amplifyCLIConstants.PROJECT_CONFIG_VERSION,
+  };
+}
+
+function setExeInfo(context: $TSContext, projectPath: String, defaultEditor?: String, envName?: String) {
+  context.exeInfo.localEnvInfo = {
+    projectPath,
+    defaultEditor,
+    envName,
+  };
+  context.exeInfo.teamProviderInfo = {};
+  context.exeInfo.metaData = {};
 }
 
 /* Begin getProjectName */

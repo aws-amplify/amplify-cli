@@ -219,11 +219,11 @@ const legacyCommandExecutor = async (context: Context, plugin: PluginInfo) => {
   }
 };
 
-const PLUGINS_WITH_HANDLERS = new Set([constants.CORE, constants.CODEGEN]);
+const EVENT_EMITTING_PLUGINS = new Set([constants.CORE, constants.CODEGEN]);
 
 async function raisePreEvent(context: Context) {
   const { command, plugin } = context.input;
-  if (!plugin || !PLUGINS_WITH_HANDLERS.has(plugin)) {
+  if (!plugin || !EVENT_EMITTING_PLUGINS.has(plugin)) {
     return;
   }
   switch (command) {
@@ -260,7 +260,7 @@ async function raisePreCodegenModelsEvent(context: Context) {
 
 async function raisePostEvent(context: Context) {
   const { command, plugin } = context.input;
-  if (!plugin || !PLUGINS_WITH_HANDLERS.has(plugin)) {
+  if (!plugin || !EVENT_EMITTING_PLUGINS.has(plugin)) {
     return;
   }
   switch (command) {
