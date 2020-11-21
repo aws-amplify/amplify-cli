@@ -354,7 +354,7 @@ function getCognitoOutput(amplifyMeta) {
 async function openAdminUI(context, appId, region) {
   // region will be needed in prod
   const { envName } = context.amplify.getEnvInfo();
-  const adminUrl = `https://www.dracarys.app/admin/${appId}/${envName}`;
+  const adminUrl = `https://www.dracarys.app/admin/${appId}/${envName}/auth`;
   await open(adminUrl, { wait: false });
   context.print.success(adminUrl);
 }
