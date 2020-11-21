@@ -5,6 +5,8 @@ import * as discovery from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 
+export const RESOURCE_TAG = 'amplify-env';
+
 type NetworkStackProps = Readonly<{
   stackName: string;
   vpcName: string;
@@ -160,7 +162,7 @@ function createAmplifyEnv(
       });
 
       const cdfnPublicSubnet = publicSubnet.node.defaultChild as ec2.CfnSubnet;
-      cdfnPublicSubnet.tags.setTag('amplify-env', envName);
+      cdfnPublicSubnet.tags.setTag(RESOURCE_TAG, envName);
 
       new ec2.CfnRoute(scope, `DefaultRoute${azId}`, {
         routeTableId: publicSubnet.routeTable.routeTableId,

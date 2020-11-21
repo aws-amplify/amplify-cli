@@ -220,7 +220,7 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
     deploymentMechanism,
   } = options;
 
-  let [authName, updatedDependsOn] = await getResourceDependencies({ dependsOn, restrictAccess, category, resourceName, context });
+  let [authResourceName, updatedDependsOn] = await getResourceDependencies({ dependsOn, restrictAccess, category, resourceName, context });
 
   let newGithubInfo: GitHubSourceActionInfo = {
     path: gitHubPath,
@@ -247,7 +247,7 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
   }
 
   await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'restrictAccess', restrictAccess);
-  await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'authName', authName);
+  await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'authName', authResourceName);
   await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'environmentMap', environmentMap);
   await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'dependsOn', updatedDependsOn);
   await context.amplify.updateamplifyMetaAfterResourceUpdate(

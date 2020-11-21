@@ -36,8 +36,6 @@ export interface IContainerDefinitions {
 export interface ILogConfiguration {
   logDriver: string;
   options: {
-    'awslogs-group': string;
-    'awslogs-region': string;
     'awslogs-stream-prefix': string;
   };
 }

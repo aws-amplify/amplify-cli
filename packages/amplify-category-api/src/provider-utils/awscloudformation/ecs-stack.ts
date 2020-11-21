@@ -296,7 +296,7 @@ export class EcsStack extends cdk.Stack {
       serviceName: `${apiName}-service-${exposedContainer.name}-${exposedContainer.port}`,
       cluster: paramClusterName.valueAsString,
       launchType: 'FARGATE',
-      desiredCount: isInitialDeploy ? 0 : desiredCount, // This is later adjusted by the PreDeploy action in the codepipeline
+      desiredCount: isInitialDeploy ? 0 : desiredCount, // This is later adjusted by the Predeploy action in the codepipeline
       serviceRegistries,
       networkConfiguration: {
         awsvpcConfiguration: {

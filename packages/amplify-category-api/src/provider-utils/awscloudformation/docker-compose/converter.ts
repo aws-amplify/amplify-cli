@@ -1,8 +1,3 @@
-//Use for zipping:
-//https://github.com/aws-amplify/amplify-cli/blob/3ec96f7616bff62b7a65e20a643b9a0f7c12b05a/packages/amplify-provider-awscloudformation/src/zip-util.js
-
-//https://github.com/gfi-centre-ouest/docker-compose-spec-typescript
-//
 import * as v1Types from './compose-spec/v1';
 import * as v2Types from './compose-spec/v2';
 import * as v38Types from './compose-spec/v3.8';

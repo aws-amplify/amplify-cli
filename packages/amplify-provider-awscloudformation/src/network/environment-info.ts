@@ -2,6 +2,7 @@ import { JSONUtilities } from 'amplify-cli-core';
 import { EC2 } from 'aws-sdk';
 import { Netmask } from 'netmask';
 import configurationManager from '../configuration-manager';
+import { RESOURCE_TAG } from './stack';
 
 const SUBNETS = 3;
 type GetEnvironmentNetworkInfoParams = {
@@ -108,7 +109,7 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
   const existingVpcSubnets = new Set<string>();
 
   Subnets.forEach(({ Tags, CidrBlock, AvailabilityZone }) => {
-    const isFromEnv = Tags.find(({ Key, Value }) => Key === 'amplify-env' && Value === stackName);
+    const isFromEnv = Tags.find(({ Key, Value }) => Key === RESOURCE_TAG && Value === stackName);
 
     if (isFromEnv) {
       envCidrs.set(AvailabilityZone, CidrBlock);
