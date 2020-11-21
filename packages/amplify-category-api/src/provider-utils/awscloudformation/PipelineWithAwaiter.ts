@@ -100,6 +100,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
       gitHubSourceActionInfo,
       containersInfo,
       desiredCount,
+      envName,
     }: {
       bucket: s3.IBucket;
       s3SourceActionKey?: string;
@@ -111,6 +112,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
         repository: ecr.Repository;
       }[];
       desiredCount: number;
+      envName: string;
     },
   ) {
     super(scope, id);
@@ -248,7 +250,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
       },
     ]);
 
-    this.pipelineName = `codepipeline-amplify-${service.serviceName}`;
+    this.pipelineName = `amplify-${envName}-${service.serviceName}`;
 
     const pipeline = new codepipeline.Pipeline(scope, `${id}Pipeline`, {
       pipelineName: this.pipelineName,

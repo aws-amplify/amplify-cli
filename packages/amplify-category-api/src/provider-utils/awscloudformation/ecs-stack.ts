@@ -331,6 +331,7 @@ export class EcsStack extends cdk.Stack {
       deploymentMechanism,
       gitHubSourceActionInfo,
       desiredCount,
+      envName
     });
 
     pipeline.node.addDependency(service);
