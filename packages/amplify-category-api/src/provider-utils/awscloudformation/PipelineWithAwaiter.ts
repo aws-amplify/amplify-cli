@@ -118,7 +118,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
     const sourceOutput = new codepipeline.Artifact('SourceArtifact');
     const buildOutput = new codepipeline.Artifact('BuildArtifact');
 
-    const codebuildproject = new codebuild.PipelineProject(scope, `${id}CodeBuildProject`, {
+    const codeBuildProject = new codebuild.PipelineProject(scope, `${id}CodeBuildProject`, {
       environment: {
         buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
         // See: https://docs.aws.amazon.com/codebuild/latest/userguide/troubleshooting.html#troubleshooting-cannot-connect-to-docker-daemon
@@ -127,7 +127,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
     });
 
     if (gitHubSourceActionInfo && gitHubSourceActionInfo.tokenSecretArn) {
-      codebuildproject.addToRolePolicy(
+      codeBuildProject.addToRolePolicy(
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: [
@@ -142,26 +142,24 @@ export class PipelineWithAwaiter extends cdk.Construct {
       );
     }
 
-    if (codebuildproject.role) {
-      codebuildproject.role.addToPrincipalPolicy(
-        new iam.PolicyStatement({
-          resources: ['*'],
-          actions: [
-            'ecr:GetAuthorizationToken',
-            'ecr:BatchGetImage',
-            'ecr:BatchGetDownloadUrlForLayer',
-            'ecr:InitiateLayerUpload',
-            'ecr:BatchCheckLayerAvailability',
-            'ecr:UploadLayerPart',
-            'ecr:CompleteLayerUpload',
-            'ecr:PutImage',
-          ],
-          effect: iam.Effect.ALLOW,
-        }),
-      );
-    }
+    codeBuildProject.role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        resources: ['*'],
+        actions: [
+          'ecr:GetAuthorizationToken',
+          'ecr:BatchGetImage',
+          'ecr:BatchGetDownloadUrlForLayer',
+          'ecr:InitiateLayerUpload',
+          'ecr:BatchCheckLayerAvailability',
+          'ecr:UploadLayerPart',
+          'ecr:CompleteLayerUpload',
+          'ecr:PutImage',
+        ],
+        effect: iam.Effect.ALLOW,
+      }),
+    );
 
-    const preBuildStages = createPreBuildStages(scope, {
+    const prebuildStages = createPreBuildStages(scope, {
       bucket,
       s3SourceActionKey,
       gitHubSourceActionInfo,
@@ -178,14 +176,14 @@ export class PipelineWithAwaiter extends cdk.Construct {
       return acc;
     }, {} as Record<string, codebuild.BuildEnvironmentVariable>);
 
-    const stagesWithDeploy = ([] as codepipeline.StageOptions[]).concat(preBuildStages, [
+    const stagesWithDeploy = ([] as codepipeline.StageOptions[]).concat(prebuildStages, [
       {
         stageName: 'Build',
         actions: [
           new codepipelineactions.CodeBuildAction({
             actionName: 'Build',
             type: codepipelineactions.CodeBuildActionType.BUILD,
-            project: codebuildproject,
+            project: codeBuildProject,
             input: sourceOutput,
             outputs: [buildOutput],
             environmentVariables,
@@ -193,10 +191,10 @@ export class PipelineWithAwaiter extends cdk.Construct {
         ],
       },
       {
-        stageName: 'PreDeploy',
+        stageName: 'Predeploy',
         actions: [
           new codepipelineactions.LambdaInvokeAction({
-            actionName: 'PreDeploy',
+            actionName: 'Predeploy',
             lambda: (() => {
               const preDeployCodeFilePath = path.join(lambdasDir, 'predeploy.js');
               const lambdaHandlerCode = fs.readFileSync(preDeployCodeFilePath, 'utf8');

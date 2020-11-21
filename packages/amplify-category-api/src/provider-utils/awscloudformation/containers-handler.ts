@@ -100,10 +100,8 @@ export const addResource = async (
         });
         break;
       default:
-        exhaustiveCheck(apiType);
-        function exhaustiveCheck(obj: never) {
-          throw new Error(`${obj} invalid API Type`);
-        }
+        const exhaustiveCheck: never = apiType;
+        throw new Error(`Unhandled type [${exhaustiveCheck}]`);
     }
   }
 

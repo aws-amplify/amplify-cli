@@ -118,9 +118,8 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
         }
         break;
       default: {
-        (function exhaustiveCheck(obj: never) {
-          throw new Error(`Invalid deploymentMechanism: ${obj}`);
-        })(deploymentMechanism);
+        const exhaustiveCheck: never = deploymentMechanism;
+        throw new Error(`Unhandled type [${exhaustiveCheck}]`);
       }
     }
   }
@@ -274,11 +273,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
 async function shouldUpdateSecrets(context: any, secrets: Record<string, string>): Promise<boolean> {
   const hasSecrets = Object.keys(secrets).length > 0;
 
-  if (!hasSecrets) {
-    return false;
-  }
-
-  if (context.exeInfo.inputParams.yes) {
+  if (!hasSecrets || context.exeInfo.inputParams.yes) {
     return false;
   }
 
