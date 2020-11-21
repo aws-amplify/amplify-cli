@@ -4,7 +4,7 @@ import path from 'path';
 import { run } from './commands/api/console';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
 
-export { EcsStack } from './provider-utils/awscloudformation/ecs-stack';
+export { EcsStack } from './provider-utils/awscloudformation/ecs-apigw-stack';
 export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
 export { generateContainersArtifacts } from './provider-utils/awscloudformation/utils/containers-artifacts';
 

@@ -1,7 +1,7 @@
-import inquirer from 'inquirer';
-import { DEPLOYMENT_MECHANISM } from '../ecs-stack';
-import { category } from '../../../category-constants';
 import { exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
+import inquirer from 'inquirer';
+import { category } from '../../../category-constants';
+import { DEPLOYMENT_MECHANISM } from '../base-api-stack';
 import { GitHubSourceActionInfo } from '../PipelineWithAwaiter';
 
 const serviceName = 'ElasticContainer';

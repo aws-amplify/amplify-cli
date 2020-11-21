@@ -1,12 +1,12 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
-import { containerFiles as containerFilesREST } from './container-artifacts';
-import { containerFiles as containerFilesGraphQL } from './container-artifacts-graphql';
-import { DEPLOYMENT_MECHANISM } from './ecs-stack';
-import { GitHubSourceActionInfo } from './PipelineWithAwaiter';
 import uuid from 'uuid';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
+import { DEPLOYMENT_MECHANISM } from './base-api-stack';
+import { containerFiles as containerFilesREST } from './container-artifacts';
+import { containerFiles as containerFilesGraphQL } from './container-artifacts-graphql';
+import { GitHubSourceActionInfo } from './PipelineWithAwaiter';
+import { API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
 import { ApiResource, generateContainersArtifacts } from './utils/containers-artifacts';
 
 export const addResource = async (

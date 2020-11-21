@@ -7,10 +7,11 @@ import uuid from 'uuid';
 import { provider as cloudformationProviderName } from '../../../provider-utils/awscloudformation/aws-constants';
 import { getContainers } from '../../../provider-utils/awscloudformation/docker-compose';
 import Container from '../../../provider-utils/awscloudformation/docker-compose/ecs-objects/Container';
-import { DEPLOYMENT_MECHANISM, EcsStack } from '../../../provider-utils/awscloudformation/ecs-stack';
+import { EcsStack } from '../ecs-apigw-stack';
 import { API_TYPE, ResourceDependency } from '../../../provider-utils/awscloudformation/service-walkthroughs/containers-walkthrough';
 import { getGitHubOwnerRepoFromPath } from '../../../provider-utils/awscloudformation/utils/github';
 import { JSONUtilities } from 'amplify-cli-core';
+import { DEPLOYMENT_MECHANISM } from '../base-api-stack';
 
 export type ApiResource = {
   category: string;
@@ -64,7 +65,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     providers: { [cloudformationProviderName]: provider },
   } = context.amplify.getProjectMeta();
 
-  const { StackName: envName, DeploymentBucketName: deploymentBucket } = provider;
+  const { StackName: envName, DeploymentBucketName: deploymentBucketName } = provider;
 
   const srcPath = path.join(resourceDir, 'src');
 
@@ -249,7 +250,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     taskEnvironmentVariables: environmentMap,
     gitHubSourceActionInfo: gitHubInfo,
     deploymentMechanism,
-    deploymentBucket,
+    deploymentBucketName,
     containers,
     isInitialDeploy,
     desiredCount,
