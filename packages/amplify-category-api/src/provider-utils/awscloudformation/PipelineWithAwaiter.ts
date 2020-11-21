@@ -250,7 +250,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
       },
     ]);
 
-    this.pipelineName = `amplify-${envName}-${service.serviceName}`;
+    this.pipelineName = `${envName}-${service.serviceName}`;
 
     const pipeline = new codepipeline.Pipeline(scope, `${id}Pipeline`, {
       pipelineName: this.pipelineName,

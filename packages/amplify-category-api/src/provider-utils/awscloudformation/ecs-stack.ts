@@ -157,7 +157,7 @@ export class EcsStack extends cdk.Stack {
       compatibility: ecs.Compatibility.FARGATE,
       memoryMiB: '1024',
       cpu: '512',
-      family: apiName,
+      family: `${envName}-${apiName}`,
     });
     (task.node.defaultChild as ecs.CfnTaskDefinition).overrideLogicalId('TaskDefinition');
     policies.forEach(policy => {
@@ -341,7 +341,7 @@ export class EcsStack extends cdk.Stack {
 
     //#region Api Gateway
     const api = new apigw2.CfnApi(this, 'Api', {
-      name: apiName,
+      name: `${envName}-${apiName}`,
       protocolType: 'HTTP',
       corsConfiguration: {
         allowHeaders: ['*'],
