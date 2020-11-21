@@ -312,7 +312,7 @@ async function console(context, amplifyMeta) {
 
       switch (answer.selection) {
         case 'Amplify admin UI':
-          await openAdminUI(context, appId, Region);
+          await openAdminUI(context, AmplifyAppId, Region);
           break;
         case 'User Pool':
           await openUserPoolConsole(context, Region, cognitoOutput.UserPoolId);
