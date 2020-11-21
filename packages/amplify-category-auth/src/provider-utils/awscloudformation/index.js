@@ -4,7 +4,7 @@ const _ = require('lodash');
 const { stateManager } = require('amplify-cli-core');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { copyCfnTemplate, saveResourceParameters } = require('./utils/synthesize-resources');
-const { ENV_SPECIFIC_PARAMS, privateKeys } = require('./constants');
+const { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys } = require('./constants');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
 const { supportedServices } = require('../supported-services');
 const { importResource, importedAuthEnvInit } = require('./import');
@@ -297,30 +297,30 @@ async function console(context, amplifyMeta) {
   if (cognitoOutput) {
     const { AmplifyAppId, Region } = amplifyMeta.providers.awscloudformation;
     if (cognitoOutput.UserPoolId && cognitoOutput.IdentityPoolId) {
-      let choices = ['User Pool', 'Identity Pool', 'User Pool and Identity Pool'];
+      let choices = [UserPool, IdentityPool, BothPools];
       let adminOption = doAdminCredentialsExist(AmplifyAppId);
       if (adminOption) {
-        choices = ['Amplify admin UI', ...choices];
+        choices = [AmplifyAdmin, ...choices];
       }
       const answer = await inquirer.prompt({
         name: 'selection',
         type: 'list',
         message: 'Which console',
         choices,
-        default: adminOption ? 'Amplify admin UI' : 'User Pool and Identity Pool',
+        default: adminOption ? AmplifyAdmin : BothPools,
       });
 
       switch (answer.selection) {
-        case 'Amplify admin UI':
+        case AmplifyAdmin:
           await openAdminUI(context, AmplifyAppId, Region);
           break;
-        case 'User Pool':
+        case UserPool:
           await openUserPoolConsole(context, Region, cognitoOutput.UserPoolId);
           break;
-        case 'Identity Pool':
+        case IdentityPool:
           await openIdentityPoolConsole(context, Region, cognitoOutput.IdentityPoolId);
           break;
-        case 'User Pool and Identity Pool':
+        case BothPools:
         default:
           await openUserPoolConsole(context, Region, cognitoOutput.UserPoolId);
           await openIdentityPoolConsole(context, Region, cognitoOutput.IdentityPoolId);
