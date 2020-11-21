@@ -29,7 +29,7 @@ async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata
     if (
       amplifyMeta[category][resourceName].service === serviceName &&
       amplifyMeta[category][resourceName].mobileHubMigrated !== true &&
-      amplifyMeta[category][answer.resourceName].serviceType !== 'imported'
+      amplifyMeta[category][resourceName].serviceType !== 'imported'
     ) {
       dynamoDbResources[resourceName] = amplifyMeta[category][resourceName];
     }
