@@ -14,6 +14,7 @@ async function run(context, envName, deleteS3) {
   const s3 = await S3.getInstance(context, {});
   let removeBucket = false;
   let deploymentBucketName;
+  let storageCategoryBucketName;
 
   if (deleteS3) {
     const projectDetails = context.amplify.getProjectDetails();
@@ -21,7 +22,7 @@ async function run(context, envName, deleteS3) {
     if (await s3.ifBucketExists(deploymentBucketName)) {
       const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
       const tempDir = path.join(amplifyDir, envName, '.temp');
-      const storageCategoryBucketName = await getStorageCategoryBucketNameFromCloud(context, envName, s3, tempDir);
+      storageCategoryBucketName = await getStorageCategoryBucketNameFromCloud(context, envName, s3, tempDir);
 
       fs.removeSync(tempDir);
 
@@ -38,6 +39,12 @@ async function run(context, envName, deleteS3) {
   }
 
   await cfn.deleteResourceStack(envName);
+
+  // In case the S3 bucket is retained and removal skipped by CF, then we explicitly delete it.
+  if (storageCategoryBucketName) {
+    await s3.deleteS3Bucket(storageCategoryBucketName);
+  }
+
   await deleteEnv(context, envName, awsConfig);
 
   if (removeBucket && deploymentBucketName) {
