@@ -37,7 +37,7 @@ async function run(context) {
     const authRoleName = `${stackName}-authRole`;
     const unauthRoleName = `${stackName}-unauthRole`;
 
-    let nestedStack = JSON.parse(fs.readFileSync(initTemplateFilePath).toString());
+    let nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
     // Track Amplify Console generated stacks
     if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
       nestedStack.Description = 'Root Stack for AWS Amplify Console';
