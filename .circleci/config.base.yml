@@ -173,7 +173,10 @@ jobs:
             unsetNpmRegistryUrl
       - run:
           name: Generate unified changelog
-          command: yarn ts-node scripts/unified-changelog.ts
+          command: |
+            git reset --hard HEAD
+            yarn update-versions
+            yarn ts-node scripts/unified-changelog.ts
       - run:
           name: Save new amplify GitHub tag
           command: node scripts/echo-current-cli-version.js > .amplify-pkg-version
