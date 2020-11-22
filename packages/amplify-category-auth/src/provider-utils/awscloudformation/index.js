@@ -8,7 +8,7 @@ const { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, pr
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
 const { supportedServices } = require('../supported-services');
 const { importResource, importedAuthEnvInit } = require('./import');
-const { doAdminCredentialsExist } = require('amplify-provider-awscloudformation');
+const { isAmplifyAdminApp } = require('amplify-provider-awscloudformation');
 
 function serviceQuestions(context, defaultValuesFilename, stringMapsFilename, serviceWalkthroughFilename, serviceMetadata) {
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;
@@ -299,7 +299,7 @@ async function console(context, amplifyMeta) {
     const { AmplifyAppId, Region } = amplifyMeta.providers.awscloudformation;
     if (cognitoOutput.UserPoolId && cognitoOutput.IdentityPoolId) {
       let choices = [UserPool, IdentityPool, BothPools];
-      let adminOption = doAdminCredentialsExist(AmplifyAppId);
+      const adminOption = await isAmplifyAdminApp(AmplifyAppId);
       if (adminOption) {
         choices = [AmplifyAdmin, ...choices];
       }

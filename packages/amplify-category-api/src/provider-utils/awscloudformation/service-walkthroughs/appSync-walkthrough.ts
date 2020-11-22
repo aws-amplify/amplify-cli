@@ -20,7 +20,7 @@ import {
   stateManager,
   $TSContext,
 } from 'amplify-cli-core';
-const { doAdminCredentialsExist } = require('amplify-provider-awscloudformation');
+const { isAmplifyAdminApp } = require('amplify-provider-awscloudformation');
 
 const serviceName = 'AppSync';
 const providerName = 'awscloudformation';
@@ -45,7 +45,7 @@ const authProviderChoices = [
   },
 ];
 
-export const openConsole = (context: $TSContext) => {
+export const openConsole = async (context: $TSContext) => {
   const amplifyMeta = stateManager.getMeta();
   const categoryAmplifyMeta = amplifyMeta[category];
   let appSyncMeta;
@@ -61,7 +61,7 @@ export const openConsole = (context: $TSContext) => {
     const { Region } = amplifyMeta.providers[providerName];
     let consoleUrl = `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
 
-    if (doAdminCredentialsExist(appId)) {
+    if (await isAmplifyAdminApp(appId)) {
       const { envName } = context.amplify.getEnvInfo();
       consoleUrl = `https://www.dracarys.app/admin/${appId}/${envName}/datastore`;
     }

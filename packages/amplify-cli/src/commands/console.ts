@@ -1,7 +1,7 @@
 import open from 'open';
 import { prompt } from 'enquirer';
 import { stateManager } from 'amplify-cli-core';
-const { doAdminCredentialsExist } = require('amplify-provider-awscloudformation');
+const { isAmplifyAdminApp } = require('amplify-provider-awscloudformation');
 
 const providerName = 'awscloudformation';
 
@@ -24,7 +24,7 @@ export const run = async context => {
 
     if (envName && AmplifyAppId) {
       consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
-      if (doAdminCredentialsExist(AmplifyAppId)) {
+      if (await isAmplifyAdminApp(AmplifyAppId)) {
         const { choice } = await prompt<{ choice: string }>({
           type: 'select',
           name: 'choice',
