@@ -145,7 +145,6 @@ function addAmplifyModels(rootDir, schemaFile, xcodeProject) {
     modelFiles.forEach(file => {
       const { base: filename } = path.parse(file);
       if (!groupHasFile(modelsGroup, filename)) {
-        console.log(`adding model source file... ${file}`);
         xcodeProject.addSourceFile(file, {}, modelsGroup.uuid);
         hasGeneratedFiles = true;
       }

@@ -161,10 +161,12 @@ async function createAmplifySkeletonProject(platform, jsFramework) {
       });
     });
   }
-  console.log(
-    `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.`,
-  );
-  console.log();
+  if (platform !== 'ios') {
+    console.log(
+      `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.\n`,
+    );
+  }
+
   const existingApp = true;
   const projectConfig = await getProjectConfig(existingApp, platform, jsFramework);
   return projectConfig.frontend;
@@ -238,7 +240,7 @@ async function guessPlatform(providedPlatform, providedJSFramework) {
 
     if (providedPlatform) {
       if (!validJSFrameworks.includes(providedJSFramework)) {
-        throw new Error('Invalid framework value passed. Valid values are  angular/ember/ionic/react/react-native/vue/none');
+        throw new Error('Invalid framework value passed. Valid values are angular/ember/ionic/react/react-native/vue/none');
       } else {
         resolvedJSFramework = providedJSFramework;
       }
@@ -467,10 +469,6 @@ async function showHelpText(frontend) {
   if (frontend === 'android') {
     await showAndroidHelpText();
   }
-
-  if (frontend === 'ios') {
-    await showIOSHelpText();
-  }
 }
 
 async function showJSHelpText() {
@@ -489,18 +487,6 @@ async function showAndroidHelpText() {
   );
   console.log(
     'Running the "amplifyPush" task provided in the amplifytools plugin will build all your local backend resources and provision them in the cloud',
-  );
-  console.log('');
-}
-
-async function showIOSHelpText() {
-  console.log();
-  console.log(chalk.green('Some next steps:'));
-  console.log(
-    'Setting "modelgen" to true in amplifytools.xcconfig will allow you to generate models/entities for your GraphQL models in your next xcode build',
-  );
-  console.log(
-    'Setting "push" to true in the amplifytools.xcconfig will build all your local backend resources and provision them in the cloud in your next xcode build',
   );
   console.log('');
 }
