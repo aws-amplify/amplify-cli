@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.29.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.27.3...amplify-e2e-tests@2.29.0-beta.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+### Features
+
+* storage import ([#5893](https://github.com/aws-amplify/amplify-cli/issues/5893)) ([ad7b028](https://github.com/aws-amplify/amplify-cli/commit/ad7b028330bcee64d5124be7f27a8494dc8e9400))
+
+
+
+## 4.32.1-alpha.0 (2020-11-11)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** fix gsi update sanity check ([#5776](https://github.com/aws-amplify/amplify-cli/issues/5776)) ([b82a3e5](https://github.com/aws-amplify/amplify-cli/commit/b82a3e5a5deb432e7283b902c8abe90dc27f0f46))
+
+
+
+
+
 # [2.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@1.6.2...amplify-e2e-tests@2.28.0) (2020-11-22)
 
 

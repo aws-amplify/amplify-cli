@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.23.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.22.0...graphql-transformer-core@6.23.1-beta.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** fix gsi update sanity check ([#5776](https://github.com/aws-amplify/amplify-cli/issues/5776)) ([b82a3e5](https://github.com/aws-amplify/amplify-cli/commit/b82a3e5a5deb432e7283b902c8abe90dc27f0f46))
+* **graphql-transformer-core:** increase stack resource limit ([#5828](https://github.com/aws-amplify/amplify-cli/issues/5828)) ([b81eacc](https://github.com/aws-amplify/amplify-cli/commit/b81eacc1e954008be451dba74b0a36503b709b10))
+
+
+
+
+
 # [6.23.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@3.7.5...graphql-transformer-core@6.23.0) (2020-11-22)
 
 

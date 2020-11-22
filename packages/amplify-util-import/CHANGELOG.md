@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.3.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-import@1.1.3...amplify-util-import@1.3.0-beta.0) (2020-11-22)
+
+
+### Features
+
+* storage import ([#5893](https://github.com/aws-amplify/amplify-cli/issues/5893)) ([ad7b028](https://github.com/aws-amplify/amplify-cli/commit/ad7b028330bcee64d5124be7f27a8494dc8e9400))
+
+
+
+
+
 # 1.2.0 (2020-11-22)
 
 
