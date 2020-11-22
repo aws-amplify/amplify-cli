@@ -55,7 +55,7 @@ async function run(context, resourceDefinition) {
     validateCfnTemplates(context, resources);
 
     for await (const resource of resources) {
-      if (resource.service === ApiServiceNameElasticContainer) {
+      if (resource.service === ApiServiceNameElasticContainer && resource.category === 'api') {
         const {
           exposedContainer,
           pipelineInfo: { consoleUrl },

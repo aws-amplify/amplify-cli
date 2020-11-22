@@ -1,7 +1,7 @@
 {
   "name": "amplify-container-hosting",
   "version": "1.0.0",
-  "description": "amplify-cli hosting plugin",
+  "description": "amplify-cli hosting plugin for containers",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",
@@ -15,7 +15,7 @@
     "aws"
   ],
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage --passWithNoTests"
   },
   "dependencies": {
     "chalk": "^3.0.0",

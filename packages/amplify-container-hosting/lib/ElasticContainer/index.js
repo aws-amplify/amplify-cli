@@ -19,14 +19,12 @@ async function enable(context) {
 
     const { domain } = await inquirer.prompt({
         name: 'domain',
-        message: 'Provide your Web App endpoint (e.g. app.myapp.dev or www.myapp.dev):',
+        message: 'Provide your web app endpoint (e.g. app.example.com or www.example.com):',
         type: 'input',
         validate: CheckIsValidDomain
     });
 
-    context.print.info(context.amplify);
-
-    const domainInZone = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'isDomainInZones', {
+    const domainZone = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'isDomainInZones', {
         domain
     });
 
@@ -56,28 +54,27 @@ async function enable(context) {
 
 
 function CheckIsValidDomain(domain) {
-    var re = new RegExp(/^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$/);
-    const validDomain = [].concat(domain.match(re))[0];
+    var re = new RegExp(/^(\*\.)?(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])$/);
+    const validDomain = re.test(domain);
 
-    if (!!validDomain) {
-        return true;
-    }
-
-    return !!validDomain ? true : `Domain ${domain} invalid`;
+    return validDomain || `Domain ${domain} invalid`;
 }
 
 async function configure(context) {
 
 }
 
-function publish(context, args) {
-    context.print.info('Publishing hook running yay!');
+async function publish(context, args) {
     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
-    return context.amplify.executeProviderUtils(context, 'awscloudformation', 'zipFiles', [projectBackendDirPath, path.join(projectBackendDirPath, 'test.zip')]).then(result => console.log('yay done zipping'));
+    const zipFile = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'zipFiles',
+        [projectBackendDirPath, path.join(projectBackendDirPath, 'bundle.zip')]);
+
+    // Upload zipFile and show pipeline url
 }
 
 function console(context) {
+    // Check this behavior
     const amplifyMeta = context.amplify.getProjectMeta();
     const { HostingBucketName: bucket, Region: region } = amplifyMeta[constants.CategoryName][serviceName].output;
     const consoleUrl = `xxxx`;

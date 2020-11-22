@@ -8,8 +8,36 @@ const SageMaker = require('./aws-utils/aws-sagemaker');
 const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
 const { updateStackForAPIMigration } = require('./push-resources');
 const SecretsManager = require('./aws-utils/aws-secretsmanager');
+const Route53 = require('./aws-utils/aws-route53');
+const { archiver } = require('./utils/archiver');
 
 module.exports = {
+  zipFiles: (...args) => {
+    return archiver.run(...args)
+  },
+  isDomainInZones: async (context, { domain }) => {
+
+    const client = await new Route53(context);
+
+    let Marker;
+    let truncated = false;
+    let zoneFound;
+
+    do {
+      const { NextMarker, IsTruncated, HostedZones } = await client.route53.listHostedZones({
+        Marker,
+        MaxItems: '100'
+      }).promise();
+
+      zoneFound = HostedZones.find(zone => `${domain}.`.endsWith(zone.Name));
+
+      Marker = NextMarker;
+      truncated = IsTruncated;
+
+    } while (truncated && !zoneFound)
+
+    return zoneFound;
+  },
   compileSchema: async (context, options) => {
     const category = 'api';
     let optionsWithUpdateHandler = { ...options };

@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { stateManager } from 'amplify-cli-core';
+import { FeatureFlags, stateManager } from 'amplify-cli-core';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
@@ -28,6 +28,11 @@ export async function executeCommand(context: Context) {
     const selectedPluginInfo = await selectPluginForExecution(context, pluginCandidates);
     await executePluginModuleCommand(context, selectedPluginInfo);
   }
+}
+
+function isAdvanceComputeEnabled(context) {
+  // TODO: Change this to project setting
+  return FeatureFlags.getBoolean('advancedCompute.enabled');
 }
 
 async function selectPluginForExecution(context: Context, pluginCandidates: PluginInfo[]): Promise<PluginInfo> {
@@ -116,6 +121,10 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
       });
       //put console hosting plugin at the top
       pluginCandidates = consoleHostingPlugins.concat(otherPlugins);
+    }
+
+    if (!isAdvanceComputeEnabled(context)) {
+      pluginCandidates = pluginCandidates.filter(plugin => !plugin.manifest.services?.includes('ElasticContainer'));
     }
 
     const answer = await inquirer.prompt({
