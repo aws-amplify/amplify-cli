@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.16.4...amplify-category-notifications@2.17.1) (2020-11-22)
+
+
+### Bug Fixes
+
+* removing getUserEndpoints ([#5918](https://github.com/aws-amplify/amplify-cli/issues/5918)) ([d6909f4](https://github.com/aws-amplify/amplify-cli/commit/d6909f4a545f1a474033f07c285b323c743cc1e3))
+
+
+
+
+
 # [2.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@1.4.14...amplify-category-notifications@2.17.0) (2020-11-22)
 
 

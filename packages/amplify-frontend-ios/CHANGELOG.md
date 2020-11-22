@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.13.8...amplify-frontend-ios@2.14.1) (2020-11-22)
+
+
+### Bug Fixes
+
+* remove app client secret as best practice ([#5731](https://github.com/aws-amplify/amplify-cli/issues/5731)) ([8bc0dd2](https://github.com/aws-amplify/amplify-cli/commit/8bc0dd2434b93c9a2cb1ff3bfad9cedd2d356c30))
+
+
+
+
+
 # [2.14.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@1.8.2...amplify-frontend-ios@2.14.0) (2020-11-22)
 
 
