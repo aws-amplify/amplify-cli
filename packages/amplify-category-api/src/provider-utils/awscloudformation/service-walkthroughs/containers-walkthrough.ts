@@ -97,15 +97,20 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
 
   if (apiType === API_TYPE.GRAPHQL) {
     choices.push({
-      name: 'ExpressJS',
-      value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_graphql' },
+      name: 'Dockerfile (Express)',
+      value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'graphql-express' },
     });
   }
 
   if (apiType === API_TYPE.REST) {
     choices.push({
-      name: 'ExpressJS',
-      value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'express_rest' },
+      name: 'Dockerfile (Express)',
+      value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'dockerfile-rest-express' },
+    });
+
+    choices.push({
+      name: 'DockerCompose (Express + Flask)',
+      value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'dockercompose-rest-express' },
     });
   }
 

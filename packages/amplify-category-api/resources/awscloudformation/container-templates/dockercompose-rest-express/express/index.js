@@ -1,35 +1,6 @@
-export const containerFiles = {
-  Dockerfile: `FROM node:alpine
-  
-ENV PORT=8080
-EXPOSE 8080
-
-WORKDIR /usr/src/app
-
-COPY package*.json ./
-RUN npm install
-COPY . .
-
-CMD [ "node", "index.js" ]
-    `,
-  'package.json': `{
-  "name": "express-lasagna",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "aws-sdk": "^2.792.0",
-    "body-parser": "^1.19.0",
-    "express": "^4.17.1"
-  }
-}`,
-  'index.js': `const express = require("express");
+const express = require("express");
 const bodyParser = require('body-parser');
+const http = require('http');
 const port = process.env.PORT || 3000;
 
 const {
@@ -51,13 +22,13 @@ app.use(function(req, res, next) {
 
 const checkAuthRules = (req) => {
   const jwt = req.header("Authorization") || "";
-  
+
   const [, jwtBody] = jwt.split(".");
-  
+
   const obj = JSON.parse(
     jwtBody ? Buffer.from(jwtBody, "base64").toString("utf-8") : "{}"
   );
-  
+
   //Customer can perform logic on JWT body
   //console.log(obj);
 
@@ -66,6 +37,33 @@ const checkAuthRules = (req) => {
   // err.statusCode = 403;
   // return next(err);
 }
+
+app.get("/images", (req, res, next) => {
+  const options = {
+    port: 5000,
+    host: 'localhost',
+    method: 'GET',
+    path: '/images'
+  };
+
+  http.get(options, data => {
+    var body = '';
+    data.on('data', (chunk) => {
+      body += chunk;
+    });
+    data.on('end', () =>{
+      console.log(body);
+      try {
+        res.contentType("application/json").send(body);
+      } catch (err){
+        console.log(err);
+        next(err);
+      }
+    }).on('error', (error) => {
+      console.log(error);
+    });
+  })
+});
 
 app.get("/list", async (req, res, next) => {
   checkAuthRules(req);
@@ -91,7 +89,7 @@ app.get("/read", async (req, res, next) => {
 
 app.post("/create", async (req, res, next) => {
   checkAuthRules(req);
-  
+
   try {
     const result = await addPostToDDB(req.body);
     res.contentType("application/json").send(result);
@@ -124,66 +122,4 @@ app.use((err, req, res, next) => {
 
 app.listen(port, () => {
   console.log('Example app listening at http://localhost:' + port);
-});  
-`,
-'DynamoDBActions.js':`const AWS = require('aws-sdk');
-const docClient = new AWS.DynamoDB.DocumentClient();
-
-const TableName = process.env.STORAGE_POSTS_NAME;
-
-const addPostToDDB = async ({id, title, author, description, topic}) => {
-
-  var params = {
-    Item : {
-      id: parseInt(id),
-      title: title,
-      author: author,
-      description: description,
-      topic: topic
-    },
-    TableName: TableName
-  }
-  try {
-    const data = await docClient.put(params).promise()
-    return params.Item;
-  } catch (err) {
-    console.log('Error: ' + err);
-    return err
-  }
-}
-
-const scanPostsFromDDB = async () =>{
-  var params = {
-    TableName: TableName,
-  }
-
-  try {
-    const data = await docClient.scan(params).promise();
-    return data.Items;
-  } catch (err){
-    console.log('Error: ' + err);
-    return err;
-  }
-}
-
-const getPostFromDDB = async (id) => {
-  const key = parseInt(id);
-  var params = {
-    TableName: TableName,
-    Key: { id: key },
-  }
-  try {
-    const data = await docClient.get(params).promise()
-    return data.Item;
-  } catch (err) {
-    console.log('Error: ' + err);
-    return err
-  }
-}
-
-module.exports = {
-  addPostToDDB,
-  scanPostsFromDDB,
-  getPostFromDDB
-};`
-};
+});

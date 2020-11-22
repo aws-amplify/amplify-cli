@@ -10,6 +10,7 @@
     "coverage",
     "lib",
     "resources/awscloudformation/lambdas",
+    "resources/awscloudformation/container-templates",
     "src/__tests__"
   ],
   "references": [

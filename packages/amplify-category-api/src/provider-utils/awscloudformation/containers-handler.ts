@@ -3,8 +3,6 @@ import path from 'path';
 import uuid from 'uuid';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import { DEPLOYMENT_MECHANISM } from './base-api-stack';
-import { containerFiles as containerFilesREST } from './container-artifacts';
-import { containerFiles as containerFilesGraphQL } from './container-artifacts-graphql';
 import { GitHubSourceActionInfo } from './PipelineWithAwaiter';
 import { API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
 import { ApiResource, generateContainersArtifacts } from './utils/containers-artifacts';
@@ -88,24 +86,11 @@ export const addResource = async (
   fs.ensureDirSync(path.join(resourceDirPath, 'src'));
 
   if (imageSource.type === IMAGE_SOURCE_TYPE.TEMPLATE) {
-    switch (apiType) {
-      case API_TYPE.GRAPHQL:
-        Object.entries(containerFilesGraphQL).forEach(([fileName, fileContents]) => {
-          fs.writeFileSync(path.join(resourceDirPath, 'src', fileName), fileContents);
-        });
-        break;
-      case API_TYPE.REST:
-        Object.entries(containerFilesREST).forEach(([fileName, fileContents]) => {
-          fs.writeFileSync(path.join(resourceDirPath, 'src', fileName), fileContents);
-        });
-        break;
-      default:
-        const exhaustiveCheck: never = apiType;
-        throw new Error(`Unhandled type [${exhaustiveCheck}]`);
-    }
-  }
-
-  if (imageSource.type === IMAGE_SOURCE_TYPE.TEMPLATE) {
+    fs.copySync(
+      path.join(__dirname, '../../../resources/awscloudformation/container-templates', imageSource.template),
+      path.join(resourceDirPath, 'src'),
+      { recursive: true }
+    );
     await generateContainersArtifacts(context, apiResource);
   }
 
