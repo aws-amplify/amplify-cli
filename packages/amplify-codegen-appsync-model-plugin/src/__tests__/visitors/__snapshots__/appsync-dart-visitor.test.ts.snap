@@ -2024,8 +2024,10 @@ class Task extends Model {
         todo = json['todo'] != null
             ? Todo.fromJson(new Map<String, dynamic>.from(json['todo']))
             : null,
-        time = json['time'],
-        createdOn = json['createdOn'];
+        time = json['time'] != null ? DateTime.parse(json['time']) : null,
+        createdOn = json['createdOn'] != null
+            ? DateTime.parse(json['createdOn'])
+            : null;
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> map = {
@@ -2065,7 +2067,7 @@ class Task extends Model {
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: Task.CREATEDON,
         isRequired: false,
-        ofType: ModelFieldType(ModelFieldTypeEnum.dateTime)));
+        ofType: ModelFieldType(ModelFieldTypeEnum.date)));
   });
 }
 

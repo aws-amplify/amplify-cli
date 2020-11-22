@@ -414,6 +414,8 @@ export class AppSyncModelDartVisitor<
           ].join('\n');
         } else if (this.isEnumType(field)) {
           return `${fieldName} = enumFromString<${field.type}>(json['${fieldName}'], ${field.type}.values)`
+        } else if (this.getNativeType(field) === 'DateTime') {
+          return `${fieldName} = json['${fieldName}'] != null ? DateTime.parse(json['${fieldName}']) : null`;
         }
         return `${fieldName} = json['${fieldName}']`;
       }).join(',\n')
