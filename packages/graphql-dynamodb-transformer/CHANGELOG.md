@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.21.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@3.8.5...graphql-dynamodb-transformer@6.21.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* [#4944](https://github.com/aws-amplify/amplify-cli/issues/4944), [#5332](https://github.com/aws-amplify/amplify-cli/issues/5332) ([#5431](https://github.com/aws-amplify/amplify-cli/issues/5431)) ([6104bde](https://github.com/aws-amplify/amplify-cli/commit/6104bde76533614cd41bd0d97aaad06660275add))
+* **graphql-dynamodb-transformer:** support model without id ([#4570](https://github.com/aws-amplify/amplify-cli/issues/4570)) ([7cb0648](https://github.com/aws-amplify/amplify-cli/commit/7cb064874d95527882eb58b1a18fa99dd2377ca7))
+* [#3438](https://github.com/aws-amplify/amplify-cli/issues/3438), many-to-many with conflict resolution generated wrong schema ([#4171](https://github.com/aws-amplify/amplify-cli/issues/4171)) ([9e8606c](https://github.com/aws-amplify/amplify-cli/commit/9e8606c4a300b5690839ec0869f7384aff189b1f))
+* add custom enum filter to connection filter ([#4269](https://github.com/aws-amplify/amplify-cli/issues/4269)) ([f559df0](https://github.com/aws-amplify/amplify-cli/commit/f559df077015c1c8d8462a92968093efdc5b9452))
+* **graphql-dynamodb-transformer:** fixes long IAM roleNames ([#4010](https://github.com/aws-amplify/amplify-cli/issues/4010)) ([041e97a](https://github.com/aws-amplify/amplify-cli/commit/041e97a182a13711d74c27fd5229c7b4d6fb237f))
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* export Typescript definitions and fix resulting type errors ([#2452](https://github.com/aws-amplify/amplify-cli/issues/2452)) ([7de3845](https://github.com/aws-amplify/amplify-cli/commit/7de384594d3b9cbf22cdaa85107fc8df26c141ec)), closes [#2451](https://github.com/aws-amplify/amplify-cli/issues/2451)
+* github partial rename for sync query constant ([#4125](https://github.com/aws-amplify/amplify-cli/issues/4125)) ([506c48a](https://github.com/aws-amplify/amplify-cli/commit/506c48aabdc2825935f006b025cea59583c21572))
+* **graphql-dynamodb-transformer:** fix [#3141](https://github.com/aws-amplify/amplify-cli/issues/3141) add attribute type enum for queries ([#3930](https://github.com/aws-amplify/amplify-cli/issues/3930)) ([1a151b3](https://github.com/aws-amplify/amplify-cli/commit/1a151b3b98c70d3b3adbccc90e619c34378785ed))
+* **graphql-dynamodb-transformer:** prevent doble escape of nextToken ([#3452](https://github.com/aws-amplify/amplify-cli/issues/3452)) ([b6decfd](https://github.com/aws-amplify/amplify-cli/commit/b6decfddf232ed8a1d8b3e51ad881bc083b45114)), closes [#3411](https://github.com/aws-amplify/amplify-cli/issues/3411)
+* sanitize input in transformer resolver([#3316](https://github.com/aws-amplify/amplify-cli/issues/3316)) ([a3bc0a5](https://github.com/aws-amplify/amplify-cli/commit/a3bc0a5e5d3faa7946d16d0f6595ce8c2f3c11dc))
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+* **graphql-dynamodb-transformer:** added scan index forward ([72cda1e](https://github.com/aws-amplify/amplify-cli/commit/72cda1e178b2fd87e42b200efbc5c87e49c964b1)), closes [#1676](https://github.com/aws-amplify/amplify-cli/issues/1676)
+* **graphql-dynamodb-transformer:** allow id for non model objects ([#2530](https://github.com/aws-amplify/amplify-cli/issues/2530)) ([0d3c849](https://github.com/aws-amplify/amplify-cli/commit/0d3c849002917016cbffcba7ac22de9538f83acc)), closes [#1984](https://github.com/aws-amplify/amplify-cli/issues/1984) [#1984](https://github.com/aws-amplify/amplify-cli/issues/1984)
+* **graphql-dynamodb-transformer:** fix cloudformation error config ([#2772](https://github.com/aws-amplify/amplify-cli/issues/2772)) ([10ca188](https://github.com/aws-amplify/amplify-cli/commit/10ca188703c71262a90b687ab758323bd2ef7f88))
+
+
+### Features
+
+* ff to turn off schema reserve word validation ([#5745](https://github.com/aws-amplify/amplify-cli/issues/5745)) ([de79514](https://github.com/aws-amplify/amplify-cli/commit/de79514c18bea7236a05f0658513b95318501d16))
+* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+* **amplify-category-function:** refactor to support runtime and template plugins ([#3517](https://github.com/aws-amplify/amplify-cli/issues/3517)) ([607ae21](https://github.com/aws-amplify/amplify-cli/commit/607ae21287941805f44ea8a9b78dd12d16d71f85))
+* **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
+* **graphql-key-transformer:** auto population of id and timestamp ([#4382](https://github.com/aws-amplify/amplify-cli/issues/4382)) ([6586611](https://github.com/aws-amplify/amplify-cli/commit/6586611293a07db9959247ff82f95542a239ff1f))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e4a2b85cbe9f430838554ae3c277440132))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe8925a4e73358b03ba927267a2df328b78))
+* updated version of [#2118](https://github.com/aws-amplify/amplify-cli/issues/2118) with addressed review comments ([#2230](https://github.com/aws-amplify/amplify-cli/issues/2230)) ([be3c499](https://github.com/aws-amplify/amplify-cli/commit/be3c499edcc6bec63b38e9241c5af7b83c930022))
+
+
+* Adding Auth on Subscriptions (#2068) ([81c630d](https://github.com/aws-amplify/amplify-cli/commit/81c630d782a6be720e513677a34b7a7dacbdc629)), closes [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043) [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043) [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043) [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043) [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068)
+
+
+### BREAKING CHANGES
+
+* If an owner is used in the auth directive it will either be a requirement if it's
+the only rule or an optional input if used with other rules
+* If an owner is included in the auth directive it will either be a requirement if
+it's the only rule or an optional input if used with other rules
+* the subscription operations will require an argument if owner is the only auth rule
+* Subscriptions will require an argument if an owner is only rule set - If owner &
+group rules are owner will be an optional arg
+
+
+
+
+
 ## [6.20.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.20.0...graphql-dynamodb-transformer@6.20.3) (2020-11-20)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer

@@ -3,6 +3,82 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.23.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@3.7.5...graphql-transformer-core@6.23.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** "innerDiffs is not iterable" on push ([#5587](https://github.com/aws-amplify/amplify-cli/issues/5587)) ([baa711d](https://github.com/aws-amplify/amplify-cli/commit/baa711d16c5d0e83a6e7ba65fdf3176b9feb186d))
+* **graphql-transformer-core:** fix gsi update sanity check ([#5776](https://github.com/aws-amplify/amplify-cli/issues/5776)) ([b82a3e5](https://github.com/aws-amplify/amplify-cli/commit/b82a3e5a5deb432e7283b902c8abe90dc27f0f46))
+* **graphql-transformer-core:** increase stack resource limit ([#5828](https://github.com/aws-amplify/amplify-cli/issues/5828)) ([b81eacc](https://github.com/aws-amplify/amplify-cli/commit/b81eacc1e954008be451dba74b0a36503b709b10))
+* [#1715](https://github.com/aws-amplify/amplify-cli/issues/1715) - Fix stack enumeration so transform.conf.json will be generated ([#2114](https://github.com/aws-amplify/amplify-cli/issues/2114)) ([d1b266b](https://github.com/aws-amplify/amplify-cli/commit/d1b266bb11dfb47e7b125d50235ce65b3e98319e))
+* [#3438](https://github.com/aws-amplify/amplify-cli/issues/3438), many-to-many with conflict resolution generated wrong schema ([#4171](https://github.com/aws-amplify/amplify-cli/issues/4171)) ([9e8606c](https://github.com/aws-amplify/amplify-cli/commit/9e8606c4a300b5690839ec0869f7384aff189b1f))
+* [#4944](https://github.com/aws-amplify/amplify-cli/issues/4944), [#5332](https://github.com/aws-amplify/amplify-cli/issues/5332) ([#5431](https://github.com/aws-amplify/amplify-cli/issues/5431)) ([6104bde](https://github.com/aws-amplify/amplify-cli/commit/6104bde76533614cd41bd0d97aaad06660275add))
+* add layer based on region ([#2399](https://github.com/aws-amplify/amplify-cli/issues/2399)) ([c6490c5](https://github.com/aws-amplify/amplify-cli/commit/c6490c537299e74c569a80fc06d1999cc92ae774)), closes [#2386](https://github.com/aws-amplify/amplify-cli/issues/2386)
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* ensure that transformer instances are not reused ([#2318](https://github.com/aws-amplify/amplify-cli/issues/2318)) ([24318ac](https://github.com/aws-amplify/amplify-cli/commit/24318ac65ed89e0845c9d36df365f4163d9298a6))
+* lambda resolver CFN syntax ([#5037](https://github.com/aws-amplify/amplify-cli/issues/5037)) ([79e7374](https://github.com/aws-amplify/amplify-cli/commit/79e7374e940f6a80b7dfaf317b890204ad53b2f1))
+* occurred spelling mistake ([#4595](https://github.com/aws-amplify/amplify-cli/issues/4595)) ([a461487](https://github.com/aws-amplify/amplify-cli/commit/a461487072dbf422892ca24c436581b49c568429))
+* use ES external versioning when using DataStore ([#4127](https://github.com/aws-amplify/amplify-cli/issues/4127)) ([cef709b](https://github.com/aws-amplify/amplify-cli/commit/cef709ba2087affe860dd6fb141ccda1e5d58fd1))
+* Validation check when mutating more than 1 GSI in update flow ([#5141](https://github.com/aws-amplify/amplify-cli/issues/5141)) ([4faaba0](https://github.com/aws-amplify/amplify-cli/commit/4faaba0509467aad03db11709175f4a3071459ae))
+* **amplify-provider-awscloudformation:** build api project w/ params ([#2003](https://github.com/aws-amplify/amplify-cli/issues/2003)) ([3692901](https://github.com/aws-amplify/amplify-cli/commit/3692901b3f82daf79475ec5b1c5cd90781917446)), closes [#1960](https://github.com/aws-amplify/amplify-cli/issues/1960)
+* **graphql-auth-transformer:** add list support for ownerField in subs ([#3166](https://github.com/aws-amplify/amplify-cli/issues/3166)) ([8d68277](https://github.com/aws-amplify/amplify-cli/commit/8d6827752ebd076424d3c76122b136eca65b02a8))
+* **graphql-elasticsearch-transformer:** fix duplicate records in es lambda ([#3712](https://github.com/aws-amplify/amplify-cli/issues/3712)) ([dd9f7e0](https://github.com/aws-amplify/amplify-cli/commit/dd9f7e0031a0dc68a9027de02f60bbe69d315c3d)), closes [#3602](https://github.com/aws-amplify/amplify-cli/issues/3602) [#3705](https://github.com/aws-amplify/amplify-cli/issues/3705)
+* **graphql-elasticsearch-transformer:** support del in sync enabled API ([#4281](https://github.com/aws-amplify/amplify-cli/issues/4281)) ([bae946d](https://github.com/aws-amplify/amplify-cli/commit/bae946dabe4a2e37cfdb87c6fbd88af824f21b69)), closes [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228) [#4228](https://github.com/aws-amplify/amplify-cli/issues/4228)
+* pass appsync specific directives to model gen ([#3211](https://github.com/aws-amplify/amplify-cli/issues/3211)) ([c9a6ada](https://github.com/aws-amplify/amplify-cli/commit/c9a6ada683a32f2a82ef9fdc4b0cb37ea70ccb11))
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+* **graphql-transformer-core:** dont incl in custom stacks stack mapping ([#2176](https://github.com/aws-amplify/amplify-cli/issues/2176)) ([c3bdc36](https://github.com/aws-amplify/amplify-cli/commit/c3bdc36d73ce47f01627918da57cf7a8590db89a)), closes [#2167](https://github.com/aws-amplify/amplify-cli/issues/2167)
+* **graphql-transformer-core:** fix migration errors ([#2245](https://github.com/aws-amplify/amplify-cli/issues/2245)) ([fd811bb](https://github.com/aws-amplify/amplify-cli/commit/fd811bbe2e08f2ade7627c8cce44c9f1dce2d9ba)), closes [#2196](https://github.com/aws-amplify/amplify-cli/issues/2196)
+* **graphql-transformer-core:** handle stack mapping on a new project ([#2218](https://github.com/aws-amplify/amplify-cli/issues/2218)) ([4ef6148](https://github.com/aws-amplify/amplify-cli/commit/4ef614880a5bfc4ca4520e903fcd7c85ccfca055))
+* **graphql-transformer-core:** try/catch on load config ([#2354](https://github.com/aws-amplify/amplify-cli/issues/2354)) ([8ed16a5](https://github.com/aws-amplify/amplify-cli/commit/8ed16a50dc953ebbc28d197d7e69904b18cf2452)), closes [pr#2348](https://github.com/pr/issues/2348)
+
+
+### Features
+
+* headless mode for API category ([#4834](https://github.com/aws-amplify/amplify-cli/issues/4834)) ([c2e09d7](https://github.com/aws-amplify/amplify-cli/commit/c2e09d73fd1bb461eeace8f4a7addd70a63047ad))
+* support for overriding pipeline function templates in transformer ([#4196](https://github.com/aws-amplify/amplify-cli/issues/4196)) ([e1830ae](https://github.com/aws-amplify/amplify-cli/commit/e1830aeb31fef8f035cb0a992a150d37f78e07bb)), closes [#4192](https://github.com/aws-amplify/amplify-cli/issues/4192)
+* transformer redesign ([#5534](https://github.com/aws-amplify/amplify-cli/issues/5534)) ([a93c685](https://github.com/aws-amplify/amplify-cli/commit/a93c6852f6588898ebc52b0574f4fcc3d2e87948))
+* **amplify-category-api:** allow minified CF stack templates ([#3520](https://github.com/aws-amplify/amplify-cli/issues/3520)) ([6da2a63](https://github.com/aws-amplify/amplify-cli/commit/6da2a634548fdf48deb4b1144c67d1e1515abb80)), closes [#2914](https://github.com/aws-amplify/amplify-cli/issues/2914)
+* **graphql-elasticsearch-transformer:** support sets in es fn ([#2986](https://github.com/aws-amplify/amplify-cli/issues/2986)) ([16419f4](https://github.com/aws-amplify/amplify-cli/commit/16419f4d9e1733ed0ada064f9ced604083ee4703)), closes [#2860](https://github.com/aws-amplify/amplify-cli/issues/2860)
+* **graphql-key-transformer:** add query automatically for named keys ([#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)) ([375282d](https://github.com/aws-amplify/amplify-cli/commit/375282d648cf9d096d13c7b958a0dfb7bd6d60b0))
+* **graphql-transformer-core:** allow user overrides for functions ([#3367](https://github.com/aws-amplify/amplify-cli/issues/3367)) ([787128f](https://github.com/aws-amplify/amplify-cli/commit/787128f2fe2b66150cfae0712bdf86745949f85e)), closes [#3359](https://github.com/aws-amplify/amplify-cli/issues/3359)
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e4a2b85cbe9f430838554ae3c277440132))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e5346ee1f27a2e9bee25fbbdcb19417f5230f))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe8925a4e73358b03ba927267a2df328b78))
+* updated version of [#2118](https://github.com/aws-amplify/amplify-cli/issues/2118) with addressed review comments ([#2230](https://github.com/aws-amplify/amplify-cli/issues/2230)) ([be3c499](https://github.com/aws-amplify/amplify-cli/commit/be3c499edcc6bec63b38e9241c5af7b83c930022))
+
+
+### Performance Improvements
+
+* optimize appsync file upload and bucket exist check ([#4533](https://github.com/aws-amplify/amplify-cli/issues/4533)) ([173996f](https://github.com/aws-amplify/amplify-cli/commit/173996f57e0d2e6b245e094e70cf4596099e782d))
+
+
+### Reverts
+
+* add query automatically for named keys ([#4513](https://github.com/aws-amplify/amplify-cli/issues/4513)) ([50c1120](https://github.com/aws-amplify/amplify-cli/commit/50c112050645b8fd5011a1e6863d30f58e0c55cb))
+* Revert "fix(graphql-auth-transformer): add list support for ownerField in subs (#3166)" (#3572) ([d693e6b](https://github.com/aws-amplify/amplify-cli/commit/d693e6b2819a5d20188fa9f68d94ef955e474bd3)), closes [#3166](https://github.com/aws-amplify/amplify-cli/issues/3166) [#3572](https://github.com/aws-amplify/amplify-cli/issues/3572)
+
+
+* Adding Auth on Subscriptions (#2068) ([81c630d](https://github.com/aws-amplify/amplify-cli/commit/81c630d782a6be720e513677a34b7a7dacbdc629)), closes [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043) [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043) [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043) [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043) [#1766](https://github.com/aws-amplify/amplify-cli/issues/1766) [#1043](https://github.com/aws-amplify/amplify-cli/issues/1043) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068) [#2068](https://github.com/aws-amplify/amplify-cli/issues/2068)
+
+
+### BREAKING CHANGES
+
+* If an owner is used in the auth directive it will either be a requirement if it's
+the only rule or an optional input if used with other rules
+* If an owner is included in the auth directive it will either be a requirement if
+it's the only rule or an optional input if used with other rules
+* the subscription operations will require an argument if owner is the only auth rule
+* Subscriptions will require an argument if an owner is only rule set - If owner &
+group rules are owner will be an optional arg
+
+
+
+
+
 ## [6.22.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.22.0...graphql-transformer-core@6.22.3) (2020-11-20)
 
 
