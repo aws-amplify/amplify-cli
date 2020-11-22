@@ -8,9 +8,8 @@ import chalk from 'chalk';
 
 export const run = async (context: $TSContext) => {
   if (!isPackaged) {
-    context.print.warning(
-      `"uninstall" is not available in this installation of Amplify.\nUse ${chalk.blueBright('npm uninstall -g @aws-amplify/cli')}`,
-    );
+    context.print.warning('"uninstall" is not available in this installation of Amplify.');
+    context.print.info(`Use ${chalk.blueBright('npm uninstall -g @aws-amplify/cli')} instead.`);
     return;
   }
   if (

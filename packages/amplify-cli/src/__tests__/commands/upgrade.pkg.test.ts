@@ -1,18 +1,15 @@
 import * as fs from 'fs-extra';
-import execa from 'execa';
 import { run } from '../../commands/upgrade';
-import fetch from 'node-fetch';
+import fetch, { Response } from 'node-fetch';
 import { $TSContext } from 'amplify-cli-core';
 import * as core from 'amplify-cli-core';
+import { Readable } from 'stream';
 
 jest.mock('fs-extra');
-const fs_mock = fs as jest.Mocked<typeof fs>;
-
-jest.mock('execa');
-const execa_mock = execa as jest.Mocked<typeof execa>;
+const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;
 
 jest.mock('node-fetch');
-const fetch_mock = fetch as jest.Mocked<typeof fetch>;
+const fetch_mock = fetch as jest.MockedFunction<typeof fetch>;
 
 const context_stub = {
   print: {
@@ -21,12 +18,26 @@ const context_stub = {
   },
 };
 
+jest.mock('gunzip-maybe');
+
+jest.mock('progress');
+
+jest.mock('tar-fs');
+
 jest.mock('amplify-cli-core', () => ({
   pathManager: {
     getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir'),
   },
   isPackaged: true,
 }));
+
+const mockStream = {
+  on: jest.fn().mockImplementation((_, callback) => {
+    callback('binary data');
+    return mockStream;
+  }),
+  pipe: jest.fn().mockImplementation(() => mockStream),
+};
 
 const core_mock = core as jest.Mocked<typeof core>;
 core_mock.pathManager.getHomeDotAmplifyDirPath = jest.fn().mockReturnValue('homedir');
@@ -37,6 +48,7 @@ const context_stub_typed = context_stub as $TSContext;
 const originalPlatform = process.platform;
 
 describe('run upgrade using packaged CLI', () => {
+  beforeEach(() => jest.clearAllMocks());
   afterEach(() => {
     Object.defineProperty(process, 'platform', {
       value: originalPlatform,
@@ -45,12 +57,12 @@ describe('run upgrade using packaged CLI', () => {
 
   it('exits early if no new packaged version available', async () => {
     // setup
-    fetch_mock.mockResolvedValueOnce({
+    fetch_mock.mockResolvedValueOnce(({
       status: 200,
       json: jest.fn().mockResolvedValueOnce({
         tag_name: 'v1.0.0',
       }),
-    });
+    } as unknown) as Response);
 
     // test
     await run(context_stub_typed);
@@ -62,25 +74,33 @@ describe('run upgrade using packaged CLI', () => {
   it('upgrades packaged CLI using GitHub releases', async () => {
     // setup
     fetch_mock
-      .mockResolvedValueOnce({
+      .mockResolvedValueOnce(({
         status: 200,
         json: jest.fn().mockResolvedValueOnce({
           tag_name: 'v100.0.0',
         }),
-      })
-      .mockResolvedValueOnce({
+      } as unknown) as Response)
+      .mockResolvedValueOnce(({
         status: 200,
-        buffer: jest.fn().mockResolvedValueOnce('binary data'),
-      });
+        headers: {
+          get: jest.fn().mockReturnValue('100'),
+        },
+        body: mockStream,
+      } as unknown) as Response);
+
+    // override process.platform
+    Object.defineProperty(process, 'platform', {
+      value: 'linux',
+    });
 
     // test
     await run(context_stub_typed);
 
     // validate
-    expect(fs_mock.writeFile.mock.calls[0]).toMatchInlineSnapshot(`
+    expect(fs_mock.move.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
+        "homedir/bin/amplify-pkg-linux",
         "homedir/bin/amplify",
-        "binary data",
       ]
     `);
     expect(fs_mock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
@@ -94,23 +114,27 @@ describe('run upgrade using packaged CLI', () => {
   it('moves old binary to temp location before downloading on windows', async () => {
     // setup
     fetch_mock
-      .mockResolvedValueOnce({
+      .mockResolvedValueOnce(({
         status: 200,
         json: jest.fn().mockResolvedValueOnce({
           tag_name: 'v100.0.0',
         }),
-      })
-      .mockResolvedValueOnce({
+      } as unknown) as Response)
+      .mockResolvedValueOnce(({
         status: 200,
-        buffer: jest.fn().mockResolvedValueOnce('binary data'),
-      });
+        headers: {
+          get: jest.fn().mockReturnValue('100'),
+        },
+        body: mockStream,
+      } as unknown) as Response);
     let movedBinToTemp = false;
-    fs_mock.move.mockImplementationOnce(async () => {
-      movedBinToTemp = true;
-    });
-    fs_mock.writeFile.mockImplementationOnce(async () => {
-      if (!movedBinToTemp) throw new Error('fs.move was not called before downloading the binary on windows');
-    });
+    fs_mock.move
+      .mockImplementationOnce(async () => {
+        movedBinToTemp = true;
+      })
+      .mockImplementationOnce(async () => {
+        if (!movedBinToTemp) throw new Error('fs.move was not called before copying extracted file to bin location');
+      });
 
     // override process.platform
     Object.defineProperty(process, 'platform', {
@@ -127,15 +151,15 @@ describe('run upgrade using packaged CLI', () => {
         "homedir/bin/amplify-old.exe",
       ]
     `);
-    expect(fs_mock.writeFile.mock.calls[0]).toMatchInlineSnapshot(`
+    expect(fs_mock.move.mock.calls[1]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify",
-        "binary data",
+        "homedir/bin/amplify-pkg-win.exe",
+        "homedir/bin/amplify.exe",
       ]
     `);
     expect(fs_mock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify",
+        "homedir/bin/amplify.exe",
         "700",
       ]
     `);

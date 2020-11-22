@@ -1217,8 +1217,6 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/import_auth_2.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-southeast-2
   import_s3_1-amplify_e2e_tests:
     working_directory: ~/repo
@@ -1236,12 +1234,6 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/import_dynamodb_1.test.ts
       CLI_REGION: us-west-2
-=======
-      CLI_REGION: us-east-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-southeast-2
->>>>>>> chore: remove npm proxy commands
   env-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1249,15 +1241,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/env.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-west-2
-=======
-      CLI_REGION: us-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-east-2
->>>>>>> chore: remove npm proxy commands
   auth_2-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1265,15 +1249,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/auth_2.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-central-1
-=======
-      CLI_REGION: eu-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-west-2
->>>>>>> chore: remove npm proxy commands
   schema-auth-9-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1281,15 +1257,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/schema-auth-9.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-northeast-1
-=======
-      CLI_REGION: eu-central-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-west-2
->>>>>>> chore: remove npm proxy commands
   schema-auth-11-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1297,15 +1265,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/schema-auth-11.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-southeast-1
-=======
-      CLI_REGION: ap-northeast-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-central-1
->>>>>>> chore: remove npm proxy commands
   migration-api-key-migration2-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1313,15 +1273,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-southeast-2
-=======
-      CLI_REGION: ap-southeast-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-northeast-1
->>>>>>> chore: remove npm proxy commands
   function_1-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1329,15 +1281,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/function_1.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: us-east-2
-=======
-      CLI_REGION: ap-southeast-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-southeast-1
->>>>>>> chore: remove npm proxy commands
   schema-auth-1-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1345,15 +1289,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/schema-auth-1.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: us-west-2
-=======
-      CLI_REGION: us-east-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-southeast-2
->>>>>>> chore: remove npm proxy commands
   function_4-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1361,15 +1297,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/function_4.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-west-2
-=======
-      CLI_REGION: us-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-east-2
->>>>>>> chore: remove npm proxy commands
   schema-function-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1377,15 +1305,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/schema-function.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-central-1
-=======
-      CLI_REGION: eu-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-west-2
->>>>>>> chore: remove npm proxy commands
   schema-model-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1393,15 +1313,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/schema-model.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-northeast-1
-=======
-      CLI_REGION: eu-central-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-west-2
->>>>>>> chore: remove npm proxy commands
   migration-api-connection-migration-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1409,15 +1321,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/migration/api.connection.migration.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-southeast-1
-=======
-      CLI_REGION: ap-northeast-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-central-1
->>>>>>> chore: remove npm proxy commands
   schema-connection-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1425,15 +1329,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/schema-connection.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-southeast-2
-=======
-      CLI_REGION: ap-southeast-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-northeast-1
->>>>>>> chore: remove npm proxy commands
   schema-auth-6-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1441,15 +1337,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/schema-auth-6.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: us-east-2
-=======
-      CLI_REGION: ap-southeast-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-southeast-1
->>>>>>> chore: remove npm proxy commands
   schema-auth-2-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1457,15 +1345,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/schema-auth-2.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: us-west-2
-=======
-      CLI_REGION: us-east-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-southeast-2
->>>>>>> chore: remove npm proxy commands
   api_1-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1473,15 +1353,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/api_1.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-west-2
-=======
-      CLI_REGION: us-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-east-2
->>>>>>> chore: remove npm proxy commands
   schema-auth-5-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1489,15 +1361,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-central-1
-=======
-      CLI_REGION: eu-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-west-2
->>>>>>> chore: remove npm proxy commands
   storage-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1505,15 +1369,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/storage.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-northeast-1
-=======
-      CLI_REGION: eu-central-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-west-2
->>>>>>> chore: remove npm proxy commands
   api_2-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
@@ -1521,25 +1377,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/api_2.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-southeast-1
-=======
-      CLI_REGION: ap-northeast-1
-  uninstall-amplify_e2e_tests_pkg_linux:
-    working_directory: ~/repo
-    docker: *ref_0
-    resource_class: large
-    environment:
-      AMPLIFY_DIR: /home/circleci/repo/out
-      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-      TEST_SUITE: src/__tests__/uninstall.test.ts
-      CLI_REGION: us-east-2
-    steps: *ref_9
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-central-1
->>>>>>> chore: remove npm proxy commands
   plugin-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
     docker: *ref_0
@@ -1918,15 +1756,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/env.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-west-2
-=======
-      CLI_REGION: us-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-east-2
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   auth_2-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -1936,15 +1766,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/auth_2.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-central-1
-=======
-      CLI_REGION: eu-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-west-2
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   schema-auth-9-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -1954,15 +1776,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/schema-auth-9.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-northeast-1
-=======
-      CLI_REGION: eu-central-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-west-2
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   schema-auth-11-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -1972,15 +1786,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/schema-auth-11.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-southeast-1
-=======
-      CLI_REGION: ap-northeast-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-central-1
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   migration-api-key-migration2-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -1990,15 +1796,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/migration/api.key.migration2.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-southeast-2
-=======
-      CLI_REGION: ap-southeast-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-northeast-1
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   function_1-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2008,15 +1806,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/function_1.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: us-east-2
-=======
-      CLI_REGION: ap-southeast-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-southeast-1
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   schema-auth-1-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2026,15 +1816,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/schema-auth-1.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: us-west-2
-=======
-      CLI_REGION: us-east-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-southeast-2
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   function_4-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2044,15 +1826,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/function_4.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-west-2
-=======
-      CLI_REGION: us-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-east-2
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   schema-function-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2062,15 +1836,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/schema-function.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-central-1
-=======
-      CLI_REGION: eu-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-west-2
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   schema-model-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2080,15 +1846,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/schema-model.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-northeast-1
-=======
-      CLI_REGION: eu-central-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-west-2
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   migration-api-connection-migration-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2098,15 +1856,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/migration/api.connection.migration.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-southeast-1
-=======
-      CLI_REGION: ap-northeast-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-central-1
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   schema-connection-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2116,15 +1866,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/schema-connection.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-southeast-2
-=======
-      CLI_REGION: ap-southeast-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-northeast-1
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   schema-auth-6-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2134,15 +1876,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/schema-auth-6.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: us-east-2
-=======
-      CLI_REGION: ap-southeast-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-southeast-1
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   schema-auth-2-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2152,15 +1886,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/schema-auth-2.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: us-west-2
-=======
-      CLI_REGION: us-east-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: ap-southeast-2
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   api_1-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2170,15 +1896,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/api_1.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-west-2
-=======
-      CLI_REGION: us-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-east-2
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   schema-auth-5-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2188,15 +1906,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/schema-auth-5.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: eu-central-1
-=======
-      CLI_REGION: eu-west-2
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: us-west-2
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   storage-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2206,15 +1916,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/storage.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-northeast-1
-=======
-      CLI_REGION: eu-central-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-west-2
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
   api_2-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -2224,15 +1926,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/api_2.test.ts
-<<<<<<< HEAD
-<<<<<<< HEAD
       CLI_REGION: ap-southeast-1
-=======
-      CLI_REGION: ap-northeast-1
->>>>>>> feat: amplify uninstall command
-=======
-      CLI_REGION: eu-central-1
->>>>>>> chore: remove npm proxy commands
     steps: *ref_9
 workflows:
   version: 2
@@ -2324,28 +2018,10 @@ workflows:
             - schema-auth-11-amplify_e2e_tests
             - migration-api-connection-migration-amplify_e2e_tests
             - api_2-amplify_e2e_tests
-<<<<<<< HEAD
             - auth_4-amplify_e2e_tests
             - import_auth_2-amplify_e2e_tests
             - migration-api-key-migration2-amplify_e2e_tests
             - schema-connection-amplify_e2e_tests
-=======
-            - layer-amplify_e2e_tests
-            - api_3-amplify_e2e_tests
-            - migration-api-key-migration2-amplify_e2e_tests
-            - schema-connection-amplify_e2e_tests
-            - migration-api-key-migration1-amplify_e2e_tests
-            - import_auth_1-amplify_e2e_tests
-            - function_1-amplify_e2e_tests
-            - schema-auth-6-amplify_e2e_tests
-<<<<<<< HEAD
->>>>>>> feat: amplify uninstall command
-=======
-            - auth_4-amplify_e2e_tests
-            - import_auth_2-amplify_e2e_tests
-            - schema-auth-1-amplify_e2e_tests
-            - schema-auth-2-amplify_e2e_tests
->>>>>>> chore: remove npm proxy commands
       - done_with_pkg_linux_e2e_tests:
           requires:
             - schema-auth-7-amplify_e2e_tests_pkg_linux
@@ -2372,28 +2048,10 @@ workflows:
             - schema-auth-11-amplify_e2e_tests_pkg_linux
             - migration-api-connection-migration-amplify_e2e_tests_pkg_linux
             - api_2-amplify_e2e_tests_pkg_linux
-<<<<<<< HEAD
             - auth_4-amplify_e2e_tests_pkg_linux
             - import_auth_2-amplify_e2e_tests_pkg_linux
             - migration-api-key-migration2-amplify_e2e_tests_pkg_linux
             - schema-connection-amplify_e2e_tests_pkg_linux
-=======
-            - layer-amplify_e2e_tests_pkg_linux
-            - api_3-amplify_e2e_tests_pkg_linux
-            - migration-api-key-migration2-amplify_e2e_tests_pkg_linux
-            - schema-connection-amplify_e2e_tests_pkg_linux
-            - migration-api-key-migration1-amplify_e2e_tests_pkg_linux
-            - import_auth_1-amplify_e2e_tests_pkg_linux
-            - function_1-amplify_e2e_tests_pkg_linux
-            - schema-auth-6-amplify_e2e_tests_pkg_linux
-<<<<<<< HEAD
->>>>>>> feat: amplify uninstall command
-=======
-            - auth_4-amplify_e2e_tests_pkg_linux
-            - import_auth_2-amplify_e2e_tests_pkg_linux
-            - schema-auth-1-amplify_e2e_tests_pkg_linux
-            - schema-auth-2-amplify_e2e_tests_pkg_linux
->>>>>>> chore: remove npm proxy commands
       - amplify_migration_tests_latest:
           filters:
             branches:
@@ -2681,8 +2339,6 @@ workflows:
           requires:
             - publish_to_local_registry
             - auth_5-amplify_e2e_tests
-<<<<<<< HEAD
-<<<<<<< HEAD
       - api_2-amplify_e2e_tests:
           filters: *ref_10
           requires:
@@ -2690,25 +2346,6 @@ workflows:
             - migration-api-key-migration1-amplify_e2e_tests
       - schema-versioned-amplify_e2e_tests:
           filters: *ref_10
-=======
-      - uninstall-amplify_e2e_tests_pkg_linux:
-<<<<<<< HEAD
->>>>>>> feat: amplify uninstall command
-=======
-          filters: &ref_11
-            branches:
-              only:
-                - master
->>>>>>> fix: path prefix and hide file
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-      - schema-versioned-amplify_e2e_tests_pkg_linux:
-          filters: *ref_11
-=======
-      - schema-versioned-amplify_e2e_tests:
-          filters: *ref_10
->>>>>>> chore: remove npm proxy commands
           requires:
             - publish_to_local_registry
       - feature-flags-amplify_e2e_tests:
@@ -2722,8 +2359,10 @@ workflows:
       - auth_4-amplify_e2e_tests:
           filters: *ref_10
           requires:
-<<<<<<< HEAD
-<<<<<<< HEAD
+            - publish_to_local_registry
+      - import_auth_2-amplify_e2e_tests:
+          filters: *ref_10
+          requires:
             - publish_to_local_registry
             - schema-versioned-amplify_e2e_tests
       - migration-api-key-migration2-amplify_e2e_tests:
@@ -2732,37 +2371,6 @@ workflows:
             - publish_to_local_registry
             - feature-flags-amplify_e2e_tests
       - schema-connection-amplify_e2e_tests:
-          filters: *ref_10
-=======
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-            - uninstall-amplify_e2e_tests_pkg_linux
-      - import_auth_2-amplify_e2e_tests_pkg_linux:
-          filters: *ref_11
-          requires:
-            - done_with_node_e2e_tests
-            - build_pkg_binaries
-            - schema-versioned-amplify_e2e_tests_pkg_linux
-      - schema-auth-1-amplify_e2e_tests_pkg_linux:
-<<<<<<< HEAD
->>>>>>> feat: amplify uninstall command
-=======
-          filters: *ref_11
->>>>>>> fix: path prefix and hide file
-=======
-            - publish_to_local_registry
-      - import_auth_2-amplify_e2e_tests:
-          filters: *ref_10
-          requires:
-            - publish_to_local_registry
-            - schema-versioned-amplify_e2e_tests
-      - schema-auth-1-amplify_e2e_tests:
-          filters: *ref_10
->>>>>>> chore: remove npm proxy commands
-          requires:
-            - publish_to_local_registry
-            - feature-flags-amplify_e2e_tests
-      - schema-auth-2-amplify_e2e_tests:
           filters: *ref_10
           requires:
             - publish_to_local_registry
@@ -3028,16 +2636,12 @@ workflows:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - auth_5-amplify_e2e_tests_pkg_linux
-<<<<<<< HEAD
-<<<<<<< HEAD
       - api_2-amplify_e2e_tests_pkg_linux:
           filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - migration-api-key-migration1-amplify_e2e_tests_pkg_linux
-=======
->>>>>>> chore: remove npm proxy commands
       - schema-versioned-amplify_e2e_tests_pkg_linux:
           filters: *ref_11
           requires:
@@ -3064,28 +2668,15 @@ workflows:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - schema-versioned-amplify_e2e_tests_pkg_linux
-<<<<<<< HEAD
       - migration-api-key-migration2-amplify_e2e_tests_pkg_linux:
-=======
-      - schema-auth-1-amplify_e2e_tests_pkg_linux:
->>>>>>> chore: remove npm proxy commands
           filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - feature-flags-amplify_e2e_tests_pkg_linux
-<<<<<<< HEAD
       - schema-connection-amplify_e2e_tests_pkg_linux:
-=======
-      - schema-auth-2-amplify_e2e_tests_pkg_linux:
->>>>>>> chore: remove npm proxy commands
           filters: *ref_11
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
             - function_3-amplify_e2e_tests_pkg_linux
-<<<<<<< HEAD
-=======
->>>>>>> fix: path prefix and hide file
-=======
->>>>>>> chore: remove npm proxy commands

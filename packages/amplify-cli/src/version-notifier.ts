@@ -4,7 +4,7 @@ import path from 'path';
 import chalk from 'chalk';
 
 const pkg = JSONUtilities.readJson<$TSAny>(path.join(__dirname, '..', 'package.json'));
-const notifier = updateNotifier({ pkg, updateCheckInterval: 0 }); // defaults to 1 day interval
+const notifier = updateNotifier({ pkg }); // defaults to 1 day interval
 
 const defaultOpts: updateNotifier.NotifyOptions = {
   message: isPackaged ? `Update available:\nRun ${chalk.blueBright('amplify upgrade')} for the latest features and fixes!` : undefined,

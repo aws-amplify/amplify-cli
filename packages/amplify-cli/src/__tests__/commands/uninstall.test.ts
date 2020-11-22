@@ -1,14 +1,10 @@
 import { $TSContext } from 'amplify-cli-core';
 import { run } from '../../commands/uninstall';
 import execa from 'execa';
-import * as fs from 'fs-extra';
 
 jest.mock('execa');
 const execa_mock = execa as jest.Mocked<typeof execa>;
 execa_mock.command.mockResolvedValue({} as any);
-
-jest.mock('fs-extra');
-const fs_mock = fs as jest.Mocked<typeof fs>;
 
 let userConfirmation = true;
 const context_stub = {
@@ -16,6 +12,7 @@ const context_stub = {
     confirmPrompt: async () => userConfirmation,
   },
   print: {
+    info: jest.fn(),
     warning: jest.fn(),
     success: jest.fn(),
   },
@@ -41,9 +38,9 @@ describe('uninstall node CLI', () => {
   it('does nothing when running using node', async () => {
     await run(context_stub_typed);
 
-    expect(context_stub.print.warning.mock.calls[0][0]).toMatchInlineSnapshot(`
-      "\\"uninstall\\" is not available in this installation of Amplify.
-      Use npm uninstall -g @aws-amplify/cli"
-    `);
+    expect(context_stub.print.warning.mock.calls[0][0]).toMatchInlineSnapshot(
+      `"\\"uninstall\\" is not available in this installation of Amplify."`,
+    );
+    expect(context_stub.print.info.mock.calls[0][0]).toMatchInlineSnapshot(`"Use npm uninstall -g @aws-amplify/cli instead."`);
   });
 });
