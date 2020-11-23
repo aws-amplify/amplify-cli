@@ -22,13 +22,15 @@ export class EcsAlbStack extends ContainersStack {
       createCloudMapService: false,
     });
 
-    const { authName } = ecsProps;
+    const { authName, restrictAccess } = ecsProps;
 
-    const param = this.parameters.get(`auth${authName}HostedUIDomain`);
+    if (restrictAccess) {
+      const param = this.parameters.get(`auth${authName}HostedUIDomain`);
 
-    this.parameters.get('ParamZipPath').default = 'site.zip';
+      this.parameters.get('ParamZipPath').default = 'site.zip';
 
-    this.userPoolDomain = param.valueAsString;
+      this.userPoolDomain = param.valueAsString;
+    }
 
     this.alb();
   }
@@ -41,7 +43,8 @@ export class EcsAlbStack extends ContainersStack {
       exposedContainer: {
         name: containerName,
         port
-      }
+      },
+      restrictAccess,
     } = this.ecsProps;
 
     const userPoolDomain = this.userPoolDomain;
@@ -74,7 +77,7 @@ export class EcsAlbStack extends ContainersStack {
       }]
     });
 
-    const userPoolClient = new cognito.CfnUserPoolClient(this, 'UserPoolClient', {
+    const userPoolClient = restrictAccess ? new cognito.CfnUserPoolClient(this, 'UserPoolClient', {
       userPoolId: this.userPoolId,
       allowedOAuthFlows: [
         // 'implicit',
@@ -92,7 +95,7 @@ export class EcsAlbStack extends ContainersStack {
       supportedIdentityProviders: ['COGNITO'], // TODO: all supported?
       callbackUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
       logoutUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
-    });
+    }) : undefined;
 
     const targetGroup = new elb2.CfnTargetGroup(this, 'TargetGroup', {
       healthCheckIntervalSeconds: cdk.Duration.seconds(90).toSeconds(),
@@ -163,25 +166,26 @@ export class EcsAlbStack extends ContainersStack {
 
     this.ecsService.addDependsOn(listener);
 
-    const listenerRule = new elb2.CfnListenerRule(this, 'AuthListener', {
+    let actionsOrderCounter = 1;
+    const listenerRule = new elb2.CfnListenerRule(this, 'AlbListenerRule', {
       priority: 1,
       listenerArn: listener.ref,
-      actions: [
-        {
-          order: 1,
+      actions: [].concat(
+        restrictAccess ? {
+          order: actionsOrderCounter++,
           type: 'authenticate-cognito',
           authenticateCognitoConfig: {
             userPoolArn,
             userPoolClientId: userPoolClient.ref,
             userPoolDomain,
           }
-        },
+        } : undefined,
         {
-          order: 2,
+          order: actionsOrderCounter++,
           type: 'forward',
           targetGroupArn: targetGroup.ref,
         }
-      ],
+      ),
       conditions: [
         {
           field: 'host-header',
