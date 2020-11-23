@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.9...amplify-appsync-simulator@1.24.1) (2020-11-22)
+
+**Note:** Version bump only for package amplify-appsync-simulator
+
+
+
+
+
+# 1.24.0 (2020-11-22)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** add js-string-escape to package.json ([#2864](https://github.com/aws-amplify/amplify-cli/issues/2864)) ([2da430b](https://github.com/aws-amplify/amplify-cli/commit/2da430b5c827b0f9f4af4fe5611528f8839703bb))
+* **amplify-appsync-simulator:** add support for AppSync template version ([#2329](https://github.com/aws-amplify/amplify-cli/issues/2329)) ([88cd220](https://github.com/aws-amplify/amplify-cli/commit/88cd220cbb254a018b888ee587c9c35994010377)), closes [#2134](https://github.com/aws-amplify/amplify-cli/issues/2134) [#2211](https://github.com/aws-amplify/amplify-cli/issues/2211) [#2299](https://github.com/aws-amplify/amplify-cli/issues/2299)
+* **amplify-appsync-simulator:** adds equals method to JavaString class ([#4316](https://github.com/aws-amplify/amplify-cli/issues/4316)) ([f84761b](https://github.com/aws-amplify/amplify-cli/commit/f84761ba688c23f92255f5dffc13aed23d918a83))
+* **amplify-appsync-simulator:** after pipeline template mapping ([#4303](https://github.com/aws-amplify/amplify-cli/issues/4303)) ([c0ad97d](https://github.com/aws-amplify/amplify-cli/commit/c0ad97da00ea5b29aa2d0f981150d41b5e688a48))
+* **amplify-appsync-simulator:** allow null returns in response template ([#2267](https://github.com/aws-amplify/amplify-cli/issues/2267)) ([7056250](https://github.com/aws-amplify/amplify-cli/commit/70562506d5aac737a92a8856b14a799f55f47490)), closes [#2248](https://github.com/aws-amplify/amplify-cli/issues/2248)
+* **amplify-appsync-simulator:** appsync scalars ([#5705](https://github.com/aws-amplify/amplify-cli/issues/5705)) ([edd8e68](https://github.com/aws-amplify/amplify-cli/commit/edd8e68e36600834ef9eaab6911e4a1111e90238))
+* **amplify-appsync-simulator:** fix none data source handler ([#2356](https://github.com/aws-amplify/amplify-cli/issues/2356)) ([157ecb1](https://github.com/aws-amplify/amplify-cli/commit/157ecb1222abc7becd71e96463b48b1637ec28e2))
+* **amplify-appsync-simulator:** fix returning null on nonexistent fields ([#5093](https://github.com/aws-amplify/amplify-cli/issues/5093)) ([a0439db](https://github.com/aws-amplify/amplify-cli/commit/a0439db462e8189d7b158472f269326e2c6bdb8d)), closes [#5003](https://github.com/aws-amplify/amplify-cli/issues/5003)
+* **amplify-appsync-simulator:** fixes [#3202](https://github.com/aws-amplify/amplify-cli/issues/3202) filter error.data ([1d01fb3](https://github.com/aws-amplify/amplify-cli/commit/1d01fb3ca26924c96a7964fa871edce9649016d7))
+* **amplify-appsync-simulator:** forward stash to responseMappingTemplate ([#3387](https://github.com/aws-amplify/amplify-cli/issues/3387)) ([5528760](https://github.com/aws-amplify/amplify-cli/commit/55287607a2d97936420b9725cd2108d92ed35b61))
+* **amplify-appsync-simulator:** handle jwt decode error gracefully ([#2500](https://github.com/aws-amplify/amplify-cli/issues/2500)) ([9c931ed](https://github.com/aws-amplify/amplify-cli/commit/9c931ed7b5304f475f17db291526a16dcb305699)), closes [#2473](https://github.com/aws-amplify/amplify-cli/issues/2473)
+* **amplify-appsync-simulator:** handle Lexical error correctly ([#5622](https://github.com/aws-amplify/amplify-cli/issues/5622)) ([22209c4](https://github.com/aws-amplify/amplify-cli/commit/22209c465b147913bb034c054e85a2e1de4246ff)), closes [#5621](https://github.com/aws-amplify/amplify-cli/issues/5621)
+* **amplify-appsync-simulator:** impl missing methods in velocity utils ([9970053](https://github.com/aws-amplify/amplify-cli/commit/99700532fc89ed79a9302fd3d719ff9eda17909d)), closes [#2300](https://github.com/aws-amplify/amplify-cli/issues/2300)
+* **amplify-appsync-simulator:** make ExpressionAttributeNames optional ([#5575](https://github.com/aws-amplify/amplify-cli/issues/5575)) ([35af053](https://github.com/aws-amplify/amplify-cli/commit/35af053de048875ea946b4467804f5f9c317a130)), closes [#5573](https://github.com/aws-amplify/amplify-cli/issues/5573)
+* **amplify-appsync-simulator:** make resolver result parsing strict ([#3224](https://github.com/aws-amplify/amplify-cli/issues/3224)) ([77bec1d](https://github.com/aws-amplify/amplify-cli/commit/77bec1df49a32f030e9e5a06651003409da00eb9)), closes [#3180](https://github.com/aws-amplify/amplify-cli/issues/3180)
+* **amplify-appsync-simulator:** normalize resolver path in windows ([#3117](https://github.com/aws-amplify/amplify-cli/issues/3117)) ([87c4ad5](https://github.com/aws-amplify/amplify-cli/commit/87c4ad59a701995220946ad35f1491f0d4b57325)), closes [#1997](https://github.com/aws-amplify/amplify-cli/issues/1997)
+* **amplify-appsync-simulator:** replace "extend" with "_.defaultsDeep" ([#4285](https://github.com/aws-amplify/amplify-cli/issues/4285)) ([5dac839](https://github.com/aws-amplify/amplify-cli/commit/5dac8394e884db7de22068696d7e4877be8d7b6a))
+* **amplify-appsync-simulator:** set max payload size for request ([#3132](https://github.com/aws-amplify/amplify-cli/issues/3132)) ([33fc925](https://github.com/aws-amplify/amplify-cli/commit/33fc92578a9124a4d1b669039dc09dc737bd36c8)), closes [#3086](https://github.com/aws-amplify/amplify-cli/issues/3086)
+* **amplify-appsync-simulator:** support early return from resolvers ([#2497](https://github.com/aws-amplify/amplify-cli/issues/2497)) ([0cff7ed](https://github.com/aws-amplify/amplify-cli/commit/0cff7ed09bfaf797baad2acd1c0a6d013cb717e8)), closes [#2427](https://github.com/aws-amplify/amplify-cli/issues/2427)
+* **amplify-appsync-simulator:** support inline resolver templates ([56fdd00](https://github.com/aws-amplify/amplify-cli/commit/56fdd0057a6ecfbd320f2a3f8b0858959bbe750e)), closes [#3834](https://github.com/aws-amplify/amplify-cli/issues/3834)
+* **amplify-appsync-simulator:** support more than 1 operation in query ([#4189](https://github.com/aws-amplify/amplify-cli/issues/4189)) ([4794c8f](https://github.com/aws-amplify/amplify-cli/commit/4794c8fef04b15deaff13f4a77be774ca91bbecb)), closes [#4181](https://github.com/aws-amplify/amplify-cli/issues/4181)
+* **amplify-appsync-simulator:** velocity template handles unknown type errors ([#5503](https://github.com/aws-amplify/amplify-cli/issues/5503)) ([64d48a4](https://github.com/aws-amplify/amplify-cli/commit/64d48a4152ad99b77ed6a54f272072af5f418d23))
+* **amplify-velocity-template:** expression not equals works unproperly ([#5571](https://github.com/aws-amplify/amplify-cli/issues/5571)) ([7bc5051](https://github.com/aws-amplify/amplify-cli/commit/7bc5051f8713b3d3b945e35e5138c4146be26e01)), closes [#5570](https://github.com/aws-amplify/amplify-cli/issues/5570)
+* [#2032](https://github.com/aws-amplify/amplify-cli/issues/2032) - add AWSTimestamp and AWSIPAddress types to mock ([#2116](https://github.com/aws-amplify/amplify-cli/issues/2116)) ([77e2e69](https://github.com/aws-amplify/amplify-cli/commit/77e2e69af6065b014818a9ef4324027f566acca2))
+* [#5372](https://github.com/aws-amplify/amplify-cli/issues/5372) - cut signing url ending slash when matching in mock ([#5434](https://github.com/aws-amplify/amplify-cli/issues/5434)) ([dfff875](https://github.com/aws-amplify/amplify-cli/commit/dfff87538dd5cb4cd932c9b141c9549e740e9942))
+* **amplify-provider-awscloudformation:** custom transformer imports ([#3236](https://github.com/aws-amplify/amplify-cli/issues/3236)) ([7794d73](https://github.com/aws-amplify/amplify-cli/commit/7794d73ab28d74bc8f5a13f8b4296cbb00f0ac13))
+* Bubbling error up to Graphiql from Lambda ([#3231](https://github.com/aws-amplify/amplify-cli/issues/3231)) ([12345da](https://github.com/aws-amplify/amplify-cli/commit/12345da3e99990d6f9994917667c30da0b0b2f2e))
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* export Typescript definitions and fix resulting type errors ([#2452](https://github.com/aws-amplify/amplify-cli/issues/2452)) ([7de3845](https://github.com/aws-amplify/amplify-cli/commit/7de384594d3b9cbf22cdaa85107fc8df26c141ec)), closes [#2451](https://github.com/aws-amplify/amplify-cli/issues/2451)
+* falsy values can be returned in mock now ([#3254](https://github.com/aws-amplify/amplify-cli/issues/3254)) ([6795e78](https://github.com/aws-amplify/amplify-cli/commit/6795e783c104004a2b2576f6903b35c1c6d2ed03)), closes [#2566](https://github.com/aws-amplify/amplify-cli/issues/2566)
+* local mock fix ([#1982](https://github.com/aws-amplify/amplify-cli/issues/1982)) ([8ee9029](https://github.com/aws-amplify/amplify-cli/commit/8ee90298189f4d3140ab84fe2d40d16bcb95485f))
+* regression in graphiql-explorer build ([#3453](https://github.com/aws-amplify/amplify-cli/issues/3453)) ([98c905e](https://github.com/aws-amplify/amplify-cli/commit/98c905edfdf52495224d2af3a934faeaab8b310a))
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+
+
+### Features
+
+* **amplify-appsync-simulator:** implement BatchInvoke ([#4421](https://github.com/aws-amplify/amplify-cli/issues/4421)) ([a330274](https://github.com/aws-amplify/amplify-cli/commit/a330274f1595f438ca7d234e2c964a633b1608b7)), closes [#4404](https://github.com/aws-amplify/amplify-cli/issues/4404)
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([6d1c632](https://github.com/aws-amplify/amplify-cli/commit/6d1c632952a49cb56670c11c9cb0c3620d0eb332))
+* **amplify-appsync-simulator:** add support for IAM authorization ([#3476](https://github.com/aws-amplify/amplify-cli/issues/3476)) ([511dfc2](https://github.com/aws-amplify/amplify-cli/commit/511dfc29dd6787ecd035ac3fe79801cd7538b1d3))
+* **amplify-appsync-simulator:** add support for websocket subscriptions ([#3912](https://github.com/aws-amplify/amplify-cli/issues/3912)) ([f6dac5b](https://github.com/aws-amplify/amplify-cli/commit/f6dac5b6d55867e35b28b1c3eec9a6eeb4e4fbe3)), closes [#3008](https://github.com/aws-amplify/amplify-cli/issues/3008)
+* **amplify-appsync-simulator:** implement GraphQL Info Object ([#3450](https://github.com/aws-amplify/amplify-cli/issues/3450)) ([24c31e2](https://github.com/aws-amplify/amplify-cli/commit/24c31e24b2978df02e4d217a2f93dd4623d36922))
+* **amplify-appsync-simulator:** implement missing string methods([#3389](https://github.com/aws-amplify/amplify-cli/issues/3389)) ([#3398](https://github.com/aws-amplify/amplify-cli/issues/3398)) ([a7ad64c](https://github.com/aws-amplify/amplify-cli/commit/a7ad64c519dff1e1977f3fca48f0adea4586aeb8))
+* **amplify-category-function:** Refactor invoke to call runtime plugins ([#3768](https://github.com/aws-amplify/amplify-cli/issues/3768)) ([92293fa](https://github.com/aws-amplify/amplify-cli/commit/92293fa83190bd18aacdc2f46a22938f94b89609))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([a755863](https://github.com/aws-amplify/amplify-cli/commit/a7558637fbb791dc22e0a91ae16f1b96fe4e99df))
+* add support for multiauth in mock server ([#2109](https://github.com/aws-amplify/amplify-cli/issues/2109)) ([fe8ee8c](https://github.com/aws-amplify/amplify-cli/commit/fe8ee8cff355a826fa9ccddcf0fad8a200a081af))
+* add the length support for strings in mock ([#2823](https://github.com/aws-amplify/amplify-cli/issues/2823)) ([c366246](https://github.com/aws-amplify/amplify-cli/commit/c3662463b97d387968cd2ad60c94e3e27b97ea7c))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e5346ee1f27a2e9bee25fbbdcb19417f5230f))
+* move away from mosca to forked mqtt server ([#2428](https://github.com/aws-amplify/amplify-cli/issues/2428)) ([6eb59d6](https://github.com/aws-amplify/amplify-cli/commit/6eb59d6a0fa616a65ad0489405cc89dfbec0f5a1))
+
+
+
+
+
 ## [1.23.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.8...amplify-appsync-simulator@1.23.9) (2020-10-30)
 
 

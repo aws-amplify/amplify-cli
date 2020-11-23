@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.5.4...amplify-category-predictions@2.6.1) (2020-11-22)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+# 2.6.0 (2020-11-22)
+
+
+### Bug Fixes
+
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+* fixed bad import ([#5386](https://github.com/aws-amplify/amplify-cli/issues/5386)) ([60b7175](https://github.com/aws-amplify/amplify-cli/commit/60b71757f97b7267251288b420dbddfe074784f6))
+* fixed typos and bad import ([#5390](https://github.com/aws-amplify/amplify-cli/issues/5390)) ([0d2f632](https://github.com/aws-amplify/amplify-cli/commit/0d2f632029bc3c78434fe502899780649f3f74e3))
+* **amplify-category-predictions:** cfn template fix ([#2159](https://github.com/aws-amplify/amplify-cli/issues/2159)) ([5b550b5](https://github.com/aws-amplify/amplify-cli/commit/5b550b5ba458557f2f9c849a29e8462dd6c86317))
+* **amplify-category-predictions:** changing the predictions lambda trigger time out to 15 mins ([#1956](https://github.com/aws-amplify/amplify-cli/issues/1956)) ([a05f634](https://github.com/aws-amplify/amplify-cli/commit/a05f634c3c0130c7e16f83605153828375f8b7f6))
+* **cli:** remove unnecessary stack trace log when adding services ([#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)) ([56efb32](https://github.com/aws-amplify/amplify-cli/commit/56efb32b79c47839cb9506a9300d40a01875a9fc))
+* [#429](https://github.com/aws-amplify/amplify-cli/issues/429) - Editor hanging bug ([#2086](https://github.com/aws-amplify/amplify-cli/issues/2086)) ([6767445](https://github.com/aws-amplify/amplify-cli/commit/676744549f903fa3a4804d814eb325301ed462ba))
+* move test package dependencies to devDependencies ([#2034](https://github.com/aws-amplify/amplify-cli/issues/2034)) ([f5623d0](https://github.com/aws-amplify/amplify-cli/commit/f5623d04a43e685901f4f1cd96e2a227164c71ee))
+* occurred spelling mistake ([#4595](https://github.com/aws-amplify/amplify-cli/issues/4595)) ([a461487](https://github.com/aws-amplify/amplify-cli/commit/a461487072dbf422892ca24c436581b49c568429))
+* replaced v1 docs references with v2 docs references ([#4169](https://github.com/aws-amplify/amplify-cli/issues/4169)) ([b578c2d](https://github.com/aws-amplify/amplify-cli/commit/b578c2dcd10038367c653ede2f6da42e7644b41b))
+* **amplify-category-api:** fix api add-graphql-datasource command ([#2320](https://github.com/aws-amplify/amplify-cli/issues/2320)) ([a9c829d](https://github.com/aws-amplify/amplify-cli/commit/a9c829d79e91246d2bb9a707ccfe886502ceebe2))
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([4e97400](https://github.com/aws-amplify/amplify-cli/commit/4e974007d95c894ab4108a2dff8d5996e7e3ce25))
+* support importing of auth resources ([#5591](https://github.com/aws-amplify/amplify-cli/issues/5591)) ([7903246](https://github.com/aws-amplify/amplify-cli/commit/790324680544fe18481f91390001f9f07a144203))
+* **cli:** new plugin platform ([#2254](https://github.com/aws-amplify/amplify-cli/issues/2254)) ([7ec29dd](https://github.com/aws-amplify/amplify-cli/commit/7ec29dd4f2da8c90727b36469eca646d289877b6))
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([a755863](https://github.com/aws-amplify/amplify-cli/commit/a7558637fbb791dc22e0a91ae16f1b96fe4e99df))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+
+
+### Reverts
+
+* Revert problematic PRs (#4803) ([f21a0f4](https://github.com/aws-amplify/amplify-cli/commit/f21a0f449a23c0c80a6f3280eef76bcbf3e9cb7c)), closes [#4803](https://github.com/aws-amplify/amplify-cli/issues/4803) [#4796](https://github.com/aws-amplify/amplify-cli/issues/4796) [#4576](https://github.com/aws-amplify/amplify-cli/issues/4576) [#4575](https://github.com/aws-amplify/amplify-cli/issues/4575) [#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)
+
+
+
+
+
+## [2.5.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.5.4...amplify-category-predictions@2.5.7) (2020-11-20)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.5.4...amplify-category-predictions@2.5.6) (2020-11-20)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
+## [2.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.5.4...amplify-category-predictions@2.5.5) (2020-11-19)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
 ## [2.5.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.5.3...amplify-category-predictions@2.5.4) (2020-11-08)
 
 **Note:** Version bump only for package amplify-category-predictions

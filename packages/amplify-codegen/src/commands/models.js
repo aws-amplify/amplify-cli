@@ -1,6 +1,7 @@
 const path = require('path');
+const fs = require('fs-extra');
 const { parse } = require('graphql');
-const { readFileSync, writeFileSync, ensureFileSync, pathExistsSync, lstatSync, readdirSync } = require('fs-extra');
+const { pathManager } = require('amplify-cli-core');
 const gqlCodeGen = require('@graphql-codegen/core');
 
 const appSyncDataStoreCodeGen = require('amplify-codegen-appsync-model-plugin');
@@ -65,11 +66,15 @@ async function generateModels(context) {
   });
 
   const generatedCode = await Promise.all(codeGenPromises);
+
   appsyncLocalConfig.forEach((cfg, idx) => {
     const outPutPath = cfg.filename;
-    ensureFileSync(outPutPath);
-    writeFileSync(outPutPath, generatedCode[idx]);
+    fs.ensureFileSync(outPutPath);
+    fs.writeFileSync(outPutPath, generatedCode[idx]);
   });
+
+  generateEslintIgnore(context);
+
   context.print.info(`Successfully generated models. Generated models can be found ${outputPath}`);
 }
 
@@ -85,14 +90,15 @@ async function validateSchema(context) {
 function loadSchema(apiResourcePath) {
   const schemaFilePath = path.join(apiResourcePath, 'schema.graphql');
   const schemaDirectory = path.join(apiResourcePath, 'schema');
-  if (pathExistsSync(schemaFilePath)) {
-    return readFileSync(schemaFilePath, 'utf8');
+  if (fs.pathExistsSync(schemaFilePath)) {
+    return fs.readFileSync(schemaFilePath, 'utf8');
   }
-  if (pathExistsSync(schemaDirectory) && lstatSync(schemaDirectory).isDirectory()) {
-    return readdirSync(schemaDirectory)
+  if (fs.pathExistsSync(schemaDirectory) && fs.lstatSync(schemaDirectory).isDirectory()) {
+    return fs
+      .readdirSync(schemaDirectory)
       .map(file => path.join(schemaDirectory, file))
-      .filter(file => file.endsWith('.graphql') && lstatSync(file).isFile())
-      .map(file => readFileSync(file, 'utf8'))
+      .filter(file => file.endsWith('.graphql') && fs.lstatSync(file).isFile())
+      .map(file => fs.readFileSync(file, 'utf8'))
       .join('\n');
   }
 
@@ -116,4 +122,33 @@ function getModelOutputPath(context) {
       return '.';
   }
 }
+
+function generateEslintIgnore(context) {
+  const projectConfig = context.amplify.getProjectConfig();
+
+  if (projectConfig.frontend !== 'javascript') {
+    return;
+  }
+
+  const projectPath = pathManager.findProjectRoot();
+
+  if (!projectPath) {
+    return;
+  }
+
+  const eslintIgnorePath = path.join(projectPath, '.eslintignore');
+  const modelFolder = path.join(getModelOutputPath(context), 'models');
+
+  if (!fs.existsSync(eslintIgnorePath)) {
+    fs.writeFileSync(eslintIgnorePath, modelFolder);
+    return;
+  }
+
+  const eslintContents = fs.readFileSync(eslintIgnorePath);
+
+  if (!eslintContents.includes(modelFolder)) {
+    fs.appendFileSync(eslintIgnorePath, `\n${modelFolder}\n`);
+  }
+}
+
 module.exports = generateModels;

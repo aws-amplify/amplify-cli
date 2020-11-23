@@ -20,6 +20,8 @@ const predictionsRegionMap = require('./aws-predictions-regions');
 
 import { CognitoUserPoolService, createCognitoUserPoolService } from './aws-utils/CognitoUserPoolService';
 import { IdentityPoolService, createIdentityPoolService } from './aws-utils/IdentityPoolService';
+import { S3Service, createS3Service } from './aws-utils/S3Service';
+import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 
 function init(context) {
   return initializer.run(context);
@@ -123,4 +125,8 @@ module.exports = {
   createCognitoUserPoolService,
   IdentityPoolService,
   createIdentityPoolService,
+  S3Service,
+  createS3Service,
+  DynamoDBService,
+  createDynamoDBService,
 };

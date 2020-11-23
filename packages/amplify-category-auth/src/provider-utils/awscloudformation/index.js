@@ -71,6 +71,7 @@ async function updateConfigOnEnvInit(context, category, service) {
         },
         resourceParams,
         providerPlugin,
+        false,
       );
 
       if (importResult) {

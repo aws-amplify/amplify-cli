@@ -1,6 +1,17 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 import { singleSelect, multiSelect } from '../utils/selectors';
 
+export type AddStorageSettings = {
+  resourceName: string;
+  bucketName: string;
+};
+
+export type AddDynamoDBSettings = {
+  resourceName: string;
+  tableName: string;
+  gsiName: string;
+};
+
 export function addSimpleDDB(cwd: string, settings: any) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
@@ -426,5 +437,124 @@ export function addS3Storage(projectDir: string) {
         reject(err);
       }
     });
+  });
+}
+
+export function addS3StorageWithSettings(projectDir: string, settings: AddStorageSettings) {
+  return new Promise((resolve, reject) => {
+    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
+
+    singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'Content (Images, audio, video, etc.)', [
+      'Content (Images, audio, video, etc.)',
+      'NoSQL Database',
+    ]);
+
+    chain
+      .wait('Please provide a friendly name for your resource that will be used to label this category in the project:')
+      .sendLine(settings.resourceName)
+      .wait('Please provide bucket name:')
+      .sendLine(settings.bucketName);
+
+    singleSelect(chain.wait('Who should have access:'), 'Auth and guest users', ['Auth users only', 'Auth and guest users']);
+
+    multiSelect(
+      chain.wait('What kind of access do you want for Authenticated users?'),
+      ['create/update', 'read', 'delete'],
+      ['create/update', 'read', 'delete'],
+    );
+
+    multiSelect(
+      chain.wait('What kind of access do you want for Guest users?'),
+      ['create/update', 'read', 'delete'],
+      ['create/update', 'read', 'delete'],
+    );
+
+    chain.wait('Do you want to add a Lambda Trigger for your S3 Bucket?').sendConfirmNo();
+
+    chain.run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
+
+export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: AddDynamoDBSettings) {
+  return new Promise((resolve, reject) => {
+    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true, noOutputTimeout: 3001 });
+
+    singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'NoSQL Database', [
+      'Content (Images, audio, video, etc.)',
+      'NoSQL Database',
+    ]);
+
+    const addColumn = (name, type) => {
+      chain.wait('What would you like to name this column').sendLine(name);
+
+      singleSelect(chain.wait('Please choose the data type:'), type, ['string', 'number', 'binary', 'boolean', 'list', 'map', 'null']);
+    };
+
+    const addAnotherColumn = () => {
+      chain.wait('Would you like to add another column').sendConfirmYes();
+    };
+
+    chain
+      .wait('Please provide a friendly name for your resource')
+      .sendLine(settings.resourceName)
+      .wait('Please provide table name')
+      .sendLine(settings.tableName);
+
+    addColumn('pk', 'string');
+    addAnotherColumn();
+
+    addColumn('sk', 'string');
+    addAnotherColumn();
+
+    addColumn('gsi-pk', 'string');
+    addAnotherColumn();
+
+    addColumn('gsi-sk', 'string');
+    addAnotherColumn();
+
+    addColumn('title', 'string');
+    addAnotherColumn();
+
+    addColumn('description', 'string');
+
+    chain.wait('Would you like to add another column').sendConfirmNo();
+
+    singleSelect(chain.wait('Please choose partition key for the table'), 'pk', ['pk', 'sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
+
+    chain.wait('Do you want to add a sort key to your table').sendConfirmYes();
+
+    singleSelect(chain.wait('Please choose sort key for the table'), 'sk', ['sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
+
+    chain
+      .wait('Do you want to add global secondary indexes to your table?')
+      .sendConfirmYes()
+      .wait('Please provide the GSI name')
+      .sendLine(settings.gsiName);
+
+    singleSelect(chain.wait('Please choose partition key for the GSI'), 'gsi-pk', ['sk', 'gsi-pk', 'gsi-sk', 'title', 'description']);
+
+    chain.wait('Do you want to add a sort key to your global secondary index').sendConfirmYes();
+
+    singleSelect(chain.wait('Please choose sort key for the GSI'), 'gsi-sk', ['sk', 'gsi-sk', 'title', 'description']);
+
+    chain
+      .wait('Do you want to add more global secondary indexes to your table')
+      .sendConfirmNo()
+      .wait('Do you want to add a Lambda Trigger for your Table')
+      .sendConfirmNo()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }

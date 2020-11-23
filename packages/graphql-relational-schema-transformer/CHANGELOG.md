@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.15.19...graphql-relational-schema-transformer@2.16.1) (2020-11-22)
+
+**Note:** Version bump only for package graphql-relational-schema-transformer
+
+
+
+
+
+# [2.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@1.0.13...graphql-relational-schema-transformer@2.16.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* **graphql-relational-schema-transformer:** escape SQL reserved keywords ([#5529](https://github.com/aws-amplify/amplify-cli/issues/5529)) ([9c0408a](https://github.com/aws-amplify/amplify-cli/commit/9c0408adf0a3541ca30b9547c6b84d28b7709783))
+* **graphql-relational-schema-transformer:** fix add datasource update ([#3542](https://github.com/aws-amplify/amplify-cli/issues/3542)) ([176f313](https://github.com/aws-amplify/amplify-cli/commit/176f313fea1e7504bbf12255dc44f424ae1ea4a1))
+* e2e test dependency and cloudform depe for relational ([#3352](https://github.com/aws-amplify/amplify-cli/issues/3352)) ([6b74433](https://github.com/aws-amplify/amplify-cli/commit/6b74433a4ddf7706fef3834f02247a3cd0fd75c2))
+* **graphql-relational-schema-transformer:** fix [#3025](https://github.com/aws-amplify/amplify-cli/issues/3025) rds resolver correctly handles no data in response ([#3314](https://github.com/aws-amplify/amplify-cli/issues/3314)) ([cb826a7](https://github.com/aws-amplify/amplify-cli/commit/cb826a7ec7680ad9b5fc46fd7a931c30747cd0ce))
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* export Typescript definitions and fix resulting type errors ([#2452](https://github.com/aws-amplify/amplify-cli/issues/2452)) ([7de3845](https://github.com/aws-amplify/amplify-cli/commit/7de384594d3b9cbf22cdaa85107fc8df26c141ec)), closes [#2451](https://github.com/aws-amplify/amplify-cli/issues/2451)
+* **graphql-relational-schema-transformer:** fix input type casing ([#2249](https://github.com/aws-amplify/amplify-cli/issues/2249)) ([3a00d56](https://github.com/aws-amplify/amplify-cli/commit/3a00d56320f8c6a7de415e12ac9c6c4b5954d934)), closes [#2217](https://github.com/aws-amplify/amplify-cli/issues/2217)
+* **graphql-relational-schema-transformer:** fix template for string keys ([#2205](https://github.com/aws-amplify/amplify-cli/issues/2205)) ([294fbc6](https://github.com/aws-amplify/amplify-cli/commit/294fbc67c7d8d806c4fe8100eb27b04571a4c811)), closes [#2133](https://github.com/aws-amplify/amplify-cli/issues/2133)
+
+
+### Features
+
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e4a2b85cbe9f430838554ae3c277440132))
+
+
+
+
+
 ## [2.15.19](https://github.com/aws-amplify/amplify-cli/compare/graphql-relational-schema-transformer@2.15.18...graphql-relational-schema-transformer@2.15.19) (2020-11-08)
 
 **Note:** Version bump only for package graphql-relational-schema-transformer

@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.13.8...amplify-frontend-ios@2.14.1) (2020-11-22)
+
+
+### Bug Fixes
+
+* remove app client secret as best practice ([#5731](https://github.com/aws-amplify/amplify-cli/issues/5731)) ([8bc0dd2](https://github.com/aws-amplify/amplify-cli/commit/8bc0dd2434b93c9a2cb1ff3bfad9cedd2d356c30))
+
+
+
+
+
+# [2.14.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@1.8.2...amplify-frontend-ios@2.14.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* do not delete if generated filename is empty ([#4528](https://github.com/aws-amplify/amplify-cli/issues/4528)) ([0cdc466](https://github.com/aws-amplify/amplify-cli/commit/0cdc46614af1be24980491f8b8caad4fc9b9f594))
+* handle missing authConfig gracefully ([#2518](https://github.com/aws-amplify/amplify-cli/issues/2518)) ([06744f6](https://github.com/aws-amplify/amplify-cli/commit/06744f6c3abf0279a507caa9cf75d1ba9a85a479)), closes [#2480](https://github.com/aws-amplify/amplify-cli/issues/2480)
+* move test package dependencies to devDependencies ([#2034](https://github.com/aws-amplify/amplify-cli/issues/2034)) ([f5623d0](https://github.com/aws-amplify/amplify-cli/commit/f5623d04a43e685901f4f1cd96e2a227164c71ee))
+* point to correct file to delete for amplify config ([#3116](https://github.com/aws-amplify/amplify-cli/issues/3116)) ([61c0769](https://github.com/aws-amplify/amplify-cli/commit/61c0769cb1d40faa76ff3de8e82f2f58199b4a0f)), closes [#2997](https://github.com/aws-amplify/amplify-cli/issues/2997)
+* remove app client secret as best practice ([#5731](https://github.com/aws-amplify/amplify-cli/issues/5731)) ([8bc0dd2](https://github.com/aws-amplify/amplify-cli/commit/8bc0dd2434b93c9a2cb1ff3bfad9cedd2d356c30))
+* **cli:** fix appsync api native config file for legacy metadata ([#2842](https://github.com/aws-amplify/amplify-cli/issues/2842)) ([a8e55b7](https://github.com/aws-amplify/amplify-cli/commit/a8e55b727fca53e9006f45da772a56e7953fc6db))
+
+
+### Features
+
+* **cli:** add amplifyconfiguration.json for native apps ([#2787](https://github.com/aws-amplify/amplify-cli/issues/2787)) ([0393535](https://github.com/aws-amplify/amplify-cli/commit/03935353596582bfac620ef7a0e68cf01ad376ee))
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** new plugin platform ([#2254](https://github.com/aws-amplify/amplify-cli/issues/2254)) ([7ec29dd](https://github.com/aws-amplify/amplify-cli/commit/7ec29dd4f2da8c90727b36469eca646d289877b6))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e4a2b85cbe9f430838554ae3c277440132))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e5346ee1f27a2e9bee25fbbdcb19417f5230f))
+
+
+
+
+
+## [2.13.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.13.8...amplify-frontend-ios@2.13.11) (2020-11-20)
+
+
+### Bug Fixes
+
+* remove app client secret as best practice ([#5731](https://github.com/aws-amplify/amplify-cli/issues/5731)) ([8bc0dd2](https://github.com/aws-amplify/amplify-cli/commit/8bc0dd2434b93c9a2cb1ff3bfad9cedd2d356c30))
+
+
+
+
+
+## [2.13.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.13.8...amplify-frontend-ios@2.13.10) (2020-11-20)
+
+
+### Bug Fixes
+
+* remove app client secret as best practice ([#5731](https://github.com/aws-amplify/amplify-cli/issues/5731)) ([8bc0dd2](https://github.com/aws-amplify/amplify-cli/commit/8bc0dd2434b93c9a2cb1ff3bfad9cedd2d356c30))
+
+
+
+
+
+## [2.13.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.13.8...amplify-frontend-ios@2.13.9) (2020-11-19)
+
+
+### Bug Fixes
+
+* remove app client secret as best practice ([#5731](https://github.com/aws-amplify/amplify-cli/issues/5731)) ([8bc0dd2](https://github.com/aws-amplify/amplify-cli/commit/8bc0dd2434b93c9a2cb1ff3bfad9cedd2d356c30))
+
+
+
+
+
 ## [2.13.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.13.6...amplify-frontend-ios@2.13.8) (2020-07-29)
 
 **Note:** Version bump only for package amplify-frontend-ios

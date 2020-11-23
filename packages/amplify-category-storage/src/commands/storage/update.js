@@ -20,7 +20,11 @@ module.exports = {
 
         return providerController.updateResource(context, category, result.service);
       })
-      .then(() => context.print.success('Successfully updated resource'))
+      .then(result => {
+        if (result) {
+          context.print.success('Successfully updated resource');
+        }
+      })
       .catch(err => {
         context.print.info(err.stack);
         context.print.error('An error occurred when updating the storage resource');

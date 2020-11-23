@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.17.3...amplify-frontend-javascript@2.18.1) (2020-11-22)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@1.6.3...amplify-frontend-javascript@2.18.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* **amplify-frontend-javascript:** fix headless pull ([42ccc0e](https://github.com/aws-amplify/amplify-cli/commit/42ccc0eb2316cbcc85256909ea1868a0e5398008)), closes [#5228](https://github.com/aws-amplify/amplify-cli/issues/5228)
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-cli/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-cli/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+* revert frontend files ([#5231](https://github.com/aws-amplify/amplify-cli/issues/5231)) ([381cb4e](https://github.com/aws-amplify/amplify-cli/commit/381cb4e191f247b06208f5d71eee248b7501ef22))
+* **amplify-frontend-javascript:** changed exports to common js ([#5220](https://github.com/aws-amplify/amplify-cli/issues/5220)) ([5debb76](https://github.com/aws-amplify/amplify-cli/commit/5debb76bed86ab925becbcba85fd06347c0fa15a))
+* **amplify-frontend-javascript:** use execa for spawning child process ([#5150](https://github.com/aws-amplify/amplify-cli/issues/5150)) ([28b1832](https://github.com/aws-amplify/amplify-cli/commit/28b183272eb26afe3f38fe27e909405b277ef534)), closes [#4626](https://github.com/aws-amplify/amplify-cli/issues/4626)
+* **cli:** fixes issues for missing build or start command ([#3918](https://github.com/aws-amplify/amplify-cli/issues/3918)) ([25c53ce](https://github.com/aws-amplify/amplify-cli/commit/25c53ce81a74c3f706f60b0519eda0a4338edbf7)), closes [#3728](https://github.com/aws-amplify/amplify-cli/issues/3728) [#3806](https://github.com/aws-amplify/amplify-cli/issues/3806)
+* point to correct file to delete for amplify config ([#3116](https://github.com/aws-amplify/amplify-cli/issues/3116)) ([61c0769](https://github.com/aws-amplify/amplify-cli/commit/61c0769cb1d40faa76ff3de8e82f2f58199b4a0f)), closes [#2997](https://github.com/aws-amplify/amplify-cli/issues/2997)
+* **amplify-frontend-javascript:** fix implicit grant oauth bug ([#2213](https://github.com/aws-amplify/amplify-cli/issues/2213)) ([16c71d7](https://github.com/aws-amplify/amplify-cli/commit/16c71d7da38c1b13555fedcdadd8ff170abc3d14))
+* fix [#1205](https://github.com/aws-amplify/amplify-cli/issues/1205) ([#1961](https://github.com/aws-amplify/amplify-cli/issues/1961)) ([e8d8b97](https://github.com/aws-amplify/amplify-cli/commit/e8d8b97cf337d86417e1be1dc52dff2740253d9e))
+* local mock fix ([#1982](https://github.com/aws-amplify/amplify-cli/issues/1982)) ([8ee9029](https://github.com/aws-amplify/amplify-cli/commit/8ee90298189f4d3140ab84fe2d40d16bcb95485f))
+* move test package dependencies to devDependencies ([#2034](https://github.com/aws-amplify/amplify-cli/issues/2034)) ([f5623d0](https://github.com/aws-amplify/amplify-cli/commit/f5623d04a43e685901f4f1cd96e2a227164c71ee))
+
+
+### Features
+
+* changes for native packaging ([#5548](https://github.com/aws-amplify/amplify-cli/issues/5548)) ([7a06f6d](https://github.com/aws-amplify/amplify-cli/commit/7a06f6d96e42a5863e2192560890adbd741b0dc6))
+* **amplify-frontend-javascript:** detect dist dir in angular ([#5199](https://github.com/aws-amplify/amplify-cli/issues/5199)) ([bb06162](https://github.com/aws-amplify/amplify-cli/commit/bb06162bdc9c9c567df4ae7f2a684bb6b586c6ab)), closes [#4669](https://github.com/aws-amplify/amplify-cli/issues/4669)
+* Delete all ([#2615](https://github.com/aws-amplify/amplify-cli/issues/2615)) ([5467679](https://github.com/aws-amplify/amplify-cli/commit/54676797b913d4a2c284c62244c8ccf8e55a44d8))
+* **cli:** new plugin platform ([#2254](https://github.com/aws-amplify/amplify-cli/issues/2254)) ([7ec29dd](https://github.com/aws-amplify/amplify-cli/commit/7ec29dd4f2da8c90727b36469eca646d289877b6))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* implement multi-auth functionality ([#1916](https://github.com/aws-amplify/amplify-cli/issues/1916)) ([b99f58e](https://github.com/aws-amplify/amplify-cli/commit/b99f58e4a2b85cbe9f430838554ae3c277440132))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e5346ee1f27a2e9bee25fbbdcb19417f5230f))
+
+
+
+
+
+## [2.17.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.17.3...amplify-frontend-javascript@2.17.6) (2020-11-20)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [2.17.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.17.3...amplify-frontend-javascript@2.17.5) (2020-11-20)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [2.17.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.17.3...amplify-frontend-javascript@2.17.4) (2020-11-19)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
 ## [2.17.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.17.2...amplify-frontend-javascript@2.17.3) (2020-11-08)
 
 **Note:** Version bump only for package amplify-frontend-javascript

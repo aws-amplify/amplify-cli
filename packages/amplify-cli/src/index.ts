@@ -26,12 +26,14 @@ import { EventEmitter } from 'events';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
 import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
+import { deleteOldVersion } from './utils/win-utils';
 EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
 export async function run() {
   let errorHandler = (e: Error) => {};
   try {
+    deleteOldVersion();
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
     // with non-help command supplied, give notification before execution

@@ -3,6 +3,103 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.4...amplify-category-storage@2.10.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* [#5794](https://github.com/aws-amplify/amplify-cli/issues/5794) - storage access problem with groups ([#5806](https://github.com/aws-amplify/amplify-cli/issues/5806)) ([26f6a7c](https://github.com/aws-amplify/amplify-cli/commit/26f6a7ced261bccc3e3fc01d97f24b1e92a600e8))
+* fix resourceName ref ([#5923](https://github.com/aws-amplify/amplify-cli/issues/5923)) ([02edc7c](https://github.com/aws-amplify/amplify-cli/commit/02edc7c0a9839bc470f3fd7b901cb3c2fc571a84))
+
+
+### Features
+
+* storage import ([#5893](https://github.com/aws-amplify/amplify-cli/issues/5893)) ([ad7b028](https://github.com/aws-amplify/amplify-cli/commit/ad7b028330bcee64d5124be7f27a8494dc8e9400))
+
+
+
+
+
+# [2.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@1.8.3...amplify-category-storage@2.9.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* [#5794](https://github.com/aws-amplify/amplify-cli/issues/5794) - storage access problem with groups ([#5806](https://github.com/aws-amplify/amplify-cli/issues/5806)) ([26f6a7c](https://github.com/aws-amplify/amplify-cli/commit/26f6a7ced261bccc3e3fc01d97f24b1e92a600e8))
+* add support for mobile hub migrated resources ([#5407](https://github.com/aws-amplify/amplify-cli/issues/5407)) ([5dfe287](https://github.com/aws-amplify/amplify-cli/commit/5dfe2872c153047ebdc56bc4f671fd57c12379d9))
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+* fix resourceName ref ([#5923](https://github.com/aws-amplify/amplify-cli/issues/5923)) ([02edc7c](https://github.com/aws-amplify/amplify-cli/commit/02edc7c0a9839bc470f3fd7b901cb3c2fc571a84))
+* give ddb trigger different policy name from lambda execution ([#2801](https://github.com/aws-amplify/amplify-cli/issues/2801)) ([b97a7db](https://github.com/aws-amplify/amplify-cli/commit/b97a7db7e856d9bd6a5568b8b7a4ea7ef27c57f9))
+* randomize role-names and bucket-name for auth and storage category ([#2709](https://github.com/aws-amplify/amplify-cli/issues/2709)) ([fe0e979](https://github.com/aws-amplify/amplify-cli/commit/fe0e979812bd3142a56a62bf15444cbb3dbbb6bb))
+* refactor mobile hub migration checks ([#5632](https://github.com/aws-amplify/amplify-cli/issues/5632)) ([b796eb8](https://github.com/aws-amplify/amplify-cli/commit/b796eb8303bb903f5f531506254441a63eba2962))
+* **amplify-category-api:** fix api add-graphql-datasource command ([#2320](https://github.com/aws-amplify/amplify-cli/issues/2320)) ([a9c829d](https://github.com/aws-amplify/amplify-cli/commit/a9c829d79e91246d2bb9a707ccfe886502ceebe2))
+* **amplify-category-api:** use standard json read ([#2581](https://github.com/aws-amplify/amplify-cli/issues/2581)) ([3adc395](https://github.com/aws-amplify/amplify-cli/commit/3adc395a5e4ccf3673735f8091db63923a46c501))
+* **amplify-category-function:** fixes[#3509](https://github.com/aws-amplify/amplify-cli/issues/3509) adds policy to list Bucket ([#3612](https://github.com/aws-amplify/amplify-cli/issues/3612)) ([55f9846](https://github.com/aws-amplify/amplify-cli/commit/55f9846c4ea05f09983c5d9c3ef1827510fbfe7a))
+* **amplify-category-storage:** add policy for GSI ([#2752](https://github.com/aws-amplify/amplify-cli/issues/2752)) ([e9fb03a](https://github.com/aws-amplify/amplify-cli/commit/e9fb03a307d8ac936df6fe47daf93712021c025d))
+* **amplify-category-storage:** fix storage update ([#5191](https://github.com/aws-amplify/amplify-cli/issues/5191)) ([754f122](https://github.com/aws-amplify/amplify-cli/commit/754f12201c07132ff6c9e7ef88f4c567cdc6302d)), closes [#5124](https://github.com/aws-amplify/amplify-cli/issues/5124)
+* **amplify-category-storage:** remove unnecessary comma ([#1755](https://github.com/aws-amplify/amplify-cli/issues/1755)) ([854c4c6](https://github.com/aws-amplify/amplify-cli/commit/854c4c692a572c2068f855d4552deda3eca9e234))
+* **amplify-category-storage:** use name for gsi index ([#2265](https://github.com/aws-amplify/amplify-cli/issues/2265)) ([89c9036](https://github.com/aws-amplify/amplify-cli/commit/89c9036cb697cd6015ad16381236af9942508b34))
+* **amplify-category-storage:** validate max length of bucket name ([ace68a9](https://github.com/aws-amplify/amplify-cli/commit/ace68a9a41adf29e924a5eee2f7970d041c24feb))
+* **cli:** remove unnecessary stack trace log when adding services ([#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)) ([56efb32](https://github.com/aws-amplify/amplify-cli/commit/56efb32b79c47839cb9506a9300d40a01875a9fc))
+* move test package dependencies to devDependencies ([#2034](https://github.com/aws-amplify/amplify-cli/issues/2034)) ([f5623d0](https://github.com/aws-amplify/amplify-cli/commit/f5623d04a43e685901f4f1cd96e2a227164c71ee))
+
+
+### Features
+
+* ability to add custom EventSource and lambda triggers via amplify add function, kinesis support in analytics category ([#2463](https://github.com/aws-amplify/amplify-cli/issues/2463)) ([b25cfd0](https://github.com/aws-amplify/amplify-cli/commit/b25cfd00b21416a82ecefda1f6498206ef71531b))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([6d1c632](https://github.com/aws-amplify/amplify-cli/commit/6d1c632952a49cb56670c11c9cb0c3620d0eb332))
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([4e97400](https://github.com/aws-amplify/amplify-cli/commit/4e974007d95c894ab4108a2dff8d5996e7e3ce25))
+* Merge GSI from a previous add when updating a storage ([#2571](https://github.com/aws-amplify/amplify-cli/issues/2571)) ([c8ae475](https://github.com/aws-amplify/amplify-cli/commit/c8ae475e25e5ad27aab602a05c29c9ca9cef8a4b))
+* storage import ([#5893](https://github.com/aws-amplify/amplify-cli/issues/5893)) ([ad7b028](https://github.com/aws-amplify/amplify-cli/commit/ad7b028330bcee64d5124be7f27a8494dc8e9400))
+* support importing of auth resources ([#5591](https://github.com/aws-amplify/amplify-cli/issues/5591)) ([7903246](https://github.com/aws-amplify/amplify-cli/commit/790324680544fe18481f91390001f9f07a144203))
+* **cli:** new plugin platform ([#2254](https://github.com/aws-amplify/amplify-cli/issues/2254)) ([7ec29dd](https://github.com/aws-amplify/amplify-cli/commit/7ec29dd4f2da8c90727b36469eca646d289877b6))
+* **cli:** usage measurement ([#3641](https://github.com/aws-amplify/amplify-cli/issues/3641)) ([a755863](https://github.com/aws-amplify/amplify-cli/commit/a7558637fbb791dc22e0a91ae16f1b96fe4e99df))
+* User Pool Groups, Admin Auth Support, Custom Group Role Policies ([#2443](https://github.com/aws-amplify/amplify-cli/issues/2443)) ([09aecfd](https://github.com/aws-amplify/amplify-cli/commit/09aecfd0cb3dae2c17d1c512946cc733c4fe3d4c))
+
+
+### Reverts
+
+* Revert problematic PRs (#4803) ([f21a0f4](https://github.com/aws-amplify/amplify-cli/commit/f21a0f449a23c0c80a6f3280eef76bcbf3e9cb7c)), closes [#4803](https://github.com/aws-amplify/amplify-cli/issues/4803) [#4796](https://github.com/aws-amplify/amplify-cli/issues/4796) [#4576](https://github.com/aws-amplify/amplify-cli/issues/4576) [#4575](https://github.com/aws-amplify/amplify-cli/issues/4575) [#4610](https://github.com/aws-amplify/amplify-cli/issues/4610)
+
+
+
+
+
+## [2.8.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.4...amplify-category-storage@2.8.7) (2020-11-20)
+
+
+### Bug Fixes
+
+* [#5794](https://github.com/aws-amplify/amplify-cli/issues/5794) - storage access problem with groups ([#5806](https://github.com/aws-amplify/amplify-cli/issues/5806)) ([26f6a7c](https://github.com/aws-amplify/amplify-cli/commit/26f6a7ced261bccc3e3fc01d97f24b1e92a600e8))
+
+
+
+
+
+## [2.8.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.4...amplify-category-storage@2.8.6) (2020-11-20)
+
+
+### Bug Fixes
+
+* [#5794](https://github.com/aws-amplify/amplify-cli/issues/5794) - storage access problem with groups ([#5806](https://github.com/aws-amplify/amplify-cli/issues/5806)) ([26f6a7c](https://github.com/aws-amplify/amplify-cli/commit/26f6a7ced261bccc3e3fc01d97f24b1e92a600e8))
+
+
+
+
+
+## [2.8.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.4...amplify-category-storage@2.8.5) (2020-11-19)
+
+
+### Bug Fixes
+
+* [#5794](https://github.com/aws-amplify/amplify-cli/issues/5794) - storage access problem with groups ([#5806](https://github.com/aws-amplify/amplify-cli/issues/5806)) ([26f6a7c](https://github.com/aws-amplify/amplify-cli/commit/26f6a7ced261bccc3e3fc01d97f24b1e92a600e8))
+
+
+
+
+
 ## [2.8.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.3...amplify-category-storage@2.8.4) (2020-11-08)
 
 **Note:** Version bump only for package amplify-category-storage
