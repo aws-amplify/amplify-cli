@@ -29,8 +29,7 @@ set exe_name=amplify-pkg-win.exe
 set tar_name=%exe_name%.tgz
 set binary_url=https://github.com/%repo_owner%/%repo_name%/releases/download/%version%/%tar_name%
 set binaries_dir_path=%userprofile%\.amplify\bin
-:: Binary name is amp for testing. Change to 'amplify' before launch
-set binary_base=amp
+set binary_base=amplify
 set binary_name=%binary_base%.exe
 set binary_path=%binaries_dir_path%\%binary_name%
 set tar_path=%binaries_dir_path%\%tar_name%
@@ -48,12 +47,15 @@ del %tar_path%
 echo %green%Extraction complete!%reset%
 
 :: Add to user path
-%binary_name% > nul 2> nul
-if errorlevel 1 (
-    setx PATH "%PATH%;%binaries_dir_path%" > nul
-    set "PATH=%PATH%;%binaries_dir_path%"
-    echo %yellow%Added %binaries_dir_path% to user PATH%reset%
+for /F "Skip=2Tokens=1-2*" %%A In ('Reg Query HKCU\Environment /V PATH 2^>Nul') Do set "userpath=%%C"
+if defined userpath (
+    setx PATH "%binaries_dir_path%;%userpath%" > nul
+) else (
+    setx PATH "%binaries_dir_path%" > nul
 )
+:: Add to current session path as well
+set "PATH=%binaries_dir_path%;%PATH%"
+echo %yellow%Added %binaries_dir_path% to user PATH%reset%
 
 %binary_path% plugin scan
 echo.

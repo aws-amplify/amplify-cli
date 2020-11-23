@@ -44,7 +44,7 @@ BINARY_URL=https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/$vers
 
 # Dowload binary
 BINARIES_DIR_PATH=$HOME/.amplify/bin
-BINARY_NAME=amp # amd for testing. Change to 'amplify' before launch
+BINARY_NAME=amplify
 BINARY_PATH=$BINARIES_DIR_PATH/$BINARY_NAME
 TAR_PATH=$BINARIES_DIR_PATH/$TAR_NAME
 EXTRACTION_PATH=$BINARIES_DIR_PATH/$BASE_NAME
@@ -69,7 +69,7 @@ add_to_path () {
 }
 SHELLTYPE="$(basename "/$SHELL")"
 if [[ $SHELLTYPE = "fish" ]]; then
-  command fish -c 'set -U fish_user_paths $fish_user_paths ~/.amplify/bin'
+  command fish -c 'set -U fish_user_paths ~/.amplify/bin $fish_user_paths'
   printf "\n$yellow Added ~/.amplify/bin to fish_user_paths universal variable$reset."
 elif [[ $SHELLTYPE = "zsh" ]]; then
   SHELL_CONFIG=$HOME/.zshrc
