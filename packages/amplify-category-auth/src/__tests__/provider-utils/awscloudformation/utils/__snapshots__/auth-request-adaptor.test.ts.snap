@@ -28,3 +28,27 @@ Object {
   "userpoolClientWriteAttributes": Array [],
 }
 `;
+
+exports[`get update auth request adaptor valid translations translates empty oAuth config into hostedUI: false 1`] = `
+Object {
+  "adminQueries": false,
+  "adminQueryGroup": undefined,
+  "authProviders": Array [],
+  "authSelections": "userPoolOnly",
+  "autoVerifiedAttributes": Array [],
+  "hostedUI": false,
+  "mfaConfiguration": "OFF",
+  "requiredAttributes": Array [
+    "required_attribute",
+  ],
+  "serviceName": "Cognito",
+  "thirdPartyAuth": false,
+  "updateFlow": "manual",
+  "useDefault": "manual",
+  "userPoolGroupList": Array [],
+  "userPoolGroups": false,
+  "userpoolClientReadAttributes": Array [],
+  "userpoolClientRefreshTokenValidity": undefined,
+  "userpoolClientWriteAttributes": Array [],
+}
+`;
