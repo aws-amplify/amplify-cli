@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.1.6...amplify-nodejs-function-runtime-provider@1.2.1) (2020-11-22)
+
+**Note:** Version bump only for package amplify-nodejs-function-runtime-provider
+
+
+
+
+
+# 1.2.0 (2020-11-22)
+
+
+### Bug Fixes
+
+* **amplify-nodejs-function-runtime-provider:** invoke waits close event before rejects ([#5498](https://github.com/aws-amplify/amplify-cli/issues/5498)) ([cafefd6](https://github.com/aws-amplify/amplify-cli/commit/cafefd65a54fcd8b06ccdc1fb2362eeeff3122d5))
+* parse appSync go function resolvers to JOSN ([#5297](https://github.com/aws-amplify/amplify-cli/issues/5297)) ([43c6e82](https://github.com/aws-amplify/amplify-cli/commit/43c6e8247210446b133fef799ff21cd70ad9e022))
+* **amplify-nodejs-function-runtime-provider:** change the exit status appropriately ([#5608](https://github.com/aws-amplify/amplify-cli/issues/5608)) ([2db83ab](https://github.com/aws-amplify/amplify-cli/commit/2db83aba05f62d9a7927da580d85bfe31a3a1d7a))
+* **amplify-nodejs-function-runtime-provider:** restore console.log ([#4941](https://github.com/aws-amplify/amplify-cli/issues/4941)) ([bc1aa0b](https://github.com/aws-amplify/amplify-cli/commit/bc1aa0b21df3c969f1ddc0f3c7842ae1337fbdba))
+* **amplify-nodejs-function-runtime-provider:** truncated results ([#5107](https://github.com/aws-amplify/amplify-cli/issues/5107)) ([8f2607c](https://github.com/aws-amplify/amplify-cli/commit/8f2607cadfe3bf71c9b17847c3d6947998dfa76c))
+* dotnet fucntion provider fixes, package.json cleanup, add pkg refs ([#3826](https://github.com/aws-amplify/amplify-cli/issues/3826)) ([75361fb](https://github.com/aws-amplify/amplify-cli/commit/75361fb266f15ba954a8b8e935874c74f66eb11a))
+* new json and snapshot ([#4947](https://github.com/aws-amplify/amplify-cli/issues/4947)) ([336858b](https://github.com/aws-amplify/amplify-cli/commit/336858bca104a2f63353e2db4e2d56b19c19a492))
+* nodejs staleBuild glob ([#4499](https://github.com/aws-amplify/amplify-cli/issues/4499)) ([6fc7281](https://github.com/aws-amplify/amplify-cli/commit/6fc7281aae4b3c76881144b6ba714966c9f9f8ba))
+* support large payload in Node.js functions ([#4906](https://github.com/aws-amplify/amplify-cli/issues/4906)) ([3733a16](https://github.com/aws-amplify/amplify-cli/commit/3733a161ea09472fe52d5fc8a6515a3e4e726338))
+* **amplify-nodejs-function-runtime-provider:** unhandled errors ([#4418](https://github.com/aws-amplify/amplify-cli/issues/4418)) ([ea19aa2](https://github.com/aws-amplify/amplify-cli/commit/ea19aa27cc2118f9247abe3515a03e72de6c4ef3))
+* **amplify-util-mock:** non-promise lambda failing ([#4203](https://github.com/aws-amplify/amplify-cli/issues/4203)) ([e34b97f](https://github.com/aws-amplify/amplify-cli/commit/e34b97f3750374a8bc8b693d9998fba1ec6f3ea0))
+* pass deserialized obj to node lambda when mocking ([#3895](https://github.com/aws-amplify/amplify-cli/issues/3895)) ([c5a1891](https://github.com/aws-amplify/amplify-cli/commit/c5a1891f218e23434fec3516d845958fddf416d8))
+* rename node pluign packages ([#3788](https://github.com/aws-amplify/amplify-cli/issues/3788)) ([7b1f0f2](https://github.com/aws-amplify/amplify-cli/commit/7b1f0f2c7bb67a9d154e8462643fb0fe35e88399))
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([4e97400](https://github.com/aws-amplify/amplify-cli/commit/4e974007d95c894ab4108a2dff8d5996e7e3ce25))
+
+
+
+
+
 ## [1.1.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.1.5...amplify-nodejs-function-runtime-provider@1.1.6) (2020-10-30)
 
 
