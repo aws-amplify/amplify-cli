@@ -4,6 +4,12 @@ const { readFileSync, writeFileSync, ensureFileSync, pathExistsSync, lstatSync, 
 const gqlCodeGen = require('@graphql-codegen/core');
 
 const appSyncDataStoreCodeGen = require('amplify-codegen-appsync-model-plugin');
+const platformToLanguageMap = {
+  android: 'java',
+  ios: 'swift',
+  flutter: 'dart',
+  javascript: 'javascript'
+}
 
 async function generateModels(context) {
   // steps:
@@ -45,7 +51,7 @@ async function generateModels(context) {
     baseOutputDir: outputPath,
     schema,
     config: {
-      target: projectConfig.frontend,
+      target: platformToLanguageMap[projectConfig.frontend] || projectConfig.frontend,
       directives: directiveDefinitions,
     },
   });
@@ -112,6 +118,8 @@ function getModelOutputPath(context) {
         : path.join('app', 'src', 'main', 'java');
     case 'ios':
       return 'amplify/generated/models';
+    case 'flutter':
+      return 'dart/models';
     default:
       return '.';
   }

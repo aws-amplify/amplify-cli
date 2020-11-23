@@ -48,15 +48,15 @@ export interface RawAppSyncModelConfig extends RawConfig {
    *  plugins:
    *    - amplify-codegen-appsync-model-plugin
    * ```
-   * target: 'swift'| 'javascript'| 'typescript' | 'android' | 'metadata'
+   * target: 'swift'| 'javascript'| 'typescript' | 'java' | 'metadata' | 'dart'
    */
   target: string;
 
   /**
    * @name modelName
    * @type string
-   * @description optional, name of the model to which the code needs to be generated. Used only
-   * when target is set to swift
+   * @description optional, name of the model to which the code needs to be generated. Used
+   * when target is set to swift, java and dart
    * @default undefined, this will generate code for all the models
    *
    * generates:
