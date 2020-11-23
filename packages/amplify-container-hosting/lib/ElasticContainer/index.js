@@ -46,11 +46,11 @@ async function enable(context) {
         default: false
     });
 
-    return generateHostingResources(context, { domain, hostedZoneId, restrictAccess}, true);
-    
+    return generateHostingResources(context, { domain, hostedZoneId, restrictAccess }, true);
+
 }
 
-export async function generateHostingResources(context, {domain, restrictAccess, hostedZoneId}, addResource = false) {
+export async function generateHostingResources(context, { domain, restrictAccess, hostedZoneId }, addResource = false) {
     const dependsOn = [];
 
     let authName;

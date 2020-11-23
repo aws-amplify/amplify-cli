@@ -62,25 +62,13 @@ export class EcsAlbStack extends ContainersStack {
 
     const [distributionDomainName, , domainNameSuffix] = domainName.match(/([^\.]+)\.(.*)/);
     const lbPrefix = `lb-${envName}`;
-    const albDomain = `${lbPrefix}.${domainNameSuffix}`;
     const albDomainName = `${lbPrefix}.${domainNameSuffix}`;
 
-
-    const distributionCertificate = new acm.CfnCertificate(this, 'DistributionCertificate', {
-      domainName: distributionDomainName,
+    const wildcardCertificate = new acm.CfnCertificate(this, 'Certificate', {
+      domainName: `*.${domainNameSuffix}`,
       validationMethod: hostedZoneId ? acm.ValidationMethod.DNS : acm.ValidationMethod.EMAIL,
       domainValidationOptions: [{
         domainName: distributionDomainName,
-        validationDomain: hostedZoneId === undefined ? domainNameSuffix : undefined,
-        hostedZoneId,
-      }]
-    });
-
-    const albCertificate = new acm.CfnCertificate(this, 'AlbCertificate', {
-      domainName: albDomain,
-      validationMethod: hostedZoneId ? acm.ValidationMethod.DNS : acm.ValidationMethod.EMAIL,
-      domainValidationOptions: [{
-        domainName: albDomain,
         validationDomain: hostedZoneId === undefined ? domainNameSuffix : undefined,
         hostedZoneId,
       }]
@@ -170,7 +158,7 @@ export class EcsAlbStack extends ContainersStack {
       loadBalancerArn: loadBalancer.ref,
       port: 443,
       protocol: elb2.Protocol.HTTPS,
-      certificates: [{ certificateArn: albCertificate.ref }]
+      certificates: [{ certificateArn: wildcardCertificate.ref }]
     });
 
     this.ecsService.addDependsOn(listener);
@@ -242,7 +230,7 @@ export class EcsAlbStack extends ContainersStack {
           }]
         }],
         viewerCertificate: {
-          acmCertificateArn: distributionCertificate.ref,
+          acmCertificateArn: wildcardCertificate.ref,
           minimumProtocolVersion: 'TLSv1.2_2019',
           sslSupportMethod: 'sni-only',
         },
