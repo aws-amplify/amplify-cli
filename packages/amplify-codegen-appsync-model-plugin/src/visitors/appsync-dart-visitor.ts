@@ -443,16 +443,16 @@ export class AppSyncModelDartVisitor<
       return `'${fieldName}': ${fieldName}`;
     }).join(', ');
     const deserializationImpl = [
-      'Map<String, dynamic> map = {',
+      ' => {',
       indentMultiline(toJsonFields),
       '};',
-      'return Map.from(map)..removeWhere((k, v) => v == null);'
     ].join('\n');
     declarationBlock.addClassMethod(
       'toJson',
       'Map<String, dynamic>',
       [],
-      deserializationImpl
+      deserializationImpl,
+      { isBlock: false }
     );
   }
 
