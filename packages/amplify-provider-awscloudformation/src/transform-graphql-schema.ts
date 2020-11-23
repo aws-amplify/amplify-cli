@@ -142,7 +142,7 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
     const amplifyMeta = stateManager.getMeta();
     const appId = amplifyMeta.providers[providerName].AmplifyAppId;
 
-    transformerList.push(new ModelAuthTransformer({ authConfig, isAmplifyAdminApp: await isAmplifyAdminApp(appId) }));
+    transformerList.push(new ModelAuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: await isAmplifyAdminApp(appId) }));
     return transformerList;
   };
 }

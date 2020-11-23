@@ -26,7 +26,7 @@ test('Test simple model with public auth rule and amplify admin app is present',
             },
           ],
         },
-        isAmplifyAdminApp: true,
+        addAwsIamAuthInOutputSchema: true,
       }),
     ],
   });
@@ -54,7 +54,7 @@ test('Test simple model with public auth rule and amplify admin app is not enabl
           },
           additionalAuthenticationProviders: [],
         },
-        isAmplifyAdminApp: false,
+        addAwsIamAuthInOutputSchema: false,
       }),
     ],
   });
@@ -86,7 +86,7 @@ test('Test simple model with private auth rule and amplify admin app is present'
             },
           ],
         },
-        isAmplifyAdminApp: true,
+        addAwsIamAuthInOutputSchema: true,
       }),
     ],
   });
@@ -118,7 +118,7 @@ test('Test simple model with private auth rule and amplify admin app not enabled
             },
           ],
         },
-        isAmplifyAdminApp: false,
+        addAwsIamAuthInOutputSchema: false,
       }),
     ],
   });
