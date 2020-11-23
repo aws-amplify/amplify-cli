@@ -35,7 +35,9 @@ async function enable(context) {
         domain
     });
 
-    const { Id: hostedZoneId } = domainZone || {};
+    const { Id: hostedZoneKey = "" } = domainZone || {};
+
+    const [, hostedZoneId] = hostedZoneKey.match(/^\/hostedzone\/(.+)/) || [];
 
     const { restrictAccess } = await inquirer.prompt({
         name: 'restrictAccess',
@@ -92,29 +94,6 @@ async function enable(context) {
             authDependency.attributes = Array.from(newAttributes);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     const providerName = 'awscloudformation';
     const {
