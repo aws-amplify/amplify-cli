@@ -1,11 +1,13 @@
+
 // @ts-check
+const { getS3Client, uploadFile } = require('./file-uploader');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
 const open = require('open');
-const chalk = require('chalk');
+
 const constants = require('../constants');
-const fileUploader = require('../../../amplify-category-hosting/lib/S3AndCloudFront/helpers/file-uploader');
+
 const {
     EcsAlbStack,
     NETWORK_STACK_LOGICAL_ID,
@@ -100,9 +102,8 @@ export async function generateHostingResources(context, { domain, restrictAccess
         }
     }
 
-    const providerName = 'awscloudformation';
     const {
-        providers: { [providerName]: provider },
+        providers: { [constants.providerName]: provider },
     } = context.amplify.getProjectMeta();
     const { StackName: envName, DeploymentBucketName: deploymentBucketName, Region: region } = provider;
     // const { auth } = context.amplify.getProjectDetails().amplifyMeta;
@@ -204,12 +205,30 @@ async function configure(context) {
 }
 
 async function publish(context, args) {
-    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+    const { frontend } = context.amplify.getProjectConfig();
+    const { config: { SourceDir: src, DistributionDir: dst } } = context.amplify.getProjectConfig()[frontend];
 
-    const zipFile = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'zipFiles',
-        [projectBackendDirPath, path.join(projectBackendDirPath, 'bundle.zip')]);
+    const { projectPath } = context.amplify.getEnvInfo();
+    const srcPath = path.join(projectPath, src);
+    const fileName = 'site.zip';
+    const filePath = path.join(dst, fileName)
 
-    // Upload zipFile and show pipeline url
+    await context.amplify.executeProviderUtils(context, 'awscloudformation', 'zipFiles',
+        [srcPath, filePath]);
+
+    const {
+        providers: { [constants.providerName]: provider },
+    } = context.amplify.getProjectMeta();
+    const { DeploymentBucketName: deploymentBucketName } = provider;
+
+
+    const s3Client = await getS3Client(context, 'publish');
+    await uploadFile(s3Client, deploymentBucketName, filePath, fileName)
+
+    const { hosting: { ElasticContainer: { output: { PipelineUrl } } } } = context.amplify.getProjectMeta();
+
+    context.print.info(`\nPublish started, you can check the status of the deployment on:\n${PipelineUrl}`);
+
 }
 
 function console(context) {

@@ -9,11 +9,11 @@ const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform
 const { updateStackForAPIMigration } = require('./push-resources');
 const SecretsManager = require('./aws-utils/aws-secretsmanager');
 const Route53 = require('./aws-utils/aws-route53');
-const { archiver } = require('./utils/archiver');
+const { run: archiver } = require('./utils/archiver');
 
 module.exports = {
-  zipFiles: (...args) => {
-    return archiver.run(...args)
+  zipFiles: (context, [srcDir, dstZipFilePath]) => {
+    return archiver(srcDir, dstZipFilePath)
   },
   isDomainInZones: async (context, { domain }) => {
 
