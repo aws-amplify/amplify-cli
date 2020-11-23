@@ -107,10 +107,7 @@ class SimpleModel extends Model {
       : id = json['id'],
         status = enumFromString<Status>(json['status'], Status.values);
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {'id': id, 'status': describeEnum(status)};
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {'id': id, 'status': describeEnum(status)};
 
   static final QueryField ID = QueryField(fieldName: \\"simpleModel.id\\");
   static final QueryField STATUS = QueryField(fieldName: \\"status\\");
@@ -240,10 +237,7 @@ class SimpleModel extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"simpleModel.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -359,10 +353,7 @@ class SimpleModel extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"simpleModel.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -491,15 +482,8 @@ class customClaim extends Model {
         bar = json['bar'],
         owner = json['owner'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {
-      'id': id,
-      'name': name,
-      'bar': bar,
-      'owner': owner
-    };
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
 
   static final QueryField ID = QueryField(fieldName: \\"customClaim.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -634,10 +618,7 @@ class customClaim extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"customClaim.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -768,10 +749,7 @@ class dynamicGroups extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"dynamicGroups.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -913,15 +891,8 @@ class simpleOwnerAuth extends Model {
         bar = json['bar'],
         owner = json['owner'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {
-      'id': id,
-      'name': name,
-      'bar': bar,
-      'owner': owner
-    };
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
 
   static final QueryField ID = QueryField(fieldName: \\"simpleOwnerAuth.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -1069,15 +1040,8 @@ class allowRead extends Model {
         bar = json['bar'],
         owner = json['owner'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {
-      'id': id,
-      'name': name,
-      'bar': bar,
-      'owner': owner
-    };
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
 
   static final QueryField ID = QueryField(fieldName: \\"allowRead.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -1211,10 +1175,7 @@ class privateType extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"privateType.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -1339,10 +1300,7 @@ class publicType extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"publicType.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -1467,10 +1425,7 @@ class staticGroups extends Model {
         name = json['name'],
         bar = json['bar'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {'id': id, 'name': name, 'bar': bar};
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"staticGroups.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -1606,10 +1561,7 @@ class Post extends Model {
         title = json['title'],
         author = json['author'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {'id': id, 'title': title, 'author': author};
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'author': author};
 
   static final QueryField ID = QueryField(fieldName: \\"post.id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
@@ -1743,10 +1695,7 @@ class Post extends Model {
         title = json['title'],
         owner = json['owner'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {'id': id, 'title': title, 'owner': owner};
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'owner': owner};
 
   static final QueryField ID = QueryField(fieldName: \\"post.id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
@@ -1890,13 +1839,8 @@ class Todo extends Model {
                 .toList()
             : null;
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {
-      'id': id,
-      'tasks': tasks?.map((e) => e?.toJson())
-    };
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'tasks': tasks?.map((e) => e?.toJson())};
 
   static final QueryField ID = QueryField(fieldName: \\"todo.id\\");
   static final QueryField TASKS = QueryField(
@@ -2029,15 +1973,12 @@ class Task extends Model {
             ? DateTime.parse(json['createdOn'])
             : null;
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {
-      'id': id,
-      'todo': todo?.toJson(),
-      'time': time?.toIso8601String(),
-      'createdOn': createdOn?.toIso8601String()
-    };
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'todo': todo?.toJson(),
+        'time': time?.toIso8601String(),
+        'createdOn': createdOn?.toIso8601String()
+      };
 
   static final QueryField ID = QueryField(fieldName: \\"task.id\\");
   static final QueryField TODO = QueryField(
@@ -2188,15 +2129,12 @@ class Blog extends Model {
             : null,
         test = json['test'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {
-      'id': id,
-      'name': name,
-      'posts': posts?.map((e) => e?.toJson()),
-      'test': test
-    };
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'posts': posts?.map((e) => e?.toJson()),
+        'test': test
+      };
 
   static final QueryField ID = QueryField(fieldName: \\"blog.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
@@ -2329,14 +2267,8 @@ class Comment extends Model {
             : null,
         content = json['content'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {
-      'id': id,
-      'post': post?.toJson(),
-      'content': content
-    };
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'post': post?.toJson(), 'content': content};
 
   static final QueryField ID = QueryField(fieldName: \\"comment.id\\");
   static final QueryField POST = QueryField(
@@ -2484,15 +2416,12 @@ class Post extends Model {
                 .toList()
             : null;
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {
-      'id': id,
-      'title': title,
-      'blog': blog?.toJson(),
-      'comments': comments?.map((e) => e?.toJson())
-    };
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'blog': blog?.toJson(),
+        'comments': comments?.map((e) => e?.toJson())
+      };
 
   static final QueryField ID = QueryField(fieldName: \\"post.id\\");
   static final QueryField TITLE = QueryField(fieldName: \\"title\\");
@@ -2653,16 +2582,13 @@ class authorBook extends Model {
         author = json['author'],
         book = json['book'];
 
-  Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {
-      'id': id,
-      'author_id': author_id,
-      'book_id': book_id,
-      'author': author,
-      'book': book
-    };
-    return Map.from(map)..removeWhere((k, v) => v == null);
-  }
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'author_id': author_id,
+        'book_id': book_id,
+        'author': author,
+        'book': book
+      };
 
   static final QueryField ID = QueryField(fieldName: \\"authorBook.id\\");
   static final QueryField AUTHOR_ID = QueryField(fieldName: \\"author_id\\");
