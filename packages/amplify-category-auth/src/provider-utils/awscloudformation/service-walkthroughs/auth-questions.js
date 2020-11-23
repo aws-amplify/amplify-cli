@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const _ = require('lodash');
-const { uniq, pullAll } = require('lodash');
+const { uniq, pullAll, isEmpty } = require('lodash');
 const path = require('path');
 const { Sort } = require('enquirer');
 // const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
@@ -412,7 +412,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
     ? JSON.parse(JSON.stringify(answers.requiredAttributes)).concat('username')
     : ['email', 'username'];
   const res = {};
-  if (oAuthProviders) {
+  if (!isEmpty(oAuthProviders)) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
@@ -458,8 +458,7 @@ function structureOAuthMetadata(coreAnswers, context, defaults, amplify) {
     delete context.updatingAuth.oAuthMetadata;
     return null;
   }
-  const prev = context.updatingAuth ? context.updatingAuth : {};
-  const answers = Object.assign(prev, coreAnswers);
+  const answers = Object.assign({}, context.updatingAuth, coreAnswers);
   let { AllowedOAuthFlows, AllowedOAuthScopes, CallbackURLs, LogoutURLs } = answers;
   if (CallbackURLs && coreAnswers.newCallbackURLs) {
     CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);
