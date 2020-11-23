@@ -1947,8 +1947,8 @@ class Task extends Model {
     buffer.write(\\"Task {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"todo=\\" + todo.toString() + \\", \\");
-    buffer.write(\\"time=\\" + time?.toIso8601String() + \\", \\");
-    buffer.write(\\"createdOn=\\" + createdOn?.toIso8601String());
+    buffer.write(\\"time=\\" + formatDateToISO8601(time) + \\", \\");
+    buffer.write(\\"createdOn=\\" + formatDateToISO8601(createdOn));
     buffer.write(\\"}\\");
 
     return buffer.toString();
@@ -1976,8 +1976,8 @@ class Task extends Model {
   Map<String, dynamic> toJson() => {
         'id': id,
         'todo': todo?.toJson(),
-        'time': time?.toIso8601String(),
-        'createdOn': createdOn?.toIso8601String()
+        'time': formatDateToISO8601(time),
+        'createdOn': formatDateToISO8601(createdOn)
       };
 
   static final QueryField ID = QueryField(fieldName: \\"task.id\\");
