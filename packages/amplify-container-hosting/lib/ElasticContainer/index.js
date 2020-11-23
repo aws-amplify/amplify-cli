@@ -46,6 +46,11 @@ async function enable(context) {
         default: false
     });
 
+    return generateHostingResources(context, { domain, hostedZoneId, restrictAccess}, true);
+    
+}
+
+export async function generateHostingResources(context, {domain, restrictAccess, hostedZoneId}, addResource = false) {
     const dependsOn = [];
 
     let authName;
@@ -180,9 +185,11 @@ async function enable(context) {
     let jsonString = JSON.stringify(context.exeInfo.template, null, 4);
     fs.writeFileSync(templateFilePath, jsonString, 'utf8');
 
-    ////////
-
-    return context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, serviceName, resource);
+    if (addResource) {
+        return context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, serviceName, resource);
+    } else {
+        await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'exposedContainer', exposedContainer);
+    }
 }
 
 function CheckIsValidDomain(domain) {

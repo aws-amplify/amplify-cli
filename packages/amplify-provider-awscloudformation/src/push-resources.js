@@ -66,6 +66,10 @@ async function run(context, resourceDefinition) {
 
         context.print.info(`${consoleUrl}\n`);
       }
+
+      if (resource.service === ApiServiceNameElasticContainer && resource.category === 'hosting') {
+        await context.amplify.invokePluginMethod(context, 'hosting', 'ElasticContainer', 'generateHostingResources', [context, resource]);
+      }
     }
 
     await packageResources(context, resources);

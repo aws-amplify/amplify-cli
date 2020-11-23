@@ -42,6 +42,7 @@
     "amplify-category-auth": "2.22.1",
     "amplify-category-function": "2.25.8",
     "amplify-category-hosting": "2.4.6",
+    "amplify-container-hosting": "1.0.0",
     "amplify-category-interactions": "2.5.4",
     "amplify-category-notifications": "2.16.4",
     "amplify-category-predictions": "2.5.4",
@@ -157,6 +158,11 @@
           "name": "hosting",
           "type": "category",
           "packageName": "amplify-console-hosting"
+        },
+        {
+          "name": "hosting",
+          "type": "category",
+          "packageName": "amplify-container-hosting"
         }
       ],
       "interactions": {

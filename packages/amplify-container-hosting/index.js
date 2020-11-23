@@ -5,6 +5,7 @@ const categoryManager = require('./lib/category-manager');
 const pluginManifest = require('./amplify-plugin.json');
 
 const category = 'hosting';
+const { generateHostingResources } = require('./lib/ElasticContainer/index')
 
 async function add(context) {
   const { availableServices } = categoryManager.getCategoryStatus(context);
@@ -115,4 +116,5 @@ module.exports = {
   getPermissionPolicies,
   executeAmplifyCommand,
   handleAmplifyEvent,
+  generateHostingResources
 };
