@@ -73,7 +73,7 @@ const upgradeCli = async (print, version: string) => {
       .on('finish', resolve)
       .on('error', reject),
   );
-  await fs.move(extractedPath, binPath);
+  await fs.move(extractedPath, binPath, { overwrite: true });
   await fs.chmod(binPath, '700');
 };
 
