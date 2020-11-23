@@ -66,12 +66,13 @@ export class EcsAlbStack extends ContainersStack {
     const [distributionDomainName, , domainNameSuffix] = domainName.match(/([^\.]+)\.(.*)/);
     const lbPrefix = `lb-${envName}`;
     const albDomainName = `${lbPrefix}.${domainNameSuffix}`;
+    const wildcardDomainName = `*.${domainNameSuffix}`;
 
     const wildcardCertificate = new acm.CfnCertificate(this, 'Certificate', {
-      domainName: `*.${domainNameSuffix}`,
+      domainName: wildcardDomainName,
       validationMethod: hostedZoneId ? acm.ValidationMethod.DNS : acm.ValidationMethod.EMAIL,
       domainValidationOptions: [{
-        domainName: distributionDomainName,
+        domainName: wildcardDomainName,
         validationDomain: hostedZoneId === undefined ? domainNameSuffix : undefined,
         hostedZoneId,
       }]
