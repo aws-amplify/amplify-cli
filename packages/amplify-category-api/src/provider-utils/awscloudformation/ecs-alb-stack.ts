@@ -29,10 +29,10 @@ export class EcsAlbStack extends ContainersStack {
     if (restrictAccess) {
       const param = this.parameters.get(`auth${authName}HostedUIDomain`);
 
-      this.parameters.get('ParamZipPath').default = 'site.zip';
-
       this.userPoolDomain = param.valueAsString;
     }
+
+    this.parameters.get('ParamZipPath').default = 'site.zip';
 
     this.alb();
   }
