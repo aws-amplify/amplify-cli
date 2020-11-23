@@ -46,9 +46,6 @@ const schemaDirName = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const s3ServiceName = 'S3';
 
-const amplifyMeta = stateManager.getMeta();
-const appId = amplifyMeta.providers[providerName].AmplifyAppId;
-
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
@@ -142,6 +139,9 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
 
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
+    const amplifyMeta = stateManager.getMeta();
+    const appId = amplifyMeta.providers[providerName].AmplifyAppId;
+
     transformerList.push(new ModelAuthTransformer({ authConfig, isAmplifyAdminApp: await isAmplifyAdminApp(appId) }));
     return transformerList;
   };
