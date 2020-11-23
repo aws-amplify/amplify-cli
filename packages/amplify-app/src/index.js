@@ -46,7 +46,7 @@ function run(opts) {
   return createAmplifySkeletonProject(opts.platform, opts.jsFramework)
     .then(frontend => createAmplifyHelperFiles(frontend))
     .then(frontend => {
-      console.log(`${emoji.get('boom')} Amplify setup completed successfully.`);
+      console.log(`${emoji.get('white_check_mark')} Amplify setup completed successfully.`);
       showHelpText(frontend);
       process.exit(0);
     })
@@ -149,7 +149,7 @@ async function createAmplifySkeletonProject(platform, jsFramework) {
             .then(projectConfig => {
               const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
               fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
-              console.log(`${emoji.get('boom')} Successfully created base Amplify Project`);
+              console.log(`${emoji.get('white_check_mark')} Successfully created base Amplify Project`);
               resolve(projectConfig.frontend);
             })
             .catch(e => {
