@@ -95,7 +95,7 @@ test('Test simple model with private auth rule and amplify admin app is present'
   expect(out.schema).toContain('Post @aws_iam @aws_cognito_user_pools');
 });
 
-test('Test simple model with private auth rule and amplify admin app is present', () => {
+test('Test simple model with private auth rule and amplify admin app not enabled', () => {
   const validSchema = `
       type Post @model @auth(rules: [{allow: groups, groups: ["Admin", "Dev"]}]) {
           id: ID!
