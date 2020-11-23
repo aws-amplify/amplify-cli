@@ -112,7 +112,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
       service: ecs.CfnService;
       containersInfo: {
         container: ecs.ContainerDefinition;
-        repository: ecr.Repository;
+        repository: ecr.IRepository;
       }[];
       desiredCount: number;
       envName: string;

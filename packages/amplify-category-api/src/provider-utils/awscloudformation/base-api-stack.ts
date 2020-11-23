@@ -52,6 +52,7 @@ export type ContainersStackProps = Readonly<{
     desiredCount: number;
     createCloudMapService?: boolean;
     gitHubSourceActionInfo?: GitHubSourceActionInfo;
+    existingEcrRepositories: Set<string>;
 }>;
 export abstract class ContainersStack extends cdk.Stack {
     protected readonly vpcId: string;
@@ -247,7 +248,7 @@ export abstract class ContainersStack extends cdk.Stack {
 
         const containersInfo: {
             container: ecs.ContainerDefinition;
-            repository: ecr.Repository;
+            repository: ecr.IRepository;
         }[] = [];
 
         containers.forEach(
@@ -280,28 +281,34 @@ export abstract class ContainersStack extends cdk.Stack {
                         })
                         : undefined;
 
-                let repository: ecr.Repository;
+                let repository: ecr.IRepository;
                 if (build) {
                     const logicalId = `${name}Repository`;
 
-                    repository = new ecr.Repository(this, logicalId, {
-                        repositoryName: `${envName}-${categoryName}-${apiName}-${name}`,
-                        removalPolicy: cdk.RemovalPolicy.RETAIN,
-                        lifecycleRules: [
-                            {
-                                rulePriority: 10,
-                                maxImageCount: 1,
-                                tagPrefixList: ['latest'],
-                                tagStatus: ecr.TagStatus.TAGGED,
-                            },
-                            {
-                                rulePriority: 100,
-                                maxImageAge: cdk.Duration.days(7),
-                                tagStatus: ecr.TagStatus.ANY,
-                            },
-                        ],
-                    });
-                    (repository.node.defaultChild as ecr.CfnRepository).overrideLogicalId(logicalId);
+                    const repositoryName = `${envName}-${categoryName}-${apiName}-${name}`;
+
+                    if (this.props.existingEcrRepositories.has(repositoryName)) {
+                        repository = ecr.Repository.fromRepositoryName(this, logicalId, repositoryName);
+                    } else {
+                        repository = new ecr.Repository(this, logicalId, {
+                            repositoryName: `${envName}-${categoryName}-${apiName}-${name}`,
+                            removalPolicy: cdk.RemovalPolicy.RETAIN,
+                            lifecycleRules: [
+                                {
+                                    rulePriority: 10,
+                                    maxImageCount: 1,
+                                    tagPrefixList: ['latest'],
+                                    tagStatus: ecr.TagStatus.TAGGED,
+                                },
+                                {
+                                    rulePriority: 100,
+                                    maxImageAge: cdk.Duration.days(7),
+                                    tagStatus: ecr.TagStatus.ANY,
+                                },
+                            ],
+                        });
+                        (repository.node.defaultChild as ecr.CfnRepository).overrideLogicalId(logicalId);
+                    }
 
                     // Needed because the image will be pulled from ecr repository later
                     repository.grantPull(task.obtainExecutionRole());
@@ -417,7 +424,7 @@ export abstract class ContainersStack extends cdk.Stack {
         service: ecs.CfnService,
         containersInfo: {
             container: ecs.ContainerDefinition;
-            repository: ecr.Repository;
+            repository: ecr.IRepository;
         }[],
         gitHubSourceActionInfo?: GitHubSourceActionInfo
     }) {

@@ -10,6 +10,8 @@ const { updateStackForAPIMigration } = require('./push-resources');
 const SecretsManager = require('./aws-utils/aws-secretsmanager');
 const Route53 = require('./aws-utils/aws-route53');
 const { run: archiver } = require('./utils/archiver');
+const ECR = require('./aws-utils/aws-ecr');
+const { pagedAWSCall } = require('./aws-utils/paged-call');
 
 module.exports = {
   zipFiles: (context, [srcDir, dstZipFilePath]) => {
@@ -294,5 +296,17 @@ module.exports = {
       throw err;
     }
     return listOfEndpoints;
+  },
+  describeEcrRepositories: async (context, options) => {
+    const ecr = await new ECR(context);
+
+    const results = await pagedAWSCall(
+      async (params, nextToken) => ecr.ecr.describeRepositories({ ...params, nextToken }).promise(),
+      options,
+      ({ repositories }) => repositories,
+      ({ nextToken }) => nextToken,
+    );
+
+    return results;
   },
 };

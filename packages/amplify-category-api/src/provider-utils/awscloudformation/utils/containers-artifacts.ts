@@ -77,6 +77,14 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     secretsArns,
   } = await processDockerConfig(context, resource, srcPath, askForExposedContainer);
 
+  const repositories = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'describeEcrRepositories');
+
+  const existingEcrRepositories: Set<string> = new Set(
+      repositories
+          .map(({ repositoryName }) => repositoryName)
+          .filter((repositoryName) => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`))
+  );
+
   const stack = new EcsStack(undefined, 'ContainersStack', {
     envName,
     categoryName,
@@ -95,6 +103,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     apiType,
     exposedContainer,
     secretsArns,
+    existingEcrRepositories,
   });
 
   const cfn = stack.toCloudFormation();

@@ -155,6 +155,15 @@ export async function generateHostingResources(context, { domain, restrictAccess
 
     resource.exposedContainer = exposedContainer;
 
+    /** @type {AWS.ECR.RepositoryList} */
+    const repositories = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'describeEcrRepositories');
+
+    const existingEcrRepositories = new Set(
+        repositories
+            .map(({ repositoryName }) => repositoryName)
+            .filter((repositoryName) => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`))
+    );
+
     const stack = new EcsAlbStack(undefined, 'ContainersHosting', {
         envName,
         categoryName,
@@ -176,6 +185,7 @@ export async function generateHostingResources(context, { domain, restrictAccess
         taskPorts: containersPorts,
         gitHubSourceActionInfo: undefined,
         taskEnvironmentVariables: {}, // TODO
+        existingEcrRepositories,
     });
 
     context.exeInfo.template = stack.toCloudFormation();
