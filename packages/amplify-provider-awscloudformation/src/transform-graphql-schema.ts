@@ -15,6 +15,8 @@ import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
+import { isAmplifyAdminApp } from './utils/admin-helpers';
+import { stateManager } from 'amplify-cli-core';
 
 import {
   collectDirectivesByTypeNames,
@@ -34,8 +36,7 @@ import {
 import { print } from 'graphql';
 import { hashDirectory } from './upload-appsync-files';
 import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
-import { transformGraphQLSchema as transformGraphQLSchemaV6  } from './graphql-transformer/transform-graphql-schema';
-
+import { transformGraphQLSchema as transformGraphQLSchemaV6 } from './graphql-transformer/transform-graphql-schema';
 
 const apiCategory = 'api';
 const storageCategory = 'storage';
@@ -44,6 +45,9 @@ const schemaFileName = 'schema.graphql';
 const schemaDirName = 'schema';
 const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 const s3ServiceName = 'S3';
+
+const amplifyMeta = stateManager.getMeta();
+const appId = amplifyMeta.providers[providerName].AmplifyAppId;
 
 function warnOnAuth(context, map) {
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
@@ -138,8 +142,7 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
 
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
-    transformerList.push(new ModelAuthTransformer({ authConfig }));
-
+    transformerList.push(new ModelAuthTransformer({ authConfig, isAmplifyAdminApp: await isAmplifyAdminApp(appId) }));
     return transformerList;
   };
 }
