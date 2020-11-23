@@ -42,7 +42,7 @@ type ContainerArtifactsMetadata = {
   pipelineInfo: { consoleUrl: string };
 };
 
-export async function generateContainersArtifacts(context: any, resource: ApiResource): Promise<ContainerArtifactsMetadata> {
+export async function generateContainersArtifacts(context: any, resource: ApiResource, askForExposedContainer: boolean = false): Promise<ContainerArtifactsMetadata> {
   const {
     providers: { [cloudformationProviderName]: provider },
   } = context.amplify.getProjectMeta();
@@ -75,7 +75,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     desiredCount,
     exposedContainer,
     secretsArns,
-  } = await processDockerConfig(context, resource, srcPath);
+  } = await processDockerConfig(context, resource, srcPath, askForExposedContainer);
 
   const stack = new EcsStack(undefined, 'ContainersStack', {
     envName,
@@ -108,7 +108,7 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   };
 }
 
-export async function processDockerConfig(context: any, resource: ApiResource, srcPath: string) {
+export async function processDockerConfig(context: any, resource: ApiResource, srcPath: string, askForExposedContainer: boolean = false) {
   const {
     providers: { [cloudformationProviderName]: provider },
   } = context.amplify.getProjectMeta();
@@ -214,7 +214,7 @@ export async function processDockerConfig(context: any, resource: ApiResource, s
   if (containersPorts.length === 0) {
     throw new Error('Service requires at least one exposed port');
   } else if (containersPorts.length > 1) {
-    exposedContainer = await checkContainerExposed(containersExposed, exposedContainerFromMeta);
+    exposedContainer = await checkContainerExposed(containersExposed, exposedContainerFromMeta, askForExposedContainer);
   } else {
     exposedContainer = {
       name: containersExposed[0].name,
@@ -322,10 +322,11 @@ async function shouldUpdateSecrets(context: any, secrets: Record<string, string>
 async function checkContainerExposed(
   containersExposed: Container[],
   exposedContainerFromMeta: { name: string; port: number } = { name: '', port: 0 },
+  askForExposedContainer: boolean = false,
 ): Promise<{ name: string; port: number }> {
   const containerExposed = containersExposed.find(container => container.name === exposedContainerFromMeta.name);
 
-  if (containerExposed?.portMappings.find(port => port.containerPort === exposedContainerFromMeta.port)) {
+  if (!askForExposedContainer && containerExposed?.portMappings.find(port => port.containerPort === exposedContainerFromMeta.port)) {
     return { ...exposedContainerFromMeta };
   } else {
     const choices: { name: string; value: Container }[] = containersExposed.map(container => ({ name: container.name, value: container }));

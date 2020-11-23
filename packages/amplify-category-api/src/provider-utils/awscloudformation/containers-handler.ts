@@ -91,7 +91,9 @@ export const addResource = async (
       path.join(resourceDirPath, 'src'),
       { recursive: true }
     );
-    await generateContainersArtifacts(context, apiResource);
+    const { exposedContainer } = await generateContainersArtifacts(context, apiResource);
+    await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'exposedContainer', exposedContainer);
+
   }
 
   context.print.success(`Successfully added resource ${resourceName} locally.`);
@@ -245,7 +247,8 @@ export const updateResource = async (serviceWalkthroughPromise: Promise<ServiceC
   apiResource.category = category;
 
   try {
-    const { exposedContainer } = await generateContainersArtifacts(context, apiResource);
+    const askForExposedContainer = true;
+    const { exposedContainer } = await generateContainersArtifacts(context, apiResource, askForExposedContainer);
     await context.amplify.updateamplifyMetaAfterResourceUpdate(category, options.resourceName, 'exposedContainer', exposedContainer);
   } catch (err) {
     // Best effort to create templates
