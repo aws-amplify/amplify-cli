@@ -7,6 +7,7 @@ import * as elb2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 import { ContainersStack, ContainersStackProps } from "./base-api-stack";
+import { v4 as uuid } from "uuid";
 
 type EcsStackProps = ContainersStackProps & Readonly<{
   domainName: string;
@@ -47,6 +48,9 @@ export class EcsAlbStack extends ContainersStack {
       },
       restrictAccess,
     } = this.ecsProps;
+
+    const sharedSecretHeaderName = 'x-cf-token';
+    const sharedSecretHeader = uuid();
 
     const userPoolDomain = this.userPoolDomain;
 
@@ -198,8 +202,8 @@ export class EcsAlbStack extends ContainersStack {
         {
           field: 'http-header',
           httpHeaderConfig: {
-            httpHeaderName: 'x-cf-token',
-            values: ['XXXXXXXXXX'], // TODO
+            httpHeaderName: sharedSecretHeaderName,
+            values: [sharedSecretHeader],
           }
         }
       ],
@@ -231,8 +235,8 @@ export class EcsAlbStack extends ContainersStack {
           domainName: albDomainName,
           id: originId,
           originCustomHeaders: [{
-            headerName: 'x-cf-token',
-            headerValue: 'XXXXXXXXXX' // TODO
+            headerName: sharedSecretHeaderName,
+            headerValue: sharedSecretHeader,
           }]
         }],
         viewerCertificate: {
@@ -243,7 +247,7 @@ export class EcsAlbStack extends ContainersStack {
       }
     });
 
-    if(hostedZoneId) {
+    if (hostedZoneId) {
       new route53.CfnRecordSet(this, 'Route53LoadBalancerRecord', {
         name: albDomainName,
         type: route53.RecordType.A,
