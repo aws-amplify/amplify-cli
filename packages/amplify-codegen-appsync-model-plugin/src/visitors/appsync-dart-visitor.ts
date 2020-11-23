@@ -355,7 +355,7 @@ export class AppSyncModelDartVisitor<
           if (this.isEnumType(field)) {
             toStringVal = `describeEnum(${fieldName})`
           } else if (this.getNativeType(field) === 'DateTime') {
-            toStringVal = `${fieldName}?.toIso8601String()`
+            toStringVal = `formatDateToISO8601(${fieldName})`
           } else if (this.getNativeType(field) === 'String') {
             toStringVal = `${fieldName}`;
           }
@@ -438,7 +438,7 @@ export class AppSyncModelDartVisitor<
       } else if (this.isEnumType(field)) {
         return `'${fieldName}': describeEnum(${fieldName})`;
       } else if (this.getNativeType(field) === 'DateTime') {
-        return `'${fieldName}': ${fieldName}?.toIso8601String()`;
+        return `'${fieldName}': formatDateToISO8601(${fieldName})`;
       }
       return `'${fieldName}': ${fieldName}`;
     }).join(', ');
