@@ -70,15 +70,13 @@ async function createNetworkResources(context: any, stackName: string, needsVpc:
 }
 
 function envHasContainers(context: any) {
-  const { function: functionsObj, api: apiObj } = context.amplify.getProjectMeta();
+  const { api: apiObj, hosting: hostingObj } = context.amplify.getProjectMeta();
 
-  if (functionsObj) {
-    const found = Object.keys(functionsObj).some(key => {
-      const func = functionsObj[key];
-      if (func.providerPlugin === providerName && func.service === 'ElasticContainer') {
-        if (func.scheduleOptions && func.scheduleOptions.cloudwatchRule) {
-          return true;
-        }
+  if (apiObj) {
+    const found = Object.keys(apiObj).some(key => {
+      const api = apiObj[key];
+      if (api.providerPlugin === providerName && api.service === 'ElasticContainer') {
+        return true;
       }
     });
 
@@ -87,10 +85,10 @@ function envHasContainers(context: any) {
     }
   }
 
-  if (apiObj) {
-    const found = Object.keys(apiObj).some(key => {
-      const api = apiObj[key];
-      if (api.providerPlugin === providerName && api.service === 'ElasticContainer') {
+  if (hostingObj) {
+    const found = Object.keys(hostingObj).some(key => {
+      const hosting = hostingObj[key];
+      if (hosting.providerPlugin === providerName && hosting.service === 'ElasticContainer') {
         return true;
       }
     });
