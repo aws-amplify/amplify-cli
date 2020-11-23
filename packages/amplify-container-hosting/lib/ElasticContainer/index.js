@@ -52,7 +52,7 @@ async function enable(context) {
 
 }
 
-export async function generateHostingResources(context, { domain, restrictAccess, hostedZoneId }, addResource = false) {
+export async function generateHostingResources(context, { domain, restrictAccess, hostedZoneId, exposedContainer: exposedContainerFromMeta = undefined }, addResource = false) {
     const dependsOn = [];
 
     let authName;
@@ -123,7 +123,7 @@ export async function generateHostingResources(context, { domain, restrictAccess
 
     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
-    /** @type {import('amplify-category-api').ApiResource & {service: string, domain: string, providerPlugin:string}} */
+    /** @type {import('amplify-category-api').ApiResource & {service: string, domain: string, providerPlugin:string, hostedZoneId: string}} */
     const resource = {
         resourceName,
         service: serviceName,
@@ -138,9 +138,10 @@ export async function generateHostingResources(context, { domain, restrictAccess
         deploymentMechanism: DEPLOYMENT_MECHANISM.FULLY_MANAGED,
         environmentMap: {}, // TODO: permissions question
         mutableParametersState: {}, // TODO
-        exposedContainer: undefined,
+        exposedContainer: exposedContainerFromMeta,
         // gitHubInfo,
         output: {}, // TODO next ime?
+        hostedZoneId,
     };
 
     const {

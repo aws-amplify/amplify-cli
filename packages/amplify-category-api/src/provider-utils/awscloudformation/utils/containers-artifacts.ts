@@ -332,6 +332,7 @@ async function checkContainerExposed(
     const choices: { name: string; value: Container }[] = containersExposed.map(container => ({ name: container.name, value: container }));
 
     const { containerToExpose } = await inquirer.prompt({
+      message: 'Select which container is the entrypoint',
       name: 'containerToExpose',
       type: 'list',
       choices,

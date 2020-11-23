@@ -5,6 +5,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as elb2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as route53 from '@aws-cdk/aws-route53';
+import * as route53targets from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
 import { ContainersStack, ContainersStackProps } from "./base-api-stack";
 import { v4 as uuid } from "uuid";
@@ -213,7 +214,7 @@ export class EcsAlbStack extends ContainersStack {
 
     const originId = `${loadBalancer.logicalId}-origin`;
 
-    const distribution = new cloudfront.CfnDistribution(this, 'Distribition', {
+    const distribution = new cloudfront.CfnDistribution(this, 'Distribution', {
       distributionConfig: {
         enabled: true,
         httpVersion: 'http2',
@@ -248,22 +249,26 @@ export class EcsAlbStack extends ContainersStack {
     });
 
     if (hostedZoneId) {
-      new route53.CfnRecordSet(this, 'Route53LoadBalancerRecord', {
-        name: albDomainName,
-        type: route53.RecordType.A,
-        aliasTarget: {
-          hostedZoneId,
-          dnsName: loadBalancer.attrDnsName
-        }
-      });
-
-      new route53.CfnRecordSet(this, 'Route53CloudfrontDistributionRecord', {
-        name: distributionDomainName,
-        type: route53.RecordType.A,
-        aliasTarget: {
-          hostedZoneId,
-          dnsName: distribution.attrDomainName
-        }
+      new route53.CfnRecordSetGroup(this, 'RecordSetGroup', {
+        hostedZoneId,
+        recordSets: [
+          {
+            name: albDomainName,
+            type: route53.RecordType.A,
+            aliasTarget: {
+              hostedZoneId: loadBalancer.attrCanonicalHostedZoneId,
+              dnsName: loadBalancer.attrDnsName
+            },
+          },
+          {
+            name: distributionDomainName,
+            type: route53.RecordType.A,
+            aliasTarget: {
+              hostedZoneId: route53targets.CloudFrontTarget.CLOUDFRONT_ZONE_ID,
+              dnsName: distribution.attrDomainName
+            },
+          }
+        ]
       });
     }
 
