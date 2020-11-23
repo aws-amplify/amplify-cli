@@ -4,6 +4,7 @@ import * as cognito from '@aws-cdk/aws-cognito';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as elb2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
 import { ContainersStack, ContainersStackProps } from "./base-api-stack";
 
@@ -242,6 +243,26 @@ export class EcsAlbStack extends ContainersStack {
       }
     });
 
+    if(hostedZoneId) {
+      new route53.CfnRecordSet(this, 'Route53LoadBalancerRecord', {
+        name: albDomainName,
+        type: route53.RecordType.A,
+        aliasTarget: {
+          hostedZoneId,
+          dnsName: loadBalancer.attrDnsName
+        }
+      });
+
+      new route53.CfnRecordSet(this, 'Route53CloudfrontDistributionRecord', {
+        name: distributionDomainName,
+        type: route53.RecordType.A,
+        aliasTarget: {
+          hostedZoneId,
+          dnsName: distribution.attrDomainName
+        }
+      });
+    }
+
     new cdk.CfnOutput(this, 'PipelineUrl', {
       value: cdk.Fn.join('', [
         'https://',
@@ -251,5 +272,10 @@ export class EcsAlbStack extends ContainersStack {
         '/view'
       ])
     });
+
+    new cdk.CfnOutput(this, 'LoadBalancerAliasDomainName', { value: loadBalancer.attrDnsName });
+    new cdk.CfnOutput(this, 'LoadBalancerCnameDomainName', { value: albDomainName });
+    new cdk.CfnOutput(this, 'CloudfrontDistributionAliasDomainName', { value: distribution.attrDomainName });
+    new cdk.CfnOutput(this, 'CloudfrontDistributionCnameDomainName', { value: distributionDomainName });
   }
 }
