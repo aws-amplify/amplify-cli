@@ -23,13 +23,12 @@ export type ApiResource = {
   deploymentMechanism: DEPLOYMENT_MECHANISM;
   authName: string;
   restrictAccess: boolean;
-  lastPushTimeStamp: string;
   dependsOn: ResourceDependency[];
   environmentMap: Record<string, string>;
   categoryPolicies: any[];
   mutableParametersState: any;
   output?: Record<string, any>;
-  apiType: API_TYPE;
+  apiType?: API_TYPE;
   exposedContainer?: { name: string; port: number };
 };
 
@@ -45,6 +44,12 @@ type ContainerArtifactsMetadata = {
 
 export async function generateContainersArtifacts(context: any, resource: ApiResource): Promise<ContainerArtifactsMetadata> {
   const {
+    providers: { [cloudformationProviderName]: provider },
+  } = context.amplify.getProjectMeta();
+
+  const { StackName: envName, DeploymentBucketName: deploymentBucketName } = provider;
+
+  const {
     category: categoryName,
     resourceName,
     gitHubInfo,
@@ -58,16 +63,65 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     exposedContainer: exposedContainerFromMeta,
   } = resource;
 
+
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backendDir, categoryName, resourceName));
+  const srcPath = path.join(resourceDir, 'src');
 
+  const {
+    containersPorts,
+    containers,
+    isInitialDeploy,
+    desiredCount,
+    exposedContainer,
+    secretsArns,
+  } = await processDockerConfig(context, resource, srcPath);
+
+  const stack = new EcsStack(undefined, 'ContainersStack', {
+    envName,
+    categoryName,
+    apiName: resourceName,
+    taskPorts: containersPorts,
+    dependsOn,
+    policies: categoryPolicies,
+    taskEnvironmentVariables: environmentMap,
+    gitHubSourceActionInfo: gitHubInfo,
+    deploymentMechanism,
+    deploymentBucketName,
+    containers,
+    isInitialDeploy,
+    desiredCount,
+    restrictAccess,
+    apiType,
+    exposedContainer,
+    secretsArns,
+  });
+
+  const cfn = stack.toCloudFormation();
+
+  const cfnFileName = `${resourceName}-cloudformation-template.json`;
+  JSONUtilities.writeJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn);
+
+  return {
+    exposedContainer,
+    pipelineInfo: { consoleUrl: stack.getPipelineConsoleUrl(provider.Region) },
+  };
+}
+
+export async function processDockerConfig(context: any, resource: ApiResource, srcPath: string) {
   const {
     providers: { [cloudformationProviderName]: provider },
   } = context.amplify.getProjectMeta();
 
   const { StackName: envName, DeploymentBucketName: deploymentBucketName } = provider;
 
-  const srcPath = path.join(resourceDir, 'src');
+  const {
+    resourceName,
+    gitHubInfo,
+    deploymentMechanism,
+    output,
+    exposedContainer: exposedContainerFromMeta,
+  } = resource;
 
   const dockerComposeFileNameYaml = 'docker-compose.yaml';
   const dockerComposeFileNameYml = 'docker-compose.yml';
@@ -139,12 +193,10 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
   const { buildspec, containers, service, secrets } = getContainers(composeContents, dockerfileContents);
 
   const containersPorts = containers.reduce(
-    (acc, container) =>
-      [].concat(
-        acc,
-        container.portMappings.map(({ containerPort }) => containerPort),
-      ),
-    [],
+    (acc, container) => acc.concat(
+      container.portMappings.map(({ containerPort }) => containerPort),
+    ),
+    <number[]>[],
   );
 
   const newContainersName = Array.from(new Set(containers.map(({ name }) => name)));
@@ -240,34 +292,13 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
 
   const desiredCount = service?.replicas ?? 1; // TODO: 1 should be from meta (HA setting)
 
-  const stack = new EcsStack(undefined, 'ContainersStack', {
-    envName,
-    categoryName,
-    apiName: resourceName,
-    taskPorts: containersPorts,
-    dependsOn,
-    policies: wrapJsonPoliciesInCdkPolicies(categoryPolicies),
-    taskEnvironmentVariables: environmentMap,
-    gitHubSourceActionInfo: gitHubInfo,
-    deploymentMechanism,
-    deploymentBucketName,
+  return {
+    containersPorts,
     containers,
     isInitialDeploy,
     desiredCount,
-    restrictAccess,
-    apiType,
     exposedContainer,
     secretsArns,
-  });
-
-  const cfn = stack.toCloudFormation();
-
-  const cfnFileName = `${resourceName}-cloudformation-template.json`;
-  JSONUtilities.writeJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn);
-
-  return {
-    exposedContainer,
-    pipelineInfo: { consoleUrl: stack.getPipelineConsoleUrl(provider.Region) },
   };
 }
 
@@ -312,21 +343,3 @@ async function checkContainerExposed(
   }
 }
 
-/**
- * Wraps an array of JSON IAM statements in a {iam.PolicyStatement} array.
- * This allow us tu pass the statements in a way that CDK can use when synthesizing
- *
- * CDK looks for a toStatementJson function
- *
- * @param policies JSON object with IAM statements
- * @returns {iam.PolicyStatement} CDK compatible policy statement
- */
-function wrapJsonPoliciesInCdkPolicies(policies: Record<string, any>[] = []): iam.PolicyStatement[] {
-  return policies.map(statement => {
-    return {
-      toStatementJson() {
-        return statement;
-      },
-    } as iam.PolicyStatement;
-  });
-}

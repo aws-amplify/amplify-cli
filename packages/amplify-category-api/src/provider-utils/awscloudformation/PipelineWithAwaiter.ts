@@ -94,6 +94,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
     scope: cdk.Construct,
     id: string,
     {
+      skipWait = false,
       bucket,
       s3SourceActionKey,
       service,
@@ -103,6 +104,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
       desiredCount,
       envName,
     }: {
+      skipWait?: boolean;
       bucket: s3.IBucket;
       s3SourceActionKey?: string;
       deploymentMechanism: DEPLOYMENT_MECHANISM;
@@ -262,12 +264,14 @@ export class PipelineWithAwaiter extends cdk.Construct {
 
     pipeline.node.addDependency(service);
 
-    const pipelineAwaiter = new PipelineAwaiter(scope, 'Awaiter', {
-      pipeline,
-      artifactBucketName: bucket.bucketName,
-      artifactKey: s3SourceActionKey,
-      deploymentMechanism,
-    });
+    if (!skipWait) {
+      new PipelineAwaiter(scope, 'Awaiter', {
+        pipeline,
+        artifactBucketName: bucket.bucketName,
+        artifactKey: s3SourceActionKey,
+        deploymentMechanism,
+      });
+    }
   }
 
   getPipelineName(): string {

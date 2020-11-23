@@ -30,6 +30,7 @@ export enum DEPLOYMENT_MECHANISM {
 };
 
 export type ContainersStackProps = Readonly<{
+    skipWait?: boolean;
     envName: string;
     categoryName: string;
     apiName: string;
@@ -42,7 +43,7 @@ export type ContainersStackProps = Readonly<{
     taskEnvironmentVariables?: Record<string, any>;
     deploymentMechanism: DEPLOYMENT_MECHANISM;
     restrictAccess: boolean;
-    policies?: ReadonlyArray<iam.PolicyStatement>;
+    policies?: ReadonlyArray<iam.PolicyStatement | Record<string, any>>;
     containers: ReadonlyArray<Container>;
     secretsArns?: ReadonlyMap<string, string>;
     exposedContainer: { name: string; port: number };
@@ -55,21 +56,25 @@ export type ContainersStackProps = Readonly<{
 export abstract class ContainersStack extends cdk.Stack {
     protected readonly vpcId: string;
     private readonly vpcCidrBlock: string;
-    private readonly subnets: ReadonlyArray<string>;
+    protected readonly subnets: ReadonlyArray<string>;
     private readonly clusterName: string;
     private readonly zipPath: string;
     private readonly cloudMapNamespaceId: string;
     protected readonly vpcLinkId: string;
     private readonly pipelineWithAwaiter: PipelineWithAwaiter;
     protected readonly cloudMapService: cloudmap.CfnService | undefined;
+    protected readonly ecsService: ecs.CfnService;
     protected readonly isAuthCondition: cdk.CfnCondition;
     protected readonly appClientId: string | undefined;
     protected readonly userPoolId: string | undefined;
+    protected readonly ecsServiceSecurityGroup: ec2.CfnSecurityGroup;
+    protected readonly parameters: ReadonlyMap<string, cdk.CfnParameter>;
 
     constructor(scope: cdk.Construct, id: string, private readonly props: ContainersStackProps) {
         super(scope, id);
 
         const {
+            parameters,
             vpcId,
             vpcCidrBlock,
             subnets,
@@ -82,6 +87,8 @@ export abstract class ContainersStack extends cdk.Stack {
             userPoolId,
         } = this.init();
 
+        this.parameters = parameters;
+
         this.vpcId = vpcId;
         this.vpcCidrBlock = vpcCidrBlock;
         this.subnets = subnets;
@@ -93,12 +100,16 @@ export abstract class ContainersStack extends cdk.Stack {
         this.appClientId = appClientId;
         this.userPoolId = userPoolId;
 
-        const { service, containersInfo, cloudMapService } = this.ecs();
-        this.cloudMapService = cloudMapService;
+        const { service, serviceSecurityGroup, containersInfo, cloudMapService } = this.ecs();
 
-        const { gitHubSourceActionInfo } = this.props;
+        this.cloudMapService = cloudMapService;
+        this.ecsService = service;
+        this.ecsServiceSecurityGroup = serviceSecurityGroup;
+
+        const { gitHubSourceActionInfo, skipWait } = this.props;
 
         const { pipelineWithAwaiter } = this.pipeline({
+            skipWait,
             service,
             containersInfo,
             gitHubSourceActionInfo,
@@ -128,6 +139,8 @@ export abstract class ContainersStack extends cdk.Stack {
         });
 
         const parameters: Map<string, cdk.CfnParameter> = new Map();
+
+        parameters.set('ParamZipPath', paramZipPath);
 
         const authParams: {
             UserPoolId?: cdk.CfnParameter;
@@ -171,6 +184,7 @@ export abstract class ContainersStack extends cdk.Stack {
         });
 
         return {
+            parameters,
             vpcId: paramVpcId.valueAsString,
             vpcCidrBlock: paramVpcCidrBlock.valueAsString,
             subnets: paramSubnetIds.valueAsList,
@@ -226,7 +240,9 @@ export abstract class ContainersStack extends cdk.Stack {
         });
         (task.node.defaultChild as ecs.CfnTaskDefinition).overrideLogicalId('TaskDefinition');
         policies.forEach(policy => {
-            task.addToTaskRolePolicy(policy);
+            const statement = isPolicyStatement(policy) ? policy : wrapJsonPoliciesInCdkPolicies(policy);
+
+            task.addToTaskRolePolicy(statement);
         });
 
         const containersInfo: {
@@ -385,16 +401,19 @@ export abstract class ContainersStack extends cdk.Stack {
 
         return {
             service,
+            serviceSecurityGroup,
             containersInfo,
             cloudMapService,
         };
     }
 
     private pipeline({
+        skipWait = false,
         service,
         containersInfo,
         gitHubSourceActionInfo,
     }: {
+        skipWait?: boolean;
         service: ecs.CfnService,
         containersInfo: {
             container: ecs.ContainerDefinition;
@@ -414,6 +433,7 @@ export abstract class ContainersStack extends cdk.Stack {
         const bucket = s3.Bucket.fromBucketName(this, 'Bucket', deploymentBucketName);
 
         const pipelineWithAwaiter = new PipelineWithAwaiter(this, 'ApiPipeline', {
+            skipWait,
             envName,
             containersInfo,
             service,
@@ -429,8 +449,12 @@ export abstract class ContainersStack extends cdk.Stack {
         return { pipelineWithAwaiter };
     }
 
+    protected getPipelineName() {
+        return this.pipelineWithAwaiter.getPipelineName();
+    }
+
     getPipelineConsoleUrl(region: string) {
-        const pipelineName = this.pipelineWithAwaiter.getPipelineName();
+        const pipelineName = this.getPipelineName();
         return `https://${region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${pipelineName}/view`;
     }
 
@@ -455,4 +479,29 @@ export abstract class ContainersStack extends cdk.Stack {
 
         return cfn;
     }
+}
+
+/**
+ * Wraps an array of JSON IAM statements in a {iam.PolicyStatement} array.
+ * This allow us tu pass the statements in a way that CDK can use when synthesizing
+ *
+ * CDK looks for a toStatementJson function
+ *
+ * @param policy JSON object with IAM statements
+ * @returns {iam.PolicyStatement} CDK compatible policy statement
+ */
+function wrapJsonPoliciesInCdkPolicies(policy: Record<string, any>): iam.PolicyStatement {
+    return {
+        toStatementJson() {
+            return policy;
+        },
+    } as iam.PolicyStatement;
+}
+
+function isPolicyStatement(obj: any): obj is iam.PolicyStatement {
+    if (obj && typeof (<iam.PolicyStatement>obj).toStatementJson === 'function') {
+        return true;
+    }
+
+    return false;
 }

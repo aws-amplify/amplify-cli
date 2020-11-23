@@ -18,6 +18,7 @@
     "test": "jest --coverage --passWithNoTests"
   },
   "dependencies": {
+    "amplify-category-api": "2.25.4",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
