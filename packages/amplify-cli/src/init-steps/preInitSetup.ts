@@ -98,7 +98,8 @@ async function installPackage() {
 async function setLocalEnvDefaults(context: $TSContext) {
   const projectPath = process.cwd();
   const defaultEditor = 'vscode';
-  const envName = 'sampledev';
+
+  const envName = context.parameters.options.env || 'sampledev';
   context.print.warning(`Setting default editor to ${defaultEditor}`);
   context.print.warning(`Setting environment to ${envName}`);
   context.print.warning('Run amplify configure project to change the default configuration later');
