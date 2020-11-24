@@ -152,7 +152,7 @@ const getResourceDependencies = async ({
 
     if (foundUnmetRequirements) {
       try {
-        authName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        authName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [
           context,
           'api',
           resourceName,
