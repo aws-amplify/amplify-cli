@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.16.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.16.2...amplify-codegen@2.16.4) (2020-11-20)
+
+
+### Bug Fixes
+
+* eslintignore creation with uninitialized project ([#5913](https://github.com/aws-amplify/amplify-cli/issues/5913)) ([a7b7a8c](https://github.com/aws-amplify/amplify-cli/commit/a7b7a8c1a193dc4fc5eaf120307d9494e6e2c8ca))
+* **amplify-codegen:** generate eslintignore in js ([#5865](https://github.com/aws-amplify/amplify-cli/issues/5865)) ([baa8a6f](https://github.com/aws-amplify/amplify-cli/commit/baa8a6f76dc6cdbd69685f77300a02073c270ac9))
+
+
+
+
+
+## [2.16.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.16.2...amplify-codegen@2.16.3) (2020-11-20)
+
+
+### Bug Fixes
+
+* eslintignore creation with uninitialized project ([#5913](https://github.com/aws-amplify/amplify-cli/issues/5913)) ([a7b7a8c](https://github.com/aws-amplify/amplify-cli/commit/a7b7a8c1a193dc4fc5eaf120307d9494e6e2c8ca))
+* **amplify-codegen:** generate eslintignore in js ([#5865](https://github.com/aws-amplify/amplify-cli/issues/5865)) ([baa8a6f](https://github.com/aws-amplify/amplify-cli/commit/baa8a6f76dc6cdbd69685f77300a02073c270ac9))
+
+
+
+
+
 ## [2.16.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.16.1...amplify-codegen@2.16.2) (2020-10-30)
 
 **Note:** Version bump only for package amplify-codegen

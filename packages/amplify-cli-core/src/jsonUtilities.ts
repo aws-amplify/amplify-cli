@@ -43,6 +43,7 @@ export class JSONUtilities {
     options?: {
       minify?: boolean;
       keepComments?: boolean;
+      mode?: number;
     },
   ): void => {
     if (!fileName) {
@@ -68,7 +69,10 @@ export class JSONUtilities {
     const dirPath = path.dirname(fileName);
     fs.ensureDirSync(dirPath);
 
-    fs.writeFileSync(fileName, jsonString, 'utf8');
+    fs.writeFileSync(fileName, jsonString, {
+      encoding: 'utf8',
+      mode: options?.mode,
+    });
   };
 
   public static parse = <T>(
