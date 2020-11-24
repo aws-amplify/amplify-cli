@@ -21,7 +21,7 @@ export class FeatureFlags {
   private newProjectDefaults: Readonly<FeatureFlagsEntry> = {};
   private existingProjectDefaults: Readonly<FeatureFlagsEntry> = {};
 
-  private constructor(private environmentProvider: CLIEnvironmentProvider, private projectPath: string, private useNewDefaults: boolean) {}
+  private constructor(private environmentProvider: CLIEnvironmentProvider, private projectPath: string, private useNewDefaults: boolean) { }
 
   public static initialize = async (
     environmentProvider: CLIEnvironmentProvider,
@@ -476,14 +476,6 @@ export class FeatureFlags {
 
   // DEVS: Register feature flags here
   private registerFlags = (): void => {
-    this.registerFlag('advancedCompute', [
-      {
-        name: 'enabled',
-        type: 'boolean',
-        defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
-      },
-    ])
     // Examples:
     // this.registerFlag('keyTransformer', [
     //   {

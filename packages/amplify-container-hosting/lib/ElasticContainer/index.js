@@ -106,8 +106,6 @@ export async function generateHostingResources(context, { domain, restrictAccess
         providers: { [constants.providerName]: provider },
     } = context.amplify.getProjectMeta();
     const { StackName: envName, DeploymentBucketName: deploymentBucketName, Region: region } = provider;
-    // const { auth } = context.amplify.getProjectDetails().amplifyMeta;
-
 
     dependsOn.push({
         category: '',

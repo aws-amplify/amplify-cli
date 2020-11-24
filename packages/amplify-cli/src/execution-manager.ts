@@ -30,9 +30,15 @@ export async function executeCommand(context: Context) {
   }
 }
 
-function isAdvanceComputeEnabled(context) {
-  // TODO: Change this to project setting
-  return FeatureFlags.getBoolean('advancedCompute.enabled');
+function isContainersEnabled(context) {
+  const { frontend } = context.amplify.getProjectConfig();
+  if (frontend) {
+    const { config: { ServerlessContainers = false } = {} } = context.amplify.getProjectConfig()[frontend];
+
+    return ServerlessContainers;
+  }
+
+  return false;
 }
 
 async function selectPluginForExecution(context: Context, pluginCandidates: PluginInfo[]): Promise<PluginInfo> {
@@ -123,7 +129,7 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
       pluginCandidates = consoleHostingPlugins.concat(otherPlugins);
     }
 
-    if (!isAdvanceComputeEnabled(context)) {
+    if (!isContainersEnabled(context)) {
       pluginCandidates = pluginCandidates.filter(plugin => !plugin.manifest.services?.includes('ElasticContainer'));
     }
 

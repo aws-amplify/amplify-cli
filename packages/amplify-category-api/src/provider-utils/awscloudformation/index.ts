@@ -61,7 +61,7 @@ export async function addResource(context, category, service, options) {
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
 
-  if (isAdvanceComputeEnabled(context)) {
+  if (isContainersEnabled(context)) {
     switch (service) {
       case 'AppSync':
         useContainerResource = await isGraphQLContainer(context);
@@ -81,9 +81,15 @@ export async function addResource(context, category, service, options) {
     : addNonContainerResource(context, category, service, options);
 }
 
-function isAdvanceComputeEnabled(context) {
-  // TODO: Change this to project setting
-  return FeatureFlags.getBoolean('advancedCompute.enabled');
+function isContainersEnabled(context) {
+  const { frontend } = context.amplify.getProjectConfig();
+  if (frontend) {
+    const { config: { ServerlessContainers = false } = {} } = context.amplify.getProjectConfig()[frontend] || {};
+
+    return ServerlessContainers;
+  }
+
+  return false;
 }
 
 async function isGraphQLContainer(context): Promise<boolean> {
@@ -129,7 +135,7 @@ async function isRestContainer(context) {
 export async function updateResource(context, category, service, options) {
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
-  if (isAdvanceComputeEnabled(context)) {
+  if (isContainersEnabled(context)) {
     const {
       hasAPIGatewayContainerResource,
       hasAPIGatewayLambdaResource,

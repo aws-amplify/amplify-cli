@@ -175,7 +175,7 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
   if (deploymentMechanismQuestion.deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     context.print.info('We need a Github Personal Access Token to automatically build & deploy your Fargate task on every Github commit.');
     context.print.info('Learn more about Github Personal Access Token here: https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token');
-    
+
     const gitHubQuestions = await inquirer.prompt([
       {
         name: 'github_access_token',
