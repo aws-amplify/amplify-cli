@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.5.1...amplify-headless-interface@1.5.2-beta.0) (2020-11-24)
+
+
+
+# 4.35.0 (2020-11-23)
+
+
+### Bug Fixes
+
+* headless auth remove oauth when empty config specified ([#5930](https://github.com/aws-amplify/amplify-cli/issues/5930)) ([bb0d028](https://github.com/aws-amplify/amplify-cli/commit/bb0d028704f6508402794d5357c7501b366c9099))
+
+
+
+
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.4.0...amplify-headless-interface@1.5.1) (2020-11-22)
 
 **Note:** Version bump only for package amplify-headless-interface

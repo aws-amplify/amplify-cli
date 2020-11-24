@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.35.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.34.0...@aws-amplify/cli@4.35.0-beta.0) (2020-11-24)
+
+
+### Features
+
+* amplify upgrade and amplify uninstall commands ([#5852](https://github.com/aws-amplify/amplify-cli/issues/5852)) ([c0aa2d9](https://github.com/aws-amplify/amplify-cli/commit/c0aa2d9fa4739214aba42fa9fff5d6c5164f540c))
+
+
+
+
+
 # [4.34.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.32.1...@aws-amplify/cli@4.34.0) (2020-11-22)
 
 
