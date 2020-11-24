@@ -1901,7 +1901,7 @@ workflows:
           filters:
             branches:
               only:
-                - compute-functions
+                - master
     jobs:
       - build
       - publish_to_local_registry:
@@ -1924,7 +1924,7 @@ workflows:
           filters:
             branches:
               only:
-                - compute-functions
+                - master
           requires:
             - build
             - mock_e2e_tests
@@ -1932,8 +1932,9 @@ workflows:
           filters:
             branches:
               only:
-                - compute-functions
+                - master
                 - beta
+                - compute-functions
           requires:
             - build
             - mock_e2e_tests
@@ -1941,7 +1942,7 @@ workflows:
           filters:
             branches:
               only:
-                - compute-functions
+                - master
                 - beta
                 - backendManager
           requires:
@@ -1955,7 +1956,7 @@ workflows:
           filters:
             branches:
               only:
-                - compute-functions
+                - master
       - done_with_node_e2e_tests:
           requires:
             - schema-auth-7-amplify_e2e_tests
@@ -2020,14 +2021,14 @@ workflows:
           filters:
             branches:
               only:
-                - compute-functions
+                - master
           requires:
             - build
       - amplify_migration_tests_v4:
           filters:
             branches:
               only:
-                - compute-functions
+                - master
           requires:
             - build
       - amplify_migration_tests_v4_30_0:
@@ -2079,7 +2080,7 @@ workflows:
             branches:
               only:
                 - release
-                - compute-functions
+                - master
                 - beta
                 - backendManager
       - github_release:
@@ -2093,7 +2094,7 @@ workflows:
           filters: &ref_10
             branches:
               only:
-                - compute-functions
+                - master
           requires:
             - publish_to_local_registry
       - schema-data-access-patterns-amplify_e2e_tests:
@@ -2333,7 +2334,7 @@ workflows:
           filters: &ref_11
             branches:
               only:
-                - compute-functions
+                - master
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
