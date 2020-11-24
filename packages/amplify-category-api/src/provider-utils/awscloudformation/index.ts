@@ -97,7 +97,7 @@ async function isGraphQLContainer(context): Promise<boolean> {
         value: false,
       },
       {
-        name: 'Elastic Container Service',
+        name: 'AWS Fargate (Container-based)',
         value: true,
       },
     ],
@@ -117,7 +117,7 @@ async function isRestContainer(context) {
         value: false,
       },
       {
-        name: 'API Gateway + Elastic Container Service',
+        name: 'API Gateway + AWS Fargate (Container-based)',
         value: true,
       },
     ],

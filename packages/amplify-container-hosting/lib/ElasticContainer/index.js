@@ -23,7 +23,7 @@ const providerPlugin = 'awscloudformation';
 const templateFileName = 'template.json';
 
 async function enable(context) {
-    context.print.info('You can register a domain using Route 53: aws.amazon.com/route53/ or use an existing domain.\n');
+    context.print.info('A registered domain is required. \nYou can register a domain using Route 53: aws.amazon.com/route53/ or use an existing domain.\n');
 
     const { domain } = await inquirer.prompt({
         name: 'domain',

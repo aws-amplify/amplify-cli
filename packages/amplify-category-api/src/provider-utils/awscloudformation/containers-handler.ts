@@ -101,20 +101,17 @@ export const addResource = async (
   context.print.success('Next steps:');
 
   if (deploymentMechanism === DEPLOYMENT_MECHANISM.FULLY_MANAGED) {
-    context.print.info(
-      `Place your Dockerfile, docker-compose.yml and any related container source files in <project-dir>/amplify/backend/api/${resourceName}/src`,
-    );
+    context.print.info(`- Place your Dockerfile, docker-compose.yml and any related container source files in "amplify/backend/api/${resourceName}/src"`);
   } else if (deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     context.print.info(
-      `Ensure you have the Dockerfile, docker-compose.yml and any related container source files in your Github path: ${gitHubInfo.path}`,
+      `- Ensure you have the Dockerfile, docker-compose.yml and any related container source files in your Github path: ${gitHubInfo.path}`,
     );
   }
 
-  context.print.info('');
   context.print.info(
-    `Amplify CLI infers many configuration settings from the "docker-compose.yaml" file. \nLearn more: docs.amplify.aws/cli/function/container`,
+    `- Amplify CLI infers many configuration settings from the "docker-compose.yaml" file. Learn more: docs.amplify.aws/cli/usage/containers`,
   );
-  context.print.info('Run "amplify push" to build and deploy your image');
+  context.print.info('- Run "amplify push" to build and deploy your image');
 
   return resourceName;
 };

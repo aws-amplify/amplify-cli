@@ -97,19 +97,19 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
 
   if (apiType === API_TYPE.GRAPHQL) {
     choices.push({
-      name: 'Dockerfile (Express)',
+      name: 'ExpressJS - GraphQL template',
       value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'graphql-express' },
     });
   }
 
   if (apiType === API_TYPE.REST) {
     choices.push({
-      name: 'Dockerfile (Express)',
+      name: 'ExpressJS - REST template',
       value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'dockerfile-rest-express' },
     });
 
     choices.push({
-      name: 'DockerCompose (Express + Flask)',
+      name: 'Docker Compose - ExpressJS + Flask template',
       value: { type: IMAGE_SOURCE_TYPE.TEMPLATE, template: 'dockercompose-rest-express' },
     });
   }
@@ -174,7 +174,8 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
 
   if (deploymentMechanismQuestion.deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     context.print.info('We need a Github Personal Access Token to automatically build & deploy your Fargate task on every Github commit.');
-
+    context.print.info('Learn more about Github Personal Access Token here: https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token');
+    
     const gitHubQuestions = await inquirer.prompt([
       {
         name: 'github_access_token',
