@@ -2,6 +2,7 @@ import {
   amplifyPush,
   amplifyPushUpdate,
   deleteProject,
+  initFlutterProjectWithProfile,
   initJSProjectWithProfile,
   addApiWithSchema,
   updateApiSchema,
@@ -35,6 +36,36 @@ describe('amplify add api (GraphQL)', () => {
   it('init a project and add the simple_model api', async () => {
     const envName = 'devtest';
     await initJSProjectWithProfile(projRoot, { name: 'simplemodel', envName });
+    await addApiWithSchema(projRoot, 'simple_model.graphql');
+    await amplifyPush(projRoot);
+
+    const meta = getProjectMeta(projRoot);
+    const region = meta.providers.awscloudformation.Region;
+    const { output } = meta.api.simplemodel;
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+    const tableName = `AmplifyDataStore-${graphqlApi.apiId}-${envName}`;
+    const error = { message: null };
+    try {
+      const table = await getDDBTable(tableName, region);
+      expect(table).toBeUndefined();
+    } catch (ex) {
+      Object.assign(error, ex);
+    }
+    expect(error).toBeDefined();
+    expect(error.message).toContain(`${tableName} not found`);
+  });
+
+  it('init a Flutter project and add the simple_model api', async () => {
+    const envName = 'devtest';
+    await initFlutterProjectWithProfile(projRoot, { name: 'simplemodel', envName });
     await addApiWithSchema(projRoot, 'simple_model.graphql');
     await amplifyPush(projRoot);
 

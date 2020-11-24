@@ -49,6 +49,7 @@ async function confirmConfiguration(context) {
     context.print.warning('Only the following categories are supported:');
     context.print.warning(' * Auth');
     context.print.warning(' * Analytics (Amazon Pinpoint only)');
+    context.print.warning(' * API (GraphQL only)');
     context.print.warning(' * Storage');
 
     const configurationSettings = [
