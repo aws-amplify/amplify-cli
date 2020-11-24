@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "2.26.1",
+  "version": "2.26.2",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@graphql-tools/merge": "^6.0.18",
-    "amplify-util-headless-input": "1.4.1",
+    "amplify-util-headless-input": "1.4.2",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",

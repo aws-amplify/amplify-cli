@@ -52,6 +52,13 @@ export class S3Service implements IS3Service {
       })
       .promise();
 
-    return response.LocationConstraint!;
+    // For us-east-1 buckets the LocationConstraint is always emtpy, we have to return a
+    // region in every case.
+    // https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
+    if (response.LocationConstraint === '' || response.LocationConstraint === null) {
+      return 'us-east-1';
+    }
+
+    return response.LocationConstraint;
   }
 }

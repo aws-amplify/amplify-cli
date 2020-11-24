@@ -1,4 +1,4 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, initFlutterProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
 import { addAuthWithDefault, addAuthWithGroupsAndAdminAPI } from 'amplify-e2e-core';
 import {
   addSimpleDDB,
@@ -13,6 +13,8 @@ import {
   updateS3AddTrigger,
 } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta, getDDBTable, checkIfBucketExists } from 'amplify-e2e-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 describe('amplify add/update storage(S3)', () => {
   let projRoot: string;
@@ -43,11 +45,20 @@ describe('amplify add/update storage(S3)', () => {
     await validate(projRoot);
   });
 
-  it('init a project and add S3 bucket with guest access', async () => {
+  it('init a javascript project and add S3 bucket with guest access', async () => {
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot, {});
     await addS3WithGuestAccess(projRoot, {});
     await amplifyPushAuth(projRoot);
+    await validate(projRoot);
+  });
+
+  it('init a flutter project and add S3 bucket with guest access', async () => {
+    await initFlutterProjectWithProfile(projRoot, { name: 'storageTest' });
+    await addAuthWithDefault(projRoot, {});
+    await addS3WithGuestAccess(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    expect(fs.existsSync(path.join(projRoot, 'lib', 'amplifyconfiguration.dart'))).toBe(true);
     await validate(projRoot);
   });
 

@@ -95,7 +95,6 @@ const importServiceWalkthrough = async (
   }
 
   const s3 = await providerUtils.createS3Service(context);
-  const amplifyMeta = stateManager.getMeta();
 
   // Get list of user pools to see if there is anything to import
   const bucketList = await s3.listBuckets();
