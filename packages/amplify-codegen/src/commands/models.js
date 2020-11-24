@@ -8,8 +8,9 @@ const platformToLanguageMap = {
   android: 'java',
   ios: 'swift',
   flutter: 'dart',
-  javascript: 'javascript'
-}
+  javascript: 'javascript',
+};
+const { getCodegenPackageName } = require('../utils/getCodegenPackageName');
 const { FeatureFlags } = require('amplify-cli-core');
 
 async function generateModels(context) {
@@ -48,9 +49,9 @@ async function generateModels(context) {
   const schema = parse(schemaContent);
   const projectConfig = context.amplify.getProjectConfig();
 
-  const appSyncDataStoreCodeGen = FeatureFlags.getBoolean('codegenPackageMigration.useAppSyncModelgenPlugin')
-    ? require('@aws-amplify/app-sync-model-gen-plugin')
-    : require('amplify-codegen-appsync-model-plugin');
+  const codegenPackageMigrationflag = 'codegenPackageMigration.useAppSyncModelgenPlugin';
+
+  const appSyncDataStoreCodeGen = require(getCodegenPackageName(FeatureFlags.getBoolean(codegenPackageMigrationflag)));
 
   const appsyncLocalConfig = await appSyncDataStoreCodeGen.preset.buildGeneratesSection({
     baseOutputDir: outputPath,
