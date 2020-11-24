@@ -139,10 +139,18 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
 
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
-    const amplifyMeta = stateManager.getMeta();
-    const appId = amplifyMeta.providers[providerName].AmplifyAppId;
 
-    transformerList.push(new ModelAuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: await isAmplifyAdminApp(appId) }));
+    let amplifyAdminEnabled: Boolean = false;
+
+    try {
+      const amplifyMeta = stateManager.getMeta();
+      const appId = amplifyMeta.providers[providerName].AmplifyAppId;
+      amplifyAdminEnabled = await isAmplifyAdminApp(appId);
+    } catch (err) {
+      console.info('App not deployed yet.');
+    }
+
+    transformerList.push(new ModelAuthTransformer({ authConfig, addAwsIamAuthInOutputSchema: amplifyAdminEnabled }));
     return transformerList;
   };
 }
