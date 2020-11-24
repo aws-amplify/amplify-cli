@@ -3,19 +3,18 @@ const path = require('path');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const emoji = require('node-emoji');
-const { spawnSync, spawn } = require('child_process');
+const { spawn } = require('child_process');
 const frameworkConfigMapping = require('./framework-config-mapping');
 const args = require('yargs').argv;
 const { addAmplifyFiles } = require('./xcodeHelpers');
 const ini = require('ini');
 const semver = require('semver');
-const stripAnsi = require('strip-ansi');
 const { engines } = require('../package.json');
 const { initializeAwsExports } = require('amplify-frontend-javascript');
+const { callAmplify } = require('./call-amplify');
 
-const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
-const amplify = /^win/.test(process.platform) ? 'amplify.cmd' : 'amplify';
-const amplifyDev = /^win/.test(process.platform) ? 'amplify-dev.cmd' : 'amplify-dev';
+const isWin = process.platform.startsWith('win');
+const npm = isWin ? 'npm.cmd' : 'npm';
 const amplifyCliPackageName = '@aws-amplify/cli';
 
 function run() {
@@ -79,10 +78,9 @@ async function installAmplifyCLI() {
 
 // Check the amplify CLI version, install latest CLI if it does not exist or is too old
 async function amplifyCLIVersionCheck() {
-  const amplifyCLIVersionSpawn = spawnSync(amplify, ['-v']);
-  const minCLIVersion = engines['@aws-amplify/cli'];
-  if (amplifyCLIVersionSpawn.stderr !== null) {
-    const amplifyCLIVersion = semver.coerce(stripAnsi(amplifyCLIVersionSpawn.stdout.toString()));
+  try {
+    const amplifyCLIVersion = await callAmplify(['-v']);
+    const minCLIVersion = engines['@aws-amplify/cli'];
     if (semver.satisfies(amplifyCLIVersion, minCLIVersion)) {
       console.log(`${emoji.get('white_check_mark')} Found Amplify CLI version ${amplifyCLIVersion}`);
     } else {
@@ -92,7 +90,7 @@ async function amplifyCLIVersionCheck() {
       console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
       await installAmplifyCLI();
     }
-  } else {
+  } catch {
     console.log(`${emoji.get('worried')} Amplify CLI was not found.`);
     console.log(`${emoji.get('sweat_smile')} Installing Amplify CLI. Hold tight.`);
     await installAmplifyCLI();
@@ -105,35 +103,20 @@ If not - then generate a skeleton with a base project */
 async function createAmplifySkeletonProject() {
   if (!fs.existsSync('./amplify')) {
     console.log(`${emoji.get('guitar')} Creating base Amplify project`);
-
-    return new Promise((resolve, reject) => {
-      const amplifyCmd = path.basename(process.argv[1]) === 'amplify-app-dev' ? amplifyDev : amplify;
-      const createSkeletonAmplifyProject = spawn(amplifyCmd, ['init', '--quickstart'], {
-        cwd: process.cwd(),
-        env: process.env,
-        stdio: 'inherit',
-      });
-
-      createSkeletonAmplifyProject.on('exit', code => {
-        if (code === 0) {
-          return getProjectConfig()
-            .then(projectConfig => {
-              const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
-              fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
-              if (!!projectConfig.javascript) {
-                initializeAwsExports(path.resolve('src'));
-              }
-              console.log(`${emoji.get('boom')} Successfully created base Amplify Project`);
-              resolve(projectConfig.frontend);
-            })
-            .catch(e => {
-              reject(e);
-            });
-        }
-        console.log(`${emoji.get('x')} Failed to create base Amplify Project`);
-        reject();
-      });
-    });
+    try {
+      await callAmplify(['init', '--quickstart']);
+      const projectConfig = await getProjectConfig();
+      const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
+      fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
+      if (!!projectConfig.javascript) {
+        initializeAwsExports(path.resolve('src'));
+      }
+      console.log(`${emoji.get('boom')} Successfully created base Amplify Project`);
+      return projectConfig.frontend;
+    } catch (err) {
+      console.log(`${emoji.get('x')} Failed to create base Amplify Project`);
+      throw new Error(err);
+    }
   }
   console.log(
     `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.`,
