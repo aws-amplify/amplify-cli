@@ -39,7 +39,7 @@ function isPulling(context: Context): boolean {
     (context.input.command === 'env' &&
       !!context.input.subCommands &&
       context.input.subCommands.length > 0 &&
-      context.input.subCommands[0] === 'pull');
+      (context.input.subCommands[0] === 'pull' || context.input.subCommands[0] === 'get'));
   return isPulling;
 }
 
