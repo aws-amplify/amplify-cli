@@ -47,7 +47,19 @@
                     ]
                 },
                 "userPoolModification": {
-                    "$ref": "#/definitions/Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\"|\"oAuth\"|\"addUserToGroup\"|\"emailBlacklist\"|\"emailWhitelist\"|\"customAuthScaffolding\">"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\"|\"addUserToGroup\"|\"emailBlacklist\"|\"emailWhitelist\"|\"customAuthScaffolding\">"
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "oAuth": {
+                                    "$ref": "#/definitions/Partial<CognitoOAuthConfiguration>"
+                                }
+                            }
+                        }
+                    ]
                 }
             },
             "required": [
@@ -55,7 +67,7 @@
                 "userPoolModification"
             ]
         },
-        "Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\"|\"oAuth\"|\"addUserToGroup\"|\"emailBlacklist\"|\"emailWhitelist\"|\"customAuthScaffolding\">": {
+        "Pick<CognitoUserPoolConfiguration,\"userPoolGroups\"|\"adminQueries\"|\"mfa\"|\"passwordPolicy\"|\"passwordRecovery\"|\"refreshTokenPeriod\"|\"readAttributes\"|\"writeAttributes\"|\"addUserToGroup\"|\"emailBlacklist\"|\"emailWhitelist\"|\"customAuthScaffolding\">": {
             "type": "object",
             "properties": {
                 "userPoolGroups": {
@@ -144,9 +156,6 @@
                         ],
                         "type": "string"
                     }
-                },
-                "oAuth": {
-                    "$ref": "#/definitions/CognitoOAuthConfiguration"
                 },
                 "addUserToGroup": {
                     "type": "object",
@@ -335,7 +344,8 @@
                 "smsMessage"
             ]
         },
-        "CognitoOAuthConfiguration": {
+        "Partial<CognitoOAuthConfiguration>": {
+            "description": "Make all properties in T optional",
             "type": "object",
             "properties": {
                 "domainPrefix": {
@@ -379,13 +389,7 @@
                         "$ref": "#/definitions/CognitoSocialProviderConfiguration"
                     }
                 }
-            },
-            "required": [
-                "oAuthGrantType",
-                "oAuthScopes",
-                "redirectSigninURIs",
-                "redirectSignoutURIs"
-            ]
+            }
         },
         "CognitoSocialProviderConfiguration": {
             "type": "object",

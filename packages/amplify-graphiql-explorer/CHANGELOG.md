@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.3.4...amplify-graphiql-explorer@1.4.1) (2020-11-22)
+
+**Note:** Version bump only for package amplify-graphiql-explorer
+
+
+
+
+
+# 1.4.0 (2020-11-22)
+
+
+### Bug Fixes
+
+* [#3376](https://github.com/nikhname/amplify-cli/issues/3376) - AppSync Simulator with IAM fails to load ([#3514](https://github.com/nikhname/amplify-cli/issues/3514)) ([1438f71](https://github.com/nikhname/amplify-cli/commit/1438f71f235a1da3e4d66d64247e824c327fa1dc))
+* build break, chore: typescript, lerna update ([#2640](https://github.com/nikhname/amplify-cli/issues/2640)) ([29fae36](https://github.com/nikhname/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* fixed typo on serviceWorker for graphiql explorer package 🐜 ([fabae78](https://github.com/nikhname/amplify-cli/commit/fabae78b0188162271b3203222ae5a1754677df2))
+* updated react-scripts module ([#5653](https://github.com/nikhname/amplify-cli/issues/5653)) ([a8118f2](https://github.com/nikhname/amplify-cli/commit/a8118f28e440c9febd58269bd6e08425dd81f00c))
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/nikhname/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/nikhname/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+
+
+### Features
+
+* add support for multiauth in mock server ([#2109](https://github.com/nikhname/amplify-cli/issues/2109)) ([fe8ee8c](https://github.com/nikhname/amplify-cli/commit/fe8ee8cff355a826fa9ccddcf0fad8a200a081af))
+* mock support for API, function and storage ([#1893](https://github.com/nikhname/amplify-cli/issues/1893)) ([372e534](https://github.com/nikhname/amplify-cli/commit/372e5346ee1f27a2e9bee25fbbdcb19417f5230f))
+
+
+
+
+
 ## [1.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.3.3...amplify-graphiql-explorer@1.3.4) (2020-10-22)
 
 

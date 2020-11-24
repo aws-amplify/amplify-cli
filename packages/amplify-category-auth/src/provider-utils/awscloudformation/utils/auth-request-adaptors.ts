@@ -15,7 +15,7 @@ import {
   CognitoIdentityPoolModification,
 } from 'amplify-headless-interface';
 import { identityPoolProviders, userPoolProviders } from '../service-walkthroughs/auth-questions';
-import { merge } from 'lodash';
+import { isEmpty, merge } from 'lodash';
 import { authProviders as authProviderList } from '../assets/string-maps';
 import {
   ServiceQuestionsResult,
@@ -106,17 +106,22 @@ const mutableAttributeAdaptor = (
 
 // converts the oauth config to the existing format
 const oauthMap = (
-  oauthConfig?: CognitoOAuthConfiguration,
+  oauthConfig?: Partial<CognitoOAuthConfiguration>,
   requiredAttributes: string[] = [],
 ): (OAuthResult & SocialProviderResult) | {} => {
   if (!oauthConfig) return {};
+  if (isEmpty(oauthConfig)) {
+    return {
+      hostedUI: false,
+    };
+  }
   return {
     hostedUI: true,
     hostedUIDomainName: oauthConfig.domainPrefix,
     newCallbackURLs: oauthConfig.redirectSigninURIs,
     newLogoutURLs: oauthConfig.redirectSignoutURIs,
-    AllowedOAuthFlows: oauthConfig.oAuthGrantType.toLowerCase() as 'code' | 'implicit',
-    AllowedOAuthScopes: oauthConfig.oAuthScopes.map(scope => scope.toLowerCase()),
+    AllowedOAuthFlows: oauthConfig?.oAuthGrantType?.toLowerCase() as 'code' | 'implicit',
+    AllowedOAuthScopes: oauthConfig?.oAuthScopes?.map(scope => scope.toLowerCase()),
     ...socialProviderMap(oauthConfig.socialProviderConfigurations, requiredAttributes),
   };
 };

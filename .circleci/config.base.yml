@@ -585,9 +585,8 @@ jobs:
             echo "export PATH=$PATH:$HOME/.amplify/bin" >> $BASH_ENV
       - run:
           name: Sanity check install
-          # TODO change to `amplify version` once the install script is modified to install to "amplify"
           command: |
-            amp version
+            amplify version
   github_release:
     <<: *defaults
     steps:
