@@ -3,9 +3,9 @@ import aws from 'aws-sdk';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 
-export const originUrl = 'https://www.dracarys.app';
+export const adminUrl = 'https://www.dracarys.app';
 
-export const amplifyAdminUrl = (appId: string, envName: string) => `${originUrl}/admin/${appId}/${envName}/verify/`;
+export const amplifyAdminUrl = (appId: string, envName: string) => `${adminUrl}/admin/${appId}/${envName}/verify/`;
 
 export function doAdminCredentialsExist(appId: string): boolean {
   return !!stateManager.getAmplifyAdminConfigEntry(appId);
