@@ -48,14 +48,35 @@ async function enable(context) {
         default: false
     });
 
-    return generateHostingResources(context, { domain, hostedZoneId, restrictAccess }, true);
+    const meta = context.amplify.getProjectDetails().amplifyMeta;
+    const hasAccessibleResources = ['storage', 'function'].some(categoryName => {
+        return Object.keys(meta[categoryName] || {}).length > 0;
+    });
+    let rolePermissions = {};
+    if (
+        hasAccessibleResources &&
+        (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your container?'))
+    ) {
+        rolePermissions = await context.amplify.invokePluginMethod(context, 'function', undefined, 'askExecRolePermissionsQuestions', [
+            context,
+            resourceName,
+            undefined,
+            undefined,
+            categoryName,
+            serviceName,
+        ]);
+    }
 
+    const { environmentMap, categoryPolicies, mutableParametersState, dependsOn } = rolePermissions;
+
+    await generateHostingResources(context, { domain, hostedZoneId, restrictAccess, categoryPolicies, environmentMap, mutableParametersState, dependsOn }, true);
 }
 
-export async function generateHostingResources(context, { domain, restrictAccess, hostedZoneId, exposedContainer: exposedContainerFromMeta = undefined }, addResource = false) {
+export async function generateHostingResources(context, { domain, restrictAccess, hostedZoneId, exposedContainer: exposedContainerFromMeta = undefined, dependsOn: dependsOnFromRolePermissions = [], categoryPolicies = [], environmentMap = {}, mutableParametersState = {} }, addResource = false) {
     const dependsOn = [];
 
     let authName;
+    let authDependensOn;
     if (restrictAccess) {
         const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
         // getting requirement satisfaction map
@@ -88,11 +109,13 @@ export async function generateHostingResources(context, { domain, restrictAccess
         const authDependency = dependsOn.find(dependency => dependency.category === 'auth');
 
         if (authDependency === undefined) {
-            dependsOn.push({
+            authDependensOn = {
                 category: 'auth',
                 resourceName: authName,
                 attributes: ['UserPoolId', 'AppClientIDWeb', 'HostedUIDomain'],
-            });
+            };
+
+            dependsOn.push(authDependensOn);
         } else {
             const existingAttributes = authDependency.attributes;
 
@@ -103,9 +126,35 @@ export async function generateHostingResources(context, { domain, restrictAccess
     }
 
     const {
+        auth: authDependsOnFromRolePermissions,
+        rest: restDependsOnRolePermissions
+    } = dependsOnFromRolePermissions.reduce((/** @type {{auth: any, rest: any[]}} */ acc, dep) => {
+        const { category, resourceName } = dep;
+        if (category === 'auth' && resourceName === authName) {
+            acc.auth = dep;
+        } else {
+            acc.rest.push(dep)
+        }
+
+        return acc;
+    }, { auth: undefined, rest: [] });
+
+    dependsOn.push(...restDependsOnRolePermissions);
+
+    if (authDependensOn !== undefined) {
+        const set = new Set(authDependensOn.attributes);
+
+        if (authDependsOnFromRolePermissions) {
+            authDependsOnFromRolePermissions.attributes.forEach(attribute => set.add(attribute));
+        }
+
+        authDependensOn.attributes = Array.from(set);
+    }
+
+    const {
         providers: { [constants.providerName]: provider },
     } = context.amplify.getProjectMeta();
-    const { StackName: envName, DeploymentBucketName: deploymentBucketName, Region: region } = provider;
+    const { StackName: envName, DeploymentBucketName: deploymentBucketName } = provider;
 
     dependsOn.push({
         category: '',
@@ -131,11 +180,11 @@ export async function generateHostingResources(context, { domain, restrictAccess
         restrictAccess,
         // apiType: undefined,
         category: categoryName,
-        categoryPolicies: [], // TODO: add question
+        categoryPolicies,
         dependsOn,
         deploymentMechanism: DEPLOYMENT_MECHANISM.FULLY_MANAGED,
-        environmentMap: {}, // TODO: permissions question
-        mutableParametersState: {}, // TODO
+        environmentMap,
+        mutableParametersState,
         exposedContainer: exposedContainerFromMeta,
         // gitHubInfo,
         output: {}, // TODO next ime?
