@@ -1,4 +1,6 @@
 const path = require('path');
+const sequential = require('promise-sequential');
+const { updateConfigOnEnvInit } = require('./provider-utils/awscloudformation');
 
 const category = 'storage';
 
@@ -109,9 +111,52 @@ async function handleAmplifyEvent(context, args) {
   context.print.info(`Received event args ${args}`);
 }
 
+async function initEnv(context) {
+  const { resourcesToBeSynced, allResources } = await context.amplify.getResourceStatus(category);
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  let toBeSynced = [];
+
+  if (resourcesToBeSynced && resourcesToBeSynced.length > 0) {
+    toBeSynced = resourcesToBeSynced.filter(b => b.category === category);
+  }
+
+  toBeSynced
+    .filter(storageResource => storageResource.sync === 'unlink')
+    .forEach(storageResource => {
+      context.amplify.removeResourceParameters(context, category, storageResource.resourceName);
+    });
+
+  let tasks = [];
+
+  // For pull change detection for import sees a difference, to avoid duplicate tasks we don't
+  // add the syncable resources, as allResources covers it, otherwise it is required for env add
+  // to populate the output value and such, these sync resources have the 'refresh' sync value.
+  if (!isPulling) {
+    tasks = tasks.concat(toBeSynced);
+  }
+
+  // check if this initialization is happening on a pull
+  if (isPulling && allResources.length > 0) {
+    tasks.push(...allResources);
+  }
+
+  const storageTasks = tasks.map(storageResource => {
+    const { resourceName, service } = storageResource;
+
+    return async () => {
+      const config = await updateConfigOnEnvInit(context, category, resourceName, service);
+
+      context.amplify.saveEnvResourceParameters(context, category, resourceName, config);
+    };
+  });
+
+  await sequential(storageTasks);
+}
+
 module.exports = {
   add,
   console,
+  initEnv,
   migrate,
   getPermissionPolicies,
   executeAmplifyCommand,

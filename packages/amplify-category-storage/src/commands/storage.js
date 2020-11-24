@@ -21,6 +21,10 @@ module.exports = {
         description: `Takes you through steps in the CLI to add a ${categoryName} resource to your local backend`,
       },
       {
+        name: 'import',
+        description: `Takes you through a CLI flow to import an existing ${categoryName} resource to your local backend`,
+      },
+      {
         name: 'update',
         description: `Takes you through steps in the CLI to update an ${categoryName} resource`,
       },

@@ -11,33 +11,62 @@ const { downloadZip, extractZip } = require('./zip-util');
 async function run(context, envName, deleteS3) {
   const awsConfig = await loadConfigurationForEnv(context, envName);
   const cfn = await new Cloudformation(context, null, awsConfig);
+  const s3 = await S3.getInstance(context, {});
+  let removeBucket = false;
+  let deploymentBucketName;
+  let storageCategoryBucketName;
+
   if (deleteS3) {
-    const s3 = await S3.getInstance(context, {});
     const projectDetails = context.amplify.getProjectDetails();
-    const projectBucket = projectDetails.teamProviderInfo[envName][ProviderName].DeploymentBucketName;
-    if (await s3.ifBucketExists(projectBucket)) {
+    deploymentBucketName = projectDetails.teamProviderInfo[envName][ProviderName].DeploymentBucketName;
+    if (await s3.ifBucketExists(deploymentBucketName)) {
       const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
       const tempDir = path.join(amplifyDir, envName, '.temp');
-      const storageBucket = await getStorageBucket(context, envName, s3, tempDir);
+      storageCategoryBucketName = await getStorageCategoryBucketNameFromCloud(context, envName, s3, tempDir);
+
       fs.removeSync(tempDir);
-      if (storageBucket) await s3.deleteS3Bucket(storageBucket);
-      await s3.deleteS3Bucket(projectBucket);
+
+      if (storageCategoryBucketName) {
+        await s3.emptyS3Bucket(storageCategoryBucketName);
+      }
+
+      removeBucket = true;
     } else {
-      context.print.info(`Unable to remove env: ${envName} because deployment bucket ${projectBucket} does not exist or has been deleted.`);
+      context.print.info(
+        `Unable to remove env: ${envName} because deployment bucket ${deploymentBucketName} does not exist or has been deleted.`,
+      );
     }
   }
+
   await cfn.deleteResourceStack(envName);
+
+  // In case the S3 bucket is retained and removal skipped by CF, then we explicitly delete it.
+  if (storageCategoryBucketName) {
+    await s3.deleteS3Bucket(storageCategoryBucketName);
+  }
+
   await deleteEnv(context, envName, awsConfig);
+
+  if (removeBucket && deploymentBucketName) {
+    await s3.deleteS3Bucket(deploymentBucketName);
+  }
 }
 
-async function getStorageBucket(context, envName, s3, tempDir) {
+async function getStorageCategoryBucketNameFromCloud(context, envName, s3, tempDir) {
   const sourceZipFile = await downloadZip(s3, tempDir, S3BackendZipFileName, envName);
   const unZippedDir = await extractZip(tempDir, sourceZipFile);
   const amplifyMeta = context.amplify.readJsonFile(`${unZippedDir}/amplify-meta.json`);
   const storage = amplifyMeta['storage'] || {};
-  const s3Storage = Object.keys(storage).filter(r => storage[r].service === 'S3');
-  if (!s3Storage.length) return;
+
+  // filter out imported buckets as we cannot touch those.
+  const s3Storage = Object.keys(storage).filter(r => storage[r].service === 'S3' && storage[r].serviceType !== 'imported');
+
+  if (!s3Storage.length) {
+    return;
+  }
+
   const fStorageName = s3Storage[0];
+
   return storage[fStorageName].output.BucketName;
 }
 

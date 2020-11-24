@@ -23,7 +23,7 @@ const permissionMap = {
   delete: ['s3:DeleteObject'],
 };
 
-async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, options) {
+export const addWalkthrough = async (context, defaultValuesFilename, serviceMetadata, options) => {
   while (!checkIfAuthExists(context)) {
     if (
       await context.amplify.confirmPrompt(
@@ -49,9 +49,9 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata, o
   } else {
     return await configure(context, defaultValuesFilename, serviceMetadata, undefined, options);
   }
-}
+};
 
-function updateWalkthrough(context, defaultValuesFilename, serviceMetada) {
+export const updateWalkthrough = (context, defaultValuesFilename, serviceMetada) => {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
@@ -73,8 +73,14 @@ function updateWalkthrough(context, defaultValuesFilename, serviceMetada) {
 
   const [resourceName] = Object.keys(storageResources);
 
+  // For better DX check if the storage is imported
+  if (amplifyMeta[category][resourceName].serviceType === 'imported') {
+    context.print.error('Updating of an imported storage resource is not supported.');
+    return;
+  }
+
   return configure(context, defaultValuesFilename, serviceMetada, resourceName);
-}
+};
 
 async function configure(context, defaultValuesFilename, serviceMetadata, resourceName, options) {
   const { amplify } = context;
@@ -1119,7 +1125,7 @@ function removeAuthUnauthAccess(answers) {
   answers.AuthenticatedAllowList = 'DISALLOW';
 }
 
-function resourceAlreadyExists(context) {
+export const resourceAlreadyExists = context => {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   let resourceName;
@@ -1135,9 +1141,9 @@ function resourceAlreadyExists(context) {
   }
 
   return resourceName;
-}
+};
 
-function checkIfAuthExists(context) {
+export const checkIfAuthExists = context => {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
   let authExists = false;
@@ -1155,9 +1161,9 @@ function checkIfAuthExists(context) {
   }
 
   return authExists;
-}
+};
 
-function migrate(context, projectPath, resourceName) {
+export const migrate = (context, projectPath, resourceName) => {
   const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
 
   // Change CFN file
@@ -1251,7 +1257,7 @@ function migrate(context, projectPath, resourceName) {
   jsonString = JSON.stringify(newParameters, null, '\t');
 
   fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
-}
+};
 
 function convertToCRUD(parameters, answers) {
   if (parameters.unauthPermissions === 'r') {
@@ -1275,7 +1281,7 @@ function convertToCRUD(parameters, answers) {
   }
 }
 
-function getIAMPolicies(resourceName, crudOptions) {
+export const getIAMPolicies = (resourceName, crudOptions) => {
   let policy = {};
   let actions = new Set();
 
@@ -1322,7 +1328,7 @@ function getIAMPolicies(resourceName, crudOptions) {
   const attributes = ['BucketName'];
 
   return { policy, attributes };
-}
+};
 
 function getTriggersForLambdaConfiguration(protectionLevel, functionName) {
   const triggers = [
@@ -1381,10 +1387,3 @@ function getTriggersForLambdaConfiguration(protectionLevel, functionName) {
   ];
   return triggers;
 }
-
-module.exports = {
-  addWalkthrough,
-  updateWalkthrough,
-  migrate,
-  getIAMPolicies,
-};

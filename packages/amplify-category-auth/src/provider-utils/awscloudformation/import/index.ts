@@ -34,6 +34,7 @@ export const importResource = async (
   serviceSelection: ServiceSelection,
   previousResourceParameters: ResourceParameters | undefined,
   providerPluginInstance?: ProviderUtils,
+  printSuccessMessage: boolean = true,
 ): Promise<{ envSpecificParameters: EnvSpecificResourceParameters } | undefined> => {
   // Load provider
   const providerPlugin = providerPluginInstance || require(serviceSelection.provider);
@@ -57,7 +58,9 @@ export const importResource = async (
 
   const { envSpecificParameters } = await updateStateFiles(context, questionParameters, answers, projectType, persistEnvParameters);
 
-  printSuccess(context, answers.authSelections!, answers.userPool!, answers.identityPool);
+  if (printSuccessMessage) {
+    printSuccess(context, answers.authSelections!, answers.userPool!, answers.identityPool);
+  }
 
   return {
     envSpecificParameters,
@@ -74,7 +77,7 @@ const printSuccess = (context: $TSContext, authSelections: AuthSelections, userP
   context.print.info('');
   context.print.info('Next steps:');
   context.print.info('');
-  context.print.info("- This resource will be available for GraphQL APIs ('amplify add api')");
+  context.print.info(`- This resource will be available for GraphQL APIs ('amplify add api')`);
   context.print.info('- Use Amplify libraries to add signup, signin, signout capabilities to your client');
   context.print.info('  application.');
   context.print.info('  - iOS: https://docs.amplify.aws/lib/auth/getting-started/q/platform/ios');
@@ -937,7 +940,8 @@ export const importedAuthEnvInit = async (
         type: 'confirm',
         message: importMessages.Questions.ImportPreviousResource(resourceName, sourceEnvParams.userPoolId, context.exeInfo.sourceEnvName),
         footer: importMessages.ImportPreviousResourceFooter,
-        //default: 'Y',
+        initial: true,
+        format: (e: any) => (e ? 'Yes' : 'No'),
       } as any);
 
       if (!importExisting) {

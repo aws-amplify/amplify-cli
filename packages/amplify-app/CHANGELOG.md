@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.18...amplify-app@2.18.1) (2020-11-22)
+
+**Note:** Version bump only for package amplify-app
+
+
+
+
+
+# 2.18.0 (2020-11-22)
+
+
+### Bug Fixes
+
+* **amplify-app:** initialize feature flag  ([#5643](https://github.com/aws-amplify/amplify-cli/issues/5643)) ([9608b56](https://github.com/aws-amplify/amplify-cli/commit/9608b5616c2b92417a1b559f41f5d3f8f42f97e5))
+* add configuration.json placeholders ([#3508](https://github.com/aws-amplify/amplify-cli/issues/3508)) ([44265c4](https://github.com/aws-amplify/amplify-cli/commit/44265c439d4b7764ff52ab5b82f5fd1c88af799e))
+* add datastoreSync option to config files ([#2920](https://github.com/aws-amplify/amplify-cli/issues/2920)) ([db20336](https://github.com/aws-amplify/amplify-cli/commit/db20336a410dafc0597941b98447faf32094cbcd))
+* add frontend plugins for guessing platform ([#3312](https://github.com/aws-amplify/amplify-cli/issues/3312)) ([3c31f25](https://github.com/aws-amplify/amplify-cli/commit/3c31f2524680894c83a4c344784428f0c12b0d20)), closes [#3300](https://github.com/aws-amplify/amplify-cli/issues/3300)
+* add graphql dependency ([#3466](https://github.com/aws-amplify/amplify-cli/issues/3466)) ([8620105](https://github.com/aws-amplify/amplify-cli/commit/86201059ddde68239b48d7a3430378ca496bcf15)), closes [#3465](https://github.com/aws-amplify/amplify-cli/issues/3465)
+* add resources in xcode helper ([#2901](https://github.com/aws-amplify/amplify-cli/issues/2901)) ([9ec8e61](https://github.com/aws-amplify/amplify-cli/commit/9ec8e616c8485beb614ab8c0d703e429e6e52ada))
+* do not remove resources group ([#4571](https://github.com/aws-amplify/amplify-cli/issues/4571)) ([c0e0396](https://github.com/aws-amplify/amplify-cli/commit/c0e0396807ea65884fcd099e6f09325708fca5a6)), closes [#4518](https://github.com/aws-amplify/amplify-cli/issues/4518)
+* fix amplify-app ios when not in xcode project ([#4344](https://github.com/aws-amplify/amplify-cli/issues/4344)) ([604fe8d](https://github.com/aws-amplify/amplify-cli/commit/604fe8dea1bdd0334f0822f41b44e1833bf553ad))
+* fix amplify-app on windows ([#3401](https://github.com/aws-amplify/amplify-cli/issues/3401)) ([aae3a92](https://github.com/aws-amplify/amplify-cli/commit/aae3a929f81a59514210cb3974e9e2fbb7a954ef)), closes [#3396](https://github.com/aws-amplify/amplify-cli/issues/3396)
+* quickstart change and profile selection ([#2806](https://github.com/aws-amplify/amplify-cli/issues/2806)) ([d28a897](https://github.com/aws-amplify/amplify-cli/commit/d28a8975cdd79b853465200fb7138373a79587b6))
+* update amplify app package dependencies to latest ([#4374](https://github.com/aws-amplify/amplify-cli/issues/4374)) ([a5ff2c7](https://github.com/aws-amplify/amplify-cli/commit/a5ff2c79aa6e2f418c5c8bee0ceb7a1e0d795d86))
+* update cli if it doesn't satisify minimum version ([#2932](https://github.com/aws-amplify/amplify-cli/issues/2932)) ([67aa941](https://github.com/aws-amplify/amplify-cli/commit/67aa94196430e6e9e68d2cae2ca8ab75120b032e))
+* update min cli version for accurate modelgen ([#2931](https://github.com/aws-amplify/amplify-cli/issues/2931)) ([2383ad3](https://github.com/aws-amplify/amplify-cli/commit/2383ad3b92b0c939004b8b9c7ac19f8a795820a0))
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+* use npm.cmd for windows ([#3100](https://github.com/aws-amplify/amplify-cli/issues/3100)) ([ce7a4a6](https://github.com/aws-amplify/amplify-cli/commit/ce7a4a6ef2865466be596a2a801b8960dff55e98))
+* use relative path for xcode and android studio helper files ([#2985](https://github.com/aws-amplify/amplify-cli/issues/2985)) ([9f844b3](https://github.com/aws-amplify/amplify-cli/commit/9f844b3e9dbf3f3e01a37c883f85f3888e376d7c))
+* **amplify-app:** support app without profile ([#2922](https://github.com/aws-amplify/amplify-cli/issues/2922)) ([b41be93](https://github.com/aws-amplify/amplify-cli/commit/b41be93205e0f89dd033bfae0c52be09549792f2))
+
+
+### Features
+
+* **amplify-app:** group amplify files in xcode integration ([#4268](https://github.com/aws-amplify/amplify-cli/issues/4268)) ([5670a08](https://github.com/aws-amplify/amplify-cli/commit/5670a0895d65702441de24d8873d48d156a9d121))
+* add amplify-app command ([#2761](https://github.com/aws-amplify/amplify-cli/issues/2761)) ([c46cdd4](https://github.com/aws-amplify/amplify-cli/commit/c46cdd421bce40d7995b3e75f0ea7f4f646d2308))
+* bump amplify cli version in amplify-app ([#3842](https://github.com/aws-amplify/amplify-cli/issues/3842)) ([18fa6cd](https://github.com/aws-amplify/amplify-cli/commit/18fa6cde44c4052bb888584f60baba83fe6e8487))
+
+
+
+
+
 ## [2.17.21](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.17.18...amplify-app@2.17.21) (2020-11-20)
 
 **Note:** Version bump only for package amplify-app

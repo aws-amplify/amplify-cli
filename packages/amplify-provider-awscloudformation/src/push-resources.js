@@ -544,9 +544,8 @@ function formNestedStack(context, projectDetails, categoryName, resourceName, se
   /* eslint-enable */
   const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
   const nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
-
   // Track Amplify Console generated stacks
-  if (process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
+  if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
     nestedStack.Description = 'Root Stack for AWS Amplify Console';
   }
 

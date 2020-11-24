@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.2.33...amplify-console-integration-tests@1.3.1) (2020-11-22)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-console-integration-tests/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-console-integration-tests/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+
+
+# 1.3.0 (2020-11-22)
+
+
+### Bug Fixes
+
+* e2e init and prediction test failures ([#4195](https://github.com/aws-amplify/amplify-console-integration-tests/issues/4195)) ([2ea6a42](https://github.com/aws-amplify/amplify-console-integration-tests/commit/2ea6a42829086d0c6ab10acd77cbbd0fc9320938))
+* refactor amplify.json file handling ([#5282](https://github.com/aws-amplify/amplify-console-integration-tests/issues/5282)) ([a6269f3](https://github.com/aws-amplify/amplify-console-integration-tests/commit/a6269f3177f3242df81e9d7dce0625295bb7a9fc))
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-console-integration-tests/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-console-integration-tests/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+* **amplify-console-hosting:** printout more informative message ([#4148](https://github.com/aws-amplify/amplify-console-integration-tests/issues/4148)) ([627a935](https://github.com/aws-amplify/amplify-console-integration-tests/commit/627a93580587d7d132b8bfa8a58e88c9e90f0a16)), closes [#4086](https://github.com/aws-amplify/amplify-console-integration-tests/issues/4086)
+
+
+
+
+
 ## [1.2.36](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.2.33...amplify-console-integration-tests@1.2.36) (2020-11-20)
 
 

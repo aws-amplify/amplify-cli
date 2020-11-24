@@ -14,16 +14,16 @@ import {
 import {
   createIDPAndUserPoolWithOAuthSettings,
   expectLocalAndCloudMetaFilesMatching,
-  expectLocalAndOGMetaFilesOutputMatching,
+  expectAuthLocalAndOGMetaFilesOutputMatching,
   expectLocalAndPulledBackendConfigMatching,
-  expectProjectDetailsMatch,
-  getOGProjectDetails,
-  getProjectDetails,
+  expectAuthProjectDetailsMatch,
+  getOGAuthProjectDetails,
+  getAuthProjectDetails,
   getShortId,
   headlessPull,
   headlessPullExpectError,
   importIdentityPoolAndUserPool,
-  ProjectDetails,
+  AuthProjectDetails,
 } from '../import-helpers';
 
 const profileName = 'amplify-integ-test-user';
@@ -48,7 +48,7 @@ describe('auth import identity pool and userpool', () => {
   let ogProjectRoot: string;
   let ogShortId: string;
   let ogSettings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
-  let ogProjectDetails: ProjectDetails;
+  let ogProjectDetails: AuthProjectDetails;
 
   // We need an extra OG project to make sure that autocomplete prompt hits in
   let dummyOGProjectRoot: string;
@@ -67,7 +67,7 @@ describe('auth import identity pool and userpool', () => {
     await addAuthIdentityPoolAndUserPoolWithOAuth(ogProjectRoot, ogSettings);
     await amplifyPushAuth(ogProjectRoot);
 
-    ogProjectDetails = getOGProjectDetails(ogProjectRoot);
+    ogProjectDetails = getOGAuthProjectDetails(ogProjectRoot);
 
     dummyOGProjectRoot = await createNewProjectDir(dummyOGProjectSettings.name);
     dummyOGShortId = getShortId();
@@ -109,9 +109,9 @@ describe('auth import identity pool and userpool', () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
     await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName);
 
-    let projectDetails = getProjectDetails(projectRoot);
+    let projectDetails = getAuthProjectDetails(projectRoot);
 
-    expectProjectDetailsMatch(projectDetails, ogProjectDetails);
+    expectAuthProjectDetailsMatch(projectDetails, ogProjectDetails);
 
     await amplifyStatus(projectRoot, 'Import');
     await amplifyPushAuth(projectRoot);
@@ -141,7 +141,7 @@ describe('auth import identity pool and userpool', () => {
 
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
-      expectLocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
+      expectAuthLocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
     } finally {
       deleteProjectDir(projectRootPull);
     }
@@ -188,7 +188,7 @@ describe('auth import identity pool and userpool', () => {
     }
   });
 
-  it('auth headless pull succeessful', async () => {
+  it('auth headless pull successful', async () => {
     await initJSProjectWithProfile(projectRoot, {
       ...projectSettings,
       disableAmplifyAppCreation: false,
@@ -198,7 +198,7 @@ describe('auth import identity pool and userpool', () => {
 
     await amplifyPushAuth(projectRoot);
 
-    let projectDetails = getProjectDetails(projectRoot);
+    let projectDetails = getAuthProjectDetails(projectRoot);
 
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
@@ -232,7 +232,7 @@ describe('auth import identity pool and userpool', () => {
 
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       expectLocalAndPulledBackendConfigMatching(projectRoot, projectRootPull);
-      expectLocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
+      expectAuthLocalAndOGMetaFilesOutputMatching(projectRoot, projectRootPull);
     } finally {
       deleteProjectDir(projectRootPull);
     }
