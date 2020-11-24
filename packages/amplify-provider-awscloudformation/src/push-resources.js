@@ -62,9 +62,11 @@ async function run(context, resourceDefinition) {
         } = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
         await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'exposedContainer', exposedContainer);
 
-        context.print.info(`\nYou can check image build status for ${resource.resourceName}`);
+        context.print.info(`\nIn a few moments, you can check image build status for ${resource.resourceName} at the following URL:`);
 
         context.print.info(`${consoleUrl}\n`);
+
+        context.print.info(`It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.`)
       }
 
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'hosting') {
