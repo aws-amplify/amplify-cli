@@ -17,28 +17,26 @@ const isWin = process.platform.startsWith('win');
 const npm = isWin ? 'npm.cmd' : 'npm';
 const amplifyCliPackageName = '@aws-amplify/cli';
 
-function run() {
+async function run() {
   const projpath = args.path;
 
   if (projpath) {
     process.chdir(projpath);
   }
 
-  return checkNodeVersion()
-    .then(() => amplifyCLIVersionCheck())
-    .then(() => createAmplifySkeletonProject())
-    .then(frontend => createAmplifyHelperFiles(frontend))
-    .then(frontend => {
-      console.log(`${emoji.get('boom')} Amplify setup completed successfully.`);
-      showHelpText(frontend);
-      process.exit(0);
-    })
-    .catch(e => {
-      if (e) {
-        console.log(e);
-      }
-      process.exit(1);
-    });
+  try {
+    await checkNodeVersion();
+    await amplifyCLIVersionCheck();
+    const frontend = await createAmplifySkeletonProject();
+    console.log(`${emoji.get('boom')} Amplify setup completed successfully.`);
+    showHelpText(frontend);
+    process.exit(0);
+  } catch (e) {
+    if (e) {
+      console.log(e);
+    }
+    process.exit(1);
+  }
 }
 
 // Node version check
@@ -79,7 +77,10 @@ async function installAmplifyCLI() {
 // Check the amplify CLI version, install latest CLI if it does not exist or is too old
 async function amplifyCLIVersionCheck() {
   try {
-    const amplifyCLIVersion = await callAmplify(['-v']);
+    const amplifyCLIVersionRaw = await callAmplify(['-v'], { inheritIO: false });
+    const amplifyCLIVersionMatch = amplifyCLIVersionRaw.match(/\d+\.\d+\.\d+(-[a-z]+\.[0-9]+)?/g);
+    const amplifyCLIVersion =
+      Array.isArray(amplifyCLIVersionMatch) && amplifyCLIVersionMatch.length > 0 ? amplifyCLIVersionMatch[0] : undefined;
     const minCLIVersion = engines['@aws-amplify/cli'];
     if (semver.satisfies(amplifyCLIVersion, minCLIVersion)) {
       console.log(`${emoji.get('white_check_mark')} Found Amplify CLI version ${amplifyCLIVersion}`);
@@ -101,6 +102,7 @@ async function amplifyCLIVersionCheck() {
 If not - then generate a skeleton with a base project */
 
 async function createAmplifySkeletonProject() {
+  let frontend;
   if (!fs.existsSync('./amplify')) {
     console.log(`${emoji.get('guitar')} Creating base Amplify project`);
     try {
@@ -112,19 +114,22 @@ async function createAmplifySkeletonProject() {
         initializeAwsExports(path.resolve('src'));
       }
       console.log(`${emoji.get('boom')} Successfully created base Amplify Project`);
-      return projectConfig.frontend;
+      frontend = projectConfig.frontend;
     } catch (err) {
       console.log(`${emoji.get('x')} Failed to create base Amplify Project`);
       throw new Error(err);
     }
+  } else {
+    console.log(
+      `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.`,
+    );
+    console.log();
+    const existingApp = true;
+    const projectConfig = await getProjectConfig(existingApp);
+    frontend = projectConfig.frontend;
   }
-  console.log(
-    `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.`,
-  );
-  console.log();
-  const existingApp = true;
-  const projectConfig = await getProjectConfig(existingApp);
-  return projectConfig.frontend;
+  await createAmplifyHelperFiles(frontend);
+  return frontend;
 }
 
 async function getProjectConfig(existingApp) {
