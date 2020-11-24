@@ -30,7 +30,8 @@
     "lower-case-first": "^2.0.1",
     "pluralize": "^8.0.0",
     "strip-indent": "^3.0.0",
-    "ts-dedent": "^1.1.0"
+    "ts-dedent": "^1.1.0",
+    "dart-style": "1.3.2-dev"
   },
   "devDependencies": {
     "@graphql-codegen/testing": "^1.13.1",
