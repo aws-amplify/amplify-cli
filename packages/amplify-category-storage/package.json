@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-storage",
-  "version": "2.10.0",
+  "version": "2.10.1",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",

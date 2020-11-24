@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.24.0...amplify-category-auth@2.24.1) (2020-11-24)
+
+
+
+# 4.35.0 (2020-11-24)
+
+
+### Bug Fixes
+
+* headless auth remove oauth when empty config specified ([#5930](https://github.com/aws-amplify/amplify-cli/issues/5930)) ([bb0d028](https://github.com/aws-amplify/amplify-cli/commit/bb0d028704f6508402794d5357c7501b366c9099))
+* **amplify-category-auth:** external auth enabled bugfix ([#5916](https://github.com/aws-amplify/amplify-cli/issues/5916)) ([a782103](https://github.com/aws-amplify/amplify-cli/commit/a78210316aac2692b4fe6d1e75ccb12b97682792))
+* new auth triggers overwrite previous selections ([#5945](https://github.com/aws-amplify/amplify-cli/issues/5945)) ([419b6d3](https://github.com/aws-amplify/amplify-cli/commit/419b6d3997df25f0de4b55e5716a8dcbe2f042d9))
+
+
+
+
+
 # [2.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.22.1...amplify-category-auth@2.24.0) (2020-11-22)
 
 
