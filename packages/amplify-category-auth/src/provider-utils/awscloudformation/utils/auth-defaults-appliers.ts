@@ -1,6 +1,6 @@
 import { ServiceQuestionsResult } from '../service-walkthrough-types';
 import { verificationBucketName } from './verification-bucket-name';
-import { merge } from 'lodash';
+import { isEmpty, merge } from 'lodash';
 import { structureOAuthMetadata } from '../service-walkthroughs/auth-questions';
 import { removeDeprecatedProps } from './synthesize-resources';
 import { immutableAttributes, safeDefaults } from '../constants';
@@ -49,5 +49,9 @@ export const getUpdateAuthDefaultsApplier = (context: any, defaultValuesFilename
 
   structureOAuthMetadata(result, context, getAllDefaults, context.amplify); // adds "oauthMetadata" to result
 
+  // If there are new trigger selections, make sure they overwrite the previous selections
+  if (!isEmpty(result.triggers)) {
+    previousResult.triggers = Object.assign({}, result.triggers);
+  }
   return merge(defaults, removeDeprecatedProps(previousResult), result);
 };
