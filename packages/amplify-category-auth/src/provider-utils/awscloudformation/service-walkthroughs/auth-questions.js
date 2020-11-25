@@ -401,7 +401,7 @@ function identityPoolProviders(coreAnswers, projectType) {
 /*
   Format hosted UI providers data per lambda spec
   hostedUIProviderMeta is saved in parameters.json.
-  hostedUIprovierCreds is saved in team-providers.
+  hostedUIprovierCreds is saved in deployment-secrets.
 */
 function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
   if (coreAnswers.useDefault === 'default') {
@@ -412,7 +412,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
     ? JSON.parse(JSON.stringify(answers.requiredAttributes)).concat('username')
     : ['email', 'username'];
   const res = {};
-  if (!isEmpty(oAuthProviders)) {
+  if (answers.hostedUI) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
