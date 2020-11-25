@@ -73,11 +73,12 @@ describe('amplify add api (GraphQL)', () => {
     const region = meta.providers.awscloudformation.Region;
     const { output } = meta.api.simplemodel;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
 
     expect(GraphQLAPIIdOutput).toBeDefined();
     expect(GraphQLAPIEndpointOutput).toBeDefined();
     expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
