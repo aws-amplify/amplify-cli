@@ -505,5 +505,16 @@ export class FeatureFlags {
         defaultValueForNewProjects: false,
       },
     ]);
+
+    this.registerFlag('codegenPackageMigration', [
+      // Use new appsync-modelgen-plugin or use old
+      // amplify-codegen-appsync-model-plugin
+      {
+        name: 'useAppSyncModelgenPlugin',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+    ]);
   };
 }
