@@ -1,8 +1,9 @@
 const path = require('path');
 const fs = require('fs-extra');
 const { parse } = require('graphql');
-const { pathManager } = require('amplify-cli-core');
+const { FeatureFlags, pathManager } = require('amplify-cli-core');
 const gqlCodeGen = require('@graphql-codegen/core');
+const { getCodegenPackageName } = require('../utils/getCodegenPackageName');
 
 const platformToLanguageMap = {
   android: 'java',
@@ -10,8 +11,6 @@ const platformToLanguageMap = {
   flutter: 'dart',
   javascript: 'javascript',
 };
-const { getCodegenPackageName } = require('../utils/getCodegenPackageName');
-const { FeatureFlags } = require('amplify-cli-core');
 
 async function generateModels(context) {
   // steps:
