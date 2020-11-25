@@ -8209,7 +8209,7 @@ clone@^2.1.1:
   resolved "https://registry.yarnpkg.com/clone/-/clone-2.1.2.tgz#1b7f4b9f591f1e8f83670401600345a02887435f"
   integrity sha1-G39Ln1kfHo+DZwQBYANFoCiHQ18=
 
-cloudform-types@4.2.0, cloudform-types@^4.1.0, cloudform-types@^4.2.0:
+cloudform-types@^4.1.0, cloudform-types@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/cloudform-types/-/cloudform-types-4.2.0.tgz#698c98a1468bd8fe9c1c275b2e65720f572ca401"
   integrity sha512-i7fmpsOtrMzF4z3Ltpqn9Khi6pgSxNCMqqsXLXWbaZsczky7vA9mkq/Z2bdMUu5x4Eaj5wvvKc95ENZ0dtN/Uw==
@@ -9343,6 +9343,11 @@ dargs@^7.0.0:
   version "7.0.0"
   resolved "https://registry.yarnpkg.com/dargs/-/dargs-7.0.0.tgz#04015c41de0bcb69ec84050f3d9be0caf8d6d5cc"
   integrity sha512-2iy1EkLdlBzQGvbweYRFxmFath8+K7+AKB0TlhHWkNuH+TmovaMH/Wp7V7R4u7f4SnX3OgLsU9t1NI9ioDnUpg==
+
+dart-style@1.3.2-dev:
+  version "1.3.2-dev"
+  resolved "https://registry.yarnpkg.com/dart-style/-/dart-style-1.3.2-dev.tgz#d21a80ff0b7f9d800584ec6a6a659ac3242ac855"
+  integrity sha512-NFI4UQYvG32t/cEkQAdkXT2ZT72tjF61tMWoALmnGwj03d2Co94zwGfbnFfdQUQvrhUNx8Wz2jKSVxGrmFaVJQ==
 
 dashdash@^1.12.0:
   version "1.14.1"

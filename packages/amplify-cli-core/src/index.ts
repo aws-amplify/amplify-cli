@@ -153,7 +153,12 @@ interface AmplifyToolkit {
     optionNameOverrides?: Record<string, string>,
   ) => Promise<ServiceSelection>;
   updateProjectConfig: () => $TSAny;
-  updateamplifyMetaAfterResourceUpdate: () => $TSAny;
+  updateamplifyMetaAfterResourceUpdate: (
+    category: string,
+    resourceName: string,
+    metaResourceKey: $TSAny,
+    metaResourceData: $TSAny,
+  ) => $TSAny;
   updateamplifyMetaAfterResourceAdd: (
     category: string,
     resourceName: string,
