@@ -78,16 +78,24 @@ export function generateLocalEnvInfoFile(context: $TSContext) {
 function generateLocalTagsFile(context: $TSContext) {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
-    const tags = [
-      {
+
+    // Preserve existing tags if present
+    const tags = stateManager.getProjectTags(projectPath);
+
+    if (!tags.find(t => t.Key === 'user:Stack')) {
+      tags.push({
         Key: 'user:Stack',
         Value: '{project-env}',
-      },
-      {
+      });
+    }
+
+    if (!tags.find(t => t.Key === 'user:Application')) {
+      tags.push({
         Key: 'user:Application',
         Value: '{project-name}',
-      },
-    ];
+      });
+    }
+
     stateManager.setProjectFileTags(projectPath, tags);
   }
 }
