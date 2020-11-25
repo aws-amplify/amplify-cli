@@ -4,8 +4,6 @@ const projectScanner = require('./lib/project-scanner');
 const configManager = require('./lib/configuration-manager');
 const constants = require('./lib/constants');
 const { createAmplifyConfig, createAWSConfig, deleteAmplifyConfig } = require('./lib/frontend-config-creator');
-const onPostInit = require('./event-handlers/handle-PostInit');
-const onPostCodegenModels = require('./event-handlers/handle-PostCodegenModels');
 
 const pluginName = 'ios';
 
@@ -52,16 +50,8 @@ async function executeAmplifyCommand(context) {
 }
 
 async function handleAmplifyEvent(context, args) {
-  switch(args.event) {
-    case 'PostInit':
-      await onPostInit.run(context, args);
-      break;
-    case 'PostCodegenModels':
-      await onPostCodegenModels.run(context, args);
-      break;
-    default:
-      break;
-  }
+  context.print.info(`${pluginName} handleAmplifyEvent to be implemented`);
+  context.print.info(`Received event args ${args}`);
 }
 
 module.exports = {
