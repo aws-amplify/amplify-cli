@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
 const _ = require('lodash');
-const { uniq, pullAll, isEmpty } = require('lodash');
+const { uniq, pullAll } = require('lodash');
 const path = require('path');
 const { Sort } = require('enquirer');
 // const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
