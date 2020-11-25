@@ -74,9 +74,9 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
   if (!isMigrationContext(context)) {
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
     // write hostedUIProviderCreds to deploymentSecrets
+    const deploymentSecrets = stateManager.getDeploymentSecrets();
+    const rootStackId = getRootStackId();
     if (hostedUIProviderCreds) {
-      const deploymentSecrets = stateManager.getDeploymentSecrets();
-      const rootStackId = getRootStackId();
       stateManager.setDeploymentSecrets(
         mergeDeploymentSecrets({
           currentDeploymentSecrets: deploymentSecrets,
@@ -86,6 +86,17 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
           keyName: hostedUIProviderCredsField,
           value: hostedUIProviderCreds,
           resource,
+        }),
+      );
+    } else {
+      stateManager.setDeploymentSecrets(
+        removeFromDeploymentSecrets({
+          currentDeploymentSecrets: deploymentSecrets,
+          rootStackId,
+          category,
+          resource,
+          envName: currentEnv,
+          keyName: hostedUIProviderCredsField,
         }),
       );
     }
