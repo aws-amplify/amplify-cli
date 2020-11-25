@@ -4,6 +4,9 @@ const askShouldGenerateCode = require('../walkthrough/questions/generateCode');
 const addWalkThrough = require('../walkthrough/add');
 const { isCodegenConfigured } = require('../utils');
 const prePushUpdateCallback = require('./prePushUpdateCallback');
+const { join } = require('path');
+const { isDataStoreEnabled } = require('graphql-transformer-core');
+const { pathManager } = require('amplify-cli-core');
 
 async function prePushAddCallback(context, resourceName) {
   // when codegen is already configured
@@ -35,6 +38,7 @@ async function prePushAddCallback(context, resourceName) {
       },
     };
     return {
+      shouldGenerateModels: await isDataStoreEnabled(join(pathManager.getBackendDirPath(), 'api', resourceName)),
       gqlConfig: newProject,
       shouldGenerateDocs: answers.shouldGenerateDocs,
     };
