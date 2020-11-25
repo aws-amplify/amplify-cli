@@ -15,7 +15,6 @@ const isCodegenConfigured = require('./isCodegenConfigured');
 const getSDLSchemaLocation = require('./getSDLSchemaLocation');
 const switchToSDLSchema = require('./switchToSDLSchema');
 const ensureIntrospectionSchema = require('./ensureIntrospectionSchema');
-const getCodegenPackageName = require('./getCodegenPackageName');
 
 module.exports = {
   getAppSyncAPIDetails,
@@ -35,5 +34,4 @@ module.exports = {
   getSDLSchemaLocation,
   switchToSDLSchema,
   ensureIntrospectionSchema,
-  getCodegenPackageName,
 };
