@@ -1,20 +1,12 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
-import { InvalidEnvironmentNameError, stateManager, exitOnNextTick, $TSContext } from 'amplify-cli-core';
 import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
+import { InvalidEnvironmentNameError, stateManager, exitOnNextTick } from 'amplify-cli-core';
 
-export async function analyzeProjectHeadless(context: $TSContext) {
-  const projectPath = process.cwd();
-  const projectName = path.basename(projectPath);
-  const env = getDefaultEnv(context);
-  setProjectConfig(context, projectName);
-  setExeInfo(context, projectPath, undefined, env);
-}
-
-export async function analyzeProject(context): Promise<$TSContext> {
+export async function analyzeProject(context) {
   if (!context.parameters.options.app) {
     context.print.warning('Note: It is recommended to run this command from the root of your app directory');
   }
@@ -44,28 +36,22 @@ export async function analyzeProject(context): Promise<$TSContext> {
     }
   }
 
-  setProjectConfig(context, projectName);
-  setExeInfo(context, projectPath, defaultEditor, envName);
-
-  return context;
-}
-
-function setProjectConfig(context: $TSContext, projectName: string) {
-  context.exeInfo.isNewProject = isNewProject(context);
   context.exeInfo.projectConfig = {
     projectName,
     version: amplifyCLIConstants.PROJECT_CONFIG_VERSION,
   };
-}
 
-function setExeInfo(context: $TSContext, projectPath: String, defaultEditor?: String, envName?: String) {
   context.exeInfo.localEnvInfo = {
     projectPath,
     defaultEditor,
     envName,
   };
+
   context.exeInfo.teamProviderInfo = {};
+
   context.exeInfo.metaData = {};
+
+  return context;
 }
 
 /* Begin getProjectName */
@@ -118,14 +104,6 @@ async function getEditor(context) {
 }
 /* End getEditor */
 
-function getDefaultEnv(context): string | undefined {
-  const defaultEnv = 'dev';
-  if (isNewProject(context) || !context.amplify.getAllEnvs().includes(defaultEnv)) {
-    return defaultEnv;
-  }
-  return undefined;
-}
-
 async function getEnvName(context) {
   let envName;
 
@@ -150,7 +128,11 @@ async function getEnvName(context) {
   }
 
   const newEnvQuestion = async () => {
-    let defaultEnvName = getDefaultEnv(context);
+    let defaultEnvName;
+    if (isNewProject(context) || !context.amplify.getAllEnvs().includes('dev')) {
+      defaultEnvName = 'dev';
+    }
+
     const envNameQuestion: inquirer.InputQuestion = {
       type: 'input',
       name: 'envName',
