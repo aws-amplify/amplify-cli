@@ -5,7 +5,6 @@ const inquirer = require('inquirer');
 const emoji = require('node-emoji');
 const { spawn } = require('child_process');
 const frameworkConfigMapping = require('./framework-config-mapping');
-const args = require('yargs').argv;
 const { addAmplifyFiles } = require('./xcodeHelpers');
 const ini = require('ini');
 const semver = require('semver');
@@ -17,9 +16,20 @@ const isWin = process.platform.startsWith('win');
 const npm = isWin ? 'npm.cmd' : 'npm';
 const amplifyCliPackageName = '@aws-amplify/cli';
 
-async function run() {
-  const projpath = args.path;
-
+/**
+ * `amplify-app` entry point
+ *
+ * @param {Object} opts command options
+ * @param {string?} opts.path project path
+ * @param {string?} opts.platform ios | android  | javascript
+ * @param {boolean?} opts.skipEnvCheck if true, skip environment checks (NodeJs version, amplify-cli)
+ * @param {string?} opts.jsFramework javascript framework
+ *
+ * @public
+ * @returns {Promise<void>}
+ */
+function run(opts) {
+  const projpath = opts.path;
   if (projpath) {
     process.chdir(projpath);
   }
@@ -39,21 +49,27 @@ async function run() {
   }
 }
 
-// Node version check
-async function checkNodeVersion() {
+/**
+ * Checks installed NodeJS version
+ * @private
+ */
+function checkNodeVersion() {
   const currentNodeVersion = process.versions.node;
   const minNodeVersion = engines.node;
   if (!semver.satisfies(currentNodeVersion, minNodeVersion)) {
-    console.error(
-      `You are running Node ${currentNodeVersion}.\n` +
-        `Amplify CLI requires Node ${minNodeVersion}. \n` +
-        `Please update your version of Node.`,
-    );
+    const errorMsg = `You are running Node ${currentNodeVersion}.\n` +
+    `Amplify CLI requires Node ${minNodeVersion}. \n` +
+    `Please update your version of Node.`;
+    console.error(errorMsg);
     process.exit(1);
   }
 }
 
-// Install CLI using npm
+/**
+ * Installs Amplify CLI using npm
+ * @private
+ * @returns {Promise<void>}
+ */
 async function installAmplifyCLI() {
   return new Promise((resolve, reject) => {
     const amplifyCLIInstall = spawn(npm, ['install', '-g', amplifyCliPackageName], {
@@ -74,7 +90,11 @@ async function installAmplifyCLI() {
   });
 }
 
-// Check the amplify CLI version, install latest CLI if it does not exist or is too old
+/**
+ * Check the amplify CLI version, install latest CLI if it does not exist or is too old
+ * @private
+ * @returns {Promise<void>}
+ */
 async function amplifyCLIVersionCheck() {
   try {
     const amplifyCLIVersionRaw = await callAmplify(['-v'], { inheritIO: false });
@@ -98,9 +118,14 @@ async function amplifyCLIVersionCheck() {
   }
 }
 
-/* Check if amplify directory is present
-If not - then generate a skeleton with a base project */
-
+/**
+ * Checks if amplify directory is present.
+ * If not - then generate a skeleton with a base project
+ * @private
+ * @param {string} platform
+ * @param {string} jsFramework
+ * @returns {Promise<void>}
+ */
 async function createAmplifySkeletonProject() {
   let frontend;
   if (!fs.existsSync('./amplify')) {
@@ -128,11 +153,17 @@ async function createAmplifySkeletonProject() {
     const projectConfig = await getProjectConfig(existingApp);
     frontend = projectConfig.frontend;
   }
+  // TODO figure out where to put this check
+  // if (platform !== 'ios') {
+  //   console.log(
+  //     `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.\n`,
+  //   );
+  // }
   await createAmplifyHelperFiles(frontend);
   return frontend;
 }
 
-async function getProjectConfig(existingApp) {
+async function getProjectConfig(existingApp, argPlatform, argJsFramework) {
   if (existingApp === true) {
     const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
     const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
@@ -143,21 +174,27 @@ async function getProjectConfig(existingApp) {
   const projectName = path.basename(process.cwd());
   let projectConfig = {};
 
-  const { suitableFrontend, jsFrameWork } = await guessPlatform();
+  const { suitableFrontend, jsFramework } = await guessPlatform(argPlatform, argJsFramework);
 
   const projectConfigTemplateFilePath = path.join(__dirname, 'project-configs', `project-config-${suitableFrontend}.json`);
   projectConfig = JSON.parse(fs.readFileSync(projectConfigTemplateFilePath));
   projectConfig.projectName = projectName;
 
   if (suitableFrontend === 'javascript') {
-    projectConfig.javascript.framework = jsFrameWork;
-    projectConfig.javascript.config = frameworkConfigMapping[jsFrameWork];
+    projectConfig.javascript.framework = jsFramework;
+    projectConfig.javascript.config = frameworkConfigMapping[jsFramework];
   }
 
   return projectConfig;
 }
 
-async function guessPlatform() {
+/**
+ * Guesses platform and used JavaScript framework if no values
+ * are provided
+ * @param {string?} providedPlatform optional platform
+ * @param {string?} providedJSFramework optional JavaScript framework
+ */
+async function guessPlatform(providedPlatform, providedJSFramework) {
   const frontendPlugins = {
     javascript: 'amplify-frontend-javascript',
     android: 'amplify-frontend-android',
@@ -166,14 +203,15 @@ async function guessPlatform() {
   };
 
   let suitableFrontend;
+  let resolvedJSFramework = 'none';
 
   const validFrontends = Object.keys(frontendPlugins);
 
-  if (args.platform) {
-    if (!validFrontends.includes(args.platform)) {
+  if (providedPlatform) {
+    if (!validFrontends.includes(providedPlatform)) {
       throw new Error('Invalid platform value passed. Valid values are javascript/ios/android');
     } else {
-      suitableFrontend = args.platform;
+      suitableFrontend = providedPlatform;
     }
   } else {
     let fitToHandleScore = -1;
@@ -188,21 +226,19 @@ async function guessPlatform() {
     });
   }
 
-  let jsFrameWork = 'none';
-
   if (suitableFrontend === 'javascript') {
     const validJSFrameworks = Object.keys(frameworkConfigMapping);
 
-    if (args.platform) {
-      if (!validJSFrameworks.includes(args.framework)) {
-        throw new Error('Invalid framework value passed. Valid values are  angular/ember/ionic/react/react-native/vue/none');
+    if (providedPlatform) {
+      if (!validJSFrameworks.includes(providedJSFramework)) {
+        throw new Error('Invalid framework value passed. Valid values are angular/ember/ionic/react/react-native/vue/none');
       } else {
-        jsFrameWork = args.framework;
+        resolvedJSFramework = providedJSFramework;
       }
     } else {
-      jsFrameWork = guessFramework(process.cwd());
+      resolvedJSFramework = guessFramework(process.cwd());
 
-      if (jsFrameWork === 'none') {
+      if (resolvedJSFramework === 'none') {
         const platformComfirmation = {
           type: 'list',
           name: 'platform',
@@ -222,7 +258,7 @@ async function guessPlatform() {
           };
 
           const { framework } = await inquirer.prompt(frameworkComfirmation);
-          jsFrameWork = framework;
+          resolvedJSFramework = framework;
         }
       }
     }
@@ -231,15 +267,15 @@ async function guessPlatform() {
   if (suitableFrontend) {
     console.log(`$  Amplify project setup for ${suitableFrontend} platform`);
   }
-  if (jsFrameWork) {
-    console.log(`${emoji.get('white_check_mark')} Framework detected: ${jsFrameWork}`);
+  if (resolvedJSFramework) {
+    console.log(`${emoji.get('white_check_mark')} Framework detected: ${resolvedJSFramework}`);
   }
 
-  return { suitableFrontend, jsFrameWork };
+  return { suitableFrontend, jsFramework: resolvedJSFramework };
 }
 
 function guessFramework(projectPath) {
-  let frameWork = 'none';
+  let framework = 'none';
   try {
     const packageJsonFilePath = path.join(projectPath, 'package.json');
 
@@ -247,25 +283,25 @@ function guessFramework(projectPath) {
       const packageJson = JSON.parse(fs.readFileSync(packageJsonFilePath));
       if (packageJson && packageJson.dependencies) {
         if (packageJson.dependencies.react) {
-          frameWork = 'react';
+          framework = 'react';
           if (packageJson.dependencies['react-native']) {
-            frameWork = 'react-native';
+            framework = 'react-native';
           }
         } else if (packageJson.dependencies['@angular/core']) {
-          frameWork = 'angular';
+          framework = 'angular';
           if (packageJson.dependencies['ionic-angular']) {
-            frameWork = 'ionic';
+            framework = 'ionic';
           }
         } else if (packageJson.dependencies.vue) {
-          frameWork = 'vue';
+          framework = 'vue';
         }
       }
     }
   } catch (e) {
     console.log(e.stack);
-    frameWork = 'none';
+    framework = 'none';
   }
-  return frameWork;
+  return framework;
 }
 
 async function createJSHelperFiles() {
@@ -424,10 +460,6 @@ async function showHelpText(frontend) {
   if (frontend === 'android') {
     await showAndroidHelpText();
   }
-
-  if (frontend === 'ios') {
-    await showIOSHelpText();
-  }
 }
 
 async function showJSHelpText() {
@@ -446,18 +478,6 @@ async function showAndroidHelpText() {
   );
   console.log(
     'Running the "amplifyPush" task provided in the amplifytools plugin will build all your local backend resources and provision them in the cloud',
-  );
-  console.log('');
-}
-
-async function showIOSHelpText() {
-  console.log();
-  console.log(chalk.green('Some next steps:'));
-  console.log(
-    'Setting "modelgen" to true in amplifytools.xcconfig will allow you to generate models/entities for your GraphQL models in your next xcode build',
-  );
-  console.log(
-    'Setting "push" to true in the amplifytools.xcconfig will build all your local backend resources and provision them in the cloud in your next xcode build',
   );
   console.log('');
 }
