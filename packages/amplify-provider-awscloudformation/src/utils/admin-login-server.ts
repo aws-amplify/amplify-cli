@@ -7,7 +7,7 @@ import { JWK, JWKS, JWT } from 'jose';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 
-import { TokenPayload, CognitoIdToken, CognitoAccessToken } from './cognitoJwtTypes';
+import { TokenPayload, CognitoIdToken, CognitoAccessToken } from './cognito-jwt-types';
 
 export class AdminLoginServer {
   private port = 4242; // placeholder
