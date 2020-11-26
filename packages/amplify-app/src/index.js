@@ -53,18 +53,17 @@ const run = async opts => {
     }
     if (platform.frontend === 'ios' && !opts.internalOnlyIosCallback) {
       // the ios frontend plugin handles the post init event to call back to ampfliy-app
-      // So we need to exit here if this is the original invocation of amplify-app (aka not the callback)
+      // So we need to return here if this is the original invocation of amplify-app (aka not the callback)
       // yes, this needs to be refactored
-      process.exit(0);
+      return;
     }
-    updateProjectConfig();
+    updateFrameworkInProjectConfig(platform.framework);
     await createAmplifyHelperFiles(platform.frontend);
     console.log(`${emoji.get('white_check_mark')} Amplify setup completed successfully.`);
     showHelpText(platform.frontend);
-    process.exit(0);
   } catch (err) {
     console.error(err);
-    process.exit(1);
+    process.exitCode = 1;
   }
 };
 
@@ -163,17 +162,15 @@ const createAmplifySkeletonProject = async frontend => {
   }
 };
 
-const updateProjectConfig = framework => {
+const updateFrameworkInProjectConfig = framework => {
   const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
   const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath, 'utf8'));
-  const projectName = path.basename(process.cwd());
-  projectConfig.projectName = projectName;
 
-  if (framework) {
+  if (framework && projectConfig.javascript) {
     projectConfig.javascript.framework = framework;
     projectConfig.javascript.config = frameworkConfigMapping[framework];
+    fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
   }
-  fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
 };
 
 /**

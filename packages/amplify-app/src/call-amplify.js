@@ -36,7 +36,7 @@ const callPkgAmplifyNix = async (args, opts) => {
 const callNodeAmplify = async (args, opts) => {
   opts = { ...defaultOpts, ...opts };
   const amplifyCmd = path.basename(process.argv[1]) === 'amplify-app-dev' ? amplifyDev : amplify;
-  const { stdout, stderr } = await execa('amplify-dev', args, { stdio: opts.inheritIO ? 'inherit' : undefined });
+  const { stdout, stderr } = await execa(amplifyCmd, args, { stdio: opts.inheritIO ? 'inherit' : undefined });
   if (stderr) {
     throw new Error(`Amplify failed due to ${stderr}`);
   }
