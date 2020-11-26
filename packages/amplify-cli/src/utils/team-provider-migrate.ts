@@ -33,13 +33,7 @@ export const migrateTeamProviderInfo = async (context: Context): Promise<boolean
 };
 
 function isPulling(context: Context): boolean {
-  const isPulling =
-    context.input.command === 'pull' ||
-    context.input.command === 'init' ||
-    (context.input.command === 'env' &&
-      !!context.input.subCommands &&
-      context.input.subCommands.length > 0 &&
-      (context.input.subCommands[0] === 'pull' || context.input.subCommands[0] === 'get'));
+  const isPulling = context.input.command === 'pull' || context.input.command === 'init' || context.input.command === 'env';
   return isPulling;
 }
 
