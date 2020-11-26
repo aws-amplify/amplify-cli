@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.24.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.24.1...amplify-category-auth@2.24.2-beta.0) (2020-11-26)
+
+
+### Bug Fixes
+
+* check hostedUI flag ([#5958](https://github.com/aws-amplify/amplify-cli/issues/5958)) ([ed310da](https://github.com/aws-amplify/amplify-cli/commit/ed310da1923b62242bf019f840deaa620aed32d1))
+
+
+
+
+
 ## [2.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.24.0...amplify-category-auth@2.24.1) (2020-11-24)
 
 
