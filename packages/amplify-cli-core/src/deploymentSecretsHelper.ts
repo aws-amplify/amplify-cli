@@ -31,6 +31,11 @@ const recursiveOmit = (obj: any, path: Array<string>): void => {
     delete obj[currentKey];
     return;
   }
+
+  if (!obj[currentKey]) {
+    return;
+  }
+
   recursiveOmit(obj[currentKey], path.slice(1));
 
   if (obj[currentKey] && _.isEmpty(obj[currentKey])) {
