@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.30.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.29.1...amplify-e2e-tests@2.30.0) (2020-11-26)
+
+
+### Features
+
+* **amplify-frontend-flutter:** adds api construction to flutter ([#5955](https://github.com/aws-amplify/amplify-cli/issues/5955)) ([3d69c12](https://github.com/aws-amplify/amplify-cli/commit/3d69c12a26001cc3d9d9be10dee5520797ff7602))
+
+
+
+
+
 ## [2.29.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.29.0...amplify-e2e-tests@2.29.1) (2020-11-24)
 
 **Note:** Version bump only for package amplify-e2e-tests

@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.36.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.35.0...@aws-amplify/cli@4.36.0) (2020-11-26)
+
+
+### Bug Fixes
+
+* removing deployment secrets and skip check on get ([#5943](https://github.com/aws-amplify/amplify-cli/issues/5943)) ([2b200b6](https://github.com/aws-amplify/amplify-cli/commit/2b200b6c97ba843b7cd37c0ee52a365f02614053))
+
+
+### Features
+
+* **iOS:** execute `amplify-app` flow on `init ` and `codegen models` ([#5917](https://github.com/aws-amplify/amplify-cli/issues/5917)) ([c47c8f7](https://github.com/aws-amplify/amplify-cli/commit/c47c8f78b37806181354d3842a2094c35b1795d0))
+
+
+### Reverts
+
+* Revert "feat(iOS): execute `amplify-app` flow on `init ` and `codegen models` (#5917)" (#5960) ([cd7951a](https://github.com/aws-amplify/amplify-cli/commit/cd7951ab6d26f1206c2f0ff95225ba7b2a5a25eb)), closes [#5917](https://github.com/aws-amplify/amplify-cli/issues/5917) [#5960](https://github.com/aws-amplify/amplify-cli/issues/5960)
+
+
+
+
+
 # [4.35.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.34.0...@aws-amplify/cli@4.35.0) (2020-11-24)
 
 

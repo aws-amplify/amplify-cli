@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.21.1...amplify-codegen-appsync-model-plugin@1.22.0) (2020-11-26)
+
+
+### Bug Fixes
+
+* snapshot for dart modelgen ([#5953](https://github.com/aws-amplify/amplify-cli/issues/5953)) ([83777ee](https://github.com/aws-amplify/amplify-cli/commit/83777ee5bf9bb4b532669d7927078db489d72975))
+
+
+
+# 4.36.0 (2020-11-24)
+
+
+### Features
+
+* **amplify-codegen-appsync-model-plugin:** add appsync dart visitor … ([#5937](https://github.com/aws-amplify/amplify-cli/issues/5937)) ([28168ad](https://github.com/aws-amplify/amplify-cli/commit/28168ad25c341c038bfd13d7ca54b1b7bd74adc7))
+
+
+
+
+
 ## [1.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.20.10...amplify-codegen-appsync-model-plugin@1.21.1) (2020-11-22)
 
 **Note:** Version bump only for package amplify-codegen-appsync-model-plugin
