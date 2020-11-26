@@ -12,10 +12,19 @@ export async function analyzeProjectHeadless(context: $TSContext) {
   const env = getDefaultEnv(context);
   setProjectConfig(context, projectName);
   setExeInfo(context, projectPath, undefined, env);
+  // default behavior in quickstart used to be android.
+  // default to that here unless different param specified
+  const { frontend } = context?.parameters?.options;
+  if (!frontend) {
+    context.print.warning('No frontend specified. Defaulting to android.');
+    context.exeInfo.projectConfig.frontend = 'android';
+  } else {
+    context.exeInfo.projectConfig.frontend = frontend;
+  }
 }
 
 export async function analyzeProject(context): Promise<$TSContext> {
-  if (!context.parameters.options.app) {
+  if (!context.parameters.options.app || !context.parameters.options.quickstart) {
     context.print.warning('Note: It is recommended to run this command from the root of your app directory');
   }
   const projectPath = process.cwd();

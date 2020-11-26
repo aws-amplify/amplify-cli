@@ -16,21 +16,10 @@ function constructExeInfo(context: $TSContext) {
 }
 
 const runStrategy = (quickstart: boolean) => {
-  return quickstart ? [
-    preInitSetup,
-    analyzeProjectHeadless,
-    initFrontend,
-    scaffoldProjectHeadless,
-    onHeadlessSuccess,
-  ] : [
-    preInitSetup,
-    analyzeProject,
-    initFrontend,
-    initProviders,
-    onSuccess,
-    postInitSetup,
-  ];
-}
+  return quickstart
+    ? [preInitSetup, analyzeProjectHeadless, scaffoldProjectHeadless, onHeadlessSuccess]
+    : [preInitSetup, analyzeProject, initFrontend, initProviders, onSuccess, postInitSetup];
+};
 
 export const run = async (context: $TSContext) => {
   constructExeInfo(context);

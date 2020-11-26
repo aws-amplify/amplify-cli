@@ -22,32 +22,51 @@ const amplifyCliPackageName = '@aws-amplify/cli';
  * @param {Object} opts command options
  * @param {string?} opts.path project path
  * @param {string?} opts.platform ios | android  | javascript
- * @param {boolean?} opts.skipEnvCheck if true, skip environment checks (NodeJs version, amplify-cli)
- * @param {string?} opts.jsFramework javascript framework
+ * @param {boolean?} opts.skipEnvCheck if true, skip node / cli checks
+ * @param {boolean?} opts.internalOnlyIosCallback if true
+ * @param {boolean?} opts.skipInit if true, skips the call to `amplify init --quickstart`
+ * @param {string?} opts.framework javascript framework
  *
  * @public
  * @returns {Promise<void>}
  */
-function run(opts) {
+const run = async opts => {
   const projpath = opts.path;
   if (projpath) {
     process.chdir(projpath);
   }
 
-  try {
-    await checkNodeVersion();
-    await amplifyCLIVersionCheck();
-    const frontend = await createAmplifySkeletonProject();
-    console.log(`${emoji.get('boom')} Amplify setup completed successfully.`);
-    showHelpText(frontend);
-    process.exit(0);
-  } catch (e) {
-    if (e) {
-      console.log(e);
+  if (!opts.skipEnvCheck) {
+    try {
+      await checkNodeVersion();
+      await amplifyCLIVersionCheck();
+    } catch (err) {
+      console.error(err);
+      process.exit(1);
     }
+  }
+
+  try {
+    const platform = await guessPlatform(opts.platform, opts.framework);
+    if (!opts.skipInit) {
+      await createAmplifySkeletonProject(platform.frontend);
+    }
+    if (platform.frontend === 'ios' && !opts.internalOnlyIosCallback) {
+      // the ios frontend plugin handles the post init event to call back to ampfliy-app
+      // So we need to exit here if this is the original invocation of amplify-app (aka not the callback)
+      // yes, this needs to be refactored
+      process.exit(0);
+    }
+    updateProjectConfig();
+    await createAmplifyHelperFiles(platform.frontend);
+    console.log(`${emoji.get('white_check_mark')} Amplify setup completed successfully.`);
+    showHelpText(platform.frontend);
+    process.exit(0);
+  } catch (err) {
+    console.error(err);
     process.exit(1);
   }
-}
+};
 
 /**
  * Checks installed NodeJS version
@@ -57,9 +76,10 @@ function checkNodeVersion() {
   const currentNodeVersion = process.versions.node;
   const minNodeVersion = engines.node;
   if (!semver.satisfies(currentNodeVersion, minNodeVersion)) {
-    const errorMsg = `You are running Node ${currentNodeVersion}.\n` +
-    `Amplify CLI requires Node ${minNodeVersion}. \n` +
-    `Please update your version of Node.`;
+    const errorMsg =
+      `You are running Node ${currentNodeVersion}.\n` +
+      `Amplify CLI requires Node ${minNodeVersion}. \n` +
+      `Please update your version of Node.`;
     console.error(errorMsg);
     process.exit(1);
   }
@@ -122,84 +142,50 @@ async function amplifyCLIVersionCheck() {
  * Checks if amplify directory is present.
  * If not - then generate a skeleton with a base project
  * @private
- * @param {string} platform
+ * @param {string} frontend
  * @param {string} jsFramework
  * @returns {Promise<void>}
  */
-async function createAmplifySkeletonProject() {
-  let frontend;
-  if (!fs.existsSync('./amplify')) {
-    console.log(`${emoji.get('guitar')} Creating base Amplify project`);
-    try {
-      await callAmplify(['init', '--quickstart']);
-      const projectConfig = await getProjectConfig();
-      const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
-      fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
-      if (!!projectConfig.javascript) {
-        initializeAwsExports(path.resolve('src'));
-      }
-      console.log(`${emoji.get('boom')} Successfully created base Amplify Project`);
-      frontend = projectConfig.frontend;
-    } catch (err) {
-      console.log(`${emoji.get('x')} Failed to create base Amplify Project`);
-      throw new Error(err);
-    }
-  } else {
+const createAmplifySkeletonProject = async frontend => {
+  if (fs.existsSync('./amplify') && frontend !== 'ios') {
     console.log(
-      `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.`,
+      `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.\n`,
     );
-    console.log();
-    const existingApp = true;
-    const projectConfig = await getProjectConfig(existingApp);
-    frontend = projectConfig.frontend;
+    return;
   }
-  // TODO figure out where to put this check
-  // if (platform !== 'ios') {
-  //   console.log(
-  //     `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.\n`,
-  //   );
-  // }
-  await createAmplifyHelperFiles(frontend);
-  return frontend;
-}
-
-async function getProjectConfig(existingApp, argPlatform, argJsFramework) {
-  if (existingApp === true) {
-    const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
-    const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath));
-
-    return projectConfig;
+  console.log(`${emoji.get('guitar')} Creating base Amplify project`);
+  try {
+    await callAmplify(['init', '--quickstart', '--frontend', frontend]);
+    console.log(`${emoji.get('white_check_mark')} Successfully created base Amplify Project`);
+  } catch (err) {
+    console.log(`${emoji.get('x')} Failed to create base Amplify Project`);
+    throw new Error(err);
   }
+};
 
+const updateProjectConfig = framework => {
+  const projectConfigFilePath = path.join('amplify', '.config', 'project-config.json');
+  const projectConfig = JSON.parse(fs.readFileSync(projectConfigFilePath, 'utf8'));
   const projectName = path.basename(process.cwd());
-  let projectConfig = {};
-
-  const { suitableFrontend, jsFramework } = await guessPlatform(argPlatform, argJsFramework);
-
-  const projectConfigTemplateFilePath = path.join(__dirname, 'project-configs', `project-config-${suitableFrontend}.json`);
-  projectConfig = JSON.parse(fs.readFileSync(projectConfigTemplateFilePath));
   projectConfig.projectName = projectName;
 
-  if (suitableFrontend === 'javascript') {
-    projectConfig.javascript.framework = jsFramework;
-    projectConfig.javascript.config = frameworkConfigMapping[jsFramework];
+  if (framework) {
+    projectConfig.javascript.framework = framework;
+    projectConfig.javascript.config = frameworkConfigMapping[framework];
   }
-
-  return projectConfig;
-}
+  fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
+};
 
 /**
- * Guesses platform and used JavaScript framework if no values
- * are provided
+ * Guesses platform and used JavaScript framework if no values are provided
  * @param {string?} providedPlatform optional platform
  * @param {string?} providedJSFramework optional JavaScript framework
  */
-async function guessPlatform(providedPlatform, providedJSFramework) {
+const guessPlatform = async (providedPlatform, providedJSFramework) => {
   const frontendPlugins = {
     javascript: 'amplify-frontend-javascript',
     android: 'amplify-frontend-android',
     ios: 'amplify-frontend-ios',
-    flutter: 'amplify-frontend-flutter',
   };
 
   let suitableFrontend;
@@ -207,11 +193,15 @@ async function guessPlatform(providedPlatform, providedJSFramework) {
 
   const validFrontends = Object.keys(frontendPlugins);
 
+  let isInferredPlatform = true;
+  let isInferredFramework = true;
+
   if (providedPlatform) {
     if (!validFrontends.includes(providedPlatform)) {
       throw new Error('Invalid platform value passed. Valid values are javascript/ios/android');
     } else {
       suitableFrontend = providedPlatform;
+      isInferredPlatform = false;
     }
   } else {
     let fitToHandleScore = -1;
@@ -229,11 +219,12 @@ async function guessPlatform(providedPlatform, providedJSFramework) {
   if (suitableFrontend === 'javascript') {
     const validJSFrameworks = Object.keys(frameworkConfigMapping);
 
-    if (providedPlatform) {
+    if (providedJSFramework) {
       if (!validJSFrameworks.includes(providedJSFramework)) {
         throw new Error('Invalid framework value passed. Valid values are angular/ember/ionic/react/react-native/vue/none');
       } else {
         resolvedJSFramework = providedJSFramework;
+        isInferredFramework = false;
       }
     } else {
       resolvedJSFramework = guessFramework(process.cwd());
@@ -248,6 +239,7 @@ async function guessPlatform(providedPlatform, providedJSFramework) {
 
         const { platform } = await inquirer.prompt(platformComfirmation);
         suitableFrontend = platform;
+        isInferredPlatform = false;
 
         if (suitableFrontend === 'javascript') {
           const frameworkComfirmation = {
@@ -264,15 +256,15 @@ async function guessPlatform(providedPlatform, providedJSFramework) {
     }
   }
 
-  if (suitableFrontend) {
-    console.log(`$  Amplify project setup for ${suitableFrontend} platform`);
+  if (suitableFrontend && isInferredPlatform) {
+    console.log(`${emoji.get('white_check_mark')} Amplify project setup for ${suitableFrontend} platform`);
   }
-  if (resolvedJSFramework) {
+  if (resolvedJSFramework !== 'none' && isInferredFramework) {
     console.log(`${emoji.get('white_check_mark')} Framework detected: ${resolvedJSFramework}`);
   }
 
-  return { suitableFrontend, jsFramework: resolvedJSFramework };
-}
+  return { frontend: suitableFrontend, framework: resolvedJSFramework };
+};
 
 function guessFramework(projectPath) {
   let framework = 'none';
@@ -438,6 +430,7 @@ async function createIosHelperFiles() {
 
 async function createAmplifyHelperFiles(frontend) {
   if (frontend === 'javascript') {
+    initializeAwsExports(path.resolve('src'));
     await createJSHelperFiles();
   }
 
@@ -482,4 +475,4 @@ async function showAndroidHelpText() {
   console.log('');
 }
 
-module.exports = { run, createAmplifySkeletonProject };
+module.exports = { run };
