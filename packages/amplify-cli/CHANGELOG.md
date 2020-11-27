@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.36.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.36.0...@aws-amplify/cli@4.36.1) (2020-11-27)
+
+
+### Bug Fixes
+
+* migrate check for env command ([#5987](https://github.com/aws-amplify/amplify-cli/issues/5987)) ([4b10034](https://github.com/aws-amplify/amplify-cli/commit/4b10034f247d3f441ec8ee13d579972be64a5132))
+
+
+
+
+
 # [4.36.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.35.0...@aws-amplify/cli@4.36.0) (2020-11-26)
 
 

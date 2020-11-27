@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.8.0...amplify-cli-core@1.9.0) (2020-11-27)
+
+
+### Bug Fixes
+
+* fix to ignore deployment secret if not found ([#5985](https://github.com/aws-amplify/amplify-cli/issues/5985)) ([c1df18d](https://github.com/aws-amplify/amplify-cli/commit/c1df18ded1610bdabc342471dc67a40100a325dc))
+
+
+### Features
+
+* **iOS:** execute `amplify-app` flow on `init ` and `codegen models` ([#5917](https://github.com/aws-amplify/amplify-cli/issues/5917)) ([c47c8f7](https://github.com/aws-amplify/amplify-cli/commit/c47c8f78b37806181354d3842a2094c35b1795d0))
+
+
+### Reverts
+
+* Revert "feat(iOS): execute `amplify-app` flow on `init ` and `codegen models` (#5917)" (#5960) ([cd7951a](https://github.com/aws-amplify/amplify-cli/commit/cd7951ab6d26f1206c2f0ff95225ba7b2a5a25eb)), closes [#5917](https://github.com/aws-amplify/amplify-cli/issues/5917) [#5960](https://github.com/aws-amplify/amplify-cli/issues/5960)
+
+
+
+
+
 # [1.8.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.6.0...amplify-cli-core@1.8.0) (2020-11-22)
 
 
