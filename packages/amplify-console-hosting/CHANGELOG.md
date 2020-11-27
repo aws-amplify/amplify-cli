@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.5.1...amplify-console-hosting@1.5.2) (2020-11-27)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
 ## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.4.12...amplify-console-hosting@1.5.1) (2020-11-22)
 
 **Note:** Version bump only for package amplify-console-hosting

@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.18.0...amplify-codegen@2.18.1) (2020-11-27)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+# [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.17.1...amplify-codegen@2.18.0) (2020-11-26)
+
+
+
+# 4.36.0 (2020-11-24)
+
+
+### Features
+
+* **amplify-codegen-appsync-model-plugin:** add appsync dart visitor … ([#5937](https://github.com/aws-amplify/amplify-cli/issues/5937)) ([28168ad](https://github.com/aws-amplify/amplify-cli/commit/28168ad25c341c038bfd13d7ca54b1b7bd74adc7))
+
+
+
+
+
 ## [2.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.16.2...amplify-codegen@2.17.1) (2020-11-22)
 
 

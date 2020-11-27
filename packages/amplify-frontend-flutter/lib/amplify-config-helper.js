@@ -5,6 +5,7 @@ function generateConfig(context, amplifyConfig, newAWSConfig) {
     Version: '1.0',
   };
   constructAnalytics(metadata, amplifyConfig);
+  constructApi(metadata, amplifyConfig);
   // Auth plugin with entire awsconfiguration contained required for Native GA release
   constructAuth(metadata, amplifyConfig, newAWSConfig);
   constructStorage(metadata, amplifyConfig);
@@ -41,6 +42,45 @@ function constructAnalytics(metadata, amplifyConfig) {
         region: resourceMeta.output.Region,
       };
     }
+  }
+}
+
+function constructApi(metadata, amplifyConfig) {
+  const categoryName = 'api';
+  const pluginName = 'awsAPIPlugin';
+  const region = metadata.providers.awscloudformation.Region;
+  if (metadata[categoryName]) {
+    Object.keys(metadata[categoryName]).forEach(r => {
+      const resourceMeta = metadata[categoryName][r];
+      if (resourceMeta.output) {
+        amplifyConfig[categoryName] = amplifyConfig[categoryName] || {};
+        amplifyConfig[categoryName].plugins = amplifyConfig[categoryName].plugins || {};
+        amplifyConfig[categoryName].plugins[pluginName] = amplifyConfig[categoryName].plugins[pluginName] || {};
+
+        if (resourceMeta.service === 'AppSync') {
+          let authorizationType;
+          if (resourceMeta.output.authConfig && resourceMeta.output.authConfig.defaultAuthentication) {
+            authorizationType = resourceMeta.output.authConfig.defaultAuthentication.authenticationType;
+          } else if (resourceMeta.output.securityType) {
+            authorizationType = resourceMeta.output.securityType;
+          }
+          amplifyConfig[categoryName].plugins[pluginName][r] = {
+            endpointType: 'GraphQL',
+            endpoint: resourceMeta.output.GraphQLAPIEndpointOutput,
+            region,
+            authorizationType,
+            apiKey: resourceMeta.output.GraphQLAPIKeyOutput,
+          };
+        } else if (resourceMeta.service === 'API Gateway') {
+          amplifyConfig[categoryName].plugins[pluginName][r] = {
+            endpointType: 'REST',
+            endpoint: resourceMeta.output.RootUrl,
+            region,
+            authorizationType: 'AWS_IAM',
+          };
+        }
+      }
+    });
   }
 }
 

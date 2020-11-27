@@ -9354,6 +9354,11 @@ dargs@^7.0.0:
   resolved "https://registry.yarnpkg.com/dargs/-/dargs-7.0.0.tgz#04015c41de0bcb69ec84050f3d9be0caf8d6d5cc"
   integrity sha512-2iy1EkLdlBzQGvbweYRFxmFath8+K7+AKB0TlhHWkNuH+TmovaMH/Wp7V7R4u7f4SnX3OgLsU9t1NI9ioDnUpg==
 
+dart-style@1.3.2-dev:
+  version "1.3.2-dev"
+  resolved "https://registry.yarnpkg.com/dart-style/-/dart-style-1.3.2-dev.tgz#d21a80ff0b7f9d800584ec6a6a659ac3242ac855"
+  integrity sha512-NFI4UQYvG32t/cEkQAdkXT2ZT72tjF61tMWoALmnGwj03d2Co94zwGfbnFfdQUQvrhUNx8Wz2jKSVxGrmFaVJQ==
+
 dashdash@^1.12.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/dashdash/-/dashdash-1.14.1.tgz#853cfa0f7cbe2fed5de20326b8dd581035f6e2f0"

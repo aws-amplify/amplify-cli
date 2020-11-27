@@ -414,7 +414,6 @@ class customClaim extends Model {
   final String id;
   final String name;
   final String bar;
-  final String owner;
 
   @override
   getInstanceType() => classType;
@@ -424,16 +423,11 @@ class customClaim extends Model {
     return id;
   }
 
-  const customClaim._internal(
-      {@required this.id, this.name, this.bar, this.owner});
+  const customClaim._internal({@required this.id, this.name, this.bar});
 
-  factory customClaim(
-      {@required String id, String name, String bar, String owner}) {
+  factory customClaim({@required String id, String name, String bar}) {
     return customClaim._internal(
-        id: id == null ? UUID.getUUID() : id,
-        name: name,
-        bar: bar,
-        owner: owner);
+        id: id == null ? UUID.getUUID() : id, name: name, bar: bar);
   }
 
   bool equals(Object other) {
@@ -446,8 +440,7 @@ class customClaim extends Model {
     return other is customClaim &&
         id == other.id &&
         name == other.name &&
-        bar == other.bar &&
-        owner == other.owner;
+        bar == other.bar;
   }
 
   @override
@@ -460,35 +453,27 @@ class customClaim extends Model {
     buffer.write(\\"customClaim {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
-    buffer.write(\\"bar=\\" + bar + \\", \\");
-    buffer.write(\\"owner=\\" + owner);
+    buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
 
     return buffer.toString();
   }
 
-  customClaim copyWith(
-      {@required String id, String name, String bar, String owner}) {
+  customClaim copyWith({@required String id, String name, String bar}) {
     return customClaim(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        bar: bar ?? this.bar,
-        owner: owner ?? this.owner);
+        id: id ?? this.id, name: name ?? this.name, bar: bar ?? this.bar);
   }
 
   customClaim.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         name = json['name'],
-        bar = json['bar'],
-        owner = json['owner'];
+        bar = json['bar'];
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"customClaim.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
-  static final QueryField OWNER = QueryField(fieldName: \\"owner\\");
   static var schema =
       Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"customClaim\\";
@@ -516,11 +501,6 @@ class customClaim extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: customClaim.BAR,
-        isRequired: false,
-        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
-
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-        key: customClaim.OWNER,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
@@ -823,7 +803,6 @@ class simpleOwnerAuth extends Model {
   final String id;
   final String name;
   final String bar;
-  final String owner;
 
   @override
   getInstanceType() => classType;
@@ -833,16 +812,11 @@ class simpleOwnerAuth extends Model {
     return id;
   }
 
-  const simpleOwnerAuth._internal(
-      {@required this.id, this.name, this.bar, this.owner});
+  const simpleOwnerAuth._internal({@required this.id, this.name, this.bar});
 
-  factory simpleOwnerAuth(
-      {@required String id, String name, String bar, String owner}) {
+  factory simpleOwnerAuth({@required String id, String name, String bar}) {
     return simpleOwnerAuth._internal(
-        id: id == null ? UUID.getUUID() : id,
-        name: name,
-        bar: bar,
-        owner: owner);
+        id: id == null ? UUID.getUUID() : id, name: name, bar: bar);
   }
 
   bool equals(Object other) {
@@ -855,8 +829,7 @@ class simpleOwnerAuth extends Model {
     return other is simpleOwnerAuth &&
         id == other.id &&
         name == other.name &&
-        bar == other.bar &&
-        owner == other.owner;
+        bar == other.bar;
   }
 
   @override
@@ -869,35 +842,27 @@ class simpleOwnerAuth extends Model {
     buffer.write(\\"simpleOwnerAuth {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
-    buffer.write(\\"bar=\\" + bar + \\", \\");
-    buffer.write(\\"owner=\\" + owner);
+    buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
 
     return buffer.toString();
   }
 
-  simpleOwnerAuth copyWith(
-      {@required String id, String name, String bar, String owner}) {
+  simpleOwnerAuth copyWith({@required String id, String name, String bar}) {
     return simpleOwnerAuth(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        bar: bar ?? this.bar,
-        owner: owner ?? this.owner);
+        id: id ?? this.id, name: name ?? this.name, bar: bar ?? this.bar);
   }
 
   simpleOwnerAuth.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         name = json['name'],
-        bar = json['bar'],
-        owner = json['owner'];
+        bar = json['bar'];
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"simpleOwnerAuth.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
-  static final QueryField OWNER = QueryField(fieldName: \\"owner\\");
   static var schema =
       Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"simpleOwnerAuth\\";
@@ -925,11 +890,6 @@ class simpleOwnerAuth extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: simpleOwnerAuth.BAR,
-        isRequired: false,
-        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
-
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-        key: simpleOwnerAuth.OWNER,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
@@ -972,7 +932,6 @@ class allowRead extends Model {
   final String id;
   final String name;
   final String bar;
-  final String owner;
 
   @override
   getInstanceType() => classType;
@@ -982,16 +941,11 @@ class allowRead extends Model {
     return id;
   }
 
-  const allowRead._internal(
-      {@required this.id, this.name, this.bar, this.owner});
+  const allowRead._internal({@required this.id, this.name, this.bar});
 
-  factory allowRead(
-      {@required String id, String name, String bar, String owner}) {
+  factory allowRead({@required String id, String name, String bar}) {
     return allowRead._internal(
-        id: id == null ? UUID.getUUID() : id,
-        name: name,
-        bar: bar,
-        owner: owner);
+        id: id == null ? UUID.getUUID() : id, name: name, bar: bar);
   }
 
   bool equals(Object other) {
@@ -1004,8 +958,7 @@ class allowRead extends Model {
     return other is allowRead &&
         id == other.id &&
         name == other.name &&
-        bar == other.bar &&
-        owner == other.owner;
+        bar == other.bar;
   }
 
   @override
@@ -1018,35 +971,27 @@ class allowRead extends Model {
     buffer.write(\\"allowRead {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
-    buffer.write(\\"bar=\\" + bar + \\", \\");
-    buffer.write(\\"owner=\\" + owner);
+    buffer.write(\\"bar=\\" + bar);
     buffer.write(\\"}\\");
 
     return buffer.toString();
   }
 
-  allowRead copyWith(
-      {@required String id, String name, String bar, String owner}) {
+  allowRead copyWith({@required String id, String name, String bar}) {
     return allowRead(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        bar: bar ?? this.bar,
-        owner: owner ?? this.owner);
+        id: id ?? this.id, name: name ?? this.name, bar: bar ?? this.bar);
   }
 
   allowRead.fromJson(Map<String, dynamic> json)
       : id = json['id'],
         name = json['name'],
-        bar = json['bar'],
-        owner = json['owner'];
+        bar = json['bar'];
 
-  Map<String, dynamic> toJson() =>
-      {'id': id, 'name': name, 'bar': bar, 'owner': owner};
+  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'bar': bar};
 
   static final QueryField ID = QueryField(fieldName: \\"allowRead.id\\");
   static final QueryField NAME = QueryField(fieldName: \\"name\\");
   static final QueryField BAR = QueryField(fieldName: \\"bar\\");
-  static final QueryField OWNER = QueryField(fieldName: \\"owner\\");
   static var schema =
       Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = \\"allowRead\\";
@@ -1073,11 +1018,6 @@ class allowRead extends Model {
 
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
         key: allowRead.BAR,
-        isRequired: false,
-        ofType: ModelFieldType(ModelFieldTypeEnum.string)));
-
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-        key: allowRead.OWNER,
         isRequired: false,
         ofType: ModelFieldType(ModelFieldTypeEnum.string)));
   });
