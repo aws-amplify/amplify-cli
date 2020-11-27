@@ -860,7 +860,6 @@ workflows:
               only:
                 - master
                 - beta
-                - issue5764
           requires:
             - build
             - mock_e2e_tests
@@ -888,7 +887,6 @@ workflows:
             branches:
               only:
                 - master
-                - issue5764
           requires:
             - publish_to_local_registry
       - done_with_node_e2e_tests:
