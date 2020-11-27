@@ -23,7 +23,8 @@ async function run(context) {
     } else {
       // Check if this is a Amplify Admin appId
       const res = await isAmplifyAdminApp(appId);
-      if (res.isAdminApp) {
+      isAdminApp = res.isAdminApp;
+      if (isAdminApp) {
         // Admin app, go through login flow
         try {
           await adminLoginFlow(context, appId, envName, res.region);
@@ -38,8 +39,8 @@ async function run(context) {
     const { appId, envName } = context.parameters.options;
     awsConfig = await configurationManager.loadConfigurationForEnv(context, envName, appId);
     context.exeInfo.awsConfig = {
-      ...context.exeInfo.awsConfig,
       configLevel: 'amplifyAdmin',
+      config: {},
     };
   } else {
     await configurationManager.init(context);
