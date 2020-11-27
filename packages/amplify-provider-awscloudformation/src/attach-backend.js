@@ -22,11 +22,11 @@ async function run(context) {
       isAdminApp = true;
     } else {
       // Check if this is a Amplify Admin appId
-      isAdminApp = await isAmplifyAdminApp(appId);
-      if (isAdminApp) {
+      const res = await isAmplifyAdminApp(appId);
+      if (res.isAdminApp) {
         // Admin app, go through login flow
         try {
-          await adminLoginFlow(context, appId, envName);
+          await adminLoginFlow(context, appId, envName, res.region);
         } catch (e) {
           context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
         }

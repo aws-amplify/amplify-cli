@@ -140,12 +140,13 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
     // TODO: Build dependency mechanism into transformers. Auth runs last
     // so any resolvers that need to be protected will already be created.
 
-    let amplifyAdminEnabled: Boolean = false;
+    let amplifyAdminEnabled: boolean = false;
 
     try {
       const amplifyMeta = stateManager.getMeta();
       const appId = amplifyMeta.providers[providerName].AmplifyAppId;
-      amplifyAdminEnabled = await isAmplifyAdminApp(appId);
+      const res = await isAmplifyAdminApp(appId);
+      amplifyAdminEnabled = res.isAdminApp;
     } catch (err) {
       console.info('App not deployed yet.');
     }

@@ -7,7 +7,7 @@ import { JWK, JWKS, JWT } from 'jose';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 
-import { TokenPayload, CognitoIdToken, CognitoAccessToken } from './cognito-jwt-types';
+import { AdminAuthPayload, CognitoIdToken, CognitoAccessToken } from './cognito-jwt-types';
 
 export class AdminLoginServer {
   private port = 4242; // placeholder
@@ -98,13 +98,10 @@ export class AdminLoginServer {
     return _.isEqual(decodedJwtId, tokens.idToken.payload) && _.isEqual(decodedJwtAccess, tokens.accessToken.payload);
   }
 
-  private async storeTokens(payload: TokenPayload, appId: string) {
+  private async storeTokens(payload: AdminAuthPayload, appId: string) {
     const issuer: string = payload.idToken.payload.iss;
-    let keys;
-    await fetch(`${issuer}/.well-known/jwks.json`)
-      .then(res => res.json())
-      .then(json => (keys = json.keys))
-      .catch(e => console.error(e));
+    const res = await fetch(`${issuer}/.well-known/jwks.json`);
+    const { keys } = await res.json();
 
     const keyStore = new JWKS.KeyStore(keys.map(key => JWK.asKey(key)));
     const areTokensValid = this.validateTokens(

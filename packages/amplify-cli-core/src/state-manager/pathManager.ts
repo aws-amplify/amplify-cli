@@ -4,11 +4,11 @@ import { homedir } from 'os';
 
 export const PathConstants = {
   // in home directory
-  DotAWSDir: '.aws',
+  DotAWSDirName: '.aws',
   AWSCredentials: 'credentials',
   AWSConfig: 'config',
   DeploymentSecretsFileName: 'deployment-secrets.json',
-  AmplifyAdminDir: 'admin',
+  AmplifyAdminDirName: 'admin',
 
   // in project root
   AmplifyDirName: 'amplify',
@@ -60,7 +60,7 @@ export class PathManager {
 
   getHomeDotAmplifyDirPath = (): string => this.homeDotAmplifyDirPath;
 
-  getAmplifyAdminDirPath = (): string => this.constructPath(this.getHomeDotAmplifyDirPath(), [PathConstants.AmplifyAdminDir]);
+  getAmplifyAdminDirPath = (): string => this.constructPath(this.getHomeDotAmplifyDirPath(), [PathConstants.AmplifyAdminDirName]);
 
   getAmplifyAdminConfigFilePath = (): string =>
     this.constructPath(this.getAmplifyAdminDirPath(), [PathConstants.AmplifyAdminConfigFileName]);
@@ -127,7 +127,7 @@ export class PathManager {
       PathConstants.BackendConfigFileName,
     ]);
 
-  getDotAWSDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDir));
+  getDotAWSDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDirName));
 
   getAWSCredentialsFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSCredentials));
 
@@ -139,7 +139,7 @@ export class PathManager {
     return this.constructPath(projectPath, [PathConstants.AmplifyDirName, fileName]);
   };
 
-  getDotAWSAmplifyDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDir, PathConstants.AmplifyDirName));
+  getDotAWSAmplifyDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDirName, PathConstants.AmplifyDirName));
 
   getDeploymentSecrets = (): string => path.normalize(path.join(this.getDotAWSAmplifyDirPath(), PathConstants.DeploymentSecretsFileName));
 
