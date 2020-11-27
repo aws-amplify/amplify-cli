@@ -130,7 +130,7 @@ const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
 
 export type ModelAuthTransformerConfig = {
   authConfig?: AppSyncAuthConfiguration;
-  addAwsIamAuthInOutputSchema?: Boolean;
+  addAwsIamAuthInOutputSchema?: boolean;
 };
 
 export type ConfiguredAuthProviders = {

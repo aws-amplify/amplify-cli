@@ -130,8 +130,15 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
-  getAmplifyAdminConfigEntry = (appId: string) => {
-    const adminConfig = (JSONUtilities.readJson(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) || {}) as any;
+  getAmplifyAdminConfigEntry = (appId: string, options?: GetOptions<$TSAny>) => {
+    const mergedOptions = {
+      throwIfNotExist: false,
+      default: {},
+      ...options,
+    };
+    const adminConfig =
+      JSONUtilities.readJson<$TSAny>(pathManager.getAmplifyAdminConfigFilePath(), { throwIfNotExist: false }) ?? mergedOptions.default;
+
     return adminConfig[appId];
   };
 
@@ -231,10 +238,10 @@ export class StateManager {
     try {
       // getting the file path can fail if we are not in a valid project
       path = filePathGetter(projectPath);
-      return fs.existsSync(path);
     } catch (e) {
       return false;
     }
+    return fs.existsSync(path);
   };
 
   private getData = <T>(filePath: string, options?: GetOptions<T>): T | undefined => {

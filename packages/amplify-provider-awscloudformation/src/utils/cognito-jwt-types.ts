@@ -1,8 +1,7 @@
-export interface TokenPayload {
+export interface AdminAuthPayload {
   accessToken: CognitoAccessToken;
   clockDrift: number;
   idToken: CognitoIdToken;
-  IdentityId?: string;
   IdentityPoolId: string;
   refreshToken: {
     token: string;
@@ -10,10 +9,15 @@ export interface TokenPayload {
   region: string;
 }
 
+export interface AuthConfig extends AdminAuthPayload {
+  IdentityId: string;
+}
+
 export interface CognitoAccessToken {
   jwtToken: string;
   payload: {
     auth_time: number;
+    client_id: string;
     'cognito:groups': string[];
     event_id: string;
     exp: number;

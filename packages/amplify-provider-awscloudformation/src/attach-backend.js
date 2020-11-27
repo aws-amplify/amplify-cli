@@ -22,11 +22,12 @@ async function run(context) {
       isAdminApp = true;
     } else {
       // Check if this is a Amplify Admin appId
-      isAdminApp = await isAmplifyAdminApp(appId);
+      const res = await isAmplifyAdminApp(appId);
+      isAdminApp = res.isAdminApp;
       if (isAdminApp) {
         // Admin app, go through login flow
         try {
-          await adminLoginFlow(context, appId, envName);
+          await adminLoginFlow(context, appId, envName, res.region);
         } catch (e) {
           context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
         }
@@ -38,8 +39,8 @@ async function run(context) {
     const { appId, envName } = context.parameters.options;
     awsConfig = await configurationManager.loadConfigurationForEnv(context, envName, appId);
     context.exeInfo.awsConfig = {
-      ...context.exeInfo.awsConfig,
       configLevel: 'amplifyAdmin',
+      config: {},
     };
   } else {
     await configurationManager.init(context);

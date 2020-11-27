@@ -11,7 +11,7 @@ const setupNewUser = require('./setup-new-user');
 const obfuscateUtil = require('./utility-obfuscate');
 const systemConfigManager = require('./system-config-manager');
 const { doAdminCredentialsExist, isAmplifyAdminApp, getRefreshedTokens } = require('./utils/admin-helpers');
-
+const { resolveAppId } = require('./utils/resolve-appId');
 const { stateManager } = require('amplify-cli-core');
 
 const defaultAWSConfig = {
@@ -25,13 +25,8 @@ async function init(context) {
   }
   normalizeInputParams(context);
 
-  let meta = undefined;
-  try {
-    meta = stateManager.getMeta(undefined, { throwIfNotExist: false });
-  } catch {
-    // swallow the error. We handle undefined meta below
-  }
-  if (meta?.providers?.awscloudformation && (await isAmplifyAdminApp(meta.providers.awscloudformation.AmplifyAppId))) {
+  const appId = resolveAppId(context);
+  if (appId && (await isAmplifyAdminApp(appId)).isAdminApp) {
     context.exeInfo.awsConfigInfo = {
       configLevel: 'amplifyAdmin',
       config: {},
@@ -158,11 +153,13 @@ async function carryOutConfigAction(context) {
 
 async function initialize(context) {
   const { awsConfigInfo } = context.exeInfo;
-  if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
-    const inputParams = context.exeInfo.inputParams[constants.Label];
-    Object.assign(awsConfigInfo, inputParams);
-  } else if (awsConfigInfo.configLevel === 'project' && (!context.exeInfo.inputParams || !context.exeInfo.inputParams.yes)) {
-    await promptForProjectConfigConfirmation(context);
+  if (awsConfigInfo.configLevel !== 'amplifyAdmin') {
+    if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
+      const inputParams = context.exeInfo.inputParams[constants.Label];
+      Object.assign(awsConfigInfo, inputParams);
+    } else if (awsConfigInfo.configLevel === 'project' && (!context.exeInfo.inputParams || !context.exeInfo.inputParams.yes)) {
+      await promptForProjectConfigConfirmation(context);
+    }
   }
 
   validateConfig(context);
@@ -560,7 +557,7 @@ async function loadConfigurationForEnv(context, env, appId) {
   let awsConfig;
   if (projectConfigInfo.configLevel === 'amplifyAdmin' || appId) {
     projectConfigInfo.configLevel = 'amplifyAdmin';
-    appId = appId || stateManager.getMeta().providers.awscloudformation.AmplifyAppId;
+    appId = appId || resolveAppId(context);
 
     if (!doAdminCredentialsExist(appId)) {
       print.info('');
@@ -744,8 +741,7 @@ async function getAwsConfig(context) {
     }
   } else if (awsConfigInfo.configLevel === 'amplifyAdmin') {
     try {
-      const meta = stateManager.getMeta();
-      const appId = _.get(meta, ['providers', 'awscloudformation', 'AmplifyAppId']);
+      const appId = resolveAppId(context);
       const authConfig = await getRefreshedTokens(appId, context.print);
       const { idToken, IdentityId, region } = authConfig;
       awsConfig = {
