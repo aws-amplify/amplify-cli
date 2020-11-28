@@ -248,6 +248,7 @@ const guessPlatform = async (providedPlatform, providedJSFramework) => {
 
           const { framework } = await inquirer.prompt(frameworkComfirmation);
           resolvedJSFramework = framework;
+          isInferredFramework = false;
         }
       }
     }
