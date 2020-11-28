@@ -56,7 +56,7 @@ export class AdminLoginServer {
       })
       .promise();
     if (!IdentityId) {
-      throw new Error('IdentityId not defined. The CLI was unable to retrieve credentials.');
+      throw new Error('IdentityId not defined. Amplify CLI was unable to retrieve credentials.');
     }
     return IdentityId;
   }
@@ -75,9 +75,9 @@ export class AdminLoginServer {
         await this.storeTokens(req.body, this.appId);
         delete req.body;
         res.sendStatus(200);
-      } catch (e) {
+      } catch (err) {
         res.sendStatus(500);
-        throw new Error('Failed to receive expected authentication tokens.');
+        throw new Error(`Failed to receive expected authentication tokens. Error: [${err}]`);
       }
       callback();
     });

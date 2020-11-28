@@ -7,7 +7,6 @@ import { onSuccess } from '../config-steps/c9-onSuccess';
 import { normalizeInputParams } from '../input-params-manager';
 import { write } from '../app-config';
 import { Context } from '../domain/context';
-const { adminLoginFlow } = require('amplify-provider-awscloudformation');
 
 export const run = async (context: Context) => {
   if (context.parameters.options['usage-data-off']) {
@@ -24,9 +23,11 @@ export const run = async (context: Context) => {
   const { appId, envName } = context?.exeInfo?.inputParams?.amplify;
   if (appId && envName) {
     try {
-      await adminLoginFlow(context, appId, envName);
+      const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+      await providerPlugin.adminLoginFlow(context, appId, envName);
     } catch (e) {
       context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
+      context.usageData.emitError(e);
       process.exit(1);
     }
     return;

@@ -3,7 +3,7 @@ const constants = require('../constants');
 const loadConfig = require('../codegen-config');
 const askShouldUpdateCode = require('../walkthrough/questions/updateCode');
 const askShouldUpdateDocs = require('../walkthrough/questions/updateDocs');
-const { join } = require('path');
+const path = require('path');
 const { isDataStoreEnabled } = require('graphql-transformer-core');
 const { pathManager } = require('amplify-cli-core');
 
@@ -32,7 +32,7 @@ async function prePushUpdateCallback(context, resourceName) {
 
     if (shouldGenerateCode) {
       return {
-        shouldGenerateModels: await isDataStoreEnabled(join(pathManager.getBackendDirPath(), 'api', resourceName)),
+        shouldGenerateModels: await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', resourceName)),
         gqlConfig: project,
         shouldGenerateDocs,
       };

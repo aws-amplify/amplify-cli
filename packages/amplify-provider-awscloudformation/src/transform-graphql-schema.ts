@@ -144,7 +144,7 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
 
     try {
       const amplifyMeta = stateManager.getMeta();
-      const appId = amplifyMeta.providers[providerName].AmplifyAppId;
+      const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
       const res = await isAmplifyAdminApp(appId);
       amplifyAdminEnabled = res.isAdminApp;
     } catch (err) {

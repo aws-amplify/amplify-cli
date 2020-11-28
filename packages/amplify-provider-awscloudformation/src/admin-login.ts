@@ -21,8 +21,7 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
     await new Promise(resolve =>
       adminLoginServer.startServer(() => {
         adminLoginServer.shutdown();
-        spinner.stop();
-        context.print.info('Successfully received Amplify Admin tokens.');
+        spinner.succeed('Successfully received Amplify Admin tokens.');
         resolve();
       }),
     );

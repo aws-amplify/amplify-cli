@@ -1,7 +1,6 @@
 import open from 'open';
 import { prompt } from 'enquirer';
 import { stateManager } from 'amplify-cli-core';
-const { isAmplifyAdminApp } = require('amplify-provider-awscloudformation');
 
 const providerName = 'awscloudformation';
 
@@ -24,7 +23,8 @@ export const run = async context => {
 
     if (envName && AmplifyAppId) {
       consoleUrl = constructStatusURL(Region, AmplifyAppId, envName);
-      if (await isAmplifyAdminApp(AmplifyAppId)) {
+      const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+      if (await providerPlugin.isAmplifyAdminApp(AmplifyAppId)) {
         const { choice } = await prompt<{ choice: string }>({
           type: 'select',
           name: 'choice',

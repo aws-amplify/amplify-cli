@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import fetch, { RequestInit } from 'node-fetch';
-import { basename } from 'path';
+import * as path from 'path';
 
 /**
  * Some constants and utils shared by github-prerelease and github-release
@@ -22,7 +22,7 @@ export const releasesRequest = (urlPath: string, opts?: RequestInit) => {
 };
 
 export const uploadReleaseFile = async (releaseId: string, filepath: string) => {
-  const filename = basename(filepath);
+  const filename = path.basename(filepath);
   const url = `${API_UPLOADS_URL}/${releaseId}/assets?name=${filename}`;
   return requestJsonWithAuth(url, {
     method: 'POST',
