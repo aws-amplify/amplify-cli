@@ -9,6 +9,13 @@ yellow="\033[33m"
 cyan="\033[36m"
 white="\033[37m"
 
+trap errorMessage EXIT
+
+function errorMessage {
+    printf "\n${red}Error: Amplify CLI failed to install. Check your internet connection and try again.$reset\n"
+    printf "If this error still occurs, install the CLI using NPM: ${cyan}npm i -g @aws-amplify/cli$reset\n"
+}
+
 printf "\n$yellow Installing the AWS Amplify CLI...$reset\n\n"
 
 # Detect platform
@@ -35,7 +42,7 @@ REPO_NAME=amplify-cli
 
 if [[ -z "$version" ]]; then
   # if no version specified, look up the latest version
-  version=`curl -L --silent https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest 2>&1 | grep 'tag_name' | grep -oE "v[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?"`
+  version=`curl -sL https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest | grep 'tag_name' | grep -oE "v[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?"`
 fi
 
 BASE_NAME=amplify-pkg-$PLATFORM
