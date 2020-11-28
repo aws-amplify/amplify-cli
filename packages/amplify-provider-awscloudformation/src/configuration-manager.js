@@ -30,7 +30,8 @@ async function init(context) {
   } catch (e) {
     // do nothing
   }
-  if (appId && (await isAmplifyAdminApp(appId)).isAdminApp) {
+  const { useProfile, configLevel } = context?.exeInfo?.inputParams?.awscloudformation || {};
+  if (!useProfile && (!configLevel || configLevel === 'amplifyAdmin') && appId && (await isAmplifyAdminApp(appId)).isAdminApp) {
     context.exeInfo.awsConfigInfo = {
       configLevel: 'amplifyAdmin',
       config: {},
