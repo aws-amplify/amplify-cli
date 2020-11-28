@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.30.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.30.1...amplify-e2e-tests@2.30.2-beta.0) (2020-11-28)
+
+
+### Reverts
+
+* "fix: remove app client secret as best practice" ([#5992](https://github.com/aws-amplify/amplify-cli/issues/5992)) ([d7d7fcf](https://github.com/aws-amplify/amplify-cli/commit/d7d7fcf65fb2928f5d97c2ada9fac8ebf3522ee0)), closes [#5731](https://github.com/aws-amplify/amplify-cli/issues/5731) [#5829](https://github.com/aws-amplify/amplify-cli/issues/5829)
+
+
+
+
+
 ## [2.30.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.30.0...amplify-e2e-tests@2.30.1) (2020-11-27)
 
 **Note:** Version bump only for package amplify-e2e-tests
