@@ -15,23 +15,26 @@ const { adminLoginFlow } = require('./admin-login');
 async function run(context) {
   let awsConfig;
   let isAdminApp = false;
-  const { appId, envName } = context?.exeInfo?.inputParams?.amplify;
-  if (appId && !envName && (await isAmplifyAdminApp(appId)).isAdminApp) {
-    throw new Error('Missing --envName <environment name> in parameters.');
-  } else if (appId && envName) {
-    // Check for existing Amplify Admin tokens
-    if (doAdminCredentialsExist(appId)) {
-      isAdminApp = true;
-    } else {
-      // Check if this is a Amplify Admin appId
-      const res = await isAmplifyAdminApp(appId);
-      isAdminApp = res.isAdminApp;
-      if (isAdminApp) {
-        // Admin app, go through login flow
-        try {
-          await adminLoginFlow(context, appId, envName, res.region);
-        } catch (e) {
-          context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
+  const { appId, envName } = context?.exeInfo?.inputParams?.amplify || {};
+  const { useProfile, configLevel } = context?.exeInfo?.inputParams?.awscloudformation || {};
+  if (!useProfile && (!configLevel || configLevel === 'amplifyAdmin')) {
+    if (appId && !envName && (await isAmplifyAdminApp(appId)).isAdminApp) {
+      throw new Error('Missing --envName <environment name> in parameters.');
+    } else if (appId && envName) {
+      // Check for existing Amplify Admin tokens
+      if (doAdminCredentialsExist(appId)) {
+        isAdminApp = true;
+      } else {
+        // Check if this is a Amplify Admin appId
+        const res = await isAmplifyAdminApp(appId);
+        isAdminApp = res.isAdminApp;
+        if (isAdminApp) {
+          // Admin app, go through login flow
+          try {
+            await adminLoginFlow(context, appId, envName, res.region);
+          } catch (e) {
+            context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
+          }
         }
       }
     }
