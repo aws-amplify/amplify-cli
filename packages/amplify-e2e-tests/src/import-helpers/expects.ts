@@ -7,6 +7,7 @@ export const expectAuthProjectDetailsMatch = (projectDetails: AuthProjectDetails
 
   expect(projectDetails.meta.UserPoolId).toEqual(ogProjectDetails.meta.UserPoolId);
   expect(projectDetails.meta.AppClientID).toEqual(ogProjectDetails.meta.AppClientID);
+  expect(projectDetails.meta.AppClientSecret).toEqual(ogProjectDetails.meta.AppClientSecret);
   expect(projectDetails.meta.AppClientIDWeb).toEqual(ogProjectDetails.meta.AppClientIDWeb);
   expect(projectDetails.meta.HostedUIDomain).toEqual(ogProjectDetails.meta.HostedUIDomain);
 
@@ -47,6 +48,7 @@ export const expectAuthLocalAndOGMetaFilesOutputMatching = (projectRoot: string,
 
   expect(authMeta.output.AppClientID).toEqual(ogAuthMeta.output.AppClientID);
   expect(authMeta.output.AppClientIDWeb).toEqual(ogAuthMeta.output.AppClientIDWeb);
+  expect(authMeta.output.AppClientSecret).toEqual(ogAuthMeta.output.AppClientSecret);
   expect(authMeta.output.HostedUIDomain).toEqual(ogAuthMeta.output.HostedUIDomain);
   expect(authMeta.output.UserPoolId).toEqual(ogAuthMeta.output.UserPoolId);
 };
