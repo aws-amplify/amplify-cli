@@ -120,7 +120,7 @@ interface AmplifyToolkit {
   getFrontendPlugins: () => $TSAny;
   getEnvDetails: () => $TSAny;
   getEnvInfo: () => $TSAny;
-  getProviderPlugins: () => $TSAny;
+  getProviderPlugins: (context: $TSContext) => $TSAny;
   getPluginInstance: () => $TSAny;
   getProjectConfig: () => $TSAny;
   getProjectDetails: () => $TSAny;

@@ -2,7 +2,7 @@ import { $TSObject, $TSContext, pathManager, stateManager } from 'amplify-cli-co
 import { isDataStoreEnabled } from 'graphql-transformer-core';
 import { normalizeInputParams } from './input-params-manager';
 import * as path from 'path';
-import { entries } from 'lodash';
+import _ from 'lodash';
 
 export function constructInputParams(context: $TSContext) {
   const inputParams: $TSObject = normalizeInputParams(context);
@@ -30,7 +30,7 @@ export const postPullCodegen = async (context: $TSContext) => {
     return;
   }
   const meta = stateManager.getCurrentMeta(undefined, { throwIfNotExist: false });
-  const gqlApiName = entries(meta?.api).find(([_, value]) => (value as any).service === 'AppSync')?.[0];
+  const gqlApiName = _.entries(meta?.api).find(([_, value]) => (value as { service: string }).service === 'AppSync')?.[0];
   if (!gqlApiName) {
     return;
   }

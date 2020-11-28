@@ -2,7 +2,7 @@ import { createAmplifySkeletonProject } from 'amplify-app';
 import fetch from 'node-fetch';
 import path from 'path';
 import fs from 'fs-extra';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, pathManager } from 'amplify-cli-core';
 
 export async function preDeployPullBackend(context: $TSContext, sandboxId: string) {
   const url = `https://rh2kdo2x79.execute-api.us-east-1.amazonaws.com/gamma/AppState/${sandboxId}`;
@@ -30,7 +30,7 @@ export async function preDeployPullBackend(context: $TSContext, sandboxId: strin
   }
 
   // Create base-skeleton amplify-folder
-  const amplifyDirPath = path.join(process.cwd(), 'amplify');
+  const amplifyDirPath = pathManager.getAmplifyDirPath(process.cwd());
   if (!fs.existsSync(amplifyDirPath)) {
     await createAmplifySkeletonProject();
   }

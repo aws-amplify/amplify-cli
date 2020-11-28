@@ -599,9 +599,10 @@ async function loadConfigurationForEnv(context, env, appId) {
         secretAccessKey: credentials.SecretAccessKey,
         sessionToken: credentials.SessionToken,
       };
-    } catch (e) {
-      print.info('');
+    } catch (err) {
       print.error('Failed to get credentials.');
+      print.info(err);
+      context.usageData.emitError(err);
       process.exit(1);
     }
   } else if (projectConfigInfo.configLevel === 'project') {
@@ -748,8 +749,9 @@ async function getAwsConfig(context) {
         ...(await getAdminCredentials(idToken, IdentityId, region)).Credentials,
         region,
       };
-    } catch (e) {
-      throw new Error('Failed to get Amplify Admin credentials.');
+    } catch (err) {
+      context.print.error('Failed to fetch Amplify Admin credentials');
+      throw new Error(err);
     }
   }
 

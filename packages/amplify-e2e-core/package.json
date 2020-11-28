@@ -24,7 +24,7 @@
     "amplify-cli-core": "1.9.0",
     "amplify-headless-interface": "1.5.2",
     "chalk": "^3.0.0",
-    "execa": "^4.0.3",
+    "execa": "^4.1.0",
     "fs-extra": "^8.1.0",
     "graphql-transformer-core": "6.23.1",
     "jest-environment-node": "^25.1.0",
