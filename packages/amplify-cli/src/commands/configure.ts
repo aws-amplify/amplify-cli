@@ -21,8 +21,8 @@ export const run = async (context: Context) => {
     return;
   }
 
-  if (context.parameters.options.appId && context.parameters.options.envName) {
-    const { appId, envName } = context.parameters.options;
+  const { appId, envName } = context?.exeInfo?.inputParams?.amplify;
+  if (appId && envName) {
     try {
       await adminLoginFlow(context, appId, envName);
     } catch (e) {

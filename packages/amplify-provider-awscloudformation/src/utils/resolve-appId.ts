@@ -6,10 +6,10 @@ export function resolveAppId(context: $TSContext): string {
     if (meta?.provider?.awscloudformation?.AmplifyAppId) {
       return meta.provider.awscloudformation.AmplifyAppId;
     }
-    throw 'Could not find AmplifyAppId in amplify-meta.json.';
-  } else if (context?.parameters?.options?.appId) {
-    return context.parameters.options.appId;
+    throw new Error('Could not find AmplifyAppId in amplify-meta.json.');
+  } else if (context?.exeInfo?.inputParams?.amplify?.appId) {
+    return context.exeInfo.inputParams.amplify.appId;
   } else {
-    throw 'Failed to resolve appId';
+    throw new Error('Failed to resolve appId');
   }
 }

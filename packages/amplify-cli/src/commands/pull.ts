@@ -4,7 +4,7 @@ import { attachBackend } from '../attach-backend';
 import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
 import { stateManager } from 'amplify-cli-core';
-import { get } from 'lodash';
+import _ from 'lodash';
 
 export const run = async context => {
   const inputParams = constructInputParams(context);
@@ -20,7 +20,7 @@ export const run = async context => {
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
     const { envName } = stateManager.getLocalEnvInfo(projectPath);
 
-    const appId = get(teamProviderInfo, [envName, 'awscloudformation', 'AmplifyAppId'], false);
+    const appId = _.get(teamProviderInfo, [envName, 'awscloudformation', 'AmplifyAppId'], false);
 
     const localEnvNames = Object.keys(teamProviderInfo);
 

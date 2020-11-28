@@ -15,8 +15,10 @@ const { adminLoginFlow } = require('./admin-login');
 async function run(context) {
   let awsConfig;
   let isAdminApp = false;
-  if (context.parameters?.options?.appId && context.parameters?.options?.envName) {
-    const { appId, envName } = context.parameters.options;
+  const { appId, envName } = context?.exeInfo?.inputParams?.amplify;
+  if (appId && !envName && (await isAmplifyAdminApp(appId)).isAdminApp) {
+    throw new Error('Missing --envName <environment name> in parameters.');
+  } else if (appId && envName) {
     // Check for existing Amplify Admin tokens
     if (doAdminCredentialsExist(appId)) {
       isAdminApp = true;
@@ -36,7 +38,6 @@ async function run(context) {
   }
 
   if (isAdminApp) {
-    const { appId, envName } = context.parameters.options;
     awsConfig = await configurationManager.loadConfigurationForEnv(context, envName, appId);
     context.exeInfo.awsConfig = {
       configLevel: 'amplifyAdmin',
