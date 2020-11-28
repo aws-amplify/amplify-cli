@@ -16,7 +16,7 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import { ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { stateManager } from 'amplify-cli-core';
+import { resolveAppId } from './utils/resolve-appId';
 
 import {
   collectDirectivesByTypeNames,
@@ -143,8 +143,7 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
     let amplifyAdminEnabled: boolean = false;
 
     try {
-      const amplifyMeta = stateManager.getMeta();
-      const appId = amplifyMeta.providers[providerName].AmplifyAppId;
+      const appId = resolveAppId(context);
       const res = await isAmplifyAdminApp(appId);
       amplifyAdminEnabled = res.isAdminApp;
     } catch (err) {

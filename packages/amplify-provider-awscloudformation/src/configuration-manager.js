@@ -12,7 +12,6 @@ const obfuscateUtil = require('./utility-obfuscate');
 const systemConfigManager = require('./system-config-manager');
 const { doAdminCredentialsExist, isAmplifyAdminApp, getRefreshedTokens } = require('./utils/admin-helpers');
 const { resolveAppId } = require('./utils/resolve-appId');
-const { stateManager } = require('amplify-cli-core');
 
 const defaultAWSConfig = {
   useProfile: true,
@@ -25,7 +24,12 @@ async function init(context) {
   }
   normalizeInputParams(context);
 
-  const appId = resolveAppId(context);
+  let appId;
+  try {
+    appId = resolveAppId(context);
+  } catch (e) {
+    // do nothing
+  }
   if (appId && (await isAmplifyAdminApp(appId)).isAdminApp) {
     context.exeInfo.awsConfigInfo = {
       configLevel: 'amplifyAdmin',
