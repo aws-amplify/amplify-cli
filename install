@@ -12,8 +12,12 @@ white="\033[37m"
 trap errorMessage EXIT
 
 function errorMessage {
-    printf "\n${red}Error: Amplify CLI failed to install. Check your internet connection and try again.$reset\n"
-    printf "If this error still occurs, install the CLI using NPM: ${cyan}npm i -g @aws-amplify/cli$reset\n"
+  exit_code=$?
+  if [ $exit_code -eq 0 ]; then
+    exit
+  fi
+  printf "\n${red}Error: Amplify CLI failed to install. Check your internet connection and try again.$reset\n"
+  printf "If this error still occurs, install the CLI using NPM: ${cyan}npm i -g @aws-amplify/cli$reset\n"
 }
 
 printf "\n$yellow Installing the AWS Amplify CLI...$reset\n\n"
