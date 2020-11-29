@@ -33,7 +33,7 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
-    "amplify-app": "2.18.1",
+    "amplify-app": "2.19.2",
     "amplify-category-analytics": "2.19.1",
     "amplify-category-api": "2.26.2",
     "amplify-category-auth": "2.24.4",
