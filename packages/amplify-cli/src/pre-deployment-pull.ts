@@ -1,6 +1,5 @@
 import { createAmplifySkeletonProject } from 'amplify-app';
 import fetch from 'node-fetch';
-import path from 'path';
 import fs from 'fs-extra';
 import { $TSContext, pathManager } from 'amplify-cli-core';
 
@@ -37,17 +36,6 @@ export async function preDeployPullBackend(context: $TSContext, sandboxId: strin
     await createAmplifySkeletonProject();
   }
 
-  // Replace base schema with the schema configured in Backend-manager app
-  // let schema = resJson.schema;
-  // schema = schema.replace(/\@auth\(rules\: \[\{allow\: private\, provider\: iam\}\]\)/g, '');
-
-  // replaceSchema(schema);
-
   // Generate models
   await context.amplify.invokePluginMethod(context, 'codegen', null, 'generateModels', [context]);
 }
-
-// function replaceSchema(schema: string) {
-//   const schemaFilePath = path.join(process.cwd(), 'amplify', 'backend', 'api', 'amplifyDatasource', 'schema.graphql');
-//   fs.writeFileSync(schemaFilePath, schema);
-// }
