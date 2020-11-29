@@ -13,7 +13,7 @@ export const run = async (context: Context) => {
   const amplifyAdminConfig = stateManager.getAmplifyAdminConfigEntry(appId);
 
   if (!amplifyAdminConfig) {
-    context.print.info(`No access data found for appId ${appId}`);
+    context.print.info(`No access information found for appId ${appId}`);
     return;
   }
 
@@ -29,7 +29,7 @@ export const run = async (context: Context) => {
       await cognitoISP.globalSignOut(amplifyAdminConfig.accessToken.jwtToken);
       context.print.info('Logged out globally.');
     } catch (e) {
-      context.print.error('An error occurred during logout.');
+      context.print.error(`An error occurred during logout: ${e.message}`);
       return;
     }
   }

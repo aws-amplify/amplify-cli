@@ -558,16 +558,18 @@ async function getAdminCredentials(idToken, identityId, region) {
 
 async function loadConfigurationForEnv(context, env, appId) {
   const projectConfigInfo = getConfigForEnv(context, env);
-  const { print } = context;
+  const { print, usageData } = context;
   let awsConfig;
   if (projectConfigInfo.configLevel === 'amplifyAdmin' || appId) {
     projectConfigInfo.configLevel = 'amplifyAdmin';
     appId = appId || resolveAppId(context);
 
     if (!doAdminCredentialsExist(appId)) {
+      const errorMsg = `No credentials found for appId: ${appId}`;
       print.info('');
-      print.error(`No credentials found for appId: ${appId}`);
+      print.error(errorMsg);
       print.info(`If the appId is correct, try running amplify configure --appId ${appId}`);
+      usageData.emitError(new Error(errorMsg));
       process.exit(1);
     }
 
@@ -607,7 +609,7 @@ async function loadConfigurationForEnv(context, env, appId) {
     } catch (err) {
       print.error('Failed to get credentials.');
       print.info(err);
-      context.usageData.emitError(err);
+      usageData.emitError(err);
       process.exit(1);
     }
   } else if (projectConfigInfo.configLevel === 'project') {

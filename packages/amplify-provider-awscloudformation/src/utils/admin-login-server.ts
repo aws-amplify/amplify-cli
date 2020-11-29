@@ -1,4 +1,4 @@
-import { stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import { CognitoIdentity } from 'aws-sdk';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -11,10 +11,11 @@ import fetch from 'node-fetch';
 import { AdminAuthPayload, CognitoIdToken, CognitoAccessToken } from './cognito-jwt-types';
 
 export class AdminLoginServer {
-  private port = 4242; // placeholder
   private app: express.Application;
-  private server: http.Server;
   private appId: string;
+  private port = 4242; // placeholder
+  private server: http.Server;
+  private print: $TSContext['print'];
 
   private corsOptions: {
     origin: string[];
@@ -22,13 +23,14 @@ export class AdminLoginServer {
     allowedHeaders: string;
   };
 
-  constructor(appId: string, originUrl: string) {
+  constructor(appId: string, originUrl: string, print: $TSContext['print']) {
     this.appId = appId;
     this.corsOptions = {
       origin: [originUrl],
       methods: ['POST', 'OPTIONS'],
       allowedHeaders: 'Content-Type',
     };
+    this.print = print;
     this.app = express();
     this.app.use(cors(this.corsOptions));
     this.app.use(bodyParser.json());
@@ -67,8 +69,8 @@ export class AdminLoginServer {
       if (!req.body || req.body.error) {
         this.shutdown();
         if (req.body.error === 'CANCELLED') {
-          console.log('Login cancelled');
-          process.exit(1);
+          this.print.info('Login cancelled');
+          process.exit(0);
         }
         throw new Error('Failed to receive expected authentication tokens.');
       }

@@ -2,11 +2,18 @@ import open from 'open';
 import ora from 'ora';
 import { $TSContext } from 'amplify-cli-core';
 
-import { adminVerifyUrl, adminBackendMap } from './utils/admin-helpers';
+import { adminVerifyUrl, adminBackendMap, isAmplifyAdminApp } from './utils/admin-helpers';
 import { AdminLoginServer } from './utils/admin-login-server';
 
 export async function adminLoginFlow(context: $TSContext, appId: string, envName: string, region?: string) {
-  region = region ?? 'us-east-1';
+  if (!region) {
+    const res = await isAmplifyAdminApp(appId);
+    if (!res.isAdminApp) {
+      throw new Error(`Admin UI not enabled for appId: ${appId}`);
+    }
+    region = res.region;
+  }
+
   const url = adminVerifyUrl(appId, envName, region);
   context.print.info(`Opening link: ${url}`);
   await open(url, { wait: false }).catch(e => {
@@ -17,7 +24,7 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
   try {
     // spawn express server locally to get credentials
     const originUrl = adminBackendMap[region].amplifyAdminUrl;
-    const adminLoginServer = new AdminLoginServer(appId, originUrl);
+    const adminLoginServer = new AdminLoginServer(appId, originUrl, context.print);
     await new Promise(resolve =>
       adminLoginServer.startServer(() => {
         adminLoginServer.shutdown();
