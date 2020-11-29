@@ -15,7 +15,8 @@ const { resolveAppId } = require('./utils/resolve-appId');
 const { adminLoginFlow } = require('./admin-login');
 
 async function run(context) {
-  let appId, awsConfig;
+  let appId;
+  let awsConfig;
   let isAdminApp = false;
   try {
     appId = resolveAppId(context);
