@@ -11,7 +11,11 @@ export const run = async context => {
   const projectPath = process.cwd();
 
   if (inputParams.sandboxId) {
-    preDeployPullBackend(context, inputParams.sandboxId);
+    try {
+      await preDeployPullBackend(context, inputParams.sandboxId);
+    } catch (e) {
+      context.print.error(`Failed to pull sandbox app: ${e.message || 'An unknown error occurred.'}`);
+    }
     return;
   }
 
