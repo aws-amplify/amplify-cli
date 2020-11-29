@@ -20,6 +20,7 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
+    "amplify-app": "2.19.2",
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1"
   },

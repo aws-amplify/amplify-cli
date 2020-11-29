@@ -1,4 +1,4 @@
-import { createAmplifySkeletonProject } from 'amplify-app';
+import { run } from 'amplify-app';
 import fetch from 'node-fetch';
 import path from 'path';
 import fs from 'fs-extra';
@@ -43,7 +43,7 @@ export async function preDeployPullBackend(context: $TSContext, sandboxId: strin
   // Create base-skeleton amplify-folder
   const amplifyDirPath = pathManager.getAmplifyDirPath(process.cwd());
   if (!fs.existsSync(amplifyDirPath)) {
-    await createAmplifySkeletonProject();
+    await run({ skipEnvCheck: true });
   }
   // Replace base schema with the schema configured in Backend-manager app
   replaceSchema(resJson.schema);
