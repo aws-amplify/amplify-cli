@@ -125,7 +125,7 @@ function getModelOutputPath(context) {
     case 'ios':
       return 'amplify/generated/models';
     case 'flutter':
-      return 'dart/models';
+      return 'lib/models';
     default:
       return '.';
   }

@@ -19,6 +19,8 @@ exports[`AppSync Dart Visitor Dart Specific Tests should generate the model prov
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'SimpleModel.dart';
 
+export 'SimpleModel.dart';
+
 class ModelProvider implements ModelProviderInterface {
   @override
   String version = \\"c93024b4cb5966d577b5aa548edfb992\\";
@@ -47,10 +49,9 @@ exports[`AppSync Dart Visitor Enum Generation should generate a class for enum t
 * permissions and limitations under the License.
 */
 
+import 'ModelProvider.dart';
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
-import 'Status.dart';
 
 /** This is an auto generated class representing the SimpleModel type in your schema. */
 @immutable
@@ -93,7 +94,7 @@ class SimpleModel extends Model {
 
     buffer.write(\\"SimpleModel {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
-    buffer.write(\\"status=\\" + describeEnum(status));
+    buffer.write(\\"status=\\" + enumToString(status));
     buffer.write(\\"}\\");
 
     return buffer.toString();
@@ -1712,11 +1713,10 @@ exports[`AppSync Dart Visitor Model with Connection Directive should generate cl
 * permissions and limitations under the License.
 */
 
+import 'ModelProvider.dart';
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-
-import 'Task.dart';
 
 /** This is an auto generated class representing the Todo type in your schema. */
 @immutable
@@ -1829,10 +1829,9 @@ exports[`AppSync Dart Visitor Model with Connection Directive should generate cl
 * permissions and limitations under the License.
 */
 
+import 'ModelProvider.dart';
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
-import 'Todo.dart';
 
 /** This is an auto generated class representing the Task type in your schema. */
 @immutable
@@ -1840,8 +1839,8 @@ class Task extends Model {
   static const classType = const TaskType();
   final String id;
   final Todo todo;
-  final DateTime time;
-  final DateTime createdOn;
+  final Time time;
+  final Date createdOn;
 
   @override
   getInstanceType() => classType;
@@ -1854,8 +1853,7 @@ class Task extends Model {
   const Task._internal(
       {@required this.id, this.todo, this.time, this.createdOn});
 
-  factory Task(
-      {@required String id, Todo todo, DateTime time, DateTime createdOn}) {
+  factory Task({@required String id, Todo todo, Time time, Date createdOn}) {
     return Task._internal(
         id: id == null ? UUID.getUUID() : id,
         todo: todo,
@@ -1886,16 +1884,15 @@ class Task extends Model {
 
     buffer.write(\\"Task {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
-    buffer.write(\\"todo=\\" + todo.toString() + \\", \\");
-    buffer.write(\\"time=\\" + formatDateToISO8601(time) + \\", \\");
-    buffer.write(\\"createdOn=\\" + formatDateToISO8601(createdOn));
+    buffer.write(\\"todo=\\" + todo?.toString() + \\", \\");
+    buffer.write(\\"time=\\" + time?.toTimeIso8601String() + \\", \\");
+    buffer.write(\\"createdOn=\\" + createdOn?.toDateIso8601String());
     buffer.write(\\"}\\");
 
     return buffer.toString();
   }
 
-  Task copyWith(
-      {@required String id, Todo todo, DateTime time, DateTime createdOn}) {
+  Task copyWith({@required String id, Todo todo, Time time, Date createdOn}) {
     return Task(
         id: id ?? this.id,
         todo: todo ?? this.todo,
@@ -1908,16 +1905,14 @@ class Task extends Model {
         todo = json['todo'] != null
             ? Todo.fromJson(new Map<String, dynamic>.from(json['todo']))
             : null,
-        time = json['time'] != null ? DateTime.parse(json['time']) : null,
-        createdOn = json['createdOn'] != null
-            ? DateTime.parse(json['createdOn'])
-            : null;
+        time = Time.fromString(json['time']),
+        createdOn = Date.fromString(json['createdOn']);
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'todo': todo?.toJson(),
-        'time': formatDateToISO8601(time),
-        'createdOn': formatDateToISO8601(createdOn)
+        'time': time?.toTimeIso8601String(),
+        'createdOn': createdOn?.toDateIso8601String()
       };
 
   static final QueryField ID = QueryField(fieldName: \\"task.id\\");
@@ -1979,11 +1974,10 @@ exports[`AppSync Dart Visitor Model with Connection Directive should support con
 * permissions and limitations under the License.
 */
 
+import 'ModelProvider.dart';
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-
-import 'Post.dart';
 
 /** This is an auto generated class representing the Blog type in your schema. */
 @immutable
@@ -2041,7 +2035,7 @@ class Blog extends Model {
     buffer.write(\\"Blog {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
-    buffer.write(\\"test=\\" + test.toString());
+    buffer.write(\\"test=\\" + test?.toString());
     buffer.write(\\"}\\");
 
     return buffer.toString();
@@ -2135,10 +2129,9 @@ exports[`AppSync Dart Visitor Model with Connection Directive should support con
 * permissions and limitations under the License.
 */
 
+import 'ModelProvider.dart';
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:flutter/foundation.dart';
-
-import 'Post.dart';
 
 /** This is an auto generated class representing the Comment type in your schema. */
 @immutable
@@ -2186,7 +2179,7 @@ class Comment extends Model {
 
     buffer.write(\\"Comment {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
-    buffer.write(\\"post=\\" + post.toString() + \\", \\");
+    buffer.write(\\"post=\\" + post?.toString() + \\", \\");
     buffer.write(\\"content=\\" + content);
     buffer.write(\\"}\\");
 
@@ -2263,12 +2256,10 @@ exports[`AppSync Dart Visitor Model with Connection Directive should support con
 * permissions and limitations under the License.
 */
 
+import 'ModelProvider.dart';
 import 'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
-
-import 'Blog.dart';
-import 'Comment.dart';
 
 /** This is an auto generated class representing the Post type in your schema. */
 @immutable
@@ -2326,7 +2317,7 @@ class Post extends Model {
     buffer.write(\\"Post {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"title=\\" + title + \\", \\");
-    buffer.write(\\"blog=\\" + blog.toString());
+    buffer.write(\\"blog=\\" + blog?.toString());
     buffer.write(\\"}\\");
 
     return buffer.toString();
