@@ -71,7 +71,7 @@ export const openConsole = async (context: $TSContext) => {
       }
       const { envName } = context.amplify.getEnvInfo();
       const baseUrl: string = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
-      consoleUrl = `${baseUrl}/${appId}/${envName}/datastore`;
+      consoleUrl = `${baseUrl}/admin/${appId}/${envName}/datastore`;
     }
     open(consoleUrl, { wait: false });
   } else {
