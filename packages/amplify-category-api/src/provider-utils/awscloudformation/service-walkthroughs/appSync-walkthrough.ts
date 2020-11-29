@@ -75,7 +75,7 @@ export const openConsole = async (context: $TSContext) => {
     }
     open(consoleUrl, { wait: false });
   } else {
-    throw new Error('AppSync API is not pushed in the cloud.');
+    context.print.error('AppSync API is not pushed in the cloud.');
   }
 };
 
