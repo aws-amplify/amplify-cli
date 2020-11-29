@@ -4,19 +4,27 @@ const path = require('path');
 const glob = require('glob');
 const extract = require('extract-zip');
 const inquirer = require('inquirer');
+const _ = require('lodash');
 const { pathManager, PathConstants } = require('amplify-cli-core');
 const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const constants = require('./constants');
 const { doAdminCredentialsExist, isAmplifyAdminApp } = require('./utils/admin-helpers');
+const { resolveAppId } = require('./utils/resolve-appId');
 const { adminLoginFlow } = require('./admin-login');
 
 async function run(context) {
+  let appId;
   let awsConfig;
   let isAdminApp = false;
-  const { appId, envName } = context?.exeInfo?.inputParams?.amplify || {};
-  const { useProfile, configLevel } = context?.exeInfo?.inputParams?.awscloudformation || {};
+  try {
+    appId = resolveAppId(context);
+  } catch (e) {
+    // Swallow
+  }
+  const { envName } = _.get(context, ['exeInfo', 'inputParams', 'amplify'], {});
+  const { useProfile, configLevel } = _.get(context, ['exeInfo', 'inputParams', 'awscloudformation'], {});
   if (!useProfile && (!configLevel || configLevel === 'amplifyAdmin')) {
     if (appId && !envName && (await isAmplifyAdminApp(appId)).isAdminApp) {
       throw new Error('Missing --envName <environment name> in parameters.');
