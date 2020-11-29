@@ -35,7 +35,9 @@ export const run = async context => {
           ],
         });
         if (choice === 'Admin') {
-          consoleUrl = await constructAdminURL(context, Region, AmplifyAppId, envName);
+          const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+          const baseUrl = providerPlugin.adminBackendMap[Region].amplifyAdminUrl;
+          consoleUrl = constructAdminURL(baseUrl, AmplifyAppId, envName);
         }
       }
     }
@@ -47,9 +49,8 @@ export const run = async context => {
   open(consoleUrl, { wait: false });
 };
 
-async function constructAdminURL(context: $TSContext, region: string, appId: string, envName: string) {
-  const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
-  return `${providerPlugin.adminBackendMap[region].amplifyAdminUrl}/admin/${appId}/${envName}/home`;
+function constructAdminURL(baseUrl: string, appId: string, envName: string) {
+  return `${baseUrl}/admin/${appId}/${envName}/home`;
 }
 
 function constructStatusURL(region, appId, envName) {
