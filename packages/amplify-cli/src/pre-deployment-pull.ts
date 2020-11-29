@@ -2,7 +2,7 @@ import { createAmplifySkeletonProject } from 'amplify-app';
 import fetch from 'node-fetch';
 import path from 'path';
 import fs from 'fs-extra';
-import { $TSContext, pathManager } from 'amplify-cli-core';
+import { AppAlreadyDeployedError, AppNotFoundError, SchemaDoesNotExistError, $TSContext, pathManager } from 'amplify-cli-core';
 
 export async function preDeployPullBackend(context: $TSContext, sandboxId: string) {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
@@ -14,20 +14,29 @@ export async function preDeployPullBackend(context: $TSContext, sandboxId: strin
   const resJson = await res.json();
 
   // App not present
-  if (resJson.message === 'Requested app was not found') {
-    context.print.error('Requested app was not found');
+  const appNotFoundMessage = 'Requested app was not found';
+  if (resJson.message === appNotFoundMessage) {
+    context.print.error(appNotFoundMessage);
+    context.usageData.emitError(new AppNotFoundError(appNotFoundMessage));
+    process.exitCode = 1;
     return;
   }
 
   // Handle Deployed App Case
   if (resJson.appId) {
-    context.print.error(`This app is already deployed. You can pull it using "amplify pull --appId ${resJson.appId}"`);
+    const deployedErrorMessage = `This app is already deployed. You can pull it using "amplify pull --appId ${resJson.appId}"`;
+    context.print.error(deployedErrorMessage);
+    context.usageData.emitError(new AppAlreadyDeployedError(deployedErrorMessage));
+    process.exitCode = 1;
     return;
   }
 
   // Handle missing schema
   if (!resJson.schema) {
-    context.print.error('No GraphQL schema found in the app.');
+    const missingSchemaMessage = 'No GraphQL schema found in the app.';
+    context.print.error(missingSchemaMessage);
+    context.usageData.emitError(new SchemaDoesNotExistError(missingSchemaMessage));
+    process.exitCode = 1;
     return;
   }
 

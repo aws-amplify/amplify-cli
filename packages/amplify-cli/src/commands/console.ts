@@ -43,6 +43,9 @@ export const run = async context => {
     }
   } catch (e) {
     context.print.error(e.message);
+    context.usageData.emitError(e);
+    process.exitCode = 1;
+    return;
   }
 
   context.print.green(consoleUrl);
