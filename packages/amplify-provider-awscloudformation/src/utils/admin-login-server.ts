@@ -3,6 +3,7 @@ import { CognitoIdentity } from 'aws-sdk';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
+import http from 'http';
 import { JWK, JWKS, JWT } from 'jose';
 import _ from 'lodash';
 import fetch from 'node-fetch';
@@ -12,7 +13,7 @@ import { AdminAuthPayload, CognitoIdToken, CognitoAccessToken } from './cognito-
 export class AdminLoginServer {
   private port = 4242; // placeholder
   private app: express.Application;
-  private server;
+  private server: http.Server;
   private appId: string;
 
   private corsOptions: {

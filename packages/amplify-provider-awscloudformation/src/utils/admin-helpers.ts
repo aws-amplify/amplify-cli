@@ -1,11 +1,13 @@
-import { stateManager, $TSContext, $TSAny } from 'amplify-cli-core';
+import { stateManager, $TSContext } from 'amplify-cli-core';
 import aws from 'aws-sdk';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 import { AuthConfig, CognitoAccessToken, CognitoIdToken } from './cognito-jwt-types';
 
-export const adminVerifyUrl = (appId: string, envName: string, region: string) =>
-  `${adminBackendMap[region].amplifyAdminUrl}/admin/${appId}/${envName}/verify/`;
+export const adminVerifyUrl = (appId: string, envName: string, region: string): string => {
+  const baseUrl = adminBackendMap[region].amplifyAdminUrl;
+  return `${baseUrl}/admin/${appId}/${envName}/verify/`;
+};
 
 export function doAdminCredentialsExist(appId: string): boolean {
   if (!appId) {
@@ -43,7 +45,7 @@ function isJwtExpired(token: CognitoAccessToken | CognitoIdToken) {
   return secSinceEpoch >= expiration - 60;
 }
 
-async function refreshJWTs(authConfig: AuthConfig, print: $TSAny) {
+async function refreshJWTs(authConfig: AuthConfig, print: $TSContext['print']) {
   const CognitoISP = new aws.CognitoIdentityServiceProvider({ region: authConfig.region });
   try {
     const result = await CognitoISP.initiateAuth({

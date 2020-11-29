@@ -296,11 +296,17 @@ async function console(context, amplifyMeta) {
   const cognitoOutput = getCognitoOutput(amplifyMeta);
   if (cognitoOutput) {
     const { AmplifyAppId, Region } = amplifyMeta.providers.awscloudformation;
+    if (!AmplifyAppId) {
+      throw new Error('Missing AmplifyAppId in amplify-meta.json');
+    }
     if (cognitoOutput.UserPoolId && cognitoOutput.IdentityPoolId) {
       let choices = [UserPool, IdentityPool, BothPools];
       const providerPlugin = require(context.amplify.getProviderPlugins(context).awscloudformation);
-      const adminOption = await providerPlugin.isAmplifyAdminApp(AmplifyAppId);
-      if (adminOption) {
+      const { isAdminApp, region } = await providerPlugin.isAmplifyAdminApp(AmplifyAppId);
+      if (isAdminApp) {
+        if (region !== Region) {
+          context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
+        }
         choices = [AmplifyAdmin, ...choices];
       }
       const answer = await inquirer.prompt({
@@ -308,7 +314,7 @@ async function console(context, amplifyMeta) {
         type: 'list',
         message: 'Which console',
         choices,
-        default: adminOption ? AmplifyAdmin : BothPools,
+        default: isAdminApp ? AmplifyAdmin : BothPools,
       });
 
       switch (answer.selection) {
@@ -353,9 +359,10 @@ function getCognitoOutput(amplifyMeta) {
 }
 
 async function openAdminUI(context, appId, region) {
-  // region will be needed in prod
   const { envName } = context.amplify.getEnvInfo();
-  const adminUrl = `https://www.dracarys.app/admin/${appId}/${envName}/auth`;
+  const providerPlugin = require(context.amplify.getProviderPlugins(context).awscloudformation);
+  const baseUrl = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
+  const adminUrl = `${baseUrl}/admin/${appId}/${envName}/auth`;
   await open(adminUrl, { wait: false });
   context.print.success(adminUrl);
 }
