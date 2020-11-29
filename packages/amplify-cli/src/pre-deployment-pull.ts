@@ -5,7 +5,9 @@ import fs from 'fs-extra';
 import { $TSContext, pathManager } from 'amplify-cli-core';
 
 export async function preDeployPullBackend(context: $TSContext, sandboxId: string) {
-  const url = `https://rh2kdo2x79.execute-api.us-east-1.amazonaws.com/gamma/AppState/${sandboxId}`;
+  const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+
+  const url = `${providerPlugin.adminBackendMap['us-east-1'].appStateUrl}/AppState/${sandboxId}`;
 
   // Fetch schema
   const res = await fetch(`${url}`);
@@ -34,12 +36,8 @@ export async function preDeployPullBackend(context: $TSContext, sandboxId: strin
   if (!fs.existsSync(amplifyDirPath)) {
     await createAmplifySkeletonProject();
   }
-
   // Replace base schema with the schema configured in Backend-manager app
-  let schema = resJson.schema;
-  schema = schema.replace(/\@auth\(rules\: \[\{allow\: private\, provider\: iam\}\]\)/g, '');
-
-  replaceSchema(schema);
+  replaceSchema(resJson.schema);
 
   // Generate models
   await context.amplify.invokePluginMethod(context, 'codegen', null, 'generateModels', [context]);

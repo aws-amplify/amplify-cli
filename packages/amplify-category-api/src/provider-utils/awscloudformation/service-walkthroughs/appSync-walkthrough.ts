@@ -57,13 +57,21 @@ export const openConsole = async (context: $TSContext) => {
   if (appSyncMeta) {
     const { GraphQLAPIIdOutput } = appSyncMeta;
     const appId = amplifyMeta.providers[providerName].AmplifyAppId;
+    if (!appId) {
+      throw new Error('Missing AmplifyAppId in amplify-meta.json');
+    }
     const { Region } = amplifyMeta.providers[providerName];
     let consoleUrl = `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
 
     const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
-    if (await providerPlugin.isAmplifyAdminApp(appId)) {
+    const { isAdminApp, region } = await providerPlugin.isAmplifyAdminApp(appId);
+    if (isAdminApp) {
+      if (region !== Region) {
+        context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
+      }
       const { envName } = context.amplify.getEnvInfo();
-      consoleUrl = `https://www.dracarys.app/admin/${appId}/${envName}/datastore`;
+      const baseUrl: string = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
+      consoleUrl = `${baseUrl}/admin/${appId}/${envName}/datastore`;
     }
     open(consoleUrl, { wait: false });
   } else {

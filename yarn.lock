@@ -6092,6 +6092,23 @@ amplify-cli-core@1.8.0:
     hjson "^3.2.1"
     lodash "^4.17.19"
 
+amplify-frontend-android@2.14.1:
+  version "2.14.1"
+  resolved "https://registry.yarnpkg.com/amplify-frontend-android/-/amplify-frontend-android-2.14.1.tgz#22b6b59bf359b38bb688daf1d6aad2bd52b9ee57"
+  integrity sha512-zksZUn9hEE97LUVJF+Kyiot0IZssD6zb6akOf2jYjJp1tvYgUP7YiXRIYsjBcNDUlTnztmGjn1rRWRLFlm9wog==
+  dependencies:
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+    inquirer "^7.3.3"
+
+amplify-frontend-ios@2.14.1:
+  version "2.14.1"
+  resolved "https://registry.yarnpkg.com/amplify-frontend-ios/-/amplify-frontend-ios-2.14.1.tgz#1804d147b886041da3ac0a82abd603d5657d4d68"
+  integrity sha512-4+t4FTYLNkxNirCPx3dQ1XVmQQ80GSG70Pn8VeVZVR/3CcfNmjfD+ODSCICidx4GvvUIYJF5ihii8GLm+lOyZg==
+  dependencies:
+    fs-extra "^8.1.0"
+    graphql-config "^2.2.1"
+
 amplify-frontend-javascript@2.18.1:
   version "2.18.1"
   resolved "https://registry.npmjs.org/amplify-frontend-javascript/-/amplify-frontend-javascript-2.18.1.tgz#0007a9faff5296808b67893b40054f9ad4261e5b"

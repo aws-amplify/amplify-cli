@@ -30,7 +30,7 @@ async function init(context) {
   } catch (e) {
     // do nothing
   }
-  const { useProfile, configLevel } = context?.exeInfo?.inputParams?.awscloudformation || {};
+  const { useProfile, configLevel } = _.get(context, ['exeInfo', 'inputParams', 'awscloudformation'], {});
   if (!useProfile && (!configLevel || configLevel === 'amplifyAdmin') && appId && (await isAmplifyAdminApp(appId)).isAdminApp) {
     context.exeInfo.awsConfigInfo = {
       configLevel: 'amplifyAdmin',
@@ -405,8 +405,8 @@ function validateConfig(context) {
 
 function persistLocalEnvConfig(context) {
   let { awsConfigInfo } = context.exeInfo;
-
-  if (context.parameters?.options?.appId && doAdminCredentialsExist(context.parameters.options.appId)) {
+  const { appId } = _.get(context, ['exeInfo', 'inputParams', 'amplify'], undefined);
+  if (appId && doAdminCredentialsExist(appId)) {
     awsConfigInfo = {
       configLevel: 'amplifyAdmin',
       config: {},

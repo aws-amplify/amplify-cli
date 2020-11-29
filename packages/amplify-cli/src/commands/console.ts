@@ -1,6 +1,6 @@
 import open from 'open';
 import { prompt } from 'enquirer';
-import { stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 
 const providerName = 'awscloudformation';
 
@@ -30,12 +30,14 @@ export const run = async context => {
           name: 'choice',
           message: 'Which site do you want to open?',
           choices: [
-            { name: 'Admin', message: 'Amplify admin UI', value: 'admin' },
-            { name: 'Console', message: 'Amplify console', value: 'console' },
+            { name: 'Admin', message: 'Amplify admin UI' },
+            { name: 'Console', message: 'Amplify console' },
           ],
         });
-        if (choice === 'admin') {
-          consoleUrl = constructAdminURL(Region, AmplifyAppId, envName);
+        if (choice === 'Admin') {
+          const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+          const baseUrl = providerPlugin.adminBackendMap[Region].amplifyAdminUrl;
+          consoleUrl = constructAdminURL(baseUrl, AmplifyAppId, envName);
         }
       }
     }
@@ -47,8 +49,8 @@ export const run = async context => {
   open(consoleUrl, { wait: false });
 };
 
-function constructAdminURL(region: string, appId: string, envName: string) {
-  return `https://www.dracarys.app/admin/${appId}/${envName}/home`;
+function constructAdminURL(baseUrl: string, appId: string, envName: string) {
+  return `${baseUrl}/admin/${appId}/${envName}/home`;
 }
 
 function constructStatusURL(region, appId, envName) {
