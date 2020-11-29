@@ -6061,68 +6061,6 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-app@2.18.1:
-  version "2.18.1"
-  resolved "https://registry.npmjs.org/amplify-app/-/amplify-app-2.18.1.tgz#8653542b4ad72d4ca99c366832024bc6961c8be8"
-  integrity sha512-f5h+6/dMJ7y+o2SVlmEKdLb+yZyFkNQKiTeN4JPiT0BRpai6pXjbTK8hV+TakA/AWglsoQJYrCeWGK7o0kgvxQ==
-  dependencies:
-    amplify-frontend-android "2.14.1"
-    amplify-frontend-ios "2.14.1"
-    amplify-frontend-javascript "2.18.1"
-    chalk "^3.0.0"
-    fs-extra "^8.1.0"
-    graphql "^14.5.8"
-    ini "^1.3.5"
-    inquirer "^7.3.3"
-    node-emoji "^1.10.0"
-    rimraf "^3.0.0"
-    semver "^7.1.1"
-    strip-ansi "^6.0.0"
-    xcode "^2.1.0"
-    yargs "^15.1.0"
-
-amplify-cli-core@1.8.0:
-  version "1.8.0"
-  resolved "https://registry.npmjs.org/amplify-cli-core/-/amplify-cli-core-1.8.0.tgz#c3688e664448b77dc9d09e3d064b3fb6a4e0e621"
-  integrity sha512-EqphS8gEbzYetJDKi2pKjVG/c/fSNRu2mvSU/olowWOiQ/1uCqntKo2+EcgVbMC2pVo2oh/t/gvCQJp6AiWLmw==
-  dependencies:
-    ajv "^6.12.3"
-    dotenv "^8.2.0"
-    fs-extra "^8.1.0"
-    hjson "^3.2.1"
-    lodash "^4.17.19"
-
-amplify-frontend-android@2.14.1:
-  version "2.14.1"
-  resolved "https://registry.yarnpkg.com/amplify-frontend-android/-/amplify-frontend-android-2.14.1.tgz#22b6b59bf359b38bb688daf1d6aad2bd52b9ee57"
-  integrity sha512-zksZUn9hEE97LUVJF+Kyiot0IZssD6zb6akOf2jYjJp1tvYgUP7YiXRIYsjBcNDUlTnztmGjn1rRWRLFlm9wog==
-  dependencies:
-    fs-extra "^8.1.0"
-    graphql-config "^2.2.1"
-    inquirer "^7.3.3"
-
-amplify-frontend-ios@2.14.1:
-  version "2.14.1"
-  resolved "https://registry.yarnpkg.com/amplify-frontend-ios/-/amplify-frontend-ios-2.14.1.tgz#1804d147b886041da3ac0a82abd603d5657d4d68"
-  integrity sha512-4+t4FTYLNkxNirCPx3dQ1XVmQQ80GSG70Pn8VeVZVR/3CcfNmjfD+ODSCICidx4GvvUIYJF5ihii8GLm+lOyZg==
-  dependencies:
-    fs-extra "^8.1.0"
-    graphql-config "^2.2.1"
-
-amplify-frontend-javascript@2.18.1:
-  version "2.18.1"
-  resolved "https://registry.npmjs.org/amplify-frontend-javascript/-/amplify-frontend-javascript-2.18.1.tgz#0007a9faff5296808b67893b40054f9ad4261e5b"
-  integrity sha512-bhtqdbN8zzYxp1K6uFZQuU13y6GqjQ+g0Xe+A3OnDBvlFeWkyf2isfDadOKXcEFK+VHj3C/5flu+lW5fFuoVWw==
-  dependencies:
-    amplify-cli-core "1.8.0"
-    chalk "^3.0.0"
-    execa "^4.0.0"
-    fs-extra "^8.1.0"
-    graphql-config "^2.2.1"
-    inquirer "^7.3.3"
-    lodash "^4.17.19"
-    promise-sequential "^1.1.1"
-
 ansi-align@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-3.0.0.tgz#b536b371cf687caaef236c18d3e21fe3797467cb"
@@ -10888,21 +10826,6 @@ execa@^3.2.0:
     npm-run-path "^4.0.0"
     onetime "^5.1.0"
     p-finally "^2.0.0"
-    signal-exit "^3.0.2"
-    strip-final-newline "^2.0.0"
-
-execa@^4.0.0:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/execa/-/execa-4.0.3.tgz#0a34dabbad6d66100bd6f2c576c8669403f317f2"
-  integrity sha512-WFDXGHckXPWZX19t1kCsXzOpqX9LWYNqn4C+HqZlk/V0imTkzJZqf87ZBhvpHaftERYknpk0fjSylnXVlVgI0A==
-  dependencies:
-    cross-spawn "^7.0.0"
-    get-stream "^5.0.0"
-    human-signals "^1.1.1"
-    is-stream "^2.0.0"
-    merge-stream "^2.0.0"
-    npm-run-path "^4.0.0"
-    onetime "^5.1.0"
     signal-exit "^3.0.2"
     strip-final-newline "^2.0.0"
 
