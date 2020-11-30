@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.21.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.20.1...graphql-transformers-e2e-tests@6.21.0) (2020-11-30)
+
+
+### Features
+
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+
+
+
+
+
 ## [6.20.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.19.1...graphql-transformers-e2e-tests@6.20.1) (2020-11-22)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests
