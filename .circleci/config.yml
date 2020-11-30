@@ -1999,7 +1999,7 @@ workflows:
               only:
                 - master
                 - beta
-                - backendManager
+                - release
           requires:
             - build
       - build_pkg_binaries:
@@ -2110,14 +2110,14 @@ workflows:
           filters:
             branches:
               only:
-                - backendManager
+                - release
       - github_prerelease_install_sanity_check:
           requires:
             - github_prerelease
           filters:
             branches:
               only:
-                - backendManager
+                - release
       - deploy:
           requires:
             - test
@@ -2137,14 +2137,13 @@ workflows:
                 - release
                 - master
                 - beta
-                - backendManager
       - github_release:
           requires:
             - deploy
           filters:
             branches:
               only:
-                - backendManager
+                - release
       - plugin-amplify_e2e_tests:
           filters: &ref_10
             branches:
