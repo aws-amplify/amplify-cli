@@ -1,19 +1,14 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as url from 'url';
 import { execSync } from 'child_process';
 import {
-  pathManager,
   $TSContext,
   NonEmptyDirectoryError,
   exitOnNextTick,
-  CLIContextEnvironmentProvider,
-  FeatureFlags,
 } from 'amplify-cli-core';
 import { getPackageManager } from '../packageManagerHelpers';
 import { normalizePackageManagerForOS } from '../packageManagerHelpers';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';
-import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 
 export async function preInitSetup(context: $TSContext) {
   if (context.parameters.options.app) {
@@ -26,13 +21,6 @@ export async function preInitSetup(context: $TSContext) {
     await installPackage();
     await setLocalEnvDefaults(context);
   }
-
-  if (context.parameters.options.quickstart) {
-    await createAmplifySkeleton(context);
-    context.usageData.emitSuccess();
-    exitOnNextTick(0);
-  }
-
   return context;
 }
 
@@ -112,29 +100,4 @@ async function setLocalEnvDefaults(context: $TSContext) {
   context.exeInfo.inputParams.amplify.envName = envName;
 
   await generateLocalEnvInfoFile(context);
-}
-
-/**
- * Extract amplify project structure with backend-config and project-config
- */
-async function createAmplifySkeleton(context: $TSContext) {
-  insertAmplifyIgnore(pathManager.getGitIgnoreFilePath(process.cwd()));
-
-  const skeletonLocalDir = path.join(__dirname, '..', '..', 'templates', 'amplify-skeleton');
-  const skeletonProjectDir = path.join(pathManager.getAmplifyDirPath(process.cwd()));
-
-  await fs.copy(skeletonLocalDir, skeletonProjectDir);
-
-  // Initialize feature flags
-  const contextEnvironmentProvider = new CLIContextEnvironmentProvider({
-    getEnvInfo: () => {
-      return context.exeInfo.localEnvInfo;
-    },
-  });
-
-  if (!FeatureFlags.isInitialized()) {
-    await FeatureFlags.initialize(contextEnvironmentProvider, true);
-  }
-
-  await FeatureFlags.ensureDefaultFeatureFlags(true);
 }

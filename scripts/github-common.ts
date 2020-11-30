@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import fetch, { RequestInit } from 'node-fetch';
-import { join, basename } from 'path';
+import * as path from 'path';
 
 /**
  * Some constants and utils shared by github-prerelease and github-release
@@ -17,12 +17,14 @@ if (!process.env.GITHUB_TOKEN) {
 }
 
 export const releasesRequest = (urlPath: string, opts?: RequestInit) => {
-  return requestJsonWithAuth(join(API_URL, urlPath), opts);
+  const url = urlPath ? `${API_URL}/${urlPath}` : API_URL;
+  return requestJsonWithAuth(url, opts);
 };
 
 export const uploadReleaseFile = async (releaseId: string, filepath: string) => {
-  const filename = basename(filepath);
-  return requestJsonWithAuth(join(API_UPLOADS_URL, releaseId, `/assets?name=${filename}`), {
+  const filename = path.basename(filepath);
+  const url = `${API_UPLOADS_URL}/${releaseId}/assets?name=${filename}`;
+  return requestJsonWithAuth(url, {
     method: 'POST',
     body: fs.createReadStream(filepath),
     headers: {

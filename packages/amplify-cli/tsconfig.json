@@ -10,8 +10,10 @@
     "src/**/*"
   ],
   "references": [
-    {"path": "../amplify-cli-core"},
-    {"path": "../amplify-category-function"},
-    { "path": "../amplify-util-import" }
+    { "path": "../amplify-category-function" },
+    { "path": "../amplify-cli-core" },
+    { "path": "../amplify-provider-awscloudformation" },
+    { "path": "../amplify-util-import" },
+    { "path": "../graphql-transformer-core"}
   ]
 }

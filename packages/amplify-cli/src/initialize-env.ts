@@ -65,9 +65,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     try {
       await sequential(initializationTasks);
     } catch (e) {
-      context.print.error(`Environment '${currentEnv}' not found.`);
-      context.print.info(`Try running "amplify env add" to add a new environment.`);
-      context.print.info(`If this backend already exists, try restoring it's definition in your team-provider-info.json file.`);
+      context.print.error(`Could not initialize '${currentEnv}': ${e.message}`);
       process.exit(1);
     }
 

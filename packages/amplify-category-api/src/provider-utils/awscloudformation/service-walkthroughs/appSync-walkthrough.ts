@@ -12,7 +12,14 @@ import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-au
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
 import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
-import { ResourceAlreadyExistsError, ResourceDoesNotExistError, UnknownResourceTypeError, exitOnNextTick } from 'amplify-cli-core';
+import {
+  ResourceAlreadyExistsError,
+  ResourceDoesNotExistError,
+  UnknownResourceTypeError,
+  exitOnNextTick,
+  stateManager,
+  $TSContext,
+} from 'amplify-cli-core';
 
 const serviceName = 'AppSync';
 const providerName = 'awscloudformation';
@@ -37,8 +44,8 @@ const authProviderChoices = [
   },
 ];
 
-export const openConsole = context => {
-  const amplifyMeta = context.amplify.getProjectMeta();
+export const openConsole = async (context: $TSContext) => {
+  const amplifyMeta = stateManager.getMeta();
   const categoryAmplifyMeta = amplifyMeta[category];
   let appSyncMeta;
   Object.keys(categoryAmplifyMeta).forEach(resourceName => {
@@ -49,16 +56,30 @@ export const openConsole = context => {
 
   if (appSyncMeta) {
     const { GraphQLAPIIdOutput } = appSyncMeta;
+    const appId = amplifyMeta.providers[providerName].AmplifyAppId;
+    if (!appId) {
+      throw new Error('Missing AmplifyAppId in amplify-meta.json');
+    }
     const { Region } = amplifyMeta.providers[providerName];
+    let consoleUrl = `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
 
-    const consoleUrl = `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
+    const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+    const { isAdminApp, region } = await providerPlugin.isAmplifyAdminApp(appId);
+    if (isAdminApp) {
+      if (region !== Region) {
+        context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
+      }
+      const { envName } = context.amplify.getEnvInfo();
+      const baseUrl: string = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
+      consoleUrl = `${baseUrl}/admin/${appId}/${envName}/datastore`;
+    }
     open(consoleUrl, { wait: false });
   } else {
     context.print.error('AppSync API is not pushed in the cloud.');
   }
 };
 
-export const serviceWalkthrough = async (context, defaultValuesFilename, serviceMetadata) => {
+export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
   const resourceName = resourceAlreadyExists(context);
   let authConfig;
   let defaultAuthType;

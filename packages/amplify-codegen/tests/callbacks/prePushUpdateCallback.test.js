@@ -15,6 +15,13 @@ jest.mock('../../src/codegen-config');
 jest.mock('../../src/walkthrough/questions/updateCode');
 jest.mock('../../src/walkthrough/questions/updateDocs');
 
+jest.mock('graphql-transformer-core');
+jest.mock('amplify-cli-core', () => ({
+  pathManager: {
+    getBackendDirPath: () => 'backend',
+  },
+}));
+
 const MOCK_PROJECT_NAME = 'MOCK_PROJECT';
 const MOCK_SELECTED_PROJECT = { projectName: MOCK_PROJECT_NAME, foo: 'bar' };
 const MOCK_PROJECTS = [MOCK_SELECTED_PROJECT];
