@@ -366,10 +366,10 @@ export class AppSyncModelDartVisitor<
               case 'Date':
               case 'Time':
               case 'DateTime':
-                toStringVal = `${fieldName}?.to${fieldNativeType}Iso8601String()`;
+                toStringVal = `${fieldName} != null ? ${fieldName}.to${fieldNativeType}Iso8601String() : "null"`;
                 break;
               default:
-                toStringVal = `${fieldName}?.toString()`;
+                toStringVal = `${fieldName} != null ? ${fieldName}.toString() : "null"`;
             }
           }
           if (index !== fields.length -1) {
