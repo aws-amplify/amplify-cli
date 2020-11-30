@@ -1884,12 +1884,11 @@ class Task extends Model {
 
     buffer.write(\\"Task {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
-    buffer.write(\\"todo=\\" + todo != null ? todo.toString() : \\"null\\" + \\", \\");
+    buffer.write(\\"todo=\\" + (todo != null ? todo.toString() : \\"null\\") + \\", \\");
     buffer.write(
-        \\"time=\\" + time != null ? time.toTimeIso8601String() : \\"null\\" + \\", \\");
-    buffer.write(\\"createdOn=\\" + createdOn != null
-        ? createdOn.toDateIso8601String()
-        : \\"null\\");
+        \\"time=\\" + (time != null ? time.toTimeIso8601String() : \\"null\\") + \\", \\");
+    buffer.write(\\"createdOn=\\" +
+        (createdOn != null ? createdOn.toDateIso8601String() : \\"null\\"));
     buffer.write(\\"}\\");
 
     return buffer.toString();
@@ -2038,7 +2037,7 @@ class Blog extends Model {
     buffer.write(\\"Blog {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"name=\\" + name + \\", \\");
-    buffer.write(\\"test=\\" + test != null ? test.toString() : \\"null\\");
+    buffer.write(\\"test=\\" + (test != null ? test.toString() : \\"null\\"));
     buffer.write(\\"}\\");
 
     return buffer.toString();
@@ -2182,7 +2181,7 @@ class Comment extends Model {
 
     buffer.write(\\"Comment {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
-    buffer.write(\\"post=\\" + post != null ? post.toString() : \\"null\\" + \\", \\");
+    buffer.write(\\"post=\\" + (post != null ? post.toString() : \\"null\\") + \\", \\");
     buffer.write(\\"content=\\" + content);
     buffer.write(\\"}\\");
 
@@ -2320,7 +2319,7 @@ class Post extends Model {
     buffer.write(\\"Post {\\");
     buffer.write(\\"id=\\" + id + \\", \\");
     buffer.write(\\"title=\\" + title + \\", \\");
-    buffer.write(\\"blog=\\" + blog != null ? blog.toString() : \\"null\\");
+    buffer.write(\\"blog=\\" + (blog != null ? blog.toString() : \\"null\\"));
     buffer.write(\\"}\\");
 
     return buffer.toString();
