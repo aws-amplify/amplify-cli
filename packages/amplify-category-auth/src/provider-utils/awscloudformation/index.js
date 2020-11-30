@@ -298,8 +298,15 @@ async function console(context, amplifyMeta) {
     const { AmplifyAppId, Region } = amplifyMeta.providers.awscloudformation;
     if (cognitoOutput.UserPoolId && cognitoOutput.IdentityPoolId) {
       let choices = [UserPool, IdentityPool, BothPools];
-      const providerPlugin = require(context.amplify.getProviderPlugins(context).awscloudformation);
-      const { isAdminApp, region } = await providerPlugin.isAmplifyAdminApp(AmplifyAppId);
+      let isAdminApp = false;
+      let region;
+      if (AmplifyAppId) {
+        const providerPlugin = require(context.amplify.getProviderPlugins(context).awscloudformation);
+        const res = await providerPlugin.isAmplifyAdminApp(AmplifyAppId);
+        isAdminApp = res.isAdminApp;
+        region = res.region;
+      }
+
       if (isAdminApp) {
         if (region !== Region) {
           context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
@@ -309,6 +316,7 @@ async function console(context, amplifyMeta) {
         }
         choices = [AmplifyAdmin, ...choices];
       }
+
       const answer = await inquirer.prompt({
         name: 'selection',
         type: 'list',
