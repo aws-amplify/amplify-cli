@@ -296,9 +296,6 @@ async function console(context, amplifyMeta) {
   const cognitoOutput = getCognitoOutput(amplifyMeta);
   if (cognitoOutput) {
     const { AmplifyAppId, Region } = amplifyMeta.providers.awscloudformation;
-    if (!AmplifyAppId) {
-      throw new Error('Missing AmplifyAppId in amplify-meta.json');
-    }
     if (cognitoOutput.UserPoolId && cognitoOutput.IdentityPoolId) {
       let choices = [UserPool, IdentityPool, BothPools];
       const providerPlugin = require(context.amplify.getProviderPlugins(context).awscloudformation);
@@ -306,6 +303,9 @@ async function console(context, amplifyMeta) {
       if (isAdminApp) {
         if (region !== Region) {
           context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
+        }
+        if (!AmplifyAppId) {
+          throw new Error('Missing AmplifyAppId in amplify-meta.json');
         }
         choices = [AmplifyAdmin, ...choices];
       }
