@@ -458,7 +458,7 @@ export class AppSyncModelDartVisitor<
         return `'${fieldName}': ${fieldName}?.toJson()`;
       }
       if (this.isEnumType(field)) {
-        return `'${fieldName}': describeEnum(${fieldName})`;
+        return `'${fieldName}': enumToString(${fieldName})`;
       }
       const fieldNativeType = this.getNativeType(field);
       switch (fieldNativeType) {

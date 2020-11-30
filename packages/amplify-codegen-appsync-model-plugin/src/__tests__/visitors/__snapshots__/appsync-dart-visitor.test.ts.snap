@@ -108,7 +108,7 @@ class SimpleModel extends Model {
       : id = json['id'],
         status = enumFromString<Status>(json['status'], Status.values);
 
-  Map<String, dynamic> toJson() => {'id': id, 'status': describeEnum(status)};
+  Map<String, dynamic> toJson() => {'id': id, 'status': enumToString(status)};
 
   static final QueryField ID = QueryField(fieldName: \\"simpleModel.id\\");
   static final QueryField STATUS = QueryField(fieldName: \\"status\\");
