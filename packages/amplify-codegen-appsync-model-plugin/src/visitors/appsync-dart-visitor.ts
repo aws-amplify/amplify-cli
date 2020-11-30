@@ -57,7 +57,8 @@ export class AppSyncModelDartVisitor<
 
   protected generateClassLoader(): string {
     const result: string[] = [];
-    const modelNames: string[] = [...Object.keys(this.modelMap), ...Object.keys(this.enumMap)].sort();
+    const modelNames: string[] = Object.keys(this.modelMap).sort();
+    const exportClasses: string[] = [...modelNames, ...Object.keys(this.enumMap)].sort();
     //License
     const license = generateLicense();
     result.push(license);
@@ -67,7 +68,7 @@ export class AppSyncModelDartVisitor<
       ...modelNames
     ];
     //Packages for export
-    const packageExports: string[] = [...modelNames];
+    const packageExports: string[] = [...exportClasses];
     //Block body
     const classDeclarationBlock = new DartDeclarationBlock()
       .asKind('class')
