@@ -6,12 +6,14 @@ exports.handler = async (event) => {
         statusCode: 200,
     <%- props.enableCors ? 
     `   headers: {
-            \"Access-Control-Allow-Origin\": \"*\"
+            \"Access-Control-Allow-Origin\": \"*\",
+            \"Access-Control-Allow-Headers\": \"*\"
         },`
     :
     `//  Uncomment below to enable CORS requests
     //  headers: {
-    //      "Access-Control-Allow-Origin": "*"
+    //      "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*"
     //  },`
      %> 
         body: JSON.stringify('Hello from Lambda!'),

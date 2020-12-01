@@ -40,6 +40,7 @@ describe('nodejs', () => {
       const response = await invokeFunction(Name, JSON.stringify({}), region);
       const payload = JSON.parse(response.Payload.toString());
       expect(payload.headers['Access-Control-Allow-Origin']).toEqual('*');
+      expect(payload.headers['Access-Control-Allow-Headers']).toEqual('*');
       expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
       delete process.env.AMPLIFY_CLI_LAMBDA_CORS_HEADER;
     });
