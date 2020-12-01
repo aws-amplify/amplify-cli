@@ -101,6 +101,9 @@ describe('run upgrade using packaged CLI', () => {
       Array [
         "homedir/bin/amplify-pkg-linux",
         "homedir/bin/amplify",
+        Object {
+          "overwrite": true,
+        },
       ]
     `);
     expect(fs_mock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
@@ -155,6 +158,9 @@ describe('run upgrade using packaged CLI', () => {
       Array [
         "homedir/bin/amplify-pkg-win.exe",
         "homedir/bin/amplify.exe",
+        Object {
+          "overwrite": true,
+        },
       ]
     `);
     expect(fs_mock.chmod.mock.calls[0]).toMatchInlineSnapshot(`

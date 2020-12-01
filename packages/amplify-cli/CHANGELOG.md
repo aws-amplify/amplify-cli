@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.37.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.36.2...@aws-amplify/cli@4.37.0) (2020-11-30)
+
+
+### Features
+
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+
+
+
+
+
+## [4.36.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.36.1...@aws-amplify/cli@4.36.2) (2020-11-28)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.36.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.36.0...@aws-amplify/cli@4.36.1) (2020-11-27)
+
+
+### Bug Fixes
+
+* migrate check for env command ([#5987](https://github.com/aws-amplify/amplify-cli/issues/5987)) ([4b10034](https://github.com/aws-amplify/amplify-cli/commit/4b10034f247d3f441ec8ee13d579972be64a5132))
+
+
+
+
+
+# [4.36.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.35.0...@aws-amplify/cli@4.36.0) (2020-11-26)
+
+
+### Bug Fixes
+
+* removing deployment secrets and skip check on get ([#5943](https://github.com/aws-amplify/amplify-cli/issues/5943)) ([2b200b6](https://github.com/aws-amplify/amplify-cli/commit/2b200b6c97ba843b7cd37c0ee52a365f02614053))
+
+
+### Features
+
+* **iOS:** execute `amplify-app` flow on `init ` and `codegen models` ([#5917](https://github.com/aws-amplify/amplify-cli/issues/5917)) ([c47c8f7](https://github.com/aws-amplify/amplify-cli/commit/c47c8f78b37806181354d3842a2094c35b1795d0))
+
+
+### Reverts
+
+* Revert "feat(iOS): execute `amplify-app` flow on `init ` and `codegen models` (#5917)" (#5960) ([cd7951a](https://github.com/aws-amplify/amplify-cli/commit/cd7951ab6d26f1206c2f0ff95225ba7b2a5a25eb)), closes [#5917](https://github.com/aws-amplify/amplify-cli/issues/5917) [#5960](https://github.com/aws-amplify/amplify-cli/issues/5960)
+
+
+
+
+
+# [4.35.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.34.0...@aws-amplify/cli@4.35.0) (2020-11-24)
+
+
+### Features
+
+* amplify upgrade and amplify uninstall commands ([#5852](https://github.com/aws-amplify/amplify-cli/issues/5852)) ([c0aa2d9](https://github.com/aws-amplify/amplify-cli/commit/c0aa2d9fa4739214aba42fa9fff5d6c5164f540c))
+
+
+
+
+
 # [4.34.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.32.1...@aws-amplify/cli@4.34.0) (2020-11-22)
 
 

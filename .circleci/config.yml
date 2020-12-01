@@ -207,11 +207,16 @@ jobs:
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
             setNpmRegistryUrlToLocal
             loginToLocalRegistry
+            git config user.email not@used.com
+            git config user.name "Doesnt Matter"
             yarn publish-to-verdaccio
             unsetNpmRegistryUrl
       - run:
           name: Generate unified changelog
-          command: yarn ts-node scripts/unified-changelog.ts
+          command: |
+            git reset --hard HEAD
+            yarn update-versions
+            yarn ts-node scripts/unified-changelog.ts
       - run:
           name: Save new amplify GitHub tag
           command: node scripts/echo-current-cli-version.js > .amplify-pkg-version
@@ -621,6 +626,13 @@ jobs:
       - restore_cache:
           key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
       - run:
+          name: Compress binaries
+          command: |
+            cd out
+            tar zcvf amplify-pkg-macos.tgz amplify-pkg-macos
+            tar zcvf amplify-pkg-linux.tgz amplify-pkg-linux
+            tar zcvf amplify-pkg-win.exe.tgz amplify-pkg-win.exe
+      - run:
           name: Publish Amplify CLI GitHub prerelease
           command: |
             version=$(cat .amplify-pkg-version)
@@ -634,9 +646,17 @@ jobs:
           key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
       - run:
           name: Install packaged Amplify CLI
-          command: |
+          command: >
             version=$(cat .amplify-pkg-version)
-            curl -sL https://aws-amplify.github.io/amplify-cli/install | bash
+
+            curl -sL https://aws-amplify.github.io/amplify-cli/install |
+            version=v$version bash
+
+            echo "export PATH=$PATH:$HOME/.amplify/bin" >> $BASH_ENV
+      - run:
+          name: Sanity check install
+          command: |
+            amplify version
   github_release:
     working_directory: ~/repo
     docker: *ref_0
@@ -1980,7 +2000,7 @@ workflows:
               only:
                 - master
                 - beta
-                - backendManager
+                - release
           requires:
             - build
       - build_pkg_binaries:
@@ -2091,14 +2111,14 @@ workflows:
           filters:
             branches:
               only:
-                - backendManager
+                - release
       - github_prerelease_install_sanity_check:
           requires:
             - github_prerelease
           filters:
             branches:
               only:
-                - backendManager
+                - release
       - deploy:
           requires:
             - test
@@ -2118,14 +2138,13 @@ workflows:
                 - release
                 - master
                 - beta
-                - backendManager
       - github_release:
           requires:
             - deploy
           filters:
             branches:
               only:
-                - backendManager
+                - release
       - plugin-amplify_e2e_tests:
           filters: &ref_10
             branches:

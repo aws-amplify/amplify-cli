@@ -11,3 +11,6 @@ export class InvalidEnvironmentNameError extends Error {}
 export class InvalidSubCommandError extends Error {}
 export class FrontendBuildError extends Error {}
 export class TeamProviderInfoMigrateError extends Error {}
+export class AppNotFoundError extends Error {}
+export class AppAlreadyDeployedError extends Error {}
+export class SchemaDoesNotExistError extends Error {}

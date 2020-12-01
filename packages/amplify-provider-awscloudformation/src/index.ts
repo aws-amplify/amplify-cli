@@ -18,6 +18,8 @@ const { loadResourceParameters, saveResourceParameters } = require('./resourcePa
 const { formUserAgentParam } = require('./aws-utils/user-agent');
 const predictionsRegionMap = require('./aws-predictions-regions');
 
+import { adminLoginFlow } from './admin-login';
+import { adminBackendMap, isAmplifyAdminApp } from './utils/admin-helpers';
 import { CognitoUserPoolService, createCognitoUserPoolService } from './aws-utils/CognitoUserPoolService';
 import { IdentityPoolService, createIdentityPoolService } from './aws-utils/IdentityPoolService';
 import { S3Service, createS3Service } from './aws-utils/S3Service';
@@ -64,7 +66,7 @@ function buildResources(context, category, resourceName) {
 async function getConfiguredAWSClient(context, category, action) {
   await aws.configureWithCreds(context);
   category = category || 'missing';
-  action = action || 'missing';
+  action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
   aws.config.update({
     customUserAgent: formUserAgentParam(context, userAgentAction),
@@ -97,10 +99,13 @@ function openConsole(context) {
 }
 
 module.exports = {
+  adminBackendMap,
+  adminLoginFlow,
   console: openConsole,
   attachBackend,
   init,
   initEnv,
+  isAmplifyAdminApp,
   onInitSuccessful,
   configure,
   configureNewUser,

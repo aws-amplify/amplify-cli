@@ -6,6 +6,12 @@ import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-p
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { initializeEnv } from '../initialize-env';
 
+export async function onHeadlessSuccess(context: $TSContext) {
+  const frontendPlugins = getFrontendPlugins(context);
+  const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
+  await frontendModule.onInitSuccessful(context);
+}
+
 export async function onSuccess(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
 

@@ -135,6 +135,11 @@ export async function writeConfig(projectDir: string, config: TransformConfig): 
   return config;
 }
 
+export const isDataStoreEnabled = async (projectDir: string): Promise<boolean> => {
+  const transformerConfig = await loadConfig(projectDir);
+  return transformerConfig?.ResolverConfig?.project !== undefined || transformerConfig?.ResolverConfig?.models !== undefined;
+};
+
 /**
  * Given an absolute path to an amplify project directory, load the
  * user defined configuration.

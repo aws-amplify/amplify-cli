@@ -5,7 +5,7 @@ import { queryProvider } from './attach-backend-steps/a10-queryProvider';
 import { analyzeProject } from './attach-backend-steps/a20-analyzeProject';
 import { initFrontend } from './attach-backend-steps/a30-initFrontend';
 import { generateFiles } from './attach-backend-steps/a40-generateFiles';
-import { postPullCodeGenCheck } from './amplify-service-helper';
+import { postPullCodegen } from './amplify-service-helper';
 import { initializeEnv } from './initialize-env';
 
 const backupAmplifyDirName = 'amplify-backup';
@@ -56,7 +56,7 @@ async function onSuccess(context: $TSContext) {
     }
   }
 
-  await postPullCodeGenCheck(context);
+  await postPullCodegen(context);
 
   if (!inputParams.yes) {
     const confirmKeepCodebase = await context.amplify.confirmPrompt('Do you plan on modifying this backend?', true);

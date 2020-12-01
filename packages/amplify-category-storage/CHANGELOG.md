@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.2...amplify-category-storage@2.10.3) (2020-11-30)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.10.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.1...amplify-category-storage@2.10.2) (2020-11-27)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.10.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.0...amplify-category-storage@2.10.1) (2020-11-24)
+
+
+### Bug Fixes
+
+* imported s3 bucket us-east-1 not getting region assigned ([#5938](https://github.com/aws-amplify/amplify-cli/issues/5938)) ([200405f](https://github.com/aws-amplify/amplify-cli/commit/200405fad98f68e3b8218206996fe1079d3c2563))
+
+
+
+
+
 # [2.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.8.4...amplify-category-storage@2.10.0) (2020-11-22)
 
 

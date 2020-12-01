@@ -4,7 +4,7 @@ const _ = require('lodash');
 const { stateManager } = require('amplify-cli-core');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { copyCfnTemplate, saveResourceParameters } = require('./utils/synthesize-resources');
-const { ENV_SPECIFIC_PARAMS, privateKeys } = require('./constants');
+const { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys } = require('./constants');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./handlers/resource-handlers');
 const { supportedServices } = require('../supported-services');
 const { importResource, importedAuthEnvInit } = require('./import');
@@ -295,23 +295,47 @@ function getRequiredParamsForHeadlessInit(projectType, previousValues) {
 async function console(context, amplifyMeta) {
   const cognitoOutput = getCognitoOutput(amplifyMeta);
   if (cognitoOutput) {
-    const { Region } = amplifyMeta.providers.awscloudformation;
+    const { AmplifyAppId, Region } = amplifyMeta.providers.awscloudformation;
     if (cognitoOutput.UserPoolId && cognitoOutput.IdentityPoolId) {
+      let choices = [UserPool, IdentityPool, BothPools];
+      let isAdminApp = false;
+      let region;
+      if (AmplifyAppId) {
+        const providerPlugin = require(context.amplify.getProviderPlugins(context).awscloudformation);
+        const res = await providerPlugin.isAmplifyAdminApp(AmplifyAppId);
+        isAdminApp = res.isAdminApp;
+        region = res.region;
+      }
+
+      if (isAdminApp) {
+        if (region !== Region) {
+          context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
+        }
+        if (!AmplifyAppId) {
+          throw new Error('Missing AmplifyAppId in amplify-meta.json');
+        }
+        choices = [AmplifyAdmin, ...choices];
+      }
+
       const answer = await inquirer.prompt({
         name: 'selection',
         type: 'list',
         message: 'Which console',
-        choices: ['User Pool', 'Identity Pool', 'Both'],
-        default: 'Both',
+        choices,
+        default: isAdminApp ? AmplifyAdmin : BothPools,
       });
 
       switch (answer.selection) {
-        case 'User Pool':
+        case AmplifyAdmin:
+          await openAdminUI(context, AmplifyAppId, Region);
+          break;
+        case UserPool:
           await openUserPoolConsole(context, Region, cognitoOutput.UserPoolId);
           break;
-        case 'Identity Pool':
+        case IdentityPool:
           await openIdentityPoolConsole(context, Region, cognitoOutput.IdentityPoolId);
           break;
+        case BothPools:
         default:
           await openUserPoolConsole(context, Region, cognitoOutput.UserPoolId);
           await openIdentityPoolConsole(context, Region, cognitoOutput.IdentityPoolId);
@@ -340,6 +364,15 @@ function getCognitoOutput(amplifyMeta) {
     }
   }
   return cognitoOutput;
+}
+
+async function openAdminUI(context, appId, region) {
+  const { envName } = context.amplify.getEnvInfo();
+  const providerPlugin = require(context.amplify.getProviderPlugins(context).awscloudformation);
+  const baseUrl = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
+  const adminUrl = `${baseUrl}/admin/${appId}/${envName}/auth`;
+  await open(adminUrl, { wait: false });
+  context.print.success(adminUrl);
 }
 
 async function openUserPoolConsole(context, region, userPoolId) {

@@ -152,7 +152,7 @@ const socialProviderMap = (
   const result: SocialProviderResult = {
     authProvidersUserPool,
     ...socialConfigMap,
-    ...userPoolProviders(authProvidersUserPool, { requiredAttributes, ...socialConfigMap }),
+    ...userPoolProviders(authProvidersUserPool, { requiredAttributes, ...socialConfigMap, hostedUI: true }),
   };
   return result;
 };
