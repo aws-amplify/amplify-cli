@@ -20,6 +20,7 @@ export type CodeGenFieldConnectionBelongsTo = CodeGenConnectionTypeBase & {
 export type CodeGenFieldConnectionHasOne = CodeGenConnectionTypeBase & {
   kind: CodeGenConnectionType.HAS_ONE;
   associatedWith: CodeGenField;
+  targetName: string;
 };
 
 export type CodeGenFieldConnectionHasMany = CodeGenConnectionTypeBase & {
@@ -186,6 +187,7 @@ export function processConnections(
             associatedWith: otherSideField,
             connectedModel: otherSide,
             isConnectingFieldAutoCreated,
+            targetName: connectionFields[0] || makeConnectionAttributeName(model.name, field.name),
           };
         } else {
           /*
