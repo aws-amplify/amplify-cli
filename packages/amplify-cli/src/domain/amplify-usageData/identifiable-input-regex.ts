@@ -1,5 +1,6 @@
 import { JSONUtilities } from 'amplify-cli-core';
 import { Input } from '../input';
+import _ from 'lodash';
 
 const containsToRedact = ['key', 'id', 'password', 'name', 'arn', 'address', 'app'];
 const quotes = '\\\\?"';
@@ -42,7 +43,9 @@ export default function redactInput(originalInput: Input, deleteArgAndOption: Bo
   let redactString: Boolean = false;
   if (deleteArgAndOption) {
     delete input.argv;
-    delete input.options;
+    if (originalInput.options) {
+      input.options = _.pick(originalInput.options, 'sandboxId');
+    }
     return input;
   }
   for (let i = 0; i < length; i++) {
