@@ -104,8 +104,11 @@ async function disable(context) {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     EmailChannelRequest: {
       Enabled: false,
+      FromAddress: context.exeInfo.serviceMeta.output.Email.FromAddress,
+      Identity: context.exeInfo.serviceMeta.output.Email.Identity,
     },
   };
+
   spinner.start('Updating Email Channel.');
   return new Promise((resolve, reject) => {
     context.exeInfo.pinpointClient.updateEmailChannel(params, (err, data) => {
