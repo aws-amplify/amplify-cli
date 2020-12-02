@@ -29,8 +29,7 @@ export function addDEVHosting(cwd: string) {
 
 export function addPRODHosting(cwd: string) {
   return new Promise((resolve, reject) => {
-    // Cloudfront distrubution takes a long time. Bumping up the timeout
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true, noOutputTimeout: 30 * 60 * 1000 })
+    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait('Select the plugin module to execute')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -38,6 +37,32 @@ export function addPRODHosting(cwd: string) {
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('hosting bucket name')
+      .sendCarriageReturn()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function removePRODCloudFront(cwd: string) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['update', 'hosting'], { cwd, stripColors: true })
+      .wait('Specify the section to configure')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Remove CloudFront from hosting')
+      .send('y')
+      .sendCarriageReturn()
+      .wait('index doc for the website')
+      .sendCarriageReturn()
+      .wait('error doc for the website')
+      .sendCarriageReturn()
+      .wait('Specify the section to configure')
+      .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .run((err: Error) => {
         if (!err) {
