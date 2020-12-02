@@ -58,6 +58,7 @@ export class AppSyncModelDartVisitor<
   protected generateClassLoader(): string {
     const result: string[] = [];
     const modelNames: string[] = Object.keys(this.modelMap).sort();
+    const exportClasses: string[] = [...modelNames, ...Object.keys(this.enumMap)].sort();
     //License
     const license = generateLicense();
     result.push(license);
@@ -66,6 +67,8 @@ export class AppSyncModelDartVisitor<
       'package:amplify_datastore_plugin_interface/amplify_datastore_plugin_interface',
       ...modelNames
     ];
+    //Packages for export
+    const packageExports: string[] = [...exportClasses];
     //Block body
     const classDeclarationBlock = new DartDeclarationBlock()
       .asKind('class')
@@ -100,6 +103,7 @@ export class AppSyncModelDartVisitor<
       );
 
     result.push(packageImports.map(p => `import '${p}.dart';`).join('\n'));
+    result.push(packageExports.map(p => `export '${p}.dart';`).join('\n'));
     result.push(classDeclarationBlock.string);
     return this.formatDartCode(result.join('\n\n'));
   }
@@ -144,24 +148,23 @@ export class AppSyncModelDartVisitor<
   }
 
   protected generatePackageHeader(): string {
-    const additionalPackages: Set<string> = new Set();
     let usingCollection = false;
+    let usingOtherClass = false;
     Object.entries(this.getSelectedModels()).forEach(([name, model]) => {
       model.fields.forEach(f => {
         if (f.isList) {
           usingCollection = true;
         }
         if (this.isModelType(f) || this.isEnumType(f)) {
-          additionalPackages.add(f.type);
+          usingOtherClass = true
         }
       });
     });
-    const baseImport = [
+    return [
       ...BASE_IMPORT_PACKAGES,
-      usingCollection ? COLLECTION_PACKAGE : ''
-    ].filter(f => f).sort().map(pckg => `import '${pckg}';`).join('\n');
-    const additionalImport = Array.from(additionalPackages).sort().map(name => `import '${name}.dart';`).join('\n');
-    return [baseImport, additionalImport].filter(f => f).join('\n\n') + '\n';
+      usingCollection ? COLLECTION_PACKAGE : '',
+      usingOtherClass ? `${LOADER_CLASS_NAME}.dart` : ''
+    ].filter(f => f).sort().map(pckg => `import '${pckg}';`).join('\n') + '\n';
   }
 
   protected generateModelClass(model: CodeGenModel): string {
@@ -351,13 +354,23 @@ export class AppSyncModelDartVisitor<
         ...fields.map((field, index) => {
           const fieldDelimiter = ', ';
           const fieldName = this.getFieldName(field);
-          let toStringVal = `${fieldName}.toString()`;
+          let toStringVal = '';
           if (this.isEnumType(field)) {
-            toStringVal = `describeEnum(${fieldName})`
-          } else if (this.getNativeType(field) === 'DateTime') {
-            toStringVal = `formatDateToISO8601(${fieldName})`
-          } else if (this.getNativeType(field) === 'String') {
-            toStringVal = `${fieldName}`;
+            toStringVal = `enumToString(${fieldName})`
+          } else {
+            const fieldNativeType = this.getNativeType(field);
+            switch (fieldNativeType) {
+              case 'String':
+                toStringVal = `${fieldName}`;
+                break;
+              case 'Date':
+              case 'Time':
+              case 'DateTime':
+                toStringVal = `(${fieldName} != null ? ${fieldName}.to${fieldNativeType}Iso8601String() : "null")`;
+                break;
+              default:
+                toStringVal = `(${fieldName} != null ? ${fieldName}.toString() : "null")`;
+            }
           }
           if (index !== fields.length -1) {
             return `buffer.write("${fieldName}=" + ${toStringVal} + "${fieldDelimiter}");`;
@@ -412,12 +425,20 @@ export class AppSyncModelDartVisitor<
             indent(`? ${this.getNativeType(field)}.fromJson(new Map<String, dynamic>.from(json['${fieldName}']))`),
             indent(`: null`)
           ].join('\n');
-        } else if (this.isEnumType(field)) {
-          return `${fieldName} = enumFromString<${field.type}>(json['${fieldName}'], ${field.type}.values)`
-        } else if (this.getNativeType(field) === 'DateTime') {
-          return `${fieldName} = json['${fieldName}'] != null ? DateTime.parse(json['${fieldName}']) : null`;
         }
-        return `${fieldName} = json['${fieldName}']`;
+        if (this.isEnumType(field)) {
+          return `${fieldName} = enumFromString<${field.type}>(json['${fieldName}'], ${field.type}.values)`
+        }
+        const fieldNativeType = this.getNativeType(field);
+        switch (fieldNativeType) {
+          case 'Date':
+          case 'Time':
+            return `${fieldName} = ${fieldNativeType}.fromString(json['${fieldName}'])`;
+          case 'DateTime':
+            return `${fieldName} = ${fieldNativeType}Parse.fromString(json['${fieldName}'])`;
+          default:
+            return `${fieldName} = json['${fieldName}']`;
+        }
       }).join(',\n')
     ).trim()};`;
     declarationBlock.addClassMethod(
@@ -435,12 +456,19 @@ export class AppSyncModelDartVisitor<
           return `'${fieldName}': ${fieldName}?.map((e) => e?.toJson())`
         }
         return `'${fieldName}': ${fieldName}?.toJson()`;
-      } else if (this.isEnumType(field)) {
-        return `'${fieldName}': describeEnum(${fieldName})`;
-      } else if (this.getNativeType(field) === 'DateTime') {
-        return `'${fieldName}': formatDateToISO8601(${fieldName})`;
       }
-      return `'${fieldName}': ${fieldName}`;
+      if (this.isEnumType(field)) {
+        return `'${fieldName}': enumToString(${fieldName})`;
+      }
+      const fieldNativeType = this.getNativeType(field);
+      switch (fieldNativeType) {
+        case 'Date':
+        case 'Time':
+        case 'DateTime':
+          return `'${fieldName}': ${fieldName}?.to${fieldNativeType}Iso8601String()`;
+        default:
+          return `'${fieldName}': ${fieldName}`;
+      }
     }).join(', ');
     const deserializationImpl = [
       ' => {',
