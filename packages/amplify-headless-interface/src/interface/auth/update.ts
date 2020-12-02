@@ -1,4 +1,4 @@
-import { CognitoUserPoolConfiguration, CognitoIdentityPoolConfiguration, NoCognitoIdentityPool } from './add';
+import { CognitoUserPoolConfiguration, CognitoIdentityPoolConfiguration, NoCognitoIdentityPool, CognitoOAuthConfiguration } from './add';
 
 export interface UpdateAuthRequest {
   version: 1;
@@ -27,10 +27,9 @@ export type CognitoUserPoolModification = Pick<
   | 'refreshTokenPeriod'
   | 'readAttributes'
   | 'writeAttributes'
-  | 'oAuth'
   | 'addUserToGroup'
   | 'emailBlacklist'
   | 'emailWhitelist'
   | 'customAuthScaffolding'
->;
+> & { oAuth?: Partial<CognitoOAuthConfiguration> };
 export type CognitoIdentityPoolModification = Pick<CognitoIdentityPoolConfiguration, 'unauthenticatedLogin' | 'identitySocialFederation'>;

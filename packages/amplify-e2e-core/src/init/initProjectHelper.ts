@@ -131,8 +131,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object) {
       .wait('Choose your default editor:')
       .sendLine(s.editor)
       .wait("Choose the type of app that you're building")
-      .send('j')
-      .send('j')
+      .sendKeyDown(3)
       .sendCarriageReturn()
       .wait('Do you want to use an AWS profile?')
       .sendLine('y')
@@ -146,6 +145,40 @@ export function initIosProjectWithProfile(cwd: string, settings: Object) {
           reject(err);
         }
       });
+  });
+}
+
+export function initFlutterProjectWithProfile(cwd: string, settings: Object) {
+  const s = { ...defaultSettings, ...settings };
+
+  return new Promise((resolve, reject) => {
+    let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
+      .wait('Enter a name for the project')
+      .sendLine(s.name)
+      .wait('Enter a name for the environment')
+      .sendLine(s.envName)
+      .wait('Choose your default editor:')
+      .sendLine(s.editor)
+      .wait("Choose the type of app that you're building")
+      .sendKeyDown(2)
+      .sendCarriageReturn()
+      .wait('Where do you want to store your configuration file')
+      .sendLine('./lib/')
+      .wait('Using default provider  awscloudformation')
+      .wait('Do you want to use an AWS profile?')
+      .sendConfirmYes()
+      .wait('Please choose the profile you want to use')
+      .sendLine(s.profileName);
+
+    singleSelect(chain, s.region, amplifyRegions);
+
+    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
@@ -266,10 +299,43 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
   });
 }
 
-export function amplifyStatus(cwd: string, expectedStatus: string) {
+export function amplifyVersion(cwd: string, expectedVersion: string, testingWithLatestCodebase = false) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['--version'], { cwd, stripColors: true })
+      .wait(expectedVersion)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+//Can be called only if detects teamprovider change
+export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, testingWithLatestCodebase) {
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);
-    spawn(getCLIPath(), ['status'], { cwd, stripColors: true })
+    spawn(getCLIPath(testingWithLatestCodebase), ['status'], { cwd, stripColors: true })
+      .wait('Amplify has been upgraded to handle secrets more securely by migrating some values')
+      .sendConfirmYes()
+      .wait(regex)
+      .sendLine('\r')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLatestCodebase = false) {
+  return new Promise((resolve, reject) => {
+    let regex = new RegExp(`.*${expectedStatus}*`);
+    spawn(getCLIPath(testingWithLatestCodebase), ['status'], { cwd, stripColors: true })
       .wait(regex)
       .sendLine('\r')
       .run((err: Error) => {

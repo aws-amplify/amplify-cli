@@ -2,6 +2,8 @@ import {
   AddAuthUserPoolOnlyWithOAuthSettings,
   AddAuthUserPoolOnlyNoOAuthSettings,
   AddAuthIdentityPoolAndUserPoolWithOAuthSettings,
+  AddStorageSettings,
+  AddDynamoDBSettings,
 } from 'amplify-e2e-core';
 
 export const createNoOAuthSettings = (projectPrefix: string, shortId: string): AddAuthUserPoolOnlyNoOAuthSettings => {
@@ -43,4 +45,19 @@ export const createIDPAndUserPoolWithOAuthSettings = (
     idpGoogleAppId: 'idpGoogleAppId',
     idpAmazonAppId: 'idpAmazonAppId',
   } as AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
+};
+
+export const createStorageSettings = (projectPrefix: string, shortId: string): AddStorageSettings => {
+  return {
+    resourceName: `${projectPrefix}res${shortId}`,
+    bucketName: `${projectPrefix}bkt${shortId}`,
+  };
+};
+
+export const createDynamoDBSettings = (projectPrefix: string, shortId: string): AddDynamoDBSettings => {
+  return {
+    resourceName: `${projectPrefix}res${shortId}`,
+    tableName: `${projectPrefix}tbl${shortId}`,
+    gsiName: `${projectPrefix}gsi${shortId}`,
+  };
 };

@@ -401,7 +401,7 @@ function identityPoolProviders(coreAnswers, projectType) {
 /*
   Format hosted UI providers data per lambda spec
   hostedUIProviderMeta is saved in parameters.json.
-  hostedUIprovierCreds is saved in team-providers.
+  hostedUIprovierCreds is saved in deployment-secrets.
 */
 function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
   if (coreAnswers.useDefault === 'default') {
@@ -412,7 +412,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
     ? JSON.parse(JSON.stringify(answers.requiredAttributes)).concat('username')
     : ['email', 'username'];
   const res = {};
-  if (oAuthProviders) {
+  if (answers.hostedUI) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
@@ -458,8 +458,7 @@ function structureOAuthMetadata(coreAnswers, context, defaults, amplify) {
     delete context.updatingAuth.oAuthMetadata;
     return null;
   }
-  const prev = context.updatingAuth ? context.updatingAuth : {};
-  const answers = Object.assign(prev, coreAnswers);
+  const answers = Object.assign({}, context.updatingAuth, coreAnswers);
   let { AllowedOAuthFlows, AllowedOAuthScopes, CallbackURLs, LogoutURLs } = answers;
   if (CallbackURLs && coreAnswers.newCallbackURLs) {
     CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);

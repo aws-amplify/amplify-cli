@@ -5,7 +5,7 @@ const ini = require('ini');
 const inquirer = require('inquirer');
 const constants = require('./constants');
 const proxyAgent = require('proxy-agent');
-const { pathManager } = require('amplify-cli-core');
+const { pathManager, SecretFileMode } = require('amplify-cli-core');
 
 const credentialsFilePath = pathManager.getAWSCredentialsFilePath();
 const configFilePath = pathManager.getAWSConfigFilePath();
@@ -56,8 +56,8 @@ function setProfile(awsConfig, profileName) {
     };
   }
 
-  fs.writeFileSync(credentialsFilePath, ini.stringify(credentials), { mode: 0o600 });
-  fs.writeFileSync(configFilePath, ini.stringify(config), { mode: 0o600 });
+  fs.writeFileSync(credentialsFilePath, ini.stringify(credentials), { mode: SecretFileMode });
+  fs.writeFileSync(configFilePath, ini.stringify(config), { mode: SecretFileMode });
 }
 
 async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {

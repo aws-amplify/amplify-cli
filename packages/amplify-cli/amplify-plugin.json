@@ -9,6 +9,7 @@
     "env",
     "help",
     "init",
+    "logout",
     "migrate",
     "plugin",
     "publish",
@@ -16,6 +17,8 @@
     "pull",
     "run",
     "status",
+    "uninstall",
+    "upgrade",
     "version"
   ],
   "commandAliases": {

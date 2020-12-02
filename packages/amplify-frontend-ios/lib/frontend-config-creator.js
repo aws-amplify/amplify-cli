@@ -179,6 +179,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
         Default: {
           PoolId: cognitoResource.output.UserPoolId,
           AppClientId: cognitoResource.output.AppClientID,
+          AppClientSecret: cognitoResource.output.AppClientSecret,
           Region: projectRegion,
         },
       },
@@ -220,6 +221,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     const oauth = {
       WebDomain: domain,
       AppClientId: cognitoResource.output.AppClientID,
+      AppClientSecret: cognitoResource.output.AppClientSecret,
       SignInRedirectURI: redirectSignIn,
       SignOutRedirectURI: redirectSignOut,
       Scopes: scope,

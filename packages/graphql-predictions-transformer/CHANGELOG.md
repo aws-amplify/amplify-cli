@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.4.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.4.1...graphql-predictions-transformer@2.4.2) (2020-11-30)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.4.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.24...graphql-predictions-transformer@2.4.1) (2020-11-22)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+# 2.4.0 (2020-11-22)
+
+
+### Bug Fixes
+
+* **graphql-predictions-transformer:** fix json validation ([#5724](https://github.com/aws-amplify/amplify-cli/issues/5724)) ([3bed4b1](https://github.com/aws-amplify/amplify-cli/commit/3bed4b10b9ac6d3088a86c28f5e211ac431644b1))
+* sanitize input in transformer resolver([#3316](https://github.com/aws-amplify/amplify-cli/issues/3316)) ([a3bc0a5](https://github.com/aws-amplify/amplify-cli/commit/a3bc0a5e5d3faa7946d16d0f6595ce8c2f3c11dc))
+
+
+
+
+
+## [2.3.27](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.24...graphql-predictions-transformer@2.3.27) (2020-11-20)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.26](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.24...graphql-predictions-transformer@2.3.26) (2020-11-20)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
+## [2.3.25](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.24...graphql-predictions-transformer@2.3.25) (2020-11-19)
+
+**Note:** Version bump only for package graphql-predictions-transformer
+
+
+
+
+
 ## [2.3.24](https://github.com/aws-amplify/amplify-cli/compare/graphql-predictions-transformer@2.3.23...graphql-predictions-transformer@2.3.24) (2020-11-08)
 
 **Note:** Version bump only for package graphql-predictions-transformer

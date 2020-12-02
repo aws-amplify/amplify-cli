@@ -20,6 +20,19 @@ export const run = async (context: Context) => {
     return;
   }
 
+  const { appId, envName } = context?.parameters?.options || {};
+  if (appId && envName) {
+    try {
+      const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+      await providerPlugin.adminLoginFlow(context, appId, envName);
+    } catch (e) {
+      context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
+      context.usageData.emitError(e);
+      process.exit(1);
+    }
+    return;
+  }
+
   if (!context.parameters.first) {
     await configureNewUser(context);
   }

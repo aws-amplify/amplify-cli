@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.4.2...amplify-nodejs-function-template-provider@1.5.1) (2020-11-22)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+# 1.5.0 (2020-11-22)
+
+
+### Bug Fixes
+
+* added exit code on remove ([#5427](https://github.com/aws-amplify/amplify-cli/issues/5427)) ([33132f7](https://github.com/aws-amplify/amplify-cli/commit/33132f764b290cafd345720409a5db8ea6088069))
+* data inconsitency ([#5344](https://github.com/aws-amplify/amplify-cli/issues/5344)) ([bfe1903](https://github.com/aws-amplify/amplify-cli/commit/bfe19038b5b676056f45d7ffcc4c2460057936d8))
+* dotnet fucntion provider fixes, package.json cleanup, add pkg refs ([#3826](https://github.com/aws-amplify/amplify-cli/issues/3826)) ([75361fb](https://github.com/aws-amplify/amplify-cli/commit/75361fb266f15ba954a8b8e935874c74f66eb11a))
+* fixed typos and bad import ([#5390](https://github.com/aws-amplify/amplify-cli/issues/5390)) ([0d2f632](https://github.com/aws-amplify/amplify-cli/commit/0d2f632029bc3c78434fe502899780649f3f74e3))
+* point editor to correct nodejs trigger template file ([#3990](https://github.com/aws-amplify/amplify-cli/issues/3990)) ([16a2b4f](https://github.com/aws-amplify/amplify-cli/commit/16a2b4f50a85372f733eef129e43b154a993b136))
+* remove deprecated use of context.done() and context.succeed() ([#4206](https://github.com/aws-amplify/amplify-cli/issues/4206)) ([cc7ce0d](https://github.com/aws-amplify/amplify-cli/commit/cc7ce0d0693307f4d8ca4a97fbb1c6268289b9b5))
+* rename node pluign packages ([#3788](https://github.com/aws-amplify/amplify-cli/issues/3788)) ([7b1f0f2](https://github.com/aws-amplify/amplify-cli/commit/7b1f0f2c7bb67a9d154e8462643fb0fe35e88399))
+
+
+### Features
+
+* added commented out cors headers ([#5315](https://github.com/aws-amplify/amplify-cli/issues/5315)) ([03ec394](https://github.com/aws-amplify/amplify-cli/commit/03ec394af21b0b5683441c14f22b8cdff9e71053))
+* feature flag implementation ([#4891](https://github.com/aws-amplify/amplify-cli/issues/4891)) ([6d1c632](https://github.com/aws-amplify/amplify-cli/commit/6d1c632952a49cb56670c11c9cb0c3620d0eb332))
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([4e97400](https://github.com/aws-amplify/amplify-cli/commit/4e974007d95c894ab4108a2dff8d5996e7e3ce25))
+
+
+
+
+
+## [1.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.4.2...amplify-nodejs-function-template-provider@1.4.5) (2020-11-20)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [1.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.4.2...amplify-nodejs-function-template-provider@1.4.4) (2020-11-20)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [1.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.4.2...amplify-nodejs-function-template-provider@1.4.3) (2020-11-19)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
 ## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.4.1...amplify-nodejs-function-template-provider@1.4.2) (2020-10-01)
 
 

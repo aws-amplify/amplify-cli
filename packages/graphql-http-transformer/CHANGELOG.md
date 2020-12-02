@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.16.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.16.1...graphql-http-transformer@4.16.2) (2020-11-30)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
+## [4.16.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.15.24...graphql-http-transformer@4.16.1) (2020-11-22)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
+# [4.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@3.4.12...graphql-http-transformer@4.16.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* [#2296](https://github.com/aws-amplify/amplify-cli/issues/2296) [#2304](https://github.com/aws-amplify/amplify-cli/issues/2304) [#2100](https://github.com/aws-amplify/amplify-cli/issues/2100) ([#2439](https://github.com/aws-amplify/amplify-cli/issues/2439)) ([82762d6](https://github.com/aws-amplify/amplify-cli/commit/82762d6187eb2102ebd134b181622188c5632d1d))
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* export Typescript definitions and fix resulting type errors ([#2452](https://github.com/aws-amplify/amplify-cli/issues/2452)) ([7de3845](https://github.com/aws-amplify/amplify-cli/commit/7de384594d3b9cbf22cdaa85107fc8df26c141ec)), closes [#2451](https://github.com/aws-amplify/amplify-cli/issues/2451)
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+
+
+### Features
+
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+
+
+
+
+
+## [4.15.27](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.15.24...graphql-http-transformer@4.15.27) (2020-11-20)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
+## [4.15.26](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.15.24...graphql-http-transformer@4.15.26) (2020-11-20)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
+## [4.15.25](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.15.24...graphql-http-transformer@4.15.25) (2020-11-19)
+
+**Note:** Version bump only for package graphql-http-transformer
+
+
+
+
+
 ## [4.15.24](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.15.23...graphql-http-transformer@4.15.24) (2020-11-08)
 
 **Note:** Version bump only for package graphql-http-transformer

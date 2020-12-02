@@ -159,7 +159,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     const action = authExists ? 'updated' : 'added';
     context.print.success(`Successfully ${action} auth resource locally.`);
 
-    return requirements.resourceName;
+    return authProps.resourceName;
   } catch (e) {
     context.print.error('Error updating Cognito resource');
     throw e;
@@ -409,6 +409,21 @@ async function prePushAuthHook(context) {
   await transformUserPoolGroupSchema(context);
 }
 
+async function importAuth(context) {
+  const { amplify } = context;
+  const servicesMetadata = require('./provider-utils/supported-services').supportedServices;
+  const existingAuth = amplify.getProjectDetails().amplifyMeta.auth || {};
+
+  if (Object.keys(existingAuth).length > 0) {
+    return context.print.warning('Auth has already been added to this project.');
+  }
+
+  const serviceSelection = await context.amplify.serviceSelectionPrompt(context, category, servicesMetadata);
+  const providerController = require(`./provider-utils/${serviceSelection.providerName}`);
+
+  return providerController.importResource(context, serviceSelection, undefined, undefined, false);
+}
+
 module.exports = {
   externalAuthEnable,
   checkRequirements,
@@ -423,4 +438,5 @@ module.exports = {
   prePushAuthHook,
   uploadFiles,
   category,
+  importAuth,
 };

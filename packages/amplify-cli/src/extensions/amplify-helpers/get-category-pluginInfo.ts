@@ -1,9 +1,7 @@
 export function getCategoryPluginInfo(context, category, service?) {
   let categoryPluginInfo;
 
-  const pluginInfosForCategory = context.pluginPlatform.plugins[category].filter(pluginInfo => {
-    return pluginInfo.manifest.type === 'category';
-  });
+  const pluginInfosForCategory = context.pluginPlatform.plugins[category];
 
   if (pluginInfosForCategory.length > 0) {
     if (service) {

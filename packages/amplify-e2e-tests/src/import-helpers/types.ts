@@ -1,6 +1,6 @@
 import { $TSObject } from 'amplify-cli-core';
 
-export type ProjectDetails = {
+export type AuthProjectDetails = {
   authResourceName?: string;
   parameters?: {
     authSelections?: string;
@@ -37,5 +37,48 @@ export type ProjectDetails = {
     amazonAppId?: string;
     facebookAppId?: string;
     googleClientId?: string;
+  };
+};
+
+export type StorageProjectDetails = {
+  storageResourceName?: string;
+  parameters?: {
+    resourceName?: string;
+  };
+  meta?: {
+    BucketName?: string;
+    Region?: string;
+  };
+  team?: {
+    tableName?: string;
+    bucketName?: string;
+    region?: string;
+  };
+};
+
+export type DynamoDBProjectDetails = {
+  storageResourceName?: string;
+  parameters?: {
+    resourceName?: string;
+  };
+  meta?: {
+    Name?: string;
+    Region?: string;
+    PartitionKeyName?: string;
+    PartitionKeyType?: string;
+    SortKeyName?: string;
+    SortKeyType?: string;
+    Arn?: string;
+    StreamArn?: string;
+  };
+  team?: {
+    tableName?: string;
+    region?: string;
+    partitionKeyName?: string;
+    partitionKeyType?: string;
+    sortKeyName?: string;
+    sortKeyType?: string;
+    arn?: string;
+    streamArn?: string;
   };
 };

@@ -1,5 +1,8 @@
-import { AddAuthRequest, CognitoUserPoolSigninMethod, CognitoUserProperty } from 'amplify-headless-interface';
-import { getAddAuthRequestAdaptor } from '../../../../provider-utils/awscloudformation/utils/auth-request-adaptors';
+import { AddAuthRequest, CognitoUserPoolSigninMethod, CognitoUserProperty, UpdateAuthRequest } from 'amplify-headless-interface';
+import {
+  getAddAuthRequestAdaptor,
+  getUpdateAuthRequestAdaptor,
+} from '../../../../provider-utils/awscloudformation/utils/auth-request-adaptors';
 
 describe('get add auth request adaptor', () => {
   describe('valid translations', () => {
@@ -18,6 +21,25 @@ describe('get add auth request adaptor', () => {
       };
 
       expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
+    });
+  });
+});
+
+describe('get update auth request adaptor', () => {
+  describe('valid translations', () => {
+    it('translates empty oAuth config into hostedUI: false', () => {
+      const updateAuthRequest: UpdateAuthRequest = {
+        version: 1,
+        serviceModification: {
+          serviceName: 'Cognito',
+          userPoolModification: {
+            oAuth: {},
+          },
+          includeIdentityPool: false,
+        },
+      };
+
+      expect(getUpdateAuthRequestAdaptor('javascript', ['required_attribute'])(updateAuthRequest)).toMatchSnapshot();
     });
   });
 });

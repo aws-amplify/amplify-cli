@@ -8,14 +8,12 @@ module.exports = {
     const servicesMetadata = require('../../provider-utils/supported-services').supportedServices;
     return amplify
       .serviceSelectionPrompt(context, category, servicesMetadata)
-      .then(result => {
+      .then(async result => {
         const providerController = require(`../../provider-utils/${result.providerName}/index`);
         if (!providerController) {
-          context.print.error('Provider not configured for this category');
-          return;
+          throw new Error(`Provider "${result.providerName}" is not configured for this category`);
         }
-
-        return providerController.console(context, result.service);
+        return await providerController.console(context, result.service);
       })
       .catch(err => {
         context.print.error('Error opening console.');

@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Root stack for the Amplify AWS CloudFormation provider",
+  "Description": "Root Stack for AWS Amplify CLI",
   "Parameters": {
     "DeploymentBucketName": {
       "Description": "Name of the common deployment bucket provided by the parent stack",

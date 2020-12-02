@@ -17,6 +17,7 @@ describe('test SIGINT with execute', () => {
       },
       exitOnNextTick: mockExit,
       pathManager: {
+        getHomeDotAmplifyDirPath: jest.fn().mockReturnValue('homedir/.amplify'),
         getAWSCredentialsFilePath: jest.fn(),
         getAWSConfigFilePath: jest.fn(),
         findProjectRoot: jest.fn(),
@@ -27,6 +28,10 @@ describe('test SIGINT with execute', () => {
       },
       FeatureFlags: {
         initialize: jest.fn(),
+      },
+      PathConstants: {
+        TeamProviderFileName: 'team-provider-info.json',
+        DeploymentSecretsFileName: 'deployment-secrets.json',
       },
       CLIContextEnvironmentProvider: jest.fn(),
     });

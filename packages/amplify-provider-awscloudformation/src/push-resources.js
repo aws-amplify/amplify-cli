@@ -20,6 +20,7 @@ const { uploadAuthTriggerFiles } = require('./upload-auth-trigger-files');
 const archiver = require('./utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const { stateManager } = require('amplify-cli-core');
+const { isAmplifyAdminApp } = require('./utils/admin-helpers');
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaLayer = 'LambdaLayer';
@@ -64,7 +65,7 @@ async function run(context, resourceDefinition) {
 
     // We do not need CloudFormation update if only syncable resources are the changes.
     if (resourcesToBeCreated.length > 0 || resourcesToBeUpdated.length > 0 || resourcesToBeDeleted.length > 0) {
-      await updateCloudFormationNestedStack(context, formNestedStack(context, projectDetails), resourcesToBeCreated, resourcesToBeUpdated);
+      await updateCloudFormationNestedStack(context, await formNestedStack(context, projectDetails), resourcesToBeCreated, resourcesToBeUpdated);
     }
 
     await postPushGraphQLCodegen(context);
@@ -158,7 +159,16 @@ async function run(context, resourceDefinition) {
     // Store current cloud backend in S3 deployment bcuket
     await storeCurrentCloudBackend(context);
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
-
+    //check for auth resources and remove deployment secret for push
+    const authResources = resources.filter(
+      resource => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation',
+    );
+    if (authResources.length > 0) {
+      for (let i = 0; i < authResources.length; i++) {
+        const authResource = authResources[i];
+        context.amplify.removeDeploymentSecrets(context, authResource.category, authResource.resourceName);
+      }
+    }
     spinner.succeed('All resources are updated in the cloud');
 
     await displayHelpfulURLs(context, resources);
@@ -200,7 +210,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
       }),
     )
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
-    .then(() => {
+    .then(async() => {
       if (!isCLIMigration) {
         spinner.start();
       }
@@ -213,11 +223,11 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
         if (isReverting && isCLIMigration) {
           // When this is a CLI migration and we are rolling back, we do not want to inject
           // an [env] for any templates.
-          nestedStack = formNestedStack(context, projectDetails, category, resourceName, 'AppSync', true);
+          nestedStack = await formNestedStack(context, projectDetails, category, resourceName, 'AppSync', true);
         } else if (isCLIMigration) {
-          nestedStack = formNestedStack(context, projectDetails, category, resourceName, 'AppSync');
+          nestedStack = await formNestedStack(context, projectDetails, category, resourceName, 'AppSync');
         } else {
-          nestedStack = formNestedStack(context, projectDetails, category);
+          nestedStack = await formNestedStack(context, projectDetails, category);
         }
         return updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
       }
@@ -498,10 +508,21 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
 }
 
 /* eslint-disable */
-function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName, skipEnv) {
+async function formNestedStack(context, projectDetails, categoryName, resourceName, serviceName, skipEnv) {
   /* eslint-enable */
   const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
   const nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
+  // Track Amplify Console generated stacks
+  try {
+    const amplifyMeta = stateManager.getMeta();
+    const appId = amplifyMeta.providers[providerName].AmplifyAppId;
+    if(await isAmplifyAdminApp(appId)) {
+      nestedStack.Description = 'Root Stack for AWS Amplify Console';
+    }
+  } catch (err) {
+    console.info('App not deployed yet.');
+  }
+
   const { amplifyMeta } = projectDetails;
   let authResourceName;
   let categories = Object.keys(amplifyMeta);

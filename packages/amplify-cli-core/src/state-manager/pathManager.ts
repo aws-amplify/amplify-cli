@@ -4,9 +4,11 @@ import { homedir } from 'os';
 
 export const PathConstants = {
   // in home directory
-  DotAWSDir: '.aws',
+  DotAWSDirName: '.aws',
   AWSCredentials: 'credentials',
   AWSConfig: 'config',
+  DeploymentSecretsFileName: 'deployment-secrets.json',
+  AmplifyAdminDirName: 'admin',
 
   // in project root
   AmplifyDirName: 'amplify',
@@ -18,6 +20,8 @@ export const PathConstants = {
   CurrentCloudBackendDirName: '#current-cloud-backend',
 
   // FileNames
+  AmplifyAdminConfigFileName: 'config.json',
+
   AmplifyRcFileName: '.amplifyrc',
   GitIgnoreFileName: '.gitignore',
   ProjectConfigFileName: 'project-config.json',
@@ -55,6 +59,11 @@ export class PathManager {
   getAmplifyLibRoot = (): string => path.join(this.getHomeDotAmplifyDirPath(), 'lib');
 
   getHomeDotAmplifyDirPath = (): string => this.homeDotAmplifyDirPath;
+
+  getAmplifyAdminDirPath = (): string => this.constructPath(this.getHomeDotAmplifyDirPath(), [PathConstants.AmplifyAdminDirName]);
+
+  getAmplifyAdminConfigFilePath = (): string =>
+    this.constructPath(this.getAmplifyAdminDirPath(), [PathConstants.AmplifyAdminConfigFileName]);
 
   getAmplifyDirPath = (projectPath?: string): string => this.constructPath(projectPath, [PathConstants.AmplifyDirName]);
 
@@ -118,7 +127,7 @@ export class PathManager {
       PathConstants.BackendConfigFileName,
     ]);
 
-  getDotAWSDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDir));
+  getDotAWSDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDirName));
 
   getAWSCredentialsFilePath = (): string => path.normalize(path.join(this.getDotAWSDirPath(), PathConstants.AWSCredentials));
 
@@ -129,6 +138,10 @@ export class PathManager {
 
     return this.constructPath(projectPath, [PathConstants.AmplifyDirName, fileName]);
   };
+
+  getDotAWSAmplifyDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDirName, PathConstants.AmplifyDirName));
+
+  getDeploymentSecrets = (): string => path.normalize(path.join(this.getDotAWSAmplifyDirPath(), PathConstants.DeploymentSecretsFileName));
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {

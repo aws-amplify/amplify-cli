@@ -12,6 +12,8 @@ export * from './tags';
 export * from './errors';
 export * from './exitOnNextTick';
 export * from './isPackaged';
+export * from './cliConstants';
+export * from './deploymentSecretsHelper';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -54,6 +56,14 @@ export type IPluginInfo = {
   manifest: $IPluginManifest;
 };
 
+export type DeploymentSecrets = {
+  appSecrets: Array<{
+    rootStackId: string;
+
+    environments: { [env: string]: { [category: string]: { [resourceName: string]: { [key: string]: string } } } };
+  }>;
+};
+
 /**
  * Plugins or other packages bundled with the CLI that pass a file to a system command or execute a binary file must export a function named
  * "getPackageAssetPaths" of this type.
@@ -93,6 +103,18 @@ export type $TSTeamProviderInfo = any;
 // Use it for all object initializer usages: {}
 export type $TSObject = Record<string, $TSAny>;
 
+export enum AmplifyFrontend {
+  android = "android",
+  ios = "ios",
+  javascript = "javascript"
+}
+export interface AmplifyProjectConfig {
+  projectName: string,
+  version: string,
+  frontend: AmplifyFrontend,
+  providers: string[],
+}
+
 // Temporary interface until Context refactor
 interface AmplifyToolkit {
   buildResources: () => $TSAny;
@@ -110,7 +132,7 @@ interface AmplifyToolkit {
   getFrontendPlugins: () => $TSAny;
   getEnvDetails: () => $TSAny;
   getEnvInfo: () => $TSAny;
-  getProviderPlugins: () => $TSAny;
+  getProviderPlugins: (context: $TSContext) => $TSAny;
   getPluginInstance: () => $TSAny;
   getProjectConfig: () => $TSAny;
   getProjectDetails: () => $TSAny;
@@ -118,7 +140,7 @@ interface AmplifyToolkit {
   getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => $TSAny;
   getResourceOutputs: () => $TSAny;
   getWhen: () => $TSAny;
-  inputValidation: () => $TSAny;
+  inputValidation: (input: $TSAny) => $TSAny;
   listCategories: () => $TSAny;
   makeId: () => $TSAny;
   openEditor: () => $TSAny;
@@ -140,6 +162,7 @@ interface AmplifyToolkit {
     category: string,
     servicesMetadata: $TSAny,
     customQuestion?: $TSAny,
+    optionNameOverrides?: Record<string, string>,
   ) => Promise<ServiceSelection>;
   updateProjectConfig: () => $TSAny;
   updateamplifyMetaAfterResourceUpdate: () => $TSAny;
