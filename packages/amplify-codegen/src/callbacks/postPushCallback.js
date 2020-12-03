@@ -13,17 +13,14 @@ async function postPushCallback(context, graphQLConfig) {
     return;
   }
 
-  const projectPath = pathManager.findProjectRoot();
-  if (!projectPath) {
-    return;
-  }
-
   if (!graphQLConfig.gqlConfig.schema) {
     const config = loadConfig(context);
-    const schemaLocation = getSchemaDownloadLocation(context);
+
+    const projectPath = pathManager.findProjectRoot() || process.cwd();
+    const schemaLocation = path.join(projectPath, getSchemaDownloadLocation(context));
 
     const newProject = graphQLConfig.gqlConfig;
-    newProject.schema = path.join(projectPath, schemaLocation);
+    newProject.schema = schemaLocation;
     config.addProject(newProject);
     config.save();
   }

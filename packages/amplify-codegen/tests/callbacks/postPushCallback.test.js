@@ -1,3 +1,5 @@
+const path = require('path');
+const { pathManager } = require('amplify-cli-core');
 const loadConfig = require('../../src/codegen-config');
 const { downloadIntrospectionSchema, getAppSyncAPIDetails, getSchemaDownloadLocation } = require('../../src/utils');
 const generateStatements = require('../../src/commands/statements');
@@ -10,6 +12,7 @@ const MOCK_CONTEXT = {
   },
 };
 
+jest.mock('amplify-cli-core');
 jest.mock('../../src/codegen-config');
 jest.mock('../../src/utils');
 jest.mock('../../src/commands/statements');
@@ -19,6 +22,7 @@ const MOCK_PROJECT_NAME = 'MOCK_PROJECT';
 const MOCK_API_ID = 'MOCK_API_ID';
 const MOCK_API_ENDPOINT = 'MOCK_API_ENDPOINT';
 
+const MOCK_PATH_MANAGER_PROJECT_ROOT = '/project';
 const MOCK_SELECTED_PROJECT = {
   projectName: MOCK_PROJECT_NAME,
   id: MOCK_API_ID,
@@ -42,6 +46,7 @@ const LOAD_CONFIG_METHODS = {
 describe('Callback - Post Push update AppSync API', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+    pathManager.findProjectRoot.mockReturnValue(MOCK_PATH_MANAGER_PROJECT_ROOT);
     loadConfig.mockReturnValue(LOAD_CONFIG_METHODS);
     getAppSyncAPIDetails.mockReturnValue(MOCK_PROJECTS);
     getSchemaDownloadLocation.mockReturnValue(MOCK_SCHEMA_DOWNLOAD_LOCATION);
@@ -52,7 +57,11 @@ describe('Callback - Post Push update AppSync API', () => {
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(getAppSyncAPIDetails).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(getSchemaDownloadLocation).toHaveBeenCalledWith(MOCK_CONTEXT);
-    expect(downloadIntrospectionSchema).toHaveBeenCalledWith(MOCK_CONTEXT, MOCK_API_ID, MOCK_SCHEMA_DOWNLOAD_LOCATION);
+    expect(downloadIntrospectionSchema).toHaveBeenCalledWith(
+      MOCK_CONTEXT,
+      MOCK_API_ID,
+      path.join(MOCK_PATH_MANAGER_PROJECT_ROOT, MOCK_SCHEMA_DOWNLOAD_LOCATION),
+    );
     expect(LOAD_CONFIG_METHODS.addProject).toHaveBeenCalled();
     const newProject = LOAD_CONFIG_METHODS.addProject.mock.calls[0][0];
     expect(newProject).toEqual({
@@ -60,7 +69,7 @@ describe('Callback - Post Push update AppSync API', () => {
       amplifyExtension: {
         ...MOCK_GRAPHQL_CONFIG.gqlConfig.amplifyExtension,
       },
-      schema: MOCK_SCHEMA_DOWNLOAD_LOCATION,
+      schema: path.join(MOCK_PATH_MANAGER_PROJECT_ROOT, MOCK_SCHEMA_DOWNLOAD_LOCATION),
     });
     expect(generateTypes).toHaveBeenCalledTimes(1);
     expect(generateStatements).toHaveBeenCalledTimes(1);
