@@ -1,3 +1,6 @@
+const path = require('path');
+const { pathManager } = require('amplify-cli-core');
+
 const loadConfig = require('../codegen-config');
 const generateStatements = require('../commands/statements');
 const generateTypes = require('../commands/types');
@@ -10,12 +13,17 @@ async function postPushCallback(context, graphQLConfig) {
     return;
   }
 
+  const projectPath = pathManager.findProjectRoot();
+  if (!projectPath) {
+    return;
+  }
+
   if (!graphQLConfig.gqlConfig.schema) {
     const config = loadConfig(context);
     const schemaLocation = getSchemaDownloadLocation(context);
 
     const newProject = graphQLConfig.gqlConfig;
-    newProject.schema = schemaLocation;
+    newProject.schema = path.join(projectPath, schemaLocation);
     config.addProject(newProject);
     config.save();
   }
