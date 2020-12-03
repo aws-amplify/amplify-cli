@@ -48,6 +48,7 @@ function getGitIgnoreAppendString() {
     'amplify/mock-data',
     'amplify/backend/amplify-meta.json',
     'amplify/backend/awscloudformation',
+    'amplify/backend/.temp',
     'build/',
     'dist/',
     'node_modules/',
