@@ -1,66 +1,71 @@
-const fs = require('fs-extra');
-import { basename } from 'path';
-import { diff as getDiffs } from 'deep-diff';
-import { readFromPath } from './fileUtils';
-import { InvalidMigrationError } from '../errors';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import _ from 'lodash';
 import { Template } from 'cloudform-types';
+import { JSONUtilities } from 'amplify-cli-core';
+import { diff as getDiffs, Diff as DeepDiff } from 'deep-diff';
+import { readFromPath } from './fileUtils';
+import { InvalidMigrationError, InvalidGSIMigrationError } from '../errors';
 import { TRANSFORM_CONFIG_FILE_NAME } from '..';
 
-interface Diff {
-  kind: 'N' | 'E' | 'D' | 'A';
-  path: string[];
-  lhs?: any;
-  rhs?: any;
-  index?: number;
-  item?: any;
+type Diff = DeepDiff<DiffableProject, DiffableProject>;
+export type DiffRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
+export type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
+
+interface DiffableProject {
+  stacks: {
+    [stackName: string]: Template;
+  };
+  root: Template;
 }
 
 /**
  * Calculates a diff between the last saved cloud backend's build directory
  * and the most recent build.
  */
-export async function check(
+export const sanityCheckProject = async (
   currentCloudBackendDir: string,
   buildDirectory: string,
-  rootStackName: string = 'cloudformation-template.json',
-) {
-  const cloudBackendDirectoryExists = await fs.exists(currentCloudBackendDir);
-  const buildDirectoryExists = await fs.exists(buildDirectory);
+  rootStackName: string,
+  diffRules: DiffRule[],
+  projectRule: ProjectRule[],
+): Promise<void> => {
+  const cloudBackendDirectoryExists = fs.existsSync(currentCloudBackendDir);
+  const buildDirectoryExists = fs.existsSync(buildDirectory);
 
-  // Diff rules rule on a single Diff.
-  const diffRules: DiffRule[] = [
-    cantEditKeySchema,
-    cantAddLSILater,
-    cantEditGSIKeySchema,
-    cantEditLSIKeySchema,
-    cantAddAndRemoveGSIAtSameTime,
-  ];
-  // Project rules run on the full set of diffs, the current build, and the next build.
-  const projectRules: ProjectRule[] = [cantHaveMoreThan500Resources, cantMutateMultipleGSIAtUpdateTime];
   if (cloudBackendDirectoryExists && buildDirectoryExists) {
     const current = await loadDiffableProject(currentCloudBackendDir, rootStackName);
     const next = await loadDiffableProject(buildDirectory, rootStackName);
     const diffs = getDiffs(current, next);
-    // Loop through the diffs and call each DiffRule.
-    // We loop once so each rule does not need to loop.
-    if (diffs) {
-      for (const diff of diffs) {
-        for (const rule of diffRules) {
-          rule(diff, current, next);
-        }
-      }
-      for (const projectRule of projectRules) {
-        projectRule(diffs, current, next);
+
+    sanityCheckDiffs(diffs, current, next, diffRules, projectRule);
+  }
+};
+
+export const sanityCheckDiffs = (
+  diffs: Diff[],
+  current: DiffableProject,
+  next: DiffableProject,
+  diffRules: DiffRule[],
+  projectRules: ProjectRule[] = [cantHaveMoreThan500ResourcesRule],
+): void => {
+  // Project rules run on the full set of diffs, the current build, and the next build.
+  // Todo: confirm if , cantMutateMultipleGSIAtUpdateTimeRule is needed as project rule as the diffRule should include it already
+
+  // Loop through the diffs and call each DiffRule.
+  // We loop once so each rule does not need to loop.
+  if (diffs) {
+    for (const diff of diffs) {
+      for (const rule of diffRules) {
+        rule(diff, current, next);
       }
     }
-  }
-}
 
-/**
- * Rules
- */
-type DiffRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
-type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) => void;
+    for (const projectRule of projectRules) {
+      projectRule(diffs, current, next);
+    }
+  }
+};
 
 /**
  * Throws a helpful error when a customer is trying to complete an invalid migration.
@@ -69,18 +74,19 @@ type ProjectRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: Dif
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export function cantEditKeySchema(diff: Diff) {
+export const cantEditKeySchemaRule = (diff: Diff): void => {
   if (diff.kind === 'E' && diff.path.length === 8 && diff.path[5] === 'KeySchema') {
     // diff.path = [ "stacks", "Todo.json", "Resources", "TodoTable", "Properties", "KeySchema", 0, "AttributeName"]
-    const stackName = basename(diff.path[1], '.json');
+    const stackName = path.basename(diff.path[1], '.json');
     const tableName = diff.path[3];
+
     throw new InvalidMigrationError(
       `Attempting to edit the key schema of the ${tableName} table in the ${stackName} stack. `,
       'Adding a primary @key directive to an existing @model. ',
       'Remove the @key directive or provide a name e.g @key(name: "ByStatus", fields: ["status"]).',
     );
   }
-}
+};
 
 /**
  * Throws a helpful error when a customer is trying to complete an invalid migration.
@@ -89,7 +95,7 @@ export function cantEditKeySchema(diff: Diff) {
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export function cantAddLSILater(diff: Diff) {
+export const cantAddLSILaterRule = (diff: Diff): void => {
   if (
     // When adding a LSI to a table that has 0 LSIs.
     (diff.kind === 'N' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') ||
@@ -97,8 +103,9 @@ export function cantAddLSILater(diff: Diff) {
     (diff.kind === 'A' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes' && diff.item.kind === 'N')
   ) {
     // diff.path = [ "stacks", "Todo.json", "Resources", "TodoTable", "Properties", "LocalSecondaryIndexes" ]
-    const stackName = basename(diff.path[1], '.json');
+    const stackName = path.basename(diff.path[1], '.json');
     const tableName = diff.path[3];
+
     throw new InvalidMigrationError(
       `Attempting to add a local secondary index to the ${tableName} table in the ${stackName} stack. ` +
         'Local secondary indexes must be created when the table is created.',
@@ -106,7 +113,7 @@ export function cantAddLSILater(diff: Diff) {
       "Change the first field in 'fields' such that a global secondary index is created or delete and recreate the model.",
     );
   }
-}
+};
 
 /**
  * Throws a helpful error when a customer is trying to complete an invalid migration.
@@ -115,16 +122,17 @@ export function cantAddLSILater(diff: Diff) {
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export function cantEditGSIKeySchema(diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) {
-  function throwError(indexName: string, stackName: string, tableName: string) {
-    throw new InvalidMigrationError(
+export const cantEditGSIKeySchemaRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
+  const throwError = (indexName: string, stackName: string, tableName: string): void => {
+    throw new InvalidGSIMigrationError(
       `Attempting to edit the global secondary index ${indexName} on the ${tableName} table in the ${stackName} stack. `,
       'The key schema of a global secondary index cannot be changed after being deployed.',
       'If using @key, first add a new @key, run `amplify push`, ' +
         'and then remove the old @key. If using @connection, first remove the @connection, run `amplify push`, ' +
         'and then add the new @connection with the new configuration.',
     );
-  }
+  };
+
   if (
     // implies a field was changed in a GSI after it was created.
     // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes",0,"KeySchema",0,"AttributeName"]
@@ -135,11 +143,12 @@ export function cantEditGSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
   ) {
     // This error is symptomatic of a change to the GSI array but does not necessarily imply a breaking change.
     const pathToGSIs = diff.path.slice(0, 6);
-    const oldIndexes = get(currentBuild, pathToGSIs);
-    const newIndexes = get(nextBuild, pathToGSIs);
-    const oldIndexesDiffable = keyBy(oldIndexes, 'IndexName');
-    const newIndexesDiffable = keyBy(newIndexes, 'IndexName');
+    const oldIndexes = _.get(currentBuild, pathToGSIs);
+    const newIndexes = _.get(nextBuild, pathToGSIs);
+    const oldIndexesDiffable = _.keyBy(oldIndexes, 'IndexName');
+    const newIndexesDiffable = _.keyBy(newIndexes, 'IndexName');
     const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable) || [];
+
     // We must look at this inner diff or else we could confuse a situation
     // where the user adds a GSI to the beginning of the GlobalSecondaryIndexes list in CFN.
     // We re-key the indexes list so we can determine if a change occurred to an index that
@@ -148,19 +157,21 @@ export function cantEditGSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
       // path: ["AGSI","KeySchema",0,"AttributeName"]
       if (innerDiff.kind === 'E' && innerDiff.path.length > 2 && innerDiff.path[1] === 'KeySchema') {
         const indexName = innerDiff.path[0];
-        const stackName = basename(diff.path[1], '.json');
+        const stackName = path.basename(diff.path[1], '.json');
         const tableName = diff.path[3];
+
         throwError(indexName, stackName, tableName);
       } else if (innerDiff.kind === 'A' && innerDiff.path.length === 2 && innerDiff.path[1] === 'KeySchema') {
         // Path like - ["gsi-PostComments", "KeySchema" ]
         const indexName = innerDiff.path[0];
-        const stackName = basename(diff.path[1], '.json');
+        const stackName = path.basename(diff.path[1], '.json');
         const tableName = diff.path[3];
+
         throwError(indexName, stackName, tableName);
       }
     }
   }
-}
+};
 
 /**
  * Throws a helpful error when a customer is trying to complete an invalid migration.
@@ -169,16 +180,17 @@ export function cantEditGSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export function cantAddAndRemoveGSIAtSameTime(diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) {
-  function throwError(stackName: string, tableName: string) {
-    throw new InvalidMigrationError(
+export const cantAddAndRemoveGSIAtSameTimeRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
+  const throwError = (stackName: string, tableName: string): void => {
+    throw new InvalidGSIMigrationError(
       `Attempting to add and remove a global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
       'You may only change one global secondary index in a single CloudFormation stack update. ',
       'If using @key, change one @key at a time. ' +
         'If using @connection, add the new @connection, run `amplify push`, ' +
         'and then remove the new @connection with the new configuration.',
     );
-  }
+  };
+
   if (
     // implies a field was changed in a GSI after it was created.
     // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes", ... ]
@@ -188,29 +200,51 @@ export function cantAddAndRemoveGSIAtSameTime(diff: Diff, currentBuild: Diffable
   ) {
     // This error is symptomatic of a change to the GSI array but does not necessarily imply a breaking change.
     const pathToGSIs = diff.path.slice(0, 6);
-    const oldIndexes = get(currentBuild, pathToGSIs);
-    const newIndexes = get(nextBuild, pathToGSIs);
-    const oldIndexesDiffable = keyBy(oldIndexes, 'IndexName');
-    const newIndexesDiffable = keyBy(newIndexes, 'IndexName');
+    const oldIndexes = _.get(currentBuild, pathToGSIs);
+    const newIndexes = _.get(nextBuild, pathToGSIs);
+    const oldIndexesDiffable = _.keyBy(oldIndexes, 'IndexName');
+    const newIndexesDiffable = _.keyBy(newIndexes, 'IndexName');
     const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable) || [];
+
     let sawDelete = false;
     let sawNew = false;
+
     for (const diff of innerDiffs) {
       // A path of length 1 means an entire GSI was created or deleted.
       if (diff.path.length === 1 && diff.kind === 'D') {
         sawDelete = true;
       }
+
       if (diff.path.length === 1 && diff.kind === 'N') {
         sawNew = true;
       }
     }
+
     if (sawDelete && sawNew) {
-      const stackName = basename(diff.path[1], '.json');
+      const stackName = path.basename(diff.path[1], '.json');
       const tableName = diff.path[3];
+
       throwError(stackName, tableName);
     }
   }
-}
+};
+
+export const cantBatchMutateGSIAtUpdateTimeRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
+  // path indicating adding new gsis or removing gsis from table
+  // ['stacks', 'Book.json', 'Resources', 'BookTable', 'Properties', 'GlobalSecondaryIndexes']
+  if ((diff.kind === 'D' || diff.kind === 'N') && diff.path.length === 6 && diff.path.slice(-1)[0] === 'GlobalSecondaryIndexes') {
+    const tableName = diff.path[3];
+    const stackName = diff.path[1];
+
+    throw new InvalidGSIMigrationError(
+      `Attempting to add and remove a global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
+      'You may only change one global secondary index in a single CloudFormation stack update. ',
+      'If using @key, change one @key at a time. ' +
+        'If using @connection, add the new @connection, run `amplify push`, ' +
+        'and then remove the new @connection with the new configuration.',
+    );
+  }
+};
 
 /**
  * Throws a helpful error when a customer is trying to complete an invalid migration.
@@ -219,19 +253,20 @@ export function cantAddAndRemoveGSIAtSameTime(diff: Diff, currentBuild: Diffable
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export function cantMutateMultipleGSIAtUpdateTime(diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) {
-  function throwError(stackName: string, tableName: string) {
-    throw new InvalidMigrationError(
+export const cantMutateMultipleGSIAtUpdateTimeRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
+  const throwError = (stackName: string, tableName: string): void => {
+    throw new InvalidGSIMigrationError(
       `Attempting to mutate more than 1 global secondary index at the same time on the ${tableName} table in the ${stackName} stack. `,
       'You may only mutate one global secondary index in a single CloudFormation stack update. ',
       'If using @key, include one @key at a time. ' +
         'If using @connection, just add one new @connection which is using @key, run `amplify push`, ',
     );
-  }
+  };
 
   if (diffs) {
     // update flow counting the tables which need more than one gsi update
-    let seenTables: Set<String> = new Set();
+    const seenTables: Set<String> = new Set();
+
     for (const diff of diffs) {
       if (
         // implies a field was changed in a GSI after it was created.
@@ -240,17 +275,19 @@ export function cantMutateMultipleGSIAtUpdateTime(diffs: Diff[], currentBuild: D
         diff.path.length >= 6 &&
         diff.path[5] === 'GlobalSecondaryIndexes'
       ) {
-        let diffTableName = diff.path[3];
+        const diffTableName = diff.path[3];
+
         if ((diff.item.kind === 'N' || diff.item.kind === 'D') && !seenTables.has(diffTableName)) {
           seenTables.add(diffTableName);
         } else if (seenTables.has(diffTableName)) {
-          const stackName = basename(diff.path[1], '.json');
+          const stackName = path.basename(diff.path[1], '.json');
+
           throwError(stackName, diffTableName);
         }
       }
     }
   }
-}
+};
 
 /**
  * Throws a helpful error when a customer is trying to complete an invalid migration.
@@ -259,7 +296,7 @@ export function cantMutateMultipleGSIAtUpdateTime(diffs: Diff[], currentBuild: D
  * @param currentBuild The last deployed build.
  * @param nextBuild The next build.
  */
-export function cantEditLSIKeySchema(diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject) {
+export const cantEditLSIKeySchemaRule = (diff: Diff, currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
   if (
     // ["stacks","Todo.json","Resources","TodoTable","Properties","LocalSecondaryIndexes",0,"KeySchema",0,"AttributeName"]
     diff.kind === 'E' &&
@@ -269,11 +306,12 @@ export function cantEditLSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
   ) {
     // This error is symptomatic of a change to the GSI array but does not necessarily imply a breaking change.
     const pathToGSIs = diff.path.slice(0, 6);
-    const oldIndexes = get(currentBuild, pathToGSIs);
-    const newIndexes = get(nextBuild, pathToGSIs);
-    const oldIndexesDiffable = keyBy(oldIndexes, 'IndexName');
-    const newIndexesDiffable = keyBy(newIndexes, 'IndexName');
+    const oldIndexes = _.get(currentBuild, pathToGSIs);
+    const newIndexes = _.get(nextBuild, pathToGSIs);
+    const oldIndexesDiffable = _.keyBy(oldIndexes, 'IndexName');
+    const newIndexesDiffable = _.keyBy(newIndexes, 'IndexName');
     const innerDiffs = getDiffs(oldIndexesDiffable, newIndexesDiffable) || [];
+
     // We must look at this inner diff or else we could confuse a situation
     // where the user adds a LSI to the beginning of the LocalSecondaryIndex list in CFN.
     // We re-key the indexes list so we can determine if a change occurred to an index that
@@ -282,8 +320,9 @@ export function cantEditLSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
       // path: ["AGSI","KeySchema",0,"AttributeName"]
       if (innerDiff.kind === 'E' && innerDiff.path.length > 2 && innerDiff.path[1] === 'KeySchema') {
         const indexName = innerDiff.path[0];
-        const stackName = basename(diff.path[1], '.json');
+        const stackName = path.basename(diff.path[1], '.json');
         const tableName = diff.path[3];
+
         throw new InvalidMigrationError(
           `Attempting to edit the local secondary index ${indexName} on the ${tableName} table in the ${stackName} stack. `,
           'The key schema of a local secondary index cannot be changed after being deployed.',
@@ -293,12 +332,14 @@ export function cantEditLSIKeySchema(diff: Diff, currentBuild: DiffableProject, 
       }
     }
   }
-}
+};
 
-export function cantHaveMoreThan500Resources(diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject) {
+export const cantHaveMoreThan500ResourcesRule = (diffs: Diff[], currentBuild: DiffableProject, nextBuild: DiffableProject): void => {
   const stackKeys = Object.keys(nextBuild.stacks);
+
   for (const stackName of stackKeys) {
     const stack = nextBuild.stacks[stackName];
+
     if (stack && stack.Resources && Object.keys(stack.Resources).length > 500) {
       throw new InvalidMigrationError(
         `The ${stackName} stack defines more than 500 resources.`,
@@ -309,54 +350,21 @@ export function cantHaveMoreThan500Resources(diffs: Diff[], currentBuild: Diffab
       );
     }
   }
-}
+};
 
-// Takes a list of object and returns an object keyed by the given attribute.
-// This allows us to make more accurate diffs.
-function keyBy(objects: any[], attr: string) {
-  return objects.reduce(
-    (acc, obj) => ({
-      ...acc,
-      [obj[attr]]: obj,
-    }),
-    {},
-  );
-}
-
-// Helpers
-interface DiffableProject {
-  stacks: {
-    [stackName: string]: Template;
-  };
-  root: Template;
-}
-async function loadDiffableProject(path: string, rootStackName: string): Promise<DiffableProject> {
+const loadDiffableProject = async (path: string, rootStackName: string): Promise<DiffableProject> => {
   const project = await readFromPath(path);
   const currentStacks = project.stacks || {};
   const diffableProject: DiffableProject = {
     stacks: {},
     root: {},
   };
-  for (const key of Object.keys(currentStacks)) {
-    diffableProject.stacks[key] = JSON.parse(project.stacks[key]);
-  }
-  diffableProject.root = JSON.parse(project[rootStackName]);
-  return diffableProject;
-}
 
-/**
- * Given an object and a path, get the value from the object at the path.
- * If the full path does not exist, returns undefined.
- * @param obj The object.
- * @param path The path.
- */
-function get(obj: any, path: string[]) {
-  let tmp = obj;
-  for (const part of path) {
-    tmp = tmp[part];
-    if (!tmp) {
-      return undefined;
-    }
+  for (const key of Object.keys(currentStacks)) {
+    diffableProject.stacks[key] = JSONUtilities.parse(project.stacks[key]);
   }
-  return tmp;
-}
+
+  diffableProject.root = JSONUtilities.parse(project[rootStackName]);
+
+  return diffableProject;
+};

@@ -9,6 +9,7 @@ export * from './init/';
 export * from './utils/';
 export * from './categories';
 export * from './utils/sdk-calls';
+export { addFeatureFlag } from './utils/feature-flags';
 
 declare global {
   namespace NodeJS {

@@ -34,6 +34,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/hosting.test.ts',
   'src/__tests__/analytics.test.ts',
   'src/__tests__/feature-flags.test.ts',
+  'src/__tests__/schema-iterative-update-2.test.ts',
   //<20m
   'src/__tests__/predictions.test.ts',
   'src/__tests__/hostingPROD.test.ts',
@@ -43,6 +44,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/auth_1.test.ts',
   'src/__tests__/auth_5.test.ts',
   'src/__tests__/function_3.test.ts',
+  'src/__tests__/schema-iterative-update-1.test.ts',
   //<30m
   'src/__tests__/schema-auth-3.test.ts',
   'src/__tests__/delete.test.ts',
@@ -76,6 +78,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/migration/api.connection.migration.test.ts',
   'src/__tests__/schema-connection.test.ts',
   'src/__tests__/schema-auth-6.test.ts',
+  'src/__tests__/schema-iterative-update-3.test.ts',
   //<50m
   'src/__tests__/schema-auth-2.test.ts',
   'src/__tests__/api_1.test.ts',
@@ -83,6 +86,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<55m
   'src/__tests__/storage.test.ts',
   'src/__tests__/api_2.test.ts',
+  'src/__tests__/schema-iterative-update-4.test.ts',
 ];
 
 /**

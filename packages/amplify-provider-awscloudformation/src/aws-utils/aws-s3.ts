@@ -200,4 +200,23 @@ export class S3 {
       throw e;
     }
   }
+
+  public getStringObjectFromBucket = async (bucketName: string, objectKey: string): Promise<string | undefined> => {
+    try {
+      const result = await this.s3
+        .getObject({
+          Bucket: bucketName,
+          Key: objectKey,
+        })
+        .promise();
+
+      return result.Body.toString();
+    } catch (e) {
+      if (e.statusCode === 404) {
+        return undefined;
+      }
+
+      throw e;
+    }
+  };
 }

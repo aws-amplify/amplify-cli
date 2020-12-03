@@ -23,7 +23,7 @@
   "dependencies": {
     "amplify-cli-core": "1.10.0",
     "amplify-function-plugin-interface": "1.5.1",
-    "cloudform-types": "4.2.0",
+    "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "folder-hash": "^3.3.2",
     "fs-extra": "^8.1.0",

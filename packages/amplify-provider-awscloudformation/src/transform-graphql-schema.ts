@@ -498,7 +498,7 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
   // this is the function
   let parameters;
   try {
-    const parametersPath = path.join(previouslyDeployedBackendDir, `build/${parametersFileName}`);
+    const parametersPath = path.join(previouslyDeployedBackendDir, 'build', parametersFileName);
     const parametersExists = fs.existsSync(parametersPath);
     if (parametersExists) {
       const parametersString = await fs.readFile(parametersPath);

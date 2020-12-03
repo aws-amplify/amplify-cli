@@ -52,7 +52,7 @@ async function executeAmplifyCommand(context) {
 }
 
 async function handleAmplifyEvent(context, args) {
-  switch(args.event) {
+  switch (args.event) {
     case 'PostInit':
       await onPostInit.run(context, args);
       break;
