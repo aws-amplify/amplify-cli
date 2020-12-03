@@ -870,6 +870,7 @@ workflows:
                 - master
                 - beta
                 - release
+                - compute-functions
           requires:
             - build
       - build_pkg_binaries:
@@ -887,6 +888,7 @@ workflows:
             branches:
               only:
                 - master
+                - compute-functions
           requires:
             - publish_to_local_registry
       - done_with_node_e2e_tests:
