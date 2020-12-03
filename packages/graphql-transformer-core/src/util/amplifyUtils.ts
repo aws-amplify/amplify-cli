@@ -79,7 +79,6 @@ export async function buildProject(opts: ProjectOptions) {
           // GSI
           cantEditGSIKeySchemaRule,
           cantAddAndRemoveGSIAtSameTimeRule,
-          cantBatchMutateGSIAtUpdateTimeRule,
         ];
 
         projectRules = [cantHaveMoreThan500ResourcesRule, cantMutateMultipleGSIAtUpdateTimeRule];
