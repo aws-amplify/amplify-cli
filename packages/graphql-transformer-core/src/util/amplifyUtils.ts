@@ -11,7 +11,6 @@ import { FeatureFlagProvider } from '../FeatureFlags';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
   cantAddLSILaterRule,
-  cantBatchMutateGSIAtUpdateTimeRule,
   cantEditGSIKeySchemaRule,
   cantEditKeySchemaRule,
   cantEditLSIKeySchemaRule,

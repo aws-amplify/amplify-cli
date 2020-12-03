@@ -1,7 +1,6 @@
 import { DynamoDB, IntrinsicFunction } from 'cloudform';
 import * as _ from 'lodash';
 import { GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
-import Table from 'cloudform-types/types/glue/table';
 import { diff as getDiffs } from 'deep-diff';
 
 export enum GSIChange {
