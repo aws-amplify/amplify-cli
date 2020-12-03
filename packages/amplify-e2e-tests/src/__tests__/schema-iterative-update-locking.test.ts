@@ -75,7 +75,7 @@ describe('Schema iterative update - locking', () => {
     let retry = 0;
     const maxRetries = 3;
     const retryDelay = 3000;
-    const stateFileName: string = 'deploymentState.json';
+    const stateFileName: string = 'deployment-state.json';
 
     while (retry < maxRetries || !lockFileExists) {
       try {
