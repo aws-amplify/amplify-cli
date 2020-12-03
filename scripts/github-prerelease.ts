@@ -10,7 +10,6 @@ import { unifiedChangelogPath } from './constants';
 const binariesDir = join(__dirname, '..', 'out');
 const binaryNamePrefix = 'amplify-pkg-';
 const platformSuffixes = ['linux', 'macos', 'win.exe'];
-const releaseDisclaimer = 'NOT FOR PRODUCTION'; // TODO remove this before launch
 
 const validateVersion = async (version: string) => {
   if (!valid(version)) {
@@ -38,8 +37,8 @@ const createPreRelease = async (version: string) => {
     method: 'POST',
     body: JSON.stringify({
       tag_name: semverToGithubTag(version),
-      name: `${version} (${releaseDisclaimer})`,
-      body: `${releaseDisclaimer}\n\n${await readFile(unifiedChangelogPath, 'utf8')}`,
+      name: version,
+      body: await readFile(unifiedChangelogPath, 'utf8'),
       draft: true,
       prerelease: true,
     }),
