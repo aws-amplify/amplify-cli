@@ -1990,7 +1990,6 @@ workflows:
               only:
                 - master
                 - beta
-                - compute-functions
           requires:
             - build
             - mock_e2e_tests
@@ -2001,6 +2000,7 @@ workflows:
                 - master
                 - beta
                 - release
+                - compute-functions
           requires:
             - build
       - build_pkg_binaries:
@@ -2150,6 +2150,7 @@ workflows:
             branches:
               only:
                 - master
+                - compute-functions
           requires:
             - publish_to_local_registry
       - schema-data-access-patterns-amplify_e2e_tests:
