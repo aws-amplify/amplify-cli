@@ -1,5 +1,7 @@
 import * as helper from '../../iterative-deployment/helpers';
+
 import { DeployMachineContext, DeploymentMachineOp } from '../../iterative-deployment/state-machine';
+
 describe('deployment helpers', () => {
   const baseDeploymentOp: DeploymentMachineOp = {
     parameters: {
@@ -30,43 +32,43 @@ describe('deployment helpers', () => {
     ],
   };
 
-  describe('hasMoreDeployment', () => {
-    it('should return true when currentIndex is smaller than deployment steps', () => {
+  describe('isDeploymentComplete', () => {
+    it('should return false when currentIndex is smaller than deployment steps', () => {
       const context: DeployMachineContext = {
         ...deploymentContext,
         currentIndex: -1,
       };
-      expect(helper.hasMoreDeployment(context)).toBeTruthy();
+      expect(helper.isDeploymentComplete(context)).toBeFalsy();
     });
 
-    it('should return false when currentIndex is bigger than deployment steps', () => {
+    it('should return true when currentIndex is bigger than deployment steps', () => {
       const context: DeployMachineContext = {
         ...deploymentContext,
         currentIndex: 1,
       };
-      expect(helper.hasMoreDeployment(context)).toBeFalsy();
+      expect(helper.isDeploymentComplete(context)).toBeTruthy();
     });
   });
 
   describe('hasMoreRollback', () => {
-    it('should return true when currentIndex is greater than -1', () => {
+    it('should return false when currentIndex is greater than -1', () => {
       const context: DeployMachineContext = {
         ...deploymentContext,
         currentIndex: 1,
       };
-      expect(helper.hasMoreRollback(context)).toBeTruthy();
+      expect(helper.isRollbackComplete(context)).toBeFalsy();
     });
 
-    it('should return false when currentIndex is smaller than 0', () => {
+    it('should return true when currentIndex is smaller than 0', () => {
       const context: DeployMachineContext = {
         ...deploymentContext,
         currentIndex: -1,
       };
-      expect(helper.hasMoreRollback(context)).toBeFalsy();
+      expect(helper.isRollbackComplete(context)).toBeTruthy();
     });
   });
 
-  describe('extractStackInfoFromContext', () => {
+  describe('getDeploymentOperationHandler', () => {
     let deployFn;
     beforeEach(() => {
       jest.restoreAllMocks();
@@ -78,7 +80,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: 0,
         };
-        helper.extractStackInfoFromContext(deployFn, 'deploying')(context);
+        helper.getDeploymentOperationHandler(deployFn)(context);
         expect(deployFn).toHaveBeenCalledWith(context.stacks[0].deployment);
       });
       it('should be an no-op if the current index is greater than the number of stacks', () => {
@@ -86,7 +88,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: 2,
         };
-        helper.extractStackInfoFromContext(deployFn, 'deploying')(context);
+        helper.getDeploymentOperationHandler(deployFn)(context);
         expect(deployFn).not.toHaveBeenCalled();
       });
 
@@ -95,7 +97,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: -1,
         };
-        helper.extractStackInfoFromContext(deployFn, 'deploying')(context);
+        helper.getDeploymentOperationHandler(deployFn)(context);
         expect(deployFn).not.toHaveBeenCalled();
       });
     });
@@ -105,7 +107,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: 0,
         };
-        helper.extractStackInfoFromContext(deployFn, 'rollingback')(context);
+        helper.getRollbackOperationHandler(deployFn)(context);
         expect(deployFn).toHaveBeenCalledWith(context.stacks[0].rollback);
       });
       it('should be an no-op if the current index is greater than the number of stacks', () => {
@@ -113,7 +115,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: 2,
         };
-        helper.extractStackInfoFromContext(deployFn, 'rollingback')(context);
+        helper.getRollbackOperationHandler(deployFn)(context);
         expect(deployFn).not.toHaveBeenCalled();
       });
 
@@ -122,7 +124,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: -1,
         };
-        helper.extractStackInfoFromContext(deployFn, 'rollingback')(context);
+        helper.getRollbackOperationHandler(deployFn)(context);
         expect(deployFn).not.toHaveBeenCalled();
       });
     });
@@ -140,7 +142,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: 0,
         };
-        helper.stackPollerActivity(stackPoller, 'deploying')(context);
+        helper.getDeploymentActivityPollerHandler(stackPoller)(context);
         expect(stackPoller).toHaveBeenCalledWith(context.stacks[0].deployment);
       });
       it('should be an no-op if the current index is greater than the number of stacks', () => {
@@ -148,7 +150,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: 2,
         };
-        helper.stackPollerActivity(stackPoller, 'deploying')(context);
+        helper.getDeploymentActivityPollerHandler(stackPoller)(context);
         expect(stackPoller).not.toHaveBeenCalled();
       });
 
@@ -157,7 +159,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: -1,
         };
-        helper.stackPollerActivity(stackPoller, 'deploying')(context);
+        helper.getDeploymentActivityPollerHandler(stackPoller)(context);
         expect(stackPoller).not.toHaveBeenCalled();
       });
     });
@@ -167,7 +169,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: 0,
         };
-        helper.stackPollerActivity(stackPoller, 'rollingback')(context);
+        helper.getRollbackActivityPollerHandler(stackPoller)(context);
         expect(stackPoller).toHaveBeenCalledWith(context.stacks[0].rollback);
       });
       it('should be an no-op if the current index is greater than the number of stacks', () => {
@@ -175,7 +177,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: 2,
         };
-        helper.stackPollerActivity(stackPoller, 'rollingback')(context);
+        helper.getRollbackActivityPollerHandler(stackPoller)(context);
         expect(stackPoller).not.toHaveBeenCalled();
       });
 
@@ -184,7 +186,7 @@ describe('deployment helpers', () => {
           ...deploymentContext,
           currentIndex: -1,
         };
-        helper.stackPollerActivity(stackPoller, 'rollingback')(context);
+        helper.getRollbackActivityPollerHandler(stackPoller)(context);
         expect(stackPoller).not.toHaveBeenCalled();
       });
     });

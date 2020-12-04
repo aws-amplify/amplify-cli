@@ -1,15 +1,16 @@
-import { DeployMachineContext, DeploymentMachineOp } from './state-machine';
 import * as path from 'path';
 
-export const hasMoreRollback = (context: DeployMachineContext) => {
-  return context.currentIndex >= 0;
+import { DeployMachineContext, DeploymentMachineOp } from './state-machine';
+
+export const isRollbackComplete = (context: DeployMachineContext) => {
+  return context.currentIndex < 0;
 };
 
-export const hasMoreDeployment = (context: DeployMachineContext) => {
-  return context.stacks.length > context.currentIndex;
+export const isDeploymentComplete = (context: DeployMachineContext) => {
+  return context.currentIndex >= context.stacks.length;
 };
 
-export const stackPollerActivity = (
+const getOperationPollerActivityHandler = (
   stackEventPollFn: (stack: Readonly<DeploymentMachineOp>) => () => void,
   operation: 'deploying' | 'rollingback',
 ) => {
@@ -24,7 +25,10 @@ export const stackPollerActivity = (
   };
 };
 
-export const extractStackInfoFromContext = (
+export const getDeploymentActivityPollerHandler = fn => getOperationPollerActivityHandler(fn, 'deploying');
+export const getRollbackActivityPollerHandler = fn => getOperationPollerActivityHandler(fn, 'rollingback');
+
+const getOperationHandler = (
   fn: (stack: Readonly<DeploymentMachineOp>) => Promise<void>,
   operation: 'deploying' | 'rollingback',
 ): ((context: Readonly<DeployMachineContext>) => Promise<void>) => {
@@ -37,6 +41,9 @@ export const extractStackInfoFromContext = (
     return Promise.resolve();
   };
 };
+
+export const getDeploymentOperationHandler = fn => getOperationHandler(fn, 'deploying');
+export const getRollbackOperationHandler = fn => getOperationHandler(fn, 'rollingback');
 
 export const getBucketKey = (keyOrUrl: string, bucketName: string): string => {
   if (keyOrUrl.startsWith('https://') && keyOrUrl.includes(bucketName)) {

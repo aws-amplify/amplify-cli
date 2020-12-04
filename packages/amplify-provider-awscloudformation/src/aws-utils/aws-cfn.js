@@ -202,10 +202,7 @@ class CloudFormation {
       .describeStack({ StackName: stackName })
       .promise()
       .then(data => {
-        return Promise.resolve(data.Parameters);
-      })
-      .catch(e => {
-        Promise.reject(e);
+        return data.Parameters;
       });
   }
 

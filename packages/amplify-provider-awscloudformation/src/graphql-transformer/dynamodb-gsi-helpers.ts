@@ -1,12 +1,13 @@
+import { AttributeDefinition, GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
+import { DynamoDB, IntrinsicFunction } from 'cloudform';
+
+import { GSIRecord } from '../utils/amplify-resource-state-utils';
+import { KeySchema } from 'cloudform-types/types/dynamoDb/table';
 import _ from 'lodash';
 
-import { AttributeDefinition, GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
-import { GSIRecord } from '../utils/amplify-resource-state-utils';
-import { DynamoDB, IntrinsicFunction } from 'cloudform';
-import { KeySchema } from 'cloudform-types/types/dynamoDb/table';
 export const MAX_GSI_PER_TABLE = 20;
 /**
- * Extract the GlobalSecondaryIndex information and required Attributes from an Table
+ * Extract the GlobalSecondaryIndex information and required Attributes from a Table
  * @param indexName name of the global secondary index of which detail is extracted
  * @param table DynamoDB Table with GSI
  */

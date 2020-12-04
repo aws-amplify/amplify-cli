@@ -1,5 +1,7 @@
-import { DynamoDB, IntrinsicFunction } from 'cloudform';
 import * as _ from 'lodash';
+
+import { DynamoDB, IntrinsicFunction } from 'cloudform';
+
 import { GlobalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
 import { diff as getDiffs } from 'deep-diff';
 
@@ -57,14 +59,15 @@ export const generateGSIChangeList = (currentIndexes: GlobalSecondaryIndex[], ne
   // Partition them as added/removed indexes
   const [indexToRemove, indexToAdd] = _.partition(addedOrRemovedIndexNames, indexName => currentIndexNames.includes(indexName));
 
-  // Get all the indexes that are in bot current and next indexes
+  // Get all the indexes that are in both current and next indexes
   const possiblyModifiedIndexNames = _.xor([...currentIndexNames, ...nextIndexNames], addedOrRemovedIndexNames);
 
   const modifiedIndexes = possiblyModifiedIndexNames
-    .map(indexName => {
-      return getUpdatedIndexDiff(currentIndexByIndexName[indexName], nextIndexByIndexName[indexName]);
-    })
-    .filter(change => Boolean(change));
+    .filter(indexName => isIdexModified(currentIndexByIndexName[indexName], nextIndexByIndexName[indexName]))
+    .map(indexName => ({
+      type: GSIChange.Update,
+      indexName,
+    }));
 
   return [
     ...indexToRemove.map(idx => ({
@@ -80,16 +83,16 @@ export const generateGSIChangeList = (currentIndexes: GlobalSecondaryIndex[], ne
 };
 
 /**
- * Returns the type of iterative change needed to the index to support index updating
+ * Checks if the index is modified
  * @param currentIndex DynamoDB GlobalSecondaryIndex in currently deployed table
  * @param nextIndex updated DynamoDB GlobalSecondaryIndex to be deployed in the next push
  */
-export const getUpdatedIndexDiff = (currentIndex: GlobalSecondaryIndex, nextIndex: GlobalSecondaryIndex): IndexChange | undefined => {
+export const isIdexModified = (currentIndex: GlobalSecondaryIndex, nextIndex: GlobalSecondaryIndex): boolean => {
   const diffs = getDiffs(currentIndex, nextIndex);
   if (currentIndex.IndexName instanceof IntrinsicFunction) {
     return;
   }
-  const isModified = diffs?.some(diff => {
+  return diffs?.some(diff => {
     const leaf = diff.path?.slice(-1)[0];
     return [
       'IndexName',
@@ -102,5 +105,4 @@ export const getUpdatedIndexDiff = (currentIndex: GlobalSecondaryIndex, nextInde
       'ProjectionType',
     ].includes(leaf);
   });
-  return isModified ? { type: GSIChange.Update, indexName: currentIndex.IndexName } : undefined;
 };

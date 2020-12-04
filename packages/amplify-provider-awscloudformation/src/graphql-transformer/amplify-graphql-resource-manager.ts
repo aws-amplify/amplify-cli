@@ -1,32 +1,33 @@
-import path from 'path';
-import fs from 'fs-extra';
-import _ from 'lodash';
-import configurationManager from '../configuration-manager';
-import { Diff } from 'deep-diff';
+import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { DeploymentOp, DeploymentStep } from '../iterative-deployment/deployment-manager';
+import { DiffChanges, DiffableProject, getGQLDiff } from './utils';
+import { DynamoDB, Template } from 'cloudform-types';
+import { GSIChange, getGSIDiffs } from './gsi-diff-helpers';
+import { GSIRecord, TemplateState, getStackParameters, getTableNames } from '../utils/amplify-resource-state-utils';
+import { ROOT_APPSYNC_S3_KEY, hashDirectory } from '../upload-appsync-files';
+import { addGsi, getGSIDetails, removeGsi } from './dynamodb-gsi-helpers';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
   cantBatchMutateGSIAtUpdateTimeRule,
   cantEditGSIKeySchemaRule,
   sanityCheckDiffs,
 } from 'graphql-transformer-core';
-import { Template, DynamoDB } from 'cloudform-types';
-import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
+
 import { CloudFormation } from 'aws-sdk';
-import { getStackParameters, GSIRecord, TemplateState, getTableNames } from '../utils/amplify-resource-state-utils';
-import { hashDirectory, ROOT_APPSYNC_S3_KEY } from '../upload-appsync-files';
-import { DiffChanges, getGQLDiff, DiffableProject } from './utils';
-import { DeploymentStep, DeploymentOp } from '../iterative-deployment/deployment-manager';
-import { addGsi, removeGsi, getGSIDetails } from './dynamodb-gsi-helpers';
-import { GSIChange, getGSIDiffs } from './gsi-diff-helpers';
+import { Diff } from 'deep-diff';
+import _ from 'lodash';
+import configurationManager from '../configuration-manager';
+import fs from 'fs-extra';
+import path from 'path';
 
 export type GQLResourceManagerProps = {
   cfnClient: CloudFormation;
-  resourceMeta: $ResourceMeta | null;
+  resourceMeta?: ResourceMeta;
   backendDir: string;
   cloudBackendDir: string;
 };
 
-export type $ResourceMeta = {
+export type ResourceMeta = {
   category: string;
   providerPlugin: string;
   resourceName: string;
@@ -46,7 +47,7 @@ export class GraphQLResourceManager {
   static serviceName: string = 'AppSync';
   static categoryName: string = 'api';
   private cfnClient: CloudFormation;
-  private resourceMeta: $ResourceMeta;
+  private resourceMeta: ResourceMeta;
   private cloudBackendApiProjectRoot: string;
   private backendApiProjectRoot: string;
   private templateState: TemplateState;
@@ -136,7 +137,7 @@ export class GraphQLResourceManager {
       const tableNames = [];
       tables.forEach(tableName => {
         tableNames.push(tableNameMap.get(tableName));
-        const filepath = path.join(stateFileDir, `${stepNumber}`, 'stacks', `${tableName}.json`);
+        const filepath = path.join(stateFileDir, stepNumber, 'stacks', `${tableName}.json`);
         fs.ensureDirSync(path.dirname(filepath));
         JSONUtilities.writeJson(filepath, this.templateState.pop(tableName));
       });
