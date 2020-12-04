@@ -574,7 +574,7 @@ async function loadConfigurationForEnv(context, env, appId) {
     }
 
     try {
-      const authConfig = await getRefreshedTokens(appId, context.printappId, print);
+      const authConfig = await getRefreshedTokens(appId, print);
       const { idToken, IdentityId, region } = authConfig;
       // use tokens to get creds and assign to config
       let credentials = (await getAdminCredentials(idToken, IdentityId, region)).Credentials;
