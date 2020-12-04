@@ -25,6 +25,8 @@ const constants = require('./constants');
 const { createEnvLevelConstructs } = require('./utils/env-level-constructs');
 const { NETWORK_STACK_LOGICAL_ID } = require('./network/stack');
 const { isAmplifyAdminApp } = require('./utils/admin-helpers');
+const { fileLogger } = require('./utils/aws-logger');
+const logger = fileLogger('push-resources');
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaLayer = 'LambdaLayer';
@@ -93,7 +95,12 @@ async function run(context, resourceDefinition) {
 
     // We do not need CloudFormation update if only syncable resources are the changes.
     if (resourcesToBeCreated.length > 0 || resourcesToBeUpdated.length > 0 || resourcesToBeDeleted.length > 0) {
-      await updateCloudFormationNestedStack(context, await formNestedStack(context, projectDetails), resourcesToBeCreated, resourcesToBeUpdated);
+      await updateCloudFormationNestedStack(
+        context,
+        await formNestedStack(context, projectDetails),
+        resourcesToBeCreated,
+        resourcesToBeUpdated,
+      );
     }
 
     await postPushGraphQLCodegen(context);
@@ -202,6 +209,7 @@ async function run(context, resourceDefinition) {
     await displayHelpfulURLs(context, resources);
   } catch (err) {
     spinner.fail('An error occurred when pushing the resources to the cloud');
+    logger('run', [resourceDefinition])(err);
     throw err;
   }
 }
@@ -238,7 +246,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
       }),
     )
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
-    .then(async() => {
+    .then(async () => {
       if (!isCLIMigration) {
         spinner.start();
       }
@@ -291,6 +299,7 @@ function storeCurrentCloudBackend(context) {
   });
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
+  let log = null;
   return archiver
     .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
@@ -300,8 +309,14 @@ function storeCurrentCloudBackend(context) {
           Body: fs.createReadStream(result.zipFilePath),
           Key: s3Key,
         };
+        log = logger('storeCurrentcoudBackend.s3.uploadFile', [{ Key: s3Key }]);
+        log();
         return s3.uploadFile(s3Params);
       });
+    })
+    .catch(ex => {
+      log(ex);
+      throw ex;
     })
     .then(() => {
       fs.removeSync(tempDir);
@@ -332,7 +347,7 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
 function packageResources(context, resources) {
   // Only build and package resources which are required
   resources = resources.filter(resource => resource.build);
-
+  let log = null;
   const packageResource = (context, resource) => {
     let s3Key;
     return (resource.service === FunctionServiceNameLambdaLayer
@@ -347,8 +362,14 @@ function packageResources(context, resources) {
             Body: fs.createReadStream(result.zipFilePath),
             Key: s3Key,
           };
+          log = logger('packageResources.s3.uploadFile', [{ Key: s3Key }]);
+          log();
           return s3.uploadFile(s3Params);
         });
+      })
+      .catch(ex => {
+        log(ex);
+        throw ex;
       })
       .then(async s3Bucket => {
         // Update cfn template
@@ -464,8 +485,16 @@ async function updateCloudFormationNestedStack(context, nestedStack, resourcesTo
   context.filesystem.write(nestedStackFilepath, jsonString);
 
   const cfnItem = await new Cloudformation(context, userAgentAction);
-
-  await cfnItem.updateResourceStack(path.normalize(path.join(backEndDir, providerName)), nestedStackFileName);
+  const dir = path.normalize(path.join(backEndDir, providerName));
+  const cfnFileName = nestedStackFileName;
+  const log = logger('updateCloudFormationNestedStack', [dir, cfnFileName]);
+  try {
+    log();
+    await cfnItem.updateResourceStack(dir, cfnFileName);
+  } catch (ex) {
+    log(ex);
+    throw ex;
+  }
 }
 
 function getAllUniqueCategories(resources) {
@@ -524,6 +553,7 @@ function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {
 
 function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceName, amplifyMeta) {
   const filePath = path.normalize(path.join(resourceDir, cfnFile));
+  let log = null;
 
   return S3.getInstance(context)
     .then(s3 => {
@@ -531,7 +561,12 @@ function uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceNam
         Body: fs.createReadStream(filePath),
         Key: `amplify-cfn-templates/${category}/${cfnFile}`,
       };
+      log = logger('uploadTemplateToS3.s3.uploadFile', [{ Key: s3Params.Key }]);
       return s3.uploadFile(s3Params, false);
+    })
+    .catch(ex => {
+      log(ex);
+      throw ex;
     })
     .then(projectBucket => {
       const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${category}/${cfnFile}`;
@@ -551,7 +586,7 @@ async function formNestedStack(context, projectDetails, categoryName, resourceNa
   try {
     const amplifyMeta = stateManager.getMeta();
     const appId = amplifyMeta.providers[providerName].AmplifyAppId;
-    if(await isAmplifyAdminApp(appId)) {
+    if (await isAmplifyAdminApp(appId)) {
       nestedStack.Description = 'Root Stack for AWS Amplify Console';
     }
   } catch (err) {

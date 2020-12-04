@@ -1,5 +1,5 @@
 import path from 'path';
-import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCircleCITags } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import os from 'os';
 
@@ -42,6 +42,8 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
 }
 
 async function initWorkflow(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region: string }) {
+  addCircleCITags(cwd);
+
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], {
       cwd,

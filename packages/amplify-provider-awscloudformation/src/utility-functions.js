@@ -12,6 +12,8 @@ const Route53 = require('./aws-utils/aws-route53');
 const { run: archiver } = require('./utils/archiver');
 const ECR = require('./aws-utils/aws-ecr');
 const { pagedAWSCall } = require('./aws-utils/paged-call');
+const { fileLogger } = require('./utils/aws-logger');
+const logger = fileLogger('utility-functions');
 
 module.exports = {
   zipFiles: (context, [srcDir, dstZipFilePath]) => {
@@ -156,8 +158,13 @@ module.exports = {
     const lambdaModel = await new Lambda(context);
     let nextMarker;
     const lambdafunctions = [];
+
     try {
       do {
+        logger('getLambdaFunction.lambdaModel.lambda.listFunctions', {
+          MaxItems: 10000,
+          Marker: nextMarker,
+        })();
         const paginatedFunctions = await lambdaModel.lambda
           .listFunctions({
             MaxItems: 10000,
@@ -170,6 +177,10 @@ module.exports = {
         nextMarker = paginatedFunctions.NextMarker;
       } while (nextMarker);
     } catch (err) {
+      logger('getLambdaFunction.lambdaModel.lambda.listFunctions', {
+        MaxItems: 10000,
+        Marker: nextMarker,
+      })(err);
       context.print.error('Failed to fetch Lambda functions');
       throw err;
     }
@@ -178,9 +189,12 @@ module.exports = {
   getPollyVoices: async context => {
     const pollyModel = await new Polly(context);
     let listOfVoices = [];
+    const log = logger('getPollyVoices.polluModel.polly.describeVoices', []);
     try {
+      log();
       listOfVoices = await pollyModel.polly.describeVoices().promise();
     } catch (err) {
+      log(err);
       context.print.error('Failed to load voices');
       throw err;
     }
@@ -194,10 +208,21 @@ module.exports = {
 
     try {
       do {
+        logger('getDynamoDBTables.dynamodb.listTables', [
+          {
+            Limit: 100,
+            ExclusiveStartTableName: nextToken,
+          },
+        ])();
         const paginatedTables = await dynamodbModel.dynamodb.listTables({ Limit: 100, ExclusiveStartTableName: nextToken }).promise();
         const dynamodbTables = paginatedTables.TableNames;
         nextToken = paginatedTables.LastEvaluatedTableName;
         for (let i = 0; i < dynamodbTables.length; i += 1) {
+          logger('getDynamoDBTables.dynamodb.describeTables', [
+            {
+              TableName: dynamodbTables[i],
+            },
+          ])();
           describeTablePromises.push(
             dynamodbModel.dynamodb
               .describeTable({
@@ -226,39 +251,72 @@ module.exports = {
       }
       return tablesToReturn;
     } catch (err) {
+      logger('getDynamoDBTables.dynamodb.*', [])(err);
       context.print.error('Failed to fetch DynamoDB tables');
       throw err;
     }
   },
-  getAppSyncAPIs: context =>
-    new AppSync(context)
+  getAppSyncAPIs: context => {
+    const log = logger('getAppSyncAPIs.appSyncModel.appSync.listGraphqlApis', { maxResults: 25 });
+
+    return new AppSync(context)
       .then(result => {
         const appSyncModel = result;
         context.print.debug(result);
+        log();
         return appSyncModel.appSync.listGraphqlApis({ maxResults: 25 }).promise();
       })
-      .then(result => result.graphqlApis),
+      .then(result => result.graphqlApis)
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
+  },
   getIntrospectionSchema: (context, options) => {
     const awsOptions = {};
     if (options.region) {
       awsOptions.region = options.region;
     }
+    let log = null;
+
     return new AppSync(context, awsOptions)
       .then(result => {
         const appSyncModel = result;
+        log = logger('getIntrospectionSchema.appSyncModel.appSync.getIntrospectionSchema', [
+          {
+            apiId: options.apiId,
+            format: 'JSON',
+          },
+        ]);
+        log();
         return appSyncModel.appSync.getIntrospectionSchema({ apiId: options.apiId, format: 'JSON' }).promise();
       })
-      .then(result => result.schema.toString() || null);
+      .then(result => result.schema.toString() || null)
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
   },
   getGraphQLApiDetails: (context, options) => {
     const awsOptions = {};
     if (options.region) {
       awsOptions.region = options.region;
     }
-    return new AppSync(context, awsOptions).then(result => {
-      const appSyncModel = result;
-      return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
-    });
+    const log = logger('getGraphQLApiDetails.appSyncModel.appSync.getGraphqlApi', [
+      {
+        apiId: options.apiId,
+      },
+    ]);
+    return new AppSync(context, awsOptions)
+      .then(result => {
+        const appSyncModel = result;
+        log();
+        return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
+      })
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
   },
   getBuiltInSlotTypes: (context, options) => {
     const params = {
@@ -268,30 +326,59 @@ module.exports = {
     if (options) {
       params.nextToken = options;
     }
-    return new Lex(context).then(result => result.lex.getBuiltinSlotTypes(params).promise());
+    const log = logger('getBuiltInSlotTypes.lex.getBuiltinSlotTypes', [params]);
+    return new Lex(context)
+      .then(result => {
+        log();
+        return result.lex.getBuiltinSlotTypes(params).promise();
+      })
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
   },
   getSlotTypes: context => {
     const params = {
       maxResults: 50,
     };
-    return new Lex(context).then(result => result.lex.getSlotTypes(params).promise());
+    const log = logger('getSlotTypes.lex.getSlotTypes', [params]);
+    return new Lex(context)
+      .then(result => result.lex.getSlotTypes(params).promise())
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
   },
   getAppSyncApiKeys: (context, options) => {
     const awsOptions = {};
     if (options.region) {
       awsOptions.region = options.region;
     }
-    return new AppSync(context, awsOptions).then(result => {
-      const appSyncModel = result;
-      return appSyncModel.appSync.listApiKeys({ apiId: options.apiId }).promise();
-    });
+    const log = logger('getAppSyncApiKeys.appSync.listApiKeys', [
+      {
+        apiId: options.apiId,
+      },
+    ]);
+    return new AppSync(context, awsOptions)
+      .then(result => {
+        const appSyncModel = result;
+        log();
+        return appSyncModel.appSync.listApiKeys({ apiId: options.apiId }).promise();
+      })
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
   },
   getEndpoints: async context => {
     const sagemakerModel = await new SageMaker(context);
     let listOfEndpoints;
+    const log = logger('getEndpoints.sageMaker.listEndpoints', []);
     try {
+      log();
       listOfEndpoints = await sagemakerModel.sageMaker.listEndpoints().promise();
     } catch (err) {
+      log(err);
       context.print.error('Failed to load endpoints');
       throw err;
     }

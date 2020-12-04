@@ -24,6 +24,7 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
+    "amplify-cli-logger": "1.0.0",
     "ajv": "^6.12.3",
     "dotenv": "^8.2.0",
     "fs-extra": "^8.1.0",
