@@ -707,7 +707,7 @@ async function formNestedStack(
   try {
     const amplifyMeta = stateManager.getMeta();
     const appId = amplifyMeta.providers[providerName].AmplifyAppId;
-    if (await isAmplifyAdminApp(appId)) {
+    if ((await isAmplifyAdminApp(appId)).isAdminApp) {
       nestedStack.Description = 'Root Stack for AWS Amplify Console';
     }
   } catch (err) {
