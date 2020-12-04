@@ -81,7 +81,7 @@ export class S3 {
         logger('uploadFile.s3.upload', [others])();
         uploadTask = this.s3.upload(augmentedS3Params);
         uploadTask.on('httpUploadProgress', max => {
-          if (showSpinner) spinner.text = `Uploading Files...${Math.round((max.loaded / max.total) * 100)}%`;
+          if (showSpinner) spinner.text = `Uploading files...${Math.round((max.loaded / max.total) * 100)}%`;
         });
       } else {
         logger('uploadFile.s3.putObject', [others])();
