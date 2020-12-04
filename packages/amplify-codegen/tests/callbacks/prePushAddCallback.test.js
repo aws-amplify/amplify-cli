@@ -16,6 +16,13 @@ jest.mock('../../src/walkthrough/questions/generateCode');
 jest.mock('../../src/utils');
 jest.mock('../../src/callbacks/prePushUpdateCallback');
 
+jest.mock('graphql-transformer-core');
+jest.mock('amplify-cli-core', () => ({
+  pathManager: {
+    getBackendDirPath: () => 'backend',
+  },
+}));
+
 const MOCK_RESOURCE_NAME = 'MOCK_API_NAME';
 const MOCK_INCLUDE_PATTERN = 'MOCK_INCLUDE';
 const MOCK_EXCLUDE_PATTERN = 'MOCK_EXCLUDE';

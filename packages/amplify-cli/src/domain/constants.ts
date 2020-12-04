@@ -10,6 +10,7 @@ export const constants = {
   PACKAGEJSON_FILE_NAME: 'package.json',
   PLUGINS_FILE_NAME: 'plugins.json',
   CORE: 'core',
+  CODEGEN: 'codegen',
   Amplify: 'amplify',
   DotAmplifyDirName: '.amplify',
   AmplifyPrefix: 'amplify-',
@@ -20,4 +21,5 @@ export const constants = {
   ExecuteAmplifyCommand: 'executeAmplifyCommand',
   ExecuteAmplifyHeadlessCommand: 'executeAmplifyHeadlessCommand',
   HandleAmplifyEvent: 'handleAmplifyEvent',
+  LogFilename: 'amplify-cli.log',
 };

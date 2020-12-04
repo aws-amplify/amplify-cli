@@ -6,6 +6,12 @@ import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-p
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { initializeEnv } from '../initialize-env';
 
+export async function onHeadlessSuccess(context: $TSContext) {
+  const frontendPlugins = getFrontendPlugins(context);
+  const frontendModule = require(frontendPlugins[context.exeInfo.projectConfig.frontend]);
+  await frontendModule.onInitSuccessful(context);
+}
+
 export async function onSuccess(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
@@ -78,16 +84,24 @@ export function generateLocalEnvInfoFile(context: $TSContext) {
 function generateLocalTagsFile(context: $TSContext) {
   if (context.exeInfo.isNewProject) {
     const { projectPath } = context.exeInfo.localEnvInfo;
-    const tags = [
-      {
+
+    // Preserve existing tags if present
+    const tags = stateManager.getProjectTags(projectPath);
+
+    if (!tags.find(t => t.Key === 'user:Stack')) {
+      tags.push({
         Key: 'user:Stack',
         Value: '{project-env}',
-      },
-      {
+      });
+    }
+
+    if (!tags.find(t => t.Key === 'user:Application')) {
+      tags.push({
         Key: 'user:Application',
         Value: '{project-name}',
-      },
-    ];
+      });
+    }
+
     stateManager.setProjectFileTags(projectPath, tags);
   }
 }

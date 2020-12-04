@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.19.0...amplify-codegen@2.19.1) (2020-12-03)
+
+
+
+## 4.37.1 (2020-12-02)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:** address feedback from flutter team(Nov 28) ([#6004](https://github.com/aws-amplify/amplify-cli/issues/6004)) ([b624e0f](https://github.com/aws-amplify/amplify-cli/commit/b624e0fff58659d0aeb13bc3e79b437071295aa3))
+
+
+
+
+
+# [2.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.18.1...amplify-codegen@2.19.0) (2020-11-30)
+
+
+### Features
+
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+
+
+
+
+
 ## [2.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.18.0...amplify-codegen@2.18.1) (2020-11-27)
 
 **Note:** Version bump only for package amplify-codegen

@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-core",
-  "version": "1.10.3",
+  "version": "1.11.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -21,12 +21,12 @@
     "clean": "rimraf ./lib"
   },
   "dependencies": {
-    "amplify-cli-core": "1.9.0",
+    "amplify-cli-core": "1.10.0",
     "amplify-headless-interface": "1.5.2",
     "chalk": "^3.0.0",
-    "execa": "^4.0.3",
+    "execa": "^4.1.0",
     "fs-extra": "^8.1.0",
-    "graphql-transformer-core": "6.23.1",
+    "graphql-transformer-core": "6.24.0",
     "jest-environment-node": "^25.1.0",
     "lodash": "^4.17.19",
     "node-pty-prebuilt-multiarch": "^0.9.0",

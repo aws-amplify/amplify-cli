@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.24.4...amplify-category-auth@2.25.0) (2020-11-30)
+
+
+### Bug Fixes
+
+* add check for undefined appId ([#6009](https://github.com/aws-amplify/amplify-cli/issues/6009)) ([db9bf58](https://github.com/aws-amplify/amplify-cli/commit/db9bf58c5c721be1125aca6972ce76a9ef222cd9))
+* appId is only required for admin ([#6007](https://github.com/aws-amplify/amplify-cli/issues/6007)) ([6eee2a2](https://github.com/aws-amplify/amplify-cli/commit/6eee2a245d2deae9d6faf81c84bbcd551561cd5c))
+
+
+### Features
+
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+
+
+
+
+
 ## [2.24.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.24.3...amplify-category-auth@2.24.4) (2020-11-28)
 
 

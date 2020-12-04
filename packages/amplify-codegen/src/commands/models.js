@@ -81,7 +81,7 @@ async function generateModels(context) {
 
   generateEslintIgnore(context);
 
-  context.print.info(`Successfully generated models. Generated models can be found ${outputPath}`);
+  context.print.info(`Successfully generated models. Generated models can be found in ${outputPath}`);
 }
 
 async function validateSchema(context) {
@@ -125,7 +125,7 @@ function getModelOutputPath(context) {
     case 'ios':
       return 'amplify/generated/models';
     case 'flutter':
-      return 'dart/models';
+      return 'lib/models';
     default:
       return '.';
   }

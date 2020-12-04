@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-runtime-provider",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Provides functionality related to functions in NodeJS on AWS",
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
   "dependencies": {
     "amplify-function-plugin-interface": "1.5.1",
     "archiver": "^3.1.1",
-    "execa": "^4.0.0",
+    "execa": "^4.1.0",
     "exit": "^0.1.2",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6"

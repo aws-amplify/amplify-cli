@@ -49,7 +49,7 @@ const createPreRelease = async (version: string) => {
 
   await Promise.all(
     platformSuffixes
-      .map(suffix => `${binaryNamePrefix}${suffix}`)
+      .map(suffix => `${binaryNamePrefix}${suffix}.tgz`)
       .map(binName => join(binariesDir, binName))
       .map(binPath => {
         console.log(`Uploading ${binPath} to release`);

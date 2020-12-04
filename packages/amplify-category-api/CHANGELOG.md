@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.26.2...amplify-category-api@2.27.0) (2020-11-30)
+
+
+### Features
+
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+
+
+
+
+
 ## [2.26.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.26.1...amplify-category-api@2.26.2) (2020-11-24)
 
 **Note:** Version bump only for package amplify-category-api
