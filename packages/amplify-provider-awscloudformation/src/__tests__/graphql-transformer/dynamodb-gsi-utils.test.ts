@@ -1,4 +1,5 @@
 import * as gsiUtils from '../../graphql-transformer/dynamodb-gsi-helpers';
+
 import { makeTableWithGSI } from './gsi-test-helpers';
 
 describe('DynamoDB GSI Utils', () => {
@@ -77,7 +78,7 @@ describe('DynamoDB GSI Utils', () => {
     });
   });
 
-  describe('addGsi', () => {
+  describe('addGSI', () => {
     const gsiItem = {
       attributeDefinition: [
         {
@@ -108,7 +109,7 @@ describe('DynamoDB GSI Utils', () => {
       const tableWithNoGSI = makeTableWithGSI({
         gsis: [],
       });
-      const updatedTable = gsiUtils.addGsi(gsiItem, tableWithNoGSI);
+      const updatedTable = gsiUtils.addGSI(gsiItem, tableWithNoGSI);
       expect(updatedTable).toBeDefined();
       expect(updatedTable).not.toEqual(tableWithNoGSI);
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
@@ -135,7 +136,7 @@ describe('DynamoDB GSI Utils', () => {
           },
         ],
       });
-      const updatedTable = gsiUtils.addGsi(gsiItem, tableWithGSI);
+      const updatedTable = gsiUtils.addGSI(gsiItem, tableWithGSI);
       expect(updatedTable).toBeDefined();
       expect(updatedTable).not.toEqual(tableWithGSI);
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
@@ -169,7 +170,7 @@ describe('DynamoDB GSI Utils', () => {
           },
         ],
       });
-      expect(() => gsiUtils.addGsi(gsiItem, tableWithGSI)).toThrowError(`An index with name ${gsiItem.gsi.IndexName} already exists`);
+      expect(() => gsiUtils.addGSI(gsiItem, tableWithGSI)).toThrowError(`An index with name ${gsiItem.gsi.IndexName} already exists`);
     });
 
     it(`should throw error when adding new index to a table with ${gsiUtils.MAX_GSI_PER_TABLE} GSIs`, () => {
@@ -186,7 +187,7 @@ describe('DynamoDB GSI Utils', () => {
           ];
         }, []),
       });
-      expect(() => gsiUtils.addGsi(gsiItem, tableWithMaxGSI)).toThrowError(
+      expect(() => gsiUtils.addGSI(gsiItem, tableWithMaxGSI)).toThrowError(
         `DynamoDB ${tableWithMaxGSI.Properties.TableName} can have max of ${gsiUtils.MAX_GSI_PER_TABLE} GSIs`,
       );
     });
@@ -209,7 +210,7 @@ describe('DynamoDB GSI Utils', () => {
           },
         ],
       });
-      const updatedTable = gsiUtils.addGsi(gsiItem, tableWithGSI);
+      const updatedTable = gsiUtils.addGSI(gsiItem, tableWithGSI);
       expect(updatedTable).toBeDefined();
       expect(updatedTable).not.toEqual(tableWithGSI);
       expect(updatedTable.Properties.AttributeDefinitions).toEqual([
@@ -244,17 +245,17 @@ describe('DynamoDB GSI Utils', () => {
     };
     it('should throw error if there are no GSIs in the table', () => {
       const tableWithNoGSI = makeTableWithGSI({ gsis: [] });
-      expect(() => gsiUtils.removeGsi('missingGsi', tableWithNoGSI)).toThrowError('No GSIs are present in the table');
+      expect(() => gsiUtils.removeGSI('missingGsi', tableWithNoGSI)).toThrowError('No GSIs are present in the table');
     });
 
     it('should throw error when trying to remove index which does not exist', () => {
       const tableWitGSI = makeTableWithGSI(tableDefinition);
-      expect(() => gsiUtils.removeGsi('missingGsi', tableWitGSI)).toThrowError(`Table MyTable does not contain GSI missingGsi`);
+      expect(() => gsiUtils.removeGSI('missingGsi', tableWitGSI)).toThrowError(`Table MyTable does not contain GSI missingGsi`);
     });
     it('should remove index when the GSI is present', () => {
       const tableWitGSI = makeTableWithGSI(tableDefinition);
 
-      const updatedTable = gsiUtils.removeGsi('byTitle', tableWitGSI);
+      const updatedTable = gsiUtils.removeGSI('byTitle', tableWitGSI);
 
       expect(updatedTable).not.toEqual(tableWitGSI);
       expect(updatedTable.Properties.GlobalSecondaryIndexes).toBeUndefined();
@@ -288,7 +289,7 @@ describe('DynamoDB GSI Utils', () => {
           },
         ],
       });
-      const updatedTable = gsiUtils.removeGsi('byTitle', tableWitGSI);
+      const updatedTable = gsiUtils.removeGSI('byTitle', tableWitGSI);
 
       expect(updatedTable).not.toEqual(tableWitGSI);
       expect(updatedTable.Properties.GlobalSecondaryIndexes).toHaveLength(1);

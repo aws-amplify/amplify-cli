@@ -1,21 +1,23 @@
 import * as aws from 'aws-sdk';
-import assert from 'assert';
-import throttle from 'lodash.throttle';
+
+import { $TSContext, IDeploymentStateManager } from 'amplify-cli-core';
 import {
-  createDeploymentMachine,
+  DeployMachineContext,
   DeploymentMachineOp,
   DeploymentMachineStep,
   StateMachineHelperFunctions,
-  DeployMachineContext,
+  createDeploymentMachine,
 } from './state-machine';
-import { interpret } from 'xstate';
 import { IStackProgressPrinter, StackEventMonitor } from './stack-event-monitor';
-import { StackProgressPrinter } from './stack-progress-printer';
-import ora from 'ora';
-import configurationManager from '../configuration-manager';
-import { $TSContext, IDeploymentStateManager } from 'amplify-cli-core';
-import { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import { getBucketKey, getHttpUrl } from './helpers';
+
+import { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import { StackProgressPrinter } from './stack-progress-printer';
+import assert from 'assert';
+import configurationManager from '../configuration-manager';
+import { interpret } from 'xstate';
+import ora from 'ora';
+import throttle from 'lodash.throttle';
 interface DeploymentManagerOptions {
   throttleDelay?: number;
   eventPollingDelay?: number;
@@ -63,7 +65,6 @@ export class DeploymentManager {
     private region: string,
     private deploymentBucket: string,
     private spinner: ora.Ora,
-    // private deployedTemplatePath: string,
     private printer: IStackProgressPrinter = new StackProgressPrinter(),
     options: DeploymentManagerOptions = {},
   ) {

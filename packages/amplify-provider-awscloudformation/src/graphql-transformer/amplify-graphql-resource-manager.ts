@@ -5,7 +5,7 @@ import { DynamoDB, Template } from 'cloudform-types';
 import { GSIChange, getGSIDiffs } from './gsi-diff-helpers';
 import { GSIRecord, TemplateState, getStackParameters, getTableNames } from '../utils/amplify-resource-state-utils';
 import { ROOT_APPSYNC_S3_KEY, hashDirectory } from '../upload-appsync-files';
-import { addGsi, getGSIDetails, removeGsi } from './dynamodb-gsi-helpers';
+import { addGSI, getGSIDetails, removeGSI } from './dynamodb-gsi-helpers';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
   cantBatchMutateGSIAtUpdateTimeRule,
@@ -258,12 +258,12 @@ export class GraphQLResourceManager {
 
   private addGSI = (gsiRecord: GSIRecord, tableName: string, template: Template): void => {
     const table = template.Resources[tableName] as DynamoDB.Table;
-    template.Resources[tableName] = addGsi(gsiRecord, table);
+    template.Resources[tableName] = addGSI(gsiRecord, table);
   };
 
   private deleteGSI = (indexName: string, tableName: string, template: Template): void => {
     const table = template.Resources[tableName] as DynamoDB.Table;
-    template.Resources[tableName] = removeGsi(indexName, table);
+    template.Resources[tableName] = removeGSI(indexName, table);
   };
 }
 

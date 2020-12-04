@@ -63,7 +63,7 @@ export const generateGSIChangeList = (currentIndexes: GlobalSecondaryIndex[], ne
   const possiblyModifiedIndexNames = _.xor([...currentIndexNames, ...nextIndexNames], addedOrRemovedIndexNames);
 
   const modifiedIndexes = possiblyModifiedIndexNames
-    .filter(indexName => isIdexModified(currentIndexByIndexName[indexName], nextIndexByIndexName[indexName]))
+    .filter(indexName => isIndexModified(currentIndexByIndexName[indexName], nextIndexByIndexName[indexName]))
     .map(indexName => ({
       type: GSIChange.Update,
       indexName,
@@ -87,7 +87,7 @@ export const generateGSIChangeList = (currentIndexes: GlobalSecondaryIndex[], ne
  * @param currentIndex DynamoDB GlobalSecondaryIndex in currently deployed table
  * @param nextIndex updated DynamoDB GlobalSecondaryIndex to be deployed in the next push
  */
-export const isIdexModified = (currentIndex: GlobalSecondaryIndex, nextIndex: GlobalSecondaryIndex): boolean => {
+export const isIndexModified = (currentIndex: GlobalSecondaryIndex, nextIndex: GlobalSecondaryIndex): boolean => {
   const diffs = getDiffs(currentIndex, nextIndex);
   if (currentIndex.IndexName instanceof IntrinsicFunction) {
     return;

@@ -222,8 +222,8 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
     },
     {
       guards: {
-        isDeploymentComplete: isDeploymentComplete,
-        isRollbackComplete: isRollbackComplete,
+        isDeploymentComplete,
+        isRollbackComplete,
       },
       activities: {
         deployPoll: getDeploymentActivityPollerHandler(helperFns.stackEventPollFn),

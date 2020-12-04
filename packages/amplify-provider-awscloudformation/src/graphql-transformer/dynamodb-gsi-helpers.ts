@@ -47,7 +47,7 @@ export const getGSIDetails = (indexName: string, table: DynamoDB.Table): GSIReco
  * @param index GSIRecord with the index  and attribute definition
  * @param table DynamoDB table to which the new GSI is added
  */
-export const addGsi = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table => {
+export const addGSI = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table => {
   const updatedTable = _.cloneDeep(table);
 
   const gsis = updatedTable.Properties.GlobalSecondaryIndexes ?? [];
@@ -81,7 +81,7 @@ export const addGsi = (index: GSIRecord, table: DynamoDB.Table): DynamoDB.Table 
  * @param indexName Name of the Index
  * @param table DynamoDB table from which the index is removed
  */
-export const removeGsi = (indexName: string, table: DynamoDB.Table): DynamoDB.Table => {
+export const removeGSI = (indexName: string, table: DynamoDB.Table): DynamoDB.Table => {
   const updatedTable = _.cloneDeep(table);
   const gsis = updatedTable.Properties.GlobalSecondaryIndexes;
   assertNotIntrinsicFunction(gsis);
