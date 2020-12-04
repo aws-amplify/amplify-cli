@@ -7,7 +7,7 @@ const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { ProviderName, AmplifyAppIdLabel } = require('./constants');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const { stateManager } = require('amplify-cli-core');
-const { fileLogger } = require('../src/utils/aws-logger');
+const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('amplify-service-manager');
 
 async function init(amplifyServiceParams) {

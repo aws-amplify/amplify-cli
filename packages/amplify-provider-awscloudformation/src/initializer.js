@@ -12,7 +12,7 @@ const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
 const amplifyServiceManager = require('./amplify-service-manager');
 const amplifyServiceMigrate = require('./amplify-service-migrate');
-const { fileLogger } = require('../src/utils/aws-logger');
+const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('attach-backend');
 
 async function run(context) {

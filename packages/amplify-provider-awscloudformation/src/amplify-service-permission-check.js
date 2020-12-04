@@ -1,5 +1,5 @@
-const { printAuthErrorMessage } = require('../src/aws-utils/aws-amplify');
-const { fileLogger } = require('../src/utils/aws-logger');
+const { printAuthErrorMessage } = require('./aws-utils/aws-amplify');
+const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('amplify-service-permission-check');
 
 async function checkAmplifyServiceIAMPermission(context, amplifyClient) {

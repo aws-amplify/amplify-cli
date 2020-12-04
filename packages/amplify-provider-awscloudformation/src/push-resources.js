@@ -21,7 +21,7 @@ const archiver = require('./utils/archiver');
 const amplifyServiceManager = require('./amplify-service-manager');
 const { stateManager } = require('amplify-cli-core');
 const { isAmplifyAdminApp } = require('./utils/admin-helpers');
-const { fileLogger } = require('../src/utils/aws-logger');
+const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('push-resources');
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
@@ -67,7 +67,12 @@ async function run(context, resourceDefinition) {
 
     // We do not need CloudFormation update if only syncable resources are the changes.
     if (resourcesToBeCreated.length > 0 || resourcesToBeUpdated.length > 0 || resourcesToBeDeleted.length > 0) {
-      await updateCloudFormationNestedStack(context, await formNestedStack(context, projectDetails), resourcesToBeCreated, resourcesToBeUpdated);
+      await updateCloudFormationNestedStack(
+        context,
+        await formNestedStack(context, projectDetails),
+        resourcesToBeCreated,
+        resourcesToBeUpdated,
+      );
     }
 
     await postPushGraphQLCodegen(context);
@@ -213,7 +218,7 @@ async function updateStackForAPIMigration(context, category, resourceName, optio
       }),
     )
     .then(() => updateS3Templates(context, resources, projectDetails.amplifyMeta))
-    .then(async() => {
+    .then(async () => {
       if (!isCLIMigration) {
         spinner.start();
       }
@@ -338,7 +343,7 @@ function packageResources(context, resources) {
         log(ex);
         throw ex;
       })
-      .then(s3Bucket => {
+      .then(async s3Bucket => {
         // Update cfn template
         const { category, resourceName } = resource;
         const backEndDir = context.amplify.pathManager.getBackendDirPath();
@@ -546,7 +551,7 @@ async function formNestedStack(context, projectDetails, categoryName, resourceNa
   try {
     const amplifyMeta = stateManager.getMeta();
     const appId = amplifyMeta.providers[providerName].AmplifyAppId;
-    if(await isAmplifyAdminApp(appId)) {
+    if (await isAmplifyAdminApp(appId)) {
       nestedStack.Description = 'Root Stack for AWS Amplify Console';
     }
   } catch (err) {
