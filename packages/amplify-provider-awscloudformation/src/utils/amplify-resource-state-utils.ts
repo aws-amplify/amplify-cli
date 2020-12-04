@@ -2,6 +2,7 @@ import { Template } from 'cloudform-types';
 import { GlobalSecondaryIndex, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table';
 import { CloudFormation } from 'aws-sdk';
 import _ from 'lodash';
+import { JSONUtilities } from 'amplify-cli-core';
 
 export interface GSIRecord {
   attributeDefinition: AttributeDefinition[];
@@ -64,7 +65,7 @@ export class TemplateState {
   public getLatest(key: string): Template | null {
     if (this.changes[key]) {
       const length = this.changes[key].length;
-      return length ? JSON.parse(this.changes[key][length - 1]) : null;
+      return length ? JSONUtilities.parse(this.changes[key][length - 1]) : null;
     }
     return null;
   }
@@ -74,7 +75,7 @@ export class TemplateState {
     if (_.isEmpty(this.changes[key])) {
       delete this.changes[key];
     }
-    return JSON.parse(template);
+    return JSONUtilities.parse(template);
   }
 
   public add(key: string, val: string): void {

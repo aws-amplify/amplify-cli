@@ -19,6 +19,7 @@ import { getBucketKey, getHttpUrl } from './helpers';
 interface DeploymentManagerOptions {
   throttleDelay?: number;
   eventPollingDelay?: number;
+  userAgent?: string;
 }
 
 export type DeploymentOp = Omit<DeploymentMachineOp, 'region' | 'stackTemplatePath' | 'stackTemplateUrl'> & {
@@ -39,8 +40,8 @@ export class DeploymentManager {
     context: $TSContext,
     deploymentBucket: string,
     spinner: ora.Ora,
-    printer?: IStackProgressPrinter,
     options?: DeploymentManagerOptions,
+    printer?: IStackProgressPrinter,
   ) => {
     try {
       const cred = await configurationManager.loadConfiguration(context);
@@ -69,11 +70,12 @@ export class DeploymentManager {
     this.options = {
       throttleDelay: 1_000,
       eventPollingDelay: 1_000,
+      userAgent: undefined,
       ...options,
     };
 
     this.s3Client = new aws.S3(creds);
-    this.cfnClient = new aws.CloudFormation({ ...creds, maxRetries: 10 });
+    this.cfnClient = new aws.CloudFormation({ ...creds, maxRetries: 10, customUserAgent: this.options.userAgent });
   }
 
   public deploy = async (deploymentStateManager: IDeploymentStateManager): Promise<void> => {

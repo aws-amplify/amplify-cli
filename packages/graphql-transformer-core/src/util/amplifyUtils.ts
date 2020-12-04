@@ -18,8 +18,8 @@ import {
   DiffRule,
   sanityCheckProject,
   ProjectRule,
+  cantMutateMultipleGSIAtUpdateTimeRule,
 } from './sanity-check';
-import { cantMutateMultipleGSIAtUpdateTimeRule } from '..';
 
 export const CLOUDFORMATION_FILE_NAME = 'cloudformation-template.json';
 export const PARAMETERS_FILE_NAME = 'parameters.json';

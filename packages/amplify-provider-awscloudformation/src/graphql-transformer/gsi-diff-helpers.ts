@@ -89,7 +89,7 @@ export const getUpdatedIndexDiff = (currentIndex: GlobalSecondaryIndex, nextInde
   if (currentIndex.IndexName instanceof IntrinsicFunction) {
     return;
   }
-  const isModeifed = diffs?.some(diff => {
+  const isModified = diffs?.some(diff => {
     const leaf = diff.path?.slice(-1)[0];
     return [
       'IndexName',
@@ -102,5 +102,5 @@ export const getUpdatedIndexDiff = (currentIndex: GlobalSecondaryIndex, nextInde
       'ProjectionType',
     ].includes(leaf);
   });
-  return isModeifed ? { type: GSIChange.Update, indexName: currentIndex.IndexName } : undefined;
+  return isModified ? { type: GSIChange.Update, indexName: currentIndex.IndexName } : undefined;
 };

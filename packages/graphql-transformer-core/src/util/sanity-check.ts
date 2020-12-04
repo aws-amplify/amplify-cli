@@ -50,7 +50,6 @@ export const sanityCheckDiffs = (
   projectRules: ProjectRule[] = [cantHaveMoreThan500ResourcesRule],
 ): void => {
   // Project rules run on the full set of diffs, the current build, and the next build.
-  // Todo: confirm if , cantMutateMultipleGSIAtUpdateTimeRule is needed as project rule as the diffRule should include it already
 
   // Loop through the diffs and call each DiffRule.
   // We loop once so each rule does not need to loop.

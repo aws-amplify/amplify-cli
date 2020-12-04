@@ -18,6 +18,7 @@ import {
 import ora from 'ora';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
+import { formUserAgentParam } from './aws-utils/user-agent';
 import { ProviderName as providerName } from './constants';
 import { buildResource } from './build-resources';
 import { uploadAppSyncFiles } from './upload-appsync-files';
@@ -135,7 +136,9 @@ export async function run(context, resourceDefinition) {
       // If there is an API change, there will be one deployment step. But when there needs an iterative update the step count is > 1
       if (deploymentSteps.length > 1) {
         // create deployment manager
-        const deploymentManager = await DeploymentManager.createInstance(context, clousformationMeta.DeploymentBucketName, spinner);
+        const deploymentManager = await DeploymentManager.createInstance(context, clousformationMeta.DeploymentBucketName, spinner, {
+          userAgent: formUserAgentParam(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated)),
+        });
 
         deploymentSteps.forEach(step => deploymentManager.addStep(step));
 
@@ -459,7 +462,6 @@ async function packageResources(context, resources) {
 
     const s3 = await S3.getInstance(context);
 
-
     const s3Params = {
       Body: fs.createReadStream(result.zipFilePath),
       Key: s3Key,
@@ -468,9 +470,8 @@ async function packageResources(context, resources) {
     log();
     let s3Bucket;
     try {
-
       s3Bucket = await s3.uploadFile(s3Params);
-    } catch(error) {
+    } catch (error) {
       log(error);
       throw error;
     }
@@ -674,8 +675,9 @@ async function uploadTemplateToS3(
   };
 
   const log = logger('uploadTemplateToS3.s3.uploadFile', [{ Key: s3Params.Key }]);
+  let projectBucket;
   try {
-    const projectBucket = await s3.uploadFile(s3Params, false);
+    projectBucket = await s3.uploadFile(s3Params, false);
   } catch (error) {
     log(error);
     throw error;

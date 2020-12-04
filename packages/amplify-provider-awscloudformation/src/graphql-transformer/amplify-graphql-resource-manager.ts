@@ -143,7 +143,6 @@ export class GraphQLResourceManager {
 
       const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildHash}/states/${stepNumber}`;
       const deploymentStep: DeploymentOp = {
-        // stackTemplatePathOrUrl: this.resourceMeta.providerMetadata.s3TemplateURL,
         stackTemplatePathOrUrl: `${deploymentRootKey}/cloudformation-template.json`,
         parameters: { ...parameters, S3DeploymentRootKey: deploymentRootKey },
         stackName: this.resourceMeta.stackId,
@@ -181,7 +180,6 @@ export class GraphQLResourceManager {
 
     const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildHash}/states/${stepNumber}`;
     return {
-      // stackTemplatePathOrUrl: this.resourceMeta.providerMetadata.s3TemplateURL,
       stackTemplatePathOrUrl: `${deploymentRootKey}/cloudformation-template.json`,
       parameters: { ...parameters, S3DeploymentRootKey: deploymentRootKey },
       stackName: this.resourceMeta.stackId,
