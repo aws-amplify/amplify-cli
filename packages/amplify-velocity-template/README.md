@@ -23,7 +23,7 @@ Velocityjs is [velocity](http://velocity.apache.org/) template engine for javasc
 
 ## Features
 
-- Supports both client and server side use.
+- Supports both client and server side usage.
 - Separation of parsing and rendering templates.
 - The basic syntax is fully supported all java version velocity.
 - [Vim Syntax](https://github.com/shepherdwind/vim-velocity) for vim.
@@ -40,7 +40,7 @@ $ npm install velocityjs
 
 Compatible with all modern browsers. You can try [test case](http://git.shepherdwind.com/velocity.js/runner/tests.html) in your browser to test it.
 
-For other lower version browsers, you need have those polyfill function.
+For other lower version browsers, you need have those polyfill functions:
 
 1. Array.prototype map, forEach, some, filter, every, indexOf
 2. Date.now
@@ -48,7 +48,7 @@ For other lower version browsers, you need have those polyfill function.
 
 ## Examples
 
-You can find a lot of examples from the tests directory. There is no different between the use of browser and NodeJs.
+You can find a lot of examples in the `tests` directory. There are no differences between using a browser and a node.js environment.
 
 ## Public API
 
@@ -73,7 +73,7 @@ params:
 
 - vm {string} velocity string input
 - context {object} render context, data or function for vm
-- macros {object} such as `#include('path/xxx')` , you can define you `inlcude` macro function
+- macros {object} such as `#include('path/xxx')` , you can define you `include` macro function
 
 ```js
 var Velocity = require('velocityjs');
@@ -83,10 +83,10 @@ Velocity.render('string of velocity', context, macros);
 
 #### context
 
-`context` is an object or undefined, for vm `$foo.bar`, data look up path will be `context.foo.bar`.
+`context` is an object or `undefined`, for vm `$foo.bar`, data look up path will be `context.foo.bar`.
 `context` can have method, and call it just on velocity string.
 
-The method of context, will have `eval` method on `this` of inner method body. You can `eval` to rerender velocity string, such as test code [$control.setTemplate](https://github.com/shepherdwind/velocity.js/blob/master/tests/compile.js#L532).
+The `context` will have `eval` method on `this` of inner method body. You can `eval` to rerender velocity string as shown in this example: [$control.setTemplate](https://github.com/shepherdwind/velocity.js/blob/master/tests/compile.js#L532).
 
 
 ### Compile and parse
@@ -132,7 +132,7 @@ Syntax you can find from [velocity user guide](http://velocity.apache.org/engine
 
 Directives supports have `set`, `foreach`, `if|else|elseif`, `macro`, `break`, `stop`, `return`.
 
-Some othe directive `evaluate`, `define`, `parse`, do not supported default, but You can realize by context or macros, for example [parse](https://github.com/shepherdwind/velocity.js/blob/master/tests/compile.js#L627)
+Some other directives such as `evaluate`, `define`, `parse` are not supported by default, but they can be used via context or macros, for example [parse](https://github.com/shepherdwind/velocity.js/blob/master/tests/compile.js#L627)
 
 ## Questions
 
