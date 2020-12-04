@@ -79,28 +79,24 @@ export class DeploymentStateManager implements IDeploymentStateManager {
   };
 
   public updateCurrentStepStatus = async (status: DeploymentStepStatus): Promise<void> => {
-    this.currentState.steps[this.currentState.currentStepIndex].status = status;
+    this.getCurrentStep().status = status;
 
     await this.saveState();
   };
 
   public startCurrentStep = async (): Promise<void> => {
     if (this.direction === 1) {
-      if (this.currentState.steps[this.currentState.currentStepIndex].status !== DeploymentStepStatus.WAITING_FOR_DEPLOYMENT) {
-        throw new Error(
-          `Cannot start step then the current step is in ${this.currentState.steps[this.currentState.currentStepIndex].status} status.`,
-        );
+      if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_DEPLOYMENT) {
+        throw new Error(`Cannot start step then the current step is in ${this.getCurrentStep().status} status.`);
       }
 
-      this.currentState.steps[this.currentState.currentStepIndex].status = DeploymentStepStatus.DEPLOYING;
+      this.getCurrentStep().status = DeploymentStepStatus.DEPLOYING;
     } else if (this.direction === -1) {
-      if (this.currentState.steps[this.currentState.currentStepIndex].status !== DeploymentStepStatus.WAITING_FOR_ROLLBACK) {
-        throw new Error(
-          `Cannot start step then the current step is in ${this.currentState.steps[this.currentState.currentStepIndex].status} status.`,
-        );
+      if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_ROLLBACK) {
+        throw new Error(`Cannot start step then the current step is in ${this.getCurrentStep().status} status.`);
       }
 
-      this.currentState.steps[this.currentState.currentStepIndex].status = DeploymentStepStatus.ROLLING_BACK;
+      this.getCurrentStep().status = DeploymentStepStatus.ROLLING_BACK;
     }
 
     await this.saveState();
@@ -111,28 +107,21 @@ export class DeploymentStateManager implements IDeploymentStateManager {
       throw new Error(`Cannot advance a deployment when it was not started.`);
     }
 
-    if (this.direction === 1 && this.currentState.steps[this.currentState.currentStepIndex].status !== DeploymentStepStatus.DEPLOYING) {
-      throw new Error(
-        `Cannot advance step then the current step is in ${this.currentState.steps[this.currentState.currentStepIndex].status} status.`,
-      );
-    } else if (
-      this.direction === -1 &&
-      this.currentState.steps[this.currentState.currentStepIndex].status !== DeploymentStepStatus.ROLLING_BACK
-    ) {
-      throw new Error(
-        `Cannot advance step then the current step is in ${this.currentState.steps[this.currentState.currentStepIndex].status} status.`,
-      );
+    if (this.direction === 1 && this.getCurrentStep().status !== DeploymentStepStatus.DEPLOYING) {
+      throw new Error(`Cannot advance step then the current step is in ${this.getCurrentStep().status} status.`);
+    } else if (this.direction === -1 && this.getCurrentStep().status !== DeploymentStepStatus.ROLLING_BACK) {
+      throw new Error(`Cannot advance step then the current step is in ${this.getCurrentStep().status} status.`);
     }
 
     // Check if we are finishing the deployment or just advancing a step
     if (this.direction === 1 && this.currentState.currentStepIndex === this.currentState.steps.length - 1) {
-      this.currentState.steps[this.currentState.currentStepIndex].status = DeploymentStepStatus.DEPLOYED;
+      this.getCurrentStep().status = DeploymentStepStatus.DEPLOYED;
 
       this.currentState.currentStepIndex = 0;
       this.currentState.finishedAt = new Date().toISOString();
       this.currentState.status = DeploymentStatus.DEPLOYED;
     } else if (this.direction === -1 && this.currentState.currentStepIndex === 0) {
-      this.currentState.steps[this.currentState.currentStepIndex].status = DeploymentStepStatus.ROLLED_BACK;
+      this.getCurrentStep().status = DeploymentStepStatus.ROLLED_BACK;
 
       this.currentState.currentStepIndex = 0;
       this.currentState.finishedAt = new Date().toISOString();
@@ -140,9 +129,9 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     } else {
       // Regular advance step
       if (this.direction === 1) {
-        this.currentState.steps[this.currentState.currentStepIndex].status = DeploymentStepStatus.DEPLOYED;
+        this.getCurrentStep().status = DeploymentStepStatus.DEPLOYED;
       } else if (this.direction === -1) {
-        this.currentState.steps[this.currentState.currentStepIndex].status = DeploymentStepStatus.ROLLED_BACK;
+        this.getCurrentStep().status = DeploymentStepStatus.ROLLED_BACK;
       }
 
       this.currentState.currentStepIndex += this.direction;
@@ -153,7 +142,7 @@ export class DeploymentStateManager implements IDeploymentStateManager {
 
   public startRollback = async (): Promise<void> => {
     if (!(await this.isDeploymentInProgress()) || this.direction !== 1) {
-      throw new Error('Cannot rollback a non-deploying deployment');
+      throw new Error('To rollback a deployment, the deployment must be in progress and not already rolling back.');
     }
 
     this.direction = -1;
@@ -207,4 +196,6 @@ export class DeploymentStateManager implements IDeploymentStateManager {
       Body: JSONUtilities.stringify(this.currentState),
     });
   };
+
+  private getCurrentStep = (): DeploymentStepState => this.currentState.steps[this.currentState.currentStepIndex];
 }

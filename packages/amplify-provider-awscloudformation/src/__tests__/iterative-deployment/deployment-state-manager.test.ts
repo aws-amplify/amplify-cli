@@ -284,7 +284,9 @@ describe('deployment state manager', () => {
   });
 
   it('cannot rollback non-started deployment', async () => {
-    expect(deploymentStateManager.startRollback()).rejects.toThrow('Cannot rollback a non-deploying deployment');
+    expect(deploymentStateManager.startRollback()).rejects.toThrow(
+      'To rollback a deployment, the deployment must be in progress and not already rolling back.',
+    );
   });
 
   it('cannot rollback an already rolled back deployment', async () => {
@@ -296,6 +298,8 @@ describe('deployment state manager', () => {
 
     await deploymentStateManager.startRollback();
 
-    expect(deploymentStateManager.startRollback()).rejects.toThrow('Cannot rollback a non-deploying deployment');
+    expect(deploymentStateManager.startRollback()).rejects.toThrow(
+      'To rollback a deployment, the deployment must be in progress and not already rolling back.',
+    );
   });
 });
