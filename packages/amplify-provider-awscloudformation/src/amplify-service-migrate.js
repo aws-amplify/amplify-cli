@@ -4,7 +4,7 @@ const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const { storeCurrentCloudBackend } = require('./push-resources');
 const constants = require('./constants');
-const { fileLogger } = require('../src/utils/aws-logger');
+const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('amplify-service-migrate');
 
 async function run(context) {
