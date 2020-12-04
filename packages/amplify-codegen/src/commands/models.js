@@ -9,8 +9,8 @@ const platformToLanguageMap = {
   android: 'java',
   ios: 'swift',
   flutter: 'dart',
-  javascript: 'javascript'
-}
+  javascript: 'javascript',
+};
 
 async function generateModels(context) {
   // steps:

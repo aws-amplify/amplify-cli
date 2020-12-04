@@ -1,0 +1,34 @@
+type Something
+  @model
+  @key(name: "byTodo", fields: ["todoID"])
+  @key(name: "byTodo2", fields: ["todo2ID"])
+  @key(name: "byTodo3", fields: ["todo3ID"]) {
+  id: ID!
+  todoID: ID!
+  todo2ID: ID!
+  todo3ID: ID!
+}
+
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+  addfield2: String
+  reltn: [Something] @connection(keyName: "byTodo", fields: ["id"])
+}
+
+type Todo2 @model {
+  id: ID!
+  name: String!
+  description: String
+  addfield2: String
+  reltn: [Something] @connection(keyName: "byTodo2", fields: ["id"])
+}
+
+type Todo3 @model {
+  id: ID!
+  name: String!
+  description: String
+  addfield2: String
+  reltn: [Something] @connection(keyName: "byTodo3", fields: ["id"])
+}

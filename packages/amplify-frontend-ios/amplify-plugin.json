@@ -1,8 +1,6 @@
 {
-    "name": "ios",
-    "type": "frontend",
-    "commands": [
-        "help"
-    ],
-    "eventHandlers": ["PostInit", "PostCodegenModels"]
+  "name": "ios",
+  "type": "frontend",
+  "commands": ["help"],
+  "eventHandlers": ["PostInit", "PostCodegenModels"]
 }

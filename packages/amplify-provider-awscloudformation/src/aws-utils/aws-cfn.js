@@ -197,6 +197,15 @@ class CloudFormation {
       });
   }
 
+  getStackParameters(stackName) {
+    return this.cfn
+      .describeStack({ StackName: stackName })
+      .promise()
+      .then(data => {
+        return data.Parameters;
+      });
+  }
+
   updateResourceStack(dir, cfnFile) {
     const filePath = path.normalize(path.join(dir, cfnFile));
     const projectDetails = this.context.amplify.getProjectDetails();

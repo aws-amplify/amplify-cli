@@ -1,11 +1,11 @@
 import { execSync } from 'child_process';
-import { ensureDir, existsSync, readFileSync, readJSON, readdirSync, } from 'fs-extra';
+import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 
 import { $TSContext, pathManager } from 'amplify-cli-core';
 
-import { preInitSetup } from '../../init-steps/preInitSetup'
-import { analyzeProject } from '../../init-steps/s0-analyzeProject'
-import { initFrontend } from '../../init-steps/s1-initFrontend'
+import { preInitSetup } from '../../init-steps/preInitSetup';
+import { analyzeProject } from '../../init-steps/s0-analyzeProject';
+import { initFrontend } from '../../init-steps/s1-initFrontend';
 import { scaffoldProjectHeadless } from '../../init-steps/s8-scaffoldHeadless';
 
 jest.mock('child_process', () => ({ execSync: jest.fn() }));
@@ -16,8 +16,6 @@ jest.mock('fs-extra');
 (readFileSync as jest.Mock).mockReturnValue('{}');
 (existsSync as jest.Mock).mockReturnValue(true);
 (readdirSync as jest.Mock).mockReturnValue([]);
-
-
 
 jest.mock('../../packageManagerHelpers', () => ({
   getPackageManager: () => 'yarn',
@@ -40,8 +38,8 @@ describe('amplify init: ', () => {
     getBackendDirPath: mockGetBackendDirPath,
     getGitIgnoreFilePath: mockGetGitIgnoreFilePath,
   };
-  
-  const mockContext = {
+
+  const mockContext = ({
     amplify: {
       AmplifyToolkit: jest.fn(),
       pathManager: mockPathManager,
@@ -63,14 +61,13 @@ describe('amplify init: ', () => {
     prompt: jest.fn(),
     exeInfo: {
       inputParams: {
-        amplify: {
-        }
-      }
+        amplify: {},
+      },
     },
     input: {},
     runtime: {},
     pluginPlatform: {},
-  } as unknown as $TSContext;
+  } as unknown) as $TSContext;
   jest.mock('amplify-cli-core', () => ({
     exitOnNextTick: jest.fn(),
   }));
@@ -82,26 +79,25 @@ describe('amplify init: ', () => {
     jest.clearAllMocks();
   });
 
-
   it('init run method should exist', () => {
     expect(initCommand).toBeDefined();
   });
 
   describe('init:preInit', () => {
-    it('should set up a sample app in an empty directory', async() => {
+    it('should set up a sample app in an empty directory', async () => {
       const appUrl = 'https://github.com/aws-samples/aws-amplify-graphql';
       const context = {
         ...mockContext,
         parameters: {
           options: {
             app: appUrl,
-          }
+          },
         },
       };
       await preInitSetup(context);
-      expect(execSync).toBeCalledWith(`git ls-remote ${appUrl}`, {'stdio': 'ignore'});
-      expect(execSync).toBeCalledWith(`git clone ${appUrl} .`, {'stdio': 'inherit'});
-      expect(execSync).toBeCalledWith('yarn install', {'stdio': 'inherit'});
+      expect(execSync).toBeCalledWith(`git ls-remote ${appUrl}`, { stdio: 'ignore' });
+      expect(execSync).toBeCalledWith(`git clone ${appUrl} .`, { stdio: 'inherit' });
+      expect(execSync).toBeCalledWith('yarn install', { stdio: 'inherit' });
     });
   });
 
@@ -117,7 +113,7 @@ describe('amplify init: ', () => {
 
   describe('init:initFrontend', () => {
     it('should use current project config if it is not a new project', async () => {
-      await initFrontend({ ...mockContext, exeInfo: { isNewProject: false }});
+      await initFrontend({ ...mockContext, exeInfo: { isNewProject: false } });
       expect(mockGetProjectConfig).toBeCalled();
     });
   });
@@ -132,13 +128,13 @@ describe('amplify init: ', () => {
           projectConfig: {
             projectName,
             frontend,
-          }
+          },
         },
       };
       const cwd = 'currentdir';
       const spy = jest.spyOn(process, 'cwd');
       spy.mockReturnValue(cwd);
-      
+
       await scaffoldProjectHeadless(context);
       expect(mockGetAmplifyDirPath).toBeCalledWith(cwd);
       expect(mockGetDotConfigDirPath).toBeCalledWith(cwd);

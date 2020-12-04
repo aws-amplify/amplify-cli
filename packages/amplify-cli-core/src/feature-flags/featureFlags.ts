@@ -504,6 +504,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
       },
+      {
+        name: 'enableIterativeGSIUpdates',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: false,
+      },
     ]);
   };
 }

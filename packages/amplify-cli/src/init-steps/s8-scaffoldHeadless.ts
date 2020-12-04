@@ -29,7 +29,7 @@ export async function scaffoldProjectHeadless(context: $TSContext) {
 
   // copy project-config.json file
   const projectConfigFile = JSONUtilities.readJson<AmplifyProjectConfig>(
-    path.join(skeletonLocalDir, PathConstants.DotConfigDirName, `project-config__${frontend}.json`)
+    path.join(skeletonLocalDir, PathConstants.DotConfigDirName, `project-config__${frontend}.json`),
   );
 
   if (!projectConfigFile) {
@@ -40,7 +40,7 @@ export async function scaffoldProjectHeadless(context: $TSContext) {
   JSONUtilities.writeJson(pathManager.getProjectConfigFilePath(projectPath), projectConfigFile);
 
   // copy backend folder
-  await fs.copy(path.join(skeletonLocalDir, PathConstants.BackendDirName), pathManager.getBackendDirPath(projectPath))
+  await fs.copy(path.join(skeletonLocalDir, PathConstants.BackendDirName), pathManager.getBackendDirPath(projectPath));
 
   insertAmplifyIgnore(pathManager.getGitIgnoreFilePath(projectPath));
 

@@ -1,0 +1,13 @@
+type Something @model @key(name: "byTodo", fields: ["todoID"]) @key(name: "byTodo2", fields: ["todo2ID"]) {
+  id: ID!
+  todoID: ID!
+  todo2ID: ID!
+}
+
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+  addfield2: String
+  reltn: [Something] @connection(keyName: "byTodo", fields: ["id"])
+}

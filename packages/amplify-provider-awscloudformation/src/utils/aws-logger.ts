@@ -1,6 +1,8 @@
-const { logger, Redactor } = require('amplify-cli-logger');
+import { Redactor, logger } from 'amplify-cli-logger';
+
 const mainModule = 'amplify-provider-awscloudformation';
-export const fileLogger = file => (crumb, args) => error => {
+
+export const fileLogger = file => (crumb, args) => (error?) => {
   const message = `${mainModule}.${file}.${crumb}(${Redactor(JSON.stringify(args))})`;
   if (!error) {
     logger.logInfo({ message });

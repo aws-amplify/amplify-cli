@@ -1,6 +1,4 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { ICognitoUserPoolService } from 'amplify-util-import';
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import {
   GetUserPoolMfaConfigResponse,
   IdentityProviderType,
@@ -14,9 +12,12 @@ import {
   UserPoolDescriptionType,
   UserPoolType,
 } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+
+import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { ICognitoUserPoolService } from 'amplify-util-import';
 import configurationManager from '../configuration-manager';
-import { pagedAWSCall } from './paged-call';
 import { fileLogger } from '../utils/aws-logger';
+import { pagedAWSCall } from './paged-call';
 const logger = fileLogger('CognitoUserPoolService');
 
 export const createCognitoUserPoolService = async (context: $TSContext, options: $TSAny): Promise<CognitoUserPoolService> => {

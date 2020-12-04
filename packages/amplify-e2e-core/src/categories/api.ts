@@ -65,7 +65,7 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = 
   });
 }
 
-export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<AddApiOptions> = {}) {
+export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
@@ -79,7 +79,7 @@ export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<
       .wait(/.*Enter a description for the API key.*/)
       .sendCarriageReturn()
       .wait(/.*After how many days from now the API key should expire.*/)
-      .sendLine('1')
+      .sendLine(opts.apiKeyExpirationDays ? opts.apiKeyExpirationDays.toString() : '1')
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
