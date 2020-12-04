@@ -34,7 +34,7 @@ export class TemplateSentError extends Error {
 }
 
 export class Unauthorized extends TemplateSentError {
-  constructor(gqlMessage, info) {
+  constructor(gqlMessage, info: GraphQLResolveInfo) {
     super(gqlMessage, 'Unauthorized', {}, {}, info);
   }
 }
