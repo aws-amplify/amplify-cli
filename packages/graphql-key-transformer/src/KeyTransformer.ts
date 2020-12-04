@@ -454,22 +454,47 @@ export class KeyTransformer extends Transformer {
     if (this.isPrimaryKey(directive)) {
       const directiveArgs: KeyArguments = getDirectiveArguments(directive);
 
+      // check @model mutation argument to update schema or not
+      let shouldMakeCreate = true;
+      let shouldMakeUpdate = true;
+      let shouldMakeDelete = true;
+
+      if (ctx.featureFlags.getBoolean('skipOverrideMutationInputTypes', true)) {
+        const modelDirective = definition.directives.reduce(dir => {
+          if (dir.name.value === 'model') {
+            return dir;
+          }
+        });
+        const modelDirectiveArgs = getDirectiveArguments(modelDirective);
+
+        // Figure out which mutations to make and if they have name overrides
+        if (modelDirectiveArgs.mutations === null) {
+          shouldMakeCreate = false;
+          shouldMakeUpdate = false;
+          shouldMakeDelete = false;
+        } else if (modelDirectiveArgs.mutations) {
+          shouldMakeCreate = modelDirectiveArgs.mutations.create ? true : false;
+          shouldMakeUpdate = modelDirectiveArgs.mutations.update ? true : false;
+          shouldMakeDelete = modelDirectiveArgs.mutations.delete ? true : false;
+        }
+      }
+
       const hasIdField = definition.fields.find(f => f.name.value === 'id');
       if (!hasIdField) {
         const createInput = ctx.getType(
           ModelResourceIDs.ModelCreateInputObjectName(definition.name.value),
         ) as InputObjectTypeDefinitionNode;
-        if (createInput) {
+        if (createInput && shouldMakeCreate) {
           ctx.putType(replaceCreateInput(definition, createInput, directiveArgs.fields));
         }
       }
 
       const updateInput = ctx.getType(ModelResourceIDs.ModelUpdateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
-      if (updateInput) {
+      if (updateInput && shouldMakeUpdate) {
         ctx.putType(replaceUpdateInput(definition, updateInput, directiveArgs.fields));
       }
       const deleteInput = ctx.getType(ModelResourceIDs.ModelDeleteInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
-      if (deleteInput) {
+      if (deleteInput && shouldMakeDelete) {
         ctx.putType(replaceDeleteInput(definition, deleteInput, directiveArgs.fields));
       }
     }

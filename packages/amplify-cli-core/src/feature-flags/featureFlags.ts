@@ -539,6 +539,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
       },
+      {
+        name: 'skipOverrideMutationInput',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      }
     ]);
 
     this.registerFlag('frontend-ios', [
