@@ -67,12 +67,12 @@ function showGraphQLURL(context, resourcesToBeCreated) {
       }
     }
 
-    context.print.info();
+    context.print.info('');
   }
 }
 
 function showRestAPIURL(context, resourcesToBeCreated) {
-  const resources = resourcesToBeCreated.filter(resource => resource.service === 'API Gateway');
+  const resources = resourcesToBeCreated.filter(resource => resource.service === 'API Gateway' || resource.service === 'ElasticContainer');
 
   if (resources.length > 0) {
     const resource = resources[0];
