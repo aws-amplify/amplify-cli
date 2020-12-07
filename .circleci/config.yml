@@ -44,7 +44,7 @@ jobs:
     <<: *nix_defaults
     steps:
       - checkout
-      - run: git push -f origin install-script-pipeline:install-script-dev
+      - run: git push -f origin install-script-dev:install-script-prod
 workflows:
   version: 2
   install_script_workflow:
@@ -60,4 +60,4 @@ workflows:
           filters:
             branches:
               only:
-                - install-script-pipeline
+                - install-script-dev
