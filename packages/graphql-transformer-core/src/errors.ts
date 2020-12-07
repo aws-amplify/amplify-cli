@@ -59,6 +59,15 @@ InvalidMigrationError.prototype.toString = function() {
   return `${this.message}\nCause: ${this.cause}\nHow to fix: ${this.fix}`;
 };
 
+export class InvalidGSIMigrationError extends InvalidMigrationError {
+  fix: string;
+  cause: string;
+  constructor(message: string, cause: string, fix: string) {
+    super(message, cause, fix);
+    this.name = 'InvalidGSIMigrationError';
+  }
+}
+
 export class InvalidDirectiveError extends Error {
   constructor(message: string) {
     super(message);

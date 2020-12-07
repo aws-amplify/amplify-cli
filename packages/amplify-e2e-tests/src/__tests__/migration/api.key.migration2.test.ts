@@ -1,4 +1,4 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate, addFeatureFlag } from 'amplify-e2e-core';
 import { addApiWithSchema, updateApiSchema } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 
@@ -17,9 +17,13 @@ describe('amplify add api', () => {
     const projectName = 'migratingkey';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_add_more_gsi.graphql';
+
     await initJSProjectWithProfile(projRoot, { name: projectName });
+    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
+
     updateApiSchema(projRoot, projectName, nextSchema1);
     await expect(
       amplifyPushUpdate(
@@ -33,9 +37,13 @@ describe('amplify add api', () => {
     const projectName = 'migratingkey1';
     const initialSchema = 'migrations_key/initial_schema1.graphql';
     const nextSchema1 = 'migrations_key/cant_remove_more_gsi.graphql';
+
     await initJSProjectWithProfile(projRoot, { name: projectName });
+    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
+
     updateApiSchema(projRoot, projectName, nextSchema1);
     await expect(
       amplifyPushUpdate(
@@ -49,7 +57,10 @@ describe('amplify add api', () => {
     const projectName = 'migratingkey2';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_update_delete_gsi.graphql';
+
     await initJSProjectWithProfile(projRoot, { name: projectName });
+    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema1);
@@ -63,11 +74,16 @@ describe('amplify add api', () => {
 
   it('init project, run invalid migration when adding more than one gsi on the same table', async () => {
     const projectName = 'invalidgsiupdate';
+
     const initialSchema = 'migrations_key/simple_key.graphql';
     const nextSchema = 'migrations_key/cant_add_multiple_gsi.graphql';
+
     await initJSProjectWithProfile(projRoot, { name: projectName });
+    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
+
     updateApiSchema(projRoot, projectName, nextSchema);
     await expect(
       amplifyPushUpdate(
@@ -81,9 +97,13 @@ describe('amplify add api', () => {
     const projectName = 'twotableupdategsi';
     const initialSchema = 'migrations_key/two_key_model_schema.graphql';
     const nextSchema = 'migrations_key/four_key_model_schema.graphql';
+
     await initJSProjectWithProfile(projRoot, { name: projectName });
+    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
+
     updateApiSchema(projRoot, projectName, nextSchema);
     await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
   });
@@ -92,9 +112,13 @@ describe('amplify add api', () => {
     const projectName = 'validaddinggsi';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/add_gsi.graphql';
+
     await initJSProjectWithProfile(projRoot, { name: projectName });
+    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
+
     updateApiSchema(projRoot, projectName, nextSchema1);
     await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
   });

@@ -14,6 +14,7 @@ export * from './exitOnNextTick';
 export * from './isPackaged';
 export * from './cliConstants';
 export * from './deploymentSecretsHelper';
+export * from './deploymentState';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -104,15 +105,15 @@ export type $TSTeamProviderInfo = any;
 export type $TSObject = Record<string, $TSAny>;
 
 export enum AmplifyFrontend {
-  android = "android",
-  ios = "ios",
-  javascript = "javascript"
+  android = 'android',
+  ios = 'ios',
+  javascript = 'javascript',
 }
 export interface AmplifyProjectConfig {
-  projectName: string,
-  version: string,
-  frontend: AmplifyFrontend,
-  providers: string[],
+  projectName: string;
+  version: string;
+  frontend: AmplifyFrontend;
+  providers: string[];
 }
 
 // Temporary interface until Context refactor
@@ -165,7 +166,12 @@ interface AmplifyToolkit {
     optionNameOverrides?: Record<string, string>,
   ) => Promise<ServiceSelection>;
   updateProjectConfig: () => $TSAny;
-  updateamplifyMetaAfterResourceUpdate: () => $TSAny;
+  updateamplifyMetaAfterResourceUpdate: (
+    category: string,
+    resourceName: string,
+    metaResourceKey?: $TSAny,
+    metaResourceData?: $TSAny,
+  ) => $TSAny;
   updateamplifyMetaAfterResourceAdd: (
     category: string,
     resourceName: string,

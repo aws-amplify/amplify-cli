@@ -241,6 +241,7 @@ async function hashDirectory(directory) {
 }
 
 module.exports = {
+  ROOT_APPSYNC_S3_KEY,
   uploadAppSyncFiles,
   hashDirectory,
 };

@@ -18,6 +18,8 @@
   ],
   "scripts": {
     "build": "tsc",
+    "test": "yarn jest",
+    "test-ci": "yarn jest --ci",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "watch": "tsc --watch"
   },
@@ -73,9 +75,11 @@
     "cfn-lint": "^1.9.7",
     "chalk": "^3.0.0",
     "cloudform": "^4.2.0",
+    "cloudform-types": "^4.2.0",
     "columnify": "^1.5.4",
     "constructs":"~3.2.0",
     "cors": "^2.8.5",
+    "deep-diff": "^1.0.2",
     "extract-zip": "^2.0.1",
     "folder-hash": "^3.3.0",
     "fs-extra": "^8.1.0",
@@ -98,6 +102,7 @@
     "inquirer": "^7.3.3",
     "jose": "^2.0.2",
     "lodash": "^4.17.19",
+    "lodash.throttle": "^4.1.1",
     "moment": "^2.24.0",
     "netmask": "^1.0.6",
     "node-fetch": "^2.6.1",
@@ -105,11 +110,16 @@
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "proxy-agent": "^3.1.1",
-    "rimraf": "^3.0.0"
+    "rimraf": "^3.0.0",
+    "xstate": "^4.14.0"
   },
   "devDependencies": {
+    "@types/columnify": "^1.5.0",
+    "@types/deep-diff": "^1.0.0",
+    "@types/lodash.throttle": "^4.1.6",
     "@types/node": "^12.12.6"
   },
+
   "jest": {
     "transform": {
       "^.+\\.tsx?$": "ts-jest"

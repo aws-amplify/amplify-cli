@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { ServiceName } from 'amplify-category-function';
 
-async function run(context, category, resourceName) {
+export async function run(context, category, resourceName) {
   const { allResources } = await context.amplify.getResourceStatus(category, resourceName);
 
   const resources = allResources.filter(resource => resource.service === ServiceName.LambdaFunction).filter(resource => resource.build);
@@ -85,8 +85,3 @@ export async function buildResource(context, resource) {
       .catch(err => reject(new Error(`Package command failed with error [${err}]`)));
   });
 }
-
-module.exports = {
-  run,
-  buildResource,
-};

@@ -81,7 +81,7 @@ export class S3 {
         logger('uploadFile.s3.upload', [others])();
         uploadTask = this.s3.upload(augmentedS3Params);
         uploadTask.on('httpUploadProgress', max => {
-          if (showSpinner) spinner.text = `Uploading Files...${Math.round((max.loaded / max.total) * 100)}%`;
+          if (showSpinner) spinner.text = `Uploading files...${Math.round((max.loaded / max.total) * 100)}%`;
         });
       } else {
         logger('uploadFile.s3.putObject', [others])();
@@ -210,4 +210,23 @@ export class S3 {
       throw e;
     }
   }
+
+  public getStringObjectFromBucket = async (bucketName: string, objectKey: string): Promise<string | undefined> => {
+    try {
+      const result = await this.s3
+        .getObject({
+          Bucket: bucketName,
+          Key: objectKey,
+        })
+        .promise();
+
+      return result.Body.toString();
+    } catch (e) {
+      if (e.statusCode === 404) {
+        return undefined;
+      }
+
+      throw e;
+    }
+  };
 }

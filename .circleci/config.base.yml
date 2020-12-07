@@ -851,6 +851,7 @@ workflows:
             branches:
               only:
                 - master
+                - iterative-update
           requires:
             - build
             - mock_e2e_tests
@@ -869,6 +870,8 @@ workflows:
               only:
                 - master
                 - beta
+                - backendManager
+                - iterative-update
                 - release
                 - compute-functions
           requires:
@@ -889,6 +892,7 @@ workflows:
               only:
                 - master
                 - compute-functions
+                - iterative-update
           requires:
             - publish_to_local_registry
       - done_with_node_e2e_tests:

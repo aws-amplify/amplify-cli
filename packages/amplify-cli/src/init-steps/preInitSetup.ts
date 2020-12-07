@@ -1,11 +1,7 @@
 import * as fs from 'fs-extra';
 import * as url from 'url';
 import { execSync } from 'child_process';
-import {
-  $TSContext,
-  NonEmptyDirectoryError,
-  exitOnNextTick,
-} from 'amplify-cli-core';
+import { $TSContext, NonEmptyDirectoryError, exitOnNextTick } from 'amplify-cli-core';
 import { getPackageManager } from '../packageManagerHelpers';
 import { normalizePackageManagerForOS } from '../packageManagerHelpers';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';

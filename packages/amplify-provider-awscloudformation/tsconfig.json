@@ -10,6 +10,7 @@
   },
   "exclude": [
     "lib",
+    "coverage",
     "src/__tests__",
   ],
   "references": [
