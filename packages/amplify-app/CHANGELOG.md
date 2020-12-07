@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.20.0...amplify-app@2.20.1) (2020-12-07)
+
+
+### Bug Fixes
+
+* bump min version of cli required by amplify-app ([#6056](https://github.com/aws-amplify/amplify-cli/issues/6056)) ([fff597b](https://github.com/aws-amplify/amplify-cli/commit/fff597bb75d4318a97f5a9ed2c5671ab884c3084))
+* use profile as key when asking for profile ([#5861](https://github.com/aws-amplify/amplify-cli/issues/5861)) ([b67278d](https://github.com/aws-amplify/amplify-cli/commit/b67278ddb9e85dfa709885b84adf937450346c42)), closes [#5394](https://github.com/aws-amplify/amplify-cli/issues/5394)
+
+
+
+
+
 # [2.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.19.2...amplify-app@2.20.0) (2020-11-30)
 
 

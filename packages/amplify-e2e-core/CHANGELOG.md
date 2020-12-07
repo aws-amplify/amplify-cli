@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.11.0...amplify-e2e-core@1.12.0) (2020-12-07)
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+
+
+
+
+
 # [1.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.10.3...amplify-e2e-core@1.11.0) (2020-11-30)
 
 
