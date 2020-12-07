@@ -23,8 +23,7 @@ jobs:
     <<: *nix_defaults
     steps:
       - checkout
-      - run: chmod +x ./install
-      - run: ./install
+      - run: cat install | bash
       - run: echo "export PATH=$PATH:$HOME/.amplify/bin" >> $BASH_ENV
       - run: amplify version
   install_script_sanity_check_windows:
@@ -38,8 +37,7 @@ jobs:
     <<: *mac_defaults
     steps:
       - checkout
-      - run: chmod +x ./install
-      - run: ./install
+      - run: cat install | bash
       - run: echo "export PATH=$PATH:$HOME/.amplify/bin" >> $BASH_ENV
       - run: amplify version
 workflows:
