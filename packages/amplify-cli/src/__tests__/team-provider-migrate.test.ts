@@ -118,6 +118,7 @@ describe('test migration code', () => {
         getTeamProviderInfo: mockGetTeamProviderInfo,
         getLocalEnvInfo: mockGetLocalEnvInfo,
         getResourceParametersJson: mockGetResourceParameterJson,
+        localEnvInfoExists: jest.fn().mockReturnValue(true),
       },
       pathManager: {
         findProjectRoot: jest.fn().mockReturnValue(true),

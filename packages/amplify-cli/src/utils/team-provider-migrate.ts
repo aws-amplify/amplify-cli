@@ -17,7 +17,7 @@ const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 export const migrateTeamProviderInfo = async (context: Context): Promise<boolean> => {
   // check if command executed in proj root and team provider has secrets
 
-  if (!isPulling(context) && pathManager.findProjectRoot()) {
+  if (!isInvalidEnvOrPulling(context) && pathManager.findProjectRoot()) {
     const authResourceName = teamProviderInfoGetAuthResourceNameHasSecrets();
     if (!authResourceName) return true;
     if (isYesFlagSet(context) || (await context.prompt.confirm(message))) {
@@ -32,7 +32,8 @@ export const migrateTeamProviderInfo = async (context: Context): Promise<boolean
   return true;
 };
 
-function isPulling(context: Context): boolean {
+function isInvalidEnvOrPulling(context: Context): boolean {
+  if (!stateManager.localEnvInfoExists()) return true;
   const isPulling = context.input.command === 'pull' || context.input.command === 'init' || context.input.command === 'env';
   return isPulling;
 }
