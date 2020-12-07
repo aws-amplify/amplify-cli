@@ -19,31 +19,45 @@ mac_defaults: &mac_defaults
   macos:
     xcode: 11.3.0
 jobs:
-  install_script_sanity_check_linux:
+  linux_install_script_sanity_check:
     <<: *nix_defaults
     steps:
       - checkout
       - run: cat install | bash
       - run: echo "export PATH=$PATH:$HOME/.amplify/bin" >> $BASH_ENV
       - run: amplify version
-  install_script_sanity_check_windows:
+  windows_install_script_sanity_check:
     <<: *win_defaults
     steps:
       - checkout
       - run: copy install-win install-win.cmd
       - run: install-win.cmd
       - run: "%userprofile%\\.amplify\\bin\\amplify version"
-  install_script_sanity_check_mac:
+  mac_install_script_sanity_check:
     <<: *mac_defaults
     steps:
       - checkout
       - run: cat install | bash
       - run: echo "export PATH=$PATH:$HOME/.amplify/bin" >> $BASH_ENV
       - run: amplify version
+  promote_install_script_to_prod:
+    <<: *nix_defaults
+    steps:
+      - checkout
+      - run: git push -f origin install-script-pipeline:install-script-dev
 workflows:
   version: 2
-  install_script_sanity_checks:
+  install_script_workflow:
     jobs:
-      - install_script_sanity_check_linux
-      - install_script_sanity_check_windows
-      - install_script_sanity_check_mac
+      - linux_install_script_sanity_check
+      - windows_install_script_sanity_check
+      - mac_install_script_sanity_check
+      - promote_install_script_to_prod:
+          requires:
+            - linux_install_script_sanity_check
+            - windows_install_script_sanity_check
+            - mac_install_script_sanity_check
+          filters:
+            branches:
+              only:
+                - install-script-pipeline
