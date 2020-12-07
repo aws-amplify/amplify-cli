@@ -61,7 +61,7 @@ describe('VelocityTemplate', () => {
           info,
         );
         expect(result.errors).toEqual([]);
-        expect(result.result).toEqual('some unexpected error, UnknowErrorType');
+        expect(result.result).toEqual('some unexpected error, UnknownErrorType');
       });
     });
 
@@ -88,7 +88,7 @@ describe('VelocityTemplate', () => {
           info,
         );
         expect(result.errors).toEqual([]);
-        expect(result.result).toEqual('Error: my string as error, UnknowErrorType');
+        expect(result.result).toEqual('Error: my string as error, UnknownErrorType');
       });
     });
 
