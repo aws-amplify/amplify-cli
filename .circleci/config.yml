@@ -1,5 +1,7 @@
 # auto generated file. Edit config.base.yaml if you want to change
 version: 2.1
+orbs:
+  win: circleci/windows@2.2.0
 machine:
   environment:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
