@@ -33,7 +33,7 @@ jobs:
       - checkout
       - run: copy install-win install-win.cmd
       - run: install-win.cmd
-      - run: %userprofile%\.amplify\bin\amplify version
+      - run: "%userprofile%\\.amplify\\bin\\amplify version"
   install_script_sanity_check_mac:
     <<: *mac_defaults
     steps:
