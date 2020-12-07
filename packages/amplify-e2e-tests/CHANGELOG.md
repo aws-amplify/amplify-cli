@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.32.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.31.0...amplify-e2e-tests@2.32.0) (2020-12-07)
+
+
+
+# 4.38.0 (2020-12-05)
+
+
+### Bug Fixes
+
+* added CORS headers to allow all type ([#6027](https://github.com/aws-amplify/amplify-cli/issues/6027)) ([74debca](https://github.com/aws-amplify/amplify-cli/commit/74debca39a4222b18bfbaddb872013b60da785de))
+* update snapshot ([#6074](https://github.com/aws-amplify/amplify-cli/issues/6074)) ([747d290](https://github.com/aws-amplify/amplify-cli/commit/747d2902917ab75aed082dd8094de4c11c37fc3e))
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+
+
+
+
+
 # [2.31.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.30.2...amplify-e2e-tests@2.31.0) (2020-11-30)
 
 

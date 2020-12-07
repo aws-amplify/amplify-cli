@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.24.1...amplify-appsync-simulator@1.24.2) (2020-12-07)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** auth directive unauthorised message ([#6038](https://github.com/aws-amplify/amplify-cli/issues/6038)) ([10b94c0](https://github.com/aws-amplify/amplify-cli/commit/10b94c087e38bbaca8a215387e964089cc7a2858))
+
+
+
+
+
 ## [1.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.9...amplify-appsync-simulator@1.24.1) (2020-11-22)
 
 **Note:** Version bump only for package amplify-appsync-simulator

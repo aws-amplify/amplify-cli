@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.33.1...amplify-provider-awscloudformation@4.34.0) (2020-12-07)
+
+
+### Bug Fixes
+
+* fixed requires referencing 'src' ([#6058](https://github.com/aws-amplify/amplify-cli/issues/6058)) ([820e733](https://github.com/aws-amplify/amplify-cli/commit/820e733cced0360c965edaf75cb6dd09d30af2ab))
+* incorrect params and return value ([#6070](https://github.com/aws-amplify/amplify-cli/issues/6070)) ([1ffdd27](https://github.com/aws-amplify/amplify-cli/commit/1ffdd27b8393f15912f016163de65d1e3821c23a))
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+
+
+
+
+
 ## [4.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.33.0...amplify-provider-awscloudformation@4.33.1) (2020-12-03)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation
