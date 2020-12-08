@@ -87,10 +87,10 @@
     "@aws-amplify/api-graphql" "^1.2.5"
     "@aws-amplify/api-rest" "^1.2.5"
 
-"@aws-amplify/appsync-modelgen-plugin@^1.20.12-dev.136":
-  version "1.20.12-dev.136"
-  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.20.12-dev.136.tgz#0a6e4d5e1174777391c13cddf2b4cb7f0cfb1429"
-  integrity sha512-VmtHH9UEwWaEEzGNAfJdpIx1sv7DAcISigtQOmfgiuJkMR5McG6p//cCxMiGRCR9zVeMxDornnmLNT/lRNMWVg==
+"@aws-amplify/appsync-modelgen-plugin@latest":
+  version "1.22.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.22.2.tgz#5c3383fab53a897b5a79bc1170b9e7dee7179487"
+  integrity sha512-iU8U4Sfh07+Ng0xTNwIQPWdwMgdb+aIdVJLD3tLbOWJhdOSerA2KBI4ddLp/MkIZavWMBMAHmT+dYF+2HlQYrw==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.12.2"
     "@graphql-codegen/visitor-plugin-common" "1.12.2"
@@ -99,6 +99,7 @@
     "@types/pluralize" "0.0.29"
     chalk "^3.0.0"
     change-case "^4.1.1"
+    dart-style "1.3.2-dev"
     lower-case-first "^2.0.1"
     pluralize "^8.0.0"
     strip-indent "^3.0.0"
@@ -5886,6 +5887,11 @@
   version "12.19.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.19.1.tgz#303f74c8a2b35644594139e948b2be470ae1186f"
   integrity sha512-/xaVmBBjOGh55WCqumLAHXU9VhjGtmyTGqJzFBXRWZzByOXI5JAJNx9xPVGEsNizrNwcec92fQMj458MWfjN1A==
+
+"@types/node@^14.14.6":
+  version "14.14.10"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.10.tgz#5958a82e41863cfc71f2307b3748e3491ba03785"
+  integrity sha512-J32dgx2hw8vXrSbu4ZlVhn1Nm3GbeCFNw2FWL8S5QKucHGY0cyNwjdQdO+KMBZ4wpmC7KhLCiNsdk1RFRIYUQQ==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
