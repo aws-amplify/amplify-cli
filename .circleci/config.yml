@@ -1414,6 +1414,14 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-auth-5.test.ts
       CLI_REGION: us-east-2
+  api-containers-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_0
+    resource_class: large
+    steps: *ref_8
+    environment:
+      TEST_SUITE: src/__tests__/containers-api.test.ts
+      CLI_REGION: us-east-2
   storage-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0

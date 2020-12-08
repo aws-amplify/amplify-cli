@@ -18,6 +18,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
+    "watch": "tsc -w",
     "clean": "rimraf ./lib"
   },
   "dependencies": {
