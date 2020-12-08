@@ -179,7 +179,12 @@ export class PipelineWithAwaiter extends cdk.Construct {
       };
 
       return acc;
-    }, {} as Record<string, codebuild.BuildEnvironmentVariable>);
+    }, {
+      AWS_ACCOUNT_ID: {
+        type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+        value: cdk.Aws.ACCOUNT_ID
+      }
+    } as Record<string, codebuild.BuildEnvironmentVariable>);
 
     const stagesWithDeploy = ([] as codepipeline.StageOptions[]).concat(prebuildStages, [
       {
@@ -272,6 +277,8 @@ export class PipelineWithAwaiter extends cdk.Construct {
         deploymentMechanism,
       });
     }
+
+    new cdk.CfnOutput(scope, 'PipelineName', { value: this.pipelineName })
   }
 
   getPipelineName(): string {

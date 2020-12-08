@@ -406,6 +406,14 @@ export abstract class ContainersStack extends cdk.Stack {
             serviceRegistries,
         });
 
+        new cdk.CfnOutput(this, 'ServiceName', {
+            value: service.serviceName
+        });
+
+        new cdk.CfnOutput(this, 'ClusterName', {
+            value: this.clusterName
+        });
+
         return {
             service,
             serviceSecurityGroup,
