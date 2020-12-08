@@ -146,7 +146,7 @@ async function amplifyCLIVersionCheck() {
  * @returns {Promise<void>}
  */
 const createAmplifySkeletonProject = async frontend => {
-  if (fs.existsSync('./amplify') && frontend !== 'ios') {
+  if (fs.existsSync(path.join('.', 'amplify', 'backend')) && frontend !== 'ios') {
     console.log(
       `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.\n`,
     );
@@ -421,7 +421,7 @@ async function createIosHelperFiles() {
     fs.writeFileSync(amplifyConfigFile, configJsonStr);
   }
 
-  if (fs.existsSync(amplifyDir)) {
+  if (fs.existsSync(path.join(amplifyDir, 'backend'))) {
     await addAmplifyFiles();
   }
 }
