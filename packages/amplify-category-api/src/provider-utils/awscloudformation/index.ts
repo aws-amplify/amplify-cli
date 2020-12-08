@@ -5,7 +5,7 @@ import { legacyAddResource } from './legacy-add-resource';
 import { legacyUpdateResource } from './legacy-update-resource';
 import { UpdateApiRequest } from 'amplify-headless-interface';
 import { editSchemaFlow } from './utils/edit-schema-flow';
-import { NotImplementedError, exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
+import { NotImplementedError, exitOnNextTick } from 'amplify-cli-core';
 import { addResource as addContainer, updateResource as updateContainer } from './containers-handler';
 import inquirer from 'inquirer';
 import { API_TYPE, ServiceConfiguration, getPermissionPolicies as getContainerPermissionPolicies } from './service-walkthroughs/containers-walkthrough';
@@ -27,7 +27,6 @@ export async function console(context, service) {
 }
 
 async function addContainerResource(context, category, service, options, apiType) {
-  const serviceMetadata = await serviceMetadataFor(service);
   const serviceWalkthroughFilename = 'containers-walkthrough.js';
   const defaultValuesFilename = 'containers-defaults.js';
 

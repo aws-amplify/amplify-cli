@@ -480,7 +480,7 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: stri
 
 export function addRestContainerApi(projectDir: string) {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+    spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendKeyDown()
       .sendCarriageReturn()

@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import uuid from 'uuid';
 import open from 'open';
-import { rootAssetDir, provider } from '../aws-constants';
+import { rootAssetDir } from '../aws-constants';
 import { checkForPathOverlap, validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
 import { ResourceDoesNotExistError, exitOnNextTick, $TSContext, stateManager } from 'amplify-cli-core';
 

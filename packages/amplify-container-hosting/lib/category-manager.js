@@ -4,8 +4,6 @@ const sequential = require('promise-sequential');
 const constants = require('./constants');
 const supportedServices = require('./supported-services');
 
-const category = 'hosting';
-
 function getAvailableServices(context) {
   const availableServices = [];
   const projectConfig = context.amplify.getProjectConfig();

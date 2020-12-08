@@ -74,7 +74,7 @@ class PipelineAwaiter extends cdk.Construct {
       queryInterval: cdk.Duration.seconds(10),
     });
 
-    const customResource = new cdk.CustomResource(scope, `Deployment${id}`, {
+    new cdk.CustomResource(scope, `Deployment${id}`, {
       serviceToken: myProvider.serviceToken,
       properties: {
         artifactBucketName,

@@ -5,8 +5,6 @@ import { DEPLOYMENT_MECHANISM } from '../base-api-stack';
 import { GitHubSourceActionInfo } from '../PipelineWithAwaiter';
 
 const serviceName = 'ElasticContainer';
-const parametersFileName = 'container-params.json';
-const cfnParametersFilename = 'container-parameters.json';
 
 /**
  * Designed to be backwards compatible with the old way of representing dependencies as
@@ -47,7 +45,7 @@ export type ServiceConfiguration = {
 };
 
 export async function serviceWalkthrough(context, defaultValuesFilename, apiType: API_TYPE): Promise<Partial<ServiceConfiguration>> {
-  const { amplify, print } = context;
+  const { amplify } = context;
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = await import(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());

@@ -1,4 +1,3 @@
-import * as iam from '@aws-cdk/aws-iam';
 import { Octokit } from '@octokit/rest';
 import * as fs from 'fs-extra';
 import inquirer from 'inquirer';
@@ -54,13 +53,11 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     resourceName,
     gitHubInfo,
     deploymentMechanism,
-    output,
     categoryPolicies = [],
     dependsOn,
     environmentMap,
     restrictAccess,
     apiType,
-    exposedContainer: exposedContainerFromMeta,
   } = resource;
 
 
@@ -122,7 +119,7 @@ export async function processDockerConfig(context: any, resource: ApiResource, s
     providers: { [cloudformationProviderName]: provider },
   } = context.amplify.getProjectMeta();
 
-  const { StackName: envName, DeploymentBucketName: deploymentBucketName } = provider;
+  const { StackName: envName } = provider;
 
   const {
     resourceName,

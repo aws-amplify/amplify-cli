@@ -25,7 +25,7 @@ const mapComposeEntriesToContainer = (record: [string, v1Types.DefinitionsServic
   var healthcheck: v2Types.DefinitionsHealthcheck = {};
   if (hasHealthCheck(v)) {
     Object.entries(v).forEach((item: [string, v2Types.DefinitionsHealthcheck]) => {
-      const [helthKey, healthVal] = item;
+      const [, healthVal] = item;
       if (healthVal.test !== undefined) {
         healthcheck = healthVal;
       }
@@ -92,7 +92,7 @@ const findServiceDeployment = (
   let result: v38Types.DefinitionsDeployment2 = {};
 
   Object.entries(yamlObject.services ?? {}).forEach((record: [string, v38Types.DefinitionsService]) => {
-    const [k, v] = record;
+    const [, v] = record;
     const { deploy } = v;
 
     if (deploy !== undefined) {

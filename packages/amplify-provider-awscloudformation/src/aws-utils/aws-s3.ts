@@ -7,7 +7,7 @@ import configurationManager from '../configuration-manager';
 import fs from 'fs-extra';
 import ora from 'ora';
 import { pagedAWSCall } from './paged-call';
-import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier, ObjectVersion } from 'aws-sdk/clients/s3';
+import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier } from 'aws-sdk/clients/s3';
 
 const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html#minPartSize-property
 const { fileLogger } = require('../utils/aws-logger');
