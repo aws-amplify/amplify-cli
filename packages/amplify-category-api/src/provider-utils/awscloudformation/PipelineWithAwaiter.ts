@@ -251,7 +251,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
               stack = cdk.Stack.of(this);
               env = {} as any;
               node = service.node;
-            })(this, 'tmpService'), // TODO: clean this,
+            })(this, 'tmpService'),
             input: buildOutput,
           }),
         ],

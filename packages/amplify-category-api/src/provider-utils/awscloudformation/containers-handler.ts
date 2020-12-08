@@ -71,7 +71,7 @@ export const addResource = async (
     environmentMap,
     categoryPolicies,
     mutableParametersState,
-    skipHashing: true,
+    skipHashing: false,
     apiType,
     iamAccessUnavailable: true, // this is because we dont support IAM access to the API yet
   };
