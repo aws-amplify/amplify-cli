@@ -259,9 +259,9 @@ async function setProjectConfigAction(context) {
       const updateOrRemove = {
         type: 'list',
         name: 'action',
-        message: 'Do you want to update or remove the project level configuration',
-        choices: ['update', 'remove', 'cancel'],
-        default: 'update',
+        message: 'Do you want to update or remove the project level AWS profile?',
+        choices: [{name: 'No', value: 'cancel'}, {name: 'Update AWS Profile', value: 'update'}, {name: 'Remove AWS Profile', value: 'remove'}],
+        default: 'cancel',
       };
       const answer = await inquirer.prompt(updateOrRemove);
       context.exeInfo.awsConfigInfo.action = answer.action;
