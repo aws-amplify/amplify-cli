@@ -1421,7 +1421,7 @@ jobs:
     steps: *ref_8
     environment:
       TEST_SUITE: src/__tests__/containers-api.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: us-east-1
   storage-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_0
