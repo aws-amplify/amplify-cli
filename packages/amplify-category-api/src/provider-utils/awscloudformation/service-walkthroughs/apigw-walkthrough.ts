@@ -809,13 +809,16 @@ export const openConsole = async (context: $TSContext) => {
 
   if (restApis) {
     let url;
+    let selectedApi = restApis[0];
 
-    const { selectedApi } = await inquirer.prompt({
-      type: "list",
-      name: "selectedApi",
-      choices: restApis,
-      message: "Please select the API"
-    });
+    if (restApis.length > 1) {
+      ({ selectedApi } = await inquirer.prompt({
+        type: "list",
+        name: "selectedApi",
+        choices: restApis,
+        message: "Please select the API"
+      }));
+    }
     const selectedResource = categoryAmplifyMeta[selectedApi];
 
     if (selectedResource.service === serviceName) {
