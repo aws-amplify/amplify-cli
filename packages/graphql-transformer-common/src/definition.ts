@@ -22,7 +22,7 @@ import {
 } from 'graphql';
 
 type ScalarMap = {
-  [k: string]: 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';
+  [k: string]: 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'AWSJSON';
 };
 export const STANDARD_SCALARS: ScalarMap = {
   String: 'String',
@@ -43,7 +43,7 @@ export const APPSYNC_DEFINED_SCALARS: ScalarMap = {
   AWSDateTime: 'String',
   AWSTimestamp: 'Int',
   AWSEmail: 'String',
-  AWSJSON: 'String',
+  AWSJSON: 'AWSJSON',
   AWSURL: 'String',
   AWSPhone: 'String',
   AWSIPAddress: 'String',

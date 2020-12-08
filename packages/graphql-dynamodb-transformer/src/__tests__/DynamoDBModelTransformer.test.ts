@@ -146,6 +146,8 @@ test('Test DynamoDBModelTransformer with multiple model directives', () => {
   expect(floatInputType).toBeDefined();
   const idInputType = getInputType(parsed, 'ModelIDFilterInput');
   expect(idInputType).toBeDefined();
+  const awsJSONInputType = getInputType(parsed, 'ModelAWSJSONFilterInput');
+  expect(awsJSONInputType).toBeDefined();
   const postInputType = getInputType(parsed, 'ModelPostFilterInput');
   expect(postInputType).toBeDefined();
   const userInputType = getInputType(parsed, 'ModelUserFilterInput');
@@ -156,6 +158,7 @@ test('Test DynamoDBModelTransformer with multiple model directives', () => {
   expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
   expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
   expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
+  expect(verifyInputCount(parsed, 'ModelAWSJSONFilterInput', 1)).toBeTruthy();
   expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
   expect(verifyInputCount(parsed, 'ModelUserFilterInput', 1)).toBeTruthy();
 });
@@ -189,6 +192,7 @@ test('Test DynamoDBModelTransformer with filter', () => {
   expect(verifyInputCount(parsed, 'ModelIntFilterInput', 1)).toBeTruthy();
   expect(verifyInputCount(parsed, 'ModelFloatFilterInput', 1)).toBeTruthy();
   expect(verifyInputCount(parsed, 'ModelIDFilterInput', 1)).toBeTruthy();
+  expect(verifyInputCount(parsed, 'ModelAWSJSONFilterInput', 1)).toBeTruthy();
   expect(verifyInputCount(parsed, 'ModelPostFilterInput', 1)).toBeTruthy();
 });
 
