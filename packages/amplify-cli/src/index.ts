@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { isCI } from 'ci-info';
 import {
   $TSContext,
   CLIContextEnvironmentProvider,
@@ -8,6 +9,7 @@ import {
   stateManager,
   exitOnNextTick,
   TeamProviderInfoMigrateError,
+  JSONValidationError,
 } from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
@@ -28,6 +30,7 @@ import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
 import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
 import { conditionalLoggingInit } from './conditional-local-logging-init';
+
 EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
@@ -116,14 +119,61 @@ export async function run() {
     }
 
     return exitCode;
-  } catch (e) {
+  } catch (error) {
     // ToDo: add logging to the core, and log execution errors using the unified core logging.
-    errorHandler(e);
-    if (e.message) {
-      print.error(e.message);
-    }
-    if (e.stack) {
-      print.info(e.stack);
+    errorHandler(error);
+
+    if (error.name === 'JSONValidationError') {
+      const jsonError = <JSONValidationError>error;
+      let printSummary = false;
+
+      print.error(error.message);
+
+      if (jsonError.unknownFlags?.length > 0) {
+        print.error('');
+        print.error(
+          `The following feature flags are defined in configuration are unknown by the currently running version of Amplify CLI:`,
+        );
+
+        for (const unknownFlag of jsonError.unknownFlags) {
+          print.error(`  - ${unknownFlag}`);
+        }
+
+        printSummary = true;
+      }
+
+      if (jsonError.otherErrors?.length > 0) {
+        print.error('');
+        print.error(`The following feature flags have validation errors:`);
+
+        for (const otherError of jsonError.otherErrors) {
+          print.error(`  - ${otherError}`);
+        }
+
+        printSummary = true;
+      }
+
+      if (printSummary) {
+        print.error('');
+        print.error(
+          `The project was pushed with a newer version of the Amplify CLI that is being used now. Update to the newer version that supports the feature flags shown as unknown above.`,
+        );
+
+        if (isCI) {
+          print.error('');
+          print.error(`Make sure that the CI/CD pipeline is not using an older, pinned down version of the Amplify CLI.`);
+        }
+
+        print.error('');
+        print.error(`Learn more about feature flags at: https://docs.amplify.aws/cli/reference/feature-flags`);
+      }
+    } else {
+      if (error.message) {
+        print.error(error.message);
+      }
+      if (error.stack) {
+        print.info(error.stack);
+      }
     }
     exitOnNextTick(1);
   }
