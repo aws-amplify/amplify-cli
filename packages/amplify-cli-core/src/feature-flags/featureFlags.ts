@@ -529,5 +529,14 @@ export class FeatureFlags {
         defaultValueForNewProjects: true,
       },
     ]);
+
+    this.registerFlag('codegen', [
+      {
+        name: 'enableXcodeIntegration',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      }
+    ]);
   };
 }

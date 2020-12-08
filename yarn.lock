@@ -87,7 +87,7 @@
     "@aws-amplify/api-graphql" "^1.2.5"
     "@aws-amplify/api-rest" "^1.2.5"
 
-"@aws-amplify/appsync-modelgen-plugin@latest":
+"@aws-amplify/appsync-modelgen-plugin@^1.22.2":
   version "1.22.2"
   resolved "https://registry.yarnpkg.com/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.22.2.tgz#5c3383fab53a897b5a79bc1170b9e7dee7179487"
   integrity sha512-iU8U4Sfh07+Ng0xTNwIQPWdwMgdb+aIdVJLD3tLbOWJhdOSerA2KBI4ddLp/MkIZavWMBMAHmT+dYF+2HlQYrw==

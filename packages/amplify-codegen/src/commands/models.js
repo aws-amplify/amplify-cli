@@ -48,9 +48,9 @@ async function generateModels(context) {
   const schema = parse(schemaContent);
   const projectConfig = context.amplify.getProjectConfig();
 
-  const codegenPackageMigrationflag = 'codegenPackageMigration.useAppSyncModelgenPlugin';
+  const codegenPackageMigrationflag = 'codegen.useAppSyncModelgenPlugin';
 
-  const appSyncDataStoreCodeGen = require(getCodegenPackageName(FeatureFlags.getBoolean(codegenPackageMigrationflag)));
+  const appSyncDataStoreCodeGen = getCodegenPackageName(FeatureFlags.getBoolean(codegenPackageMigrationflag));
 
   const appsyncLocalConfig = await appSyncDataStoreCodeGen.preset.buildGeneratesSection({
     baseOutputDir: outputPath,
