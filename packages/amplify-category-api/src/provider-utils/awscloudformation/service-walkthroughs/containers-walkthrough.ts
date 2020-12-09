@@ -241,7 +241,7 @@ export async function updateWalkthrough(context, defaultValuesFilename, apiType:
 
   // There can only be one appsync resource
   if (resources.length === 0) {
-    const errMessage = `No ${apiType} API resource to update. Please use "amplify add api" command to create a new ${apiType} API`;
+    const errMessage = `No ${apiType} API resource to update. Use "amplify add api" command to create a new ${apiType} API`;
     context.print.error(errMessage);
     context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
