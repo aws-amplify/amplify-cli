@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require('body-parser');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 const {
     addPostToDDB,
@@ -19,7 +19,7 @@ app.use(function (req, res, next) {
     next()
 });
 
-const checkAuthRules = (req) => {
+const checkAuthRules = (req, res, next) => {
     const jwt = req.header("Authorization") || "";
 
     const [, jwtBody] = jwt.split(".");
@@ -30,6 +30,7 @@ const checkAuthRules = (req) => {
 
     //Customer can perform logic on JWT body
     //console.log(obj);
+    next();
 
     //Failure example:
     // const err = new Error("Access denied");
@@ -37,8 +38,9 @@ const checkAuthRules = (req) => {
     // return next(err);
 }
 
-app.get("/list", async (req, res, next) => {
-    checkAuthRules(req);
+app.use(checkAuthRules);
+
+app.get("/posts", async (req, res, next) => {
 
     try {
         const result = await scanPostsFromDDB();
@@ -48,8 +50,8 @@ app.get("/list", async (req, res, next) => {
     }
 });
 
-app.get("/read", async (req, res, next) => {
-    checkAuthRules(req);
+app.get("/post", async (req, res, next) => {
+    console.log(req.query.id);
 
     try {
         const result = await getPostFromDDB(req.query.id);
@@ -59,8 +61,7 @@ app.get("/read", async (req, res, next) => {
     }
 });
 
-app.post("/create", async (req, res, next) => {
-    checkAuthRules(req);
+app.post("/post", async (req, res, next) => {
 
     try {
         const result = await addPostToDDB(req.body);
@@ -71,16 +72,14 @@ app.post("/create", async (req, res, next) => {
 });
 
 app.use((req, res, next) => {
-    checkAuthRules(req);
 
     try {
-        const result = "Please try one of the standard routes such as /list, /read, or /create";
+        const result = `Please try GET on /posts, /post?id=xyz, or a POST to /post with JSON {\"id\":\"123\",\"title\":\"Fargate test\"}`;
         res.contentType("application/json").send(result);
     } catch (err) {
         next(err);
     }
 });
-
 
 // Error middleware must be defined last
 app.use((err, req, res, next) => {

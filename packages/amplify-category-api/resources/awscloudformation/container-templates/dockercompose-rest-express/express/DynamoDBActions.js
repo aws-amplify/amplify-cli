@@ -1,12 +1,12 @@
 const AWS = require('aws-sdk');
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-const TableName = "posts-dev";//process.env.STORAGE_POSTS_NAME;
+const TableName = process.env.STORAGE_POSTS_NAME;
 
-const addPostToDDB = async ({id, title, author, description, topic}) => {
+const addPostToDDB = async ({ id, title, author, description, topic }) => {
 
   var params = {
-    Item : {
+    Item: {
       id: parseInt(id, 10),
       title: title,
       author: author,
@@ -24,7 +24,7 @@ const addPostToDDB = async ({id, title, author, description, topic}) => {
   }
 }
 
-const scanPostsFromDDB = async () =>{
+const scanPostsFromDDB = async () => {
   var params = {
     TableName: TableName,
   }
@@ -32,7 +32,7 @@ const scanPostsFromDDB = async () =>{
   try {
     const data = await docClient.scan(params).promise();
     return data.Items;
-  } catch (err){
+  } catch (err) {
     console.log('Error: ' + err);
     return err;
   }
