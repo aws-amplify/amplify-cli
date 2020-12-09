@@ -132,7 +132,7 @@ export async function run() {
       if (jsonError.unknownFlags?.length > 0) {
         print.error('');
         print.error(
-          `The following feature flags are defined in configuration are unknown by the currently running version of Amplify CLI:`,
+          `These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:`,
         );
 
         for (const unknownFlag of jsonError.unknownFlags) {
@@ -156,16 +156,16 @@ export async function run() {
       if (printSummary) {
         print.error('');
         print.error(
-          `The project was pushed with a newer version of the Amplify CLI that is being used now. Update to the newer version that supports the feature flags shown as unknown above.`,
+          `This issue likely happens when the project has been pushed with a newer version of Amplify CLI, try updating to a newer version.`,
         );
 
         if (isCI) {
           print.error('');
-          print.error(`Make sure that the CI/CD pipeline is not using an older, pinned down version of the Amplify CLI.`);
+          print.error(`Ensure that the CI/CD pipeline is not using an older or pinned down version of Amplify CLI.`);
         }
 
         print.error('');
-        print.error(`Learn more about feature flags at: https://docs.amplify.aws/cli/reference/feature-flags`);
+        print.error(`Learn more about feature flags: https://docs.amplify.aws/cli/reference/feature-flags`);
       }
     } else {
       if (error.message) {
