@@ -27,7 +27,7 @@ import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
 import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
-import { conditionalLoggingInit } from './conditional-local-logging-init';
+import { logInput } from './conditional-local-logging-init';
 EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
@@ -67,7 +67,7 @@ export async function run() {
     }
 
     rewireDeprecatedCommands(input);
-    conditionalLoggingInit(input);
+    logInput(input);
     const context = constructContext(pluginPlatform, input);
 
     // Initialize feature flags
