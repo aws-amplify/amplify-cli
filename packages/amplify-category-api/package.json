@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@graphql-tools/merge": "^6.0.18",
+    "amplify-cli-core": "1.11.0",
     "amplify-util-headless-input": "1.4.2",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
