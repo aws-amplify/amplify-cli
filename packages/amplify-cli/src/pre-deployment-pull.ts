@@ -41,7 +41,7 @@ export async function preDeployPullBackend(context: $TSContext, sandboxId: strin
   }
 
   // Create base-skeleton amplify-folder
-  const amplifyDirPath = pathManager.getAmplifyDirPath(process.cwd());
+  const amplifyDirPath = pathManager.getBackendDirPath(process.cwd());
   if (!fs.existsSync(amplifyDirPath)) {
     await run({ skipEnvCheck: true });
   }
