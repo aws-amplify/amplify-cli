@@ -2,7 +2,7 @@ import * as v1Types from './compose-spec/v1';
 import * as v2Types from './compose-spec/v2';
 import * as v38Types from './compose-spec/v3.8';
 import { dockerComposeToObject, dockerfileToObject, generateBuildSpec } from './DockerUtils';
-import Container from './ecs-objects/Container';
+import Container from './ecs-objects/container';
 import { BuildHashMap, PortMappings } from './ecs-objects/types';
 
 const isv1Schema = (obj: any): obj is v1Types.ConfigSchemaV1Json => {

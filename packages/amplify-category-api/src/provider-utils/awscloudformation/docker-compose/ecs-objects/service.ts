@@ -1,5 +1,5 @@
 import { IServiceDefinition, ServiceHealthCheck, DeploymentConfiguration, ContainerConfig, TaskConfig } from './types';
-import Container from './Container';
+import Container from './container';
 import * as v38Types from '../compose-spec/v3.8';
 
 //ALB Healthcheck, should be overriden by CLI command

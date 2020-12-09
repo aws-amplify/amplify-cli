@@ -9,8 +9,8 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
-import Container from './docker-compose/ecs-objects/Container';
-import { GitHubSourceActionInfo, PipelineWithAwaiter } from "./PipelineWithAwaiter";
+import Container from './docker-compose/ecs-objects/container';
+import { GitHubSourceActionInfo, PipelineWithAwaiter } from "./pipeline-with-awaiter";
 
 const PIPELINE_AWAITER_ZIP = 'custom-resource-pipeline-awaiter.zip';
 

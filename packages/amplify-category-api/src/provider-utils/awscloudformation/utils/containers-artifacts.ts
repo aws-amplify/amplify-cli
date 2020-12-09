@@ -5,7 +5,7 @@ import * as path from 'path';
 import uuid from 'uuid';
 import { provider as cloudformationProviderName } from '../../../provider-utils/awscloudformation/aws-constants';
 import { getContainers } from '../../../provider-utils/awscloudformation/docker-compose';
-import Container from '../../../provider-utils/awscloudformation/docker-compose/ecs-objects/Container';
+import Container from '../docker-compose/ecs-objects/container';
 import { EcsStack } from '../ecs-apigw-stack';
 import { API_TYPE, ResourceDependency } from '../../../provider-utils/awscloudformation/service-walkthroughs/containers-walkthrough';
 import { getGitHubOwnerRepoFromPath } from '../../../provider-utils/awscloudformation/utils/github';

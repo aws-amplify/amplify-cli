@@ -3,7 +3,7 @@ import path from 'path';
 import uuid from 'uuid';
 import { NETWORK_STACK_LOGICAL_ID } from '../../category-constants';
 import { DEPLOYMENT_MECHANISM } from './base-api-stack';
-import { GitHubSourceActionInfo } from './PipelineWithAwaiter';
+import { GitHubSourceActionInfo } from './pipeline-with-awaiter';
 import { API_TYPE, IMAGE_SOURCE_TYPE, ResourceDependency, ServiceConfiguration } from './service-walkthroughs/containers-walkthrough';
 import { ApiResource, generateContainersArtifacts } from './utils/containers-artifacts';
 
