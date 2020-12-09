@@ -102,7 +102,7 @@ app.get("/images", (req, res, next) => {
 app.use((req, res, next) => {
 
     try {
-        const result = `Please try GET on /posts, /post?id=xyz, or a POST to /post with JSON {\"id\":\"123\",\"title\":\"Fargate test\"}`;
+        const result = `Please try GET on /posts, /post?id=xyz, GET on /images, or a POST to /post with JSON {\"id\":\"123\",\"title\":\"Fargate test\"}`;
         res.contentType("application/json").send(result);
     } catch (err) {
         next(err);
