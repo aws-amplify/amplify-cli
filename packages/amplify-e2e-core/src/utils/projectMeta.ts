@@ -69,7 +69,12 @@ function getAwsAndroidConfig(projectRoot: string) {
 
 function getAwsIOSConfig(projectRoot: string) {
   const configPath = getAWSConfigIOSPath(projectRoot);
-  return JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  return JSONUtilities.readJson(configPath);
+}
+
+function getAmplifyIOSConfig(projectRoot: string) {
+  const configPath = getAmplifyConfigIOSPath(projectRoot);
+  return JSONUtilities.readJson(configPath);
 }
 
 function getDeploymentSecrets(): any {
@@ -100,6 +105,7 @@ export {
   getBackendAmplifyMeta,
   getAwsAndroidConfig,
   getAwsIOSConfig,
+  getAmplifyIOSConfig,
   getAWSConfigAndroidPath,
   getAmplifyConfigAndroidPath,
   getAmplifyConfigIOSPath,
