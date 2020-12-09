@@ -2,14 +2,14 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { IIdentityPoolService } from 'amplify-util-import';
 import { CognitoIdentity } from 'aws-sdk';
 import { PaginationKey, IdentityPool, IdentityPoolShortDescription, ListIdentityPoolsResponse } from 'aws-sdk/clients/cognitoidentity';
-import configurationManager from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 import { pagedAWSCall } from './paged-call';
 
 export const createIdentityPoolService = async (context: $TSContext, options: $TSAny): Promise<IdentityPoolService> => {
   let credentials = {};
 
   try {
-    credentials = await configurationManager.loadConfiguration(context);
+    credentials = await loadConfiguration(context);
   } catch (e) {
     // could not load credentials
   }

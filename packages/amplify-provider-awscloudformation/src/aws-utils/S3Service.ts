@@ -1,13 +1,13 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { IS3Service } from 'amplify-util-import';
 import S3, { Bucket } from 'aws-sdk/clients/s3';
-import configurationManager from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 
 export const createS3Service = async (context: $TSContext, options: $TSAny): Promise<S3Service> => {
   let credentials = {};
 
   try {
-    credentials = await configurationManager.loadConfiguration(context);
+    credentials = await loadConfiguration(context);
   } catch (e) {
     // could not load credentials
   }

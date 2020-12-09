@@ -14,7 +14,7 @@ import { getBucketKey, getHttpUrl } from './helpers';
 import { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import { StackProgressPrinter } from './stack-progress-printer';
 import assert from 'assert';
-import configurationManager from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 import { interpret } from 'xstate';
 import ora from 'ora';
 import throttle from 'lodash.throttle';
@@ -46,7 +46,7 @@ export class DeploymentManager {
     printer?: IStackProgressPrinter,
   ) => {
     try {
-      const cred = await configurationManager.loadConfiguration(context);
+      const cred = await loadConfiguration(context);
       assert(cred.region);
       return new DeploymentManager(cred, cred.region, deploymentBucket, spinner, printer, options);
     } catch (e) {

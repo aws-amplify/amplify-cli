@@ -15,7 +15,7 @@ import {
 
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { ICognitoUserPoolService } from 'amplify-util-import';
-import configurationManager from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
 const logger = fileLogger('CognitoUserPoolService');
@@ -24,7 +24,7 @@ export const createCognitoUserPoolService = async (context: $TSContext, options:
   let credentials = {};
 
   try {
-    credentials = await configurationManager.loadConfiguration(context);
+    credentials = await loadConfiguration(context);
   } catch (e) {
     // could not load credentials
   }
