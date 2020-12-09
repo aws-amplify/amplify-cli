@@ -52,15 +52,8 @@ class Service implements IServiceDefinition {
     /*SERVICE-specific settings*/
     dockerDeploymentConfig?.replicas !== undefined && (this.desiredCount = dockerDeploymentConfig?.replicas); //Main control, replica ~= task count
 
-    //TODO - Need to look deeper at this algorithm
     dockerDeploymentConfig?.placement?.max_replicas_per_node !== undefined &&
       (this.deploymentConfiguration.MaximumPercent = dockerDeploymentConfig?.placement?.max_replicas_per_node);
-
-    //Maybe something like this?
-    // if (dockerDeploymentConfig?.placement?.max_replicas_per_node !== undefined) {
-    //   let calc = 100 + ((dockerDeploymentConfig?.placement?.max_replicas_per_node / this.desiredCount) * 100);
-    //   console.log(calc);
-    // }
 
     /*CONTAINER-specific settings*/
     //ECS recommends 300-500 MiB as a starting point for web applications.

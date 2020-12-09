@@ -99,7 +99,7 @@ export class EcsAlbStack extends ContainersStack {
         "aws.cognito.signin.user.admin"
       ],
       generateSecret: true,
-      supportedIdentityProviders: ['COGNITO'], // TODO: all supported?
+      supportedIdentityProviders: ['COGNITO'],
       callbackUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
       logoutUrLs: [`https://${distributionDomainName}/oauth2/idpresponse`],
     }) : undefined;

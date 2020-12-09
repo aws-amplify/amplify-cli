@@ -170,7 +170,6 @@ function createAmplifyEnv(
         gatewayId: igwId,
       });
 
-      // TODO: CDK doesn't return a CfnSubnet to set a custom logicalName
       publicSubnet.associateNetworkAcl('', pubNacl);
 
       subnets.push(publicSubnet);
