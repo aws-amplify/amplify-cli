@@ -152,7 +152,7 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
   }
 
   deploymentMechanismChoices.push({
-    name: 'Advanced: Self-managed (Learn more: docs.amplify.aws/function/container#...)',
+    name: 'Advanced: Self-managed (Learn more: docs.amplify.aws/cli/usage/containers)',
     value: DEPLOYMENT_MECHANISM.SELF_MANAGED,
   });
 
