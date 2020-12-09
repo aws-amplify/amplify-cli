@@ -70,7 +70,7 @@ async function enable(context) {
     // Check if there are files inside source directory
     const { frontend } = context.amplify.getProjectConfig();
     const { config: { SourceDir: src } } = context.amplify.getProjectConfig()[frontend];
-    const projectSrcDirPath = path.join(context.amplify.pathManager.getAmplifyDirPath(), '../src');
+    const projectSrcDirPath = path.join(context.amplify.pathManager.getAmplifyDirPath(), '..', src);
 
     fs.ensureDirSync(projectSrcDirPath);
 
