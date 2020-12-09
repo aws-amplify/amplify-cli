@@ -4,7 +4,6 @@ const { getS3Client, uploadFile } = require('./file-uploader');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
-const open = require('open');
 
 const constants = require('../constants');
 
@@ -291,8 +290,6 @@ async function publish(context, args) {
 
 function console(context) {
     // Check this behavior
-    const amplifyMeta = context.amplify.getProjectMeta();
-    const { HostingBucketName: bucket, Region: region } = amplifyMeta[constants.CategoryName][serviceName].output;
     const consoleUrl = `xxxx`;
     context.print.info(consoleUrl);
     //   open(consoleUrl, { wait: false });
