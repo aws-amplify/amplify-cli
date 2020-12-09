@@ -1,47 +1,26 @@
-const { getCodegenPackageName } = require('../../src/utils/getCodegenPackageName');
-const CODEGEN_OLD_PACKAGE = 'amplify-codegen-appsync-model-plugin';
-const CODEGEN_NEW_PACKAGE = '@aws-amplify/appsync-modelgen-plugin';
+const { getCodegenPackage } = require('../../src/utils/getCodegenPackage');
 
-const mockaddToSchema = jest.fn();
-const mockplugin = jest.fn();
+// old codegen package
+jest.mock('amplify-codegen-appsync-model-plugin', () => {
+  const module = jest.requireActual('amplify-codegen-appsync-model-plugin');
+  return {
+    ...module,
+    name: 'OldCodegenPackage',
+  };
+});
 
-const oldCodegenPackage_mock = {
-  __esModule: true,
-  addToSchema: mockaddToSchema,
-  plugin: mockplugin,
-  preset: {
-    buildGeneratesSection: jest.fn(),
-  },
-};
+// new codegen package
+jest.mock('@aws-amplify/appsync-modelgen-plugin', () => {
+  const module = jest.requireActual('@aws-amplify/appsync-modelgen-plugin');
+  return {
+    ...module,
+    name: 'NewCodegenPackage',
+  };
+});
 
-const newCodegenPackage_mock = {
-  __esModule: true,
-  addToSchema: mockaddToSchema,
-  plugin: mockplugin,
-  preset: {
-    buildGeneratesSection: jest.fn(),
-  },
-};
-
-it('getCodegenPackageName', () => {
-  jest.mock(CODEGEN_OLD_PACKAGE, () => ({
-    __esModule: true,
-    addToSchema: jest.fn(),
-    plugin: jest.fn(),
-    preset: {
-      buildGeneratesSection: jest.fn(),
-    },
-  }));
-  jest.mock(CODEGEN_NEW_PACKAGE, () => ({
-    __esModule: true,
-    addToSchema: jest.fn(),
-    plugin: jest.fn(),
-    preset: {
-      buildGeneratesSection: jest.fn(),
-    },
-  }));
-  expect(getCodegenPackageName(false)).toBeDefined();
-  expect(JSON.stringify(getCodegenPackageName(false))).toEqual(JSON.stringify(oldCodegenPackage_mock));
-  expect(getCodegenPackageName(true)).toBeDefined();
-  expect(JSON.stringify(getCodegenPackageName(false))).toEqual(JSON.stringify(newCodegenPackage_mock));
+it('getCodegenPackage', () => {
+  expect(getCodegenPackage(false)).toBeDefined();
+  expect(getCodegenPackage(false).name).toEqual('OldCodegenPackage');
+  expect(getCodegenPackage(true)).toBeDefined();
+  expect(getCodegenPackage(true).name).toEqual('NewCodegenPackage');
 });

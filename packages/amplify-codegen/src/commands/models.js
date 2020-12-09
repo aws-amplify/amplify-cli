@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 const { parse } = require('graphql');
 const { FeatureFlags, pathManager } = require('amplify-cli-core');
 const gqlCodeGen = require('@graphql-codegen/core');
-const { getCodegenPackageName } = require('../utils/getCodegenPackageName');
+const { getCodegenPackage } = require('../utils/getCodegenPackage');
 
 const platformToLanguageMap = {
   android: 'java',
@@ -50,7 +50,7 @@ async function generateModels(context) {
 
   const codegenPackageMigrationflag = 'codegen.useAppSyncModelgenPlugin';
 
-  const appSyncDataStoreCodeGen = getCodegenPackageName(FeatureFlags.getBoolean(codegenPackageMigrationflag));
+  const appSyncDataStoreCodeGen = getCodegenPackage(FeatureFlags.getBoolean(codegenPackageMigrationflag));
 
   const appsyncLocalConfig = await appSyncDataStoreCodeGen.preset.buildGeneratesSection({
     baseOutputDir: outputPath,
