@@ -4,6 +4,7 @@ const { getS3Client, uploadFile } = require('./file-uploader');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
+const open = require('open');
 
 const constants = require('../constants');
 
@@ -19,7 +20,7 @@ const categoryName = 'hosting';
 const resourceName = 'site';
 const providerPlugin = 'awscloudformation';
 
-const templateFileName = 'template.json';
+const templateFileName = 'container-template.json';
 
 async function enable(context) {
     context.print.info('A registered domain is required. \nYou can register a domain using Route 53: aws.amazon.com/route53/ or use an existing domain.\n');
@@ -66,12 +67,68 @@ async function enable(context) {
         ]);
     }
 
-    const { environmentMap, categoryPolicies, mutableParametersState, dependsOn } = rolePermissions;
+    // Check if there are files inside source directory
+    const { frontend } = context.amplify.getProjectConfig();
+    const { config: { SourceDir: src } } = context.amplify.getProjectConfig()[frontend];
+    const projectSrcDirPath = path.join(context.amplify.pathManager.getAmplifyDirPath(), '../src');
 
-    await generateHostingResources(context, { domain, hostedZoneId, restrictAccess, categoryPolicies, environmentMap, mutableParametersState, dependsOn }, true);
+    fs.ensureDirSync(projectSrcDirPath);
+
+    if (!srcDirectoryHasDockerfileOrCompose(projectSrcDirPath)) {
+        if (srcDirectoryOnlyHasAwsExportsFile(projectSrcDirPath)) {
+            context.print.info('No web application has been detected in your src directory. A sample web application with Dockerfile has been placed in the src directory for your convenience.');
+
+            fs.copySync(
+                path.join(__dirname, '../../resources/express-template'),
+                projectSrcDirPath,
+                { recursive: true }
+            );
+        } else {
+            context.print.info('Amplify detected existing web application files in your src directory. A sample Dockerfile has been placed in the src directory for you to use as a starting point when deploying to the cloud.')
+
+            fs.copySync(
+                path.join(__dirname, '../../resources/simple-template'),
+                projectSrcDirPath,
+                { recursive: true }
+            );
+        }
+    }
+
+    const { environmentMap, categoryPolicies, mutableParametersState, dependsOn } = rolePermissions;
+    try {
+        await generateHostingResources(context, { domain, hostedZoneId, restrictAccess, categoryPolicies, environmentMap, mutableParametersState, dependsOn }, true);
+    } catch (err) {
+        delete err.stack;
+        throw err;
+    }
 }
 
-export async function generateHostingResources(context, { domain, restrictAccess, hostedZoneId, exposedContainer: exposedContainerFromMeta = undefined, dependsOn: dependsOnFromRolePermissions = [], categoryPolicies = [], environmentMap = {}, mutableParametersState = {} }, addResource = false) {
+function srcDirectoryOnlyHasAwsExportsFile(src) {
+    const files = new Set(fs.readdirSync(src));
+
+    return files.size === 1 && files.has('aws-exports.js');
+}
+
+function srcDirectoryHasDockerfileOrCompose(src) {
+    const files = new Set(fs.readdirSync(src));
+
+    return files.has('Dockerfile') || files.has('docker-compose.yaml') || files.has('docker-compose.yml');
+}
+
+export async function generateHostingResources(
+    context,
+    {
+        domain,
+        restrictAccess,
+        hostedZoneId,
+        exposedContainer: exposedContainerFromMeta = undefined,
+        dependsOn: dependsOnFromRolePermissions = [],
+        categoryPolicies = [],
+        environmentMap = {},
+        mutableParametersState = {}
+    },
+    addResource = false) {
+
     const dependsOn = [];
 
     let authName;
@@ -155,11 +212,13 @@ export async function generateHostingResources(context, { domain, restrictAccess
     } = context.amplify.getProjectMeta();
     const { StackName: envName, DeploymentBucketName: deploymentBucketName } = provider;
 
-    dependsOn.push({
-        category: '',
-        resourceName: NETWORK_STACK_LOGICAL_ID,
-        attributes: ['ClusterName', 'VpcId', 'VpcCidrBlock', 'SubnetIds', 'VpcLinkId', 'CloudMapNamespaceId'],
-    });
+    if (!dependsOn.find(({ resourceName }) => resourceName === NETWORK_STACK_LOGICAL_ID)) {
+        dependsOn.push({
+            category: '',
+            resourceName: NETWORK_STACK_LOGICAL_ID,
+            attributes: ['ClusterName', 'VpcId', 'VpcCidrBlock', 'SubnetIds', 'VpcLinkId', 'CloudMapNamespaceId'],
+        });
+    }
 
     const { frontend } = context.amplify.getProjectConfig();
     const { config: { SourceDir: src } } = context.amplify.getProjectConfig()[frontend];
@@ -169,7 +228,7 @@ export async function generateHostingResources(context, { domain, restrictAccess
 
     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
-    /** @type {import('amplify-category-api').ApiResource & {service: string, domain: string, providerPlugin:string, hostedZoneId: string}} */
+    /** @type {import('amplify-category-api').ApiResource & {service: string, domain: string, providerPlugin:string, hostedZoneId: string, iamAccessUnavailable: boolean}} */
     const resource = {
         resourceName,
         service: serviceName,
@@ -188,6 +247,7 @@ export async function generateHostingResources(context, { domain, restrictAccess
         // gitHubInfo,
         output: {}, // TODO next ime?
         hostedZoneId,
+        iamAccessUnavailable: true
     };
 
     const {
@@ -246,7 +306,12 @@ export async function generateHostingResources(context, { domain, restrictAccess
     if (addResource) {
         return context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, serviceName, resource);
     } else {
+        await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'hostedZoneId', hostedZoneId);
         await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'exposedContainer', exposedContainer);
+        await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'environmentMap', environmentMap);
+        await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'mutableParametersState', mutableParametersState);
+        await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'dependsOn', dependsOn);
+        await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'categoryPolicies', categoryPolicies);
     }
 }
 
@@ -258,7 +323,69 @@ function CheckIsValidDomain(domain) {
 }
 
 async function configure(context) {
+    const {
+        hosting: {
+            ElasticContainer: {
+                domain: currentDomain,
+                restrictAccess: currentRestrictAccess,
+                mutableParametersState: currentMutableParameterState,
+                environmentMap: currentEnvironmentMap
+            }
+        }
+    } = context.amplify.getProjectMeta();
 
+    context.print.info('A registered domain is required. \nYou can register a domain using Route 53: aws.amazon.com/route53/ or use an existing domain.\n');
+
+    const { domain } = await inquirer.prompt({
+        name: 'domain',
+        message: 'Provide your web app endpoint (e.g. app.example.com or www.example.com):',
+        type: 'input',
+        validate: CheckIsValidDomain,
+        default: currentDomain
+    });
+
+    /** @type {AWS.Route53.HostedZone} */
+    const domainZone = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'isDomainInZones', {
+        domain
+    });
+
+    const { Id: hostedZoneKey = "" } = domainZone || {};
+
+    const [, hostedZoneId] = hostedZoneKey.match(/^\/hostedzone\/(.+)/) || [];
+
+    const { restrictAccess } = await inquirer.prompt({
+        name: 'restrictAccess',
+        message: 'Do you want to automatically protect your web app using Amazon Cognito Hosted UI',
+        type: 'confirm',
+        default: currentRestrictAccess
+    });
+
+    const meta = context.amplify.getProjectDetails().amplifyMeta;
+    const hasAccessibleResources = ['storage', 'function'].some(categoryName => {
+        return Object.keys(meta[categoryName] || {}).length > 0;
+    });
+    let rolePermissions = {};
+    if (
+        hasAccessibleResources &&
+        (await context.amplify.confirmPrompt('Do you want to access other resources in this project from your container?'))
+    ) {
+        rolePermissions = await context.amplify.invokePluginMethod(context, 'function', undefined, 'askExecRolePermissionsQuestions', [
+            context,
+            resourceName,
+            currentMutableParameterState.permissions,
+            currentEnvironmentMap,
+            categoryName,
+            serviceName,
+        ]);
+    }
+
+    const { environmentMap, categoryPolicies, mutableParametersState, dependsOn } = rolePermissions;
+    try {
+        await generateHostingResources(context, { domain, hostedZoneId, restrictAccess, categoryPolicies, environmentMap, mutableParametersState, dependsOn }, false);
+    } catch (err) {
+        delete err.stack;
+        throw err;
+    }
 }
 
 async function publish(context, args) {
@@ -286,13 +413,43 @@ async function publish(context, args) {
 
     context.print.info(`\nPublish started, you can check the status of the deployment on:\n${PipelineUrl}`);
 
+
 }
 
-function console(context) {
+async function console(context) {
     // Check this behavior
-    const consoleUrl = `xxxx`;
-    context.print.info(consoleUrl);
-    //   open(consoleUrl, { wait: false });
+    const amplifyMeta = context.amplify.getProjectMeta();
+    const { Region } = amplifyMeta.providers[providerPlugin];
+
+    const { PipelineName, ServiceName, ClusterName } = amplifyMeta[constants.CategoryName][serviceName].output;
+    const codePipeline = "CodePipeline";
+    const elasticContainer = "ElasticContainer"
+    let url;
+
+    const { selectedConsole } = await inquirer.prompt({
+        name: "selectedConsole",
+        message: "Which console you want to open",
+        type: "list",
+        choices: [{
+            name: "Elastic Container Service (Deployed container status)",
+            value: elasticContainer
+        }, {
+            name: "CodePipeline (Container build status)",
+            value: codePipeline
+        }]
+    });
+
+    if (selectedConsole === elasticContainer) {
+        url = `https://console.aws.amazon.com/ecs/home?region=${Region}#/clusters/${ClusterName}/services/${ServiceName}/details`
+
+    } else if (selectedConsole === codePipeline) {
+        url = `https://${Region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${PipelineName}/view`
+
+    } else {
+        context.print.error('Option not available');
+        return;
+    }
+    open(url, { wait: false });
 }
 
 async function migrate(context) {

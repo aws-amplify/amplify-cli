@@ -6510,36 +6510,6 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-amplify-category-api@2.26.1:
-  version "2.26.1"
-  resolved "https://registry.yarnpkg.com/amplify-category-api/-/amplify-category-api-2.26.1.tgz#31b238e45520163c3c031259426b03a4216a4607"
-  integrity sha512-wiLg5ErjcnIKLlCIyo164X5TE/sHxpLM9lzgqcmisFpdc0Mjh9cscSgP59XeakUYtQm0lQ5Bdcol1m2lZCKMNg==
-  dependencies:
-    "@graphql-tools/merge" "^6.0.18"
-    amplify-util-headless-input "1.4.1"
-    chalk "^3.0.0"
-    fs-extra "^8.1.0"
-    graphql "^14.5.8"
-    graphql-relational-schema-transformer "2.16.1"
-    graphql-transformer-core "6.23.1"
-    inquirer "^7.3.3"
-    open "^7.0.0"
-    ora "^4.0.3"
-    uuid "^3.4.0"
-
-amplify-headless-interface@1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/amplify-headless-interface/-/amplify-headless-interface-1.5.1.tgz#ae2b5889cdb488db73cc2061fbb94b2258d61a4e"
-  integrity sha512-E+ab54m87/YhH82QlaSc1scmJ/PArYFKmN6Fo1w8RGGWXM5q2f5eNkwfpeZ3E+v4m3E9a4FpiDcydagPR/iqbw==
-
-amplify-util-headless-input@1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/amplify-util-headless-input/-/amplify-util-headless-input-1.4.1.tgz#f9bb49a5a306711043b5eb760a4d5001cbd91a8e"
-  integrity sha512-vk3Ak/n+OPAey54MFQYc62sFFVpl1Lq6xir6XX2VNjk0IB4I0xgrVUI0Fcs8yLkU7SdFTRXG6X07TRd//H/O1w==
-  dependencies:
-    ajv "^6.12.2"
-    amplify-headless-interface "1.5.1"
-
 ansi-align@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-3.0.0.tgz#b536b371cf687caaef236c18d3e21fe3797467cb"
@@ -12833,18 +12803,6 @@ graphql-transformer-core@6.13.1:
     fs-extra "^8.1.0"
     graphql "^14.5.8"
     graphql-transformer-common "4.13.1"
-
-graphql-transformer-core@6.23.1:
-  version "6.23.1"
-  resolved "https://registry.yarnpkg.com/graphql-transformer-core/-/graphql-transformer-core-6.23.1.tgz#731b3cee1d5907db6bd9369df4d0f3b3a032b1e5"
-  integrity sha512-mDsFjjo/CCecPzTR6x1R426HbozAfLl/uOicd+/aUqYjLPuXvNmx8fw9XFzro9ta5kEnahQGrqh96P9jSXDzkA==
-  dependencies:
-    cloudform-types "^4.2.0"
-    deep-diff "^1.0.2"
-    fs-extra "^8.1.0"
-    glob "^7.1.6"
-    graphql "^14.5.8"
-    graphql-transformer-common "4.18.1"
 
 graphql-type-json@^0.3.1:
   version "0.3.2"

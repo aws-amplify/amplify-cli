@@ -6,6 +6,7 @@ async function displayHelpfulURLs(context, resourcesToBeCreated) {
   showGraphQLURL(context, resourcesToBeCreated);
   showRestAPIURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
+  showContainerHostingInfo(context, resourcesToBeCreated);
   showHostedUIURLs(context, resourcesToBeCreated);
   await showRekognitionURLS(context, resourcesToBeCreated);
   context.print.info('');
@@ -86,6 +87,29 @@ function showRestAPIURL(context, resourcesToBeCreated) {
     if (RootUrl) {
       context.print.info(chalk`REST API endpoint: {blue.underline ${RootUrl}}`);
     }
+  }
+}
+
+function showContainerHostingInfo(context, resourcesToBeCreated) {
+  const resource = resourcesToBeCreated.find(resource => resource.category === 'hosting' && resource.service === 'ElasticContainer' && !resource.hostedZoneId);
+  if (resource && resource.output) {
+    const {
+      output: {
+        LoadBalancerCnameDomainName,
+        LoadBalancerAliasDomainName,
+        CloudfrontDistributionAliasDomainName,
+        CloudfrontDistributionCnameDomainName
+      }
+    } = resource;
+
+    context.print.info(`Make sure to add the following CNAMEs to your domain’s DNS records:\n`);
+
+    const tableOptions = [];
+    tableOptions.push(['NAME', 'VALUE']);
+    tableOptions.push([LoadBalancerCnameDomainName, LoadBalancerAliasDomainName]);
+    tableOptions.push([CloudfrontDistributionCnameDomainName, CloudfrontDistributionAliasDomainName]);
+
+    context.print.table(tableOptions, { format: 'markdown' });
   }
 }
 

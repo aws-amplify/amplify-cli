@@ -131,7 +131,10 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
       pluginCandidates = consoleHostingPlugins.concat(otherPlugins);
     }
 
-    if (!isContainersEnabled(context)) {
+    const amplifyMeta = context.amplify.getProjectMeta();
+    const { Region } = amplifyMeta.providers['awscloudformation'];
+
+    if (!isContainersEnabled(context) || Region !== 'us-east-1') {
       pluginCandidates = pluginCandidates.filter(plugin => !plugin.manifest.services?.includes('ElasticContainer'));
     }
 

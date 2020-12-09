@@ -23,7 +23,7 @@ export class EcsStack extends ContainersStack {
         new cdk.CfnOutput(this, 'GraphQLAPIEndpointOutput', { value: api.attrApiEndpoint });
         break;
       case API_TYPE.REST:
-        new cdk.CfnOutput(this, 'ApiName', { value: api.name });
+        new cdk.CfnOutput(this, 'ApiName', { value: ecsProps.apiName });
         new cdk.CfnOutput(this, 'RootUrl', { value: api.attrApiEndpoint });
         break;
       default:
