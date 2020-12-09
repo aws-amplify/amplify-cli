@@ -1,6 +1,6 @@
 {
   "name": "amplify-app",
-  "version": "2.20.1",
+  "version": "2.20.2",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "amplify-frontend-android": "2.14.2",
-    "amplify-frontend-ios": "2.17.0",
+    "amplify-frontend-ios": "2.17.1",
     "amplify-frontend-javascript": "2.19.1",
     "chalk": "^3.0.0",
     "execa": "^4.1.0",
