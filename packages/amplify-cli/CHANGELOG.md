@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.38.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.38.0...@aws-amplify/cli@4.38.1-beta.0) (2020-12-09)
+
+
+### Bug Fixes
+
+* check amplify/backend to determine project existence ([#6115](https://github.com/aws-amplify/amplify-cli/issues/6115)) ([4135a24](https://github.com/aws-amplify/amplify-cli/commit/4135a2428027d801c78e6877d0936f9753ba83e4))
+
+
+
+
+
 # [4.38.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.37.1...@aws-amplify/cli@4.38.0) (2020-12-07)
 
 
