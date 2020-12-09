@@ -121,7 +121,8 @@ function getAWSExportsObject(resources) {
         Object.assign(configOutput, getAppSyncConfig(serviceResourceMapping[service], projectRegion));
         break;
       case 'API Gateway':
-        Object.assign(configOutput, getAPIGWConfig(serviceResourceMapping[service], projectRegion));
+      case 'ElasticContainer':
+        Object.assign(configOutput, getAPIGWConfig(serviceResourceMapping[service], projectRegion, configOutput));
         break;
       case 'Pinpoint':
         Object.assign(configOutput, getPinpointConfig(serviceResourceMapping[service], projectRegion));
@@ -330,19 +331,21 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
   return config;
 }
 
-function getAPIGWConfig(apigwResources, projectRegion) {
+function getAPIGWConfig(apigwResources, projectRegion, configOutput) {
   // There can be multiple api gateway resource
 
   const apigwConfig = {
-    aws_cloud_logic_custom: [],
+    aws_cloud_logic_custom: configOutput.aws_cloud_logic_custom || [],
   };
 
   for (let i = 0; i < apigwResources.length; i += 1) {
-    apigwConfig.aws_cloud_logic_custom.push({
-      name: apigwResources[i].output.ApiName,
-      endpoint: apigwResources[i].output.RootUrl,
-      region: projectRegion,
-    });
+    if (apigwResources[i].output.ApiName && apigwResources[i].output.RootUrl) { // only REST endpoints contains this information
+      apigwConfig.aws_cloud_logic_custom.push({
+        name: apigwResources[i].output.ApiName,
+        endpoint: apigwResources[i].output.RootUrl,
+        region: projectRegion,
+      });
+    }
   }
   return apigwConfig;
 }

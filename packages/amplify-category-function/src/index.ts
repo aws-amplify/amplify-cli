@@ -13,6 +13,8 @@ export { ServiceName } from './provider-utils/awscloudformation/utils/constants'
 import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 export { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 
+export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
+
 export async function add(context, providerName, service, parameters) {
   const options = {
     service,

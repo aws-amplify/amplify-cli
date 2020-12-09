@@ -22,6 +22,7 @@ import {
 } from 'amplify-cli-core';
 
 const serviceName = 'AppSync';
+const elasticContainerServiceName = 'ElasticContainer';
 const providerName = 'awscloudformation';
 const graphqlSchemaDir = path.join(rootAssetDir, 'graphql-schemas');
 
@@ -47,37 +48,86 @@ const authProviderChoices = [
 export const openConsole = async (context: $TSContext) => {
   const amplifyMeta = stateManager.getMeta();
   const categoryAmplifyMeta = amplifyMeta[category];
-  let appSyncMeta;
-  Object.keys(categoryAmplifyMeta).forEach(resourceName => {
-    if (categoryAmplifyMeta[resourceName].service === serviceName && categoryAmplifyMeta[resourceName].output) {
-      appSyncMeta = categoryAmplifyMeta[resourceName].output;
-    }
+  const { Region } = amplifyMeta.providers[providerName];
+
+  const graphQLApis = Object.keys(categoryAmplifyMeta).filter(resourceName => {
+    const resource = categoryAmplifyMeta[resourceName];
+
+    return resource.output &&
+      (resource.service === serviceName ||
+        (resource.service === elasticContainerServiceName && resource.apiType === 'GRAPHQL'))
   });
 
-  if (appSyncMeta) {
-    const { GraphQLAPIIdOutput } = appSyncMeta;
-    const appId = amplifyMeta.providers[providerName].AmplifyAppId;
-    if (!appId) {
-      throw new Error('Missing AmplifyAppId in amplify-meta.json');
-    }
-    const { Region } = amplifyMeta.providers[providerName];
-    let consoleUrl = `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
+  if (graphQLApis) {
+    let url;
+    let selectedApi = graphQLApis[0];
 
-    const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
-    const { isAdminApp, region } = await providerPlugin.isAmplifyAdminApp(appId);
-    if (isAdminApp) {
-      if (region !== Region) {
-        context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
-      }
-      const { envName } = context.amplify.getEnvInfo();
-      const baseUrl: string = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
-      consoleUrl = `${baseUrl}/admin/${appId}/${envName}/datastore`;
+    if (graphQLApis.length > 1) {
+      ({ selectedApi } = await inquirer.prompt({
+        type: "list",
+        name: "selectedApi",
+        choices: graphQLApis,
+        message: "Please select the API"
+      }));
     }
-    open(consoleUrl, { wait: false });
+
+    const selectedResource = categoryAmplifyMeta[selectedApi];
+
+    if (selectedResource.service === serviceName) {
+      const { output: { GraphQLAPIIdOutput } } = selectedResource;
+      const appId = amplifyMeta.providers[providerName].AmplifyAppId;
+      if (!appId) {
+        throw new Error('Missing AmplifyAppId in amplify-meta.json');
+      }
+
+      url = `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
+
+      const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+      const { isAdminApp, region } = await providerPlugin.isAmplifyAdminApp(appId);
+      if (isAdminApp) {
+        if (region !== Region) {
+          context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
+        }
+        const { envName } = context.amplify.getEnvInfo();
+        const baseUrl: string = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
+        url = `${baseUrl}/admin/${appId}/${envName}/datastore`;
+      }
+
+    } else { // Elastic Container API
+      const { output: { PipelineName, ServiceName, ClusterName } } = selectedResource;
+      const codePipeline = "CodePipeline";
+      const elasticContainer = "ElasticContainer"
+
+      const { selectedConsole } = await inquirer.prompt({
+        name: "selectedConsole",
+        message: "Which console you want to open",
+        type: "list",
+        choices: [{
+          name: "Elastic Container Service (Deployed container status)",
+          value: elasticContainer
+        }, {
+          name: "CodePipeline (Container build status)",
+          value: codePipeline
+        }]
+      });
+
+      if (selectedConsole === elasticContainer) {
+        url = `https://console.aws.amazon.com/ecs/home?region=${Region}#/clusters/${ClusterName}/services/${ServiceName}/details`
+
+      } else if (selectedConsole === codePipeline) {
+        url = `https://${Region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${PipelineName}/view`
+
+      } else {
+        context.print.error('Option not available');
+        return;
+      }
+    }
+
+    open(url, { wait: false });
   } else {
     context.print.error('AppSync API is not pushed in the cloud.');
-  }
-};
+  };
+}
 
 export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
   const resourceName = resourceAlreadyExists(context);

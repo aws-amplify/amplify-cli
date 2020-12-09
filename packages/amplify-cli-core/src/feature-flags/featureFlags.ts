@@ -21,7 +21,7 @@ export class FeatureFlags {
   private newProjectDefaults: Readonly<FeatureFlagsEntry> = {};
   private existingProjectDefaults: Readonly<FeatureFlagsEntry> = {};
 
-  private constructor(private environmentProvider: CLIEnvironmentProvider, private projectPath: string, private useNewDefaults: boolean) {}
+  private constructor(private environmentProvider: CLIEnvironmentProvider, private projectPath: string, private useNewDefaults: boolean) { }
 
   public static initialize = async (
     environmentProvider: CLIEnvironmentProvider,

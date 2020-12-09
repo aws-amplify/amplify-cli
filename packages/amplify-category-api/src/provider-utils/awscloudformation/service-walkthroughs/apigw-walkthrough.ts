@@ -3,15 +3,17 @@ import path from 'path';
 import fs from 'fs-extra';
 import os from 'os';
 import uuid from 'uuid';
+import open from 'open';
 import { rootAssetDir } from '../aws-constants';
 import { checkForPathOverlap, validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
-import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick, $TSContext, stateManager } from 'amplify-cli-core';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
 
 const category = 'api';
 const serviceName = 'API Gateway';
+const elasticContainerServiceName = 'ElasticContainer';
 const parametersFileName = 'api-params.json';
 const cfnParametersFilename = 'parameters.json';
 
@@ -732,23 +734,6 @@ export async function migrate(context, projectPath, resourceName) {
   fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
 }
 
-// function checkIfAuthExists(context) {
-//   const { amplify } = context;
-//   const { amplifyMeta } = amplify.getProjectDetails();
-//   let authExists = false;
-//   const authServiceName = 'Cognito';
-//   const authCategory = 'auth';
-
-//   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
-//     const categoryResources = amplifyMeta[authCategory];
-//     Object.keys(categoryResources).forEach((resource) => {
-//       if (categoryResources[resource].service === authServiceName) {
-//         authExists = true;
-//       }
-//     });
-//   }
-//   return authExists;
-// }
 function convertToCRUD(privacy) {
   if (privacy === 'r') {
     privacy = ['/GET'];
@@ -809,3 +794,70 @@ export function getIAMPolicies(resourceName, crudOptions) {
 
   return { policy, attributes };
 }
+
+export const openConsole = async (context: $TSContext) => {
+  const amplifyMeta = stateManager.getMeta();
+  const categoryAmplifyMeta = amplifyMeta[category];
+  const { Region } = amplifyMeta.providers.awscloudformation;
+
+  const restApis = Object.keys(categoryAmplifyMeta).filter(resourceName => {
+    const resource = categoryAmplifyMeta[resourceName];
+    return resource.output &&
+      (resource.service === serviceName ||
+        (resource.service === elasticContainerServiceName && resource.apiType === 'REST'))
+  });
+
+  if (restApis) {
+    let url;
+    let selectedApi = restApis[0];
+
+    if (restApis.length > 1) {
+      ({ selectedApi } = await inquirer.prompt({
+        type: "list",
+        name: "selectedApi",
+        choices: restApis,
+        message: "Please select the API"
+      }));
+    }
+    const selectedResource = categoryAmplifyMeta[selectedApi];
+
+    if (selectedResource.service === serviceName) {
+      const { output: { ApiId } } = selectedResource;
+
+      url = `https://${Region}.console.aws.amazon.com/apigateway/home?region=${Region}#/apis/${ApiId}/resources/`;
+
+    } else { // Elastic Container API
+      const { output: { PipelineName, ServiceName, ClusterName } } = selectedResource;
+      const codePipeline = "CodePipeline";
+      const elasticContainer = "ElasticContainer"
+
+      const { selectedConsole } = await inquirer.prompt({
+        name: "selectedConsole",
+        message: "Which console you want to open",
+        type: "list",
+        choices: [{
+          name: "Elastic Container Service (Deployed container status)",
+          value: elasticContainer
+        }, {
+          name: "CodePipeline (Container build status)",
+          value: codePipeline
+        }]
+      });
+
+      if (selectedConsole === elasticContainer) {
+        url = `https://console.aws.amazon.com/ecs/home?region=${Region}#/clusters/${ClusterName}/services/${ServiceName}/details`
+
+      } else if (selectedConsole === codePipeline) {
+        url = `https://${Region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${PipelineName}/view`
+
+      } else {
+        context.print.error('Option not available');
+        return;
+      }
+    }
+
+    open(url, { wait: false });
+  } else {
+    context.print.error('There are no REST APIs pushed to the cloud');
+  }
+};

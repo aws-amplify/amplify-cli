@@ -7,10 +7,41 @@ const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
 const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
 const { updateStackForAPIMigration } = require('./push-resources');
+const SecretsManager = require('./aws-utils/aws-secretsmanager');
+const Route53 = require('./aws-utils/aws-route53');
+const { run: archiver } = require('./utils/archiver');
+const ECR = require('./aws-utils/aws-ecr');
+const { pagedAWSCall } = require('./aws-utils/paged-call');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('utility-functions');
 
 module.exports = {
+  zipFiles: (context, [srcDir, dstZipFilePath]) => {
+    return archiver(srcDir, dstZipFilePath)
+  },
+  isDomainInZones: async (context, { domain }) => {
+
+    const client = await new Route53(context);
+
+    let Marker;
+    let truncated = false;
+    let zoneFound;
+
+    do {
+      const { NextMarker, IsTruncated, HostedZones } = await client.route53.listHostedZones({
+        Marker,
+        MaxItems: '100'
+      }).promise();
+
+      zoneFound = HostedZones.find(zone => `${domain}.`.endsWith(zone.Name));
+
+      Marker = NextMarker;
+      truncated = IsTruncated;
+
+    } while (truncated && !zoneFound)
+
+    return zoneFound;
+  },
   compileSchema: async (context, options) => {
     const category = 'api';
     let optionsWithUpdateHandler = { ...options };
@@ -27,6 +58,84 @@ module.exports = {
     }
 
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
+  },
+  newSecret: async (context, options) => {
+    const { description, secret, name, version } = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager
+      .createSecret({
+        Description: description,
+        Name: name,
+        SecretString: secret,
+        ClientRequestToken: version,
+      })
+      .promise();
+
+    return response;
+  },
+  updateSecret: async (context, options) => {
+    const { description, secret, name, version } = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager
+      .updateSecret({
+        SecretId: name,
+        Description: description,
+        SecretString: secret,
+        ClientRequestToken: version,
+      })
+      .promise();
+
+    return response;
+  },
+  upsertSecretValue: async (context, options) => {
+    const { name } = options;
+    const client = await new SecretsManager(context);
+
+    /** @type {string} */
+    let secretArn;
+
+    try {
+      ({ ARN: secretArn } = await client.secretsManager.describeSecret({ SecretId: name }).promise());
+    } catch (error) {
+      const { code } = error;
+
+      if (code !== 'ResourceNotFoundException') {
+        throw error;
+      }
+    }
+
+    if (secretArn === undefined) {
+      return await module.exports.newSecret(context, options);
+    } else {
+      return await module.exports.putSecretValue(context, options);
+    }
+  },
+  putSecretValue: async (context, options) => {
+    const { name, secret } = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager
+      .putSecretValue({
+        SecretId: name,
+        SecretString: secret,
+      })
+      .promise();
+
+    return response;
+  },
+  /**
+   * @param {any} context
+   * @param {{secretArn: string}} options
+   */
+  retrieveSecret: async (context, options) => {
+    const { secretArn: SecretId } = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager
+      .getSecretValue({
+        SecretId,
+      })
+      .promise();
+
+    return response;
   },
   getTransformerDirectives: async (context, options) => {
     const { resourceDir } = options;
@@ -274,5 +383,17 @@ module.exports = {
       throw err;
     }
     return listOfEndpoints;
+  },
+  describeEcrRepositories: async (context, options) => {
+    const ecr = await new ECR(context);
+
+    const results = await pagedAWSCall(
+      async (params, nextToken) => ecr.ecr.describeRepositories({ ...params, nextToken }).promise(),
+      options,
+      ({ repositories }) => repositories,
+      ({ nextToken }) => nextToken,
+    );
+
+    return results;
   },
 };

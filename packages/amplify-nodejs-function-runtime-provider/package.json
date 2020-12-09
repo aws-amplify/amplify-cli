@@ -17,6 +17,7 @@
     "nodejs"
   ],
   "scripts": {
+    "watch": "tsc -w",
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "test": "jest"
