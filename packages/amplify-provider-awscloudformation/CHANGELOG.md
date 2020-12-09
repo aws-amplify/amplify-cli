@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.34.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.34.0...amplify-provider-awscloudformation@4.34.1-beta.0) (2020-12-09)
+
+
+### Reverts
+
+* **amplify-provider-awscloudformation:** removed cfn logging ([#6119](https://github.com/aws-amplify/amplify-cli/issues/6119)) ([a7f7f26](https://github.com/aws-amplify/amplify-cli/commit/a7f7f26676076dc2209b10f75dc8b5d992057f4a))
+
+
+
+
+
 # [4.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.33.1...amplify-provider-awscloudformation@4.34.0) (2020-12-07)
 
 
