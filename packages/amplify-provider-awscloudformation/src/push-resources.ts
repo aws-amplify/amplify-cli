@@ -757,6 +757,21 @@ async function formNestedStack(
         TemplateURL: NetworkStackS3Url,
       },
     };
+
+    nestedStack.Resources.DeploymentBucket.Properties['VersioningConfiguration'] = {
+      "Status": "Enabled"
+    };
+
+    nestedStack.Resources.DeploymentBucket.Properties['LifecycleConfiguration'] = {
+      "Rules": [
+        {
+          "ExpirationInDays": 7,
+          "NoncurrentVersionExpirationInDays": 7,
+          "Prefix": "codepipeline-amplify/",
+          "Status": "Enabled"
+        }
+      ]
+    };
   }
 
   let categories = Object.keys(amplifyMeta);

@@ -23,19 +23,6 @@
       "Properties": {
         "BucketName": {
           "Ref": "DeploymentBucketName"
-        },
-        "VersioningConfiguration": {
-          "Status": "Enabled"
-        },
-        "LifecycleConfiguration": {
-          "Rules": [
-            {
-              "ExpirationInDays": 7,
-              "NoncurrentVersionExpirationInDays": 7,
-              "Prefix": "codepipeline-amplify/",
-              "Status": "Enabled"
-            }
-          ]
         }
       }
     },
