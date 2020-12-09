@@ -1,6 +1,5 @@
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 
-import { ExecOptions } from 'child_process';
 import execa from 'execa';
 import fs from 'fs-extra';
 import glob from 'glob';
@@ -45,14 +44,11 @@ function runPackageManager(cwd: string, scriptName?: string) {
   const packageManager = useYarn ? 'yarn' : 'npm';
   const args = toPackageManagerArgs(useYarn, scriptName);
   try {
-    const { stdout, exitCode } = execa.commandSync(`${packageManager} ${args.join(' ')}`, {
+    const { stdout, stderr, exitCode } = execa.sync(packageManager, args, {
       cwd,
       stdio: 'pipe',
       encoding: 'utf-8',
     });
-    if (exitCode !== 0) {
-      throw new Error(stdout);
-    }
   } catch (error) {
     if ((error as any).code === 'ENOENT') {
       throw new Error(`Packaging lambda failed function failed. Could not find ${packageManager} executable in the PATH.`);
