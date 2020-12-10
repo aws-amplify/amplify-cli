@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.39.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.38.2...@aws-amplify/cli@4.39.0-beta.0) (2020-12-10)
+
+
+### Bug Fixes
+
+* disabling local logging ([#6125](https://github.com/aws-amplify/amplify-cli/issues/6125)) ([89c9d8b](https://github.com/aws-amplify/amplify-cli/commit/89c9d8b6fe811cc45749062c65266d280f8f47e1))
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
 ## [4.38.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.38.1...@aws-amplify/cli@4.38.2) (2020-12-09)
 
 **Note:** Version bump only for package @aws-amplify/cli
