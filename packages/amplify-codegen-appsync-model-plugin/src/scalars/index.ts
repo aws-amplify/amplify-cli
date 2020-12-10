@@ -4,7 +4,7 @@ export const JAVA_SCALAR_MAP: NormalizedScalarsMap = {
   ID: 'String',
   String: 'String',
   Int: 'Integer',
-  Float: 'Float',
+  Float: 'Double',
   Boolean: 'Boolean',
   AWSDate: 'java.util.Date',
   AWSDateTime: 'java.util.Date',
