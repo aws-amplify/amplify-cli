@@ -16,7 +16,7 @@ import { KeyTransformer } from 'graphql-key-transformer';
 import { ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { stateManager } from 'amplify-cli-core';
+import { JSONUtilities, stateManager } from 'amplify-cli-core';
 
 import {
   collectDirectivesByTypeNames,
@@ -445,7 +445,12 @@ export async function transformGraphQLSchema(context, options) {
     S3DeploymentRootKey: deploymentRootKey,
   };
 
-  fs.ensureDirSync(buildDir);
+  // If it is a dry run, don't create the build folder as it could make a follow-up command
+  // to not to trigger a build, hence a corrupt deployment.
+  if (!options.dryRun) {
+    fs.ensureDirSync(buildDir);
+  }
+
   // Transformer compiler code
   // const schemaText = await readProjectSchema(resourceDir);
   const project = await readProjectConfiguration(resourceDir);
@@ -467,7 +472,7 @@ export async function transformGraphQLSchema(context, options) {
   const buildConfig = {
     ...options,
     buildParameters,
-    projectDirectory: options.dryrun ? false : resourceDir,
+    projectDirectory: resourceDir,
     transformersFactory: transformerListFactory,
     transformersFactoryArgs: [searchableTransformerFlag, storageConfig],
     rootStackFileName: 'cloudformation-template.json',
@@ -480,11 +485,10 @@ export async function transformGraphQLSchema(context, options) {
   context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
-  const jsonString = JSON.stringify(parameters, null, 4);
-
   if (!options.dryRun) {
-    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    JSONUtilities.writeJson(parametersFilePath, parameters);
   }
+
   return transformerOutput;
 }
 
