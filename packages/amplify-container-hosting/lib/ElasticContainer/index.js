@@ -147,7 +147,7 @@ export async function generateHostingResources(
 
         if (foundUnmetRequirements) {
             try {
-                authName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [
+                authName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
                     context,
                     'api',
                     resourceName,
