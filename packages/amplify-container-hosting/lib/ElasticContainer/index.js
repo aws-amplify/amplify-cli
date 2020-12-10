@@ -306,6 +306,7 @@ export async function generateHostingResources(
     if (addResource) {
         return context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, serviceName, resource);
     } else {
+        await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'restrictAccess', restrictAccess);
         await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'hostedZoneId', hostedZoneId);
         await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'exposedContainer', exposedContainer);
         await context.amplify.updateamplifyMetaAfterResourceUpdate(constants.CategoryName, serviceName, 'environmentMap', environmentMap);
