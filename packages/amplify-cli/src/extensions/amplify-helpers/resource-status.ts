@@ -129,7 +129,7 @@ function getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, reso
         const dependsOnCategory = resources[i].dependsOn[j].category;
         const dependsOnResourcename = resources[i].dependsOn[j].resourceName;
         if (
-          (!amplifyMeta[dependsOnCategory][dependsOnResourcename].lastPushTimeStamp ||
+          amplifyMeta[dependsOnCategory] && (!amplifyMeta[dependsOnCategory][dependsOnResourcename].lastPushTimeStamp ||
             !currentAmplifyMeta[dependsOnCategory] ||
             !currentAmplifyMeta[dependsOnCategory][dependsOnResourcename]) &&
           amplifyMeta[dependsOnCategory][dependsOnResourcename].serviceType !== 'imported'

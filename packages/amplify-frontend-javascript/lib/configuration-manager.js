@@ -12,7 +12,8 @@ async function init(context) {
     framework,
     config,
   };
-  await confirmConfiguration(context);
+  const initial = true;
+  await confirmConfiguration(context, initial);
 }
 
 function onInitSuccessful(context) {
@@ -32,7 +33,9 @@ async function configure(context) {
   if (!currentConfiguration.config) {
     currentConfiguration.config = getProjectConfiguration(currentConfiguration.framework, context.exeInfo.localEnvInfo.projectPath);
   }
-  await confirmConfiguration(context);
+
+  const initial = false;
+  await confirmConfiguration(context, initial);
 }
 
 function normalizeInputParams(context) {
@@ -64,9 +67,9 @@ function normalizeInputParams(context) {
   context.exeInfo.inputParams[constants.Label] = inputParams;
 }
 
-async function confirmConfiguration(context) {
+async function confirmConfiguration(context, initial = true) {
   await confirmFramework(context);
-  await confirmFrameworkConfiguration(context);
+  await confirmFrameworkConfiguration(context, initial);
 }
 
 async function confirmFramework(context) {
@@ -99,7 +102,7 @@ async function confirmFramework(context) {
   }
 }
 
-async function confirmFrameworkConfiguration(context) {
+async function confirmFrameworkConfiguration(context, initial = true) {
   const inputParams = context.exeInfo.inputParams[constants.Label];
   if (inputParams && inputParams.config) {
     Object.assign(context.exeInfo.projectConfig[constants.Label].config, inputParams.config);
@@ -135,10 +138,21 @@ async function confirmFrameworkConfiguration(context) {
         name: 'StartCommand',
         message: 'Start Command:',
         default: config.StartCommand,
-      },
+      }
     ];
     const answers = await inquirer.prompt(configurationSettings);
-    Object.assign(context.exeInfo.projectConfig[constants.Label].config, answers);
+
+    let ServerlessContainers;
+    if (!initial) {
+      ({ ServerlessContainers } = await inquirer.prompt({
+        type: 'confirm',
+        name: 'ServerlessContainers',
+        message: 'Do you want to enable container-based deployments?',
+        default: config.ServerlessContainers === true
+      }));
+    }
+
+    Object.assign(context.exeInfo.projectConfig[constants.Label].config, { ...answers, ServerlessContainers });
   }
 }
 

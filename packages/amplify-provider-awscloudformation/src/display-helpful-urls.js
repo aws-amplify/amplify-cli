@@ -6,6 +6,7 @@ async function displayHelpfulURLs(context, resourcesToBeCreated) {
   showGraphQLURL(context, resourcesToBeCreated);
   showRestAPIURL(context, resourcesToBeCreated);
   showHostingURL(context, resourcesToBeCreated);
+  showContainerHostingInfo(context, resourcesToBeCreated);
   showHostedUIURLs(context, resourcesToBeCreated);
   await showRekognitionURLS(context, resourcesToBeCreated);
   context.print.info('');
@@ -28,10 +29,11 @@ function showPinpointURL(context, resourcesToBeCreated) {
 }
 
 function showGraphQLURL(context, resourcesToBeCreated) {
-  const resources = resourcesToBeCreated.filter(resource => resource.service === 'AppSync');
-  // There can only be one appsync resource
-  if (resources.length > 0) {
-    const resource = resources[0];
+  const resources = resourcesToBeCreated.filter(
+    resource => resource.service === 'AppSync' || (resource.service === 'ElasticContainer' && resource.apiType === 'GRAPHQL'),
+  );
+
+  for (const resource of resources) {
     const { category, resourceName } = resource;
     const amplifyMeta = context.amplify.getProjectMeta();
     if (!amplifyMeta[category][resourceName].output) {
@@ -47,7 +49,7 @@ function showGraphQLURL(context, resourcesToBeCreated) {
 
     if (securityType) {
       hasApiKey = securityType === 'API_KEY';
-    } else {
+    } else if (authConfig) {
       const apiKeyProvider = [...(authConfig.additionalAuthenticationProviders || []), authConfig.defaultAuthentication].find(
         provider => provider.authenticationType === 'API_KEY',
       );
@@ -65,11 +67,13 @@ function showGraphQLURL(context, resourcesToBeCreated) {
         );
       }
     }
+
+    context.print.info('');
   }
 }
 
 function showRestAPIURL(context, resourcesToBeCreated) {
-  const resources = resourcesToBeCreated.filter(resource => resource.service === 'API Gateway');
+  const resources = resourcesToBeCreated.filter(resource => resource.service === 'API Gateway' || resource.service === 'ElasticContainer');
 
   if (resources.length > 0) {
     const resource = resources[0];
@@ -83,6 +87,29 @@ function showRestAPIURL(context, resourcesToBeCreated) {
     if (RootUrl) {
       context.print.info(chalk`REST API endpoint: {blue.underline ${RootUrl}}`);
     }
+  }
+}
+
+function showContainerHostingInfo(context, resourcesToBeCreated) {
+  const resource = resourcesToBeCreated.find(resource => resource.category === 'hosting' && resource.service === 'ElasticContainer' && !resource.hostedZoneId);
+  if (resource && resource.output) {
+    const {
+      output: {
+        LoadBalancerCnameDomainName,
+        LoadBalancerAliasDomainName,
+        CloudfrontDistributionAliasDomainName,
+        CloudfrontDistributionCnameDomainName
+      }
+    } = resource;
+
+    context.print.info(`Make sure to add the following CNAMEs to your domain’s DNS records:\n`);
+
+    const tableOptions = [];
+    tableOptions.push(['NAME', 'VALUE']);
+    tableOptions.push([LoadBalancerCnameDomainName, LoadBalancerAliasDomainName]);
+    tableOptions.push([CloudfrontDistributionCnameDomainName, CloudfrontDistributionAliasDomainName]);
+
+    context.print.table(tableOptions, { format: 'markdown' });
   }
 }
 

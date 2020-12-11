@@ -13,6 +13,18 @@ describe('amplify add api', () => {
     deleteProjectDir(projRoot);
   });
 
+  it('init project, allow adding key when keyschema of one key is used in another key', async () => {
+    const projectName = 'validksgsiupdate';
+    const initial_schema = 'migrations_key/three_gsi_model_schema.graphql';
+    const nextSchema = 'migrations_key/four_gsi_model_schema.graphql';
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initial_schema);
+    await amplifyPush(projRoot);
+
+    updateApiSchema(projRoot, projectName, nextSchema);
+    await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
+  });
+
   it('init project, run invalid migration trying to add more than one gsi, and check for error', async () => {
     const projectName = 'migratingkey';
     const initialSchema = 'migrations_key/initial_schema.graphql';

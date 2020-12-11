@@ -19,7 +19,7 @@ import ora from 'ora';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
-import { ProviderName as providerName } from './constants';
+import constants, { ProviderName as providerName } from './constants';
 import { buildResource } from './build-resources';
 import { uploadAppSyncFiles } from './upload-appsync-files';
 import { prePushGraphQLCodegen, postPushGraphQLCodegen } from './graphql-codegen';
@@ -39,11 +39,15 @@ import { DeploymentStep, DeploymentOp } from './iterative-deployment/deployment-
 import { DeploymentStateManager } from './iterative-deployment/deployment-state-manager';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
+import { createEnvLevelConstructs } from './utils/env-level-constructs';
+import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 
 const logger = fileLogger('push-resources');
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaLayer = 'LambdaLayer';
+// keep in sync with ServiceName in amplify-category-api, but probably it will not change
+const ApiServiceNameElasticContainer = 'ElasticContainer';
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
 const rootStackFileName = 'rootStackTemplate.json';
@@ -71,7 +75,29 @@ export async function run(context, resourceDefinition) {
       resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
     }
 
+    await createEnvLevelConstructs(context);
+
     validateCfnTemplates(context, resources);
+
+    for await (const resource of resources) {
+      if (resource.service === ApiServiceNameElasticContainer && resource.category === 'api') {
+        const {
+          exposedContainer,
+          pipelineInfo: { consoleUrl },
+        } = await context.amplify.invokePluginMethod(context, 'api', undefined, 'generateContainersArtifacts', [context, resource]);
+        await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'exposedContainer', exposedContainer);
+
+        context.print.info(`\nIn a few moments, you can check image build status for ${resource.resourceName} at the following URL:`);
+
+        context.print.info(`${consoleUrl}\n`);
+
+        context.print.info(`It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.`)
+      }
+
+      if (resource.service === ApiServiceNameElasticContainer && resource.category === 'hosting') {
+        await context.amplify.invokePluginMethod(context, 'hosting', 'ElasticContainer', 'generateHostingResources', [context, resource]);
+      }
+    }
 
     await packageResources(context, resources);
 
@@ -520,7 +546,6 @@ async function packageResources(context, resources) {
           deploymentBucketName: s3Bucket,
           s3Key,
         });
-
         stateManager.setMeta(undefined, amplifyMeta);
         stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
       } else {
@@ -529,6 +554,13 @@ async function packageResources(context, resources) {
           S3Key: s3Key,
         };
       }
+    } else if (resource.service === ApiServiceNameElasticContainer) {
+      const cfnParams = {
+        ParamZipPath: s3Key,
+      };
+
+      const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
+      context.amplify.writeObjectAsJson(cfnParamsFilePath, cfnParams, true);
     } else {
       if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
         cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
@@ -542,7 +574,6 @@ async function packageResources(context, resources) {
         };
       }
     }
-
     context.amplify.writeObjectAsJson(cfnFilePath, cfnMeta, true);
   };
 
@@ -715,8 +746,34 @@ async function formNestedStack(
   }
 
   const { amplifyMeta } = projectDetails;
-
   let authResourceName: string;
+
+  const { NetworkStackS3Url } = amplifyMeta.providers[constants.ProviderName];
+
+  if (NetworkStackS3Url) {
+    nestedStack.Resources[NETWORK_STACK_LOGICAL_ID] = {
+      Type: 'AWS::CloudFormation::Stack',
+      Properties: {
+        TemplateURL: NetworkStackS3Url,
+      },
+    };
+
+    nestedStack.Resources.DeploymentBucket.Properties['VersioningConfiguration'] = {
+      "Status": "Enabled"
+    };
+
+    nestedStack.Resources.DeploymentBucket.Properties['LifecycleConfiguration'] = {
+      "Rules": [
+        {
+          "ExpirationInDays": 7,
+          "NoncurrentVersionExpirationInDays": 7,
+          "Prefix": "codepipeline-amplify/",
+          "Status": "Enabled"
+        }
+      ]
+    };
+  }
+
   let categories = Object.keys(amplifyMeta);
 
   categories = categories.filter(category => category !== 'provider');
@@ -748,11 +805,11 @@ async function formNestedStack(
 
               const dependentResource = _.get(amplifyMeta, [dependsOn[i].category, dependsOn[i].resourceName], undefined);
 
-              if (!dependentResource) {
+              if (!dependentResource && dependsOn[i].category) {
                 throw new Error(`Cannot get resource: ${dependsOn[i].resourceName} from '${dependsOn[i].category}' category.`);
               }
 
-              if (dependentResource.serviceType === 'imported') {
+              if (dependentResource && dependentResource.serviceType === 'imported') {
                 const outputAttributeValue = _.get(dependentResource, ['output', dependsOn[i].attributes[j]], undefined);
 
                 if (!outputAttributeValue) {

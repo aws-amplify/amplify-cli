@@ -21,7 +21,7 @@ export class FeatureFlags {
   private newProjectDefaults: Readonly<FeatureFlagsEntry> = {};
   private existingProjectDefaults: Readonly<FeatureFlagsEntry> = {};
 
-  private constructor(private environmentProvider: CLIEnvironmentProvider, private projectPath: string, private useNewDefaults: boolean) {}
+  private constructor(private environmentProvider: CLIEnvironmentProvider, private projectPath: string, private useNewDefaults: boolean) { }
 
   public static initialize = async (
     environmentProvider: CLIEnvironmentProvider,
@@ -532,6 +532,24 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
+      },
+    ]);
+
+    this.registerFlag('frontend-ios', [
+      {
+        name: 'enableXcodeIntegration',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      }
+    ]);
+
+    this.registerFlag('auth', [
+      {
+        name: 'enableCaseInsensitivity',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
       },
     ]);
   };

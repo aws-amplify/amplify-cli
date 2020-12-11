@@ -117,7 +117,7 @@ export class VelocityTemplate {
       error: error
         ? {
             ...error,
-            type: error.extensions?.errorType || 'UnknowErrorType',
+            type: error.type || error.extensions?.errorType || 'UnknownErrorType',
             message: error.message || `Error: ${error}`,
           }
         : error,

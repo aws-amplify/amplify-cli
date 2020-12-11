@@ -268,11 +268,11 @@ export const cantMutateMultipleGSIAtUpdateTimeRule = (diffs: Diff[], currentBuil
 
     for (const diff of diffs) {
       if (
-        // implies a field was changed in a GSI after it was created.
-        // Path like:["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes", ... ]
+        // implies a field was changed in a GSI after it was created if it ends in GSI
+        // Path like: ["stacks","Todo.json","Resources","TodoTable","Properties","GlobalSecondaryIndexes" ]
         diff.kind === 'A' &&
         diff.path.length >= 6 &&
-        diff.path[5] === 'GlobalSecondaryIndexes'
+        diff.path.slice(-1)[0] === 'GlobalSecondaryIndexes'
       ) {
         const diffTableName = diff.path[3];
 
@@ -363,7 +363,9 @@ const loadDiffableProject = async (path: string, rootStackName: string): Promise
     diffableProject.stacks[key] = JSONUtilities.parse(project.stacks[key]);
   }
 
-  diffableProject.root = JSONUtilities.parse(project[rootStackName]);
+  if (project[rootStackName]) {
+    diffableProject.root = JSONUtilities.parse(project[rootStackName]);
+  }
 
   return diffableProject;
 };

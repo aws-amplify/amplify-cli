@@ -28,6 +28,7 @@ import {
   NONE_INT_VALUE,
   applyKeyConditionExpression,
   attributeTypeFromScalar,
+  isListType,
   toCamelCase,
   applyCompositeKeyConditionExpression,
 } from 'graphql-transformer-common';
@@ -323,6 +324,9 @@ export class ResourceFactory {
       const sortKeyField = relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName);
 
       if (sortKeyField) {
+        if (isListType(sortKeyField.type)) {
+          throw new InvalidDirectiveError(`sortField "${sortKeyField.name}" is a list. It should be a scalar.`);
+        }
         setup.push(applyKeyConditionExpression(String(keySchema[1].AttributeName), attributeTypeFromScalar(sortKeyField.type), 'query'));
       } else {
         setup.push(

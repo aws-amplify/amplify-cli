@@ -35,6 +35,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/analytics.test.ts',
   'src/__tests__/feature-flags.test.ts',
   'src/__tests__/schema-iterative-update-2.test.ts',
+  'src/__tests__/containers-api.test.ts',
   //<20m
   'src/__tests__/predictions.test.ts',
   'src/__tests__/hostingPROD.test.ts',

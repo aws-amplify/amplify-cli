@@ -43,8 +43,17 @@ import {
   graphqlName,
   toUpper,
   getDirectiveArgument,
+  isListType,
 } from 'graphql-transformer-common';
-import { makeModelConnectionType } from 'graphql-dynamodb-transformer';
+import {
+  makeModelConnectionType,
+  makeModelSortDirectionEnumObject,
+  makeScalarFilterInputs,
+  makeEnumFilterInputObjects,
+  makeModelXFilterInputObject,
+  makeAttributeTypeEnum,
+  CONDITIONS_MINIMUM_VERSION,
+} from 'graphql-dynamodb-transformer';
 import {
   ObjectTypeDefinitionNode,
   FieldDefinitionNode,
@@ -389,9 +398,45 @@ export class KeyTransformer extends Transformer {
       };
       ctx.putType(queryType);
 
+      // Create Sort Direction if it doesn't exist
+      if (!this.typeExist('ModelSortDirection', ctx)) {
+        const modelSortDirection = makeModelSortDirectionEnumObject();
+        ctx.addEnum(modelSortDirection);
+      }
+      this.generateFilterInputs(ctx, definition);
       this.generateModelXConnectionType(ctx, definition);
     }
   };
+
+  private generateFilterInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
+    const scalarFilters = makeScalarFilterInputs(this.supportsConditions(ctx));
+    for (const filter of scalarFilters) {
+      if (!this.typeExist(filter.name.value, ctx)) {
+        ctx.addInput(filter);
+      }
+    }
+
+    // Create the Enum filters
+    const enumFilters = makeEnumFilterInputObjects(def, ctx, this.supportsConditions(ctx));
+    for (const filter of enumFilters) {
+      if (!this.typeExist(filter.name.value, ctx)) {
+        ctx.addInput(filter);
+      }
+    }
+
+    // Create the ModelXFilterInput
+    const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx, this.supportsConditions(ctx));
+    if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
+      ctx.addInput(tableXQueryFilterInput);
+    }
+
+    if (this.supportsConditions(ctx)) {
+      const attributeTypeEnum = makeAttributeTypeEnum();
+      if (!this.typeExist(attributeTypeEnum.name.value, ctx)) {
+        ctx.addType(attributeTypeEnum);
+      }
+    }
+  }
 
   private generateModelXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
     const tableXConnectionName = ModelResourceIDs.ModelConnectionTypeName(def.name.value);
@@ -402,7 +447,6 @@ export class KeyTransformer extends Transformer {
     // Create the ModelXConnection
     const connectionType = blankObject(tableXConnectionName);
     ctx.addObject(connectionType);
-
     ctx.addObjectExtension(makeModelConnectionType(def.name.value));
   }
 
@@ -538,7 +582,7 @@ export class KeyTransformer extends Transformer {
         const ddbKeyType = attributeTypeFromType(existingField.type, ctx);
         if (this.isPrimaryKey(directive) && !isNonNullType(existingField.type)) {
           throw new InvalidDirectiveError(`The primary @key on type '${definition.name.value}' must reference non-null fields.`);
-        } else if (ddbKeyType !== 'S' && ddbKeyType !== 'N' && ddbKeyType !== 'B') {
+        } else if (ddbKeyType !== 'S' && ddbKeyType !== 'N') {
           throw new InvalidDirectiveError(`A @key on type '${definition.name.value}' cannot reference non-scalar field ${fieldName}.`);
         }
       }
@@ -691,6 +735,9 @@ export class KeyTransformer extends Transformer {
   private typeExist(type: string, ctx: TransformerContext): boolean {
     return Boolean(type in ctx.nodeMap);
   }
+  private supportsConditions(context: TransformerContext) {
+    return context.getTransformerVersion() >= CONDITIONS_MINIMUM_VERSION;
+  }
 }
 
 /**
@@ -710,6 +757,9 @@ function keySchema(args: KeyArguments) {
 }
 
 function attributeTypeFromType(type: TypeNode, ctx: TransformerContext) {
+  if (isListType(type)) {
+    return 'L';
+  }
   const baseTypeName = getBaseType(type);
   const ofType = ctx.getType(baseTypeName);
   if (ofType && ofType.kind === Kind.ENUM_TYPE_DEFINITION) {
@@ -934,7 +984,13 @@ function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: Direct
   const keys = args.fields;
   const keyTypes = keys.map(k => {
     const field = definition.fields.find(f => f.name.value === k);
-    return attributeTypeFromType(field.type, ctx);
+    const type = attributeTypeFromType(field.type, ctx);
+
+    if (type === 'L') {
+      throw new InvalidDirectiveError(`A @key on type '${definition.name.value}' cannot reference non-scalar field ${field.name}.`);
+    }
+
+    return type;
   });
 
   const expressions: Expression[] = [];

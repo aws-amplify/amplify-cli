@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.39.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.38.2...@aws-amplify/cli@4.39.0) (2020-12-11)
+
+
+### Bug Fixes
+
+* disabling local logging ([#6125](https://github.com/aws-amplify/amplify-cli/issues/6125)) ([89c9d8b](https://github.com/aws-amplify/amplify-cli/commit/89c9d8b6fe811cc45749062c65266d280f8f47e1))
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
+## [4.38.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.38.1...@aws-amplify/cli@4.38.2) (2020-12-09)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.38.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.38.0...@aws-amplify/cli@4.38.1) (2020-12-09)
+
+
+
+## 4.38.1 (2020-12-08)
+
+
+### Bug Fixes
+
+* check amplify/backend to determine project existence ([#6115](https://github.com/aws-amplify/amplify-cli/issues/6115)) ([4135a24](https://github.com/aws-amplify/amplify-cli/commit/4135a2428027d801c78e6877d0936f9753ba83e4))
+
+
+
+
+
 # [4.38.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.37.1...@aws-amplify/cli@4.38.0) (2020-12-07)
 
 
