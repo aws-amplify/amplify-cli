@@ -84,6 +84,7 @@ class CloudFormation {
     return new Promise(resolve => {
       this.pollQueue.once('empty', () => {
         const failedStacks = this.stackEvents.filter(ev => CNF_ERROR_STATUS.includes(ev.ResourceStatus));
+
         try {
           const trace = this.generateFailedStackErrorMsgs(failedStacks);
           console.log(`\n\n${chalk.reset.red.bold('Following resources failed')}\n`);
@@ -94,6 +95,10 @@ class CloudFormation {
           resolve();
         } catch (e) {
           Promise.reject(e);
+        } finally {
+          if (this.pollForEvents) {
+            clearInterval(this.pollForEvents);
+          }
         }
       });
     });
