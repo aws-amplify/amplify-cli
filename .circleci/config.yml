@@ -2111,6 +2111,7 @@ workflows:
                 - backendManager
                 - iterative-update
                 - release
+                - compute-functions
           requires:
             - build
       - build_pkg_binaries:
@@ -2260,6 +2261,7 @@ workflows:
             branches:
               only:
                 - master
+                - compute-functions
                 - iterative-update
           requires:
             - publish_to_local_registry
