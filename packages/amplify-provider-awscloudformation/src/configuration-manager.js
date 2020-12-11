@@ -405,7 +405,7 @@ function validateConfig(context) {
 
 function persistLocalEnvConfig(context) {
   let { awsConfigInfo } = context.exeInfo;
-  const { appId } = _.get(context, ['exeInfo', 'inputParams', 'amplify'], undefined);
+  const { appId } = _.get(context, ['exeInfo', 'inputParams', 'amplify'], {});
   if (appId && doAdminCredentialsExist(appId)) {
     awsConfigInfo = {
       configLevel: 'amplifyAdmin',
