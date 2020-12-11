@@ -57,9 +57,11 @@ export function loadDiffableProject(path: string, rootStackName: string): Diffab
     root: {},
   };
   for (const key of Object.keys(currentStacks)) {
-    diffableProject.stacks[key] = JSON.parse(project.stacks[key]);
+    diffableProject.stacks[key] = JSONUtilities.parse(project.stacks[key]);
   }
-  diffableProject.root = JSON.parse(project[rootStackName]);
+  if (project[rootStackName]) {
+    diffableProject.root = JSONUtilities.parse(project[rootStackName]);
+  }
   return diffableProject;
 }
 

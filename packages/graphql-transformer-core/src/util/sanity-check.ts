@@ -363,7 +363,9 @@ const loadDiffableProject = async (path: string, rootStackName: string): Promise
     diffableProject.stacks[key] = JSONUtilities.parse(project.stacks[key]);
   }
 
-  diffableProject.root = JSONUtilities.parse(project[rootStackName]);
+  if (project[rootStackName]) {
+    diffableProject.root = JSONUtilities.parse(project[rootStackName]);
+  }
 
   return diffableProject;
 };
