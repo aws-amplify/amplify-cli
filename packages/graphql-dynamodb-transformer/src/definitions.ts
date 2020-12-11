@@ -42,12 +42,14 @@ const INT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'between'];
 const FLOAT_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'between'];
 const BOOLEAN_CONDITIONS = ['ne', 'eq'];
 const SIZE_CONDITIONS = ['ne', 'eq', 'le', 'lt', 'ge', 'gt', 'between'];
+const AWSJSON_CONDITIONS = ['ne', 'eq'];
 
 const STRING_FUNCTIONS = new Set<string>(['attributeExists', 'attributeType', 'size']);
 const ID_FUNCTIONS = new Set<string>(['attributeExists', 'attributeType', 'size']);
 const INT_FUNCTIONS = new Set<string>(['attributeExists', 'attributeType']);
 const FLOAT_FUNCTIONS = new Set<string>(['attributeExists', 'attributeType']);
 const BOOLEAN_FUNCTIONS = new Set<string>(['attributeExists', 'attributeType']);
+const AWSJSON_FUNCTIONS = new Set<string>(['attributeExists', 'attributeType']);
 
 const ATTRIBUTE_TYPES = ['binary', 'binarySet', 'bool', 'list', 'map', 'number', 'numberSet', 'string', 'stringSet', '_null'];
 
@@ -616,6 +618,8 @@ function getScalarConditions(type: string): string[] {
       return FLOAT_CONDITIONS;
     case 'Boolean':
       return BOOLEAN_CONDITIONS;
+    case 'AWSJSON':
+      return AWSJSON_CONDITIONS;
     default:
       throw new Error('Valid types are String, ID, Int, Float, Boolean');
   }
@@ -659,6 +663,8 @@ function getFunctionListForType(typeName: string): Set<string> {
       return FLOAT_FUNCTIONS;
     case 'Boolean':
       return BOOLEAN_FUNCTIONS;
+    case 'AWSJSON':
+      return AWSJSON_FUNCTIONS;
     default:
       throw new Error('Valid types are String, ID, Int, Float, Boolean');
   }
@@ -781,6 +787,7 @@ export function makeScalarFilterInputs(supportsConditions: Boolean): InputObject
     makeModelScalarFilterInputObject('Int', supportsConditions),
     makeModelScalarFilterInputObject('Float', supportsConditions),
     makeModelScalarFilterInputObject('Boolean', supportsConditions),
+    makeModelScalarFilterInputObject('AWSJSON', supportsConditions),
   ];
 
   if (supportsConditions) {
