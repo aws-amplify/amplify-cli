@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.28.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.28.0-beta.0...amplify-category-api@2.28.0-beta.1) (2020-12-11)
+
+
+### Bug Fixes
+
+* containers - don't wait for pipeline on hosting ([#6137](https://github.com/aws-amplify/amplify-cli/issues/6137)) ([c75d694](https://github.com/aws-amplify/amplify-cli/commit/c75d69436104cb974684b0ed48c743294f70d556))
+
+
+
+
+
 # [2.28.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.27.1...amplify-category-api@2.28.0-beta.0) (2020-12-10)
 
 
