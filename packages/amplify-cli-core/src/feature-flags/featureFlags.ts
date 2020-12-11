@@ -520,5 +520,14 @@ export class FeatureFlags {
         defaultValueForNewProjects: true,
       }
     ]);
+
+    this.registerFlag('auth', [
+      {
+        name: 'enableCaseInsensitivity',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+    ]);
   };
 }
