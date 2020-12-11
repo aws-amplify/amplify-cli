@@ -17,12 +17,18 @@ const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 export const migrateTeamProviderInfo = async (context: Context): Promise<boolean> => {
   // check if command executed in proj root and team provider has secrets
 
-  if (!isPulling(context) && pathManager.findProjectRoot()) {
+  if (!isInvalidEnvOrPulling(context) && pathManager.findProjectRoot()) {
     const authResourceName = teamProviderInfoGetAuthResourceNameHasSecrets();
-    if (!authResourceName) return true;
+
+    if (!authResourceName) {
+      return true;
+    }
+
     if (isYesFlagSet(context) || (await context.prompt.confirm(message))) {
       const authParams = stateManager.getResourceParametersJson(undefined, 'auth', authResourceName);
+
       moveSecretsFromTeamProviderToDeployment();
+
       await externalAuthEnable(context, undefined, undefined, authParams);
     } else {
       return false;
@@ -32,8 +38,13 @@ export const migrateTeamProviderInfo = async (context: Context): Promise<boolean
   return true;
 };
 
-function isPulling(context: Context): boolean {
+function isInvalidEnvOrPulling(context: Context): boolean {
+  if (!stateManager.localEnvInfoExists()) {
+    return true;
+  }
+
   const isPulling = context.input.command === 'pull' || context.input.command === 'init' || context.input.command === 'env';
+
   return isPulling;
 }
 
@@ -42,9 +53,9 @@ function teamProviderInfoGetAuthResourceNameHasSecrets(): any | undefined {
     const teamProviderInfo = stateManager.getTeamProviderInfo();
     const { envName } = stateManager.getLocalEnvInfo();
     const authResources = _.get(teamProviderInfo, [envName, 'categories', 'auth']);
+
     if (authResources) {
       return _.find(Object.keys(authResources), resource => _.has(authResources, [resource, hostedUIProviderCredsField]));
     }
   }
-  return;
 }
