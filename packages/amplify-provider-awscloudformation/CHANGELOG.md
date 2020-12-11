@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.35.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.31.0...amplify-provider-awscloudformation@4.35.0) (2020-12-11)
+
+
+### Bug Fixes
+
+* fixed requires referencing 'src' ([#6058](https://github.com/aws-amplify/amplify-cli/issues/6058)) ([820e733](https://github.com/aws-amplify/amplify-cli/commit/820e733cced0360c965edaf75cb6dd09d30af2ab))
+* imported s3 bucket us-east-1 not getting region assigned ([#5938](https://github.com/aws-amplify/amplify-cli/issues/5938)) ([200405f](https://github.com/aws-amplify/amplify-cli/commit/200405fad98f68e3b8218206996fe1079d3c2563))
+* incorrect params and return value ([#6070](https://github.com/aws-amplify/amplify-cli/issues/6070)) ([1ffdd27](https://github.com/aws-amplify/amplify-cli/commit/1ffdd27b8393f15912f016163de65d1e3821c23a))
+* version bucket conditional ([#6131](https://github.com/aws-amplify/amplify-cli/issues/6131)) ([9c4281f](https://github.com/aws-amplify/amplify-cli/commit/9c4281ff62241c00c5a93700f23ee7613b18ac39))
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+
+
+### Reverts
+
+* **amplify-provider-awscloudformation:** removed cfn logging ([#6119](https://github.com/aws-amplify/amplify-cli/issues/6119)) ([a7f7f26](https://github.com/aws-amplify/amplify-cli/commit/a7f7f26676076dc2209b10f75dc8b5d992057f4a))
+
+
+
+# 4.35.0 (2020-11-23)
+
+
+### Features
+
+* add root stack description to the root stack in the initializer ([#5927](https://github.com/aws-amplify/amplify-cli/issues/5927)) ([af06e42](https://github.com/aws-amplify/amplify-cli/commit/af06e42e5f8385c6507d05b9075deddf0c274b02))
+
+
+
+
+
 ## [4.34.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.34.0...amplify-provider-awscloudformation@4.34.1) (2020-12-09)
 
 

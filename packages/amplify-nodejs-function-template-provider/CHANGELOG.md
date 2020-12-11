@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.5.1...amplify-nodejs-function-template-provider@1.6.0) (2020-12-11)
+
+
+### Bug Fixes
+
+* added CORS headers to allow all type ([#6027](https://github.com/aws-amplify/amplify-cli/issues/6027)) ([74debca](https://github.com/aws-amplify/amplify-cli/commit/74debca39a4222b18bfbaddb872013b60da785de))
+* fixed core references ([#6069](https://github.com/aws-amplify/amplify-cli/issues/6069)) ([32446ac](https://github.com/aws-amplify/amplify-cli/commit/32446ac77a5064bee928544861b8a70fba556d51))
+* update snapshot ([#6074](https://github.com/aws-amplify/amplify-cli/issues/6074)) ([747d290](https://github.com/aws-amplify/amplify-cli/commit/747d2902917ab75aed082dd8094de4c11c37fc3e))
+
+
+
+
+
 ## [1.5.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.5.1...amplify-nodejs-function-template-provider@1.5.2) (2020-12-07)
 
 

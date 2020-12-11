@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.18.1...amplify-frontend-javascript@2.20.0) (2020-12-11)
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+
+
+
+
+
 ## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.19.0...amplify-frontend-javascript@2.19.1) (2020-12-07)
 
 **Note:** Version bump only for package amplify-frontend-javascript

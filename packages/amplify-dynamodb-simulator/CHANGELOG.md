@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.16.1...amplify-dynamodb-simulator@1.18.0) (2020-12-11)
+
+
+### Features
+
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+
+
+
+
+
 ## [1.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.17.0...amplify-dynamodb-simulator@1.17.1) (2020-12-07)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.26.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.23.1...graphql-transformer-core@6.26.0) (2020-12-11)
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+
+
+
+
+
 # [6.25.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.24.0...graphql-transformer-core@6.25.0) (2020-12-07)
 
 

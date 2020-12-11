@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.18.1...amplify-app@2.21.0) (2020-12-11)
+
+
+### Bug Fixes
+
+* bump min version of cli required by amplify-app ([#6056](https://github.com/aws-amplify/amplify-cli/issues/6056)) ([fff597b](https://github.com/aws-amplify/amplify-cli/commit/fff597bb75d4318a97f5a9ed2c5671ab884c3084))
+* check amplify/backend to determine project existence ([#6115](https://github.com/aws-amplify/amplify-cli/issues/6115)) ([4135a24](https://github.com/aws-amplify/amplify-cli/commit/4135a2428027d801c78e6877d0936f9753ba83e4))
+* use profile as key when asking for profile ([#5861](https://github.com/aws-amplify/amplify-cli/issues/5861)) ([b67278d](https://github.com/aws-amplify/amplify-cli/commit/b67278ddb9e85dfa709885b84adf937450346c42)), closes [#5394](https://github.com/aws-amplify/amplify-cli/issues/5394)
+
+
+### Features
+
+* pre-deploy pull, new login mechanism and pkg cli updates ([#5941](https://github.com/aws-amplify/amplify-cli/issues/5941)) ([7274251](https://github.com/aws-amplify/amplify-cli/commit/7274251faadc1035acce5f44699b172e10e2e67d))
+* **iOS:** execute `amplify-app` flow on `init ` and `codegen models` ([#5917](https://github.com/aws-amplify/amplify-cli/issues/5917)) ([c47c8f7](https://github.com/aws-amplify/amplify-cli/commit/c47c8f78b37806181354d3842a2094c35b1795d0))
+
+
+### Reverts
+
+* Revert "feat(iOS): execute `amplify-app` flow on `init ` and `codegen models` (#5917)" (#5960) ([cd7951a](https://github.com/aws-amplify/amplify-cli/commit/cd7951ab6d26f1206c2f0ff95225ba7b2a5a25eb)), closes [#5917](https://github.com/aws-amplify/amplify-cli/issues/5917) [#5960](https://github.com/aws-amplify/amplify-cli/issues/5960)
+
+
+
+
+
 ## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.20.1...amplify-app@2.20.2) (2020-12-09)
 
 
