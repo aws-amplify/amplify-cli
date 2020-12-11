@@ -126,6 +126,7 @@ describe('process connection', () => {
         expect(connectionInfo.kind).toEqual(CodeGenConnectionType.HAS_ONE);
         expect(connectionInfo.associatedWith).toEqual(modelMap.License.fields[0]);
         expect(connectionInfo.isConnectingFieldAutoCreated).toEqual(true);
+        expect(connectionInfo.targetName).toEqual("personLicenseId");
       });
 
       it('should return BELONGS_TO License.person field', () => {
