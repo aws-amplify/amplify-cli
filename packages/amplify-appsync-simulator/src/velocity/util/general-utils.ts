@@ -5,6 +5,7 @@ import { JavaArray } from '../value-mapper/array';
 import { JavaMap } from '../value-mapper/map';
 import jsStringEscape from 'js-string-escape';
 import { GraphQLResolveInfo, FieldNode } from 'graphql';
+
 export const generalUtils = {
   errors: [],
   quiet: () => '',
@@ -30,7 +31,7 @@ export const generalUtils = {
     return JSON.parse(value);
   },
   toJson(value) {
-    return value ? JSON.stringify(value) : JSON.stringify(null);
+    return value !== undefined ? JSON.stringify(value) : JSON.stringify(null);
   },
   autoId() {
     return autoId();
