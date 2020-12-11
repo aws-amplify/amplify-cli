@@ -110,13 +110,6 @@ input ModelBooleanInput {
   attributeType: ModelAttributeTypes
 }
 
-input ModelAWSJSONInput {
-  ne: AWSJSON
-  eq: AWSJSON
-  attributeExists: Boolean
-  attributeType: ModelAttributeTypes
-}
-
 input ModelSizeInput {
   ne: Int
   eq: Int
@@ -405,13 +398,6 @@ input ModelFloatInput {
 input ModelBooleanInput {
   ne: Boolean
   eq: Boolean
-  attributeExists: Boolean
-  attributeType: ModelAttributeTypes
-}
-
-input ModelAWSJSONInput {
-  ne: AWSJSON
-  eq: AWSJSON
   attributeExists: Boolean
   attributeType: ModelAttributeTypes
 }
