@@ -14,6 +14,6 @@ export function removeGetUserEndpoints(resourceName) {
   _.remove(unAuthAction, action => action === 'mobiletargeting:GetUserEndpoints');
   _.remove(authAction, action => action === 'mobiletargeting:GetUserEndpoints');
   _.set(pinpointTemplateFile, 'Resources.CognitoUnauthPolicy.Properties.PolicyDocument.Statement[0].Action', unAuthAction);
-  _.set(pinpointTemplateFile, 'Resources.CognitoUnauthPolicy.Properties.PolicyDocument.Statement[0].Action', authAction);
+  _.set(pinpointTemplateFile, 'Resources.CognitoAuthPolicy.Properties.PolicyDocument.Statement[0].Action', authAction);
   JSONUtilities.writeJson(pinpointTemplateFilePath, pinpointTemplateFile);
 }
