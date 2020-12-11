@@ -25,8 +25,9 @@ export function invoke(options: InvokeOptions): Promise<any> {
           const result = JSON.parse(lastLine);
           if (result.error) {
             reject(result.error);
+          } else {
+            resolve(result.result);
           }
-          resolve(result.result);
         } catch {
           resolve(lastLine);
         }
