@@ -43,6 +43,7 @@ import {
   graphqlName,
   toUpper,
   getDirectiveArgument,
+  isListType,
 } from 'graphql-transformer-common';
 import { makeModelConnectionType } from 'graphql-dynamodb-transformer';
 import {
@@ -538,7 +539,7 @@ export class KeyTransformer extends Transformer {
         const ddbKeyType = attributeTypeFromType(existingField.type, ctx);
         if (this.isPrimaryKey(directive) && !isNonNullType(existingField.type)) {
           throw new InvalidDirectiveError(`The primary @key on type '${definition.name.value}' must reference non-null fields.`);
-        } else if (ddbKeyType !== 'S' && ddbKeyType !== 'N' && ddbKeyType !== 'B') {
+        } else if (ddbKeyType !== 'S' && ddbKeyType !== 'N') {
           throw new InvalidDirectiveError(`A @key on type '${definition.name.value}' cannot reference non-scalar field ${fieldName}.`);
         }
       }
@@ -710,6 +711,9 @@ function keySchema(args: KeyArguments) {
 }
 
 function attributeTypeFromType(type: TypeNode, ctx: TransformerContext) {
+  if (isListType(type)) {
+    return 'L';
+  }
   const baseTypeName = getBaseType(type);
   const ofType = ctx.getType(baseTypeName);
   if (ofType && ofType.kind === Kind.ENUM_TYPE_DEFINITION) {
@@ -934,7 +938,13 @@ function setQuerySnippet(definition: ObjectTypeDefinitionNode, directive: Direct
   const keys = args.fields;
   const keyTypes = keys.map(k => {
     const field = definition.fields.find(f => f.name.value === k);
-    return attributeTypeFromType(field.type, ctx);
+    const type = attributeTypeFromType(field.type, ctx);
+
+    if (type === 'L') {
+      throw new InvalidDirectiveError(`A @key on type '${definition.name.value}' cannot reference non-scalar field ${field.name}.`);
+    }
+
+    return type;
   });
 
   const expressions: Expression[] = [];

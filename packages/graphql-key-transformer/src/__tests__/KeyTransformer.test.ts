@@ -27,14 +27,14 @@ test('Check KeyTransformer Resolver Code', () => {
 });
 test('KeyTransformer should fail if more than 1 @key is provided without a name.', () => {
   const invalidSchema = `
-    type Test @key(fields: ["id"]) @key(fields: ["email"]) {
+    type Test @model @key(fields: ["id"]) @key(fields: ["email"]) {
         id: ID!
         email: String
     }
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
@@ -42,14 +42,14 @@ test('KeyTransformer should fail if more than 1 @key is provided without a name.
 
 test('KeyTransformer should fail if more than 1 @key is provided with the same name.', () => {
   const invalidSchema = `
-    type Test @key(name: "Test", fields: ["id"]) @key(name: "Test", fields: ["email"]) {
+    type Test @model @key(name: "Test", fields: ["id"]) @key(name: "Test", fields: ["email"]) {
         id: ID!
         email: String
     }
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
@@ -57,14 +57,14 @@ test('KeyTransformer should fail if more than 1 @key is provided with the same n
 
 test('KeyTransformer should fail if referencing a field that does not exist.', () => {
   const invalidSchema = `
-    type Test @key(fields: ["someWeirdId"]) {
+    type Test @model @key(fields: ["someWeirdId"]) {
         id: ID!
         email: String
     }
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
@@ -72,14 +72,14 @@ test('KeyTransformer should fail if referencing a field that does not exist.', (
 
 test('Test that a primary @key fails if pointing to nullable fields.', () => {
   const invalidSchema = `
-    type Test @key(fields: ["email"]) {
+    type Test @model @key(fields: ["email"]) {
         id: ID!
         email: String
     }
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
@@ -87,28 +87,43 @@ test('Test that a primary @key fails if pointing to nullable fields.', () => {
 
 test('Test that model with an LSI but no primary sort key will fail.', () => {
   const invalidSchema = `
-    type Test @key(fields: ["id"]) @key(name: "SomeLSI", fields: ["id", "email"]) {
+    type Test @model @key(fields: ["id"]) @key(name: "SomeLSI", fields: ["id", "email"]) {
         id: ID!
         email: String!
     }
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
 });
 
 test('KeyTransformer should fail if a non-existing type field is defined as key field.', () => {
   const invalidSchema = `
-    type Test @key(name: "Test", fields: ["one"]) {
+    type Test @model @key(name: "Test", fields: ["one"]) {
         id: ID!
         email: String
     }
     `;
 
   const transformer = new GraphQLTransform({
-    transformers: [new KeyTransformer()],
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+
+  expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
+});
+
+test('KeyTransformer should fail if a list type field is defined as key field.', () => {
+  const invalidSchema = `
+    type Test @model @key(name: "Test", fields: ["emails"]) {
+        id: ID!
+        emails: [String!]!
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
