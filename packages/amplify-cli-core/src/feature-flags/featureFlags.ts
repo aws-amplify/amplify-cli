@@ -511,5 +511,14 @@ export class FeatureFlags {
         defaultValueForNewProjects: false,
       },
     ]);
+
+    this.registerFlag('frontend-ios', [
+      {
+        name: 'enableXcodeIntegration',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      }
+    ]);
   };
 }
