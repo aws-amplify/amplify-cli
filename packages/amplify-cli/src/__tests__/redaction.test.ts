@@ -43,32 +43,6 @@ describe('input-redaction', () => {
     expect(redactedCategoriesJsonFromOptions.notifications.Pinpoint.FCM.ApiKey).toEqual(replacementstring);
     const deletedInput = redactInput(input, true, replacementstring);
     expect(deletedInput.argv).toBeFalsy();
-    expect(deletedInput.options).toEqual({});
-  });
-
-  it('should let sandboxId through', () => {
-    const redactedInput = redactInput(
-      {
-        argv: [],
-        options: {
-          sandboxId: '12321',
-          appID: '56345',
-        },
-      },
-      true,
-    );
-    expect(redactedInput.options?.sandboxId).toBeTruthy();
-    expect(redactedInput.options?.appID).toBeFalsy();
-  });
-
-  it('should let sandboxId through', () => {
-    const redactedInput = redactInput(
-      {
-        argv: [],
-        options: undefined,
-      },
-      true,
-    );
-    expect(redactedInput.options).toBeFalsy();
+    expect(deletedInput.options).toBeFalsy();
   });
 });
