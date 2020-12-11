@@ -21,7 +21,7 @@ export class EcsAlbStack extends ContainersStack {
   constructor(scope: cdk.Construct, id: string, private readonly ecsProps: EcsStackProps) {
     super(scope, id, {
       ...ecsProps,
-      skipWait: false,
+      skipWait: true,
       createCloudMapService: false,
     });
 
