@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { pathManager, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
 
