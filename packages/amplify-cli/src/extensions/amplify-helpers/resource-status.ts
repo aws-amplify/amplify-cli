@@ -180,7 +180,12 @@ async function getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, category
   await asyncForEach(Object.keys(amplifyMeta), async categoryName => {
     const categoryItem = amplifyMeta[categoryName];
     await asyncForEach(Object.keys(categoryItem), async resource => {
-      if (categoryName === 'analytics') {
+      if (
+        categoryName === 'analytics' &&
+        amplifyMeta[categoryName] &&
+        amplifyMeta[categoryName][resource] &&
+        amplifyMeta[categoryName][resource].service === 'Pinpoint'
+      ) {
         removeGetUserEndpoints(resource);
       }
       if (
