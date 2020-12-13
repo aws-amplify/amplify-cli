@@ -10,7 +10,7 @@ export async function downloadAPIModels(context: $TSContext, allResources) {
 
   const framework = projectConfig.frontend;
 
-  if (framework === 'javascript') {
+  if (['javascript', 'flutter'].includes(framework)) {
     return;
   }
 
