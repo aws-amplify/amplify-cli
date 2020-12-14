@@ -1,15 +1,15 @@
-import type AWS from "aws-sdk";
+import AWS from 'aws-sdk';
 import aws from './aws';
-import configurationManager from "../configuration-manager";
-
+import { loadConfiguration } from '../configuration-manager';
+import { $TSContext } from 'amplify-cli-core';
 class ECR {
   public ecr: AWS.ECR;
 
-  constructor(private readonly context: any, options = {}) {
+  constructor(private readonly context: $TSContext, options = {}) {
     const instancePromise = (async () => {
       let cred = {};
       try {
-        cred = await configurationManager.loadConfiguration(context);
+        cred = await loadConfiguration(context);
       } catch (e) {
         // ignore missing config
       }
@@ -19,7 +19,7 @@ class ECR {
       return this;
     })();
 
-    return <ECR><unknown>instancePromise;
+    return <ECR>(<unknown>instancePromise);
   }
 }
 
