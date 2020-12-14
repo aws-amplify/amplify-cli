@@ -52,7 +52,7 @@ export async function init(context: $TSContext) {
   }
   normalizeInputParams(context);
 
-  let appId;
+  let appId: string;
   try {
     appId = resolveAppId(context);
   } catch (e) {
