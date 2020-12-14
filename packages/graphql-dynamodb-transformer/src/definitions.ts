@@ -31,7 +31,6 @@ import {
   makeValueNode,
   withNamedNodeNamed,
   isListType,
-  isScalarOrScalarList,
 } from 'graphql-transformer-common';
 import { TransformerContext } from 'graphql-transformer-core';
 import { getCreatedAtFieldName, getUpdatedAtFieldName } from './ModelDirectiveArgs';
@@ -60,7 +59,7 @@ export function getNonModelObjectArray(
 ): ObjectTypeDefinitionNode[] {
   // loop over all fields in the object, picking out all nonscalars that are not @model types
   for (const field of obj.fields) {
-    if (!isScalarOrScalarList(field.type)) {
+    if (!isScalar(field.type)) {
       const def = ctx.getType(getBaseType(field.type));
 
       if (
@@ -150,7 +149,7 @@ export function makeCreateInputObject(
     .filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.getType(getBaseType(field.type));
       if (
-        isScalarOrScalarList(field.type) ||
+        isScalar(field.type) ||
         nonModelTypes.find(e => e.name.value === getBaseType(field.type)) ||
         (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
       ) {
@@ -217,7 +216,7 @@ export function makeUpdateInputObject(
     .filter(f => {
       const fieldType = ctx.getType(getBaseType(f.type));
       if (
-        isScalarOrScalarList(f.type) ||
+        isScalar(f.type) ||
         nonModelTypes.find(e => e.name.value === getBaseType(f.type)) ||
         (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)
       ) {
@@ -306,7 +305,7 @@ export function makeModelXFilterInputObject(
   const fields: InputValueDefinitionNode[] = obj.fields
     .filter((field: FieldDefinitionNode) => {
       const fieldType = ctx.getType(getBaseType(field.type));
-      if (isScalarOrScalarList(field.type) || (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)) {
+      if (isScalar(field.type) || (fieldType && fieldType.kind === Kind.ENUM_TYPE_DEFINITION)) {
         return true;
       }
     })

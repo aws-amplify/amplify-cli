@@ -554,7 +554,6 @@ test('Many-to-many without conflict resolution generates correct schema', () => 
     type Post @model {
       id: ID!
       title: String!
-      frontMatter: [FrontMatter]
       editors: [PostEditor] @connection(keyName: "byPost", fields: ["id"])
     }
 
@@ -575,11 +574,6 @@ test('Many-to-many without conflict resolution generates correct schema', () => 
       id: ID!
       username: String!
       posts: [PostEditor] @connection(keyName: "byEditor", fields: ["id"])
-    }
-
-    type FrontMatter {
-      name: String
-      value: String
     }
   `;
 

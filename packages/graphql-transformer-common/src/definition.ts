@@ -67,7 +67,7 @@ export const MAP_SCALARS: { [k: string]: boolean } = {
   AWSJSON: true,
 };
 
-export function attributeTypeFromScalar(scalar: NamedTypeNode | NonNullTypeNode): 'S' | 'N' {
+export function attributeTypeFromScalar(scalar: TypeNode): 'S' | 'N' {
   const baseType = getBaseType(scalar);
   const baseScalar = DEFAULT_SCALARS[baseType];
   if (!baseScalar) {
@@ -87,37 +87,27 @@ export function attributeTypeFromScalar(scalar: NamedTypeNode | NonNullTypeNode)
   }
 }
 
-export function isScalar(type: TypeNode): type is NamedTypeNode | NonNullTypeNode {
+export function isScalar(type: TypeNode) {
   if (type.kind === Kind.NON_NULL_TYPE) {
     return isScalar(type.type);
   } else if (type.kind === Kind.LIST_TYPE) {
-    return false;
+    return isScalar(type.type);
   } else {
     return Boolean(DEFAULT_SCALARS[type.name.value]);
   }
 }
 
-export function isScalarOrEnum(type: TypeNode, enums: EnumTypeDefinitionNode[]): type is NamedTypeNode | NonNullTypeNode {
+export function isScalarOrEnum(type: TypeNode, enums: EnumTypeDefinitionNode[]) {
   if (type.kind === Kind.NON_NULL_TYPE) {
     return isScalarOrEnum(type.type, enums);
   } else if (type.kind === Kind.LIST_TYPE) {
-    return false;
+    return isScalarOrEnum(type.type, enums);
   } else {
     for (const e of enums) {
       if (e.name.value === type.name.value) {
         return true;
       }
     }
-    return Boolean(DEFAULT_SCALARS[type.name.value]);
-  }
-}
-
-export function isScalarOrScalarList(type: TypeNode): boolean {
-  if (type.kind === Kind.NON_NULL_TYPE) {
-    return isScalar(type.type);
-  } else if (type.kind === Kind.LIST_TYPE) {
-    return isScalar(type.type);
-  } else {
     return Boolean(DEFAULT_SCALARS[type.name.value]);
   }
 }
@@ -132,7 +122,7 @@ export function getBaseType(type: TypeNode): string {
   }
 }
 
-export function isListType(type: TypeNode): type is ListTypeNode {
+export function isListType(type: TypeNode): boolean {
   if (type.kind === Kind.NON_NULL_TYPE) {
     return isListType(type.type);
   } else if (type.kind === Kind.LIST_TYPE) {
@@ -142,7 +132,7 @@ export function isListType(type: TypeNode): type is ListTypeNode {
   }
 }
 
-export function isNonNullType(type: TypeNode): type is NonNullTypeNode {
+export function isNonNullType(type: TypeNode): boolean {
   return type.kind === Kind.NON_NULL_TYPE;
 }
 
