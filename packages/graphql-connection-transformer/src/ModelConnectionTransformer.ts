@@ -281,19 +281,13 @@ export class ModelConnectionTransformer extends Transformer {
     // We use this to configure key condition arguments for the resolver on the many side of the @connection.
     const foreignAssociatedSortField =
       associatedSortFieldName && relatedType.fields.find((f: FieldDefinitionNode) => f.name.value === associatedSortFieldName);
-
-    let sortKeyInfo = undefined;
-
-    if (foreignAssociatedSortField) {
-      if (isListType(foreignAssociatedSortField.type)) {
-        throw new InvalidDirectiveError(`sortField "${foreignAssociatedSortField}" is a list. It should be a scalar.`);
-      }
-      sortKeyInfo = {
-        fieldName: foreignAssociatedSortField.name.value,
-        attributeType: attributeTypeFromScalar(foreignAssociatedSortField.type),
-        typeName: getBaseType(foreignAssociatedSortField.type),
-      }
-    }
+    const sortKeyInfo = foreignAssociatedSortField
+      ? {
+          fieldName: foreignAssociatedSortField.name.value,
+          attributeType: attributeTypeFromScalar(foreignAssociatedSortField.type),
+          typeName: getBaseType(foreignAssociatedSortField.type),
+        }
+      : undefined;
 
     // Relationship Cardinalities:
     // 1. [] to []
