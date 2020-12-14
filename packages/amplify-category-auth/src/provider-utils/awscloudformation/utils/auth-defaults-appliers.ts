@@ -1,6 +1,6 @@
 import { ServiceQuestionsResult } from '../service-walkthrough-types';
 import { verificationBucketName } from './verification-bucket-name';
-import { assign, isEmpty } from 'lodash';
+import { isEmpty, merge } from 'lodash';
 import { structureOAuthMetadata } from '../service-walkthroughs/auth-questions';
 import { removeDeprecatedProps } from './synthesize-resources';
 import { immutableAttributes, safeDefaults } from '../constants';
@@ -18,7 +18,7 @@ export const getAddAuthDefaultsApplier = (context: any, defaultValuesFilename: s
   result: ServiceQuestionsResult,
 ): Promise<ServiceQuestionsResult> => {
   const { functionMap, generalDefaults, roles, getAllDefaults } = await import(`../assets/${defaultValuesFilename}`);
-  result = assign(generalDefaults(projectName), result);
+  result = merge(generalDefaults(projectName), result);
 
   await verificationBucketName(result);
 
@@ -32,7 +32,7 @@ export const getAddAuthDefaultsApplier = (context: any, defaultValuesFilename: s
 
   /* merge actual answers object into props object,
    * ensuring that manual entries override defaults */
-  return assign(functionMap[result.authSelections](result.resourceName), result, roles);
+  return merge(functionMap[result.authSelections](result.resourceName), result, roles);
 };
 
 export const getUpdateAuthDefaultsApplier = (context: any, defaultValuesFilename: string, previousResult: ServiceQuestionsResult) => async (
@@ -60,5 +60,5 @@ export const getUpdateAuthDefaultsApplier = (context: any, defaultValuesFilename
   if (!isEmpty(result.triggers)) {
     previousResult.triggers = Object.assign({}, result.triggers);
   }
-  return assign(defaults, removeDeprecatedProps(previousResult), result);
+  return merge(defaults, removeDeprecatedProps(previousResult), result);
 };
