@@ -124,11 +124,6 @@ input ModelBooleanFilterInput {
   eq: Boolean
 }
 
-input ModelAWSJSONFilterInput {
-  ne: AWSJSON
-  eq: AWSJSON
-}
-
 input ModelPostFilterInput {
   id: ModelIDFilterInput
   title: ModelStringFilterInput
@@ -343,11 +338,6 @@ input ModelFloatFilterInput {
 input ModelBooleanFilterInput {
   ne: Boolean
   eq: Boolean
-}
-
-input ModelAWSJSONFilterInput {
-  ne: AWSJSON
-  eq: AWSJSON
 }
 
 input ModelPostFilterInput {
@@ -619,11 +609,6 @@ input ModelBooleanFilterInput {
   eq: Boolean
 }
 
-input ModelAWSJSONFilterInput {
-  ne: AWSJSON
-  eq: AWSJSON
-}
-
 input ModelPostFilterInput {
   id: ModelIDFilterInput
   title: ModelStringFilterInput
@@ -816,11 +801,6 @@ input ModelFloatFilterInput {
 input ModelBooleanFilterInput {
   ne: Boolean
   eq: Boolean
-}
-
-input ModelAWSJSONFilterInput {
-  ne: AWSJSON
-  eq: AWSJSON
 }
 
 input ModelPostFilterInput {
@@ -1030,11 +1010,6 @@ input ModelFloatFilterInput {
 input ModelBooleanFilterInput {
   ne: Boolean
   eq: Boolean
-}
-
-input ModelAWSJSONFilterInput {
-  ne: AWSJSON
-  eq: AWSJSON
 }
 
 input ModelPostFilterInput {
