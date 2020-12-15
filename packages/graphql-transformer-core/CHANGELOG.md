@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.25.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.25.0...graphql-transformer-core@6.25.1-beta.1) (2020-12-15)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** fix gsi mutate san check ([#6095](https://github.com/aws-amplify/amplify-cli/issues/6095)) ([37d08d9](https://github.com/aws-amplify/amplify-cli/commit/37d08d941421fe030bb454e7f417b3198a4b04ac)), closes [#6013](https://github.com/aws-amplify/amplify-cli/issues/6013)
+* [#6097](https://github.com/aws-amplify/amplify-cli/issues/6097) - check for root stack when loading projects for sanity check ([#6121](https://github.com/aws-amplify/amplify-cli/issues/6121)) ([6ebe735](https://github.com/aws-amplify/amplify-cli/commit/6ebe735fddca83532b2e327cb2008729a8103d55))
+* [#6123](https://github.com/aws-amplify/amplify-cli/issues/6123) - add missing amplify-cli-core dependencies to packages ([#6124](https://github.com/aws-amplify/amplify-cli/issues/6124)) ([e6519f2](https://github.com/aws-amplify/amplify-cli/commit/e6519f2dd81d2983b797f226d723a73a25967d25))
+
+
+
+
+
 ## [6.25.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.25.0...graphql-transformer-core@6.25.1-beta.0) (2020-12-15)
 
 

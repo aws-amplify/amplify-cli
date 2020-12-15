@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.13.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.12.0...amplify-cli-core@1.13.0-beta.1) (2020-12-15)
+
+
+### Bug Fixes
+
+* [#4175](https://github.com/aws-amplify/amplify-cli/issues/4175) ([#6065](https://github.com/aws-amplify/amplify-cli/issues/6065)) ([85b1ae3](https://github.com/aws-amplify/amplify-cli/commit/85b1ae31253d06718e13a2e2ff8cca3fc1931073))
+* provide better error message when unknown feature flags are present ([#6114](https://github.com/aws-amplify/amplify-cli/issues/6114)) ([d452e83](https://github.com/aws-amplify/amplify-cli/commit/d452e83c19bc6c4002a851c68b3961fc135f3689))
+
+
+### Features
+
+* **amplify-frontend-ios:** xcode integration feature flag ([#6072](https://github.com/aws-amplify/amplify-cli/issues/6072)) ([d7327ca](https://github.com/aws-amplify/amplify-cli/commit/d7327ca50b163c6104e99a112b8f5c5201e0bbbf))
+
+
+
+
+
 # [1.13.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.12.0...amplify-cli-core@1.13.0-beta.0) (2020-12-15)
 
 

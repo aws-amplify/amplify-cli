@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.35.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.35.0...amplify-provider-awscloudformation@4.35.1-beta.1) (2020-12-15)
+
+
+### Bug Fixes
+
+* [#6097](https://github.com/aws-amplify/amplify-cli/issues/6097) - check for root stack when loading projects for sanity check ([#6121](https://github.com/aws-amplify/amplify-cli/issues/6121)) ([6ebe735](https://github.com/aws-amplify/amplify-cli/commit/6ebe735fddca83532b2e327cb2008729a8103d55))
+* [#6097](https://github.com/aws-amplify/amplify-cli/issues/6097) - don't create build folder during dryrun ([#6133](https://github.com/aws-amplify/amplify-cli/issues/6133)) ([b22e491](https://github.com/aws-amplify/amplify-cli/commit/b22e49173deb1654b97efa7967261caf7098a58b))
+* **amplify-provider-awscloudformation:** infinite loop on stack failure ([#6134](https://github.com/aws-amplify/amplify-cli/issues/6134)) ([af0ced4](https://github.com/aws-amplify/amplify-cli/commit/af0ced4b0b9ba153b83e5b35c0f11e57d62e9e82))
+* throw error on failed push ([#6186](https://github.com/aws-amplify/amplify-cli/issues/6186)) ([be93e6b](https://github.com/aws-amplify/amplify-cli/commit/be93e6b3a9071575864717840721502f0ddbe4ca))
+* undefined appId destructuring ([#6092](https://github.com/aws-amplify/amplify-cli/issues/6092)) ([b817664](https://github.com/aws-amplify/amplify-cli/commit/b817664e10c5c7469bf99058e1879e969ec92619))
+
+
+
+
+
 ## [4.35.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.35.0...amplify-provider-awscloudformation@4.35.1-beta.0) (2020-12-15)
 
 

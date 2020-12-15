@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.28.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.28.0...amplify-category-function@2.28.1-beta.1) (2020-12-15)
+
+
+### Bug Fixes
+
+* removes overwrite of current DependsOn ([#6040](https://github.com/aws-amplify/amplify-cli/issues/6040)) ([8866f45](https://github.com/aws-amplify/amplify-cli/commit/8866f45a1a2306c205b651c8e7c68d90f1092acb))
+
+
+
+
+
 ## [2.28.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.28.0...amplify-category-function@2.28.1-beta.0) (2020-12-15)
 
 
