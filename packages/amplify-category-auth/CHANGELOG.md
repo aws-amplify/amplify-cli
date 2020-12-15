@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.26.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.26.0...amplify-category-auth@2.26.1-beta.0) (2020-12-15)
+
+
+### Bug Fixes
+
+* [#4175](https://github.com/aws-amplify/amplify-cli/issues/4175) ([#6065](https://github.com/aws-amplify/amplify-cli/issues/6065)) ([85b1ae3](https://github.com/aws-amplify/amplify-cli/commit/85b1ae31253d06718e13a2e2ff8cca3fc1931073))
+* ensure auth selections overwrite defaults ([#6071](https://github.com/aws-amplify/amplify-cli/issues/6071)) ([4b22fb2](https://github.com/aws-amplify/amplify-cli/commit/4b22fb281ba1ba4efa6b9d41f736450f2a959cc7))
+
+
+### Reverts
+
+* Revert "fix: ensure auth selections overwrite defaults (#6071)" (#6179) ([05b88ad](https://github.com/aws-amplify/amplify-cli/commit/05b88ad1e8b9c286f38535ce8dfce58dc87d53fb)), closes [#6071](https://github.com/aws-amplify/amplify-cli/issues/6071) [#6179](https://github.com/aws-amplify/amplify-cli/issues/6179)
+
+
+
+
+
 # [2.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.25.1...amplify-category-auth@2.26.0) (2020-12-11)
 
 
