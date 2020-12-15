@@ -91,7 +91,9 @@ export async function run(context, resourceDefinition) {
 
         context.print.info(`${consoleUrl}\n`);
 
-        context.print.info(`It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.`)
+        context.print.info(
+          `It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.`,
+        );
       }
 
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'hosting') {
@@ -601,6 +603,7 @@ async function updateCloudFormationNestedStack(context, nestedStack, resourcesTo
     await cfnItem.updateResourceStack(path.normalize(path.join(backEndDir, providerName)), nestedStackFileName);
   } catch (error) {
     log(error);
+    throw error;
   }
 }
 
@@ -759,18 +762,18 @@ async function formNestedStack(
     };
 
     nestedStack.Resources.DeploymentBucket.Properties['VersioningConfiguration'] = {
-      "Status": "Enabled"
+      Status: 'Enabled',
     };
 
     nestedStack.Resources.DeploymentBucket.Properties['LifecycleConfiguration'] = {
-      "Rules": [
+      Rules: [
         {
-          "ExpirationInDays": 7,
-          "NoncurrentVersionExpirationInDays": 7,
-          "Prefix": "codepipeline-amplify/",
-          "Status": "Enabled"
-        }
-      ]
+          ExpirationInDays: 7,
+          NoncurrentVersionExpirationInDays: 7,
+          Prefix: 'codepipeline-amplify/',
+          Status: 'Enabled',
+        },
+      ],
     };
   }
 
