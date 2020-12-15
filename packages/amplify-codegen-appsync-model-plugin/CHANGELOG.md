@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.22.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.22.1...amplify-codegen-appsync-model-plugin@1.22.2-beta.0) (2020-12-15)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:** pass targetName for hasOne relationships ([#6031](https://github.com/aws-amplify/amplify-cli/issues/6031)) ([dc6bb85](https://github.com/aws-amplify/amplify-cli/commit/dc6bb85020bfe684e619e1e317615ab8048ce962))
+
+
+
+
+
 ## [1.22.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.22.0...amplify-codegen-appsync-model-plugin@1.22.1) (2020-12-03)
 
 

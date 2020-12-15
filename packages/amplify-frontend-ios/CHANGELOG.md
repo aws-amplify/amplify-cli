@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.18.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.17.2...amplify-frontend-ios@2.18.0-beta.0) (2020-12-15)
+
+
+### Features
+
+* **amplify-frontend-ios:** xcode integration feature flag ([#6072](https://github.com/aws-amplify/amplify-cli/issues/6072)) ([d7327ca](https://github.com/aws-amplify/amplify-cli/commit/d7327ca50b163c6104e99a112b8f5c5201e0bbbf))
+
+
+
+
+
 ## [2.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.17.1...amplify-frontend-ios@2.17.2) (2020-12-11)
 
 **Note:** Version bump only for package amplify-frontend-ios
