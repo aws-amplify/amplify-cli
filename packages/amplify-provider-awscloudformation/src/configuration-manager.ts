@@ -533,7 +533,7 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
       const errorMsg = `No credentials found for appId: ${appId}`;
       print.info('');
       print.error(errorMsg);
-      print.info(`If the appId is correct, try running amplify configure --appId ${appId}`);
+      print.info(`If the appId is correct, try running amplify configure --appId ${appId} --envName ${env}`);
       usageData.emitError(new Error(errorMsg));
       process.exit(1);
     }
