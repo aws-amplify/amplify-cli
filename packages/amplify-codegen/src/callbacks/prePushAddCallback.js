@@ -2,7 +2,7 @@ const { normalizeInputParams } = require('../utils/input-params-manager');
 const constants = require('../constants');
 const askShouldGenerateCode = require('../walkthrough/questions/generateCode');
 const addWalkThrough = require('../walkthrough/add');
-const { isCodegenConfigured } = require('../utils');
+const { getFrontEndHandler, isCodegenConfigured } = require('../utils');
 const prePushUpdateCallback = require('./prePushUpdateCallback');
 const path = require('path');
 const { isDataStoreEnabled } = require('graphql-transformer-core');
@@ -16,11 +16,15 @@ async function prePushAddCallback(context, resourceName) {
 
   let shouldGenerateCode = false;
   if (context.exeInfo.inputParams) {
-    normalizeInputParams(context);
-    const inputParams = context.exeInfo.inputParams[constants.Label];
-    const yesFlag = context.exeInfo.inputParams.yes;
+    const frontend = getFrontEndHandler(context);
 
-    shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, () => askShouldGenerateCode());
+    if (frontend !== 'flutter') {
+      normalizeInputParams(context);
+      const inputParams = context.exeInfo.inputParams[constants.Label];
+      const yesFlag = context.exeInfo.inputParams.yes;
+
+      shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, () => askShouldGenerateCode());
+    }
   } else {
     shouldGenerateCode = await askShouldGenerateCode();
   }
