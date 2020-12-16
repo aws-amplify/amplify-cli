@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.28.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.28.0...amplify-category-api@2.28.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* [#6123](https://github.com/aws-amplify/amplify-cli/issues/6123) - add missing amplify-cli-core dependencies to packages ([#6124](https://github.com/aws-amplify/amplify-cli/issues/6124)) ([e6519f2](https://github.com/aws-amplify/amplify-cli/commit/e6519f2dd81d2983b797f226d723a73a25967d25))
+
+
+
+
+
 # [2.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.27.1...amplify-category-api@2.28.0) (2020-12-11)
 
 

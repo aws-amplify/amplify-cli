@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.24.2...amplify-appsync-simulator@1.24.3) (2020-12-16)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** utils.toJson false value ([#5797](https://github.com/aws-amplify/amplify-cli/issues/5797)) ([cc1a74b](https://github.com/aws-amplify/amplify-cli/commit/cc1a74bc812e234ef18e736539507bac2e4d9a81))
+* [#6067](https://github.com/aws-amplify/amplify-cli/issues/6067) - nodejs mock return error from lambda ([#6096](https://github.com/aws-amplify/amplify-cli/issues/6096)) ([d6793c8](https://github.com/aws-amplify/amplify-cli/commit/d6793c8670e4874db23ca08b3d1d7cba4dd0e56e))
+
+
+
+
+
 ## [1.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.24.1...amplify-appsync-simulator@1.24.2) (2020-12-07)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.0...amplify-e2e-tests@2.33.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** fix gsi mutate san check ([#6095](https://github.com/aws-amplify/amplify-cli/issues/6095)) ([37d08d9](https://github.com/aws-amplify/amplify-cli/commit/37d08d941421fe030bb454e7f417b3198a4b04ac)), closes [#6013](https://github.com/aws-amplify/amplify-cli/issues/6013)
+
+
+
+
+
 # [2.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.32.0...amplify-e2e-tests@2.33.0) (2020-12-11)
 
 

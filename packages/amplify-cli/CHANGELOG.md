@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.40.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.39.0...@aws-amplify/cli@4.40.0) (2020-12-16)
+
+
+### Bug Fixes
+
+* check that cfn template exists ([#6163](https://github.com/aws-amplify/amplify-cli/issues/6163)) ([04b9918](https://github.com/aws-amplify/amplify-cli/commit/04b991810897525816257272822ded002b27f0e5))
+* hostedUIProviderCreds Not found and check for localenv ([#6099](https://github.com/aws-amplify/amplify-cli/issues/6099)) ([874ceaa](https://github.com/aws-amplify/amplify-cli/commit/874ceaa7811bad2cd0ad3ba35f588b7fca0ead0f))
+* provide better error message when unknown feature flags are present ([#6114](https://github.com/aws-amplify/amplify-cli/issues/6114)) ([d452e83](https://github.com/aws-amplify/amplify-cli/commit/d452e83c19bc6c4002a851c68b3961fc135f3689))
+
+
+### Features
+
+* added exception item into options ([#6018](https://github.com/aws-amplify/amplify-cli/issues/6018)) ([7a3be75](https://github.com/aws-amplify/amplify-cli/commit/7a3be75935de928b0e080afc3a07e7efa1eeb8bf))
+
+
+### Reverts
+
+* Revert "feat: added exception item into options (#6018)" (#6157) ([6fb0b07](https://github.com/aws-amplify/amplify-cli/commit/6fb0b07b4daf7e4d964f3db35194d2ba8652d76c)), closes [#6018](https://github.com/aws-amplify/amplify-cli/issues/6018) [#6157](https://github.com/aws-amplify/amplify-cli/issues/6157)
+
+
+
+
+
 # [4.39.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.38.2...@aws-amplify/cli@4.39.0) (2020-12-11)
 
 

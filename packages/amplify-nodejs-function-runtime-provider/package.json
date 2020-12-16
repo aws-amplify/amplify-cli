@@ -1,6 +1,6 @@
 {
   "name": "amplify-nodejs-function-runtime-provider",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Provides functionality related to functions in NodeJS on AWS",
   "repository": {
     "type": "git",
