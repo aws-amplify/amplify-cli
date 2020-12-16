@@ -27,21 +27,18 @@ async function run(context) {
   }
   const { envName } = _.get(context, ['exeInfo', 'inputParams', 'amplify'], {});
   const { useProfile, configLevel } = _.get(context, ['exeInfo', 'inputParams', 'awscloudformation'], {});
-  if (!useProfile && (!configLevel || configLevel === 'amplifyAdmin')) {
-    if (appId && !envName && (await isAmplifyAdminApp(appId)).isAdminApp) {
-      throw new Error('Missing --envName <environment name> in parameters.');
-    } else if (appId && envName) {
-      // Check if this is a Amplify Admin appId
-      const res = await isAmplifyAdminApp(appId);
-      isAdminApp = res.isAdminApp;
-      // Check for existing Amplify Admin tokens
-      if (isAdminApp) {
-        // Admin app, go through login flow
-        try {
-          await adminLoginFlow(context, appId, envName, res.region);
-        } catch (e) {
-          context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
-        }
+  if (!useProfile && (!configLevel || configLevel === 'amplifyAdmin') && appId) {
+    const res = await isAmplifyAdminApp(appId);
+    isAdminApp = res.isAdminApp;
+    if (isAdminApp) {
+      if (!envName) {
+        throw new Error('Missing --envName <environment name> in parameters.');
+      }
+      // Admin app, go through login flow
+      try {
+        await adminLoginFlow(context, appId, envName, res.region);
+      } catch (e) {
+        context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
       }
     }
   }
