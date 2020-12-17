@@ -18,11 +18,13 @@ function setProfile(awsConfig, profileName) {
   let credentials = {};
   let config = {};
   if (fs.existsSync(credentialsFilePath)) {
+    logger('setProfile.credetialsFilePathExists', [credentialsFilePath])();
     makeFileOwnerReadWrite(credentialsFilePath);
     credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
   }
 
   if (fs.existsSync(configFilePath)) {
+    logger('setProfile.credetialsFilePathExists', [credentialsFilePath])();
     makeFileOwnerReadWrite(configFilePath);
     config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
   }
@@ -57,7 +59,7 @@ function setProfile(awsConfig, profileName) {
       region: awsConfig.region,
     };
   }
-
+  logger('setProfile.writecredetialsFilePath', [credentialsFilePath])();
   fs.writeFileSync(credentialsFilePath, ini.stringify(credentials), { mode: SecretFileMode });
   fs.writeFileSync(configFilePath, ini.stringify(config), { mode: SecretFileMode });
 }
@@ -67,6 +69,7 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
+    logger('getProfiledAwsConfig.profileConfig', [profileConfig])();
     if (!isRoleSourceProfile && profileConfig.role_arn) {
       const roleCredentials = await getRoleCredentials(context, profileName, profileConfig);
       delete profileConfig.role_arn;
@@ -76,6 +79,7 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
         ...roleCredentials,
       };
     } else {
+      logger('getProfiledAwsConfig.getProfileCredentials', [profileName]);
       const profileCredentials = getProfileCredentials(profileName);
       awsConfig = {
         ...profileConfig,
@@ -83,7 +87,9 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
       };
     }
   } else {
-    throw new Error(`Profile configuration is missing for: ${profileName}`);
+    const err = new Error(`Profile configuration is missing for: ${profileName}`);
+    logger('getProfiledAwsConfig', [profileName])(err);
+    throw err;
   }
 
   if (httpProxy) {
@@ -97,6 +103,7 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
 }
 
 function makeFileOwnerReadWrite(filePath) {
+  logger('makeFileOwnerReadWrite', [filePath])();
   fs.chmodSync(filePath, '600');
 }
 
@@ -244,12 +251,14 @@ async function resetCache(context, profileName) {
 
 function getCacheFilePath(context) {
   const sharedConfigDirPath = path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
+  logger('getCacheFilePath', [sharedConfigDirPath])();
   fs.ensureDirSync(sharedConfigDirPath);
   return path.join(sharedConfigDirPath, constants.CacheFileName);
 }
 
 function getProfileConfig(profileName) {
   let profileConfig;
+  logger('getProfileConfig', [profileName])();
   if (fs.existsSync(configFilePath)) {
     makeFileOwnerReadWrite(configFilePath);
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
@@ -265,6 +274,7 @@ function getProfileConfig(profileName) {
 
 function getProfileCredentials(profileName) {
   let profileCredentials;
+  logger('getProfileCredentials', [profileName])();
   if (fs.existsSync(credentialsFilePath)) {
     makeFileOwnerReadWrite(credentialsFilePath);
     const credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
@@ -293,11 +303,12 @@ function normalizeKeys(config) {
 
 function getProfileRegion(profileName) {
   let profileRegion;
-
+  logger('getProfileRegion', [profileName])();
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     profileRegion = profileConfig.region;
   }
+  logger('getProfileRegion', [profileRegion])();
 
   return profileRegion;
 }
