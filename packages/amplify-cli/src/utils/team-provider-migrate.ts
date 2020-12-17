@@ -43,9 +43,11 @@ function isInvalidEnvOrPulling(context: Context): boolean {
     return true;
   }
 
-  const isPulling = context.input.command === 'pull' || context.input.command === 'init' || context.input.command === 'env';
+  if (context.input.command) {
+    return ['pull', 'init', 'env', 'delete'].includes(context.input.command);
+  }
 
-  return isPulling;
+  return false;
 }
 
 function teamProviderInfoGetAuthResourceNameHasSecrets(): any | undefined {
