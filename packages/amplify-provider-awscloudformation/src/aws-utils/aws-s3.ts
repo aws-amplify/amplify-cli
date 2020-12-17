@@ -3,7 +3,7 @@ import { $TSContext } from 'amplify-cli-core';
 import aws from './aws.js';
 import _ from 'lodash';
 const providerName = require('../constants').ProviderName;
-import configurationManager from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 import fs from 'fs-extra';
 import ora from 'ora';
 import { pagedAWSCall } from './paged-call';
@@ -28,7 +28,7 @@ export class S3 {
     if (!S3.instance) {
       let cred = {};
       try {
-        cred = await configurationManager.loadConfiguration(context);
+        cred = await loadConfiguration(context);
       } catch (e) {
         // ignore missing config
       }

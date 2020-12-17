@@ -20,7 +20,7 @@ export const run = async (context: Context) => {
     return;
   }
 
-  const { appId, envName } = context?.parameters?.options || {};
+  const { appId, envName }: { appId: string; envName: string } = context?.parameters?.options || {};
   if (appId && envName) {
     try {
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);

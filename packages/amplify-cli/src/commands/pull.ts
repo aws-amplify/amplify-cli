@@ -3,10 +3,10 @@ import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';
 import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
-import { stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 
-export const run = async context => {
+export const run = async (context: $TSContext) => {
   const inputParams = constructInputParams(context);
   const projectPath = process.cwd();
 

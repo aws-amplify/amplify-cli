@@ -34,6 +34,7 @@ export type $TSContext = {
   usageData: $TSAny;
   runtime: $TSAny;
   pluginPlatform: IPluginPlatform;
+  newUserInfo?: $TSAny;
 };
 
 export type IPluginPlatform = {
@@ -143,7 +144,7 @@ interface AmplifyToolkit {
   getWhen: () => $TSAny;
   inputValidation: (input: $TSAny) => $TSAny;
   listCategories: () => $TSAny;
-  makeId: () => $TSAny;
+  makeId: (n?: number) => string;
   openEditor: () => $TSAny;
   onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
   pathManager: () => $TSAny;

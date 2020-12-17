@@ -1,7 +1,7 @@
 import { $TSContext } from 'amplify-cli-core';
 import aws from './aws.js';
 import { APIGateway as APIGW } from 'aws-sdk';
-import configurationManager from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 
 export class APIGateway {
   private static instance: APIGateway;
@@ -12,7 +12,7 @@ export class APIGateway {
     if (!APIGateway.instance) {
       let cred = {};
       try {
-        cred = await configurationManager.loadConfiguration(context);
+        cred = await loadConfiguration(context);
       } catch (e) {
         // ignore missing config
       }

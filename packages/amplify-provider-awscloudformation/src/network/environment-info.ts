@@ -1,7 +1,7 @@
 import { JSONUtilities } from 'amplify-cli-core';
 import { EC2 } from 'aws-sdk';
 import { Netmask } from 'netmask';
-import configurationManager from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 import { RESOURCE_TAG } from './stack';
 
 const SUBNETS = 3;
@@ -20,7 +20,7 @@ export async function getEnvironmentNetworkInfo(context, params: GetEnvironmentN
 
   let cred = {};
   try {
-    cred = await configurationManager.loadConfiguration(context);
+    cred = await loadConfiguration(context);
   } catch (e) {
     // ignore missing config
   }
