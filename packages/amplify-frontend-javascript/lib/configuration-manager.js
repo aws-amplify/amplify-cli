@@ -12,8 +12,7 @@ async function init(context) {
     framework,
     config,
   };
-  const initial = true;
-  await confirmConfiguration(context, initial);
+  await confirmConfiguration(context);
 }
 
 function onInitSuccessful(context) {
@@ -34,8 +33,7 @@ async function configure(context) {
     currentConfiguration.config = getProjectConfiguration(currentConfiguration.framework, context.exeInfo.localEnvInfo.projectPath);
   }
 
-  const initial = false;
-  await confirmConfiguration(context, initial);
+  await confirmConfiguration(context);
 }
 
 function normalizeInputParams(context) {
@@ -67,9 +65,9 @@ function normalizeInputParams(context) {
   context.exeInfo.inputParams[constants.Label] = inputParams;
 }
 
-async function confirmConfiguration(context, initial = true) {
+async function confirmConfiguration(context) {
   await confirmFramework(context);
-  await confirmFrameworkConfiguration(context, initial);
+  await confirmFrameworkConfiguration(context);
 }
 
 async function confirmFramework(context) {
@@ -102,7 +100,7 @@ async function confirmFramework(context) {
   }
 }
 
-async function confirmFrameworkConfiguration(context, initial = true) {
+async function confirmFrameworkConfiguration(context) {
   const inputParams = context.exeInfo.inputParams[constants.Label];
   if (inputParams && inputParams.config) {
     Object.assign(context.exeInfo.projectConfig[constants.Label].config, inputParams.config);
@@ -142,17 +140,7 @@ async function confirmFrameworkConfiguration(context, initial = true) {
     ];
     const answers = await inquirer.prompt(configurationSettings);
 
-    let ServerlessContainers;
-    if (!initial) {
-      ({ ServerlessContainers } = await inquirer.prompt({
-        type: 'confirm',
-        name: 'ServerlessContainers',
-        message: 'Do you want to enable container-based deployments?',
-        default: config.ServerlessContainers === true
-      }));
-    }
-
-    Object.assign(context.exeInfo.projectConfig[constants.Label].config, { ...answers, ServerlessContainers });
+    Object.assign(context.exeInfo.projectConfig[constants.Label].config, { ...answers });
   }
 }
 
