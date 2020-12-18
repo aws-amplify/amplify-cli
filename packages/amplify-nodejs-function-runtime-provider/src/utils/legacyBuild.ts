@@ -44,7 +44,7 @@ function runPackageManager(cwd: string, scriptName?: string) {
   const packageManager = useYarn ? 'yarn' : 'npm';
   const args = toPackageManagerArgs(useYarn, scriptName);
   try {
-    const { stdout, stderr, exitCode } = execa.sync(packageManager, args, {
+    execa.sync(packageManager, args, {
       cwd,
       stdio: 'pipe',
       encoding: 'utf-8',
