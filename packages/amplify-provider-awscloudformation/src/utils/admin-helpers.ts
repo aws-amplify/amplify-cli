@@ -20,9 +20,16 @@ export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: bo
   if (!appId) {
     throw `Failed to check if Admin UI is enabled: appId is undefined`;
   }
-  const res = await fetch(`${adminBackendMap['us-east-1'].appStateUrl}/AppState/?appId=${appId}`);
-  const resJson = await res.json();
-  return { isAdminApp: !!resJson.appId, region: resJson.region };
+  let appState = await getAdminAppState(appId, 'us-east-1');
+  if (appState.appId && appState.region && appState.region !== 'us-east-1') {
+    appState = await getAdminAppState(appId, appState.region);
+  }
+  return { isAdminApp: !!appState.appId, region: appState.region };
+}
+
+async function getAdminAppState(appId: string, region: string) {
+  const res = await fetch(`${adminBackendMap[region].appStateUrl}/AppState/?appId=${appId}`);
+  return res.json();
 }
 
 export async function getRefreshedTokens(appId: string, print: $TSContext['print']) {
