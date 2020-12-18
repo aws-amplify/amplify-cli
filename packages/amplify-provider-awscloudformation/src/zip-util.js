@@ -35,7 +35,7 @@ function downloadZip(s3, tempDir, zipFileName, envName) {
       })
       .catch(err => {
         log(err);
-        resolve(err);
+        reject(err);
       });
   });
 }
