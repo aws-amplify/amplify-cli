@@ -92,8 +92,8 @@ function doesAwsConfigExists(context: $TSContext) {
   let configExists = false;
   const { envName } = context?.exeInfo?.localEnvInfo || context.amplify.getEnvInfo();
 
-  if (stateManager.localEnvInfoExists()) {
-    const envAwsInfo = stateManager.getLocalEnvInfo();
+  if (stateManager.localAWSInfoExists()) {
+    const envAwsInfo = stateManager.getLocalAWSInfo();
     if (envAwsInfo[envName]) {
       context.exeInfo = context.exeInfo || {};
       context.exeInfo.awsConfigInfo = envAwsInfo[envName];
