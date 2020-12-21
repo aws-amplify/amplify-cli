@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.35.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.35.1...amplify-provider-awscloudformation@4.35.2) (2020-12-21)
+
+
+
+## 4.40.1 (2020-12-18)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fixes rest client generation ([#6180](https://github.com/aws-amplify/amplify-cli/issues/6180)) ([af54abe](https://github.com/aws-amplify/amplify-cli/commit/af54abe7087676d2d74a8beb04196760ee70c481))
+* [#6168](https://github.com/aws-amplify/amplify-cli/issues/6168), update error messages, yarn.lock ([#6207](https://github.com/aws-amplify/amplify-cli/issues/6207)) ([450eb0e](https://github.com/aws-amplify/amplify-cli/commit/450eb0e618c66ed34719f65a5a799a193d6a8a94))
+* **amplify-provider-awscloudformation:** load correct file ([#6212](https://github.com/aws-amplify/amplify-cli/issues/6212)) ([7876187](https://github.com/aws-amplify/amplify-cli/commit/787618736540231efeeee8c803c178325b2c70b4))
+* rejects on error ([#6216](https://github.com/aws-amplify/amplify-cli/issues/6216)) ([473bea5](https://github.com/aws-amplify/amplify-cli/commit/473bea5c7260e3c7a70291e513d8b718cd82f601))
+
+
+
+
+
 ## [4.35.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.35.0...amplify-provider-awscloudformation@4.35.1) (2020-12-16)
 
 
