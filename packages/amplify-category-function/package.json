@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "2.28.1",
+  "version": "2.28.2-beta.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-cli-core": "1.13.0",
+    "amplify-cli-core": "1.13.1-beta.0",
     "amplify-function-plugin-interface": "1.6.0",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",

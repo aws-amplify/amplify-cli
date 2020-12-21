@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-mock",
-  "version": "3.27.4",
+  "version": "3.27.5-beta.0",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -27,9 +27,9 @@
   "dependencies": {
     "@hapi/topo": "^5.0.0",
     "amplify-appsync-simulator": "1.24.3",
-    "amplify-category-function": "2.28.1",
-    "amplify-codegen": "2.20.2",
-    "amplify-dynamodb-simulator": "1.17.3",
+    "amplify-category-function": "2.28.2-beta.0",
+    "amplify-codegen": "2.20.3-beta.0",
+    "amplify-dynamodb-simulator": "1.17.4-beta.0",
     "amplify-storage-simulator": "1.5.1",
     "chokidar": "^3.3.1",
     "execa": "^4.1.0",

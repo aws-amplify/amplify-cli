@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.40.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.40.0...@aws-amplify/cli@4.40.1-beta.0) (2020-12-21)
+
+
+### Bug Fixes
+
+* **cli:** update plugin type details url ([#6120](https://github.com/aws-amplify/amplify-cli/issues/6120)) ([d6c44cc](https://github.com/aws-amplify/amplify-cli/commit/d6c44cc2770a13f86ee208d2585ec625517523dd))
+* [#6168](https://github.com/aws-amplify/amplify-cli/issues/6168), update error messages, yarn.lock ([#6207](https://github.com/aws-amplify/amplify-cli/issues/6207)) ([450eb0e](https://github.com/aws-amplify/amplify-cli/commit/450eb0e618c66ed34719f65a5a799a193d6a8a94))
+* skip delete ([#6204](https://github.com/aws-amplify/amplify-cli/issues/6204)) ([33f51d0](https://github.com/aws-amplify/amplify-cli/commit/33f51d07b7a7584575788f6265c43b28cec72e05))
+
+
+
+
+
 # [4.40.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.39.0...@aws-amplify/cli@4.40.0) (2020-12-16)
 
 
