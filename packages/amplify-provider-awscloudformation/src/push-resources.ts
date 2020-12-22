@@ -463,8 +463,7 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
         validateFile(filePath);
       } catch (err) {
         context.print.error(`Invalid CloudFormation template: ${filePath}`);
-
-        throw err;
+        context.print.error(err.message);
       }
     }
   }
