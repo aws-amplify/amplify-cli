@@ -12,3 +12,9 @@ export enum CRUDOperation {
   UPDATE = 'update',
   DELETE = 'delete',
 }
+
+export enum GraphQLOperation {
+  QUERY = 'Query',
+  MUTATION = 'Mutation',
+  SUBSCRIPTION = 'Subscription',
+}

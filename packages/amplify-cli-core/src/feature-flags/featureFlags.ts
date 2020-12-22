@@ -561,5 +561,14 @@ export class FeatureFlags {
         defaultValueForNewProjects: true,
       },
     ]);
+
+    this.registerFlag('appSync', [
+      {
+        name: 'generateGraphQLPermissions',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+    ]);
   };
 }

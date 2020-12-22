@@ -34,7 +34,7 @@ const pythonTemplateChoices = ['Hello World'];
 
 const additionalPermissions = (chain: ExecutionContext, settings: any) => {
   multiSelect(
-    chain.sendLine('y').wait('Select the category'),
+    chain.sendLine('y').wait('Select the categories you want this function to have access to'),
     settings.additionalPermissions.permissions,
     settings.additionalPermissions.choices,
   );
