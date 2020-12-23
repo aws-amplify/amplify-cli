@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import * as fs from 'fs-extra';
+import { EOL } from 'os';
 import * as path from 'path';
 import { validateFile } from 'cfn-lint';
 import glob from 'glob';
@@ -462,9 +463,7 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
       try {
         validateFile(filePath);
       } catch (err) {
-        context.print.error(`Invalid CloudFormation template: ${filePath}`);
-
-        throw err;
+        context.print.error(`Invalid CloudFormation template: ${filePath}${EOL}${err.message}`);
       }
     }
   }
