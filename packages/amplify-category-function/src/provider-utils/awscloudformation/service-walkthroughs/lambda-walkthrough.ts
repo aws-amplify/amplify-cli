@@ -60,7 +60,7 @@ export async function createWalkthrough(
   // list out the advanced settings before asking whether to configure them
   context.print.info('');
   context.print.success('Available advanced settings:');
-  advancedSettingsList.forEach(setting => context.print.info('- '.concat(setting)));
+  advancedSettingsList.forEach(setting => context.print.info(setting));
   context.print.info('');
 
   // ask whether to configure advanced settings
