@@ -13,10 +13,7 @@ import {
 import { FunctionParameters, FunctionDependency } from 'amplify-function-plugin-interface/src';
 import { appsyncTableSuffix } from '../utils/constants';
 import { getAppSyncResourceName } from '../utils/appSyncHelper';
-import { stateManager } from 'amplify-cli-core';
-import { FeatureFlags } from 'amplify-cli-core';
-
-const generateGraphQLPermissions = () => FeatureFlags.getBoolean('generateGraphQLPermissions');
+import { stateManager, FeatureFlags } from 'amplify-cli-core';
 
 /**
  * This whole file desperately needs to be refactored
@@ -29,6 +26,9 @@ export const askExecRolePermissionsQuestions = async (
   category?: string,
   serviceName?: string,
 ): Promise<ExecRolePermissionsResponse> => {
+  // feature flag for graphQL permission bugfix as part of PR-5342
+  const generateGraphQLPermissions = FeatureFlags.getBoolean('appSync.generateGraphQLPermissions');
+
   const amplifyMeta = stateManager.getMeta();
 
   const categories = Object.keys(amplifyMeta).filter(category => category !== 'providers');
@@ -82,7 +82,7 @@ export const askExecRolePermissionsQuestions = async (
     }
 
     if (_.isEmpty(resourcesList)) {
-      context.print.warning(`No resources found for ${category}`);
+      context.print.warning(`No resources found for ${selectedCategory}`);
       continue;
     }
 
@@ -90,7 +90,7 @@ export const askExecRolePermissionsQuestions = async (
       let selectedResources = [];
       if (resourcesList.length > 1) {
         // There's a few resources in this category. Let's pick some.
-        const resourceQuestion = selectResourcesInCategory(resourcesList, currentPermissionMap, category);
+        const resourceQuestion = selectResourcesInCategory(resourcesList, currentPermissionMap, selectedCategory);
         const resourceAnswer = await inquirer.prompt([resourceQuestion]);
         selectedResources = _.concat(resourceAnswer.resources);
       } else {
@@ -99,14 +99,13 @@ export const askExecRolePermissionsQuestions = async (
       }
 
       for (let resourceName of selectedResources) {
-        // PR-5342
         // If the resource is AppSync, use GraphQL operations for permission policies.
         // Otherwise, default to CRUD permissions.
-        const serviceType = _.get(amplifyMeta, [category, resourceName, 'service']);
+        const serviceType = _.get(amplifyMeta, [selectedCategory, resourceName, 'service']);
         let options;
         switch (serviceType) {
           case 'AppSync':
-            options = generateGraphQLPermissions() ? graphqlOperations : crudOptions;
+            options = generateGraphQLPermissions ? graphqlOperations : crudOptions;
             break;
           default:
             options = crudOptions;
@@ -114,14 +113,15 @@ export const askExecRolePermissionsQuestions = async (
         }
 
         // In case of some resources they are not in the meta file so check for resource existence as well
-        const isMobileHubImportedResource = _.get(amplifyMeta, [category, resourceName, 'mobileHubMigrated'], false);
+        const isMobileHubImportedResource = _.get(amplifyMeta, [selectedCategory, resourceName, 'mobileHubMigrated'], false);
         if (isMobileHubImportedResource) {
-          context.print.warning(`Policies cannot be added for ${category}/${resourceName}, since it is a MobileHub imported resource.`);
+          context.print.warning(
+            `Policies cannot be added for ${selectedCategory}/${resourceName}, since it is a MobileHub imported resource.`,
+          );
           continue;
         } else {
-          const resourceType = _.get(amplifyMeta, [category, resourceName, 'service']);
-          const currentPermissions = fetchPermissionsForResourceInCategory(currentPermissionMap, category, resourceName);
-          const permissionQuestion = selectPermissions(options, currentPermissions, resourceType);
+          const currentPermissions = fetchPermissionsForResourceInCategory(currentPermissionMap, selectedCategory, resourceName);
+          const permissionQuestion = selectPermissions(options, currentPermissions, resourceName);
           const permissionAnswer = await inquirer.prompt([permissionQuestion]);
           const resourcePolicy: any = permissionAnswer.options;
 
@@ -280,10 +280,10 @@ const selectCategories = (choices: DistinctChoice<any>[], currentPermissionMap: 
   default: fetchPermissionCategories(currentPermissionMap),
 });
 
-const selectPermissions = (choices: DistinctChoice<any>[], currentPermissions: any, resourceType: any) => ({
+const selectPermissions = (choices: DistinctChoice<any>[], currentPermissions: any, resourceName: any) => ({
   type: 'checkbox',
   name: 'options',
-  message: `Select the operations you want to permit for ${resourceType}`,
+  message: `Select the operations you want to permit on ${resourceName}`,
   choices,
   validate: answers => (_.isEmpty(answers) ? 'You must select at least one operation' : true),
   default: currentPermissions,
