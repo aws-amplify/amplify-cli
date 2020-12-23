@@ -33,7 +33,7 @@ async function validateGithubRepo(context: $TSContext, repoUrl: string) {
     execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
   } catch (e) {
     context.print.error('Invalid remote github url');
-    context.usageData.emitError(e);
+    await context.usageData.emitError(e);
     exitOnNextTick(1);
   }
 }
@@ -49,14 +49,14 @@ async function cloneRepo(context: $TSContext, repoUrl: string) {
   if (files.length > 0) {
     const errMessage = 'Please ensure you run this command in an empty directory';
     context.print.error(errMessage);
-    context.usageData.emitError(new NonEmptyDirectoryError(errMessage));
+    await context.usageData.emitError(new NonEmptyDirectoryError(errMessage));
     exitOnNextTick(1);
   }
 
   try {
     execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
   } catch (e) {
-    context.usageData.emitError(e);
+    await context.usageData.emitError(e);
     exitOnNextTick(1);
   }
 }

@@ -15,7 +15,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
     const errMessage =
       'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.';
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
 
@@ -35,7 +35,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, datasourceMeta
     const errMessage =
       'You must create an AppSync API in your project before adding a graphql datasource. Please use "amplify api add" to create the API.';
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
 
@@ -97,7 +97,7 @@ async function selectCluster(context, inputs, AWS) {
   }
   const errMessage = 'No properly configured Aurora Serverless clusters found.';
   context.print.error(errMessage);
-  context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+  await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
   exitOnNextTick(0);
 }
 
@@ -149,7 +149,7 @@ async function getSecretStoreArn(context, inputs, clusterResourceId, AWS) {
     } else {
       const errMessage = 'No RDS access credentials found in the AWS Secrect Manager.';
       context.print.error(errMessage);
-      context.usageData.emitError(new ResourceCredentialsNotFoundError(errMessage));
+      await context.usageData.emitError(new ResourceCredentialsNotFoundError(errMessage));
       exitOnNextTick(0);
     }
   }
@@ -194,7 +194,7 @@ async function selectDatabase(context, inputs, clusterArn, secretArn, AWS) {
 
   const errMessage = 'No properly configured databases found.';
   context.print.error(errMessage);
-  context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+  await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
   exitOnNextTick(0);
 }
 

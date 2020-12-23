@@ -57,7 +57,7 @@ async function serviceQuestionWalkthrough(
   if (options.length === 0) {
     const errMessage = `No services defined by configured providers for category: ${category}`;
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(1);
   }
   if (options.length === 1) {

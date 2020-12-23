@@ -29,7 +29,7 @@ async function console(context) {
       if (predictionsResources.length === 0) {
         const errMessage = `No ${result.category} console supported resource found.`;
         context.print.error(errMessage);
-        context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+        await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
         exitOnNextTick(0);
         return;
       }

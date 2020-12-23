@@ -8,7 +8,11 @@ import { editSchemaFlow } from './utils/edit-schema-flow';
 import { NotImplementedError, exitOnNextTick } from 'amplify-cli-core';
 import { addResource as addContainer, updateResource as updateContainer } from './containers-handler';
 import inquirer from 'inquirer';
-import { API_TYPE, ServiceConfiguration, getPermissionPolicies as getContainerPermissionPolicies } from './service-walkthroughs/containers-walkthrough';
+import {
+  API_TYPE,
+  ServiceConfiguration,
+  getPermissionPolicies as getContainerPermissionPolicies,
+} from './service-walkthroughs/containers-walkthrough';
 import { category } from '../../category-constants';
 
 export async function console(context, service) {
@@ -19,7 +23,7 @@ export async function console(context, service) {
   if (!openConsole) {
     const errMessage = 'Opening console functionality not available for this option';
     context.print.error(errMessage);
-    context.usageData.emitError(new NotImplementedError(errMessage));
+    await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
 
@@ -139,7 +143,7 @@ export async function updateResource(context, category, service, options) {
       hasAPIGatewayContainerResource,
       hasAPIGatewayLambdaResource,
       hasGraphQLAppSyncResource,
-      hasGraphqlContainerResource
+      hasGraphqlContainerResource,
     } = await describeApiResourcesBySubCategory(context);
 
     switch (service) {
@@ -157,7 +161,7 @@ export async function updateResource(context, category, service, options) {
         if (hasAPIGatewayContainerResource && hasAPIGatewayLambdaResource) {
           useContainerResource = await isRestContainer(context);
         } else if (hasAPIGatewayContainerResource) {
-          useContainerResource = true
+          useContainerResource = true;
         } else {
           useContainerResource = false;
         }
@@ -174,13 +178,8 @@ export async function updateResource(context, category, service, options) {
 }
 
 async function describeApiResourcesBySubCategory(context) {
-
   const { allResources } = await context.amplify.getResourceStatus();
-  const resources = allResources
-    .filter(resource =>
-      resource.category === category &&
-      resource.mobileHubMigrated !== true
-    );
+  const resources = allResources.filter(resource => resource.category === category && resource.mobileHubMigrated !== true);
 
   let hasAPIGatewayContainerResource = false;
   let hasAPIGatewayLambdaResource = false;
@@ -188,24 +187,22 @@ async function describeApiResourcesBySubCategory(context) {
   let hasGraphqlContainerResource = false;
 
   resources.forEach(resource => {
-    hasAPIGatewayContainerResource = hasAPIGatewayContainerResource ||
-      (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.REST);
+    hasAPIGatewayContainerResource =
+      hasAPIGatewayContainerResource || (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.REST);
 
-    hasAPIGatewayLambdaResource = hasAPIGatewayLambdaResource ||
-      resource.service === 'API Gateway';
+    hasAPIGatewayLambdaResource = hasAPIGatewayLambdaResource || resource.service === 'API Gateway';
 
-    hasGraphQLAppSyncResource = hasGraphQLAppSyncResource ||
-      resource.service === 'AppSync';
+    hasGraphQLAppSyncResource = hasGraphQLAppSyncResource || resource.service === 'AppSync';
 
-    hasGraphqlContainerResource = hasGraphqlContainerResource ||
-      (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.GRAPHQL);
-  })
+    hasGraphqlContainerResource =
+      hasGraphqlContainerResource || (resource.service === 'ElasticContainer' && resource.apiType === API_TYPE.GRAPHQL);
+  });
 
   return {
     hasAPIGatewayLambdaResource,
     hasAPIGatewayContainerResource,
     hasGraphQLAppSyncResource,
-    hasGraphqlContainerResource
+    hasGraphqlContainerResource,
   };
 }
 
@@ -218,7 +215,7 @@ async function updateContainerResource(context, category, service, apiType: API_
   if (!updateWalkthrough) {
     const errMessage = 'Update functionality not available for this option';
     context.print.error(errMessage);
-    context.usageData.emitError(new NotImplementedError(errMessage));
+    await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
 
@@ -236,7 +233,7 @@ async function updateNonContainerResource(context, category, service) {
   if (!updateWalkthrough) {
     const errMessage = 'Update functionality not available for this option';
     context.print.error(errMessage);
-    context.usageData.emitError(new NotImplementedError(errMessage));
+    await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
 

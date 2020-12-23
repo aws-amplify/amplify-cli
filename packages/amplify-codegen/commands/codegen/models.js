@@ -10,7 +10,7 @@ module.exports = {
     } catch (ex) {
       context.print.info(ex.message);
       console.log(ex.stack);
-      context.usageData.emitError(ex);
+      await context.usageData.emitError(ex);
       exitOnNextTick(1);
     }
   },

@@ -10,13 +10,13 @@ export async function forceRemoveResource(context: $TSContext, category, name, d
 
   if (!amplifyMeta[category] || Object.keys(amplifyMeta[category]).length === 0) {
     context.print.error('No resources added for this category');
-    context.usageData.emitError(new ResourceDoesNotExistError());
+    await context.usageData.emitError(new ResourceDoesNotExistError());
     exitOnNextTick(1);
   }
 
   if (!context || !category || !name || !dir) {
     context.print.error('Unable to force removal of resource: missing parameters');
-    context.usageData.emitError(new MissingParametersError());
+    await context.usageData.emitError(new MissingParametersError());
     exitOnNextTick(1);
   }
 
@@ -45,7 +45,7 @@ export async function removeResource(
     Object.keys(amplifyMeta[category]).filter(r => amplifyMeta[category][r].mobileHubMigrated !== true).length === 0
   ) {
     context.print.error('No resources added for this category');
-    context.usageData.emitError(new ResourceDoesNotExistError());
+    await context.usageData.emitError(new ResourceDoesNotExistError());
     exitOnNextTick(1);
   }
 
@@ -57,7 +57,7 @@ export async function removeResource(
     if (!enabledCategoryResources.includes(resourceName)) {
       const errMessage = `Resource ${resourceName} has not been added to ${category}`;
       context.print.error(errMessage);
-      context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+      await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
       exitOnNextTick(1);
     }
   } else {
