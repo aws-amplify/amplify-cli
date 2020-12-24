@@ -1,6 +1,8 @@
 import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, invokeFunction } from '..';
 import { Lambda } from 'aws-sdk';
 import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
+import * as glob from 'glob';
+import * as path from 'path';
 
 type FunctionActions = 'create' | 'update';
 
@@ -472,3 +474,12 @@ const getRuntimeDisplayName = (runtime: FunctionRuntimes) => {
       throw new Error(`Invalid runtime value: ${runtime}`);
   }
 };
+
+export function validateRemovalNodeModulesDir(projRoot) {
+  let functionDir = path.join(projRoot, 'amplify', '#current-cloud-backend', 'function');
+  const nodeModulesDirs = glob.sync('**/node_modules', {
+    cwd: functionDir,
+    absolute: true,
+  });
+  expect(nodeModulesDirs.length).toBe(0);
+}
