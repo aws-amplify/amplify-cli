@@ -20,6 +20,10 @@ import {
   forEach,
   and,
   RESOLVER_VERSION_ID,
+  int,
+  list,
+  float,
+  Expression,
 } from 'graphql-mapping-template';
 import {
   ResourceConstants,
@@ -34,7 +38,17 @@ import { plural } from 'pluralize';
 import { SyncConfig, SyncUtils } from 'graphql-transformer-core';
 import Template from 'cloudform-types/types/template';
 import md5 from 'md5';
-import { InputObjectTypeDefinitionNode } from 'graphql';
+import {
+  InputObjectTypeDefinitionNode,
+  IntValueNode,
+  FloatValueNode,
+  StringValueNode,
+  BooleanValueNode,
+  EnumValueNode,
+  ListValueNode,
+  ValueNode,
+  ObjectValueNode,
+} from 'graphql';
 
 type MutationResolverInput = {
   type: string;
@@ -46,6 +60,27 @@ type MutationResolverInput = {
     updatedAtField?: string;
   };
 };
+
+function valueNodeToExpression(node: ValueNode): Expression {
+  switch (node.kind) {
+    case 'IntValue':
+      return int(Number((node as IntValueNode).value));
+    case 'FloatValue':
+      return float(Number((node as FloatValueNode).value));
+    case 'StringValue':
+      return str((node as StringValueNode).value);
+    case 'BooleanValue':
+      return bool((node as BooleanValueNode).value);
+    case 'NullValue':
+      return nul();
+    case 'EnumValue':
+      return str((node as EnumValueNode).value);
+    case 'ListValue':
+      return list((node as ListValueNode).values.map(valueNodeToExpression));
+    case 'ObjectValue':
+      return obj((node as ObjectValueNode).fields.reduce((o, f) => ({ ...o, [f.name.value]: valueNodeToExpression(f.value) }), {}));
+  }
+}
 
 export class ResourceFactory {
   public makeParams() {
@@ -471,6 +506,15 @@ export class ResourceFactory {
               ),
             ]
           : []),
+        ...input.fields
+          ?.filter(field => field.defaultValue)
+          .flatMap((field, index) => [
+            comment(`Set the ${field.name.value} default value`),
+            set(ref(`defaultValue${index}`), valueNodeToExpression(field.defaultValue)),
+            qref(
+              `$context.args.input.put("${field.name.value}", $util.defaultIfNull($ctx.args.input.${field.name.value}, $defaultValue${index}))`,
+            ),
+          ]),
       ]),
     );
   }
@@ -534,14 +578,6 @@ export class ResourceFactory {
               ),
             ),
           ),
-          ...(timestamps && timestamps.updatedAtField
-            ? [
-                comment(`Automatically set the updatedAt timestamp.`),
-                qref(
-                  `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $util.time.nowISO8601()))`,
-                ),
-              ]
-            : []),
           qref(`$context.args.input.put("__typename", "${type}")`),
           comment('Update condition if type is @versioned'),
           iff(
@@ -597,6 +633,30 @@ export class ResourceFactory {
       ResponseMappingTemplate: print(DynamoDBMappingTemplate.dynamoDBResponse(isSyncEnabled)),
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
+  }
+
+  public initalizeDefaultInputForUpdateMutation(input: InputObjectTypeDefinitionNode, timestamps): string {
+    return printBlock('Set default values')(
+      compoundExpression([
+        ...(timestamps && timestamps.updatedAtField
+          ? [
+              comment(`Automatically set the updatedAt timestamp.`),
+              qref(
+                `$context.args.input.put("${timestamps.updatedAtField}", $util.defaultIfNull($ctx.args.input.${timestamps.updatedAtField}, $util.time.nowISO8601()))`,
+              ),
+            ]
+          : []),
+        ...input.fields
+          ?.filter(field => field.defaultValue)
+          .flatMap((field, index) => [
+            comment(`Set the ${field.name.value} default value`),
+            set(ref(`defaultValue${index}`), valueNodeToExpression(field.defaultValue)),
+            qref(
+              `$context.args.input.put("${field.name.value}", $util.defaultIfNull($ctx.args.input.${field.name.value}, $defaultValue${index}))`,
+            ),
+          ]),
+      ]),
+    );
   }
 
   /**
