@@ -83,7 +83,7 @@ function waitJobToSucceed(job, amplifyClient) {
 
 async function httpPutFile(filePath, url) {
   await fetch(url, {
-    method: 'POST',
+    method: 'PUT',
     body: fs.readFileSync(filePath),
   });
 }
