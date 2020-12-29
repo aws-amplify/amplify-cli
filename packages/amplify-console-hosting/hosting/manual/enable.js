@@ -22,10 +22,10 @@ async function enable(context) {
   // Init team-provider-info
   configUtils.initTeamProviderInfo(context, category, resourceName, type);
 
-  console.log();
-  console.log(messageConstants.POST_ADDING_MESSAGE);
-  console.log();
-  console.log(messageConstants.POST_PUBLISH_MESSAGE);
+  context.print.info('');
+  context.print.info(messageConstants.POST_ADDING_MESSAGE);
+  context.print.info('');
+  context.print.info(messageConstants.POST_PUBLISH_MESSAGE);
 }
 
 module.exports = {
