@@ -51,7 +51,7 @@ function warnOnAuth(context, map) {
   if (unAuthModelTypes.length) {
     context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
-    context.print.info('Learn more about @auth here: https://docs.amplify.aws/cli/graphql-transformer/directives#auth\n');
+    context.print.info('Learn more about @auth here: https://docs.amplify.aws/cli/graphql-transformer/auth\n');
   }
 }
 
@@ -160,9 +160,9 @@ function getTransformerFactory(context, resourceDir, authConfig?) {
  */
 async function transformerVersionCheck(context, resourceDir, cloudBackendDirectory, updatedResources, usedDirectives) {
   const versionChangeMessage =
-    'The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: https://docs.amplify.aws/cli/graphql-transformer/directives#authorizing-subscriptions';
+    'The default behavior for @auth has changed in the latest version of Amplify\nRead here for details: https://docs.amplify.aws/cli/graphql-transformer/auth#authorizing-subscriptions';
   const warningESMessage =
-    'The behavior for @searchable has changed after version 4.14.1.\nRead here for details: https://docs.amplify.aws/cli/graphql-transformer/directives#searchable';
+    'The behavior for @searchable has changed after version 4.14.1.\nRead here for details: https://docs.amplify.aws/cli/graphql-transformer/searchable';
   const checkVersionExist = config => config && config.Version;
   const checkESWarningExists = config => config && config.ElasticsearchWarning;
   let writeToConfig = false;
