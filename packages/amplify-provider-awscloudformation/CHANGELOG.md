@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.36.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.35.2...amplify-provider-awscloudformation@4.36.0) (2020-12-31)
+
+
+### Bug Fixes
+
+* print warnings for CFN lint ([#6236](https://github.com/aws-amplify/amplify-cli/issues/6236)) ([847b8ac](https://github.com/aws-amplify/amplify-cli/commit/847b8ac7ba02aaeb8477add41e64795e3a68a9ce))
+
+
+### Features
+
+* added tests and logging coverage for system config ([#6209](https://github.com/aws-amplify/amplify-cli/issues/6209)) ([b943d7c](https://github.com/aws-amplify/amplify-cli/commit/b943d7c0304d75f9eabf4fd5f5fbf108a1c83309))
+
+
+
+
+
 ## [4.35.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.35.1...amplify-provider-awscloudformation@4.35.2) (2020-12-21)
 
 

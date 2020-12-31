@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "2.33.2",
+  "version": "2.33.3",
   "description": "",
   "repository": {
     "type": "git",
@@ -21,8 +21,8 @@
     "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
-    "amplify-cli-core": "1.13.1",
-    "amplify-e2e-core": "1.13.2",
+    "amplify-cli-core": "1.14.0",
+    "amplify-e2e-core": "1.13.3",
     "aws-amplify": "^3.0.8",
     "aws-appsync": "^2.0.2",
     "aws-sdk": "^2.765.0",
