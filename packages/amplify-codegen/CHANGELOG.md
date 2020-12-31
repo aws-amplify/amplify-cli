@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.20.3...amplify-codegen@2.20.4-beta.0) (2020-12-31)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** excludes flutter projects from gql gen ([#6199](https://github.com/aws-amplify/amplify-cli/issues/6199)) ([450616e](https://github.com/aws-amplify/amplify-cli/commit/450616e42d28e862919c54b29454a29dbd715eaf))
+
+
+
+
+
 ## [2.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.20.2...amplify-codegen@2.20.3) (2020-12-21)
 
 **Note:** Version bump only for package amplify-codegen
