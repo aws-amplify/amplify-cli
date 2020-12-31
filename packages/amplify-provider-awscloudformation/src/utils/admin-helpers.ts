@@ -2,7 +2,7 @@ import { stateManager, $TSContext } from 'amplify-cli-core';
 import aws from 'aws-sdk';
 import _ from 'lodash';
 import fetch from 'node-fetch';
-import { AuthConfig, CognitoAccessToken, CognitoIdToken } from './cognito-jwt-types';
+import { AuthConfig, CognitoAccessToken, CognitoIdToken } from './auth-types';
 
 export const adminVerifyUrl = (appId: string, envName: string, region: string): string => {
   const baseUrl = adminBackendMap[region].amplifyAdminUrl;

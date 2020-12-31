@@ -25,7 +25,7 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
     // spawn express server locally to get credentials
     const originUrl = adminBackendMap[region].amplifyAdminUrl;
     const adminLoginServer = new AdminLoginServer(appId, originUrl, context.print);
-    await new Promise(resolve =>
+    await new Promise<void>(resolve =>
       adminLoginServer.startServer(() => {
         adminLoginServer.shutdown();
         spinner.succeed('Successfully received Amplify Admin tokens.');

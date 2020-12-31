@@ -9,10 +9,10 @@ type ServiceSelectionOption = {
   value: ServiceSelection;
 };
 
-function filterServicesByEnabledProviders(context, enabledProviders: string[], supportedServices) {
+function filterServicesByEnabledProviders(context: $TSContext, enabledProviders: string[], supportedServices) {
   const providerPlugins = getProviderPlugins(context);
 
-  const filteredServices: any[] = [];
+  const filteredServices: $TSAny[] = [];
 
   if (supportedServices !== undefined && enabledProviders !== undefined) {
     Object.keys(supportedServices).forEach(serviceName => {
@@ -33,26 +33,26 @@ function filterServicesByEnabledProviders(context, enabledProviders: string[], s
 }
 
 async function serviceQuestionWalkthrough(
-  context,
+  context: $TSContext,
   supportedServices,
   category,
   customQuestion = null,
   optionNameOverrides?: Record<string, string>,
 ): Promise<ServiceSelection> {
   const options: ServiceSelectionOption[] = [];
-  for (let i = 0; i < supportedServices.length; ++i) {
-    let optionName = supportedServices[i].alias || `${supportedServices[i].providerName}:${supportedServices[i].service}`;
+  for (const supportedService of supportedServices) {
+    let optionName = supportedService.alias || `${supportedService.providerName}:${supportedService.service}`;
 
-    if (optionNameOverrides && optionNameOverrides[supportedServices[i].service]) {
-      optionName = optionNameOverrides[supportedServices[i].service];
+    if (optionNameOverrides && optionNameOverrides[supportedService.service]) {
+      optionName = optionNameOverrides[supportedService.service];
     }
 
     options.push({
       name: optionName,
       value: {
-        provider: supportedServices[i].providerPlugin,
-        service: supportedServices[i].service,
-        providerName: supportedServices[i].providerName,
+        provider: supportedService.providerPlugin,
+        service: supportedService.service,
+        providerName: supportedService.providerName,
       },
     });
   }

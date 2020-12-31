@@ -1,3 +1,5 @@
+export type AuthType = 'admin' | 'profile' | 'accessKeys';
+
 export interface AdminAuthPayload {
   accessToken: CognitoAccessToken;
   clockDrift: number;

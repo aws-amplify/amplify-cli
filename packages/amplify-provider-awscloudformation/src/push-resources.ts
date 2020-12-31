@@ -10,6 +10,7 @@ import {
   stateManager,
   FeatureFlags,
   JSONUtilities,
+  $TSAny,
   $TSContext,
   $TSObject,
   $TSMeta,
@@ -57,7 +58,7 @@ const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
 
-export async function run(context, resourceDefinition) {
+export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
   let iterativeDeploymentWasInvoked = false;
 
@@ -306,17 +307,12 @@ export async function run(context, resourceDefinition) {
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
 
     //check for auth resources and remove deployment secret for push
-    const authResources = resources.filter(
-      resource => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation',
-    );
+    resources
+      .filter(resource => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation')
+      .map(({ category, resourceName }) =>
+        context.amplify.removeDeploymentSecrets(context, category, resourceName)
+      );
 
-    if (authResources.length > 0) {
-      for (let i = 0; i < authResources.length; i++) {
-        const authResource = authResources[i];
-
-        context.amplify.removeDeploymentSecrets(context, authResource.category, authResource.resourceName);
-      }
-    }
 
     spinner.succeed('All resources are updated in the cloud');
 
@@ -333,7 +329,7 @@ export async function run(context, resourceDefinition) {
   }
 }
 
-export async function updateStackForAPIMigration(context, category, resourceName, options) {
+export async function updateStackForAPIMigration(context: $TSContext, category: string, resourceName: string, options) {
   const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeDeleted, allResources } = await context.amplify.getResourceStatus(
     category,
     resourceName,
@@ -407,11 +403,11 @@ export async function updateStackForAPIMigration(context, category, resourceName
   }
 }
 
-export async function storeCurrentCloudBackend(context) {
+export async function storeCurrentCloudBackend(context: $TSContext) {
   const zipFilename = '#current-cloud-backend.zip';
-  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const backendDir = pathManager.getBackendDirPath();
   const tempDir = path.join(backendDir, '.temp');
-  const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
+  const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
 
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
@@ -447,18 +443,17 @@ export async function storeCurrentCloudBackend(context) {
   fs.removeSync(tempDir);
 }
 
-function validateCfnTemplates(context, resourcesToBeUpdated) {
-  for (let i = 0; i < resourcesToBeUpdated.length; i += 1) {
-    const { category, resourceName } = resourcesToBeUpdated[i];
-    const backEndDir = context.amplify.pathManager.getBackendDirPath();
+function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[]) {
+  for (const { category, resourceName } of resourcesToBeUpdated) {
+    const backEndDir = pathManager.getBackendDirPath();
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
       cwd: resourceDir,
       ignore: [parametersJson],
     });
 
-    for (let j = 0; j < cfnFiles.length; j += 1) {
-      const filePath = path.normalize(path.join(resourceDir, cfnFiles[j]));
+    for (const cfnFile of cfnFiles) {
+      const filePath = path.normalize(path.join(resourceDir, cfnFile));
 
       try {
         validateFile(filePath);
@@ -469,14 +464,14 @@ function validateCfnTemplates(context, resourcesToBeUpdated) {
   }
 }
 
-async function packageResources(context, resources) {
+async function packageResources(context: $TSContext, resources: $TSAny[]) {
   // Only build and package resources which are required
   resources = resources.filter(resource => resource.build);
 
   let log = null;
 
-  const packageResource = async (context, resource) => {
-    let result;
+  const packageResource = async (context: $TSContext, resource: $TSAny) => {
+    let result: $TSAny;
 
     if (resource.service === FunctionServiceNameLambdaLayer) {
       result = await context.amplify.invokePluginMethod(context, 'function', undefined, 'packageLayer', [context, resource]);
@@ -504,8 +499,8 @@ async function packageResources(context, resources) {
     }
 
     // Update cfn template
-    const { category, resourceName } = resource;
-    const backEndDir = context.amplify.pathManager.getBackendDirPath();
+    const { category, resourceName }: { category: string, resourceName: string } = resource;
+    const backEndDir = pathManager.getBackendDirPath();
     const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
 
     const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
@@ -526,7 +521,7 @@ async function packageResources(context, resources) {
 
     const cfnFile = cfnFiles[0];
     const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
-    const cfnMeta = context.amplify.readJsonFile(cfnFilePath);
+    const cfnMeta = JSONUtilities.readJson<$TSAny>(cfnFilePath);
 
     if (resource.service === FunctionServiceNameLambdaLayer) {
       const isMultiEnvLayer = await context.amplify.invokePluginMethod(context, 'function', undefined, 'isMultiEnvLayer', [
@@ -561,7 +556,7 @@ async function packageResources(context, resources) {
       };
 
       const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
-      context.amplify.writeObjectAsJson(cfnParamsFilePath, cfnParams, true);
+      JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
     } else {
       if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
         cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
@@ -575,7 +570,7 @@ async function packageResources(context, resources) {
         };
       }
     }
-    context.amplify.writeObjectAsJson(cfnFilePath, cfnMeta, true);
+    JSONUtilities.writeJson(cfnFilePath, cfnMeta);
   };
 
   const promises = [];
@@ -587,8 +582,8 @@ async function packageResources(context, resources) {
   return Promise.all(promises);
 }
 
-async function updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated) {
-  const backEndDir = context.amplify.pathManager.getBackendDirPath();
+async function updateCloudFormationNestedStack(context: $TSContext, nestedStack, resourcesToBeCreated, resourcesToBeUpdated) {
+  const backEndDir = pathManager.getBackendDirPath();
   const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, nestedStackFileName));
 
   JSONUtilities.writeJson(nestedStackFilepath, nestedStack);
@@ -641,8 +636,8 @@ function getAllUniqueCategories(resources: $TSObject[]): $TSObject[] {
   return [...categories];
 }
 
-function getCfnFiles(context, category, resourceName) {
-  const backEndDir = context.amplify.pathManager.getBackendDirPath();
+function getCfnFiles(category: string, resourceName: string) {
+  const backEndDir = pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   const resourceBuildDir = path.join(resourceDir, optionalBuildDirectoryName);
 
@@ -676,15 +671,14 @@ function getCfnFiles(context, category, resourceName) {
   };
 }
 
-function updateS3Templates(context, resourcesToBeUpdated, amplifyMeta) {
+function updateS3Templates(context: $TSContext, resourcesToBeUpdated, amplifyMeta: $TSMeta) {
   const promises = [];
 
-  for (let i = 0; i < resourcesToBeUpdated.length; i += 1) {
-    const { category, resourceName } = resourcesToBeUpdated[i];
-    const { resourceDir, cfnFiles } = getCfnFiles(context, category, resourceName);
+  for (const { category, resourceName } of resourcesToBeUpdated) {
+    const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
 
-    for (let j = 0; j < cfnFiles.length; j += 1) {
-      promises.push(uploadTemplateToS3(context, resourceDir, cfnFiles[j], category, resourceName, amplifyMeta));
+    for (const cfnFile of cfnFiles) {
+      promises.push(uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceName, amplifyMeta));
     }
   }
 
@@ -921,7 +915,7 @@ async function formNestedStack(
       const authParameters = loadResourceParameters(context, 'auth', authResourceName);
 
       if (authParameters.identityPoolName) {
-        updateIdPRolesInNestedStack(context, nestedStack, authResourceName);
+        updateIdPRolesInNestedStack(nestedStack, authResourceName);
       }
     }
   }
@@ -929,7 +923,7 @@ async function formNestedStack(
   return nestedStack;
 }
 
-function updateIdPRolesInNestedStack(context, nestedStack, authResourceName) {
+function updateIdPRolesInNestedStack(nestedStack, authResourceName) {
   const authLogicalResourceName = `auth${authResourceName}`;
   const idpUpdateRoleCfnFilePath = path.join(__dirname, '..', 'resources', 'update-idp-roles-cfn.json');
   const idpUpdateRoleCfn = JSONUtilities.readJson<$TSObject>(idpUpdateRoleCfnFilePath);
