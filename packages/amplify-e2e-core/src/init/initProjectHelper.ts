@@ -319,6 +319,40 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
   });
 }
 
+export function amplifyInitSandbox(cwd: string, settings: {}) {
+  const s = { ...defaultSettings, ...settings };
+  let env;
+
+  if (s.disableAmplifyAppCreation === true) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
+
+  addCircleCITags(cwd);
+
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env })
+      .wait('Enter a name for the environment')
+      .sendLine(s.envName)
+      .wait('Choose your default editor:')
+      .sendLine(s.editor)
+      .wait('Using default provider  awscloudformation')
+      .wait('Do you want to use an AWS profile?')
+      .sendLine('y')
+      .wait('Please choose the profile you want to use')
+      .sendLine(s.profileName)
+      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function amplifyVersion(cwd: string, expectedVersion: string, testingWithLatestCodebase = false) {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['--version'], { cwd, stripColors: true })
