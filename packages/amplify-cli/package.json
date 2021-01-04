@@ -96,7 +96,8 @@
     "tar-fs": "^2.1.1",
     "update-notifier": "^4.1.0",
     "which": "^2.0.2",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "glob": "^7.1.6"
   },
   "devDependencies": {
     "@types/ci-info": "^2.0.0",
