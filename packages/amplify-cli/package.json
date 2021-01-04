@@ -79,6 +79,7 @@
     "figlet": "^1.2.4",
     "folder-hash": "^3.3.0",
     "fs-extra": "^8.1.0",
+    "glob": "^7.1.6",
     "global-prefix": "^3.0.0",
     "graphql-transformer-core": "6.25.1",
     "gunzip-maybe": "^1.4.2",
@@ -96,8 +97,7 @@
     "tar-fs": "^2.1.1",
     "update-notifier": "^4.1.0",
     "which": "^2.0.2",
-    "winston": "^3.3.3",
-    "glob": "^7.1.6"
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/ci-info": "^2.0.0",
