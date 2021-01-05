@@ -4,6 +4,7 @@ import { hashElement } from 'folder-hash';
 import glob from 'glob';
 import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
 import { JSONUtilities, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
+import { ServiceName } from 'amplify-category-function';
 
 export function updateAwsMetaFile(filePath, category, resourceName, attribute, value, timestamp) {
   const amplifyMeta = JSONUtilities.readJson<$TSMeta>(filePath);
@@ -57,7 +58,9 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
     // in the case that the resource is being deleted, the sourceDir won't exist
     if (fs.pathExistsSync(sourceDir)) {
       fs.copySync(sourceDir, targetDir);
-      removeNodeModulesDir(targetDir);
+      if (resources[i]?.service === ServiceName.LambdaFunction) {
+        removeNodeModulesDir(targetDir);
+      }
     }
   }
 
@@ -70,7 +73,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
   }
 }
 
-function removeNodeModulesDir(currentCloudBackendDir) {
+function removeNodeModulesDir(currentCloudBackendDir: string) {
   const nodeModulesDirs = glob.sync('**/node_modules', {
     cwd: currentCloudBackendDir,
     absolute: true,
