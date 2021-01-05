@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^3.2.2",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "cloudform-types": "^4.2.0",
     "graphql": "^14.5.8",
     "graphql-transformer-common": "4.18.1",
