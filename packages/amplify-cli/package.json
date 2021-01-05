@@ -79,6 +79,7 @@
     "figlet": "^1.2.4",
     "folder-hash": "^3.3.0",
     "fs-extra": "^8.1.0",
+    "glob": "^7.1.6",
     "global-prefix": "^3.0.0",
     "graphql-transformer-core": "6.25.1",
     "gunzip-maybe": "^1.4.2",

@@ -1,6 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { hashElement } from 'folder-hash';
+import glob from 'glob';
 import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
 import { JSONUtilities, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
 
@@ -56,6 +57,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
     // in the case that the resource is being deleted, the sourceDir won't exist
     if (fs.pathExistsSync(sourceDir)) {
       fs.copySync(sourceDir, targetDir);
+      removeNodeModulesDir(targetDir);
     }
   }
 
@@ -65,6 +67,18 @@ function moveBackendResourcesToCurrentCloudBackend(resources) {
   // if project hasn't been initialized after tags has been released
   if (fs.existsSync(tagFilePath)) {
     fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
+  }
+}
+
+function removeNodeModulesDir(currentCloudBackendDir) {
+  const nodeModulesDirs = glob.sync('**/node_modules', {
+    cwd: currentCloudBackendDir,
+    absolute: true,
+  });
+  for (const nodeModulesPath of nodeModulesDirs) {
+    if (fs.existsSync(nodeModulesPath)) {
+      fs.removeSync(nodeModulesPath);
+    }
   }
 }
 
