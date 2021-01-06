@@ -62,7 +62,14 @@ export async function run(context, resourceDefinition) {
   let iterativeDeploymentWasInvoked = false;
 
   try {
-    const { resourcesToBeCreated, resourcesToBeUpdated, resourcesToBeSynced, resourcesToBeDeleted, allResources } = resourceDefinition;
+    const {
+      resourcesToBeCreated,
+      resourcesToBeUpdated,
+      resourcesToBeSynced,
+      resourcesToBeDeleted,
+      tagsUpdated,
+      allResources,
+    } = resourceDefinition;
     const clousformationMeta = context.amplify.getProjectMeta().providers.awscloudformation;
     const {
       parameters: { options },
@@ -161,7 +168,7 @@ export async function run(context, resourceDefinition) {
     await updateS3Templates(context, resources, projectDetails.amplifyMeta);
 
     // We do not need CloudFormation update if only syncable resources are the changes.
-    if (resourcesToBeCreated.length > 0 || resourcesToBeUpdated.length > 0 || resourcesToBeDeleted.length > 0) {
+    if (resourcesToBeCreated.length > 0 || resourcesToBeUpdated.length > 0 || resourcesToBeDeleted.length > 0 || tagsUpdated) {
       // If there is an API change, there will be one deployment step. But when there needs an iterative update the step count is > 1
       if (deploymentSteps.length > 1) {
         // create deployment manager
@@ -415,6 +422,12 @@ export async function storeCurrentCloudBackend(context) {
 
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir);
+  }
+  // handle tag file
+  const tagFilePath = pathManager.getTagFilePath();
+  const tagCloudFilePath = pathManager.getCurrentTagFilePath();
+  if (fs.existsSync(tagFilePath)) {
+    fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
   }
 
   const cliJSONFiles = glob.sync(PathConstants.CLIJSONFileNameGlob, {

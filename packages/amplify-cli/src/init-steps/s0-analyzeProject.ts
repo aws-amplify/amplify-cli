@@ -75,6 +75,17 @@ function setExeInfo(context: $TSContext, projectPath: String, defaultEditor?: St
   };
   context.exeInfo.teamProviderInfo = {};
   context.exeInfo.metaData = {};
+  context.exeInfo.initialTags = [
+    {
+      Key: 'user:Stack',
+      Value: '{project-env}',
+    },
+    {
+      Key: 'user:Application',
+      Value: '{project-name}',
+    },
+  ];
+  return context;
 }
 
 /* Begin getProjectName */

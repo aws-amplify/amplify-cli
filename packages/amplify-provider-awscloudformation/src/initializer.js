@@ -36,6 +36,8 @@ async function run(context) {
     const { amplifyAppId, verifiedStackName, deploymentBucketName } = await amplifyServiceManager.init(amplifyServiceParams);
 
     stackName = verifiedStackName;
+    const Tags = context.amplify.getTags(context);
+
     const authRoleName = `${stackName}-authRole`;
     const unauthRoleName = `${stackName}-unauthRole`;
 
@@ -64,6 +66,7 @@ async function run(context) {
           ParameterValue: unauthRoleName,
         },
       ],
+      Tags,
     };
 
     const spinner = ora();
@@ -167,6 +170,13 @@ function storeCurrentCloudBackend(context) {
     cwd: pathManager.getAmplifyDirPath(),
     absolute: true,
   });
+
+  // handle tag file
+  const tagFilePath = pathManager.getTagFilePath();
+  const tagCloudFilePath = pathManager.getCurrentTagFilePath();
+  if (fs.existsSync(tagFilePath)) {
+    fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
+  }
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
   let log = null;
