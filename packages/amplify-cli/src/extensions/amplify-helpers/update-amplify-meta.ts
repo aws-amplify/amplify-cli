@@ -2,18 +2,9 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { hashElement } from 'folder-hash';
 import glob from 'glob';
-import {
-  updateBackendConfigAfterResourceAdd,
-  updateBackendConfigAfterResourceUpdate,
-} from './update-backend-config';
-import {
-  JSONUtilities,
-  pathManager,
-  stateManager,
-  $TSAny,
-  $TSMeta,
-  $TSObject,
-} from 'amplify-cli-core';
+import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
+import { JSONUtilities, pathManager, stateManager, $TSAny, $TSMeta, $TSObject } from 'amplify-cli-core';
+import { ServiceName } from 'amplify-category-function';
 
 export function updateAwsMetaFile(
   filePath: string,
@@ -21,7 +12,7 @@ export function updateAwsMetaFile(
   resourceName: string,
   attribute: $TSAny,
   value: $TSAny,
-  timestamp: $TSAny
+  timestamp: $TSAny,
 ): $TSMeta {
   const amplifyMeta = JSONUtilities.readJson<$TSMeta>(filePath);
 
@@ -61,9 +52,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
 
   for (const resource of resources) {
     const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName));
-    const targetDir = path.normalize(
-      path.join(pathManager.getCurrentCloudBackendDirPath(), resource.category, resource.resourceName),
-    );
+    const targetDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), resource.category, resource.resourceName));
 
     if (fs.pathExistsSync(targetDir)) {
       fs.removeSync(targetDir);
@@ -74,7 +63,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
     // in the case that the resource is being deleted, the sourceDir won't exist
     if (fs.pathExistsSync(sourceDir)) {
       fs.copySync(sourceDir, targetDir);
-      if (resources[i]?.service === ServiceName.LambdaFunction) {
+      if (resource?.service === ServiceName.LambdaFunction) {
         removeNodeModulesDir(targetDir);
       }
     }
@@ -183,11 +172,7 @@ export async function updateamplifyMetaAfterPush(resources: $TSObject[]) {
 
     // If the operation was a remove-sync then for imported resources we cannot set timestamp
     // but those are still in the received array as this method is operation agnostic.
-    if (
-      resource.serviceType === 'imported' &&
-      amplifyMeta[resource.category] &&
-      amplifyMeta[resource.category][resource.resourceName]
-    ) {
+    if (resource.serviceType === 'imported' && amplifyMeta[resource.category] && amplifyMeta[resource.category][resource.resourceName]) {
       amplifyMeta[resource.category][resource.resourceName].lastPushTimeStamp = currentTimestamp;
     }
   }
