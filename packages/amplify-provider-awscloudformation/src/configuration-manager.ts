@@ -22,7 +22,6 @@ import {
   removeProjectComfirmQuestion,
   updateOrRemoveQuestion,
 } from './question-flows/configuration-questions';
-import inquirer from 'inquirer';
 
 interface AwsConfig extends AwsSecrets {
   useProfile?: boolean;
@@ -91,11 +90,11 @@ export async function configure(context: $TSContext) {
   return await carryOutConfigAction(context);
 }
 
-async function enableServerlessContainers(context) {
+async function enableServerlessContainers(context: $TSContext) {
   const frontend = context.exeInfo.projectConfig.frontend;
   const { config = {} } = context.exeInfo.projectConfig[frontend] || {};
 
-  const { ServerlessContainers } = await inquirer.prompt({
+  const { ServerlessContainers } = await prompt({
     type: 'confirm',
     name: 'ServerlessContainers',
     message: 'Do you want to enable container-based deployments?',
@@ -109,7 +108,7 @@ async function enableServerlessContainers(context) {
   context.exeInfo.projectConfig[frontend].config = { ...config, ServerlessContainers };
 }
 
-function doesAwsConfigExists(context) {
+function doesAwsConfigExists(context: $TSContext) {
   let configExists = false;
   const { envName } = context?.exeInfo?.localEnvInfo || context.amplify.getEnvInfo();
 
