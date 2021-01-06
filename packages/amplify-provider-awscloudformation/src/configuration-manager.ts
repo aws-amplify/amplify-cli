@@ -82,10 +82,30 @@ export async function configure(context: $TSContext) {
   context.exeInfo = context.exeInfo || context.amplify.getProjectDetails();
   normalizeInputParams(context);
   context.exeInfo.awsConfigInfo = getCurrentConfig(context);
+  await enableServerlessContainers(context);
+
   await newUserCheck(context);
   printInfo(context);
   await setProjectConfigAction(context);
   return await carryOutConfigAction(context);
+}
+
+async function enableServerlessContainers(context: $TSContext) {
+  const frontend = context.exeInfo.projectConfig.frontend;
+  const { config = {} } = context.exeInfo.projectConfig[frontend] || {};
+
+  const { ServerlessContainers } = await prompt({
+    type: 'confirm',
+    name: 'ServerlessContainers',
+    message: 'Do you want to enable container-based deployments?',
+    default: config.ServerlessContainers === true
+  });
+
+  if (!context.exeInfo.projectConfig[frontend]) {
+    context.exeInfo.projectConfig[frontend] = { config };
+  }
+
+  context.exeInfo.projectConfig[frontend].config = { ...config, ServerlessContainers };
 }
 
 function doesAwsConfigExists(context: $TSContext) {
