@@ -463,7 +463,6 @@ function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[
 
 async function packageResources(context: $TSContext, resources: $TSAny[]) {
   // Only build and package resources which are required
-  resources = resources;
   return Promise.all(resources.filter(resource => resource.build).map(resource => packageResource(context, resource)));
 }
 
