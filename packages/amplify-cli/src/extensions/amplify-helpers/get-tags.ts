@@ -1,4 +1,4 @@
-import { stateManager, Tag, HydrateTags, pathManager } from 'amplify-cli-core';
+import { stateManager, Tag, HydrateTags } from 'amplify-cli-core';
 import { Context } from '../../domain/context';
 
 export function getTags(context: Context): Tag[] {

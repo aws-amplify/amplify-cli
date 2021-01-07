@@ -350,7 +350,7 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     allResources = allResources.filter(resource => resource.providerPlugin === providerName);
   }
 
-  const tagsUpdated = compareTags(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
+  const tagsUpdated = _.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
   return {
     resourcesToBeCreated,
@@ -360,27 +360,6 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     tagsUpdated,
     allResources,
   };
-}
-
-function compareTags(tags: Tag[], currenTags: Tag[]): boolean {
-  if (tags.length !== currenTags.length) return true;
-  const tagMap = new Map(tags.map(tag => [tag.Key, tag.Value]));
-  if (
-    _.some(currenTags, tag => {
-      if (tagMap.has(tag.Key)) {
-        if (tagMap.get(tag.Key) !== tag.Value) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        return true;
-      }
-    })
-  )
-    return true;
-
-  return false;
 }
 
 export async function showResourceTable(category, resourceName, filteredResources) {
