@@ -1,6 +1,6 @@
-function generateConfig(context, amplifyConfig, newAWSConfig) {
+function generateConfig(context, newAWSConfig) {
   const metadata = context.amplify.getProjectMeta();
-  amplifyConfig = amplifyConfig || {
+  const amplifyConfig = {
     UserAgent: 'aws-amplify-cli/2.0',
     Version: '1.0',
   };
@@ -50,7 +50,7 @@ function constructApi(metadata, amplifyConfig) {
   const categoryName = 'api';
   const pluginName = 'awsAPIPlugin';
   const region = metadata.providers.awscloudformation.Region;
-  if (metadata[categoryName]) {
+  if (metadata[categoryName] && Object.keys(metadata[categoryName]).length > 0) {
     Object.keys(metadata[categoryName]).forEach(r => {
       const resourceMeta = metadata[categoryName][r];
       if (resourceMeta.output) {
