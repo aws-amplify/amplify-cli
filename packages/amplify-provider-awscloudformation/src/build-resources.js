@@ -68,6 +68,7 @@ export async function buildResource(context, resource) {
       runtime: breadcrumbs.functionRuntime,
       lastPackageTimestamp: resource.lastPackageTimestamp ? new Date(resource.lastPackageTimestamp) : undefined,
       lastBuildTimestamp: rebuilt ? new Date() : new Date(resource.lastBuildTimeStamp),
+      skipHashing: resource.skipHashing,
     };
     packagePromise = runtimePlugin.package(packageRequest);
   }
@@ -75,7 +76,9 @@ export async function buildResource(context, resource) {
     packagePromise
       .then(result => {
         const packageHash = result.packageHash;
-        zipFilename = packageHash ? `${resource.resourceName}-${packageHash}-build.zip` : zipFilename;
+        zipFilename = packageHash
+          ? `${resource.resourceName}-${packageHash}-build.zip`
+          : zipFilename ?? `${resource.category}-${resource.resourceName}-build.zip`;
         context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename);
         resolve({ zipFilename, zipFilePath: destination });
       })

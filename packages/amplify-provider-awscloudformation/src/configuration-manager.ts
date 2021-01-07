@@ -1,30 +1,58 @@
-const aws = require('aws-sdk');
-const _ = require('lodash');
-const path = require('path');
-const fs = require('fs-extra');
-const chalk = require('chalk');
-const inquirer = require('inquirer');
-const proxyAgent = require('proxy-agent');
-const awsRegions = require('./aws-regions');
-const constants = require('./constants');
-const setupNewUser = require('./setup-new-user');
-const obfuscateUtil = require('./utility-obfuscate');
-const systemConfigManager = require('./system-config-manager');
-const { doAdminCredentialsExist, isAmplifyAdminApp, getRefreshedTokens } = require('./utils/admin-helpers');
-const { resolveAppId } = require('./utils/resolve-appId');
+import { pathManager, stateManager, $TSAny, $TSContext, JSONUtilities } from 'amplify-cli-core';
+const aws = require('aws-sdk'); // TODO switch to ./aws-utils/aws when supported
+import _ from 'lodash';
+import path from 'path';
+import fs from 'fs-extra';
+import chalk from 'chalk';
+import { prompt } from 'inquirer';
+import proxyAgent from 'proxy-agent';
+import awsRegions from './aws-regions';
+import constants from './constants';
+import setupNewUser from './setup-new-user';
+import obfuscateUtil from './utility-obfuscate';
+import systemConfigManager from './system-config-manager';
+import { doAdminCredentialsExist, isAmplifyAdminApp, getRefreshedTokens } from './utils/admin-helpers';
+import { resolveAppId } from './utils/resolve-appId';
+import { CognitoIdToken } from './utils/auth-types';
+import {
+  accessKeysQuestion,
+  createConfirmQuestion,
+  profileConfirmQuestion,
+  profileNameQuestion,
+  removeProjectComfirmQuestion,
+  updateOrRemoveQuestion,
+} from './question-flows/configuration-questions';
 
-const defaultAWSConfig = {
+interface AwsConfig extends AwsSecrets {
+  useProfile?: boolean;
+  profileName?: string;
+  awsConfigFilePath?: string;
+}
+
+type ProjectType = 'amplifyAdmin' | 'general' | 'project';
+interface ProjectConfig {
+  configLevel: ProjectType;
+  config?: AwsConfig;
+}
+
+interface AwsSecrets {
+  accessKeyId?: string;
+  secretAccessKey?: string;
+  region?: string;
+}
+
+const defaultAWSConfig: AwsConfig = {
   useProfile: true,
   profileName: 'default',
 };
 
-async function init(context) {
+export async function init(context: $TSContext) {
   if (!context.exeInfo.isNewProject && doesAwsConfigExists(context)) {
     return context;
   }
   normalizeInputParams(context);
 
-  let appId;
+  let appId: string;
   try {
     appId = resolveAppId(context);
   } catch (e) {
@@ -50,24 +78,42 @@ async function init(context) {
   return await carryOutConfigAction(context);
 }
 
-async function configure(context) {
+export async function configure(context: $TSContext) {
   context.exeInfo = context.exeInfo || context.amplify.getProjectDetails();
   normalizeInputParams(context);
   context.exeInfo.awsConfigInfo = getCurrentConfig(context);
+  await enableServerlessContainers(context);
+
   await newUserCheck(context);
   printInfo(context);
   await setProjectConfigAction(context);
   return await carryOutConfigAction(context);
 }
 
-function doesAwsConfigExists(context) {
-  let configExists = false;
-  const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
-  const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
-  const { envName } = context.exeInfo ? context.exeInfo.localEnvInfo : context.amplify.getEnv();
+async function enableServerlessContainers(context: $TSContext) {
+  const frontend = context.exeInfo.projectConfig.frontend;
+  const { config = {} } = context.exeInfo.projectConfig[frontend] || {};
 
-  if (fs.existsSync(configInfoFilePath)) {
-    const envAwsInfo = context.amplify.readJsonFile(configInfoFilePath);
+  const { ServerlessContainers } = await prompt({
+    type: 'confirm',
+    name: 'ServerlessContainers',
+    message: 'Do you want to enable container-based deployments?',
+    default: config.ServerlessContainers === true
+  });
+
+  if (!context.exeInfo.projectConfig[frontend]) {
+    context.exeInfo.projectConfig[frontend] = { config };
+  }
+
+  context.exeInfo.projectConfig[frontend].config = { ...config, ServerlessContainers };
+}
+
+function doesAwsConfigExists(context: $TSContext) {
+  let configExists = false;
+  const { envName } = context?.exeInfo?.localEnvInfo || context.amplify.getEnvInfo();
+
+  if (stateManager.localAWSInfoExists()) {
+    const envAwsInfo = stateManager.getLocalAWSInfo();
     if (envAwsInfo[envName]) {
       context.exeInfo = context.exeInfo || {};
       context.exeInfo.awsConfigInfo = envAwsInfo[envName];
@@ -79,11 +125,11 @@ function doesAwsConfigExists(context) {
   return configExists;
 }
 
-function normalizeInputParams(context) {
-  let inputParams;
+function normalizeInputParams(context: $TSContext) {
+  let inputParams: $TSAny;
   if (context.exeInfo.inputParams) {
-    if (context.exeInfo.inputParams[constants.Label]) {
-      inputParams = context.exeInfo.inputParams[constants.Label];
+    if (context.exeInfo.inputParams[constants.ProviderName]) {
+      inputParams = context.exeInfo.inputParams[constants.ProviderName];
     } else {
       for (let alias of constants.Aliases) {
         if (context.exeInfo.inputParams[alias]) {
@@ -95,9 +141,9 @@ function normalizeInputParams(context) {
   }
 
   if (inputParams) {
-    const normalizedInputParams = {};
+    const normalizedInputParams: ProjectConfig = { configLevel: undefined };
 
-    if (inputParams.configLevel && inputParams.configLevel === 'general') {
+    if (inputParams?.configLevel === 'general') {
       normalizedInputParams.configLevel = 'general';
     } else {
       delete inputParams.configLevel;
@@ -106,7 +152,7 @@ function normalizeInputParams(context) {
     }
 
     if (normalizedInputParams.configLevel === 'project') {
-      let errorMessage;
+      let errorMessage: string;
       if (!normalizedInputParams.config || Object.keys(normalizedInputParams.config).length < 1) {
         errorMessage = 'configLevel set to "project" but project level config is missing.';
       } else {
@@ -130,11 +176,11 @@ function normalizeInputParams(context) {
         throw new Error(errorMessage);
       }
     }
-    context.exeInfo.inputParams[constants.Label] = normalizedInputParams;
+    context.exeInfo.inputParams[constants.ProviderName] = normalizedInputParams;
   }
 }
 
-async function carryOutConfigAction(context) {
+async function carryOutConfigAction(context: $TSContext) {
   let result;
   switch (context.exeInfo.awsConfigInfo.action) {
     case 'init':
@@ -156,11 +202,11 @@ async function carryOutConfigAction(context) {
   return result;
 }
 
-async function initialize(context) {
+async function initialize(context: $TSContext) {
   const { awsConfigInfo } = context.exeInfo;
   if (awsConfigInfo.configLevel !== 'amplifyAdmin') {
-    if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
-      const inputParams = context.exeInfo.inputParams[constants.Label];
+    if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.ProviderName]) {
+      const inputParams = context.exeInfo.inputParams[constants.ProviderName];
       Object.assign(awsConfigInfo, inputParams);
     } else if (awsConfigInfo.configLevel === 'project' && (!context.exeInfo.inputParams || !context.exeInfo.inputParams.yes)) {
       await promptForProjectConfigConfirmation(context);
@@ -175,17 +221,17 @@ async function initialize(context) {
   return context;
 }
 
-function onInitSuccessful(context) {
+export function onInitSuccessful(context: $TSContext) {
   if (context.exeInfo.isNewEnv || !doesAwsConfigExists(context)) {
     persistLocalEnvConfig(context);
   }
   return context;
 }
 
-async function create(context) {
+async function create(context: $TSContext) {
   const { awsConfigInfo } = context.exeInfo;
-  if (context.exeInfo.inputParams[constants.Label]) {
-    const inputParams = context.exeInfo.inputParams[constants.Label];
+  if (context.exeInfo.inputParams[constants.ProviderName]) {
+    const inputParams = context.exeInfo.inputParams[constants.ProviderName];
     Object.assign(awsConfigInfo, inputParams);
   } else {
     await promptForProjectConfigConfirmation(context);
@@ -200,10 +246,10 @@ async function create(context) {
   return context;
 }
 
-async function update(context) {
+async function update(context: $TSContext) {
   const { awsConfigInfo } = context.exeInfo;
-  if (context.exeInfo.inputParams[constants.Label]) {
-    const inputParams = context.exeInfo.inputParams[constants.Label];
+  if (context.exeInfo.inputParams[constants.ProviderName]) {
+    const inputParams = context.exeInfo.inputParams[constants.ProviderName];
     Object.assign(awsConfigInfo, inputParams);
   } else {
     await promptForProjectConfigConfirmation(context);
@@ -217,7 +263,7 @@ async function update(context) {
   return context;
 }
 
-async function remove(context) {
+async function remove(context: $TSContext) {
   const { awsConfigInfo } = context.exeInfo;
   await confirmProjectConfigRemoval(context);
   if (awsConfigInfo.action !== 'cancel') {
@@ -226,7 +272,7 @@ async function remove(context) {
   return context;
 }
 
-function printInfo(context) {
+function printInfo(context: $TSContext) {
   const url = 'https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html';
   context.print.info('');
   context.print.info('For more information on AWS Profiles, see:');
@@ -234,9 +280,9 @@ function printInfo(context) {
   context.print.info('');
 }
 
-async function setProjectConfigAction(context) {
-  if (context.exeInfo.inputParams[constants.Label]) {
-    const inputParams = context.exeInfo.inputParams[constants.Label];
+async function setProjectConfigAction(context: $TSContext) {
+  if (context.exeInfo.inputParams[constants.ProviderName]) {
+    const inputParams = context.exeInfo.inputParams[constants.ProviderName];
 
     if (context.exeInfo.awsConfigInfo.configLevel === 'project') {
       if (inputParams.configLevel === 'project') {
@@ -256,23 +302,10 @@ async function setProjectConfigAction(context) {
     context.exeInfo.awsConfigInfo.action = 'none';
     context.print.info('For the awscloudformation provider.');
     if (context.exeInfo.awsConfigInfo.configLevel === 'project') {
-      const updateOrRemove = {
-        type: 'list',
-        name: 'action',
-        message: 'Do you want to update or remove the project level configuration',
-        choices: ['update', 'remove', 'cancel'],
-        default: 'update',
-      };
-      const answer = await inquirer.prompt(updateOrRemove);
+      const answer = await prompt(updateOrRemoveQuestion);
       context.exeInfo.awsConfigInfo.action = answer.action;
     } else {
-      const confirmCreate = {
-        type: 'confirm',
-        name: 'setProjectLevelConfig',
-        message: 'Do you want to set the project level configuration',
-        default: true,
-      };
-      const answer = await inquirer.prompt(confirmCreate);
+      const answer = await prompt(createConfirmQuestion);
       if (answer.setProjectLevelConfig) {
         context.exeInfo.awsConfigInfo.action = 'create';
         context.exeInfo.awsConfigInfo.configLevel = 'project';
@@ -286,21 +319,15 @@ async function setProjectConfigAction(context) {
   return context;
 }
 
-async function confirmProjectConfigRemoval(context) {
+async function confirmProjectConfigRemoval(context: $TSContext) {
   if (!context.exeInfo.inputParams.yes) {
-    const removeProjectComfirmation = {
-      type: 'confirm',
-      name: 'removeProjectConfig',
-      message: 'Remove project level configuration',
-      default: false,
-    };
-    const asnwer = await inquirer.prompt(removeProjectComfirmation);
+    const asnwer = await prompt(removeProjectComfirmQuestion);
     context.exeInfo.awsConfigInfo.action = asnwer.removeProjectConfig ? 'remove' : 'cancel';
   }
   return context;
 }
 
-async function promptForProjectConfigConfirmation(context) {
+async function promptForProjectConfigConfirmation(context: $TSContext) {
   const { awsConfigInfo } = context.exeInfo;
 
   let availableProfiles = [];
@@ -309,58 +336,13 @@ async function promptForProjectConfigConfirmation(context) {
     availableProfiles = Object.keys(namedProfiles);
   }
 
-  const useProfileConfirmation = {
-    type: 'confirm',
-    name: 'useProfile',
-    message: 'Do you want to use an AWS profile?',
-    default: awsConfigInfo.config.useProfile,
-  };
-
-  const profileName = {
-    type: 'list',
-    name: 'profileName',
-    message: 'Please choose the profile you want to use',
-    choices: availableProfiles,
-    default: awsConfigInfo.config.profileName,
-  };
-
-  const configurationSettings = [
-    {
-      type: 'password',
-      mask: '*',
-      name: 'accessKeyId',
-      message: 'accessKeyId: ',
-      default: awsConfigInfo.config.accessKeyId
-        ? obfuscateUtil.obfuscate(awsConfigInfo.config.accessKeyId)
-        : constants.DefaultAWSAccessKeyId,
-      transformer: obfuscateUtil.transform,
-    },
-    {
-      type: 'password',
-      mask: '*',
-      name: 'secretAccessKey',
-      message: 'secretAccessKey: ',
-      default: awsConfigInfo.config.secretAccessKey
-        ? obfuscateUtil.obfuscate(awsConfigInfo.config.secretAccessKey)
-        : constants.DefaultAWSSecretAccessKey,
-      transformer: obfuscateUtil.transform,
-    },
-    {
-      type: 'list',
-      name: 'region',
-      message: 'region: ',
-      choices: awsRegions.regions,
-      default: awsConfigInfo.config.region ? awsConfigInfo.config.region : constants.DefaultAWSRegion,
-    },
-  ];
-
-  let answers;
+  let answers: $TSAny;
 
   if (availableProfiles && availableProfiles.length > 0) {
-    answers = await inquirer.prompt(useProfileConfirmation);
+    answers = await prompt(profileConfirmQuestion(awsConfigInfo.config.useProfile));
     awsConfigInfo.config.useProfile = answers.useProfile;
     if (answers.useProfile) {
-      answers = await inquirer.prompt(profileName);
+      answers = await prompt(profileNameQuestion(availableProfiles, awsConfigInfo.config.profileName));
       awsConfigInfo.config.profileName = answers.profileName;
       return context;
     }
@@ -368,7 +350,16 @@ async function promptForProjectConfigConfirmation(context) {
     awsConfigInfo.config.useProfile = false;
   }
 
-  answers = await inquirer.prompt(configurationSettings);
+  answers = await prompt(
+    accessKeysQuestion(
+      awsConfigInfo.config.accessKeyId ? obfuscateUtil.obfuscate(awsConfigInfo.config.accessKeyId) : constants.DefaultAWSAccessKeyId,
+      awsConfigInfo.config.secretAccessKey
+        ? obfuscateUtil.obfuscate(awsConfigInfo.config.secretAccessKey)
+        : constants.DefaultAWSSecretAccessKey,
+      awsConfigInfo.config.region || constants.DefaultAWSRegion,
+      obfuscateUtil.transform,
+    ),
+  );
   if (!obfuscateUtil.isObfuscated(answers.accessKeyId)) {
     awsConfigInfo.config.accessKeyId = answers.accessKeyId;
   }
@@ -376,11 +367,9 @@ async function promptForProjectConfigConfirmation(context) {
     awsConfigInfo.config.secretAccessKey = answers.secretAccessKey;
   }
   awsConfigInfo.config.region = answers.region;
-
-  return context;
 }
 
-function validateConfig(context) {
+function validateConfig(context: $TSContext) {
   const { awsConfigInfo } = context.exeInfo;
   awsConfigInfo.configValidated = false;
   if (awsConfigInfo.configLevel === 'general' || awsConfigInfo.configLevel === 'amplifyAdmin') {
@@ -403,9 +392,9 @@ function validateConfig(context) {
   return context;
 }
 
-function persistLocalEnvConfig(context) {
+function persistLocalEnvConfig(context: $TSContext) {
   let { awsConfigInfo } = context.exeInfo;
-  const { appId } = _.get(context, ['exeInfo', 'inputParams', 'amplify'], undefined);
+  const { appId } = _.get(context, ['exeInfo', 'inputParams', 'amplify'], {});
   if (appId && doAdminCredentialsExist(appId)) {
     awsConfigInfo = {
       configLevel: 'amplifyAdmin',
@@ -413,7 +402,7 @@ function persistLocalEnvConfig(context) {
     };
   }
 
-  const awsInfo = {
+  const awsInfo: AwsConfig & Pick<ProjectConfig, 'configLevel'> = {
     configLevel: awsConfigInfo.configLevel,
   };
 
@@ -433,30 +422,27 @@ function persistLocalEnvConfig(context) {
         secretAccessKey: awsConfigInfo.config.secretAccessKey,
         region: awsConfigInfo.config.region,
       };
-      const sharedConfigDirPath = path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
+      const sharedConfigDirPath = path.join(pathManager.getHomeDotAmplifyDirPath(), constants.ProviderName);
       fs.ensureDirSync(sharedConfigDirPath);
       const awsSecretsFileName = context.amplify.makeId(10);
       const awsSecretsFilePath = path.join(sharedConfigDirPath, awsSecretsFileName);
-      const jsonString = JSON.stringify(awsSecrets, null, 4);
-      fs.writeFileSync(awsSecretsFilePath, jsonString, 'utf8');
+      JSONUtilities.writeJson(awsSecretsFilePath, awsSecrets);
 
       awsInfo.awsConfigFilePath = awsSecretsFilePath;
     }
   }
 
-  const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
+  const dotConfigDirPath = pathManager.getDotConfigDirPath();
   const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
   const { envName } = context.exeInfo.localEnvInfo;
 
   let envAwsInfo = {};
   if (fs.existsSync(configInfoFilePath)) {
-    envAwsInfo = context.amplify.readJsonFile(configInfoFilePath);
+    envAwsInfo = JSONUtilities.readJson(configInfoFilePath);
   }
 
   envAwsInfo[envName] = awsInfo;
-  const jsonString = JSON.stringify(envAwsInfo, null, 4);
-  fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
-
+  JSONUtilities.writeJson(configInfoFilePath, envAwsInfo);
   return context;
 }
 
@@ -465,24 +451,24 @@ function getCurrentConfig(context) {
   return getConfigForEnv(context, envName);
 }
 
-function getConfigForEnv(context, envName) {
-  const projectConfigInfo = {
+export function getConfigForEnv(context: $TSContext, envName: string) {
+  const projectConfigInfo: ProjectConfig = {
     configLevel: 'general',
     config: {},
   };
-  const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
+  const dotConfigDirPath = pathManager.getDotConfigDirPath();
   const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
 
   if (fs.existsSync(configInfoFilePath)) {
     try {
-      const configInfo = context.amplify.readJsonFile(configInfoFilePath, 'utf8')[envName];
+      const configInfo = JSONUtilities.readJson(configInfoFilePath)[envName];
 
       if (configInfo && configInfo.configLevel !== 'general' && configInfo.configLevel !== 'amplifyAdmin') {
         if (configInfo.useProfile && configInfo.profileName) {
           projectConfigInfo.config.useProfile = configInfo.useProfile;
           projectConfigInfo.config.profileName = configInfo.profileName;
         } else if (configInfo.awsConfigFilePath && fs.existsSync(configInfo.awsConfigFilePath)) {
-          const awsSecrets = context.amplify.readJsonFile(configInfo.awsConfigFilePath, 'utf8');
+          const awsSecrets = JSONUtilities.readJson<AwsSecrets>(configInfo.awsConfigFilePath);
           projectConfigInfo.config.useProfile = false;
           projectConfigInfo.config.awsConfigFilePath = configInfo.awsConfigFilePath;
           projectConfigInfo.config.accessKeyId = awsSecrets.accessKeyId;
@@ -502,18 +488,18 @@ function getConfigForEnv(context, envName) {
   return projectConfigInfo;
 }
 
-function updateProjectConfig(context) {
+function updateProjectConfig(context: $TSContext) {
   removeProjectConfig(context);
   persistLocalEnvConfig(context);
   return context;
 }
 
-function removeProjectConfig(context) {
-  const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
+function removeProjectConfig(context: $TSContext) {
+  const dotConfigDirPath = pathManager.getDotConfigDirPath();
   const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
   if (fs.existsSync(configInfoFilePath)) {
     const { envName } = context.amplify.getEnvInfo();
-    const configInfo = context.amplify.readJsonFile(configInfoFilePath, 'utf8');
+    const configInfo = JSONUtilities.readJson(configInfoFilePath);
     if (configInfo[envName]) {
       if (configInfo[envName].awsConfigFilePath && fs.existsSync(configInfo[envName].awsConfigFilePath)) {
         fs.removeSync(configInfo[envName].awsConfigFilePath);
@@ -522,20 +508,19 @@ function removeProjectConfig(context) {
         configLevel: 'general',
       };
     }
-    const jsonString = JSON.stringify(configInfo, null, 4);
-    fs.writeFileSync(configInfoFilePath, jsonString, 'utf8');
+    JSONUtilities.writeJson(configInfoFilePath, configInfo);
   }
 }
 
-async function loadConfiguration(context) {
+export async function loadConfiguration(context: $TSContext) {
   const { envName } = context.amplify.getEnvInfo();
   const config = await loadConfigurationForEnv(context, envName);
   return config;
 }
 
-function loadConfigFromPath(context, profilePath) {
+function loadConfigFromPath(profilePath: string) {
   if (fs.existsSync(profilePath)) {
-    const config = context.amplify.readJsonFile(profilePath);
+    const config = JSONUtilities.readJson<$TSAny>(profilePath);
     if (config.accessKeyId && config.secretAccessKey && config.region) {
       return config;
     }
@@ -543,7 +528,7 @@ function loadConfigFromPath(context, profilePath) {
   throw new Error(`Invalid config ${profilePath}`);
 }
 
-async function getAdminCredentials(idToken, identityId, region) {
+async function getAdminCredentials(idToken: CognitoIdToken, identityId: string, region: string) {
   const cognitoIdentity = new aws.CognitoIdentity({ region });
   const login = idToken.payload.iss.replace('https://', '');
   return cognitoIdentity
@@ -556,7 +541,7 @@ async function getAdminCredentials(idToken, identityId, region) {
     .promise();
 }
 
-async function loadConfigurationForEnv(context, env, appId) {
+export async function loadConfigurationForEnv(context: $TSContext, env: string, appId?: string) {
   const projectConfigInfo = getConfigForEnv(context, env);
   const { print, usageData } = context;
   let awsConfig;
@@ -568,7 +553,7 @@ async function loadConfigurationForEnv(context, env, appId) {
       const errorMsg = `No credentials found for appId: ${appId}`;
       print.info('');
       print.error(errorMsg);
-      print.info(`If the appId is correct, try running amplify configure --appId ${appId}`);
+      print.info(`If the appId is correct, try running amplify configure --appId ${appId} --envName ${env}`);
       usageData.emitError(new Error(errorMsg));
       process.exit(1);
     }
@@ -617,13 +602,13 @@ async function loadConfigurationForEnv(context, env, appId) {
     if (config.useProfile) {
       awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
     } else {
-      awsConfig = loadConfigFromPath(context, config.awsConfigFilePath);
+      awsConfig = loadConfigFromPath(config.awsConfigFilePath);
     }
   }
   return awsConfig;
 }
 
-async function resetCache(context) {
+export async function resetCache(context: $TSContext) {
   const projectConfigInfo = getCurrentConfig(context);
   if (projectConfigInfo.configLevel === 'project') {
     const { config } = projectConfigInfo;
@@ -633,10 +618,10 @@ async function resetCache(context) {
   }
 }
 
-function resolveRegion() {
+export function resolveRegion() {
   // For details of how aws region is set, check the following link
   // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-region.html
-  let region;
+  let region: string;
   if (process.env.AWS_REGION) {
     region = process.env.AWS_REGION;
   }
@@ -650,12 +635,12 @@ function resolveRegion() {
   return region;
 }
 
-async function newUserCheck(context) {
+async function newUserCheck(context: $TSContext) {
   const configSource = scanConfig(context);
   if (!configSource) {
     let needToSetupNewUser = true;
-    if (context.exeInfo.inputParams[constants.Label]) {
-      const inputParams = context.exeInfo.inputParams[constants.Label];
+    if (context.exeInfo.inputParams[constants.ProviderName]) {
+      const inputParams = context.exeInfo.inputParams[constants.ProviderName];
       const inputConfigSufficient =
         inputParams.configLevel === 'general' || (inputParams.configLevel === 'project' && !inputParams.config.useProfile);
       if (inputConfigSufficient) {
@@ -667,7 +652,7 @@ async function newUserCheck(context) {
         throw new Error('AWS access credentials can not be found.');
       } else {
         context.print.info('AWS access credentials can not be found.');
-        const answer = await inquirer.prompt([
+        const answer = await prompt([
           {
             type: 'confirm',
             name: 'setupNewUser',
@@ -683,10 +668,10 @@ async function newUserCheck(context) {
   }
 }
 
-function scanConfig(context) {
-  let configSource = getConfigLevel(context);
+function scanConfig(context: $TSContext) {
+  let configSource: string = getConfigLevel(context);
   if (!configSource) {
-    const namedProfiles = systemConfigManager.getNamedProfiles();
+    const namedProfiles: $TSAny = systemConfigManager.getNamedProfiles();
     if (namedProfiles && Object.keys(namedProfiles).length > 0) {
       configSource = 'profile-available';
     }
@@ -704,15 +689,15 @@ function scanConfig(context) {
   return configSource;
 }
 
-function getConfigLevel(context) {
-  let configLevel;
+function getConfigLevel(context: $TSContext): ProjectType {
+  let configLevel: ProjectType;
   try {
     const namedProfiles = systemConfigManager.getNamedProfiles();
-    const dotConfigDirPath = context.amplify.pathManager.getDotConfigDirPath();
-    const configInfoFilePath = path.join(dotConfigDirPath, constants.LocalAWSInfoFileName);
+    const configInfoFilePath = pathManager.getLocalAWSInfoFilePath();
+
     if (fs.existsSync(configInfoFilePath)) {
       const { envName } = context.amplify.getEnvInfo();
-      const envConfigInfo = context.amplify.readJsonFile(configInfoFilePath)[envName];
+      const envConfigInfo = JSONUtilities.readJson(configInfoFilePath)[envName];
       if (envConfigInfo) {
         // configLevel is 'general' only when it's explicitly set so
         if (envConfigInfo.configLevel === 'general') {
@@ -732,7 +717,7 @@ function getConfigLevel(context) {
   return configLevel;
 }
 
-async function getAwsConfig(context) {
+export async function getAwsConfig(context: $TSContext) {
   const { awsConfigInfo } = context.exeInfo;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 
@@ -750,8 +735,7 @@ async function getAwsConfig(context) {
   } else if (awsConfigInfo.configLevel === 'amplifyAdmin') {
     try {
       const appId = resolveAppId(context);
-      const authConfig = await getRefreshedTokens(appId, context.print);
-      const { idToken, IdentityId, region } = authConfig;
+      const { idToken, IdentityId, region } = await getRefreshedTokens(appId, context.print);
       awsConfig = {
         ...(await getAdminCredentials(idToken, IdentityId, region)).Credentials,
         region,
@@ -771,14 +755,3 @@ async function getAwsConfig(context) {
 
   return awsConfig;
 }
-
-module.exports = {
-  init,
-  onInitSuccessful,
-  configure,
-  loadConfiguration,
-  resetCache,
-  resolveRegion,
-  loadConfigurationForEnv,
-  getAwsConfig,
-};

@@ -404,6 +404,31 @@ describe('feature flags', () => {
       }).rejects.toThrowError(`Invalid number value: 'invalid' for 'transformerversion' in section 'graphqltransformer'`);
     });
 
+    test('initialize feature flag provider fail unknown flags', async () => {
+      const context: any = {
+        getEnvInfo: (_: boolean): any => {
+          return {
+            envName: 'dev',
+          };
+        },
+      };
+
+      const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
+      const projectPath = path.join(__dirname, 'testFiles', 'testProject-initialize-unknown-flag');
+
+      // Set current cwd to projectPath for .env to work correctly
+      process.chdir(projectPath);
+
+      await expect(async () => {
+        await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
+      }).rejects.toMatchObject({
+        message: 'Invalid feature flag configuration',
+        name: 'JSONValidationError',
+        unknownFlags: ['graphqltransformer.foo', 'graphqltransformer.bar'],
+        otherErrors: ['graphqltransformer.transformerversion: should be number'],
+      });
+    });
+
     const getTestFlags = (): Record<string, FeatureFlagRegistration[]> => {
       return {
         graphQLTransformer: [

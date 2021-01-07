@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.33.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.2...amplify-e2e-tests@2.33.3) (2020-12-31)
+
+
+
+# 4.41.0 (2020-12-30)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [2.33.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.1...amplify-e2e-tests@2.33.2) (2020-12-21)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.0...amplify-e2e-tests@2.33.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** fix gsi mutate san check ([#6095](https://github.com/aws-amplify/amplify-cli/issues/6095)) ([37d08d9](https://github.com/aws-amplify/amplify-cli/commit/37d08d941421fe030bb454e7f417b3198a4b04ac)), closes [#6013](https://github.com/aws-amplify/amplify-cli/issues/6013)
+
+
+
+
+
+# [2.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.32.0...amplify-e2e-tests@2.33.0) (2020-12-11)
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
 # [2.32.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.31.0...amplify-e2e-tests@2.32.0) (2020-12-07)
 
 

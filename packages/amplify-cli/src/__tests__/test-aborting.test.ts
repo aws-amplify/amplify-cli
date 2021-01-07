@@ -27,6 +27,7 @@ describe('test SIGINT with execute', () => {
       stateManager: {
         getMeta: jest.fn(),
         projectConfigExists: jest.fn(),
+        localEnvInfoExists: jest.fn().mockReturnValue(true),
       },
       FeatureFlags: {
         initialize: jest.fn(),

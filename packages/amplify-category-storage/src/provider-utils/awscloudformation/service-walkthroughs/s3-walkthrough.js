@@ -43,7 +43,7 @@ export const addWalkthrough = async (context, defaultValuesFilename, serviceMeta
   if (resourceName) {
     const errMessage = 'Amazon S3 storage was already added to your project.';
     context.print.warning(errMessage);
-    context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
 
     exitOnNextTick(0);
   } else {

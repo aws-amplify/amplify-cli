@@ -3,6 +3,90 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.36.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.35.2...amplify-provider-awscloudformation@4.36.0) (2020-12-31)
+
+
+### Bug Fixes
+
+* print warnings for CFN lint ([#6236](https://github.com/aws-amplify/amplify-cli/issues/6236)) ([847b8ac](https://github.com/aws-amplify/amplify-cli/commit/847b8ac7ba02aaeb8477add41e64795e3a68a9ce))
+
+
+### Features
+
+* added tests and logging coverage for system config ([#6209](https://github.com/aws-amplify/amplify-cli/issues/6209)) ([b943d7c](https://github.com/aws-amplify/amplify-cli/commit/b943d7c0304d75f9eabf4fd5f5fbf108a1c83309))
+
+
+
+
+
+## [4.35.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.35.1...amplify-provider-awscloudformation@4.35.2) (2020-12-21)
+
+
+
+## 4.40.1 (2020-12-18)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** fixes rest client generation ([#6180](https://github.com/aws-amplify/amplify-cli/issues/6180)) ([af54abe](https://github.com/aws-amplify/amplify-cli/commit/af54abe7087676d2d74a8beb04196760ee70c481))
+* [#6168](https://github.com/aws-amplify/amplify-cli/issues/6168), update error messages, yarn.lock ([#6207](https://github.com/aws-amplify/amplify-cli/issues/6207)) ([450eb0e](https://github.com/aws-amplify/amplify-cli/commit/450eb0e618c66ed34719f65a5a799a193d6a8a94))
+* **amplify-provider-awscloudformation:** load correct file ([#6212](https://github.com/aws-amplify/amplify-cli/issues/6212)) ([7876187](https://github.com/aws-amplify/amplify-cli/commit/787618736540231efeeee8c803c178325b2c70b4))
+* rejects on error ([#6216](https://github.com/aws-amplify/amplify-cli/issues/6216)) ([473bea5](https://github.com/aws-amplify/amplify-cli/commit/473bea5c7260e3c7a70291e513d8b718cd82f601))
+
+
+
+
+
+## [4.35.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.35.0...amplify-provider-awscloudformation@4.35.1) (2020-12-16)
+
+
+
+# 4.40.0 (2020-12-15)
+
+
+### Bug Fixes
+
+* [#6097](https://github.com/aws-amplify/amplify-cli/issues/6097) - check for root stack when loading projects for sanity check ([#6121](https://github.com/aws-amplify/amplify-cli/issues/6121)) ([6ebe735](https://github.com/aws-amplify/amplify-cli/commit/6ebe735fddca83532b2e327cb2008729a8103d55))
+* [#6097](https://github.com/aws-amplify/amplify-cli/issues/6097) - don't create build folder during dryrun ([#6133](https://github.com/aws-amplify/amplify-cli/issues/6133)) ([b22e491](https://github.com/aws-amplify/amplify-cli/commit/b22e49173deb1654b97efa7967261caf7098a58b))
+* **amplify-provider-awscloudformation:** infinite loop on stack failure ([#6134](https://github.com/aws-amplify/amplify-cli/issues/6134)) ([af0ced4](https://github.com/aws-amplify/amplify-cli/commit/af0ced4b0b9ba153b83e5b35c0f11e57d62e9e82))
+* throw error on failed push ([#6186](https://github.com/aws-amplify/amplify-cli/issues/6186)) ([acb2089](https://github.com/aws-amplify/amplify-cli/commit/acb208900dafe09949c1201cdb351c9d94bc0b58))
+* undefined appId destructuring ([#6092](https://github.com/aws-amplify/amplify-cli/issues/6092)) ([b817664](https://github.com/aws-amplify/amplify-cli/commit/b817664e10c5c7469bf99058e1879e969ec92619))
+
+
+
+
+
+# [4.35.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.34.1...amplify-provider-awscloudformation@4.35.0) (2020-12-11)
+
+
+### Bug Fixes
+
+* version bucket conditional ([#6131](https://github.com/aws-amplify/amplify-cli/issues/6131)) ([9c4281f](https://github.com/aws-amplify/amplify-cli/commit/9c4281ff62241c00c5a93700f23ee7613b18ac39))
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
+## [4.34.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.34.0...amplify-provider-awscloudformation@4.34.1) (2020-12-09)
+
+
+
+## 4.38.2 (2020-12-09)
+
+
+### Reverts
+
+* **amplify-provider-awscloudformation:** removed cfn logging ([#6119](https://github.com/aws-amplify/amplify-cli/issues/6119)) ([a7f7f26](https://github.com/aws-amplify/amplify-cli/commit/a7f7f26676076dc2209b10f75dc8b5d992057f4a))
+
+
+
+
+
 # [4.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.33.1...amplify-provider-awscloudformation@4.34.0) (2020-12-07)
 
 

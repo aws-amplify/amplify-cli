@@ -42,8 +42,8 @@ export const run = async context => {
       await frontendHandlerModule.publish(context);
     }
   } catch (e) {
-    context.print.error(`An error occurred during the publish operation`);
-    context.usageData.emitError(new FrontendBuildError());
+    context.print.error(`An error occurred during the publish operation: ${e.message || 'Unknown error occurred.'}`);
+    context.usageData.emitError(new FrontendBuildError(e.message));
     process.exit(1);
   }
 };

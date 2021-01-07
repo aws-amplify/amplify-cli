@@ -24,6 +24,7 @@ export interface ServiceQuestionsBaseResult {
   userpoolClientRefreshTokenValidity?: number;
   userpoolClientReadAttributes: string[];
   userpoolClientWriteAttributes: string[];
+  usernameCaseSensitive?: boolean;
 }
 
 export interface OAuthResult {

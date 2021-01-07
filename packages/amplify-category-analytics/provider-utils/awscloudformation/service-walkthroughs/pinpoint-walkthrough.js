@@ -17,7 +17,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   if (resourceName) {
     const errMessage = 'Pinpoint analytics have already been added to your project.';
     context.print.warning(errMessage);
-    context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     exitOnNextTick(0);
   } else {
     return configure(context, defaultValuesFilename, serviceMetadata);

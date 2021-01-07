@@ -17,6 +17,7 @@ import {
   removeHeadlessApi,
   getAwsIOSConfig,
   getAmplifyIOSConfig
+  amplifyPushWithoutCodegen,
 } from 'amplify-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -95,7 +96,7 @@ describe('amplify add api (GraphQL)', () => {
     const envName = 'devtest';
     await initFlutterProjectWithProfile(projRoot, { name: 'simplemodel', envName });
     await addApiWithSchema(projRoot, 'simple_model.graphql');
-    await amplifyPush(projRoot);
+    await amplifyPushWithoutCodegen(projRoot);
 
     const meta = getProjectMeta(projRoot);
     const region = meta.providers.awscloudformation.Region;

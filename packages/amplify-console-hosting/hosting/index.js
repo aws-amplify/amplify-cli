@@ -30,8 +30,8 @@ async function enable(context) {
       await hostingModule.enable(context);
     } else {
       doesSelectHelp = true;
-      console.log(HELP_INFO_PLACE_HOLDER);
-      console.log('-------------------------------');
+      context.print.info(HELP_INFO_PLACE_HOLDER);
+      context.print.info('-------------------------------');
     }
   } while (doesSelectHelp);
 }

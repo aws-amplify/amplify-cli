@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.28.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.28.2...amplify-category-function@2.28.3) (2020-12-31)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [2.28.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.28.1...amplify-category-function@2.28.2) (2020-12-21)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [2.28.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.28.0...amplify-category-function@2.28.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* removes overwrite of current DependsOn ([#6040](https://github.com/aws-amplify/amplify-cli/issues/6040)) ([8866f45](https://github.com/aws-amplify/amplify-cli/commit/8866f45a1a2306c205b651c8e7c68d90f1092acb))
+
+
+
+
+
+# [2.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.27.0...amplify-category-function@2.28.0) (2020-12-11)
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
 # [2.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.26.3...amplify-category-function@2.27.0) (2020-12-07)
 
 

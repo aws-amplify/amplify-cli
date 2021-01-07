@@ -19,6 +19,7 @@ export * from './sdk-calls';
 export * from './selectors';
 export * from './sleep';
 export * from './transformConfig';
+export * from './admin-ui';
 
 // run dotenv config to update env variable
 config();

@@ -16,7 +16,7 @@ import {
 import { CloudFormation } from 'aws-sdk';
 import { Diff } from 'deep-diff';
 import _ from 'lodash';
-import configurationManager from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -54,7 +54,7 @@ export class GraphQLResourceManager {
 
   public static createInstance = async (context: $TSContext, gqlResource: any, StackId: string) => {
     try {
-      const cred = await configurationManager.loadConfiguration(context);
+      const cred = await loadConfiguration(context);
       const cfn = new CloudFormation(cred);
       const apiStack = await cfn
         .describeStackResources({ StackName: StackId, LogicalResourceId: gqlResource.providerMetadata.logicalId })

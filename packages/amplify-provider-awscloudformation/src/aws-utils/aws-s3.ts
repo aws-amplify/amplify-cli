@@ -1,13 +1,13 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 
 import aws from './aws.js';
 import _ from 'lodash';
 const providerName = require('../constants').ProviderName;
-import configurationManager from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 import fs from 'fs-extra';
 import ora from 'ora';
 import { pagedAWSCall } from './paged-call';
-import { ListObjectsV2Output, ListObjectsV2Request, NextToken } from 'aws-sdk/clients/s3';
+import { ListObjectVersionsOutput, ListObjectVersionsRequest, ObjectIdentifier } from 'aws-sdk/clients/s3';
 
 const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3/ManagedUpload.html#minPartSize-property
 const { fileLogger } = require('../utils/aws-logger');
@@ -28,7 +28,7 @@ export class S3 {
     if (!S3.instance) {
       let cred = {};
       try {
-        cred = await configurationManager.loadConfiguration(context);
+        cred = await loadConfiguration(context);
       } catch (e) {
         // ignore missing config
       }
@@ -134,25 +134,35 @@ export class S3 {
     }
   }
 
-  async getAllObjectKeys(bucketName, continuationToken = null) {
-    const result = await pagedAWSCall<ListObjectsV2Output, { Key: string }, NextToken>(
-      async (param: $TSAny, nextToken?: NextToken) => {
-        const parmaWithNextToken: ListObjectsV2Request = nextToken ? { ...param, ContinuationToken: nextToken } : param;
-        logger('getAllObjectKey.s3.listObjectsV2', [parmaWithNextToken])();
-        return await this.s3.listObjectsV2(parmaWithNextToken).promise();
+  async getAllObjectVersions(
+    bucketName: string,
+    continuationToken: Required<Pick<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = null,
+  ) {
+    const result = await pagedAWSCall<
+      ListObjectVersionsOutput,
+      Required<ObjectIdentifier>,
+      typeof continuationToken,
+      ListObjectVersionsRequest
+    >(
+      async (param, nextToken?) => {
+        const parmaWithNextToken = nextToken ? { ...param, ...nextToken } : param;
+        logger('getAllObjectKey.s3.listObjectVersions', [parmaWithNextToken])();
+        return await this.s3.listObjectVersions(parmaWithNextToken).promise();
       },
       {
         Bucket: bucketName,
+        ...continuationToken,
       },
-      (response?: ListObjectsV2Output) => response.Contents?.map(r => ({ Key: r.Key })),
-      async (response?: ListObjectsV2Output) => (response && response.IsTruncated ? response.NextContinuationToken : undefined),
+      (response?) => response.Versions?.map(({ Key, VersionId }) => ({ Key, VersionId })),
+      async (response?) =>
+        response && response.IsTruncated ? { KeyMarker: response.NextKeyMarker, VersionIdMarker: response.NextVersionIdMarker } : undefined,
     );
     return result;
   }
 
   public async deleteAllObjects(bucketName): Promise<void> {
-    logger('deleteAllObjects.s3.getAllObjectKey', [{ BucketName: bucketName }])();
-    const allObjects = await this.getAllObjectKeys(bucketName);
+    logger('deleteAllObjects.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
+    const allObjects = await this.getAllObjectVersions(bucketName);
     const chunkedResult = _.chunk(allObjects, 1000);
     for (let chunk of chunkedResult) {
       logger('deleteAllObjects.s3.deleteObjects', [{ Bucket: bucketName }])();

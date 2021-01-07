@@ -9,7 +9,7 @@ export async function askAnalyticsCategoryKinesisQuestions(context: any) {
   if (kinesisResources.length === 0) {
     const errMessage = 'No Kinesis streams resource to select. Please use "amplify add analytics" command to create a new Kinesis stream';
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
     return;
   } else if (kinesisResources.length === 1) {

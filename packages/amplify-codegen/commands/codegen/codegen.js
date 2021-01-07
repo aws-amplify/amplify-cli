@@ -33,7 +33,7 @@ module.exports = {
     }
     if (context.parameters.first) {
       context.print.info(constants.CMD_DESCRIPTION_NOT_SUPPORTED);
-      context.usageData.emitError(new InvalidSubCommandError(constants.CMD_DESCRIPTION_NOT_SUPPORTED));
+      await context.usageData.emitError(new InvalidSubCommandError(constants.CMD_DESCRIPTION_NOT_SUPPORTED));
       exitOnNextTick(1);
     }
 
@@ -43,7 +43,7 @@ module.exports = {
       await codeGen.generate(context, forceDownloadSchema, maxDepth);
     } catch (e) {
       context.print.info(e.message);
-      context.usageData.emitError(e);
+      await context.usageData.emitError(e);
       exitOnNextTick(1);
     }
   },

@@ -1,6 +1,6 @@
 import sequential from 'promise-sequential';
 import ora from 'ora';
-import { $TSObject, stateManager, exitOnNextTick } from 'amplify-cli-core';
+import { $TSContext, $TSObject, stateManager, exitOnNextTick } from 'amplify-cli-core';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 
 const spinner = ora('');
@@ -8,7 +8,7 @@ const spinner = ora('');
 // The following code pulls the latest backend to #current-cloud-backend
 // so the amplify status is correctly shown to the user before the user confirms
 // to push his local developments
-async function syncCurrentCloudBackend(context) {
+async function syncCurrentCloudBackend(context: $TSContext) {
   context.exeInfo.restoreBackend = false;
 
   const currentEnv = context.exeInfo.localEnvInfo.envName;
@@ -38,7 +38,7 @@ async function syncCurrentCloudBackend(context) {
   }
 }
 
-export const run = async context => {
+export const run = async (context: $TSContext) => {
   try {
     context.amplify.constructExeInfo(context);
     if (context.parameters.options.force) {

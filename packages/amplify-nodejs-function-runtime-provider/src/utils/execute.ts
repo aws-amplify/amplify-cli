@@ -95,16 +95,16 @@ process.on('message', async options => {
     process.stdout.write('\n');
     process.stdout.write(JSON.stringify({ result, error: null }));
   } catch (error) {
-    process.send!(
+    process.stdout.write('\n');
+    process.stdout.write(
       JSON.stringify({
         result: null,
         error: {
           type: 'Lambda:Unhandled',
-          message: error.message,
+          message: error.message || typeof error === 'string' ? error : 'Unknown error', // In case of callback('error'), it is only a string
         },
       }),
     );
-    exit(1);
   }
   exit(0);
 });

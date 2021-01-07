@@ -19,7 +19,8 @@ import { loadProject as readTransformerConfiguration } from './transform-config'
 import { loadProject } from 'graphql-transformer-core';
 import { AppSyncAuthConfiguration } from '@aws-amplify/graphql-transformer-core';
 import { Template } from '@aws-amplify/graphql-transformer-core/lib/config/project-config';
-import { AmplifyCLIFeatureFlagAdapter  } from '../utils/amplify-cli-feature-flag-adapter';
+import { AmplifyCLIFeatureFlagAdapter } from '../utils/amplify-cli-feature-flag-adapter';
+import { JSONUtilities } from 'amplify-cli-core';
 
 const API_CATEGORY = 'api';
 const STORAGE_CATEGORY = 'storage';
@@ -32,12 +33,12 @@ const S3_SERVICE_NAME = 'S3';
 const TRANSFORM_CONFIG_FILE_NAME = `transform.conf.json`;
 
 function warnOnAuth(context, map) {
-  const a:boolean = true;
+  const a: boolean = true;
   const unAuthModelTypes = Object.keys(map).filter(type => !map[type].includes('auth') && map[type].includes('model'));
   if (unAuthModelTypes.length) {
     context.print.warning("\nThe following types do not have '@auth' enabled. Consider using @auth with @model");
     context.print.warning(unAuthModelTypes.map(type => `\t - ${type}`).join('\n'));
-    context.print.info('Learn more about @auth here: https://docs.amplify.aws/cli/graphql-transformer/directives#auth\n');
+    context.print.info('Learn more about @auth here: https://docs.amplify.aws/cli/graphql-transformer/auth\n');
   }
 }
 
@@ -238,10 +239,17 @@ export async function transformGraphQLSchema(context, options) {
     S3DeploymentRootKey: deploymentRootKey,
   };
 
-  fs.ensureDirSync(buildDir);
+  // If it is a dry run, don't create the build folder as it could make a follow-up command
+  // to not to trigger a build, hence a corrupt deployment.
+  if (!options.dryRun) {
+    fs.ensureDirSync(buildDir);
+  }
+
   const project = await loadProject(resourceDir);
 
-  const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir) ? await loadProject(previouslyDeployedBackendDir): undefined;
+  const lastDeployedProjectConfig = fs.existsSync(previouslyDeployedBackendDir)
+    ? await loadProject(previouslyDeployedBackendDir)
+    : undefined;
 
   // Check for common errors
   const directiveMap = collectDirectivesByTypeNames(project.schema);
@@ -258,7 +266,7 @@ export async function transformGraphQLSchema(context, options) {
   const buildConfig: ProjectOptions<TransformerFactoryArgs> = {
     ...options,
     buildParameters,
-    projectDirectory: options.dryrun ? false : resourceDir,
+    projectDirectory: resourceDir,
     transformersFactory: transformerListFactory,
     transformersFactoryArgs: [searchableTransformerFlag, storageConfig],
     rootStackFileName: 'cloudformation-template.json',
@@ -273,11 +281,10 @@ export async function transformGraphQLSchema(context, options) {
   context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
-  const parametersStr = JSON.stringify(parameters, null, 4);
-
   if (!options.dryRun) {
-    fs.writeFileSync(parametersFilePath, parametersStr, 'utf8');
+    JSONUtilities.writeJson(parametersFilePath, parameters);
   }
+
   return transformerOutput;
 }
 

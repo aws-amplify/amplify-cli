@@ -10,7 +10,7 @@ const configurationManager = require('./configuration-manager');
 const { getConfiguredAmplifyClient } = require('./aws-utils/aws-amplify');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const constants = require('./constants');
-const { doAdminCredentialsExist, isAmplifyAdminApp } = require('./utils/admin-helpers');
+const { isAmplifyAdminApp } = require('./utils/admin-helpers');
 const { resolveAppId } = require('./utils/resolve-appId');
 const { adminLoginFlow } = require('./admin-login');
 const { fileLogger } = require('./utils/aws-logger');
@@ -27,25 +27,18 @@ async function run(context) {
   }
   const { envName } = _.get(context, ['exeInfo', 'inputParams', 'amplify'], {});
   const { useProfile, configLevel } = _.get(context, ['exeInfo', 'inputParams', 'awscloudformation'], {});
-  if (!useProfile && (!configLevel || configLevel === 'amplifyAdmin')) {
-    if (appId && !envName && (await isAmplifyAdminApp(appId)).isAdminApp) {
-      throw new Error('Missing --envName <environment name> in parameters.');
-    } else if (appId && envName) {
-      // Check for existing Amplify Admin tokens
-      if (doAdminCredentialsExist(appId)) {
-        isAdminApp = true;
-      } else {
-        // Check if this is a Amplify Admin appId
-        const res = await isAmplifyAdminApp(appId);
-        isAdminApp = res.isAdminApp;
-        if (isAdminApp) {
-          // Admin app, go through login flow
-          try {
-            await adminLoginFlow(context, appId, envName, res.region);
-          } catch (e) {
-            context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
-          }
-        }
+  if (!useProfile && (!configLevel || configLevel === 'amplifyAdmin') && appId) {
+    const res = await isAmplifyAdminApp(appId);
+    isAdminApp = res.isAdminApp;
+    if (isAdminApp) {
+      if (!envName) {
+        throw new Error('Missing --envName <environment name> in parameters.');
+      }
+      // Admin app, go through login flow
+      try {
+        await adminLoginFlow(context, appId, envName, res.region);
+      } catch (e) {
+        context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
       }
     }
   }

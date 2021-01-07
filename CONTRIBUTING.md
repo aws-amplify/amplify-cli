@@ -52,7 +52,25 @@ However, to construct a more comprehensive commit message with proper message ti
 ? Are there any breaking changes? Y/N
 ? Does this change affect any open issues? Y/N
 ? Add issue references (e.g. "fix #123", "re #123".): <issue number if exists>
+```
 
+## Getting Started with Development
+
+Start from a clean project state:
+```bash
+git clean -fdx -e .vscode
+git fetch origin && checkout --track origin/master -B master
+```
+
+To get started, ensure you have [`npm`](https://nodejs.org/en/download/) installed. Use it to install `yarn` and `lerna`:
+```bash
+npm install --global yarn lerna
+```
+
+From there, you can run the `setup-dev` target:
+```bash
+yarn clean
+yarn setup-dev
 ```
 
 For the question `What is the scope of this change`, enter the name of the package that received the major codebase changes. Note that the package name under the `packages/amplify-cli` folder is actually `cli`. 
@@ -70,6 +88,12 @@ The "pre-push" hook runs lint, and unit tests on the changed packages.
 ## Tests
 
 Please ensure that your change still passes unit tests, and ideally integration/UI tests. It's OK if you're still working on tests at the time that you submit, but be prepared to be asked about them. Wherever possible, pull requests should contain tests as appropriate. Bugfixes should contain tests that exercise the corrected behavior (i.e., the test should fail without the bugfix and pass with it), and new features should be accompanied by tests exercising the feature.
+
+To run the tests:
+```bash
+yarn test
+```
+Note: Before running the tests, you must first complete the one-time setup instructions under [Getting Started with Development](#getting-started-with-development).
 
 ## Code Style
 

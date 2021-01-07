@@ -1,5 +1,5 @@
 {
-    "description": "Defines acceptable payloads to amplify add storage --stdin",
+    "description": "Headless mode for add storage is not yet implemented.\nThis interface is subject to change and should not be used.",
     "type": "object",
     "properties": {
         "version": {

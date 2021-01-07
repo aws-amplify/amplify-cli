@@ -7,6 +7,7 @@ import { hashElement } from 'folder-hash';
 import { getEnvInfo } from './get-env-info';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
+import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-policy';
 import { pathManager, stateManager, $TSMeta, $TSAny, Tag } from 'amplify-cli-core';
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, isLambdaLayer = false) {
@@ -129,7 +130,7 @@ function getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, reso
         const dependsOnCategory = resources[i].dependsOn[j].category;
         const dependsOnResourcename = resources[i].dependsOn[j].resourceName;
         if (
-          (!amplifyMeta[dependsOnCategory][dependsOnResourcename].lastPushTimeStamp ||
+          amplifyMeta[dependsOnCategory] && (!amplifyMeta[dependsOnCategory][dependsOnResourcename].lastPushTimeStamp ||
             !currentAmplifyMeta[dependsOnCategory] ||
             !currentAmplifyMeta[dependsOnCategory][dependsOnResourcename]) &&
           amplifyMeta[dependsOnCategory][dependsOnResourcename].serviceType !== 'imported'
@@ -179,6 +180,9 @@ async function getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, category
   await asyncForEach(Object.keys(amplifyMeta), async categoryName => {
     const categoryItem = amplifyMeta[categoryName];
     await asyncForEach(Object.keys(categoryItem), async resource => {
+      if (categoryName === 'analytics') {
+        removeGetUserEndpoints(resource);
+      }
       if (
         currentAmplifyMeta[categoryName] &&
         currentAmplifyMeta[categoryName][resource] !== undefined &&

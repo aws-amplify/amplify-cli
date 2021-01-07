@@ -32,6 +32,7 @@ async function configure(context) {
   if (!currentConfiguration.config) {
     currentConfiguration.config = getProjectConfiguration(currentConfiguration.framework, context.exeInfo.localEnvInfo.projectPath);
   }
+
   await confirmConfiguration(context);
 }
 
@@ -135,10 +136,11 @@ async function confirmFrameworkConfiguration(context) {
         name: 'StartCommand',
         message: 'Start Command:',
         default: config.StartCommand,
-      },
+      }
     ];
     const answers = await inquirer.prompt(configurationSettings);
-    Object.assign(context.exeInfo.projectConfig[constants.Label].config, answers);
+
+    Object.assign(context.exeInfo.projectConfig[constants.Label].config, { ...answers });
   }
 }
 

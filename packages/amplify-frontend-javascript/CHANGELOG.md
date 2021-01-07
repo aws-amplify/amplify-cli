@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.20.2...amplify-frontend-javascript@2.20.3) (2020-12-31)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.20.1...amplify-frontend-javascript@2.20.2) (2020-12-21)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [2.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.20.0...amplify-frontend-javascript@2.20.1) (2020-12-16)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+# [2.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.19.1...amplify-frontend-javascript@2.20.0) (2020-12-11)
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
 ## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.19.0...amplify-frontend-javascript@2.19.1) (2020-12-07)
 
 **Note:** Version bump only for package amplify-frontend-javascript

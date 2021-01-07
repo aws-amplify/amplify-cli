@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.22.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.22.2...amplify-codegen-appsync-model-plugin@1.22.3) (2020-12-31)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** store graphql float as java double ([#6145](https://github.com/aws-amplify/amplify-cli/issues/6145)) ([fadc144](https://github.com/aws-amplify/amplify-cli/commit/fadc14495b21c327069f16f2c8f6bd99397d6059))
+* updateSnaphot for [#6145](https://github.com/aws-amplify/amplify-cli/issues/6145) ([#6244](https://github.com/aws-amplify/amplify-cli/issues/6244)) ([f95921d](https://github.com/aws-amplify/amplify-cli/commit/f95921d7876b8047a9c59a2a9cacea572025f1a1))
+
+
+
+
+
+## [1.22.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.22.1...amplify-codegen-appsync-model-plugin@1.22.2) (2020-12-16)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:** pass targetName for hasOne relationships ([#6031](https://github.com/aws-amplify/amplify-cli/issues/6031)) ([dc6bb85](https://github.com/aws-amplify/amplify-cli/commit/dc6bb85020bfe684e619e1e317615ab8048ce962))
+
+
+
+
+
 ## [1.22.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen-appsync-model-plugin@1.22.0...amplify-codegen-appsync-model-plugin@1.22.1) (2020-12-03)
 
 

@@ -7,8 +7,15 @@ import {
   initNewEnvWithAccessKey,
   initNewEnvWithProfile,
   amplifyStatus,
+  getAdminApp,
+  amplifyPullSandbox,
+  amplifyInitSandbox,
+  getProjectSchema,
+  amplifyPush,
 } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir, getEnvVars, getProjectMeta } from 'amplify-e2e-core';
+import { JSONUtilities } from 'amplify-cli-core';
+import { SandboxApp } from '../types/SandboxApp';
 
 describe('amplify init', () => {
   let projRoot: string;
@@ -19,6 +26,27 @@ describe('amplify init', () => {
   afterEach(async () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
+  });
+
+  it('should pull sandbox and download schema', async () => {
+    const schemaBody = {
+      schema:
+        '    type Todo @model @auth(rules: [{allow: public}]) {        id: ID!        name: String!        description: String    }    ',
+      shareable: 'true',
+    };
+    const sandBoxAppString = await getAdminApp(schemaBody);
+    expect(sandBoxAppString).toBeDefined();
+    const sandboxApp = JSONUtilities.parse<SandboxApp>(sandBoxAppString);
+    expect(sandboxApp.schema).toEqual(schemaBody.schema);
+    await amplifyPullSandbox(projRoot, {
+      appType: 'javascript',
+      framework: 'angular',
+      sandboxId: sandboxApp.backendManagerAppId,
+    });
+    await amplifyInitSandbox(projRoot, {});
+    const projectSchema = getProjectSchema(projRoot, 'amplifyDatasource');
+    expect(projectSchema).toEqual(schemaBody.schema);
+    await amplifyPush(projRoot);
   });
 
   it('should init the project and create new env', async () => {

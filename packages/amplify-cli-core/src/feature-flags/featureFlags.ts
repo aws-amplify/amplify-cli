@@ -307,18 +307,41 @@ export class FeatureFlags {
 
   private validateFlags = (allFlags: { name: string; flags: FeatureFlagConfiguration }[]): void => {
     const schema = this.buildJSONSchemaFromRegistrations();
-    const ajv = new Ajv();
+    const ajv = new Ajv({
+      allErrors: true,
+    });
     const schemaValidate = ajv.compile(schema);
 
     const validator = (target: string, flags: FeatureFlagsEntry) => {
       const valid = schemaValidate(flags);
 
       if (!valid && schemaValidate.errors) {
-        const jsonError = schemaValidate.errors[0];
-        const additionalProperty = (<AdditionalPropertiesParams>jsonError?.params)?.additionalProperty;
-        const propertyMessage = additionalProperty ? `: '${additionalProperty}'` : '';
+        const unknownFlags = [];
+        const otherErrors = [];
 
-        throw new JSONValidationError(`${target}: ${ajv.errorsText(schemaValidate.errors)}${propertyMessage}`);
+        for (const error of schemaValidate.errors) {
+          if (error.keyword === 'additionalProperties') {
+            const additionalProperty = (<AdditionalPropertiesParams>error.params)?.additionalProperty;
+            let flagName = error.dataPath.length > 0 && error.dataPath[0] === '.' ? `${error.dataPath.slice(1)}.` : '';
+
+            if (additionalProperty) {
+              flagName += additionalProperty;
+            }
+
+            if (flagName.length > 0) {
+              unknownFlags.push(flagName);
+            }
+          } else {
+            const errorMessage =
+              error.dataPath.length > 0 && error.dataPath[0] === '.'
+                ? `${error.dataPath.slice(1)}: ${error.message}`
+                : `${error.dataPath}: ${error.message}`;
+
+            otherErrors.push(errorMessage);
+          }
+        }
+
+        throw new JSONValidationError('Invalid feature flag configuration', unknownFlags, otherErrors);
       }
     };
 
@@ -509,6 +532,33 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: false,
+      },
+    ]);
+
+    this.registerFlag('frontend-ios', [
+      {
+        name: 'enableXcodeIntegration',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+    ]);
+
+    this.registerFlag('auth', [
+      {
+        name: 'enableCaseInsensitivity',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+    ]);
+
+    this.registerFlag('codegen', [
+      {
+        name: 'useAppSyncModelgenPlugin',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
       },
     ]);
   };

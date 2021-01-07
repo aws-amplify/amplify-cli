@@ -34,6 +34,7 @@ export type $TSContext = {
   usageData: $TSAny;
   runtime: $TSAny;
   pluginPlatform: IPluginPlatform;
+  newUserInfo?: $TSAny;
 };
 
 export type IPluginPlatform = {
@@ -121,12 +122,12 @@ interface AmplifyToolkit {
   buildResources: () => $TSAny;
   confirmPrompt: (prompt: string, defaultValue?: boolean) => $TSAny;
   constants: $TSAny;
-  constructExeInfo: () => $TSAny;
+  constructExeInfo: (context: $TSContext) => $TSAny;
   copyBatch: () => $TSAny;
   crudFlow: () => $TSAny;
   deleteProject: () => $TSAny;
   executeProviderUtils: () => $TSAny;
-  getAllEnvs: () => $TSAny;
+  getAllEnvs: () => string[];
   getPlugin: () => $TSAny;
   getCategoryPluginInfo: (context: $TSContext, category?: string, service?: string) => $TSAny;
   getAllCategoryPluginInfo: (context: $TSContext) => $TSAny;
@@ -143,15 +144,21 @@ interface AmplifyToolkit {
   getWhen: () => $TSAny;
   inputValidation: (input: $TSAny) => $TSAny;
   listCategories: () => $TSAny;
-  makeId: () => $TSAny;
+  makeId: (n?: number) => string;
   openEditor: () => $TSAny;
   onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
   pathManager: () => $TSAny;
   pressEnterToContinue: () => $TSAny;
-  pushResources: () => $TSAny;
+  pushResources: (
+    context: $TSContext,
+    category?: string,
+    resourceName?: string,
+    filteredResources?: { category: string, resourceName: string }[],
+  ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
   readJsonFile: () => $TSAny;
   removeEnvFromCloud: () => $TSAny;
+  removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
   removeResource: () => $TSAny;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
@@ -169,21 +176,21 @@ interface AmplifyToolkit {
   updateamplifyMetaAfterResourceUpdate: (
     category: string,
     resourceName: string,
-    metaResourceKey?: $TSAny,
+    metaResourceKey: string,
     metaResourceData?: $TSAny,
-  ) => $TSAny;
+  ) => $TSMeta;
   updateamplifyMetaAfterResourceAdd: (
     category: string,
     resourceName: string,
     metaResourceData: $TSAny,
     backendResourceData?: $TSAny,
     overwriteObjectIfExists?: boolean,
-  ) => $TSAny;
-  updateamplifyMetaAfterResourceDelete: () => $TSAny;
-  updateProvideramplifyMeta: () => $TSAny;
-  updateamplifyMetaAfterPush: () => $TSAny;
-  updateamplifyMetaAfterBuild: () => $TSAny;
-  updateAmplifyMetaAfterPackage: () => $TSAny;
+  ) => void;
+  updateamplifyMetaAfterResourceDelete: (category: string, resourceName: string) => void;
+  updateProvideramplifyMeta: (providerName: string, options: $TSObject) => void;
+  updateamplifyMetaAfterPush: (resources: $TSObject[]) => void;
+  updateamplifyMetaAfterBuild: (resource: $TSObject) => void;
+  updateAmplifyMetaAfterPackage: (resource: $TSObject, zipFilename: string) => void;
   updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSAny) => $TSAny;
   updateBackendConfigAfterResourceUpdate: () => $TSAny;
   updateBackendConfigAfterResourceRemove: () => $TSAny;

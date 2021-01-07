@@ -12,7 +12,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   if (resourceName) {
     const errMessage = 'Kinesis resource have already been added to your project.';
     context.print.warning(errMessage);
-    context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     exitOnNextTick(0);
   }
   return configure(context, defaultValuesFilename, serviceMetadata);
@@ -158,7 +158,7 @@ async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata
   if (kinesisResources.length === 0) {
     const errMessage = 'No Kinesis streams resource to update. Please use "amplify add analytics" command to create a new Kinesis stream';
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
     return;
   } else if (kinesisResources.length === 1) {
