@@ -17,14 +17,26 @@ describe('$utils.math.round', () => {
   });
 });
 
-describe('$utils.str.minVal', () => {
+describe('$utils.math.minVal', () => {
   it('should get the min value', () => {
     expect(util.math.minVal(13.45, 45.67)).toEqual(13.45);
   });
 });
 
-describe('$utils.str.maxVal', () => {
+describe('$utils.math.maxVal', () => {
   it('get the max value', () => {
     expect(util.math.maxVal(13.45, 45.67)).toEqual(45.67);
+  });
+});
+
+describe('$utils.math.random', () => {
+  it('get a random value', () => {
+    expect(typeof util.math.randomDouble()).toBe('number');
+  });
+});
+
+describe('$utils.math.randomWithinRange', () => {
+  it('get a randomWithinRange value', () => {
+    expect(typeof util.math.randomWithinRange(10, 20)).toBe('number');
   });
 });
