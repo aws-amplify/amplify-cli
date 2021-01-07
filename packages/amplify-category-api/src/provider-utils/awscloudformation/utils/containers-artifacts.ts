@@ -41,7 +41,11 @@ type ContainerArtifactsMetadata = {
   pipelineInfo: { consoleUrl: string };
 };
 
-export async function generateContainersArtifacts(context: any, resource: ApiResource, askForExposedContainer: boolean = false): Promise<ContainerArtifactsMetadata> {
+export async function generateContainersArtifacts(
+  context: any,
+  resource: ApiResource,
+  askForExposedContainer: boolean = false,
+): Promise<ContainerArtifactsMetadata> {
   const {
     providers: { [cloudformationProviderName]: provider },
   } = context.amplify.getProjectMeta();
@@ -60,26 +64,23 @@ export async function generateContainersArtifacts(context: any, resource: ApiRes
     apiType,
   } = resource;
 
-
   const backendDir = context.amplify.pathManager.getBackendDirPath();
   const resourceDir = path.normalize(path.join(backendDir, categoryName, resourceName));
   const srcPath = path.join(resourceDir, 'src');
 
-  const {
-    containersPorts,
-    containers,
-    isInitialDeploy,
-    desiredCount,
-    exposedContainer,
-    secretsArns,
-  } = await processDockerConfig(context, resource, srcPath, askForExposedContainer);
+  const { containersPorts, containers, isInitialDeploy, desiredCount, exposedContainer, secretsArns } = await processDockerConfig(
+    context,
+    resource,
+    srcPath,
+    askForExposedContainer,
+  );
 
   const repositories = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'describeEcrRepositories');
 
   const existingEcrRepositories: Set<string> = new Set(
-      repositories
-          .map(({ repositoryName }) => repositoryName)
-          .filter((repositoryName) => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`))
+    repositories
+      .map(({ repositoryName }) => repositoryName)
+      .filter(repositoryName => repositoryName.startsWith(`${envName}-${categoryName}-${resourceName}-`)),
   );
 
   const stack = new EcsStack(undefined, 'ContainersStack', {
@@ -121,13 +122,7 @@ export async function processDockerConfig(context: any, resource: ApiResource, s
 
   const { StackName: envName } = provider;
 
-  const {
-    resourceName,
-    gitHubInfo,
-    deploymentMechanism,
-    output,
-    exposedContainer: exposedContainerFromMeta,
-  } = resource;
+  const { resourceName, gitHubInfo, deploymentMechanism, output, exposedContainer: exposedContainerFromMeta } = resource;
 
   const dockerComposeFileNameYaml = 'docker-compose.yaml';
   const dockerComposeFileNameYml = 'docker-compose.yml';
@@ -168,7 +163,7 @@ export async function processDockerConfig(context: any, resource: ApiResource, s
             path: path.join(pathInRepo, fileName),
           });
 
-          containerDefinitionFiles[fileName] = Buffer.from(content, encoding).toString('utf8');
+          containerDefinitionFiles[fileName] = Buffer.from(content, <BufferEncoding>encoding).toString('utf8');
         } catch (error) {
           const { status } = error;
 
@@ -199,9 +194,7 @@ export async function processDockerConfig(context: any, resource: ApiResource, s
   const { buildspec, containers, service, secrets } = getContainers(composeContents, dockerfileContents);
 
   const containersPorts = containers.reduce(
-    (acc, container) => acc.concat(
-      container.portMappings.map(({ containerPort }) => containerPort),
-    ),
+    (acc, container) => acc.concat(container.portMappings.map(({ containerPort }) => containerPort)),
     <number[]>[],
   );
 
@@ -210,8 +203,7 @@ export async function processDockerConfig(context: any, resource: ApiResource, s
   let isInitialDeploy = Object.keys(output ?? {}).length === 0;
   const currentContainersSet = new Set(output?.ContainerNames?.split(','));
   // Service require all containers to exists
-  isInitialDeploy = isInitialDeploy ||
-    newContainersName.some(newContainer => !currentContainersSet.has(newContainer));
+  isInitialDeploy = isInitialDeploy || newContainersName.some(newContainer => !currentContainersSet.has(newContainer));
 
   let exposedContainer: { name: string; port: number };
 
@@ -350,4 +342,3 @@ async function checkContainerExposed(
     };
   }
 }
-

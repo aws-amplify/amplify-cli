@@ -16,7 +16,7 @@ import {
   getDDBTable,
   removeHeadlessApi,
   getAwsIOSConfig,
-  getAmplifyIOSConfig
+  getAmplifyIOSConfig,
   amplifyPushWithoutCodegen,
 } from 'amplify-e2e-core';
 import path from 'path';
@@ -80,7 +80,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(GraphQLAPIIdOutput).toBeDefined();
     expect(GraphQLAPIEndpointOutput).toBeDefined();
     expect(GraphQLAPIKeyOutput).toBeDefined();
-    
+
     await removeHeadlessApi(projRoot, 'simplemodel');
     await amplifyPushUpdate(projRoot);
 
