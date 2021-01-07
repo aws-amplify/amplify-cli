@@ -54,7 +54,7 @@ export async function updateLayerWalkthrough(
   if (resources.length === 0) {
     const errMessage = 'No Lambda layer resource to update. Please use "amplify add function" to create a new Layer';
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
   const resourceQuestion: InputQuestion = [

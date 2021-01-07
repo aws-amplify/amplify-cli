@@ -101,7 +101,7 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, sho
     if (bucketName === '' || !(amplifyMeta.predictions[resourceName].output && amplifyMeta.predictions[resourceName].output.collectionId)) {
       const errMessage = 'Push the resources to the cloud using `amplify push` command.';
       context.print.error(errMessage);
-      context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+      await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
       exitOnNextTick(0);
       return;
     }
@@ -112,7 +112,7 @@ async function printRekognitionUploadUrl(context, resourceName, amplifyMeta, sho
       'Console command not supported for your configuration in the project. Use ‘amplify update predictions’ to modify your configurations.';
     // !showOnAmplifyStatus is used so that this message is not shown in amplify status scenario.
     context.print.error(errMessage);
-    context.usageData.emitError(new NotImplementedError(errMessage));
+    await context.usageData.emitError(new NotImplementedError(errMessage));
     exitOnNextTick(0);
   }
 }

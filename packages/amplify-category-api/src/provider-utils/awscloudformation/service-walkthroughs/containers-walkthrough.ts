@@ -172,7 +172,9 @@ async function newContainer(context, resourceName: string, apiType: API_TYPE): P
 
   if (deploymentMechanismQuestion.deploymentMechanism === DEPLOYMENT_MECHANISM.INDENPENDENTLY_MANAGED) {
     context.print.info('We need a Github Personal Access Token to automatically build & deploy your Fargate task on every Github commit.');
-    context.print.info('Learn more about Github Personal Access Token here: https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token');
+    context.print.info(
+      'Learn more about Github Personal Access Token here: https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token',
+    );
 
     const gitHubQuestions = await inquirer.prompt([
       {
@@ -236,14 +238,17 @@ export async function updateWalkthrough(context, defaultValuesFilename, apiType:
   const { allResources } = await context.amplify.getResourceStatus();
 
   const resources = allResources
-    .filter(resource => resource.category === category && resource.service === serviceName && !!resource.providerPlugin && resource.apiType === apiType)
+    .filter(
+      resource =>
+        resource.category === category && resource.service === serviceName && !!resource.providerPlugin && resource.apiType === apiType,
+    )
     .map(resource => resource.resourceName);
 
   // There can only be one appsync resource
   if (resources.length === 0) {
     const errMessage = `No ${apiType} API resource to update. Use "amplify add api" command to create a new ${apiType} API`;
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
     return;
   }
@@ -350,5 +355,5 @@ async function confirm(question: string) {
 }
 
 export async function getPermissionPolicies(context, service, resourceName, crudOptions) {
-  throw new Error('IAM access not available for this resource')
+  throw new Error('IAM access not available for this resource');
 }

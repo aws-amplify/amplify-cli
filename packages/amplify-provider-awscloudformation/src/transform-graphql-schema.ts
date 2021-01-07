@@ -224,7 +224,7 @@ async function warningMessage(context, warningMessage) {
       default: false,
     });
     if (!response.transformerConfig) {
-      context.usageData.emitSuccess();
+      await context.usageData.emitSuccess();
       exitOnNextTick(0);
     }
   }

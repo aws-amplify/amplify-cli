@@ -37,7 +37,7 @@ export async function pushResources(
       const errMessage = "Environment doesn't exist. Please use 'amplify init' to create a new environment";
 
       context.print.error(errMessage);
-      context.usageData.emitError(new EnvironmentDoesNotExistError(errMessage));
+      await context.usageData.emitError(new EnvironmentDoesNotExistError(errMessage));
 
       exitOnNextTick(1);
     }

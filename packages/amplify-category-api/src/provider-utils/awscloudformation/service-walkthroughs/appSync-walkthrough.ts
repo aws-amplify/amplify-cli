@@ -53,9 +53,10 @@ export const openConsole = async (context: $TSContext) => {
   const graphQLApis = Object.keys(categoryAmplifyMeta).filter(resourceName => {
     const resource = categoryAmplifyMeta[resourceName];
 
-    return resource.output &&
-      (resource.service === serviceName ||
-        (resource.service === elasticContainerServiceName && resource.apiType === 'GRAPHQL'))
+    return (
+      resource.output &&
+      (resource.service === serviceName || (resource.service === elasticContainerServiceName && resource.apiType === 'GRAPHQL'))
+    );
   });
 
   if (graphQLApis) {
@@ -64,17 +65,19 @@ export const openConsole = async (context: $TSContext) => {
 
     if (graphQLApis.length > 1) {
       ({ selectedApi } = await inquirer.prompt({
-        type: "list",
-        name: "selectedApi",
+        type: 'list',
+        name: 'selectedApi',
         choices: graphQLApis,
-        message: "Please select the API"
+        message: 'Please select the API',
       }));
     }
 
     const selectedResource = categoryAmplifyMeta[selectedApi];
 
     if (selectedResource.service === serviceName) {
-      const { output: { GraphQLAPIIdOutput } } = selectedResource;
+      const {
+        output: { GraphQLAPIIdOutput },
+      } = selectedResource;
       const appId = amplifyMeta.providers[providerName].AmplifyAppId;
       if (!appId) {
         throw new Error('Missing AmplifyAppId in amplify-meta.json');
@@ -92,31 +95,34 @@ export const openConsole = async (context: $TSContext) => {
         const baseUrl: string = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
         url = `${baseUrl}/admin/${appId}/${envName}/datastore`;
       }
-
-    } else { // Elastic Container API
-      const { output: { PipelineName, ServiceName, ClusterName } } = selectedResource;
-      const codePipeline = "CodePipeline";
-      const elasticContainer = "ElasticContainer"
+    } else {
+      // Elastic Container API
+      const {
+        output: { PipelineName, ServiceName, ClusterName },
+      } = selectedResource;
+      const codePipeline = 'CodePipeline';
+      const elasticContainer = 'ElasticContainer';
 
       const { selectedConsole } = await inquirer.prompt({
-        name: "selectedConsole",
-        message: "Which console you want to open",
-        type: "list",
-        choices: [{
-          name: "Elastic Container Service (Deployed container status)",
-          value: elasticContainer
-        }, {
-          name: "CodePipeline (Container build status)",
-          value: codePipeline
-        }]
+        name: 'selectedConsole',
+        message: 'Which console you want to open',
+        type: 'list',
+        choices: [
+          {
+            name: 'Elastic Container Service (Deployed container status)',
+            value: elasticContainer,
+          },
+          {
+            name: 'CodePipeline (Container build status)',
+            value: codePipeline,
+          },
+        ],
       });
 
       if (selectedConsole === elasticContainer) {
-        url = `https://console.aws.amazon.com/ecs/home?region=${Region}#/clusters/${ClusterName}/services/${ServiceName}/details`
-
+        url = `https://console.aws.amazon.com/ecs/home?region=${Region}#/clusters/${ClusterName}/services/${ServiceName}/details`;
       } else if (selectedConsole === codePipeline) {
-        url = `https://${Region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${PipelineName}/view`
-
+        url = `https://${Region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${PipelineName}/view`;
       } else {
         context.print.error('Option not available');
         return;
@@ -126,8 +132,8 @@ export const openConsole = async (context: $TSContext) => {
     open(url, { wait: false });
   } else {
     context.print.error('AppSync API is not pushed in the cloud.');
-  };
-}
+  }
+};
 
 export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
   const resourceName = resourceAlreadyExists(context);
@@ -139,7 +145,7 @@ export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilen
     const errMessage =
       'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.';
     context.print.warning(errMessage);
-    context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     exitOnNextTick(0);
   }
 
@@ -250,7 +256,7 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
   } else {
     const errMessage = 'No AppSync resource to update. Use the "amplify add api" command to update your existing AppSync API.';
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
 
@@ -569,7 +575,7 @@ async function askAuthQuestions(authType, context, printLeadText = false) {
 
   const errMessage = `Unknown authType: ${authType}`;
   context.print.error(errMessage);
-  context.usageData.emitError(new UnknownResourceTypeError(errMessage));
+  await context.usageData.emitError(new UnknownResourceTypeError(errMessage));
   exitOnNextTick(1);
 }
 
