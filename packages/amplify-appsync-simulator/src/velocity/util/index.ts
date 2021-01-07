@@ -5,6 +5,8 @@ import { listUtils } from './list-utils';
 import { mapUtils } from './map-utils';
 import { transformUtils } from './transform';
 import { time } from './time';
+import { str } from './str';
+import { math } from './math';
 import { GraphQLResolveInfo } from 'graphql';
 
 export function create(errors = [], now: Date = new Date(), info: GraphQLResolveInfo) {
@@ -18,5 +20,7 @@ export function create(errors = [], now: Date = new Date(), info: GraphQLResolve
     errors,
     info,
     time: time(),
+    str,
+    math,
   };
 }
