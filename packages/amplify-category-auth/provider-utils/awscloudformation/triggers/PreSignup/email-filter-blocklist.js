@@ -1,5 +1,5 @@
 exports.handler = (event, context, callback) => {
-  // blacklisted domains
+  // blocked domains
   const bld = process.env.DOMAINBLOCKLIST.split(',').map(d => d.trim());
 
   const { email } = event.request.userAttributes;

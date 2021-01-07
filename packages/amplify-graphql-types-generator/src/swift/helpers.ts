@@ -35,10 +35,10 @@ const builtInScalarMap = {
   [GraphQLID.name]: 'GraphQLID',
 };
 
-const INFLECTOR_BLACK_LIST = ['delta'];
+const INFLECTOR_BLOCK_LIST = ['delta'];
 
 (Inflector as any).inflections('en', function(inflect: any) {
-  INFLECTOR_BLACK_LIST.forEach(w => {
+  INFLECTOR_BLOCK_LIST.forEach(w => {
     inflect.uncountable(w, w);
   });
 });

@@ -4,7 +4,7 @@ const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
 const { isPackaged } = require('amplify-cli-core');
 
-const CUSTOM_CONFIG_BLACK_LIST = [
+const CUSTOM_CONFIG_BLOCK_LIST = [
   'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
   'aws_appsync_dangerously_connect_to_http_endpoint_for_testing',
 ];
@@ -91,7 +91,7 @@ function getCustomConfigs(cloudAWSExports, currentAWSExports) {
   const customConfigs = {};
   if (currentAWSExports) {
     Object.keys(currentAWSExports)
-      .filter(key => !CUSTOM_CONFIG_BLACK_LIST.includes(key))
+      .filter(key => !CUSTOM_CONFIG_BLOCK_LIST.includes(key))
       .forEach(key => {
         if (!cloudAWSExports[key]) {
           customConfigs[key] = currentAWSExports[key];
