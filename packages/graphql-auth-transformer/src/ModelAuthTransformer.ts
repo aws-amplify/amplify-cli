@@ -684,9 +684,7 @@ Static group authorization should perform as expected.`,
 Either make the field optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to off or public)\n`);
         }
         // operation check in the protected field
-        resolver.Properties.ResponseMappingTemplate = print(
-          this.resources.operationCheckExpression(ctx.getMutationTypeName(), field.name.value),
-        );
+        resolver.Properties.ResponseMappingTemplate = print(this.resources.operationCheckExpression(ctx.getMutationTypeName(), field));
       }
       // If a resolver exists, a @connection for example. Prepend it to the req.
       const templateParts = [print(authExpression), resolver.Properties.RequestMappingTemplate];
