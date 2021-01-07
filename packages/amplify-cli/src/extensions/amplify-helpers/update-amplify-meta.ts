@@ -47,8 +47,6 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
   const amplifyCloudMetaFilePath = pathManager.getCurrentAmplifyMetaFilePath();
   const backendConfigFilePath = pathManager.getBackendConfigFilePath();
   const backendConfigCloudFilePath = pathManager.getCurrentBackendConfigFilePath();
-  const tagFilePath = pathManager.getTagFilePath();
-  const tagCloudFilePath = pathManager.getCurrentTagFilePath();
 
   for (const resource of resources) {
     const sourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName));
@@ -71,11 +69,6 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
 
   fs.copySync(amplifyMetaFilePath, amplifyCloudMetaFilePath, { overwrite: true });
   fs.copySync(backendConfigFilePath, backendConfigCloudFilePath, { overwrite: true });
-
-  // if project hasn't been initialized after tags has been released
-  if (fs.existsSync(tagFilePath)) {
-    fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
-  }
 }
 
 function removeNodeModulesDir(currentCloudBackendDir: string) {

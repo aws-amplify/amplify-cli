@@ -33,3 +33,22 @@ export function validate(tags: Tag[]): void {
   //check If tags exceed limit
   if (tags.length > 50) throw new Error('No. of tags cannot exceed 50');
 }
+
+export function HydrateTags(tags: Tag[], tagVariables: TagVariables): Tag[] {
+  const { envName, projectName } = tagVariables;
+  const replace: any = {
+    '{project-name}': projectName,
+    '{project-env}': envName,
+  };
+  return tags.map(tag => {
+    return {
+      ...tag,
+      Value: tag.Value.replace(/{project-name}|{project-env}/g, (matched: string) => replace[matched]),
+    };
+  });
+}
+
+type TagVariables = {
+  envName: string;
+  projectName: string;
+};

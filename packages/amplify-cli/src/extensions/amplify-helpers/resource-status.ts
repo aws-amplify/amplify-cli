@@ -130,7 +130,8 @@ function getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, reso
         const dependsOnCategory = resources[i].dependsOn[j].category;
         const dependsOnResourcename = resources[i].dependsOn[j].resourceName;
         if (
-          amplifyMeta[dependsOnCategory] && (!amplifyMeta[dependsOnCategory][dependsOnResourcename].lastPushTimeStamp ||
+          amplifyMeta[dependsOnCategory] &&
+          (!amplifyMeta[dependsOnCategory][dependsOnResourcename].lastPushTimeStamp ||
             !currentAmplifyMeta[dependsOnCategory] ||
             !currentAmplifyMeta[dependsOnCategory][dependsOnResourcename]) &&
           amplifyMeta[dependsOnCategory][dependsOnResourcename].serviceType !== 'imported'
@@ -348,12 +349,8 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     resourcesToBeDeleted = resourcesToBeDeleted.filter(resource => resource.providerPlugin === providerName);
     allResources = allResources.filter(resource => resource.providerPlugin === providerName);
   }
-  let tagsUpdated = compareTags(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
-  // if tags updated but no resource to apply tags, ignore tags updated
-  if (allResources.filter(resource => resource.category === 'provider').length === 0) {
-    tagsUpdated = false;
-  }
+  const tagsUpdated = _.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
   return {
     resourcesToBeCreated,
@@ -363,21 +360,6 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     tagsUpdated,
     allResources,
   };
-}
-
-function compareTags(tags: Tag[], currenTags: Tag[]): boolean {
-  if (tags.length !== currenTags.length) return true;
-  const tagMap = new Map(tags.map(tag => [tag.Key, tag.Value]));
-  if (
-    _.some(currenTags, tag => {
-      if (tagMap.has(tag.Key)) {
-        if (tagMap.get(tag.Key) === tag.Value) return false;
-      }
-    })
-  )
-    return true;
-
-  return false;
 }
 
 export async function showResourceTable(category, resourceName, filteredResources) {

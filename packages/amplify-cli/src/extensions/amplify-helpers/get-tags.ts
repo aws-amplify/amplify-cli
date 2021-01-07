@@ -1,27 +1,13 @@
-import { stateManager, Tag } from 'amplify-cli-core';
-import { getProjectDetails } from './get-project-details';
-export function getTags(): Tag[] {
-  const projectDetails = getProjectDetails();
-  const { projectName } = projectDetails.projectConfig;
-  const { envName } = projectDetails.localEnvInfo;
-  return HydrateTags(stateManager.getProjectTags(), { envName, projectName });
-}
+import { stateManager, Tag, HydrateTags } from 'amplify-cli-core';
+import { Context } from '../../domain/context';
 
-function HydrateTags(tags: Tag[], tagVariables: TagVariables): Tag[] {
-  const { envName, projectName } = tagVariables;
-  const replace = {
-    '{project-name}': projectName,
-    '{project-env}': envName,
-  };
-  return tags.map(tag => {
-    return {
-      ...tag,
-      Value: tag.Value.replace(/{project-name}|{project-env}/g, (matched: string) => replace[matched]),
-    };
-  });
+export function getTags(context: Context): Tag[] {
+  if (stateManager.isTagFilePresent()) {
+    return stateManager.getHydratedTags();
+  } else {
+    const tags = context.exeInfo.initialTags;
+    const { envName } = context.exeInfo.localEnvInfo;
+    const { projectName } = context.exeInfo.projectConfig;
+    return HydrateTags(tags, { envName, projectName });
+  }
 }
-
-type TagVariables = {
-  envName: string;
-  projectName: string;
-};

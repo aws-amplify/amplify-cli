@@ -2,9 +2,10 @@ import * as fs from 'fs-extra';
 import { pathManager } from './pathManager';
 import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets } from '..';
 import { JSONUtilities } from '../jsonUtilities';
-import { Tag, ReadValidateTags } from '../tags';
 import _ from 'lodash';
 import { SecretFileMode } from '../cliConstants';
+import { Tag, ReadValidateTags, HydrateTags } from '../tags';
+
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
   preserveComments?: boolean;
@@ -166,6 +167,18 @@ export class StateManager {
     const filePath = pathManager.getLocalAWSInfoFilePath(projectPath);
 
     JSONUtilities.writeJson(filePath, localAWSInfo);
+  };
+
+  getHydratedTags = (projectPath?: string | undefined): Tag[] => {
+    const tags = this.getProjectTags(projectPath);
+    const { projectName } = this.getProjectConfig(projectPath);
+    const { envName } = this.getLocalEnvInfo(projectPath);
+    return HydrateTags(tags, { projectName, envName });
+  };
+
+  isTagFilePresent = (projectPath?: string | undefined): boolean => {
+    if (pathManager.findProjectRoot()) return fs.existsSync(pathManager.getTagFilePath(projectPath));
+    return false;
   };
 
   setProjectFileTags = (projectPath: string | undefined, tags: Tag[]): void => {
