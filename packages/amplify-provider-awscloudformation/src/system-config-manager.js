@@ -136,7 +136,7 @@ async function getRoleCredentials(context, profileName, profileConfig) {
     const log = logger('getRoleCredentials.sts.assumeRole', [assumeRoleRequest]);
     try {
       log();
-      const roleData = await sts.assumeRole().promise();
+      const roleData = await sts.assumeRole(assumeRoleRequest).promise();
       roleCredentials = {
         accessKeyId: roleData.Credentials.AccessKeyId,
         secretAccessKey: roleData.Credentials.SecretAccessKey,
