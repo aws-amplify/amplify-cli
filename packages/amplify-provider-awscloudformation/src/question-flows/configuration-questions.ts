@@ -2,7 +2,7 @@ import { $TSAny } from 'amplify-cli-core';
 import { ListQuestion, ConfirmQuestion, PasswordQuestion } from 'inquirer';
 import awsRegions from '../aws-regions';
 
-export function authTypeQuestion(choices: string[]): ListQuestion {
+export function authTypeQuestion(choices: { name: string, value: string }[]): ListQuestion {
   return {
     type: 'list',
     name: 'authChoice',

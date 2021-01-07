@@ -8,7 +8,7 @@ import { JWK, JWKS, JWT } from 'jose';
 import _ from 'lodash';
 import fetch from 'node-fetch';
 
-import { AdminAuthPayload, CognitoIdToken, CognitoAccessToken } from './cognito-jwt-types';
+import { AdminAuthPayload, CognitoIdToken, CognitoAccessToken } from './auth-types';
 
 export class AdminLoginServer {
   private app: express.Application;

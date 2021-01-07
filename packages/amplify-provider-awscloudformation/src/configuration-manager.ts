@@ -13,7 +13,7 @@ import obfuscateUtil from './utility-obfuscate';
 import systemConfigManager from './system-config-manager';
 import { doAdminCredentialsExist, isAmplifyAdminApp, getRefreshedTokens } from './utils/admin-helpers';
 import { resolveAppId } from './utils/resolve-appId';
-import { CognitoIdToken } from './utils/cognito-jwt-types';
+import { CognitoIdToken } from './utils/auth-types';
 import {
   accessKeysQuestion,
   createConfirmQuestion,
@@ -669,7 +669,7 @@ async function newUserCheck(context: $TSContext) {
 }
 
 function scanConfig(context: $TSContext) {
-  let configSource = getConfigLevel(context);
+  let configSource: string = getConfigLevel(context);
   if (!configSource) {
     const namedProfiles: $TSAny = systemConfigManager.getNamedProfiles();
     if (namedProfiles && Object.keys(namedProfiles).length > 0) {
@@ -689,8 +689,8 @@ function scanConfig(context: $TSContext) {
   return configSource;
 }
 
-function getConfigLevel(context: $TSContext) {
-  let configLevel: string;
+function getConfigLevel(context: $TSContext): ProjectType {
+  let configLevel: ProjectType;
   try {
     const namedProfiles = systemConfigManager.getNamedProfiles();
     const configInfoFilePath = pathManager.getLocalAWSInfoFilePath();
