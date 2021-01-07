@@ -155,7 +155,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -374,7 +374,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -419,7 +419,7 @@ input UpdateUserInput {
 }
 
 input DeleteUserInput {
-  id: ID
+  id: ID!
 }
 
 input SearchableStringFilterInput {
@@ -834,7 +834,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -1043,7 +1043,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {

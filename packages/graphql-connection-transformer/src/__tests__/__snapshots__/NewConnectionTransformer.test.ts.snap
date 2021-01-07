@@ -164,7 +164,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
   _version: Int
 }
 
@@ -229,7 +229,7 @@ input UpdatePostEditorInput {
 }
 
 input DeletePostEditorInput {
-  id: ID
+  id: ID!
   _version: Int
 }
 
@@ -268,7 +268,7 @@ input UpdateUserInput {
 }
 
 input DeleteUserInput {
-  id: ID
+  id: ID!
   _version: Int
 }
 
@@ -440,7 +440,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -487,7 +487,7 @@ input UpdatePostEditorInput {
 }
 
 input DeletePostEditorInput {
-  id: ID
+  id: ID!
 }
 
 input ModelPostEditorConditionInput {
@@ -522,7 +522,7 @@ input UpdateUserInput {
 }
 
 input DeleteUserInput {
-  id: ID
+  id: ID!
 }
 
 input ModelUserConditionInput {

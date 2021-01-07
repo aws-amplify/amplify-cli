@@ -128,7 +128,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -292,7 +292,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -577,7 +577,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -877,7 +877,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -1276,7 +1276,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -1563,7 +1563,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -1708,7 +1708,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
