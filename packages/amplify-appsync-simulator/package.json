@@ -67,6 +67,7 @@
     "amplify-graphiql-explorer": "1.4.1"
   },
   "jest": {
+    "testRunner": "jest-circus/runner",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
