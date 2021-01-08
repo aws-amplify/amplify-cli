@@ -29,6 +29,7 @@ import {
   checkAmplifyFolderStructure,
   getTeamProviderInfo,
   getProjectConfig,
+  removeDotConfigDir,
 } from '../src/pullAndInit/amplifyArtifactsManager';
 import * as util from '../src/util';
 
@@ -95,6 +96,7 @@ describe('amplify console build', () => {
       envName,
       appId,
     };
+    removeDotConfigDir(projectDirPath);
     await headlessInit(projectDirPath, amplifyParam, providersParam, codegenParam);
     expect(checkAmplifyFolderStructure(projectDirPath)).toBeTruthy();
     teamProviderInfo = getTeamProviderInfo(projectDirPath);
@@ -144,6 +146,7 @@ describe('amplify console build', () => {
     const clonedProjectDirPath = await util.createNewProjectDir('console-cloned');
     fs.copySync(originalProjectDirPath, clonedProjectDirPath);
     removeFilesForThirdParty(clonedProjectDirPath);
+    removeDotConfigDir(clonedProjectDirPath);
     envName = 'devteamb';
     const appIdB = await createConsoleApp(projectName, amplifyClient);
     backendParams = generateBackendEnvParams(appIdB, projectName, envName);
