@@ -62,17 +62,17 @@ function getS3StorageBucketName(projectRoot: string) {
   return storage[fStorageName].output.BucketName;
 }
 
-function getAwsAndroidConfig(projectRoot: string) {
+function getAwsAndroidConfig(projectRoot: string): any {
   const configPath = getAWSConfigAndroidPath(projectRoot);
-  return JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  return JSONUtilities.readJson(configPath);
 }
 
-function getAwsIOSConfig(projectRoot: string) {
+function getAwsIOSConfig(projectRoot: string): any {
   const configPath = getAWSConfigIOSPath(projectRoot);
   return JSONUtilities.readJson(configPath);
 }
 
-function getAmplifyIOSConfig(projectRoot: string) {
+function getAmplifyIOSConfig(projectRoot: string): any {
   const configPath = getAmplifyConfigIOSPath(projectRoot);
   return JSONUtilities.readJson(configPath);
 }
