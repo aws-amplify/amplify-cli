@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.36.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.36.0...amplify-provider-awscloudformation@4.36.1-beta.0) (2021-01-08)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** pass assumeRoleRequest ([#6264](https://github.com/aws-amplify/amplify-cli/issues/6264)) ([08820b2](https://github.com/aws-amplify/amplify-cli/commit/08820b28f5efdf957bdad8f64aa1dd57dfc4af9b))
+* apply tags on create and push nested stack ([#6321](https://github.com/aws-amplify/amplify-cli/issues/6321)) ([4faa3e5](https://github.com/aws-amplify/amplify-cli/commit/4faa3e5ac38d311fe7901fb1b8a1b542cf19e598))
+* change to new docs url in some messages ([#6281](https://github.com/aws-amplify/amplify-cli/issues/6281)) ([9d1a682](https://github.com/aws-amplify/amplify-cli/commit/9d1a682cf5c49cc6ba87a00fbefec7fbc10af47b))
+* container based deployments on native projects ([#6201](https://github.com/aws-amplify/amplify-cli/issues/6201)) ([5ebcae8](https://github.com/aws-amplify/amplify-cli/commit/5ebcae83625d4626daf4391240b19fb7bd475759))
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+
+
+
+
+
 # [4.36.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.35.2...amplify-provider-awscloudformation@4.36.0) (2020-12-31)
 
 

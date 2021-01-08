@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.20.3...amplify-frontend-javascript@2.20.4-beta.0) (2021-01-08)
+
+
+### Bug Fixes
+
+* better error message when angular.json is missing ([#6253](https://github.com/aws-amplify/amplify-cli/issues/6253)) ([0c8175e](https://github.com/aws-amplify/amplify-cli/commit/0c8175e6312fc6fcd5b9e1334cf2011d1e8d392a))
+* container based deployments on native projects ([#6201](https://github.com/aws-amplify/amplify-cli/issues/6201)) ([5ebcae8](https://github.com/aws-amplify/amplify-cli/commit/5ebcae83625d4626daf4391240b19fb7bd475759))
+* set default sourceDir for rn projects to 'src' ([#6319](https://github.com/aws-amplify/amplify-cli/issues/6319)) ([6ebbe41](https://github.com/aws-amplify/amplify-cli/commit/6ebbe411aa0a8c790f0ed64ef6d0aa71b70d14ec))
+
+
+
+
+
 ## [2.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.20.2...amplify-frontend-javascript@2.20.3) (2020-12-31)
 
 **Note:** Version bump only for package amplify-frontend-javascript

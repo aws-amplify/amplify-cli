@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.10.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.9.4...graphql-elasticsearch-transformer@4.10.0-beta.0) (2021-01-08)
+
+
+### Features
+
+* **graphql-elasticsearch-transformer:** ddb_to_ess script now accepts session token ([#6313](https://github.com/aws-amplify/amplify-cli/issues/6313)) ([9bf8b16](https://github.com/aws-amplify/amplify-cli/commit/9bf8b16ac4f67f7be553b7cb0d020ebe0c46ab8f))
+
+
+
+
+
 ## [4.9.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.9.3...graphql-elasticsearch-transformer@4.9.4) (2020-12-16)
 
 

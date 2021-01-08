@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.19.3...amplify-category-analytics@2.19.4-beta.0) (2021-01-08)
+
+
+### Bug Fixes
+
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+
+
+
+
+
 ## [2.19.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.19.2...amplify-category-analytics@2.19.3) (2020-12-16)
 
 
