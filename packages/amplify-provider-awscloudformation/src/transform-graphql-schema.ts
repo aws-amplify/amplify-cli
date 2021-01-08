@@ -323,6 +323,7 @@ export async function transformGraphQLSchema(context, options) {
     resources = resources.concat(allResources);
   }
   resources = resources.filter(resource => resource.service === 'AppSync');
+  const appSyncApiToBeUpdated = resourcesToBeUpdated.filter(resource => resource.service === 'AppSync');
 
   if (!resourceDir) {
     // There can only be one appsync resource
@@ -477,12 +478,11 @@ export async function transformGraphQLSchema(context, options) {
     transformersFactory: transformerListFactory,
     transformersFactoryArgs: [searchableTransformerFlag, storageConfig],
     rootStackFileName: 'cloudformation-template.json',
-    currentCloudBackendDirectory: previouslyDeployedBackendDir,
+    currentCloudBackendDirectory: appSyncApiToBeUpdated.length ? previouslyDeployedBackendDir : undefined,
     minify: options.minify,
     featureFlags: new AmplifyCLIFeatureFlagAdapter(),
   };
   const transformerOutput = await buildAPIProject(buildConfig);
-
   context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 
