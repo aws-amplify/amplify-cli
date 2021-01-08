@@ -1,20 +1,38 @@
-import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
+import { getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
 
-export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string) => {
+export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
       .wait('What type of auth resource do you want to import')
       .sendKeyDown()
       .sendCarriageReturn()
       .wait('Select the User Pool you want to import')
       .send(autoCompletePrefix)
       .delay(500) // Some delay required for autocomplete and terminal to catch up
-      .sendCarriageReturn()
+      .sendCarriageReturn();
+
+    if (clientNames?.web) {
+      chain
+        .wait('Select a Web client to import:')
+        .send(clientNames.web)
+        .delay(500) // Some delay required for autocomplete and terminal to catch up
+        .sendCarriageReturn();
+    }
+
+    if (clientNames?.native) {
+      chain.wait('Select a Native client to import:');
+      chain
+        .send(clientNames.native)
+        .delay(500) // Some delay required for autocomplete and terminal to catch up
+        .sendCarriageReturn();
+    }
+
+    chain
       .wait('- JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
-          resolve();
+          resolve(undefined);
         } else {
           reject(err);
         }
@@ -22,20 +40,40 @@ export const importUserPoolOnly = (cwd: string, autoCompletePrefix: string) => {
   });
 };
 
-export const importIdentityPoolAndUserPool = (cwd: string, autoCompletePrefix: string) => {
+export const importIdentityPoolAndUserPool = (cwd: string, autoCompletePrefix: string, clientNames?: { web?: string; native?: string }) => {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['auth', 'import'], { cwd, stripColors: true })
       .wait('What type of auth resource do you want to import')
       .sendCarriageReturn()
       .wait('Select the User Pool you want to import')
       .send(autoCompletePrefix)
       .delay(500) // Some delay required for autocomplete and terminal to catch up
-      .sendCarriageReturn()
+      .sendCarriageReturn();
+
+    if (clientNames?.web) {
+      chain
+        .wait('Select a Web client to import:')
+        .send(clientNames.web)
+        .delay(500) // Some delay required for autocomplete and terminal to catch up
+        .sendCarriageReturn();
+    }
+
+    if (clientNames?.native) {
+      chain.wait('Select a Native client to import:');
+      chain
+        .send(clientNames.native)
+        .delay(500) // Some delay required for autocomplete and terminal to catch up
+        .sendCarriageReturn();
+    } else {
+      chain.wait('Select a Native client to import:').sendCarriageReturn();
+    }
+
+    chain
       .wait('- JavaScript: https://docs.amplify.aws/lib/auth/getting-started/q/platform/js')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
-          resolve();
+          resolve(undefined);
         } else {
           reject(err);
         }
@@ -53,7 +91,7 @@ export const removeImportedAuthWithDefault = (cwd: string) => {
       .sendEof()
       .run((err: Error) => {
         if (!err) {
-          resolve();
+          resolve(undefined);
         } else {
           reject(err);
         }
@@ -80,7 +118,7 @@ export const addS3WithAuthConfigurationMismatchErrorExit = (cwd: string, setting
       .sendEof()
       .run((err: Error) => {
         if (!err) {
-          resolve();
+          resolve(undefined);
         } else {
           reject(err);
         }
