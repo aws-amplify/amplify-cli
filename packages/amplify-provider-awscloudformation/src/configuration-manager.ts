@@ -13,15 +13,17 @@ import obfuscateUtil from './utility-obfuscate';
 import systemConfigManager from './system-config-manager';
 import { doAdminCredentialsExist, isAmplifyAdminApp, getRefreshedTokens } from './utils/admin-helpers';
 import { resolveAppId } from './utils/resolve-appId';
-import { CognitoIdToken } from './utils/auth-types';
+import { AuthType, AwsSdkConfig, CognitoIdToken } from './utils/auth-types';
 import {
   accessKeysQuestion,
+  authTypeQuestion,
   createConfirmQuestion,
   profileConfirmQuestion,
   profileNameQuestion,
   removeProjectComfirmQuestion,
   updateOrRemoveQuestion,
 } from './question-flows/configuration-questions';
+import { adminLoginFlow } from './admin-login';
 
 interface AwsConfig extends AwsSecrets {
   useProfile?: boolean;
@@ -98,7 +100,7 @@ async function enableServerlessContainers(context: $TSContext) {
     type: 'confirm',
     name: 'ServerlessContainers',
     message: 'Do you want to enable container-based deployments?',
-    default: config.ServerlessContainers === true
+    default: config.ServerlessContainers === true,
   });
 
   if (!context.exeInfo.projectConfig[frontend]) {
@@ -528,10 +530,10 @@ function loadConfigFromPath(profilePath: string) {
   throw new Error(`Invalid config ${profilePath}`);
 }
 
-async function getAdminCredentials(idToken: CognitoIdToken, identityId: string, region: string) {
+async function getAdminCognitoCredentials(idToken: CognitoIdToken, identityId: string, region: string): Promise<AwsSdkConfig> {
   const cognitoIdentity = new aws.CognitoIdentity({ region });
   const login = idToken.payload.iss.replace('https://', '');
-  return cognitoIdentity
+  const { Credentials } = await cognitoIdentity
     .getCredentialsForIdentity({
       IdentityId: identityId,
       Logins: {
@@ -539,58 +541,55 @@ async function getAdminCredentials(idToken: CognitoIdToken, identityId: string, 
       },
     })
     .promise();
+
+  return {
+    accessKeyId: Credentials.AccessKeyId,
+    expiration: Credentials.Expiration,
+    region,
+    secretAccessKey: Credentials.SecretKey,
+    sessionToken: Credentials.SessionToken,
+  };
+}
+
+async function getAdminStsCredentials(idToken: CognitoIdToken, region: string): Promise<AwsSdkConfig> {
+  const sts = new aws.STS();
+  const { Credentials } = await sts
+    .assumeRole({
+      RoleArn: idToken.payload['cognito:preferred_role'],
+      RoleSessionName: 'amplifyadmin',
+    })
+    .promise();
+
+  return {
+    accessKeyId: Credentials.AccessKeyId,
+    expiration: Credentials.Expiration,
+    region,
+    secretAccessKey: Credentials.SecretAccessKey,
+    sessionToken: Credentials.SessionToken,
+  };
 }
 
 export async function loadConfigurationForEnv(context: $TSContext, env: string, appId?: string) {
   const projectConfigInfo = getConfigForEnv(context, env);
+  const authType = await determineAuthType(context, projectConfigInfo);
   const { print, usageData } = context;
-  let awsConfig;
-  if (projectConfigInfo.configLevel === 'amplifyAdmin' || appId) {
+  let awsConfig: AwsSdkConfig;
+  if (authType.type === 'admin') {
     projectConfigInfo.configLevel = 'amplifyAdmin';
-    appId = appId || resolveAppId(context);
 
     if (!doAdminCredentialsExist(appId)) {
-      const errorMsg = `No credentials found for appId: ${appId}`;
-      print.info('');
-      print.error(errorMsg);
-      print.info(`If the appId is correct, try running amplify configure --appId ${appId} --envName ${env}`);
-      usageData.emitError(new Error(errorMsg));
-      process.exit(1);
+      adminLoginFlow(context, appId, env, authType.region);
     }
 
     try {
       const authConfig = await getRefreshedTokens(appId, print);
       const { idToken, IdentityId, region } = authConfig;
       // use tokens to get creds and assign to config
-      let credentials = (await getAdminCredentials(idToken, IdentityId, region)).Credentials;
-
-      awsConfig = {
-        accessKeyId: credentials.AccessKeyId,
-        expiration: credentials.Expiration,
-        region,
-        secretAccessKey: credentials.SecretKey,
-        sessionToken: credentials.SessionToken,
-      };
-
+      awsConfig = await getAdminCognitoCredentials(idToken, IdentityId, region);
       aws.config.update(awsConfig);
-
-      const sts = new aws.STS();
-      credentials = (
-        await sts
-          .assumeRole({
-            RoleArn: idToken.payload['cognito:preferred_role'],
-            RoleSessionName: 'amplifyadmin',
-          })
-          .promise()
-      ).Credentials;
-
-      awsConfig = {
-        accessKeyId: credentials.AccessKeyId,
-        expiration: credentials.Expiration,
-        region,
-        secretAccessKey: credentials.SecretAccessKey,
-        sessionToken: credentials.SessionToken,
-      };
+      // need to use Cognito creds to get STS creds - otherwise
+      // users will not be able to provision Cognito resources
+      awsConfig = await getAdminStsCredentials(idToken, region);
     } catch (err) {
       print.error('Failed to get credentials.');
       print.info(err);
@@ -721,7 +720,7 @@ export async function getAwsConfig(context: $TSContext) {
   const { awsConfigInfo } = context.exeInfo;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 
-  let awsConfig;
+  let awsConfig: AwsSdkConfig;
   if (awsConfigInfo.configLevel === 'project') {
     if (awsConfigInfo.config.useProfile) {
       awsConfig = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
@@ -736,10 +735,7 @@ export async function getAwsConfig(context: $TSContext) {
     try {
       const appId = resolveAppId(context);
       const { idToken, IdentityId, region } = await getRefreshedTokens(appId, context.print);
-      awsConfig = {
-        ...(await getAdminCredentials(idToken, IdentityId, region)).Credentials,
-        region,
-      };
+      awsConfig = await getAdminCognitoCredentials(idToken, IdentityId, region);
     } catch (err) {
       context.print.error('Failed to fetch Amplify Admin credentials');
       throw new Error(err);
@@ -754,4 +750,54 @@ export async function getAwsConfig(context: $TSContext) {
   }
 
   return awsConfig;
+}
+
+async function determineAuthType(context: $TSContext, projectConfig: ProjectConfig): Promise<$TSAny> {
+  // Check for headless parameters
+  let { accessKeyId, profileName, region, secretAccessKey, useProfile } = _.get(
+    context,
+    ['exeInfo', 'inputParams', 'awscloudformation'],
+    {},
+  );
+
+  // Check process env vars
+  accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
+  secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+  region = region || process.env.AWS_REGION;
+
+  // Check for local project config
+  useProfile = useProfile ?? projectConfig?.config?.useProfile;
+  profileName = profileName ?? projectConfig?.config?.profileName;
+
+  if (useProfile) {
+    return { type: 'profile', profileName };
+  } else if (accessKeyId && secretAccessKey) {
+    return { type: 'accessKeys', accessKeyId, region, secretAccessKey };
+  }
+
+  let appId: string;
+  let adminAppConfig: { isAdminApp?: boolean; region?: string };
+  try {
+    appId = resolveAppId(context);
+    if (appId) {
+      adminAppConfig = await isAmplifyAdminApp(appId);
+      if (adminAppConfig.isAdminApp && doAdminCredentialsExist(appId)) {
+        return { type: 'admin' };
+      }
+    }
+  } catch (e) {
+    // do nothing, appId might not be defined for a new project
+  }
+
+  let choices: { name: string; value: AuthType }[] = [
+    { name: 'AWS profile', value: 'profile' },
+    { name: 'Supply access keys directly', value: 'accessKeys' },
+  ];
+
+  if (adminAppConfig.isAdminApp) {
+    choices = [{ name: 'Amplify admin', value: 'admin' }, ...choices];
+  }
+
+  const { authChoice } = await prompt(authTypeQuestion(choices));
+  return { type: authChoice };
 }

@@ -1,3 +1,16 @@
+import { $TSAny } from 'amplify-cli-core';
+export type AuthType = 'admin' | 'profile' | 'accessKeys';
+
+export interface AwsSdkConfig {
+  accessKeyId: string;
+  expiration?: $TSAny; // TODO
+  region: string;
+  secretAccessKey: string;
+  sessionToken?: string;
+  httpOptions: {
+    agent: $TSAny; // TODO
+  };
+}
 export interface AdminAuthPayload {
   accessToken: CognitoAccessToken;
   clockDrift: number;

@@ -64,7 +64,7 @@ async function refreshJWTs(authConfig: AuthConfig, print: $TSContext['print']) {
     }).promise();
     return result.AuthenticationResult;
   } catch (e) {
-    print.error('Failed to refresh tokens.');
+    print.error(`Failed to refresh tokens: ${e.message || 'Unknown error occurred'}`);
     throw e;
   }
 }
