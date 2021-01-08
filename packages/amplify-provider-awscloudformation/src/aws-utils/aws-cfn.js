@@ -213,7 +213,7 @@ class CloudFormation {
     const authRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].AuthRoleName : '';
     const unauthRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName : '';
 
-    const Tags = this.context.amplify.getTags();
+    const Tags = this.context.amplify.getTags(this.context);
 
     if (!stackName) {
       throw new Error('Project stack has not been created yet. Use amplify init to initialize the project.');

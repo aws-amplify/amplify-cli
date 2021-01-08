@@ -5,9 +5,19 @@ export function getTags(context: Context): Tag[] {
   if (stateManager.isTagFilePresent()) {
     return stateManager.getHydratedTags();
   } else {
-    const tags = context.exeInfo.initialTags;
     const { envName } = context.exeInfo.localEnvInfo;
     const { projectName } = context.exeInfo.projectConfig;
-    return HydrateTags(tags, { envName, projectName });
+    return HydrateTags(initialTags, { envName, projectName });
   }
 }
+
+const initialTags: Tag[] = [
+  {
+    Key: 'user:Stack',
+    Value: '{project-env}',
+  },
+  {
+    Key: 'user:Application',
+    Value: '{project-name}',
+  },
+];

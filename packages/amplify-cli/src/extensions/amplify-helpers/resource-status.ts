@@ -349,8 +349,8 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     resourcesToBeDeleted = resourcesToBeDeleted.filter(resource => resource.providerPlugin === providerName);
     allResources = allResources.filter(resource => resource.providerPlugin === providerName);
   }
-
-  const tagsUpdated = _.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
+  // if not equal there is a tag update
+  const tagsUpdated = !_.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
   return {
     resourcesToBeCreated,
