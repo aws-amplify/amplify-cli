@@ -1,15 +1,5 @@
 import { HydrateTags } from 'amplify-cli-core';
 describe('getTags', () => {
-  const mockedTags = [
-    {
-      Key: 'projectName',
-      Value: '{project-name}',
-    },
-    {
-      Key: 'projectenv',
-      Value: '{project-env}',
-    },
-  ];
   const mockConfig = {
     projectConfig: {
       projectName: 'foo',
@@ -32,7 +22,6 @@ describe('getTags', () => {
   const mockContext = {
     exeInfo: {
       ...mockConfig,
-      initialTags: mockedTags,
     },
   };
 
@@ -43,7 +32,7 @@ describe('getTags', () => {
   it('test for values', () => {
     const readTags = getTags(mockContext);
     expect(readTags).toBeDefined();
-    expect(readTags.filter(r => r.Key === 'projectName')[0].Value).toEqual(mockConfig.projectConfig.projectName);
-    expect(readTags.filter(r => r.Key === 'projectenv')[0].Value).toEqual(mockConfig.localEnvInfo.envName);
+    expect(readTags.filter(r => r.Key === 'user:Application')[0].Value).toEqual(mockConfig.projectConfig.projectName);
+    expect(readTags.filter(r => r.Key === 'user:Stack')[0].Value).toEqual(mockConfig.localEnvInfo.envName);
   });
 });
