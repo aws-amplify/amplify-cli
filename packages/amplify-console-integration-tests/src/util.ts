@@ -18,6 +18,6 @@ function stripBOM(content: string) {
   return content;
 }
 
-export function readJsonFileSync(jsonFilePath: string, encoding: string = 'utf8'): any {
+export function readJsonFileSync(jsonFilePath: string, encoding: BufferEncoding = 'utf8'): any {
   return JSON.parse(stripBOM(fs.readFileSync(jsonFilePath, encoding)));
 }
