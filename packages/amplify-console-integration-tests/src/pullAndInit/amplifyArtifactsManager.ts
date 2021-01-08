@@ -2,6 +2,14 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as util from '../util';
 
+export function removeDotConfigDir(projectRootDirPath: string) {
+  const amplifyDirPath = path.join(projectRootDirPath, 'amplify');
+
+  const dotConfigDirPath = path.join(amplifyDirPath, '.config');
+
+  fs.removeSync(dotConfigDirPath);
+}
+
 export function removeFilesForTeam(projectRootDirPath: string) {
   const amplifyDirPath = path.join(projectRootDirPath, 'amplify');
 
