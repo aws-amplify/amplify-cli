@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformers-e2e-tests",
-  "version": "6.21.2",
+  "version": "6.21.3",
   "description": "End to end functional tests for appsync supported transformers.",
   "private": true,
   "repository": {
@@ -39,10 +39,10 @@
     "aws-sdk": "^2.765.0",
     "execa": "4.1.0",
     "fs-extra": "^8.1.0",
-    "graphql-auth-transformer": "6.23.2",
+    "graphql-auth-transformer": "6.23.3",
     "graphql-connection-transformer": "4.19.4",
     "graphql-dynamodb-transformer": "6.21.4",
-    "graphql-elasticsearch-transformer": "4.9.4",
+    "graphql-elasticsearch-transformer": "4.10.0",
     "graphql-function-transformer": "2.4.4",
     "graphql-http-transformer": "4.16.4",
     "graphql-key-transformer": "2.20.4",

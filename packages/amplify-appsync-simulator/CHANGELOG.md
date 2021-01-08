@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.24.3...amplify-appsync-simulator@1.25.0) (2021-01-08)
+
+
+### Bug Fixes
+
+* correctly initialize Array when values contain a single integer element ([#6235](https://github.com/aws-amplify/amplify-cli/issues/6235)) ([c410678](https://github.com/aws-amplify/amplify-cli/commit/c410678d85973c3fac7b46eda574906199e7bcb6))
+
+
+### Features
+
+* **amplify-appsync-simulator:** implement new utils ([#6257](https://github.com/aws-amplify/amplify-cli/issues/6257)) ([1c1dda9](https://github.com/aws-amplify/amplify-cli/commit/1c1dda92f05547bbbfd7a7b4b48c057abab48e82))
+
+
+
+
+
 ## [1.24.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.24.2...amplify-appsync-simulator@1.24.3) (2020-12-16)
 
 

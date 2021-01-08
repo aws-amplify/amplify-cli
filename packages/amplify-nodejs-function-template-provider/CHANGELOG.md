@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.5.6...amplify-nodejs-function-template-provider@1.5.7) (2021-01-08)
+
+
+### Bug Fixes
+
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+
+
+
+
+
 ## [1.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.5.5...amplify-nodejs-function-template-provider@1.5.6) (2020-12-31)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.17.1...amplify-category-notifications@2.17.2) (2021-01-08)
+
+
+### Bug Fixes
+
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+
+
+
+
+
 ## [2.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.16.4...amplify-category-notifications@2.17.1) (2020-11-22)
 
 

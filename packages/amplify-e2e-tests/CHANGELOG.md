@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.33.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.3...amplify-e2e-tests@2.33.4) (2021-01-08)
+
+
+### Bug Fixes
+
+* removes nodeModules from currentCloudBackend ([#6261](https://github.com/aws-amplify/amplify-cli/issues/6261)) ([db9dca9](https://github.com/aws-amplify/amplify-cli/commit/db9dca9db019494a0c68f42d9ffeb92d0b9b2b43))
+
+
+
+
+
 ## [2.33.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.2...amplify-e2e-tests@2.33.3) (2020-12-31)
 
 

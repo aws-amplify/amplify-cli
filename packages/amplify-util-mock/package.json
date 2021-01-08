@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-mock",
-  "version": "3.27.6",
+  "version": "3.27.7",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -26,10 +26,10 @@
   },
   "dependencies": {
     "@hapi/topo": "^5.0.0",
-    "amplify-appsync-simulator": "1.24.3",
-    "amplify-category-function": "2.28.3",
-    "amplify-codegen": "2.20.4",
-    "amplify-dynamodb-simulator": "1.17.5",
+    "amplify-appsync-simulator": "1.25.0",
+    "amplify-category-function": "2.28.4",
+    "amplify-codegen": "2.20.5",
+    "amplify-dynamodb-simulator": "1.17.6",
     "amplify-storage-simulator": "1.5.1",
     "chokidar": "^3.3.1",
     "execa": "^4.1.0",
@@ -47,7 +47,7 @@
     "aws-sdk": "^2.765.0",
     "aws-sdk-mock": "^5.1.0",
     "axios": "^0.21.1",
-    "graphql-auth-transformer": "6.23.2",
+    "graphql-auth-transformer": "6.23.3",
     "graphql-connection-transformer": "4.19.4",
     "graphql-dynamodb-transformer": "6.21.4",
     "graphql-function-transformer": "2.4.4",

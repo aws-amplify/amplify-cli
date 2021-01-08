@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.41.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.41.0...@aws-amplify/cli@4.41.1) (2021-01-08)
+
+
+### Bug Fixes
+
+* **cli:** handle undefined enabledProviders ([#6293](https://github.com/aws-amplify/amplify-cli/issues/6293)) ([b57b05d](https://github.com/aws-amplify/amplify-cli/commit/b57b05dc95109e490cb4b07c7304f32949607b77))
+* apply tags on create and push nested stack ([#6321](https://github.com/aws-amplify/amplify-cli/issues/6321)) ([4faa3e5](https://github.com/aws-amplify/amplify-cli/commit/4faa3e5ac38d311fe7901fb1b8a1b542cf19e598))
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+* removes nodeModules for lambda functions ([#6317](https://github.com/aws-amplify/amplify-cli/issues/6317)) ([091e148](https://github.com/aws-amplify/amplify-cli/commit/091e148ada698567bbdc78fc528da8c5a8e57a73))
+* removes nodeModules from currentCloudBackend ([#6261](https://github.com/aws-amplify/amplify-cli/issues/6261)) ([db9dca9](https://github.com/aws-amplify/amplify-cli/commit/db9dca9db019494a0c68f42d9ffeb92d0b9b2b43))
+
+
+
+
+
 # [4.41.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.40.1...@aws-amplify/cli@4.41.0) (2020-12-31)
 
 
