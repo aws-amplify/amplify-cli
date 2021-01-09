@@ -1,10 +1,9 @@
 import * as execa from 'execa';
 import { invoke } from '../../utils/invoke';
-import { InvokeOptions } from '../../utils/invokeOptions';
+import { InvokeOptions } from '../../utils/invokeUtils';
 
 jest.mock('execa');
 const execa_mock = execa as jest.Mocked<typeof execa>;
-
 class ExecaChildProcessMock {
   public stdout = {
     on: jest.fn(),
