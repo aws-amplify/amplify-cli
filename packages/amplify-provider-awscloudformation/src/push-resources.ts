@@ -482,6 +482,7 @@ async function packageResources(context: $TSContext, resources: $TSAny[]) {
 async function packageResource(context: $TSContext, resource: $TSAny) {
   let result: $TSAny;
   let log: $TSAny = null;
+  const { envName }: { envName: string } = context.amplify.getEnvInfo();
 
   if (resource.service === FunctionServiceNameLambdaLayer) {
     result = await context.amplify.invokePluginMethod(context, 'function', undefined, 'packageLayer', [context, resource]);
@@ -500,7 +501,7 @@ async function packageResource(context: $TSContext, resource: $TSAny) {
   };
   log = logger('packageResources.s3.uploadFile', [{ Key: s3Key }]);
   log();
-  let s3Bucket;
+  let s3Bucket: string;
   try {
     s3Bucket = await s3.uploadFile(s3Params);
   } catch (error) {
@@ -534,26 +535,13 @@ async function packageResource(context: $TSContext, resource: $TSAny) {
   const cfnMeta = JSONUtilities.readJson<$TSAny>(cfnFilePath);
 
   if (resource.service === FunctionServiceNameLambdaLayer) {
-    const isMultiEnvLayer: boolean = await context.amplify.invokePluginMethod(context, 'function', undefined, 'isMultiEnvLayer', [
+    const isMultiEnvLayer: boolean = await context.amplify.invokePluginMethod(context, category, undefined, 'isMultiEnvLayer', [
       context,
       resourceName,
     ]);
 
     if (isMultiEnvLayer) {
-      const amplifyMeta = stateManager.getMeta();
-      const teamProviderInfo = stateManager.getTeamProviderInfo();
-
-      _.set(teamProviderInfo, [context.amplify.getEnvInfo().envName, 'categories', 'function', resourceName], {
-        deploymentBucketName: s3Bucket,
-        s3Key,
-      });
-
-      _.set(amplifyMeta, ['function', resourceName, 's3Bucket'], {
-        deploymentBucketName: s3Bucket,
-        s3Key,
-      });
-      stateManager.setMeta(undefined, amplifyMeta);
-      stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+      storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
     } else {
       cfnMeta.Resources.LambdaLayer.Properties.Content = {
         S3Bucket: s3Bucket,
@@ -561,9 +549,7 @@ async function packageResource(context: $TSContext, resource: $TSAny) {
       };
     }
   } else if (resource.service === ApiServiceNameElasticContainer) {
-    const cfnParams = {
-      ParamZipPath: s3Key,
-    };
+    const cfnParams = { ParamZipPath: s3Key };
 
     const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
     JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
@@ -574,13 +560,24 @@ async function packageResource(context: $TSContext, resource: $TSAny) {
         Key: s3Key,
       };
     } else {
-      cfnMeta.Resources.LambdaFunction.Properties.Code = {
-        S3Bucket: s3Bucket,
-        S3Key: s3Key,
-      };
+      const paramType = { Type: 'String' };
+      cfnMeta.Parameters.deploymentBucketName = paramType;
+      cfnMeta.Parameters.s3Key = paramType;
+      storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
     }
   }
   JSONUtilities.writeJson(cfnFilePath, cfnMeta);
+}
+
+function storeS3BucketInfo(category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) {
+  const amplifyMeta = stateManager.getMeta();
+  const teamProviderInfo = stateManager.getTeamProviderInfo();
+
+  _.set(teamProviderInfo, [envName, 'categories', category, resourceName], { deploymentBucketName, s3Key });
+
+  _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
+  stateManager.setMeta(undefined, amplifyMeta);
+  stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
 }
 
 async function updateCloudFormationNestedStack(
