@@ -3,11 +3,11 @@ export type AuthType = 'admin' | 'profile' | 'accessKeys';
 
 export interface AwsSdkConfig {
   accessKeyId: string;
-  expiration?: $TSAny; // TODO
+  expiration?: $TSAny; // TODO - should be number of seconds since epoch
   region: string;
   secretAccessKey: string;
   sessionToken?: string;
-  httpOptions: {
+  httpOptions?: {
     agent: $TSAny; // TODO
   };
 }
