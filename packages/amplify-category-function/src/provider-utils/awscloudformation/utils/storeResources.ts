@@ -21,8 +21,8 @@ export function createFunctionResources(context: $TSContext, parameters: Functio
 
   // copy template, CFN and parameter files
   copyTemplateFiles(context, parameters);
-  saveMutableState(context, parameters);
-  saveCFNParameters(context, parameters);
+  saveMutableState(parameters);
+  saveCFNParameters(parameters);
   context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
 }
 
@@ -72,7 +72,6 @@ export function removeLayerArtifacts(context: $TSContext, layerName: string) {
 
 // ideally function update should be refactored so this function does not need to be exported
 export function saveMutableState(
-  context: $TSContext,
   parameters:
     | Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers' | 'functionName'>>
     | FunctionTriggerParameters,
@@ -82,7 +81,6 @@ export function saveMutableState(
 
 // ideally function update should be refactored so this function does not need to be exported
 export function saveCFNParameters(
-  context: $TSContext,
   parameters: Partial<Pick<FunctionParameters, 'cloudwatchRule' | 'resourceName'>> | FunctionTriggerParameters,
 ) {
   if ('trigger' in parameters) {
