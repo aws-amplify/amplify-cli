@@ -459,26 +459,18 @@ export class KeyTransformer extends Transformer {
       let shouldMakeUpdate = true;
       let shouldMakeDelete = true;
 
-      if (ctx.featureFlags.getBoolean('skipOverrideMutationInputTypes', true)) {
+      if (ctx.featureFlags.getBoolean('skipOverrideMutationInputTypes', false)) {
         const modelDirective = definition.directives.reduce(dir => {
           if (dir.name.value === 'model') {
             return dir;
           }
         });
         const modelDirectiveArgs = getDirectiveArguments(modelDirective);
-
         // Figure out which mutations to make and if they have name overrides
-        if (modelDirectiveArgs.mutations === null) {
-          shouldMakeCreate = false;
-          shouldMakeUpdate = false;
-          shouldMakeDelete = false;
-        } else if (modelDirectiveArgs.mutations) {
-          shouldMakeCreate = modelDirectiveArgs.mutations.create ? true : false;
-          shouldMakeUpdate = modelDirectiveArgs.mutations.update ? true : false;
-          shouldMakeDelete = modelDirectiveArgs.mutations.delete ? true : false;
-        }
+        shouldMakeCreate = !!modelDirectiveArgs?.mutations?.create;
+        shouldMakeUpdate = !!modelDirectiveArgs?.mutations?.update;
+        shouldMakeDelete = !!modelDirectiveArgs?.mutations?.delete;
       }
-
       const hasIdField = definition.fields.find(f => f.name.value === 'id');
       if (!hasIdField) {
         const createInput = ctx.getType(
