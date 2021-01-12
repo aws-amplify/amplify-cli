@@ -1,6 +1,6 @@
-function generateConfig(context, amplifyConfig, newAWSConfig) {
+function generateConfig(context, newAWSConfig) {
   const metadata = context.amplify.getProjectMeta();
-  amplifyConfig = {
+  const amplifyConfig = {
     UserAgent: 'aws-amplify-cli/2.0',
     Version: '1.0',
   };
@@ -84,7 +84,7 @@ function constructApi(metadata, amplifyConfig) {
             endpointType: 'REST',
             endpoint: resourceMeta.output.RootUrl,
             region,
-            authorizationType: resourceMeta.restrictAccess ? "AMAZON_COGNITO_USER_POOLS" : "AWS_IAM",
+            authorizationType: resourceMeta.restrictAccess ? 'AMAZON_COGNITO_USER_POOLS' : 'AWS_IAM',
           };
         }
       }
