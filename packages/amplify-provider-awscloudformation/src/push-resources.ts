@@ -555,6 +555,8 @@ async function packageResource(context: $TSContext, resource: $TSAny) {
     JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
   } else {
     if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
+      // TODO: determine if code path is still relevant
+      // if relevant, change to use refs for Bucket/Key
       cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
         Bucket: s3Bucket,
         Key: s3Key,
