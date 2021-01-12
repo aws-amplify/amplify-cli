@@ -7,17 +7,17 @@ import { AdminLoginServer } from './utils/admin-login-server';
 
 export async function adminLoginFlow(context: $TSContext, appId: string, envName: string, region?: string) {
   if (!region) {
-    const res = await isAmplifyAdminApp(appId);
-    if (!res.isAdminApp) {
+    const { isAdminApp, region: _region } = await isAmplifyAdminApp(appId);
+    if (!isAdminApp) {
       throw new Error(`Admin UI not enabled for appId: ${appId}`);
     }
-    region = res.region;
+    region = _region;
   }
 
   const url = adminVerifyUrl(appId, envName, region);
   context.print.info(`Opening link: ${url}`);
   await open(url, { wait: false }).catch(e => {
-    context.print.error('Failed to open web browser.');
+    context.print.error(`Failed to open web browser: ${e.message || 'Unknown error occurred'}`);
     return;
   });
   const spinner = ora('Continue in browser to log in…\n').start();
@@ -34,6 +34,6 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
     );
   } catch (e) {
     spinner.stop();
-    context.print.error(e);
+    context.print.error(`Failed to authenticate with Amplify Admin: ${e.message || 'Unknown error occurred'}`);
   }
 }

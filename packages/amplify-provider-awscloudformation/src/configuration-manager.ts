@@ -736,6 +736,8 @@ export async function getAwsConfig(context: $TSContext) {
       const appId = resolveAppId(context);
       const { idToken, IdentityId, region } = await getRefreshedTokens(appId, context.print);
       awsConfig = await getAdminCognitoCredentials(idToken, IdentityId, region);
+      aws.config.update(awsConfig);
+      awsConfig = await getAdminStsCredentials(idToken, region);
     } catch (err) {
       context.print.error('Failed to fetch Amplify Admin credentials');
       throw new Error(err);
