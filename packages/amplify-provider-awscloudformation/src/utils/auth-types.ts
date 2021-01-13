@@ -1,6 +1,6 @@
 import { $TSAny } from 'amplify-cli-core';
-export type AuthType = 'admin' | 'profile' | 'accessKeys';
 
+export type AuthType = 'admin' | 'profile' | 'accessKeys';
 export interface AwsSdkConfig {
   accessKeyId: string;
   expiration?: $TSAny; // TODO - should be number of seconds since epoch

@@ -1,5 +1,4 @@
 import { exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
-const aws = require('aws-sdk'); // TODO switch to ./aws-utils/aws when supported
 import _ from 'lodash';
 import path from 'path';
 import fs from 'fs-extra';
@@ -14,7 +13,7 @@ import obfuscateUtil from './utility-obfuscate';
 import systemConfigManager from './system-config-manager';
 import { doAdminTokensExist, getTempCredsWithAdminTokens, isAmplifyAdminApp } from './utils/admin-helpers';
 import { resolveAppId } from './utils/resolve-appId';
-import { AuthType, AwsSdkConfig, CognitoIdToken } from './utils/auth-types';
+import { AuthType, AwsSdkConfig } from './utils/auth-types';
 import {
   accessKeysQuestion,
   authTypeQuestion,
@@ -55,7 +54,7 @@ export async function init(context: $TSContext) {
   normalizeInputParams(context);
 
   const authTypeConfig = await determineAuthType(context);
-  if (authTypeConfig.authType === 'admin') {
+  if (authTypeConfig.type === 'admin') {
     context.exeInfo.awsConfigInfo = {
       configLevel: 'amplifyAdmin',
       config: {},
@@ -542,7 +541,7 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
       await usageData.emitError(err);
       exitOnNextTick(1);
     }
-  } else if (projectConfigInfo.configLevel === 'project') {
+  } else if (authType.type === 'profile') {
     const { config } = projectConfigInfo;
     if (config.useProfile) {
       awsConfig = await systemConfigManager.getProfiledAwsConfig(context, config.profileName);
@@ -697,7 +696,7 @@ export async function getAwsConfig(context: $TSContext) {
   return awsConfig;
 }
 
-async function determineAuthType(context: $TSContext, projectConfig?: ProjectConfig): Promise<$TSAny> {
+async function determineAuthType(context: $TSContext, projectConfig?: ProjectConfig): Promise<DetermineAuthTypeReturn> {
   // Check for headless parameters
   normalizeInputParams(context);
   let { accessKeyId, profileName, region, secretAccessKey, useProfile } = _.get(
@@ -728,7 +727,7 @@ async function determineAuthType(context: $TSContext, projectConfig?: ProjectCon
     if (appId) {
       adminAppConfig = await isAmplifyAdminApp(appId);
       if (adminAppConfig.isAdminApp && doAdminTokensExist(appId)) {
-        return { type: 'admin' };
+        return { type: 'admin', appId, region: adminAppConfig.region };
       }
     }
   } catch (e) {
@@ -746,4 +745,14 @@ async function determineAuthType(context: $TSContext, projectConfig?: ProjectCon
 
   const { authChoice } = await prompt(authTypeQuestion(choices));
   return { type: authChoice };
+}
+
+interface DetermineAuthTypeReturn {
+  type: AuthType;
+  appId?: string;
+  profileName?: string;
+  region?: string;
+  useProfile?: boolean;
+  accessKeyId?: string;
+  secretAccessKey?: string;
 }
