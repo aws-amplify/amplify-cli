@@ -721,50 +721,16 @@ export const migrate = async context => {
   });
 };
 
-export const getIAMPolicies = (resourceName, crudOptions, context) => {
+export const getIAMPolicies = (resourceName, operations, context) => {
   let policy = {};
-  const actions = [];
+  const resources = [];
 
-  crudOptions.forEach(crudOption => {
-    switch (crudOption) {
-      case 'create':
-        actions.push('appsync:Create*', 'appsync:StartSchemaCreation', 'appsync:GraphQL');
-        break;
-      case 'update':
-        actions.push('appsync:Update*');
-        break;
-      case 'read':
-        actions.push('appsync:Get*', 'appsync:List*');
-        break;
-      case 'delete':
-        actions.push('appsync:Delete*');
-        break;
-      default:
-        console.log(`${crudOption} not supported`);
-    }
-  });
+  operations.forEach(operation => resources.push(buildPolicyResource(resourceName, operation)));
 
   policy = {
     Effect: 'Allow',
-    Action: actions,
-    Resource: [
-      {
-        'Fn::Join': [
-          '',
-          [
-            'arn:aws:appsync:',
-            { Ref: 'AWS::Region' },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':apis/',
-            {
-              Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
-            },
-            '/*',
-          ],
-        ],
-      },
-    ],
+    Action: ['appsync:GraphQL'],
+    Resource: resources,
   };
 
   const attributes = ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'];
@@ -773,6 +739,25 @@ export const getIAMPolicies = (resourceName, crudOptions, context) => {
   }
 
   return { policy, attributes };
+};
+
+const buildPolicyResource = (resourceName, operation) => {
+  return {
+    'Fn::Join': [
+      '',
+      [
+        'arn:aws:appsync:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':apis/',
+        {
+          Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
+        },
+        `/types/${operation}/*`,
+      ],
+    ],
+  };
 };
 
 const templateSchemaFilter = authConfig => {
