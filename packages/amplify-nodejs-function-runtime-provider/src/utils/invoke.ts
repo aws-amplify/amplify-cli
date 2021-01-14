@@ -1,15 +1,11 @@
-import { InvokeOptions } from './invokeOptions';
-import path from 'path';
-import * as execa from 'execa';
+import { InvokeOptions, getLambdaChildProcess } from './invokeUtils';
 
 // copied from amplify-util-mock with slight modifications
 export function invoke(options: InvokeOptions): Promise<any> {
   return new Promise((resolve, reject) => {
     try {
       let data: string = '';
-      const lambdaFn = execa.node(path.join(__dirname, 'execute.js'), [], {
-        env: options.environment || {},
-      });
+      const lambdaFn = getLambdaChildProcess(options.environment);
       lambdaFn.stdout.on('data', msg => {
         data += msg;
       });

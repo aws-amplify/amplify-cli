@@ -33,3 +33,11 @@ module.exports.callbackHandler = async (event, context, callback) => {
 module.exports.nonAsyncHandler = () => {
   return 'foo';
 };
+
+module.exports.undefinedVariableHandler = (event, context, callback) => {
+  console.log(undedvar);
+};
+
+module.exports.stringErrorHandler = (event, context, callback) => {
+  throw 'string';
+};
