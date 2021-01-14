@@ -50,7 +50,7 @@ const additionalPermissions = (chain: ExecutionContext, settings: any) => {
   }
   // n-resources repeated questions
   settings.additionalPermissions.resources.forEach(elem =>
-    multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
+    multiSelect(chain.wait(`Select the operations you want to permit on ${elem}`), settings.additionalPermissions.operations, [
       'create',
       'read',
       'update',
@@ -181,10 +181,7 @@ const coreFunction = (
     }
 
     // edit function question
-    chain
-      .wait('Do you want to edit the local lambda function now?')
-      .sendLine('n')
-      .sendEof();
+    chain.wait('Do you want to edit the local lambda function now?').sendLine('n').sendEof();
 
     runChain(chain, resolve, reject);
   });
@@ -341,19 +338,13 @@ const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string)
 };
 
 const addminutes = (chain: ExecutionContext) => {
-  chain
-    .wait('Enter rate for minutes(1-59)?')
-    .sendLine('5')
-    .sendCarriageReturn();
+  chain.wait('Enter rate for minutes(1-59)?').sendLine('5').sendCarriageReturn();
 
   return chain;
 };
 
 const addhourly = (chain: ExecutionContext) => {
-  chain
-    .wait('Enter rate for hours(1-23)?')
-    .sendLine('5')
-    .sendCarriageReturn();
+  chain.wait('Enter rate for hours(1-23)?').sendLine('5').sendCarriageReturn();
 
   return chain;
 };
@@ -387,10 +378,7 @@ const addCron = (chain: ExecutionContext, settings: any) => {
       addhourly(moveDown(chain, 1).sendCarriageReturn());
       break;
     case 'Daily':
-      moveDown(chain, 2)
-        .sendCarriageReturn()
-        .wait('Select the start time (use arrow keys):')
-        .sendCarriageReturn();
+      moveDown(chain, 2).sendCarriageReturn().wait('Select the start time (use arrow keys):').sendCarriageReturn();
       break;
     case 'Weekly':
       addWeekly(moveDown(chain, 3).sendCarriageReturn());
