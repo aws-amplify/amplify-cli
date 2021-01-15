@@ -153,7 +153,7 @@ interface AmplifyToolkit {
     context: $TSContext,
     category?: string,
     resourceName?: string,
-    filteredResources?: { category: string, resourceName: string }[],
+    filteredResources?: { category: string; resourceName: string }[],
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
   readJsonFile: () => $TSAny;
@@ -162,7 +162,7 @@ interface AmplifyToolkit {
   removeResource: () => $TSAny;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
-  showHelp: () => $TSAny;
+  showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
   showHelpfulProviderLinks: () => $TSAny;
   showResourceTable: () => $TSAny;
   serviceSelectionPrompt: (
