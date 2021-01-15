@@ -1,6 +1,16 @@
 import { $TSAny } from 'amplify-cli-core';
 
-export type AuthType = 'admin' | 'profile' | 'accessKeys';
+export type AuthFlow = 'admin' | 'profile' | 'accessKeys';
+export interface AuthFlowConfig {
+  type: AuthFlow;
+  appId?: string;
+  profileName?: string;
+  region?: string;
+  useProfile?: boolean;
+  accessKeyId?: string;
+  secretAccessKey?: string;
+}
+
 export interface AwsSdkConfig {
   accessKeyId: string;
   expiration?: $TSAny; // TODO - should be number of seconds since epoch
@@ -22,7 +32,7 @@ export interface AdminAuthPayload {
   region: string;
 }
 
-export interface AuthConfig extends AdminAuthPayload {
+export interface AdminAuthConfig extends AdminAuthPayload {
   IdentityId: string;
 }
 
