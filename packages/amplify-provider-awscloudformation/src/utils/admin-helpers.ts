@@ -89,8 +89,9 @@ export async function getRefreshedTokens(appId: string, print: $TSContext['print
   if (isJwtExpired(authConfig.idToken)) {
     const refreshedTokens = await refreshJWTs(authConfig, print);
     // Refresh stored tokens
-    authConfig.idToken.jwtToken = refreshedTokens.IdToken;
     authConfig.accessToken.jwtToken = refreshedTokens.AccessToken;
+    authConfig.idToken.jwtToken = refreshedTokens.IdToken;
+    authConfig.refreshToken.token = refreshedTokens.RefreshToken;
     stateManager.setAmplifyAdminConfigEntry(appId, authConfig);
   }
   return authConfig;
