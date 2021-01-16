@@ -2,7 +2,7 @@ import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, Provid
 import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './utils/layerParams';
 import { chooseParamsOnEnvInit } from './utils/layerHelpers';
 import { supportedServices } from '../supported-services';
-import { ServiceName, provider, parametersFileName } from './utils/constants';
+import { ServiceName, provider, parametersFileName, functionParametersFileName } from './utils/constants';
 import { category as categoryName } from '../../constants';
 import {
   createFunctionResources,
@@ -19,6 +19,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import open from 'open';
 import { IsMockableResponse } from '../..';
+import { JSONUtilities } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function
@@ -198,7 +199,7 @@ export async function updateFunctionResource(context, category, service, paramet
       context.amplify.pathManager.getBackendDirPath(),
       categoryName,
       resourceToUpdate,
-      parametersFileName,
+      functionParametersFileName,
     );
     let previousParameters;
 
@@ -206,10 +207,15 @@ export async function updateFunctionResource(context, category, service, paramet
       previousParameters = context.amplify.readJsonFile(parametersFilePath);
 
       if ('trigger' in previousParameters) {
-        parameters = _.assign(parameters, previousParameters);
+        parameters = _.assign({}, previousParameters, parameters);
+
+        if (parameters.triggerEnvs && parameters.triggerEnvs instanceof String) {
+          parameters.triggerEnvs = JSONUtilities.parse(parameters.triggerEnvs) || [];
+        }
       }
     }
     saveMutableState(context, parameters);
+    saveCFNParameters(context, parameters);
   } else {
     parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
     if (parameters.dependsOn) {
@@ -340,6 +346,7 @@ export async function updateConfigOnEnvInit(context: any, resourceName: string, 
     if (resourceParams.trigger === true) {
       envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
     }
+
     return envParams;
   } else if (isMultiEnvLayer(context, resourceName) && service === ServiceName.LambdaLayer) {
     const teamProviderParams: StoredLayerParameters = await chooseParamsOnEnvInit(context, resourceName);
