@@ -1,11 +1,12 @@
-import { Compile, parse } from 'amplify-velocity-template';
-import { AmplifyAppSyncSimulator } from '..';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from '../type-definition';
-import { create as createUtil, TemplateSentError } from './util';
+import { Compile, parse } from 'amplify-velocity-template';
+import { TemplateSentError, create as createUtil } from './util';
 import { map as convertToJavaTypes, map } from './value-mapper/mapper';
+
+import { AmplifyAppSyncSimulator } from '..';
+import { AppSyncGraphQLExecutionContext } from '../utils/graphql-runner';
 import { GraphQLResolveInfo } from 'graphql';
 import { createInfo } from './util/info';
-import { AppSyncGraphQLExecutionContext } from '../utils/graphql-runner';
 
 export type AppSyncSimulatorRequestContext = {
   jwt?: {
@@ -52,8 +53,12 @@ export class VelocityTemplate {
     info?: GraphQLResolveInfo,
   ): { result; stash; errors; isReturn: boolean } {
     const context = this.buildRenderContext(ctxValues, requestContext, info);
-
-    const templateResult = this.compiler.render(context);
+    let templateResult;
+    try {
+      templateResult = this.compiler.render(context);
+    } catch (e) {
+      return { result: null, errors: [...context.util.errors], isReturn: false, stash: context.ctx.stash.toJSON() };
+    }
     const isReturn = this.compiler._state.return; // If the template has #return, then set the value
     const stash = context.ctx.stash.toJSON();
     try {

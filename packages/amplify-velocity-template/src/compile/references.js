@@ -1,4 +1,4 @@
-module.exports = function(Velocity, utils) {
+module.exports = function (Velocity, utils) {
   'use strict';
 
   function getSize(obj) {
@@ -75,15 +75,15 @@ module.exports = function(Velocity, utils) {
 
   utils.mixin(Velocity.prototype, {
     // 增加某些函数，不需要执行html转义
-    addIgnoreEscpape: function(key) {
+    addIgnoreEscpape: function (key) {
       if (!utils.isArray(key)) key = [key];
 
       utils.forEach(
         key,
-        function(key) {
+        function (key) {
           this.config.unescape[key] = true;
         },
-        this
+        this,
       );
     },
 
@@ -93,7 +93,7 @@ module.exports = function(Velocity, utils) {
      * @param {bool} isVal 取值还是获取字符串，两者的区别在于，求值返回结果，求
      * 字符串，如果没有返回变量自身，比如$foo
      */
-    getReferences: function(ast, isVal) {
+    getReferences: function (ast, isVal) {
       if (ast.prue) {
         var define = this.defines[ast.id];
         if (utils.isArray(define)) {
@@ -124,7 +124,7 @@ module.exports = function(Velocity, utils) {
       if (ast.path) {
         utils.some(
           ast.path,
-          function(property, i, len) {
+          function (property, i, len) {
             if (ret === undefined) {
               this._throw(ast, property);
             }
@@ -132,7 +132,7 @@ module.exports = function(Velocity, utils) {
             // 第三个参数，返回后面的参数ast
             ret = this.getAttributes(property, ret, ast);
           },
-          this
+          this,
         );
       }
 
@@ -148,14 +148,14 @@ module.exports = function(Velocity, utils) {
     /**
      * 获取局部变量，在macro和foreach循环中使用
      */
-    getLocal: function(ast) {
+    getLocal: function (ast) {
       var id = ast.id;
       var local = this.local;
       var ret = false;
 
       var isLocaled = utils.some(
         this.conditions,
-        function(contextId) {
+        function (contextId) {
           var _local = local[contextId];
           if (id in _local) {
             ret = _local[id];
@@ -164,7 +164,7 @@ module.exports = function(Velocity, utils) {
 
           return false;
         },
-        this
+        this,
       );
 
       return {
@@ -179,7 +179,7 @@ module.exports = function(Velocity, utils) {
      * 第二次是$a.b返回值
      * @private
      */
-    getAttributes: function(property, baseRef, ast) {
+    getAttributes: function (property, baseRef, ast) {
       // fix #54
       if (baseRef === null || baseRef === undefined) {
         return undefined;
@@ -205,7 +205,7 @@ module.exports = function(Velocity, utils) {
      * $foo.bar[1] index求值
      * @private
      */
-    getPropIndex: function(property, baseRef) {
+    getPropIndex: function (property, baseRef) {
       var ast = property.id;
       var key;
       if (ast.type === 'references') {
@@ -222,27 +222,30 @@ module.exports = function(Velocity, utils) {
     /**
      * $foo.bar()求值
      */
-    getPropMethod: function(property, baseRef, ast) {
+    getPropMethod: function (property, baseRef, ast) {
       var id = property.id;
       var ret = '';
 
-      // getter 处理
+      // get(xxx)
+      if (id === 'get' && !(id in baseRef)) {
+        return getter(baseRef, this.getLiteral(property.args[0]));
+      }
+
+      if (id === 'set' && !(id in baseRef)) {
+        baseRef[this.getLiteral(property.args[0])] = this.getLiteral(property.args[1]);
+        return '';
+      }
+
+      // getter for example: getAddress()
       if (id.indexOf('get') === 0 && !(id in baseRef)) {
-        if (id.length === 3) {
-          // get('address')
-          ret = getter(baseRef, this.getLiteral(property.args[0]));
-        } else {
-          // getAddress()
-          ret = getter(baseRef, id.slice(3));
-        }
+        return getter(baseRef, id.slice(3));
+      }
 
-        return ret;
-
-        // setter 处理
-      } else if (id.indexOf('set') === 0 && !baseRef[id]) {
+      // setter 处理
+      if (id.indexOf('set') === 0 && !baseRef[id]) {
         baseRef[id.slice(3)] = this.getLiteral(property.args[0]);
         // $page.setName(123)
-        baseRef.toString = function() {
+        baseRef.toString = function () {
           return '';
         };
         return baseRef;
@@ -252,7 +255,7 @@ module.exports = function(Velocity, utils) {
         return utils.keys(baseRef);
       } else if (id === 'entrySet' && !baseRef[id]) {
         ret = [];
-        utils.forEach(baseRef, function(value, key) {
+        utils.forEach(baseRef, function (value, key) {
           ret.push({ key: key, value: value });
         });
 
@@ -263,6 +266,26 @@ module.exports = function(Velocity, utils) {
         return (baseRef[this.getLiteral(property.args[0])] = this.getLiteral(property.args[1]));
       } else if (id === 'add' && !baseRef[id] && typeof baseRef.push === 'function') {
         return baseRef.push(this.getLiteral(property.args[0]));
+      } else if (id === 'remove') {
+        if (utils.isArray(baseRef)) {
+          const itemToRemove = this.getLiteral(property.args[0]);
+          let indexToRemove;
+          if (typeof itemToRemove === 'number') {
+            indexToRemove = itemToRemove;
+          } else {
+            indexToRemove = baseRef.indexOf(itemToRemove);
+          }
+
+          ret = baseRef[indexToRemove];
+          baseRef.splice(indexToRemove, 1);
+          return ret;
+        } else if (utils.isObject(baseRef)) {
+          ret = baseRef[this.getLiteral(property.args[0])];
+          delete baseRef[this.getLiteral(property.args[0])];
+          return ret;
+        }
+
+        return undefined;
       } else if (id === 'subList' && !baseRef[id]) {
         return baseRef.slice(this.getLiteral(property.args[0]), this.getLiteral(property.args[1]));
       } else {
@@ -271,17 +294,17 @@ module.exports = function(Velocity, utils) {
 
         utils.forEach(
           property.args,
-          function(exp) {
+          function (exp) {
             args.push(this.getLiteral(exp));
           },
-          this
+          this,
         );
 
         if (ret && ret.call) {
           var that = this;
 
           if (typeof baseRef === 'object' && baseRef) {
-            baseRef.eval = function() {
+            baseRef.eval = function () {
               return that.eval.apply(that, arguments);
             };
           }
@@ -291,10 +314,10 @@ module.exports = function(Velocity, utils) {
           } catch (e) {
             var pos = ast.pos;
             var text = Velocity.Helper.getRefText(ast);
-            var err = ' on ' + text + ' at Line number ' + pos.first_line + ':' + pos.first_column;
+            var err = ' on ' + text + ' at L/N ' + pos.first_line + ':' + pos.first_column;
             e.name = '';
             e.message += err;
-            throw e;
+            throw new Error(e);
           }
         } else {
           this._throw(ast, property, 'TypeError');
@@ -305,7 +328,7 @@ module.exports = function(Velocity, utils) {
       return ret;
     },
 
-    _throw: function(ast, property, errorName) {
+    _throw: function (ast, property, errorName) {
       if (this.config.env !== 'development') {
         return;
       }

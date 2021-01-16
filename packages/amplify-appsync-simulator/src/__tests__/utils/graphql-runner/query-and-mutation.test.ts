@@ -1,9 +1,8 @@
-import { makeExecutableSchema } from 'graphql-tools';
-import { GraphQLSchema, parse } from 'graphql';
+import { GraphQLError, GraphQLSchema, parse } from 'graphql';
 
-import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
 import { AmplifyAppSyncSimulatorAuthenticationType } from '../../../type-definition';
-
+import { AppSyncGraphQLExecutionContext } from '../../../utils/graphql-runner';
+import { makeExecutableSchema } from 'graphql-tools';
 import { runQueryOrMutation } from '../../../utils/graphql-runner/query-and-mutation';
 
 describe('runQueryAndMutation', () => {
@@ -145,18 +144,14 @@ describe('runQueryAndMutation', () => {
       }
     `);
 
-    executionContext.appsyncErrors = [
-      {
-        name: 'Template Error',
-        message: 'An error from template',
-      },
-    ];
+    const error = new GraphQLError('An error from template');
+    executionContext.appsyncErrors = [error];
     const variables = { var1: 'val1' };
     getNameResolver.mockReturnValue(name);
 
     await expect(runQueryOrMutation(schema, doc, variables, 'getName', executionContext)).resolves.toEqual({
       data: { getName: name },
-      errors: executionContext.appsyncErrors,
+      errors: [error],
     });
   });
 });
