@@ -1,4 +1,4 @@
-module.exports = function(Velocity, utils) {
+module.exports = function (Velocity, utils) {
   'use strict';
 
   function getSize(obj) {
@@ -75,12 +75,12 @@ module.exports = function(Velocity, utils) {
 
   utils.mixin(Velocity.prototype, {
     // 增加某些函数，不需要执行html转义
-    addIgnoreEscpape: function(key) {
+    addIgnoreEscpape: function (key) {
       if (!utils.isArray(key)) key = [key];
 
       utils.forEach(
         key,
-        function(key) {
+        function (key) {
           this.config.unescape[key] = true;
         },
         this,
@@ -93,7 +93,7 @@ module.exports = function(Velocity, utils) {
      * @param {bool} isVal 取值还是获取字符串，两者的区别在于，求值返回结果，求
      * 字符串，如果没有返回变量自身，比如$foo
      */
-    getReferences: function(ast, isVal) {
+    getReferences: function (ast, isVal) {
       if (ast.prue) {
         var define = this.defines[ast.id];
         if (utils.isArray(define)) {
@@ -124,7 +124,7 @@ module.exports = function(Velocity, utils) {
       if (ast.path) {
         utils.some(
           ast.path,
-          function(property, i, len) {
+          function (property, i, len) {
             if (ret === undefined) {
               this._throw(ast, property);
             }
@@ -148,14 +148,14 @@ module.exports = function(Velocity, utils) {
     /**
      * 获取局部变量，在macro和foreach循环中使用
      */
-    getLocal: function(ast) {
+    getLocal: function (ast) {
       var id = ast.id;
       var local = this.local;
       var ret = false;
 
       var isLocaled = utils.some(
         this.conditions,
-        function(contextId) {
+        function (contextId) {
           var _local = local[contextId];
           if (id in _local) {
             ret = _local[id];
@@ -179,7 +179,7 @@ module.exports = function(Velocity, utils) {
      * 第二次是$a.b返回值
      * @private
      */
-    getAttributes: function(property, baseRef, ast) {
+    getAttributes: function (property, baseRef, ast) {
       // fix #54
       if (baseRef === null || baseRef === undefined) {
         return undefined;
@@ -205,7 +205,7 @@ module.exports = function(Velocity, utils) {
      * $foo.bar[1] index求值
      * @private
      */
-    getPropIndex: function(property, baseRef) {
+    getPropIndex: function (property, baseRef) {
       var ast = property.id;
       var key;
       if (ast.type === 'references') {
@@ -222,7 +222,7 @@ module.exports = function(Velocity, utils) {
     /**
      * $foo.bar()求值
      */
-    getPropMethod: function(property, baseRef, ast) {
+    getPropMethod: function (property, baseRef, ast) {
       var id = property.id;
       var ret = '';
 
@@ -245,7 +245,7 @@ module.exports = function(Velocity, utils) {
       if (id.indexOf('set') === 0 && !baseRef[id]) {
         baseRef[id.slice(3)] = this.getLiteral(property.args[0]);
         // $page.setName(123)
-        baseRef.toString = function() {
+        baseRef.toString = function () {
           return '';
         };
         return baseRef;
@@ -255,7 +255,7 @@ module.exports = function(Velocity, utils) {
         return utils.keys(baseRef);
       } else if (id === 'entrySet' && !baseRef[id]) {
         ret = [];
-        utils.forEach(baseRef, function(value, key) {
+        utils.forEach(baseRef, function (value, key) {
           ret.push({ key: key, value: value });
         });
 
@@ -268,14 +268,16 @@ module.exports = function(Velocity, utils) {
         return baseRef.push(this.getLiteral(property.args[0]));
       } else if (id === 'remove') {
         if (utils.isArray(baseRef)) {
-          if (typeof index === 'number') {
-            var index = this.getLiteral(property.args[0]);
+          const itemToRemove = this.getLiteral(property.args[0]);
+          let indexToRemove;
+          if (typeof itemToRemove === 'number') {
+            indexToRemove = itemToRemove;
           } else {
-            var index = baseRef.indexOf(this.getLiteral(property.args[0]));
+            indexToRemove = baseRef.indexOf(itemToRemove);
           }
 
-          ret = baseRef[index];
-          baseRef.splice(index, 1);
+          ret = baseRef[indexToRemove];
+          baseRef.splice(indexToRemove, 1);
           return ret;
         } else if (utils.isObject(baseRef)) {
           ret = baseRef[this.getLiteral(property.args[0])];
@@ -292,7 +294,7 @@ module.exports = function(Velocity, utils) {
 
         utils.forEach(
           property.args,
-          function(exp) {
+          function (exp) {
             args.push(this.getLiteral(exp));
           },
           this,
@@ -302,7 +304,7 @@ module.exports = function(Velocity, utils) {
           var that = this;
 
           if (typeof baseRef === 'object' && baseRef) {
-            baseRef.eval = function() {
+            baseRef.eval = function () {
               return that.eval.apply(that, arguments);
             };
           }
@@ -326,7 +328,7 @@ module.exports = function(Velocity, utils) {
       return ret;
     },
 
-    _throw: function(ast, property, errorName) {
+    _throw: function (ast, property, errorName) {
       if (this.config.env !== 'development') {
         return;
       }
