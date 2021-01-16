@@ -35,7 +35,7 @@ import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import archiver from './utils/archiver';
 import amplifyServiceManager from './amplify-service-manager';
 import { DeploymentManager } from './iterative-deployment';
-import { Template } from 'cloudform-types';
+import { Fn, Template } from 'cloudform-types';
 import { getGqlUpdatedResource } from './graphql-transformer/utils';
 import { DeploymentStep, DeploymentOp } from './iterative-deployment/deployment-manager';
 import { DeploymentStateManager } from './iterative-deployment/deployment-state-manager';
@@ -533,21 +533,12 @@ async function packageResource(context: $TSContext, resource: $TSAny) {
   const cfnFile = cfnFiles[0];
   const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
   const cfnMeta = JSONUtilities.readJson<$TSAny>(cfnFilePath);
+  const paramType = { Type: 'String' };
 
   if (resource.service === FunctionServiceNameLambdaLayer) {
-    const isMultiEnvLayer: boolean = await context.amplify.invokePluginMethod(context, category, undefined, 'isMultiEnvLayer', [
-      context,
-      resourceName,
-    ]);
-
-    if (isMultiEnvLayer) {
-      storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
-    } else {
-      cfnMeta.Resources.LambdaLayer.Properties.Content = {
-        S3Bucket: s3Bucket,
-        S3Key: s3Key,
-      };
-    }
+    cfnMeta.Parameters.deploymentBucketName = paramType;
+    cfnMeta.Parameters.s3Key = paramType;
+    storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
   } else if (resource.service === ApiServiceNameElasticContainer) {
     const cfnParams = { ParamZipPath: s3Key };
 
@@ -555,14 +546,13 @@ async function packageResource(context: $TSContext, resource: $TSAny) {
     JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
   } else {
     if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-      // TODO: determine if code path is still relevant
-      // if relevant, change to use refs for Bucket/Key
+      cfnMeta.Parameters.deploymentBucketName = paramType;
+      cfnMeta.Parameters.s3Key = paramType;
       cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
-        Bucket: s3Bucket,
-        Key: s3Key,
+        Bucket: Fn.Ref('deploymentBucketName'),
+        Key: Fn.Ref('s3Key'),
       };
     } else {
-      const paramType = { Type: 'String' };
       cfnMeta.Parameters.deploymentBucketName = paramType;
       cfnMeta.Parameters.s3Key = paramType;
       storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
