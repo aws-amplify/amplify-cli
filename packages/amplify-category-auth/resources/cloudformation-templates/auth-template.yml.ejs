@@ -49,7 +49,9 @@ Parameters:
 
 Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
+  <%if (props.authSelections !=='identityPoolOnly' ) { %>
   ShouldOutputAppClientSecrets: !Equals [!Ref userpoolClientGenerateSecret, true ]
+  <% } %> 
 
 Resources:
   <%if (props.verificationBucketName) { %>
