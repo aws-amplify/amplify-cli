@@ -58,7 +58,7 @@ export function propertyDeclaration(
   if (closure) {
     generator.printOnNewline(name);
 
-    if (isNullable && isOptional) {
+    if (isNullable || isOptional) {
       generator.print('?');
     }
     generator.print(': ');
@@ -84,10 +84,26 @@ export function propertyDeclaration(
     }
   } else {
     generator.printOnNewline(name);
-    if (isOptional && isNullable) {
+    if (isOptional || isNullable) {
       generator.print('?');
     }
-    generator.print(`: ${typeName || (type && typeNameFromGraphQLType(generator.context, type))}`);
+    generator.print(': ');
+
+    if (isArray) {
+      generator.print(' Array<');
+    }
+    generator.print(`${typeName || (type && typeNameFromGraphQLType(generator.context, type))}`);
+    if (isArray) {
+      if (isArrayElementNullable) {
+        generator.print(' | null');
+      }
+      generator.print(' >');
+    }
+
+    // When typeName is passed as string it includes <typename> | null for nullable types.
+    if (isNullable && (!typeName || isArray)) {
+      generator.print(' | null');
+    }
   }
   generator.print(',');
 }

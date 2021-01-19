@@ -114,7 +114,7 @@ function structDeclarationForInputObjectType(generator: CodeGenerator, type: Gra
     },
     () => {
       const properties = propertiesFromFields(generator.context, Object.values(type.getFields()));
-      properties.forEach(property => propertyDeclaration(generator, { ...property, isOptional: true }));
+      properties.forEach(property => propertyDeclaration(generator, { ...property }));
     },
   );
 }

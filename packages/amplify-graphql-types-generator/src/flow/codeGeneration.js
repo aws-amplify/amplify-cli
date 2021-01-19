@@ -355,17 +355,6 @@ export function propertyDeclarations(generator, properties, isOptional) {
         (property.inlineFragments && property.inlineFragments.length > 0) ||
         (property.fragmentSpreads && property.fragmentSpreads.length > 0)
       ) {
-        const fields = property.fields.map(field => {
-          if (field.fieldName === '__typename') {
-            return {
-              ...field,
-              typeName: `"${property.typeName}"`,
-              type: { name: `"${property.typeName}"` },
-            };
-          } else {
-            return field;
-          }
-        });
         propertyDeclaration(generator, property, () => {
           const properties = propertiesFromFields(generator.context, property.fields);
           propertyDeclarations(generator, properties, isOptional);
