@@ -60,8 +60,8 @@ export async function init(context: $TSContext) {
     };
   } else if (authTypeConfig.type === 'accessKeys') {
     context.exeInfo.awsConfigInfo = {
-      configLevel: 'general',
-      config: {},
+      configLevel: 'project',
+      config: { useProfile: false },
     };
   } else {
     context.exeInfo.awsConfigInfo = {
@@ -200,7 +200,14 @@ async function carryOutConfigAction(context: $TSContext) {
 
 async function initialize(context: $TSContext, authConfig?: AuthFlowConfig) {
   const { awsConfigInfo } = context.exeInfo;
-  if (awsConfigInfo.configLevel !== 'amplifyAdmin') {
+  if (authConfig?.type === 'accessKeys') {
+    if (
+      (!awsConfigInfo.config.accessKeyId || !awsConfigInfo.config.secretAccessKey) &&
+      (!authConfig.accessKeyId || !authConfig.secretAccessKey)
+    ) {
+      await promptForAuthConfig(context, authConfig);
+    }
+  } else if (awsConfigInfo.configLevel !== 'amplifyAdmin') {
     if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.ProviderName]) {
       const inputParams = context.exeInfo.inputParams[constants.ProviderName];
       Object.assign(awsConfigInfo, inputParams);
@@ -525,17 +532,23 @@ function loadConfigFromPath(profilePath: string) {
 }
 
 export async function loadConfigurationForEnv(context: $TSContext, env: string, appId?: string) {
+  const { awsConfigInfo } = context.exeInfo;
+  if (awsConfigInfo.config.accessKeyId && awsConfigInfo.config.secretAccessKey) {
+    // Already loaded config
+    return awsConfigInfo.config;
+  }
+
   const projectConfigInfo = getConfigForEnv(env);
   const authType = await determineAuthType(context, projectConfigInfo);
   const { print, usageData } = context;
   let awsConfig: AwsSdkConfig;
+
   if (authType.type === 'admin') {
     projectConfigInfo.configLevel = 'amplifyAdmin';
     appId = appId || authType.appId;
     if (!doAdminTokensExist(appId)) {
       adminLoginFlow(context, appId, env, authType.region);
     }
-
     try {
       awsConfig = await getTempCredsWithAdminTokens(appId, print);
     } catch (err) {
@@ -550,7 +563,6 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
       awsConfig = loadConfigFromPath(projectConfigInfo.config.awsConfigFilePath);
     }
   }
-  // TODO: handle directly supplied keys
   return awsConfig;
 }
 
@@ -713,7 +725,7 @@ async function determineAuthType(context: $TSContext, projectConfig?: ProjectCon
   // Check process env vars
   accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
   secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
-  region = region || process.env.AWS_REGION;
+  region = resolveRegion();
 
   // Check for local project config
   useProfile = useProfile ?? projectConfig?.config?.useProfile;
