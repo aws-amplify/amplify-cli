@@ -460,7 +460,7 @@ export class KeyTransformer extends Transformer {
       let shouldMakeDelete = true;
 
       if (ctx.featureFlags.getBoolean('skipOverrideMutationInputTypes', false)) {
-        const modelDirective = definition.directives.reduce(dir => {
+        const modelDirective = definition.directives.find(dir => {
           if (dir.name.value === 'model') {
             return dir;
           }
