@@ -725,7 +725,7 @@ async function determineAuthType(context: $TSContext, projectConfig?: ProjectCon
   // Check process env vars
   accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
   secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
-  region = resolveRegion();
+  region = region || resolveRegion();
 
   // Check for local project config
   useProfile = useProfile ?? projectConfig?.config?.useProfile;
