@@ -113,7 +113,7 @@ function srcDirectoryHasDockerfileOrCompose(src) {
   return files.has('Dockerfile') || files.has('docker-compose.yaml') || files.has('docker-compose.yml');
 }
 
-async function generateHostingResources(
+export async function generateHostingResources(
   context,
   {
     domain,
