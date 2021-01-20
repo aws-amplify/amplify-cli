@@ -49,7 +49,7 @@ import { getCognitoResourceName } from '../schema-api-directives/authHelper';
 import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 
 describe('auth import userpool only', () => {
-  const profileName = 'default';
+  const profileName = 'amplify-integ-test-user';
 
   const projectPrefix = 'auimpup';
   const ogProjectPrefix = 'ogauimpup';

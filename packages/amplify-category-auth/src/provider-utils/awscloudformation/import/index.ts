@@ -415,7 +415,7 @@ const selectAppClients = async (
   answers: ImportAnswers,
 ): Promise<void> => {
   let autoSelected = 0;
-  let changeAppClientSlection = false;
+  let changeAppClientSelction = false;
   do {
     // Select web application clients
     if (questionParameters.webClients!.length === 1) {
@@ -481,11 +481,11 @@ const selectAppClients = async (
       answers.appClientNativeId = undefined; // Only to be used by enquirer
 
       if (answers.appClientNative === answers.appClientWeb) {
-        changeAppClientSlection = await context.prompt.confirm(importMessages.ConfirmUseDifferentAppClient);
+        changeAppClientSelction = await context.prompt.confirm(importMessages.ConfirmUseDifferentAppClient);
       }
     }
     questionParameters.bothAppClientsWereAutoSelected = autoSelected === 2;
-  } while (changeAppClientSlection);
+  } while (changeAppClientSelction);
 };
 
 const appClientsOAuthPropertiesMatching = async (
