@@ -7,9 +7,6 @@ import {
   isCompositeType,
   GraphQLOutputType,
   GraphQLInputType,
-  GraphQLScalarType,
-  GraphQLEnumType,
-  GraphQLInputObjectType,
   GraphQLObjectType,
   GraphQLError,
   GraphQLSchema,
@@ -21,6 +18,12 @@ import {
   SelectionSetNode,
   SelectionNode,
   isSpecifiedScalarType,
+  isEnumType,
+  isUnionType,
+  isScalarType,
+  isObjectType,
+  isInputObjectType,
+  isInterfaceType,
   NonNullTypeNode,
   GraphQLNonNull,
 } from 'graphql';
@@ -166,7 +169,7 @@ export function compileToIR(schema: GraphQLSchema, document: DocumentNode, optio
     const possibleTypes = fragment.selectionSet.possibleTypes.filter(type => fragmentSpread.selectionSet.possibleTypes.includes(type));
 
     fragmentSpread.isConditional = fragment.selectionSet.possibleTypes.some(
-      type => !fragmentSpread.selectionSet.possibleTypes.includes(type)
+      type => !fragmentSpread.selectionSet.possibleTypes.includes(type),
     );
 
     fragmentSpread.selectionSet = {
@@ -198,13 +201,29 @@ class Compiler {
     if (this.typesUsedSet.has(type)) return;
 
     if (
-      type instanceof GraphQLEnumType ||
-      type instanceof GraphQLInputObjectType ||
-      (type instanceof GraphQLScalarType && !isSpecifiedScalarType(type))
+      isEnumType(type) ||
+      isUnionType(type) ||
+      isInputObjectType(type) ||
+      isInterfaceType(type) ||
+      isObjectType(type) ||
+      (isScalarType(type) && !isSpecifiedScalarType(type))
     ) {
       this.typesUsedSet.add(type);
     }
-    if (type instanceof GraphQLInputObjectType) {
+    if (isInterfaceType(type) || isUnionType(type)) {
+      for (const concreteType of this.schema.getPossibleTypes(type)) {
+        this.addTypeUsed(getNamedType(concreteType));
+      }
+    }
+    if (isInputObjectType(type)) {
+      for (const field of Object.values(type.getFields())) {
+        this.addTypeUsed(getNamedType(field.type));
+      }
+    }
+    if (isObjectType(type)) {
+      for (const fieldType of type.getInterfaces()) {
+        this.addTypeUsed(getNamedType(fieldType));
+      }
       for (const field of Object.values(type.getFields())) {
         this.addTypeUsed(getNamedType(field.type));
       }
@@ -233,6 +252,9 @@ class Compiler {
 
     const source = print(operationDefinition);
     const rootType = getOperationRootType(this.schema, operationDefinition) as GraphQLObjectType;
+    const selectionSet = this.compileSelectionSet(operationDefinition.selectionSet, rootType);
+
+    this.addTypeUsed(getNamedType((selectionSet.selections[0] as Field).type)); // store result type
 
     return {
       filePath,
@@ -241,7 +263,7 @@ class Compiler {
       variables,
       source,
       rootType,
-      selectionSet: this.compileSelectionSet(operationDefinition.selectionSet, rootType),
+      selectionSet,
     };
   }
 
@@ -266,7 +288,7 @@ class Compiler {
     selectionSetNode: SelectionSetNode,
     parentType: GraphQLCompositeType,
     possibleTypes: GraphQLObjectType[] = this.possibleTypesForType(parentType),
-    visitedFragments: Set<string> = new Set()
+    visitedFragments: Set<string> = new Set(),
   ): SelectionSet {
     return {
       possibleTypes,
@@ -275,8 +297,8 @@ class Compiler {
           wrapInBooleanConditionsIfNeeded(
             this.compileSelection(selectionNode, parentType, possibleTypes, visitedFragments),
             selectionNode,
-            possibleTypes
-          )
+            possibleTypes,
+          ),
         )
         .filter(x => x) as Selection[],
     };
@@ -286,7 +308,7 @@ class Compiler {
     selectionNode: SelectionNode,
     parentType: GraphQLCompositeType,
     possibleTypes: GraphQLObjectType[],
-    visitedFragments: Set<string>
+    visitedFragments: Set<string>,
   ): Selection | null {
     switch (selectionNode.kind) {
       case Kind.FIELD: {
@@ -383,7 +405,7 @@ class Compiler {
 function wrapInBooleanConditionsIfNeeded(
   selection: Selection | null,
   selectionNode: SelectionNode,
-  possibleTypes: GraphQLObjectType[]
+  possibleTypes: GraphQLObjectType[],
 ): Selection | null {
   if (!selection) return null;
 

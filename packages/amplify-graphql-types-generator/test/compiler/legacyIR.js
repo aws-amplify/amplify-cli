@@ -76,7 +76,20 @@ describe('Compiling query documents to the legacy IR', () => {
 
     const { typesUsed } = withStringifiedTypes(compileToLegacyIR(schema, document));
 
-    expect(typesUsed).toEqual(['Episode', 'ReviewInput', 'ColorInput']);
+    expect(typesUsed).toEqual([
+      'Episode',
+      'Character',
+      'Human',
+      'FriendsConnection',
+      'FriendsEdge',
+      'PageInfo',
+      'Starship',
+      'Droid',
+      'SearchResult',
+      'ReviewInput',
+      'ColorInput',
+      'Review',
+    ]);
   });
 
   it(`should keep track of enums used in fields`, () => {
@@ -95,7 +108,7 @@ describe('Compiling query documents to the legacy IR', () => {
 
     const { typesUsed } = withStringifiedTypes(compileToLegacyIR(schema, document));
 
-    expect(typesUsed).toEqual(['Episode']);
+    expect(typesUsed).toEqual(['Character', 'Human', 'FriendsConnection', 'FriendsEdge', 'PageInfo', 'Episode', 'Starship', 'Droid']);
   });
 
   it(`should keep track of types used in fields of input objects`, () => {

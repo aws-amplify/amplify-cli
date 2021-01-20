@@ -5,12 +5,16 @@ import {
   isCompositeType,
   isAbstractType,
   GraphQLEnumType,
-  GraphQLNonNull,
-  GraphQLInputObjectType,
-  GraphQLType,
-  GraphQLUnionType,
-  GraphQLInterfaceType,
   GraphQLObjectType,
+  GraphQLInputObjectType,
+  GraphQLInterfaceType,
+  GraphQLUnionType,
+  GraphQLType,
+  isEnumType,
+  isUnionType,
+  isInterfaceType,
+  isObjectType,
+  isInputObjectType,
   isListType,
   isNonNullType,
 } from 'graphql';
@@ -19,7 +23,7 @@ import { wrap } from '../utilities/printing';
 
 import { CodeGenerator } from '../utilities/CodeGenerator';
 
-import { interfaceDeclaration, propertyDeclaration, propertySetsDeclaration, Property } from './language';
+import { interfaceDeclaration, propertyDeclaration, pickedPropertySetsDeclaration, Property } from './language';
 
 import { typeNameFromGraphQLType } from './types';
 import Maybe from 'graphql/tsutils/Maybe';
@@ -44,10 +48,16 @@ export function generateSource(context: LegacyCompilerContext) {
 }
 
 export function typeDeclarationForGraphQLType(generator: CodeGenerator, type: GraphQLType) {
-  if (type instanceof GraphQLEnumType) {
+  if (isEnumType(type)) {
     enumerationDeclaration(generator, type);
-  } else if (type instanceof GraphQLInputObjectType) {
+  } else if (isUnionType(type)) {
+    unionDeclaration(generator, type);
+  } else if (isInputObjectType(type)) {
     structDeclarationForInputObjectType(generator, type);
+  } else if (isObjectType(type)) {
+    structDeclarationForObjectType(generator, type);
+  } else if (isInterfaceType(type)) {
+    structDeclarationForInterfaceType(generator, type);
   }
 }
 
@@ -78,6 +88,23 @@ function enumerationDeclaration(generator: CodeGenerator, type: GraphQLEnumType)
   generator.printNewline();
 }
 
+function unionDeclaration(generator: CodeGenerator, type: GraphQLUnionType) {
+  const { name, description } = type;
+  const value = type
+    .getTypes()
+    .map(type => type.name)
+    .join(' | ');
+
+  generator.printNewlineIfNeeded();
+  if (description) {
+    description.split('\n').forEach(line => {
+      generator.printOnNewline(`// ${line.trim()}`);
+    });
+  }
+  generator.printOnNewline(`export type ${name} = ${value}`);
+  generator.printNewline();
+}
+
 function structDeclarationForInputObjectType(generator: CodeGenerator, type: GraphQLInputObjectType) {
   const interfaceName = type.name;
   interfaceDeclaration(
@@ -87,7 +114,37 @@ function structDeclarationForInputObjectType(generator: CodeGenerator, type: Gra
     },
     () => {
       const properties = propertiesFromFields(generator.context, Object.values(type.getFields()));
-      propertyDeclarations(generator, properties, true);
+      properties.forEach(property => propertyDeclaration(generator, { ...property }));
+    },
+  );
+}
+
+function structDeclarationForObjectType(generator: CodeGenerator, type: GraphQLObjectType) {
+  const interfaceName = type.name;
+  interfaceDeclaration(
+    generator,
+    {
+      interfaceName,
+    },
+    () => {
+      const properties = propertiesFromFields(generator.context, Object.values(type.getFields()));
+      propertyDeclaration(generator, { fieldName: '__typename', typeName: `"${interfaceName}"` });
+      properties.forEach(property => propertyDeclaration(generator, { ...property, isOptional: true }));
+    },
+  );
+}
+
+function structDeclarationForInterfaceType(generator: CodeGenerator, type: GraphQLInterfaceType) {
+  const interfaceName = type.name;
+  interfaceDeclaration(
+    generator,
+    {
+      interfaceName,
+    },
+    () => {
+      const properties = propertiesFromFields(generator.context, Object.values(type.getFields()));
+      propertyDeclaration(generator, { fieldName: '__typename', typeName: `"${interfaceName}"` });
+      properties.forEach(property => propertyDeclaration(generator, { ...property, isOptional: true }));
     },
   );
 }
@@ -124,7 +181,7 @@ export function interfaceVariablesDeclarationForOperation(
     },
     () => {
       const properties = propertiesFromFields(generator.context, variables);
-      propertyDeclarations(generator, properties, true);
+      pickedPropertyDeclarations(generator, properties, true);
     },
   );
 }
@@ -136,10 +193,10 @@ function getObjectTypeName(type: GraphQLType): string {
   if (isNonNullType(type)) {
     return getObjectTypeName(type.ofType);
   }
-  if (type instanceof GraphQLObjectType) {
+  if (isObjectType(type)) {
     return `"${type.name}"`;
   }
-  if (type instanceof GraphQLUnionType) {
+  if (isUnionType(type)) {
     return type
       .getTypes()
       .map(type => getObjectTypeName(type))
@@ -183,7 +240,7 @@ export function interfaceDeclarationForOperation(generator: CodeGenerator, { ope
       interfaceName,
     },
     () => {
-      propertyDeclarations(generator, properties);
+      pickedPropertyDeclarations(generator, properties);
     },
   );
 }
@@ -240,7 +297,7 @@ export function interfaceDeclarationForFragment(generator: CodeGenerator, fragme
           }
         });
 
-        propertySetsDeclaration(generator, fragment, propertySets, true);
+        pickedPropertySetsDeclaration(generator, fragment, propertySets, true);
       } else {
         const fragmentFields = fields.map(field => {
           if (field.fieldName === '__typename') {
@@ -255,7 +312,7 @@ export function interfaceDeclarationForFragment(generator: CodeGenerator, fragme
         });
 
         const properties = propertiesFromFields(generator.context, fragmentFields);
-        propertyDeclarations(generator, properties);
+        pickedPropertyDeclarations(generator, properties);
       }
     },
   );
@@ -299,7 +356,7 @@ export function propertyFromField(
   const namedType = getNamedType(fieldType);
 
   let isNullable = true;
-  if (fieldType instanceof GraphQLNonNull) {
+  if (isNonNullType(fieldType)) {
     isNullable = false;
   }
 
@@ -309,10 +366,10 @@ export function propertyFromField(
     let isArrayElementNullable = null;
     if (isListType(fieldType)) {
       isArray = true;
-      isArrayElementNullable = !(fieldType.ofType instanceof GraphQLNonNull);
+      isArrayElementNullable = !isNonNullType(fieldType.ofType);
     } else if (isNonNullType(fieldType) && isListType(fieldType.ofType)) {
       isArray = true;
-      isArrayElementNullable = !(fieldType.ofType.ofType instanceof GraphQLNonNull);
+      isArrayElementNullable = !isNonNullType(fieldType.ofType.ofType);
     }
 
     return {
@@ -338,7 +395,8 @@ export function propertyFromField(
   }
 }
 
-export function propertyDeclarations(generator: CodeGenerator, properties: Property[], isInput = false) {
+// pickedPropertyDeclarations declares specific properties selected by execution schemas or fragment schemas.
+export function pickedPropertyDeclarations(generator: CodeGenerator, properties: Property[], isOptional = false) {
   if (!properties) return;
   properties.forEach(property => {
     if (isAbstractType(getNamedType(property.type || property.fieldType!))) {
@@ -380,30 +438,19 @@ export function propertyDeclarations(generator: CodeGenerator, properties: Prope
         }
       });
 
-      propertySetsDeclaration(generator, property, propertySets);
+      pickedPropertySetsDeclaration(generator, property, propertySets);
     } else {
       if (
         (property.fields && property.fields.length > 0) ||
         (property.inlineFragments && property.inlineFragments.length > 0) ||
         (property.fragmentSpreads && property.fragmentSpreads.length > 0)
       ) {
-        const fields = property.fields!.map(field => {
-          if (field.fieldName === '__typename') {
-            return {
-              ...field,
-              typeName: `"${property.typeName}"`,
-              type: { name: `"${property.typeName}"` } as GraphQLType,
-            };
-          } else {
-            return field;
-          }
-        });
         propertyDeclaration(generator, property, () => {
-          const properties = propertiesFromFields(generator.context, fields!);
-          propertyDeclarations(generator, properties, isInput);
+          const properties = propertiesFromFields(generator.context, property.fields!);
+          pickedPropertyDeclarations(generator, properties, isOptional);
         });
       } else {
-        propertyDeclaration(generator, { ...property, isInput });
+        propertyDeclaration(generator, { ...property, isOptional });
       }
     }
   });
@@ -417,7 +464,7 @@ export function propertyDeclarations(generator: CodeGenerator, properties: Prope
 function getPossibleTypeNames(generator: CodeGenerator<LegacyCompilerContext>, property: Property) {
   const type = getNamedType(property.fieldType || property.type!);
 
-  if (type instanceof GraphQLUnionType || type instanceof GraphQLInterfaceType) {
+  if (isUnionType(type) || isInterfaceType(type)) {
     return generator.context.schema.getPossibleTypes(type).map(type => type.name);
   }
 
