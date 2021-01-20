@@ -532,8 +532,8 @@ function loadConfigFromPath(profilePath: string) {
 }
 
 export async function loadConfigurationForEnv(context: $TSContext, env: string, appId?: string) {
-  const { awsConfigInfo } = context.exeInfo;
-  if (awsConfigInfo.config.accessKeyId && awsConfigInfo.config.secretAccessKey) {
+  const { awsConfigInfo } = context.exeInfo || {};
+  if (awsConfigInfo?.config?.accessKeyId && awsConfigInfo?.config?.secretAccessKey) {
     // Already loaded config
     return awsConfigInfo.config;
   }
