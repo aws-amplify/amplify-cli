@@ -367,7 +367,7 @@ describe('auth import userpool only', () => {
         nativeAppClientName,
         customAppClientSettings,
       ));
-      await await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: nativeAppClientName });
+      await await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: nativeAppClientName, web: '_app_clientWeb' });
       await amplifyPushAuth(projectRoot);
       expectLocalAndCloudMetaFilesMatching(projectRoot);
       const projectDetails = getAuthProjectDetails(projectRoot);
