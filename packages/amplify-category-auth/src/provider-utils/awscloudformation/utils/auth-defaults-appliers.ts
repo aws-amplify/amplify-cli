@@ -1,9 +1,10 @@
 import { ServiceQuestionsResult } from '../service-walkthrough-types';
 import { verificationBucketName } from './verification-bucket-name';
-import { merge } from 'lodash';
+import { isEmpty, merge } from 'lodash';
 import { structureOAuthMetadata } from '../service-walkthroughs/auth-questions';
 import { removeDeprecatedProps } from './synthesize-resources';
 import { immutableAttributes, safeDefaults } from '../constants';
+import { FeatureFlags } from 'amplify-cli-core';
 
 /**
  * Factory function that returns a function that applies default values to a ServiceQuestionsResult request.
@@ -22,6 +23,12 @@ export const getAddAuthDefaultsApplier = (context: any, defaultValuesFilename: s
   await verificationBucketName(result);
 
   structureOAuthMetadata(result, context, getAllDefaults, context.amplify); // adds "oauthMetadata" to result
+
+  // Make the usernames for Cognito case-insensitive by default when it is created, if feature flag
+  // is enabled.
+  if (FeatureFlags.getBoolean('auth.enableCaseInsensitivity')) {
+    result.usernameCaseSensitive = false;
+  }
 
   /* merge actual answers object into props object,
    * ensuring that manual entries override defaults */
@@ -49,5 +56,9 @@ export const getUpdateAuthDefaultsApplier = (context: any, defaultValuesFilename
 
   structureOAuthMetadata(result, context, getAllDefaults, context.amplify); // adds "oauthMetadata" to result
 
+  // If there are new trigger selections, make sure they overwrite the previous selections
+  if (!isEmpty(result.triggers)) {
+    previousResult.triggers = Object.assign({}, result.triggers);
+  }
   return merge(defaults, removeDeprecatedProps(previousResult), result);
 };

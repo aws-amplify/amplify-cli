@@ -43,24 +43,24 @@ export const bucketNotExists = async (bucket: string) => {
 
 export const deleteS3Bucket = async (bucket: string) => {
   const s3 = new S3();
-  let continuationToken = null;
-  const objectKey = [];
+  let continuationToken: Required<Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = undefined;
+  const objectKeyAndVersion = <S3.ObjectIdentifier[]>[];
   let truncated = false;
   do {
     const results = await s3
-      .listObjectsV2({
+      .listObjectVersions({
         Bucket: bucket,
-        ContinuationToken: continuationToken,
+        ...continuationToken,
       })
       .promise();
-    results.Contents.forEach(r => {
-      objectKey.push({ Key: r.Key });
+    results.Versions?.forEach(({ Key, VersionId }) => {
+      objectKeyAndVersion.push({ Key, VersionId });
     });
 
-    continuationToken = results.NextContinuationToken;
+    continuationToken = { KeyMarker: results.NextKeyMarker, VersionIdMarker: results.NextVersionIdMarker };
     truncated = results.IsTruncated;
   } while (truncated);
-  const chunkedResult = _.chunk(objectKey, 1000);
+  const chunkedResult = _.chunk(objectKeyAndVersion, 1000);
   const deleteReq = chunkedResult
     .map(r => {
       return {

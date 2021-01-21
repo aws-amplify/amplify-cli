@@ -51,17 +51,15 @@ export async function askDynamoDBQuestions(context: any, currentProjectOnly = fa
         return { resourceName: dynamoResourceAnswer.dynamoDbResources as string };
       }
       case 'newResource': {
-        let add;
-        try {
-          ({ add } = require('amplify-category-storage'));
-        } catch (e) {
-          context.print.error('Storage plugin is not installed in the CLI. You must install it to use this feature.');
-          break;
-        }
-        return add(context, 'awscloudformation', 'DynamoDB').then((resourceName: any) => {
-          context.print.success('Successfully added DynamoDb table locally');
-          return { resourceName };
-        });
+        const resourceName = await context.amplify.invokePluginMethod(context, 'storage', undefined, 'add', [
+          context,
+          'awscloudformation',
+          'DynamoDB',
+        ]);
+
+        context.print.success('Successfully added DynamoDb table locally');
+
+        return { resourceName };
       }
       default:
         context.print.error('Invalid option selected');
@@ -108,7 +106,7 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
       No AppSync resources have been configured in the API category.
       Please use "amplify add api" command to create a new appsync resource`;
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(1);
   } else if (appSyncResources.length === 1) {
     targetResourceName = appSyncResources[0].resourceName;

@@ -1,5 +1,6 @@
 import { showHelp } from './show-help';
 import { listCategories } from './list-categories';
+import { isPackaged } from 'amplify-cli-core';
 
 export function showAllHelp(context) {
   context.print.info('');
@@ -77,7 +78,25 @@ export function showAllHelp(context) {
       name: 'console',
       description: 'Opens the web console for the selected cloud resource.',
     },
+    {
+      name: 'logout',
+      description: 'If using temporary cloud provider credentials, this logs out of the account.',
+    },
   ];
+
+  if (isPackaged) {
+    commands.push(
+      {
+        name: 'upgrade',
+        description: 'Donwload and install the latest version of the Amplify CLI',
+      },
+      {
+        name: 'uninstall',
+        description:
+          'Remove all global Amplify configuration files and uninstall the Amplify CLI. This will not delete any Amplify projects.',
+      },
+    );
+  }
 
   showHelp(header, commands);
   context.print.info('');

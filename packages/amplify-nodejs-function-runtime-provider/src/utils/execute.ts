@@ -1,5 +1,5 @@
 import { existsSync } from 'fs-extra';
-import { InvokeOptions } from './invokeOptions';
+import { InvokeOptions } from './invokeUtils';
 import path from 'path';
 import _ from 'lodash';
 import exit from 'exit';
@@ -95,15 +95,14 @@ process.on('message', async options => {
     process.stdout.write('\n');
     process.stdout.write(JSON.stringify({ result, error: null }));
   } catch (error) {
-    process.send!(
+    let lambdaError = typeof error === 'string' ? { message: 'Unknown Error' } : { message: error.message, stack: error.stack };
+    process.stdout.write('\n');
+    process.stdout.write(
       JSON.stringify({
         result: null,
-        error: {
-          type: 'Lambda:Unhandled',
-          message: error.message,
-        },
+        error: { type: 'Lambda:Unhandled', ...lambdaError },
       }),
     );
   }
-  exit(1);
+  exit(0);
 });

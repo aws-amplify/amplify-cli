@@ -11,7 +11,7 @@ import {
   TypeNode,
   NamedTypeNode,
 } from 'graphql';
-import { GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
+import { FeatureFlagProvider, GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer';
 import { getBaseType } from 'graphql-transformer-common';
 
@@ -687,6 +687,26 @@ test('Schema should compile successfully when subscription is missing from schem
   const mutationType = getObjectType(parsed, 'Mutation');
   expect(mutationType).toBeDefined();
   expectFields(mutationType, ['createPost', 'updatePost', 'deletePost']);
+});
+
+test('Should not validate reserved type names when validateTypeNameReservedWords is off', () => {
+  const schema = `
+  type Subscription @model{
+    id: Int
+    str: String
+  }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer()],
+    featureFlags: ({
+      getBoolean: jest.fn().mockImplementation(name => (name === 'validateTypeNameReservedWords' ? false : undefined)),
+    } as unknown) as FeatureFlagProvider,
+  });
+  const out = transformer.transform(schema);
+  expect(out).toBeDefined();
+  const parsed = parse(out.schema);
+  const subscriptionType = getObjectType(parsed, 'Subscription');
+  expect(subscriptionType).toBeDefined();
 });
 
 function transformerVersionSnapshot(version: number): string {

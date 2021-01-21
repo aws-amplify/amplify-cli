@@ -1,6 +1,16 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { $TSContext, CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, exitOnNextTick } from 'amplify-cli-core';
+import { isCI } from 'ci-info';
+import {
+  $TSContext,
+  CLIContextEnvironmentProvider,
+  FeatureFlags,
+  pathManager,
+  stateManager,
+  exitOnNextTick,
+  TeamProviderInfoMigrateError,
+  JSONValidationError,
+} from 'amplify-cli-core';
 import { Input } from './domain/input';
 import { getPluginPlatform, scan } from './plugin-manager';
 import { getCommandLineInput, verifyInput } from './input-manager';
@@ -17,12 +27,17 @@ import { notify } from './version-notifier';
 import { EventEmitter } from 'events';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
+import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
+import { deleteOldVersion } from './utils/win-utils';
+import { logInput } from './conditional-local-logging-init';
+
 EventEmitter.defaultMaxListeners = 1000;
 
 // entry from commandline
 export async function run() {
   let errorHandler = (e: Error) => {};
   try {
+    deleteOldVersion();
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
     // with non-help command supplied, give notification before execution
@@ -46,7 +61,6 @@ export async function run() {
       input = getCommandLineInput(pluginPlatform);
       verificationResult = verifyInput(pluginPlatform, input);
     }
-
     if (!verificationResult.verified) {
       if (verificationResult.helpCommandAvailable) {
         input.command = constants.HELP;
@@ -54,8 +68,9 @@ export async function run() {
         throw new Error(verificationResult.message);
       }
     }
-    rewireDeprecatedCommands(input);
 
+    rewireDeprecatedCommands(input);
+    logInput(input);
     const context = constructContext(pluginPlatform, input);
 
     // Initialize feature flags
@@ -70,6 +85,10 @@ export async function run() {
 
     await attachUsageData(context);
 
+    if (!(await migrateTeamProviderInfo(context))) {
+      context.usageData.emitError(new TeamProviderInfoMigrateError());
+      return 1;
+    }
     errorHandler = boundErrorHandler.bind(context);
     process.on('SIGINT', sigIntHandler.bind(context));
 
@@ -78,10 +97,10 @@ export async function run() {
     context.usageData.emitInvoke();
 
     // For mobile hub migrated project validate project and command to be executed
-    // if (!ensureMobileHubCommandCompatibility((context as unknown) as $TSContext)) {
-    //   // Double casting until we have properly typed context
-    //   return 1;
-    // }
+    if (!ensureMobileHubCommandCompatibility((context as unknown) as $TSContext)) {
+      // Double casting until we have properly typed context
+      return 1;
+    }
 
     await executeCommand(context);
 
@@ -100,14 +119,61 @@ export async function run() {
     }
 
     return exitCode;
-  } catch (e) {
+  } catch (error) {
     // ToDo: add logging to the core, and log execution errors using the unified core logging.
-    errorHandler(e);
-    if (e.message) {
-      print.error(e.message);
-    }
-    if (e.stack) {
-      print.info(e.stack);
+    errorHandler(error);
+
+    if (error.name === 'JSONValidationError') {
+      const jsonError = <JSONValidationError>error;
+      let printSummary = false;
+
+      print.error(error.message);
+
+      if (jsonError.unknownFlags?.length > 0) {
+        print.error('');
+        print.error(
+          `These feature flags are defined in the "amplify/cli.json" configuration file and are unknown to the currently running Amplify CLI:`,
+        );
+
+        for (const unknownFlag of jsonError.unknownFlags) {
+          print.error(`  - ${unknownFlag}`);
+        }
+
+        printSummary = true;
+      }
+
+      if (jsonError.otherErrors?.length > 0) {
+        print.error('');
+        print.error(`The following feature flags have validation errors:`);
+
+        for (const otherError of jsonError.otherErrors) {
+          print.error(`  - ${otherError}`);
+        }
+
+        printSummary = true;
+      }
+
+      if (printSummary) {
+        print.error('');
+        print.error(
+          `This issue likely happens when the project has been pushed with a newer version of Amplify CLI, try updating to a newer version.`,
+        );
+
+        if (isCI) {
+          print.error('');
+          print.error(`Ensure that the CI/CD pipeline is not using an older or pinned down version of Amplify CLI.`);
+        }
+
+        print.error('');
+        print.error(`Learn more about feature flags: https://docs.amplify.aws/cli/reference/feature-flags`);
+      }
+    } else {
+      if (error.message) {
+        print.error(error.message);
+      }
+      if (error.stack) {
+        print.info(error.stack);
+      }
     }
     exitOnNextTick(1);
   }
@@ -124,8 +190,13 @@ function boundErrorHandler(this: Context, e: Error) {
   this.usageData.emitError(e);
 }
 
-function sigIntHandler(this: Context, e: any) {
+async function sigIntHandler(this: Context, e: any) {
   this.usageData.emitAbort();
+  try {
+    await this.amplify.runCleanUpTasks(this);
+  } catch (err) {
+    this.print.warning(`Could not run clean up tasks\nError: ${err.message}`);
+  }
   this.print.warning('^Aborted!');
   exitOnNextTick(2);
 }

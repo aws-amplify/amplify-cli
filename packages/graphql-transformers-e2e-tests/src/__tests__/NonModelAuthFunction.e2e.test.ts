@@ -6,8 +6,7 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { default as moment } from 'moment';
-import emptyBucket from '../emptyBucket';
-import { deploy } from '../deployNestedStacks';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { LambdaHelper } from '../LambdaHelper';
@@ -359,8 +358,6 @@ beforeAll(async () => {
   );
   // Arbitrary wait to make sure everything is ready.
   await cf.wait(5, () => Promise.resolve());
-  console.log('Successfully created stack ' + STACK_NAME);
-  console.log(finishedStack);
   expect(finishedStack).toBeDefined();
   const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
   const endpoint = getApiEndpoint(finishedStack.Outputs);
@@ -369,10 +366,6 @@ beforeAll(async () => {
   const getIdentityPoolId = outputValueSelector('IdentityPoolId');
   const identityPoolId = getIdentityPoolId(finishedStack.Outputs);
   expect(identityPoolId).toBeTruthy();
-  console.log(`Identity Pool Id: ${identityPoolId}`);
-
-  console.log(`User pool Id: ${USER_POOL_ID}`);
-  console.log(`User pool ClientId: ${userPoolClientId}`);
 
   // Verify we have all the details
   expect(USER_POOL_ID).toBeTruthy();
@@ -423,27 +416,8 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  try {
-    console.log('Deleting stack ' + STACK_NAME);
-    await cf.deleteStack(STACK_NAME);
-    await deleteUserPool(cognitoClient, USER_POOL_ID);
-    await cf.waitForStack(STACK_NAME);
-    console.log('Successfully deleted stack ' + STACK_NAME);
-  } catch (e) {
-    if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-      // The stack was deleted. This is good.
-      expect(true).toEqual(true);
-      console.log('Successfully deleted stack ' + STACK_NAME);
-    } else {
-      console.error(e);
-      expect(true).toEqual(false);
-    }
-  }
-  try {
-    await emptyBucket(BUCKET_NAME);
-  } catch (e) {
-    console.warn(`Error during bucket cleanup: ${e}`);
-  }
+  await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf, { cognitoClient, userPoolId: USER_POOL_ID });
+
   try {
     await LAMBDA_HELPER.deleteFunction(ECHO_FUNCTION_NAME);
   } catch (e) {

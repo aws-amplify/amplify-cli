@@ -507,10 +507,10 @@ describe('Metadata visitor', () => {
     it('should generate for typeDeclaration', () => {
       const typeDeclaration = getVisitor(schema, 'typeDeclaration');
       expect(typeDeclaration.generate()).toMatchInlineSnapshot(`
-"import { Schema } from '@aws-amplify/datastore';
+        "import { Schema } from '@aws-amplify/datastore';
 
-export declare const schema: Schema;"
-`);
+        export declare const schema: Schema;"
+      `);
     });
   });
 });
@@ -568,20 +568,6 @@ describe('Metadata visitor', () => {
                             \\"type\\": \\"String\\",
                             \\"isRequired\\": false,
                             \\"attributes\\": []
-                        },
-                        \\"customOwnerField\\": {
-                            \\"name\\": \\"customOwnerField\\",
-                            \\"isArray\\": false,
-                            \\"type\\": \\"String\\",
-                            \\"isRequired\\": false,
-                            \\"attributes\\": []
-                        },
-                        \\"customOwnerField2\\": {
-                            \\"name\\": \\"customOwnerField2\\",
-                            \\"isArray\\": false,
-                            \\"type\\": \\"String\\",
-                            \\"isRequired\\": false,
-                            \\"attributes\\": []
                         }
                     },
                     \\"syncable\\": true,
@@ -656,7 +642,7 @@ describe('Metadata visitor', () => {
                     }
                 }
             },
-            \\"version\\": \\"5d997b204c79c66d009287de0054655e\\"
+            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
         };"
       `);
     });
@@ -690,20 +676,6 @@ describe('Metadata visitor', () => {
                             \\"type\\": \\"String\\",
                             \\"isRequired\\": false,
                             \\"attributes\\": []
-                        },
-                        \\"customOwnerField\\": {
-                            \\"name\\": \\"customOwnerField\\",
-                            \\"isArray\\": false,
-                            \\"type\\": \\"String\\",
-                            \\"isRequired\\": false,
-                            \\"attributes\\": []
-                        },
-                        \\"customOwnerField2\\": {
-                            \\"name\\": \\"customOwnerField2\\",
-                            \\"isArray\\": false,
-                            \\"type\\": \\"String\\",
-                            \\"isRequired\\": false,
-                            \\"attributes\\": []
                         }
                     },
                     \\"syncable\\": true,
@@ -778,7 +750,200 @@ describe('Metadata visitor', () => {
                     }
                 }
             },
-            \\"version\\": \\"5d997b204c79c66d009287de0054655e\\"
+            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
+        };"
+      `);
+    });
+  });
+});
+
+describe('Metadata visitor for auth process in field level', () => {
+  const schema = /* GraphQL */ `
+    type Employee @model @auth(rules: [{ allow: owner }, { allow: groups, groups: ["Admins"] }]) {
+      id: ID!
+      name: String!
+      address: String!
+      ssn: String @auth(rules: [{ allow: owner }])
+    }
+  `;
+  let visitor: AppSyncJSONVisitor;
+  beforeEach(() => {
+    visitor = getVisitor(schema);
+  });
+
+  describe('metadata snapshots', () => {
+    it('should generate for Javascript', () => {
+      const jsVisitor = getVisitor(schema, 'javascript');
+      expect(jsVisitor.generate()).toMatchInlineSnapshot(`
+        "export const schema = {
+            \\"models\\": {
+                \\"Employee\\": {
+                    \\"name\\": \\"Employee\\",
+                    \\"fields\\": {
+                        \\"id\\": {
+                            \\"name\\": \\"id\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"ID\\",
+                            \\"isRequired\\": true,
+                            \\"attributes\\": []
+                        },
+                        \\"name\\": {
+                            \\"name\\": \\"name\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": true,
+                            \\"attributes\\": []
+                        },
+                        \\"address\\": {
+                            \\"name\\": \\"address\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": true,
+                            \\"attributes\\": []
+                        },
+                        \\"ssn\\": {
+                            \\"name\\": \\"ssn\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        }
+                    },
+                    \\"syncable\\": true,
+                    \\"pluralName\\": \\"Employees\\",
+                    \\"attributes\\": [
+                        {
+                            \\"type\\": \\"model\\",
+                            \\"properties\\": {}
+                        },
+                        {
+                            \\"type\\": \\"auth\\",
+                            \\"properties\\": {
+                                \\"rules\\": [
+                                    {
+                                        \\"provider\\": \\"userPools\\",
+                                        \\"ownerField\\": \\"owner\\",
+                                        \\"allow\\": \\"owner\\",
+                                        \\"identityClaim\\": \\"cognito:username\\",
+                                        \\"operations\\": [
+                                            \\"create\\",
+                                            \\"update\\",
+                                            \\"delete\\",
+                                            \\"read\\"
+                                        ]
+                                    },
+                                    {
+                                        \\"groupClaim\\": \\"cognito:groups\\",
+                                        \\"provider\\": \\"userPools\\",
+                                        \\"allow\\": \\"groups\\",
+                                        \\"groups\\": [
+                                            \\"Admins\\"
+                                        ],
+                                        \\"operations\\": [
+                                            \\"create\\",
+                                            \\"update\\",
+                                            \\"delete\\",
+                                            \\"read\\"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            \\"enums\\": {},
+            \\"nonModels\\": {},
+            \\"version\\": \\"bff2efaf6e138056991c723932df2763\\"
+        };"
+      `);
+    });
+
+    it('should generate for typescript', () => {
+      const tsVisitor = getVisitor(schema, 'typescript');
+      expect(tsVisitor.generate()).toMatchInlineSnapshot(`
+        "import { Schema } from \\"@aws-amplify/datastore\\";
+
+        export const schema: Schema = {
+            \\"models\\": {
+                \\"Employee\\": {
+                    \\"name\\": \\"Employee\\",
+                    \\"fields\\": {
+                        \\"id\\": {
+                            \\"name\\": \\"id\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"ID\\",
+                            \\"isRequired\\": true,
+                            \\"attributes\\": []
+                        },
+                        \\"name\\": {
+                            \\"name\\": \\"name\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": true,
+                            \\"attributes\\": []
+                        },
+                        \\"address\\": {
+                            \\"name\\": \\"address\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": true,
+                            \\"attributes\\": []
+                        },
+                        \\"ssn\\": {
+                            \\"name\\": \\"ssn\\",
+                            \\"isArray\\": false,
+                            \\"type\\": \\"String\\",
+                            \\"isRequired\\": false,
+                            \\"attributes\\": []
+                        }
+                    },
+                    \\"syncable\\": true,
+                    \\"pluralName\\": \\"Employees\\",
+                    \\"attributes\\": [
+                        {
+                            \\"type\\": \\"model\\",
+                            \\"properties\\": {}
+                        },
+                        {
+                            \\"type\\": \\"auth\\",
+                            \\"properties\\": {
+                                \\"rules\\": [
+                                    {
+                                        \\"provider\\": \\"userPools\\",
+                                        \\"ownerField\\": \\"owner\\",
+                                        \\"allow\\": \\"owner\\",
+                                        \\"identityClaim\\": \\"cognito:username\\",
+                                        \\"operations\\": [
+                                            \\"create\\",
+                                            \\"update\\",
+                                            \\"delete\\",
+                                            \\"read\\"
+                                        ]
+                                    },
+                                    {
+                                        \\"groupClaim\\": \\"cognito:groups\\",
+                                        \\"provider\\": \\"userPools\\",
+                                        \\"allow\\": \\"groups\\",
+                                        \\"groups\\": [
+                                            \\"Admins\\"
+                                        ],
+                                        \\"operations\\": [
+                                            \\"create\\",
+                                            \\"update\\",
+                                            \\"delete\\",
+                                            \\"read\\"
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            \\"enums\\": {},
+            \\"nonModels\\": {},
+            \\"version\\": \\"bff2efaf6e138056991c723932df2763\\"
         };"
       `);
     });

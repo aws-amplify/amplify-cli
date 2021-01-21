@@ -1,8 +1,9 @@
-import path from 'path';
+import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
+
+import execa from 'execa';
 import fs from 'fs-extra';
 import glob from 'glob';
-import childProcess from 'child_process';
-import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
+import path from 'path';
 
 // copied from the existing build-resources.js file in amplify-cli with changes for new interface
 export async function buildResource(request: BuildRequest): Promise<BuildResult> {
@@ -39,19 +40,21 @@ function installDependencies(resourceDir: string) {
 }
 
 function runPackageManager(cwd: string, scriptName?: string) {
-  const isWindows = /^win/.test(process.platform);
-  const npm = isWindows ? 'npm.cmd' : 'npm';
-  const yarn = isWindows ? 'yarn.cmd' : 'yarn';
   const useYarn = fs.existsSync(`${cwd}/yarn.lock`);
-  const packageManager = useYarn ? yarn : npm;
+  const packageManager = useYarn ? 'yarn' : 'npm';
   const args = toPackageManagerArgs(useYarn, scriptName);
-  const childProcessResult = childProcess.spawnSync(packageManager, args, {
-    cwd,
-    stdio: 'pipe',
-    encoding: 'utf-8',
-  });
-  if (childProcessResult.status !== 0) {
-    throw new Error(childProcessResult.output.join());
+  try {
+    execa.sync(packageManager, args, {
+      cwd,
+      stdio: 'pipe',
+      encoding: 'utf-8',
+    });
+  } catch (error) {
+    if ((error as any).code === 'ENOENT') {
+      throw new Error(`Packaging lambda failed function failed. Could not find ${packageManager} executable in the PATH.`);
+    } else {
+      throw new Error(`Packaging lambda failed function failed with the error \n${error.message}`);
+    }
   }
 }
 

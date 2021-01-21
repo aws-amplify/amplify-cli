@@ -19,4 +19,5 @@ export const amplifyCLIConstants = {
   TagsFileName: 'tags.json',
   PROJECT_CONFIG_VERSION: '3.0',
   BreadcrumbsFileName: 'amplify.state',
+  LogDirectory: '.amplify-log',
 };

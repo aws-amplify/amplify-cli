@@ -9,6 +9,7 @@ export * from './init/';
 export * from './utils/';
 export * from './categories';
 export * from './utils/sdk-calls';
+export { addFeatureFlag } from './utils/feature-flags';
 
 declare global {
   namespace NodeJS {
@@ -22,7 +23,7 @@ const amplifyTestsDir = 'amplify-e2e-tests';
 
 export function getCLIPath(testingWithLatestCodebase = false) {
   if (isCI() && !testingWithLatestCodebase) {
-    return 'amplify';
+    return process.env.AMPLIFY_PATH || 'amplify';
   }
   return path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
 }

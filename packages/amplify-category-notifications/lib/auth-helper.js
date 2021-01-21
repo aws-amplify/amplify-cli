@@ -61,10 +61,13 @@ async function attachPolicyToRole(context, policy, roleName) {
 }
 
 async function checkAuth(context, resourceName) {
-  const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-
   const apiRequirements = { authSelections: 'identityPoolOnly', allowUnauthenticatedIdentities: true };
-  const checkResult = await checkRequirements(apiRequirements, context, constants.CategoryName, resourceName);
+  const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+    apiRequirements,
+    context,
+    constants.CategoryName,
+    resourceName,
+  ]);
 
   // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
   // configuration.
@@ -81,7 +84,12 @@ async function checkAuth(context, resourceName) {
     try {
       context.print.warning(`Adding ${constants.CategoryName} would also add the Auth category to the project if not already added.`);
 
-      await externalAuthEnable(context, constants.CategoryName, resourceName, apiRequirements);
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        context,
+        constants.CategoryName,
+        resourceName,
+        apiRequirements,
+      ]);
 
       context.print.warning('Execute "amplify push" to update the Auth resources in the cloud.');
     } catch (error) {
@@ -108,7 +116,7 @@ function getPolicyDoc(context) {
     Statement: [
       {
         Effect: 'Allow',
-        Action: ['mobiletargeting:PutEvents', 'mobiletargeting:UpdateEndpoint', 'mobiletargeting:GetUserEndpoints'],
+        Action: ['mobiletargeting:PutEvents', 'mobiletargeting:UpdateEndpoint'],
         Resource: [`arn:aws:mobiletargeting:*:${accountNumber}:apps/${pinpointAppId}*`],
       },
     ],

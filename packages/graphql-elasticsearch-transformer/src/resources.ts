@@ -467,6 +467,7 @@ export class ResourceFactory {
             path: str('$indexPath'),
             size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
             search_after: list([ref('util.toJson($context.args.nextToken)')]),
+            from: ref('context.args.from'),
             version: bool(includeVersion),
             query: ifElse(
               ref('context.args.filter'),

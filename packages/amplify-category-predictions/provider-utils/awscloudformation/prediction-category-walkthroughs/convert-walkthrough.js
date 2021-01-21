@@ -21,13 +21,7 @@ async function addWalkthrough(context) {
         'You need to add auth (Amazon Cognito) to your project in order to add storage for user files. Do you want to add auth now?',
       )
     ) {
-      try {
-        const { add } = require('amplify-category-auth');
-        await add(context);
-      } catch (e) {
-        context.print.error('The Auth plugin is not installed in the CLI. You need to install it to use this feature');
-        break;
-      }
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
       break;
     } else {
       context.usageData.emitSuccess();

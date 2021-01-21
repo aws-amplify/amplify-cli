@@ -4,21 +4,24 @@ const path = require('path');
 const fs = require('fs-extra');
 const childProcess = require('child_process');
 
-if (process.argv.length < 3) {
-  console.log('requires 1 arguments. source');
+if (process.argv.length < 4) {
+  console.log('requires 2 arguments. source and command name');
   process.exit(1);
 }
 
 const src = path.join(process.cwd(), process.argv[2]);
+
 let dest;
-if (process.argv.length === 3) {
+if (process.argv.length === 4) {
   const yarnGlobalBin = childProcess
     .execSync('yarn global bin')
     .toString()
     .trim();
-  dest = path.join(yarnGlobalBin, 'amplify-dev');
+  dest = path.join(yarnGlobalBin, process.argv[3]);
 } else {
-  dest = path.isAbsolute(process.argv[3]) ? process.argv[3] : path.join(process.cwd(), process.argv[3]).toString();
+  dest = path.isAbsolute(process.argv[4])
+    ? path.join(process.argv[4], process.argv[3])
+    : path.join(process.cwd(), process.argv[4], process.argv[3]).toString();
 }
 
 if (!fs.existsSync(src)) {

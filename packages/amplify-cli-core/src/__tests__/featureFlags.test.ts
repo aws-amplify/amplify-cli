@@ -10,7 +10,6 @@ import {
   CLIContextEnvironmentProvider,
   JSONUtilities,
   pathManager,
-  pathManager as realPathManager,
   FeatureFlagRegistration,
 } from '..';
 import { FeatureFlagEnvironmentProvider } from '../feature-flags/featureFlagEnvironmentProvider';
@@ -110,6 +109,31 @@ describe('feature flags', () => {
         const createdConfig = (await fs.readFile(projectConfigFileName)).toString();
 
         expect(createdConfig).not.toBe('');
+      } finally {
+        rimraf.sync(tempProjectDir);
+      }
+    });
+
+    test('initializes falsy feature flag with truthy default', async () => {
+      const templateConfigFileName = path.join(__dirname, 'testFiles', 'project-with-feature-off', amplifyConfigFileName);
+
+      const osTempDir = await fs.realpath(os.tmpdir());
+      const tempProjectDir = path.join(osTempDir, `amp-${uuid()}`);
+
+      try {
+        await fs.mkdirs(tempProjectDir);
+
+        process.chdir(tempProjectDir);
+
+        const projectConfigFileName = pathManager.getCLIJSONFilePath(tempProjectDir);
+
+        await fs.mkdirs(path.dirname(projectConfigFileName));
+
+        await fs.copyFile(templateConfigFileName, projectConfigFileName);
+
+        await FeatureFlags.initialize(({ getCurrentEnvName: () => 'dev' } as unknown) as CLIEnvironmentProvider);
+
+        expect(FeatureFlags.getBoolean('graphQLTransformer.validateTypeNameReservedWords')).toBe(false);
       } finally {
         rimraf.sync(tempProjectDir);
       }
@@ -378,6 +402,31 @@ describe('feature flags', () => {
       await expect(async () => {
         await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
       }).rejects.toThrowError(`Invalid number value: 'invalid' for 'transformerversion' in section 'graphqltransformer'`);
+    });
+
+    test('initialize feature flag provider fail unknown flags', async () => {
+      const context: any = {
+        getEnvInfo: (_: boolean): any => {
+          return {
+            envName: 'dev',
+          };
+        },
+      };
+
+      const envProvider: CLIEnvironmentProvider = new CLIContextEnvironmentProvider(context);
+      const projectPath = path.join(__dirname, 'testFiles', 'testProject-initialize-unknown-flag');
+
+      // Set current cwd to projectPath for .env to work correctly
+      process.chdir(projectPath);
+
+      await expect(async () => {
+        await FeatureFlags.initialize(envProvider, undefined, getTestFlags());
+      }).rejects.toMatchObject({
+        message: 'Invalid feature flag configuration',
+        name: 'JSONValidationError',
+        unknownFlags: ['graphqltransformer.foo', 'graphqltransformer.bar'],
+        otherErrors: ['graphqltransformer.transformerversion: should be number'],
+      });
     });
 
     const getTestFlags = (): Record<string, FeatureFlagRegistration[]> => {

@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-mock",
-  "version": "3.24.15",
+  "version": "3.27.7",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -26,13 +26,13 @@
   },
   "dependencies": {
     "@hapi/topo": "^5.0.0",
-    "amplify-appsync-simulator": "1.23.6",
-    "amplify-category-function": "2.25.3",
-    "amplify-codegen": "2.15.21",
-    "amplify-dynamodb-simulator": "1.14.3",
-    "amplify-storage-simulator": "1.4.2",
+    "amplify-appsync-simulator": "1.25.0",
+    "amplify-category-function": "2.28.4",
+    "amplify-codegen": "2.20.5",
+    "amplify-dynamodb-simulator": "1.17.6",
+    "amplify-storage-simulator": "1.5.1",
     "chokidar": "^3.3.1",
-    "execa": "^4.0.0",
+    "execa": "^4.1.0",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.19",
     "semver": "^7.1.3",
@@ -46,18 +46,18 @@
     "aws-appsync": "^2.0.2",
     "aws-sdk": "^2.765.0",
     "aws-sdk-mock": "^5.1.0",
-    "axios": "^0.19.2",
-    "graphql-auth-transformer": "6.20.7",
-    "graphql-connection-transformer": "4.18.13",
-    "graphql-dynamodb-transformer": "6.19.14",
-    "graphql-function-transformer": "2.3.20",
-    "graphql-key-transformer": "2.19.13",
+    "axios": "^0.21.1",
+    "graphql-auth-transformer": "6.23.3",
+    "graphql-connection-transformer": "4.19.4",
+    "graphql-dynamodb-transformer": "6.21.4",
+    "graphql-function-transformer": "2.4.4",
+    "graphql-key-transformer": "2.20.4",
     "graphql-tag": "^2.10.1",
-    "graphql-transformer-core": "6.21.5",
-    "graphql-versioned-transformer": "4.15.21",
+    "graphql-transformer-core": "6.25.1",
+    "graphql-versioned-transformer": "4.16.4",
     "isomorphic-fetch": "^2.2.1",
     "jsonwebtoken": "^8.5.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "uuid": "^3.4.0",
     "ws": "^7.2.1"
   },
@@ -91,7 +91,7 @@
     ],
     "globals": {
       "ts-jest": {
-        "tsConfig": "<rootDir>/tsconfig.tests.json"
+        "tsconfig": "<rootDir>/tsconfig.tests.json"
       }
     }
   },

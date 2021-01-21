@@ -62,7 +62,12 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
       isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`,
     );
 
-    await sequential(initializationTasks);
+    try {
+      await sequential(initializationTasks);
+    } catch (e) {
+      context.print.error(`Could not initialize '${currentEnv}': ${e.message}`);
+      process.exit(1);
+    }
 
     spinner.succeed(
       isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.',

@@ -9,7 +9,7 @@ export const run = async context => {
   if (!envName) {
     const errMessage = "You must pass in the name of the environment as a part of the 'amplify env remove <env-name>' command";
     context.print.error(errMessage);
-    context.usageData.emitError(new UnknownArgumentError(errMessage));
+    await context.usageData.emitError(new UnknownArgumentError(errMessage));
     exitOnNextTick(1);
   }
   let envFound = false;
@@ -30,7 +30,7 @@ export const run = async context => {
         'You cannot delete your current environment. Please switch to another environment to delete your current environment';
       context.print.error(errMessage);
       context.print.error("If this is your only environment you can use the 'amplify delete' command to delete your project");
-      context.usageData.emitError(new UnknownArgumentError(errMessage));
+      await context.usageData.emitError(new UnknownArgumentError(errMessage));
       exitOnNextTick(1);
     }
 

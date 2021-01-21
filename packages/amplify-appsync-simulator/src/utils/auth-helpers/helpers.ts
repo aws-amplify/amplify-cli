@@ -34,7 +34,9 @@ export function isValidOIDCToken(token: JWTToken, configuredAuthTypes: AmplifyAp
         : auth.openIDConnectConfig.Issuer,
     );
 
-  return oidcIssuers.length > 0 && oidcIssuers.includes(token.iss);
+  const tokenIssuer = token.iss.endsWith('/') ? token.iss.substring(0, token.iss.length - 1) : token.iss;
+
+  return oidcIssuers.length > 0 && oidcIssuers.includes(tokenIssuer);
 }
 export function extractHeader(headers: Record<string, string | string[]>, name: string): string {
   const headerName = Object.keys(headers).find(header => header.toLowerCase() === name.toLowerCase());

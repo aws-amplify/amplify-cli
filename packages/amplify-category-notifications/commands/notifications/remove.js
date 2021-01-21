@@ -15,7 +15,7 @@ module.exports = {
     if (pinpointApp) {
       const pinpointResource = context.exeInfo.amplifyMeta.notifications[pinpointApp.Name];
 
-      if (pinpointResource && !pinpointResource.providerPlugin) {
+      if (pinpointResource && pinpointResource.mobileHubMigrated === true) {
         context.print.error('Notifications is migrated from Mobile Hub and cannot be removed with Amplify CLI.');
         return context;
       }

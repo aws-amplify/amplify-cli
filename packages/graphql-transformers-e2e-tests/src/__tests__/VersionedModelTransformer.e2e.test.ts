@@ -9,8 +9,7 @@ import { GraphQLClient } from '../GraphQLClient';
 import { default as moment } from 'moment';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { S3Client } from '../S3Client';
-import { deploy } from '../deployNestedStacks';
-import emptyBucket from '../emptyBucket';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 
 jest.setTimeout(2000000);
 
@@ -66,7 +65,6 @@ beforeAll(async () => {
 
   try {
     const out = transformer.transform(validSchema);
-    console.log('Creating Stack ' + STACK_NAME);
     const finishedStack = await deploy(
       customS3Client,
       cf,
@@ -82,7 +80,6 @@ beforeAll(async () => {
 
     // Arbitrary wait to make sure everything is ready.
     //await cf.wait(10, () => Promise.resolve())
-    console.log('Successfully created stack ' + STACK_NAME);
     expect(finishedStack).toBeDefined();
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
@@ -98,26 +95,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  try {
-    console.log('Deleting stack ' + STACK_NAME);
-    await cf.deleteStack(STACK_NAME);
-    await cf.waitForStack(STACK_NAME);
-    console.log('Successfully deleted stack ' + STACK_NAME);
-  } catch (e) {
-    if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-      // The stack was deleted. This is good.
-      expect(true).toEqual(true);
-      console.log('Successfully deleted stack ' + STACK_NAME);
-    } else {
-      console.error(e);
-      expect(true).toEqual(false);
-    }
-  }
-  try {
-    await emptyBucket(BUCKET_NAME);
-  } catch (e) {
-    console.error(`Failed to empty S3 bucket: ${e}`);
-  }
+  await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf);
 });
 
 /**

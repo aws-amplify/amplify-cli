@@ -3,6 +3,157 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.19.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.19.3...graphql-connection-transformer@4.19.4) (2020-12-16)
+
+
+### Bug Fixes
+
+* **graphql-key-transformer:** prevent non-scalar key fields ([#5319](https://github.com/aws-amplify/amplify-cli/issues/5319)) ([4a5b305](https://github.com/aws-amplify/amplify-cli/commit/4a5b305dd695e61fcbc4ce0ca659b6f5a1c7e467)), closes [#5300](https://github.com/aws-amplify/amplify-cli/issues/5300)
+* [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) - add proper AWSJSON mapping in generated filter input types ([#6112](https://github.com/aws-amplify/amplify-cli/issues/6112)) ([743e84a](https://github.com/aws-amplify/amplify-cli/commit/743e84a9d968aab4648a12d3a19aa5ea14c4d755))
+
+
+### Reverts
+
+* Revert "Revert "Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158)" (#6160)" (#6183) ([a0ca94e](https://github.com/aws-amplify/amplify-cli/commit/a0ca94e5a1a848404ef3977743f19d26300a636a)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158) [#6160](https://github.com/aws-amplify/amplify-cli/issues/6160) [#6183](https://github.com/aws-amplify/amplify-cli/issues/6183)
+* Revert "fix(graphql-key-transformer): prevent non-scalar key fields (#5319)" (#6181) ([c61268d](https://github.com/aws-amplify/amplify-cli/commit/c61268d093571c906c13e7033552503b9fd83a98)), closes [#5319](https://github.com/aws-amplify/amplify-cli/issues/5319) [#6181](https://github.com/aws-amplify/amplify-cli/issues/6181)
+* Revert "Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158)" (#6160) ([f425924](https://github.com/aws-amplify/amplify-cli/commit/f42592420dcb49640c680c5001b3026ae0129090)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158) [#6160](https://github.com/aws-amplify/amplify-cli/issues/6160)
+* Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158) ([9e57e4d](https://github.com/aws-amplify/amplify-cli/commit/9e57e4d8c887be8ee4119c87383c7379cec40c37)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158)
+
+
+
+
+
+## [4.19.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.19.2...graphql-connection-transformer@4.19.3) (2020-12-07)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.19.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.19.1...graphql-connection-transformer@4.19.2) (2020-11-30)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.19.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.18...graphql-connection-transformer@4.19.1) (2020-11-22)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+# [4.19.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@3.5.5...graphql-connection-transformer@4.19.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* **graphql-connection-transformer:** error if field not in relatedType ([#4481](https://github.com/aws-amplify/amplify-cli/issues/4481)) ([48e4a5e](https://github.com/aws-amplify/amplify-cli/commit/48e4a5ed8656f963d7cde49d465e4436b313e23e)), closes [#4236](https://github.com/aws-amplify/amplify-cli/issues/4236)
+* add custom enum filter to connection filter ([#4269](https://github.com/aws-amplify/amplify-cli/issues/4269)) ([f559df0](https://github.com/aws-amplify/amplify-cli/commit/f559df077015c1c8d8462a92968093efdc5b9452))
+* **graphql-connection-transformer:** limit was not respected ([#4021](https://github.com/aws-amplify/amplify-cli/issues/4021)) ([480d0a0](https://github.com/aws-amplify/amplify-cli/commit/480d0a02a5744225d8375f447ab8dc642e285eaa))
+* [#3438](https://github.com/aws-amplify/amplify-cli/issues/3438), many-to-many with conflict resolution generated wrong schema ([#4171](https://github.com/aws-amplify/amplify-cli/issues/4171)) ([9e8606c](https://github.com/aws-amplify/amplify-cli/commit/9e8606c4a300b5690839ec0869f7384aff189b1f))
+* add AttributeTypeEnum for connections on models with no codegen ([#4102](https://github.com/aws-amplify/amplify-cli/issues/4102)) ([4e92402](https://github.com/aws-amplify/amplify-cli/commit/4e92402e0b0fae30501972f3ad16203fc19ba287))
+* **graphql-connection-transformer:** support non string type in sort key ([#3492](https://github.com/aws-amplify/amplify-cli/issues/3492)) ([bc4a1d9](https://github.com/aws-amplify/amplify-cli/commit/bc4a1d9bd707c62ea2c4ec685401f34dfeca0bd0)), closes [#3403](https://github.com/aws-amplify/amplify-cli/issues/3403)
+* **graphql-connection-transformer:** valiate composite sortkey ([#3419](https://github.com/aws-amplify/amplify-cli/issues/3419)) ([e9d0e95](https://github.com/aws-amplify/amplify-cli/commit/e9d0e95616075d9f152191bc5eb0ee612f8f65c0))
+* [#2296](https://github.com/aws-amplify/amplify-cli/issues/2296) [#2304](https://github.com/aws-amplify/amplify-cli/issues/2304) [#2100](https://github.com/aws-amplify/amplify-cli/issues/2100) ([#2439](https://github.com/aws-amplify/amplify-cli/issues/2439)) ([82762d6](https://github.com/aws-amplify/amplify-cli/commit/82762d6187eb2102ebd134b181622188c5632d1d))
+* [#2347](https://github.com/aws-amplify/amplify-cli/issues/2347) - enum validation for key directive ([#2363](https://github.com/aws-amplify/amplify-cli/issues/2363)) ([1facade](https://github.com/aws-amplify/amplify-cli/commit/1facaded3095eaff5a015e76ca4d718b7bc3c938))
+* [#2389](https://github.com/aws-amplify/amplify-cli/issues/2389) ([#2538](https://github.com/aws-amplify/amplify-cli/issues/2538)) ([fb92a9d](https://github.com/aws-amplify/amplify-cli/commit/fb92a9d7c6a1f807e49b7f899531de90cc1f4ee3))
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* export Typescript definitions and fix resulting type errors ([#2452](https://github.com/aws-amplify/amplify-cli/issues/2452)) ([7de3845](https://github.com/aws-amplify/amplify-cli/commit/7de384594d3b9cbf22cdaa85107fc8df26c141ec)), closes [#2451](https://github.com/aws-amplify/amplify-cli/issues/2451)
+* sanitize input in transformer resolver([#3316](https://github.com/aws-amplify/amplify-cli/issues/3316)) ([a3bc0a5](https://github.com/aws-amplify/amplify-cli/commit/a3bc0a5e5d3faa7946d16d0f6595ce8c2f3c11dc))
+* upgrade to node10 as min version for CLI ([#3128](https://github.com/aws-amplify/amplify-cli/issues/3128)) ([a0b18e0](https://github.com/aws-amplify/amplify-cli/commit/a0b18e0187a26b4ab0e6e986b0277f347e829444))
+* **graphql-connection-transformer:** fix self connection bug ([#1944](https://github.com/aws-amplify/amplify-cli/issues/1944)) ([1a6affc](https://github.com/aws-amplify/amplify-cli/commit/1a6affc7cc5ba0d59c908b6f6a58852013d22343)), closes [#1799](https://github.com/aws-amplify/amplify-cli/issues/1799)
+
+
+### Features
+
+* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+* **amplify-codegen-appsync-model-plugin:** modelgen connection support ([#2836](https://github.com/aws-amplify/amplify-cli/issues/2836)) ([353749c](https://github.com/aws-amplify/amplify-cli/commit/353749ce6643a07206a1f4c30d00beb775db169e))
+* **cli:** cLI updates and new features for Amplify Console ([#2742](https://github.com/aws-amplify/amplify-cli/issues/2742)) ([0fd0dd5](https://github.com/aws-amplify/amplify-cli/commit/0fd0dd5102177766c454c8715fa5acac32385048))
+* **graphql-connection-transformer:** limit ([#1953](https://github.com/aws-amplify/amplify-cli/issues/1953)) ([dcaf844](https://github.com/aws-amplify/amplify-cli/commit/dcaf84480974e7a697d1ea29782a4f5032a77942))
+* **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
+* **graphql-key-transformer:** add query automatically for named keys ([#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)) ([375282d](https://github.com/aws-amplify/amplify-cli/commit/375282d648cf9d096d13c7b958a0dfb7bd6d60b0))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* conditions update ([#2789](https://github.com/aws-amplify/amplify-cli/issues/2789)) ([3fae391](https://github.com/aws-amplify/amplify-cli/commit/3fae391340d5fd151e1c43286c90142b5ab0eab0))
+* updated version of [#2118](https://github.com/aws-amplify/amplify-cli/issues/2118) with addressed review comments ([#2230](https://github.com/aws-amplify/amplify-cli/issues/2230)) ([be3c499](https://github.com/aws-amplify/amplify-cli/commit/be3c499edcc6bec63b38e9241c5af7b83c930022))
+
+
+### Reverts
+
+* add query automatically for named keys ([#4513](https://github.com/aws-amplify/amplify-cli/issues/4513)) ([50c1120](https://github.com/aws-amplify/amplify-cli/commit/50c112050645b8fd5011a1e6863d30f58e0c55cb))
+
+
+
+
+
+## [4.18.21](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.18...graphql-connection-transformer@4.18.21) (2020-11-20)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.20](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.18...graphql-connection-transformer@4.18.20) (2020-11-20)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.19](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.18...graphql-connection-transformer@4.18.19) (2020-11-19)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.18](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.17...graphql-connection-transformer@4.18.18) (2020-11-08)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.16...graphql-connection-transformer@4.18.17) (2020-10-30)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.15...graphql-connection-transformer@4.18.16) (2020-10-27)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.14...graphql-connection-transformer@4.18.15) (2020-10-22)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.18.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.13...graphql-connection-transformer@4.18.14) (2020-10-17)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
 ## [4.18.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.18.12...graphql-connection-transformer@4.18.13) (2020-10-01)
 
 **Note:** Version bump only for package graphql-connection-transformer

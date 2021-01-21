@@ -273,9 +273,9 @@ export function ref(value: string): ReferenceNode {
  */
 export interface QuietReferenceNode {
   kind: 'QuietReference';
-  value: string;
+  value: string|Expression;
 }
-export function qref(value: string): QuietReferenceNode {
+export function qref(value: string| Expression): QuietReferenceNode {
   return {
     kind: 'QuietReference',
     value,

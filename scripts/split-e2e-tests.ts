@@ -34,6 +34,8 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/hosting.test.ts',
   'src/__tests__/analytics.test.ts',
   'src/__tests__/feature-flags.test.ts',
+  'src/__tests__/schema-iterative-update-2.test.ts',
+  'src/__tests__/containers-api.test.ts',
   //<20m
   'src/__tests__/predictions.test.ts',
   'src/__tests__/hostingPROD.test.ts',
@@ -43,6 +45,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/auth_1.test.ts',
   'src/__tests__/auth_5.test.ts',
   'src/__tests__/function_3.test.ts',
+  'src/__tests__/schema-iterative-update-1.test.ts',
   //<30m
   'src/__tests__/schema-auth-3.test.ts',
   'src/__tests__/delete.test.ts',
@@ -59,6 +62,8 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/api_3.test.ts',
   'src/__tests__/import_auth_1.test.ts',
   'src/__tests__/import_auth_2.test.ts',
+  'src/__tests__/import_s3_1.test.ts',
+  'src/__tests__/import_dynamodb_1.test.ts',
   //<40m
   'src/__tests__/env.test.ts',
   'src/__tests__/auth_2.test.ts',
@@ -74,6 +79,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/migration/api.connection.migration.test.ts',
   'src/__tests__/schema-connection.test.ts',
   'src/__tests__/schema-auth-6.test.ts',
+  'src/__tests__/schema-iterative-update-3.test.ts',
   //<50m
   'src/__tests__/schema-auth-2.test.ts',
   'src/__tests__/api_1.test.ts',
@@ -81,6 +87,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   //<55m
   'src/__tests__/storage.test.ts',
   'src/__tests__/api_2.test.ts',
+  'src/__tests__/schema-iterative-update-4.test.ts',
 ];
 
 /**
@@ -108,6 +115,7 @@ export type CircleCIConfig = {
   jobs: {
     [name: string]: {
       steps: Record<string, any>;
+      environment: Record<string, string>;
     };
   };
   workflows: {
@@ -156,6 +164,7 @@ function splitTests(
     const newJob = {
       ...job,
       environment: {
+        ...job.environment,
         TEST_SUITE: suite,
         CLI_REGION: testRegion,
       },
@@ -295,13 +304,20 @@ function saveConfig(config: CircleCIConfig): void {
 }
 function main(): void {
   const config = loadConfig();
-  const splitConfig = splitTests(
+  const splitNodeTests = splitTests(
     config,
     'amplify_e2e_tests',
     'build_test_deploy',
     join(process.cwd(), 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
-  saveConfig(splitConfig);
+  const splitPkgTests = splitTests(
+    splitNodeTests,
+    'amplify_e2e_tests_pkg_linux',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-e2e-tests'),
+    CONCURRENCY,
+  );
+  saveConfig(splitPkgTests);
 }
 main();

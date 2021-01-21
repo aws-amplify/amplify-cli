@@ -5,7 +5,9 @@ const ini = require('ini');
 const inquirer = require('inquirer');
 const constants = require('./constants');
 const proxyAgent = require('proxy-agent');
-const { pathManager } = require('amplify-cli-core');
+const { pathManager, SecretFileMode } = require('amplify-cli-core');
+const { fileLogger } = require('./utils/aws-logger');
+const logger = fileLogger('system-config-manager');
 
 const credentialsFilePath = pathManager.getAWSCredentialsFilePath();
 const configFilePath = pathManager.getAWSConfigFilePath();
@@ -16,11 +18,13 @@ function setProfile(awsConfig, profileName) {
   let credentials = {};
   let config = {};
   if (fs.existsSync(credentialsFilePath)) {
+    logger('setProfile.credetialsFilePathExists', [credentialsFilePath])();
     makeFileOwnerReadWrite(credentialsFilePath);
     credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
   }
 
   if (fs.existsSync(configFilePath)) {
+    logger('setProfile.credetialsFilePathExists', [credentialsFilePath])();
     makeFileOwnerReadWrite(configFilePath);
     config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
   }
@@ -55,9 +59,9 @@ function setProfile(awsConfig, profileName) {
       region: awsConfig.region,
     };
   }
-
-  fs.writeFileSync(credentialsFilePath, ini.stringify(credentials), { mode: 0o600 });
-  fs.writeFileSync(configFilePath, ini.stringify(config), { mode: 0o600 });
+  logger('setProfile.writecredetialsFilePath', [credentialsFilePath])();
+  fs.writeFileSync(credentialsFilePath, ini.stringify(credentials), { mode: SecretFileMode });
+  fs.writeFileSync(configFilePath, ini.stringify(config), { mode: SecretFileMode });
 }
 
 async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
@@ -65,6 +69,7 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
+    logger('getProfiledAwsConfig.profileConfig', [profileConfig])();
     if (!isRoleSourceProfile && profileConfig.role_arn) {
       const roleCredentials = await getRoleCredentials(context, profileName, profileConfig);
       delete profileConfig.role_arn;
@@ -74,6 +79,7 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
         ...roleCredentials,
       };
     } else {
+      logger('getProfiledAwsConfig.getProfileCredentials', [profileName]);
       const profileCredentials = getProfileCredentials(profileName);
       awsConfig = {
         ...profileConfig,
@@ -81,7 +87,9 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
       };
     }
   } else {
-    throw new Error(`Profile configuration is missing for: ${profileName}`);
+    const err = new Error(`Profile configuration is missing for: ${profileName}`);
+    logger('getProfiledAwsConfig', [profileName])(err);
+    throw err;
   }
 
   if (httpProxy) {
@@ -95,6 +103,7 @@ async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
 }
 
 function makeFileOwnerReadWrite(filePath) {
+  logger('makeFileOwnerReadWrite', [filePath])();
   fs.chmodSync(filePath, '600');
 }
 
@@ -114,25 +123,29 @@ async function getRoleCredentials(context, profileName, profileConfig) {
       context.print.info(`  ${profileConfig.mfa_serial}`);
       mfaTokenCode = await getMfaTokenCode();
     }
-
+    logger('getRoleCredentials.aws.STS', [sourceProfileAwsConfig])();
     const sts = new aws.STS(sourceProfileAwsConfig);
-    const roleData = await sts
-      .assumeRole({
-        RoleArn: profileConfig.role_arn,
-        RoleSessionName: roleSessionName,
-        DurationSeconds: profileConfig.duration_seconds,
-        ExternalId: profileConfig.external_id,
-        SerialNumber: profileConfig.mfa_serial,
-        TokenCode: mfaTokenCode,
-      })
-      .promise();
-
-    roleCredentials = {
-      accessKeyId: roleData.Credentials.AccessKeyId,
-      secretAccessKey: roleData.Credentials.SecretAccessKey,
-      sessionToken: roleData.Credentials.SessionToken,
-      expiration: roleData.Credentials.Expiration,
+    const assumeRoleRequest = {
+      RoleArn: profileConfig.role_arn,
+      RoleSessionName: roleSessionName,
+      DurationSeconds: profileConfig.duration_seconds,
+      ExternalId: profileConfig.external_id,
+      SerialNumber: profileConfig.mfa_serial,
+      TokenCode: mfaTokenCode,
     };
+    const log = logger('getRoleCredentials.sts.assumeRole', [assumeRoleRequest]);
+    try {
+      log();
+      const roleData = await sts.assumeRole(assumeRoleRequest).promise();
+      roleCredentials = {
+        accessKeyId: roleData.Credentials.AccessKeyId,
+        secretAccessKey: roleData.Credentials.SecretAccessKey,
+        sessionToken: roleData.Credentials.SessionToken,
+        expiration: roleData.Credentials.Expiration,
+      };
+    } catch (ex) {
+      log(ex);
+    }
 
     cacheRoleCredentials(context, profileConfig.role_arn, roleSessionName, roleCredentials);
   }
@@ -238,12 +251,14 @@ async function resetCache(context, profileName) {
 
 function getCacheFilePath(context) {
   const sharedConfigDirPath = path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
+  logger('getCacheFilePath', [sharedConfigDirPath])();
   fs.ensureDirSync(sharedConfigDirPath);
   return path.join(sharedConfigDirPath, constants.CacheFileName);
 }
 
 function getProfileConfig(profileName) {
   let profileConfig;
+  logger('getProfileConfig', [profileName])();
   if (fs.existsSync(configFilePath)) {
     makeFileOwnerReadWrite(configFilePath);
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
@@ -259,6 +274,7 @@ function getProfileConfig(profileName) {
 
 function getProfileCredentials(profileName) {
   let profileCredentials;
+  logger('getProfileCredentials', [profileName])();
   if (fs.existsSync(credentialsFilePath)) {
     makeFileOwnerReadWrite(credentialsFilePath);
     const credentials = ini.parse(fs.readFileSync(credentialsFilePath, 'utf-8'));
@@ -287,11 +303,12 @@ function normalizeKeys(config) {
 
 function getProfileRegion(profileName) {
   let profileRegion;
-
+  logger('getProfileRegion', [profileName])();
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     profileRegion = profileConfig.region;
   }
+  logger('getProfileRegion', [profileRegion])();
 
   return profileRegion;
 }

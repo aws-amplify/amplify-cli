@@ -3,12 +3,14 @@ import * as path from 'path';
 import { existsSync, copySync, outputFileSync } from 'fs-extra';
 import uuid from 'uuid';
 import { cfnTemplateRoot, privateKeys, adminAuthAssetRoot, triggerRoot, ENV_SPECIFIC_PARAMS } from '../constants';
-import { ServiceName as FunctionServiceName } from 'amplify-category-function';
 import { pathManager, JSONUtilities } from 'amplify-cli-core';
 import { get } from 'lodash';
 import { authProviders } from '../assets/string-maps';
 
 const category = 'auth';
+
+// keep in sync with ServiceName in amplify-category-function, but probably it will not change
+const FunctionServiceNameLambdaFunction = 'Lambda';
 
 /**
  * Factory function that returns a function that synthesizes all resources based on a ServiceQuestionsResult request.
@@ -345,7 +347,7 @@ const createAdminAuthFunction = async (
   if (operation === 'add') {
     // add amplify-meta and backend-config
     const backendConfigs = {
-      service: FunctionServiceName.LambdaFunction,
+      service: FunctionServiceNameLambdaFunction,
       providerPlugin: 'awscloudformation',
       build: true,
       dependsOn,

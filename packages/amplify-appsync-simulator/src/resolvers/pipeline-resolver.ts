@@ -1,6 +1,6 @@
 import { AmplifyAppSyncSimulator } from '..';
-import { AppSyncSimulatorPipelineResolverConfig } from '../type-definition';
 import { AppSyncBaseResolver } from './base-resolver';
+import { AppSyncSimulatorPipelineResolverConfig } from '../type-definition';
 
 export class AppSyncPipelineResolver extends AppSyncBaseResolver {
   constructor(protected config: AppSyncSimulatorPipelineResolverConfig, simulatorContext: AmplifyAppSyncSimulator) {

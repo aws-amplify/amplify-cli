@@ -1,14 +1,17 @@
 {
+    "description": "Defines the json object expected by `amplify add api --headless`",
     "type": "object",
     "properties": {
         "version": {
+            "description": "The schema version.",
             "type": "number",
             "enum": [
                 1
             ]
         },
         "serviceConfiguration": {
-            "$ref": "#/definitions/AppSyncServiceConfiguration"
+            "$ref": "#/definitions/AppSyncServiceConfiguration",
+            "description": "The service configuration that will be interpreted by Amplify."
         }
     },
     "required": [
@@ -17,23 +20,26 @@
     ],
     "definitions": {
         "AppSyncServiceConfiguration": {
+            "description": "Configuration exposed by AppSync. Currently this is the only API type supported by Amplify headless mode.",
             "type": "object",
             "properties": {
                 "serviceName": {
+                    "description": "The service name of the resource provider.",
                     "type": "string",
                     "enum": [
                         "AppSync"
                     ]
                 },
                 "apiName": {
+                    "description": "The name of the API that will be created.",
                     "type": "string"
                 },
                 "transformSchema": {
-                    "description": "The annotated GraphQL schema that defines the AppSync API",
+                    "description": "The annotated GraphQL schema that defines the AppSync API.",
                     "type": "string"
                 },
                 "defaultAuthType": {
-                    "description": "The auth type that will be used by default",
+                    "description": "The auth type that will be used by default.",
                     "anyOf": [
                         {
                             "$ref": "#/definitions/AppSyncAPIKeyAuthType"
@@ -50,7 +56,7 @@
                     ]
                 },
                 "additionalAuthTypes": {
-                    "description": "Additional methods of authenticating API requests",
+                    "description": "Additional methods of authenticating API requests.",
                     "type": "array",
                     "items": {
                         "anyOf": [
@@ -70,7 +76,8 @@
                     }
                 },
                 "conflictResolution": {
-                    "$ref": "#/definitions/ConflictResolution"
+                    "$ref": "#/definitions/ConflictResolution",
+                    "description": "The strategy for resolving API write conflicts."
                 }
             },
             "required": [
@@ -81,6 +88,7 @@
             ]
         },
         "AppSyncAPIKeyAuthType": {
+            "description": "Specifies that the AppSync API should be secured using an API key.",
             "type": "object",
             "properties": {
                 "mode": {
@@ -101,6 +109,7 @@
             ]
         },
         "AppSyncAWSIAMAuthType": {
+            "description": "Specifies that the AppSync API should be secured using AWS IAM.",
             "type": "object",
             "properties": {
                 "mode": {
@@ -115,6 +124,7 @@
             ]
         },
         "AppSyncCognitoUserPoolsAuthType": {
+            "description": "Specifies that the AppSync API should be secured using Cognito.",
             "type": "object",
             "properties": {
                 "mode": {
@@ -124,6 +134,7 @@
                     ]
                 },
                 "cognitoUserPoolId": {
+                    "description": "The user pool that will be used to authenticate requests.",
                     "type": "string"
                 }
             },
@@ -133,6 +144,7 @@
             ]
         },
         "AppSyncOpenIDConnectAuthType": {
+            "description": "Specifies that the AppSync API should be secured using OpenID.",
             "type": "object",
             "properties": {
                 "mode": {
@@ -165,9 +177,11 @@
             ]
         },
         "ConflictResolution": {
+            "description": "Defines a strategy for resolving API write conflicts.",
             "type": "object",
             "properties": {
                 "defaultResolutionStrategy": {
+                    "description": "The strategy that will be used for all models by default.",
                     "anyOf": [
                         {
                             "$ref": "#/definitions/PredefinedResolutionStrategy"
@@ -178,6 +192,7 @@
                     ]
                 },
                 "perModelResolutionStrategy": {
+                    "description": "Strategies that will be used for individual models.",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/PerModelResolutionstrategy"
@@ -186,6 +201,7 @@
             }
         },
         "PredefinedResolutionStrategy": {
+            "description": "Resolution strategies provided by AppSync. See https://docs.aws.amazon.com/appsync/latest/devguide/conflict-detection-and-sync.html for details.",
             "type": "object",
             "properties": {
                 "type": {
@@ -202,6 +218,7 @@
             ]
         },
         "LambdaResolutionStrategy": {
+            "description": "Resolution strategy using a custom lambda function.",
             "type": "object",
             "properties": {
                 "type": {
@@ -211,6 +228,7 @@
                     ]
                 },
                 "resolver": {
+                    "description": "The lambda function used to resolve conflicts.",
                     "anyOf": [
                         {
                             "$ref": "#/definitions/NewLambdaConflictResolver"
@@ -227,6 +245,7 @@
             ]
         },
         "NewLambdaConflictResolver": {
+            "description": "Defines a new lambda conflict resolver. Using this resolver type will create a new lambda function with boilerplate resolver logic.",
             "type": "object",
             "properties": {
                 "type": {
@@ -241,6 +260,7 @@
             ]
         },
         "ExistingLambdaConflictResolver": {
+            "description": "Defines an lambda conflict resolver that uses an existing lambda function.",
             "type": "object",
             "properties": {
                 "type": {
@@ -250,12 +270,15 @@
                     ]
                 },
                 "name": {
+                    "description": "The name of the lambda function (this must be a lambda function that exists in the Amplify project).",
                     "type": "string"
                 },
                 "region": {
+                    "description": "The lambda function region.",
                     "type": "string"
                 },
                 "arn": {
+                    "description": "A lambda function ARN. This could be an ARN outside of the Amplify project but in that case extra care must be taken to ensure the AppSync API has access to the Lambda.",
                     "type": "string"
                 }
             },
@@ -265,9 +288,11 @@
             ]
         },
         "PerModelResolutionstrategy": {
+            "description": "Defines a resolution strategy for a single model.",
             "type": "object",
             "properties": {
                 "resolutionStrategy": {
+                    "description": "The resolution strategy for the model.",
                     "anyOf": [
                         {
                             "$ref": "#/definitions/PredefinedResolutionStrategy"
@@ -278,6 +303,7 @@
                     ]
                 },
                 "entityName": {
+                    "description": "The model name.",
                     "type": "string"
                 }
             },

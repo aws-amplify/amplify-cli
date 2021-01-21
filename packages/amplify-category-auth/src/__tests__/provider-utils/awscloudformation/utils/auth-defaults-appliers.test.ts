@@ -13,6 +13,21 @@ jest.mock('../../../../provider-utils/awscloudformation/service-walkthroughs/aut
   structureOAuthMetadata: jest.fn(result => (result.include = 'this value')),
 }));
 
+jest.mock('amplify-cli-core', () => {
+  return {
+    FeatureFlags: {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'auth.enableCaseInsensitivity') {
+          return true;
+        }
+      }),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    },
+  };
+});
+
 const structureOAuthMetadata_mock = structureOAuthMetadata as jest.MockedFunction<typeof structureOAuthMetadata>;
 
 describe('update auth defaults applier', () => {

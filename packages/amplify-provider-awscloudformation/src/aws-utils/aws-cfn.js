@@ -84,6 +84,7 @@ class CloudFormation {
     return new Promise(resolve => {
       this.pollQueue.once('empty', () => {
         const failedStacks = this.stackEvents.filter(ev => CNF_ERROR_STATUS.includes(ev.ResourceStatus));
+
         try {
           const trace = this.generateFailedStackErrorMsgs(failedStacks);
           console.log(`\n\n${chalk.reset.red.bold('Following resources failed')}\n`);
@@ -94,6 +95,10 @@ class CloudFormation {
           resolve();
         } catch (e) {
           Promise.reject(e);
+        } finally {
+          if (this.pollForEvents) {
+            clearInterval(this.pollForEvents);
+          }
         }
       });
     });
@@ -189,6 +194,15 @@ class CloudFormation {
       });
   }
 
+  getStackParameters(stackName) {
+    return this.cfn
+      .describeStack({ StackName: stackName })
+      .promise()
+      .then(data => {
+        return data.Parameters;
+      });
+  }
+
   updateResourceStack(dir, cfnFile) {
     const filePath = path.normalize(path.join(dir, cfnFile));
     const projectDetails = this.context.amplify.getProjectDetails();
@@ -199,7 +213,7 @@ class CloudFormation {
     const authRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].AuthRoleName : '';
     const unauthRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName : '';
 
-    const Tags = this.context.amplify.getTags();
+    const Tags = this.context.amplify.getTags(this.context);
 
     if (!stackName) {
       throw new Error('Project stack has not been created yet. Use amplify init to initialize the project.');
@@ -248,7 +262,6 @@ class CloudFormation {
                 ],
                 Tags,
               };
-
               cfnModel.updateStack(cfnParentStackParams, updateErr => {
                 self.readStackEvents(stackName);
 
@@ -284,7 +297,6 @@ class CloudFormation {
     };
     const projectDetails = this.context.amplify.getProjectDetails();
     const { amplifyMeta } = projectDetails;
-
     const result = await this.cfn.describeStackResources(cfnParentStackParams).promise();
     const resources = result.StackResources.filter(
       resource =>
@@ -462,12 +474,12 @@ function showEvents(events) {
       });
       return res;
     });
-    console.log(
-      columnify(e, {
-        columns: COLUMNS,
-        showHeaders: false,
-      }),
-    );
+
+    const formattedEvents = columnify(e, {
+      columns: COLUMNS,
+      showHeaders: false,
+    });
+    console.log(formattedEvents);
   }
 }
 

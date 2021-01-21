@@ -12,6 +12,8 @@ const constants = require('./constants');
 const configurationManager = require('./configuration-manager');
 const amplifyServiceManager = require('./amplify-service-manager');
 const amplifyServiceMigrate = require('./amplify-service-migrate');
+const { fileLogger } = require('./utils/aws-logger');
+const logger = fileLogger('attach-backend');
 
 async function run(context) {
   await configurationManager.init(context);
@@ -34,12 +36,22 @@ async function run(context) {
     const { amplifyAppId, verifiedStackName, deploymentBucketName } = await amplifyServiceManager.init(amplifyServiceParams);
 
     stackName = verifiedStackName;
+    const Tags = context.amplify.getTags(context);
+
     const authRoleName = `${stackName}-authRole`;
     const unauthRoleName = `${stackName}-unauthRole`;
+
+    let nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
+    // Track Amplify Console generated stacks
+    if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
+      nestedStack.Description = 'Root Stack for AWS Amplify Console';
+    }
+    nestedStack = JSON.stringify(nestedStack);
+
     const params = {
       StackName: stackName,
       Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
-      TemplateBody: fs.readFileSync(initTemplateFilePath).toString(),
+      TemplateBody: nestedStack,
       Parameters: [
         {
           ParameterKey: 'DeploymentBucketName',
@@ -54,6 +66,7 @@ async function run(context) {
           ParameterValue: unauthRoleName,
         },
       ],
+      Tags,
     };
 
     const spinner = ora();
@@ -158,7 +171,16 @@ function storeCurrentCloudBackend(context) {
     absolute: true,
   });
 
+  // handle tag file
+  const tagFilePath = pathManager.getTagFilePath();
+  const tagCloudFilePath = pathManager.getCurrentTagFilePath();
+  if (fs.existsSync(tagFilePath)) {
+    fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
+  }
+
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
+  let log = null;
+
   return archiver
     .run(currentCloudBackendDir, zipFilePath, undefined, cliJSONFiles)
     .then(result => {
@@ -168,8 +190,14 @@ function storeCurrentCloudBackend(context) {
           Body: fs.createReadStream(result.zipFilePath),
           Key: s3Key,
         };
+        log = logger('storeCurrentCloudBackend.s3.uploadFile', [{ Key: s3Key }]);
+        log();
         return s3.uploadFile(s3Params);
       });
+    })
+    .catch(ex => {
+      log(ex);
+      throw ex;
     })
     .then(() => {
       fs.removeSync(tempDir);
@@ -196,7 +224,14 @@ async function uploadFile(s3, filePath, key) {
       Body: fs.createReadStream(filePath),
       Key: key,
     };
-    await s3.uploadFile(s3Params);
+    const log = logger('uploadFile.s3.uploadFile', [{ Key: key }]);
+    try {
+      log();
+      await s3.uploadFile(s3Params);
+    } catch (ex) {
+      log(ex);
+      throw ex;
+    }
   }
 }
 

@@ -23,7 +23,7 @@ export async function deleteProject(context) {
       spinner.start();
       await Promise.all(Object.keys(allEnvs).map(env => removeEnvFromCloud(context, env, confirmation.deleteS3)));
       const appId = getAmplifyAppId();
-      if (confirmation.deleteAmpilfyApp && appId) {
+      if (confirmation.deleteAmplifyApp && appId) {
         const awsCloudPlugin = getPluginInstance(context, 'awscloudformation');
         const amplifyClient = await awsCloudPlugin.getConfiguredAmplifyClient(context, {});
         const environments = await amplifyBackendEnvironments(amplifyClient, appId);
@@ -62,7 +62,7 @@ export async function getConfirmation(context, env?) {
     return {
       proceed: true,
       deleteS3: true,
-      deleteAmpilfyApp: true,
+      deleteAmplifyApp: !process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION,
     };
   const environmentText = env ? `'${env}' environment` : 'all the environments';
   return {
@@ -72,8 +72,8 @@ export async function getConfirmation(context, env?) {
       })`,
       false,
     ),
-    // Place holder for later selective deletes
+    // Placeholder for later selective deletes
     deleteS3: true,
-    deleteAmpilfyApp: true,
+    deleteAmplifyApp: true,
   };
 }

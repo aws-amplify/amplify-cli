@@ -6,7 +6,7 @@ import { keys } from 'lodash';
  */
 export const lambdaArnToConfig = (arn: any, provisionedLambdas: LambdaFunctionConfig[]): LambdaFunctionConfig => {
   const errorSuffix =
-    '\nSee https://docs.amplify.aws/cli/graphql-transformer/directives#function for information on how to configure Lambda resolvers.';
+    '\nSee https://docs.amplify.aws/cli/graphql-transformer/function for information on how to configure Lambda resolvers.';
   let searchString = '';
   if (typeof arn === 'string') {
     searchString = arn;

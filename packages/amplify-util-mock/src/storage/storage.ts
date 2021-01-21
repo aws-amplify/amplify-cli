@@ -1,7 +1,7 @@
 import { AmplifyStorageSimulator } from 'amplify-storage-simulator';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { getAmplifyMeta, addCleanupTask, getMockDataDirectory } from '../utils';
+import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { getInvoker } from 'amplify-category-function';
 import { loadMinimalLambdaConfig } from '../utils/lambda/loadMinimal';
@@ -36,7 +36,7 @@ export class StorageTest {
     let localDirS3 = this.createLocalStorage(context, `${storageParams.bucketName}`);
 
     try {
-      addCleanupTask(context, async context => {
+      context.amplify.addCleanUpTask(async context => {
         await this.stop(context);
       });
       this.configOverrideManager = ConfigOverrideManager.getInstance(context);

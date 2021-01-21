@@ -40,8 +40,8 @@ export const immutableAttributes = [
   'userPoolName',
   'identityPoolName',
   'usernameAttributes',
-  'autoVerifiedAttributes',
   'requiredAttributes',
+  'usernameCaseSensitive',
 ];
 
 export const privateKeys = [
@@ -69,3 +69,9 @@ export const privateKeys = [
   'addLogoutOnUpdate',
   'additionalQuestions',
 ];
+
+// amplify console auth options
+export const UserPool = 'User Pool';
+export const IdentityPool = 'Identity Pool';
+export const BothPools = `${UserPool} and ${IdentityPool}`;
+export const AmplifyAdmin = 'Amplify admin UI';

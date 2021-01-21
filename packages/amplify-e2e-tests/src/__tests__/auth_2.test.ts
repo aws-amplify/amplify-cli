@@ -1,18 +1,12 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import {
-  addAuthWithDefault,
-  removeAuthWithDefault,
-  addAuthWithDefaultSocial,
-  addAuthWithGroupTrigger,
-  addAuthWithRecaptchaTrigger,
-  addAuthViaAPIWithTrigger,
-} from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush, validateNodeModulesDirRemoval } from 'amplify-e2e-core';
+import { addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger } from 'amplify-e2e-core';
 import {
   createNewProjectDir,
   deleteProjectDir,
   getProjectMeta,
   getUserPool,
   getUserPoolClients,
+  isDeploymentSecretForEnvExists,
   getLambdaFunction,
 } from 'amplify-e2e-core';
 
@@ -34,9 +28,10 @@ describe('amplify add auth...', () => {
   it('...should init a project and add auth with defaultSocial', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithDefaultSocial(projRoot, {});
+    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeTruthy();
     await amplifyPushAuth(projRoot);
     const meta = getProjectMeta(projRoot);
-
+    expect(isDeploymentSecretForEnvExists(projRoot, 'integtest')).toBeFalsy();
     const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
@@ -45,6 +40,7 @@ describe('amplify add auth...', () => {
 
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
+    validateNodeModulesDirRemoval(projRoot);
     expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
     expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
     expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(4);
@@ -65,6 +61,7 @@ describe('amplify add auth...', () => {
     const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
 
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
+    validateNodeModulesDirRemoval(projRoot);
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
@@ -86,6 +83,7 @@ describe('amplify add auth...', () => {
 
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
+    validateNodeModulesDirRemoval(projRoot);
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
     expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
@@ -112,6 +110,7 @@ describe('amplify add auth...', () => {
     const verifyFunction = await getLambdaFunction(verifyFunctionName, meta.providers.awscloudformation.Region);
 
     expect(userPool.UserPool).toBeDefined();
+    validateNodeModulesDirRemoval(projRoot);
     expect(clients).toHaveLength(2);
     expect(createFunction).toBeDefined();
     expect(defineFunction).toBeDefined();

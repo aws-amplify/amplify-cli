@@ -96,7 +96,7 @@ describe('nodejs', () => {
       expect(payload2.ScannedCount).toBeDefined();
     });
 
-    it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
+    it.only('existing lambda updated with additional permissions should be able to scan ddb', async () => {
       await initJSProjectWithProfile(projRoot, {});
 
       const random = Math.floor(Math.random() * 10000);
@@ -350,6 +350,37 @@ describe('nodejs', () => {
       );
       const envVarsObj = lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables;
       expect(_.keys(envVarsObj)).toContain(`API_${apiName.toUpperCase()}_GRAPHQLAPIKEYOUTPUT`);
+    });
+
+    it('should be able to query AppSync with minimal permissions with featureFlag', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      const random = Math.floor(Math.random() * 10000);
+      const apiName = `apiwithapikey${random}`;
+      await addApiWithSchema(projRoot, 'simple_model.graphql', { apiName });
+      const fnName = `apikeyenvvar${random}`;
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['api'],
+            choices: ['api'],
+            resources: [apiName],
+            operations: ['query'],
+          },
+        },
+        'nodejs',
+      );
+
+      const lambdaCFN = readJsonFile(
+        path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
+      );
+      const envVarsObj = lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement;
+      envVarsObj.forEach(statement => {
+        expect(statement.Action).toContain('appsync:GraphQL');
+        expect(statement.Resource[0]['Fn::Join'][1]).toContain('/types/Query/*');
+      });
     });
   });
 });

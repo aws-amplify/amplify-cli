@@ -15,7 +15,10 @@ async function run(context) {
     enabledHostingServices = Object.keys(amplifyMeta[hostingCategory]);
   }
 
-  if (!enabledHostingServices.includes('S3AndCloudFront') && !enabledHostingServices.includes('amplifyhosting')) {
+  if (!enabledHostingServices.includes('S3AndCloudFront') &&
+    !enabledHostingServices.includes('amplifyhosting') &&
+    !enabledHostingServices.includes('ElasticContainer')) {
+
     throw new Error('No hosting services are enabled for Javascript project.');
   }
 
@@ -35,6 +38,12 @@ async function run(context) {
     const hostingPluginModule = require(pluginInfo.packageLocation);
     context.print.info('Publish started for amplifyhosting');
     await hostingPluginModule.publish(context, 'amplifyhosting', { doSkipBuild: frontendBuildComplete });
+  }
+
+  if (enabledHostingServices.includes('ElasticContainer')) {
+    const pluginInfo = context.amplify.getCategoryPluginInfo(context, 'hosting', 'ElasticContainer');
+    const hostingPluginModule = require(pluginInfo.packageLocation);
+    await hostingPluginModule.publish(context, 'ElasticContainer', { doSkipBuild: frontendBuildComplete });
   }
 }
 

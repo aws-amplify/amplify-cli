@@ -1,6 +1,6 @@
 const path = require('path');
 const _ = require('lodash');
-const { JSONUtilities } = require('amplify-cli-core');
+const { AngularConfigNotFoundError, exitOnNextTick, JSONUtilities } = require('amplify-cli-core');
 
 const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 
@@ -12,7 +12,7 @@ const reactConfig = {
 };
 
 const reactNativeConfig = {
-  SourceDir: '/',
+  SourceDir: 'src',
   DistributionDir: '/',
   BuildCommand: `${npm} run-script build`,
   StartCommand: `${npm} run-script start`,
@@ -53,9 +53,21 @@ const defaultConfig = {
   StartCommand: `${npm} run-script start`,
 };
 
-function getAngularConfig(projectRoot) {
+function getAngularConfig(context) {
+  const projectRoot = context.exeInfo.localEnvInfo.projectPath;
   const angularConfigFile = path.join(projectRoot, 'angular.json');
-  const angularProjectConfig = JSONUtilities.readJson(angularConfigFile, { throwIfNotExist: false });
+  let angularProjectConfig;
+  try {
+    angularProjectConfig = JSONUtilities.readJson(angularConfigFile);
+  } catch (error) {
+    const errorMessage = `Failed to read ${angularConfigFile}: ${error.message || 'Unknown error occurred.'}`;
+    context.print.error(errorMessage);
+    context.print.info(
+      `Angular apps need to be set up by the Angular CLI first: https://docs.amplify.aws/start/getting-started/setup/q/integration/angular`,
+    );
+    context.usageData.emitError(new AngularConfigNotFoundError(errorMessage));
+    exitOnNextTick(1);
+  }
   const dist = _.get(
     angularProjectConfig,
     ['projects', angularProjectConfig.defaultProject, 'architect', 'build', 'options', 'outputPath'],
@@ -67,10 +79,10 @@ function getAngularConfig(projectRoot) {
   };
 }
 
-function getProjectConfiguration(framework, projectRoot) {
+function getProjectConfiguration(context, framework) {
   switch (framework) {
     case 'angular':
-      return getAngularConfig(projectRoot);
+      return getAngularConfig(context);
     case 'ember':
       return emberConfig;
     case 'ionic':

@@ -1,4 +1,4 @@
-import { nspawn as spawn } from 'amplify-e2e-core';
+import { addCircleCITags, nspawn as spawn } from 'amplify-e2e-core';
 import { getCLIPath } from '../util';
 import { HOSTING_NOT_ENABLED, HOSTING_ENABLED_IN_CONSOLE, ORIGINAL_ENV } from './constants';
 
@@ -18,6 +18,9 @@ const defaultSettings = {
 
 export function initJSProjectWithProfile(cwd: string, providersParam: any) {
   const s = { ...defaultSettings };
+
+  addCircleCITags(cwd);
+
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init', '--providers', JSON.stringify(providersParam)], { cwd, stripColors: true })
       .wait('Enter a name for the project')

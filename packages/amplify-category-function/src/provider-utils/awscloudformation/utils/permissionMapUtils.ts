@@ -8,6 +8,6 @@ export const fetchPermissionResourcesForCategory = (permissionMap, category: str
   return _.keys(_.get(permissionMap, [category]));
 };
 
-export const fetchPermissionsForResourceInCategory = (permissionMap, category: string, resourceName: string) => {
+export const fetchPermissionsForResourceInCategory = (permissionMap: object = {}, category: string, resourceName: string) => {
   return _.get(permissionMap, [category, resourceName]);
 };

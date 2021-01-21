@@ -140,7 +140,7 @@ export class DynamoDBModelTransformer extends Transformer {
       def.name.value === ctx.getMutationTypeName() ||
       def.name.value === ctx.getSubscriptionTypeName();
 
-    if (isTypeNameReserved) {
+    if (isTypeNameReserved && ctx.featureFlags.getBoolean('validateTypeNameReservedWords', true)) {
       throw new InvalidDirectiveError(
         `'${def.name.value}' is a reserved type name and currently in use within the default schema element.`,
       );
@@ -445,8 +445,9 @@ export class DynamoDBModelTransformer extends Transformer {
       }
     }
 
-    // Create sync query
+    // Create sync query if @model present for datastore
     if (isSyncEnabled) {
+      // change here for selective Sync for @model (Just add the queryMap for table and query expression)
       const syncResolver = this.resources.makeSyncResolver(typeName);
       const syncResourceID = ResolverResourceIDs.SyncResolverResourceID(typeName);
       ctx.setResource(syncResourceID, syncResolver);
@@ -640,6 +641,12 @@ export class DynamoDBModelTransformer extends Transformer {
       }
     }
   }
+
+  /**
+   * Generate Predicate type for Sync Query for DataStore
+   * @param ctx : transformer context
+   * @param def : ObjectTypeDefinition
+   */
 
   private generateConditionInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
     const scalarFilters = makeScalarFilterInputs(this.supportsConditions(ctx));

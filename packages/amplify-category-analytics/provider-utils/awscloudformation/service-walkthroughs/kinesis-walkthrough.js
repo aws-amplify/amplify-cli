@@ -12,7 +12,7 @@ async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   if (resourceName) {
     const errMessage = 'Kinesis resource have already been added to your project.';
     context.print.warning(errMessage);
-    context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
     exitOnNextTick(0);
   }
   return configure(context, defaultValuesFilename, serviceMetadata);
@@ -74,15 +74,17 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       unauthPolicyName: defaultValues.unauthPolicyName,
     };
 
-    // Check for authorization rules and settings
-    const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-
     const analyticsRequirements = {
       authSelections: 'identityPoolOnly',
       allowUnauthenticatedIdentities: true,
     };
 
-    const checkResult = await checkRequirements(analyticsRequirements, context, 'analytics', targetResourceName);
+    const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+      analyticsRequirements,
+      context,
+      'analytics',
+      targetResourceName,
+    ]);
 
     // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
     // configuration.
@@ -103,7 +105,12 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
         )
       ) {
         try {
-          await externalAuthEnable(context, 'analytics', targetResourceName, analyticsRequirements);
+          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+            context,
+            'analytics',
+            targetResourceName,
+            analyticsRequirements,
+          ]);
         } catch (error) {
           context.print.error(error);
           throw error;
@@ -114,7 +121,12 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
             'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
           );
           analyticsRequirements.allowUnauthenticatedIdentities = false;
-          await externalAuthEnable(context, 'analytics', targetResourceName, analyticsRequirements);
+          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+            context,
+            'analytics',
+            targetResourceName,
+            analyticsRequirements,
+          ]);
         } catch (error) {
           context.print.error(error);
           throw error;
@@ -146,7 +158,7 @@ async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata
   if (kinesisResources.length === 0) {
     const errMessage = 'No Kinesis streams resource to update. Please use "amplify add analytics" command to create a new Kinesis stream';
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
     return;
   } else if (kinesisResources.length === 1) {

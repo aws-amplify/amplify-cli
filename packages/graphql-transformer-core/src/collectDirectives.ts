@@ -60,6 +60,7 @@ export function collectDirectivesByTypeNames(sdl: string) {
   });
   return { types, directives: Array.from(directives) };
 }
+
 export function collectDirectivesByType(sdl: string): Object {
   const doc = parse(sdl);
   // defined types with directives list

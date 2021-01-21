@@ -83,7 +83,7 @@ describe('WebsocketSubscriptionServer', () => {
   });
 
   describe('Connect', () => {
-    it('should close connection when the protocol is not graphql-ws', async done => {
+    it('should close connection when the protocol is not graphql-ws', done => {
       const client = new WS(`ws://localhost:${serverPort}${SUBSCRIPTION_PATH}`, 'something');
       client.addEventListener('close', event => {
         expect(event.code).toEqual(1002);
@@ -92,15 +92,18 @@ describe('WebsocketSubscriptionServer', () => {
       });
     });
 
-    it('should accept connection when the protocol is graphql-ws', async done => {
+    it('should accept connection when the protocol is graphql-ws', async () => {
       const client = new WS(`ws://localhost:${serverPort}${SUBSCRIPTION_PATH}`, 'graphql-ws');
-      client.addEventListener('close', event => {
-        expect(event.wasClean).toBeTruthy();
-        done();
+      const messagePromise = new Promise((resolve, _) => {
+        client.addEventListener('close', event => {
+          expect(event.wasClean).toBeTruthy();
+          resolve(undefined);
+        });
       });
       await waitForConnection(client);
       client.close();
       expect(onConnectHandler).toHaveBeenCalled();
+      return messagePromise;
     });
 
     it('should call onConnectionHandler with header', async () => {
@@ -119,15 +122,19 @@ describe('WebsocketSubscriptionServer', () => {
       expect(onConnectHandler.mock.calls[0][1]).toEqual(header);
     });
 
-    it('should fail connection when onConnectionHandler throw and error', async done => {
+    it('should fail connection when onConnectionHandler throw and error', async () => {
       onConnectHandler.mockRejectedValue('error');
       const client = new WS(`ws://localhost:${serverPort}${SUBSCRIPTION_PATH}`, 'graphql-ws');
-      client.addEventListener('close', event => {
-        expect(event.code).toEqual(1002);
-        done();
+      const messagePromise = new Promise((resolve, _) => {
+        client.addEventListener('close', event => {
+          expect(event.code).toEqual(1002);
+          resolve(undefined);
+        });
       });
       await waitForConnection(client);
       client.close();
+
+      return messagePromise;
     });
   });
 
@@ -144,33 +151,41 @@ describe('WebsocketSubscriptionServer', () => {
       jest.useRealTimers();
     });
 
-    it('should ACK connection', async done => {
+    it('should ACK connection', async () => {
       const connectionIntiMessage = {
         type: MESSAGE_TYPES.GQL_CONNECTION_INIT,
         payload: {},
       };
-      client.onmessage = (message: WS.MessageEvent) => {
-        const data = JSON.parse(message.data as string);
-        expect(data.type).toEqual(MESSAGE_TYPES.GQL_CONNECTION_ACK);
-        expect(data.payload.connectionTimeout).toEqual(connectionTimeoutDuration);
-        client.close();
-        done();
-      };
+      const messagePromise = new Promise((resolve, _) => {
+        client.onmessage = (message: WS.MessageEvent) => {
+          const data = JSON.parse(message.data as string);
+          expect(data.type).toEqual(MESSAGE_TYPES.GQL_CONNECTION_ACK);
+          expect(data.payload.connectionTimeout).toEqual(connectionTimeoutDuration);
+          client.close();
+          resolve(undefined);
+        };
+      });
       client.send(JSON.stringify(connectionIntiMessage));
+
+      return messagePromise;
     });
 
-    it('should send Error if  the Connection init sends invalid message', async done => {
+    it('should send Error if  the Connection init sends invalid message', async () => {
       const invalidConnectionIntiMessage = {
         type: 'invalid',
         payload: {},
       };
-      client.onmessage = (message: WS.MessageEvent) => {
-        const data = JSON.parse(message.data as string);
-        expect(data.type).toEqual(MESSAGE_TYPES.GQL_ERROR);
-        client.close();
-        done();
-      };
+      const messagePromise = new Promise((resolve, _) => {
+        client.onmessage = (message: WS.MessageEvent) => {
+          const data = JSON.parse(message.data as string);
+          expect(data.type).toEqual(MESSAGE_TYPES.GQL_ERROR);
+          client.close();
+          resolve(undefined);
+        };
+      });
       client.send(JSON.stringify(invalidConnectionIntiMessage));
+
+      return messagePromise;
     });
 
     it('should send KEEP_ALIVE message periodically', async () => {

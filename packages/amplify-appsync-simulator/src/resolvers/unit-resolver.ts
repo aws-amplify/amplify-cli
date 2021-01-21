@@ -1,6 +1,6 @@
 import { AmplifyAppSyncSimulator } from '..';
-import { AppSyncSimulatorUnitResolverConfig } from '../type-definition';
 import { AppSyncBaseResolver } from './base-resolver';
+import { AppSyncSimulatorUnitResolverConfig } from '../type-definition';
 
 export class AppSyncUnitResolver extends AppSyncBaseResolver {
   protected config: AppSyncSimulatorUnitResolverConfig;

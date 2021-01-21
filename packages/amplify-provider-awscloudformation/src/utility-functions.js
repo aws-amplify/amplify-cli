@@ -7,8 +7,41 @@ const Polly = require('./aws-utils/aws-polly');
 const SageMaker = require('./aws-utils/aws-sagemaker');
 const { transformGraphQLSchema, getDirectiveDefinitions } = require('./transform-graphql-schema');
 const { updateStackForAPIMigration } = require('./push-resources');
+const SecretsManager = require('./aws-utils/aws-secretsmanager');
+const Route53 = require('./aws-utils/aws-route53');
+const { run: archiver } = require('./utils/archiver');
+const ECR = require('./aws-utils/aws-ecr');
+const { pagedAWSCall } = require('./aws-utils/paged-call');
+const { fileLogger } = require('./utils/aws-logger');
+const logger = fileLogger('utility-functions');
 
 module.exports = {
+  zipFiles: (context, [srcDir, dstZipFilePath]) => {
+    return archiver(srcDir, dstZipFilePath)
+  },
+  isDomainInZones: async (context, { domain }) => {
+
+    const client = await new Route53(context);
+
+    let Marker;
+    let truncated = false;
+    let zoneFound;
+
+    do {
+      const { NextMarker, IsTruncated, HostedZones } = await client.route53.listHostedZones({
+        Marker,
+        MaxItems: '100'
+      }).promise();
+
+      zoneFound = HostedZones.find(zone => `${domain}.`.endsWith(zone.Name));
+
+      Marker = NextMarker;
+      truncated = IsTruncated;
+
+    } while (truncated && !zoneFound)
+
+    return zoneFound;
+  },
   compileSchema: async (context, options) => {
     const category = 'api';
     let optionsWithUpdateHandler = { ...options };
@@ -25,6 +58,84 @@ module.exports = {
     }
 
     return transformGraphQLSchema(context, optionsWithUpdateHandler);
+  },
+  newSecret: async (context, options) => {
+    const { description, secret, name, version } = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager
+      .createSecret({
+        Description: description,
+        Name: name,
+        SecretString: secret,
+        ClientRequestToken: version,
+      })
+      .promise();
+
+    return response;
+  },
+  updateSecret: async (context, options) => {
+    const { description, secret, name, version } = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager
+      .updateSecret({
+        SecretId: name,
+        Description: description,
+        SecretString: secret,
+        ClientRequestToken: version,
+      })
+      .promise();
+
+    return response;
+  },
+  upsertSecretValue: async (context, options) => {
+    const { name } = options;
+    const client = await new SecretsManager(context);
+
+    /** @type {string} */
+    let secretArn;
+
+    try {
+      ({ ARN: secretArn } = await client.secretsManager.describeSecret({ SecretId: name }).promise());
+    } catch (error) {
+      const { code } = error;
+
+      if (code !== 'ResourceNotFoundException') {
+        throw error;
+      }
+    }
+
+    if (secretArn === undefined) {
+      return await module.exports.newSecret(context, options);
+    } else {
+      return await module.exports.putSecretValue(context, options);
+    }
+  },
+  putSecretValue: async (context, options) => {
+    const { name, secret } = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager
+      .putSecretValue({
+        SecretId: name,
+        SecretString: secret,
+      })
+      .promise();
+
+    return response;
+  },
+  /**
+   * @param {any} context
+   * @param {{secretArn: string}} options
+   */
+  retrieveSecret: async (context, options) => {
+    const { secretArn: SecretId } = options;
+    const client = await new SecretsManager(context);
+    const response = await client.secretsManager
+      .getSecretValue({
+        SecretId,
+      })
+      .promise();
+
+    return response;
   },
   getTransformerDirectives: async (context, options) => {
     const { resourceDir } = options;
@@ -47,8 +158,13 @@ module.exports = {
     const lambdaModel = await new Lambda(context);
     let nextMarker;
     const lambdafunctions = [];
+
     try {
       do {
+        logger('getLambdaFunction.lambdaModel.lambda.listFunctions', {
+          MaxItems: 10000,
+          Marker: nextMarker,
+        })();
         const paginatedFunctions = await lambdaModel.lambda
           .listFunctions({
             MaxItems: 10000,
@@ -61,6 +177,10 @@ module.exports = {
         nextMarker = paginatedFunctions.NextMarker;
       } while (nextMarker);
     } catch (err) {
+      logger('getLambdaFunction.lambdaModel.lambda.listFunctions', {
+        MaxItems: 10000,
+        Marker: nextMarker,
+      })(err);
       context.print.error('Failed to fetch Lambda functions');
       throw err;
     }
@@ -69,9 +189,12 @@ module.exports = {
   getPollyVoices: async context => {
     const pollyModel = await new Polly(context);
     let listOfVoices = [];
+    const log = logger('getPollyVoices.polluModel.polly.describeVoices', []);
     try {
+      log();
       listOfVoices = await pollyModel.polly.describeVoices().promise();
     } catch (err) {
+      log(err);
       context.print.error('Failed to load voices');
       throw err;
     }
@@ -85,10 +208,21 @@ module.exports = {
 
     try {
       do {
+        logger('getDynamoDBTables.dynamodb.listTables', [
+          {
+            Limit: 100,
+            ExclusiveStartTableName: nextToken,
+          },
+        ])();
         const paginatedTables = await dynamodbModel.dynamodb.listTables({ Limit: 100, ExclusiveStartTableName: nextToken }).promise();
         const dynamodbTables = paginatedTables.TableNames;
         nextToken = paginatedTables.LastEvaluatedTableName;
         for (let i = 0; i < dynamodbTables.length; i += 1) {
+          logger('getDynamoDBTables.dynamodb.describeTables', [
+            {
+              TableName: dynamodbTables[i],
+            },
+          ])();
           describeTablePromises.push(
             dynamodbModel.dynamodb
               .describeTable({
@@ -117,39 +251,72 @@ module.exports = {
       }
       return tablesToReturn;
     } catch (err) {
+      logger('getDynamoDBTables.dynamodb.*', [])(err);
       context.print.error('Failed to fetch DynamoDB tables');
       throw err;
     }
   },
-  getAppSyncAPIs: context =>
-    new AppSync(context)
+  getAppSyncAPIs: context => {
+    const log = logger('getAppSyncAPIs.appSyncModel.appSync.listGraphqlApis', { maxResults: 25 });
+
+    return new AppSync(context)
       .then(result => {
         const appSyncModel = result;
         context.print.debug(result);
+        log();
         return appSyncModel.appSync.listGraphqlApis({ maxResults: 25 }).promise();
       })
-      .then(result => result.graphqlApis),
+      .then(result => result.graphqlApis)
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
+  },
   getIntrospectionSchema: (context, options) => {
     const awsOptions = {};
     if (options.region) {
       awsOptions.region = options.region;
     }
+    let log = null;
+
     return new AppSync(context, awsOptions)
       .then(result => {
         const appSyncModel = result;
+        log = logger('getIntrospectionSchema.appSyncModel.appSync.getIntrospectionSchema', [
+          {
+            apiId: options.apiId,
+            format: 'JSON',
+          },
+        ]);
+        log();
         return appSyncModel.appSync.getIntrospectionSchema({ apiId: options.apiId, format: 'JSON' }).promise();
       })
-      .then(result => result.schema.toString() || null);
+      .then(result => result.schema.toString() || null)
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
   },
   getGraphQLApiDetails: (context, options) => {
     const awsOptions = {};
     if (options.region) {
       awsOptions.region = options.region;
     }
-    return new AppSync(context, awsOptions).then(result => {
-      const appSyncModel = result;
-      return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
-    });
+    const log = logger('getGraphQLApiDetails.appSyncModel.appSync.getGraphqlApi', [
+      {
+        apiId: options.apiId,
+      },
+    ]);
+    return new AppSync(context, awsOptions)
+      .then(result => {
+        const appSyncModel = result;
+        log();
+        return appSyncModel.appSync.getGraphqlApi({ apiId: options.apiId }).promise();
+      })
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
   },
   getBuiltInSlotTypes: (context, options) => {
     const params = {
@@ -159,33 +326,74 @@ module.exports = {
     if (options) {
       params.nextToken = options;
     }
-    return new Lex(context).then(result => result.lex.getBuiltinSlotTypes(params).promise());
+    const log = logger('getBuiltInSlotTypes.lex.getBuiltinSlotTypes', [params]);
+    return new Lex(context)
+      .then(result => {
+        log();
+        return result.lex.getBuiltinSlotTypes(params).promise();
+      })
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
   },
   getSlotTypes: context => {
     const params = {
       maxResults: 50,
     };
-    return new Lex(context).then(result => result.lex.getSlotTypes(params).promise());
+    const log = logger('getSlotTypes.lex.getSlotTypes', [params]);
+    return new Lex(context)
+      .then(result => result.lex.getSlotTypes(params).promise())
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
   },
   getAppSyncApiKeys: (context, options) => {
     const awsOptions = {};
     if (options.region) {
       awsOptions.region = options.region;
     }
-    return new AppSync(context, awsOptions).then(result => {
-      const appSyncModel = result;
-      return appSyncModel.appSync.listApiKeys({ apiId: options.apiId }).promise();
-    });
+    const log = logger('getAppSyncApiKeys.appSync.listApiKeys', [
+      {
+        apiId: options.apiId,
+      },
+    ]);
+    return new AppSync(context, awsOptions)
+      .then(result => {
+        const appSyncModel = result;
+        log();
+        return appSyncModel.appSync.listApiKeys({ apiId: options.apiId }).promise();
+      })
+      .catch(ex => {
+        log(ex);
+        throw ex;
+      });
   },
   getEndpoints: async context => {
     const sagemakerModel = await new SageMaker(context);
     let listOfEndpoints;
+    const log = logger('getEndpoints.sageMaker.listEndpoints', []);
     try {
+      log();
       listOfEndpoints = await sagemakerModel.sageMaker.listEndpoints().promise();
     } catch (err) {
+      log(err);
       context.print.error('Failed to load endpoints');
       throw err;
     }
     return listOfEndpoints;
+  },
+  describeEcrRepositories: async (context, options) => {
+    const ecr = await new ECR(context);
+
+    const results = await pagedAWSCall(
+      async (params, nextToken) => ecr.ecr.describeRepositories({ ...params, nextToken }).promise(),
+      options,
+      ({ repositories }) => repositories,
+      ({ nextToken }) => nextToken,
+    );
+
+    return results;
   },
 };

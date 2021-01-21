@@ -65,7 +65,7 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = 
   });
 }
 
-export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<AddApiOptions> = {}) {
+export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   const schemaPath = getSchemaPath(schemaFile);
   return new Promise((resolve, reject) => {
@@ -79,7 +79,7 @@ export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<
       .wait(/.*Enter a description for the API key.*/)
       .sendCarriageReturn()
       .wait(/.*After how many days from now the API key should expire.*/)
-      .sendLine('1')
+      .sendLine(opts.apiKeyExpirationDays ? opts.apiKeyExpirationDays.toString() : '1')
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
@@ -275,9 +275,7 @@ export function addRestApi(cwd: string, settings: any) {
       } else {
         chain
           .sendCarriageReturn() // Create new Lambda function
-          .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
-          .sendCarriageReturn()
-          .wait('Provide the AWS Lambda function name')
+          .wait('Provide an AWS Lambda function name')
           .sendCarriageReturn();
 
         selectRuntime(chain, 'nodejs');
@@ -296,11 +294,7 @@ export function addRestApi(cwd: string, settings: any) {
         }
 
         chain
-          .wait('Do you want to access other resources in this project from your Lambda function')
-          .sendLine('n')
-          .wait('Do you want to invoke this function on a recurring schedule?')
-          .sendLine('n')
-          .wait('Do you want to configure Lambda layers for this function?')
+          .wait('Do you want to configure advanced settings?')
           .sendLine('n')
           .wait('Do you want to edit the local lambda function now')
           .sendLine('n');
@@ -473,6 +467,37 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: stri
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendLine('n')
+      .wait('"amplify publish" will build all your local backend and frontend resources')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addRestContainerApi(projectDir: string) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+      .wait('Please select from one of the below mentioned services:')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Which service would you like to use')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Provide a friendly name for your resource to be used as a label for this category in the project:')
+      .sendCarriageReturn()
+      .wait('What image would you like to use')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('When do you want to build & deploy the Fargate task')
+      .sendCarriageReturn()
+      .wait('Do you want to restrict API access')
+      .sendConfirmNo()
+      .wait('Select which container is the entrypoint')
+      .sendCarriageReturn()
       .wait('"amplify publish" will build all your local backend and frontend resources')
       .run((err: Error) => {
         if (!err) {

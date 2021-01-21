@@ -247,7 +247,7 @@ export class AppSyncSwiftVisitor extends AppSyncModelVisitor {
       if (connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
         return `.hasOne(${name}, is: ${isRequired}, ofType: ${typeName}, associatedWith: ${this.getModelName(
           connectionInfo.connectedModel,
-        )}.keys.${this.getFieldName(connectionInfo.associatedWith)})`;
+        )}.keys.${this.getFieldName(connectionInfo.associatedWith)}, targetName: "${connectionInfo.targetName}")`;
       }
       if (connectionInfo.kind === CodeGenConnectionType.BELONGS_TO) {
         return `.belongsTo(${name}, is: ${isRequired}, ofType: ${typeName}, targetName: "${connectionInfo.targetName}")`;

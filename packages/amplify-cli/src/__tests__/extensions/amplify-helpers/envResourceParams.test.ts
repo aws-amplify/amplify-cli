@@ -6,7 +6,14 @@ import { pathManager, stateManager, $TSContext } from 'amplify-cli-core';
 jest.mock('fs-extra');
 jest.mock('amplify-cli-core', () => ({
   pathManager: { getTeamProviderInfoFilePath: jest.fn() },
-  stateManager: { getTeamProviderInfo: jest.fn(), setTeamProviderInfo: jest.fn() },
+  stateManager: {
+    getTeamProviderInfo: jest.fn(),
+    setTeamProviderInfo: jest.fn(),
+    getDeploymentSecrets: jest.fn(),
+    setDeploymentSecrets: jest.fn(),
+    getLocalEnvInfo: jest.fn().mockReturnValue({ envName: 'testEnv' }),
+  },
+  removeFromDeploymentSecrets: jest.fn(),
 }));
 jest.mock('../../../../src/extensions/amplify-helpers/get-env-info', () => ({ getEnvInfo: jest.fn() }));
 
@@ -20,6 +27,10 @@ test('saveEnvResourceParams appends to existing params', () => {
   const contextStub = {};
   const existingParams = {
     testEnv: {
+      awscloudformation: {
+        StackId:
+          'arn:aws:cloudformation:us-east-1:1234567891011:stack/amplify-teamprovider-dev-134909/df33f4d0-1895-11eb-a8b4-0e706f74ed45',
+      },
       categories: {
         testCategory: {
           testResourceName: {
@@ -39,6 +50,10 @@ test('saveEnvResourceParams appends to existing params', () => {
   //expect(callParams[0]).toEqual('test/path');
   const expectedParams = {
     testEnv: {
+      awscloudformation: {
+        StackId:
+          'arn:aws:cloudformation:us-east-1:1234567891011:stack/amplify-teamprovider-dev-134909/df33f4d0-1895-11eb-a8b4-0e706f74ed45',
+      },
       categories: {
         testCategory: {
           testResourceName: {

@@ -24,7 +24,7 @@ module.exports = {
       for (let i = 0; i < services.length; i++) {
         const serviceMeta = existingAuth[services[i]];
 
-        if (serviceMeta.service === 'Cognito' && !serviceMeta.providerPlugin) {
+        if (serviceMeta.service === 'Cognito' && serviceMeta.mobileHubMigrated === true) {
           context.print.error('Auth is migrated from Mobile Hub and cannot be updated with Amplify CLI.');
           return context;
         } else if (serviceMeta.service === 'Cognito' && serviceMeta.serviceType === 'imported') {

@@ -2,11 +2,18 @@ import path from 'path';
 import fs from 'fs-extra';
 import { ExecOptions } from 'child_process';
 import execa from 'execa';
+import * as which from 'which';
 
 // Gets the pipenv dir where this function's dependencies are located
 export async function getPipenvDir(srcRoot: string): Promise<string> {
   const pipEnvDir = await execAsStringPromise('pipenv --venv', { cwd: srcRoot });
-  const pyVersion = await execAsStringPromise('python3 --version');
+  const pyBinary = getPythonBinaryName();
+
+  if (!pyBinary) {
+    throw new Error(`Could not find 'python3' or 'python' executable in the PATH.`);
+  }
+
+  const pyVersion = await execAsStringPromise(`${pyBinary} --version`);
   let pipEnvPath = path.join(pipEnvDir, 'lib', 'python' + majMinPyVersion(pyVersion), 'site-packages');
   if (process.platform.startsWith('win')) {
     pipEnvPath = path.join(pipEnvDir, 'Lib', 'site-packages');
@@ -43,3 +50,18 @@ export async function execAsStringPromise(command: string, opts?: ExecOptions): 
     throw new Error(`Recieved error [${err}] running command [${command}]`);
   }
 }
+
+export const getPythonBinaryName = (): string | undefined => {
+  const executables = ['python3', 'python'];
+  let executablePath: string | null;
+
+  for (const executable of executables) {
+    executablePath = which.sync(executable, {
+      nothrow: true,
+    });
+
+    if (executablePath !== null) {
+      return executable;
+    }
+  }
+};

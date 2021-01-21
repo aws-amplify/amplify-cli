@@ -4,7 +4,7 @@ export const JAVA_SCALAR_MAP: NormalizedScalarsMap = {
   ID: 'String',
   String: 'String',
   Int: 'Integer',
-  Float: 'Float',
+  Float: 'Double',
   Boolean: 'Boolean',
   AWSDate: 'Temporal.Date',
   AWSDateTime: 'Temporal.DateTime',
@@ -74,4 +74,21 @@ export const METADATA_SCALAR_MAP: NormalizedScalarsMap = {
   Int: 'Int',
   Float: 'Float',
   AWSTimestamp: 'AWSTimestamp',
+};
+
+export const DART_SCALAR_MAP: NormalizedScalarsMap = {
+  ID: 'String',
+  String: 'String',
+  Int: 'int',
+  Float: 'double',
+  Boolean: 'bool',
+  AWSDate: 'Date',
+  AWSDateTime: 'DateTime',
+  AWSTime: 'Time',
+  AWSTimestamp: 'int',
+  AWSEmail: 'String',
+  AWSJSON: 'String',
+  AWSURL: 'String',
+  AWSPhone: 'String',
+  AWSIPAddress: 'String',
 };

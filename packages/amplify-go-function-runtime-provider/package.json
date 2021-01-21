@@ -1,6 +1,6 @@
 {
   "name": "amplify-go-function-runtime-provider",
-  "version": "1.2.5",
+  "version": "1.5.6",
   "description": "Provides functionality related to functions in Go 1.x on AWS",
   "repository": {
     "type": "git",
@@ -21,9 +21,10 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo resources/localinvoke/go.sum resources/localinvoke/main resources/localinvoke/main.exe"
   },
   "dependencies": {
-    "amplify-function-plugin-interface": "1.4.1",
+    "amplify-cli-core": "1.14.1",
+    "amplify-function-plugin-interface": "1.6.0",
     "archiver": "^3.1.1",
-    "execa": "^4.0.0",
+    "execa": "^4.1.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
     "portfinder": "^1.0.25",

@@ -1,4 +1,4 @@
-import { AmplifyCLIFeatureFlagAdapter } from '../../utils/transfomer-feature-flag-adapter';
+import { AmplifyCLIFeatureFlagAdapter } from '../../utils/amplify-cli-feature-flag-adapter';
 import { FeatureFlags } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core');

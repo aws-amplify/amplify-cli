@@ -9,13 +9,16 @@
     "env",
     "help",
     "init",
+    "logout",
     "migrate",
+    "plugin",
     "publish",
     "push",
     "pull",
     "run",
     "status",
-    "plugin",
+    "uninstall",
+    "upgrade",
     "version"
   ],
   "commandAliases": {

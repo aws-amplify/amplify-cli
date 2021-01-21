@@ -4,19 +4,17 @@ import { onCategoryOutputsChange } from './on-category-outputs-change';
 import { initializeEnv } from '../../initialize-env';
 import { getProviderPlugins } from './get-provider-plugins';
 import { getEnvInfo } from './get-env-info';
-import { EnvironmentDoesNotExistError, stateManager, exitOnNextTick } from 'amplify-cli-core';
+import { EnvironmentDoesNotExistError, exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 
-/*
-context: Object // Required
-category: String // Optional
-resourceName: String // Optional
-filteredResources: [{category: String, resourceName: String}] // Optional
-*/
-
-export async function pushResources(context, category, resourceName, filteredResources) {
+export async function pushResources(
+  context: $TSContext,
+  category?: string,
+  resourceName?: string,
+  filteredResources?: { category: string, resourceName: string }[],
+) {
   if (context.parameters.options.env) {
-    const envName = context.parameters.options.env;
-    const allEnvs = context.amplify.getAllEnvs(context);
+    const envName: string = context.parameters.options.env;
+    const allEnvs = context.amplify.getAllEnvs();
 
     if (allEnvs.findIndex(env => env === envName) !== -1) {
       context.exeInfo = {};
@@ -39,7 +37,7 @@ export async function pushResources(context, category, resourceName, filteredRes
       const errMessage = "Environment doesn't exist. Please use 'amplify init' to create a new environment";
 
       context.print.error(errMessage);
-      context.usageData.emitError(new EnvironmentDoesNotExistError(errMessage));
+      await context.usageData.emitError(new EnvironmentDoesNotExistError(errMessage));
 
       exitOnNextTick(1);
     }
@@ -78,27 +76,27 @@ export async function pushResources(context, category, resourceName, filteredRes
   return continueToPush;
 }
 
-async function providersPush(context, category, resourceName, filteredResources) {
+async function providersPush(context: $TSContext, category, resourceName, filteredResources) {
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
-  const providerPromises: (() => Promise<any>)[] = [];
+  const providerPromises: (() => Promise<$TSAny>)[] = [];
 
-  for (let i = 0; i < providers.length; i += 1) {
-    const providerModule = require(providerPlugins[providers[i]]);
-    const resourceDefiniton = await context.amplify.getResourceStatus(category, resourceName, providers[i], filteredResources);
+  for (const provider of providers) {
+    const providerModule = require(providerPlugins[provider]);
+    const resourceDefiniton = await context.amplify.getResourceStatus(category, resourceName, provider, filteredResources);
     providerPromises.push(providerModule.pushResources(context, resourceDefiniton));
   }
 
   await Promise.all(providerPromises);
 }
 
-export async function storeCurrentCloudBackend(context) {
+export async function storeCurrentCloudBackend(context: $TSContext) {
   const { providers } = getProjectConfig();
   const providerPlugins = getProviderPlugins(context);
-  const providerPromises: (() => Promise<any>)[] = [];
+  const providerPromises: (() => Promise<$TSAny>)[] = [];
 
-  for (let i = 0; i < providers.length; i += 1) {
-    const providerModule = require(providerPlugins[providers[i]]);
+  for (const provider of providers) {
+    const providerModule = require(providerPlugins[provider]);
     providerPromises.push(providerModule.storeCurrentCloudBackend(context));
   }
 

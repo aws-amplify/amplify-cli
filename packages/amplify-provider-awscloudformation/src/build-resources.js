@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import { ServiceName } from 'amplify-category-function';
 
-async function run(context, category, resourceName) {
+export async function run(context, category, resourceName) {
   const { allResources } = await context.amplify.getResourceStatus(category, resourceName);
 
   const resources = allResources.filter(resource => resource.service === ServiceName.LambdaFunction).filter(resource => resource.build);
@@ -16,7 +16,7 @@ async function run(context, category, resourceName) {
 
 // This function is a translation layer around the previous buildResource
 // For legacy purposes, the method builds and packages the resource
-async function buildResource(context, resource) {
+export async function buildResource(context, resource) {
   const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), resource.category, resource.resourceName);
   let breadcrumbs = context.amplify.readBreadcrumbs(context, resource.category, resource.resourceName);
 
@@ -68,6 +68,7 @@ async function buildResource(context, resource) {
       runtime: breadcrumbs.functionRuntime,
       lastPackageTimestamp: resource.lastPackageTimestamp ? new Date(resource.lastPackageTimestamp) : undefined,
       lastBuildTimestamp: rebuilt ? new Date() : new Date(resource.lastBuildTimeStamp),
+      skipHashing: resource.skipHashing,
     };
     packagePromise = runtimePlugin.package(packageRequest);
   }
@@ -75,15 +76,12 @@ async function buildResource(context, resource) {
     packagePromise
       .then(result => {
         const packageHash = result.packageHash;
-        zipFilename = packageHash ? `${resource.resourceName}-${packageHash}-build.zip` : zipFilename;
+        zipFilename = packageHash
+          ? `${resource.resourceName}-${packageHash}-build.zip`
+          : zipFilename ?? `${resource.category}-${resource.resourceName}-build.zip`;
         context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename);
         resolve({ zipFilename, zipFilePath: destination });
       })
       .catch(err => reject(new Error(`Package command failed with error [${err}]`)));
   });
 }
-
-module.exports = {
-  run,
-  buildResource,
-};

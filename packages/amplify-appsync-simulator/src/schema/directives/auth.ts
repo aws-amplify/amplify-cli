@@ -44,7 +44,7 @@ function getAuthDirectiveForField(
   schema: GraphQLSchema,
   field,
   typeName: string,
-  simulator: AmplifyAppSyncSimulator
+  simulator: AmplifyAppSyncSimulator,
 ): AmplifyAppSyncSimulatorAuthenticationType[] {
   const fieldDirectives = field.astNode.directives;
   const parentField = schema.getType(typeName);
@@ -109,7 +109,7 @@ export function protectResolversWithAuthRules(typeDef, existingResolvers, simula
         const groups = getCognitoGroups(ctx.jwt || {});
         const authorized = groups.some(group => allowedCognitoGroups.includes(group));
         if (!authorized) {
-          const err = new Unauthorized(`Not Authorized to access ${fieldName} on type ${typeName}`, info.operation.loc);
+          const err = new Unauthorized(`Not Authorized to access ${fieldName} on type ${typeName}`, info);
           throw err;
         }
       }

@@ -1,0 +1,12 @@
+type Comment @model @key(name: "byTodo", fields: ["todoID"]) {
+  id: ID!
+  todoID: ID!
+}
+
+type Todo @model {
+  id: ID!
+  name: String!
+  description: String
+  addfield2: String
+  Comments: [Comment] @connection(keyName: "byTodo", fields: ["id"])
+}

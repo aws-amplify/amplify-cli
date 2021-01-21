@@ -8,7 +8,7 @@ const reactConfig = {
 };
 
 const reactNativeConfig = {
-  SourceDir: '/',
+  SourceDir: 'src',
   DistributionDir: '/',
   BuildCommand: `${npm} run-script build`,
   StartCommand: `${npm} run-script start`,

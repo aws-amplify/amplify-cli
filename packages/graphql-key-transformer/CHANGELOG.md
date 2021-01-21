@@ -3,6 +3,159 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.20.3...graphql-key-transformer@2.20.4) (2020-12-16)
+
+
+### Bug Fixes
+
+* **graphql-key-transformer:** prevent non-scalar key fields ([#5319](https://github.com/aws-amplify/amplify-cli/issues/5319)) ([4a5b305](https://github.com/aws-amplify/amplify-cli/commit/4a5b305dd695e61fcbc4ce0ca659b6f5a1c7e467)), closes [#5300](https://github.com/aws-amplify/amplify-cli/issues/5300)
+* **graphql-key-transformer:** support sortEnum and filterInput ([#6033](https://github.com/aws-amplify/amplify-cli/issues/6033)) ([1dd373b](https://github.com/aws-amplify/amplify-cli/commit/1dd373b036b765a8bdf3b6e6bb1385519e35ef3d)), closes [#6029](https://github.com/aws-amplify/amplify-cli/issues/6029)
+
+
+### Reverts
+
+* Revert "fix(graphql-key-transformer): prevent non-scalar key fields (#5319)" (#6181) ([c61268d](https://github.com/aws-amplify/amplify-cli/commit/c61268d093571c906c13e7033552503b9fd83a98)), closes [#5319](https://github.com/aws-amplify/amplify-cli/issues/5319) [#6181](https://github.com/aws-amplify/amplify-cli/issues/6181)
+
+
+
+
+
+## [2.20.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.20.2...graphql-key-transformer@2.20.3) (2020-12-07)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.20.1...graphql-key-transformer@2.20.2) (2020-11-30)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.20.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.18...graphql-key-transformer@2.20.1) (2020-11-22)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+# [2.20.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@1.1.7...graphql-key-transformer@2.20.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* sync resolver for mock ([#5684](https://github.com/aws-amplify/amplify-cli/issues/5684)) ([80e2cd4](https://github.com/aws-amplify/amplify-cli/commit/80e2cd44bde1021d4415c6c3b670f44ec1bcae3c))
+* **graphql-dynamodb-transformer:** support model without id ([#4570](https://github.com/aws-amplify/amplify-cli/issues/4570)) ([7cb0648](https://github.com/aws-amplify/amplify-cli/commit/7cb064874d95527882eb58b1a18fa99dd2377ca7))
+* [#1720](https://github.com/aws-amplify/amplify-cli/issues/1720) - fix GraphQL name generation for [@key](https://github.com/key) ([#2093](https://github.com/aws-amplify/amplify-cli/issues/2093)) ([51716f3](https://github.com/aws-amplify/amplify-cli/commit/51716f340e820358087d68fd9e926084c10565eb))
+* [#2033](https://github.com/aws-amplify/amplify-cli/issues/2033) - Make sure key field order is preserved ([#2117](https://github.com/aws-amplify/amplify-cli/issues/2117)) ([58f8f76](https://github.com/aws-amplify/amplify-cli/commit/58f8f76ec2738d65f65568e5f4157d5ada0976c5))
+* [#2239](https://github.com/aws-amplify/amplify-cli/issues/2239) missing proper casing of input type argument ([#2246](https://github.com/aws-amplify/amplify-cli/issues/2246)) ([9d197f1](https://github.com/aws-amplify/amplify-cli/commit/9d197f1f67728935ddfb5c02c5fe53368b010b63))
+* [#2389](https://github.com/aws-amplify/amplify-cli/issues/2389) ([#2538](https://github.com/aws-amplify/amplify-cli/issues/2538)) ([fb92a9d](https://github.com/aws-amplify/amplify-cli/commit/fb92a9d7c6a1f807e49b7f899531de90cc1f4ee3))
+* sort direction argument for lists and queries ([#4459](https://github.com/aws-amplify/amplify-cli/issues/4459)) ([3ada816](https://github.com/aws-amplify/amplify-cli/commit/3ada81686b1cf014dade9cf454fbf624bc7a22cb))
+* **graphql-key-transformer:** add key validation in create ([#4146](https://github.com/aws-amplify/amplify-cli/issues/4146)) ([0e20424](https://github.com/aws-amplify/amplify-cli/commit/0e20424f78876a1e4d8d5e0c80e6f76bcef98f84)), closes [#1756](https://github.com/aws-amplify/amplify-cli/issues/1756)
+* [#2711](https://github.com/aws-amplify/amplify-cli/issues/2711) - usage of [@auth](https://github.com/auth) without [@model](https://github.com/model) on fields ([#3590](https://github.com/aws-amplify/amplify-cli/issues/3590)) ([553186e](https://github.com/aws-amplify/amplify-cli/commit/553186e53050cafdf27120443d176023ef4acebc))
+* sanitize input in transformer resolver([#3316](https://github.com/aws-amplify/amplify-cli/issues/3316)) ([a3bc0a5](https://github.com/aws-amplify/amplify-cli/commit/a3bc0a5e5d3faa7946d16d0f6595ce8c2f3c11dc))
+* **graphql-key-transformer:** fix merge errors ([#2762](https://github.com/aws-amplify/amplify-cli/issues/2762)) ([edf4c76](https://github.com/aws-amplify/amplify-cli/commit/edf4c76aae130f300f520787168db7cd2782c324))
+* **graphql-key-transformer:** update deleteInput logic to hadle ID ([2856c9e](https://github.com/aws-amplify/amplify-cli/commit/2856c9e72be1e9ac8d5be33a44dc26e893f29ee0))
+* build break after recent merges ([#2758](https://github.com/aws-amplify/amplify-cli/issues/2758)) ([7155787](https://github.com/aws-amplify/amplify-cli/commit/7155787d74306e9708fe7115648ab6f702dc2093))
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* export Typescript definitions and fix resulting type errors ([#2452](https://github.com/aws-amplify/amplify-cli/issues/2452)) ([7de3845](https://github.com/aws-amplify/amplify-cli/commit/7de384594d3b9cbf22cdaa85107fc8df26c141ec)), closes [#2451](https://github.com/aws-amplify/amplify-cli/issues/2451)
+* the KeyTransformer class name was incorrect ([#2346](https://github.com/aws-amplify/amplify-cli/issues/2346)) ([b54ef02](https://github.com/aws-amplify/amplify-cli/commit/b54ef02b18976b8457612225aa5e67cc2a805636))
+* **graphql-key-transformer:** added sort direction ([a0f9f30](https://github.com/aws-amplify/amplify-cli/commit/a0f9f30d4141f3574f34cd5d7183471044b12935)), closes [#1676](https://github.com/aws-amplify/amplify-cli/issues/1676)
+* **graphql-key-transformer:** key req resolver edit ([c4a9da5](https://github.com/aws-amplify/amplify-cli/commit/c4a9da51b2db2d411fcb016934ffdd8e8425313c)), closes [#1676](https://github.com/aws-amplify/amplify-cli/issues/1676) [#1990](https://github.com/aws-amplify/amplify-cli/issues/1990) [#1629](https://github.com/aws-amplify/amplify-cli/issues/1629)
+
+
+### Features
+
+* **amplify-category-api:** change default graphql query limit to 100 ([#4124](https://github.com/aws-amplify/amplify-cli/issues/4124)) ([1a68c4d](https://github.com/aws-amplify/amplify-cli/commit/1a68c4d589e2101357dec4e980719fc547964e23))
+* **graphql-dynamodb-transformer:** expose createdAt and updatedAt on model ([#4149](https://github.com/aws-amplify/amplify-cli/issues/4149)) ([8e0662e](https://github.com/aws-amplify/amplify-cli/commit/8e0662eac8c88da9393f32c33457a597acf591ed)), closes [#401](https://github.com/aws-amplify/amplify-cli/issues/401)
+* **graphql-key-transformer:** add query automatically for named keys ([#4458](https://github.com/aws-amplify/amplify-cli/issues/4458)) ([375282d](https://github.com/aws-amplify/amplify-cli/commit/375282d648cf9d096d13c7b958a0dfb7bd6d60b0))
+* **graphql-key-transformer:** auto population of id and timestamp ([#4382](https://github.com/aws-amplify/amplify-cli/issues/4382)) ([6586611](https://github.com/aws-amplify/amplify-cli/commit/6586611293a07db9959247ff82f95542a239ff1f))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* mock support for API, function and storage ([#1893](https://github.com/aws-amplify/amplify-cli/issues/1893)) ([372e534](https://github.com/aws-amplify/amplify-cli/commit/372e5346ee1f27a2e9bee25fbbdcb19417f5230f))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* sanity check ([#1815](https://github.com/aws-amplify/amplify-cli/issues/1815)) ([54a8dbe](https://github.com/aws-amplify/amplify-cli/commit/54a8dbe8925a4e73358b03ba927267a2df328b78))
+
+
+### Reverts
+
+* add query automatically for named keys ([#4513](https://github.com/aws-amplify/amplify-cli/issues/4513)) ([50c1120](https://github.com/aws-amplify/amplify-cli/commit/50c112050645b8fd5011a1e6863d30f58e0c55cb))
+
+
+
+
+
+## [2.19.21](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.18...graphql-key-transformer@2.19.21) (2020-11-20)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.20](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.18...graphql-key-transformer@2.19.20) (2020-11-20)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.19](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.18...graphql-key-transformer@2.19.19) (2020-11-19)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.18](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.17...graphql-key-transformer@2.19.18) (2020-11-08)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.17](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.16...graphql-key-transformer@2.19.17) (2020-10-30)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.16](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.15...graphql-key-transformer@2.19.16) (2020-10-27)
+
+
+### Bug Fixes
+
+* sync resolver for mock ([#5684](https://github.com/aws-amplify/amplify-cli/issues/5684)) ([80e2cd4](https://github.com/aws-amplify/amplify-cli/commit/80e2cd44bde1021d4415c6c3b670f44ec1bcae3c))
+
+
+
+
+
+## [2.19.15](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.14...graphql-key-transformer@2.19.15) (2020-10-22)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.19.14](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.13...graphql-key-transformer@2.19.14) (2020-10-17)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
 ## [2.19.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.19.12...graphql-key-transformer@2.19.13) (2020-10-01)
 
 **Note:** Version bump only for package graphql-key-transformer

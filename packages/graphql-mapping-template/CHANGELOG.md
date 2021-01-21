@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.18.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.17.0...graphql-mapping-template@4.18.1) (2020-11-22)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
+# [4.18.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@3.1.1...graphql-mapping-template@4.18.0) (2020-11-22)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** early return if no obj ([#5050](https://github.com/aws-amplify/amplify-cli/issues/5050)) ([ed1f2b3](https://github.com/aws-amplify/amplify-cli/commit/ed1f2b364b50ab3f2b16ddac849c937b239bb499))
+* **graphql-mapping-template:** fix [@key](https://github.com/key) issue when datastore enabled ([#5175](https://github.com/aws-amplify/amplify-cli/issues/5175)) ([d58c4aa](https://github.com/aws-amplify/amplify-cli/commit/d58c4aa6ba07859a6fec250df281649bb17548e9)), closes [#4355](https://github.com/aws-amplify/amplify-cli/issues/4355)
+* build break, chore: typescript, lerna update ([#2640](https://github.com/aws-amplify/amplify-cli/issues/2640)) ([29fae36](https://github.com/aws-amplify/amplify-cli/commit/29fae366f4cab054feefa58c7dc733002d19570c))
+* use ES external versioning when using DataStore ([#4127](https://github.com/aws-amplify/amplify-cli/issues/4127)) ([cef709b](https://github.com/aws-amplify/amplify-cli/commit/cef709ba2087affe860dd6fb141ccda1e5d58fd1))
+* **graphql-elasticsearch-transformer:** fixed es req template ([311f57d](https://github.com/aws-amplify/amplify-cli/commit/311f57d9938aa78c83c7c695ddd39457b89c8afc))
+* **graphql-mapping-template:** handle missing arguments gracefully ([4950993](https://github.com/aws-amplify/amplify-cli/commit/4950993eb7a3b11bbecef5e82e1859e1f27d1453))
+* **graphql-relational-schema-transformer:** fix [#3025](https://github.com/aws-amplify/amplify-cli/issues/3025) rds resolver correctly handles no data in response ([#3314](https://github.com/aws-amplify/amplify-cli/issues/3314)) ([cb826a7](https://github.com/aws-amplify/amplify-cli/commit/cb826a7ec7680ad9b5fc46fd7a931c30747cd0ce))
+
+
+### Features
+
+* transformer redesign ([#5534](https://github.com/aws-amplify/amplify-cli/issues/5534)) ([a93c685](https://github.com/aws-amplify/amplify-cli/commit/a93c6852f6588898ebc52b0574f4fcc3d2e87948))
+* **graphql-elasticsearch-transformer:** add 'from' query parameter ([#5098](https://github.com/aws-amplify/amplify-cli/issues/5098)) ([d52a804](https://github.com/aws-amplify/amplify-cli/commit/d52a804c25df63cd1cee1a72bb99286ecfe54ed5))
+* adding amplify cli predictions category ([#1936](https://github.com/aws-amplify/amplify-cli/issues/1936)) ([b7b7c2c](https://github.com/aws-amplify/amplify-cli/commit/b7b7c2c1927da10f8c54f38a523021187361131c))
+* headless mode for API category ([#4834](https://github.com/aws-amplify/amplify-cli/issues/4834)) ([c2e09d7](https://github.com/aws-amplify/amplify-cli/commit/c2e09d73fd1bb461eeace8f4a7addd70a63047ad))
+* resolver changes ([#2760](https://github.com/aws-amplify/amplify-cli/issues/2760)) ([8ce0d12](https://github.com/aws-amplify/amplify-cli/commit/8ce0d12eb1d3bd6d0132baca39b6e9daff04c39a))
+* updated version of [#2118](https://github.com/aws-amplify/amplify-cli/issues/2118) with addressed review comments ([#2230](https://github.com/aws-amplify/amplify-cli/issues/2230)) ([be3c499](https://github.com/aws-amplify/amplify-cli/commit/be3c499edcc6bec63b38e9241c5af7b83c930022))
+
+
+
+
+
+# [4.17.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.16.0...graphql-mapping-template@4.17.0) (2020-11-08)
+
+
+### Features
+
+* transformer redesign ([#5534](https://github.com/aws-amplify/amplify-cli/issues/5534)) ([a93c685](https://github.com/aws-amplify/amplify-cli/commit/a93c6852f6588898ebc52b0574f4fcc3d2e87948))
+
+
+
+
+
+# [4.16.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.15.3...graphql-mapping-template@4.16.0) (2020-10-30)
+
+
+### Features
+
+* **graphql-elasticsearch-transformer:** add 'from' query parameter ([#5098](https://github.com/aws-amplify/amplify-cli/issues/5098)) ([d52a804](https://github.com/aws-amplify/amplify-cli/commit/d52a804c25df63cd1cee1a72bb99286ecfe54ed5))
+
+
+
+
+
+## [4.15.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.15.2...graphql-mapping-template@4.15.3) (2020-10-22)
+
+**Note:** Version bump only for package graphql-mapping-template
+
+
+
+
+
 ## [4.15.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-mapping-template@4.15.1...graphql-mapping-template@4.15.2) (2020-08-31)
 
 
