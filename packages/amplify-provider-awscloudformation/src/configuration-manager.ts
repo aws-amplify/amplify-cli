@@ -52,7 +52,7 @@ export async function init(context: $TSContext) {
   }
   normalizeInputParams(context);
 
-  const authTypeConfig = await determineAuthType(context);
+  const authTypeConfig = await determineAuthFlow(context);
   if (authTypeConfig.type === 'admin') {
     context.exeInfo.awsConfigInfo = {
       configLevel: 'amplifyAdmin',
@@ -539,7 +539,7 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
   }
 
   const projectConfigInfo = getConfigForEnv(env);
-  const authType = await determineAuthType(context, projectConfigInfo);
+  const authType = await determineAuthFlow(context, projectConfigInfo);
   const { print, usageData } = context;
   let awsConfig: AwsSdkConfig;
 
@@ -714,7 +714,7 @@ export async function getAwsConfig(context: $TSContext) {
   return awsConfig;
 }
 
-async function determineAuthType(context: $TSContext, projectConfig?: ProjectConfig): Promise<AuthFlowConfig> {
+async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectConfig): Promise<AuthFlowConfig> {
   // Check for headless parameters
   let { accessKeyId, profileName, region, secretAccessKey, useProfile } = _.get(
     context,
