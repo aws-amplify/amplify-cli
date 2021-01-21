@@ -26,7 +26,7 @@ import {
   importIdentityPoolAndUserPool,
 } from '../import-helpers';
 
-const profileName = 'amplify-integ-test-user';
+const profileName = 'default';
 
 describe('auth import identity pool and userpool', () => {
   const projectPrefix = 'auimpidup';
@@ -107,7 +107,7 @@ describe('auth import identity pool and userpool', () => {
 
   it('auth import identitypool and userpool', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ' });
+    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     let projectDetails = getAuthProjectDetails(projectRoot);
 
@@ -125,7 +125,7 @@ describe('auth import identity pool and userpool', () => {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ' });
+    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     await amplifyPushAuth(projectRoot);
 
@@ -153,7 +153,7 @@ describe('auth import identity pool and userpool', () => {
       disableAmplifyAppCreation: false,
     });
 
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ' });
+    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     await amplifyPushAuth(projectRoot);
 
@@ -194,7 +194,7 @@ describe('auth import identity pool and userpool', () => {
       disableAmplifyAppCreation: false,
     });
 
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ' });
+    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     await amplifyPushAuth(projectRoot);
 
@@ -240,7 +240,7 @@ describe('auth import identity pool and userpool', () => {
 
   it('auth import, storage auth/guest access, push successful', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ' });
+    await importIdentityPoolAndUserPool(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
     await addS3Storage(projectRoot);
     await amplifyPushAuth(projectRoot);
 
