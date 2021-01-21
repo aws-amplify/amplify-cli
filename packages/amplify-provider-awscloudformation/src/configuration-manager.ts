@@ -60,7 +60,7 @@ export async function init(context: $TSContext) {
     };
   } else if (authTypeConfig.type === 'accessKeys') {
     context.exeInfo.awsConfigInfo = {
-      configLevel: 'project',
+      configLevel: 'general',
       config: { useProfile: false },
     };
   } else {
