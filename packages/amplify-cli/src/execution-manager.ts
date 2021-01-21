@@ -134,7 +134,7 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
     const amplifyMeta = context.amplify.getProjectMeta();
     const { Region } = amplifyMeta.providers['awscloudformation'];
 
-    if (!isContainersEnabled(context) || Region !== 'us-east-1') {
+    if (!isContainersEnabled(context) || Region !== 'us-east-1') { // SSL Certificates only available to be created on us-east-1 only
       pluginCandidates = pluginCandidates.filter(plugin => !plugin.manifest.services?.includes('ElasticContainer'));
     }
 

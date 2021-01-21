@@ -136,6 +136,7 @@ export async function generateHostingResources(
     if (restrictAccess) {
         const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
         // getting requirement satisfaction map
+        // TODO: need to add additional parameter to check if HostedUI is enabled otherwise deployment will fail
         const satisfiedRequirements = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
             apiRequirements,
             context,
