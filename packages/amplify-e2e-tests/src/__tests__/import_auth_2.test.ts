@@ -26,7 +26,7 @@ import {
   importIdentityPoolAndUserPool,
 } from '../import-helpers';
 
-const profileName = 'default';
+const profileName = 'amplify-integ-test-user';
 
 describe('auth import identity pool and userpool', () => {
   const projectPrefix = 'auimpidup';
