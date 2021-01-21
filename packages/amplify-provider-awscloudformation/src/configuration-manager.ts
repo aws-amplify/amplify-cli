@@ -576,7 +576,7 @@ export async function resetCache(context: $TSContext) {
   }
 }
 
-export function resolveRegion() {
+export function resolveRegion(): string {
   // For details of how aws region is set, check the following link
   // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-region.html
   let region: string;
