@@ -129,7 +129,7 @@ describe('auth import userpool only', () => {
 
   it('status should reflect correct values for imported auth', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ' });
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     let projectDetails = getAuthProjectDetails(projectRoot);
 
@@ -157,7 +157,7 @@ describe('auth import userpool only', () => {
 
   it('imported auth with graphql api and cognito should push', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ' }); // space at to make sure its not web client
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' }); // space at to make sure its not web client
     await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectRoot);
     await amplifyPush(projectRoot);
 
@@ -166,7 +166,7 @@ describe('auth import userpool only', () => {
 
   it('imported auth with function and crud on auth should push', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ' });
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     const functionName = randomizedFunctionName('authimpfunc');
     const authResourceName = getCognitoResourceName(projectRoot);
@@ -224,7 +224,7 @@ describe('auth import userpool only', () => {
 
   it('imported userpool only auth, s3 storage add should fail with error', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ' });
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     // Imported auth resources cannot be used together with \'storage\' category\'s authenticated and unauthenticated access.
     await expect(addS3WithAuthConfigurationMismatchErrorExit(projectRoot, {})).rejects.toThrowError(
@@ -237,7 +237,7 @@ describe('auth import userpool only', () => {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ' });
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     const functionName = randomizedFunctionName('authimpfunc');
     const authResourceName = getCognitoResourceName(projectRoot);
@@ -280,7 +280,7 @@ describe('auth import userpool only', () => {
 
   it('imported auth, create prod env, files should match', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ' });
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     await amplifyPushAuth(projectRoot);
 
@@ -340,9 +340,9 @@ describe('auth import userpool only', () => {
     } as any);
 
     // The previously configured Cognito User Pool: '${userPoolName}' (${userPoolId}) cannot be found.
-    await expect(await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ' })).rejects.toThrowError(
-      'Process exited with non zero exit code 1',
-    );
+    await expect(
+      await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' }),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
   });
 
   // Used for creating custom app clients. This should match with web app client setting for import to work
