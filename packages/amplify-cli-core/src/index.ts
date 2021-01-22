@@ -123,7 +123,7 @@ interface AmplifyToolkit {
   confirmPrompt: (prompt: string, defaultValue?: boolean) => $TSAny;
   constants: $TSAny;
   constructExeInfo: (context: $TSContext) => $TSAny;
-  copyBatch: () => $TSAny;
+  copyBatch: (context: $TSContext, jobs: $TSAny, props: $TSAny, force: boolean, writeParams?: $TSAny[] | $TSObject) => Promise<void>;
   crudFlow: () => $TSAny;
   deleteProject: () => $TSAny;
   executeProviderUtils: () => $TSAny;
@@ -153,7 +153,7 @@ interface AmplifyToolkit {
     context: $TSContext,
     category?: string,
     resourceName?: string,
-    filteredResources?: { category: string, resourceName: string }[],
+    filteredResources?: { category: string; resourceName: string }[],
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
   readJsonFile: () => $TSAny;
@@ -212,8 +212,8 @@ interface AmplifyToolkit {
   forceRemoveResource: () => $TSAny;
   writeObjectAsJson: () => $TSAny;
   hashDir: () => $TSAny;
-  leaveBreadcrumbs: () => $TSAny;
-  readBreadcrumbs: () => $TSAny;
+  leaveBreadcrumbs: (context: $TSContext, category: string, resourceName: string, breadcrumbs: $TSAny) => void;
+  readBreadcrumbs: (context: $TSContext, category: string, resourceName: string) => $TSAny;
   loadRuntimePlugin: () => $TSAny;
   getImportedAuthProperties: (
     context: $TSContext,

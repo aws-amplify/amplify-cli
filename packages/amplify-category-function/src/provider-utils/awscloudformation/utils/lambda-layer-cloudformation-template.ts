@@ -1,9 +1,10 @@
+import { $TSContext } from 'amplify-cli-core';
 import { Fn, DeletionPolicy, Refs } from 'cloudform-types';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
-import { isMultiEnvLayer, Permission, LayerParameters, getLayerMetadataFactory, LayerMetadata } from './layerParams';
+import { getLayerMetadataFactory, isMultiEnvLayer, LayerMetadata, LayerParameters, Permission } from './layerParams';
 
-function generateLayerCfnObjBase(multiEnvLayer: boolean) {
+function generateLayerCfnObjBase() {
   const cfnObj = {
     AWSTemplateFormatVersion: '2010-09-09',
     Description: 'Lambda layer resource stack creation using Amplify CLI',
@@ -15,6 +16,12 @@ function generateLayerCfnObjBase(multiEnvLayer: boolean) {
       env: {
         Type: 'String',
       },
+      s3Key: {
+        Type: 'String',
+      },
+      deploymentBucketName: {
+        Type: 'String',
+      },
     },
     Resources: {},
     Conditions: {
@@ -22,26 +29,13 @@ function generateLayerCfnObjBase(multiEnvLayer: boolean) {
     },
   };
 
-  if (multiEnvLayer) {
-    _.merge(cfnObj, {
-      Parameters: {
-        s3Key: {
-          Type: 'String',
-        },
-        deploymentBucketName: {
-          Type: 'String',
-        },
-      },
-    });
-  }
-
   return cfnObj;
 }
 
 /**
  * generates CFN for Layer and Layer permissions when updating layerVersion
  */
-export function generateLayerCfnObj(context, parameters: LayerParameters) {
+export function generateLayerCfnObj(context: $TSContext, parameters: LayerParameters) {
   const multiEnvLayer = isMultiEnvLayer(context, parameters.layerName);
   const layerData = getLayerMetadataFactory(context)(parameters.layerName);
   const outputObj = {
@@ -52,7 +46,7 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
       Region: { Value: Refs.Region },
     },
   };
-  let cfnObj = { ...generateLayerCfnObjBase(multiEnvLayer), ...outputObj };
+  let cfnObj = { ...generateLayerCfnObjBase(), ...outputObj };
   const POLICY_RETAIN = DeletionPolicy.Retain;
   const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
 
