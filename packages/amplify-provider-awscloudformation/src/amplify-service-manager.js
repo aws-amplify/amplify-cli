@@ -18,7 +18,6 @@ async function init(amplifyServiceParams) {
   let deploymentBucketName = `${stackName}-deployment`;
 
   const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
-  logger('init.getConfiguredAmplifyClient', [!!amplifyClient])();
   if (!amplifyClient) {
     // This happens when the Amplify service is not available in the region
     return {
@@ -29,7 +28,6 @@ async function init(amplifyServiceParams) {
   }
 
   const hasPermission = await checkAmplifyServiceIAMPermission(context, amplifyClient);
-  logger('init.checkAmplifyServiceIAMPermission', [hasPermission])();
   if (!hasPermission) {
     return {
       amplifyAppId,
@@ -117,18 +115,13 @@ async function init(amplifyServiceParams) {
   }
 
   if (!amplifyAppId) {
-    logger('in if', [amplifyAppId])();
-
     const createAppParams = {
       name: projectName,
-      tags: getTagMap(context),
       environmentVariables: { _LIVE_PACKAGE_UPDATES: '[{"pkg":"@aws-amplify/cli","type":"npm","version":"latest"}]' },
     };
-    logger('after create params', [amplifyAppId])();
     const log = logger('init.amplifyClient.createApp', [createAppParams]);
 
     try {
-      logger('amplifyAppCreationEnabled', [amplifyAppCreationEnabled()])();
       if (amplifyAppCreationEnabled()) {
         log();
         const createAppResponse = await amplifyClient.createApp(createAppParams).promise();
@@ -208,14 +201,6 @@ async function init(amplifyServiceParams) {
     verifiedStackName,
     deploymentBucketName,
   };
-}
-function getTagMap(context) {
-  const tags = context.amplify.getTags(context);
-  const tagMap = tags.reduce((obj, tag) => {
-    obj[tag.Key] = tag.Value;
-    return obj;
-  }, {});
-  return tagMap;
 }
 
 async function deleteEnv(context, envName, awsConfig) {
@@ -306,7 +291,6 @@ async function postPushCheck(context) {
       if (!amplifyAppId) {
         const createAppParams = {
           name: projectConfig.projectName,
-          tags: getTagMap(context),
           environmentVariables: { _LIVE_PACKAGE_UPDATES: '[{"pkg":"@aws-amplify/cli","type":"npm","version":"latest"}]' },
         };
         const log = logger('postPushCheck.amplifyClient.createApp', [createAppParams]);
