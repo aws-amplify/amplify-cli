@@ -60,7 +60,7 @@ export async function init(context: $TSContext) {
     };
   } else if (authTypeConfig.type === 'accessKeys') {
     context.exeInfo.awsConfigInfo = {
-      configLevel: 'general',
+      configLevel: 'project',
       config: { useProfile: false },
     };
   } else {
@@ -202,9 +202,13 @@ async function initialize(context: $TSContext, authConfig?: AuthFlowConfig) {
   const { awsConfigInfo } = context.exeInfo;
   if (authConfig?.type === 'accessKeys') {
     if (
-      (!awsConfigInfo.config.accessKeyId || !awsConfigInfo.config.secretAccessKey) &&
-      (!authConfig.accessKeyId || !authConfig.secretAccessKey)
+      (awsConfigInfo.config?.accessKeyId && awsConfigInfo.config?.secretAccessKey) ||
+      (authConfig?.accessKeyId && authConfig?.secretAccessKey)
     ) {
+      awsConfigInfo.config.accessKeyId = awsConfigInfo.config.accessKeyId || authConfig.accessKeyId;
+      awsConfigInfo.config.secretAccessKey = awsConfigInfo.config.secretAccessKey || authConfig.secretAccessKey;
+      awsConfigInfo.config.region = awsConfigInfo.config.region || authConfig.region;
+    } else {
       await promptForAuthConfig(context, authConfig);
     }
   } else if (awsConfigInfo.configLevel !== 'amplifyAdmin') {
@@ -723,8 +727,8 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
   );
 
   // Check process env vars
-  accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
-  secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+  // accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
+  // secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
   region = region || resolveRegion();
 
   // Check for local project config
