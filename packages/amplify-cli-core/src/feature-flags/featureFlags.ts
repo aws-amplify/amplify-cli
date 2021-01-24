@@ -566,6 +566,18 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
       },
+      {
+        name: 'useDocsGeneratorPlugin',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+      {
+        name: 'useTypesGeneratorPlugin',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      }
     ]);
 
     this.registerFlag('appSync', [
