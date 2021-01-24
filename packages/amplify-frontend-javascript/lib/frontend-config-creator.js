@@ -82,7 +82,11 @@ async function createAWSExports(context, amplifyResources, cloudAmplifyResources
 
   const customConfigs = getCustomConfigs(cloudAWSExports, currentAWSExports);
 
+  const { envName } = context.amplify.getEnvInfo();
+  const environmentConfig = { envName };
+
   Object.assign(newAWSExports, customConfigs);
+  Object.assign(newAWSExports, environmentConfig);
   generateAWSExportsFile(context, newAWSExports);
   return context;
 }
