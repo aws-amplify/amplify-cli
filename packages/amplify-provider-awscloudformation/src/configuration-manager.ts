@@ -525,7 +525,7 @@ export async function loadConfiguration(context: $TSContext) {
   return config;
 }
 
-function loadConfigFromPath(profilePath: string) {
+function loadConfigFromPath(profilePath: string): $TSAny {
   if (fs.existsSync(profilePath)) {
     const config = JSONUtilities.readJson<$TSAny>(profilePath);
     if (config.accessKeyId && config.secretAccessKey && config.region) {
@@ -535,10 +535,13 @@ function loadConfigFromPath(profilePath: string) {
   throw new Error(`Invalid config ${profilePath}`);
 }
 
-export async function loadConfigurationForEnv(context: $TSContext, env: string, appId?: string) {
+export async function loadConfigurationForEnv(context: $TSContext, env: string, appId?: string): Promise<AwsSdkConfig> {
   const { awsConfigInfo } = context.exeInfo || {};
   if (awsConfigInfo?.config?.accessKeyId && awsConfigInfo?.config?.secretAccessKey) {
     // Already loaded config
+    if (!awsConfigInfo.region) {
+      awsConfigInfo.region = resolveRegion();
+    }
     return awsConfigInfo.config;
   }
 
@@ -679,7 +682,7 @@ function getConfigLevel(context: $TSContext): ProjectType {
   return configLevel;
 }
 
-export async function getAwsConfig(context: $TSContext) {
+export async function getAwsConfig(context: $TSContext): Promise<AwsConfig> {
   const { awsConfigInfo } = context.exeInfo;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 
@@ -726,9 +729,10 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     {},
   );
 
-  // Check process env vars
-  // accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
-  // secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+  if (context?.exeInfo?.inputParams?.yes) {
+    accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
+    secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+  }
   region = region || resolveRegion();
 
   // Check for local project config

@@ -13,12 +13,12 @@ export interface AuthFlowConfig {
 
 export interface AwsSdkConfig {
   accessKeyId: string;
-  expiration?: $TSAny; // TODO - should be number of seconds since epoch
+  expiration?: Date;
   region: string;
   secretAccessKey: string;
   sessionToken?: string;
   httpOptions?: {
-    agent: $TSAny; // TODO
+    agent: $TSAny;
   };
 }
 export interface AdminAuthPayload {
