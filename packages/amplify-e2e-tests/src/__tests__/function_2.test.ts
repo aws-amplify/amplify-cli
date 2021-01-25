@@ -96,7 +96,7 @@ describe('nodejs', () => {
       expect(payload2.ScannedCount).toBeDefined();
     });
 
-    it.only('existing lambda updated with additional permissions should be able to scan ddb', async () => {
+    it('existing lambda updated with additional permissions should be able to scan ddb', async () => {
       await initJSProjectWithProfile(projRoot, {});
 
       const random = Math.floor(Math.random() * 10000);

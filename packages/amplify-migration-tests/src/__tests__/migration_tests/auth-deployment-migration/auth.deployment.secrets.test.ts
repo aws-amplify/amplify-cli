@@ -21,7 +21,7 @@ describe('amplify auth add with social', () => {
     deleteProjectDir(projRoot);
   });
 
-  it.only('init project, add social migrate and push', async () => {
+  it('init project, add social migrate and push', async () => {
     // init, add api and push with installed cli
     const envName = 'integtest';
     await amplifyVersion(projRoot, '4.30.0', false);
