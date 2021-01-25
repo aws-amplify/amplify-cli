@@ -1,4 +1,5 @@
 import { ServiceSelection } from './serviceSelection';
+import { BuildType } from 'amplify-function-plugin-interface';
 
 export * from './cliContext';
 export * from './cliContextEnvironmentProvider';
@@ -106,6 +107,13 @@ export type $TSTeamProviderInfo = any;
 // Use it for all object initializer usages: {}
 export type $TSObject = Record<string, $TSAny>;
 
+// There are tons of places where we use these two pieces of information to identify a resource
+// We can use this type to type those instances
+export interface ResourceTuple {
+  category: string;
+  resourceName: string;
+}
+
 export enum AmplifyFrontend {
   android = 'android',
   ios = 'ios',
@@ -120,8 +128,7 @@ export interface AmplifyProjectConfig {
 
 // Temporary interface until Context refactor
 interface AmplifyToolkit {
-  buildResources: () => $TSAny;
-  confirmPrompt: (prompt: string, defaultValue?: boolean) => $TSAny;
+  confirmPrompt: (prompt: string, defaultValue?: boolean) => boolean;
   constants: $TSAny;
   constructExeInfo: (context: $TSContext) => $TSAny;
   copyBatch: (context: $TSContext, jobs: $TSAny, props: $TSAny, force: boolean, writeParams?: $TSAny[] | $TSObject) => Promise<void>;
@@ -190,8 +197,8 @@ interface AmplifyToolkit {
   updateamplifyMetaAfterResourceDelete: (category: string, resourceName: string) => void;
   updateProvideramplifyMeta: (providerName: string, options: $TSObject) => void;
   updateamplifyMetaAfterPush: (resources: $TSObject[]) => void;
-  updateamplifyMetaAfterBuild: (resource: $TSObject) => void;
-  updateAmplifyMetaAfterPackage: (resource: $TSObject, zipFilename: string) => void;
+  updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: BuildType) => void;
+  updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string) => void;
   updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSAny) => $TSAny;
   updateBackendConfigAfterResourceUpdate: () => $TSAny;
   updateBackendConfigAfterResourceRemove: () => $TSAny;
@@ -213,9 +220,9 @@ interface AmplifyToolkit {
   forceRemoveResource: () => $TSAny;
   writeObjectAsJson: () => $TSAny;
   hashDir: () => $TSAny;
-  leaveBreadcrumbs: (context: $TSContext, category: string, resourceName: string, breadcrumbs: $TSAny) => void;
-  readBreadcrumbs: (context: $TSContext, category: string, resourceName: string) => $TSAny;
-  loadRuntimePlugin: () => $TSAny;
+  leaveBreadcrumbs: (category: string, resourceName: string, breadcrumbs: unknown) => void;
+  readBreadcrumbs: (category: string, resourceName: string) => $TSAny;
+  loadRuntimePlugin: (context: $TSContext, pluginId: string) => Promise<$TSAny>;
   getImportedAuthProperties: (
     context: $TSContext,
   ) => {

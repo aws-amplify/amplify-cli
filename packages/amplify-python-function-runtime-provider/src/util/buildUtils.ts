@@ -4,21 +4,21 @@ import { execAsStringPromise } from './pyUtils';
 import glob from 'glob';
 
 export async function pythonBuild(params: BuildRequest): Promise<BuildResult> {
-  if (!params.lastBuildTimestamp || isBuildStale(params.srcRoot, params.lastBuildTimestamp)) {
+  if (!params.lastBuildTimeStamp || isBuildStale(params.srcRoot, params.lastBuildTimeStamp)) {
     const pipenvLogs = await execAsStringPromise('pipenv install', { cwd: params.srcRoot });
     console.log(pipenvLogs);
-    return Promise.resolve({ rebuilt: true });
+    return { rebuilt: true };
   }
-  return Promise.resolve({ rebuilt: false });
+  return { rebuilt: false };
 }
 
-function isBuildStale(resourceDir: string, lastBuildTimestamp: Date) {
+function isBuildStale(resourceDir: string, lastBuildTimeStamp: Date) {
   const dirTime = new Date(fs.statSync(resourceDir).mtime);
-  if (dirTime > lastBuildTimestamp) {
+  if (dirTime > lastBuildTimeStamp) {
     return true;
   }
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/**`, { ignore: ['**/dist/**', '**/__pycache__/**'] })
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimestamp);
+    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
   return !!fileUpdatedAfterLastBuild;
 }

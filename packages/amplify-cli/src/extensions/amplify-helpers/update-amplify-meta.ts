@@ -3,8 +3,10 @@ import * as path from 'path';
 import { hashElement } from 'folder-hash';
 import glob from 'glob';
 import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
-import { JSONUtilities, pathManager, stateManager, $TSAny, $TSMeta, $TSObject } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, stateManager, $TSAny, $TSMeta, $TSObject, ResourceTuple } from 'amplify-cli-core';
 import { ServiceName } from 'amplify-category-function';
+import _ from 'lodash';
+import { BuildType } from 'amplify-function-plugin-interface';
 
 export function updateAwsMetaFile(
   filePath: string,
@@ -183,26 +185,21 @@ function getHashForResourceDir(dirPath) {
   return hashElement(dirPath, options).then(result => result.hash);
 }
 
-export function updateamplifyMetaAfterBuild(resource: $TSObject) {
+export function updateamplifyMetaAfterBuild({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD) {
   const amplifyMeta = stateManager.getMeta();
-  const currentTimestamp = new Date();
-
-  /*eslint-disable */
-  amplifyMeta[resource.category][resource.resourceName].lastBuildTimeStamp = currentTimestamp;
-  /* eslint-enable */
-
+  _.set(amplifyMeta, [category, resourceName, buildTypeKeyMap[buildType]], new Date());
   stateManager.setMeta(undefined, amplifyMeta);
 }
 
-export function updateAmplifyMetaAfterPackage(resource: $TSObject, zipFilename: string) {
+const buildTypeKeyMap: Record<BuildType, string> = {
+  [BuildType.PROD]: 'lastBuildTimeStamp',
+  [BuildType.DEV]: 'lastDevBuildTimeStamp',
+};
+
+export function updateAmplifyMetaAfterPackage({ category, resourceName }: ResourceTuple, zipFilename: string) {
   const amplifyMeta = stateManager.getMeta();
-  const currentTimestamp = new Date();
-
-  /*eslint-disable */
-  amplifyMeta[resource.category][resource.resourceName].lastPackageTimeStamp = currentTimestamp;
-  amplifyMeta[resource.category][resource.resourceName].distZipFilename = zipFilename;
-  /* eslint-enable */
-
+  _.set(amplifyMeta, [category, resourceName, 'lastPackageTimeStamp'], new Date());
+  _.set(amplifyMeta, [category, resourceName, 'distZipFilename'], zipFilename);
   stateManager.setMeta(undefined, amplifyMeta);
 }
 

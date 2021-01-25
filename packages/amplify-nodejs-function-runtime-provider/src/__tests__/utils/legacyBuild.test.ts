@@ -25,7 +25,7 @@ describe('legacy build resource', () => {
     fs_mock.statSync.mockImplementation(file => ({ mtime: new Date(stubFileTimestamps.get(file.toString())!) } as any));
 
     const result = await buildResource({
-      lastBuildTimestamp: new Date(timestamp),
+      lastBuildTimeStamp: new Date(timestamp),
       srcRoot: 'resourceDir',
       env: 'something',
       runtime: 'other',

@@ -2,12 +2,14 @@ import path from 'path';
 import { category } from './constants';
 export { category } from './constants';
 import { FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
-import { stateManager } from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { supportedServices } from './provider-utils/supported-services';
 import _ from 'lodash';
-export { packageLayer, hashLayerResource } from './provider-utils/awscloudformation/utils/packageLayer';
+export { buildFunction } from './provider-utils/awscloudformation/utils/buildFunction';
+export { packageResource } from './provider-utils/awscloudformation/utils/package';
+export { hashLayerResource } from './provider-utils/awscloudformation/utils/packageLayer';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
@@ -155,25 +157,22 @@ export async function initEnv(context) {
   await sequential(functionTasks);
 }
 
-// returns a function that can be used to invoke the lambda locally
-export async function getInvoker(context: any, params: InvokerParameters): Promise<({ event: any }) => Promise<any>> {
-  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), category, params.resourceName);
-  const breadcrumbs: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(context, category, params.resourceName);
-  const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, breadcrumbs.pluginId);
+// Returns a wrapper around FunctionRuntimeLifecycleManager.invoke() that can be used to invoke the function with only an event
+export async function getInvoker(
+  context: $TSContext,
+  { handler, resourceName, envVars }: InvokerParameters,
+): Promise<({ event: unknown }) => Promise<any>> {
+  const resourcePath = path.join(pathManager.getBackendDirPath(), category, resourceName);
+  const { pluginId, functionRuntime }: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(category, resourceName);
+  const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, pluginId);
 
-  const lastBuildTimestampStr = (await context.amplify.getResourceStatus(category, params.resourceName)).allResources.find(
-    resource => resource.resourceName === params.resourceName,
-  ).lastBuildTimeStamp as string;
-
-  return async request =>
-    await runtimeManager.invoke({
-      handler: params.handler,
-      event: JSON.stringify(request.event),
-      env: context.amplify.getEnvInfo().envName,
-      runtime: breadcrumbs.functionRuntime,
+  return ({ event }) =>
+    runtimeManager.invoke({
+      handler: handler,
+      event: JSON.stringify(event),
+      runtime: functionRuntime,
       srcRoot: resourcePath,
-      envVars: params.envVars,
-      lastBuildTimestamp: lastBuildTimestampStr ? new Date(lastBuildTimestampStr) : undefined,
+      envVars: envVars,
     });
 }
 

@@ -13,6 +13,9 @@ import {
 import { ServiceName } from './constants';
 import _ from 'lodash';
 import { LayerParameters } from './layerParams';
+import { ResourceMeta } from '../types/packaging-types';
+import { $TSContext, ResourceTuple } from 'amplify-cli-core';
+import { category } from '../../../constants';
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
  */
@@ -203,6 +206,17 @@ export async function loadPluginFromFactory(pluginPath, expectedFactoryFunction,
     throw new Error('Could not load selected plugin');
   }
   return plugin[expectedFactoryFunction](context);
+}
+
+export async function getRuntimeManager(
+  context: $TSContext,
+  resourceName: string,
+): Promise<FunctionRuntimeLifecycleManager & { runtime: string }> {
+  const { pluginId, functionRuntime } = context.amplify.readBreadcrumbs(category, resourceName);
+  return {
+    ...((await context.amplify.loadRuntimePlugin(context, pluginId)) as FunctionRuntimeLifecycleManager),
+    runtime: functionRuntime,
+  };
 }
 
 // Convenience interfaces that are private to this class
