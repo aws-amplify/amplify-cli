@@ -1,9 +1,10 @@
-import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, invokeFunction } from '..';
+import { nspawn as spawn, ExecutionContext, KEY_DOWN_ARROW, getCLIPath, getProjectMeta, getBackendAmplifyMeta, invokeFunction } from '..';
 import { Lambda } from 'aws-sdk';
 import { singleSelect, multiSelect, moveUp, moveDown } from '../utils/selectors';
 import * as glob from 'glob';
 import * as path from 'path';
-
+import _ from 'lodash';
+import { loadFeatureFlags } from '../utils/feature-flags';
 type FunctionActions = 'create' | 'update';
 
 type FunctionRuntimes = 'dotnetCore31' | 'go' | 'java' | 'nodejs' | 'python';
@@ -34,7 +35,11 @@ const nodeJSTemplateChoices = [
 
 const pythonTemplateChoices = ['Hello World'];
 
-const additionalPermissions = (chain: ExecutionContext, settings: any) => {
+const crudOptions = ['create', 'read', 'update', 'delete'];
+
+const appSyncOptions = ['query', 'mutation', 'subscription'];
+
+const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: any) => {
   multiSelect(
     chain.sendLine('y').wait('Select the categories you want this function to have access to'),
     settings.additionalPermissions.permissions,
@@ -48,18 +53,18 @@ const additionalPermissions = (chain: ExecutionContext, settings: any) => {
       settings.additionalPermissions.resourceChoices,
     );
   }
+
   // n-resources repeated questions
-  settings.additionalPermissions.resources.forEach(elem =>
-    multiSelect(chain.wait(`Select the operations you want to permit for ${elem}`), settings.additionalPermissions.operations, [
-      'create',
-      'read',
-      'update',
-      'delete',
-    ]),
-  );
+  settings.additionalPermissions.resources.forEach(elem => {
+    const service = _.get(getBackendAmplifyMeta(cwd), ['api', elem, 'service']);
+    const gqlpermff = !!_.get(loadFeatureFlags(cwd), ['features', 'appsync', 'generategraphqlpermissions']);
+    const isAppSyncApi = service === 'AppSync';
+    const allChoices = isAppSyncApi && gqlpermff ? appSyncOptions : crudOptions;
+    multiSelect(chain.wait(`Select the operations you want to permit on ${elem}`), settings.additionalPermissions.operations, allChoices);
+  });
 };
 
-const updateFunctionCore = (chain: ExecutionContext, settings: any) => {
+const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: any) => {
   singleSelect(
     chain.wait('Which setting do you want to update?'),
     settings.additionalPermissions
@@ -71,7 +76,7 @@ const updateFunctionCore = (chain: ExecutionContext, settings: any) => {
   );
   if (settings.additionalPermissions) {
     // update permissions
-    additionalPermissions(chain, settings);
+    additionalPermissions(cwd, chain, settings);
   } else if (settings.schedulePermissions) {
     // update scheduling
     if (
@@ -150,7 +155,7 @@ const coreFunction = (
         chain.sendLine('y').wait('Do you want to access other resources in this project from your Lambda function?');
         if (settings.additionalPermissions) {
           // other permissions flow
-          additionalPermissions(chain, settings);
+          additionalPermissions(cwd, chain, settings);
         } else {
           chain.sendLine('n');
         }
@@ -177,14 +182,11 @@ const coreFunction = (
         chain.sendLine('n');
       }
     } else {
-      updateFunctionCore(chain, settings);
+      updateFunctionCore(cwd, chain, settings);
     }
 
     // edit function question
-    chain
-      .wait('Do you want to edit the local lambda function now?')
-      .sendLine('n')
-      .sendEof();
+    chain.wait('Do you want to edit the local lambda function now?').sendLine('n').sendEof();
 
     runChain(chain, resolve, reject);
   });
@@ -341,19 +343,13 @@ const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string)
 };
 
 const addminutes = (chain: ExecutionContext) => {
-  chain
-    .wait('Enter rate for minutes(1-59)?')
-    .sendLine('5')
-    .sendCarriageReturn();
+  chain.wait('Enter rate for minutes(1-59)?').sendLine('5').sendCarriageReturn();
 
   return chain;
 };
 
 const addhourly = (chain: ExecutionContext) => {
-  chain
-    .wait('Enter rate for hours(1-23)?')
-    .sendLine('5')
-    .sendCarriageReturn();
+  chain.wait('Enter rate for hours(1-23)?').sendLine('5').sendCarriageReturn();
 
   return chain;
 };
@@ -387,10 +383,7 @@ const addCron = (chain: ExecutionContext, settings: any) => {
       addhourly(moveDown(chain, 1).sendCarriageReturn());
       break;
     case 'Daily':
-      moveDown(chain, 2)
-        .sendCarriageReturn()
-        .wait('Select the start time (use arrow keys):')
-        .sendCarriageReturn();
+      moveDown(chain, 2).sendCarriageReturn().wait('Select the start time (use arrow keys):').sendCarriageReturn();
       break;
     case 'Weekly':
       addWeekly(moveDown(chain, 3).sendCarriageReturn());

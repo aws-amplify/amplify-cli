@@ -49,6 +49,10 @@ function getCloudBackendConfig(projectRoot: string) {
   return JSON.parse(fs.readFileSync(currentCloudPath, 'utf8'));
 }
 
+function getParameterPath(projRoot: string, category: string, resourceName: string) {
+  return path.join(projRoot, 'amplify', 'backend', category, resourceName, 'parameters.json');
+}
+
 function getTeamProviderInfo(projectRoot: string) {
   const teamProviderFilePath: string = path.join(projectRoot, 'amplify', 'team-provider-info.json');
   return JSON.parse(fs.readFileSync(teamProviderFilePath, 'utf8'));
@@ -99,6 +103,16 @@ function isDeploymentSecretForEnvExists(projRoot: string, envName: string): bool
   return false;
 }
 
+function getParameters(projRoot: string, category: string, resourceName: string): any {
+  const parametersPath = getParameterPath(projRoot, category, resourceName);
+  return JSONUtilities.parse(fs.readFileSync(parametersPath, 'utf8'));
+}
+
+function setParameters(projRoot: string, category: string, resourceName: string, parameters: any) {
+  const parametersPath = getParameterPath(projRoot, category, resourceName);
+  JSONUtilities.writeJson(parametersPath, parameters);
+}
+
 export {
   getProjectMeta,
   getProjectTags,
@@ -116,5 +130,7 @@ export {
   getAmplifyDirPath,
   getBackendConfig,
   getTeamProviderInfo,
+  getParameters,
   getCloudBackendConfig,
+  setParameters,
 };

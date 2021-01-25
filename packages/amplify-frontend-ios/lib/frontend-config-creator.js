@@ -1,4 +1,5 @@
 const constants = require('./constants');
+const _ = require('lodash');
 const path = require('path');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
@@ -170,14 +171,17 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   }
 
   if (cognitoResource.output.UserPoolId) {
+    const defaultPool = {
+      PoolId: cognitoResource.output.UserPoolId,
+      AppClientId: cognitoResource.output.AppClientID,
+      Region: projectRegion,
+    };
+    if (cognitoResource.output.AppClientSecret) {
+      _.set(defaultPool, 'AppClientSecret', cognitoResource.output.AppClientSecret);
+    }
     Object.assign(cognitoConfig, {
       CognitoUserPool: {
-        Default: {
-          PoolId: cognitoResource.output.UserPoolId,
-          AppClientId: cognitoResource.output.AppClientID,
-          AppClientSecret: cognitoResource.output.AppClientSecret,
-          Region: projectRegion,
-        },
+        Default: defaultPool,
       },
     });
   }

@@ -214,15 +214,16 @@ export async function updateFunctionResource(context, category, service, paramet
         }
       }
     }
-    saveMutableState(context, parameters);
-    saveCFNParameters(context, parameters);
+
+    saveMutableState(parameters);
+    saveCFNParameters(parameters);
   } else {
     parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
     if (parameters.dependsOn) {
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
     }
-    saveMutableState(context, parameters);
-    saveCFNParameters(context, parameters);
+    saveMutableState(parameters);
+    saveCFNParameters(parameters);
   }
 
   if (!parameters || (parameters && !parameters.skipEdit)) {

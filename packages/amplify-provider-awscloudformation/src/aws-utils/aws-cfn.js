@@ -352,6 +352,10 @@ class CloudFormation {
                   }
                 }
 
+                if (resourceObject.service === 'S3AndCloudFront' && resourceObject.output) {
+                  updatedMeta[category][resource].output = formattedOutputs;
+                }
+
                 stateManager.setMeta(undefined, updatedMeta);
               }
             }

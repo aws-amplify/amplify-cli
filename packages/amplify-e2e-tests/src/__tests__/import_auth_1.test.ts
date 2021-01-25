@@ -1,9 +1,11 @@
-import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as path from 'path';
+
+import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import {
+  AddAuthUserPoolOnlyWithOAuthSettings,
   addApiWithCognitoUserPoolAuthTypeWhenAuthExists,
   addAuthUserPoolOnlyWithOAuth,
-  AddAuthUserPoolOnlyWithOAuthSettings,
   addFunction,
   amplifyPull,
   amplifyPush,
@@ -18,30 +20,37 @@ import {
   initJSProjectWithProfile,
   initProjectWithAccessKey,
 } from 'amplify-e2e-core';
-import { randomizedFunctionName } from '../schema-api-directives/functionTester';
-import { getCognitoResourceName } from '../schema-api-directives/authHelper';
-import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
 import {
+  AppClientSettings,
+  AuthProjectDetails,
+  addAppClientWithSecret,
+  addAppClientWithoutSecret,
   addS3WithAuthConfigurationMismatchErrorExit,
   createUserPoolOnlyWithOAuthSettings,
+  deleteAppClient,
   expectApiHasCorrectAuthConfig,
-  expectLocalAndCloudMetaFilesMatching,
   expectAuthLocalAndOGMetaFilesOutputMatching,
+  expectAuthProjectDetailsMatch,
+  expectLocalAndCloudMetaFilesMatching,
   expectLocalAndPulledBackendConfigMatching,
   expectLocalTeamInfoHasNoCategories,
   expectNoAuthInMeta,
-  expectAuthProjectDetailsMatch,
-  getOGAuthProjectDetails,
   getAuthProjectDetails,
+  getOGAuthProjectDetails,
   getShortId,
+  importIdentityPoolAndUserPool,
   importUserPoolOnly,
-  AuthProjectDetails,
   readRootStack,
   removeImportedAuthWithDefault,
 } from '../import-helpers';
-import { $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { addEnvironmentWithImportedAuth, checkoutEnvironment, removeEnvironment } from '../environment/env';
+
+import { getCognitoResourceName } from '../schema-api-directives/authHelper';
+import { randomizedFunctionName } from '../schema-api-directives/functionTester';
 
 describe('auth import userpool only', () => {
+  const profileName = 'amplify-integ-test-user';
+
   const projectPrefix = 'auimpup';
   const ogProjectPrefix = 'ogauimpup';
 
@@ -120,7 +129,7 @@ describe('auth import userpool only', () => {
 
   it('status should reflect correct values for imported auth', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName);
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     let projectDetails = getAuthProjectDetails(projectRoot);
 
@@ -148,7 +157,7 @@ describe('auth import userpool only', () => {
 
   it('imported auth with graphql api and cognito should push', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName);
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' }); // space at to make sure its not web client
     await addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectRoot);
     await amplifyPush(projectRoot);
 
@@ -157,7 +166,7 @@ describe('auth import userpool only', () => {
 
   it('imported auth with function and crud on auth should push', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName);
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     const functionName = randomizedFunctionName('authimpfunc');
     const authResourceName = getCognitoResourceName(projectRoot);
@@ -215,7 +224,7 @@ describe('auth import userpool only', () => {
 
   it('imported userpool only auth, s3 storage add should fail with error', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName);
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     // Imported auth resources cannot be used together with \'storage\' category\'s authenticated and unauthenticated access.
     await expect(addS3WithAuthConfigurationMismatchErrorExit(projectRoot, {})).rejects.toThrowError(
@@ -228,7 +237,7 @@ describe('auth import userpool only', () => {
       ...projectSettings,
       disableAmplifyAppCreation: false,
     });
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName);
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     const functionName = randomizedFunctionName('authimpfunc');
     const authResourceName = getCognitoResourceName(projectRoot);
@@ -271,7 +280,7 @@ describe('auth import userpool only', () => {
 
   it('imported auth, create prod env, files should match', async () => {
     await initJSProjectWithProfile(projectRoot, projectSettings);
-    await importUserPoolOnly(projectRoot, ogSettings.userPoolName);
+    await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' });
 
     await amplifyPushAuth(projectRoot);
 
@@ -331,8 +340,83 @@ describe('auth import userpool only', () => {
     } as any);
 
     // The previously configured Cognito User Pool: '${userPoolName}' (${userPoolId}) cannot be found.
-    await expect(await importUserPoolOnly(projectRoot, ogSettings.userPoolName)).rejects.toThrowError(
-      'Process exited with non zero exit code 1',
-    );
+    await expect(
+      await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: '_app_client ', web: '_app_clientWeb' }),
+    ).rejects.toThrowError('Process exited with non zero exit code 1');
+  });
+
+  // Used for creating custom app clients. This should match with web app client setting for import to work
+  const customAppClientSettings: AppClientSettings = {
+    supportedIdentityProviders: ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon'],
+    allowedOAuthFlowsUserPoolClient: true,
+    callbackURLs: ['https://sin1/', 'https://sin2/'],
+    logoutURLs: ['https://sout1/', 'https://sout2/'],
+    allowedOAuthFlows: ['code'],
+    allowedScopes: ['aws.cognito.signin.user.admin', 'email', 'openid', 'phone', 'profile'],
+  };
+
+  it('should support importing AppClient with secret', async () => {
+    const nativeAppClientName = 'nativeClientWithSecret';
+    let appClientId;
+    let appclientSecret;
+    try {
+      await initJSProjectWithProfile(projectRoot, projectSettings);
+      ({ appClientId, appclientSecret } = await addAppClientWithSecret(
+        profileName,
+        ogProjectRoot,
+        nativeAppClientName,
+        customAppClientSettings,
+      ));
+      await await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: nativeAppClientName, web: '_app_clientWeb' });
+      await amplifyPushAuth(projectRoot);
+      expectLocalAndCloudMetaFilesMatching(projectRoot);
+      const projectDetails = getAuthProjectDetails(projectRoot);
+      expectAuthProjectDetailsMatch(projectDetails, {
+        ...ogProjectDetails,
+        meta: { ...ogProjectDetails.meta, AppClientID: appClientId, AppClientSecret: appclientSecret },
+        team: { ...ogProjectDetails.team, nativeClientId: appClientId },
+      });
+    } finally {
+      // delete the app client
+      if (appClientId) {
+        deleteAppClient(profileName, ogProjectRoot, appClientId);
+      }
+    }
+  });
+
+  it('should support importing AppClient with out secret', async () => {
+    const nativeAppClientName = 'nativeClientWithOutSecret';
+    let appClientId;
+    let appclientSecret;
+
+    try {
+      await initJSProjectWithProfile(projectRoot, projectSettings);
+
+      ({ appClientId, appclientSecret } = await addAppClientWithoutSecret(
+        profileName,
+        ogProjectRoot,
+        nativeAppClientName,
+        customAppClientSettings,
+      ));
+
+      await await importUserPoolOnly(projectRoot, ogSettings.userPoolName, { native: nativeAppClientName, web: '_app_clientWeb' });
+
+      await amplifyPushAuth(projectRoot);
+
+      expectLocalAndCloudMetaFilesMatching(projectRoot);
+
+      const projectDetails = getAuthProjectDetails(projectRoot);
+
+      expectAuthProjectDetailsMatch(projectDetails, {
+        ...ogProjectDetails,
+        meta: { ...ogProjectDetails.meta, AppClientID: appClientId, AppClientSecret: appclientSecret },
+        team: { ...ogProjectDetails.team, nativeClientId: appClientId },
+      });
+    } finally {
+      // delete the app client
+      if (appClientId) {
+        deleteAppClient(profileName, ogProjectRoot, appClientId);
+      }
+    }
   });
 });

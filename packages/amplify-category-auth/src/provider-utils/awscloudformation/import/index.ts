@@ -1,17 +1,4 @@
-import Enquirer from 'enquirer';
-import _ from 'lodash';
-import uuid from 'uuid';
-import {
-  IdentityProviderType,
-  UserPoolClientType,
-  UserPoolDescriptionType,
-  UserPoolType,
-} from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
-
 import { $TSContext, ServiceSelection, stateManager } from 'amplify-cli-core';
-import { ICognitoUserPoolService, IIdentityPoolService } from 'amplify-util-import';
-import { importMessages } from './messages';
 import {
   AuthSelections,
   BackendConfiguration,
@@ -25,6 +12,19 @@ import {
   ProviderUtils,
   ResourceParameters,
 } from './types';
+import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
+import { ICognitoUserPoolService, IIdentityPoolService } from 'amplify-util-import';
+import {
+  IdentityProviderType,
+  UserPoolClientType,
+  UserPoolDescriptionType,
+  UserPoolType,
+} from 'aws-sdk/clients/cognitoidentityserviceprovider';
+
+import Enquirer from 'enquirer';
+import _ from 'lodash';
+import { importMessages } from './messages';
+import uuid from 'uuid';
 
 // Currently the CLI only supports the output generation of these providers
 const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon'];
@@ -355,15 +355,11 @@ const validateUserPool = async (
 ): Promise<boolean | string> => {
   const userPoolClients = await cognito.listUserPoolClients(userPoolId);
   const webClients = userPoolClients.filter(c => !c.ClientSecret);
-  const nativeClients = userPoolClients.filter(c => c.ClientSecret !== undefined);
+  const nativeClients = userPoolClients;
 
-  // Check if the selected user pool has at least 1 native and 1 web app client configured.
+  // Check if the selected user pool has at least 1 web app client configured.
   if (webClients?.length < 1) {
     return importMessages.NoAtLeastOneAppClient('Web');
-  }
-
-  if (nativeClients?.length < 1) {
-    return importMessages.NoAtLeastOneAppClient('Native');
   }
 
   // If authSelections involves the selection of an Identity Pool as well then we have to look for an
@@ -419,68 +415,77 @@ const selectAppClients = async (
   answers: ImportAnswers,
 ): Promise<void> => {
   let autoSelected = 0;
+  let changeAppClientSelction = false;
+  do {
+    // Select web application clients
+    if (questionParameters.webClients!.length === 1) {
+      answers.appClientWeb = questionParameters.webClients![0];
 
-  // Select web application clients
-  if (questionParameters.webClients!.length === 1) {
-    answers.appClientWeb = questionParameters.webClients![0];
+      context.print.info(importMessages.SingleAppClientSelected('Web', answers.appClientWeb.ClientName!));
 
-    context.print.info(importMessages.SingleAppClientSelected('Web', answers.appClientWeb.ClientName!));
+      autoSelected++;
+    } else {
+      const appClientChoices = questionParameters
+        .webClients!.map(c => ({
+          message: `${c.ClientName!} (${c.ClientId})`,
+          value: c.ClientId,
+        }))
+        .sort((a, b) => a.message.localeCompare(b.message));
 
-    autoSelected++;
-  } else {
-    const appClientChoices = questionParameters
-      .webClients!.map(c => ({
-        message: `${c.ClientName!} (${c.ClientId})`,
-        value: c.ClientId,
-      }))
-      .sort((a, b) => a.message.localeCompare(b.message));
+      const appClientSelectQuestion = {
+        type: 'autocomplete',
+        name: 'appClientWebId',
+        message: importMessages.Questions.SelectAppClient('Web'),
+        required: true,
+        choices: appClientChoices,
+        limit: 5,
+        footer: importMessages.Questions.AutoCompleteFooter,
+      };
 
-    const appClientSelectQuestion = {
-      type: 'select',
-      name: 'appClientWebId',
-      message: importMessages.Questions.SelectAppClient('Web'),
-      required: true,
-      choices: appClientChoices,
-    };
+      context.print.info(importMessages.MultipleAppClients('Web'));
 
-    context.print.info(importMessages.MultipleAppClients('Web'));
+      const { appClientWebId } = await enquirer.prompt(appClientSelectQuestion);
+      answers.appClientWeb = questionParameters.webClients!.find(c => c.ClientId! === appClientWebId);
+      answers.appClientWebId = undefined; // Only to be used by enquirer
+    }
 
-    const { appClientWebId } = await enquirer.prompt(appClientSelectQuestion);
-    answers.appClientWeb = questionParameters.webClients!.find(c => c.ClientId! === appClientWebId);
-    answers.appClientWebId = undefined; // Only to be used by enquirer
-  }
+    // Select Native application client
+    if (questionParameters.nativeClients!.length === 1) {
+      answers.appClientNative = questionParameters.nativeClients![0];
 
-  // Select Native application client
-  if (questionParameters.nativeClients!.length === 1) {
-    answers.appClientNative = questionParameters.nativeClients![0];
+      context.print.info(importMessages.SingleAppClientSelected('Native', answers.appClientNative.ClientName!));
+      context.print.warning(importMessages.WarnAppClientReuse);
+      autoSelected++;
+    } else {
+      const appClientChoices = questionParameters
+        .nativeClients!.map(c => ({
+          message: `${c.ClientName!} (${c.ClientId}) ${c.ClientSecret ? '(has app client secret)' : ''}`,
+          value: c.ClientId,
+        }))
+        .sort((a, b) => a.message.localeCompare(b.message));
 
-    context.print.info(importMessages.SingleAppClientSelected('Native', answers.appClientNative.ClientName!));
+      const appClientSelectQuestion = {
+        type: 'autocomplete',
+        name: 'appClientNativeId',
+        message: importMessages.Questions.SelectAppClient('Native'),
+        required: true,
+        choices: appClientChoices,
+        limit: 5,
+        footer: importMessages.Questions.AutoCompleteFooter,
+      };
 
-    autoSelected++;
-  } else {
-    const appClientChoices = questionParameters
-      .nativeClients!.map(c => ({
-        message: `${c.ClientName!} (${c.ClientId})`,
-        value: c.ClientId,
-      }))
-      .sort((a, b) => a.message.localeCompare(b.message));
+      context.print.info(importMessages.MultipleAppClients('Native'));
 
-    const appClientSelectQuestion = {
-      type: 'select',
-      name: 'appClientNativeId',
-      message: importMessages.Questions.SelectAppClient('Native'),
-      required: true,
-      choices: appClientChoices,
-    };
+      const { appClientNativeId } = await enquirer.prompt(appClientSelectQuestion);
+      answers.appClientNative = questionParameters.nativeClients!.find(c => c.ClientId! === appClientNativeId);
+      answers.appClientNativeId = undefined; // Only to be used by enquirer
 
-    context.print.info(importMessages.MultipleAppClients('Native'));
-
-    const { appClientNativeId } = await enquirer.prompt(appClientSelectQuestion);
-    answers.appClientNative = questionParameters.nativeClients!.find(c => c.ClientId! === appClientNativeId);
-    answers.appClientNativeId = undefined; // Only to be used by enquirer
-  }
-
-  questionParameters.bothAppClientsWereAutoSelected = autoSelected === 2;
+      if (answers.appClientNative === answers.appClientWeb) {
+        changeAppClientSelction = await context.prompt.confirm(importMessages.ConfirmUseDifferentAppClient);
+      }
+    }
+    questionParameters.bothAppClientsWereAutoSelected = autoSelected === 2;
+  } while (changeAppClientSelction);
 };
 
 const appClientsOAuthPropertiesMatching = async (
@@ -726,7 +731,7 @@ const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): Meta
     UserPoolId: userPool.Id!,
     UserPoolName: userPool.Name!,
     AppClientID: answers.appClientNative!.ClientId,
-    AppClientSecret: answers.appClientNative!.ClientSecret,
+    ...(answers.appClientNative!.ClientSecret ? { AppClientSecret: answers.appClientNative!.ClientSecret } : {}),
     AppClientIDWeb: answers.appClientWeb!.ClientId,
     HostedUIDomain: userPool.Domain,
   };

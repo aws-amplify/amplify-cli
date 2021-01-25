@@ -49,6 +49,9 @@ Parameters:
 
 Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
+  <%if (props.authSelections !=='identityPoolOnly' ) { %>
+  ShouldOutputAppClientSecrets: !Equals [!Ref userpoolClientGenerateSecret, true ]
+  <% } %> 
 
 Resources:
   <%if (props.verificationBucketName) { %>
@@ -1161,6 +1164,7 @@ Outputs :
     Description: The user pool app client id
   AppClientSecret:
     Value: !GetAtt UserPoolClientInputs.appSecret
+    Condition: ShouldOutputAppClientSecrets
   <%if (props.mfaConfiguration != 'OFF') { %>
   CreatedSNSRole:
     Value: !GetAtt SNSRole.Arn

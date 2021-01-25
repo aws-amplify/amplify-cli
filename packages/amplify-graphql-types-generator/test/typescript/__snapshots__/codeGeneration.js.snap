@@ -13,6 +13,96 @@ export enum Episode {
 }
 
 
+export type Character = {
+  __typename: \\"Character\\",
+  // The ID of the character
+  id?: string,
+  // The name of the character
+  name?: string,
+  // The friends of the character, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the character exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this character appears in
+  appearsIn?: Array< Episode | null >,
+};
+
+export type Human = {
+  __typename: \\"Human\\",
+  // The ID of the human
+  id?: string,
+  // What this human calls themselves
+  name?: string,
+  // The home planet of the human, or null if unknown
+  homePlanet?: string | null,
+  // Height in the preferred unit, default is meters
+  height?: number | null,
+  // Mass in kilograms, or null if unknown
+  mass?: number | null,
+  // This human's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the human exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this human appears in
+  appearsIn?: Array< Episode | null >,
+  // A list of starships this person has piloted, or an empty list if none
+  starships?:  Array<Starship | null > | null,
+};
+
+export type FriendsConnection = {
+  __typename: \\"FriendsConnection\\",
+  // The total number of friends
+  totalCount?: number | null,
+  // The edges for each of the character's friends.
+  edges?:  Array<FriendsEdge | null > | null,
+  // A list of the friends, as a convenience when edges are not needed.
+  friends?:  Array<Character | null > | null,
+  // Information for paginating this connection
+  pageInfo?: PageInfo,
+};
+
+export type FriendsEdge = {
+  __typename: \\"FriendsEdge\\",
+  // A cursor used for pagination
+  cursor?: string,
+  // The character represented by this friendship edge
+  node?: Character,
+};
+
+export type PageInfo = {
+  __typename: \\"PageInfo\\",
+  startCursor?: string | null,
+  endCursor?: string | null,
+  hasNextPage?: boolean,
+};
+
+export type Starship = {
+  __typename: \\"Starship\\",
+  // The ID of the starship
+  id?: string,
+  // The name of the starship
+  name?: string,
+  // Length of the starship, along the longest axis
+  length?: number | null,
+  coordinates?: Array< Array< number > > | null,
+};
+
+export type Droid = {
+  __typename: \\"Droid\\",
+  // The ID of the droid
+  id?: string,
+  // What others call this droid
+  name?: string,
+  // This droid's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the droid exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this droid appears in
+  appearsIn?: Array< Episode | null >,
+  // This droid's primary function
+  primaryFunction?: string | null,
+};
+
 export type HeroAndFriendsNamesQueryVariables = {
   episode?: Episode | null,
 };
@@ -69,6 +159,104 @@ exports[`TypeScript code generation #generateSource() should generate fragmented
 "/* tslint:disable */
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
+
+export type Character = {
+  __typename: \\"Character\\",
+  // The ID of the character
+  id?: string,
+  // The name of the character
+  name?: string,
+  // The friends of the character, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the character exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this character appears in
+  appearsIn?: Array< Episode | null >,
+};
+
+export type Human = {
+  __typename: \\"Human\\",
+  // The ID of the human
+  id?: string,
+  // What this human calls themselves
+  name?: string,
+  // The home planet of the human, or null if unknown
+  homePlanet?: string | null,
+  // Height in the preferred unit, default is meters
+  height?: number | null,
+  // Mass in kilograms, or null if unknown
+  mass?: number | null,
+  // This human's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the human exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this human appears in
+  appearsIn?: Array< Episode | null >,
+  // A list of starships this person has piloted, or an empty list if none
+  starships?:  Array<Starship | null > | null,
+};
+
+export type FriendsConnection = {
+  __typename: \\"FriendsConnection\\",
+  // The total number of friends
+  totalCount?: number | null,
+  // The edges for each of the character's friends.
+  edges?:  Array<FriendsEdge | null > | null,
+  // A list of the friends, as a convenience when edges are not needed.
+  friends?:  Array<Character | null > | null,
+  // Information for paginating this connection
+  pageInfo?: PageInfo,
+};
+
+export type FriendsEdge = {
+  __typename: \\"FriendsEdge\\",
+  // A cursor used for pagination
+  cursor?: string,
+  // The character represented by this friendship edge
+  node?: Character,
+};
+
+export type PageInfo = {
+  __typename: \\"PageInfo\\",
+  startCursor?: string | null,
+  endCursor?: string | null,
+  hasNextPage?: boolean,
+};
+
+// The episodes in the Star Wars trilogy
+export enum Episode {
+  NEWHOPE = \\"NEWHOPE\\", // Star Wars Episode IV: A New Hope, released in 1977.
+  EMPIRE = \\"EMPIRE\\", // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  JEDI = \\"JEDI\\", // Star Wars Episode VI: Return of the Jedi, released in 1983.
+}
+
+
+export type Starship = {
+  __typename: \\"Starship\\",
+  // The ID of the starship
+  id?: string,
+  // The name of the starship
+  name?: string,
+  // Length of the starship, along the longest axis
+  length?: number | null,
+  coordinates?: Array< Array< number > > | null,
+};
+
+export type Droid = {
+  __typename: \\"Droid\\",
+  // The ID of the droid
+  id?: string,
+  // What others call this droid
+  name?: string,
+  // This droid's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the droid exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this droid appears in
+  appearsIn?: Array< Episode | null >,
+  // This droid's primary function
+  primaryFunction?: string | null,
+};
 
 export type HeroAndFriendsNamesQuery = {
   hero: ( {
@@ -164,18 +352,26 @@ export type ColorInput = {
   blue: number,
 };
 
+export type Review = {
+  __typename: \\"Review\\",
+  // The number of stars this review gave, 1-5
+  stars?: number,
+  // Comment about the movie
+  commentary?: string | null,
+};
+
 export type ReviewMovieMutationVariables = {
   episode?: Episode | null,
   review?: ReviewInput | null,
 };
 
 export type ReviewMovieMutation = {
-  createReview:  {
+  createReview?:  {
     __typename: \\"Review\\",
     // The number of stars this review gave, 1-5
     stars: number,
     // Comment about the movie
-    commentary: string | null,
+    commentary?: string | null,
   } | null,
 };
 "
@@ -186,19 +382,117 @@ exports[`TypeScript code generation #generateSource() should generate query oper
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type Character = {
+  __typename: \\"Character\\",
+  // The ID of the character
+  id?: string,
+  // The name of the character
+  name?: string,
+  // The friends of the character, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the character exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this character appears in
+  appearsIn?: Array< Episode | null >,
+};
+
+export type Human = {
+  __typename: \\"Human\\",
+  // The ID of the human
+  id?: string,
+  // What this human calls themselves
+  name?: string,
+  // The home planet of the human, or null if unknown
+  homePlanet?: string | null,
+  // Height in the preferred unit, default is meters
+  height?: number | null,
+  // Mass in kilograms, or null if unknown
+  mass?: number | null,
+  // This human's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the human exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this human appears in
+  appearsIn?: Array< Episode | null >,
+  // A list of starships this person has piloted, or an empty list if none
+  starships?:  Array<Starship | null > | null,
+};
+
+export type FriendsConnection = {
+  __typename: \\"FriendsConnection\\",
+  // The total number of friends
+  totalCount?: number | null,
+  // The edges for each of the character's friends.
+  edges?:  Array<FriendsEdge | null > | null,
+  // A list of the friends, as a convenience when edges are not needed.
+  friends?:  Array<Character | null > | null,
+  // Information for paginating this connection
+  pageInfo?: PageInfo,
+};
+
+export type FriendsEdge = {
+  __typename: \\"FriendsEdge\\",
+  // A cursor used for pagination
+  cursor?: string,
+  // The character represented by this friendship edge
+  node?: Character,
+};
+
+export type PageInfo = {
+  __typename: \\"PageInfo\\",
+  startCursor?: string | null,
+  endCursor?: string | null,
+  hasNextPage?: boolean,
+};
+
+// The episodes in the Star Wars trilogy
+export enum Episode {
+  NEWHOPE = \\"NEWHOPE\\", // Star Wars Episode IV: A New Hope, released in 1977.
+  EMPIRE = \\"EMPIRE\\", // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  JEDI = \\"JEDI\\", // Star Wars Episode VI: Return of the Jedi, released in 1983.
+}
+
+
+export type Starship = {
+  __typename: \\"Starship\\",
+  // The ID of the starship
+  id?: string,
+  // The name of the starship
+  name?: string,
+  // Length of the starship, along the longest axis
+  length?: number | null,
+  coordinates?: Array< Array< number > > | null,
+};
+
+export type Droid = {
+  __typename: \\"Droid\\",
+  // The ID of the droid
+  id?: string,
+  // What others call this droid
+  name?: string,
+  // This droid's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the droid exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this droid appears in
+  appearsIn?: Array< Episode | null >,
+  // This droid's primary function
+  primaryFunction?: string | null,
+};
+
 export type HeroAndDetailsQuery = {
   hero: ( {
       __typename: \\"Human\\",
       // What this human calls themselves
       name: string,
       // Height in the preferred unit, default is meters
-      height: number | null,
+      height?: number | null,
     } | {
       __typename: \\"Droid\\",
       // What others call this droid
       name: string,
       // This droid's primary function
-      primaryFunction: string | null,
+      primaryFunction?: string | null,
     }
   ) | null,
 };
@@ -206,11 +500,11 @@ export type HeroAndDetailsQuery = {
 export type HeroDetailsFragment = ( {
       __typename: \\"Human\\",
       // Height in the preferred unit, default is meters
-      height: number | null,
+      height?: number | null,
     } | {
       __typename: \\"Droid\\",
       // This droid's primary function
-      primaryFunction: string | null,
+      primaryFunction?: string | null,
     }
   );
 "
@@ -228,6 +522,96 @@ export enum Episode {
   JEDI = \\"JEDI\\", // Star Wars Episode VI: Return of the Jedi, released in 1983.
 }
 
+
+export type Character = {
+  __typename: \\"Character\\",
+  // The ID of the character
+  id?: string,
+  // The name of the character
+  name?: string,
+  // The friends of the character, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the character exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this character appears in
+  appearsIn?: Array< Episode | null >,
+};
+
+export type Human = {
+  __typename: \\"Human\\",
+  // The ID of the human
+  id?: string,
+  // What this human calls themselves
+  name?: string,
+  // The home planet of the human, or null if unknown
+  homePlanet?: string | null,
+  // Height in the preferred unit, default is meters
+  height?: number | null,
+  // Mass in kilograms, or null if unknown
+  mass?: number | null,
+  // This human's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the human exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this human appears in
+  appearsIn?: Array< Episode | null >,
+  // A list of starships this person has piloted, or an empty list if none
+  starships?:  Array<Starship | null > | null,
+};
+
+export type FriendsConnection = {
+  __typename: \\"FriendsConnection\\",
+  // The total number of friends
+  totalCount?: number | null,
+  // The edges for each of the character's friends.
+  edges?:  Array<FriendsEdge | null > | null,
+  // A list of the friends, as a convenience when edges are not needed.
+  friends?:  Array<Character | null > | null,
+  // Information for paginating this connection
+  pageInfo?: PageInfo,
+};
+
+export type FriendsEdge = {
+  __typename: \\"FriendsEdge\\",
+  // A cursor used for pagination
+  cursor?: string,
+  // The character represented by this friendship edge
+  node?: Character,
+};
+
+export type PageInfo = {
+  __typename: \\"PageInfo\\",
+  startCursor?: string | null,
+  endCursor?: string | null,
+  hasNextPage?: boolean,
+};
+
+export type Starship = {
+  __typename: \\"Starship\\",
+  // The ID of the starship
+  id?: string,
+  // The name of the starship
+  name?: string,
+  // Length of the starship, along the longest axis
+  length?: number | null,
+  coordinates?: Array< Array< number > > | null,
+};
+
+export type Droid = {
+  __typename: \\"Droid\\",
+  // The ID of the droid
+  id?: string,
+  // What others call this droid
+  name?: string,
+  // This droid's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the droid exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this droid appears in
+  appearsIn?: Array< Episode | null >,
+  // This droid's primary function
+  primaryFunction?: string | null,
+};
 
 export type HeroAndFriendsNamesQueryVariables = {
   episode?: Episode | null,
@@ -275,10 +659,21 @@ exports[`TypeScript code generation #generateSource() should generate simple nes
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type Starship = {
+  __typename: \\"Starship\\",
+  // The ID of the starship
+  id?: string,
+  // The name of the starship
+  name?: string,
+  // Length of the starship, along the longest axis
+  length?: number | null,
+  coordinates?: Array< Array< number > > | null,
+};
+
 export type StarshipCoordsQuery = {
-  starship:  {
+  starship?:  {
     __typename: \\"Starship\\",
-    coordinates: Array< Array< number > > | null,
+    coordinates?: Array< Array< number > > | null,
   } | null,
 };
 "
@@ -288,6 +683,104 @@ exports[`TypeScript code generation #generateSource() should generate simple que
 "/* tslint:disable */
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
+
+export type Character = {
+  __typename: \\"Character\\",
+  // The ID of the character
+  id?: string,
+  // The name of the character
+  name?: string,
+  // The friends of the character, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the character exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this character appears in
+  appearsIn?: Array< Episode | null >,
+};
+
+export type Human = {
+  __typename: \\"Human\\",
+  // The ID of the human
+  id?: string,
+  // What this human calls themselves
+  name?: string,
+  // The home planet of the human, or null if unknown
+  homePlanet?: string | null,
+  // Height in the preferred unit, default is meters
+  height?: number | null,
+  // Mass in kilograms, or null if unknown
+  mass?: number | null,
+  // This human's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the human exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this human appears in
+  appearsIn?: Array< Episode | null >,
+  // A list of starships this person has piloted, or an empty list if none
+  starships?:  Array<Starship | null > | null,
+};
+
+export type FriendsConnection = {
+  __typename: \\"FriendsConnection\\",
+  // The total number of friends
+  totalCount?: number | null,
+  // The edges for each of the character's friends.
+  edges?:  Array<FriendsEdge | null > | null,
+  // A list of the friends, as a convenience when edges are not needed.
+  friends?:  Array<Character | null > | null,
+  // Information for paginating this connection
+  pageInfo?: PageInfo,
+};
+
+export type FriendsEdge = {
+  __typename: \\"FriendsEdge\\",
+  // A cursor used for pagination
+  cursor?: string,
+  // The character represented by this friendship edge
+  node?: Character,
+};
+
+export type PageInfo = {
+  __typename: \\"PageInfo\\",
+  startCursor?: string | null,
+  endCursor?: string | null,
+  hasNextPage?: boolean,
+};
+
+// The episodes in the Star Wars trilogy
+export enum Episode {
+  NEWHOPE = \\"NEWHOPE\\", // Star Wars Episode IV: A New Hope, released in 1977.
+  EMPIRE = \\"EMPIRE\\", // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  JEDI = \\"JEDI\\", // Star Wars Episode VI: Return of the Jedi, released in 1983.
+}
+
+
+export type Starship = {
+  __typename: \\"Starship\\",
+  // The ID of the starship
+  id?: string,
+  // The name of the starship
+  name?: string,
+  // Length of the starship, along the longest axis
+  length?: number | null,
+  coordinates?: Array< Array< number > > | null,
+};
+
+export type Droid = {
+  __typename: \\"Droid\\",
+  // The ID of the droid
+  id?: string,
+  // What others call this droid
+  name?: string,
+  // This droid's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the droid exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this droid appears in
+  appearsIn?: Array< Episode | null >,
+  // This droid's primary function
+  primaryFunction?: string | null,
+};
 
 export type HeroNameQuery = {
   hero: ( {
@@ -317,6 +810,96 @@ export enum Episode {
 }
 
 
+export type Character = {
+  __typename: \\"Character\\",
+  // The ID of the character
+  id?: string,
+  // The name of the character
+  name?: string,
+  // The friends of the character, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the character exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this character appears in
+  appearsIn?: Array< Episode | null >,
+};
+
+export type Human = {
+  __typename: \\"Human\\",
+  // The ID of the human
+  id?: string,
+  // What this human calls themselves
+  name?: string,
+  // The home planet of the human, or null if unknown
+  homePlanet?: string | null,
+  // Height in the preferred unit, default is meters
+  height?: number | null,
+  // Mass in kilograms, or null if unknown
+  mass?: number | null,
+  // This human's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the human exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this human appears in
+  appearsIn?: Array< Episode | null >,
+  // A list of starships this person has piloted, or an empty list if none
+  starships?:  Array<Starship | null > | null,
+};
+
+export type FriendsConnection = {
+  __typename: \\"FriendsConnection\\",
+  // The total number of friends
+  totalCount?: number | null,
+  // The edges for each of the character's friends.
+  edges?:  Array<FriendsEdge | null > | null,
+  // A list of the friends, as a convenience when edges are not needed.
+  friends?:  Array<Character | null > | null,
+  // Information for paginating this connection
+  pageInfo?: PageInfo,
+};
+
+export type FriendsEdge = {
+  __typename: \\"FriendsEdge\\",
+  // A cursor used for pagination
+  cursor?: string,
+  // The character represented by this friendship edge
+  node?: Character,
+};
+
+export type PageInfo = {
+  __typename: \\"PageInfo\\",
+  startCursor?: string | null,
+  endCursor?: string | null,
+  hasNextPage?: boolean,
+};
+
+export type Starship = {
+  __typename: \\"Starship\\",
+  // The ID of the starship
+  id?: string,
+  // The name of the starship
+  name?: string,
+  // Length of the starship, along the longest axis
+  length?: number | null,
+  coordinates?: Array< Array< number > > | null,
+};
+
+export type Droid = {
+  __typename: \\"Droid\\",
+  // The ID of the droid
+  id?: string,
+  // What others call this droid
+  name?: string,
+  // This droid's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the droid exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this droid appears in
+  appearsIn?: Array< Episode | null >,
+  // This droid's primary function
+  primaryFunction?: string | null,
+};
+
 export type HeroNameQueryVariables = {
   episode?: Episode | null,
 };
@@ -341,6 +924,16 @@ exports[`TypeScript code generation #generateSource() should handle comments in 
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type CommentTest = {
+  __typename: \\"CommentTest\\",
+  // This is a single-line comment
+  singleLine?: string | null,
+  // This is a multi-line
+  // comment.
+  multiLine?: string | null,
+  enumCommentTest?: EnumCommentTestCase | null,
+};
+
 export enum EnumCommentTestCase {
   first = \\"first\\", // This is a single-line comment
   // This is a multi-line
@@ -350,9 +943,9 @@ export enum EnumCommentTestCase {
 
 
 export type CustomScalarQuery = {
-  commentTest:  {
+  commentTest?:  {
     __typename: \\"CommentTest\\",
-    enumCommentTest: EnumCommentTestCase | null,
+    enumCommentTest?: EnumCommentTestCase | null,
   } | null,
 };
 "
@@ -363,6 +956,23 @@ exports[`TypeScript code generation #generateSource() should handle interfaces a
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type InterfaceTestCase = {
+  __typename: \\"InterfaceTestCase\\",
+  prop?: string,
+};
+
+export type ImplA = {
+  __typename: \\"ImplA\\",
+  prop?: string,
+  propA?: string,
+};
+
+export type ImplB = {
+  __typename: \\"ImplB\\",
+  prop?: string,
+  propB?: number | null,
+};
+
 export type CustomScalarQuery = {
   interfaceTest: ( {
       __typename: \\"ImplA\\",
@@ -371,7 +981,7 @@ export type CustomScalarQuery = {
     } | {
       __typename: \\"ImplB\\",
       prop: string,
-      propB: number | null,
+      propB?: number | null,
     }
   ) | null,
 };
@@ -383,12 +993,30 @@ exports[`TypeScript code generation #generateSource() should handle multi-line c
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type CommentTest = {
+  __typename: \\"CommentTest\\",
+  // This is a single-line comment
+  singleLine?: string | null,
+  // This is a multi-line
+  // comment.
+  multiLine?: string | null,
+  enumCommentTest?: EnumCommentTestCase | null,
+};
+
+export enum EnumCommentTestCase {
+  first = \\"first\\", // This is a single-line comment
+  // This is a multi-line
+  // comment.
+  second = \\"second\\",
+}
+
+
 export type CustomScalarQuery = {
-  commentTest:  {
+  commentTest?:  {
     __typename: \\"CommentTest\\",
     // This is a multi-line
     // comment.
-    multiLine: string | null,
+    multiLine?: string | null,
   } | null,
 };
 "
@@ -399,11 +1027,29 @@ exports[`TypeScript code generation #generateSource() should handle single line 
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type CommentTest = {
+  __typename: \\"CommentTest\\",
+  // This is a single-line comment
+  singleLine?: string | null,
+  // This is a multi-line
+  // comment.
+  multiLine?: string | null,
+  enumCommentTest?: EnumCommentTestCase | null,
+};
+
+export enum EnumCommentTestCase {
+  first = \\"first\\", // This is a single-line comment
+  // This is a multi-line
+  // comment.
+  second = \\"second\\",
+}
+
+
 export type CustomScalarQuery = {
-  commentTest:  {
+  commentTest?:  {
     __typename: \\"CommentTest\\",
     // This is a single-line comment
-    singleLine: string | null,
+    singleLine?: string | null,
   } | null,
 };
 "
@@ -413,6 +1059,19 @@ exports[`TypeScript code generation #generateSource() should handle unions at ro
 "/* tslint:disable */
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
+
+export type UnionTestCase = PartialA | PartialB
+
+
+export type PartialA = {
+  __typename: \\"PartialA\\",
+  prop?: string,
+};
+
+export type PartialB = {
+  __typename: \\"PartialB\\",
+  prop?: string,
+};
 
 export type CustomScalarQuery = {
   unionTest: ( {
@@ -431,6 +1090,104 @@ exports[`TypeScript code generation #generateSource() should have __typename val
 "/* tslint:disable */
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
+
+export type Character = {
+  __typename: \\"Character\\",
+  // The ID of the character
+  id?: string,
+  // The name of the character
+  name?: string,
+  // The friends of the character, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the character exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this character appears in
+  appearsIn?: Array< Episode | null >,
+};
+
+export type Human = {
+  __typename: \\"Human\\",
+  // The ID of the human
+  id?: string,
+  // What this human calls themselves
+  name?: string,
+  // The home planet of the human, or null if unknown
+  homePlanet?: string | null,
+  // Height in the preferred unit, default is meters
+  height?: number | null,
+  // Mass in kilograms, or null if unknown
+  mass?: number | null,
+  // This human's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the human exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this human appears in
+  appearsIn?: Array< Episode | null >,
+  // A list of starships this person has piloted, or an empty list if none
+  starships?:  Array<Starship | null > | null,
+};
+
+export type FriendsConnection = {
+  __typename: \\"FriendsConnection\\",
+  // The total number of friends
+  totalCount?: number | null,
+  // The edges for each of the character's friends.
+  edges?:  Array<FriendsEdge | null > | null,
+  // A list of the friends, as a convenience when edges are not needed.
+  friends?:  Array<Character | null > | null,
+  // Information for paginating this connection
+  pageInfo?: PageInfo,
+};
+
+export type FriendsEdge = {
+  __typename: \\"FriendsEdge\\",
+  // A cursor used for pagination
+  cursor?: string,
+  // The character represented by this friendship edge
+  node?: Character,
+};
+
+export type PageInfo = {
+  __typename: \\"PageInfo\\",
+  startCursor?: string | null,
+  endCursor?: string | null,
+  hasNextPage?: boolean,
+};
+
+// The episodes in the Star Wars trilogy
+export enum Episode {
+  NEWHOPE = \\"NEWHOPE\\", // Star Wars Episode IV: A New Hope, released in 1977.
+  EMPIRE = \\"EMPIRE\\", // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  JEDI = \\"JEDI\\", // Star Wars Episode VI: Return of the Jedi, released in 1983.
+}
+
+
+export type Starship = {
+  __typename: \\"Starship\\",
+  // The ID of the starship
+  id?: string,
+  // The name of the starship
+  name?: string,
+  // Length of the starship, along the longest axis
+  length?: number | null,
+  coordinates?: Array< Array< number > > | null,
+};
+
+export type Droid = {
+  __typename: \\"Droid\\",
+  // The ID of the droid
+  id?: string,
+  // What others call this droid
+  name?: string,
+  // This droid's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the droid exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this droid appears in
+  appearsIn?: Array< Episode | null >,
+  // This droid's primary function
+  primaryFunction?: string | null,
+};
 
 export type HeroNameQuery = {
   hero: ( {
@@ -463,8 +1220,106 @@ exports[`TypeScript code generation #generateSource() should have __typename val
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type Droid = {
+  __typename: \\"Droid\\",
+  // The ID of the droid
+  id?: string,
+  // What others call this droid
+  name?: string,
+  // This droid's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the droid exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this droid appears in
+  appearsIn?: Array< Episode | null >,
+  // This droid's primary function
+  primaryFunction?: string | null,
+};
+
+export type Character = {
+  __typename: \\"Character\\",
+  // The ID of the character
+  id?: string,
+  // The name of the character
+  name?: string,
+  // The friends of the character, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the character exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this character appears in
+  appearsIn?: Array< Episode | null >,
+};
+
+export type Human = {
+  __typename: \\"Human\\",
+  // The ID of the human
+  id?: string,
+  // What this human calls themselves
+  name?: string,
+  // The home planet of the human, or null if unknown
+  homePlanet?: string | null,
+  // Height in the preferred unit, default is meters
+  height?: number | null,
+  // Mass in kilograms, or null if unknown
+  mass?: number | null,
+  // This human's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the human exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this human appears in
+  appearsIn?: Array< Episode | null >,
+  // A list of starships this person has piloted, or an empty list if none
+  starships?:  Array<Starship | null > | null,
+};
+
+export type FriendsConnection = {
+  __typename: \\"FriendsConnection\\",
+  // The total number of friends
+  totalCount?: number | null,
+  // The edges for each of the character's friends.
+  edges?:  Array<FriendsEdge | null > | null,
+  // A list of the friends, as a convenience when edges are not needed.
+  friends?:  Array<Character | null > | null,
+  // Information for paginating this connection
+  pageInfo?: PageInfo,
+};
+
+export type FriendsEdge = {
+  __typename: \\"FriendsEdge\\",
+  // A cursor used for pagination
+  cursor?: string,
+  // The character represented by this friendship edge
+  node?: Character,
+};
+
+export type PageInfo = {
+  __typename: \\"PageInfo\\",
+  startCursor?: string | null,
+  endCursor?: string | null,
+  hasNextPage?: boolean,
+};
+
+// The episodes in the Star Wars trilogy
+export enum Episode {
+  NEWHOPE = \\"NEWHOPE\\", // Star Wars Episode IV: A New Hope, released in 1977.
+  EMPIRE = \\"EMPIRE\\", // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  JEDI = \\"JEDI\\", // Star Wars Episode VI: Return of the Jedi, released in 1983.
+}
+
+
+export type Starship = {
+  __typename: \\"Starship\\",
+  // The ID of the starship
+  id?: string,
+  // The name of the starship
+  name?: string,
+  // Length of the starship, along the longest axis
+  length?: number | null,
+  coordinates?: Array< Array< number > > | null,
+};
+
 export type DroidNameQuery = {
-  droid:  {
+  droid?:  {
     __typename: \\"Droid\\",
     // What others call this droid
     name: string,
@@ -484,19 +1339,117 @@ exports[`TypeScript code generation #generateSource() should have the correct __
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
+export type Human = {
+  __typename: \\"Human\\",
+  // The ID of the human
+  id?: string,
+  // What this human calls themselves
+  name?: string,
+  // The home planet of the human, or null if unknown
+  homePlanet?: string | null,
+  // Height in the preferred unit, default is meters
+  height?: number | null,
+  // Mass in kilograms, or null if unknown
+  mass?: number | null,
+  // This human's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the human exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this human appears in
+  appearsIn?: Array< Episode | null >,
+  // A list of starships this person has piloted, or an empty list if none
+  starships?:  Array<Starship | null > | null,
+};
+
+export type Character = {
+  __typename: \\"Character\\",
+  // The ID of the character
+  id?: string,
+  // The name of the character
+  name?: string,
+  // The friends of the character, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the character exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this character appears in
+  appearsIn?: Array< Episode | null >,
+};
+
+export type Droid = {
+  __typename: \\"Droid\\",
+  // The ID of the droid
+  id?: string,
+  // What others call this droid
+  name?: string,
+  // This droid's friends, or an empty list if they have none
+  friends?:  Array<Character | null > | null,
+  // The friends of the droid exposed as a connection with edges
+  friendsConnection?: FriendsConnection,
+  // The movies this droid appears in
+  appearsIn?: Array< Episode | null >,
+  // This droid's primary function
+  primaryFunction?: string | null,
+};
+
+export type FriendsConnection = {
+  __typename: \\"FriendsConnection\\",
+  // The total number of friends
+  totalCount?: number | null,
+  // The edges for each of the character's friends.
+  edges?:  Array<FriendsEdge | null > | null,
+  // A list of the friends, as a convenience when edges are not needed.
+  friends?:  Array<Character | null > | null,
+  // Information for paginating this connection
+  pageInfo?: PageInfo,
+};
+
+export type FriendsEdge = {
+  __typename: \\"FriendsEdge\\",
+  // A cursor used for pagination
+  cursor?: string,
+  // The character represented by this friendship edge
+  node?: Character,
+};
+
+export type PageInfo = {
+  __typename: \\"PageInfo\\",
+  startCursor?: string | null,
+  endCursor?: string | null,
+  hasNextPage?: boolean,
+};
+
+// The episodes in the Star Wars trilogy
+export enum Episode {
+  NEWHOPE = \\"NEWHOPE\\", // Star Wars Episode IV: A New Hope, released in 1977.
+  EMPIRE = \\"EMPIRE\\", // Star Wars Episode V: The Empire Strikes Back, released in 1980.
+  JEDI = \\"JEDI\\", // Star Wars Episode VI: Return of the Jedi, released in 1983.
+}
+
+
+export type Starship = {
+  __typename: \\"Starship\\",
+  // The ID of the starship
+  id?: string,
+  // The name of the starship
+  name?: string,
+  // Length of the starship, along the longest axis
+  length?: number | null,
+  coordinates?: Array< Array< number > > | null,
+};
+
 export type FindHumanQueryVariables = {
-  id: string,
+  id?: string,
 };
 
 export type FindHumanQuery = {
-  human:  {
+  human?:  {
     __typename: \\"Human\\",
     // The ID of the human
     id: string,
     // What this human calls themselves
     name: string,
     // A list of starships this person has piloted, or an empty list if none
-    starships:  Array< {
+    starships?:  Array< {
       __typename: \\"Starship\\",
       // The ID of the starship
       id: string,
@@ -513,8 +1466,8 @@ export type humanDetailsFragment = {
   // What this human calls themselves
   name: string,
   // A list of starships this person has piloted, or an empty list if none
-  starships:  Array< {
-    __typename: \\"Starship\\",
+  starships?:  Array< {
+    __typename: string,
     // The ID of the starship
     id: string,
     // The name of the starship

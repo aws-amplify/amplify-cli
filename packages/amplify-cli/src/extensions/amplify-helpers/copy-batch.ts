@@ -1,28 +1,26 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities, $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
 
 /**
  * Runs a series of jobs through the templating system.
  *
- * @param {any}             context        - The Amplify CLI context
- * @param {any[]}           jobs           - A list of jobs to run.
- * @param {any}             props          - The props to use for variable replacement.
- * @param {boolean}         force          - Force CF template generation
- * @param {array|object}    writeParams    - data for the CF template but not parameters file
+ * @param {$TSContext}          context      - The Amplify CLI context
+ * @param {$TSAny[]}            jobs         - A list of jobs to run.
+ * @param {$TSAny}              props        - The props to use for variable replacement.
+ * @param {boolean}             force        - Force CF template generation
+ * @param {$TSAny[]|$TSObject}  writeParams  - data for the CF template but not parameters file
  */
-export async function copyBatch(context, jobs, props, force, writeParams) {
+export async function copyBatch(context: $TSContext, jobs: $TSAny, props: $TSAny, force: boolean, writeParams?: $TSAny[] | $TSObject) {
   // grab some features
-  const { template, prompt, filesystem } = context;
+  const { template, prompt, filesystem } = context as $TSAny;
   const { confirm } = prompt;
 
   // If the file exists
-  const shouldGenerate = async (target, force) => {
+  const shouldGenerate = async (target: $TSAny, force: boolean) => {
     if (!filesystem.exists(target) || force) return true;
     return confirm(`overwrite ${target}`);
   };
 
-  for (let index = 0; index < jobs.length; index += 1) {
-    // grab the current job
-    const job = jobs[index];
+  for (const job of jobs) {
     // safety check
     if (!job) {
       continue;

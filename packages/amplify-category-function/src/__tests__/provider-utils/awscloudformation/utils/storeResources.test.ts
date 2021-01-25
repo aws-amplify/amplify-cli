@@ -1,4 +1,4 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import { LambdaLayer } from 'amplify-function-plugin-interface';
 import { saveMutableState } from '../../../../provider-utils/awscloudformation/utils/storeResources';
 
@@ -7,22 +7,20 @@ jest.mock('amplify-cli-core', () => ({
     readJson: jest.fn(),
     writeJson: jest.fn(),
   },
+  pathManager: {
+    getBackendDirPath: jest.fn(),
+  },
 }));
 
 const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
+const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
+
+pathManager_mock.getBackendDirPath.mockImplementation(() => 'backendDir');
 
 describe('save mutable state', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-
-  const context_stub = {
-    amplify: {
-      pathManager: {
-        getBackendDirPath: () => 'backendDir',
-      },
-    },
-  };
 
   it('destructures mutableParametersState in the stored object', () => {
     const mutableParametersStateContents = {
@@ -36,7 +34,7 @@ describe('save mutable state', () => {
       lambdaLayers: [] as LambdaLayer[],
     };
 
-    saveMutableState(context_stub, input);
+    saveMutableState(input);
     expect(JSONUtilities_mock.writeJson.mock.calls[0][1]).toMatchSnapshot();
   });
 
@@ -62,7 +60,7 @@ describe('save mutable state', () => {
       lambdaLayers: [],
       resourceName: 'testResourceName',
     };
-    saveMutableState(context_stub, input);
+    saveMutableState(input);
     expect(JSONUtilities_mock.writeJson.mock.calls[0][1]).toMatchSnapshot();
   });
 });

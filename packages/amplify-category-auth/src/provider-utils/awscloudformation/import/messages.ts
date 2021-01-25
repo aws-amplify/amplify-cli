@@ -25,7 +25,6 @@ export const importMessages = {
     `The selected Cognito User Pool does not have at least 1 ${type} app client configured. ${type} app clients are app clients ${
       type === 'Web' ? 'without' : 'with'
     } a client secret.`,
-
   OneIdentityPoolValid: (identityPoolName: string, identityPoolId: string) =>
     `${greenCheck} Only one Identity Pool resource found: '${identityPoolName}' (${identityPoolId}) was automatically selected.`,
   MultipleIdentityPools: ` Multiple Identity Pools are configured for the selected Cognito User Pool.`,
@@ -40,7 +39,9 @@ export const importMessages = {
   ImportPreviousResourceFooter: `If you choose No, then an import walkthrough will run to import a different resource into the new environment.`,
   ImportNewResourceRequired: (resourceName: string) =>
     `Imported resource: '${resourceName}' found, parameters are required for environment creation.`,
-
+  ConfirmUseDifferentAppClient:
+    'It is recommended to use different app clients for web and native application, You have chosen the same app client for both. Do you want to change this?',
+  WarnAppClientReuse: '⚠️ It is recommended to use different app client for web and native application.',
   Questions: {
     UserPoolSelection: 'Select the User Pool you want to import:',
     IdentityPoolSelection: `Select the Identity Pool you want to import:`,
