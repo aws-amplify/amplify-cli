@@ -565,9 +565,9 @@ function storeS3BucketInfo(category: string, deploymentBucketName: string, envNa
   const amplifyMeta = stateManager.getMeta();
   const teamProviderInfo = stateManager.getTeamProviderInfo();
 
-  _.set(teamProviderInfo, [envName, 'categories', category, resourceName], { deploymentBucketName, s3Key });
+  _.assign(teamProviderInfo, [envName, 'categories', category, resourceName], { deploymentBucketName, s3Key });
 
-  _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
+  _.assign(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
   stateManager.setMeta(undefined, amplifyMeta);
   stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
 }
