@@ -19,8 +19,6 @@ export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDi
 
     if (settings.emptyDir) {
       chain
-        .wait('Do you want to use an AWS profile')
-        .sendLine('y')
         .wait('Which authentication method do you want to use?')
         .sendCarriageReturn()
         .wait('Choose your default editor:')

@@ -525,9 +525,9 @@ export async function loadConfiguration(context: $TSContext) {
   return config;
 }
 
-function loadConfigFromPath(profilePath: string): $TSAny {
+function loadConfigFromPath(profilePath: string): AwsSdkConfig {
   if (fs.existsSync(profilePath)) {
-    const config = JSONUtilities.readJson<$TSAny>(profilePath);
+    const config = JSONUtilities.readJson<AwsSdkConfig>(profilePath);
     if (config.accessKeyId && config.secretAccessKey && config.region) {
       return config;
     }
@@ -567,8 +567,10 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
     if (authType?.profileName) {
       awsConfig = await systemConfigManager.getProfiledAwsConfig(context, authType.profileName);
     } else {
-      awsConfig = loadConfigFromPath(projectConfigInfo.config.awsConfigFilePath);
+      throw Error('Project configuration invalid. Missing profile name.');
     }
+  } else if (authType.type === 'accessKeys') {
+    awsConfig = loadConfigFromPath(projectConfigInfo.config.awsConfigFilePath);
   }
   return awsConfig;
 }
@@ -741,8 +743,13 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
 
   if (accessKeyId && secretAccessKey) {
     return { type: 'accessKeys', accessKeyId, region, secretAccessKey };
-  } else if (useProfile && profileName) {
+  }
+  if (useProfile && profileName) {
     return { type: 'profile', profileName };
+  }
+  if (projectConfig?.config?.awsConfigFilePath) {
+    const awsConfig = loadConfigFromPath(projectConfig.config.awsConfigFilePath);
+    return { ...awsConfig, type: 'accessKeys' };
   }
 
   let appId: string;
