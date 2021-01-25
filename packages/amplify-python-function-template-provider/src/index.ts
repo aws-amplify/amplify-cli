@@ -24,6 +24,7 @@ export function helloWorld(): Promise<FunctionTemplateParameters> {
       destMap: {
         'index.py': 'src/index.py',
         'event.json': 'src/event.json',
+        'setup.py': 'src/setup.py',
       },
       defaultEditorFile: 'src/index.py',
     },
