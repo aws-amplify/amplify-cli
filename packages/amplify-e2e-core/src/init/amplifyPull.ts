@@ -21,6 +21,8 @@ export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDi
       chain
         .wait('Which authentication method do you want to use?')
         .sendCarriageReturn()
+        .wait('Please choose the profile you want to use')
+        .sendCarriageReturn()
         .wait('Choose your default editor:')
         .sendCarriageReturn()
         .wait("Choose the type of app that you're building")
