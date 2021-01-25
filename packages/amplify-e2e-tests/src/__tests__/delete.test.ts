@@ -1,25 +1,32 @@
 import { S3, Amplify } from 'aws-sdk';
-import { initJSProjectWithProfile, initIosProjectWithProfile, initAndroidProjectWithProfile, deleteProject } from 'amplify-e2e-core';
 import {
+  addPinpointAnalytics,
+  addApiWithoutSchema,
+  addAuthWithDefault,
+  addS3,
+  amplifyDelete,
+  amplifyPushWithoutCodegen,
+  bucketNotExists,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
-  getProjectMeta,
-  getS3StorageBucketName,
-  getAWSConfigIOSPath,
+  deleteS3Bucket,
+  initAndroidProjectWithProfile,
+  initIosProjectWithProfile,
+  initJSProjectWithProfile,
+  initProjectForPinpoint,
+  getAmplifyConfigAndroidPath,
   getAmplifyConfigIOSPath,
   getAWSConfigAndroidPath,
-  getAmplifyConfigAndroidPath,
-  bucketNotExists,
-  deleteS3Bucket,
+  getAWSConfigIOSPath,
+  getProjectMeta,
+  getS3StorageBucketName,
+  pinpointAppExist,
+  pushToCloud,
 } from 'amplify-e2e-core';
 import { addEnvironment, checkoutEnvironment, removeEnvironment } from '../environment/env';
-import { addApiWithoutSchema } from 'amplify-e2e-core';
 import { addCodegen } from '../codegen/add';
-import { addS3 } from 'amplify-e2e-core';
-import { amplifyPushWithoutCodegen } from 'amplify-e2e-core';
-import { addAuthWithDefault } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
-import { initProjectForPinpoint, addPinpointAnalytics, pushToCloud, pinpointAppExist, amplifyDelete } from 'amplify-e2e-core';
 import { getAWSExportsPath } from '../aws-exports/awsExports';
 import _ from 'lodash';
 
@@ -68,10 +75,10 @@ describe('amplify delete', () => {
     const amplifyMeta = getProjectMeta(projRoot);
     const meta = amplifyMeta.providers.awscloudformation;
     const deploymentBucketName1 = meta.DeploymentBucketName;
-    await expect(await bucketExists(deploymentBucketName1)).toBe(true);
+    expect(await bucketExists(deploymentBucketName1)).toBe(true);
     await checkoutEnvironment(projRoot, { envName: 'testdev' });
     await removeEnvironment(projRoot, { envName: 'testprod' });
-    await expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
+    expect(await bucketNotExists(deploymentBucketName1)).toBe(true);
     await deleteProject(projRoot);
   });
 
@@ -82,16 +89,17 @@ describe('amplify delete', () => {
     await amplifyPushWithoutCodegen(projRoot);
     const bucketName = getS3StorageBucketName(projRoot);
     await putFiles(bucketName);
-    expect(await bucketExists(bucketName)).toBeTruthy();
+    expect(await bucketExists(bucketName)).toBe(true);
     await deleteProject(projRoot);
-    expect(await bucketNotExists(bucketName)).toBeTruthy();
+    expect(await bucketNotExists(bucketName)).toBe(true);
   });
+
   it('should try deleting unavailable bucket but not fail', async () => {
     await initJSProjectWithProfile(projRoot, {});
     const amplifyMeta = getProjectMeta(projRoot);
     const meta = amplifyMeta.providers.awscloudformation;
     const bucketName = meta.DeploymentBucketName;
-    expect(await bucketExists(bucketName)).toBeTruthy();
+    expect(await bucketExists(bucketName)).toBe(true);
     await deleteS3Bucket(bucketName);
     await deleteProject(projRoot);
   });
