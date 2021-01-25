@@ -1,5 +1,5 @@
 import { existsSync } from 'fs-extra';
-import _ = require('lodash');
+import * as _ from 'lodash';
 import * as path from 'path';
 
 function loadFunction(fileName: string) {

@@ -19,7 +19,7 @@ export function getAllLambdaFunctions(context: $TSContext, backendPath: string):
         const cfnParams = path.join(lambdaDir, 'function-parameters.json');
         try {
           const lambdaCfn = JSONUtilities.readJson<$TSAny>(cfnPath);
-          const lambdaCfnParams = fs.existsSync(cfnParams) ? JSONUtilities.readJson<$TSAny>(cfnParams) : {};
+          const lambdaCfnParams = JSONUtilities.readJson<$TSAny>(cfnParams, { throwIfNotExist: false }) || {};
           const lambdaConfig = processResources(lambdaCfn.Resources, { ...lambdaCfnParams, env: 'NONE' });
           lambdaConfig.basePath = lambdaDir;
           lambdas.push(lambdaConfig);
