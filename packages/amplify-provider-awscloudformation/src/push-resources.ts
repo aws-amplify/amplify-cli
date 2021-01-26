@@ -545,18 +545,20 @@ async function packageResource(context: $TSContext, resource: $TSAny) {
     const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
     JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
   } else {
+    cfnMeta.Parameters.deploymentBucketName = paramType;
+    cfnMeta.Parameters.s3Key = paramType;
     if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-      cfnMeta.Parameters.deploymentBucketName = paramType;
-      cfnMeta.Parameters.s3Key = paramType;
       cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
         Bucket: Fn.Ref('deploymentBucketName'),
         Key: Fn.Ref('s3Key'),
       };
     } else {
-      cfnMeta.Parameters.deploymentBucketName = paramType;
-      cfnMeta.Parameters.s3Key = paramType;
-      storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
+      cfnMeta.Resources.LambdaFunction.Properties.Code = {
+        S3Bucket: Fn.Ref('deploymentBucketName'),
+        S3Key: Fn.Ref('s3Key'),
+      };
     }
+    storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
   }
   JSONUtilities.writeJson(cfnFilePath, cfnMeta);
 }
@@ -565,7 +567,9 @@ function storeS3BucketInfo(category: string, deploymentBucketName: string, envNa
   const amplifyMeta = stateManager.getMeta();
   const teamProviderInfo = stateManager.getTeamProviderInfo();
 
-  _.set(teamProviderInfo, [envName, 'categories', category, resourceName], { deploymentBucketName, s3Key });
+  const tpiResourceParams: $TSAny = _.get(teamProviderInfo, [envName, 'categories', category, resourceName], {});
+  _.assign(tpiResourceParams, { deploymentBucketName, s3Key });
+  _.set(teamProviderInfo, [envName, 'categories', category, resourceName], tpiResourceParams);
 
   _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
   stateManager.setMeta(undefined, amplifyMeta);
