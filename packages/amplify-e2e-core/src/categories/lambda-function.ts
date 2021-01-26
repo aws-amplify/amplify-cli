@@ -405,10 +405,15 @@ const addCron = (chain: ExecutionContext, settings: any) => {
   return chain;
 };
 
-export const functionMockAssert = (cwd: string, settings: { funcName: string; successString: string; eventFile: string }) => {
-  return new Promise((resolve, reject) => {
-    const lookupName = settings.funcName;
-    spawn(getCLIPath(), ['mock', 'function', lookupName, '--event', settings.eventFile], { cwd, stripColors: true })
+export const functionMockAssert = (
+  cwd: string,
+  settings: { funcName: string; successString: string; eventFile: string; timeout?: number },
+) => {
+  return new Promise<void>((resolve, reject) => {
+    const cliArgs = ['mock', 'function', settings.funcName, '--event', settings.eventFile].concat(
+      settings.timeout ? ['--timeout', settings.timeout.toString()] : [],
+    );
+    spawn(getCLIPath(), cliArgs, { cwd, stripColors: true })
       .wait('Result:')
       .wait(settings.successString)
       .wait('Finished execution.')
