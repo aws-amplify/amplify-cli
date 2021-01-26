@@ -1,3 +1,4 @@
+import { $TSAny } from 'amplify-cli-core';
 import { start } from '../../func';
 
 jest.mock('../../utils/lambda/loadMinimal', () => ({
@@ -5,6 +6,14 @@ jest.mock('../../utils/lambda/loadMinimal', () => ({
 }));
 jest.mock('../../utils', () => ({
   hydrateAllEnvVars: jest.fn(),
+}));
+jest.mock('amplify-cli-core', () => ({
+  JSONUtilities: {
+    readJson: jest.fn(),
+  },
+  pathManager: {
+    getBackendDirPath: () => 'fake-backend-path',
+  },
 }));
 jest.mock('amplify-category-function', () => ({
   getInvoker: () => () => new Promise(resolve => setTimeout(() => resolve('lambda value'), 1000 * 19)),
@@ -17,7 +26,7 @@ describe('function start', () => {
     jest.clearAllMocks();
   });
 
-  const context_stub = {
+  const context_stub: $TSAny = {
     input: {
       subCommands: ['funcName'],
       options: {
@@ -26,9 +35,6 @@ describe('function start', () => {
       },
     },
     amplify: {
-      pathManager: {
-        getBackendDirPath: jest.fn(() => 'backend-path'),
-      },
       inputValidation: () => () => true,
       readJsonFile: jest.fn(),
       getResourceStatus: () => ({ allResources: [] }),

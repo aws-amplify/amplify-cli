@@ -15,6 +15,7 @@ export type ApiDetails = {
     type: string;
   }[];
 };
+
 export function hydrateAllEnvVars(
   resources: Resources,
   sourceEnvVars: Record<string, string>,

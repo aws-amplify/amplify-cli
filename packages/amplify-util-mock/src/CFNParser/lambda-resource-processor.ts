@@ -1,3 +1,4 @@
+import { $TSAny, $TSObject } from 'amplify-cli-core';
 import { CloudFormationParseContext } from './types';
 import { parseValue } from './field-parser';
 
@@ -39,8 +40,8 @@ export function lambdaFunctionHandler(resourceName, resource, cfnContext: CloudF
   };
 }
 
-export function processResources(resources: { [key: string]: any }, transformResult: any, params = {}): LambdaFunctionConfig | undefined {
-  const definition = Object.entries(resources).find((entry: [string, any]) => entry[1].Type === 'AWS::Lambda::Function');
+export function processResources(resources: $TSObject, params = {}): LambdaFunctionConfig | undefined {
+  const definition = Object.entries(resources).find((entry: [string, $TSAny]) => entry[1].Type === 'AWS::Lambda::Function');
   if (definition) {
     return lambdaFunctionHandler(definition[0], definition[1], {
       conditions: CFN_DEFAULT_CONDITIONS,

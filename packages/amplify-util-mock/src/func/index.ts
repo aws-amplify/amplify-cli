@@ -1,3 +1,4 @@
+import { JSONUtilities, pathManager, $TSContext } from 'amplify-cli-core';
 import { getInvoker, category, isMockable } from 'amplify-category-function';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
@@ -6,7 +7,7 @@ import { hydrateAllEnvVars } from '../utils';
 
 const DEFAULT_TIMEOUT_SECONDS = 10;
 
-export async function start(context) {
+export async function start(context: $TSContext) {
   if (!context.input.subCommands || context.input.subCommands.length < 1) {
     throw new Error('Specify the function name to invoke with "amplify mock function <function name>"');
   }
@@ -18,7 +19,7 @@ export async function start(context) {
     throw new Error(`Unable to mock ${resourceName}. ${mockable.reason}`);
   }
   const { amplify } = context;
-  const resourcePath = path.join(amplify.pathManager.getBackendDirPath(), category, resourceName);
+  const resourcePath = path.join(pathManager.getBackendDirPath(), category, resourceName);
   const eventNameValidator = amplify.inputValidation({
     operator: 'regex',
     value: '^[a-zA-Z0-9/._-]+?\\.json$',
@@ -51,8 +52,8 @@ export async function start(context) {
     eventName = resourceAnswers.eventName as string;
   }
 
-  const event = amplify.readJsonFile(path.resolve(path.join(resourcePath, eventName)));
-  const lambdaConfig = loadMinimalLambdaConfig(context, resourceName, { env: context.amplify.getEnvInfo().envName });
+  const event = JSONUtilities.readJson(path.resolve(path.join(resourcePath, eventName)));
+  const lambdaConfig = loadMinimalLambdaConfig(resourceName, { env: context.amplify.getEnvInfo().envName });
   if (!lambdaConfig || !lambdaConfig.handler) {
     throw new Error(`Could not parse handler for ${resourceName} from cloudformation file`);
   }
