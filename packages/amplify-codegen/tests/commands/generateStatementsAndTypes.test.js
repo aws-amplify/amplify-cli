@@ -21,6 +21,22 @@ jest.mock('../../src/commands/types');
 jest.mock('../../src/commands/statements');
 jest.mock('../../src/codegen-config');
 jest.mock('../../src/utils');
+// Mock the Feature flags for statements and types generation to use migrated packages
+jest.mock('amplify-cli-core', () => {
+  return {
+    FeatureFlags: {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'codegen.useDocsGeneratorPlugin') {
+          return true;
+        }
+        if (name === 'codegen.usetypesGeneratorPlugin') {
+          return true;
+        }
+      })
+    },
+  };
+});
+
 
 const MOCK_INCLUDE_PATH = 'MOCK_INCLUDE';
 const MOCK_STATEMENTS_PATH = 'MOCK_STATEMENTS_PATH';

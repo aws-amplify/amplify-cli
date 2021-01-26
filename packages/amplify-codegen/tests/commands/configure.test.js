@@ -7,6 +7,22 @@ jest.mock('../../src/commands/add');
 jest.mock('../../src/codegen-config');
 jest.mock('../../src/walkthrough/configure');
 
+// Mock the Feature flags for statements and types generation to use migrated packages
+jest.mock('amplify-cli-core', () => {
+  return {
+    FeatureFlags: {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'codegen.useDocsGeneratorPlugin') {
+          return true;
+        }
+        if (name === 'codegen.usetypesGeneratorPlugin') {
+          return true;
+        }
+      })
+    },
+  };
+});
+
 const MOCK_CONFIG_METHOD = {
   getProjects: jest.fn(),
   addProject: jest.fn(),
