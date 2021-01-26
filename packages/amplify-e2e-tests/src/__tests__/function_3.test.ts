@@ -78,6 +78,7 @@ describe('python function tests', () => {
       funcName,
       successString: helloWorldSuccessOutput,
       eventFile: 'src/event.json',
+      timeout: 120,
     }); // will throw if successString is not in output
   });
 
