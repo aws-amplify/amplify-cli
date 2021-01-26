@@ -1,13 +1,24 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, updateFunction } from 'amplify-e2e-core';
-import { addSimpleDDB, addDDBWithTrigger } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc, getFunctionSrc } from 'amplify-e2e-core';
-import { addApiWithSchema } from 'amplify-e2e-core';
-import { getBackendAmplifyMeta } from 'amplify-e2e-core';
-import { invokeFunction } from 'amplify-e2e-core';
+import {
+  addApiWithSchema,
+  addDDBWithTrigger,
+  addFunction,
+  addSimpleDDB,
+  amplifyPush,
+  amplifyPushAuth,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getBackendAmplifyMeta,
+  getFunctionSrc,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  invokeFunction,
+  overrideFunctionSrc,
+  readJsonFile,
+  updateFunction,
+} from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
-import { readJsonFile } from 'amplify-e2e-core';
 import _ from 'lodash';
 
 describe('nodejs', () => {
