@@ -37,7 +37,7 @@ const pythonTemplateChoices = ['Hello World'];
 
 const crudOptions = ['create', 'read', 'update', 'delete'];
 
-const appSyncOptions = ['query', 'mutation', 'subscription'];
+const appSyncOptions = ['Query', 'Mutation', 'Subscription'];
 
 const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: any) => {
   multiSelect(
