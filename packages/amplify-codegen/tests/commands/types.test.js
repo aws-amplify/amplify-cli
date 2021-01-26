@@ -7,7 +7,6 @@ const loadConfig = require('../../src/codegen-config');
 const generateTypes = require('../../src/commands/types');
 const constants = require('../../src/constants');
 const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../../src/utils');
-
 const MOCK_CONTEXT = {
   print: {
     info: jest.fn(),
@@ -31,14 +30,13 @@ jest.mock('amplify-cli-core', () => {
         if (name === 'codegen.useDocsGeneratorPlugin') {
           return true;
         }
-        if (name === 'codegen.usetypesGeneratorPlugin') {
+        if (name === 'codegen.useTypesGeneratorPlugin') {
           return true;
         }
       })
     },
   };
 });
-
 
 const MOCK_INCLUDE_PATH = 'MOCK_INCLUDE';
 const MOCK_EXCLUDE_PATH = 'MOCK_EXCLUDE';

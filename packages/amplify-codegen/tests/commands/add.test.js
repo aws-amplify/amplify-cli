@@ -31,7 +31,7 @@ jest.mock('amplify-cli-core', () => {
         if (name === 'codegen.useDocsGeneratorPlugin') {
           return true;
         }
-        if (name === 'codegen.usetypesGeneratorPlugin') {
+        if (name === 'codegen.useTypesGeneratorPlugin') {
           return true;
         }
       })
