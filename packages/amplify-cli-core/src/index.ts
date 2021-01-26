@@ -162,7 +162,7 @@ interface AmplifyToolkit {
   removeResource: () => $TSAny;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
-  showHelp: () => $TSAny;
+  showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
   showHelpfulProviderLinks: () => $TSAny;
   showResourceTable: () => $TSAny;
   serviceSelectionPrompt: (
