@@ -127,7 +127,7 @@ function copyTemplateFiles(context: $TSContext, parameters: FunctionParameters |
   let templateParams: $TSAny = parameters;
   if ('trigger' in parameters) {
     let triggerEnvs = context.amplify.loadEnvResourceParameters(context, 'function', parameters.resourceName);
-    parameters.triggerEnvs = JSON.parse(parameters.triggerEnvs) || [];
+    parameters.triggerEnvs = JSONUtilities.parse(parameters.triggerEnvs) || [];
 
     parameters.triggerEnvs.forEach(c => {
       triggerEnvs[c.key] = c.value;
