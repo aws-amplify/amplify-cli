@@ -7,6 +7,7 @@ import {
   DeploymentMachineStep,
   StateMachineHelperFunctions,
   createDeploymentMachine,
+  StateMachineError
 } from './state-machine';
 import { IStackProgressPrinter, StackEventMonitor } from './stack-event-monitor';
 import { getBucketKey, getHttpUrl } from './helpers';
@@ -22,6 +23,18 @@ interface DeploymentManagerOptions {
   throttleDelay?: number;
   eventPollingDelay?: number;
   userAgent?: string;
+}
+
+export class DeploymentError extends Error {
+  constructor(errors: StateMachineError[]) {
+    super('There was an error while deploying changes.');
+    this.name = `DeploymentError`;
+    const stackTrace = [];
+    for (const err of errors) {
+      stackTrace.push(`Index: ${err.currentIndex} Step: ${err.step}\n${err.error.stack}`);
+    }
+    this.stack = JSON.stringify(stackTrace);
+  }
 }
 
 export type DeploymentOp = Omit<DeploymentMachineOp, 'region' | 'stackTemplatePath' | 'stackTemplateUrl'> & {
@@ -133,8 +146,7 @@ export class DeploymentManager {
               return resolve();
             case 'rolledBack':
             case 'failed':
-              return reject(new Error('Deployment failed'));
-              break;
+              return reject(new DeploymentError(state.context.errors));
             default:
             // intentionally left blank as we don't care about intermediate states
           }
@@ -209,7 +221,7 @@ export class DeploymentManager {
       await this.s3Client.headObject({ Bucket: this.deploymentBucket, Key: bucketKey }).promise();
       return true;
     } catch (e) {
-      if (e.ccode === 'NotFound') {
+      if (e.code === 'NotFound') {
         throw new Error(`The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`);
       }
       throw e;
@@ -220,11 +232,13 @@ export class DeploymentManager {
     assert(tableName, 'table name should be passed');
 
     const dbClient = new aws.DynamoDB({ region });
-
-    const response = await dbClient.describeTable({ TableName: tableName }).promise();
-    const gsis = response.Table?.GlobalSecondaryIndexes;
-
-    return gsis ? gsis.every(idx => idx.IndexStatus === 'ACTIVE') : true;
+    try {
+      const response = await dbClient.describeTable({ TableName: tableName }).promise();
+      const gsis = response.Table?.GlobalSecondaryIndexes;
+      return gsis ? gsis.every(idx => idx.IndexStatus === 'ACTIVE') : true;
+    } catch (err) {
+      throw err;
+    }
   };
 
   private waitForIndices = async (stackParams: DeploymentMachineOp) => {
@@ -243,10 +257,11 @@ export class DeploymentManager {
       });
     });
 
-    await Promise.all(waiters);
     try {
+      await Promise.all(waiters);
       await this.deploymentStateManager?.advanceStep();
-    } catch {
+    } catch (err) {
+      throw err;
       // deployment should not fail because saving status failed
     }
     return Promise.resolve();
@@ -269,32 +284,32 @@ export class DeploymentManager {
   private doDeploy = async (currentStack: DeploymentMachineOp): Promise<void> => {
     try {
       await this.deploymentStateManager?.startCurrentStep();
-    } catch {
-      // deployment should not fail because status could not be saved
+      const cfn = this.cfnClient;
+
+      assert(currentStack.stackName, 'stack name should be passed to doDeploy');
+      assert(currentStack.stackTemplateUrl, 'stackTemplateUrl must be passed to doDeploy');
+
+      await this.ensureStack(currentStack.stackName);
+
+      const parameters = Object.entries(currentStack.parameters).map(([key, val]) => {
+        return {
+          ParameterKey: key,
+          ParameterValue: val.toString(),
+        };
+      });
+
+      await cfn
+        .updateStack({
+          StackName: currentStack.stackName,
+          Parameters: parameters,
+          TemplateURL: currentStack.stackTemplateUrl,
+          Capabilities: currentStack.capabilities,
+          ClientRequestToken: currentStack.clientRequestToken,
+        })
+        .promise();
+    } catch (err) {
+      throw err;
     }
-    const cfn = this.cfnClient;
-
-    assert(currentStack.stackName, 'stack name should be passed to doDeploy');
-    assert(currentStack.stackTemplateUrl, 'stackTemplateUrl must be passed to doDeploy');
-
-    await this.ensureStack(currentStack.stackName);
-
-    const parameters = Object.entries(currentStack.parameters).map(([key, val]) => {
-      return {
-        ParameterKey: key,
-        ParameterValue: val.toString(),
-      };
-    });
-
-    await cfn
-      .updateStack({
-        StackName: currentStack.stackName,
-        Parameters: parameters,
-        TemplateURL: currentStack.stackTemplateUrl,
-        Capabilities: currentStack.capabilities,
-        ClientRequestToken: currentStack.clientRequestToken,
-      })
-      .promise();
   };
 
   private waitForDeployment = async (stackParams: DeploymentMachineOp): Promise<void> => {

@@ -1,6 +1,7 @@
 import { Template } from 'cloudform-types';
 import { GlobalSecondaryIndex, AttributeDefinition } from 'cloudform-types/types/dynamoDb/table';
 import { CloudFormation } from 'aws-sdk';
+import { Capabilities } from 'aws-sdk/clients/cloudformation';
 import _ from 'lodash';
 import { JSONUtilities } from 'amplify-cli-core';
 
@@ -8,17 +9,27 @@ export interface GSIRecord {
   attributeDefinition: AttributeDefinition[];
   gsi: GlobalSecondaryIndex;
 }
+/**
+ * Use previously deployed variables
+ */
+export interface DeploymentRecord {
+  parameters?: Record<string, string>;
+  capabilities?: Capabilities;
+}
 
-export const getStackParameters = async (cfnClient: CloudFormation, StackId: string): Promise<any> => {
+export const getPreviousDeploymentRecord = async (cfnClient: CloudFormation, stackId: string): Promise<DeploymentRecord> => {
+  let depRecord: DeploymentRecord = {};
   const apiStackInfo = await cfnClient
     .describeStacks({
-      StackName: StackId,
+      StackName: stackId,
     })
     .promise();
-  return apiStackInfo.Stacks[0].Parameters.reduce((acc, param) => {
+  depRecord.parameters = apiStackInfo.Stacks[0].Parameters.reduce((acc, param) => {
     acc[param.ParameterKey] = param.ParameterValue;
     return acc;
-  }, {});
+  }, {}) as Record<string, string>;
+  depRecord.capabilities = apiStackInfo.Stacks[0].Capabilities;
+  return depRecord;
 };
 
 export const getTableNames = async (cfnClient: CloudFormation, tables: string[], StackId: string): Promise<Map<string, string>> => {

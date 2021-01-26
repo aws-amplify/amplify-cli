@@ -7,7 +7,6 @@ import {
   isDeploymentComplete,
   isRollbackComplete,
 } from './helpers';
-
 import { send } from 'xstate/lib/actions';
 
 export type DeploymentMachineOp = {
@@ -31,6 +30,7 @@ export type DeployMachineContext = {
   region: string;
   stacks: DeploymentMachineStep[];
   currentIndex: number;
+  errors?: StateMachineError[];
 };
 
 export type DeploymentMachineEvents = 'IDLE' | 'DEPLOY' | 'ROLLBACK' | 'INDEX' | 'DONE' | 'NEXT';
@@ -44,6 +44,12 @@ export type DeploymentMachineState = State<
     context: DeployMachineContext;
   }
 >;
+
+export type StateMachineError = {
+  error: Error;
+  step: number;
+  currentIndex: number;
+}
 export interface DeployMachineSchema {
   states: {
     idle: {};
@@ -71,6 +77,13 @@ export interface DeployMachineSchema {
 
 interface DeployMachineEvent extends EventObject {
   type: DeploymentMachineEvents;
+}
+
+export const collectError = (context: DeployMachineContext, err: any, meta: any) => {
+  return {
+    ...context,
+    errors: [...context.errors, { error: err.data, step: meta.step.value, currentIndex: context.currentIndex }]
+  }
 }
 
 export type StateMachineHelperFunctions = {
@@ -122,6 +135,7 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
                 },
                 onError: {
                   target: '#rollback',
+                  actions: assign(collectError),
                 },
               },
             },
@@ -134,6 +148,7 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
                 },
                 onError: {
                   target: '#rollback',
+                  actions: assign(collectError),
                 },
               },
               activities: ['deployPoll'],
@@ -145,6 +160,9 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
                 onDone: {
                   target: 'triggerDeploy',
                   actions: send('NEXT'),
+                },
+                onError: {
+                  actions: assign(collectError),
                 },
               },
             },
@@ -178,6 +196,7 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
                 },
                 onError: {
                   target: '#failed',
+                  actions: assign(collectError),
                 },
               },
             },
@@ -190,6 +209,7 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
                 },
                 onError: {
                   target: '#failed',
+                  actions: assign(collectError),
                 },
               },
               activities: ['rollbackPoll'],
@@ -201,6 +221,9 @@ export function createDeploymentMachine(initialContext: DeployMachineContext, he
                 onDone: {
                   target: 'triggerRollback',
                   actions: send('NEXT'),
+                },
+                onError: {
+                  actions: assign(collectError),
                 },
               },
             },

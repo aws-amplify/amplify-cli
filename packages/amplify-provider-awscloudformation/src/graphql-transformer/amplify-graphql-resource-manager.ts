@@ -3,7 +3,7 @@ import { DeploymentOp, DeploymentStep } from '../iterative-deployment/deployment
 import { DiffChanges, DiffableProject, getGQLDiff } from './utils';
 import { DynamoDB, Template } from 'cloudform-types';
 import { GSIChange, getGSIDiffs } from './gsi-diff-helpers';
-import { GSIRecord, TemplateState, getStackParameters, getTableNames } from '../utils/amplify-resource-state-utils';
+import { GSIRecord, TemplateState, getPreviousDeploymentRecord, getTableNames } from '../utils/amplify-resource-state-utils';
 import { ROOT_APPSYNC_S3_KEY, hashDirectory } from '../upload-appsync-files';
 import { addGSI, getGSIDetails, removeGSI } from './dynamodb-gsi-helpers';
 import {
@@ -118,7 +118,7 @@ export class GraphQLResourceManager {
 
     const tableNameMap = await getTableNames(this.cfnClient, this.templateState.getKeys(), this.resourceMeta.stackId);
 
-    const parameters = await getStackParameters(this.cfnClient, this.resourceMeta.stackId);
+    const { parameters, capabilities } = await getPreviousDeploymentRecord(this.cfnClient, this.resourceMeta.stackId);
 
     const buildHash = await hashDirectory(this.backendApiProjectRoot);
 
@@ -148,6 +148,7 @@ export class GraphQLResourceManager {
         parameters: { ...parameters, S3DeploymentRootKey: deploymentRootKey },
         stackName: this.resourceMeta.stackId,
         tableNames: tableNames,
+        capabilities,
         // clientRequestToken: `${buildHash}-step-${stepNumber}`,
       };
 
@@ -171,7 +172,7 @@ export class GraphQLResourceManager {
     const cloudBuildDir = path.join(this.cloudBackendApiProjectRoot, 'build');
     const stateFileDir = this.getStateFilesDirectory();
 
-    const parameters = await getStackParameters(this.cfnClient, this.resourceMeta.stackId);
+    const { parameters, capabilities } = await getPreviousDeploymentRecord(this.cfnClient, this.resourceMeta.stackId);
     const buildHash = await hashDirectory(this.backendApiProjectRoot);
 
     const stepNumber = 'initial-stack';
@@ -184,6 +185,7 @@ export class GraphQLResourceManager {
       stackTemplatePathOrUrl: `${deploymentRootKey}/cloudformation-template.json`,
       parameters: { ...parameters, S3DeploymentRootKey: deploymentRootKey },
       stackName: this.resourceMeta.stackId,
+      capabilities,
       tableNames: [],
     };
   };
