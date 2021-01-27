@@ -1,18 +1,20 @@
 import path from 'path';
 import { category } from './constants';
 export { category } from './constants';
-import { FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import { BuildType, FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { supportedServices } from './provider-utils/supported-services';
 import _ from 'lodash';
-export { buildFunction } from './provider-utils/awscloudformation/utils/buildFunction';
+export { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/packageLayer';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
+import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
+import { PackageRequestMeta } from './provider-utils/awscloudformation/types/packaging-types';
 export { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
@@ -174,6 +176,13 @@ export async function getInvoker(
       srcRoot: resourcePath,
       envVars: envVars,
     });
+}
+
+export function getBuilder(context: $TSContext, resourceName: string, buildType: BuildType): () => Promise<void> {
+  const lastBuildTimeStamp = _.get(stateManager.getMeta(), [category, resourceName, buildTypeKeyMap[buildType]]);
+  return async () => {
+    await buildFunction(context, { resourceName, buildType, lastBuildTimeStamp });
+  };
 }
 
 export function isMockable(context: any, resourceName: string): IsMockableResponse {

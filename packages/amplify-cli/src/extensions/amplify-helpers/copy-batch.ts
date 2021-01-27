@@ -1,4 +1,4 @@
-import { JSONUtilities, $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext, $TSCopyJob, JSONUtilities } from 'amplify-cli-core';
 
 /**
  * Runs a series of jobs through the templating system.
@@ -7,15 +7,15 @@ import { JSONUtilities, $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
  * @param {$TSAny[]}            jobs         - A list of jobs to run.
  * @param {$TSAny}              props        - The props to use for variable replacement.
  * @param {boolean}             force        - Force CF template generation
- * @param {$TSAny[]|$TSObject}  writeParams  - data for the CF template but not parameters file
+ * @param {$TSAny[]|$TSObject}  writeParams  - boolean of whether props should be written to job.paramsFile, or an object that should be written to job.paramsFile
  */
-export async function copyBatch(context: $TSContext, jobs: $TSAny, props: $TSAny, force: boolean, writeParams?: $TSAny[] | $TSObject) {
+export async function copyBatch(context: $TSContext, jobs: $TSCopyJob, props: object, force?: boolean, writeParams?: boolean | object) {
   // grab some features
-  const { template, prompt, filesystem } = context as $TSAny;
+  const { template, prompt, filesystem } = context;
   const { confirm } = prompt;
 
   // If the file exists
-  const shouldGenerate = async (target: $TSAny, force: boolean) => {
+  const shouldGenerate = async (target: string, force?: boolean) => {
     if (!filesystem.exists(target) || force) return true;
     return confirm(`overwrite ${target}`);
   };

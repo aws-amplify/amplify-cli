@@ -1,11 +1,14 @@
 import { $TSContext, pathManager } from 'amplify-cli-core';
 import { FunctionRuntimeLifecycleManager, BuildRequest, BuildType } from 'amplify-function-plugin-interface';
-import { ResourceMeta } from '../types/packaging-types';
 import * as path from 'path';
+import { category } from '../../../constants';
 
-export const buildFunction = async (context: $TSContext, resource: ResourceMeta, buildType: BuildType = BuildType.PROD) => {
-  const resourcePath = path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName);
-  const breadcrumbs = context.amplify.readBreadcrumbs(resource.category, resource.resourceName);
+export const buildFunction = async (
+  context: $TSContext,
+  { resourceName, lastBuildTimeStamp, buildType = BuildType.PROD }: BuildRequestMeta,
+) => {
+  const resourcePath = path.join(pathManager.getBackendDirPath(), category, resourceName);
+  const breadcrumbs = context.amplify.readBreadcrumbs(category, resourceName);
 
   const runtimePlugin: FunctionRuntimeLifecycleManager = (await context.amplify.loadRuntimePlugin(
     context,
@@ -14,11 +17,11 @@ export const buildFunction = async (context: $TSContext, resource: ResourceMeta,
 
   const depCheck = await runtimePlugin.checkDependencies(breadcrumbs.functionRuntime);
   if (!depCheck.hasRequiredDependencies) {
-    context.print.error(depCheck.errorMessage || `You are missing dependencies required to package ${resource.resourceName}`);
-    throw new Error(`Missing required dependencies to package ${resource.resourceName}`);
+    context.print.error(depCheck.errorMessage || `You are missing dependencies required to package ${resourceName}`);
+    throw new Error(`Missing required dependencies to package ${resourceName}`);
   }
 
-  const prevBuildTime = resource.lastBuildTimeStamp ? new Date(resource.lastBuildTimeStamp) : undefined;
+  const prevBuildTime = lastBuildTimeStamp ? new Date(lastBuildTimeStamp) : undefined;
 
   // build the function
   let rebuilt = false;
@@ -32,16 +35,27 @@ export const buildFunction = async (context: $TSContext, resource: ResourceMeta,
       runtime: breadcrumbs.functionRuntime,
       legacyBuildHookParams: {
         projectRoot: pathManager.findProjectRoot(),
-        resourceName: resource.resourceName,
+        resourceName: resourceName,
       },
       lastBuildTimeStamp: prevBuildTime,
     };
     rebuilt = (await runtimePlugin.build(buildRequest)).rebuilt;
   }
   if (rebuilt) {
-    context.amplify.updateamplifyMetaAfterBuild(resource, buildType);
+    context.amplify.updateamplifyMetaAfterBuild({ category, resourceName }, buildType.toString());
     return new Date().toISOString();
   } else {
-    return resource?.lastBuildTimeStamp;
+    return lastBuildTimeStamp;
   }
+};
+
+export interface BuildRequestMeta {
+  resourceName: string;
+  lastBuildTimeStamp?: string;
+  buildType?: BuildType;
+}
+
+export const buildTypeKeyMap: Record<BuildType, string> = {
+  [BuildType.PROD]: 'lastBuildTimeStamp',
+  [BuildType.DEV]: 'lastDevBuildTimeStamp',
 };

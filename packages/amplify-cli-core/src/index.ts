@@ -1,5 +1,4 @@
 import { ServiceSelection } from './serviceSelection';
-import { BuildType } from 'amplify-function-plugin-interface';
 
 export * from './cliContext';
 export * from './cliContextEnvironmentProvider';
@@ -37,6 +36,21 @@ export type $TSContext = {
   runtime: $TSAny;
   pluginPlatform: IPluginPlatform;
   newUserInfo?: $TSAny;
+  filesystem: IContextFilesystem;
+  template: IContextTemplate;
+};
+
+export type IContextFilesystem = {
+  remove: (targetPath: string) => void;
+  read: (targetPath: string, encoding?: string) => $TSAny;
+  write: (targetPath: string, data: unknown) => void;
+  exists: (targetPath: string) => boolean;
+  isFile: (targetPath: string) => boolean;
+  path: (...pathParts: string[]) => string;
+};
+
+export type IContextTemplate = {
+  generate: (opts: { template: string; target: string; props: object; directory: string }) => string;
 };
 
 export type IPluginPlatform = {
@@ -126,12 +140,14 @@ export interface AmplifyProjectConfig {
   providers: string[];
 }
 
+export type $TSCopyJob = any;
+
 // Temporary interface until Context refactor
 interface AmplifyToolkit {
   confirmPrompt: (prompt: string, defaultValue?: boolean) => boolean;
   constants: $TSAny;
   constructExeInfo: (context: $TSContext) => $TSAny;
-  copyBatch: (context: $TSContext, jobs: $TSAny, props: $TSAny, force: boolean, writeParams?: $TSAny[] | $TSObject) => Promise<void>;
+  copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: object, force?: boolean, writeParams?: boolean | object) => $TSAny;
   crudFlow: () => $TSAny;
   deleteProject: () => $TSAny;
   executeProviderUtils: () => $TSAny;
@@ -197,7 +213,8 @@ interface AmplifyToolkit {
   updateamplifyMetaAfterResourceDelete: (category: string, resourceName: string) => void;
   updateProvideramplifyMeta: (providerName: string, options: $TSObject) => void;
   updateamplifyMetaAfterPush: (resources: $TSObject[]) => void;
-  updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: BuildType) => void;
+  // buildType is from amplify-function-plugin-interface but can't be imported here because it would create a circular dependency
+  updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: string) => void;
   updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string) => void;
   updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSAny) => $TSAny;
   updateBackendConfigAfterResourceUpdate: () => $TSAny;

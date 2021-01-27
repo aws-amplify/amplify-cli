@@ -23,7 +23,7 @@ export function createFunctionResources(context: $TSContext, parameters: Functio
   copyTemplateFiles(context, parameters);
   saveMutableState(parameters);
   saveCFNParameters(parameters);
-  context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
+  context.amplify.leaveBreadcrumbs(categoryName, parameters.resourceName, createBreadcrumbs(parameters));
 }
 
 export const createLayerArtifacts = (context: $TSContext, parameters: LayerParameters, latestVersion: number = 1): string => {

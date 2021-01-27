@@ -7,6 +7,7 @@ import { JSONUtilities, pathManager, stateManager, $TSAny, $TSMeta, $TSObject, R
 import { ServiceName } from 'amplify-category-function';
 import _ from 'lodash';
 import { BuildType } from 'amplify-function-plugin-interface';
+import { buildTypeKeyMap } from 'amplify-category-function';
 
 export function updateAwsMetaFile(
   filePath: string,
@@ -190,11 +191,6 @@ export function updateamplifyMetaAfterBuild({ category, resourceName }: Resource
   _.set(amplifyMeta, [category, resourceName, buildTypeKeyMap[buildType]], new Date());
   stateManager.setMeta(undefined, amplifyMeta);
 }
-
-const buildTypeKeyMap: Record<BuildType, string> = {
-  [BuildType.PROD]: 'lastBuildTimeStamp',
-  [BuildType.DEV]: 'lastDevBuildTimeStamp',
-};
 
 export function updateAmplifyMetaAfterPackage({ category, resourceName }: ResourceTuple, zipFilename: string) {
   const amplifyMeta = stateManager.getMeta();

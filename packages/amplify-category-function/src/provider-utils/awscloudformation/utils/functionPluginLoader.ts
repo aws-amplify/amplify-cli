@@ -5,7 +5,6 @@ import {
   FunctionRuntimeCondition,
   FunctionRuntimeParameters,
   FunctionTemplateParameters,
-  Contributor,
   FunctionRuntimeLifecycleManager,
   RuntimeContributionRequest,
   TemplateContributionRequest,
@@ -13,8 +12,7 @@ import {
 import { ServiceName } from './constants';
 import _ from 'lodash';
 import { LayerParameters } from './layerParams';
-import { ResourceMeta } from '../types/packaging-types';
-import { $TSContext, ResourceTuple } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { category } from '../../../constants';
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)

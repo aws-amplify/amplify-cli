@@ -1,6 +1,6 @@
 import { $TSContext, ResourceTuple } from 'amplify-cli-core';
 
-export type ResourceMeta = ResourceTuple & {
+export type PackageRequestMeta = ResourceTuple & {
   service: string;
   build: boolean;
   distZipFilename: string;
@@ -9,4 +9,4 @@ export type ResourceMeta = ResourceTuple & {
   skipHashing: boolean;
 };
 
-export type Packager = (context: $TSContext, resource: ResourceMeta) => Promise<{ zipFilename: string; zipFilePath: string }>;
+export type Packager = (context: $TSContext, resource: PackageRequestMeta) => Promise<{ zipFilename: string; zipFilePath: string }>;

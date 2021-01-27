@@ -21,14 +21,14 @@ import { getLayerRuntimes } from './layerRuntimes';
 import crypto from 'crypto';
 import { updateLayerArtifacts } from './storeResources';
 import globby from 'globby';
-import { Packager, ResourceMeta } from '../types/packaging-types';
+import { Packager, PackageRequestMeta } from '../types/packaging-types';
 
 export const packageLayer: Packager = async (context, resource) => {
   await ensureLayerVersion(context, resource.resourceName);
   return zipLayer(context, resource);
 };
 
-async function zipLayer(context: $TSContext, resource: ResourceMeta) {
+async function zipLayer(context: $TSContext, resource: PackageRequestMeta) {
   const zipFilename = 'latest-build.zip';
   const layerName = resource.resourceName;
   const layerDirPath = path.join(pathManager.getBackendDirPath(), resource.category, layerName);

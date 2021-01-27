@@ -1,11 +1,10 @@
-import { $TSContext } from 'amplify-cli-core';
 /*
   Function Runtime Contributor Types
 */
 
 // All Function Runtime Contributor plugins must export a function of this type named 'functionRuntimeContributorFactory'
 export type FunctionRuntimeContributorFactory = (
-  context: $TSContext,
+  context: any,
 ) => Contributor<FunctionRuntimeParameters, RuntimeContributionRequest> & FunctionRuntimeLifecycleManager;
 
 // Subset of FunctionParameters that defines the function runtime
@@ -74,8 +73,8 @@ export type BuildRequest = {
 };
 
 export enum BuildType {
-  PROD,
-  DEV,
+  PROD = 'PROD',
+  DEV = 'DEV',
 }
 
 // Request sent to package a function
