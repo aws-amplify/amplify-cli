@@ -119,8 +119,7 @@ export async function initEnv(context) {
     };
   });
 
-  // Handle amplify pull for already pushed layer versions
-  // Need to fetch layerVersionMap from #current-cloud-backend, since amplifyMeta
+  // Need to fetch metadata from #current-cloud-backend, since amplifyMeta
   // gets regenerated in intialize-env.ts in the amplify-cli package
   const teamProviderInfo = stateManager.getTeamProviderInfo();
   const currentAmplifyMeta = stateManager.getCurrentMeta();
@@ -129,17 +128,25 @@ export async function initEnv(context) {
   allResources
     .filter(resourceCategoryFilter)
     .filter(r => !changedResources.includes(r))
-    .filter(r => r.service === ServiceName.LambdaLayer)
     .forEach(r => {
-      const layerName = r.resourceName;
-      const lvmPath = [category, layerName, 'layerVersionMap'];
-      const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
-      if (isMultiEnvLayer(context, layerName)) {
-        _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
-        const s3Bucket = _.get(currentAmplifyMeta, [category, layerName, 's3Bucket'], {});
-        _.set(teamProviderInfo, [envName, 'categories', category, layerName], s3Bucket);
+      const { resourceName, service }: { resourceName: string; service: string } = r;
+
+      const s3Bucket = _.get(currentAmplifyMeta, [category, resourceName, 's3Bucket'], undefined);
+      if (s3Bucket) {
+        const tpiResourceParams = _.get(teamProviderInfo, [envName, 'categories', category, resourceName], {});
+        _.assign(tpiResourceParams, s3Bucket);
+        _.set(teamProviderInfo, [envName, 'categories', category, resourceName], tpiResourceParams);
+        _.set(amplifyMeta, [category, resourceName, 's3Bucket'], s3Bucket);
       }
-      _.set(amplifyMeta, lvmPath, currentVersionMap);
+
+      if (service === ServiceName.LambdaLayer) {
+        const lvmPath = [category, resourceName, 'layerVersionMap'];
+        const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
+        if (isMultiEnvLayer(context, resourceName)) {
+          _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
+        }
+        _.set(amplifyMeta, lvmPath, currentVersionMap);
+      }
     });
 
   stateManager.setMeta(undefined, amplifyMeta);
