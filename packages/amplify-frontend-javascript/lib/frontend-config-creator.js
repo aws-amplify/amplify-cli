@@ -75,28 +75,18 @@ function createAmplifyConfig(context, amplifyResources) {
   }
 }
 
-async function createAWSExports(context, amplifyResources, cloudAmplifyResources) {
+async function createAWSExports(context, amplifyResources) {
   const newAWSExports = getAWSExportsObject(amplifyResources);
-  const cloudAWSExports = getAWSExportsObject(cloudAmplifyResources);
-  const currentAWSExports = await getCurrentAWSExports(context);
-
-  const customConfigs = getCustomConfigs(cloudAWSExports, currentAWSExports);
-
+  const customConfigs = removeCustomConfigs(newAWSExports);
   Object.assign(newAWSExports, customConfigs);
   generateAWSExportsFile(context, newAWSExports);
   return context;
 }
 
-function getCustomConfigs(cloudAWSExports, currentAWSExports) {
+function removeCustomConfigs(newAWSExports) {
   const customConfigs = {};
-  if (currentAWSExports) {
-    Object.keys(currentAWSExports)
-      .filter(key => !CUSTOM_CONFIG_DENY_LIST.includes(key))
-      .forEach(key => {
-        if (!cloudAWSExports[key]) {
-          customConfigs[key] = currentAWSExports[key];
-        }
-      });
+  if (newAWSExports) {
+    Object.keys(newAWSExports).filter(key => !CUSTOM_CONFIG_BLACK_LIST.includes(key));
   }
   return customConfigs;
 }

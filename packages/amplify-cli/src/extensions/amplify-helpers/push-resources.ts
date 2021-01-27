@@ -10,7 +10,7 @@ export async function pushResources(
   context: $TSContext,
   category?: string,
   resourceName?: string,
-  filteredResources?: { category: string, resourceName: string }[],
+  filteredResources?: { category: string; resourceName: string }[],
 ) {
   if (context.parameters.options.env) {
     const envName: string = context.parameters.options.env;
@@ -64,7 +64,8 @@ export async function pushResources(
       const currentAmplifyMeta = stateManager.getCurrentMeta();
 
       await providersPush(context, category, resourceName, filteredResources);
-      await onCategoryOutputsChange(context, currentAmplifyMeta);
+      const localMeta = stateManager.getMeta();
+      await onCategoryOutputsChange(context, currentAmplifyMeta, localMeta);
     } catch (err) {
       // Handle the errors and print them nicely for the user.
       context.print.error(`\n${err.message}`);

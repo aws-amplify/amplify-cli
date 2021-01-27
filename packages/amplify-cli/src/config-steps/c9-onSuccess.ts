@@ -5,8 +5,10 @@ export async function onSuccess(context) {
 
   stateManager.setProjectConfig(projectPath, context.exeInfo.projectConfig);
   stateManager.setLocalEnvInfo(undefined, context.exeInfo.localEnvInfo);
+  const localMeta = stateManager.getMeta();
+  const currentMeta = stateManager.getCurrentMeta();
 
-  await context.amplify.onCategoryOutputsChange(context);
+  await context.amplify.onCategoryOutputsChange(context, currentMeta, localMeta);
 
   printWelcomeMessage(context);
 }

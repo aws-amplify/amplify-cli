@@ -95,9 +95,9 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
 
       await sequential(providerPushTasks);
     }
-
+    const localMeta = stateManager.getMeta();
     // Generate AWS exports/configurtion file
-    await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
+    await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta, localMeta);
 
     context.print.success(isPulling ? '' : 'Initialized your environment successfully.');
   } catch (e) {

@@ -12,7 +12,11 @@ import {
   amplifyPushAuth,
   addAuthWithRecaptchaTrigger,
   addAuthWithDefaultSocial,
+  addApiWithoutSchema,
+  amplifyPushWithoutCodegen,
+  amplifyPush,
 } from 'amplify-e2e-core';
+import { getAWSExports } from '../aws-exports/awsExports';
 import {
   addEnvironment,
   checkoutEnvironment,
@@ -186,5 +190,30 @@ describe('environment commands with HostedUI params', () => {
     await pullEnvironment(projRoot);
     const meta = getProjectMeta(projRoot);
     await validate(meta);
+  });
+});
+
+describe('environment and push commands for aws exports', () => {
+  let projRoot: string;
+  beforeAll(async () => {
+    projRoot = await createNewProjectDir('env-test');
+    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
+    await addAuthWithDefault(projRoot, {});
+    await amplifyPushWithoutCodegen(projRoot);
+  });
+
+  afterAll(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('add api and push should update aws exports', async () => {
+    await addEnvironment(projRoot, { envName: 'envb' });
+    await addApiWithoutSchema(projRoot, { apiName: 'testing' });
+    await amplifyPush(projRoot);
+    const awsExports: any = getAWSExports(projRoot).default;
+    const { aws_appsync_graphqlEndpoint, aws_appsync_region } = awsExports;
+    expect(aws_appsync_graphqlEndpoint).toBeDefined();
+    expect(aws_appsync_region).toBeDefined();
   });
 });
