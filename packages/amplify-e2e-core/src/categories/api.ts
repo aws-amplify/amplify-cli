@@ -4,12 +4,29 @@ import { selectRuntime, selectTemplate } from './lambda-function';
 import { singleSelect, multiSelect } from '../utils/selectors';
 import _ from 'lodash';
 
+type APIConfig = {
+  'Amazon Cognito User Pool': {};
+  IAM: {};
+  'API Key': { apiExpirationDays?: number };
+  'OpenID Connect': {
+    oidcProviderName: string;
+    oidcProviderDomain: string;
+    oidcClientId: string;
+    ttlaIssueInMillisecond: string;
+    ttlaAuthInMillisecond: string;
+  };
+  apiOptions: {
+    apiName: string;
+    schemaPath: string;
+  };
+};
+
 export function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
 }
 
 export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['api', 'gql-compile'], { cwd, stripColors: true })
       .wait('GraphQL schema compiled successfully.')
       .run((err: Error) => {
@@ -32,7 +49,7 @@ const defaultOptions: AddApiOptions = {
 
 export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = {}) {
   const options = _.assign(defaultOptions, opts);
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -68,7 +85,7 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = 
 export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   const schemaPath = getSchemaPath(schemaFile);
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -101,7 +118,7 @@ export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<
 
 export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: string) {
   const schemaPath = getSchemaPath(schemaFile);
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -145,7 +162,7 @@ export function updateApiSchema(cwd: string, projectName: string, schemaName: st
 }
 
 export function updateApiWithMultiAuth(cwd: string, settings: any) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -196,7 +213,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
 }
 
 export function apiUpdateToggleDataStore(cwd: string, settings: any) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -216,7 +233,7 @@ export function apiUpdateToggleDataStore(cwd: string, settings: any) {
 }
 
 export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -252,7 +269,7 @@ export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
 
 // Either settings.existingLambda or settings.isCrud is required
 export function addRestApi(cwd: string, settings: any) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     if (!('existingLambda' in settings) && !('isCrud' in settings)) {
       reject(new Error('Missing property in settings object in addRestApi()'));
     } else {
@@ -317,25 +334,46 @@ export function addRestApi(cwd: string, settings: any) {
   });
 }
 
-//add default api
-
 const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Connect'];
 
-export function addApi(projectDir: string, settings?: any) {
+const removeAPIOpts = (
+  opts: Partial<APIConfig>,
+): {
+  apiName: string;
+  schemaPath: string;
+} => {
+  if (opts.apiOptions) {
+    const apiOpts = opts.apiOptions;
+    delete opts.apiOptions;
+    return apiOpts;
+  }
+  return {
+    apiName: null,
+    schemaPath: null,
+  };
+};
+
+export function addApi(projectDir: string, apiConfig?: Partial<APIConfig>) {
   let authTypesToSelectFrom = allAuthTypes.slice();
-  return new Promise((resolve, reject) => {
+  const apiOptions = removeAPIOpts(apiConfig);
+  return new Promise<void>((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
-      .wait('Provide API name:')
-      .sendCarriageReturn();
+      .wait('Provide API name:');
 
-    if (settings && Object.keys(settings).length > 0) {
-      const authTypesToAdd = Object.keys(settings);
+    if (apiOptions.apiName) {
+      chain.sendLine(apiOptions.apiName);
+    } else {
+      chain.sendCarriageReturn();
+    }
+
+    if (apiConfig && Object.keys(apiConfig).length > 0) {
+      const authTypesToAdd = Object.keys(apiConfig);
       const defaultType = authTypesToAdd[0];
 
       singleSelect(chain.wait('Choose the default authorization type for the API'), defaultType, authTypesToSelectFrom);
-      setupAuthType(defaultType, chain, settings);
+      setupAuthType(defaultType, chain, apiConfig);
 
       if (authTypesToAdd.length > 1) {
         authTypesToAdd.shift();
@@ -356,7 +394,7 @@ export function addApi(projectDir: string, settings?: any) {
         );
 
         authTypesToAdd.forEach(authType => {
-          setupAuthType(authType, chain, settings);
+          setupAuthType(authType, chain, apiConfig);
         });
 
         chain.wait('Configure conflict detection?').sendCarriageReturn(); //No
@@ -369,29 +407,26 @@ export function addApi(projectDir: string, settings?: any) {
 
       chain.wait('Do you want to configure advanced settings for the GraphQL API').sendCarriageReturn(); //No
     }
-
-    chain
-      .wait('Do you have an annotated GraphQL schema?')
-      .sendLine('n')
-      .wait('Choose a schema template:')
-      .sendCarriageReturn()
-      .wait('Do you want to edit the schema now?')
-      .sendLine('n')
-      .wait('"amplify publish" will build all your local backend and frontend resources')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    chain.wait('Do you have an annotated GraphQL schema?');
+    if (apiOptions.schemaPath) {
+      chain.sendLine('y').wait('Provide your schema file path:').sendLine(apiOptions.schemaPath);
+    } else {
+      chain.sendLine('n').wait('Choose a schema template:').sendCarriageReturn().wait('Do you want to edit the schema now?').sendLine('n');
+    }
+    chain.wait('"amplify publish" will build all your local backend and frontend resources').run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
-function setupAuthType(authType: string, chain: any, settings?: any) {
+function setupAuthType(authType: string, chain: any, settings?: Partial<APIConfig>) {
   switch (authType) {
     case 'API key':
-      setupAPIKey(chain);
+      setupAPIKey(chain, settings['API Key'].apiExpirationDays);
       break;
     case 'Amazon Cognito User Pool':
       setupCognitoUserPool(chain);
@@ -400,12 +435,12 @@ function setupAuthType(authType: string, chain: any, settings?: any) {
       setupIAM(chain);
       break;
     case 'OpenID Connect':
-      setupOIDC(chain, settings);
+      setupOIDC(chain, settings['OpenID Connect']);
       break;
   }
 }
 
-function setupAPIKey(chain: any) {
+function setupAPIKey(chain: any, expirationInDays?: number) {
   chain
     .wait('Enter a description for the API key')
     .sendCarriageReturn()
@@ -450,7 +485,7 @@ function setupOIDC(chain: any, settings?: any) {
 }
 
 export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: string) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -479,7 +514,7 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: stri
 }
 
 export function addRestContainerApi(projectDir: string) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendKeyDown()
