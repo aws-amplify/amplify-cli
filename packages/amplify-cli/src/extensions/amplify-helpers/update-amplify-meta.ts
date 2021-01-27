@@ -64,7 +64,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
     // in the case that the resource is being deleted, the sourceDir won't exist
     if (fs.pathExistsSync(sourceDir)) {
       fs.copySync(sourceDir, targetDir);
-      if (resource?.service === ServiceName.LambdaFunction) {
+      if (resource.service === ServiceName.LambdaFunction) {
         removeNodeModulesDir(targetDir);
       }
     }
@@ -163,7 +163,12 @@ export async function updateamplifyMetaAfterPush(resources: $TSObject[]) {
         let hashDir = await getHashForResourceDir(sourceDir);
 
         if (resource.category === 'hosting' && resource.service === 'ElasticContainer') {
-          const { frontend, [frontend]: { config: { SourceDir } } } = stateManager.getProjectConfig();
+          const {
+            frontend,
+            [frontend]: {
+              config: { SourceDir },
+            },
+          } = stateManager.getProjectConfig();
           // build absolute path for Dockerfile and docker-compose.yaml
           const projectRootPath = pathManager.findProjectRoot();
           if (projectRootPath) {
@@ -197,8 +202,8 @@ function getHashForResourceDir(dirPath, files?: string[]) {
   const options: HashElementOptions = {
     folders: { exclude: ['.*', 'node_modules', 'test_coverage'] },
     files: {
-      include: files
-    }
+      include: files,
+    },
   };
 
   return hashElement(dirPath, options).then(result => result.hash);
