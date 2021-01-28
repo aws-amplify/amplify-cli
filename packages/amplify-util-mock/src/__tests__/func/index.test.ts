@@ -14,9 +14,13 @@ jest.mock('amplify-cli-core', () => ({
   pathManager: {
     getBackendDirPath: () => 'fake-backend-path',
   },
+  stateManager: {
+    getMeta: jest.fn().mockReturnValue({}),
+  },
 }));
 jest.mock('amplify-category-function', () => ({
   getInvoker: () => () => new Promise(resolve => setTimeout(() => resolve('lambda value'), 1000 * 19)),
+  getBuilder: jest.fn().mockReturnValue(() => {}),
   isMockable: () => ({ isMockable: true }),
   category: 'function',
 }));
@@ -44,6 +48,7 @@ describe('function start', () => {
       success: jest.fn(),
       info: jest.fn(),
       error: jest.fn(),
+      warning: jest.fn(),
     },
   };
 
