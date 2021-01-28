@@ -1,5 +1,6 @@
 type Something
   @model
+  @auth(rules: [{ allow: private, provider: iam }])
   @key(name: "byTodo", fields: ["todoID"])
   @key(name: "byTodo2", fields: ["todo2ID"])
   @key(name: "byTodo3", fields: ["todo3ID"]) {

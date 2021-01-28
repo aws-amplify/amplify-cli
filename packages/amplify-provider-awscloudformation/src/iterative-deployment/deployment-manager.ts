@@ -7,6 +7,7 @@ import {
   DeploymentMachineStep,
   StateMachineHelperFunctions,
   createDeploymentMachine,
+  StateMachineError
 } from './state-machine';
 import { IStackProgressPrinter, StackEventMonitor } from './stack-event-monitor';
 import { getBucketKey, getHttpUrl } from './helpers';
@@ -22,6 +23,18 @@ interface DeploymentManagerOptions {
   throttleDelay?: number;
   eventPollingDelay?: number;
   userAgent?: string;
+}
+
+export class DeploymentError extends Error {
+  constructor(errors: StateMachineError[]) {
+    super('There was an error while deploying changes.');
+    this.name = `DeploymentError`;
+    const stackTrace = [];
+    for (const err of errors) {
+      stackTrace.push(`Index: ${err.currentIndex} State: ${err.stateValue}\n${err.error.stack}`);
+    }
+    this.stack = JSON.stringify(stackTrace);
+  }
 }
 
 export type DeploymentOp = Omit<DeploymentMachineOp, 'region' | 'stackTemplatePath' | 'stackTemplateUrl'> & {
@@ -133,8 +146,7 @@ export class DeploymentManager {
               return resolve();
             case 'rolledBack':
             case 'failed':
-              return reject(new Error('Deployment failed'));
-              break;
+              return reject(new DeploymentError(state.context.errors));
             default:
             // intentionally left blank as we don't care about intermediate states
           }
@@ -209,7 +221,7 @@ export class DeploymentManager {
       await this.s3Client.headObject({ Bucket: this.deploymentBucket, Key: bucketKey }).promise();
       return true;
     } catch (e) {
-      if (e.ccode === 'NotFound') {
+      if (e.code === 'NotFound') {
         throw new Error(`The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`);
       }
       throw e;
@@ -220,10 +232,8 @@ export class DeploymentManager {
     assert(tableName, 'table name should be passed');
 
     const dbClient = new aws.DynamoDB({ region });
-
     const response = await dbClient.describeTable({ TableName: tableName }).promise();
     const gsis = response.Table?.GlobalSecondaryIndexes;
-
     return gsis ? gsis.every(idx => idx.IndexStatus === 'ACTIVE') : true;
   };
 
