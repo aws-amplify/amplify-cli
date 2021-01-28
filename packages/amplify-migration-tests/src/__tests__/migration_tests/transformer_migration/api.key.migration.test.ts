@@ -8,9 +8,8 @@ import {
   apiGqlCompile,
   createNewProjectDir,
   deleteProjectDir,
-  getFeatureFlagConfig,
-  setFeatureFlagConfig,
   amplifyPushUpdate,
+  addFeatureFlag
 } from 'amplify-e2e-core';
 
 describe('amplify key force push', () => {
@@ -24,17 +23,17 @@ describe('amplify key force push', () => {
     deleteProjectDir(projRoot);
   });
 
-  // it('init project, add key and migrate with force push', async () => {
-  //   const projectName = 'keyforce';
-  //   const initialSchema = 'migrations_key/simple_key.graphql';
-  //   // init, add api and push with installed cli
-  //   await initJSProjectWithProfile(projRoot, { name: projectName });
-  //   await addApiWithSchema(projRoot, initialSchema);
-  //   await amplifyPush(projRoot);
-  //   // gql-compile and force push with codebase cli
-  //   await apiGqlCompile(projRoot, true);
-  //   await amplifyPushForce(projRoot, true);
-  // });
+  it('init project, add key and migrate with force push', async () => {
+    const projectName = 'keyforce';
+    const initialSchema = 'migrations_key/simple_key.graphql';
+    // init, add api and push with installed cli
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    // gql-compile and force push with codebase cli
+    await apiGqlCompile(projRoot, true);
+    await amplifyPushForce(projRoot, true);
+  });
 
   it('init project, add lsi key and force push expect error', async () => {
     const projectName = 'keyforce';
@@ -43,11 +42,8 @@ describe('amplify key force push', () => {
     await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
-    // update feature flag
-    let featureFlagConfig = getFeatureFlagConfig(projRoot) as any;
-    featureFlagConfig.features.graphqltransformer['secondaryKeyAsGSI'] = true;
-    // write back to config
-    setFeatureFlagConfig(projRoot, featureFlagConfig);
+    // add feature flag
+    addFeatureFlag(projRoot, 'graphqltransformer', 'secondaryKeyAsGSI', true);
     // forceUpdateSchema
     updateApiSchema(projRoot, projectName, initialSchema, true);
     // gql-compile and force push with codebase cli

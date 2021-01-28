@@ -1,4 +1,4 @@
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform, FeatureFlagProvider } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { parse, FieldDefinitionNode, ObjectTypeDefinitionNode, Kind, InputObjectTypeDefinitionNode } from 'graphql';
@@ -315,7 +315,7 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
   expect(deleteInput.fields).toHaveLength(2);
 });
 
-test('Test that a secondary @key with a multiple field adds an LSI.', () => {
+test('Test that a secondary @key with a multiple field adds an LSI with GSI FF turned off', () => {
   const validSchema = `
     type Test
         @model @key(fields: ["email", "createdAt"])
@@ -326,24 +326,15 @@ test('Test that a secondary @key with a multiple field adds an LSI.', () => {
     }
     `;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags: {
-      getNumber: (featureName: string, defaultValue: Number) => {
-        return defaultValue || 0;
-      },
-      getString: (featureName: string, defaultValue: string) => {
-        return defaultValue || '';
-      },
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'secondaryKeyAsGSI') return true;
-        return defaultValue || false;
-      },
-      getObject: (featureName: string, defaultValue: Object) => {
-        return defaultValue || null;
-      },
-    },
-  });
+    const transformer = new GraphQLTransform({
+      transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+      featureFlags: {
+        getBoolean: (featureName: string, defaultValue: boolean) => {
+          if (featureName === 'secondaryKeyAsGSI') return false;
+          return defaultValue || false;
+        },
+      } as unknown as FeatureFlagProvider
+    });
 
   const out = transformer.transform(validSchema);
   let tableResource = out.stacks.Test.Resources.TestTable;
@@ -378,24 +369,15 @@ test('Test that a secondary @key with a multiple field adds an GSI based on enab
     }
     `;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags: {
-      getNumber: (featureName: string, defaultValue: Number) => {
-        return defaultValue || 0;
-      },
-      getString: (featureName: string, defaultValue: string) => {
-        return defaultValue || '';
-      },
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'secondaryKeyAsGSI') return true;
-        return defaultValue || false;
-      },
-      getObject: (featureName: string, defaultValue: Object) => {
-        return defaultValue || null;
-      },
-    },
-  });
+    const transformer = new GraphQLTransform({
+      transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+      featureFlags: {
+        getBoolean: (featureName: string, defaultValue: boolean) => {
+          if (featureName === 'secondaryKeyAsGSI') return true;
+          return defaultValue || false;
+        },
+      } as unknown as FeatureFlagProvider
+    });
 
   const out = transformer.transform(validSchema);
   let tableResource = out.stacks.Test.Resources.TestTable;
