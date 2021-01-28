@@ -76,19 +76,18 @@ function createAmplifyConfig(context, amplifyResources) {
 }
 
 async function createAWSExports(context, amplifyResources) {
-  const newAWSExports = getAWSExportsObject(amplifyResources);
-  const customConfigs = removeCustomConfigs(newAWSExports);
-  Object.assign(newAWSExports, customConfigs);
+  let newAWSExports = getAWSExportsObject(amplifyResources);
+  removeCustomConfigs(newAWSExports);
   generateAWSExportsFile(context, newAWSExports);
   return context;
 }
 
 function removeCustomConfigs(newAWSExports) {
-  const customConfigs = {};
-  if (newAWSExports) {
-    Object.keys(newAWSExports).filter(key => !CUSTOM_CONFIG_BLACK_LIST.includes(key));
-  }
-  return customConfigs;
+  Object.keys(newAWSExports).forEach(key => {
+    if (CUSTOM_CONFIG_DENY_LIST.includes(key)) {
+      delete newAWSExports[key];
+    }
+  });
 }
 
 function getAWSExportsObject(resources) {
@@ -328,16 +327,16 @@ function getAPIGWConfig(apigwResources, projectRegion, configOutput) {
     aws_cloud_logic_custom: configOutput.aws_cloud_logic_custom || [],
   };
 
-  for (let i = 0; i < apigwResources.length; i += 1) {
-    if (apigwResources[i].output.ApiName && apigwResources[i].output.RootUrl) {
-      // only REST endpoints contains this information
-      apigwConfig.aws_cloud_logic_custom.push({
-        name: apigwResources[i].output.ApiName,
-        endpoint: apigwResources[i].output.RootUrl,
+  // only REST endpoints contains this information
+  apigwConfig.aws_cloud_logic_custom = apigwResources
+    .filter(r => r.output.ApiName && r.output.RootUrl)
+    .map(r => {
+      return {
+        name: r.output.ApiName,
+        endpoint: r.output.RootUrl,
         region: projectRegion,
-      });
-    }
-  }
+      };
+    });
   return apigwConfig;
 }
 
