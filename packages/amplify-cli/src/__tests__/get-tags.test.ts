@@ -11,6 +11,7 @@ describe('getTags', () => {
   jest.setMock('amplify-cli-core', {
     stateManager: {
       isTagFilePresent: jest.fn().mockReturnValue(false),
+      localEnvInfoExists: jest.fn().mockReturnValue(false),
     },
     HydrateTags,
   });

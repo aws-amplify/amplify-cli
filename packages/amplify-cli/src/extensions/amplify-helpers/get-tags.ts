@@ -1,14 +1,25 @@
-import { stateManager, Tag, HydrateTags } from 'amplify-cli-core';
+import { stateManager, Tag, HydrateTags, $TSAny } from 'amplify-cli-core';
 import { Context } from '../../domain/context';
 
 export function getTags(context: Context): Tag[] {
+  let tags: Tag[];
+  let envInfo: $TSAny;
+  let projectConfig: $TSAny;
   if (stateManager.isTagFilePresent()) {
-    return stateManager.getHydratedTags();
+    tags = stateManager.getProjectTags();
   } else {
-    const { envName } = context.exeInfo.localEnvInfo;
-    const { projectName } = context.exeInfo.projectConfig;
-    return HydrateTags(initialTags, { envName, projectName });
+    tags = initialTags;
   }
+  if (stateManager.localEnvInfoExists() && stateManager.projectConfigExists()) {
+    envInfo = stateManager.getLocalEnvInfo();
+    projectConfig = stateManager.getProjectConfig();
+  } else {
+    envInfo = context.exeInfo.localEnvInfo;
+    projectConfig = context.exeInfo.projectConfig;
+  }
+  const { envName } = envInfo;
+  const { projectName } = projectConfig;
+  return HydrateTags(tags, { envName, projectName });
 }
 
 const initialTags: Tag[] = [
