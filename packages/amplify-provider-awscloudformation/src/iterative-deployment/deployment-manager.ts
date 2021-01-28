@@ -256,7 +256,7 @@ export class DeploymentManager {
     await Promise.all(waiters);
     try {
       await this.deploymentStateManager?.advanceStep();
-    } catch (err) {
+    } catch {
       // deployment should not fail because saving status failed
     }
     return Promise.resolve();
