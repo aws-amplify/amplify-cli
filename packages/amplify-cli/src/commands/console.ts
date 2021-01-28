@@ -1,4 +1,3 @@
-import open from 'open';
 import { prompt } from 'enquirer';
 import { stateManager, utils } from 'amplify-cli-core';
 
