@@ -6,6 +6,7 @@ import {
   getRollbackOperationHandler,
   isDeploymentComplete,
   isRollbackComplete,
+  collectError,
 } from './helpers';
 import { send } from 'xstate/lib/actions';
 
@@ -47,7 +48,7 @@ export type DeploymentMachineState = State<
 
 export type StateMachineError = {
   error: Error;
-  step: number;
+  stateValue: number;
   currentIndex: number;
 }
 export interface DeployMachineSchema {
@@ -77,13 +78,6 @@ export interface DeployMachineSchema {
 
 interface DeployMachineEvent extends EventObject {
   type: DeploymentMachineEvents;
-}
-
-export const collectError = (context: DeployMachineContext, err: any, meta: any) => {
-  return {
-    ...context,
-    errors: [...context.errors, { error: err.data, step: meta.step.value, currentIndex: context.currentIndex }]
-  }
 }
 
 export type StateMachineHelperFunctions = {

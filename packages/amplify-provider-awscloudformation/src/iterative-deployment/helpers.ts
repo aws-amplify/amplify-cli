@@ -2,6 +2,13 @@ import * as path from 'path';
 
 import { DeployMachineContext, DeploymentMachineOp } from './state-machine';
 
+export const collectError = (context: DeployMachineContext, err: any, meta: any) => {
+  return {
+    ...context,
+    errors: [...(context.errors ? context.errors : []), { error: err.data, stateValue: meta.state.value, currentIndex: context.currentIndex }]
+  }
+}
+
 export const isRollbackComplete = (context: DeployMachineContext) => {
   return context.currentIndex < 0;
 };

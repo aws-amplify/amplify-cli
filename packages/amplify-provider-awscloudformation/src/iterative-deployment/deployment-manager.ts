@@ -31,7 +31,7 @@ export class DeploymentError extends Error {
     this.name = `DeploymentError`;
     const stackTrace = [];
     for (const err of errors) {
-      stackTrace.push(`Index: ${err.currentIndex} Step: ${err.step}\n${err.error.stack}`);
+      stackTrace.push(`Index: ${err.currentIndex} State: ${err.stateValue}\n${err.error.stack}`);
     }
     this.stack = JSON.stringify(stackTrace);
   }
@@ -232,13 +232,9 @@ export class DeploymentManager {
     assert(tableName, 'table name should be passed');
 
     const dbClient = new aws.DynamoDB({ region });
-    try {
-      const response = await dbClient.describeTable({ TableName: tableName }).promise();
-      const gsis = response.Table?.GlobalSecondaryIndexes;
-      return gsis ? gsis.every(idx => idx.IndexStatus === 'ACTIVE') : true;
-    } catch (err) {
-      throw err;
-    }
+    const response = await dbClient.describeTable({ TableName: tableName }).promise();
+    const gsis = response.Table?.GlobalSecondaryIndexes;
+    return gsis ? gsis.every(idx => idx.IndexStatus === 'ACTIVE') : true;
   };
 
   private waitForIndices = async (stackParams: DeploymentMachineOp) => {
@@ -257,11 +253,10 @@ export class DeploymentManager {
       });
     });
 
+    await Promise.all(waiters);
     try {
-      await Promise.all(waiters);
       await this.deploymentStateManager?.advanceStep();
     } catch (err) {
-      throw err;
       // deployment should not fail because saving status failed
     }
     return Promise.resolve();
@@ -284,32 +279,32 @@ export class DeploymentManager {
   private doDeploy = async (currentStack: DeploymentMachineOp): Promise<void> => {
     try {
       await this.deploymentStateManager?.startCurrentStep();
-      const cfn = this.cfnClient;
-
-      assert(currentStack.stackName, 'stack name should be passed to doDeploy');
-      assert(currentStack.stackTemplateUrl, 'stackTemplateUrl must be passed to doDeploy');
-
-      await this.ensureStack(currentStack.stackName);
-
-      const parameters = Object.entries(currentStack.parameters).map(([key, val]) => {
-        return {
-          ParameterKey: key,
-          ParameterValue: val.toString(),
-        };
-      });
-
-      await cfn
-        .updateStack({
-          StackName: currentStack.stackName,
-          Parameters: parameters,
-          TemplateURL: currentStack.stackTemplateUrl,
-          Capabilities: currentStack.capabilities,
-          ClientRequestToken: currentStack.clientRequestToken,
-        })
-        .promise();
-    } catch (err) {
-      throw err;
+    } catch {
+      // deployment should not fail because status could not be saved
     }
+    const cfn = this.cfnClient;
+
+    assert(currentStack.stackName, 'stack name should be passed to doDeploy');
+    assert(currentStack.stackTemplateUrl, 'stackTemplateUrl must be passed to doDeploy');
+
+    await this.ensureStack(currentStack.stackName);
+
+    const parameters = Object.entries(currentStack.parameters).map(([key, val]) => {
+      return {
+        ParameterKey: key,
+        ParameterValue: val.toString(),
+      };
+    });
+
+    await cfn
+      .updateStack({
+        StackName: currentStack.stackName,
+        Parameters: parameters,
+        TemplateURL: currentStack.stackTemplateUrl,
+        Capabilities: currentStack.capabilities,
+        ClientRequestToken: currentStack.clientRequestToken,
+      })
+      .promise();
   };
 
   private waitForDeployment = async (stackParams: DeploymentMachineOp): Promise<void> => {

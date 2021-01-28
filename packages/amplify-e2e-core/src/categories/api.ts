@@ -4,23 +4,6 @@ import { selectRuntime, selectTemplate } from './lambda-function';
 import { singleSelect, multiSelect } from '../utils/selectors';
 import _ from 'lodash';
 
-type APIConfig = {
-  'Amazon Cognito User Pool': {};
-  IAM: {};
-  'API Key': { apiExpirationDays?: number };
-  'OpenID Connect': {
-    oidcProviderName: string;
-    oidcProviderDomain: string;
-    oidcClientId: string;
-    ttlaIssueInMillisecond: string;
-    ttlaAuthInMillisecond: string;
-  };
-  apiOptions: {
-    apiName: string;
-    schemaPath: string;
-  };
-};
-
 export function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../../amplify-e2e-tests/schemas/${schemaName}`;
 }
@@ -54,7 +37,7 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = 
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
-      .sendLine(opts.apiName)
+      .sendLine(options.apiName)
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)
@@ -336,44 +319,21 @@ export function addRestApi(cwd: string, settings: any) {
 
 const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Connect'];
 
-const removeAPIOpts = (
-  opts: Partial<APIConfig>,
-): {
-  apiName: string;
-  schemaPath: string;
-} => {
-  if (opts.apiOptions) {
-    const apiOpts = opts.apiOptions;
-    delete opts.apiOptions;
-    return apiOpts;
-  }
-  return {
-    apiName: null,
-    schemaPath: null,
-  };
-};
-
-export function addApi(projectDir: string, apiConfig?: Partial<APIConfig>) {
+export function addApi(projectDir: string, settings?: any) {
   let authTypesToSelectFrom = allAuthTypes.slice();
-  const apiOptions = removeAPIOpts(apiConfig);
   return new Promise<void>((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
-      .wait('Provide API name:');
+      .wait('Provide API name:')
+      .sendCarriageReturn();
 
-    if (apiOptions.apiName) {
-      chain.sendLine(apiOptions.apiName);
-    } else {
-      chain.sendCarriageReturn();
-    }
-
-    if (apiConfig && Object.keys(apiConfig).length > 0) {
-      const authTypesToAdd = Object.keys(apiConfig);
+    if (settings && Object.keys(settings).length > 0) {
+      const authTypesToAdd = Object.keys(settings);
       const defaultType = authTypesToAdd[0];
 
       singleSelect(chain.wait('Choose the default authorization type for the API'), defaultType, authTypesToSelectFrom);
-      setupAuthType(defaultType, chain, apiConfig);
+      setupAuthType(defaultType, chain, settings);
 
       if (authTypesToAdd.length > 1) {
         authTypesToAdd.shift();
@@ -394,7 +354,7 @@ export function addApi(projectDir: string, apiConfig?: Partial<APIConfig>) {
         );
 
         authTypesToAdd.forEach(authType => {
-          setupAuthType(authType, chain, apiConfig);
+          setupAuthType(authType, chain, settings);
         });
 
         chain.wait('Configure conflict detection?').sendCarriageReturn(); //No
@@ -407,26 +367,29 @@ export function addApi(projectDir: string, apiConfig?: Partial<APIConfig>) {
 
       chain.wait('Do you want to configure advanced settings for the GraphQL API').sendCarriageReturn(); //No
     }
-    chain.wait('Do you have an annotated GraphQL schema?');
-    if (apiOptions.schemaPath) {
-      chain.sendLine('y').wait('Provide your schema file path:').sendLine(apiOptions.schemaPath);
-    } else {
-      chain.sendLine('n').wait('Choose a schema template:').sendCarriageReturn().wait('Do you want to edit the schema now?').sendLine('n');
-    }
-    chain.wait('"amplify publish" will build all your local backend and frontend resources').run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
-        reject(err);
-      }
-    });
+
+    chain
+      .wait('Do you have an annotated GraphQL schema?')
+      .sendLine('n')
+      .wait('Choose a schema template:')
+      .sendCarriageReturn()
+      .wait('Do you want to edit the schema now?')
+      .sendLine('n')
+      .wait('"amplify publish" will build all your local backend and frontend resources')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
   });
 }
 
-function setupAuthType(authType: string, chain: any, settings?: Partial<APIConfig>) {
+function setupAuthType(authType: string, chain: any, settings?: any) {
   switch (authType) {
     case 'API key':
-      setupAPIKey(chain, settings['API Key'].apiExpirationDays);
+      setupAPIKey(chain);
       break;
     case 'Amazon Cognito User Pool':
       setupCognitoUserPool(chain);
@@ -435,12 +398,12 @@ function setupAuthType(authType: string, chain: any, settings?: Partial<APIConfi
       setupIAM(chain);
       break;
     case 'OpenID Connect':
-      setupOIDC(chain, settings['OpenID Connect']);
+      setupOIDC(chain, settings);
       break;
   }
 }
 
-function setupAPIKey(chain: any, expirationInDays?: number) {
+function setupAPIKey(chain: any) {
   chain
     .wait('Enter a description for the API key')
     .sendCarriageReturn()

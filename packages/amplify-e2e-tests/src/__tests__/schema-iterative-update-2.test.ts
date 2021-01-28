@@ -4,12 +4,12 @@ import {
   initJSProjectWithProfile,
   deleteProject,
   deleteProjectDir,
-  addAuthWithDefault,
   addFeatureFlag,
   amplifyPush,
   updateApiSchema,
   amplifyPushUpdate,
-  addApi,
+  addApiWithoutSchema,
+  updateApiWithMultiAuth
 } from 'amplify-e2e-core';
 
 describe('Schema iterative update - add new @models and @key', () => {
@@ -29,21 +29,13 @@ describe('Schema iterative update - add new @models and @key', () => {
     const apiName = 'addkeyandmodel';
 
     const initialSchema = path.join('iterative-push', 'add-one-key-multiple-models', 'initial-schema.graphql');
-    await addAuthWithDefault(projectDir);
-    await addApi(projectDir, {
-      'API Key': {},
-      'Amazon Cognito User Pool': {},
-      IAM: {},
-      apiOptions: {
-        apiName,
-        schemaPath: initialSchema,
-      },
-    });
+    await addApiWithoutSchema(projectDir, { apiName });
+    await updateApiWithMultiAuth(projectDir, {});
     updateApiSchema(projectDir, apiName, initialSchema);
     await amplifyPush(projectDir);
 
     const finalSchema = path.join('iterative-push', 'add-one-key-multiple-models', 'final-schema.graphql');
-    await updateApiSchema(projectDir, apiName, finalSchema);
+    updateApiSchema(projectDir, apiName, finalSchema);
     await amplifyPushUpdate(projectDir);
   });
 });
