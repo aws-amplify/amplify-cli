@@ -29,9 +29,7 @@ export interface AdminAuthPayload {
   region: string;
 }
 
-export interface AdminAuthConfig extends AdminAuthPayload {
-  IdentityId: string;
-}
+export type AdminAuthConfig = AdminAuthPayload & { IdentityId: string };
 
 export interface CognitoAccessToken {
   jwtToken: string;

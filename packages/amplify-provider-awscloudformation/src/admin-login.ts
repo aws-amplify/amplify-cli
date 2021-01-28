@@ -17,7 +17,7 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
   const url = adminVerifyUrl(appId, envName, region);
   context.print.info(`Opening link: ${url}`);
   await open(url, { wait: false }).catch(e => {
-    context.print.error(`Failed to open web browser: ${e.message || 'Unknown error occurred'}`);
+    context.print.error(`Failed to open web browser: ${e.message || e}`);
     return;
   });
   const spinner = ora('Continue in browser to log in…\n').start();
@@ -34,6 +34,6 @@ export async function adminLoginFlow(context: $TSContext, appId: string, envName
     );
   } catch (e) {
     spinner.stop();
-    context.print.error(`Failed to authenticate with Amplify Admin: ${e.message || 'Unknown error occurred'}`);
+    context.print.error(`Failed to authenticate with Amplify Admin: ${e.message || e}`);
   }
 }
