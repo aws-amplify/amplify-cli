@@ -460,11 +460,7 @@ export class KeyTransformer extends Transformer {
       let shouldMakeDelete = true;
 
       if (ctx.featureFlags.getBoolean('skipOverrideMutationInputTypes', false)) {
-        const modelDirective = definition.directives.find(dir => {
-          if (dir.name.value === 'model') {
-            return dir;
-          }
-        });
+        const modelDirective = definition.directives.find(dir => dir.name.value === 'model');
         const modelDirectiveArgs = getDirectiveArguments(modelDirective);
         // Figure out which mutations to make and if they have name overrides
         shouldMakeCreate = !!modelDirectiveArgs?.mutations?.create;
