@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import ora from 'ora';
 import sequential from 'promise-sequential';
-import { stateManager, $TSMeta, $TSContext } from 'amplify-cli-core';
+import { stateManager, $TSAny, $TSMeta, $TSContext } from 'amplify-cli-core';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
 const spinner = ora('');
 
@@ -25,10 +25,10 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     }
 
     if (!context.exeInfo.restoreBackend) {
-      populateAmplifyMeta(context, amplifyMeta);
+      populateAmplifyMeta(projectPath, amplifyMeta);
     }
 
-    const categoryInitializationTasks: (() => Promise<any>)[] = [];
+    const categoryInitializationTasks: (() => Promise<$TSAny>)[] = [];
 
     const initializedCategories = Object.keys(stateManager.getMeta());
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
@@ -50,8 +50,8 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
 
     const providerPlugins = getProviderPlugins(context);
 
-    const initializationTasks: (() => Promise<any>)[] = [];
-    const providerPushTasks: (() => Promise<any>)[] = [];
+    const initializationTasks: (() => Promise<$TSAny>)[] = [];
+    const providerPushTasks: (() => Promise<$TSAny>)[] = [];
 
     context.exeInfo.projectConfig.providers.forEach(provider => {
       const providerModule = require(providerPlugins[provider]);
@@ -106,12 +106,8 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
   }
 }
 
-function populateAmplifyMeta(context: $TSContext, amplifyMeta: $TSMeta) {
-  const { projectPath } = context.exeInfo.localEnvInfo;
-
+function populateAmplifyMeta(projectPath: string, amplifyMeta: $TSMeta) {
   const backendConfig = stateManager.getBackendConfig(projectPath);
-
   Object.assign(amplifyMeta, backendConfig);
-
   stateManager.setMeta(projectPath, amplifyMeta);
 }
