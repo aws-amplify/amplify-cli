@@ -1,4 +1,3 @@
-const open = require('open');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 
@@ -6,6 +5,7 @@ const awsRegions = require('./aws-regions.js').regions;
 const constants = require('./constants.js');
 const systemConfigManager = require('./system-config-manager');
 const obfuscationUtil = require('./utility-obfuscate');
+const { utils } = require('amplify-cli-core');
 
 async function run(context) {
   const awsConfig = {
@@ -18,7 +18,7 @@ async function run(context) {
   context.print.info('');
   context.print.info('Sign in to your AWS administrator account:');
   context.print.info(chalk.green(constants.AWSAmazonConsoleUrl));
-  open(constants.AWSAmazonConsoleUrl, { wait: false }).catch(() => {});
+  utils.openIfNotCI(constants.AWSAmazonConsoleUrl, { wait: false }).catch(() => {});
 
   await context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
 
@@ -46,7 +46,7 @@ async function run(context) {
   const deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', userName).replace('{region}', awsConfig.region);
   context.print.info('Complete the user creation using the AWS console');
   context.print.info(chalk.green(deepLinkURL));
-  open(deepLinkURL, { wait: false }).catch(() => {});
+  utils.openIfNotCI(deepLinkURL, { wait: false }).catch(() => {});
   await context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
 
   context.print.info('Enter the access key of the newly created user:');

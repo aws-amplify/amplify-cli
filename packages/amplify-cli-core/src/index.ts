@@ -15,6 +15,7 @@ export * from './isPackaged';
 export * from './cliConstants';
 export * from './deploymentSecretsHelper';
 export * from './deploymentState';
+export * as utils from './utils';
 
 // Temporary types until we can finish full type definition across the whole CLI
 

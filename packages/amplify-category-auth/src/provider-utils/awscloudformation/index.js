@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
-const open = require('open');
 const _ = require('lodash');
-const { stateManager } = require('amplify-cli-core');
+const { stateManager, utils } = require('amplify-cli-core');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { copyCfnTemplate, saveResourceParameters } = require('./utils/synthesize-resources');
 const { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys } = require('./constants');
@@ -371,20 +370,20 @@ async function openAdminUI(context, appId, region) {
   const providerPlugin = require(context.amplify.getProviderPlugins(context).awscloudformation);
   const baseUrl = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
   const adminUrl = `${baseUrl}/admin/${appId}/${envName}/auth`;
-  await open(adminUrl, { wait: false });
+  await utils.openIfNotCI(adminUrl, { wait: false });
   context.print.success(adminUrl);
 }
 
 async function openUserPoolConsole(context, region, userPoolId) {
   const userPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/users/?region=${region}#/pool/${userPoolId}/details`;
-  await open(userPoolConsoleUrl, { wait: false });
+  await utils.openIfNotCI(userPoolConsoleUrl, { wait: false });
   context.print.info('User Pool console:');
   context.print.success(userPoolConsoleUrl);
 }
 
 async function openIdentityPoolConsole(context, region, identityPoolId) {
   const identityPoolConsoleUrl = `https://${region}.console.aws.amazon.com/cognito/pool/?region=${region}&id=${identityPoolId}`;
-  await open(identityPoolConsoleUrl, { wait: false });
+  await utils.openIfNotCI(identityPoolConsoleUrl, { wait: false });
   context.print.info('Identity Pool console:');
   context.print.success(identityPoolConsoleUrl);
 }

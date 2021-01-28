@@ -1,4 +1,4 @@
-const open = require('open');
+const { utils } = require('amplify-cli-core');
 const constants = require('./constants');
 
 function run(context) {
@@ -8,7 +8,7 @@ function run(context) {
     const { Region, StackId } = metaData.providers[constants.Label];
     consoleUrl = `https://console.aws.amazon.com/cloudformation/home?region=${Region}#/stack/detail?stackId=${StackId}`;
   }
-  open(consoleUrl, { wait: false });
+  utils.openIfNotCI(consoleUrl, { wait: false });
 }
 
 module.exports = {

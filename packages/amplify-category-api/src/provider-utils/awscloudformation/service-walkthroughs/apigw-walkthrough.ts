@@ -3,10 +3,9 @@ import path from 'path';
 import fs from 'fs-extra';
 import os from 'os';
 import uuid from 'uuid';
-import open from 'open';
 import { rootAssetDir } from '../aws-constants';
 import { checkForPathOverlap, validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
-import { ResourceDoesNotExistError, exitOnNextTick, $TSContext, stateManager } from 'amplify-cli-core';
+import { ResourceDoesNotExistError, exitOnNextTick, $TSContext, stateManager, utils } from 'amplify-cli-core';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -862,7 +861,7 @@ export const openConsole = async (context: $TSContext) => {
       }
     }
 
-    open(url, { wait: false });
+    utils.openIfNotCI(url, { wait: false });
   } else {
     context.print.error('There are no REST APIs pushed to the cloud');
   }

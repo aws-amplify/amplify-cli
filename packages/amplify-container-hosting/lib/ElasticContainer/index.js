@@ -3,11 +3,11 @@ const { getS3Client, uploadFile } = require('./file-uploader');
 const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
-const open = require('open');
 
 const constants = require('../constants');
 
 const { EcsAlbStack, NETWORK_STACK_LOGICAL_ID, DEPLOYMENT_MECHANISM, processDockerConfig } = require('amplify-category-api');
+const { utils } = require('amplify-cli-core');
 
 const serviceName = 'ElasticContainer';
 const categoryName = 'hosting';
@@ -463,7 +463,7 @@ async function console(context) {
     context.print.error('Option not available');
     return;
   }
-  open(url, { wait: false });
+  utils.openIfNotCI(url, { wait: false });
 }
 
 async function migrate(context) {}

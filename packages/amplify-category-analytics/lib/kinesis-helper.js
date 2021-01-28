@@ -1,4 +1,4 @@
-const open = require('open');
+const { utils } = require('amplify-cli-core');
 const constants = require('./constants');
 
 function console(context) {
@@ -10,7 +10,7 @@ function console(context) {
   if (kinesisApp) {
     const { Id } = kinesisApp;
     const consoleUrl = `https://${region}.console.aws.amazon.com/kinesis/home?region=${region}#/streams/details?streamName=${Id}&tab=details`;
-    open(consoleUrl, { wait: false });
+    utils.openIfNotCI(consoleUrl, { wait: false });
   } else {
     context.print.error('Kinesis is not enabled in the cloud.');
   }

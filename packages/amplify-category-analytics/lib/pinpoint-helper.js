@@ -1,4 +1,4 @@
-const open = require('open');
+const { utils } = require('amplify-cli-core');
 const constants = require('./constants');
 
 function console(context) {
@@ -10,7 +10,7 @@ function console(context) {
   if (pinpointApp) {
     const { Id, Region } = pinpointApp;
     const consoleUrl = `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/analytics/overview`;
-    open(consoleUrl, { wait: false });
+    utils.openIfNotCI(consoleUrl, { wait: false });
   } else {
     context.print.error('Neither analytics nor notifications is enabled in the cloud.');
   }
