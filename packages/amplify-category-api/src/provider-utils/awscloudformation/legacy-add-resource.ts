@@ -69,7 +69,7 @@ export const copyCfnTemplate = (context, category, options, cfnFilename) => {
   return context.amplify.copyBatch(context, copyJobs, options, true, false);
 };
 
-const addPolicyResourceNameToPaths = paths => {
+export const addPolicyResourceNameToPaths = paths => {
   if (Array.isArray(paths)) {
     paths.forEach(p => {
       const pathName = p.name;
