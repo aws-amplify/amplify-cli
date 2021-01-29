@@ -238,7 +238,7 @@ function debug(message: string, title: string = 'DEBUG'): void {
   console.log(colors.rainbow(botLine));
 }
 
-function table(data: string[][], options: any = {}): void {
+function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {}): void {
   let t: CLITable.Table;
   switch (options.format) {
     case 'markdown':

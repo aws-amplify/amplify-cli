@@ -25,7 +25,7 @@ export type $TSAny = any;
 // Use it for all CLI Context class references, it enables a quick way to see what we have on the context
 export type $TSContext = {
   amplify: AmplifyToolkit;
-  print: $TSAny;
+  print: IContextPrint;
   migrationInfo: $TSAny;
   projectHasMobileHubResources: boolean;
   prompt: $TSAny;
@@ -38,6 +38,20 @@ export type $TSContext = {
   newUserInfo?: $TSAny;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
+};
+
+export type IContextPrint = {
+  info: (message: string) => void;
+  fancy: (message: string) => void;
+  warning: (message: string) => void;
+  error: (message: string) => void;
+  success: (message: string) => void;
+  table: (data: string[][], options?: { format?: 'markdown' | 'lean' }) => void;
+  debug: (message: string) => void;
+  green: (message: string) => void;
+  yellow: (message: string) => void;
+  red: (message: string) => void;
+  blue: (message: string) => void;
 };
 
 export type IContextFilesystem = {

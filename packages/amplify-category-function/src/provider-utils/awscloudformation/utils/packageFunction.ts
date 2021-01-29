@@ -1,5 +1,3 @@
-// For legacy purposes, the method builds and packages the resource
-
 import { pathManager } from 'amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';

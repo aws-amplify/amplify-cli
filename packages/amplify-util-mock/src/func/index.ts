@@ -9,7 +9,7 @@ import { BuildType } from 'amplify-function-plugin-interface';
 
 const DEFAULT_TIMEOUT_SECONDS = 10;
 
-export async function start(context) {
+export async function start(context: $TSContext) {
   const ampMeta = stateManager.getMeta();
   let resourceName = context?.input?.subCommands?.[0];
   if (!resourceName) {
@@ -44,10 +44,10 @@ export async function start(context) {
 
   const event = await resolveEvent(context, resourceName);
   const envVars = hydrateAllEnvVars(allResources, lambdaConfig.environment);
-  context.print.warning('Ensuring latest function changes are built...');
+  context.print.blue('Ensuring latest function changes are built...');
   await getBuilder(context, resourceName, BuildType.DEV)();
   const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars });
-  context.print.warning('Starting execution...');
+  context.print.blue('Starting execution...');
   await timeConstrainedInvoker(invoker({ event }), context.input.options)
     .then(result => {
       const msg = typeof result === 'object' ? JSON.stringify(result) : result;
