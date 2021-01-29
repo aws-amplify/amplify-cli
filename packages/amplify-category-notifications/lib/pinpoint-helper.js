@@ -1,6 +1,6 @@
 const ora = require('ora');
 const inquirer = require('inquirer');
-const { utils } = require('amplify-cli-core');
+const { open } = require('amplify-cli-core');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
@@ -240,7 +240,7 @@ function console(context) {
   if (pinpointApp) {
     const { Id, Region } = pinpointApp;
     const consoleUrl = `https://${Region}.console.aws.amazon.com/pinpoint/home/?region=${Region}#/apps/${Id}/settings`;
-    utils.openIfNotCI(consoleUrl, { wait: false });
+    open(consoleUrl, { wait: false });
   } else {
     context.print.error('Neither notifications nor analytics is enabled in the cloud.');
   }

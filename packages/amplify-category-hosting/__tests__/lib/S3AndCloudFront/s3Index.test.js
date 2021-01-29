@@ -8,7 +8,7 @@ jest.mock('../../../lib/S3AndCloudFront/helpers/cloudfront-manager');
 
 const fs = require('fs-extra');
 const path = require('path');
-const { utils } = require('amplify-cli-core');
+const { open } = require('amplify-cli-core');
 const inquirer = require('inquirer');
 const mockirer = require('mockirer');
 
@@ -154,12 +154,12 @@ describe('s3IndexModule', () => {
     await s3IndexModule.publish(mockContext, { distributionDirPath: 'dist' });
     expect(fileUPloader.run).toBeCalled();
     expect(cloudFrontManager.invalidateCloudFront).toBeCalled();
-    expect(utils.openIfNotCI).toBeCalled();
+    expect(open).toBeCalled();
   });
 
   test('console', async () => {
     await s3IndexModule.console(mockContext);
-    expect(utils.openIfNotCI).toBeCalled();
+    expect(open).toBeCalled();
   });
 
   test('migrate', async () => {

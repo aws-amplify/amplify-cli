@@ -1,5 +1,5 @@
 import { prompt } from 'enquirer';
-import { stateManager, utils } from 'amplify-cli-core';
+import { stateManager, open } from 'amplify-cli-core';
 
 const providerName = 'awscloudformation';
 
@@ -48,7 +48,7 @@ export const run = async context => {
   }
 
   context.print.green(consoleUrl);
-  utils.openIfNotCI(consoleUrl, { wait: false });
+  open(consoleUrl, { wait: false });
 };
 
 function constructAdminURL(baseUrl: string, appId: string, envName: string) {

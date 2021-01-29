@@ -7,7 +7,7 @@ const path = require('path');
 const constants = require('../constants');
 
 const { EcsAlbStack, NETWORK_STACK_LOGICAL_ID, DEPLOYMENT_MECHANISM, processDockerConfig } = require('amplify-category-api');
-const { utils } = require('amplify-cli-core');
+const { open } = require('amplify-cli-core');
 
 const serviceName = 'ElasticContainer';
 const categoryName = 'hosting';
@@ -463,7 +463,7 @@ async function console(context) {
     context.print.error('Option not available');
     return;
   }
-  utils.openIfNotCI(url, { wait: false });
+  open(url, { wait: false });
 }
 
 async function migrate(context) {}

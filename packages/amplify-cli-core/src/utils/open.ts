@@ -1,4 +1,4 @@
-import open from 'open';
+import opn from 'open';
 import ciInfo from 'ci-info';
 import { ChildProcess } from 'child_process';
 
@@ -8,9 +8,9 @@ import { ChildProcess } from 'child_process';
  * @param target The thing you want to open. Can be a URL, file, or executable.
  * @param options
  */
-export const openIfNotCI = (target: string, options: open.Options): Promise<ChildProcess | void> => {
-  if (!ciInfo.isCI) {
-    return open(target, options);
+export const open = (target: string, options: opn.Options): Promise<ChildProcess | void> => {
+  if (ciInfo.isCI) {
+    return Promise.resolve();
   }
-  return Promise.resolve();
+  return opn(target, options);
 };

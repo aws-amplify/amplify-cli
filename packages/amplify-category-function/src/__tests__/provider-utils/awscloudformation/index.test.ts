@@ -1,6 +1,6 @@
 import { openConsole, isMockable } from '../../../provider-utils/awscloudformation';
 import { ServiceName } from '../../../provider-utils/awscloudformation/utils/constants';
-import { utils } from 'amplify-cli-core';
+import { open } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core');
 
@@ -18,7 +18,7 @@ describe('awscloudformation function provider', () => {
       },
     };
     openConsole(contextStub, ServiceName.LambdaFunction);
-    const openMock = utils.openIfNotCI as any;
+    const openMock = open as any;
     expect(openMock.mock.calls.length).toBe(1);
     expect(openMock.mock.calls[0][0]).toMatchSnapshot();
 

@@ -18,7 +18,7 @@ import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
 import fs from 'fs-extra';
 import path from 'path';
 import { IsMockableResponse } from '../..';
-import { JSONUtilities, utils } from 'amplify-cli-core';
+import { JSONUtilities, open } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function
@@ -401,7 +401,7 @@ export function openConsole(context, service: ServiceName) {
   const region = amplifyMeta.providers[provider].Region;
   const selection = service === ServiceName.LambdaFunction ? 'functions' : 'layers';
   const url = `https://${region}.console.aws.amazon.com/lambda/home?region=${region}#/${selection}`;
-  utils.openIfNotCI(url, { wait: false });
+  open(url, { wait: false });
 }
 
 export function isMockable(service: ServiceName): IsMockableResponse {

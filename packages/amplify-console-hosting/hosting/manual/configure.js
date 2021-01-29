@@ -1,5 +1,5 @@
 const utils = require('../../utils/amplify-context-utils');
-const { utils: amplifyUtils } = require('amplify-cli-core');
+const { open } = require('amplify-cli-core');
 const questions = require('../../modules/questions/question-generator');
 
 async function configure(context) {
@@ -7,7 +7,7 @@ async function configure(context) {
   const appId = utils.getAppIdForCurrEnv(context);
   const env = utils.getCurrEnv(context);
   if (await questions.askConfigureAppQuestion()) {
-    await amplifyUtils.openIfNotCI(`https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}/${env}`);
+    await open(`https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}/${env}`);
   }
 }
 

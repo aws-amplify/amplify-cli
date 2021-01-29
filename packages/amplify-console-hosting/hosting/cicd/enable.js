@@ -1,5 +1,5 @@
 const utils = require('../../utils/amplify-context-utils');
-const { utils: amplifyUtils } = require('amplify-cli-core');
+const { open } = require('amplify-cli-core');
 const questions = require('../../modules/questions/question-generator');
 const configUtils = require('../../utils/config-utils');
 const constants = require('../../constants/plugin-constants');
@@ -15,7 +15,7 @@ async function enable(context) {
   const category = constants.CATEGORY;
   const resourceName = constants.CONSOLE_RESOURCE_NAME;
   const type = constants.TYPE_CICD;
-  await amplifyUtils.openIfNotCI(`https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}`);
+  await open(`https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}`);
 
   await questions.askCICDConfirmQuestion(context);
 

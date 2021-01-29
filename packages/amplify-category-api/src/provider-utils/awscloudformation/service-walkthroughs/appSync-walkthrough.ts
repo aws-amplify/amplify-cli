@@ -18,7 +18,7 @@ import {
   exitOnNextTick,
   stateManager,
   $TSContext,
-  utils,
+  open,
 } from 'amplify-cli-core';
 
 const serviceName = 'AppSync';
@@ -129,7 +129,7 @@ export const openConsole = async (context: $TSContext) => {
       }
     }
 
-    utils.openIfNotCI(url, { wait: false });
+    open(url, { wait: false });
   } else {
     context.print.error('AppSync API is not pushed in the cloud.');
   }

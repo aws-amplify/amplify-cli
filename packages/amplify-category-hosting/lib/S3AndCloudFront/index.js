@@ -2,7 +2,7 @@ const fs = require('fs-extra');
 const inquirer = require('inquirer');
 const path = require('path');
 const chalk = require('chalk');
-const { utils } = require('amplify-cli-core');
+const { open } = require('amplify-cli-core');
 const configManager = require('./configuration-manager');
 const fileUPloader = require('./helpers/file-uploader');
 const cloudFrontManager = require('./helpers/cloudfront-manager');
@@ -124,7 +124,7 @@ function publish(context, args) {
         const { WebsiteURL } = context.exeInfo.serviceMeta.output;
         context.print.info('Your app is published successfully.');
         context.print.info(chalk.green(WebsiteURL));
-        utils.openIfNotCI(WebsiteURL, { wait: false });
+        open(WebsiteURL, { wait: false });
       }
     })
     .catch(e => {
@@ -137,7 +137,7 @@ function console(context) {
   const { HostingBucketName: bucket, Region: region } = amplifyMeta[constants.CategoryName][serviceName].output;
   const consoleUrl = `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/?region=${region}&tab=overview`;
   context.print.info(chalk.green(consoleUrl));
-  utils.openIfNotCI(consoleUrl, { wait: false });
+  open(consoleUrl, { wait: false });
 }
 
 async function migrate(context) {

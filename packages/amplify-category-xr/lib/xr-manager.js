@@ -6,7 +6,7 @@ const { URL } = require('url');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
-const { utils } = require('amplify-cli-core');
+const { open } = require('amplify-cli-core');
 
 const SUMERIAN_CONSOLE_URL = 'https://console.aws.amazon.com/sumerian/home/start';
 
@@ -235,7 +235,7 @@ async function remove(context) {
 
 function console(context) {
   context.print.info(chalk.green(SUMERIAN_CONSOLE_URL));
-  utils.openIfNotCI(SUMERIAN_CONSOLE_URL, { wait: false });
+  open(SUMERIAN_CONSOLE_URL, { wait: false });
 }
 
 function getProjectNameFromPath(urlPath) {

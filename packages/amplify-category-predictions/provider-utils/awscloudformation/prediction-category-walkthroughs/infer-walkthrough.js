@@ -1,7 +1,7 @@
 import inferAssets from '../assets/inferQuestions';
 import getAllDefaults from '../default-values/infer-defaults';
 import regionMapper from '../assets/regionMapping';
-import { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick, utils } from 'amplify-cli-core';
+import { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick, open } from 'amplify-cli-core';
 const inquirer = require('inquirer');
 const path = require('path');
 const fs = require('fs-extra');
@@ -234,7 +234,7 @@ async function getEndpoints(context, questionObj, params) {
 
 async function createEndpoint(context, defaultValues) {
   const endpointConsoleUrl = `https://${defaultValues.region}.console.aws.amazon.com/sagemaker/home?region=${defaultValues.region}#/endpoints/create`;
-  await utils.openIfNotCI(endpointConsoleUrl, { wait: false });
+  await open(endpointConsoleUrl, { wait: false });
   context.print.info('SageMaker Console:');
   context.print.success(endpointConsoleUrl);
   await inquirer.prompt({
