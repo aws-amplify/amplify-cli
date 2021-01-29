@@ -20,8 +20,10 @@ describe('amplify add api', () => {
 
     await initJSProjectWithProfile(projRoot, { name: projectName });
     addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+    // testing this with old behavior with named lsi key
+    addFeatureFlag(projRoot, 'graphqltransformer', 'secondarykeyasgsi', false);
 
-    await addApiWithSchema(projRoot, initialSchema);
+    await addApiWithSchema(projRoot, initialSchema, { apiKeyExpirationDays: 2 });
     await amplifyPush(projRoot);
 
     updateApiSchema(projRoot, projectName, nextSchema1);
