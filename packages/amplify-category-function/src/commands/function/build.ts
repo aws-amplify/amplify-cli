@@ -12,14 +12,14 @@ export const name = 'build';
  */
 export const run = async (context: $TSContext) => {
   const resourceName = context?.input?.subCommands?.[0];
-  const cont =
+  const confirmContinue =
     !!resourceName ||
     context.input?.options?.yes ||
     (await context.amplify.confirmPrompt(
       'This will build all functions and layers in your project. Are you sure you want to continue?',
       false,
     ));
-  if (!cont) {
+  if (!confirmContinue) {
     return;
   }
   try {

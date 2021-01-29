@@ -1,13 +1,11 @@
 import { $TSContext, $TSCopyJob, JSONUtilities } from 'amplify-cli-core';
 
 /**
- * Runs a series of jobs through the templating system.
- *
- * @param {$TSContext}          context      - The Amplify CLI context
- * @param {$TSAny[]}            jobs         - A list of jobs to run.
- * @param {$TSAny}              props        - The props to use for variable replacement.
- * @param {boolean}             force        - Force CF template generation
- * @param {$TSAny[]|$TSObject}  writeParams  - boolean of whether props should be written to job.paramsFile, or an object that should be written to job.paramsFile
+ * @param context The Amplify CLI context
+ * @param jobs A list of jobs to run
+ * @param props Mapping of replacements to make in the templates
+ * @param force Force template generation
+ * @param writeParams boolean of whether props should be written to job.paramsFile, or an object that should be written to job.paramsFile
  */
 export async function copyBatch(context: $TSContext, jobs: $TSCopyJob, props: object, force?: boolean, writeParams?: boolean | object) {
   // grab some features

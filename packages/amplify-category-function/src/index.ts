@@ -2,7 +2,7 @@ import path from 'path';
 import { category } from './constants';
 export { category } from './constants';
 import { BuildType, FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
-import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { supportedServices } from './provider-utils/supported-services';
@@ -14,7 +14,6 @@ import { ServiceName } from './provider-utils/awscloudformation/utils/constants'
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
-import { PackageRequestMeta } from './provider-utils/awscloudformation/types/packaging-types';
 export { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
@@ -163,7 +162,7 @@ export async function initEnv(context) {
 export async function getInvoker(
   context: $TSContext,
   { handler, resourceName, envVars }: InvokerParameters,
-): Promise<({ event: unknown }) => Promise<any>> {
+): Promise<({ event: unknown }) => Promise<$TSAny>> {
   const resourcePath = path.join(pathManager.getBackendDirPath(), category, resourceName);
   const { pluginId, functionRuntime }: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(category, resourceName);
   const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, pluginId);
