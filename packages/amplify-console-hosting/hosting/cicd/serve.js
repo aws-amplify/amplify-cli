@@ -7,7 +7,7 @@ async function serve(context) {
   const region = utils.getRegionForCurrEnv(context);
   const appId = utils.getAppIdForCurrEnv(context);
   if (await questions.askServeQuestion(constants.TYPE_CICD)) {
-    await openI(`https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}`);
+    await open(`https://${region}.console.aws.amazon.com/amplify/home?region=${region}#/${appId}`);
   }
 }
 
