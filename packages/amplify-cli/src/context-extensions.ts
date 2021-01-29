@@ -225,7 +225,7 @@ function blue(message: string): void {
   console.log(colors.blue(message));
 }
 
-function fancy(message: string): void {
+function fancy(message?: string): void {
   console.log(message);
 }
 

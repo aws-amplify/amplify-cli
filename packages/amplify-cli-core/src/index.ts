@@ -42,7 +42,7 @@ export type $TSContext = {
 
 export type IContextPrint = {
   info: (message: string) => void;
-  fancy: (message: string) => void;
+  fancy: (message?: string) => void;
   warning: (message: string) => void;
   error: (message: string) => void;
   success: (message: string) => void;
