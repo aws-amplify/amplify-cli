@@ -55,9 +55,11 @@ export const generalUtils = {
   getErrors() {
     return this.errors;
   },
-  validate(allGood, message, type, data) {
+  validate(allGood, message, errorType, data) {
     if (allGood) return '';
-    throw new ValidateError(message, type, data);
+    const error = new ValidateError(message, this.info, errorType, data);
+    this.errors.push(error);
+    throw error;
   },
   isNull(value) {
     return value === null || typeof value == 'undefined';
