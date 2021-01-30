@@ -183,6 +183,7 @@ const guessPlatform = async (providedPlatform, providedJSFramework) => {
     javascript: 'amplify-frontend-javascript',
     android: 'amplify-frontend-android',
     ios: 'amplify-frontend-ios',
+    flutter: 'amplify-frontend-flutter',
   };
 
   let suitableFrontend;
