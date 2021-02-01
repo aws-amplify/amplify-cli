@@ -71,14 +71,17 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
 
       if (providerPlugin) {
         const providerController = require(`./provider-utils/${providerPlugin}`);
-        const { policies, attributes } = providerController.getPermissionPolicies(
+        const { policy, attributes } = providerController.getPermissionPolicies(
           context,
           service,
           resourceName,
           resourceOpsMapping[resourceName],
         );
-
-        permissionPolicies.push(...policies);
+        if (Array.isArray(policy)) {
+          permissionPolicies.push(...policy);
+        } else {
+          permissionPolicies.push(policy);
+        }
         resourceAttributes.push({ resourceName, attributes, category });
       } else {
         context.print.error(`Provider not configured for ${category}: ${resourceName}`);

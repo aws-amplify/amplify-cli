@@ -1299,7 +1299,7 @@ function convertToCRUD(parameters, answers) {
 }
 
 export const getIAMPolicies = (resourceName, crudOptions) => {
-  let policies = [];
+  let policy = [];
   let actions = new Set();
 
   crudOptions.forEach(crudOption => {
@@ -1323,8 +1323,8 @@ export const getIAMPolicies = (resourceName, crudOptions) => {
   });
 
   actions = Array.from(actions);
-  let listBucketPolicy = {};
   if (actions.includes('s3:ListBucket')) {
+    let listBucketPolicy = {};
     listBucketPolicy = {
       Effect: 'Allow',
       Action: 's3:ListBucket',
@@ -1343,8 +1343,9 @@ export const getIAMPolicies = (resourceName, crudOptions) => {
       ],
     };
     actions = actions.filter(action => action != 's3:ListBucket');
+    policy.push(listBucketPolicy);
   }
-  let policy = {
+  let s3ObjectPolicy = {
     Effect: 'Allow',
     Action: actions,
     Resource: [
@@ -1362,11 +1363,10 @@ export const getIAMPolicies = (resourceName, crudOptions) => {
       },
     ],
   };
-  // push both policies
-  policies.push(policy, listBucketPolicy);
+  policy.push(s3ObjectPolicy);
   const attributes = ['BucketName'];
 
-  return { policies, attributes };
+  return { policy, attributes };
 };
 
 function getTriggersForLambdaConfiguration(protectionLevel, functionName) {
