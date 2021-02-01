@@ -1,6 +1,6 @@
 import { open, $TSContext, stateManager } from 'amplify-cli-core';
 import { buildFunction } from '../../../provider-utils/awscloudformation/utils/buildFunction';
-import { getBuilder } from '../../../../lib';
+import { getBuilder } from '../../..';
 import { BuildType } from 'amplify-function-plugin-interface';
 
 jest.mock('amplify-cli-core');
@@ -15,7 +15,13 @@ stateManager_mock.getMeta.mockReturnValue({
 });
 jest.mock('open');
 
-jest.mock('../../../provider-utils/awscloudformation/utils/buildFunction');
+jest.mock('../../../provider-utils/awscloudformation/utils/buildFunction', () => ({
+  buildFunction: jest.fn(),
+  buildTypeKeyMap: {
+    PROD: 'lastBuildTimeStamp',
+    DEV: 'lastDevBuildTimeStamp',
+  },
+}));
 const buildFunction_mock = buildFunction as jest.MockedFunction<typeof buildFunction>;
 
 describe('awscloudformation function provider', () => {
