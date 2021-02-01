@@ -87,10 +87,30 @@ function validateInputParams(channelInput) {
   return channelInput;
 }
 
-function disable(context) {
+async function disable(context) {
+  let answers;
+  if (context.exeInfo.pinpointInputParams && context.exeInfo.pinpointInputParams[channelName]) {
+    answers = validateInputParams(context.exeInfo.pinpointInputParams[channelName]);
+  } else {
+    let channelOutput = {};
+    if (context.exeInfo.serviceMeta.output[channelName]) {
+      channelOutput = context.exeInfo.serviceMeta.output[channelName];
+    }
+    const questions = [
+      {
+        name: 'ApiKey',
+        type: 'input',
+        message: 'ApiKey',
+        default: channelOutput.ApiKey,
+      },
+    ];
+    answers = await inquirer.prompt(questions);
+  }
+
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     GCMChannelRequest: {
+      ...answers,
       Enabled: false,
     },
   };
