@@ -71,7 +71,7 @@ export async function getConfirmation(context, env?) {
       chalk.yellow(
         `Are you sure you want to continue? This ${chalk.red(
           'CANNOT',
-        )} be undone. (This would delete ${environmentText} of the project from the cloud${
+        )} be undone. (This will delete ${environmentText} of the project from the cloud${
           env ? '' : ' and wipe out all the local files created by Amplify CLI'
         })`,
       ),
