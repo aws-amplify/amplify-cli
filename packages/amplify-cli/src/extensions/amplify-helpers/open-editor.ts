@@ -40,7 +40,7 @@ export async function openEditor(context, filePath, waitToContinue = true) {
 
     if (!editor) {
       context.print.error(
-        `Selected editor '${editorSelected}' was not found in your machine. Please open your favorite editor and modify the file if needed.`,
+        `Selected editor '${editorSelected}' was not found in your machine. Open your favorite editor and modify the file if needed.`,
       );
     }
 
@@ -86,12 +86,12 @@ export async function openEditor(context, filePath, waitToContinue = true) {
 
           subProcess.on('error', err => {
             context.print.error(
-              `Selected editor ${editorSelected} was not found in your machine. Please manually edit the file created at ${filePath}`,
+              `Selected editor ${editorSelected} was not found in your machine. Manually edit the file created at ${filePath}`,
             );
           });
 
           subProcess.unref();
-          context.print.info(`Please edit the file in your editor: ${filePath}`);
+          context.print.info(`Edit the file in your editor: ${filePath}`);
           if (waitToContinue) {
             await inquirer.prompt(continueQuestion);
           }
@@ -102,7 +102,7 @@ export async function openEditor(context, filePath, waitToContinue = true) {
           });
         }
       } catch (e) {
-        context.print.error(`Selected default editor not found in your machine. Please manually edit the file created at ${filePath}`);
+        context.print.error(`Selected default editor not found in your machine. Manually edit the file created at ${filePath}`);
       }
     }
   }
