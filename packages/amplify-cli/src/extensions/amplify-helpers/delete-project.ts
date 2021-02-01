@@ -1,6 +1,5 @@
 import ora from 'ora';
 import chalk from 'chalk';
-import inquirer from 'inquirer';
 import { FeatureFlags } from 'amplify-cli-core';
 import { removeEnvFromCloud } from './remove-env-from-cloud';
 import { getFrontendPlugins } from './get-frontend-plugins';
@@ -67,25 +66,17 @@ export async function getConfirmation(context, env?) {
       deleteAmplifyApp: !process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION,
     };
   const environmentText = env ? `'${env}' environment` : 'all the environments';
-
-  const message = chalk.yellow(
-    `Are you sure you want to continue? This ${chalk.red(
-      'CANNOT',
-    )} be undone. (This would delete ${environmentText} of the project from the cloud${
-      env ? '' : ' and wipe out all the local files created by Amplify CLI'
-    })`,
-  );
-
-  const confirm = await inquirer.prompt({
-    name: 'yesno',
-    message,
-    type: 'confirm',
-    default: false,
-    prefix: '⚠️ ',
-  });
-
   return {
-    proceed: confirm.yesno,
+    proceed: await context.amplify.confirmPrompt(
+      chalk.yellow(
+        `Are you sure you want to continue? This ${chalk.red(
+          'CANNOT',
+        )} be undone. (This would delete ${environmentText} of the project from the cloud${
+          env ? '' : ' and wipe out all the local files created by Amplify CLI'
+        })`,
+      ),
+      false,
+    ),
     // Placeholder for later selective deletes
     deleteS3: true,
     deleteAmplifyApp: true,
