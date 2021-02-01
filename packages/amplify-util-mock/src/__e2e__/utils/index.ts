@@ -32,7 +32,7 @@ export async function launchDDBLocal() {
   return { emulator, dbPath, client };
 }
 
-export async function deploy(transformerOutput: any, client?: DynamoDB) {
+export async function deploy(transformerOutput: any, client?: DynamoDB): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
 
@@ -44,6 +44,24 @@ export async function deploy(transformerOutput: any, client?: DynamoDB) {
   const simulator = await runAppSyncSimulator(config);
   return { simulator, config };
 }
+
+export async function reDeploy(
+  transformerOutput: any,
+  simulator: AmplifyAppSyncSimulator,
+  client?: DynamoDB,
+): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
+  let config: any = processTransformerStacks(transformerOutput);
+  config.appSync.apiKey = 'da-fake-api-key';
+
+  if (client) {
+    await createAndUpdateTable(client, config);
+    config = configureDDBDataSource(config, client.config);
+  }
+  configureLambdaDataSource(config);
+  simulator?.reload(config);
+  return { simulator, config };
+}
+
 async function configureLambdaDataSource(config) {
   config.dataSources
     .filter(d => d.type === 'AWS_LAMBDA')
@@ -77,7 +95,7 @@ export async function terminateDDB(emulator, dbPath) {
   }
 }
 
-export async function runAppSyncSimulator(config, port?: number, wsPort?: number) {
+export async function runAppSyncSimulator(config, port?: number, wsPort?: number): Promise<AmplifyAppSyncSimulator> {
   const appsyncSimulator = new AmplifyAppSyncSimulator({ port, wsPort });
   await appsyncSimulator.start();
   await appsyncSimulator.init(config);

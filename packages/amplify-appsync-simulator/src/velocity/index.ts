@@ -57,9 +57,9 @@ export class VelocityTemplate {
     try {
       templateResult = this.compiler.render(context);
     } catch (e) {
-      const lastError = context.util.errors.pop();
+      const lastError = context.util.errors.length && context.util.errors[context.util.errors.length - 1];
       if (lastError && lastError instanceof ValidateError) {
-        return { result: lastError.data, errors: [...context.util.errors, lastError], isReturn: false, stash: context.ctx.stash.toJSON() };
+        return { result: lastError.data, errors: [...context.util.errors], isReturn: true, stash: context.ctx.stash.toJSON() };
       }
       return { result: null, errors: [...context.util.errors], isReturn: false, stash: context.ctx.stash.toJSON() };
     }
