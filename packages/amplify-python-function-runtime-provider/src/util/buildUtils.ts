@@ -1,12 +1,11 @@
 import fs from 'fs-extra';
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface/src';
-import { execAsStringPromise } from './pyUtils';
 import glob from 'glob';
+import execa from 'execa';
 
 export async function pythonBuild(params: BuildRequest): Promise<BuildResult> {
   if (!params.lastBuildTimeStamp || isBuildStale(params.srcRoot, params.lastBuildTimeStamp)) {
-    const pipenvLogs = await execAsStringPromise('pipenv install', { cwd: params.srcRoot });
-    console.log(pipenvLogs);
+    await execa.command('pipenv install', { cwd: params.srcRoot, stdio: 'inherit' });
     return { rebuilt: true };
   }
   return { rebuilt: false };
