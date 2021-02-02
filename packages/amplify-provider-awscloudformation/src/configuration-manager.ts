@@ -1,9 +1,10 @@
 import { exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
-import _ from 'lodash';
-import path from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
+import { isCI } from 'ci-info';
 import { prompt } from 'inquirer';
+import _ from 'lodash';
+import path from 'path';
 import proxyAgent from 'proxy-agent';
 import { adminLoginFlow } from './admin-login';
 import awsRegions from './aws-regions';
@@ -558,9 +559,9 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
     }
     try {
       awsConfig = await getTempCredsWithAdminTokens(appId, print);
-    } catch (err) {
-      print.error(`Failed to get credentials: ${err.message || 'Unknown error occurred'}`);
-      await usageData.emitError(err);
+    } catch (error) {
+      print.error(`Failed to get credentials: ${error.message || error}`);
+      await usageData.emitError(error);
       exitOnNextTick(1);
     }
   } else if (authType.type === 'profile') {
@@ -731,7 +732,7 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     {},
   );
 
-  if (context?.exeInfo?.inputParams?.yes) {
+  if (isCI) {
     accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
     secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
   }
@@ -744,12 +745,23 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
   if (accessKeyId && secretAccessKey) {
     return { type: 'accessKeys', accessKeyId, region, secretAccessKey };
   }
+
   if (useProfile && profileName) {
     return { type: 'profile', profileName };
   }
+
   if (projectConfig?.config?.awsConfigFilePath) {
     const awsConfig = loadConfigFromPath(projectConfig.config.awsConfigFilePath);
     return { ...awsConfig, type: 'accessKeys' };
+  }
+
+  if (isCI) {
+    const errorMessage = 'Failed to resolve AWS access keys in CI.';
+    const docsUrl = 'https://docs.amplify.aws/cli/usage/headless';
+    context.print.error(errorMessage);
+    context.print.info(`Access keys for continuous integration can be configured with headless paramaters: ${chalk.green(docsUrl)}`);
+    await context.usageData.emitError(errorMessage);
+    exitOnNextTick(1);
   }
 
   let appId: string;
@@ -773,11 +785,11 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
 async function askAuthType(isAdminAvailable: boolean = false): Promise<AuthFlow> {
   let choices: { name: string; value: AuthFlow }[] = [
     { name: 'AWS profile', value: 'profile' },
-    { name: 'Supply access keys directly', value: 'accessKeys' },
+    { name: 'AWS access keys', value: 'accessKeys' },
   ];
 
   if (isAdminAvailable) {
-    choices = [{ name: 'Amplify admin', value: 'admin' }, ...choices];
+    choices = [{ name: 'Amplify Admin UI', value: 'admin' }, ...choices];
   }
 
   const { authChoice }: { authChoice?: AuthFlow } = await prompt(authTypeQuestion(choices));

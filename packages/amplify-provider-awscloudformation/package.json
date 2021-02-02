@@ -74,6 +74,7 @@
     "bottleneck": "2.19.5",
     "cfn-lint": "^1.9.7",
     "chalk": "^3.0.0",
+    "ci-info": "^2.0.0",
     "cloudform": "^4.2.0",
     "cloudform-types": "^4.2.0",
     "columnify": "^1.5.4",

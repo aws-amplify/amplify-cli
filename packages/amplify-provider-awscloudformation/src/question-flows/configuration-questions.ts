@@ -6,7 +6,7 @@ export function authTypeQuestion(choices: { name: string; value: string }[]): Li
   return {
     type: 'list',
     name: 'authChoice',
-    message: 'Which authentication method do you want to use?',
+    message: 'Select the authentication method you want to use:',
     choices,
   };
 }
