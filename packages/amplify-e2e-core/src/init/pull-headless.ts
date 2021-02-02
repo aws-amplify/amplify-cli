@@ -19,7 +19,7 @@ export function pullProject(cwd: string, settings: Object) {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['pull', '--appId', s.appId, '--envName', s.envName], { cwd, stripColors: true })
-      .wait('Do you want to use an AWS profile?')
+      .wait('Select the authentication method you want to use:')
       .sendLine(s.useProfile)
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)

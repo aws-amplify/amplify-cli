@@ -39,12 +39,12 @@ export default function initProjectWithProfile(cwd: string, settings: any = {}, 
       .wait('Start Command:')
       .sendline('\r')
       .wait('Using default provider  awscloudformation')
-      .wait('Do you want to use an AWS profile?')
-      .sendline('y')
+      .wait('Select the authentication method you want to use:')
+      .sendline('\r')
       .wait('Please choose the profile you want to use')
       .sendline(s.profileName)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run(function(err: Error) {
+      .run(function (err: Error) {
         if (!err) {
           resolve();
         } else {
@@ -68,12 +68,12 @@ export function initAndroidProject(cwd: string, settings: any = {}, verbose: Boo
       .sendline('\r')
       .wait('Where is your Res directory:')
       .sendline('\r')
-      .wait('Do you want to use an AWS profile?')
-      .sendline('y')
+      .wait('Select the authentication method you want to use:')
+      .sendline('\r')
       .wait('Please choose the profile you want to use')
       .sendline('\r')
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run(function(err: Error) {
+      .run(function (err: Error) {
         if (!err) {
           resolve();
         } else {
@@ -96,12 +96,12 @@ export function initIosProject(cwd: string, settings: any = {}, verbose: Boolean
       .wait("Choose the type of app that you're building")
       .sendline('\r')
       // .sendline('\j\j\r')
-      .wait('Do you want to use an AWS profile?')
-      .sendline('y')
+      .wait('Select the authentication method you want to use:')
+      .sendline('\r')
       .wait('Please choose the profile you want to use')
       .sendline('\r')
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run(function(err: Error) {
+      .run(function (err: Error) {
         if (!err) {
           resolve();
         } else {

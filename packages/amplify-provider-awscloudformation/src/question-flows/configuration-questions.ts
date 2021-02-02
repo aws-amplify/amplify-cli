@@ -2,21 +2,12 @@ import { $TSAny } from 'amplify-cli-core';
 import { ListQuestion, ConfirmQuestion, PasswordQuestion } from 'inquirer';
 import awsRegions from '../aws-regions';
 
-export function authTypeQuestion(choices: { name: string, value: string }[]): ListQuestion {
+export function authTypeQuestion(choices: { name: string; value: string }[]): ListQuestion {
   return {
     type: 'list',
     name: 'authChoice',
-    message: 'Which authentication method do you want to use?',
+    message: 'Select the authentication method you want to use:',
     choices,
-  };
-}
-
-export function profileConfirmQuestion(defaultAns: boolean): ConfirmQuestion {
-  return {
-    type: 'confirm',
-    name: 'useProfile',
-    message: 'Do you want to use an AWS profile?',
-    default: defaultAns,
   };
 }
 

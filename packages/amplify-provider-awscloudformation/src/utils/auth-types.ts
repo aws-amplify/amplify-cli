@@ -1,3 +1,23 @@
+import { $TSAny } from 'amplify-cli-core';
+
+export type AuthFlow = 'admin' | 'profile' | 'accessKeys';
+export interface AuthFlowConfig extends Partial<AwsSdkConfig> {
+  type: AuthFlow;
+  appId?: string;
+  profileName?: string;
+  useProfile?: boolean;
+}
+
+export interface AwsSdkConfig {
+  accessKeyId: string;
+  expiration?: Date;
+  region: string;
+  secretAccessKey: string;
+  sessionToken?: string;
+  httpOptions?: {
+    agent: $TSAny;
+  };
+}
 export interface AdminAuthPayload {
   accessToken: CognitoAccessToken;
   clockDrift: number;
@@ -9,9 +29,7 @@ export interface AdminAuthPayload {
   region: string;
 }
 
-export interface AuthConfig extends AdminAuthPayload {
-  IdentityId: string;
-}
+export type AdminAuthConfig = AdminAuthPayload & { IdentityId: string };
 
 export interface CognitoAccessToken {
   jwtToken: string;

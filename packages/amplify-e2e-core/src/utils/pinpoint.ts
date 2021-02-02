@@ -1,5 +1,5 @@
 import { Pinpoint } from 'aws-sdk';
-import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags } from '..';
+import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 import _ from 'lodash';
 
 const settings = {
@@ -99,8 +99,9 @@ export function initProjectForPinpoint(cwd: string) {
       .wait('Start Command:')
       .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
-      .wait('Do you want to use an AWS profile?')
-      .sendLine('n')
+      .wait('Select the authentication method you want to use:')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .pauseRecording()
       .wait('accessKeyId')
       .sendLine(settings.accessKeyId)
