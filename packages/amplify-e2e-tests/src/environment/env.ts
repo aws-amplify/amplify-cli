@@ -7,7 +7,7 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
       .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
-      .wait('Which authentication method do you want to use?')
+      .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn();
@@ -33,7 +33,7 @@ export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName:
       .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
-      .wait('Which authentication method do you want to use?')
+      .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn()
@@ -69,9 +69,7 @@ export function listEnvironment(cwd: string, settings: { numEnv?: number }) {
   return new Promise((resolve, reject) => {
     let numEnv = settings.numEnv || 1;
     let regex = /\|\s\*?[a-z]{2,10}\s+\|/;
-    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true })
-      .wait('| Environments |')
-      .wait('| ------------ |');
+    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true }).wait('| Environments |').wait('| ------------ |');
 
     for (let i = 0; i < numEnv; ++i) {
       chain.wait(regex);
@@ -145,7 +143,7 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
       .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
-      .wait('Which authentication method do you want to use?')
+      .wait('Select the authentication method you want to use:')
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn()

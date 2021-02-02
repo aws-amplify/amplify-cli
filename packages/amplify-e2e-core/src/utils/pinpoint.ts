@@ -99,7 +99,7 @@ export function initProjectForPinpoint(cwd: string) {
       .wait('Start Command:')
       .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
-      .wait('Which authentication method do you want to use?')
+      .wait('Select the authentication method you want to use:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .pauseRecording()

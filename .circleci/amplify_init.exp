@@ -19,7 +19,7 @@ expect -exact "Build Command:"
 send -- "\r"
 expect -exact "Start Command:"
 send -- "\r"
-expect "Which authentication method do you want to use?"
+expect "Select the authentication method you want to use:"
 send -- "j\r"
 log_user 0;
 expect "accessKeyId:"

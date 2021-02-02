@@ -19,7 +19,7 @@ export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDi
 
     if (settings.emptyDir) {
       chain
-        .wait('Which authentication method do you want to use?')
+        .wait('Select the authentication method you want to use:')
         .sendCarriageReturn()
         .wait('Please choose the profile you want to use')
         .sendCarriageReturn()
@@ -40,11 +40,7 @@ export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDi
         .wait('Do you plan on modifying this backend?')
         .sendLine('y');
     } else {
-      chain
-        .wait('Pre-pull status')
-        .wait('Current Environment')
-        .wait(tableHeaderRegex)
-        .wait(tableSeperator);
+      chain.wait('Pre-pull status').wait('Current Environment').wait(tableHeaderRegex).wait(tableSeperator);
     }
 
     if (settings.override) {
@@ -56,15 +52,9 @@ export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDi
     }
 
     if (settings.emptyDir) {
-      chain
-        .wait(/Successfully pulled backend environment .+ from the cloud\./)
-        .wait("Run 'amplify pull' to sync upstream changes.");
+      chain.wait(/Successfully pulled backend environment .+ from the cloud\./).wait("Run 'amplify pull' to sync upstream changes.");
     } else {
-      chain
-        .wait('Post-pull status')
-        .wait('Current Environment')
-        .wait(tableHeaderRegex)
-        .wait(tableSeperator);
+      chain.wait('Post-pull status').wait('Current Environment').wait(tableHeaderRegex).wait(tableSeperator);
     }
 
     chain.run((err: Error) => {
