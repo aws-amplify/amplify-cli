@@ -1,5 +1,4 @@
-import { amplifyConfigure as configure } from 'amplify-e2e-core';
-import { isCI } from 'amplify-e2e-core';
+import { amplifyConfigure as configure, isCI } from 'amplify-e2e-core';
 
 async function setupAmplify() {
   if (isCI()) {
