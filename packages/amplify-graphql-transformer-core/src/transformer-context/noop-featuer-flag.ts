@@ -1,4 +1,4 @@
-import { FeatureFlagProvider } from "@aws-amplify/graphql-transformer-interfaces";
+import { FeatureFlagProvider } from '@aws-amplify/graphql-transformer-interfaces';
 
 export class NoopFeatureFlagProvider implements FeatureFlagProvider {
   getBoolean(featureName: string, options?: boolean): boolean {
@@ -10,6 +10,7 @@ export class NoopFeatureFlagProvider implements FeatureFlagProvider {
   getNumber(featureName: string, options?: number): number {
     return this.getValue<number>(featureName, options);
   }
+  // eslint-disable-next-line @typescript-eslint/ban-types
   getObject(): object {
     // Todo: for future extensibility
     throw new Error('Not implemented');

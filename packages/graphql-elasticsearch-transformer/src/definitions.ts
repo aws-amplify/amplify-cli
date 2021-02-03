@@ -36,7 +36,7 @@ export function makeSearchableScalarInputObject(type: string): InputObjectTypeDe
   const conditions = getScalarConditions(type);
   const fields: InputValueDefinitionNode[] = conditions.map((condition: string) => ({
     kind: Kind.INPUT_VALUE_DEFINITION,
-    name: { kind: 'Name' as 'Name', value: condition },
+    name: { kind: 'Name' as const, value: condition },
     type: getScalarFilterInputType(condition, type, name),
     // TODO: Service does not support new style descriptions so wait.
     // description: field.description,

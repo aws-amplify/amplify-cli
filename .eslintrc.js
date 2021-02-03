@@ -5,7 +5,6 @@ module.exports = {
     'eslint:recommended',
     'plugin:prettier/recommended',
     'plugin:react/recommended', // Uses the recommended rules from @eslint-plugin-react
-    'plugin:@typescript-eslint/eslint-recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
     'prettier/@typescript-eslint', // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
   ],
@@ -112,7 +111,14 @@ module.exports = {
     'no-use-before-define': 'off', // https://eslint.org/docs/rules/no-use-before-define
     'prefer-destructuring': 'off', // https://eslint.org/docs/rules/prefer-destructuring
     'prefer-object-spread': 'off', // https://eslint.org/docs/rules/prefer-object-spread
-    '@typescript-eslint/camelcase': 'off',
+    '@typescript-eslint/naming-convention': ['error', {
+      selector: 'default',
+      format: null
+    }, {
+        selector: ['class', 'interface'],
+        format: ['PascalCase']
+      }
+    ],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
@@ -124,7 +130,6 @@ module.exports = {
     'no-return-await': 'off', // https://eslint.org/docs/rules/no-return-await
 
     // TSLint existing rules
-    '@typescript-eslint/class-name-casing': 'error',
     curly: 'off', // Enable later
     'guard-for-in': 'error',
     indent: 'off', // Enable later
@@ -162,7 +167,6 @@ module.exports = {
     'default-case': 'off',
     'no-return-assign': 'off',
     'import/no-duplicates': 'off',
-    '@typescript-eslint/interface-name-prefix': 'off',
     'no-throw-literal': 'off',
     'react/static-property-placement': 'off',
     'import/no-extraneous-dependencies': 'off',
@@ -199,6 +203,9 @@ module.exports = {
     'no-constant-condition': 'off',
     'operator-assignment': 'off',
     'import/no-named-default': 'off',
+    'prefer-arrow-callback': 'off',
+    'arrow-body-style': 'off',
+    'camelcase': 'off'
   },
   overrides: [
     {
@@ -221,7 +228,6 @@ module.exports = {
         'default-case': 'error',
         'no-return-assign': 'error',
         'import/no-duplicates': 'error',
-        '@typescript-eslint/interface-name-prefix': 'error',
         'no-throw-literal': 'error',
         'react/static-property-placement': 'error',
         'import/no-extraneous-dependencies': 'error',
