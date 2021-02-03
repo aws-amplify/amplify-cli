@@ -727,9 +727,8 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     ['exeInfo', 'inputParams', 'awscloudformation'],
     {},
   );
-  const yesFlag = !!_.get(context, ['exeInfo', 'inputParams', 'yes'], false);
 
-  if (yesFlag) {
+  if (context.exeInfo.inputParams.yes) {
     if (process.env.AWS_SDK_LOAD_CONFIG) {
       useProfile = useProfile === undefined ? true : useProfile;
       profileName = profileName || process.env.AWS_PROFILE || 'default';
@@ -757,7 +756,7 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     return { ...awsConfig, type: 'accessKeys' };
   }
 
-  if (yesFlag) {
+  if (context.exeInfo.inputParams.yes) {
     const errorMessage = 'Failed to resolve AWS access keys with --yes flag.';
     const docsUrl = 'https://docs.amplify.aws/cli/usage/headless';
     context.print.error(errorMessage);
