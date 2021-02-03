@@ -1,7 +1,6 @@
 import { exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import { isCI } from 'ci-info';
 import { prompt } from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
@@ -606,31 +605,28 @@ export function resolveRegion(): string {
 async function newUserCheck(context: $TSContext) {
   const configSource = scanConfig(context);
   if (!configSource) {
-    let needToSetupNewUser = true;
     if (context.exeInfo.inputParams[constants.ProviderName]) {
       const inputParams = context.exeInfo.inputParams[constants.ProviderName];
       const inputConfigSufficient =
         inputParams.configLevel === 'general' || (inputParams.configLevel === 'project' && !inputParams.config.useProfile);
       if (inputConfigSufficient) {
-        needToSetupNewUser = false;
+        return;
       }
     }
-    if (needToSetupNewUser) {
-      if (context.exeInfo.inputParams.yes) {
-        throw new Error('AWS access credentials can not be found.');
-      } else {
-        context.print.info('AWS access credentials can not be found.');
-        const answer = await prompt([
-          {
-            type: 'confirm',
-            name: 'setupNewUser',
-            message: 'Setup new user',
-            default: true,
-          },
-        ]);
-        if (answer.setupNewUser) {
-          context.newUserInfo = await setupNewUser.run(context);
-        }
+    if (context.exeInfo.inputParams.yes) {
+      throw new Error('AWS access credentials can not be found.');
+    } else {
+      context.print.info('AWS access credentials can not be found.');
+      const answer = await prompt([
+        {
+          type: 'confirm',
+          name: 'setupNewUser',
+          message: 'Setup new user',
+          default: true,
+        },
+      ]);
+      if (answer.setupNewUser) {
+        context.newUserInfo = await setupNewUser.run(context);
       }
     }
   }
@@ -732,22 +728,27 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     {},
   );
 
-  if (isCI) {
-    accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
-    secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+  if (context.exeInfo.inputParams.yes) {
+    if (process.env.AWS_SDK_LOAD_CONFIG) {
+      useProfile = useProfile === undefined ? true : useProfile;
+      profileName = profileName || process.env.AWS_PROFILE || 'default';
+    } else {
+      accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
+      secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+    }
+    region = region || resolveRegion();
   }
-  region = region || resolveRegion();
 
   // Check for local project config
   useProfile = useProfile ?? projectConfig?.config?.useProfile;
   profileName = profileName ?? projectConfig?.config?.profileName;
 
-  if (accessKeyId && secretAccessKey) {
-    return { type: 'accessKeys', accessKeyId, region, secretAccessKey };
-  }
-
   if (useProfile && profileName) {
     return { type: 'profile', profileName };
+  }
+
+  if (accessKeyId && secretAccessKey) {
+    return { type: 'accessKeys', accessKeyId, region, secretAccessKey };
   }
 
   if (projectConfig?.config?.awsConfigFilePath) {
@@ -755,8 +756,8 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     return { ...awsConfig, type: 'accessKeys' };
   }
 
-  if (isCI) {
-    const errorMessage = 'Failed to resolve AWS access keys in CI.';
+  if (context.exeInfo.inputParams.yes) {
+    const errorMessage = 'Failed to resolve AWS access keys with --yes flag.';
     const docsUrl = 'https://docs.amplify.aws/cli/usage/headless';
     context.print.error(errorMessage);
     context.print.info(`Access keys for continuous integration can be configured with headless paramaters: ${chalk.green(docsUrl)}`);

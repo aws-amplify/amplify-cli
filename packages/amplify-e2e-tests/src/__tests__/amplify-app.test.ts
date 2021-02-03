@@ -7,8 +7,7 @@ import {
   amplifyPush,
   addIntegAccountInConfig,
 } from '../amplify-app-helpers/amplify-app-setup';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
-import { deleteProject } from 'amplify-e2e-core';
+import { createNewProjectDir, deleteProject, deleteProjectDir } from 'amplify-e2e-core';
 import {
   validateProject,
   validateProjectConfig,
@@ -66,7 +65,7 @@ describe('amplify-app platform tests', () => {
     validateApi(projRoot);
     validateBackendConfig(projRoot);
     validateFeatureFlags(projRoot);
-    await addIntegAccountInConfig(projRoot);
+    addIntegAccountInConfig(projRoot);
     await amplifyModelgen(projRoot);
     validateModelgen(projRoot);
     await amplifyPush(projRoot);
