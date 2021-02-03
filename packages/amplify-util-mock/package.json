@@ -22,7 +22,7 @@
     "build": "tsc",
     "build-tests": "tsc --build tsconfig.tests.json",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf lib tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "@hapi/topo": "^5.0.0",
@@ -33,6 +33,8 @@
     "amplify-dynamodb-simulator": "1.17.8",
     "amplify-storage-simulator": "1.5.1",
     "chokidar": "^3.3.1",
+    "detect-port": "^1.3.0",
+    "dotenv": "^8.2.0",
     "execa": "^4.1.0",
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.19",
@@ -40,13 +42,14 @@
     "which": "^2.0.2"
   },
   "devDependencies": {
+    "@types/detect-port": "^1.3.0",
     "@types/lodash": "^4.14.149",
     "@types/node": "^10.17.13",
     "@types/semver": "^7.1.0",
     "@types/which": "^1.3.2",
     "amplify-function-plugin-interface": "1.6.0",
     "aws-appsync": "^2.0.2",
-    "aws-sdk": "^2.765.0",
+    "aws-sdk": "^2.836.0",
     "aws-sdk-mock": "^5.1.0",
     "axios": "^0.21.1",
     "graphql-auth-transformer": "6.23.5",

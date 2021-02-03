@@ -64,7 +64,7 @@ export type CloudFormationIntrinsicFunction =
   | CloudFormationFnSub;
 export type CloudFormationProperty = string | CloudFormationIntrinsicFunction;
 export interface CloudFormationResourceProperty {
-  [name: string]: CloudFormationIntrinsicFunction | CloudFormationResourceProperty;
+  [name: string]: CloudFormationResourceProperty | CloudFormationIntrinsicFunction;
 }
 export type CloudFormationResource = {
   Type: string;
@@ -103,4 +103,10 @@ export type CloudFormationProcessedResource = {
 
 export type CloudFormationTemplateFetcher = {
   getCloudFormationStackTemplate: (templateName: string) => CloudFormationTemplate;
+};
+
+export type ProcessedLambdaFunction = {
+  name: string;
+  handler: string;
+  environment: Record<string, string>;
 };

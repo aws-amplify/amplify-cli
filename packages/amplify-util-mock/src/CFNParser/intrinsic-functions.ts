@@ -1,5 +1,6 @@
 import { CloudFormationParseContext } from './types';
 import { isPlainObject } from 'lodash';
+import { importModelTableResolver } from './import-model-table-resolver';
 
 export function cfnJoin(valNode: [string, string[]], { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
   if (!(Array.isArray(valNode) && valNode.length === 2 && Array.isArray(valNode[1]))) {
@@ -12,13 +13,7 @@ export function cfnJoin(valNode: [string, string[]], { params, conditions, resou
 
 export function cfnSub(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
   if (typeof valNode === 'string') {
-    exports[valNode] = templateReplace(valNode, params);
-    return processValue(valNode, {
-      params,
-      conditions,
-      resources,
-      exports,
-    });
+    return templateReplace(valNode, params);
   }
   if (!Array.isArray(valNode) && valNode.length !== 2) {
     throw new Error(`FN::Sub expects an array with 2 elements instead got ${JSON.stringify(valNode)}`);
@@ -189,11 +184,7 @@ export function cfnImportValue(valNode, { params, conditions, resources, exports
     throw new Error(`FN::ImportValue expects an array with  1 elements instead got ${JSON.stringify(valNode)}`);
   }
   const key = processValue(valNode, { params, conditions, resources, exports });
-  if (!Object.keys(exports).includes(key)) {
-    console.warn(`Fn::ImportValue could not find ${key} in exports. Using unsubstituted value.`);
-    return key;
-  }
-  return exports[key];
+  return exports[key] ?? importModelTableResolver(key, params.env);
 }
 
 export function cfnCondition(valNode, { conditions }: CloudFormationParseContext, processValue) {

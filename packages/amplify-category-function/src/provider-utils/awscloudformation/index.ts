@@ -2,7 +2,7 @@ import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, Provid
 import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './utils/layerParams';
 import { chooseParamsOnEnvInit } from './utils/layerHelpers';
 import { supportedServices } from '../supported-services';
-import { ServiceName, provider, parametersFileName, functionParametersFileName } from './utils/constants';
+import { ServiceName, provider, functionParametersFileName } from './utils/constants';
 import { category as categoryName } from '../../constants';
 import {
   createFunctionResources,

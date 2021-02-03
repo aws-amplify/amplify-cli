@@ -4,7 +4,7 @@ import * as fs from 'fs-extra';
 import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { getInvoker } from 'amplify-category-function';
-import { loadMinimalLambdaConfig } from '../utils/lambda/loadMinimal';
+import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 
 const port = 20005; // port for S3
 
@@ -81,9 +81,7 @@ export class StorageTest {
         if (prefix_arr === undefined) {
           let eventName = String(eventObj.Records[0].event.eventName).split(':')[0];
           if (eventName === 'ObjectRemoved' || eventName === 'ObjectCreated') {
-            triggerName = String(obj.Function.Ref)
-              .split('function')[1]
-              .split('Arn')[0];
+            triggerName = String(obj.Function.Ref).split('function')[1].split('Arn')[0];
             break;
           }
         } else {
@@ -100,9 +98,7 @@ export class StorageTest {
             }
             // check prefix given  is the prefix of keyname in the event object
             if (keyName.indexOf(node) === 0) {
-              triggerName = String(obj.Function.Ref)
-                .split('function')[1]
-                .split('Arn')[0];
+              triggerName = String(obj.Function.Ref).split('function')[1].split('Arn')[0];
               break;
             }
           }
@@ -112,7 +108,7 @@ export class StorageTest {
         }
       }
 
-      const config = loadMinimalLambdaConfig(context, triggerName);
+      const config = await loadLambdaConfig(triggerName, context.print);
       const invoker = await getInvoker(context, { handler: config.handler, resourceName: triggerName });
       await invoker({ event: eventObj });
     });

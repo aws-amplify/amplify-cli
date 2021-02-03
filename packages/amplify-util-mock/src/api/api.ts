@@ -5,7 +5,7 @@ import { add, generate, isCodegenConfigured, switchToSDLSchema } from 'amplify-c
 import * as path from 'path';
 import * as chokidar from 'chokidar';
 
-import { getAmplifyMeta, getMockDataDirectory, hydrateAllEnvVars } from '../utils';
+import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { checkJavaVersion } from '../utils/index';
 import { runTransformer } from './run-graphql-transformer';
 import { processAppSyncResources } from '../CFNParser';
@@ -13,12 +13,11 @@ import { ResolverOverrides } from './resolver-overrides';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db';
 import { getMockConfig } from '../utils/mock-config-file';
-import { getAllLambdaFunctions } from '../utils/lambda/load';
 import { getInvoker } from 'amplify-category-function';
-import { keys } from 'lodash';
-import { LambdaFunctionConfig } from '../CFNParser/lambda-resource-processor';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
+
+export const MOCK_API_PORT = 20002;
 
 export class APITest {
   private apiName: string;
@@ -29,16 +28,13 @@ export class APITest {
   private watcher: chokidar.FSWatcher;
   private ddbEmulator;
   private configOverrideManager: ConfigOverrideManager;
-
-  private projectRoot: string;
   private apiParameters: object = {};
 
-  async start(context, port: number = 20002, wsPort: number = 20003) {
+  async start(context, port: number = MOCK_API_PORT, wsPort: number = 20003) {
     try {
       context.amplify.addCleanUpTask(async context => {
         await this.stop(context);
       });
-      this.projectRoot = context.amplify.getEnvInfo().projectPath;
       this.configOverrideManager = ConfigOverrideManager.getInstance(context);
       // check java version
       await checkJavaVersion(context);
@@ -188,8 +184,6 @@ export class APITest {
     if (lambdaDataSources.length === 0) {
       return config;
     }
-    const provisionedLambdas = getAllLambdaFunctions(context, path.join(this.projectRoot, 'amplify', 'backend'));
-
     return {
       ...config,
       dataSources: await Promise.all(
@@ -197,12 +191,11 @@ export class APITest {
           if (d.type !== 'AWS_LAMBDA') {
             return d;
           }
-          const lambdaConfig = lambdaArnToConfig(d.LambdaFunctionArn, provisionedLambdas);
-          const envVars = await this.hydrateLambdaEnvVars(context, lambdaConfig.environment, config);
+          const lambdaConfig = await lambdaArnToConfig(d.LambdaFunctionArn, context.print);
           const invoker = await getInvoker(context, {
             resourceName: lambdaConfig.name,
             handler: lambdaConfig.handler,
-            envVars,
+            envVars: lambdaConfig.environment,
           });
           return {
             ...d,
@@ -339,17 +332,5 @@ export class APITest {
 
     this.configOverrideManager.addOverride('api', override);
     await this.configOverrideManager.generateOverriddenFrontendExports(context);
-  }
-
-  private async hydrateLambdaEnvVars(context, sourceEnvVars: Record<string, any>, config): Promise<Record<string, any>> {
-    const resources = await context.amplify.getResourceStatus();
-    const allResources = resources.allResources;
-    return hydrateAllEnvVars(allResources, sourceEnvVars, {
-      apiId: 'fake-api-id',
-      apiKey: config.appSync.apiKey,
-      apiName: this.apiName,
-      url: `${this.appSyncSimulator.url}/graphql`,
-      dataSources: config.dataSources,
-    });
   }
 }
