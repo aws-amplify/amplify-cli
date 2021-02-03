@@ -565,7 +565,7 @@ export function makeModelScalarFilterInputObject(type: string, supportsCondition
   const conditions = getScalarConditions(type);
   const fields: InputValueDefinitionNode[] = conditions.map((condition: string) => ({
     kind: Kind.INPUT_VALUE_DEFINITION,
-    name: { kind: 'Name' as 'Name', value: condition },
+    name: { kind: 'Name' as const, value: condition },
     type: getScalarFilterInputType(condition, type, name),
     // TODO: Service does not support new style descriptions so wait.
     // description: field.description,
@@ -624,7 +624,7 @@ function makeSizeInputType(): InputObjectTypeDefinitionNode {
   const name = ModelResourceIDs.ModelSizeInputTypeName();
   const fields: InputValueDefinitionNode[] = SIZE_CONDITIONS.map((condition: string) => ({
     kind: Kind.INPUT_VALUE_DEFINITION,
-    name: { kind: 'Name' as 'Name', value: condition },
+    name: { kind: 'Name' as const, value: condition },
     type: getScalarFilterInputType(condition, 'Int', '' /* unused */),
     // TODO: Service does not support new style descriptions so wait.
     // description: field.description,
@@ -670,7 +670,7 @@ function makeFunctionInputFields(typeName: string): InputValueDefinitionNode[] {
   if (functions.has('attributeExists')) {
     fields.push({
       kind: Kind.INPUT_VALUE_DEFINITION,
-      name: { kind: 'Name' as 'Name', value: 'attributeExists' },
+      name: { kind: 'Name' as const, value: 'attributeExists' },
       type: makeNamedType('Boolean'),
       // TODO: Service does not support new style descriptions so wait.
       // description: field.description,
@@ -681,7 +681,7 @@ function makeFunctionInputFields(typeName: string): InputValueDefinitionNode[] {
   if (functions.has('attributeType')) {
     fields.push({
       kind: Kind.INPUT_VALUE_DEFINITION,
-      name: { kind: 'Name' as 'Name', value: 'attributeType' },
+      name: { kind: 'Name' as const, value: 'attributeType' },
       type: makeNamedType(ModelResourceIDs.ModelAttributeTypesName()),
       // TODO: Service does not support new style descriptions so wait.
       // description: field.description,
@@ -692,7 +692,7 @@ function makeFunctionInputFields(typeName: string): InputValueDefinitionNode[] {
   if (functions.has('size')) {
     fields.push({
       kind: Kind.INPUT_VALUE_DEFINITION,
-      name: { kind: 'Name' as 'Name', value: 'size' },
+      name: { kind: 'Name' as const, value: 'size' },
       type: makeNamedType(ModelResourceIDs.ModelSizeInputTypeName()),
       // TODO: Service does not support new style descriptions so wait.
       // description: field.description,
@@ -706,13 +706,13 @@ function makeFunctionInputFields(typeName: string): InputValueDefinitionNode[] {
 export function makeAttributeTypeEnum(): EnumTypeDefinitionNode {
   const makeEnumValue = (enumValue: string): EnumValueDefinitionNode => ({
     kind: Kind.ENUM_VALUE_DEFINITION,
-    name: { kind: 'Name' as 'Name', value: enumValue },
+    name: { kind: 'Name' as const, value: enumValue },
     directives: [],
   });
 
   return {
     kind: Kind.ENUM_TYPE_DEFINITION,
-    name: { kind: 'Name' as 'Name', value: ModelResourceIDs.ModelAttributeTypesName() },
+    name: { kind: 'Name' as const, value: ModelResourceIDs.ModelAttributeTypesName() },
     values: ATTRIBUTE_TYPES.map(t => makeEnumValue(t)),
     directives: [],
   };
