@@ -1,7 +1,11 @@
 import * as nexpect from 'nexpect';
 import { getCLIPath, isCI } from '../utils';
 
-export default function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true, verbose: Boolean = isCI() ? false : true) {
+export default function deleteProject(
+  cwd: string,
+  deleteDeploymentBucket: Boolean = true,
+  verbose: Boolean = isCI() ? false : true,
+): Promise<void> {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, verbose })
@@ -9,7 +13,7 @@ export default function deleteProject(cwd: string, deleteDeploymentBucket: Boole
       .sendline('y')
       .sendline('')
       .wait('Project deleted locally.')
-      .run(async function(err: Error) {
+      .run(async function (err: Error) {
         if (!err) {
           resolve();
         } else {

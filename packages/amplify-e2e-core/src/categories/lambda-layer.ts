@@ -53,7 +53,7 @@ export async function validateLayerMetadata(projRoot: string, layerName: string,
   expect(cloudData.CompatibleRuntimes).toEqual(runtimeValues);
 }
 
-export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false) {
+export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false): Promise<void> {
   const defaultSettings = {
     permissions: [],
   };
@@ -86,7 +86,7 @@ export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase:
 }
 
 // Assumes first item in list is a layer and removes it
-export function removeLayer(cwd: string) {
+export function removeLayer(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'function'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
@@ -106,7 +106,7 @@ export function removeLayer(cwd: string) {
   });
 }
 
-export function updateLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false) {
+export function updateLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
