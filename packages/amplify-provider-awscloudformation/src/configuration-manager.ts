@@ -379,7 +379,6 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
 
 function validateConfig(context: $TSContext) {
   const { awsConfigInfo } = context.exeInfo;
-  context.print.debug(awsConfigInfo); // TODO remove
   awsConfigInfo.configValidated = false;
   if (awsConfigInfo.configLevel === 'general' || awsConfigInfo.configLevel === 'amplifyAdmin') {
     awsConfigInfo.configValidated = true;
@@ -398,7 +397,6 @@ function validateConfig(context: $TSContext) {
         awsRegions.regions.includes(awsConfigInfo.config.region);
     }
   }
-  context.print.debug(awsConfigInfo); // TODO remove
   return context;
 }
 
