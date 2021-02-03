@@ -66,7 +66,6 @@ module.exports = {
     // New rules
     'class-methods-use-this': 'off',
     'import/extensions': 'off',
-    'import/no-default-export': 'error',
     'import/prefer-default-export': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-var-requires': 'off',
@@ -82,7 +81,6 @@ module.exports = {
     'no-shadow': 'off',
     'no-unneeded-ternary': 'off',
     'no-unreachable': 'off',
-    'no-unused-expressions': 'off',
     'no-useless-catch': 'off',
     'no-useless-return': 'off',
     'object-shorthand': 'off',
@@ -101,7 +99,6 @@ module.exports = {
     'prettier/prettier': 'off',
 
     // TODO needs to be enabled when fixing valid warnings of this error
-    'no-constant-condition': ['error', { checkLoops: false }],
     //'no-param-reassign': ['error', { 'props': false }],
     'no-param-reassign': 'off', // https://eslint.org/docs/rules/no-param-reassign
     //'no-plusplus': ['error', { 'allowForLoopAfterthoughts': true }], // https://eslint.org/docs/rules/no-plusplus
@@ -141,7 +138,6 @@ module.exports = {
     'no-eval': 'error',
     'dot-notation': 'off', // Enable later
     'no-trailing-spaces': 'error',
-    'no-unused-expressions': 'error',
     semi: 'off', // Enable later,
     '@typescript-eslint/typedef': 'off', // Enable later
     //'@typescript-eslint/typedef': ['error', { propertyDeclaration:true, variableDeclaration: true, memberVariableDeclaration: true }],
@@ -264,6 +260,7 @@ module.exports = {
     },
   ],
   ignorePatterns: [
+    'scripts/',
     'node_modules',
     'dist',
     'build',
