@@ -402,6 +402,13 @@ function validateConfig(context: $TSContext) {
 
 function persistLocalEnvConfig(context: $TSContext) {
   let { awsConfigInfo } = context.exeInfo;
+  const { appId } = _.get(context, ['exeInfo', 'inputParams', 'amplify'], {});
+  if (appId && doAdminTokensExist(appId)) {
+    awsConfigInfo = {
+      configLevel: 'amplifyAdmin',
+      config: {},
+    };
+  }
 
   const awsInfo: AwsConfig & Pick<ProjectConfig, 'configLevel'> = {
     configLevel: awsConfigInfo.configLevel,
