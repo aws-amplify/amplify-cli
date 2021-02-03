@@ -41,7 +41,7 @@ export default function redactInput(originalInput: Input, deleteArgAndOption: Bo
   const length = argv.length;
   let redactString: Boolean = false;
   if (deleteArgAndOption) {
-    delete input.argv;
+    input.argv = [];
     delete input.options;
     return input;
   }

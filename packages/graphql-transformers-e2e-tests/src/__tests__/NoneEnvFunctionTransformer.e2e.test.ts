@@ -158,7 +158,7 @@ test('Test simple echo function', async () => {
 });
 
 function wait(ms: number) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     setTimeout(() => resolve(), ms);
   });
 }

@@ -20,7 +20,6 @@
     "react": "^17.0.1",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.3",
-    "typescript": "^4.0.3",
     "web-vitals": "^0.2.4"
   },
   "author": "Amazon Web Services",

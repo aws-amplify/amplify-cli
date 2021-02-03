@@ -15,7 +15,7 @@ const defaultSettings = {
   profileName: '\r',
 };
 
-export default function initProjectWithProfile(cwd: string, settings: any = {}, verbose: Boolean = isCI() ? false : true) {
+export default function initProjectWithProfile(cwd: string, settings: any = {}, verbose: Boolean = isCI() ? false : true): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   return new Promise((resolve, reject) => {
     nexpect
@@ -54,7 +54,7 @@ export default function initProjectWithProfile(cwd: string, settings: any = {}, 
   });
 }
 
-export function initAndroidProject(cwd: string, settings: any = {}, verbose: Boolean = isCI() ? false : true) {
+export function initAndroidProject(cwd: string, settings: any = {}, verbose: Boolean = isCI() ? false : true): Promise<void> {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })
@@ -83,7 +83,7 @@ export function initAndroidProject(cwd: string, settings: any = {}, verbose: Boo
   });
 }
 
-export function initIosProject(cwd: string, settings: any = {}, verbose: Boolean = isCI() ? false : true) {
+export function initIosProject(cwd: string, settings: any = {}, verbose: Boolean = isCI() ? false : true): Promise<void> {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['init'], { cwd, stripColors: true, verbose })

@@ -6,12 +6,12 @@ const npm = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
 const amplifyAppBinPath = path.join(__dirname, '..', '..', '..', 'amplify-app', 'bin', 'amplify-app');
 const spawnCommand = isCI() ? 'amplify-app' : amplifyAppBinPath;
 
-function amplifyAppAndroid(projRoot: string) {
+function amplifyAppAndroid(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(spawnCommand, ['--platform', 'android'], { cwd: projRoot, stripColors: true })
       .wait('Successfully created base Amplify Project')
       .wait('Amplify setup completed successfully')
-      .run(function(err) {
+      .run(function (err) {
         if (!err) {
           resolve();
         } else {
@@ -21,12 +21,12 @@ function amplifyAppAndroid(projRoot: string) {
   });
 }
 
-function amplifyAppIos(projRoot: string) {
+function amplifyAppIos(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(spawnCommand, ['--platform', 'ios'], { cwd: projRoot, stripColors: true })
       .wait('Amplify setup completed successfully')
       .wait('Successfully created base Amplify Project')
-      .run(function(err) {
+      .run(function (err) {
         if (!err) {
           resolve();
         } else {
@@ -36,14 +36,14 @@ function amplifyAppIos(projRoot: string) {
   });
 }
 
-function amplifyAppAngular(projRoot: string) {
+function amplifyAppAngular(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(spawnCommand, [], { cwd: projRoot, stripColors: true })
       .wait('What type of app are you building')
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
       .sendCarriageReturn()
-      .run(function(err) {
+      .run(function (err) {
         if (!err) {
           resolve();
         } else {
@@ -53,14 +53,14 @@ function amplifyAppAngular(projRoot: string) {
   });
 }
 
-function amplifyAppReact(projRoot: string) {
+function amplifyAppReact(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(spawnCommand, [], { cwd: projRoot, stripColors: true })
       .wait('What type of app are you building')
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
       .sendLine(`${KEY_DOWN_ARROW}${KEY_DOWN_ARROW}${KEY_DOWN_ARROW}`)
-      .run(function(err) {
+      .run(function (err) {
         if (!err) {
           resolve();
         } else {
@@ -70,9 +70,9 @@ function amplifyAppReact(projRoot: string) {
   });
 }
 
-function amplifyModelgen(projRoot: string) {
+function amplifyModelgen(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(npm, ['run', 'amplify-modelgen'], { cwd: projRoot, stripColors: true }).run(function(err) {
+    spawn(npm, ['run', 'amplify-modelgen'], { cwd: projRoot, stripColors: true }).run(function (err) {
       if (!err) {
         resolve();
       } else {
@@ -82,9 +82,9 @@ function amplifyModelgen(projRoot: string) {
   });
 }
 
-function amplifyPush(projRoot: string) {
+function amplifyPush(projRoot: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(npm, ['run', 'amplify-push'], { cwd: projRoot, stripColors: true }).run(function(err) {
+    spawn(npm, ['run', 'amplify-push'], { cwd: projRoot, stripColors: true }).run(function (err) {
       if (!err) {
         resolve();
       } else {

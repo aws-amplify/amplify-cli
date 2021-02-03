@@ -467,9 +467,9 @@ describe('feature flags', () => {
     });
 
     test('initialization does not fail when process.env is not available', () => {
-      delete process.env;
+      process.env = {};
 
-      expect(process.env).toBeUndefined();
+      expect(process.env).toEqual({});
 
       provider.load();
     });

@@ -250,7 +250,7 @@ export async function testSubscription(
     received.push(event.data);
   });
 
-  await new Promise(res => setTimeout(() => res(), 4000));
+  await new Promise<void>(res => setTimeout(() => res(), 4000));
 
   const mutationTasks = [];
   for (let i = 0; i < mutations.length; i++) {
@@ -262,13 +262,13 @@ export async function testSubscription(
         fetchPolicy: 'no-cache',
         variables: mutationInput,
       });
-      await new Promise(res => setTimeout(() => res(), 4000)); //to ensure correct order in received data
+      await new Promise<void>(res => setTimeout(() => res(), 4000)); //to ensure correct order in received data
     });
   }
 
   await runInSequential(mutationTasks);
 
-  await new Promise(res => setTimeout(() => res(), 4000));
+  await new Promise<void>(res => setTimeout(() => res(), 4000));
 
   sub.unsubscribe();
   if (!checkResult(received, subscriptionResult)) {

@@ -239,7 +239,7 @@ test('Test pipelineReverse of @function(s)', async () => {
 });
 
 function wait(ms: number) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     setTimeout(() => resolve(), ms);
   });
 }
