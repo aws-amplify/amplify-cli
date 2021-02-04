@@ -1,14 +1,15 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
   addAuthWithDefaultSocial,
-  isDeploymentSecretForEnvExists,
+  amplifyPushWithoutCodegen,
   amplifyStatus,
   amplifyStatusWithMigrate,
   amplifyVersion,
-  amplifyPushWithoutCodegen,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  isDeploymentSecretForEnvExists,
 } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+import { initJSProjectWithProfile } from '../../../migration-helpers/init';
 
 describe('amplify auth add with social', () => {
   let projRoot: string;
