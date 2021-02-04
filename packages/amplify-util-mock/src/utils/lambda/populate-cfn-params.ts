@@ -1,4 +1,5 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
+import aws = require('aws-sdk');
 import _ = require('lodash');
 import { MOCK_API_PORT } from '../../api/api';
 

@@ -37,7 +37,7 @@ export class StorageTest {
 
     try {
       context.amplify.addCleanUpTask(async context => {
-        await this.stop(context);
+        await this.stop();
       });
       this.configOverrideManager = ConfigOverrideManager.getInstance(context);
       this.storageName = await this.getStorage(context);
@@ -51,7 +51,7 @@ export class StorageTest {
     }
   }
 
-  async stop(context) {
+  async stop() {
     await this.storageSimulator.stop();
   }
 
@@ -109,7 +109,7 @@ export class StorageTest {
       }
 
       const config = await loadLambdaConfig(triggerName, context.print);
-      const invoker = await getInvoker(context, { handler: config.handler, resourceName: triggerName });
+      const invoker = await getInvoker(context, { handler: config.handler, resourceName: triggerName, envVars: config.environment });
       await invoker({ event: eventObj });
     });
   }

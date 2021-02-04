@@ -24,6 +24,9 @@ export const lambdaFunctionHandler = (
     {} as Record<string, string>,
   );
   return {
+    cfnExposedAttributes: { Arn: 'arn' },
+    arn: `arn:aws:lambda:{aws-region}:{aws-account-number}:function/${name}/LATEST`,
+    ref: `arn:aws:lambda:{aws-region}:{aws-account-number}:function/${name}/LATEST`,
     name,
     handler,
     environment,
