@@ -7,7 +7,7 @@ import {
   deleteProjectDir,
   updateApiSchema,
 } from 'amplify-e2e-core';
-import { initJSProjectWithProfile } from '../../../migration-helpers/init';
+import { initJSProjectWithProfile } from '../../../migration-helpers';
 
 describe('amplify searchable migration', () => {
   let projRoot: string;

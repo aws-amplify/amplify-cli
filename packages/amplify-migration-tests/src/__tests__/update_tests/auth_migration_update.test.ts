@@ -12,7 +12,7 @@ import {
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
-import { initJSProjectWithProfile } from '../../migration-helpers/init';
+import { initJSProjectWithProfile } from '../../migration-helpers';
 
 describe('amplify auth migration', () => {
   let projRoot: string;

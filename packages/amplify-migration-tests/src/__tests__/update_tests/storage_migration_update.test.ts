@@ -9,7 +9,7 @@ import {
   getProjectMeta,
   updateDDBWithTrigger,
 } from 'amplify-e2e-core';
-import { initJSProjectWithProfile } from '../../migration-helpers/init';
+import { initJSProjectWithProfile } from '../../migration-helpers';
 
 describe('amplify add/update storage(DDB)', () => {
   let projRoot: string;
