@@ -70,3 +70,15 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
       });
   });
 }
+
+export function versionCheck(cwd: string, testingWithLatestCodebase = false) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['-v'], { cwd, stripColors: true }).run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
+  });
+}

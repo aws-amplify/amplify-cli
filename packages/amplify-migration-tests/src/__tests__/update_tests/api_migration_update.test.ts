@@ -16,12 +16,14 @@ import {
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';
-import { initJSProjectWithProfile } from '../../migration-helpers/init';
+import { initJSProjectWithProfile, versionCheck } from '../../migration-helpers/init';
 
 describe('api migration update test', () => {
   let projRoot: string;
   beforeEach(async () => {
     projRoot = await createNewProjectDir('graphql-api');
+    await versionCheck(projRoot);
+    await versionCheck(projRoot, true);
   });
 
   afterEach(async () => {
