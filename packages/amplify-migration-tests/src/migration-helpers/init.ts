@@ -30,7 +30,7 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
+    spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
