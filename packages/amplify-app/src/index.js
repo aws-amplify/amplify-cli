@@ -10,6 +10,7 @@ const ini = require('ini');
 const semver = require('semver');
 const { engines } = require('../package.json');
 const { initializeAwsExports } = require('amplify-frontend-javascript');
+const { initializeAmplifyConfiguration } = require('amplify-frontend-flutter');
 const { callAmplify } = require('./call-amplify');
 
 const isWin = process.platform.startsWith('win');
@@ -439,6 +440,10 @@ async function createAmplifyHelperFiles(frontend) {
 
   if (frontend === 'ios') {
     await createIosHelperFiles();
+  }
+
+  if (frontend === 'flutter') {
+    initializeAmplifyConfiguration(path.resolve('src'));
   }
 
   return frontend;
