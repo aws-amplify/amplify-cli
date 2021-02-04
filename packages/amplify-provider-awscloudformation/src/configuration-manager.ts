@@ -724,7 +724,7 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
   // Check for headless parameters
   let { accessKeyId, profileName, region, secretAccessKey, useProfile } = _.get(
     context,
-    ['exeInfo', 'inputParams', 'awscloudformation'],
+    ['exeInfo', 'inputParams', 'awscloudformation', 'config'],
     {},
   );
 
