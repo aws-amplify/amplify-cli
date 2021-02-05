@@ -722,11 +722,24 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsConfig> {
 
 async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectConfig): Promise<AuthFlowConfig> {
   // Check for headless parameters
-  let { accessKeyId, profileName, region, secretAccessKey, useProfile } = _.get(
-    context,
-    ['exeInfo', 'inputParams', 'awscloudformation', 'config'],
-    {},
-  );
+  // TODO fix how input parameters are handled
+  let cfnParams = _.get(context, ['exeInfo', 'inputParams', 'awscloudformation'], undefined);
+  if (cfnParams?.config) {
+    cfnParams = cfnParams.config;
+  }
+  let {
+    accessKeyId,
+    profileName,
+    region,
+    secretAccessKey,
+    useProfile,
+  }: {
+    accessKeyId: string;
+    profileName: string;
+    region: string;
+    secretAccessKey: string;
+    useProfile: boolean;
+  } = cfnParams || {};
 
   if (context?.exeInfo?.inputParams?.yes) {
     if (process.env.AWS_SDK_LOAD_CONFIG) {
