@@ -11,9 +11,7 @@ export const packageFunction: Packager = async (context, resource) => {
   const resourcePath = path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName);
   const runtimeManager = await getRuntimeManager(context, resource.resourceName);
   const distDir = path.join(resourcePath, 'dist');
-  if (!fs.existsSync(distDir)) {
-    fs.mkdirSync(distDir);
-  }
+  fs.ensureDirSync(distDir);
   const destination = path.join(distDir, 'latest-build.zip');
   const packageRequest = {
     env: context.amplify.getEnvInfo().envName,
