@@ -3,14 +3,12 @@ const path = require('path');
 
 const Cloudformation = require('./aws-utils/aws-cfn');
 const { S3 } = require('./aws-utils/aws-s3');
-const { loadConfigurationForEnv } = require('./configuration-manager');
 const { deleteEnv } = require('./amplify-service-manager');
 const { S3BackendZipFileName, ProviderName } = require('./constants');
 const { downloadZip, extractZip } = require('./zip-util');
 
 async function run(context, envName, deleteS3) {
-  const awsConfig = await loadConfigurationForEnv(context, envName);
-  const cfn = await new Cloudformation(context, null, awsConfig);
+  const cfn = new Cloudformation(context, null);
   const s3 = await S3.getInstance(context, {});
   let removeBucket = false;
   let deploymentBucketName;
@@ -45,7 +43,7 @@ async function run(context, envName, deleteS3) {
     await s3.deleteS3Bucket(storageCategoryBucketName);
   }
 
-  await deleteEnv(context, envName, awsConfig);
+  await deleteEnv(context, envName);
 
   if (removeBucket && deploymentBucketName) {
     await s3.deleteS3Bucket(deploymentBucketName);
