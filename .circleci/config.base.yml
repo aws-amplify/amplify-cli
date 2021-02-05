@@ -5,7 +5,7 @@ machine:
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: circleci/node:10.18
+    - image: circleci/node:12
       auth:
         username: $DOCKERHUB_USERNAME
         password: $DOCKERHUB_ACCESS_TOKEN
