@@ -9,7 +9,7 @@ import {
   deleteProjectDir,
   isDeploymentSecretForEnvExists,
 } from 'amplify-e2e-core';
-import { initJSProjectWithProfile } from '../../../migration-helpers/init';
+import { initJSProjectWithProfile } from '../../../migration-helpers';
 
 describe('amplify auth add with social', () => {
   let projRoot: string;

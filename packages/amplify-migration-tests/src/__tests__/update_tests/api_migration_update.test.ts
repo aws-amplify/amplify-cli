@@ -16,7 +16,7 @@ import {
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { join } from 'path';
-import { initJSProjectWithProfile } from '../../migration-helpers/init';
+import { initJSProjectWithProfile } from '../../migration-helpers';
 
 describe('api migration update test', () => {
   let projRoot: string;

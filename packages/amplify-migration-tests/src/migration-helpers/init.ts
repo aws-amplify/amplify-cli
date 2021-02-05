@@ -1,4 +1,4 @@
-import { addCircleCITags, getCLIPath, isCI, nspawn as spawn } from 'amplify-e2e-core';
+import { addCircleCITags, getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
 
 const defaultSettings = {
   name: '\r',
@@ -30,7 +30,7 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
+    spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
@@ -49,15 +49,9 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
       .sendLine(s.buildCmd)
       .wait('Start Command:')
       .sendCarriageReturn()
-      .wait('Using default provider  awscloudformation');
-
-    if (testingWithLatestCodebase || !isCI()) {
-      chain.wait('Select the authentication method you want to use:').sendCarriageReturn();
-    } else {
-      chain.wait('Do you want to use an AWS profile?').sendLine('y');
-    }
-
-    chain
+      .wait('Using default provider  awscloudformation')
+      .wait(/(Select the authentication method you want to use|Do you want to use an AWS profile)/)
+      .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')

@@ -15,7 +15,7 @@ import {
   validateLayerMetadata,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-import { initJSProjectWithProfile } from '../../migration-helpers/init';
+import { initJSProjectWithProfile } from '../../migration-helpers';
 
 describe('amplify function migration', () => {
   let projRoot: string;
