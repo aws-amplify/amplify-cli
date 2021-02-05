@@ -51,7 +51,7 @@ Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
   <%if (props.authSelections !=='identityPoolOnly' ) { %>
   ShouldOutputAppClientSecrets: !Equals [!Ref userpoolClientGenerateSecret, true ]
-  <% } %> 
+  <% } %>
 
 Resources:
   <%if (props.verificationBucketName) { %>
@@ -380,7 +380,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt
         - UserPoolClientRole
@@ -506,7 +506,7 @@ Resources:
 
 
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt
         - UserPoolClientRole
@@ -638,7 +638,7 @@ Resources:
             - '} '
 
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt
         - UserPoolClientRole
@@ -737,7 +737,7 @@ Resources:
             - '}'
 
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt
         - UserPoolClientRole
@@ -858,7 +858,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt
         - MFALambdaRole
@@ -1018,7 +1018,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs10.x
+      Runtime: nodejs12.x
       Timeout: '300'
       Role: !GetAtt
         - OpenIdLambdaRole

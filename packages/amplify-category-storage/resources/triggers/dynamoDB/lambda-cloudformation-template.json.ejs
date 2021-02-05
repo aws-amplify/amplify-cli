@@ -28,7 +28,7 @@
             "FunctionName": {
                 "Fn::If": [
                     "ShouldNotCreateEnvResources",
-                    "<%= props.functionName %>", 
+                    "<%= props.functionName %>",
                     {
 
                         "Fn::Join": [
@@ -41,7 +41,7 @@
                                 }
                             ]
                         ]
-                    }      
+                    }
                 ]
             },
             "Environment": {
@@ -52,7 +52,7 @@
                 }
             },
             "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
-            "Runtime": "nodejs10.x",
+            "Runtime": "nodejs14.x",
             "Timeout": "25"
           }
         },
@@ -62,7 +62,7 @@
                 "RoleName": {
                     "Fn::If": [
                         "ShouldNotCreateEnvResources",
-                        "<%=props.roleName %>", 
+                        "<%=props.roleName %>",
                         {
 
                             "Fn::Join": [
@@ -75,7 +75,7 @@
                                     }
                                 ]
                             ]
-                        } 
+                        }
                     ]
                 },
                 "AssumeRolePolicyDocument": {

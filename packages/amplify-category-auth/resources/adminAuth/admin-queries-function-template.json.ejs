@@ -11,7 +11,7 @@
             "Type": "String",
             "Default": "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>"
           }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].attributes.length - 1) { %>,<% } %>
-        
+
           <% } %>
           <% } %>
     },
@@ -37,7 +37,7 @@
             "FunctionName": {
                 "Fn::If": [
                     "ShouldNotCreateEnvResources",
-                    "<%= props.functionName %>", 
+                    "<%= props.functionName %>",
                     {
 
                         "Fn::Join": [
@@ -50,7 +50,7 @@
                                 }
                             ]
                         ]
-                    }      
+                    }
                 ]
             },
             "Environment": {
@@ -60,12 +60,12 @@
                     },
                     "GROUP": "<%= props.lambdaGroupVar %>",
                     "USERPOOL" : {
-                        "Ref": "auth<%= props.authResourceName %>UserPoolId" 
+                        "Ref": "auth<%= props.authResourceName %>UserPoolId"
                     }
                 }
             },
             "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
-            "Runtime": "nodejs10.x",
+            "Runtime": "nodejs14.x",
             "Timeout": "25"
           }
         },
@@ -75,7 +75,7 @@
                 "RoleName": {
                     "Fn::If": [
                         "ShouldNotCreateEnvResources",
-                        "<%=props.roleName %>", 
+                        "<%=props.roleName %>",
                         {
 
                             "Fn::Join": [
@@ -88,7 +88,7 @@
                                     }
                                 ]
                             ]
-                        } 
+                        }
                     ]
                 },
                 "AssumeRolePolicyDocument": {

@@ -198,7 +198,7 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
               ],
             },
           },
-        })
+        }),
       );
       lambdaConfigurations.push(
         addObjectKeys(triggers, {
@@ -222,7 +222,7 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
               ],
             },
           },
-        })
+        }),
       );
       lambdaConfigurations.push(
         addObjectKeys(triggers, {
@@ -246,7 +246,7 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
               ],
             },
           },
-        })
+        }),
       );
     } else {
       lambdaConfigurations.push(triggers);
@@ -285,7 +285,7 @@ function generateStorageCFNForAdditionalLambda(storageCFNFile, functionName, pre
       Function: {
         Ref: `function${functionName}Arn`,
       },
-    }
+    },
   );
 
   storageCFNFile.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations = lambdaConfigurations;
@@ -521,7 +521,7 @@ function generateLambdaAccessForRekognition(identifyCFNFile, functionName, s3Res
         },
       },
       Handler: 'index.handler',
-      Runtime: 'nodejs10.x',
+      Runtime: 'nodejs12.x',
       Timeout: '300',
       Role: {
         'Fn::GetAtt': ['CollectionsLambdaExecutionRole', 'Arn'],

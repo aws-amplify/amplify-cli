@@ -62,7 +62,7 @@ getLayerRuntimes_mock.mockImplementation(() => {
       name: 'NodeJs',
       value: 'nodejs',
       layerExecutablePath: 'nodejs/node_modules',
-      cloudTemplateValue: 'nodejs12.x',
+      cloudTemplateValue: 'nodejs14.x',
     },
   ];
 });

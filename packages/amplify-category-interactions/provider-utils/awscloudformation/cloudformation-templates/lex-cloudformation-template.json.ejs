@@ -48,7 +48,7 @@
                     "FunctionName": {
                     "Fn::If": [
                         "ShouldNotCreateEnvResources",
-                        "<%= props.functionName %>", 
+                        "<%= props.functionName %>",
                         {
 
                             "Fn::Join": [
@@ -66,18 +66,18 @@
                 },
                 "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
                 "Environment": {"Variables" : { "ENV": {"Ref": "env"}}},
-                "Runtime": "nodejs10.x",
+                "Runtime": "nodejs14.x",
                 "Timeout": "300"
             }
         },
-        
+
         "LambdaExecutionRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
                 "RoleName": {
                     "Fn::If": [
                         "ShouldNotCreateEnvResources",
-                        "<%= props.roleName %>", 
+                        "<%= props.roleName %>",
                         {
 
                             "Fn::Join": [
@@ -196,12 +196,12 @@
             "Type": "AWS::IAM::Policy",
             "Properties": {
               "PolicyName": "<%= props.unauthPolicyName %>",
-              "Roles": [ 
+              "Roles": [
                 {"Ref": "unauthRoleName" }
               ],
               "PolicyDocument": {
                 "Version": "2012-10-17",
-                "Statement": [ 
+                "Statement": [
                     {
                         "Action": [
                             "lex:PostContent",
@@ -224,7 +224,7 @@
                                       {
                                         "Fn::If": [
                                             "ShouldNotCreateEnvResources",
-                                            "<%= props.botName %>", 
+                                            "<%= props.botName %>",
                                             {
 
                                                 "Fn::Join": [
@@ -254,7 +254,7 @@
             "Type": "AWS::IAM::Policy",
             "Properties": {
                 "PolicyName": "<%= props.authPolicyName %>",
-              "Roles": [ 
+              "Roles": [
                 {"Ref": "authRoleName" }
               ],
               "PolicyDocument": {
@@ -282,7 +282,7 @@
                                       {
                                         "Fn::If": [
                                             "ShouldNotCreateEnvResources",
-                                            "<%= props.botName %>", 
+                                            "<%= props.botName %>",
                                             {
 
                                                 "Fn::Join": [
@@ -319,7 +319,7 @@
             "Value": {
                 "Fn::If": [
                     "ShouldNotCreateEnvResources",
-                    "<%= props.botName %>", 
+                    "<%= props.botName %>",
                     {
 
                         "Fn::Join": [
