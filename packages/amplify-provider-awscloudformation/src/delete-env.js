@@ -8,7 +8,7 @@ const { S3BackendZipFileName, ProviderName } = require('./constants');
 const { downloadZip, extractZip } = require('./zip-util');
 
 async function run(context, envName, deleteS3) {
-  const cfn = new Cloudformation(context, null);
+  const cfn = await new Cloudformation(context, null);
   const s3 = await S3.getInstance(context, {});
   let removeBucket = false;
   let deploymentBucketName;
