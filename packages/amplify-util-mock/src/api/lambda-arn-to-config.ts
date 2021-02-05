@@ -8,7 +8,7 @@ import { ProcessedLambdaFunction } from '../CFNParser/stack/types';
 /**
  * Attempts to match an arn object against the array of lambdas configured in the project
  */
-export const lambdaArnToConfig = (arn: $TSAny, print: $TSContext['print']): Promise<ProcessedLambdaFunction> => {
+export const lambdaArnToConfig = (context: $TSContext, arn: $TSAny): Promise<ProcessedLambdaFunction> => {
   const errorSuffix =
     '\nSee https://docs.amplify.aws/cli/graphql-transformer/function for information on how to configure Lambda resolvers.';
   let searchString = '';
@@ -38,5 +38,5 @@ export const lambdaArnToConfig = (arn: $TSAny, print: $TSContext['print']): Prom
     );
   }
   // lambdaArnToConfig is only called in the context of initializing a mock API, so setting overrideApiToLocal to true here
-  return loadLambdaConfig(foundLambdaName, print, true);
+  return loadLambdaConfig(context, foundLambdaName, true);
 };

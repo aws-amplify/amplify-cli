@@ -4,7 +4,7 @@ import _ = require('lodash');
 import { MOCK_API_PORT } from '../../api/api';
 
 /**
- * Loads all parameters that should be passed into the CFN template when resolving values
+ * Loads all parameters that should be passed into the lambda CFN template when resolving values
  *
  * Iterates through a list of parameter getters. If multiple getters return the same key, the latter will overwrite the former
  */
@@ -22,7 +22,8 @@ const getDefaultParams = (): Record<string, string> => {
   const env = stateManager.getLocalEnvInfo().envName;
   const teamProvider = stateManager.getTeamProviderInfo();
   const region = _.get(teamProvider, [env, 'awscloudformation', 'Region']);
-  const stackId = _.get(teamProvider, [env, 'awscloudformation', 'StackId'], '');
+  const stackId = _.get(teamProvider, [env, 'awscloudformation', 'StackId'], 'fake-stack-id');
+  const stackName = _.get(teamProvider, [env, 'awscloudformation', 'StackName'], 'local-testing');
   const accountIdMatcher = /arn:aws:cloudformation:.+:(?<accountId>\d+):stack\/.+/;
   const match = accountIdMatcher.exec(stackId);
   const accountId = match ? match.groups.accountId : '12345678910';
@@ -30,8 +31,8 @@ const getDefaultParams = (): Record<string, string> => {
     env,
     'AWS::Region': region,
     'AWS::AccountId': accountId,
-    'AWS::StackId': 'fake-stackId',
-    'AWS::StackName': 'local-testing',
+    'AWS::StackId': stackId,
+    'AWS::StackName': stackName,
   };
 };
 

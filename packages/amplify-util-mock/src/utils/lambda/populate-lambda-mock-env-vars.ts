@@ -1,32 +1,32 @@
-import { pathManager, stateManager } from 'amplify-cli-core';
-import { SharedIniFileCredentials } from 'aws-sdk';
-import _ = require('lodash');
+import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import _ from 'lodash';
 import { ProcessedLambdaFunction } from '../../CFNParser/stack/types';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
+import { loadConfigurationForEnv, resolveAppId } from 'amplify-provider-awscloudformation';
 
 /**
  * Appends default labmda environment variables to the environment property of the processedLambda
  * (see https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-runtime)
  * Some values are stubbed properly and others have static default values
  */
-export const populateLambdaMockEnvVars = (processedLambda: ProcessedLambdaFunction) => {
-  processedLambda.environment = [getAwsCredentials, getStaticDefaults, getDynamicDefaults, getDotEnvValues]
-    .map(envVarGetter => envVarGetter(processedLambda))
-    .reduce((acc, it) => ({ ...acc, ...it }), processedLambda.environment);
+export const populateLambdaMockEnvVars = async (context: $TSContext, processedLambda: ProcessedLambdaFunction) => {
+  processedLambda.environment = (
+    await Promise.all(
+      [getAwsCredentials, getStaticDefaults, getDynamicDefaults, getDotEnvValues].map(envVarGetter =>
+        envVarGetter(processedLambda, context),
+      ),
+    )
+  ).reduce((acc, it) => ({ ...acc, ...it }), processedLambda.environment);
 };
 
-const getAwsCredentials = (): Record<string, string> => {
+const getAwsCredentials = async (_, context: $TSContext): Promise<Record<string, string>> => {
   const env = stateManager.getLocalEnvInfo().envName;
-  const profile = _.get(stateManager.getLocalAWSInfo(), [env, 'profileName']);
-  if (!profile) {
-    return {};
-  }
-  const credentials = new SharedIniFileCredentials({ profile });
+  const awsConfig = await loadConfigurationForEnv(context, env, resolveAppId(context));
   return {
-    AWS_ACCESS_KEY_ID: credentials.accessKeyId,
-    AWS_SECRET_ACCESS_KEY: credentials.secretAccessKey,
-    AWS_SESSION_TOKEN: credentials.sessionToken,
+    AWS_ACCESS_KEY_ID: awsConfig.accessKeyId,
+    AWS_SECRET_ACCESS_KEY: awsConfig.secretAccessKey,
+    AWS_SESSION_TOKEN: awsConfig.sessionToken,
   };
 };
 

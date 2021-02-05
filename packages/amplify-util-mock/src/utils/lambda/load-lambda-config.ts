@@ -19,27 +19,27 @@ const CFN_DEFAULT_CONDITIONS = {
  * @param print The print object from context
  */
 export const loadLambdaConfig = async (
+  context: $TSContext,
   resourceName: string,
-  print: $TSContext['print'],
   overrideApiToLocal: boolean = false,
 ): Promise<ProcessedLambdaFunction> => {
   overrideApiToLocal = overrideApiToLocal || (await isApiRunning());
   const resourcePath = path.join(pathManager.getBackendDirPath(), 'function', resourceName);
-  const { Resources: cfnResources } = JSONUtilities.readJson<$TSAny>(
+  const { Resources: cfnResources } = JSONUtilities.readJson<{ Resources: $TSObject }>(
     path.join(resourcePath, `${resourceName}-cloudformation-template.json`),
-  ) as { Resources: $TSObject };
+  );
   const lambdaDef = Object.entries(cfnResources).find(([_, resourceDef]: [string, $TSAny]) => resourceDef.Type === 'AWS::Lambda::Function');
   if (!lambdaDef) {
     return;
   }
-  const cfnParams = populateCfnParams(print, resourceName, overrideApiToLocal);
+  const cfnParams = populateCfnParams(context.print, resourceName, overrideApiToLocal);
   const processedLambda = lambdaFunctionHandler(lambdaDef[0], lambdaDef[1], {
     conditions: CFN_DEFAULT_CONDITIONS,
     params: cfnParams,
     exports: {},
     resources: {},
   });
-  populateLambdaMockEnvVars(processedLambda);
+  await populateLambdaMockEnvVars(context, processedLambda);
   return processedLambda;
 };
 

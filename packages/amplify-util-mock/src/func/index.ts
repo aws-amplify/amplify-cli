@@ -36,7 +36,7 @@ export async function start(context: $TSContext) {
   }
 
   const event = await resolveEvent(context, resourceName);
-  const lambdaConfig = await loadLambdaConfig(resourceName, context.print);
+  const lambdaConfig = await loadLambdaConfig(context, resourceName);
   if (!lambdaConfig?.handler) {
     throw new Error(`Could not parse handler for ${resourceName} from cloudformation file`);
   }

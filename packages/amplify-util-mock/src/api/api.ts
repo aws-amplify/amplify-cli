@@ -191,7 +191,7 @@ export class APITest {
           if (d.type !== 'AWS_LAMBDA') {
             return d;
           }
-          const lambdaConfig = await lambdaArnToConfig(d.LambdaFunctionArn, context.print);
+          const lambdaConfig = await lambdaArnToConfig(context, d.LambdaFunctionArn);
           const invoker = await getInvoker(context, {
             resourceName: lambdaConfig.name,
             handler: lambdaConfig.handler,

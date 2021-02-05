@@ -9,6 +9,7 @@
   "references": [
     {"path": "../amplify-category-function"},
     {"path": "../amplify-cli-core"},
-    {"path": "../amplify-storage-simulator"}
+    {"path": "../amplify-storage-simulator"},
+    {"path": "../amplify-provider-awscloudformation"}
   ],
 }

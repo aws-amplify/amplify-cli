@@ -112,20 +112,20 @@ export function cfnRef(valNode, { params, resources }: CloudFormationParseContex
   return key;
 }
 
-export function cfnSelect(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+export function cfnSelect(valNode, parseContext: CloudFormationParseContext, processValue) {
   if (!Array.isArray(valNode) && valNode.length !== 2) {
     throw new Error(`FN::Select expects an array with 2 elements instead got ${JSON.stringify(valNode)}`);
   }
 
   const index = parseInt(valNode[0], 10);
-  if (!Array.isArray(valNode[1])) {
-    throw new Error(`FN::Select expects list item to be an array instead got ${JSON.stringify(valNode)}`);
+  const selectionList = Array.isArray[valNode[1]] ? valNode[1] : processValue(valNode[1], parseContext);
+  if (!Array.isArray(selectionList)) {
+    throw new Error(`FN::Select expects list item to be an array instead got ${JSON.stringify(selectionList)}`);
   }
-  if (index >= valNode[1].length) {
-    throw new Error(`FN::Select expects index tp be less than or equal to size of listOfObject ${JSON.stringify(valNode)}`);
+  if (index >= selectionList.length) {
+    throw new Error(`FN::Select expects index to be less than or equal to the length of list: ${JSON.stringify(selectionList)}`);
   }
-  const map = valNode[1].map(item => processValue(item, { params, conditions, resources, exports }));
-  return map[index];
+  return processValue(selectionList[index]);
 }
 
 export function cfnIf(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
