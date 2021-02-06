@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.22.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.21.3...graphql-transformers-e2e-tests@6.22.0-beta.0) (2021-02-06)
+
+
+### Features
+
+* **graphql-connection-transformer:** allow null key-based connections ([#5153](https://github.com/aws-amplify/amplify-cli/issues/5153)) ([e9c8276](https://github.com/aws-amplify/amplify-cli/commit/e9c82768df42144291c70bc719db9f1ab546c39a))
+* **graphql-key-transformer:** change default to add GSIs when using [@key](https://github.com/key) ([#5648](https://github.com/aws-amplify/amplify-cli/issues/5648)) ([4287c63](https://github.com/aws-amplify/amplify-cli/commit/4287c630295c304c7ff8343922926b4830b75cd4))
+
+
+
+
+
 ## [6.21.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.21.2...graphql-transformers-e2e-tests@6.21.3) (2021-01-08)
 
 **Note:** Version bump only for package graphql-transformers-e2e-tests

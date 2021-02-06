@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.4.2...amplify-nodejs-function-runtime-provider@1.4.3-beta.0) (2021-02-06)
+
+
+### Bug Fixes
+
+* **amplify-nodejs-function-runtime-provider:** fix lambda error format ([#6350](https://github.com/aws-amplify/amplify-cli/issues/6350)) ([0cf5282](https://github.com/aws-amplify/amplify-cli/commit/0cf5282deed96638cc6e9cd286b4d9c3de0b8542)), closes [#5553](https://github.com/aws-amplify/amplify-cli/issues/5553)
+
+
+
+
+
 ## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.4.1...amplify-nodejs-function-runtime-provider@1.4.2) (2020-12-31)
 
 

@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.27.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.26.4...amplify-category-auth@2.27.0-beta.0) (2021-02-06)
+
+
+### Bug Fixes
+
+* [#6397](https://github.com/aws-amplify/amplify-cli/issues/6397) - auth update overwrite parameters ([#6403](https://github.com/aws-amplify/amplify-cli/issues/6403)) ([75f5ace](https://github.com/aws-amplify/amplify-cli/commit/75f5ace173a6b36b943e2110845e411a2cce5d6d))
+* appclient secret output default to false ([#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)) ([3da53b7](https://github.com/aws-amplify/amplify-cli/commit/3da53b7c9aacf718ebd8ea63e59928425af20764))
+* apply empty arrays as default values but not undefined values ([#6445](https://github.com/aws-amplify/amplify-cli/issues/6445)) ([c2d2a6c](https://github.com/aws-amplify/amplify-cli/commit/c2d2a6cbffaed255a4cac7738d4691dda25e8710))
+* correct given_name fb attribute mapping ([#6510](https://github.com/aws-amplify/amplify-cli/issues/6510)) ([c26d958](https://github.com/aws-amplify/amplify-cli/commit/c26d95866a0496b26d4d7581eb2096b87390f50e))
+* generating condition for user pool ([#6426](https://github.com/aws-amplify/amplify-cli/issues/6426)) ([4f35e08](https://github.com/aws-amplify/amplify-cli/commit/4f35e08e38900f59e4b98da1417deb204f072f6a))
+
+
+### Features
+
+* add support for importing userpool with no appclient secret ([#6404](https://github.com/aws-amplify/amplify-cli/issues/6404)) ([4ce4138](https://github.com/aws-amplify/amplify-cli/commit/4ce413829f14aa90ca9ca27510249f1c6c39909f)), closes [#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)
+
+
+
+
+
 ## [2.26.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.26.3...amplify-category-auth@2.26.4) (2021-01-08)
 
 **Note:** Version bump only for package amplify-category-auth
