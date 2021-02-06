@@ -5,9 +5,11 @@ import * as path from 'path';
 import { v4 } from 'uuid';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
-import { invoke } from '../../utils/lambda/invoke';
 import { getFunctionDetails } from './lambda-helper';
 import { DynamoDB } from 'aws-sdk';
+import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
+
+const invoke = functionRuntimeContributorFactory({}).invoke;
 
 jest.mock('amplify-cli-core', () => ({
   pathManager: {
@@ -73,8 +75,11 @@ async function configureLambdaDataSource(config) {
       d.invoke = payload => {
         logDebug('Invoking lambda with config', lambdaConfig);
         return invoke({
-          ...lambdaConfig,
-          event: payload,
+          srcRoot: lambdaConfig.packageFolder,
+          env: 'test',
+          runtime: 'nodejs',
+          handler: `${functionName}.${lambdaConfig.handler}`,
+          event: JSON.stringify(payload),
         });
       };
     });

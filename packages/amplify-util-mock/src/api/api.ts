@@ -250,7 +250,6 @@ export class APITest {
   }
 
   private async startDynamoDBLocalServer(context) {
-    const { projectPath } = context.amplify.getEnvInfo();
     const dbPath = path.join(await getMockDataDirectory(context), 'dynamodb');
     fs.ensureDirSync(dbPath);
     const mockConfig = await getMockConfig(context);
