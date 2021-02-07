@@ -741,6 +741,10 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     useProfile: boolean;
   } = cfnParams || {};
 
+  // Check for local project config
+  useProfile = useProfile ?? projectConfig?.config?.useProfile;
+  profileName = profileName ?? projectConfig?.config?.profileName;
+
   if (context?.exeInfo?.inputParams?.yes) {
     if (process.env.AWS_SDK_LOAD_CONFIG) {
       useProfile = useProfile === undefined ? true : useProfile;
@@ -751,10 +755,6 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     }
     region = region || resolveRegion();
   }
-
-  // Check for local project config
-  useProfile = useProfile ?? projectConfig?.config?.useProfile;
-  profileName = profileName ?? projectConfig?.config?.profileName;
 
   if (useProfile && profileName) {
     return { type: 'profile', profileName };
