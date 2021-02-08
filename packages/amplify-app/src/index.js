@@ -443,7 +443,7 @@ async function createAmplifyHelperFiles(frontend) {
   }
 
   if (frontend === 'flutter') {
-    initializeAmplifyConfiguration(path.resolve('src'));
+    initializeAmplifyConfiguration(path.resolve('lib'));
   }
 
   return frontend;
