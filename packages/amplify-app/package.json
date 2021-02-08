@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "amplify-frontend-android": "2.14.4",
+    "amplify-frontend-flutter": "0.2.1",
     "amplify-frontend-ios": "2.18.4",
     "amplify-frontend-javascript": "2.20.4",
     "chalk": "^3.0.0",
