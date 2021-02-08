@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.37.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.37.0-beta.0...amplify-provider-awscloudformation@4.37.0-beta.1) (2021-02-08)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** check proj config b4 env vars ([#6565](https://github.com/aws-amplify/amplify-cli/issues/6565)) ([a66bd14](https://github.com/aws-amplify/amplify-cli/commit/a66bd14ee001e0bd20976ccf6141f17e9b43fe8e))
+
+
+
+
+
 # [4.37.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.36.1...amplify-provider-awscloudformation@4.37.0-beta.0) (2021-02-06)
 
 
