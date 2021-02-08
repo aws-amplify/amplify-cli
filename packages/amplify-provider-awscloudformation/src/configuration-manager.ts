@@ -456,11 +456,11 @@ function persistLocalEnvConfig(context: $TSContext) {
 
 function getCurrentConfig(context: $TSContext) {
   const { envName }: { envName: string } = context.amplify.getEnvInfo();
-  return getConfigForEnv(envName);
+  return getConfigForEnv(context, envName);
 }
 
-function getConfigForEnv(envName: string) {
-  const projectConfigInfo: ProjectConfig = {
+function getConfigForEnv(context: $TSContext, envName: string) {
+  const projectConfigInfo: ProjectConfig = context?.exeInfo?.awsConfig || {
     configLevel: 'general',
     config: {},
   };
@@ -545,7 +545,7 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
     return awsConfigInfo.config;
   }
 
-  const projectConfigInfo = getConfigForEnv(env);
+  const projectConfigInfo = getConfigForEnv(context, env);
   const authType = await determineAuthFlow(context, projectConfigInfo);
   const { print, usageData } = context;
   let awsConfig: AwsSdkConfig;
@@ -745,22 +745,11 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
   useProfile = useProfile ?? projectConfig?.config?.useProfile;
   profileName = profileName ?? projectConfig?.config?.profileName;
 
-  if (context?.exeInfo?.inputParams?.yes) {
-    if (process.env.AWS_SDK_LOAD_CONFIG) {
-      useProfile = useProfile === undefined ? true : useProfile;
-      profileName = profileName || process.env.AWS_PROFILE || 'default';
-    } else {
-      accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
-      secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
-    }
-    region = region || resolveRegion();
-  }
-
   if (useProfile && profileName) {
     return { type: 'profile', profileName };
   }
 
-  if (accessKeyId && secretAccessKey) {
+  if (accessKeyId && secretAccessKey && region) {
     return { type: 'accessKeys', accessKeyId, region, secretAccessKey };
   }
 
@@ -769,27 +758,41 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     return { ...awsConfig, type: 'accessKeys' };
   }
 
-  if (context?.exeInfo?.inputParams?.yes) {
-    const errorMessage = 'Failed to resolve AWS access keys with --yes flag.';
-    const docsUrl = 'https://docs.amplify.aws/cli/usage/headless';
-    context.print.error(errorMessage);
-    context.print.info(`Access keys for continuous integration can be configured with headless paramaters: ${chalk.green(docsUrl)}`);
-    await context.usageData.emitError(errorMessage);
-    exitOnNextTick(1);
-  }
-
   let appId: string;
   let adminAppConfig: { isAdminApp?: boolean; region?: string };
   try {
     appId = resolveAppId(context);
     if (appId) {
       adminAppConfig = await isAmplifyAdminApp(appId);
-      if (adminAppConfig.isAdminApp && doAdminTokensExist(appId)) {
+      if (adminAppConfig.isAdminApp && doAdminTokensExist(appId) && projectConfig?.configLevel === 'amplifyAdmin') {
         return { type: 'admin', appId, region: adminAppConfig.region };
       }
     }
   } catch (e) {
     // do nothing, appId might not be defined for a new project
+  }
+
+  if (context?.exeInfo?.inputParams?.yes) {
+    if (process.env.AWS_SDK_LOAD_CONFIG) {
+      profileName = profileName || process.env.AWS_PROFILE || 'default';
+      return { type: 'profile', profileName };
+    } else {
+      accessKeyId = accessKeyId || process.env.AWS_ACCESS_KEY_ID;
+      secretAccessKey = secretAccessKey || process.env.AWS_SECRET_ACCESS_KEY;
+      region = region || resolveRegion();
+      if (accessKeyId && secretAccessKey && region) {
+        return { type: 'accessKeys', accessKeyId, region, secretAccessKey };
+      }
+    }
+  }
+
+  if (context?.exeInfo?.inputParams?.yes) {
+    const errorMessage = 'Failed to resolve AWS credentials with --yes flag.';
+    const docsUrl = 'https://docs.amplify.aws/cli/usage/headless';
+    context.print.error(errorMessage);
+    context.print.info(`Access keys for continuous integration can be configured with headless paramaters: ${chalk.green(docsUrl)}`);
+    await context.usageData.emitError(errorMessage);
+    exitOnNextTick(1);
   }
 
   const authType = await askAuthType(adminAppConfig?.isAdminApp);
