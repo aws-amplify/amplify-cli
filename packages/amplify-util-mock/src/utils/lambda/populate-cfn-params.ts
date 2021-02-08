@@ -1,6 +1,5 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
-import aws = require('aws-sdk');
-import _ = require('lodash');
+import _ from 'lodash';
 import { MOCK_API_PORT } from '../../api/api';
 
 /**
@@ -13,15 +12,15 @@ export const populateCfnParams = (
   resourceName: string,
   overrideApiToLocal: boolean = false,
 ): Record<string, string> => {
-  return [getDefaultParams, getAmplifyMetaParams, getParametersJsonParams, getTeamProviderParams]
+  return [getCfnPseudoParams, getAmplifyMetaParams, getParametersJsonParams, getTeamProviderParams]
     .map(paramProvider => paramProvider(print, resourceName, overrideApiToLocal))
     .reduce((acc, it) => ({ ...acc, ...it }), {});
 };
 
-const getDefaultParams = (): Record<string, string> => {
+const getCfnPseudoParams = (): Record<string, string> => {
   const env = stateManager.getLocalEnvInfo().envName;
   const teamProvider = stateManager.getTeamProviderInfo();
-  const region = _.get(teamProvider, [env, 'awscloudformation', 'Region']);
+  const region = _.get(teamProvider, [env, 'awscloudformation', 'Region'], 'us-test-1');
   const stackId = _.get(teamProvider, [env, 'awscloudformation', 'StackId'], 'fake-stack-id');
   const stackName = _.get(teamProvider, [env, 'awscloudformation', 'StackName'], 'local-testing');
   const accountIdMatcher = /arn:aws:cloudformation:.+:(?<accountId>\d+):stack\/.+/;
