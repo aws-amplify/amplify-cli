@@ -352,6 +352,7 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
       awsConfigInfo.config.useProfile = true;
       answers = await prompt(profileNameQuestion(availableProfiles, awsConfigInfo.config.profileName));
       awsConfigInfo.config.profileName = answers.profileName;
+      validateConfig(context);
       return;
     }
   } else {
