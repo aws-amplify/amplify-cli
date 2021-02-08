@@ -97,6 +97,12 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     await createEnvLevelConstructs(context);
 
+    // removing dependent functions if @model{Table} is deleted
+    const apiResourceTobeUpdated = resourcesToBeUpdated.filter(resource => resource.service === 'AppSync');
+    if (apiResourceTobeUpdated) {
+      await removeDependentFunctions(context, apiResourceTobeUpdated);
+    }
+
     validateCfnTemplates(context, resources);
 
     for await (const resource of resources) {
