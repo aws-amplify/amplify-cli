@@ -24,19 +24,7 @@ export async function openEditor(context, filePath, waitToContinue = true) {
 
     let editor: envEditor.Editor;
 
-    // Until env-editor supports xcode we've to have a branch here
-    if (editorSelected === 'xcode') {
-      editor = {
-        id: 'xcode',
-        name: 'Xcode',
-        binary: 'xcode',
-        isTerminalEditor: false,
-        paths: ['/Applications/Xcode.app/Contents/MacOS/Xcode', '/Applications/Xcode-beta.app/Contents/MacOS/Xcode'],
-        keywords: [],
-      };
-    } else {
-      editor = envEditor.getEditor(editorSelected);
-    }
+    editor = envEditor.getEditor(editorSelected);
 
     if (!editor) {
       context.print.error(
