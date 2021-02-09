@@ -1,7 +1,9 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '..';
+import _ from 'lodash';
 import { spawnSync } from 'child_process';
+import { getBackendAmplifyMeta } from '../utils';
 
 export function addDEVHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -136,4 +138,9 @@ export function resetBuildCommand(projectDir: string, newBuildCommand: string): 
   projectConfig.javascript.config.BuildCommand = newBuildCommand;
   fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
   return currentBuildCommand;
+}
+
+export function extractHostingBucketInfo(projectDir: string) {
+  const meta = getBackendAmplifyMeta(projectDir);
+  return _.get(meta, ['hosting', 'S3AndCloudFront', 'output', 'HostingBucketName']);
 }
