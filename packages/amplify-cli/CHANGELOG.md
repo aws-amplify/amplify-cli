@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.42.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.41.3-beta.1...@aws-amplify/cli@4.42.0-beta.0) (2021-02-09)
+
+
+### Features
+
+* add Flutter  support for Admin UI ([#6516](https://github.com/aws-amplify/amplify-cli/issues/6516)) ([d9ee44b](https://github.com/aws-amplify/amplify-cli/commit/d9ee44be73f43b11da2a07d21fd60108f49b1608))
+
+
+
+
+
 ## [4.41.3-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.41.3-beta.0...@aws-amplify/cli@4.41.3-beta.1) (2021-02-08)
 
 **Note:** Version bump only for package @aws-amplify/cli

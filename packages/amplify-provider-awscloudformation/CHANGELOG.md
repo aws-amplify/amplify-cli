@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.37.0-beta.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.37.0-beta.1...amplify-provider-awscloudformation@4.37.0-beta.2) (2021-02-09)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** ask auth flow type for new envs ([#6569](https://github.com/aws-amplify/amplify-cli/issues/6569)) ([71e8062](https://github.com/aws-amplify/amplify-cli/commit/71e80627f9c999dc6cd46390f82d83142fe434c8))
+
+
+
+
+
 # [4.37.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.37.0-beta.0...amplify-provider-awscloudformation@4.37.0-beta.1) (2021-02-08)
 
 
