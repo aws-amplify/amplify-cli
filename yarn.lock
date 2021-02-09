@@ -87,10 +87,10 @@
     "@aws-amplify/api-graphql" "^1.2.5"
     "@aws-amplify/api-rest" "^1.2.5"
 
-"@aws-amplify/appsync-modelgen-plugin@^1.22.3":
-  version "1.22.3"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.22.3.tgz#5d7593dc67498050fb2e71bb9304d10d5b829b9d"
-  integrity sha512-6jTMA7PpEZw5RXdv9gHRCm7AKwsJhbIHY0xsnJ0wj4o3zwyrnkfH6JhtZH7hOzw9qtFkKVro/BDgsdEaekLK+A==
+"@aws-amplify/appsync-modelgen-plugin@^1.22.6":
+  version "1.22.6"
+  resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.22.6.tgz#d701ac3947d3f727dd0bacb1fea67dbd7a438b35"
+  integrity sha512-Gi5s8lmFjPkUFtuQ+sayb7m6z92Osng7GLAqDsRHPQgWT2uLopPdr1YI8hUP22t+CJzizSUVHuk0rYSCqIFZ7Q==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.12.2"
     "@graphql-codegen/visitor-plugin-common" "1.12.2"
