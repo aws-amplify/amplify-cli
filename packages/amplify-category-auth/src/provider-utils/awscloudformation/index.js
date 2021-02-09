@@ -146,9 +146,10 @@ async function updateConfigOnEnvInit(context, category, service) {
   if (hostedUIProviderMeta) {
     currentEnvSpecificValues = getOAuthProviderKeys(currentEnvSpecificValues, resourceParams);
   }
-
+  const isPullingOrNewEnv = context.input.command === 'pull' || context.input.command === 'env';
+  // don't ask for env_specific params when creating a new env or pulling
   srvcMetaData.inputs = srvcMetaData.inputs.filter(
-    input => ENV_SPECIFIC_PARAMS.includes(input.key) && !Object.keys(currentEnvSpecificValues).includes(input.key),
+    input => ENV_SPECIFIC_PARAMS.includes(input.key) && !Object.keys(currentEnvSpecificValues).includes(input.key) && !isPullingOrNewEnv,
   );
 
   const serviceWalkthroughSrc = `${__dirname}/service-walkthroughs/${serviceWalkthroughFilename}`;

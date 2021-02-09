@@ -41,9 +41,9 @@ function loadResourceParameters(context, category, resource) {
     parameters = context.amplify.readJsonFile(parametersFilePath);
   }
   const envSpecificParams = context.amplify.loadEnvResourceParameters(context, category, resource);
-  const resourceParameters = { ...parameters, ...envSpecificParams };
-  if (category === 'auth' && parameters && parameters.hostedUI && resourceParameters[hostedUIProviderCredsField]) {
-    return _.set(resourceParameters, hostedUIProviderCredsField, '[]');
+  let resourceParameters = { ...parameters, ...envSpecificParams };
+  if (category === 'auth' && parameters && parameters.hostedUI && !resourceParameters[hostedUIProviderCredsField]) {
+    resourceParameters = _.set(resourceParameters, hostedUIProviderCredsField, '[]');
   }
   return resourceParameters;
 }
