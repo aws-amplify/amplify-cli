@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.21.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.21.0-beta.0...amplify-app@2.21.0-beta.1) (2021-02-09)
+
+
+### Bug Fixes
+
+* generate flutter amp config in lib ([#6571](https://github.com/aws-amplify/amplify-cli/issues/6571)) ([ecfb6d3](https://github.com/aws-amplify/amplify-cli/commit/ecfb6d3a1421787c2d48eb81c1625e30ca60216f))
+
+
+
+
+
 # [2.21.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.20.9-beta.0...amplify-app@2.21.0-beta.0) (2021-02-09)
 
 
