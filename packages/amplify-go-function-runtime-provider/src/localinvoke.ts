@@ -1,11 +1,22 @@
 import path from 'path';
 import fs from 'fs-extra';
 import portfinder from 'portfinder';
+import fp from 'find-process';
 import { pathManager } from 'amplify-cli-core';
-
 import { InvocationRequest, BuildRequest } from 'amplify-function-plugin-interface';
 import { buildResourceInternal, executeCommand } from './runtime';
-import { MAIN_SOURCE, MAX_PORT, BASE_PORT, BIN_LOCAL, MAIN_BINARY, MAIN_BINARY_WIN, packageName, relativeShimSrcPath } from './constants';
+import {
+  MAIN_SOURCE,
+  MAX_PORT,
+  BASE_PORT,
+  BIN_LOCAL,
+  MAIN_BINARY,
+  MAIN_BINARY_WIN,
+  MAIN_DEBUG_BIN,
+  packageName,
+  relativeShimSrcPath,
+} from './constants';
+
 import execa, { ExecaChildProcess } from 'execa';
 
 // Go typing standards dictating JSON properties with PascalCase format
@@ -80,14 +91,30 @@ export const localInvoke = async (request: InvocationRequest, context: any) => {
 
   const lambdaExecutableDir = path.join(request.srcRoot, BIN_LOCAL);
   const lambdaExecutablePath = path.join(lambdaExecutableDir, MAIN_BINARY);
+  const lambdaExecutableDebug = path.join(request.srcRoot, SRC, MAIN_DEBUG_BIN);
+
+  const debugProcess = (await fp('name', lambdaExecutableDebug))[0];
+  let debugPort;
+  const haveDebugProcess = Boolean(debugProcess);
+  if (haveDebugProcess) {
+    const { stdout } = await execa('netstat', ['-ltnp', debugProcess.pid.toString()]);
+    const pidRegex = new RegExp(debugProcess.pid.toString());
+    const stat = stdout.split('\n').filter(x => pidRegex.test(x))[0];
+    const debugProcessPort = stat.match(/127.0.0.1:([\d]{1,5})/);
+    if (debugProcessPort) {
+      debugPort = parseInt(debugProcessPort[1], 10);
+    }
+  }
 
   context.print.info(`Launching Lambda process, port: ${portNumber}`);
 
-  const lambdaProcess = startLambda(request, portNumber, { executable: lambdaExecutablePath, cwd: lambdaExecutableDir });
-
+  let lambdaProcess;
+  if (!haveDebugProcess) {
+    lambdaProcess = startLambda(request, portNumber, { executable: lambdaExecutablePath, cwd: lambdaExecutableDir });
+  }
   const envelope = {
     timeoutMilliseconds: 5000,
-    port: portNumber,
+    port: debugPort || portNumber,
     payload: request.event,
   };
 
@@ -100,11 +127,12 @@ export const localInvoke = async (request: InvocationRequest, context: any) => {
     input: envelopeString,
   });
 
-  await stopLambda(lambdaProcess);
+  if (lambdaProcess) {
+    await stopLambda(lambdaProcess);
+  }
 
   if (processResult.exitCode === 0) {
     const lambdaResult: LambdaResult = JSON.parse(processResult.stdout);
-
     if (lambdaResult.Response) {
       try {
         return JSON.parse(lambdaResult.Response);
