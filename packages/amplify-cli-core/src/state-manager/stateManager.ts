@@ -4,7 +4,7 @@ import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets } from '..';
 import { JSONUtilities } from '../jsonUtilities';
 import _ from 'lodash';
 import { SecretFileMode } from '../cliConstants';
-import { Tag, ReadValidateTags, HydrateTags } from '../tags';
+import { Tag, ReadTags, HydrateTags } from '../tags';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -54,9 +54,9 @@ export class StateManager {
     );
   };
 
-  getProjectTags = (projectPath?: string): Tag[] => ReadValidateTags(pathManager.getTagFilePath(projectPath));
+  getProjectTags = (projectPath?: string): Tag[] => ReadTags(pathManager.getTagFilePath(projectPath));
 
-  getCurrentProjectTags = (projectPath?: string): Tag[] => ReadValidateTags(pathManager.getCurrentTagFilePath(projectPath));
+  getCurrentProjectTags = (projectPath?: string): Tag[] => ReadTags(pathManager.getCurrentTagFilePath(projectPath));
 
   teamProviderInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getTeamProviderInfoFilePath, projectPath);
 
