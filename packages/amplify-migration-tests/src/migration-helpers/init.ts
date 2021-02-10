@@ -17,7 +17,7 @@ const defaultSettings = {
   disableAmplifyAppCreation: true,
 };
 
-export function initJSProjectWithProfile(cwd: string, settings: Object, testingWithLatestCodebase = false) {
+export function initJSProjectWithProfile(cwd: string, settings: Object, testingWithLatestCodebase = false): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 

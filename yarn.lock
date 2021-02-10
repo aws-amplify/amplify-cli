@@ -7064,6 +7064,18 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
+amplify-cli-core@1.14.1:
+  version "1.14.1"
+  resolved "https://registry.npmjs.org/amplify-cli-core/-/amplify-cli-core-1.14.1.tgz#7bdf82b00f82cdb4f83895349a0963abb797ada7"
+  integrity sha512-iHeFaePbG24sZX/oJi/d+k1b74sFor5NJREMa7am2YLbdq9TsiPAgcVXNjzYbfESJoaQLUdBYpQsJYr10XEOUw==
+  dependencies:
+    ajv "^6.12.3"
+    amplify-cli-logger "1.1.0"
+    dotenv "^8.2.0"
+    fs-extra "^8.1.0"
+    hjson "^3.2.1"
+    lodash "^4.17.19"
+
 ansi-align@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-3.0.0.tgz#b536b371cf687caaef236c18d3e21fe3797467cb"
