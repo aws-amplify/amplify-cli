@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "e2e": "jest",
-    "build-tests": "tsc --build tsconfig.tests.json"
+    "build-tests": "yarn tsc --build tsconfig.tests.json"
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^3.2.2",
