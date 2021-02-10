@@ -19,7 +19,7 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "amplify-cli-core": "1.14.1",
+    "amplify-cli-core": "1.15.0",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3"
