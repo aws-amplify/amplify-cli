@@ -36,7 +36,7 @@ const vueConfig = {
 };
 
 const emberConfig = {
-  SourceDir: '/',
+  SourceDir: './',
   DistributionDir: 'dist',
   BuildCommand: `${npm} run-script build -- -e production`,
   StartCommand: `${npm} run-script start`,
