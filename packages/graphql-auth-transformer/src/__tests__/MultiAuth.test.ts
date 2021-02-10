@@ -157,6 +157,27 @@ const getSchemaWithRecursiveNonModelField = (authDirective: string) => {
   `;
 };
 
+const getRecursiveSchemaWithDiffModesOnParentType = (authDir1: string, authDir2: string) => {
+  return `
+  type Post @model ${authDir1} {
+    id: ID!
+    title: String!
+    tags: [Tag]
+  }
+
+  type Comment @model ${authDir2} {
+    id: ID!
+    content: String
+    tags: [Tag]
+  }
+
+  type Tag {
+    id: ID
+    tags: [Tag]
+  }
+  `;
+};
+
 const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
   new GraphQLTransform({
     transformers: [
@@ -523,6 +544,19 @@ describe('Type directive transformation tests', () => {
 
   test(`Recursive types without @model`, () => {
     const schema = getSchemaWithRecursiveNonModelField(ownerRestrictedIAMPrivateAuthDirective);
+    const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
+
+    const out = transformer.transform(schema);
+    const schemaDoc = parse(out.schema);
+
+    const tagType = getObjectType(schemaDoc, 'Tag');
+    const expectedDirectiveNames = [userPoolsDirectiveName, iamDirectiveName];
+
+    expectMultiple(tagType, expectedDirectiveNames);
+  });
+
+  test(`Recursive types with diff auth modes on parent @model types`, () => {
+    const schema = getRecursiveSchemaWithDiffModesOnParentType(ownerAuthDirective, privateIAMDirective);
     const transformer = getTransformer(withAuthModes(userPoolsDefaultConfig, ['AWS_IAM']));
 
     const out = transformer.transform(schema);
