@@ -17,9 +17,8 @@ import _ from 'lodash';
 import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
 import fs from 'fs-extra';
 import path from 'path';
-import open from 'open';
 import { IsMockableResponse } from '../..';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities, open } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function

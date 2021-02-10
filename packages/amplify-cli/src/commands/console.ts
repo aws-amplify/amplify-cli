@@ -1,6 +1,5 @@
-import open from 'open';
 import { prompt } from 'enquirer';
-import { stateManager } from 'amplify-cli-core';
+import { stateManager, open } from 'amplify-cli-core';
 
 const providerName = 'awscloudformation';
 
