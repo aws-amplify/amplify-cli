@@ -8,3 +8,5 @@ To build this image the following CircleCI configuration is needed
 
 - `AWS_ECR_ACCOUNT_URL` URL of ECR repository. This needs to contain just the host name
 - `ECR_REGION` Region of ECR repository
+- `ECR_ACCESS_KEY` AWS Access key used for ECR
+- `ECR_SECRET_ACCESS_KEY` AWS Secret Access for ECR
