@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.14.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-ui-tests@2.14.2...amplify-ui-tests@2.14.3-beta.0) (2021-02-11)
+
+**Note:** Version bump only for package amplify-ui-tests
+
+
+
+
+
 ## [2.14.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-ui-tests@2.14.1...amplify-ui-tests@2.14.2) (2021-02-10)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.34.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.34.0...amplify-e2e-tests@2.34.1-beta.0) (2021-02-11)
+
+
+### Reverts
+
+* Revert "chore: update amplify lib version (#6544)" (#6597) ([819a749](https://github.com/aws-amplify/amplify-cli/commit/819a74917ff1f8c1e9b66fea0a06338884d52b24)), closes [#6544](https://github.com/aws-amplify/amplify-cli/issues/6544) [#6597](https://github.com/aws-amplify/amplify-cli/issues/6597)
+
+
+
+
+
 # [2.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.4...amplify-e2e-tests@2.34.0) (2021-02-10)
 
 

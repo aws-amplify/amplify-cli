@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.18.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.17.2...amplify-category-notifications@2.18.0-beta.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
 ## [2.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.17.1...amplify-category-notifications@2.17.2) (2021-01-08)
 
 
