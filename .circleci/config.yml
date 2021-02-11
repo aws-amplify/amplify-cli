@@ -1,0 +1,29 @@
+version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@6.15.3
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: 744586199449.dkr.ecr.us-east-2.amazonaws.com/amplify-cli-base-image:latest
+
+jobs:
+  build_image:
+    docker:
+      - image: circleci/node:10.18
+    steps:
+      - setup_remote_docker
+      - aws-ecr/build-and-push-image:
+          checkout: true
+          create-repo: true
+          dockerfile: Dockerfile
+          repo: amplify-cli-base-image
+          tag: "latest"
+
+workflows:
+  version: 2.1
+  build_and_push_image:
+    jobs:
+      - build:
+          context: amplify-cli-ecr
