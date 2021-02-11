@@ -1,8 +1,8 @@
 import { openConsole, isMockable } from '../../../provider-utils/awscloudformation';
 import { ServiceName } from '../../../provider-utils/awscloudformation/utils/constants';
-import open from 'open';
+import { open } from 'amplify-cli-core';
 
-jest.mock('open');
+jest.mock('amplify-cli-core');
 
 describe('awscloudformation function provider', () => {
   it('opens the correct service console', () => {

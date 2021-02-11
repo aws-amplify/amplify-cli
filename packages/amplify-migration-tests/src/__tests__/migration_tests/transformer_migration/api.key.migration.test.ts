@@ -1,16 +1,16 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
+  addApiWithSchema,
+  addFeatureFlag,
   amplifyPush,
   amplifyPushForce,
-  addApiWithSchema,
-  updateApiSchema,
+  amplifyPushUpdate,
   apiGqlCompile,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
-  amplifyPushUpdate,
-  addFeatureFlag
+  updateApiSchema,
 } from 'amplify-e2e-core';
+import { initJSProjectWithProfile } from '../../../migration-helpers';
 
 describe('amplify key force push', () => {
   let projRoot: string;
@@ -48,11 +48,7 @@ describe('amplify key force push', () => {
     updateApiSchema(projRoot, projectName, initialSchema, true);
     // gql-compile and force push with codebase cli
     await expect(
-      amplifyPushUpdate(
-        projRoot,
-        /Attempting to remove a local secondary index on the TodoTable table in the Todo stack.*/,
-        true,
-      ),
+      amplifyPushUpdate(projRoot, /Attempting to remove a local secondary index on the TodoTable table in the Todo stack.*/, true),
     ).rejects.toThrowError(/Attempting to remove a local secondary index on the TodoTable table in the Todo stack.*/);
   });
 });

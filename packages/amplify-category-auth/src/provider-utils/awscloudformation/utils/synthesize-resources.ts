@@ -33,7 +33,7 @@ export const getResourceSynthesizer = (context: any, cfnFilename: string, provid
 
 /**
  * Factory function that returns a function that updates the auth resource based on a ServiceQuestionsResult request.
- * The function retusn the request unchanged to enable .then() chaining
+ * The function returns the request unchanged to enable .then() chaining
  *
  * The code is more-or-less refactored as-is from the existing update logic
  * @param context The amplify context
@@ -64,7 +64,7 @@ export const getResourceUpdater = (context: any, cfnFilename: string, provider: 
 
   if ((!request.updateFlow && !request.thirdPartyAuth) || (request.updateFlow === 'manual' && !request.thirdPartyAuth)) {
     delete request.selectedParties;
-    delete request.authProviders;
+    request.authProviders = [];
     authProviders.forEach(a => delete (request as any)[a.answerHashKey]);
     if (request.googleIos) {
       delete request.googleIos;

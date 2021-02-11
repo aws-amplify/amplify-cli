@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.28.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.28.2...amplify-category-api@2.28.3) (2021-02-10)
+
+
+### Bug Fixes
+
+* fix appsync permission assignment from functions ([#5342](https://github.com/aws-amplify/amplify-cli/issues/5342)) ([b2e2dd0](https://github.com/aws-amplify/amplify-cli/commit/b2e2dd0071c1a451ba032cf7f8cfe7cf6381a96e))
+
+
+
+
+
 ## [2.28.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.28.1...amplify-category-api@2.28.2) (2021-01-08)
 
 

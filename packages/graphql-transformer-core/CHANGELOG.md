@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.26.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.25.1...graphql-transformer-core@6.26.0) (2021-02-10)
+
+
+### Features
+
+* **graphql-key-transformer:** change default to add GSIs when using [@key](https://github.com/key) ([#5648](https://github.com/aws-amplify/amplify-cli/issues/5648)) ([4287c63](https://github.com/aws-amplify/amplify-cli/commit/4287c630295c304c7ff8343922926b4830b75cd4))
+
+
+
+
+
 ## [6.25.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.25.0...graphql-transformer-core@6.25.1) (2020-12-16)
 
 

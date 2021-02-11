@@ -1,8 +1,21 @@
+import {
+  addApiWithSchema,
+  addFunction,
+  addLayer,
+  amplifyPush,
+  amplifyPushAuth,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getProjectMeta,
+  invokeFunction,
+  overrideFunctionSrc,
+  updateFunction,
+  updateLayer,
+  validateLayerMetadata,
+} from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, addLayer, invokeFunction, updateFunction, updateLayer, validateLayerMetadata } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc } from 'amplify-e2e-core';
-import { addApiWithSchema } from 'amplify-e2e-core';
+import { initJSProjectWithProfile } from '../../migration-helpers';
 
 describe('amplify function migration', () => {
   let projRoot: string;

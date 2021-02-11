@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.14.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-ui-tests@2.14.1...amplify-ui-tests@2.14.2) (2021-02-10)
+
+
+### Bug Fixes
+
+* support choosing AWS authentication flow when admin UI is enabled ([#6433](https://github.com/aws-amplify/amplify-cli/issues/6433)) ([3bf56a8](https://github.com/aws-amplify/amplify-cli/commit/3bf56a8e2e5be67dd861a55807ecc94bd561b4a2))
+
+
+
+
+
 ## [2.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-ui-tests@2.13.3...amplify-ui-tests@2.14.1) (2020-11-22)
 
 **Note:** Version bump only for package amplify-ui-tests

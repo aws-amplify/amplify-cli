@@ -2,7 +2,7 @@ import { getCLIPath, KEY_DOWN_ARROW, nspawn as spawn } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
-export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = false) {
+export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
@@ -20,7 +20,7 @@ export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = fa
   });
 }
 
-export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean = false) {
+export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push', '--force'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
@@ -36,7 +36,7 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean
   });
 }
 
-export function amplifyPushWithoutCodegen(cwd: string, testingWithLatestCodebase: boolean = false) {
+export function amplifyPushWithoutCodegen(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
@@ -51,7 +51,7 @@ export function amplifyPushWithoutCodegen(cwd: string, testingWithLatestCodebase
   });
 }
 
-export function amplifyPushUpdate(cwd: string, waitForText?: RegExp, testingWithLatestCodebase: boolean = false) {
+export function amplifyPushUpdate(cwd: string, waitForText?: RegExp, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
@@ -67,7 +67,7 @@ export function amplifyPushUpdate(cwd: string, waitForText?: RegExp, testingWith
   });
 }
 
-export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean = false) {
+export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
@@ -84,7 +84,11 @@ export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean 
 }
 
 // this function expects a single layer's content to be modified
-export function amplifyPushLayer(cwd: string, usePreviousPermissions: boolean = true, testingWithLatestCodebase: boolean = false) {
+export function amplifyPushLayer(
+  cwd: string,
+  usePreviousPermissions: boolean = true,
+  testingWithLatestCodebase: boolean = false,
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')

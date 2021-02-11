@@ -44,11 +44,11 @@ async function run(context) {
   }
 
   if (isAdminApp) {
-    awsConfig = await configurationManager.loadConfigurationForEnv(context, envName, appId);
     context.exeInfo.awsConfig = {
       configLevel: 'amplifyAdmin',
       config: {},
     };
+    awsConfig = await configurationManager.loadConfigurationForEnv(context, envName, appId);
   } else {
     await configurationManager.init(context);
     awsConfig = await configurationManager.getAwsConfig(context);

@@ -1,6 +1,6 @@
-const open = require('open');
 const ora = require('ora');
 const inquirer = require('inquirer');
+const { open } = require('amplify-cli-core');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');

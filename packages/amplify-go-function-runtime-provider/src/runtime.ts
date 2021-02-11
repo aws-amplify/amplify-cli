@@ -185,7 +185,7 @@ const winZip = async (src: string, dest: string, print: any) => {
   print.warning('See https://github.com/aws/aws-lambda-go/issues/13#issuecomment-358729411.');
 };
 
-const nixZip = async (src: string, dest: string) => {
+const nixZip = async (src: string, dest: string): Promise<void> => {
   const outDir = path.join(src, BIN);
   const mainFile = path.join(outDir, MAIN_BINARY);
 

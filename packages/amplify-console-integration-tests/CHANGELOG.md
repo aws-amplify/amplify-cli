@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.12](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.3.11...amplify-console-integration-tests@1.3.12) (2021-02-10)
+
+
+### Bug Fixes
+
+* support choosing AWS authentication flow when admin UI is enabled ([#6433](https://github.com/aws-amplify/amplify-console-integration-tests/issues/6433)) ([3bf56a8](https://github.com/aws-amplify/amplify-console-integration-tests/commit/3bf56a8e2e5be67dd861a55807ecc94bd561b4a2))
+
+
+
+
+
 ## [1.3.11](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.3.10...amplify-console-integration-tests@1.3.11) (2021-01-08)
 
 

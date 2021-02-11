@@ -1,15 +1,22 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from 'amplify-e2e-core';
-import { join } from 'path';
-import { existsSync } from 'fs';
 import {
   addApiWithSchema,
   addApiWithSchemaAndConflictDetection,
+  amplifyPush,
+  amplifyPushUpdate,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getAppSyncApi,
+  getProjectMeta,
+  getTransformConfig,
   updateApiSchema,
   updateApiWithMultiAuth,
   updateAPIWithResolutionStrategy,
 } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getTransformConfig, getAppSyncApi } from 'amplify-e2e-core';
+import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
+import { join } from 'path';
+import { initJSProjectWithProfile } from '../../migration-helpers';
 
 describe('api migration update test', () => {
   let projRoot: string;

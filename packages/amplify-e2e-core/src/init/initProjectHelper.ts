@@ -33,7 +33,7 @@ export const amplifyRegions = [
   'ca-central-1',
 ];
 
-export function initJSProjectWithProfile(cwd: string, settings: Object) {
+export function initJSProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -81,7 +81,7 @@ export function initJSProjectWithProfile(cwd: string, settings: Object) {
   });
 }
 
-export function initAndroidProjectWithProfile(cwd: string, settings: Object) {
+export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
@@ -122,7 +122,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object) {
   });
 }
 
-export function initIosProjectWithProfile(cwd: string, settings: Object) {
+export function initIosProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
@@ -161,7 +161,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object) {
   });
 }
 
-export function initFlutterProjectWithProfile(cwd: string, settings: Object) {
+export function initFlutterProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
@@ -197,7 +197,10 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object) {
   });
 }
 
-export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region?: string }) {
+export function initProjectWithAccessKey(
+  cwd: string,
+  settings: { accessKeyId: string; secretAccessKey: string; region?: string },
+): Promise<void> {
   const s = { ...defaultSettings, ...settings };
 
   addCircleCITags(cwd);
@@ -252,7 +255,7 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
   });
 }
 
-export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }) {
+export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
@@ -291,7 +294,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
   });
 }
 
-export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
+export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
@@ -322,7 +325,7 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
   });
 }
 
-export function amplifyInitSandbox(cwd: string, settings: {}) {
+export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -356,7 +359,7 @@ export function amplifyInitSandbox(cwd: string, settings: {}) {
   });
 }
 
-export function amplifyVersion(cwd: string, expectedVersion: string, testingWithLatestCodebase = false) {
+export function amplifyVersion(cwd: string, expectedVersion: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['--version'], { cwd, stripColors: true })
       .wait(expectedVersion)
@@ -371,7 +374,7 @@ export function amplifyVersion(cwd: string, expectedVersion: string, testingWith
 }
 
 //Can be called only if detects teamprovider change
-export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, testingWithLatestCodebase) {
+export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, testingWithLatestCodebase): Promise<void> {
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(testingWithLatestCodebase), ['status'], { cwd, stripColors: true })
@@ -389,7 +392,7 @@ export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, te
   });
 }
 
-export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLatestCodebase = false) {
+export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(testingWithLatestCodebase), ['status'], { cwd, stripColors: true })

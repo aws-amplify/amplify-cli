@@ -240,7 +240,7 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
   }
 };
 
-export const functionBuild = (cwd: string, settings: any) => {
+export const functionBuild = (cwd: string, settings: any): Promise<void> => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue building the resources?')

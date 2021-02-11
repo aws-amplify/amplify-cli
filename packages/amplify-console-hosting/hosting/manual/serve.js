@@ -1,6 +1,6 @@
-const open = require('open');
 const utils = require('../../utils/amplify-context-utils');
 const amplifyUtils = require('../../utils/amplify-console-utils');
+const { open } = require('amplify-cli-core');
 
 async function serve(context) {
   const appId = utils.getAppIdForCurrEnv(context);

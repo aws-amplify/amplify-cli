@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-flutter@0.2.1...amplify-frontend-flutter@0.3.0) (2021-02-10)
+
+
+### Features
+
+* add Flutter  support for Admin UI ([#6516](https://github.com/aws-amplify/amplify-cli/issues/6516)) ([d9ee44b](https://github.com/aws-amplify/amplify-cli/commit/d9ee44be73f43b11da2a07d21fd60108f49b1608))
+
+
+
+
+
 ## [0.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-flutter@0.2.0...amplify-frontend-flutter@0.2.1) (2021-01-08)
 
 
