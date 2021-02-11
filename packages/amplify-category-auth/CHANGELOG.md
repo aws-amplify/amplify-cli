@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.27.0...amplify-category-auth@2.28.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
 # [2.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.26.4...amplify-category-auth@2.27.0) (2021-02-10)
 
 

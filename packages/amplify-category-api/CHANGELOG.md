@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.29.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.28.3...amplify-category-api@2.29.0) (2021-02-11)
+
+
+### Bug Fixes
+
+* sets policy resource name in api update flow ([328abac](https://github.com/aws-amplify/amplify-cli/commit/328abacd81d03dbae8b0c0246536c465a7954c1e))
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
 ## [2.28.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.28.2...amplify-category-api@2.28.3) (2021-02-10)
 
 
