@@ -23,6 +23,11 @@ import { CognitoUserPoolService, createCognitoUserPoolService } from './aws-util
 import { IdentityPoolService, createIdentityPoolService } from './aws-utils/IdentityPoolService';
 import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
+import { resolveAppId } from './utils/resolve-appId';
+import { loadConfigurationForEnv } from './configuration-manager';
+
+export { resolveAppId } from './utils/resolve-appId';
+export { loadConfigurationForEnv } from './configuration-manager';
 
 function init(context) {
   return initializer.run(context);
@@ -128,4 +133,6 @@ module.exports = {
   createS3Service,
   DynamoDBService,
   createDynamoDBService,
+  resolveAppId,
+  loadConfigurationForEnv,
 };

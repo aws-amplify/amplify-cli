@@ -41,6 +41,7 @@ const startLambda = (request: InvocationRequest, portNumber: number, lambda: { e
 
   const lambdaProcess: ExecaChildProcess = execa.command(lambda.executable, {
     env: envVars,
+    extendEnv: false,
     cwd: lambda.cwd,
   });
 

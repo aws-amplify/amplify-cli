@@ -12,5 +12,6 @@ export type InvokeOptions = {
 export const getLambdaChildProcess = (environment: any, functionName: string = 'execute.js'): execa.ExecaChildProcess => {
   return execa.node(path.join(__dirname, functionName), [], {
     env: environment || {},
+    extendEnv: false,
   });
-}
+};

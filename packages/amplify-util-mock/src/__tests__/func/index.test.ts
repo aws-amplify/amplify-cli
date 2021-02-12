@@ -5,8 +5,8 @@ import { stateManager } from 'amplify-cli-core';
 import * as _ from 'lodash';
 import * as inquirer from 'inquirer';
 
-jest.mock('../../utils/lambda/loadMinimal', () => ({
-  loadMinimalLambdaConfig: jest.fn(() => ({ handler: 'index.testHandle' })),
+jest.mock('../../utils/lambda/load-lambda-config', () => ({
+  loadLambdaConfig: jest.fn(() => ({ handler: 'index.testHandle' })),
 }));
 jest.mock('../../utils', () => ({
   hydrateAllEnvVars: jest.fn(),

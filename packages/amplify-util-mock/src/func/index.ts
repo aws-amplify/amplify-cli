@@ -1,11 +1,10 @@
 import { getInvoker, category, isMockable, getBuilder } from 'amplify-category-function';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { loadMinimalLambdaConfig } from '../utils/lambda/loadMinimal';
-import { hydrateAllEnvVars } from '../utils';
 import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import _ = require('lodash');
+import _ from 'lodash';
 import { BuildType } from 'amplify-function-plugin-interface';
+import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 
 const DEFAULT_TIMEOUT_SECONDS = 10;
 
@@ -36,17 +35,14 @@ export async function start(context: $TSContext) {
     }
   }
 
-  const lambdaConfig = loadMinimalLambdaConfig(resourceName, { env: context.amplify.getEnvInfo().envName });
-  if (!lambdaConfig || !lambdaConfig.handler) {
+  const event = await resolveEvent(context, resourceName);
+  const lambdaConfig = await loadLambdaConfig(context, resourceName);
+  if (!lambdaConfig?.handler) {
     throw new Error(`Could not parse handler for ${resourceName} from cloudformation file`);
   }
-  const { allResources } = await context.amplify.getResourceStatus();
-
-  const event = await resolveEvent(context, resourceName);
-  const envVars = hydrateAllEnvVars(allResources, lambdaConfig.environment);
   context.print.blue('Ensuring latest function changes are built...');
   await getBuilder(context, resourceName, BuildType.DEV)();
-  const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars });
+  const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars: lambdaConfig.environment });
   context.print.blue('Starting execution...');
   await timeConstrainedInvoker(invoker({ event }), context.input.options)
     .then(result => {
