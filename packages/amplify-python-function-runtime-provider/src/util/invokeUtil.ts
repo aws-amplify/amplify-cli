@@ -21,14 +21,14 @@ export async function pythonInvoke(context: any, request: InvocationRequest): Pr
   }
 
   const childProcess = execa('pipenv', ['run', pyBinary, shimPath, handlerFile + '.py', handlerName], {
-    stderr: 'inherit',
-    stdout: 'inherit',
-    env: request.envVars,
+    cwd: request.srcRoot,
+    env: { PATH: process.env.PATH, ...request.envVars }, // pipenv relies on python in the PATH so we have to add that in
     extendEnv: false,
+    input: JSON.stringify({ event: request.event, context: {} }) + '\n',
   });
 
+  childProcess.stderr.pipe(process.stderr);
   childProcess.stdout.pipe(process.stdout);
-  childProcess.stdin.write(JSON.stringify({ event: request.event, context: {} }) + '\n');
 
   const { stdout } = await childProcess;
   const lines = stdout.split('\n');
