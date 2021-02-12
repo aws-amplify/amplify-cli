@@ -1,4 +1,6 @@
-export async function loadRuntimePlugin(context, pluginId) {
+import { $TSContext } from 'amplify-cli-core';
+
+export async function loadRuntimePlugin(context: $TSContext, pluginId: string) {
   if (!context.pluginPlatform.plugins.functionRuntime) {
     throw new Error('No function runtime plugins found. Try "amplify plugin scan" and then rerun the command.');
   }

@@ -1,5 +1,6 @@
-import { lambdaFunctionHandler } from '../lambda-resource-processor';
-import { CloudFormationResource } from '../stack/types';
+import { $TSAny } from 'amplify-cli-core';
+import { lambdaFunctionHandler } from './lambda';
+import { CloudFormationResource, ProcessedLambdaFunction } from '../stack/types';
 import { CloudFormationParseContext } from '../types';
 import {
   appSyncAPIKeyResourceHandler,
@@ -16,7 +17,7 @@ export type CloudFormationResourceProcessorFn = (
   resourceName: string,
   resource: CloudFormationResource,
   cfnContext: CloudFormationParseContext,
-) => any; //CloudFormationProcessedResourceResult;
+) => ProcessedLambdaFunction | $TSAny; // TODO should type the rest of the handler responses
 
 const resourceProcessorMapping: Record<string, CloudFormationResourceProcessorFn> = {};
 export function getResourceProcessorFor(resourceType: string): CloudFormationResourceProcessorFn {

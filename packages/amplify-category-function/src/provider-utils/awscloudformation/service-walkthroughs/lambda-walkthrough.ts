@@ -177,7 +177,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
   const resourceDirPath = path.join(projectBackendDirPath, category, functionParameters.resourceName);
   const currentParameters = loadFunctionParameters(context, resourceDirPath);
-  const functionRuntime = context.amplify.readBreadcrumbs(context, category, functionParameters.resourceName).functionRuntime as string;
+  const functionRuntime = context.amplify.readBreadcrumbs(category, functionParameters.resourceName).functionRuntime as string;
 
   const cfnParameters: any = JSONUtilities.readJson(path.join(resourceDirPath, parametersFileName), { throwIfNotExist: false }) || {};
   const scheduleParameters = {

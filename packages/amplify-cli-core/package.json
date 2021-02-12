@@ -41,6 +41,7 @@
     "@types/node": "^10.17.13",
     "@types/rimraf": "^3.0.0",
     "@types/uuid": "^8.0.0",
+    "amplify-function-plugin-interface": "1.6.0",
     "rimraf": "^3.0.0"
   },
   "jest": {
