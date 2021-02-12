@@ -21,6 +21,8 @@ export async function pythonInvoke(context: any, request: InvocationRequest): Pr
   }
 
   const childProcess = execa('pipenv', ['run', pyBinary, shimPath, handlerFile + '.py', handlerName], {
+    stderr: 'inherit',
+    stdout: 'inherit',
     env: request.envVars,
     extendEnv: false,
   });

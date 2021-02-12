@@ -110,3 +110,7 @@ const resolveEvent = async (context: $TSContext, resourceName: string): Promise<
 
   return JSONUtilities.readJson(path.resolve(path.join(resourcePath, eventName)));
 };
+
+interface InvokerOptions {
+  timeout?: string;
+}

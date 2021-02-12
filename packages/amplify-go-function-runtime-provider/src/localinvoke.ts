@@ -43,6 +43,8 @@ const startLambda = (request: InvocationRequest, portNumber: number, lambda: { e
     env: envVars,
     extendEnv: false,
     cwd: lambda.cwd,
+    stderr: 'inherit',
+    stdout: 'inherit',
   });
 
   return lambdaProcess;

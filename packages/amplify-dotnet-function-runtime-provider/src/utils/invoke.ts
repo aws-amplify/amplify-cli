@@ -18,10 +18,10 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
       ['lambda-test-tool-3.1', '--no-ui', '--function-handler', request.handler, '--payload', eventFile, '--pause-exit', 'false'],
       {
         cwd: sourcePath,
-        env: {
-          ...process.env,
-          ...request.envVars,
-        },
+        extendEnv: false,
+        env: request.envVars,
+        stderr: 'inherit',
+        stdout: 'inherit',
       },
     );
   } finally {

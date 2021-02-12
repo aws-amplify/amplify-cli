@@ -20,6 +20,8 @@ export const invokeResource = async (request: InvocationRequest, context: any) =
       input: request.event,
       env: request.envVars,
       extendEnv: false,
+      stderr: 'inherit',
+      stdout: 'inherit',
     },
   );
   childProcess.stdout.pipe(process.stdout);

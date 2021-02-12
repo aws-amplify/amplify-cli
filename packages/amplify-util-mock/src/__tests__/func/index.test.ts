@@ -68,7 +68,7 @@ describe('function start', () => {
   jest.setTimeout(1000 * 20);
 
   // NOTE: A warning from jest saying that async operations weren't stopped in the test is expected here
-  // because the mock function is designed to keep running after the timeout to ense that the timeout works
+  // because the mock function is designed to keep running after the timeout to ensure that the timeout works
   it('times out function execution at the default time', async () => {
     await start(context_stub);
     expect(context_stub.print.error.mock.calls[0][0]).toMatchInlineSnapshot(`"funcName failed with the following error:"`);
