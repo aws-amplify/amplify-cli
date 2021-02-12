@@ -76,7 +76,6 @@ async function configureLambdaDataSource(config) {
         logDebug('Invoking lambda with config', lambdaConfig);
         return invoke({
           srcRoot: lambdaConfig.packageFolder,
-          env: 'test',
           runtime: 'nodejs',
           handler: `${functionName}.${lambdaConfig.handler}`,
           event: JSON.stringify(payload),
