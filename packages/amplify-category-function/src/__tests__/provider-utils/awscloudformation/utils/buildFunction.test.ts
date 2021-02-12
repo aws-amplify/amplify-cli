@@ -1,6 +1,6 @@
 import { $TSContext, pathManager } from 'amplify-cli-core';
 import { BuildType, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
-import { buildFunction } from '../../../..';
+import { buildFunction } from '../../../../provider-utils/awscloudformation/utils/buildFunction';
 
 jest.mock('amplify-cli-core');
 
