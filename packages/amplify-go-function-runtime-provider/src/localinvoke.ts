@@ -13,6 +13,7 @@ import {
   MAIN_BINARY,
   MAIN_BINARY_WIN,
   MAIN_DEBUG_BIN,
+  SRC,
   packageName,
   relativeShimSrcPath,
 } from './constants';
