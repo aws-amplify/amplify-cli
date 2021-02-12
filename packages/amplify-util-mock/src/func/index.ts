@@ -61,32 +61,45 @@ export async function start(context: $TSContext) {
 
   const envVars = hydrateAllEnvVars(allResources, lambdaConfig.environment);
   const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars });
-  context.print.success('Starting execution...');
-  await timeConstrainedInvoker(invoker({ event }), context.input.options)
-    .then(result => {
-      const msg = typeof result === 'object' ? JSON.stringify(result) : result;
-      context.print.success('Result:');
-      context.print.info(typeof result === 'undefined' ? '' : msg);
-    })
-    .catch(error => {
-      context.print.error(`${resourceName} failed with the following error:`);
-      context.print.info(error);
-    })
-    .then(() => context.print.success('Finished execution.'));
+  context.print.blue('Starting execution...');
+  try {
+    const result = await timeConstrainedInvoker(invoker({ event }), context.input.options);
+    const resultString =
+      typeof result === 'object' ? JSON.stringify(result, undefined, 2) : typeof result === 'undefined' ? 'undefined' : result;
+    context.print.success('Result:');
+    context.print.info(resultString);
+  } catch (err) {
+    context.print.error(`${resourceName} failed with the following error:`);
+    context.print.info(err);
+  } finally {
+    context.print.blue('Finished execution.');
+  }
 }
 
-interface InvokerOptions {
-  timeout?: string;
-}
-export const timeConstrainedInvoker: <T>(p: Promise<T>, opts: InvokerOptions) => Promise<T> = (promise, options): Promise<any> =>
-  Promise.race([promise, getTimer(options)]);
+export const timeConstrainedInvoker = async <T>(promise: Promise<T>, options: InvokerOptions): Promise<T> => {
+  const { timer, cancel } = getCancellableTimer(options);
+  try {
+    return await Promise.race([promise, timer]);
+  } finally {
+    cancel();
+  }
+};
 
-const getTimer = (options: { timeout?: string }) => {
-  const inputTimeout = Number.parseInt(options?.timeout, 10);
+const getCancellableTimer = ({ timeout }: InvokerOptions) => {
+  const inputTimeout = Number.parseInt(timeout, 10);
   const lambdaTimeoutSeconds = !!inputTimeout && inputTimeout > 0 ? inputTimeout : DEFAULT_TIMEOUT_SECONDS;
   const timeoutErrorMessage = `Lambda execution timed out after ${lambdaTimeoutSeconds} seconds. Press ctrl + C to exit the process.
     To increase the lambda timeout use the --timeout parameter to set a value in seconds.
     Note that the maximum Lambda execution time is 15 minutes:
     https://aws.amazon.com/about-aws/whats-new/2018/10/aws-lambda-supports-functions-that-can-run-up-to-15-minutes/\n`;
-  return new Promise((_, reject) => setTimeout(() => reject(new Error(timeoutErrorMessage)), lambdaTimeoutSeconds * 1000));
+  let timeoutObj;
+  const timer = new Promise<never>((_, reject) => {
+    timeoutObj = setTimeout(() => reject(new Error(timeoutErrorMessage)), lambdaTimeoutSeconds * 1000);
+  });
+  const cancel = () => clearTimeout(timeoutObj);
+  return { timer, cancel };
 };
+
+interface InvokerOptions {
+  timeout?: string;
+}

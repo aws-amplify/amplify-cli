@@ -1,43 +1,53 @@
-var fs = require('fs-extra');
-var content = fs.readFileSync('../data/mock.json');
+const fs = require('fs-extra');
+const path = require('path');
+const content = fs.readFileSync(path.join(__dirname, '../data/mock.json'), 'utf-8');
 const data = JSON.parse(content);
 
-module.exports.asyncHandler = (event, context, callback) => {
-  return new Promise((resolve, reject) => {
-    if (event.succeed) {
-      resolve('foo');
-    } else {
-      reject(new Error('Fail'));
-    }
-  });
+module.exports.expectedLargeData = data;
+
+// async handlers
+module.exports.asyncReturnEvent = async event => {
+  return event;
 };
 
-module.exports.asyncHandlerLargeData = (event, context, callback) => {
-  return new Promise((resolve, reject) => {
-    if (event.succeed) {
-      resolve(data);
-    } else {
-      reject(new Error('Fail'));
-    }
-  });
+module.exports.asyncReturnUndefined = async () => {
+  return undefined;
 };
 
-module.exports.callbackHandler = async (event, context, callback) => {
-  if (event.succeed) {
-    callback(null, 'foo');
-  } else {
-    callback(new Error('Fail'), null);
-  }
+module.exports.asyncRejectWithError = async () => {
+  throw new Error('asyncRejectWithError failure');
 };
 
-module.exports.nonAsyncHandler = () => {
-  return 'foo';
+module.exports.asyncRejectWithString = async () => {
+  throw 'asyncRejectWithString failure';
 };
 
-module.exports.undefinedVariableHandler = (event, context, callback) => {
-  console.log(undedvar);
+module.exports.asyncReturnLargeData = async () => {
+  return data;
 };
 
-module.exports.stringErrorHandler = (event, context, callback) => {
-  throw 'string';
+// callback handlers
+module.exports.callbackReturnEvent = (event, _, callback) => {
+  callback(null, event);
+};
+
+module.exports.callbackRejectWithError = (_, __, callback) => {
+  callback(new Error('callbackRejectWithError failure'));
+};
+
+module.exports.callbackRejectWithString = (_, __, callback) => {
+  callback('callbackRejectWithString failure');
+};
+
+module.exports.syncRejectWithError = () => {
+  throw new Error('syncRejectWithError failure');
+};
+
+module.exports.syncRejectWithString = () => {
+  throw 'syncRejectWithString failure';
+};
+
+// invalid handlers
+module.exports.referenceError = () => {
+  console.dne('referenceError');
 };

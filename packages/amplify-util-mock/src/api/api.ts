@@ -15,8 +15,6 @@ import { configureDDBDataSource, createAndUpdateTable } from '../utils/dynamo-db
 import { getMockConfig } from '../utils/mock-config-file';
 import { getAllLambdaFunctions } from '../utils/lambda/load';
 import { getInvoker } from 'amplify-category-function';
-import { keys } from 'lodash';
-import { LambdaFunctionConfig } from '../CFNParser/lambda-resource-processor';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
 

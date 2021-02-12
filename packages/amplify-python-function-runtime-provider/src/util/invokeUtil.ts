@@ -20,7 +20,10 @@ export async function pythonInvoke(context: any, request: InvocationRequest): Pr
     throw new Error(`Could not find 'python3' or 'python' executable in the PATH.`);
   }
 
-  const childProcess = execa('pipenv', ['run', pyBinary, shimPath, handlerFile + '.py', handlerName]);
+  const childProcess = execa('pipenv', ['run', pyBinary, shimPath, handlerFile + '.py', handlerName], {
+    stderr: 'inherit',
+    stdout: 'inherit',
+  });
 
   childProcess.stdout.pipe(process.stdout);
   childProcess.stdin.write(JSON.stringify({ event: request.event, context: {} }) + '\n');

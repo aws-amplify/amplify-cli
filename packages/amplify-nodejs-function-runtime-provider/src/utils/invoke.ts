@@ -1,56 +1,42 @@
-import { InvokeOptions, getLambdaChildProcess } from './invokeUtils';
+import * as execa from 'execa';
+import { Readable } from 'stream';
+import { executorPath } from './executorPath';
 
-// copied from amplify-util-mock with slight modifications
-export function invoke(options: InvokeOptions): Promise<any> {
-  return new Promise((resolve, reject) => {
-    try {
-      let data: string = '';
-      const lambdaFn = getLambdaChildProcess(options.environment);
-      lambdaFn.stdout.on('data', msg => {
-        data += msg;
-      });
-      let inClosePromise: Promise<void> | null;
-      const onClose = async () => {
-        const lines = data.split('\n');
-        if (lines.length > 1) {
-          const logs = lines.slice(0, -1).join('\n');
-          console.log(logs);
-        }
-        const lastLine = lines[lines.length - 1];
-        try {
-          const result = JSON.parse(lastLine);
-          if (result.error) {
-            reject(result.error);
-          } else {
-            resolve(result.result);
-          }
-        } catch {
-          resolve(lastLine);
-        }
-      };
-      lambdaFn.on('close', () => {
-        inClosePromise = onClose();
-      });
-      lambdaFn.catch(err => {
-        const rejectWithClose = () => {
-          if (inClosePromise) {
-            inClosePromise.finally(() => {
-              reject(err.message);
-            });
-          } else {
-            reject(err.message);
-          }
-        };
-
-        if (data.length > 0) {
-          setTimeout(() => rejectWithClose(), 2000);
-        } else {
-          rejectWithClose();
-        }
-      });
-      lambdaFn.send(JSON.stringify(options));
-    } catch (e) {
-      reject(e);
-    }
+export const invoke = async (options: InvokeOptions): Promise<any> => {
+  const lambdaExecution = execa.node(executorPath, [], {
+    env: options.environment,
+    extendEnv: false,
+    stdio: ['ignore', 'inherit', 'inherit', 'pipe'],
   });
-}
+  lambdaExecution.send(options);
+  const childPipe = ((lambdaExecution.stdio as any)[3] as unknown) as Readable;
+  childPipe.setEncoding('utf-8');
+  let data = '';
+
+  return new Promise((resolve, reject) => {
+    const closeHandler = () => {
+      const { result, error }: { result?: any; error?: any } = JSON.parse(data);
+      if (error) {
+        reject(error);
+      } else if (typeof result === 'undefined') {
+        resolve(null);
+      } else {
+        resolve(result);
+      }
+    };
+    childPipe.on('data', (d: string) => {
+      data += d;
+    });
+    childPipe.on('close', closeHandler);
+    childPipe.on('end', closeHandler);
+    childPipe.on('error', reject);
+  });
+};
+
+export type InvokeOptions = {
+  packageFolder: string;
+  handler: string;
+  event: string;
+  context?: object;
+  environment?: { [key: string]: string };
+};
