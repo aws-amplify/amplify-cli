@@ -285,7 +285,7 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Action": ["mobiletargeting:PutEvents", "mobiletargeting:UpdateEndpoint"],
+              "Action": ["mobiletargeting:PutEvents", "mobiletargeting:UpdateEndpoint", "mobiletargeting:GetUserEndpoints"],
               "Resource": [
                 {
                   "Fn::If": [
@@ -337,7 +337,7 @@
           "Statement": [
             {
               "Effect": "Allow",
-              "Action": ["mobiletargeting:PutEvents", "mobiletargeting:UpdateEndpoint"],
+              "Action": ["mobiletargeting:PutEvents", "mobiletargeting:UpdateEndpoint", "mobiletargeting:GetUserEndpoints"],
               "Resource": [
                 {
                   "Fn::If": [
