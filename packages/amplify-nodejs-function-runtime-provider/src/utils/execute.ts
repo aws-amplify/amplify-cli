@@ -10,13 +10,14 @@ process.on('message', async (options: InvokeOptions) => {
     const result = await invokeFunction(options);
     parentPipe.write(JSON.stringify({ result }));
   } catch (error) {
+    let plainError = error;
     if (typeof error === 'object') {
-      error = Object.getOwnPropertyNames(error).reduce((acc, key) => {
+      plainError = Object.getOwnPropertyNames(error).reduce((acc, key) => {
         acc[key] = error[key];
         return acc;
       }, {} as Record<string, any>);
     }
-    parentPipe.write(JSON.stringify({ error }));
+    parentPipe.write(JSON.stringify({ error: plainError }));
   }
   exit(0);
 });
