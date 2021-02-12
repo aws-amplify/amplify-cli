@@ -109,13 +109,15 @@ describe('invoke invalid func', () => {
     );
   });
 
-  it('handles syntax error', () => {
+  it('handles syntax error', async () => {
     return expect(
       invoke({
         handler: 'handlerWithSyntaxError.syntaxError',
         packageFolder: __dirname,
         ...objectEvent,
       }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`"Could not load lambda handler function due to SyntaxError: Unexpected token '{'"`);
+    ).rejects.toMatchObject({
+      message: /Could not load lambda handler function due to SyntaxError: Unexpected token.*/,
+    });
   });
 });
