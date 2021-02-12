@@ -303,6 +303,7 @@ module.exports = {
     '/packages/amplify-cli-logger/lib',
     '/packages/amplify-codegen-appsync-model-plugin/lib',
     '/packages/amplify-e2e-core/lib',
+    '/packages/amplify-function-plugin-interface/lib',
     '/packages/amplify-graphql-docs-generator/lib',
     '/packages/amplify-graphql-types-generator/lib',
     '/packages/amplify-headless-interface/lib',
@@ -317,7 +318,7 @@ module.exports = {
     '/packages/graphql-transformer-*/lib',
     '/packages/amplify-headless-interface/lib',
     '/packages/amplify-util-headless-input/lib',
-    'packages/amplify-graphql-*transformer*/lib',
+    '/packages/amplify-graphql-*transformer*/lib',
     '/packages/amplify-provider-awscloudformation/lib',
     '/packages/amplify-console-integration-tests/lib',
 

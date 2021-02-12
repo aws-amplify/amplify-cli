@@ -22,7 +22,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
     },
     checkDependencies: runtimeValue => checkDependencies(runtimeValue),
     package: request => packageResource(request, context),
-    build: request => buildResource(request, context),
+    build: buildResource,
     invoke: request => localInvoke(request, context),
   };
 };

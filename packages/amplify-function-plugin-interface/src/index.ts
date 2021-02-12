@@ -54,25 +54,28 @@ export type RuntimeContributionRequest = {
 // Request sent to invoke a function
 export type InvocationRequest = {
   srcRoot: string;
-  env: string;
   runtime: string;
   handler: string;
   event: string;
-  lastBuildTimestamp?: Date;
   envVars?: { [key: string]: string };
 };
 
 // Request sent to build a function
 export type BuildRequest = {
-  env: string;
+  buildType: BuildType;
   srcRoot: string;
   runtime: string;
   legacyBuildHookParams?: {
     projectRoot: string;
     resourceName: string;
   };
-  lastBuildTimestamp?: Date;
+  lastBuildTimeStamp?: Date;
 };
+
+export enum BuildType {
+  PROD = 'PROD',
+  DEV = 'DEV',
+}
 
 // Request sent to package a function
 export type PackageRequest = {
@@ -80,8 +83,8 @@ export type PackageRequest = {
   srcRoot: string;
   dstFilename: string;
   runtime: string;
-  lastBuildTimestamp: Date;
-  lastPackageTimestamp?: Date;
+  lastBuildTimeStamp: Date;
+  lastPackageTimeStamp?: Date;
   skipHashing?: boolean;
 };
 

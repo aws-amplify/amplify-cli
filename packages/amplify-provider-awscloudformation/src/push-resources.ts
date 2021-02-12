@@ -22,7 +22,6 @@ import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
 import constants, { ProviderName as providerName } from './constants';
-import { buildResource } from './build-resources';
 import { uploadAppSyncFiles } from './upload-appsync-files';
 import { prePushGraphQLCodegen, postPushGraphQLCodegen } from './graphql-codegen';
 import { prePushAuthTransform } from './auth-transform';
@@ -76,13 +75,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       parameters: { options },
     } = context;
 
-    let resources: $TSObject[];
-
-    if (context.exeInfo && context.exeInfo.forcePush) {
-      resources = allResources;
-    } else {
-      resources = resourcesToBeCreated.concat(resourcesToBeUpdated);
-    }
+    const resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
     await createEnvLevelConstructs(context);
 
@@ -110,7 +103,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       }
     }
 
-    await packageResources(context, resources);
+    await prepareBuildableResources(context, resources);
 
     await transformGraphQLSchema(context, {
       handleMigration: opts => updateStackForAPIMigration(context, 'api', undefined, opts),
@@ -349,8 +342,6 @@ export async function updateStackForAPIMigration(context: $TSContext, category: 
 
   resources = allResources.filter(resource => resource.service === 'AppSync');
 
-  await packageResources(context, resources);
-
   await uploadAppSyncFiles(context, resources, allResources, {
     useDeprecatedParameters: isReverting,
     defaultParams: {
@@ -474,22 +465,26 @@ function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[
   }
 }
 
-async function packageResources(context: $TSContext, resources: $TSAny[]) {
+async function prepareBuildableResources(context: $TSContext, resources: $TSAny[]) {
   // Only build and package resources which are required
-  return Promise.all(resources.filter(resource => resource.build).map(resource => packageResource(context, resource)));
+  return Promise.all(resources.filter(resource => resource.build).map(resource => prepareResource(context, resource)));
 }
 
-async function packageResource(context: $TSContext, resource: $TSAny) {
-  let result: $TSAny;
-  let log: $TSAny = null;
+async function prepareResource(context: $TSContext, resource: $TSAny) {
+  // currently the only category that has a "buildable" resource is the functions category, hence the hardcoding
+  resource.lastBuildTimeStamp = await context.amplify.invokePluginMethod(context, 'function', undefined, 'buildResource', [
+    context,
+    resource,
+  ]);
+  const result: { zipFilename: string; zipFilePath: string } = await context.amplify.invokePluginMethod(
+    context,
+    'function',
+    undefined,
+    'packageResource',
+    [context, resource],
+  );
+
   const { envName }: { envName: string } = context.amplify.getEnvInfo();
-
-  if (resource.service === FunctionServiceNameLambdaLayer) {
-    result = await context.amplify.invokePluginMethod(context, 'function', undefined, 'packageLayer', [context, resource]);
-  } else {
-    result = await buildResource(context, resource);
-  }
-
   // Upload zip file to S3
   const s3Key = `amplify-builds/${result.zipFilename}`;
 
@@ -499,7 +494,7 @@ async function packageResource(context: $TSContext, resource: $TSAny) {
     Body: fs.createReadStream(result.zipFilePath),
     Key: s3Key,
   };
-  log = logger('packageResources.s3.uploadFile', [{ Key: s3Key }]);
+  const log = logger('packageResources.s3.uploadFile', [{ Key: s3Key }]);
   log();
   let s3Bucket: string;
   try {

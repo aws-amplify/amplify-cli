@@ -225,7 +225,7 @@ function blue(message: string): void {
   console.log(colors.blue(message));
 }
 
-function fancy(message: string): void {
+function fancy(message?: string): void {
   console.log(message);
 }
 
@@ -238,7 +238,7 @@ function debug(message: string, title: string = 'DEBUG'): void {
   console.log(colors.rainbow(botLine));
 }
 
-function table(data: string[][], options: any = {}): void {
+function table(data: string[][], options: { format?: 'markdown' | 'lean' } = {}): void {
   let t: CLITable.Table;
   switch (options.format) {
     case 'markdown':
@@ -312,7 +312,7 @@ const CLI_TABLE_MARKDOWN = {
 
 function attachTemplate(context: Context) {
   context.template = {
-    async generate(opts: any): Promise<string> {
+    async generate(opts: { template: string; target: string; props: object; directory: string }): Promise<string> {
       const ejs = require('ejs');
       const template = opts.template;
       const target = opts.target;

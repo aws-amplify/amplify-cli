@@ -1,67 +1,53 @@
-import { JSONUtilities, pathManager, $TSContext } from 'amplify-cli-core';
-import { getInvoker, category, isMockable } from 'amplify-category-function';
+import { getInvoker, category, isMockable, getBuilder } from 'amplify-category-function';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
 import { loadMinimalLambdaConfig } from '../utils/lambda/loadMinimal';
 import { hydrateAllEnvVars } from '../utils';
+import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import _ = require('lodash');
+import { BuildType } from 'amplify-function-plugin-interface';
 
 const DEFAULT_TIMEOUT_SECONDS = 10;
 
 export async function start(context: $TSContext) {
-  if (!context.input.subCommands || context.input.subCommands.length < 1) {
-    throw new Error('Specify the function name to invoke with "amplify mock function <function name>"');
-  }
-
-  const resourceName = context.input.subCommands[0];
-  // check that the resource is mockable
-  const mockable = isMockable(context, resourceName);
-  if (!mockable.isMockable) {
-    throw new Error(`Unable to mock ${resourceName}. ${mockable.reason}`);
-  }
-  const { amplify } = context;
-  const resourcePath = path.join(pathManager.getBackendDirPath(), category, resourceName);
-  const eventNameValidator = amplify.inputValidation({
-    operator: 'regex',
-    value: '^[a-zA-Z0-9/._-]+?\\.json$',
-    onErrorMsg: 'Provide a valid unix-like path to a .json file',
-    required: true,
-  });
-  let eventName: string = context.input.options ? context.input.options.event : undefined;
-  let promptForEvent = true;
-  if (eventName) {
-    const validatorOutput = eventNameValidator(eventName);
-    const isValid = typeof validatorOutput !== 'string';
-    if (!isValid) {
-      context.print.warning(validatorOutput);
+  const ampMeta = stateManager.getMeta();
+  let resourceName = context?.input?.subCommands?.[0];
+  if (!resourceName) {
+    const choices = _.keys(_.get(ampMeta, ['function'])).filter(resourceName => isMockable(context, resourceName).isMockable);
+    if (choices.length < 1) {
+      throw new Error('There are no mockable functions in the project. Use `amplify add function` to create one.');
+    } else if (choices.length == 1) {
+      resourceName = choices[0];
     } else {
-      promptForEvent = false;
+      const resourceNameQuestion = [
+        {
+          type: 'list',
+          name: 'resourceName',
+          message: 'Select the function to mock',
+          choices,
+        },
+      ];
+      ({ resourceName } = await inquirer.prompt<{ resourceName: string }>(resourceNameQuestion));
+    }
+  } else {
+    const mockable = isMockable(context, resourceName);
+    if (!mockable.isMockable) {
+      throw new Error(`Unable to mock ${resourceName}. ${mockable.reason}`);
     }
   }
 
-  if (promptForEvent) {
-    const resourceQuestions = [
-      {
-        type: 'input',
-        name: 'eventName',
-        message: `Provide the path to the event JSON object relative to ${resourcePath}`,
-        validate: eventNameValidator,
-        default: 'src/event.json',
-      },
-    ];
-    const resourceAnswers = await inquirer.prompt(resourceQuestions);
-    eventName = resourceAnswers.eventName as string;
-  }
-
-  const event = JSONUtilities.readJson(path.resolve(path.join(resourcePath, eventName)));
   const lambdaConfig = loadMinimalLambdaConfig(resourceName, { env: context.amplify.getEnvInfo().envName });
   if (!lambdaConfig || !lambdaConfig.handler) {
     throw new Error(`Could not parse handler for ${resourceName} from cloudformation file`);
   }
   const { allResources } = await context.amplify.getResourceStatus();
 
+  const event = await resolveEvent(context, resourceName);
   const envVars = hydrateAllEnvVars(allResources, lambdaConfig.environment);
+  context.print.blue('Ensuring latest function changes are built...');
+  await getBuilder(context, resourceName, BuildType.DEV)();
   const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars });
-  context.print.success('Starting execution...');
+  context.print.blue('Starting execution...');
   await timeConstrainedInvoker(invoker({ event }), context.input.options)
     .then(result => {
       const msg = typeof result === 'object' ? JSON.stringify(result) : result;
@@ -89,4 +75,42 @@ const getTimer = (options: { timeout?: string }) => {
     Note that the maximum Lambda execution time is 15 minutes:
     https://aws.amazon.com/about-aws/whats-new/2018/10/aws-lambda-supports-functions-that-can-run-up-to-15-minutes/\n`;
   return new Promise((_, reject) => setTimeout(() => reject(new Error(timeoutErrorMessage)), lambdaTimeoutSeconds * 1000));
+};
+
+const resolveEvent = async (context: $TSContext, resourceName: string): Promise<unknown> => {
+  const { amplify } = context;
+  const resourcePath = path.join(pathManager.getBackendDirPath(), category, resourceName);
+  const eventNameValidator = amplify.inputValidation({
+    operator: 'regex',
+    value: '^[a-zA-Z0-9/._-]+?\\.json$',
+    onErrorMsg: 'Provide a valid unix-like path to a .json file',
+    required: true,
+  });
+  let eventName: string = context.input.options ? context.input.options.event : undefined;
+  let promptForEvent = true;
+  if (eventName) {
+    const validatorOutput = eventNameValidator(eventName);
+    const isValid = typeof validatorOutput !== 'string';
+    if (!isValid) {
+      context.print.warning(validatorOutput);
+    } else {
+      promptForEvent = false;
+    }
+  }
+
+  if (promptForEvent) {
+    const eventNameQuestion = [
+      {
+        type: 'input',
+        name: 'eventName',
+        message: `Provide the path to the event JSON object relative to ${resourcePath}`,
+        validate: eventNameValidator,
+        default: 'src/event.json',
+      },
+    ];
+    const resourceAnswers = await inquirer.prompt(eventNameQuestion);
+    eventName = resourceAnswers.eventName as string;
+  }
+
+  return JSONUtilities.readJson(path.resolve(path.join(resourcePath, eventName)));
 };

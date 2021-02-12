@@ -9,7 +9,7 @@ import path from 'path';
 export async function buildResource(request: BuildRequest): Promise<BuildResult> {
   const resourceDir = path.join(request.srcRoot, 'src');
 
-  if (!request.lastBuildTimestamp || isBuildStale(request.srcRoot, request.lastBuildTimestamp)) {
+  if (!request.lastBuildTimeStamp || isBuildStale(request.srcRoot, request.lastBuildTimeStamp)) {
     installDependencies(resourceDir);
     if (request.legacyBuildHookParams) {
       runBuildScriptHook(request.legacyBuildHookParams.resourceName, request.legacyBuildHookParams.projectRoot);
@@ -65,15 +65,15 @@ function toPackageManagerArgs(useYarn: boolean, scriptName?: string) {
   return useYarn ? [] : ['install'];
 }
 
-function isBuildStale(resourceDir: string, lastBuildTimestamp: Date) {
+function isBuildStale(resourceDir: string, lastBuildTimeStamp: Date) {
   const dirTime = new Date(fs.statSync(resourceDir).mtime);
-  if (dirTime > lastBuildTimestamp) {
+  if (dirTime > lastBuildTimeStamp) {
     return true;
   }
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/**`)
     .filter(p => !p.includes('dist'))
     .filter(p => !p.includes('node_modules'))
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimestamp);
+    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
   return !!fileUpdatedAfterLastBuild;
 }

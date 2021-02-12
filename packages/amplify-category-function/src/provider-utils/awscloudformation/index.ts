@@ -226,7 +226,7 @@ export async function updateFunctionResource(context, category, service, paramet
   }
 
   if (!parameters || (parameters && !parameters.skipEdit)) {
-    const breadcrumb = context.amplify.readBreadcrumbs(context, categoryName, parameters.resourceName);
+    const breadcrumb = context.amplify.readBreadcrumbs(categoryName, parameters.resourceName);
     const displayName = 'trigger' in parameters ? parameters.resourceName : undefined;
     await openEditor(context, category, parameters.resourceName, { defaultEditorFile: breadcrumb.defaultEditorFile }, displayName, false);
   }

@@ -3,7 +3,6 @@ const initializer = require('./initializer');
 const initializeEnv = require('./initialize-env');
 const resourcePusher = require('./push-resources');
 const envRemover = require('./delete-env');
-const resourceBuilder = require('./build-resources');
 const providerUtils = require('./utility-functions');
 const constants = require('./constants');
 const configManager = require('./configuration-manager');
@@ -59,10 +58,6 @@ function configure(context) {
   return configManager.configure(context);
 }
 
-function buildResources(context, category, resourceName) {
-  return resourceBuilder.run(context, category, resourceName);
-}
-
 async function getConfiguredAWSClient(context, category, action) {
   await aws.configureWithCreds(context);
   category = category || 'missing';
@@ -112,7 +107,6 @@ module.exports = {
   constants,
   pushResources,
   storeCurrentCloudBackend,
-  buildResources,
   providerUtils,
   setupNewUser,
   getConfiguredAWSClient,
