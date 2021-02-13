@@ -2,7 +2,7 @@ import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, Provid
 import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './utils/layerParams';
 import { chooseParamsOnEnvInit } from './utils/layerHelpers';
 import { supportedServices } from '../supported-services';
-import { ServiceName, provider, parametersFileName, functionParametersFileName } from './utils/constants';
+import { ServiceName, provider, functionParametersFileName } from './utils/constants';
 import { category as categoryName } from '../../constants';
 import {
   createFunctionResources,
@@ -226,7 +226,7 @@ export async function updateFunctionResource(context, category, service, paramet
   }
 
   if (!parameters || (parameters && !parameters.skipEdit)) {
-    const breadcrumb = context.amplify.readBreadcrumbs(context, categoryName, parameters.resourceName);
+    const breadcrumb = context.amplify.readBreadcrumbs(categoryName, parameters.resourceName);
     const displayName = 'trigger' in parameters ? parameters.resourceName : undefined;
     await openEditor(context, category, parameters.resourceName, { defaultEditorFile: breadcrumb.defaultEditorFile }, displayName, false);
   }

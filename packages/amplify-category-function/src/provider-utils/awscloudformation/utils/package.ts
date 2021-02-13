@@ -6,13 +6,6 @@ import { packageLayer } from './packageLayer';
 
 export const packageResource: Packager = async (context, resource) => getServicePackager(resource.service)(context, resource);
 
-const getServicePackager = (service: string) => (servicePackagerMap[service] ?? packageUnknown) as Packager;
-
-const servicePackagerMap: Record<ServiceName, Packager> = {
-  [ServiceName.LambdaFunction]: packageFunction,
-  [ServiceName.LambdaLayer]: packageLayer,
-};
-
-const packageUnknown: Packager = (_, resource) => {
-  throw new Error(`Unknown function service type ${resource.service}`);
-};
+// there are some other categories (api and maybe others) that depend on the packageFunction function to create a zip file of resource
+// which is why it is the default return value here
+const getServicePackager = (service: string) => (service === ServiceName.LambdaLayer ? packageLayer : packageFunction);
