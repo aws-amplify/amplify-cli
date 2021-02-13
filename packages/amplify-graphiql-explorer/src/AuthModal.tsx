@@ -50,8 +50,8 @@ export class AuthModal extends Component<Props, State> {
     oidcTokenError: '',
   };
 
-  constructor(props, ...args) {
-    super(props, ...args);
+  constructor(props) {
+    super(props);
 
     const decodedToken = this.parseJWTToken(this.props.currentCognitoToken) || {};
     let state = {

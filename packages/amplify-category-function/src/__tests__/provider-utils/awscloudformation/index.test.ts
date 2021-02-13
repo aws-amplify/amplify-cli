@@ -1,10 +1,33 @@
 import { openConsole, isMockable } from '../../../provider-utils/awscloudformation';
 import { ServiceName } from '../../../provider-utils/awscloudformation/utils/constants';
-import open from 'open';
+import { open, $TSContext, stateManager } from 'amplify-cli-core';
+import { buildFunction } from '../../../provider-utils/awscloudformation/utils/buildFunction';
+import { getBuilder } from '../../..';
+import { BuildType } from 'amplify-function-plugin-interface';
 
+jest.mock('amplify-cli-core');
+const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+stateManager_mock.getMeta.mockReturnValue({
+  function: {
+    testFunc: {
+      lastBuildTimeStamp: 'lastBuildTimeStamp',
+      lastDevBuildTimeStamp: 'lastDevBuildTimeStamp',
+    },
+  },
+});
 jest.mock('open');
 
+jest.mock('../../../provider-utils/awscloudformation/utils/buildFunction', () => ({
+  buildFunction: jest.fn(),
+  buildTypeKeyMap: {
+    PROD: 'lastBuildTimeStamp',
+    DEV: 'lastDevBuildTimeStamp',
+  },
+}));
+const buildFunction_mock = buildFunction as jest.MockedFunction<typeof buildFunction>;
+
 describe('awscloudformation function provider', () => {
+  beforeEach(() => jest.clearAllMocks());
   it('opens the correct service console', () => {
     const contextStub = {
       amplify: {
@@ -37,5 +60,17 @@ describe('awscloudformation function provider', () => {
   it('can mock lambda functions', () => {
     const isFunctionMockable = isMockable(ServiceName.LambdaFunction);
     expect(isFunctionMockable.isMockable).toBe(true);
+  });
+
+  it('passes correct build timestamp to buildFunction', async () => {
+    const prodBuilder = await getBuilder({} as $TSContext, 'testFunc', BuildType.PROD);
+    await prodBuilder();
+    expect(buildFunction_mock.mock.calls[0][1].lastBuildTimeStamp).toEqual('lastBuildTimeStamp');
+
+    buildFunction_mock.mockClear();
+
+    const devBuilder = await getBuilder({} as $TSContext, 'testFunc', BuildType.DEV);
+    await devBuilder();
+    expect(buildFunction_mock.mock.calls[0][1].lastBuildTimeStamp).toEqual('lastDevBuildTimeStamp');
   });
 });

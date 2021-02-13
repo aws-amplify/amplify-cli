@@ -3,6 +3,77 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.10...amplify-category-storage@2.10.11) (2021-02-11)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.10.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.9...amplify-category-storage@2.10.10) (2021-02-10)
+
+
+### Bug Fixes
+
+* issue [#6131](https://github.com/aws-amplify/amplify-cli/issues/6131) e2e fix ([#6522](https://github.com/aws-amplify/amplify-cli/issues/6522)) ([5777edd](https://github.com/aws-amplify/amplify-cli/commit/5777edd0854bef127da46961e2b659ae2974e846))
+* update list bucket policies for s3 triggers ([#6497](https://github.com/aws-amplify/amplify-cli/issues/6497)) ([b09ccf0](https://github.com/aws-amplify/amplify-cli/commit/b09ccf0cd871eba6ca7e211846bde8d18d4b4b0f))
+
+
+
+
+
+## [2.10.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.8...amplify-category-storage@2.10.9) (2021-01-08)
+
+
+### Bug Fixes
+
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+
+
+
+
+
+## [2.10.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.7...amplify-category-storage@2.10.8) (2020-12-31)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.10.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.6...amplify-category-storage@2.10.7) (2020-12-21)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.10.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.5...amplify-category-storage@2.10.6) (2020-12-16)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.10.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.4...amplify-category-storage@2.10.5) (2020-12-11)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.10.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.3...amplify-category-storage@2.10.4) (2020-12-07)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
 ## [2.10.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.2...amplify-category-storage@2.10.3) (2020-11-30)
 
 **Note:** Version bump only for package amplify-category-storage

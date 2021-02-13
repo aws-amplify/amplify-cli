@@ -1,6 +1,6 @@
 import { nspawn as spawn, getCLIPath } from '..';
 
-export function addSampleInteraction(cwd: string, settings: any) {
+export function addSampleInteraction(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'interactions'], { cwd, stripColors: true })
       .wait('Provide a friendly resource name that will be used to label this category')

@@ -3,7 +3,6 @@ import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { Context } from './context';
 
 export class AmplifyToolkit {
-  private _buildResources: any;
   private _confirmPrompt: any;
   private _constants: any;
   private _constructExeInfo: any;
@@ -90,10 +89,6 @@ export class AmplifyToolkit {
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
-  get buildResources(): any {
-    this._buildResources = this._buildResources || require(path.join(this._amplifyHelpersDirPath, 'build-resources')).buildResources;
-    return this._buildResources;
-  }
   get confirmPrompt(): any {
     this._confirmPrompt = this._confirmPrompt || require(path.join(this._amplifyHelpersDirPath, 'confirm-prompt')).confirmPrompt;
     return this._confirmPrompt;

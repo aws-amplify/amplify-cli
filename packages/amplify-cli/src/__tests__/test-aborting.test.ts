@@ -4,6 +4,7 @@ describe('test SIGINT with execute', () => {
   afterAll(() => {
     jest.clearAllMocks();
   });
+
   it('case: run', async () => {
     const input = { argv: ['/usr/local/bin/node', '/usr/local/bin/amplify-dev', '-v'], options: { v: true } };
     const mockExit = jest.fn();
@@ -14,6 +15,7 @@ describe('test SIGINT with execute', () => {
           name: 'cli',
           version: '12.12.1',
         }),
+        stringify: jest.fn().mockReturnValue(''),
       },
       exitOnNextTick: mockExit,
       pathManager: {
@@ -25,6 +27,7 @@ describe('test SIGINT with execute', () => {
       stateManager: {
         getMeta: jest.fn(),
         projectConfigExists: jest.fn(),
+        localEnvInfoExists: jest.fn().mockReturnValue(true),
       },
       FeatureFlags: {
         initialize: jest.fn(),
@@ -43,6 +46,12 @@ describe('test SIGINT with execute', () => {
       verifyInput: jest.fn().mockReturnValue({
         verified: true,
       }),
+    });
+    jest.setMock('amplify-cli-logger', {
+      logger: {
+        logInfo: jest.fn(),
+      },
+      Redactor: jest.fn(),
     });
 
     const mockContext: Context = jest.genMockFromModule('../domain/context');
@@ -77,7 +86,7 @@ describe('test SIGINT with execute', () => {
     setTimeout(() => {
       process.emit('SIGINT', 'SIGINT');
       process.exitCode = 2;
-    }, 50);
+    }, 10);
 
     await require('../index').run();
     expect(mockContext.usageData.emitAbort).toBeCalled();

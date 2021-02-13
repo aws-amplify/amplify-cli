@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.26.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.26.0...graphql-transformer-core@6.26.1) (2021-02-11)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+# [6.26.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.25.1...graphql-transformer-core@6.26.0) (2021-02-10)
+
+
+### Features
+
+* **graphql-key-transformer:** change default to add GSIs when using [@key](https://github.com/key) ([#5648](https://github.com/aws-amplify/amplify-cli/issues/5648)) ([4287c63](https://github.com/aws-amplify/amplify-cli/commit/4287c630295c304c7ff8343922926b4830b75cd4))
+
+
+
+
+
+## [6.25.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.25.0...graphql-transformer-core@6.25.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** fix gsi mutate san check ([#6095](https://github.com/aws-amplify/amplify-cli/issues/6095)) ([37d08d9](https://github.com/aws-amplify/amplify-cli/commit/37d08d941421fe030bb454e7f417b3198a4b04ac)), closes [#6013](https://github.com/aws-amplify/amplify-cli/issues/6013)
+* [#6097](https://github.com/aws-amplify/amplify-cli/issues/6097) - check for root stack when loading projects for sanity check ([#6121](https://github.com/aws-amplify/amplify-cli/issues/6121)) ([6ebe735](https://github.com/aws-amplify/amplify-cli/commit/6ebe735fddca83532b2e327cb2008729a8103d55))
+* [#6123](https://github.com/aws-amplify/amplify-cli/issues/6123) - add missing amplify-cli-core dependencies to packages ([#6124](https://github.com/aws-amplify/amplify-cli/issues/6124)) ([e6519f2](https://github.com/aws-amplify/amplify-cli/commit/e6519f2dd81d2983b797f226d723a73a25967d25))
+
+
+
+
+
+# [6.25.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.24.0...graphql-transformer-core@6.25.0) (2020-12-07)
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+
+
+
+
+
 # [6.24.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.23.1...graphql-transformer-core@6.24.0) (2020-11-30)
 
 

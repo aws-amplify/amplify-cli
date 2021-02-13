@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.6.7...amplify-console-hosting@1.7.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
+## [1.6.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.6.6...amplify-console-hosting@1.6.7) (2021-02-10)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
+## [1.6.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.6.5...amplify-console-hosting@1.6.6) (2021-01-08)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
+## [1.6.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.6.4...amplify-console-hosting@1.6.5) (2020-12-31)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
+## [1.6.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.6.3...amplify-console-hosting@1.6.4) (2020-12-21)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
+## [1.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.6.2...amplify-console-hosting@1.6.3) (2020-12-16)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
+## [1.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.6.1...amplify-console-hosting@1.6.2) (2020-12-11)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
+## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.6.0...amplify-console-hosting@1.6.1) (2020-12-07)
+
+**Note:** Version bump only for package amplify-console-hosting
+
+
+
+
+
 # [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-console-hosting@1.5.2...amplify-console-hosting@1.6.0) (2020-11-30)
 
 

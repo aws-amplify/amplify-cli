@@ -27,7 +27,7 @@ import {
   methodCall,
   RESOLVER_VERSION_ID,
   isNullOrEmpty,
-  ret
+  ret,
 } from 'graphql-mapping-template';
 import { ResourceConstants, NONE_VALUE } from 'graphql-transformer-common';
 import GraphQLApi, {
@@ -780,10 +780,7 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
   }
 
   public returnIfEmpty(objectPath: string): Expression {
-    return iff(
-      isNullOrEmpty(ref(objectPath)),
-      ret()
-    );
+    return iff(isNullOrEmpty(ref(objectPath)), ret());
   }
 
   public throwIfStaticGroupUnauthorized(field?: FieldDefinitionNode): Expression {
@@ -918,10 +915,13 @@ identityClaim: "${rule.identityField || rule.identityClaim || DEFAULT_IDENTITY_F
     });
   }
 
-  public operationCheckExpression(operation: string, field: string) {
+  public operationCheckExpression(operation: string, field: FieldDefinitionNode) {
+    // check if the field has @connection
+    const connectionDirective = field.directives.find(dir => dir.name.value === 'connection');
+    const returnValue: Expression = connectionDirective ? toJson(ref(`context.result`)) : toJson(ref(`context.source.${field.name.value}`));
     return block('Checking for allowed operations which can return this field', [
       set(ref('operation'), raw('$util.defaultIfNull($context.source.operation, "null")')),
-      ifElse(raw(`$operation == "${operation}"`), ref('util.toJson(null)'), ref(`util.toJson($context.source.${field})`)),
+      ifElse(raw(`$operation == "${operation}"`), ref('util.toJson(null)'), returnValue),
     ]);
   }
 

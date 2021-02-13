@@ -3,6 +3,92 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.14.0...amplify-e2e-core@1.14.1) (2021-02-11)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+# [1.14.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.13.4...amplify-e2e-core@1.14.0) (2021-02-10)
+
+
+### Bug Fixes
+
+* appclient secret output default to false ([#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)) ([3da53b7](https://github.com/aws-amplify/amplify-cli/commit/3da53b7c9aacf718ebd8ea63e59928425af20764))
+* fix appsync permission assignment from functions ([#5342](https://github.com/aws-amplify/amplify-cli/issues/5342)) ([b2e2dd0](https://github.com/aws-amplify/amplify-cli/commit/b2e2dd0071c1a451ba032cf7f8cfe7cf6381a96e))
+* **amplify-provider-awscloudformation:** fix hosting output ([#6041](https://github.com/aws-amplify/amplify-cli/issues/6041)) ([a2c1577](https://github.com/aws-amplify/amplify-cli/commit/a2c15774762c0f07b44ca9c91c57ef4eb3752f2b)), closes [#402](https://github.com/aws-amplify/amplify-cli/issues/402)
+* **amplify-provider-awscloudformation:** use prev deployment vars ([#6486](https://github.com/aws-amplify/amplify-cli/issues/6486)) ([39dfd27](https://github.com/aws-amplify/amplify-cli/commit/39dfd271bcf86b0ec424bb89c0bb38c0544d8d80))
+* persist s3bucket metadata on pull and env change ([#6502](https://github.com/aws-amplify/amplify-cli/issues/6502)) ([357f787](https://github.com/aws-amplify/amplify-cli/commit/357f787c2d816e1defa1d0909b06f82775c35255))
+* support choosing AWS authentication flow when admin UI is enabled ([#6433](https://github.com/aws-amplify/amplify-cli/issues/6433)) ([3bf56a8](https://github.com/aws-amplify/amplify-cli/commit/3bf56a8e2e5be67dd861a55807ecc94bd561b4a2))
+
+
+### Features
+
+* **graphql-key-transformer:** change default to add GSIs when using [@key](https://github.com/key) ([#5648](https://github.com/aws-amplify/amplify-cli/issues/5648)) ([4287c63](https://github.com/aws-amplify/amplify-cli/commit/4287c630295c304c7ff8343922926b4830b75cd4))
+
+
+
+
+
+## [1.13.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.13.3...amplify-e2e-core@1.13.4) (2021-01-08)
+
+
+### Bug Fixes
+
+* removes nodeModules from currentCloudBackend ([#6261](https://github.com/aws-amplify/amplify-cli/issues/6261)) ([db9dca9](https://github.com/aws-amplify/amplify-cli/commit/db9dca9db019494a0c68f42d9ffeb92d0b9b2b43))
+
+
+
+
+
+## [1.13.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.13.2...amplify-e2e-core@1.13.3) (2020-12-31)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [1.13.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.13.1...amplify-e2e-core@1.13.2) (2020-12-21)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [1.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.13.0...amplify-e2e-core@1.13.1) (2020-12-16)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+# [1.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.12.0...amplify-e2e-core@1.13.0) (2020-12-11)
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
+# [1.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.11.0...amplify-e2e-core@1.12.0) (2020-12-07)
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+
+
+
+
+
 # [1.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.10.3...amplify-e2e-core@1.11.0) (2020-11-30)
 
 

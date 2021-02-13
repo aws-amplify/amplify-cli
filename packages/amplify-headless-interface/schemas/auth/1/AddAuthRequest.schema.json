@@ -1,18 +1,20 @@
 {
-    "description": "Defines acceptable payloads to amplify add auth --stdin",
+    "description": "Defines acceptable payloads to amplify add auth --headless.",
     "type": "object",
     "properties": {
         "version": {
+            "description": "The schema version.",
             "type": "number",
             "enum": [
                 1
             ]
         },
         "resourceName": {
+            "description": "A name for the auth resource.",
             "type": "string"
         },
         "serviceConfiguration": {
-            "description": "Defines AWS Cognito parameters",
+            "description": "The configuration that defines the auth resource.",
             "anyOf": [
                 {
                     "allOf": [
@@ -44,17 +46,19 @@
     ],
     "definitions": {
         "BaseCognitoServiceConfiguration": {
-            "description": "Configuration that applies to all Cognito configuration",
+            "description": "Configuration that applies to all Cognito configuration.",
             "type": "object",
             "properties": {
                 "serviceName": {
+                    "description": "The name of the service providing the resource.",
                     "type": "string",
                     "enum": [
                         "Cognito"
                     ]
                 },
                 "userPoolConfiguration": {
-                    "$ref": "#/definitions/CognitoUserPoolConfiguration"
+                    "$ref": "#/definitions/CognitoUserPoolConfiguration",
+                    "description": "The Cognito user pool configuration."
                 }
             },
             "required": [
@@ -63,12 +67,15 @@
             ]
         },
         "CognitoUserPoolConfiguration": {
+            "description": "Cognito configuration exposed by Amplify.",
             "type": "object",
             "properties": {
                 "signinMethod": {
-                    "$ref": "#/definitions/CognitoUserPoolSigninMethod"
+                    "$ref": "#/definitions/CognitoUserPoolSigninMethod",
+                    "description": "How users will signin to their account."
                 },
                 "requiredSignupAttributes": {
+                    "description": "Account attributes that must be specified to sign up.",
                     "type": "array",
                     "items": {
                         "enum": [
@@ -94,18 +101,22 @@
                     }
                 },
                 "userPoolName": {
+                    "description": "The name of the user pool. If not specified, a unique string will be generated.",
                     "type": "string"
                 },
                 "userPoolGroups": {
+                    "description": "User pool groups to create within the user pool. If not specified, no groups are created.",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/CognitoUserPoolGroup"
                     }
                 },
                 "adminQueries": {
-                    "$ref": "#/definitions/CognitoAdminQueries"
+                    "$ref": "#/definitions/CognitoAdminQueries",
+                    "description": "If defined, an Admin Queries API is created."
                 },
                 "mfa": {
+                    "description": "If defined, specifies MFA configuration. Default is MFA off.",
                     "anyOf": [
                         {
                             "$ref": "#/definitions/CognitoMFAOff"
@@ -116,6 +127,7 @@
                     ]
                 },
                 "passwordRecovery": {
+                    "description": "If defined, specifies password recovery configiuration. Default is email recovery.",
                     "anyOf": [
                         {
                             "$ref": "#/definitions/CognitoEmailPasswordRecoveryConfiguration"
@@ -126,12 +138,15 @@
                     ]
                 },
                 "passwordPolicy": {
-                    "$ref": "#/definitions/CognitoPasswordPolicy"
+                    "$ref": "#/definitions/CognitoPasswordPolicy",
+                    "description": "If defined, specifies password constraint configuration. Default is minimum length of 8 characters."
                 },
                 "refreshTokenPeriod": {
+                    "description": "Defines how long refresh tokens are valid in days. Default is 30 days.",
                     "type": "number"
                 },
                 "readAttributes": {
+                    "description": "Defines which user attributes can be read by the app. Default is email.",
                     "type": "array",
                     "items": {
                         "enum": [
@@ -159,6 +174,7 @@
                     }
                 },
                 "writeAttributes": {
+                    "description": "Defines which user attributes can be written by the app. Default is none.",
                     "type": "array",
                     "items": {
                         "enum": [
@@ -184,44 +200,8 @@
                     }
                 },
                 "oAuth": {
-                    "$ref": "#/definitions/CognitoOAuthConfiguration"
-                },
-                "confirmationRedirect": {
-                    "$ref": "#/definitions/CognitoConfirmationRedirectConfiguration"
-                },
-                "addUserToGroup": {
-                    "type": "object",
-                    "properties": {
-                        "groupName": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "groupName"
-                    ]
-                },
-                "emailBlacklist": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "emailWhitelist": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "customAuthScaffolding": {
-                    "type": "object",
-                    "properties": {
-                        "customChallengeAnswer": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "customChallengeAnswer"
-                    ]
+                    "$ref": "#/definitions/CognitoOAuthConfiguration",
+                    "description": "If defined, specified oAuth configuration will be applied to the user pool."
                 }
             },
             "required": [
@@ -239,12 +219,15 @@
             "type": "string"
         },
         "CognitoUserPoolGroup": {
+            "description": "Defines a Cognito user pool group.",
             "type": "object",
             "properties": {
                 "customPolicy": {
+                    "description": "Not implemented and should not be used.",
                     "type": "string"
                 },
                 "groupName": {
+                    "description": "The group name.",
                     "type": "string"
                 }
             },
@@ -253,9 +236,11 @@
             ]
         },
         "CognitoAdminQueries": {
+            "description": "Configuration for the AdminQueries API",
             "type": "object",
             "properties": {
                 "permissions": {
+                    "description": "Defines the API permissions. groupName must only be specified if restrictAccess is true, in which case only the specified user pool group will have access to the Admin Queries API.",
                     "type": "object",
                     "properties": {
                         "restrictAccess": {
@@ -275,6 +260,7 @@
             ]
         },
         "CognitoMFAOff": {
+            "description": "Specifies that MFA should not be enabled for the user pool.",
             "type": "object",
             "properties": {
                 "mode": {
@@ -289,9 +275,11 @@
             ]
         },
         "CognitoMFASettings": {
+            "description": "Specifies that MFA is enabled for the user pool.",
             "type": "object",
             "properties": {
                 "mode": {
+                    "description": "ON requires users to set up MFA when creating an account. OPTIONAL means the user has the option to set up MFA.",
                     "enum": [
                         "ON",
                         "OPTIONAL"
@@ -299,6 +287,7 @@
                     "type": "string"
                 },
                 "mfaTypes": {
+                    "description": "MFA delivery options.",
                     "type": "array",
                     "items": {
                         "enum": [
@@ -309,18 +298,8 @@
                     }
                 },
                 "smsMessage": {
+                    "description": "If SMS is specified in \"mfaTypes\" this specifies the smsMessage that will be sent to the user.",
                     "type": "string"
-                },
-                "mfaWithCaptcha": {
-                    "type": "object",
-                    "properties": {
-                        "googleRecaptchaSecret": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "googleRecaptchaSecret"
-                    ]
                 }
             },
             "required": [
@@ -330,6 +309,7 @@
             ]
         },
         "CognitoEmailPasswordRecoveryConfiguration": {
+            "description": "Defines the email that will be sent to users to recover their password.",
             "type": "object",
             "properties": {
                 "deliveryMethod": {
@@ -352,6 +332,7 @@
             ]
         },
         "CognitoSMSPasswordRecoveryConfiguration": {
+            "description": "Defines the SMS message that will be send to users to recover their password",
             "type": "object",
             "properties": {
                 "deliveryMethod": {
@@ -378,6 +359,7 @@
                 "additionalConstraints": {
                     "type": "array",
                     "items": {
+                        "description": "Password contraints that can be applied to Cognito user pools.",
                         "enum": [
                             "REQUIRE_DIGIT",
                             "REQUIRE_LOWERCASE",
@@ -390,24 +372,29 @@
             }
         },
         "CognitoOAuthConfiguration": {
+            "description": "Cognito OAuth configuration exposed by Amplify",
             "type": "object",
             "properties": {
                 "domainPrefix": {
+                    "description": "Your hosted UI domain name.",
                     "type": "string"
                 },
                 "redirectSigninURIs": {
+                    "description": "Valid signin redirect URIs.",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "redirectSignoutURIs": {
+                    "description": "Valid signout redirect URIs.",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "oAuthGrantType": {
+                    "description": "The oAuth grant type.",
                     "enum": [
                         "CODE",
                         "IMPLICIT"
@@ -415,6 +402,7 @@
                     "type": "string"
                 },
                 "oAuthScopes": {
+                    "description": "The oAuth scopes granted by signin.",
                     "type": "array",
                     "items": {
                         "enum": [
@@ -428,6 +416,7 @@
                     }
                 },
                 "socialProviderConfigurations": {
+                    "description": "If defined, users will be able to login with the specified social providers.",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/CognitoSocialProviderConfiguration"
@@ -442,9 +431,11 @@
             ]
         },
         "CognitoSocialProviderConfiguration": {
+            "description": "Defines a Cognito oAuth social provider",
             "type": "object",
             "properties": {
                 "provider": {
+                    "description": "Social providers supported by Amplify and Cognito",
                     "enum": [
                         "FACEBOOK",
                         "GOOGLE",
@@ -453,9 +444,11 @@
                     "type": "string"
                 },
                 "clientId": {
+                    "description": "The client ID (sometimes called app ID) configured with the provider.",
                     "type": "string"
                 },
                 "clientSecret": {
+                    "description": "The client secret (sometimes called an app secret) configured with the provider.",
                     "type": "string"
                 }
             },
@@ -465,30 +458,12 @@
                 "provider"
             ]
         },
-        "CognitoConfirmationRedirectConfiguration": {
-            "type": "object",
-            "properties": {
-                "redirectURL": {
-                    "type": "string"
-                },
-                "emailSubject": {
-                    "type": "string"
-                },
-                "emailMessage": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "emailMessage",
-                "emailSubject",
-                "redirectURL"
-            ]
-        },
         "NoCognitoIdentityPool": {
-            "description": "Specifies that the Cognito configuration should not include an identity pool",
+            "description": "Specifies that the Cognito configuration should not include an identity pool.",
             "type": "object",
             "properties": {
                 "includeIdentityPool": {
+                    "description": "Indicates an indentity pool should not be configured.",
                     "type": "boolean",
                     "enum": [
                         false
@@ -500,10 +475,11 @@
             ]
         },
         "CognitoIdentityPool": {
-            "description": "Specifies that the Cognito configuration includes an identity pool configuration",
+            "description": "Specifies that the Cognito configuration includes an identity pool configuration.",
             "type": "object",
             "properties": {
                 "includeIdentityPool": {
+                    "description": "Indicates an identity pool should be configured.",
                     "type": "boolean",
                     "enum": [
                         true
@@ -511,7 +487,7 @@
                 },
                 "identityPoolConfiguration": {
                     "$ref": "#/definitions/CognitoIdentityPoolConfiguration",
-                    "description": "The identity pool configuration. If not specified, defaults are applied"
+                    "description": "The identity pool configuration. If not specified, defaults are applied."
                 }
             },
             "required": [
@@ -522,13 +498,15 @@
             "type": "object",
             "properties": {
                 "identityPoolName": {
-                    "description": "If not specified, a random string is generated",
+                    "description": "If not specified, a random string is generated.",
                     "type": "string"
                 },
                 "unauthenticatedLogin": {
+                    "description": "Allow guest login or not. Default is false.",
                     "type": "boolean"
                 },
                 "identitySocialFederation": {
+                    "description": "If specified, Cognito will allow the specified providers to federate into the IdentityPool.",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/CognitoIdentitySocialFederation"
@@ -537,6 +515,7 @@
             }
         },
         "CognitoIdentitySocialFederation": {
+            "description": "Defines a social federation provider.",
             "type": "object",
             "properties": {
                 "provider": {
@@ -548,6 +527,7 @@
                     "type": "string"
                 },
                 "clientId": {
+                    "description": "ClientId unique to your client and the provider.",
                     "type": "string"
                 }
             },

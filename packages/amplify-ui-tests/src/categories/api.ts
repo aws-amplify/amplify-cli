@@ -19,7 +19,7 @@ function getSchemaPath(schemaName: string): string {
   return `${__dirname}/../../schemas/${schemaName}.graphql`;
 }
 
-export function addApiWithSimpleModel(cwd: string, settings: any = {}, verbose: boolean = !isCI()) {
+export function addApiWithSimpleModel(cwd: string, settings: any = {}, verbose: boolean = !isCI()): Promise<void> {
   settings = { ...defaultSettings, ...settings };
   const schemaName: string = settings.schemaName ? settings.schemaName : 'simple_model';
   readSchemaDocument(schemaName);
@@ -38,7 +38,7 @@ export function addApiWithSimpleModel(cwd: string, settings: any = {}, verbose: 
       .sendline('y\r')
       .wait('Provide your schema file path:')
       .sendline(getSchemaPath(schemaName))
-      .run(function(err: Error) {
+      .run(function (err: Error) {
         if (!err) {
           resolve();
         } else {

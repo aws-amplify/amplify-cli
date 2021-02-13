@@ -23,6 +23,7 @@ packages/graphql*/lib
 packages/amplify-graphql-transformer-*/lib
 packages/amplify-cli/lib
 packages/amplify-cli-core/lib
+packages/amplify-cli-logger/lib
 packages/amplify-mqtt-server/lib
 packages/amplify-appsync-simulator/lib
 packages/amplify-codegen-appsync-model-plugin/lib
@@ -35,6 +36,7 @@ packages/amplify-category-api/lib
 packages/amplify-category-auth/lib
 packages/amplify-category-storage/lib
 packages/amplify-e2e-tests/amplify-e2e-reports
+packages/amplify-console-integration-tests/lib
 packages/amplify-console-integration-tests/console-integration-reports
 packages/amplify-migration-tests/amplify-migration-reports
 packages/amplify-migration-tests/lib
@@ -62,3 +64,4 @@ packages/amplify-java-function-runtime-provider/resources/localinvoke/bin/
 packages/**/reports/junit/*
 test.out.log
 *.tsbuildinfo
+packages/amplify-graphiql-explorer/.eslintcache

@@ -7,7 +7,13 @@
             "Default" : "NONE",
             "Description" : " Schedule Expression"
         },
+        "deploymentBucketName": {
+            "Type": "String"
+        },
         "env": {
+            "Type": "String"
+        },
+        "s3Key": {
             "Type": "String"
         }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
     <% if (props.dependsOn) { %>
@@ -45,6 +51,14 @@
             "aws:asset:property": "Code"
           },
           "Properties": {
+            "Code": {
+                "S3Bucket": {
+                    "Ref": "deploymentBucketName"
+                },
+                "S3Key": {
+                    "Ref": "s3Key"
+                }
+            },
             "Handler": "<%= props.functionTemplate.handler? props.functionTemplate.handler : props.runtime.defaultHandler %>",
             "FunctionName": {
                 "Fn::If": [
@@ -68,7 +82,7 @@
             "Environment": {
                 "Variables" : <%- JSON.stringify(props.environmentMap) %>
             },
-            "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
+            "Role": { "Fn::GetAtt": ["LambdaExecutionRole", "Arn"] },
             "Runtime": "<%= props.runtime.cloudTemplateValue %>",
             "Layers": <%- JSON.stringify(props.lambdaLayersCFNArray) %>,
             "Timeout": "25"
@@ -125,10 +139,10 @@
                     "Statement": [
                         {
                             "Effect": "Allow",
-                            "Action":["logs:CreateLogGroup",
+                            "Action": ["logs:CreateLogGroup",
                             "logs:CreateLogStream",
                             "logs:PutLogEvents"],
-                            "Resource": { "Fn::Sub" : [ "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*", { "region": {"Ref": "AWS::Region"},  "account": {"Ref": "AWS::AccountId"}, "lambda": {"Ref": "LambdaFunction"}} ]}
+                            "Resource": { "Fn::Sub": [ "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*", { "region": {"Ref": "AWS::Region"}, "account": {"Ref": "AWS::AccountId"}, "lambda": {"Ref": "LambdaFunction"}} ]}
                         }<% if (props.functionTemplate.parameters && props.functionTemplate.parameters.database && props.functionTemplate.parameters.database.resourceName) { %>,
                         {
                             "Effect": "Allow",
@@ -214,17 +228,17 @@
         <% } %>
         <% if (props.cloudwatchRule && props.cloudwatchRule != "NONE") { %>
         ,"CloudWatchEvent": {
-            "Type" : "AWS::Events::Rule",
-            "Properties":{
-                "Description" : "Schedule rule for Lambda",
-                "ScheduleExpression" : {
-                    "Ref" : "CloudWatchRule"
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Description": "Schedule rule for Lambda",
+                "ScheduleExpression": {
+                    "Ref": "CloudWatchRule"
                 },
                 "State": "ENABLED",
                 "Targets": [{
                     "Arn": { "Fn::GetAtt": ["LambdaFunction", "Arn"] },
-                    "Id":{
-                        "Ref" : "LambdaFunction"
+                    "Id": {
+                        "Ref": "LambdaFunction"
                     }
                 }]
             }
@@ -263,8 +277,8 @@
         }
         <% if (props.cloudwatchRule && props.cloudwatchRule != "NONE") { %>
         ,"CloudWatchEventRule": {
-            "Value" :{
-                "Ref" : "CloudWatchEvent"
+            "Value": {
+                "Ref": "CloudWatchEvent"
             }
         }
         <% } %>

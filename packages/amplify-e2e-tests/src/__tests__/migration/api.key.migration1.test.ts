@@ -1,4 +1,4 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate, addFeatureFlag } from 'amplify-e2e-core';
 import { addApiWithSchema, updateApiSchema } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
 
@@ -17,9 +17,15 @@ describe('amplify add api', () => {
     const projectName = 'migratingkey';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_add_lsi.graphql';
+
     await initJSProjectWithProfile(projRoot, { name: projectName });
-    await addApiWithSchema(projRoot, initialSchema);
+    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+    // testing this with old behavior with named lsi key
+    addFeatureFlag(projRoot, 'graphqltransformer', 'secondarykeyasgsi', false);
+
+    await addApiWithSchema(projRoot, initialSchema, { apiKeyExpirationDays: 2 });
     await amplifyPush(projRoot);
+
     updateApiSchema(projRoot, projectName, nextSchema1);
     await expect(
       amplifyPushUpdate(
@@ -33,9 +39,13 @@ describe('amplify add api', () => {
     const projectName = 'migratingkey';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_change_gsi.graphql';
+
     await initJSProjectWithProfile(projRoot, { name: projectName });
+    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
+
     updateApiSchema(projRoot, projectName, nextSchema1);
     await expect(
       amplifyPushUpdate(projRoot, /Attempting to edit the global secondary index SomeGSI on the TodoTable table in the Todo stack.*/),
@@ -46,9 +56,13 @@ describe('amplify add api', () => {
     const projectName = 'migratingkey';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_change_key_schema.graphql';
+
     await initJSProjectWithProfile(projRoot, { name: projectName });
+    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
+
     updateApiSchema(projRoot, projectName, nextSchema1);
     await expect(
       amplifyPushUpdate(projRoot, /Attempting to edit the key schema of the TodoTable table in the Todo stack.*/),
@@ -59,9 +73,13 @@ describe('amplify add api', () => {
     const projectName = 'migrationchangelsi';
     const initialSchema = 'migrations_key/initial_schema.graphql';
     const nextSchema1 = 'migrations_key/cant_change_lsi.graphql';
+
     await initJSProjectWithProfile(projRoot, { name: projectName });
+    addFeatureFlag(projRoot, 'graphqltransformer', 'enableiterativegsiupdates', false);
+
     await addApiWithSchema(projRoot, initialSchema);
     await amplifyPush(projRoot);
+
     updateApiSchema(projRoot, projectName, nextSchema1);
     await expect(
       amplifyPushUpdate(projRoot, /Attempting to edit the local secondary index SomeLSI on the TodoTable table in the Todo stack.*/),

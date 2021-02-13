@@ -1,14 +1,5 @@
+import { HydrateTags } from 'amplify-cli-core';
 describe('getTags', () => {
-  const mockedTags = [
-    {
-      Key: 'projectName',
-      Value: '{project-name}',
-    },
-    {
-      Key: 'projectenv',
-      Value: '{project-env}',
-    },
-  ];
   const mockConfig = {
     projectConfig: {
       projectName: 'foo',
@@ -19,23 +10,30 @@ describe('getTags', () => {
   };
   jest.setMock('amplify-cli-core', {
     stateManager: {
-      getProjectTags: jest.fn().mockReturnValue(mockedTags),
+      isTagFilePresent: jest.fn().mockReturnValue(false),
+      localEnvInfoExists: jest.fn().mockReturnValue(false),
     },
+    HydrateTags,
   });
   jest.setMock('../extensions/amplify-helpers/get-project-details', {
     getProjectDetails: jest.fn().mockReturnValue(mockConfig),
   });
 
   const { getTags } = require('../extensions/amplify-helpers/get-tags');
+  const mockContext = {
+    exeInfo: {
+      ...mockConfig,
+    },
+  };
 
   it('getTags exists', () => {
     expect(getTags).toBeDefined();
   });
 
   it('test for values', () => {
-    const readTags = getTags();
+    const readTags = getTags(mockContext);
     expect(readTags).toBeDefined();
-    expect(readTags.filter(r => r.Key === 'projectName')[0].Value).toEqual(mockConfig.projectConfig.projectName);
-    expect(readTags.filter(r => r.Key === 'projectenv')[0].Value).toEqual(mockConfig.localEnvInfo.envName);
+    expect(readTags.filter(r => r.Key === 'user:Application')[0].Value).toEqual(mockConfig.projectConfig.projectName);
+    expect(readTags.filter(r => r.Key === 'user:Stack')[0].Value).toEqual(mockConfig.localEnvInfo.envName);
   });
 });

@@ -105,7 +105,7 @@ export async function askAPICategoryDynamoDBQuestions(context: any) {
       No AppSync resources have been configured in the API category.
       Please use "amplify add api" command to create a new appsync resource`;
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   } else if (appSyncResources.length === 1) {
     targetResourceName = appSyncResources[0].resourceName;

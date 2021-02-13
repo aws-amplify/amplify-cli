@@ -1,9 +1,8 @@
-import * as fs from 'fs-extra';
 import { initializeEnv } from './initialize-env';
 import { postPullCodegen } from './amplify-service-helper';
-import { exitOnNextTick } from 'amplify-cli-core';
+import { exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 
-export async function pullBackend(context, inputParams) {
+export async function pullBackend(context: $TSContext, inputParams: $TSAny) {
   context.exeInfo = context.amplify.getProjectDetails();
   context.exeInfo.inputParams = inputParams;
   context.print.info('');
@@ -39,10 +38,9 @@ export async function pullBackend(context, inputParams) {
   context.print.info('');
 }
 
-function ensureBackendConfigFile(context) {
+function ensureBackendConfigFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
-  if (!fs.existsSync(backendConfigFilePath)) {
-    fs.writeFileSync(backendConfigFilePath, '{}', 'utf8');
+  if (!stateManager.backendConfigFileExists(projectPath)) {
+    stateManager.setBackendConfig(projectPath, {});
   }
 }

@@ -14,6 +14,8 @@ export * from './exitOnNextTick';
 export * from './isPackaged';
 export * from './cliConstants';
 export * from './deploymentSecretsHelper';
+export * from './deploymentState';
+export * from './utils';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -23,7 +25,7 @@ export type $TSAny = any;
 // Use it for all CLI Context class references, it enables a quick way to see what we have on the context
 export type $TSContext = {
   amplify: AmplifyToolkit;
-  print: $TSAny;
+  print: IContextPrint;
   migrationInfo: $TSAny;
   projectHasMobileHubResources: boolean;
   prompt: $TSAny;
@@ -33,6 +35,36 @@ export type $TSContext = {
   usageData: $TSAny;
   runtime: $TSAny;
   pluginPlatform: IPluginPlatform;
+  newUserInfo?: $TSAny;
+  filesystem: IContextFilesystem;
+  template: IContextTemplate;
+};
+
+export type IContextPrint = {
+  info: (message: string) => void;
+  fancy: (message?: string) => void;
+  warning: (message: string) => void;
+  error: (message: string) => void;
+  success: (message: string) => void;
+  table: (data: string[][], options?: { format?: 'markdown' | 'lean' }) => void;
+  debug: (message: string) => void;
+  green: (message: string) => void;
+  yellow: (message: string) => void;
+  red: (message: string) => void;
+  blue: (message: string) => void;
+};
+
+export type IContextFilesystem = {
+  remove: (targetPath: string) => void;
+  read: (targetPath: string, encoding?: string) => $TSAny;
+  write: (targetPath: string, data: unknown) => void;
+  exists: (targetPath: string) => boolean;
+  isFile: (targetPath: string) => boolean;
+  path: (...pathParts: string[]) => string;
+};
+
+export type IContextTemplate = {
+  generate: (opts: { template: string; target: string; props: object; directory: string }) => string;
 };
 
 export type IPluginPlatform = {
@@ -103,29 +135,37 @@ export type $TSTeamProviderInfo = any;
 // Use it for all object initializer usages: {}
 export type $TSObject = Record<string, $TSAny>;
 
+// There are tons of places where we use these two pieces of information to identify a resource
+// We can use this type to type those instances
+export interface ResourceTuple {
+  category: string;
+  resourceName: string;
+}
+
 export enum AmplifyFrontend {
-  android = "android",
-  ios = "ios",
-  javascript = "javascript"
+  android = 'android',
+  ios = 'ios',
+  javascript = 'javascript',
 }
 export interface AmplifyProjectConfig {
-  projectName: string,
-  version: string,
-  frontend: AmplifyFrontend,
-  providers: string[],
+  projectName: string;
+  version: string;
+  frontend: AmplifyFrontend;
+  providers: string[];
 }
+
+export type $TSCopyJob = any;
 
 // Temporary interface until Context refactor
 interface AmplifyToolkit {
-  buildResources: () => $TSAny;
-  confirmPrompt: (prompt: string, defaultValue?: boolean) => $TSAny;
+  confirmPrompt: (prompt: string, defaultValue?: boolean) => boolean;
   constants: $TSAny;
-  constructExeInfo: () => $TSAny;
-  copyBatch: () => $TSAny;
+  constructExeInfo: (context: $TSContext) => $TSAny;
+  copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: object, force?: boolean, writeParams?: boolean | object) => $TSAny;
   crudFlow: () => $TSAny;
   deleteProject: () => $TSAny;
   executeProviderUtils: () => $TSAny;
-  getAllEnvs: () => $TSAny;
+  getAllEnvs: () => string[];
   getPlugin: () => $TSAny;
   getCategoryPluginInfo: (context: $TSContext, category?: string, service?: string) => $TSAny;
   getAllCategoryPluginInfo: (context: $TSContext) => $TSAny;
@@ -142,19 +182,25 @@ interface AmplifyToolkit {
   getWhen: () => $TSAny;
   inputValidation: (input: $TSAny) => $TSAny;
   listCategories: () => $TSAny;
-  makeId: () => $TSAny;
+  makeId: (n?: number) => string;
   openEditor: () => $TSAny;
   onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
   pathManager: () => $TSAny;
   pressEnterToContinue: () => $TSAny;
-  pushResources: () => $TSAny;
+  pushResources: (
+    context: $TSContext,
+    category?: string,
+    resourceName?: string,
+    filteredResources?: { category: string; resourceName: string }[],
+  ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
   readJsonFile: () => $TSAny;
   removeEnvFromCloud: () => $TSAny;
+  removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
   removeResource: () => $TSAny;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
-  showHelp: () => $TSAny;
+  showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
   showHelpfulProviderLinks: () => $TSAny;
   showResourceTable: () => $TSAny;
   serviceSelectionPrompt: (
@@ -165,19 +211,25 @@ interface AmplifyToolkit {
     optionNameOverrides?: Record<string, string>,
   ) => Promise<ServiceSelection>;
   updateProjectConfig: () => $TSAny;
-  updateamplifyMetaAfterResourceUpdate: () => $TSAny;
+  updateamplifyMetaAfterResourceUpdate: (
+    category: string,
+    resourceName: string,
+    metaResourceKey: string,
+    metaResourceData?: $TSAny,
+  ) => $TSMeta;
   updateamplifyMetaAfterResourceAdd: (
     category: string,
     resourceName: string,
     metaResourceData: $TSAny,
     backendResourceData?: $TSAny,
     overwriteObjectIfExists?: boolean,
-  ) => $TSAny;
-  updateamplifyMetaAfterResourceDelete: () => $TSAny;
-  updateProvideramplifyMeta: () => $TSAny;
-  updateamplifyMetaAfterPush: () => $TSAny;
-  updateamplifyMetaAfterBuild: () => $TSAny;
-  updateAmplifyMetaAfterPackage: () => $TSAny;
+  ) => void;
+  updateamplifyMetaAfterResourceDelete: (category: string, resourceName: string) => void;
+  updateProvideramplifyMeta: (providerName: string, options: $TSObject) => void;
+  updateamplifyMetaAfterPush: (resources: $TSObject[]) => void;
+  // buildType is from amplify-function-plugin-interface but can't be imported here because it would create a circular dependency
+  updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: string) => void;
+  updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string) => void;
   updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSAny) => $TSAny;
   updateBackendConfigAfterResourceUpdate: () => $TSAny;
   updateBackendConfigAfterResourceRemove: () => $TSAny;
@@ -199,9 +251,9 @@ interface AmplifyToolkit {
   forceRemoveResource: () => $TSAny;
   writeObjectAsJson: () => $TSAny;
   hashDir: () => $TSAny;
-  leaveBreadcrumbs: () => $TSAny;
-  readBreadcrumbs: () => $TSAny;
-  loadRuntimePlugin: () => $TSAny;
+  leaveBreadcrumbs: (category: string, resourceName: string, breadcrumbs: unknown) => void;
+  readBreadcrumbs: (category: string, resourceName: string) => $TSAny;
+  loadRuntimePlugin: (context: $TSContext, pluginId: string) => Promise<$TSAny>;
   getImportedAuthProperties: (
     context: $TSContext,
   ) => {

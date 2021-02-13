@@ -1,5 +1,6 @@
 jest.mock('fs-extra');
 jest.mock('open');
+jest.mock('amplify-cli-core');
 
 jest.mock('../../../lib/S3AndCloudFront/configuration-manager');
 jest.mock('../../../lib/S3AndCloudFront/helpers/file-uploader');
@@ -7,7 +8,7 @@ jest.mock('../../../lib/S3AndCloudFront/helpers/cloudfront-manager');
 
 const fs = require('fs-extra');
 const path = require('path');
-const open = require('open');
+const { open } = require('amplify-cli-core');
 const inquirer = require('inquirer');
 const mockirer = require('mockirer');
 
@@ -20,8 +21,6 @@ const internalParametersContents = require('../../../lib/S3AndCloudFront/paramet
 const mockTemplate = require('../../../__mocks__/mockTemplate');
 const mockParameters = require('../../../__mocks__/mockParameters');
 
-const serviceName = 'S3AndCloudFront';
-const providerPlugin = 'awscloudformation';
 const templateFileName = 'template.json';
 const parametersFileName = 'parameters.json';
 
@@ -101,6 +100,7 @@ describe('s3IndexModule', () => {
       options: {},
     },
   };
+
   beforeAll(() => {
     mockirer(inquirer, mockAnswers);
     fs.ensureDirSync = jest.fn();

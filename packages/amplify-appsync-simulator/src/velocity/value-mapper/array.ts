@@ -7,7 +7,12 @@ export class JavaArray extends Array<any> {
       // splice sends a single object
       values = [values];
     }
-    super(...values);
+    if (values.length !== 1) {
+      super(...values);
+    } else {
+      super();
+      this.push(values[0]);
+    }
     Object.setPrototypeOf(this, Object.create(JavaArray.prototype));
     this.mapper = mapper;
   }

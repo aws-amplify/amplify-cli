@@ -2,13 +2,13 @@ const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
 const { getProjectConfiguration, getSupportedFrameworks } = require('./framework-config-mapping');
-const constants = require('./constants');
+const { Label: JAVASCRIPT } = require('./constants');
 
 async function init(context) {
   normalizeInputParams(context);
   const framework = guessFramework(context, context.exeInfo.localEnvInfo.projectPath);
-  const config = getProjectConfiguration(framework, context.exeInfo.localEnvInfo.projectPath);
-  context.exeInfo.projectConfig[constants.Label] = {
+  const config = getProjectConfiguration(context, framework);
+  context.exeInfo.projectConfig[JAVASCRIPT] = {
     framework,
     config,
   };
@@ -21,24 +21,25 @@ function onInitSuccessful(context) {
 
 async function configure(context) {
   normalizeInputParams(context);
-  if (!context.exeInfo.projectConfig[constants.Label]) {
-    context.exeInfo.projectConfig[constants.Label] = {};
+  if (!context.exeInfo.projectConfig[JAVASCRIPT]) {
+    context.exeInfo.projectConfig[JAVASCRIPT] = {};
   }
 
-  const currentConfiguration = context.exeInfo.projectConfig[constants.Label];
+  const currentConfiguration = context.exeInfo.projectConfig[JAVASCRIPT];
   if (!currentConfiguration.framework) {
     currentConfiguration.framework = guessFramework(context.exeInfo.localEnvInfo.projectPath);
   }
   if (!currentConfiguration.config) {
-    currentConfiguration.config = getProjectConfiguration(currentConfiguration.framework, context.exeInfo.localEnvInfo.projectPath);
+    currentConfiguration.config = getProjectConfiguration(context, currentConfiguration.framework);
   }
+
   await confirmConfiguration(context);
 }
 
 function normalizeInputParams(context) {
   let inputParams;
-  if (context.exeInfo.inputParams && context.exeInfo.inputParams[constants.Label]) {
-    inputParams = context.exeInfo.inputParams[constants.Label];
+  if (context.exeInfo.inputParams && context.exeInfo.inputParams[JAVASCRIPT]) {
+    inputParams = context.exeInfo.inputParams[JAVASCRIPT];
   }
   if (inputParams && inputParams.framework) {
     if (!getSupportedFrameworks().includes(inputParams.framework.toLowerCase())) {
@@ -61,7 +62,7 @@ function normalizeInputParams(context) {
   if (!context.exeInfo.inputParams) {
     context.exeInfo.inputParams = {};
   }
-  context.exeInfo.inputParams[constants.Label] = inputParams;
+  context.exeInfo.inputParams[JAVASCRIPT] = inputParams;
 }
 
 async function confirmConfiguration(context) {
@@ -70,14 +71,11 @@ async function confirmConfiguration(context) {
 }
 
 async function confirmFramework(context) {
-  const inputParams = context.exeInfo.inputParams[constants.Label];
+  const inputParams = context.exeInfo.inputParams[JAVASCRIPT];
   if (inputParams && inputParams.framework) {
-    if (context.exeInfo.projectConfig[constants.Label].framework !== inputParams.framework) {
-      context.exeInfo.projectConfig[constants.Label].framework = inputParams.framework;
-      context.exeInfo.projectConfig[constants.Label].config = getProjectConfiguration(
-        inputParams.framework,
-        context.exeInfo.localEnvInfo.projectPath,
-      );
+    if (context.exeInfo.projectConfig[JAVASCRIPT].framework !== inputParams.framework) {
+      context.exeInfo.projectConfig[JAVASCRIPT].framework = inputParams.framework;
+      context.exeInfo.projectConfig[JAVASCRIPT].config = getProjectConfiguration(context, inputParams.framework);
     }
   } else if (!context.exeInfo.inputParams.yes) {
     context.print.info('Please tell us about your project');
@@ -86,31 +84,28 @@ async function confirmFramework(context) {
       name: 'framework',
       message: 'What javascript framework are you using',
       choices: getSupportedFrameworks(),
-      default: context.exeInfo.projectConfig[constants.Label].framework,
+      default: context.exeInfo.projectConfig[JAVASCRIPT].framework,
     };
     const answers = await inquirer.prompt(frameworkComfirmation);
-    if (context.exeInfo.projectConfig[constants.Label].framework !== answers.framework) {
-      context.exeInfo.projectConfig[constants.Label].framework = answers.framework;
-      context.exeInfo.projectConfig[constants.Label].config = getProjectConfiguration(
-        answers.framework,
-        context.exeInfo.localEnvInfo.projectPath,
-      );
+    if (context.exeInfo.projectConfig[JAVASCRIPT].framework !== answers.framework) {
+      context.exeInfo.projectConfig[JAVASCRIPT].framework = answers.framework;
+      context.exeInfo.projectConfig[JAVASCRIPT].config = getProjectConfiguration(context, answers.framework);
     }
   }
 }
 
 async function confirmFrameworkConfiguration(context) {
-  const inputParams = context.exeInfo.inputParams[constants.Label];
+  const inputParams = context.exeInfo.inputParams[JAVASCRIPT];
   if (inputParams && inputParams.config) {
-    Object.assign(context.exeInfo.projectConfig[constants.Label].config, inputParams.config);
+    Object.assign(context.exeInfo.projectConfig[JAVASCRIPT].config, inputParams.config);
   } else if (!context.exeInfo.inputParams.yes) {
-    if (!context.exeInfo.projectConfig[constants.Label].config) {
-      context.exeInfo.projectConfig[constants.Label].config = getProjectConfiguration(
-        context.exeInfo.projectConfig[constants.Label].framework,
-        context.exeInfo.localEnvInfo.projectPath,
+    if (!context.exeInfo.projectConfig[JAVASCRIPT].config) {
+      context.exeInfo.projectConfig[JAVASCRIPT].config = getProjectConfiguration(
+        context,
+        context.exeInfo.projectConfig[JAVASCRIPT].framework,
       );
     }
-    const { config } = context.exeInfo.projectConfig[constants.Label];
+    const { config } = context.exeInfo.projectConfig[JAVASCRIPT];
     const configurationSettings = [
       {
         type: 'input',
@@ -138,7 +133,8 @@ async function confirmFrameworkConfiguration(context) {
       },
     ];
     const answers = await inquirer.prompt(configurationSettings);
-    Object.assign(context.exeInfo.projectConfig[constants.Label].config, answers);
+
+    Object.assign(context.exeInfo.projectConfig[JAVASCRIPT].config, { ...answers });
   }
 }
 

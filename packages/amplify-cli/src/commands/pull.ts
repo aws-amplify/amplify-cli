@@ -3,10 +3,10 @@ import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';
 import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
-import { stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 
-export const run = async context => {
+export const run = async (context: $TSContext) => {
   const inputParams = constructInputParams(context);
   const projectPath = process.cwd();
 
@@ -35,7 +35,7 @@ export const run = async context => {
     } else if (!appId) {
       context.print.error(`Environment '${envName}' not found.`);
       context.print.info(`Try running "amplify env add" to add a new environment.`);
-      context.print.info(`If this backend already exists, try restoring it's definition in your team-provider-info.json file.`);
+      context.print.info(`If this backend already exists, try restoring its definition in your team-provider-info.json file.`);
       process.exit(1);
     }
 

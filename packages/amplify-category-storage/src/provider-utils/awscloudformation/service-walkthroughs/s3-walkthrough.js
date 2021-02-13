@@ -43,7 +43,7 @@ export const addWalkthrough = async (context, defaultValuesFilename, serviceMeta
   if (resourceName) {
     const errMessage = 'Amazon S3 storage was already added to your project.';
     context.print.warning(errMessage);
-    context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
 
     exitOnNextTick(0);
   } else {
@@ -937,7 +937,7 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
             Statement: [
               {
                 Effect: 'Allow',
-                Action: ['s3:PutObject', 's3:GetObject', 's3:ListBucket', 's3:DeleteObject'],
+                Action: ['s3:PutObject', 's3:GetObject', 's3:DeleteObject'],
                 Resource: [
                   {
                     'Fn::Join': [
@@ -948,6 +948,23 @@ async function addTrigger(context, resourceName, triggerFunction, adminTriggerFu
                           Ref: 'S3Bucket',
                         },
                         '/*',
+                      ],
+                    ],
+                  },
+                ],
+              },
+              {
+                Effect: 'Allow',
+                Action: 's3:ListBucket',
+                Resource: [
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:aws:s3:::',
+                        {
+                          Ref: 'S3Bucket',
+                        },
                       ],
                     ],
                   },
@@ -1282,7 +1299,7 @@ function convertToCRUD(parameters, answers) {
 }
 
 export const getIAMPolicies = (resourceName, crudOptions) => {
-  let policy = {};
+  let policy = [];
   let actions = new Set();
 
   crudOptions.forEach(crudOption => {
@@ -1306,7 +1323,29 @@ export const getIAMPolicies = (resourceName, crudOptions) => {
   });
 
   actions = Array.from(actions);
-  policy = {
+  if (actions.includes('s3:ListBucket')) {
+    let listBucketPolicy = {};
+    listBucketPolicy = {
+      Effect: 'Allow',
+      Action: 's3:ListBucket',
+      Resource: [
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:aws:s3:::',
+              {
+                Ref: `${category}${resourceName}BucketName`,
+              },
+            ],
+          ],
+        },
+      ],
+    };
+    actions = actions.filter(action => action != 's3:ListBucket');
+    policy.push(listBucketPolicy);
+  }
+  let s3ObjectPolicy = {
     Effect: 'Allow',
     Action: actions,
     Resource: [
@@ -1324,7 +1363,7 @@ export const getIAMPolicies = (resourceName, crudOptions) => {
       },
     ],
   };
-
+  policy.push(s3ObjectPolicy);
   const attributes = ['BucketName'];
 
   return { policy, attributes };

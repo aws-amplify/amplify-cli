@@ -10,7 +10,7 @@ export const buildResource = async (request: BuildRequest): Promise<BuildResult>
   const resourceDir = join(request.srcRoot);
   const projectPath = join(resourceDir);
 
-  if (!request.lastBuildTimestamp || isBuildStale(request.srcRoot, request.lastBuildTimestamp)) {
+  if (!request.lastBuildTimeStamp || isBuildStale(request.srcRoot, request.lastBuildTimeStamp)) {
     installDependencies(projectPath);
 
     return { rebuilt: true };
@@ -42,16 +42,16 @@ const runPackageManager = (cwd: string, buildArgs: string) => {
   }
 };
 
-const isBuildStale = (resourceDir: string, lastBuildTimestamp: Date) => {
+const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date) => {
   const dirTime = new Date(fs.statSync(resourceDir).mtime);
 
-  if (dirTime > lastBuildTimestamp) {
+  if (dirTime > lastBuildTimeStamp) {
     return true;
   }
 
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/*/!(build | dist)/**`)
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimestamp);
+    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
 
   return !!fileUpdatedAfterLastBuild;
 };

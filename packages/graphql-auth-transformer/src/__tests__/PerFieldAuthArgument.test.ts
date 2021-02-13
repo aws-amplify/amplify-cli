@@ -1,23 +1,23 @@
 import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
+import { ModelConnectionTransformer } from 'graphql-connection-transformer';
+import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 
 test('Test that subscriptions are only generated if the respective mutation operation exists', () => {
   const validSchema = `
-    type Salary
+      type Salary
         @model
         @auth(rules: [
                 {allow: owner},
                 {allow: groups, groups: ["Moderator"]}
-            ])
-    {
+            ]) {
         id: ID!
         wage: Int
         owner: String
         secret: String @auth(rules: [{allow: owner}])
-    }
-    `;
+      }`;
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),
@@ -48,6 +48,61 @@ test('Test that subscriptions are only generated if the respective mutation oper
 
   expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toContain('$util.qr($ctx.result.put("operation", "Mutation"))');
   expect(out.resolvers['Mutation.deleteSalary.res.vtl']).toMatchSnapshot();
+});
+
+test('Test per-field @auth on a @connection field', () => {
+  const validSchema = `
+    type Post
+      @model
+      @auth(rules: [
+        { allow: groups, groups: ["admin"] }
+        { allow: owner, ownerField: "moderator" }
+      ])
+    {
+      id: ID!
+      name: String!
+      tags: [Tag] 
+        @connection(keyName: "byTags", fields: ["id"])
+        @auth(rules: [ { allow: groups, groups: ["admin"] } ])
+    }
+    type Tag
+      @model
+      @key(name: "byTags", fields: ["postID"])
+      @auth(rules: [ { allow: groups, groups: ["admin"] } ]) 
+    {
+      id: ID!
+      postID: ID!
+      post: Post @connection(fields: ["postID"])
+      createdAt: AWSDateTime
+      updatedAt: AWSDateTime
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [
+      new DynamoDBModelTransformer(),
+      new KeyTransformer(),
+      new ModelConnectionTransformer(),
+      new ModelAuthTransformer({
+        authConfig: {
+          defaultAuthentication: {
+            authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+          },
+          additionalAuthenticationProviders: [{ authenticationType: 'AWS_IAM' }],
+        },
+      }),
+    ],
+  });
+
+  try {
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+
+    const resolvers = out.resolvers;
+    expect(resolvers['Tag.post.res.vtl']).toMatchSnapshot();
+    expect(resolvers['Tag.post.res.vtl']).toContain('$util.toJson($ctx.result)');
+  } catch (err) {
+    throw err;
+  }
 });
 
 test('Test per-field @auth without model', () => {

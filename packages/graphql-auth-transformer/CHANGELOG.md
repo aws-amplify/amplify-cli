@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.23.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.23.4...graphql-auth-transformer@6.23.5) (2021-02-11)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
+## [6.23.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.23.3...graphql-auth-transformer@6.23.4) (2021-02-10)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** protection for connection types ([#5655](https://github.com/aws-amplify/amplify-cli/issues/5655)) ([52d33f8](https://github.com/aws-amplify/amplify-cli/commit/52d33f8a114266720b7429de4ab3360fea0f63b7)), closes [#4874](https://github.com/aws-amplify/amplify-cli/issues/4874) [#5510](https://github.com/aws-amplify/amplify-cli/issues/5510)
+
+
+
+
+
+## [6.23.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.23.2...graphql-auth-transformer@6.23.3) (2021-01-08)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fix field auth with connection ([#6320](https://github.com/aws-amplify/amplify-cli/issues/6320)) ([8cc85d0](https://github.com/aws-amplify/amplify-cli/commit/8cc85d0da8b1877e19285f9b8347dd54f48d87a1)), closes [#4760](https://github.com/aws-amplify/amplify-cli/issues/4760)
+
+
+
+
+
+## [6.23.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.23.1...graphql-auth-transformer@6.23.2) (2020-12-16)
+
+
+### Bug Fixes
+
+* [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) - add proper AWSJSON mapping in generated filter input types ([#6112](https://github.com/aws-amplify/amplify-cli/issues/6112)) ([743e84a](https://github.com/aws-amplify/amplify-cli/commit/743e84a9d968aab4648a12d3a19aa5ea14c4d755))
+
+
+### Reverts
+
+* Revert "Revert "Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158)" (#6160)" (#6183) ([a0ca94e](https://github.com/aws-amplify/amplify-cli/commit/a0ca94e5a1a848404ef3977743f19d26300a636a)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158) [#6160](https://github.com/aws-amplify/amplify-cli/issues/6160) [#6183](https://github.com/aws-amplify/amplify-cli/issues/6183)
+* Revert "Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158)" (#6160) ([f425924](https://github.com/aws-amplify/amplify-cli/commit/f42592420dcb49640c680c5001b3026ae0129090)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158) [#6160](https://github.com/aws-amplify/amplify-cli/issues/6160)
+* Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158) ([9e57e4d](https://github.com/aws-amplify/amplify-cli/commit/9e57e4d8c887be8ee4119c87383c7379cec40c37)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158)
+
+
+
+
+
+## [6.23.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.23.0...graphql-auth-transformer@6.23.1) (2020-12-07)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
 # [6.23.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.22.1...graphql-auth-transformer@6.23.0) (2020-11-30)
 
 

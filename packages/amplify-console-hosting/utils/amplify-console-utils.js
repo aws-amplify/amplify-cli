@@ -1,11 +1,11 @@
-const { put } = require('request-promise');
+const fetch = require('node-fetch');
 const fs = require('fs-extra');
 const ora = require('ora');
 
-const DEPLOY_ARTIFACTS_MESSAGE =
-  'Deploying build artifacts to the Amplify Console..';
+const DEPLOY_ARTIFACTS_MESSAGE = 'Deploying build artifacts to the Amplify Console..';
 const DEPLOY_COMPLETE_MESSAGE = 'Deployment complete!';
-const DEPLOY_FAILURE_MESSAGE = 'Deployment failed! Please report an issue on the Amplify Console GitHub issue tracker at https://github.com/aws-amplify/amplify-console/issues.';
+const DEPLOY_FAILURE_MESSAGE =
+  'Deployment failed! Please report an issue on the Amplify Console GitHub issue tracker at https://github.com/aws-amplify/amplify-console/issues.';
 
 function getDefaultDomainForApp(appId) {
   return `https://${appId}.amplifyapp.com`;
@@ -15,12 +15,7 @@ function getDefaultDomainForBranch(appId, branch) {
   return `https://${branch}.${appId}.amplifyapp.com`;
 }
 
-async function publishFileToAmplify(
-  appId,
-  branchName,
-  artifactsPath,
-  amplifyClient,
-) {
+async function publishFileToAmplify(appId, branchName, artifactsPath, amplifyClient) {
   const spinner = ora();
   spinner.start(DEPLOY_ARTIFACTS_MESSAGE);
   try {
@@ -29,9 +24,7 @@ async function publishFileToAmplify(
       branchName,
     };
     await cancelAllPendingJob(appId, branchName, amplifyClient);
-    const { zipUploadUrl, jobId } = await amplifyClient
-      .createDeployment(params)
-      .promise();
+    const { zipUploadUrl, jobId } = await amplifyClient.createDeployment(params).promise();
     await httpPutFile(artifactsPath, zipUploadUrl);
     await amplifyClient.startDeployment({ ...params, jobId }).promise();
     await waitJobToSucceed({ ...params, jobId }, amplifyClient);
@@ -89,9 +82,9 @@ function waitJobToSucceed(job, amplifyClient) {
 }
 
 async function httpPutFile(filePath, url) {
-  await put({
+  await fetch(url, {
+    method: 'PUT',
     body: fs.readFileSync(filePath),
-    url,
   });
 }
 

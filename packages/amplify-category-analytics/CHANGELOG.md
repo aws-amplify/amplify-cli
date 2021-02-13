@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.19.5...amplify-category-analytics@2.20.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
+## [2.19.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.19.4...amplify-category-analytics@2.19.5) (2021-02-10)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
+## [2.19.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.19.3...amplify-category-analytics@2.19.4) (2021-01-08)
+
+
+### Bug Fixes
+
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+
+
+
+
+
+## [2.19.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.19.2...amplify-category-analytics@2.19.3) (2020-12-16)
+
+
+### Bug Fixes
+
+* [#6123](https://github.com/aws-amplify/amplify-cli/issues/6123) - add missing amplify-cli-core dependencies to packages ([#6124](https://github.com/aws-amplify/amplify-cli/issues/6124)) ([e6519f2](https://github.com/aws-amplify/amplify-cli/commit/e6519f2dd81d2983b797f226d723a73a25967d25))
+
+
+
+
+
+## [2.19.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.19.1...amplify-category-analytics@2.19.2) (2020-12-07)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
 ## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.18.4...amplify-category-analytics@2.19.1) (2020-11-22)
 
 

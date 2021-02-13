@@ -9,7 +9,7 @@ export function getSchemaPath(schemaName: string): string {
 }
 
 export function apiGqlCompile(cwd: string, testingWithLatestCodebase: boolean = false) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['api', 'gql-compile'], { cwd, stripColors: true })
       .wait('GraphQL schema compiled successfully.')
       .run((err: Error) => {
@@ -32,12 +32,12 @@ const defaultOptions: AddApiOptions = {
 
 export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = {}) {
   const options = _.assign(defaultOptions, opts);
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
       .wait('Provide API name:')
-      .sendLine(opts.apiName)
+      .sendLine(options.apiName)
       .wait(/.*Choose the default authorization type for the API.*/)
       .sendCarriageReturn()
       .wait(/.*Enter a description for the API key.*/)
@@ -65,10 +65,10 @@ export function addApiWithoutSchema(cwd: string, opts: Partial<AddApiOptions> = 
   });
 }
 
-export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<AddApiOptions> = {}) {
+export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<AddApiOptions & { apiKeyExpirationDays: number }> = {}) {
   const options = _.assign(defaultOptions, opts);
   const schemaPath = getSchemaPath(schemaFile);
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -79,7 +79,7 @@ export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<
       .wait(/.*Enter a description for the API key.*/)
       .sendCarriageReturn()
       .wait(/.*After how many days from now the API key should expire.*/)
-      .sendLine('1')
+      .sendLine(opts.apiKeyExpirationDays ? opts.apiKeyExpirationDays.toString() : '1')
       .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
       .sendCarriageReturn()
       .wait('Do you have an annotated GraphQL schema?')
@@ -101,7 +101,7 @@ export function addApiWithSchema(cwd: string, schemaFile: string, opts: Partial<
 
 export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: string) {
   const schemaPath = getSchemaPath(schemaFile);
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -138,14 +138,17 @@ export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: st
   });
 }
 
-export function updateApiSchema(cwd: string, projectName: string, schemaName: string) {
+export function updateApiSchema(cwd: string, projectName: string, schemaName: string, forceUpdate: boolean = false) {
   const testSchemaPath = getSchemaPath(schemaName);
-  const schemaText = fs.readFileSync(testSchemaPath).toString();
+  let schemaText = fs.readFileSync(testSchemaPath).toString();
+  if (forceUpdate) {
+    schemaText += '  ';
+  }
   updateSchema(cwd, projectName, schemaText);
 }
 
 export function updateApiWithMultiAuth(cwd: string, settings: any) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -196,7 +199,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
 }
 
 export function apiUpdateToggleDataStore(cwd: string, settings: any) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -216,7 +219,7 @@ export function apiUpdateToggleDataStore(cwd: string, settings: any) {
 }
 
 export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(settings.testingWithLatestCodebase), ['update', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -252,7 +255,7 @@ export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
 
 // Either settings.existingLambda or settings.isCrud is required
 export function addRestApi(cwd: string, settings: any) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     if (!('existingLambda' in settings) && !('isCrud' in settings)) {
       reject(new Error('Missing property in settings object in addRestApi()'));
     } else {
@@ -317,13 +320,11 @@ export function addRestApi(cwd: string, settings: any) {
   });
 }
 
-//add default api
-
 const allAuthTypes = ['API key', 'Amazon Cognito User Pool', 'IAM', 'OpenID Connect'];
 
 export function addApi(projectDir: string, settings?: any) {
   let authTypesToSelectFrom = allAuthTypes.slice();
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -450,7 +451,7 @@ function setupOIDC(chain: any, settings?: any) {
 }
 
 export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: string) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
       .sendCarriageReturn()
@@ -467,6 +468,37 @@ export function addApiWithCognitoUserPoolAuthTypeWhenAuthExists(projectDir: stri
       .sendCarriageReturn()
       .wait('Do you want to edit the schema now?')
       .sendLine('n')
+      .wait('"amplify publish" will build all your local backend and frontend resources')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function addRestContainerApi(projectDir: string) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'api'], { cwd: projectDir, stripColors: true })
+      .wait('Please select from one of the below mentioned services:')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Which service would you like to use')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('Provide a friendly name for your resource to be used as a label for this category in the project:')
+      .sendCarriageReturn()
+      .wait('What image would you like to use')
+      .sendKeyDown()
+      .sendCarriageReturn()
+      .wait('When do you want to build & deploy the Fargate task')
+      .sendCarriageReturn()
+      .wait('Do you want to restrict API access')
+      .sendConfirmNo()
+      .wait('Select which container is the entrypoint')
+      .sendCarriageReturn()
       .wait('"amplify publish" will build all your local backend and frontend resources')
       .run((err: Error) => {
         if (!err) {

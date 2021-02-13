@@ -3,6 +3,68 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.25.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.25.1...amplify-appsync-simulator@1.25.2) (2021-02-11)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** expose errors from util.validate ([#6514](https://github.com/aws-amplify/amplify-cli/issues/6514)) ([8273037](https://github.com/aws-amplify/amplify-cli/commit/82730371ed0292e762d45313a7fa8de062c860dd)), closes [#6068](https://github.com/aws-amplify/amplify-cli/issues/6068)
+
+
+
+
+
+## [1.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.25.0...amplify-appsync-simulator@1.25.1) (2021-02-10)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** allow token.iss ending with slash ([#6364](https://github.com/aws-amplify/amplify-cli/issues/6364)) ([cba5c4d](https://github.com/aws-amplify/amplify-cli/commit/cba5c4d82c186d61f01bf2a9552363289f7b6742))
+* **amplify-velocity-template:** support 'get' and 'set' of array vars ([#5747](https://github.com/aws-amplify/amplify-cli/issues/5747)) ([b5f917a](https://github.com/aws-amplify/amplify-cli/commit/b5f917a81524feb64ec7e674c6213cb47fd7794c)), closes [#5741](https://github.com/aws-amplify/amplify-cli/issues/5741)
+
+
+
+
+
+# [1.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.24.3...amplify-appsync-simulator@1.25.0) (2021-01-08)
+
+
+### Bug Fixes
+
+* correctly initialize Array when values contain a single integer element ([#6235](https://github.com/aws-amplify/amplify-cli/issues/6235)) ([c410678](https://github.com/aws-amplify/amplify-cli/commit/c410678d85973c3fac7b46eda574906199e7bcb6))
+
+
+### Features
+
+* **amplify-appsync-simulator:** implement new utils ([#6257](https://github.com/aws-amplify/amplify-cli/issues/6257)) ([1c1dda9](https://github.com/aws-amplify/amplify-cli/commit/1c1dda92f05547bbbfd7a7b4b48c057abab48e82))
+
+
+
+
+
+## [1.24.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.24.2...amplify-appsync-simulator@1.24.3) (2020-12-16)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** utils.toJson false value ([#5797](https://github.com/aws-amplify/amplify-cli/issues/5797)) ([cc1a74b](https://github.com/aws-amplify/amplify-cli/commit/cc1a74bc812e234ef18e736539507bac2e4d9a81))
+* [#6067](https://github.com/aws-amplify/amplify-cli/issues/6067) - nodejs mock return error from lambda ([#6096](https://github.com/aws-amplify/amplify-cli/issues/6096)) ([d6793c8](https://github.com/aws-amplify/amplify-cli/commit/d6793c8670e4874db23ca08b3d1d7cba4dd0e56e))
+
+
+
+
+
+## [1.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.24.1...amplify-appsync-simulator@1.24.2) (2020-12-07)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** auth directive unauthorised message ([#6038](https://github.com/aws-amplify/amplify-cli/issues/6038)) ([10b94c0](https://github.com/aws-amplify/amplify-cli/commit/10b94c087e38bbaca8a215387e964089cc7a2858))
+
+
+
+
+
 ## [1.24.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.23.9...amplify-appsync-simulator@1.24.1) (2020-11-22)
 
 **Note:** Version bump only for package amplify-appsync-simulator

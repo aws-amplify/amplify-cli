@@ -1,4 +1,5 @@
-import { nspawn as spawn, getCLIPath, singleSelect } from '..';
+import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
+import { KEY_DOWN_ARROW } from '../utils';
 
 const defaultSettings = {
   name: '\r',
@@ -32,7 +33,7 @@ export const amplifyRegions = [
   'ca-central-1',
 ];
 
-export function initJSProjectWithProfile(cwd: string, settings: Object) {
+export function initJSProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
@@ -41,6 +42,8 @@ export function initJSProjectWithProfile(cwd: string, settings: Object) {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
   }
+
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env })
@@ -63,8 +66,8 @@ export function initJSProjectWithProfile(cwd: string, settings: Object) {
       .wait('Start Command:')
       .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
-      .wait('Do you want to use an AWS profile?')
-      .sendLine('y')
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
@@ -78,8 +81,11 @@ export function initJSProjectWithProfile(cwd: string, settings: Object) {
   });
 }
 
-export function initAndroidProjectWithProfile(cwd: string, settings: Object) {
+export function initAndroidProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
+
+  addCircleCITags(cwd);
+
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
@@ -99,13 +105,15 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object) {
       .sendCarriageReturn()
       .wait('Where is your Res directory')
       .sendCarriageReturn()
-      .wait('Do you want to use an AWS profile?')
-      .sendLine('y')
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
+          addCircleCITags(cwd);
+
           resolve();
         } else {
           reject(err);
@@ -114,8 +122,11 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object) {
   });
 }
 
-export function initIosProjectWithProfile(cwd: string, settings: Object) {
+export function initIosProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
+
+  addCircleCITags(cwd);
+
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
@@ -133,13 +144,15 @@ export function initIosProjectWithProfile(cwd: string, settings: Object) {
       .wait("Choose the type of app that you're building")
       .sendKeyDown(3)
       .sendCarriageReturn()
-      .wait('Do you want to use an AWS profile?')
-      .sendLine('y')
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
+          addCircleCITags(cwd);
+
           resolve();
         } else {
           reject(err);
@@ -148,8 +161,10 @@ export function initIosProjectWithProfile(cwd: string, settings: Object) {
   });
 }
 
-export function initFlutterProjectWithProfile(cwd: string, settings: Object) {
+export function initFlutterProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
+
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
@@ -165,8 +180,8 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object) {
       .wait('Where do you want to store your configuration file')
       .sendLine('./lib/')
       .wait('Using default provider  awscloudformation')
-      .wait('Do you want to use an AWS profile?')
-      .sendConfirmYes()
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName);
 
@@ -182,8 +197,13 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object) {
   });
 }
 
-export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region?: string }) {
+export function initProjectWithAccessKey(
+  cwd: string,
+  settings: { accessKeyId: string; secretAccessKey: string; region?: string },
+): Promise<void> {
   const s = { ...defaultSettings, ...settings };
+
+  addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], {
@@ -212,8 +232,9 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
       .wait('Start Command:')
       .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
-      .wait('Do you want to use an AWS profile?')
-      .sendLine('n')
+      .wait('Select the authentication method you want to use:')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .pauseRecording()
       .wait('accessKeyId')
       .sendLine(s.accessKeyId)
@@ -234,7 +255,9 @@ export function initProjectWithAccessKey(cwd: string, settings: { accessKeyId: s
   });
 }
 
-export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }) {
+export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; accessKeyId: string; secretAccessKey: string }): Promise<void> {
+  addCircleCITags(cwd);
+
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], {
       cwd,
@@ -248,8 +271,9 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Using default provider  awscloudformation')
-      .wait('Do you want to use an AWS profile?')
-      .sendLine('n')
+      .wait('Select the authentication method you want to use:')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .pauseRecording()
       .wait('accessKeyId')
       .sendLine(s.accessKeyId)
@@ -270,7 +294,9 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
   });
 }
 
-export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
+export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Promise<void> {
+  addCircleCITags(cwd);
+
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init'], {
       cwd,
@@ -284,8 +310,8 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Using default provider  awscloudformation')
-      .wait('Do you want to use an AWS profile?')
-      .sendLine('y')
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn()
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
@@ -299,7 +325,41 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }) {
   });
 }
 
-export function amplifyVersion(cwd: string, expectedVersion: string, testingWithLatestCodebase = false) {
+export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
+  const s = { ...defaultSettings, ...settings };
+  let env;
+
+  if (s.disableAmplifyAppCreation === true) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
+
+  addCircleCITags(cwd);
+
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env })
+      .wait('Enter a name for the environment')
+      .sendLine(s.envName)
+      .wait('Choose your default editor:')
+      .sendLine(s.editor)
+      .wait('Using default provider  awscloudformation')
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
+      .wait('Please choose the profile you want to use')
+      .sendLine(s.profileName)
+      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function amplifyVersion(cwd: string, expectedVersion: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['--version'], { cwd, stripColors: true })
       .wait(expectedVersion)
@@ -314,7 +374,7 @@ export function amplifyVersion(cwd: string, expectedVersion: string, testingWith
 }
 
 //Can be called only if detects teamprovider change
-export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, testingWithLatestCodebase) {
+export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, testingWithLatestCodebase): Promise<void> {
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(testingWithLatestCodebase), ['status'], { cwd, stripColors: true })
@@ -332,7 +392,7 @@ export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, te
   });
 }
 
-export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLatestCodebase = false) {
+export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(testingWithLatestCodebase), ['status'], { cwd, stripColors: true })

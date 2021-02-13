@@ -153,7 +153,7 @@ export async function askEventSourceQuestions(context: any) {
           if (!storageResources) {
             const errMessage = 'There are no DynamoDB resources configured in your project currently';
             context.print.error(errMessage);
-            context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+            await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
             exitOnNextTick(0);
           }
 

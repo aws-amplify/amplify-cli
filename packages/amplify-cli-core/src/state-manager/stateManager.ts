@@ -2,9 +2,10 @@ import * as fs from 'fs-extra';
 import { pathManager } from './pathManager';
 import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets } from '..';
 import { JSONUtilities } from '../jsonUtilities';
-import { Tag, ReadValidateTags } from '../tags';
 import _ from 'lodash';
 import { SecretFileMode } from '../cliConstants';
+import { Tag, ReadTags, HydrateTags } from '../tags';
+
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
   preserveComments?: boolean;
@@ -53,9 +54,9 @@ export class StateManager {
     );
   };
 
-  getProjectTags = (projectPath?: string): Tag[] => ReadValidateTags(pathManager.getTagFilePath(projectPath));
+  getProjectTags = (projectPath?: string): Tag[] => ReadTags(pathManager.getTagFilePath(projectPath));
 
-  getCurrentProjectTags = (projectPath?: string): Tag[] => ReadValidateTags(pathManager.getCurrentTagFilePath(projectPath));
+  getCurrentProjectTags = (projectPath?: string): Tag[] => ReadTags(pathManager.getCurrentTagFilePath(projectPath));
 
   teamProviderInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getTeamProviderInfoFilePath, projectPath);
 
@@ -80,6 +81,8 @@ export class StateManager {
 
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
+
+  localAWSInfoExists = (projectPath?: string): boolean => this.doesExist(pathManager.getLocalAWSInfoFilePath, projectPath);
 
   getLocalAWSInfo = (projectPath?: string, options?: GetOptions<$TSAny>): $TSAny => {
     const filePath = pathManager.getLocalAWSInfoFilePath(projectPath);
@@ -164,6 +167,18 @@ export class StateManager {
     const filePath = pathManager.getLocalAWSInfoFilePath(projectPath);
 
     JSONUtilities.writeJson(filePath, localAWSInfo);
+  };
+
+  getHydratedTags = (projectPath?: string | undefined): Tag[] => {
+    const tags = this.getProjectTags(projectPath);
+    const { projectName } = this.getProjectConfig(projectPath);
+    const { envName } = this.getLocalEnvInfo(projectPath);
+    return HydrateTags(tags, { projectName, envName });
+  };
+
+  isTagFilePresent = (projectPath?: string | undefined): boolean => {
+    if (pathManager.findProjectRoot()) return fs.existsSync(pathManager.getTagFilePath(projectPath));
+    return false;
   };
 
   setProjectFileTags = (projectPath: string | undefined, tags: Tag[]): void => {

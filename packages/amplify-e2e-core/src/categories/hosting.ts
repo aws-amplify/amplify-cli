@@ -1,9 +1,11 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { nspawn as spawn, getCLIPath, createNewProjectDir, KEY_DOWN_ARROW, readJsonFile } from '..';
+import _ from 'lodash';
 import { spawnSync } from 'child_process';
+import { getBackendAmplifyMeta } from '../utils';
 
-export function addDEVHosting(cwd: string) {
+export function addDEVHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait('Select the plugin module to execute')
@@ -27,10 +29,9 @@ export function addDEVHosting(cwd: string) {
   });
 }
 
-export function addPRODHosting(cwd: string) {
+export function addPRODHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    // Cloudfront distrubution takes a long time. Bumping up the timeout
-    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true, noOutputTimeout: 30 * 60 * 1000 })
+    spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait('Select the plugin module to execute')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
@@ -49,7 +50,33 @@ export function addPRODHosting(cwd: string) {
   });
 }
 
-export function amplifyPushWithUpdate(cwd: string) {
+export function removePRODCloudFront(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['update', 'hosting'], { cwd, stripColors: true })
+      .wait('Specify the section to configure')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Remove CloudFront from hosting')
+      .send('y')
+      .sendCarriageReturn()
+      .wait('index doc for the website')
+      .sendCarriageReturn()
+      .wait('error doc for the website')
+      .sendCarriageReturn()
+      .wait('Specify the section to configure')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function amplifyPushWithUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
@@ -64,7 +91,7 @@ export function amplifyPushWithUpdate(cwd: string) {
   });
 }
 
-export function amplifyPublishWithoutUpdate(cwd: string) {
+export function amplifyPublishWithoutUpdate(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['publish'], { cwd, stripColors: true }).run((err: Error) => {
       if (!err) {
@@ -76,7 +103,7 @@ export function amplifyPublishWithoutUpdate(cwd: string) {
   });
 }
 
-export function removeHosting(cwd: string) {
+export function removeHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
@@ -111,4 +138,9 @@ export function resetBuildCommand(projectDir: string, newBuildCommand: string): 
   projectConfig.javascript.config.BuildCommand = newBuildCommand;
   fs.writeFileSync(projectConfigFilePath, JSON.stringify(projectConfig, null, 4));
   return currentBuildCommand;
+}
+
+export function extractHostingBucketInfo(projectDir: string) {
+  const meta = getBackendAmplifyMeta(projectDir);
+  return _.get(meta, ['hosting', 'S3AndCloudFront', 'output', 'HostingBucketName']);
 }

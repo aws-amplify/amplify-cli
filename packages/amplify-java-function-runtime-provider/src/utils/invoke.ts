@@ -2,17 +2,9 @@ import execa from 'execa';
 import path from 'path';
 import { InvocationRequest } from 'amplify-function-plugin-interface';
 import { packageName, relativeShimJarPath } from './constants';
-import { buildResource } from './build';
 import { pathManager } from 'amplify-cli-core';
 
 export const invokeResource = async (request: InvocationRequest, context: any) => {
-  await buildResource({
-    env: request.env,
-    runtime: request.runtime,
-    srcRoot: request.srcRoot,
-    lastBuildTimestamp: request.lastBuildTimestamp,
-  });
-
   const [handlerClassName, handlerMethodName] = request.handler.split('::');
 
   const childProcess = execa(
@@ -26,6 +18,10 @@ export const invokeResource = async (request: InvocationRequest, context: any) =
     ],
     {
       input: request.event,
+      env: request.envVars,
+      extendEnv: false,
+      stderr: 'inherit',
+      stdout: 'inherit',
     },
   );
   childProcess.stdout.pipe(process.stdout);

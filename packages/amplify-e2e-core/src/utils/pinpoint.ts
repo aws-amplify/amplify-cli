@@ -1,5 +1,5 @@
 import { Pinpoint } from 'aws-sdk';
-import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions } from '..';
+import { getCLIPath, nspawn as spawn, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from '..';
 import _ from 'lodash';
 
 const settings = {
@@ -69,7 +69,9 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
   return result;
 }
 
-export function initProjectForPinpoint(cwd: string) {
+export function initProjectForPinpoint(cwd: string): Promise<void> {
+  addCircleCITags(cwd);
+
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], {
       cwd,
@@ -97,8 +99,9 @@ export function initProjectForPinpoint(cwd: string) {
       .wait('Start Command:')
       .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
-      .wait('Do you want to use an AWS profile?')
-      .sendLine('n')
+      .wait('Select the authentication method you want to use:')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .pauseRecording()
       .wait('accessKeyId')
       .sendLine(settings.accessKeyId)
@@ -140,7 +143,7 @@ export function addPinpointAnalytics(cwd: string): Promise<string> {
   });
 }
 
-export function pushToCloud(cwd: string) {
+export function pushToCloud(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue')
@@ -157,7 +160,7 @@ export function pushToCloud(cwd: string) {
   });
 }
 
-export function amplifyDelete(cwd: string) {
+export function amplifyDelete(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')

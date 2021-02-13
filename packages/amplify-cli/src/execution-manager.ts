@@ -32,6 +32,17 @@ export async function executeCommand(context: Context) {
   }
 }
 
+function isContainersEnabled(context) {
+  const { frontend } = context.amplify.getProjectConfig();
+  if (frontend) {
+    const { config: { ServerlessContainers = false } = {} } = context.amplify.getProjectConfig()[frontend];
+
+    return ServerlessContainers;
+  }
+
+  return false;
+}
+
 async function selectPluginForExecution(context: Context, pluginCandidates: PluginInfo[]): Promise<PluginInfo> {
   let result = pluginCandidates[0];
 
@@ -118,6 +129,13 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
       });
       //put console hosting plugin at the top
       pluginCandidates = consoleHostingPlugins.concat(otherPlugins);
+    }
+
+    const amplifyMeta = context.amplify.getProjectMeta();
+    const { Region } = amplifyMeta.providers['awscloudformation'];
+
+    if (!isContainersEnabled(context) || Region !== 'us-east-1') {
+      pluginCandidates = pluginCandidates.filter(plugin => !plugin.manifest.services?.includes('ElasticContainer'));
     }
 
     const answer = await inquirer.prompt({

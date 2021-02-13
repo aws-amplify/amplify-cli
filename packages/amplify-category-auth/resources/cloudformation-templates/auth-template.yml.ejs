@@ -7,11 +7,11 @@ Parameters:
     Type: String
   unauthRoleArn:
     Type: String
-  
+
   <% if (props.dependsOn && props.dependsOn.length > 0) { %>
   <% for(var i=0; i < props.dependsOn.length; i++) { %>
   <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
-  <%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>: 
+  <%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>:
     Type: String
     Default: <%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>
   <% } %>
@@ -49,6 +49,9 @@ Parameters:
 
 Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
+  <%if (props.authSelections !=='identityPoolOnly' ) { %>
+  ShouldOutputAppClientSecrets: !Equals [!Ref userpoolClientGenerateSecret, true ]
+  <% } %> 
 
 Resources:
   <%if (props.verificationBucketName) { %>
@@ -63,9 +66,9 @@ Resources:
         ErrorDocument: "index.html"
       CorsConfiguration:
         CorsRules:
-          - 
+          -
             AllowedHeaders:
-              - "Authorization" 
+              - "Authorization"
               - "Content-Length"
             AllowedMethods:
               - "GET"
@@ -75,32 +78,32 @@ Resources:
   <% } %>
   <%if (props.authSelections !== 'identityPoolOnly') { %>
   # BEGIN SNS ROLE RESOURCE
-  SNSRole: 
+  SNSRole:
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
     Type: AWS::IAM::Role
     Properties:
       RoleName: !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_sns-role`%>', !Join ['',[ 'sns', '<%=`${props.sharedId}`%>', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]]]
-      AssumeRolePolicyDocument: 
+      AssumeRolePolicyDocument:
         Version: "2012-10-17"
-        Statement: 
+        Statement:
           - Sid: ""
             Effect: "Allow"
-            Principal: 
+            Principal:
               Service: "cognito-idp.amazonaws.com"
-            Action: 
+            Action:
               - "sts:AssumeRole"
-            Condition: 
+            Condition:
               StringEquals:
                 sts:ExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
-      Policies: 
-        - 
+      Policies:
+        -
           PolicyName: <%=`${props.resourceNameTruncated}-sns-policy`%>
-          PolicyDocument: 
+          PolicyDocument:
             Version: "2012-10-17"
-            Statement: 
-              - 
+            Statement:
+              -
                 Effect: "Allow"
-                Action: 
+                Action:
                   - "sns:Publish"
                 Resource: "*"
   # BEGIN USER POOL RESOURCES
@@ -112,7 +115,11 @@ Resources:
     Properties:
       UserPoolName: !If [ShouldNotCreateEnvResources, !Ref userPoolName, !Join ['',[!Ref userPoolName, '-', !Ref env]]]
       <%if (props.requiredAttributes && props.requiredAttributes.length > 0) { %>
-      Schema: 
+      <%if (props.usernameCaseSensitive !== undefined) { %>
+      UsernameConfiguration:
+        CaseSensitive: <%= props.usernameCaseSensitive %>
+      <% } %>
+      Schema:
         <% for(var i=0; i < props.requiredAttributes.length; i++) { %>
         -
           Name: <%= props.requiredAttributes[i] %>
@@ -156,7 +163,7 @@ Resources:
       <%if (props.autoVerifiedAttributes.includes('email')) { %>
       EmailVerificationMessage: !Ref emailVerificationMessage
       EmailVerificationSubject: !Ref emailVerificationSubject
-      <% } %>      
+      <% } %>
       Policies:
         PasswordPolicy:
           MinimumLength: !Ref passwordPolicyMinLength
@@ -166,106 +173,106 @@ Resources:
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
       <% if (props.usernameAttributes && props.usernameAttributes !== 'username') { %>
       UsernameAttributes: !Ref usernameAttributes
-      <% } %>    
+      <% } %>
       MfaConfiguration: !Ref mfaConfiguration
       SmsVerificationMessage: !Ref smsVerificationMessage
-      SmsConfiguration: 
+      SmsConfiguration:
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
-    <%if (props.mfaConfiguration != 'OFF') { %>      
+    <%if (props.mfaConfiguration != 'OFF') { %>
     DependsOn: SNSRole
     <% } %>
   <%if (props.triggers && props.dependsOn) { %>
   <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { %>
-  UserPoolCreateAuthChallengeLambdaInvokePermission: 
+  UserPoolCreateAuthChallengeLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
-    Properties: 
+    Properties:
       Action: "lambda:invokeFunction"
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>CreateAuthChallengeName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>  
+  <% } %>
   <%if (props.dependsOn.find(i => i.resourceName.includes('CustomMessage'))) { %>
-  UserPoolCustomMessageLambdaInvokePermission: 
+  UserPoolCustomMessageLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
-    Properties: 
+    Properties:
       Action: "lambda:invokeFunction"
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>CustomMessageName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>  
+  <% } %>
   <%if (props.dependsOn.find(i => i.resourceName.includes('DefineAuthChallenge'))) { %>
-  UserPoolDefineAuthChallengeLambdaInvokePermission: 
+  UserPoolDefineAuthChallengeLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
-    Properties: 
+    Properties:
       Action: "lambda:invokeFunction"
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>DefineAuthChallengeName
       SourceArn: !GetAtt UserPool.Arn
   <% } %>
   <%if (props.dependsOn.find(i => i.resourceName.includes('PostAuthentication'))) { %>
-  UserPoolPostAuthenticationLambdaInvokePermission: 
+  UserPoolPostAuthenticationLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
-    Properties: 
+    Properties:
       Action: "lambda:invokeFunction"
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PostAuthenticationName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>  
+  <% } %>
   <%if (props.dependsOn.find(i => i.resourceName.includes('PostConfirmation'))) { %>
-  UserPoolPostConfirmationLambdaInvokePermission: 
+  UserPoolPostConfirmationLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
-    Properties: 
+    Properties:
       Action: "lambda:invokeFunction"
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PostConfirmationName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>  
+  <% } %>
   <%if (props.dependsOn.find(i => i.resourceName.includes('PreAuthentication'))) { %>
-  UserPoolPreAuthenticationLambdaInvokePermission: 
+  UserPoolPreAuthenticationLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
-    Properties: 
+    Properties:
       Action: "lambda:invokeFunction"
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PreAuthenticationName
       SourceArn: !GetAtt UserPool.Arn
   <% } %>
   <%if (props.dependsOn.find(i => i.resourceName.includes('PreSignup'))) { %>
-  UserPoolPreSignupLambdaInvokePermission: 
+  UserPoolPreSignupLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
-    Properties: 
+    Properties:
       Action: "lambda:invokeFunction"
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PreSignupName
       SourceArn: !GetAtt UserPool.Arn
   <% } %>
   <%if (props.dependsOn.find(i => i.resourceName.includes('PreTokenGeneration'))) { %>
-  UserPoolPreTokenGenerationLambdaInvokePermission: 
+  UserPoolPreTokenGenerationLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
-    Properties: 
+    Properties:
       Action: "lambda:invokeFunction"
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PreTokenGenerationName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %> 
+  <% } %>
   <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { %>
-  UserPoolVerifyAuthChallengeResponseLambdaInvokePermission: 
+  UserPoolVerifyAuthChallengeResponseLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
-    Properties: 
+    Properties:
       Action: "lambda:invokeFunction"
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>  
+  <% } %>
   # Updating lambda role with permissions to Cognito
   <% if (props.permissions && props.permissions.length > 0) { %>
   <% for(var i=0; i < props.permissions.length; i++) { %>
@@ -349,7 +356,7 @@ Resources:
     Type: 'AWS::Lambda::Function'
     Properties:
       Code:
-        ZipFile: !Join 
+        ZipFile: !Join
           - |+
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
@@ -365,7 +372,7 @@ Resources:
             - '   };'
             - '   identity.describeUserPoolClient(params).promise()'
             - '     .then((res) => {'
-            - '       response.send(event, context, response.SUCCESS, {''appSecret'': res.UserPoolClient.ClientSecret});'   
+            - '       response.send(event, context, response.SUCCESS, {''appSecret'': res.UserPoolClient.ClientSecret});'
             - '     })'
             - '     .catch((err) => {'
             - '       response.send(event, context, response.FAILED, {err});'
@@ -375,7 +382,7 @@ Resources:
       Handler: index.handler
       Runtime: nodejs10.x
       Timeout: '300'
-      Role: !GetAtt 
+      Role: !GetAtt
         - UserPoolClientRole
         - Arn
     DependsOn: UserPoolClientRole
@@ -386,7 +393,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_userpoolclient_lambda_iam_policy`%>
-      Roles: 
+      Roles:
         - !Ref UserPoolClientRole
       PolicyDocument:
         Version: '2012-10-17'
@@ -403,7 +410,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_userpoolclient_lambda_log_policy`%>
-      Roles: 
+      Roles:
         - !Ref UserPoolClientRole
       PolicyDocument:
         Version: 2012-10-17
@@ -413,10 +420,10 @@ Resources:
               - 'logs:CreateLogGroup'
               - 'logs:CreateLogStream'
               - 'logs:PutLogEvents'
-            Resource: !Sub  
+            Resource: !Sub
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
               - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref UserPoolClientLambda}
-    DependsOn: UserPoolClientLambdaPolicy  
+    DependsOn: UserPoolClientLambdaPolicy
   UserPoolClientInputs:
   # Values passed to Userpool client Lambda
   # Depends on UserPool for Id
@@ -433,7 +440,7 @@ Resources:
     Type: 'AWS::Lambda::Function'
     Properties:
       Code:
-        ZipFile: !Join 
+        ZipFile: !Join
           - |+
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
@@ -452,7 +459,7 @@ Resources:
             - ' }'
             - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
             - '  let checkDomainAvailability = (domainName) => {'
-            - '  let params = { Domain: domainName };'   
+            - '  let params = { Domain: domainName };'
             - '  return identity.describeUserPoolDomain(params).promise().then((res) => {'
             - '   if (res.DomainDescription && res.DomainDescription.UserPool) {'
             - '    return false;'
@@ -501,7 +508,7 @@ Resources:
       Handler: index.handler
       Runtime: nodejs10.x
       Timeout: '300'
-      Role: !GetAtt 
+      Role: !GetAtt
         - UserPoolClientRole
         - Arn
     DependsOn: UserPoolClientRole
@@ -510,7 +517,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'hostedUI']]
-      Roles: 
+      Roles:
         - !Ref UserPoolClientRole
       PolicyDocument:
         Version: '2012-10-17'
@@ -530,7 +537,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'hostedUILogPolicy']]
-      Roles: 
+      Roles:
         - !Ref UserPoolClientRole
       PolicyDocument:
         Version: 2012-10-17
@@ -540,7 +547,7 @@ Resources:
               - 'logs:CreateLogGroup'
               - 'logs:CreateLogStream'
               - 'logs:PutLogEvents'
-            Resource: !Sub  
+            Resource: !Sub
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
               - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref HostedUICustomResource}
     DependsOn: HostedUICustomResourcePolicy
@@ -558,7 +565,7 @@ Resources:
     Type: 'AWS::Lambda::Function'
     Properties:
       Code:
-        ZipFile: !Join 
+        ZipFile: !Join
           - |+
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
@@ -576,7 +583,7 @@ Resources:
             - ' }'
             - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
             - '  let getRequestParams = (providerName) => {'
-            - '   let providerMetaIndex = hostedUIProviderMeta.findIndex((provider) => provider.ProviderName === providerName);'   
+            - '   let providerMetaIndex = hostedUIProviderMeta.findIndex((provider) => provider.ProviderName === providerName);'
             - '   let providerMeta =  hostedUIProviderMeta[providerMetaIndex];'
             - '   let providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);'
             - '   let providerCreds = hostedUIProviderCreds[providerCredsIndex];'
@@ -633,7 +640,7 @@ Resources:
       Handler: index.handler
       Runtime: nodejs10.x
       Timeout: '300'
-      Role: !GetAtt 
+      Role: !GetAtt
         - UserPoolClientRole
         - Arn
     DependsOn: UserPoolClientRole
@@ -642,7 +649,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'hostedUIProvider']]
-      Roles: 
+      Roles:
         - !Ref UserPoolClientRole
       PolicyDocument:
         Version: '2012-10-17'
@@ -660,7 +667,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'hostedUIProviderLogPolicy']]
-      Roles: 
+      Roles:
         - !Ref UserPoolClientRole
       PolicyDocument:
         Version: 2012-10-17
@@ -670,7 +677,7 @@ Resources:
               - 'logs:CreateLogGroup'
               - 'logs:CreateLogStream'
               - 'logs:PutLogEvents'
-            Resource: !Sub  
+            Resource: !Sub
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
               - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref HostedUIProvidersCustomResource}
     DependsOn: HostedUIProvidersCustomResourcePolicy
@@ -689,7 +696,7 @@ Resources:
     Type: 'AWS::Lambda::Function'
     Properties:
       Code:
-        ZipFile: !Join 
+        ZipFile: !Join
           - |+
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
@@ -708,7 +715,7 @@ Resources:
             - ' }'
             - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
             - '  let params = {'
-            - '   UserPoolId: userPoolId,'   
+            - '   UserPoolId: userPoolId,'
             - '   AllowedOAuthFlows: oAuthMetadata.AllowedOAuthFlows,'
             - '   AllowedOAuthFlowsUserPoolClient: true,'
             - '   AllowedOAuthScopes: oAuthMetadata.AllowedOAuthScopes,'
@@ -732,7 +739,7 @@ Resources:
       Handler: index.handler
       Runtime: nodejs10.x
       Timeout: '300'
-      Role: !GetAtt 
+      Role: !GetAtt
         - UserPoolClientRole
         - Arn
     DependsOn: HostedUIProvidersCustomResourceInputs
@@ -741,7 +748,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'OAuth']]
-      Roles: 
+      Roles:
         - !Ref UserPoolClientRole
       PolicyDocument:
         Version: '2012-10-17'
@@ -756,7 +763,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: !Join ['-',[!Ref UserPool, 'OAuthLogPolicy']]
-      Roles: 
+      Roles:
         - !Ref UserPoolClientRole
       PolicyDocument:
         Version: 2012-10-17
@@ -766,7 +773,7 @@ Resources:
               - 'logs:CreateLogGroup'
               - 'logs:CreateLogStream'
               - 'logs:PutLogEvents'
-            Resource: !Sub  
+            Resource: !Sub
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
               - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref OAuthCustomResource}
     DependsOn: OAuthCustomResourcePolicy
@@ -814,7 +821,7 @@ Resources:
     Type: 'AWS::Lambda::Function'
     Properties:
       Code:
-        ZipFile: !Join 
+        ZipFile: !Join
           - |+
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
@@ -843,7 +850,7 @@ Resources:
             - '   };'
             - '   identity.setUserPoolMfaConfig(totpParams).promise()'
             - '     .then((res) => {'
-            - '       response.send(event, context, response.SUCCESS, {res});'   
+            - '       response.send(event, context, response.SUCCESS, {res});'
             - '     })'
             - '     .catch((err) => {'
             - '       response.send(event, context, response.FAILED, {err});'
@@ -853,7 +860,7 @@ Resources:
       Handler: index.handler
       Runtime: nodejs10.x
       Timeout: '300'
-      Role: !GetAtt 
+      Role: !GetAtt
         - MFALambdaRole
         - Arn
     DependsOn: MFALambdaRole
@@ -864,7 +871,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_totp_lambda_iam_policy`%>
-      Roles: 
+      Roles:
         - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: '2012-10-17'
@@ -880,7 +887,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_totp_lambda_log_policy`%>
-      Roles: 
+      Roles:
         - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_totp_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: 2012-10-17
@@ -890,10 +897,10 @@ Resources:
               - 'logs:CreateLogGroup'
               - 'logs:CreateLogStream'
               - 'logs:PutLogEvents'
-            Resource: !Sub  
+            Resource: !Sub
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
               - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref MFALambda}
-    DependsOn: MFALambdaPolicy  
+    DependsOn: MFALambdaPolicy
   MFALambdaInputs:
   # Values passed to MFA Lambda
   # Depends on UserPool for Arn
@@ -944,7 +951,7 @@ Resources:
     Type: 'AWS::Lambda::Function'
     Properties:
       Code:
-        ZipFile: !Join 
+        ZipFile: !Join
           - |+
           - - 'const response = require(''cfn-response'');'
             - 'const aws = require(''aws-sdk'');'
@@ -956,7 +963,7 @@ Resources:
             - ' if (event.RequestType == ''Update'' || event.RequestType == ''Create'') {'
             - '   const params = {'
             - '     ClientIDList: event.ResourceProperties.clientIdList.split('',''),'
-            - '     ThumbprintList: ["0000000000000000000000000000000000000000"],'   
+            - '     ThumbprintList: ["0000000000000000000000000000000000000000"],'
             - '     Url: event.ResourceProperties.url'
             - '   };'
             - '   let exists = false;'
@@ -971,7 +978,7 @@ Resources:
             - '     }'
             - '     if (!existingValue) {'
             - '       iam.createOpenIDConnectProvider(params).promise().then((data) => {'
-            - '         response.send(event, context, response.SUCCESS, {providerArn: data.OpenIDConnectProviderArn, providerIds: params.ClientIDList});'   
+            - '         response.send(event, context, response.SUCCESS, {providerArn: data.OpenIDConnectProviderArn, providerIds: params.ClientIDList});'
             - '       })'
             - '       .catch((err) => {'
             - '         response.send(event, context, response.FAILED, {err});'
@@ -994,7 +1001,7 @@ Resources:
             - '           }'
             - '         });'
             - '         Promise.all(updateCalls).then(function(values) {'
-            - '           response.send(event, context, response.SUCCESS, {providerArn: existingValue, providerIds: params.ClientIDList});'   
+            - '           response.send(event, context, response.SUCCESS, {providerArn: existingValue, providerIds: params.ClientIDList});'
             - '         })'
             - '         .catch((err3) => {'
             - '           response.send(event, context, response.FAILED, {err3});'
@@ -1013,7 +1020,7 @@ Resources:
       Handler: index.handler
       Runtime: nodejs10.x
       Timeout: '300'
-      Role: !GetAtt 
+      Role: !GetAtt
         - OpenIdLambdaRole
         - Arn
     DependsOn: OpenIdLambdaRole
@@ -1024,7 +1031,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_openid_lambda_iam_policy`%>
-      Roles: 
+      Roles:
         - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: '2012-10-17'
@@ -1034,13 +1041,13 @@ Resources:
               - 'iam:CreateOpenIDConnectProvider'
               - 'iam:GetOpenIDConnectProvider'
               - 'iam:AddClientIDToOpenIDConnectProvider'
-            Resource: !Sub  
+            Resource: !Sub
               - arn:aws:iam::${account}:oidc-provider/accounts.google.com
               - { account: !Ref "AWS::AccountId"}
           - Effect: Allow
             Action:
               - 'iam:ListOpenIDConnectProviders'
-            Resource: !Sub  
+            Resource: !Sub
               - arn:aws:iam::${account}:oidc-provider/${selector}
               - { account: !Ref "AWS::AccountId", selector: '*'}
     DependsOn: OpenIdLambda
@@ -1051,7 +1058,7 @@ Resources:
     Type: 'AWS::IAM::Policy'
     Properties:
       PolicyName: <%=`${props.resourceNameTruncated}_openid_lambda_log_policy`%>
-      Roles: 
+      Roles:
         - !If [ShouldNotCreateEnvResources, '<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', !Join ['',['<%=`${props.resourceNameTruncated}_openid_lambda_role`%>', '-', !Ref env]]]
       PolicyDocument:
         Version: 2012-10-17
@@ -1061,10 +1068,10 @@ Resources:
               - 'logs:CreateLogGroup'
               - 'logs:CreateLogStream'
               - 'logs:PutLogEvents'
-            Resource: !Sub  
+            Resource: !Sub
               - arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*
               - { region: !Ref "AWS::Region",  account: !Ref "AWS::AccountId", lambda: !Ref OpenIdLambda}
-    DependsOn: OpenIdLambdaIAMPolicy  
+    DependsOn: OpenIdLambdaIAMPolicy
   OpenIdLambdaInputs:
   # Values passed to OpenId Lambda
   # Depends on OpenId for Arn
@@ -1076,11 +1083,11 @@ Resources:
       url: 'https://accounts.google.com'
     DependsOn: OpenIdLogPolicy
   <% } %>
- 
+
   IdentityPool:
   # Always created
     Type: AWS::Cognito::IdentityPool
-    Properties: 
+    Properties:
       IdentityPoolName: !If [ShouldNotCreateEnvResources, '<%= props.identityPoolName %>', !Join ['',['<%= props.identityPoolName %>', '__', !Ref env]]]
       <%if (props.authSelections !== 'identityPoolOnly') { %>
       CognitoIdentityProviders:
@@ -1094,7 +1101,7 @@ Resources:
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
       <% } -%>
       <%if (props.authProviders && Object.keys(props.authProviders).length > 0 && props.authProviders !== '{}' && !(Object.keys(props.authProviders).length === 1 && props.authProviders[0] === 'accounts.google.com' && props.audiences)) { %>
-      SupportedLoginProviders: 
+      SupportedLoginProviders:
         <%if (props.authProviders.indexOf('graph.facebook.com') !== -1) { %>
         graph.facebook.com: !Ref facebookAppId
         <% } %>
@@ -1110,16 +1117,16 @@ Resources:
       OpenIdConnectProviderARNs:
         - !GetAtt OpenIdLambdaInputs.providerArn
     DependsOn: OpenIdLambdaInputs
-      <% } %> 
-    <%if ((!props.audiences || props.audiences.length === 0) && props.authSelections !== 'identityPoolOnly') { %>   
-    DependsOn: UserPoolClientInputs 
+      <% } %>
+    <%if ((!props.audiences || props.audiences.length === 0) && props.authSelections !== 'identityPoolOnly') { %>
+    DependsOn: UserPoolClientInputs
     <% } %>
-  
+
   IdentityPoolRoleMap:
   # Created to map Auth and Unauth roles to the identity pool
   # Depends on Identity Pool for ID ref
     Type: AWS::Cognito::IdentityPoolRoleAttachment
-    Properties: 
+    Properties:
       IdentityPoolId: !Ref IdentityPool
       Roles:
           unauthenticated: !Ref unauthRoleArn
@@ -1133,7 +1140,7 @@ Outputs :
     Value: !Ref 'IdentityPool'
     Description:  Id for the identity pool
   IdentityPoolName:
-    Value: !GetAtt IdentityPool.Name 
+    Value: !GetAtt IdentityPool.Name
   <% } %>
   <%if (props.hostedUIDomainName) { %>
   HostedUIDomain:
@@ -1157,19 +1164,20 @@ Outputs :
     Description: The user pool app client id
   AppClientSecret:
     Value: !GetAtt UserPoolClientInputs.appSecret
+    Condition: ShouldOutputAppClientSecrets
   <%if (props.mfaConfiguration != 'OFF') { %>
-  CreatedSNSRole: 
+  CreatedSNSRole:
     Value: !GetAtt SNSRole.Arn
     Description: role arn
   <% } %>
   <%if (props.googleClientId) { %>
   GoogleWebClient:
     Value: !Ref googleClientId
-  <% } %> 
+  <% } %>
   <%if (props.googleIos) { %>
   GoogleIOSClient:
     Value: !Ref googleIos
-  <% } %> 
+  <% } %>
   <%if (props.googleAndroid) { %>
   GoogleAndroidClient:
     Value: !Ref googleAndroid
@@ -1177,9 +1185,9 @@ Outputs :
   <%if (props.facebookAppId) { %>
   FacebookWebClient:
     Value: !Ref facebookAppId
-  <% } %> 
+  <% } %>
   <%if (props.amazonAppId) { %>
   AmazonWebClient:
     Value: !Ref amazonAppId
-  <% } %> 
+  <% } %>
   <% } %>

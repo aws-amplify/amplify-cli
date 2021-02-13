@@ -28,6 +28,7 @@ export const PathConstants = {
   AmplifyMetaFileName: 'amplify-meta.json',
   TagsFileName: 'tags.json',
   ParametersJsonFileName: 'parameters.json',
+  ReadMeFileName: 'README.md',
 
   LocalEnvFileName: 'local-env-info.json',
   LocalAWSInfoFileName: 'local-aws-info.json',
@@ -98,11 +99,17 @@ export class PathManager {
   getBackendConfigFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.BackendConfigFileName]);
 
-  getTagFilePath = (projectPath?: string): string =>
-    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.TagsFileName]);
+  getTagFilePath = (projectPath?: string): string => {
+    return this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.TagsFileName]);
+  };
 
-  getCurrentTagFilePath = (projectPath?: string): string =>
-    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName, PathConstants.TagsFileName]);
+  getCurrentTagFilePath = (projectPath?: string): string => {
+    return this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.CurrentCloudBackendDirName,
+      PathConstants.TagsFileName,
+    ]);
+  };
 
   getResourceParamatersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
     this.constructPath(projectPath, [
@@ -112,6 +119,9 @@ export class PathManager {
       resourceName,
       PathConstants.ParametersJsonFileName,
     ]);
+
+  getReadMeFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.ReadMeFileName]);
 
   getCurrentAmplifyMetaFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [

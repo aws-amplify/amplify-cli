@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
-const open = require('open');
 const _ = require('lodash');
-const { stateManager } = require('amplify-cli-core');
+const { stateManager, open } = require('amplify-cli-core');
 const { getAuthResourceName } = require('../../utils/getAuthResourceName');
 const { copyCfnTemplate, saveResourceParameters } = require('./utils/synthesize-resources');
 const { ENV_SPECIFIC_PARAMS, AmplifyAdmin, UserPool, IdentityPool, BothPools, privateKeys } = require('./constants');

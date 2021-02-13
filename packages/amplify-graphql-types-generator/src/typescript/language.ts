@@ -1,6 +1,6 @@
 import { LegacyInlineFragment } from '../compiler/legacyIR';
 
-import { propertyDeclarations } from './codeGeneration';
+import { pickedPropertyDeclarations } from './codeGeneration';
 import { typeNameFromGraphQLType } from './types';
 
 import { CodeGenerator } from '../utilities/CodeGenerator';
@@ -19,7 +19,7 @@ export interface Property {
   fields?: any[];
   inlineFragments?: LegacyInlineFragment[];
   fragmentSpreads?: any;
-  isInput?: boolean;
+  isOptional?: boolean;
   isArray?: boolean;
   isArrayElementNullable?: boolean | null;
 }
@@ -27,7 +27,7 @@ export interface Property {
 export function interfaceDeclaration(
   generator: CodeGenerator,
   { interfaceName, noBrackets }: { interfaceName: string; noBrackets?: boolean },
-  closure: () => void
+  closure: () => void,
 ) {
   generator.printNewlineIfNeeded();
   generator.printNewline();
@@ -44,8 +44,8 @@ export function interfaceDeclaration(
 
 export function propertyDeclaration(
   generator: CodeGenerator,
-  { fieldName, type, propertyName, typeName, description, isInput, isArray, isNullable, isArrayElementNullable }: Property,
-  closure?: () => void
+  { fieldName, type, propertyName, typeName, description, isOptional, isArray, isNullable, isArrayElementNullable }: Property,
+  closure?: () => void,
 ) {
   const name = fieldName || propertyName;
 
@@ -58,7 +58,7 @@ export function propertyDeclaration(
   if (closure) {
     generator.printOnNewline(name);
 
-    if (isNullable && isInput) {
+    if (isNullable || isOptional) {
       generator.print('?');
     }
     generator.print(': ');
@@ -84,15 +84,36 @@ export function propertyDeclaration(
     }
   } else {
     generator.printOnNewline(name);
-    if (isInput && isNullable) {
+    if (isOptional || isNullable) {
       generator.print('?');
     }
-    generator.print(`: ${typeName || (type && typeNameFromGraphQLType(generator.context, type))}`);
+    generator.print(': ');
+
+    if (isArray) {
+      generator.print(' Array<');
+    }
+    generator.print(`${typeName || (type && typeNameFromGraphQLType(generator.context, type))}`);
+    if (isArray) {
+      if (isArrayElementNullable) {
+        generator.print(' | null');
+      }
+      generator.print(' >');
+    }
+
+    // When typeName is passed as string it includes <typename> | null for nullable types.
+    if (isNullable && (!typeName || isArray)) {
+      generator.print(' | null');
+    }
   }
   generator.print(',');
 }
 
-export function propertySetsDeclaration(generator: CodeGenerator, property: Property, propertySets: Property[][], standalone = false) {
+export function pickedPropertySetsDeclaration(
+  generator: CodeGenerator,
+  property: Property,
+  propertySets: Property[][],
+  standalone = false,
+) {
   const { description, fieldName, propertyName, isNullable, isArray, isArrayElementNullable } = property;
   const name = fieldName || propertyName;
 
@@ -116,7 +137,7 @@ export function propertySetsDeclaration(generator: CodeGenerator, property: Prop
     () => {
       propertySets.forEach((propertySet, index, propertySets) => {
         generator.withinBlock(() => {
-          propertyDeclarations(generator, propertySet);
+          pickedPropertyDeclarations(generator, propertySet);
         });
         if (index !== propertySets.length - 1) {
           generator.print(' |');
@@ -124,7 +145,7 @@ export function propertySetsDeclaration(generator: CodeGenerator, property: Prop
       });
     },
     '(',
-    ')'
+    ')',
   );
 
   generator.popScope();
@@ -158,7 +179,7 @@ export function methodDeclaration(
     async: boolean;
     args: Array<string>;
   },
-  closure: () => void
+  closure: () => void,
 ) {
   generator.printNewline();
   if (async) generator.print('async ');

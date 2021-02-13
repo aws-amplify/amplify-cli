@@ -1,13 +1,28 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, updateFunction } from 'amplify-e2e-core';
-import { addSimpleDDB, addDDBWithTrigger } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc, getFunctionSrc } from 'amplify-e2e-core';
-import { addApiWithSchema } from 'amplify-e2e-core';
-import { getBackendAmplifyMeta } from 'amplify-e2e-core';
-import { invokeFunction } from 'amplify-e2e-core';
+import {
+  addApiWithSchema,
+  addAuthWithDefault,
+  addDDBWithTrigger,
+  addFunction,
+  addS3StorageWithSettings,
+  addSimpleDDB,
+  AddStorageSettings,
+  amplifyPush,
+  amplifyPushAuth,
+  amplifyPushForce,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getBackendAmplifyMeta,
+  getFunctionSrc,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  invokeFunction,
+  overrideFunctionSrc,
+  readJsonFile,
+  updateFunction,
+} from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
-import { readJsonFile } from 'amplify-e2e-core';
 import _ from 'lodash';
 
 describe('nodejs', () => {
@@ -20,6 +35,61 @@ describe('nodejs', () => {
     afterEach(async () => {
       await deleteProject(projRoot);
       deleteProjectDir(projRoot);
+    });
+
+    it('lambda with s3 permissions should be able to call listObjects', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+      const s3Name = `integtestfn${random}`;
+      const options: AddStorageSettings = {
+        resourceName: s3Name,
+        bucketName: s3Name,
+      };
+      await addAuthWithDefault(projRoot);
+      await addS3StorageWithSettings(projRoot, options);
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['storage'],
+            resources: [s3Name],
+            choices: ['auth', 'storage', 'function', 'api'],
+            operations: ['create', 'update', 'read', 'delete'],
+          },
+        },
+        'nodejs',
+      );
+
+      overrideFunctionSrc(
+        projRoot,
+        fnName,
+        `
+      const AWS = require('aws-sdk');
+      const awsS3Client = new AWS.S3();
+
+      exports.handler = function(event, context) {
+          let listObjects = await awsS3Client
+          .listObjectsV2({
+            Bucket: process.env.STORAGE_INTEGTESTFN${random}_BUCKETNAME,
+          })
+          .promise();
+          return listObjects
+      }
+    `,
+      );
+      await amplifyPushForce(projRoot);
+      const meta = getProjectMeta(projRoot);
+      const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
+      expect(bucketName).toBeDefined();
+      expect(region).toBeDefined();
+      const { Name: functionName } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      expect(functionName).toBeDefined();
+      const result1 = await invokeFunction(functionName, null, region);
+      expect(result1.StatusCode).toBe(200);
+      expect(result1.Payload).toBeDefined();
     });
 
     it('lambda with dynamoDB permissions should be able to scan ddb', async () => {
@@ -339,7 +409,7 @@ describe('nodejs', () => {
             permissions: ['api'],
             choices: ['api'],
             resources: [apiName],
-            operations: ['read'],
+            operations: ['Query'],
           },
         },
         'nodejs',
@@ -350,6 +420,37 @@ describe('nodejs', () => {
       );
       const envVarsObj = lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables;
       expect(_.keys(envVarsObj)).toContain(`API_${apiName.toUpperCase()}_GRAPHQLAPIKEYOUTPUT`);
+    });
+
+    it('should be able to query AppSync with minimal permissions with featureFlag', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      const random = Math.floor(Math.random() * 10000);
+      const apiName = `apiwithapikey${random}`;
+      await addApiWithSchema(projRoot, 'simple_model.graphql', { apiName });
+      const fnName = `apikeyenvvar${random}`;
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['api'],
+            choices: ['api'],
+            resources: [apiName],
+            operations: ['Query'],
+          },
+        },
+        'nodejs',
+      );
+
+      const lambdaCFN = readJsonFile(
+        path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
+      );
+      const envVarsObj = lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement;
+      envVarsObj.forEach(statement => {
+        expect(statement.Action).toContain('appsync:GraphQL');
+        expect(statement.Resource[0]['Fn::Join'][1]).toContain('/types/Query/*');
+      });
     });
   });
 });

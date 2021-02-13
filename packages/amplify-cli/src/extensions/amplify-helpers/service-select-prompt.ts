@@ -1,55 +1,58 @@
-import { $TSAny, $TSContext, ServiceSelection } from 'amplify-cli-core';
+import { $TSAny, $TSContext, exitOnNextTick, ResourceDoesNotExistError, ServiceSelection } from 'amplify-cli-core';
 import * as inquirer from 'inquirer';
+
 import { getProjectConfig } from './get-project-config';
 import { getProviderPlugins } from './get-provider-plugins';
-import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
-import { keys } from 'lodash';
 
 type ServiceSelectionOption = {
   name: string;
   value: ServiceSelection;
 };
 
-function filterServicesByEnabledProviders(context, enabledProviders, supportedServices) {
+function filterServicesByEnabledProviders(context: $TSContext, enabledProviders: string[], supportedServices) {
   const providerPlugins = getProviderPlugins(context);
 
-  const filteredServices: any[] = [];
+  const filteredServices: $TSAny[] = [];
 
-  Object.keys(supportedServices).forEach(service => {
-    if (enabledProviders.includes(supportedServices[service].provider)) {
-      filteredServices.push({
-        service,
-        providerPlugin: providerPlugins[supportedServices[service].provider],
-        providerName: supportedServices[service].provider,
-        alias: supportedServices[service].alias,
-      });
-    }
-  });
+  if (supportedServices !== undefined && enabledProviders !== undefined) {
+    Object.keys(supportedServices).forEach(serviceName => {
+      const { provider, alias } = supportedServices[serviceName];
+
+      if (enabledProviders.includes(provider)) {
+        filteredServices.push({
+          service: serviceName,
+          providerPlugin: providerPlugins[provider],
+          providerName: provider,
+          alias: alias,
+        });
+      }
+    });
+  }
 
   return filteredServices;
 }
 
 async function serviceQuestionWalkthrough(
-  context,
+  context: $TSContext,
   supportedServices,
   category,
   customQuestion = null,
   optionNameOverrides?: Record<string, string>,
 ): Promise<ServiceSelection> {
   const options: ServiceSelectionOption[] = [];
-  for (let i = 0; i < supportedServices.length; ++i) {
-    let optionName = supportedServices[i].alias || `${supportedServices[i].providerName}:${supportedServices[i].service}`;
+  for (const supportedService of supportedServices) {
+    let optionName = supportedService.alias || `${supportedService.providerName}:${supportedService.service}`;
 
-    if (optionNameOverrides && optionNameOverrides[supportedServices[i].service]) {
-      optionName = optionNameOverrides[supportedServices[i].service];
+    if (optionNameOverrides && optionNameOverrides[supportedService.service]) {
+      optionName = optionNameOverrides[supportedService.service];
     }
 
     options.push({
       name: optionName,
       value: {
-        provider: supportedServices[i].providerPlugin,
-        service: supportedServices[i].service,
-        providerName: supportedServices[i].providerName,
+        provider: supportedService.providerPlugin,
+        service: supportedService.service,
+        providerName: supportedService.providerName,
       },
     });
   }
@@ -57,9 +60,10 @@ async function serviceQuestionWalkthrough(
   if (options.length === 0) {
     const errMessage = `No services defined by configured providers for category: ${category}`;
     context.print.error(errMessage);
-    context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(1);
   }
+
   if (options.length === 1) {
     // No need to ask questions
     context.print.info(`Using service: ${options[0].value.service}, provided by: ${options[0].value.providerName}`);

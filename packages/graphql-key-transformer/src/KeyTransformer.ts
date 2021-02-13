@@ -44,7 +44,15 @@ import {
   toUpper,
   getDirectiveArgument,
 } from 'graphql-transformer-common';
-import { makeModelConnectionType } from 'graphql-dynamodb-transformer';
+import {
+  makeModelConnectionType,
+  makeModelSortDirectionEnumObject,
+  makeScalarFilterInputs,
+  makeEnumFilterInputObjects,
+  makeModelXFilterInputObject,
+  makeAttributeTypeEnum,
+  CONDITIONS_MINIMUM_VERSION,
+} from 'graphql-dynamodb-transformer';
 import {
   ObjectTypeDefinitionNode,
   FieldDefinitionNode,
@@ -389,9 +397,45 @@ export class KeyTransformer extends Transformer {
       };
       ctx.putType(queryType);
 
+      // Create Sort Direction if it doesn't exist
+      if (!this.typeExist('ModelSortDirection', ctx)) {
+        const modelSortDirection = makeModelSortDirectionEnumObject();
+        ctx.addEnum(modelSortDirection);
+      }
+      this.generateFilterInputs(ctx, definition);
       this.generateModelXConnectionType(ctx, definition);
     }
   };
+
+  private generateFilterInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
+    const scalarFilters = makeScalarFilterInputs(this.supportsConditions(ctx));
+    for (const filter of scalarFilters) {
+      if (!this.typeExist(filter.name.value, ctx)) {
+        ctx.addInput(filter);
+      }
+    }
+
+    // Create the Enum filters
+    const enumFilters = makeEnumFilterInputObjects(def, ctx, this.supportsConditions(ctx));
+    for (const filter of enumFilters) {
+      if (!this.typeExist(filter.name.value, ctx)) {
+        ctx.addInput(filter);
+      }
+    }
+
+    // Create the ModelXFilterInput
+    const tableXQueryFilterInput = makeModelXFilterInputObject(def, ctx, this.supportsConditions(ctx));
+    if (!this.typeExist(tableXQueryFilterInput.name.value, ctx)) {
+      ctx.addInput(tableXQueryFilterInput);
+    }
+
+    if (this.supportsConditions(ctx)) {
+      const attributeTypeEnum = makeAttributeTypeEnum();
+      if (!this.typeExist(attributeTypeEnum.name.value, ctx)) {
+        ctx.addType(attributeTypeEnum);
+      }
+    }
+  }
 
   private generateModelXConnectionType(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
     const tableXConnectionName = ModelResourceIDs.ModelConnectionTypeName(def.name.value);
@@ -402,7 +446,6 @@ export class KeyTransformer extends Transformer {
     // Create the ModelXConnection
     const connectionType = blankObject(tableXConnectionName);
     ctx.addObject(connectionType);
-
     ctx.addObjectExtension(makeModelConnectionType(def.name.value));
   }
 
@@ -603,6 +646,7 @@ export class KeyTransformer extends Transformer {
     const tableResource = ctx.getResource(tableLogicalID);
     const primaryKeyDirective = getPrimaryKey(definition);
     const primaryPartitionKeyName = primaryKeyDirective ? getDirectiveArguments(primaryKeyDirective).fields[0] : 'id';
+    const defaultGSI = ctx.featureFlags.getBoolean('secondaryKeyAsGSI', false);
     if (!tableResource) {
       throw new InvalidDirectiveError(`The @key directive may only be added to object definitions annotated with @model.`);
     } else {
@@ -613,7 +657,7 @@ export class KeyTransformer extends Transformer {
           ProjectionType: 'ALL',
         }),
       };
-      if (primaryPartitionKeyName === ks[0].AttributeName) {
+      if (primaryPartitionKeyName === ks[0].AttributeName && !defaultGSI) {
         // This is an LSI.
         // Add the new secondary index and update the table's attribute definitions.
         tableResource.Properties.LocalSecondaryIndexes = append(
@@ -690,6 +734,9 @@ export class KeyTransformer extends Transformer {
   }
   private typeExist(type: string, ctx: TransformerContext): boolean {
     return Boolean(type in ctx.nodeMap);
+  }
+  private supportsConditions(context: TransformerContext) {
+    return context.getTransformerVersion() >= CONDITIONS_MINIMUM_VERSION;
   }
 }
 

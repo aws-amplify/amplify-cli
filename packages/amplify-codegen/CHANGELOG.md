@@ -3,6 +3,100 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.21.0...amplify-codegen@2.21.1) (2021-02-11)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** set sourceDir path to correct graphql schema location ([#6512](https://github.com/aws-amplify/amplify-cli/issues/6512)) ([6edf229](https://github.com/aws-amplify/amplify-cli/commit/6edf2298ebbabda57230f9e0b9c6c4f504f8a275)), closes [aws-amplify/amplify-cli#5483](https://github.com/aws-amplify/amplify-cli/issues/5483) [aws-amplify/amplify-cli#5483](https://github.com/aws-amplify/amplify-cli/issues/5483)
+
+
+
+
+
+# [2.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.20.5...amplify-codegen@2.21.0) (2021-02-10)
+
+
+### Features
+
+* add Flutter  support for Admin UI ([#6516](https://github.com/aws-amplify/amplify-cli/issues/6516)) ([d9ee44b](https://github.com/aws-amplify/amplify-cli/commit/d9ee44be73f43b11da2a07d21fd60108f49b1608))
+
+
+
+
+
+## [2.20.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.20.4...amplify-codegen@2.20.5) (2021-01-08)
+
+
+### Bug Fixes
+
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+
+
+
+
+
+## [2.20.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.20.3...amplify-codegen@2.20.4) (2020-12-31)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** excludes flutter projects from gql gen ([#6199](https://github.com/aws-amplify/amplify-cli/issues/6199)) ([450616e](https://github.com/aws-amplify/amplify-cli/commit/450616e42d28e862919c54b29454a29dbd715eaf))
+
+
+
+
+
+## [2.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.20.2...amplify-codegen@2.20.3) (2020-12-21)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.20.1...amplify-codegen@2.20.2) (2020-12-16)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [2.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.20.0...amplify-codegen@2.20.1) (2020-12-11)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+# [2.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.19.1...amplify-codegen@2.20.0) (2020-12-07)
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+
+
+
+
+
+## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.19.0...amplify-codegen@2.19.1) (2020-12-03)
+
+
+
+## 4.37.1 (2020-12-02)
+
+
+### Bug Fixes
+
+* **amplify-codegen-appsync-model-plugin:** address feedback from flutter team(Nov 28) ([#6004](https://github.com/aws-amplify/amplify-cli/issues/6004)) ([b624e0f](https://github.com/aws-amplify/amplify-cli/commit/b624e0fff58659d0aeb13bc3e79b437071295aa3))
+
+
+
+
+
 # [2.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.18.1...amplify-codegen@2.19.0) (2020-11-30)
 
 

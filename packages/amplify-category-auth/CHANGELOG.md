@@ -3,6 +3,97 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.27.0...amplify-category-auth@2.28.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
+# [2.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.26.4...amplify-category-auth@2.27.0) (2021-02-10)
+
+
+### Bug Fixes
+
+* [#6397](https://github.com/aws-amplify/amplify-cli/issues/6397) - auth update overwrite parameters ([#6403](https://github.com/aws-amplify/amplify-cli/issues/6403)) ([75f5ace](https://github.com/aws-amplify/amplify-cli/commit/75f5ace173a6b36b943e2110845e411a2cce5d6d))
+* appclient secret output default to false ([#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)) ([3da53b7](https://github.com/aws-amplify/amplify-cli/commit/3da53b7c9aacf718ebd8ea63e59928425af20764))
+* apply empty arrays as default values but not undefined values ([#6445](https://github.com/aws-amplify/amplify-cli/issues/6445)) ([c2d2a6c](https://github.com/aws-amplify/amplify-cli/commit/c2d2a6cbffaed255a4cac7738d4691dda25e8710))
+* correct given_name fb attribute mapping ([#6510](https://github.com/aws-amplify/amplify-cli/issues/6510)) ([c26d958](https://github.com/aws-amplify/amplify-cli/commit/c26d95866a0496b26d4d7581eb2096b87390f50e))
+* generating condition for user pool ([#6426](https://github.com/aws-amplify/amplify-cli/issues/6426)) ([4f35e08](https://github.com/aws-amplify/amplify-cli/commit/4f35e08e38900f59e4b98da1417deb204f072f6a))
+
+
+### Features
+
+* add support for importing userpool with no appclient secret ([#6404](https://github.com/aws-amplify/amplify-cli/issues/6404)) ([4ce4138](https://github.com/aws-amplify/amplify-cli/commit/4ce413829f14aa90ca9ca27510249f1c6c39909f)), closes [#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)
+
+
+
+
+
+## [2.26.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.26.3...amplify-category-auth@2.26.4) (2021-01-08)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+## [2.26.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.26.2...amplify-category-auth@2.26.3) (2020-12-31)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+## [2.26.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.26.1...amplify-category-auth@2.26.2) (2020-12-21)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+## [2.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.26.0...amplify-category-auth@2.26.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* [#4175](https://github.com/aws-amplify/amplify-cli/issues/4175) ([#6065](https://github.com/aws-amplify/amplify-cli/issues/6065)) ([85b1ae3](https://github.com/aws-amplify/amplify-cli/commit/85b1ae31253d06718e13a2e2ff8cca3fc1931073))
+* ensure auth selections overwrite defaults ([#6071](https://github.com/aws-amplify/amplify-cli/issues/6071)) ([4b22fb2](https://github.com/aws-amplify/amplify-cli/commit/4b22fb281ba1ba4efa6b9d41f736450f2a959cc7))
+
+
+### Reverts
+
+* Revert "fix: ensure auth selections overwrite defaults (#6071)" (#6179) ([05b88ad](https://github.com/aws-amplify/amplify-cli/commit/05b88ad1e8b9c286f38535ce8dfce58dc87d53fb)), closes [#6071](https://github.com/aws-amplify/amplify-cli/issues/6071) [#6179](https://github.com/aws-amplify/amplify-cli/issues/6179)
+
+
+
+
+
+# [2.26.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.25.1...amplify-category-auth@2.26.0) (2020-12-11)
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
+## [2.25.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.25.0...amplify-category-auth@2.25.1) (2020-12-07)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
 # [2.25.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.24.4...amplify-category-auth@2.25.0) (2020-11-30)
 
 

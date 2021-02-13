@@ -1,4 +1,5 @@
 const { join, dirname } = require('path');
+const { pathManager } = require('amplify-cli-core');
 
 const getSchemaDownloadLocation = require('../../src/utils/getSchemaDownloadLocation');
 const getAndroidResDir = require('../../src/utils/getAndroidResDir');
@@ -6,6 +7,7 @@ const getFrontendHandler = require('../../src/utils/getFrontEndHandler');
 
 jest.mock('../../src/utils/getAndroidResDir');
 jest.mock('../../src/utils/getFrontEndHandler');
+jest.mock('amplify-cli-core');
 
 let mockContext;
 const mockProjectConfigDefault = 'MOCK_PROJECT_CONFIG';
@@ -19,12 +21,14 @@ const mockProjectConfig = {
 };
 const mockResDir = 'MOCK_RES_DIR/Res';
 const mockAPIName = 'FooAPI';
+const mockProjectRoot = '/home/user/project/proj1';
 
 const mockGetProjectConfigDefault = jest.fn();
 const mockGetProjectConfig = jest.fn();
 describe('getSchemaDownloadLocation', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+    pathManager.findProjectRoot.mockReturnValue(mockProjectRoot);
     mockGetProjectConfigDefault.mockReturnValue(mockProjectConfigDefault);
     mockGetProjectConfig.mockReturnValue(mockProjectConfig);
     getAndroidResDir.mockImplementation(() => {
@@ -40,7 +44,7 @@ describe('getSchemaDownloadLocation', () => {
       },
     };
     const downloadLocation = getSchemaDownloadLocation(mockContext);
-    expect(downloadLocation).toEqual(join('src', 'graphql', 'schema.json'));
+    expect(downloadLocation).toEqual(join(mockProjectRoot, 'src', 'graphql', 'schema.json'));
   });
 
   it('should use the defined project config directory when used in JS frontend', () => {
@@ -50,7 +54,7 @@ describe('getSchemaDownloadLocation', () => {
       },
     };
     const downloadLocation = getSchemaDownloadLocation(mockContext);
-    expect(downloadLocation).toEqual(join('web-client', 'src', 'graphql', 'schema.json'));
+    expect(downloadLocation).toEqual(join(mockProjectRoot, 'web-client', 'src', 'graphql', 'schema.json'));
   });
 
   it('should use the graphql directory when used in iOS frontend', () => {
@@ -61,7 +65,7 @@ describe('getSchemaDownloadLocation', () => {
     };
     getFrontendHandler.mockReturnValue('iOS');
     const downloadLocation = getSchemaDownloadLocation(mockContext);
-    expect(downloadLocation).toEqual(join('graphql', 'schema.json'));
+    expect(downloadLocation).toEqual(join(mockProjectRoot, 'graphql', 'schema.json'));
   });
 
   it('should use main directory in Android', () => {
@@ -72,6 +76,17 @@ describe('getSchemaDownloadLocation', () => {
     };
     getAndroidResDir.mockReturnValue(mockResDir);
     const downloadLocation = getSchemaDownloadLocation(mockContext);
-    expect(downloadLocation).toEqual(join(dirname(mockResDir), 'graphql', 'schema.json'));
+    expect(downloadLocation).toEqual(join(mockProjectRoot, dirname(mockResDir), 'graphql', 'schema.json'));
+  });
+
+  it('should return the download location inside the project root', () => {
+    mockContext = {
+      amplify: {
+        getProjectConfig: mockGetProjectConfig,
+      },
+    };
+    getAndroidResDir.mockReturnValue(mockResDir);
+    const downloadLocation = getSchemaDownloadLocation(mockContext);
+    expect(downloadLocation).toContain(mockProjectRoot);
   });
 });

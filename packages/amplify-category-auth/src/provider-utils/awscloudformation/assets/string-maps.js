@@ -186,7 +186,7 @@ const attributeProviderMap = {
   },
   given_name: {
     facebook: {
-      attr: 'given_name',
+      attr: 'first_name',
       scope: 'public_profile',
     },
     google: {

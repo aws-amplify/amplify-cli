@@ -1,4 +1,4 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush, validateNodeModulesDirRemoval } from 'amplify-e2e-core';
 import { addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger } from 'amplify-e2e-core';
 import {
   createNewProjectDir,
@@ -40,6 +40,7 @@ describe('amplify add auth...', () => {
 
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
+    validateNodeModulesDirRemoval(projRoot);
     expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
     expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
     expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(4);
@@ -60,6 +61,7 @@ describe('amplify add auth...', () => {
     const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
 
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
+    validateNodeModulesDirRemoval(projRoot);
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
@@ -81,6 +83,7 @@ describe('amplify add auth...', () => {
 
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
+    validateNodeModulesDirRemoval(projRoot);
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
     expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
@@ -107,6 +110,7 @@ describe('amplify add auth...', () => {
     const verifyFunction = await getLambdaFunction(verifyFunctionName, meta.providers.awscloudformation.Region);
 
     expect(userPool.UserPool).toBeDefined();
+    validateNodeModulesDirRemoval(projRoot);
     expect(clients).toHaveLength(2);
     expect(createFunction).toBeDefined();
     expect(defineFunction).toBeDefined();

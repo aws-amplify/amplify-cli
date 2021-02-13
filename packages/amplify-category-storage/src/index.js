@@ -77,8 +77,11 @@ async function getPermissionPolicies(context, resourceOpsMapping) {
           resourceName,
           resourceOpsMapping[resourceName],
         );
-
-        permissionPolicies.push(policy);
+        if (Array.isArray(policy)) {
+          permissionPolicies.push(...policy);
+        } else {
+          permissionPolicies.push(policy);
+        }
         resourceAttributes.push({ resourceName, attributes, category });
       } else {
         context.print.error(`Provider not configured for ${category}: ${resourceName}`);

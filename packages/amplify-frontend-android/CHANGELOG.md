@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.14.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.14.4...amplify-frontend-android@2.14.5) (2021-02-10)
+
+
+### Bug Fixes
+
+* appclient secret output default to false ([#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)) ([3da53b7](https://github.com/aws-amplify/amplify-cli/commit/3da53b7c9aacf718ebd8ea63e59928425af20764))
+
+
+
+
+
+## [2.14.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.14.3...amplify-frontend-android@2.14.4) (2021-01-13)
+
+
+
+## 4.41.2 (2021-01-12)
+
+
+### Bug Fixes
+
+* regression from [#6131](https://github.com/aws-amplify/amplify-cli/issues/6131) ([#6370](https://github.com/aws-amplify/amplify-cli/issues/6370)) ([9dcd118](https://github.com/aws-amplify/amplify-cli/commit/9dcd118eed4cd29b4d10d1b235fcc35933d58b02))
+
+
+
+
+
+## [2.14.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.14.2...amplify-frontend-android@2.14.3) (2021-01-08)
+
+
+### Bug Fixes
+
+* container based deployments on native projects ([#6201](https://github.com/aws-amplify/amplify-cli/issues/6201)) ([5ebcae8](https://github.com/aws-amplify/amplify-cli/commit/5ebcae83625d4626daf4391240b19fb7bd475759))
+
+
+
+
+
 ## [2.14.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.14.1...amplify-frontend-android@2.14.2) (2020-11-28)
 
 

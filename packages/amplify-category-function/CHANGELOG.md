@@ -3,6 +3,91 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.29.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.28.5...amplify-category-function@2.29.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
+## [2.28.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.28.4...amplify-category-function@2.28.5) (2021-02-10)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** use ref for S3Bucket and S3Key in CFN ([#6358](https://github.com/aws-amplify/amplify-cli/issues/6358)) ([84a141a](https://github.com/aws-amplify/amplify-cli/commit/84a141ac4812d95c27b14c8d9f81e4a5c8fadef8))
+* [#6397](https://github.com/aws-amplify/amplify-cli/issues/6397) - auth update overwrite parameters ([#6403](https://github.com/aws-amplify/amplify-cli/issues/6403)) ([75f5ace](https://github.com/aws-amplify/amplify-cli/commit/75f5ace173a6b36b943e2110845e411a2cce5d6d))
+* fix appsync permission assignment from functions ([#5342](https://github.com/aws-amplify/amplify-cli/issues/5342)) ([b2e2dd0](https://github.com/aws-amplify/amplify-cli/commit/b2e2dd0071c1a451ba032cf7f8cfe7cf6381a96e))
+* persist s3bucket metadata on pull and env change ([#6502](https://github.com/aws-amplify/amplify-cli/issues/6502)) ([357f787](https://github.com/aws-amplify/amplify-cli/commit/357f787c2d816e1defa1d0909b06f82775c35255))
+
+
+
+
+
+## [2.28.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.28.3...amplify-category-function@2.28.4) (2021-01-08)
+
+
+### Bug Fixes
+
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+
+
+
+
+
+## [2.28.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.28.2...amplify-category-function@2.28.3) (2020-12-31)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [2.28.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.28.1...amplify-category-function@2.28.2) (2020-12-21)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [2.28.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.28.0...amplify-category-function@2.28.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* removes overwrite of current DependsOn ([#6040](https://github.com/aws-amplify/amplify-cli/issues/6040)) ([8866f45](https://github.com/aws-amplify/amplify-cli/commit/8866f45a1a2306c205b651c8e7c68d90f1092acb))
+
+
+
+
+
+# [2.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.27.0...amplify-category-function@2.28.0) (2020-12-11)
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
+# [2.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.26.3...amplify-category-function@2.27.0) (2020-12-07)
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+
+
+
+
+
 ## [2.26.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.26.2...amplify-category-function@2.26.3) (2020-11-30)
 
 **Note:** Version bump only for package amplify-category-function

@@ -1,9 +1,10 @@
 import { ServiceQuestionsResult } from '../service-walkthrough-types';
 import { verificationBucketName } from './verification-bucket-name';
-import { isEmpty, merge } from 'lodash';
+import _ from 'lodash';
 import { structureOAuthMetadata } from '../service-walkthroughs/auth-questions';
 import { removeDeprecatedProps } from './synthesize-resources';
 import { immutableAttributes, safeDefaults } from '../constants';
+import { FeatureFlags } from 'amplify-cli-core';
 
 /**
  * Factory function that returns a function that applies default values to a ServiceQuestionsResult request.
@@ -17,15 +18,21 @@ export const getAddAuthDefaultsApplier = (context: any, defaultValuesFilename: s
   result: ServiceQuestionsResult,
 ): Promise<ServiceQuestionsResult> => {
   const { functionMap, generalDefaults, roles, getAllDefaults } = await import(`../assets/${defaultValuesFilename}`);
-  result = merge(generalDefaults(projectName), result);
+  result = assignDefaults({}, generalDefaults(projectName), result);
 
   await verificationBucketName(result);
 
   structureOAuthMetadata(result, context, getAllDefaults, context.amplify); // adds "oauthMetadata" to result
 
+  // Make the usernames for Cognito case-insensitive by default when it is created, if feature flag
+  // is enabled.
+  if (FeatureFlags.getBoolean('auth.enableCaseInsensitivity')) {
+    result.usernameCaseSensitive = false;
+  }
+
   /* merge actual answers object into props object,
    * ensuring that manual entries override defaults */
-  return merge(functionMap[result.authSelections](result.resourceName), result, roles);
+  return assignDefaults({}, functionMap[result.authSelections](result.resourceName), result, roles);
 };
 
 export const getUpdateAuthDefaultsApplier = (context: any, defaultValuesFilename: string, previousResult: ServiceQuestionsResult) => async (
@@ -50,8 +57,14 @@ export const getUpdateAuthDefaultsApplier = (context: any, defaultValuesFilename
   structureOAuthMetadata(result, context, getAllDefaults, context.amplify); // adds "oauthMetadata" to result
 
   // If there are new trigger selections, make sure they overwrite the previous selections
-  if (!isEmpty(result.triggers)) {
+  if (!_.isEmpty(result.triggers)) {
     previousResult.triggers = Object.assign({}, result.triggers);
   }
-  return merge(defaults, removeDeprecatedProps(previousResult), result);
+  return assignDefaults({}, defaults, removeDeprecatedProps(previousResult), result);
 };
+
+// same as _.assign except undefined values won't overwrite existing values
+// typed to accept up to 4 params but could be typed to accept any number of params
+const assignDefaults = _.partialRight(_.assignWith, (objValue: unknown, srcValue: unknown) =>
+  _.isUndefined(srcValue) ? objValue : srcValue,
+) as <T, U, V, W>(a: T, b: U, c?: V, d?: W) => T & U & V & W;

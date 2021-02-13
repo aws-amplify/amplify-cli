@@ -75,6 +75,8 @@ function setExeInfo(context: $TSContext, projectPath: String, defaultEditor?: St
   };
   context.exeInfo.teamProviderInfo = {};
   context.exeInfo.metaData = {};
+
+  return context;
 }
 
 /* Begin getProjectName */
@@ -150,11 +152,11 @@ async function getEnvName(context) {
       return envName;
     }
     context.print.error(INVALID_ENV_NAME_MSG);
-    context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
+    await context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
     exitOnNextTick(1);
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
     context.print.error('Environment name missing');
-    context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
+    await context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
     exitOnNextTick(1);
   }
 

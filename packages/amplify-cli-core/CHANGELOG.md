@@ -3,6 +3,109 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.15.0...amplify-cli-core@1.16.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
+# [1.15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.14.1...amplify-cli-core@1.15.0) (2021-02-10)
+
+
+### Bug Fixes
+
+* fix appsync permission assignment from functions ([#5342](https://github.com/aws-amplify/amplify-cli/issues/5342)) ([b2e2dd0](https://github.com/aws-amplify/amplify-cli/commit/b2e2dd0071c1a451ba032cf7f8cfe7cf6381a96e))
+* **amplify-category-function:** use ref for S3Bucket and S3Key in CFN ([#6358](https://github.com/aws-amplify/amplify-cli/issues/6358)) ([84a141a](https://github.com/aws-amplify/amplify-cli/commit/84a141ac4812d95c27b14c8d9f81e4a5c8fadef8))
+* optimize mock package imports ([#6455](https://github.com/aws-amplify/amplify-cli/issues/6455)) ([1b64a14](https://github.com/aws-amplify/amplify-cli/commit/1b64a147cbb3b56ce6f8465318d611de5d724685))
+
+
+### Features
+
+* **graphql-key-transformer:** change default to add GSIs when using [@key](https://github.com/key) ([#5648](https://github.com/aws-amplify/amplify-cli/issues/5648)) ([4287c63](https://github.com/aws-amplify/amplify-cli/commit/4287c630295c304c7ff8343922926b4830b75cd4))
+
+
+
+
+
+## [1.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.14.0...amplify-cli-core@1.14.1) (2021-01-08)
+
+
+### Bug Fixes
+
+* apply tags on create and push nested stack ([#6321](https://github.com/aws-amplify/amplify-cli/issues/6321)) ([4faa3e5](https://github.com/aws-amplify/amplify-cli/commit/4faa3e5ac38d311fe7901fb1b8a1b542cf19e598))
+* better error message when angular.json is missing ([#6253](https://github.com/aws-amplify/amplify-cli/issues/6253)) ([0c8175e](https://github.com/aws-amplify/amplify-cli/commit/0c8175e6312fc6fcd5b9e1334cf2011d1e8d392a))
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+
+
+
+
+
+# [1.14.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.13.1...amplify-cli-core@1.14.0) (2020-12-31)
+
+
+### Features
+
+* **cli:** generate REAMDE file in amplify dir ([#5808](https://github.com/aws-amplify/amplify-cli/issues/5808)) ([cf0629f](https://github.com/aws-amplify/amplify-cli/commit/cf0629f7385df77aad19fddd58e3587e40482de2))
+
+
+
+
+
+## [1.13.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.13.0...amplify-cli-core@1.13.1) (2020-12-21)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** load correct file ([#6212](https://github.com/aws-amplify/amplify-cli/issues/6212)) ([7876187](https://github.com/aws-amplify/amplify-cli/commit/787618736540231efeeee8c803c178325b2c70b4))
+
+
+
+
+
+# [1.13.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.12.0...amplify-cli-core@1.13.0) (2020-12-16)
+
+
+### Bug Fixes
+
+* [#4175](https://github.com/aws-amplify/amplify-cli/issues/4175) ([#6065](https://github.com/aws-amplify/amplify-cli/issues/6065)) ([85b1ae3](https://github.com/aws-amplify/amplify-cli/commit/85b1ae31253d06718e13a2e2ff8cca3fc1931073))
+* provide better error message when unknown feature flags are present ([#6114](https://github.com/aws-amplify/amplify-cli/issues/6114)) ([d452e83](https://github.com/aws-amplify/amplify-cli/commit/d452e83c19bc6c4002a851c68b3961fc135f3689))
+
+
+### Features
+
+* **amplify-frontend-ios:** xcode integration feature flag ([#6072](https://github.com/aws-amplify/amplify-cli/issues/6072)) ([d7327ca](https://github.com/aws-amplify/amplify-cli/commit/d7327ca50b163c6104e99a112b8f5c5201e0bbbf))
+
+
+
+
+
+# [1.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.11.0...amplify-cli-core@1.12.0) (2020-12-11)
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
+# [1.11.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.10.0...amplify-cli-core@1.11.0) (2020-12-07)
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+
+
+
+
+
 # [1.10.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.9.0...amplify-cli-core@1.10.0) (2020-11-30)
 
 

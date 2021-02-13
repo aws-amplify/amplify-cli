@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.22.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.22.0...graphql-transformers-e2e-tests@6.22.1) (2021-02-11)
+
+
+
+# 4.43.0 (2021-02-11)
+
+
+### Reverts
+
+* Revert "chore: update amplify lib version (#6544)" (#6597) ([819a749](https://github.com/aws-amplify/amplify-cli/commit/819a74917ff1f8c1e9b66fea0a06338884d52b24)), closes [#6544](https://github.com/aws-amplify/amplify-cli/issues/6544) [#6597](https://github.com/aws-amplify/amplify-cli/issues/6597)
+
+
+
+
+
+# [6.22.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.21.3...graphql-transformers-e2e-tests@6.22.0) (2021-02-10)
+
+
+### Features
+
+* **graphql-connection-transformer:** allow null key-based connections ([#5153](https://github.com/aws-amplify/amplify-cli/issues/5153)) ([e9c8276](https://github.com/aws-amplify/amplify-cli/commit/e9c82768df42144291c70bc719db9f1ab546c39a))
+* **graphql-key-transformer:** change default to add GSIs when using [@key](https://github.com/key) ([#5648](https://github.com/aws-amplify/amplify-cli/issues/5648)) ([4287c63](https://github.com/aws-amplify/amplify-cli/commit/4287c630295c304c7ff8343922926b4830b75cd4))
+
+
+
+
+
+## [6.21.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.21.2...graphql-transformers-e2e-tests@6.21.3) (2021-01-08)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.21.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.21.1...graphql-transformers-e2e-tests@6.21.2) (2020-12-16)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
+## [6.21.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.21.0...graphql-transformers-e2e-tests@6.21.1) (2020-12-07)
+
+**Note:** Version bump only for package graphql-transformers-e2e-tests
+
+
+
+
+
 # [6.21.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformers-e2e-tests@6.20.1...graphql-transformers-e2e-tests@6.21.0) (2020-11-30)
 
 

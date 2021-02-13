@@ -3689,7 +3689,7 @@ public final class Todo implements Model {
   private final @ModelField(targetType=\\"String\\") String description;
   private final @ModelField(targetType=\\"String\\") String due_date;
   private final @ModelField(targetType=\\"Int\\", isRequired = true) Integer version;
-  private final @ModelField(targetType=\\"Float\\") Float value;
+  private final @ModelField(targetType=\\"Float\\") Double value;
   private final @ModelField(targetType=\\"task\\") @HasMany(associatedWith = \\"todo\\", type = task.class) List<task> tasks = null;
   public String getId() {
       return id;
@@ -3715,7 +3715,7 @@ public final class Todo implements Model {
       return version;
   }
   
-  public Float getValue() {
+  public Double getValue() {
       return value;
   }
   
@@ -3723,7 +3723,7 @@ public final class Todo implements Model {
       return tasks;
   }
   
-  private Todo(String id, String title, Boolean done, String description, String due_date, Integer version, Float value) {
+  private Todo(String id, String title, Boolean done, String description, String due_date, Integer version, Double value) {
     this.id = id;
     this.title = title;
     this.done = done;
@@ -3843,7 +3843,7 @@ public final class Todo implements Model {
     BuildStep id(String id) throws IllegalArgumentException;
     BuildStep description(String description);
     BuildStep dueDate(String dueDate);
-    BuildStep value(Float value);
+    BuildStep value(Double value);
   }
   
 
@@ -3854,7 +3854,7 @@ public final class Todo implements Model {
     private Integer version;
     private String description;
     private String due_date;
-    private Float value;
+    private Double value;
     @Override
      public Todo build() {
         String id = this.id != null ? this.id : UUID.randomUUID().toString();
@@ -3903,7 +3903,7 @@ public final class Todo implements Model {
     }
     
     @Override
-     public BuildStep value(Float value) {
+     public BuildStep value(Double value) {
         this.value = value;
         return this;
     }
@@ -3931,7 +3931,7 @@ public final class Todo implements Model {
   
 
   public final class CopyOfBuilder extends Builder {
-    private CopyOfBuilder(String id, String title, Boolean done, String description, String dueDate, Integer version, Float value) {
+    private CopyOfBuilder(String id, String title, Boolean done, String description, String dueDate, Integer version, Double value) {
       super.id(id);
       super.title(title)
         .done(done)
@@ -3967,7 +3967,7 @@ public final class Todo implements Model {
     }
     
     @Override
-     public CopyOfBuilder value(Float value) {
+     public CopyOfBuilder value(Double value) {
       return (CopyOfBuilder) super.value(value);
     }
   }

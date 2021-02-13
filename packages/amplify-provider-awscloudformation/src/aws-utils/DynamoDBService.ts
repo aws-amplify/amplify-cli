@@ -1,14 +1,14 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { IDynamoDBService } from 'amplify-util-import';
 import DynamoDB, { ListTablesInput, ListTablesOutput, TableDescription, TableName } from 'aws-sdk/clients/dynamodb';
-import configurationManager from '../configuration-manager';
+import { loadConfiguration } from '../configuration-manager';
 import { pagedAWSCall } from './paged-call';
 
 export const createDynamoDBService = async (context: $TSContext, options: $TSAny): Promise<DynamoDBService> => {
   let credentials = {};
 
   try {
-    credentials = await configurationManager.loadConfiguration(context);
+    credentials = await loadConfiguration(context);
   } catch (e) {
     // could not load credentials
   }

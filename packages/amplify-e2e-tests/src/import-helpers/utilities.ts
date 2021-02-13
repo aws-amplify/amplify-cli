@@ -1,10 +1,13 @@
+import * as aws from 'aws-sdk';
 import * as path from 'path';
-import { v4 as uuid } from 'uuid';
-import _ from 'lodash';
+
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
-import { getBackendAmplifyMeta, getTeamProviderInfo } from 'amplify-e2e-core';
+import { AppClientSettings, DynamoDBProjectDetails } from './types';
 import { AuthProjectDetails, StorageProjectDetails } from '.';
-import { DynamoDBProjectDetails } from './types';
+import { getBackendAmplifyMeta, getProjectMeta, getTeamProviderInfo } from 'amplify-e2e-core';
+
+import _ from 'lodash';
+import { v4 as uuid } from 'uuid';
 
 export const getShortId = (): string => {
   const [shortId] = uuid().split('-');
@@ -262,4 +265,56 @@ export const getDynamoDBResourceName = (projectRoot: string): string => {
     return amplifyMeta.storage[key].service === 'DynamoDB';
   }) as any;
   return dynamoDBResourceName;
+};
+
+const addAppClient = async (
+  profileName: string,
+  projectRoot: string,
+  clientName: string,
+  generateSecret: boolean,
+  settings: AppClientSettings,
+) => {
+  const projectDetails = getProjectMeta(projectRoot);
+  const authDetails = getAuthProjectDetails(projectRoot);
+  const creds = new aws.SharedIniFileCredentials({ profile: profileName });
+  aws.config.credentials = creds;
+
+  const cognitoClient = new aws.CognitoIdentityServiceProvider({ region: projectDetails.providers.awscloudformation.Region });
+  const response = await cognitoClient
+    .createUserPoolClient({
+      ClientName: clientName,
+      UserPoolId: authDetails.meta.UserPoolId,
+      GenerateSecret: generateSecret,
+      AllowedOAuthFlows: settings.allowedOAuthFlows,
+      CallbackURLs: settings.callbackURLs,
+      LogoutURLs: settings.logoutURLs,
+      AllowedOAuthScopes: settings.allowedScopes,
+      SupportedIdentityProviders: settings.supportedIdentityProviders,
+      AllowedOAuthFlowsUserPoolClient: settings.allowedOAuthFlowsUserPoolClient,
+    })
+    .promise();
+  return { appClientId: response.UserPoolClient.ClientId, appclientSecret: response.UserPoolClient.ClientSecret };
+};
+
+export const addAppClientWithSecret = async (profileName: string, projectRoot: string, clientName: string, settings: AppClientSettings) => {
+  return addAppClient(profileName, projectRoot, clientName, true, settings);
+};
+
+export const addAppClientWithoutSecret = async (
+  profileName: string,
+  projectRoot: string,
+  clientName: string,
+  settings: AppClientSettings,
+) => {
+  return addAppClient(profileName, projectRoot, clientName, false, settings);
+};
+
+export const deleteAppClient = async (profileName: string, projectRoot: string, clientId: string) => {
+  const authDetails = getAuthProjectDetails(projectRoot);
+  const projectDetails = getProjectMeta(projectRoot);
+  const creds = new aws.SharedIniFileCredentials({ profile: profileName });
+  aws.config.credentials = creds;
+
+  const cognitoClient = new aws.CognitoIdentityServiceProvider({ region: projectDetails.providers.awscloudformation.Region });
+  await cognitoClient.deleteUserPoolClient({ ClientId: clientId, UserPoolId: authDetails.meta.UserPoolId }).promise();
 };

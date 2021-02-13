@@ -8,7 +8,7 @@ import {
   interfaceDeclarationForFragment,
   propertiesFromFields,
   updateTypeNameField,
-  propertyDeclarations,
+  pickedPropertyDeclarations,
   interfaceNameFromOperation,
 } from '../typescript/codeGeneration';
 import { typeNameFromGraphQLType } from '../typescript/types';
@@ -83,7 +83,7 @@ function interfaceDeclarationForOperation(generator: CodeGenerator, { operationN
         interfaceName,
       },
       () => {
-        propertyDeclarations(generator, properties);
+        pickedPropertyDeclarations(generator, properties);
       },
     );
   }

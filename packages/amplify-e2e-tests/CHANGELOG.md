@@ -3,6 +3,125 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.34.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.34.0...amplify-e2e-tests@2.34.1) (2021-02-11)
+
+
+
+# 4.43.0 (2021-02-11)
+
+
+### Reverts
+
+* Revert "chore: update amplify lib version (#6544)" (#6597) ([819a749](https://github.com/aws-amplify/amplify-cli/commit/819a74917ff1f8c1e9b66fea0a06338884d52b24)), closes [#6544](https://github.com/aws-amplify/amplify-cli/issues/6544) [#6597](https://github.com/aws-amplify/amplify-cli/issues/6597)
+
+
+
+
+
+# [2.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.4...amplify-e2e-tests@2.34.0) (2021-02-10)
+
+
+### Bug Fixes
+
+* appclient secret output default to false ([#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)) ([3da53b7](https://github.com/aws-amplify/amplify-cli/commit/3da53b7c9aacf718ebd8ea63e59928425af20764))
+* **amplify-provider-awscloudformation:** fix hosting output ([#6041](https://github.com/aws-amplify/amplify-cli/issues/6041)) ([a2c1577](https://github.com/aws-amplify/amplify-cli/commit/a2c15774762c0f07b44ca9c91c57ef4eb3752f2b)), closes [#402](https://github.com/aws-amplify/amplify-cli/issues/402)
+* **amplify-provider-awscloudformation:** use prev deployment vars ([#6486](https://github.com/aws-amplify/amplify-cli/issues/6486)) ([39dfd27](https://github.com/aws-amplify/amplify-cli/commit/39dfd271bcf86b0ec424bb89c0bb38c0544d8d80))
+* check --yes flag instead of CI env vars, clean up test imports ([#6541](https://github.com/aws-amplify/amplify-cli/issues/6541)) ([989624e](https://github.com/aws-amplify/amplify-cli/commit/989624e8cba524d989982a7389cd43eb8dcd8760))
+* enables cors support for lambda proxy integrations for python ([#6477](https://github.com/aws-amplify/amplify-cli/issues/6477)) ([44d1ce3](https://github.com/aws-amplify/amplify-cli/commit/44d1ce34786b6d1161d48332d7d026414a126c89))
+* fix appsync permission assignment from functions ([#5342](https://github.com/aws-amplify/amplify-cli/issues/5342)) ([b2e2dd0](https://github.com/aws-amplify/amplify-cli/commit/b2e2dd0071c1a451ba032cf7f8cfe7cf6381a96e))
+* persist s3bucket metadata on pull and env change ([#6502](https://github.com/aws-amplify/amplify-cli/issues/6502)) ([357f787](https://github.com/aws-amplify/amplify-cli/commit/357f787c2d816e1defa1d0909b06f82775c35255))
+* support choosing AWS authentication flow when admin UI is enabled ([#6433](https://github.com/aws-amplify/amplify-cli/issues/6433)) ([3bf56a8](https://github.com/aws-amplify/amplify-cli/commit/3bf56a8e2e5be67dd861a55807ecc94bd561b4a2))
+* update list bucket policies for s3 triggers ([#6497](https://github.com/aws-amplify/amplify-cli/issues/6497)) ([b09ccf0](https://github.com/aws-amplify/amplify-cli/commit/b09ccf0cd871eba6ca7e211846bde8d18d4b4b0f))
+
+
+### Features
+
+* add support for importing userpool with no appclient secret ([#6404](https://github.com/aws-amplify/amplify-cli/issues/6404)) ([4ce4138](https://github.com/aws-amplify/amplify-cli/commit/4ce413829f14aa90ca9ca27510249f1c6c39909f)), closes [#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)
+* provide tags on create app ([#6381](https://github.com/aws-amplify/amplify-cli/issues/6381)) ([0530d1a](https://github.com/aws-amplify/amplify-cli/commit/0530d1af0e1c46bac45da2c0185d213058a28849))
+
+
+### Reverts
+
+* Revert "feat: provide tags on create app (#6381)" (#6456) ([5789b26](https://github.com/aws-amplify/amplify-cli/commit/5789b26036c4e93f569669e25c3cf2637b4abdb8)), closes [#6381](https://github.com/aws-amplify/amplify-cli/issues/6381) [#6456](https://github.com/aws-amplify/amplify-cli/issues/6456)
+
+
+
+
+
+## [2.33.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.3...amplify-e2e-tests@2.33.4) (2021-01-08)
+
+
+### Bug Fixes
+
+* removes nodeModules from currentCloudBackend ([#6261](https://github.com/aws-amplify/amplify-cli/issues/6261)) ([db9dca9](https://github.com/aws-amplify/amplify-cli/commit/db9dca9db019494a0c68f42d9ffeb92d0b9b2b43))
+
+
+
+
+
+## [2.33.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.2...amplify-e2e-tests@2.33.3) (2020-12-31)
+
+
+
+# 4.41.0 (2020-12-30)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [2.33.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.1...amplify-e2e-tests@2.33.2) (2020-12-21)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.33.0...amplify-e2e-tests@2.33.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* **graphql-transformer-core:** fix gsi mutate san check ([#6095](https://github.com/aws-amplify/amplify-cli/issues/6095)) ([37d08d9](https://github.com/aws-amplify/amplify-cli/commit/37d08d941421fe030bb454e7f417b3198a4b04ac)), closes [#6013](https://github.com/aws-amplify/amplify-cli/issues/6013)
+
+
+
+
+
+# [2.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.32.0...amplify-e2e-tests@2.33.0) (2020-12-11)
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
+# [2.32.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.31.0...amplify-e2e-tests@2.32.0) (2020-12-07)
+
+
+
+# 4.38.0 (2020-12-05)
+
+
+### Bug Fixes
+
+* added CORS headers to allow all type ([#6027](https://github.com/aws-amplify/amplify-cli/issues/6027)) ([74debca](https://github.com/aws-amplify/amplify-cli/commit/74debca39a4222b18bfbaddb872013b60da785de))
+* update snapshot ([#6074](https://github.com/aws-amplify/amplify-cli/issues/6074)) ([747d290](https://github.com/aws-amplify/amplify-cli/commit/747d2902917ab75aed082dd8094de4c11c37fc3e))
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+
+
+
+
+
 # [2.31.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.30.2...amplify-e2e-tests@2.31.0) (2020-11-30)
 
 

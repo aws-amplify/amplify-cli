@@ -3,6 +3,164 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.43.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.42.0...@aws-amplify/cli@4.43.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
+# [4.42.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.41.2...@aws-amplify/cli@4.42.0) (2021-02-10)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** use ref for S3Bucket and S3Key in CFN ([#6358](https://github.com/aws-amplify/amplify-cli/issues/6358)) ([84a141a](https://github.com/aws-amplify/amplify-cli/commit/84a141ac4812d95c27b14c8d9f81e4a5c8fadef8))
+* [#6397](https://github.com/aws-amplify/amplify-cli/issues/6397) - auth update overwrite parameters ([#6403](https://github.com/aws-amplify/amplify-cli/issues/6403)) ([75f5ace](https://github.com/aws-amplify/amplify-cli/commit/75f5ace173a6b36b943e2110845e411a2cce5d6d))
+* check for local env file and then fall back on exeinfo ([#6500](https://github.com/aws-amplify/amplify-cli/issues/6500)) ([d2bc6d8](https://github.com/aws-amplify/amplify-cli/commit/d2bc6d86ada45fbda8014a54ed2d09459411d7ab))
+* persist s3bucket metadata on pull and env change ([#6502](https://github.com/aws-amplify/amplify-cli/issues/6502)) ([357f787](https://github.com/aws-amplify/amplify-cli/commit/357f787c2d816e1defa1d0909b06f82775c35255))
+
+
+### Features
+
+* add Flutter  support for Admin UI ([#6516](https://github.com/aws-amplify/amplify-cli/issues/6516)) ([d9ee44b](https://github.com/aws-amplify/amplify-cli/commit/d9ee44be73f43b11da2a07d21fd60108f49b1608))
+
+
+
+
+
+## [4.41.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.41.1...@aws-amplify/cli@4.41.2) (2021-01-13)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.41.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.41.0...@aws-amplify/cli@4.41.1) (2021-01-08)
+
+
+### Bug Fixes
+
+* **cli:** handle undefined enabledProviders ([#6293](https://github.com/aws-amplify/amplify-cli/issues/6293)) ([b57b05d](https://github.com/aws-amplify/amplify-cli/commit/b57b05dc95109e490cb4b07c7304f32949607b77))
+* apply tags on create and push nested stack ([#6321](https://github.com/aws-amplify/amplify-cli/issues/6321)) ([4faa3e5](https://github.com/aws-amplify/amplify-cli/commit/4faa3e5ac38d311fe7901fb1b8a1b542cf19e598))
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+* removes nodeModules for lambda functions ([#6317](https://github.com/aws-amplify/amplify-cli/issues/6317)) ([091e148](https://github.com/aws-amplify/amplify-cli/commit/091e148ada698567bbdc78fc528da8c5a8e57a73))
+* removes nodeModules from currentCloudBackend ([#6261](https://github.com/aws-amplify/amplify-cli/issues/6261)) ([db9dca9](https://github.com/aws-amplify/amplify-cli/commit/db9dca9db019494a0c68f42d9ffeb92d0b9b2b43))
+
+
+
+
+
+# [4.41.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.40.1...@aws-amplify/cli@4.41.0) (2020-12-31)
+
+
+### Features
+
+* **cli:** generate REAMDE file in amplify dir ([#5808](https://github.com/aws-amplify/amplify-cli/issues/5808)) ([cf0629f](https://github.com/aws-amplify/amplify-cli/commit/cf0629f7385df77aad19fddd58e3587e40482de2))
+
+
+
+
+
+## [4.40.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.40.0...@aws-amplify/cli@4.40.1) (2020-12-21)
+
+
+### Bug Fixes
+
+* **cli:** update plugin type details url ([#6120](https://github.com/aws-amplify/amplify-cli/issues/6120)) ([d6c44cc](https://github.com/aws-amplify/amplify-cli/commit/d6c44cc2770a13f86ee208d2585ec625517523dd))
+* [#6168](https://github.com/aws-amplify/amplify-cli/issues/6168), update error messages, yarn.lock ([#6207](https://github.com/aws-amplify/amplify-cli/issues/6207)) ([450eb0e](https://github.com/aws-amplify/amplify-cli/commit/450eb0e618c66ed34719f65a5a799a193d6a8a94))
+* skip delete ([#6204](https://github.com/aws-amplify/amplify-cli/issues/6204)) ([33f51d0](https://github.com/aws-amplify/amplify-cli/commit/33f51d07b7a7584575788f6265c43b28cec72e05))
+
+
+
+
+
+# [4.40.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.39.0...@aws-amplify/cli@4.40.0) (2020-12-16)
+
+
+### Bug Fixes
+
+* check that cfn template exists ([#6163](https://github.com/aws-amplify/amplify-cli/issues/6163)) ([04b9918](https://github.com/aws-amplify/amplify-cli/commit/04b991810897525816257272822ded002b27f0e5))
+* hostedUIProviderCreds Not found and check for localenv ([#6099](https://github.com/aws-amplify/amplify-cli/issues/6099)) ([874ceaa](https://github.com/aws-amplify/amplify-cli/commit/874ceaa7811bad2cd0ad3ba35f588b7fca0ead0f))
+* provide better error message when unknown feature flags are present ([#6114](https://github.com/aws-amplify/amplify-cli/issues/6114)) ([d452e83](https://github.com/aws-amplify/amplify-cli/commit/d452e83c19bc6c4002a851c68b3961fc135f3689))
+
+
+### Features
+
+* added exception item into options ([#6018](https://github.com/aws-amplify/amplify-cli/issues/6018)) ([7a3be75](https://github.com/aws-amplify/amplify-cli/commit/7a3be75935de928b0e080afc3a07e7efa1eeb8bf))
+
+
+### Reverts
+
+* Revert "feat: added exception item into options (#6018)" (#6157) ([6fb0b07](https://github.com/aws-amplify/amplify-cli/commit/6fb0b07b4daf7e4d964f3db35194d2ba8652d76c)), closes [#6018](https://github.com/aws-amplify/amplify-cli/issues/6018) [#6157](https://github.com/aws-amplify/amplify-cli/issues/6157)
+
+
+
+
+
+# [4.39.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.38.2...@aws-amplify/cli@4.39.0) (2020-12-11)
+
+
+### Bug Fixes
+
+* disabling local logging ([#6125](https://github.com/aws-amplify/amplify-cli/issues/6125)) ([89c9d8b](https://github.com/aws-amplify/amplify-cli/commit/89c9d8b6fe811cc45749062c65266d280f8f47e1))
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
+## [4.38.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.38.1...@aws-amplify/cli@4.38.2) (2020-12-09)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.38.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.38.0...@aws-amplify/cli@4.38.1) (2020-12-09)
+
+
+
+## 4.38.1 (2020-12-08)
+
+
+### Bug Fixes
+
+* check amplify/backend to determine project existence ([#6115](https://github.com/aws-amplify/amplify-cli/issues/6115)) ([4135a24](https://github.com/aws-amplify/amplify-cli/commit/4135a2428027d801c78e6877d0936f9753ba83e4))
+
+
+
+
+
+# [4.38.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.37.1...@aws-amplify/cli@4.38.0) (2020-12-07)
+
+
+### Features
+
+* add support for multiple [@key](https://github.com/key) changes in same [@model](https://github.com/model) ([#6044](https://github.com/aws-amplify/amplify-cli/issues/6044)) ([e574637](https://github.com/aws-amplify/amplify-cli/commit/e5746379ea1330c53dacb55e8f6a9de7b17b55ae))
+
+
+
+
+
+## [4.37.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.37.0...@aws-amplify/cli@4.37.1) (2020-12-03)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 # [4.37.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.36.2...@aws-amplify/cli@4.37.0) (2020-11-30)
 
 

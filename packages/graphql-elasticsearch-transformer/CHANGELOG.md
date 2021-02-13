@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.10.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.10.1...graphql-elasticsearch-transformer@4.10.2) (2021-02-11)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.10.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.10.0...graphql-elasticsearch-transformer@4.10.1) (2021-02-10)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+# [4.10.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.9.4...graphql-elasticsearch-transformer@4.10.0) (2021-01-08)
+
+
+### Features
+
+* **graphql-elasticsearch-transformer:** ddb_to_ess script now accepts session token ([#6313](https://github.com/aws-amplify/amplify-cli/issues/6313)) ([9bf8b16](https://github.com/aws-amplify/amplify-cli/commit/9bf8b16ac4f67f7be553b7cb0d020ebe0c46ab8f))
+
+
+
+
+
+## [4.9.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.9.3...graphql-elasticsearch-transformer@4.9.4) (2020-12-16)
+
+
+### Bug Fixes
+
+* [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) - add proper AWSJSON mapping in generated filter input types ([#6112](https://github.com/aws-amplify/amplify-cli/issues/6112)) ([743e84a](https://github.com/aws-amplify/amplify-cli/commit/743e84a9d968aab4648a12d3a19aa5ea14c4d755))
+
+
+### Reverts
+
+* Revert "Revert "Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158)" (#6160)" (#6183) ([a0ca94e](https://github.com/aws-amplify/amplify-cli/commit/a0ca94e5a1a848404ef3977743f19d26300a636a)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158) [#6160](https://github.com/aws-amplify/amplify-cli/issues/6160) [#6183](https://github.com/aws-amplify/amplify-cli/issues/6183)
+* Revert "Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158)" (#6160) ([f425924](https://github.com/aws-amplify/amplify-cli/commit/f42592420dcb49640c680c5001b3026ae0129090)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158) [#6160](https://github.com/aws-amplify/amplify-cli/issues/6160)
+* Revert "fix: #6108 - add proper AWSJSON mapping in generated filter input types (#6112)" (#6158) ([9e57e4d](https://github.com/aws-amplify/amplify-cli/commit/9e57e4d8c887be8ee4119c87383c7379cec40c37)), closes [#6108](https://github.com/aws-amplify/amplify-cli/issues/6108) [#6112](https://github.com/aws-amplify/amplify-cli/issues/6112) [#6158](https://github.com/aws-amplify/amplify-cli/issues/6158)
+
+
+
+
+
+## [4.9.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.9.2...graphql-elasticsearch-transformer@4.9.3) (2020-12-07)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
 ## [4.9.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.9.1...graphql-elasticsearch-transformer@4.9.2) (2020-11-30)
 
 **Note:** Version bump only for package graphql-elasticsearch-transformer

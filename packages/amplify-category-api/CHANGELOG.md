@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.29.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.28.3...amplify-category-api@2.29.0) (2021-02-11)
+
+
+### Bug Fixes
+
+* sets policy resource name in api update flow ([328abac](https://github.com/aws-amplify/amplify-cli/commit/328abacd81d03dbae8b0c0246536c465a7954c1e))
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
+## [2.28.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.28.2...amplify-category-api@2.28.3) (2021-02-10)
+
+
+### Bug Fixes
+
+* fix appsync permission assignment from functions ([#5342](https://github.com/aws-amplify/amplify-cli/issues/5342)) ([b2e2dd0](https://github.com/aws-amplify/amplify-cli/commit/b2e2dd0071c1a451ba032cf7f8cfe7cf6381a96e))
+
+
+
+
+
+## [2.28.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.28.1...amplify-category-api@2.28.2) (2021-01-08)
+
+
+### Bug Fixes
+
+* remove process on next and await ([#6239](https://github.com/aws-amplify/amplify-cli/issues/6239)) ([59d4a0e](https://github.com/aws-amplify/amplify-cli/commit/59d4a0eb318d2b3ad97be34bda9dee756cf82d74))
+
+
+
+
+
+## [2.28.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.28.0...amplify-category-api@2.28.1) (2020-12-16)
+
+
+### Bug Fixes
+
+* [#6123](https://github.com/aws-amplify/amplify-cli/issues/6123) - add missing amplify-cli-core dependencies to packages ([#6124](https://github.com/aws-amplify/amplify-cli/issues/6124)) ([e6519f2](https://github.com/aws-amplify/amplify-cli/commit/e6519f2dd81d2983b797f226d723a73a25967d25))
+
+
+
+
+
+# [2.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.27.1...amplify-category-api@2.28.0) (2020-12-11)
+
+
+
+# 4.39.0 (2020-12-10)
+
+
+### Bug Fixes
+
+* containers - don't wait for pipeline on hosting ([#6137](https://github.com/aws-amplify/amplify-cli/issues/6137)) ([c75d694](https://github.com/aws-amplify/amplify-cli/commit/c75d69436104cb974684b0ed48c743294f70d556))
+* only ignore root src folder ([#6136](https://github.com/aws-amplify/amplify-cli/issues/6136)) ([6289f5d](https://github.com/aws-amplify/amplify-cli/commit/6289f5ddc803eecf4d048075d769153c978523ac))
+
+
+### Features
+
+* container-based deployments([#5727](https://github.com/aws-amplify/amplify-cli/issues/5727)) ([fad6377](https://github.com/aws-amplify/amplify-cli/commit/fad6377bd384862ca4429cb1a83eee90efd62b58))
+
+
+
+
+
+## [2.27.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.27.0...amplify-category-api@2.27.1) (2020-12-07)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
 # [2.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.26.2...amplify-category-api@2.27.0) (2020-11-30)
 
 

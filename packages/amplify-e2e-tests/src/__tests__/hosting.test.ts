@@ -1,7 +1,7 @@
 import { amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
 
 import { initJSProjectWithProfile, deleteProject } from 'amplify-e2e-core';
-import { addDEVHosting, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
+import { addDEVHosting, removeHosting, amplifyPushWithoutCodegen, extractHostingBucketInfo, deleteS3Bucket } from 'amplify-e2e-core';
 import { deleteProjectDir, getProjectMeta } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -17,9 +17,15 @@ describe('amplify add hosting', () => {
   });
 
   afterAll(async () => {
+    const hostingBucket = extractHostingBucketInfo(projRoot);
     await removeHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
     await deleteProject(projRoot);
+    if (hostingBucket) {
+      try {
+        await deleteS3Bucket(hostingBucket);
+      } catch {}
+    }
     deleteProjectDir(projRoot);
   });
 

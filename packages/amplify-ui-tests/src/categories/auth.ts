@@ -1,7 +1,7 @@
 import * as nexpect from 'nexpect';
 import { getCLIPath, isCI, getEnvVars } from '../utils';
 
-export function addAuthWithDefault(cwd: string, settings: any = {}, verbose: boolean = !isCI()) {
+export function addAuthWithDefault(cwd: string, settings: any = {}, verbose: boolean = !isCI()): Promise<void> {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true, verbose })
@@ -12,7 +12,7 @@ export function addAuthWithDefault(cwd: string, settings: any = {}, verbose: boo
       .wait('Do you want to configure advanced settings?')
       .sendline('\r')
       .sendEof()
-      .run(function(err: Error) {
+      .run(function (err: Error) {
         if (!err) {
           resolve();
         } else {
@@ -22,7 +22,7 @@ export function addAuthWithDefault(cwd: string, settings: any = {}, verbose: boo
   });
 }
 
-export function addAuthWithDefaultSocial(cwd: string, settings: any = {}, verbose: boolean = !isCI()) {
+export function addAuthWithDefaultSocial(cwd: string, settings: any = {}, verbose: boolean = !isCI()): Promise<void> {
   return new Promise((resolve, reject) => {
     const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET }: any = getEnvVars();
 
@@ -94,7 +94,7 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any = {}, verbos
       .sendline(AMAZON_APP_SECRET)
       .sendline('\r')
       .sendEof()
-      .run(function(err: Error) {
+      .run(function (err: Error) {
         if (!err) {
           resolve();
         } else {

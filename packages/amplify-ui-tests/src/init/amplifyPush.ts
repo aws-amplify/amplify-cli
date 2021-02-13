@@ -1,7 +1,7 @@
 import * as nexpect from 'nexpect';
 import { getCLIPath, isCI } from '../utils';
 
-function amplifyPushApi(cwd: string, verbose: Boolean = isCI() ? false : true) {
+function amplifyPushApi(cwd: string, verbose: Boolean = isCI() ? false : true): Promise<void> {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
@@ -10,7 +10,7 @@ function amplifyPushApi(cwd: string, verbose: Boolean = isCI() ? false : true) {
       .wait('Do you want to generate code for your newly created GraphQL API')
       .sendline('n\r')
       .sendEof()
-      .run(function(err: Error) {
+      .run(function (err: Error) {
         if (!err) {
           resolve();
         } else {
@@ -20,14 +20,14 @@ function amplifyPushApi(cwd: string, verbose: Boolean = isCI() ? false : true) {
   });
 }
 
-function amplifyPush(cwd: string, verbose: Boolean = isCI() ? false : true) {
+function amplifyPush(cwd: string, verbose: Boolean = isCI() ? false : true): Promise<void> {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['push'], { cwd, stripColors: true, verbose })
       .wait('Are you sure you want to continue?')
       .sendline('y\r')
       .sendEof()
-      .run(function(err: Error) {
+      .run(function (err: Error) {
         if (!err) {
           resolve();
         } else {

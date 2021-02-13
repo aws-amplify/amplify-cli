@@ -39,7 +39,7 @@ async function getConfiguredPinpointClient(context, category, action, envName) {
     // ignore missing config
   }
   category = category || 'missing';
-  action = action || 'missing';
+  action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
   const defaultOptions = {
     region: mapServiceRegion(cred.region || configurationManager.resolveRegion()),

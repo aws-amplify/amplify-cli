@@ -71,7 +71,7 @@ async function enable(context, successMessage) {
     }
   } catch (err) {
     context.print.error(err.message);
-    context.usageData.emitError(err);
+    await context.usageData.emitError(err);
     exitOnNextTick(1);
   }
 

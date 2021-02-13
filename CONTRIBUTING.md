@@ -2,25 +2,24 @@
 
 Bug reports and feature suggestions are welcome. When filing a bug, try to include as much information as you can. Details like these are incredibly useful:
 
-* A reproducible test case or series of steps
-* The date/commit of the code you're running
-* Any modifications you've made relevant to the bug
-* Anything unusual about your environment or deployment
+- A reproducible test case or series of steps
+- The date/commit of the code you're running
+- Any modifications you've made relevant to the bug
+- Anything unusual about your environment or deployment
 
 # Pull Requests
 
-
 Pull requests are welcome!
 
-You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort. 
+You should open an issue to discuss your pull request, unless it's a trivial change. It's best to ensure that your proposed change would be accepted so that you don't waste your own time. If you would like to implement support for a significant feature that is not yet available, please talk to us beforehand to avoid any duplication of effort.
 
 Pull requests should generally be opened against **master**.
 
-Only include ***src*** files in your PR. Don't include any build files i.e. dist/. These will be built upon publish to npm and when a release is created on GitHub.
+Only include **_src_** files in your PR. Don't include any build files i.e. dist/. These will be built upon publish to npm and when a release is created on GitHub.
 
 ## Git hooks
 
-You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/master) (you can see them in the root [package.json](https://github.com/aws-amplify/amplify-cli/blob/master/package.json#L45) file): 
+You will notice the extra actions carried out when you run the `git commit` or `git push` commands on this monorepo, that's because the following git hooks are configured using [husky](https://github.com/typicode/husky/tree/master) (you can see them in the root [package.json](https://github.com/aws-amplify/amplify-cli/blob/master/package.json#L45) file):
 
 ```json
  "husky": {
@@ -32,13 +31,15 @@ You will notice the extra actions carried out when you run the `git commit` or `
   }
 ```
 
-### Requirement: 
+### Requirement:
+
 To ensure those git hooks properly execute, run `yarn` or `npm install` at the root of this monorepo to install the neccessary dev dependency packages.
 
 ### "commit-msg" hook:
-The "commit-msg" hook ensures the commit message follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention, so that proper CHANGELOG.md files and package versions are maintained. 
 
-You can directly enter a properly formatted simple commit message, such as: 
+The "commit-msg" hook ensures the commit message follows the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) convention, so that proper CHANGELOG.md files and package versions are maintained.
+
+You can directly enter a properly formatted simple commit message, such as:
 
 `git commit -m 'docs(cli): correct spelling of CHANGELOG'`
 
@@ -52,24 +53,55 @@ However, to construct a more comprehensive commit message with proper message ti
 ? Are there any breaking changes? Y/N
 ? Does this change affect any open issues? Y/N
 ? Add issue references (e.g. "fix #123", "re #123".): <issue number if exists>
-
 ```
 
-For the question `What is the scope of this change`, enter the name of the package that received the major codebase changes. Note that the package name under the `packages/amplify-cli` folder is actually `cli`. 
+## Getting Started with Development
 
-If the git commit directly addressed certain github issues, add the issue references after the `Add issue references` prompt. However, it is NOT required to search through all the github issues to find the ones that might be relevant and reference them in your commit. 
+Start from a clean project state:
+
+```bash
+git clean -fdx -e .vscode
+git fetch origin && git checkout --track origin/master -B master
+```
+
+To get started, ensure you have [`npm`](https://nodejs.org/en/download/) installed. Use it to install `yarn` and `lerna`:
+
+```bash
+npm install --global yarn lerna
+```
+
+From there, you can run the `setup-dev` target:
+
+```bash
+yarn clean
+yarn setup-dev
+```
+
+For the question `What is the scope of this change`, enter the name of the package that received the major codebase changes. Note that the package name under the `packages/amplify-cli` folder is actually `cli`.
+
+If the git commit directly addressed certain github issues, add the issue references after the `Add issue references` prompt. However, it is NOT required to search through all the github issues to find the ones that might be relevant and reference them in your commit.
 
 ### "pre-commit" hook:
-If the codebase changes updated e2e tests in the `amplify-e2e-tests` package, the "pre-commit" hook will run the `split-e2e-tests` script to update the e2e test steps in the configuration file for our CICD workflow. 
+
+If the codebase changes updated e2e tests in the `amplify-e2e-tests` package, the "pre-commit" hook will run the `split-e2e-tests` script to update the e2e test steps in the configuration file for our CICD workflow.
 
 The "pre-commit" hook also runs [prettier](https://prettier.io/) on the staged files.
 
 ### "pre-push" hook:
+
 The "pre-push" hook runs lint, and unit tests on the changed packages.
 
 ## Tests
 
 Please ensure that your change still passes unit tests, and ideally integration/UI tests. It's OK if you're still working on tests at the time that you submit, but be prepared to be asked about them. Wherever possible, pull requests should contain tests as appropriate. Bugfixes should contain tests that exercise the corrected behavior (i.e., the test should fail without the bugfix and pass with it), and new features should be accompanied by tests exercising the feature.
+
+To run the tests:
+
+```bash
+yarn test
+```
+
+Note: Before running the tests, you must first complete the one-time setup instructions under [Getting Started with Development](#getting-started-with-development).
 
 ## Code Style
 

@@ -1,22 +1,10 @@
 import path from 'path';
 import fs from 'fs-extra';
-import glob from 'glob';
 import * as execa from 'execa';
 import { InvocationRequest } from 'amplify-function-plugin-interface';
-import { buildCore } from './build';
 import { executableName } from '../constants';
 
 export const invoke = async (request: InvocationRequest): Promise<string> => {
-  await buildCore(
-    {
-      env: request.env,
-      runtime: request.runtime,
-      srcRoot: request.srcRoot,
-      lastBuildTimestamp: request.lastBuildTimestamp,
-    },
-    'Debug',
-  );
-
   const sourcePath = path.join(request.srcRoot, 'src');
   let result: execa.ExecaSyncReturnValue<string>;
   let tempDir: string = '';
@@ -30,10 +18,10 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
       ['lambda-test-tool-3.1', '--no-ui', '--function-handler', request.handler, '--payload', eventFile, '--pause-exit', 'false'],
       {
         cwd: sourcePath,
-        env: {
-          ...process.env,
-          ...request.envVars,
-        },
+        extendEnv: false,
+        env: request.envVars,
+        stderr: 'inherit',
+        stdout: 'inherit',
       },
     );
   } finally {

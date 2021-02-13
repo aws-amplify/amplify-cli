@@ -119,6 +119,12 @@ function loadEnvResourceParametersFromDeploymentSecrets(context: $TSContext, cat
     const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
     if (deploymentSecretByAppId) {
       return _.get(deploymentSecretByAppId.environments, [currentEnv, category, resource]);
+    } else {
+      const parameters = stateManager.getResourceParametersJson(undefined, category, resource);
+      //set empty default if no hostedUIProviderCreds found
+      if (parameters && parameters.hostedUI) {
+        return _.set({}, hostedUIProviderCredsField, '[]');
+      }
     }
   } catch (e) {}
   return {};

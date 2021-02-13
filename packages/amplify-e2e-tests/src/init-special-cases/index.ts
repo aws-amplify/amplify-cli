@@ -1,5 +1,5 @@
 import path from 'path';
-import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, singleSelect, amplifyRegions, addCircleCITags, KEY_DOWN_ARROW } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import os from 'os';
 
@@ -41,7 +41,9 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
   }
 }
 
-async function initWorkflow(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region: string }) {
+async function initWorkflow(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region: string }): Promise<void> {
+  addCircleCITags(cwd);
+
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['init'], {
       cwd,
@@ -69,9 +71,9 @@ async function initWorkflow(cwd: string, settings: { accessKeyId: string; secret
       .wait('Start Command:')
       .sendCarriageReturn()
       .wait('Using default provider  awscloudformation')
-      .wait('AWS access credentials can not be found.')
-      .wait('Setup new user')
-      .sendLine('n')
+      .wait('Select the authentication method you want to use:')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
       .pauseRecording()
       .wait('accessKeyId')
       .sendLine(settings.accessKeyId)

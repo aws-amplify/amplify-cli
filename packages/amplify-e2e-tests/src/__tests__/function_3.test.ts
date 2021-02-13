@@ -46,7 +46,18 @@ describe('go function tests', () => {
 });
 
 describe('python function tests', () => {
-  const helloWorldSuccessOutput = '{"message":"Hello from your new Amplify Python lambda!"}';
+  const statusCode: number = 200;
+  const headers = {
+    'Access-Control-Allow-Headers': '*',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+  };
+  const message: string = 'Hello from your new Amplify Python lambda!';
+  const helloWorldSuccessOutput = {
+    statusCode: statusCode,
+    headers: headers,
+    body: message,
+  };
 
   let projRoot: string;
   let funcName: string;
@@ -76,8 +87,9 @@ describe('python function tests', () => {
   it('add python hello world and mock locally', async () => {
     await functionMockAssert(projRoot, {
       funcName,
-      successString: helloWorldSuccessOutput,
+      successString: helloWorldSuccessOutput.body,
       eventFile: 'src/event.json',
+      timeout: 120,
     }); // will throw if successString is not in output
   });
 
@@ -85,7 +97,7 @@ describe('python function tests', () => {
     const payload = '{"test":"event"}';
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
-    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(helloWorldSuccessOutput));
+    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(JSON.stringify(helloWorldSuccessOutput)));
   });
 });
 

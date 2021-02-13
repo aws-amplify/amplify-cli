@@ -10,6 +10,7 @@ const ini = require('ini');
 const semver = require('semver');
 const { engines } = require('../package.json');
 const { initializeAwsExports } = require('amplify-frontend-javascript');
+const { initializeAmplifyConfiguration } = require('amplify-frontend-flutter');
 const { callAmplify } = require('./call-amplify');
 
 const isWin = process.platform.startsWith('win');
@@ -146,7 +147,7 @@ async function amplifyCLIVersionCheck() {
  * @returns {Promise<void>}
  */
 const createAmplifySkeletonProject = async frontend => {
-  if (fs.existsSync('./amplify') && frontend !== 'ios') {
+  if (fs.existsSync(path.join('.', 'amplify', 'backend')) && frontend !== 'ios') {
     console.log(
       `An Amplify project is already initialized in your current working directory ${emoji.get('smiley')}. Not generating base project.\n`,
     );
@@ -183,6 +184,7 @@ const guessPlatform = async (providedPlatform, providedJSFramework) => {
     javascript: 'amplify-frontend-javascript',
     android: 'amplify-frontend-android',
     ios: 'amplify-frontend-ios',
+    flutter: 'amplify-frontend-flutter',
   };
 
   let suitableFrontend;
@@ -421,7 +423,7 @@ async function createIosHelperFiles() {
     fs.writeFileSync(amplifyConfigFile, configJsonStr);
   }
 
-  if (fs.existsSync(amplifyDir)) {
+  if (fs.existsSync(path.join(amplifyDir, 'backend'))) {
     await addAmplifyFiles();
   }
 }
@@ -438,6 +440,10 @@ async function createAmplifyHelperFiles(frontend) {
 
   if (frontend === 'ios') {
     await createIosHelperFiles();
+  }
+
+  if (frontend === 'flutter') {
+    initializeAmplifyConfiguration(path.resolve('lib'));
   }
 
   return frontend;
