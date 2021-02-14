@@ -154,4 +154,23 @@ describe('runQueryAndMutation', () => {
       errors: [error],
     });
   });
+
+  it('should have error object populated when error occurs in the resolver (e.g. Lambda DataSource)', async () => {
+    const name = 'John Doe';
+    const doc = parse(/* GraphQL */ `
+      query getName {
+        getName
+      }
+    `);
+
+    const error: Error = new Error('An error from the resolver');
+    executionContext.appsyncErrors = [error];
+    const variables = { var1: 'val1' };
+    getNameResolver.mockReturnValue(null);
+
+    await expect(runQueryOrMutation(schema, doc, variables, 'getName', executionContext)).resolves.toEqual({
+      data: { getName: null },
+      errors: [error],
+    });
+  });
 });
