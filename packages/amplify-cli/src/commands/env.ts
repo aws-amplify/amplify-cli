@@ -11,6 +11,7 @@ export const run = async context => {
     /* eslint-enable */
   }
   shiftParams(context);
+  subcommand = mapSubcommandAlias(subcommand);
   if (subcommand === 'help') {
     displayHelp(context);
   } else {
@@ -86,4 +87,11 @@ function displayHelp(context) {
 
   context.amplify.showHelp(header, commands);
   context.print.info('');
+}
+
+function mapSubcommandAlias(subcommand: string): string {
+  if (subcommand === 'ls') {
+    return 'list';
+  }
+  return subcommand;
 }
