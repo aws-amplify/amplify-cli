@@ -82,7 +82,10 @@ async function createAWSExports(context, amplifyResources, cloudAmplifyResources
 
   const customConfigs = getCustomConfigs(cloudAWSExports, currentAWSExports);
 
-  Object.assign(newAWSExports, customConfigs);
+  if (context.input.command !== 'push' && context.input.command !== 'init') {
+    Object.assign(newAWSExports, customConfigs);
+  }
+
   generateAWSExportsFile(context, newAWSExports);
   return context;
 }
@@ -339,7 +342,8 @@ function getAPIGWConfig(apigwResources, projectRegion, configOutput) {
   };
 
   for (let i = 0; i < apigwResources.length; i += 1) {
-    if (apigwResources[i].output.ApiName && apigwResources[i].output.RootUrl) { // only REST endpoints contains this information
+    if (apigwResources[i].output.ApiName && apigwResources[i].output.RootUrl) {
+      // only REST endpoints contains this information
       apigwConfig.aws_cloud_logic_custom.push({
         name: apigwResources[i].output.ApiName,
         endpoint: apigwResources[i].output.RootUrl,
