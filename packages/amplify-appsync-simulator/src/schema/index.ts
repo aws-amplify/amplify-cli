@@ -15,7 +15,7 @@ export function generateResolvers(
   resolversConfig: (AppSyncSimulatorUnitResolverConfig | AppSyncSimulatorPipelineResolverConfig)[] = [],
   simulatorContext: AmplifyAppSyncSimulator,
 ) {
-  schema = schema.body.replace('scalar AWSJSON', ''); // scalar AWSJSON があったら消す
+  schema.body = schema.body.replace('scalar AWSJSON', ''); // scalar AWSJSON があったら消す
   const appSyncScalars = new Source(
     Object.keys(scalars)
       .map(scalar => `scalar ${scalar}`)
