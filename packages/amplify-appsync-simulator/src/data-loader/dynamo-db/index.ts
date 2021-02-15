@@ -50,9 +50,10 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
           return await this.scan(payload);
         case 'TransactWriteItems':
           return await this.transactWriteItems(payload);
-
         case 'BatchGetItem':
+          return await this.batchGetItem(payload);
         case 'BatchPutItem':
+          return await this.batchPutItem(payload);
         case 'BatchDeleteItem':
           throw new Error(`Operation  ${payload.operation} not implemented`);
         default:
@@ -287,6 +288,62 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
     );
     await this.client.transactWriteItems({ TransactItems }).promise();
     return { keys: transactItems.map(item => DynamoDB.Converter.unmarshall(item.key)) };
+  }
+
+  private async batchGetItem({ tables }: { tables: { [key: string]: { keys: DynamoDB.Key[] } } }) {
+    tables;
+    const input: DynamoDB.Types.BatchGetItemInput = {
+      RequestItems: {},
+    };
+    for (const tableName of Object.keys(tables)) {
+      input.RequestItems[tableName] = { Keys: tables[tableName].keys };
+    }
+    const res = await this.client.batchGetItem(input).promise();
+    const result = {
+      data: {},
+      unprocessedKeys: {},
+    };
+    if (res.Responses) {
+      for (const tableName of Object.keys(res.Responses)) {
+        const hoge = res.Responses[tableName];
+        result.data[tableName] = res.Responses[tableName].map(item => DynamoDB.Converter.unmarshall(item));
+      }
+    }
+    if (res.UnprocessedKeys) {
+      for (const tableName of Object.keys(res.UnprocessedKeys)) {
+        result.unprocessedKeys[tableName] = res.UnprocessedKeys[tableName].Keys.map(key => DynamoDB.Converter.unmarshall(key));
+      }
+    }
+    return result;
+  }
+
+  private async batchPutItem({ tables }: { tables: { [key: string]: DynamoDB.AttributeMap[] } }) {
+    const input: DynamoDB.Types.BatchWriteItemInput = {
+      RequestItems: {},
+    };
+    for (const tableName of Object.keys(tables)) {
+      input.RequestItems[tableName] = tables[tableName].map(Item => {
+        return { PutRequest: { Item } };
+      });
+    }
+    const res = await this.client.batchWriteItem(input).promise();
+    const result = {
+      data: {},
+      unprocessedItems: {},
+    };
+    if (res.ItemCollectionMetrics) {
+      for (const tableName of Object.keys(res.ItemCollectionMetrics)) {
+        result.data[tableName] = res.ItemCollectionMetrics[tableName].map(item => DynamoDB.Converter.unmarshall(item.ItemCollectionKey));
+      }
+    }
+    if (res.UnprocessedItems) {
+      for (const tableName of Object.keys(res.UnprocessedItems)) {
+        result.unprocessedItems[tableName] = res.UnprocessedItems[tableName].map(req =>
+          DynamoDB.Converter.unmarshall(req.PutRequest?.Item),
+        );
+      }
+    }
+    return result;
   }
 }
 
