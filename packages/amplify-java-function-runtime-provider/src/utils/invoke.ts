@@ -18,12 +18,11 @@ export const invokeResource = async (request: InvocationRequest, context: any) =
     ],
     {
       input: request.event,
-      env: request.envVars,
+      env: { PATH: process.env.PATH, ...request.envVars }, // Java relies on PATH so we have to add that into the env
       extendEnv: false,
-      stderr: 'inherit',
-      stdout: 'inherit',
     },
   );
+  childProcess.stderr.pipe(process.stderr);
   childProcess.stdout.pipe(process.stdout);
 
   const { stdout, exitCode } = await childProcess;
