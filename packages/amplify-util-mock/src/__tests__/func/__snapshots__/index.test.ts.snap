@@ -9,7 +9,7 @@ exports[`function start times out function execution at the default time 2`] = `
 `;
 
 exports[`function start times out function execution at the specified time 1`] = `
-[Error: Lambda execution timed out after 12 seconds. Press ctrl + C to exit the process.
+[Error: Lambda execution timed out after 1 seconds. Press ctrl + C to exit the process.
     To increase the lambda timeout use the --timeout parameter to set a value in seconds.
     Note that the maximum Lambda execution time is 15 minutes:
     https://aws.amazon.com/about-aws/whats-new/2018/10/aws-lambda-supports-functions-that-can-run-up-to-15-minutes/

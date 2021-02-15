@@ -5,8 +5,7 @@ import { prompt } from 'inquirer';
 import path from 'path';
 import _ from 'lodash';
 import { hashElement } from 'folder-hash';
-import { pathManager } from 'amplify-cli-core';
-import { FunctionDependency } from 'amplify-function-plugin-interface';
+import { $TSContext, pathManager } from 'amplify-cli-core';
 import { ServiceName, provider } from './constants';
 import { previousPermissionsQuestion } from './layerHelpers';
 import {
@@ -22,13 +21,14 @@ import { getLayerRuntimes } from './layerRuntimes';
 import crypto from 'crypto';
 import { updateLayerArtifacts } from './storeResources';
 import globby from 'globby';
+import { Packager, PackageRequestMeta } from '../types/packaging-types';
 
-export async function packageLayer(context, resource: Resource) {
+export const packageLayer: Packager = async (context, resource) => {
   await ensureLayerVersion(context, resource.resourceName);
   return zipLayer(context, resource);
-}
+};
 
-async function zipLayer(context, resource: Resource) {
+async function zipLayer(context: $TSContext, resource: PackageRequestMeta) {
   const zipFilename = 'latest-build.zip';
   const layerName = resource.resourceName;
   const layerDirPath = path.join(pathManager.getBackendDirPath(), resource.category, layerName);
@@ -38,7 +38,7 @@ async function zipLayer(context, resource: Resource) {
   const zip = archiver.create('zip');
   const output = fs.createWriteStream(destination);
 
-  return new Promise((resolve, reject) => {
+  return new Promise<{ zipFilePath: string; zipFilename: string }>((resolve, reject) => {
     output.on('close', () => {
       // check zip size is less than 250MB
       if (validFilesize(destination)) {
@@ -86,7 +86,7 @@ async function zipLayer(context, resource: Resource) {
 }
 
 // Check hash results for content changes, bump version if so
-async function ensureLayerVersion(context: any, layerName: string) {
+async function ensureLayerVersion(context: $TSContext, layerName: string) {
   const layerState = getLayerMetadataFactory(context)(layerName);
   const isNewVersion = await layerState.syncVersions();
   const latestVersion = layerState.getLatestVersion();
@@ -165,10 +165,7 @@ export const hashLayerVersionContents = async (layerPath: string): Promise<strin
 
   const joinedHashes = (await Promise.all([safeHash(nodePath, nodeHashOptions), safeHash(pyPath), safeHash(optPath)])).join();
 
-  return crypto
-    .createHash('sha256')
-    .update(joinedHashes)
-    .digest('base64');
+  return crypto.createHash('sha256').update(joinedHashes).digest('base64');
 };
 
 // wrapper around hashElement that will return an empty string if the path does not exist
@@ -191,11 +188,4 @@ function validFilesize(path, maxSize = 250) {
   } catch (error) {
     return new Error(`Calculating file size failed: ${path}`);
   }
-}
-
-interface Resource {
-  service: ServiceName;
-  dependsOn?: FunctionDependency[];
-  resourceName: string;
-  category: string;
 }

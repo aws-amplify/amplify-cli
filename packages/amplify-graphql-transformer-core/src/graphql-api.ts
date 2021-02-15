@@ -324,7 +324,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   }
 
   public getDefaultAuthorization() {
-    return this.authorizationConfig?.defaultAuthorization!;
+    return this.authorizationConfig?.defaultAuthorization;
   }
 
   public addResolver(

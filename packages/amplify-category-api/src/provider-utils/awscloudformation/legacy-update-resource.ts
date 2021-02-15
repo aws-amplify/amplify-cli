@@ -1,14 +1,14 @@
-import { serviceMetadataFor } from "./utils/dynamic-imports";
-import { copyCfnTemplate } from "./legacy-add-resource";
+import { serviceMetadataFor } from './utils/dynamic-imports';
+import { copyCfnTemplate, addPolicyResourceNameToPaths } from './legacy-add-resource';
 import fs from 'fs-extra';
 import path from 'path';
-import { parametersFileName } from "./aws-constants";
+import { parametersFileName } from './aws-constants';
 
 export const legacyUpdateResource = async (updateWalkthroughPromise: Promise<any>, context, category, service) => {
   let answers;
   let { cfnFilename } = await serviceMetadataFor(service);
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-  const result = await updateWalkthroughPromise
+  const result = await updateWalkthroughPromise;
   const options: any = {};
   if (result) {
     if (result.answers) {
@@ -22,6 +22,7 @@ export const legacyUpdateResource = async (updateWalkthroughPromise: Promise<any
       if (answers.customCfnFile) {
         cfnFilename = answers.customCfnFile;
       }
+      addPolicyResourceNameToPaths(answers.paths);
       copyCfnTemplate(context, category, answers, cfnFilename);
       const parameters = { ...answers };
       const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
@@ -32,4 +33,4 @@ export const legacyUpdateResource = async (updateWalkthroughPromise: Promise<any
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, answers.resourceName, 'dependsOn', answers.dependsOn);
     }
   }
-}
+};

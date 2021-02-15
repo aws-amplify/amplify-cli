@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.20.5...amplify-frontend-javascript@2.20.6) (2021-02-11)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** set sourceDir path to correct graphql schema location ([#6512](https://github.com/aws-amplify/amplify-cli/issues/6512)) ([6edf229](https://github.com/aws-amplify/amplify-cli/commit/6edf2298ebbabda57230f9e0b9c6c4f504f8a275)), closes [aws-amplify/amplify-cli#5483](https://github.com/aws-amplify/amplify-cli/issues/5483) [aws-amplify/amplify-cli#5483](https://github.com/aws-amplify/amplify-cli/issues/5483)
+
+
+
+
+
+## [2.20.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.20.4...amplify-frontend-javascript@2.20.5) (2021-02-10)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
 ## [2.20.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.20.3...amplify-frontend-javascript@2.20.4) (2021-01-08)
 
 

@@ -15,7 +15,8 @@ import {
   ListTypeNode,
   InputObjectTypeDefinitionNode,
   NamedTypeNode,
-  EnumTypeDefinitionNode} from 'graphql';
+  EnumTypeDefinitionNode,
+} from 'graphql';
 import { DEFAULT_SCALARS } from 'graphql-transformer-common';
 
 import { merge } from 'lodash';
@@ -38,7 +39,6 @@ export class ArgumentWrapper {
   };
 }
 
-
 export class DirectiveWrapper {
   private arguments: ArgumentWrapper[] = [];
   private name: NameNode;
@@ -57,7 +57,7 @@ export class DirectiveWrapper {
   };
   public getArguments = <T>(defaultValue: Required<T>): Required<T> => {
     const argValues = this.arguments.reduce(
-      (acc: {}, arg: ArgumentWrapper) => ({
+      (acc: Record<string, any>, arg: ArgumentWrapper) => ({
         ...acc,
         [arg.name.value]: valueFromASTUntyped(arg.value),
       }),

@@ -179,10 +179,29 @@ describe('intrinsic-functions', () => {
     it('should select the value', () => {
       const node: any = ['2', ['foo', 'bar', 'baz']];
       expect(cfnSelect(node, cfnContext, parseValue)).toEqual('baz');
-      expect(parseValue).toHaveBeenCalledTimes(3);
-      node[1].forEach((item, idx) => {
-        expect(parseValue.mock.calls[idx][0]).toEqual(item);
-      });
+      expect(parseValue).toHaveBeenCalledTimes(2);
+      expect(parseValue.mock.calls[0][0]).toEqual(node[1]);
+      expect(parseValue.mock.calls[1][0]).toEqual('baz');
+    });
+    it('should resolve nested intrinsic functions to a list', () => {
+      parseValue.mockReturnValueOnce(['this', 'is', 'the', 'expected value']).mockImplementationOnce(input => input);
+      const parseThis = { parse: 'this' };
+      const node: any = [3, parseThis];
+      expect(cfnSelect(node, cfnContext, parseValue)).toEqual('expected value');
+      expect(parseValue).toHaveBeenCalledTimes(2);
+      expect(parseValue.mock.calls[0][0]).toEqual(parseThis);
+      expect(parseValue.mock.calls[1][0]).toEqual('expected value');
+    });
+
+    it('should error on a non-list value', () => {
+      parseValue.mockReturnValueOnce('this is not an array');
+      const parseThis = { parse: 'this' };
+      const node: any = [2, parseThis];
+      expect(() => cfnSelect(node, cfnContext, parseValue)).toThrowErrorMatchingInlineSnapshot(
+        `"FN::Select expects list item to be an array instead got \\"this is not an array\\""`,
+      );
+      expect(parseValue).toHaveBeenCalled();
+      expect(parseValue.mock.calls[0][0]).toEqual(parseThis);
     });
   });
 

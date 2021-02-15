@@ -1,6 +1,6 @@
 {
   "name": "amplify-app",
-  "version": "2.20.8",
+  "version": "2.21.1",
   "description": "Amplify CLI",
   "repository": {
     "type": "git",
@@ -28,9 +28,10 @@
     "@aws-amplify/cli": ">=4.37.0"
   },
   "dependencies": {
-    "amplify-frontend-android": "2.14.4",
-    "amplify-frontend-ios": "2.18.4",
-    "amplify-frontend-javascript": "2.20.4",
+    "amplify-frontend-android": "2.14.5",
+    "amplify-frontend-flutter": "0.3.0",
+    "amplify-frontend-ios": "2.18.6",
+    "amplify-frontend-javascript": "2.20.6",
     "chalk": "^3.0.0",
     "execa": "^4.1.0",
     "fs-extra": "^8.1.0",

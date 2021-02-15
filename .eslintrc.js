@@ -5,7 +5,6 @@ module.exports = {
     'eslint:recommended',
     'plugin:prettier/recommended',
     'plugin:react/recommended', // Uses the recommended rules from @eslint-plugin-react
-    'plugin:@typescript-eslint/eslint-recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
     'prettier/@typescript-eslint', // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
   ],
@@ -66,7 +65,6 @@ module.exports = {
     // New rules
     'class-methods-use-this': 'off',
     'import/extensions': 'off',
-    'import/no-default-export': 'error',
     'import/prefer-default-export': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-var-requires': 'off',
@@ -82,7 +80,6 @@ module.exports = {
     'no-shadow': 'off',
     'no-unneeded-ternary': 'off',
     'no-unreachable': 'off',
-    'no-unused-expressions': 'off',
     'no-useless-catch': 'off',
     'no-useless-return': 'off',
     'object-shorthand': 'off',
@@ -101,7 +98,6 @@ module.exports = {
     'prettier/prettier': 'off',
 
     // TODO needs to be enabled when fixing valid warnings of this error
-    'no-constant-condition': ['error', { checkLoops: false }],
     //'no-param-reassign': ['error', { 'props': false }],
     'no-param-reassign': 'off', // https://eslint.org/docs/rules/no-param-reassign
     //'no-plusplus': ['error', { 'allowForLoopAfterthoughts': true }], // https://eslint.org/docs/rules/no-plusplus
@@ -115,7 +111,14 @@ module.exports = {
     'no-use-before-define': 'off', // https://eslint.org/docs/rules/no-use-before-define
     'prefer-destructuring': 'off', // https://eslint.org/docs/rules/prefer-destructuring
     'prefer-object-spread': 'off', // https://eslint.org/docs/rules/prefer-object-spread
-    '@typescript-eslint/camelcase': 'off',
+    '@typescript-eslint/naming-convention': ['error', {
+      selector: 'default',
+      format: null
+    }, {
+        selector: ['class', 'interface'],
+        format: ['PascalCase']
+      }
+    ],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
@@ -127,7 +130,6 @@ module.exports = {
     'no-return-await': 'off', // https://eslint.org/docs/rules/no-return-await
 
     // TSLint existing rules
-    '@typescript-eslint/class-name-casing': 'error',
     curly: 'off', // Enable later
     'guard-for-in': 'error',
     indent: 'off', // Enable later
@@ -141,7 +143,6 @@ module.exports = {
     'no-eval': 'error',
     'dot-notation': 'off', // Enable later
     'no-trailing-spaces': 'error',
-    'no-unused-expressions': 'error',
     semi: 'off', // Enable later,
     '@typescript-eslint/typedef': 'off', // Enable later
     //'@typescript-eslint/typedef': ['error', { propertyDeclaration:true, variableDeclaration: true, memberVariableDeclaration: true }],
@@ -166,7 +167,6 @@ module.exports = {
     'default-case': 'off',
     'no-return-assign': 'off',
     'import/no-duplicates': 'off',
-    '@typescript-eslint/interface-name-prefix': 'off',
     'no-throw-literal': 'off',
     'react/static-property-placement': 'off',
     'import/no-extraneous-dependencies': 'off',
@@ -203,6 +203,9 @@ module.exports = {
     'no-constant-condition': 'off',
     'operator-assignment': 'off',
     'import/no-named-default': 'off',
+    'prefer-arrow-callback': 'off',
+    'arrow-body-style': 'off',
+    'camelcase': 'off'
   },
   overrides: [
     {
@@ -225,7 +228,6 @@ module.exports = {
         'default-case': 'error',
         'no-return-assign': 'error',
         'import/no-duplicates': 'error',
-        '@typescript-eslint/interface-name-prefix': 'error',
         'no-throw-literal': 'error',
         'react/static-property-placement': 'error',
         'import/no-extraneous-dependencies': 'error',
@@ -264,6 +266,7 @@ module.exports = {
     },
   ],
   ignorePatterns: [
+    'scripts/',
     'node_modules',
     'dist',
     'build',
@@ -300,6 +303,7 @@ module.exports = {
     '/packages/amplify-cli-logger/lib',
     '/packages/amplify-codegen-appsync-model-plugin/lib',
     '/packages/amplify-e2e-core/lib',
+    '/packages/amplify-function-plugin-interface/lib',
     '/packages/amplify-graphql-docs-generator/lib',
     '/packages/amplify-graphql-types-generator/lib',
     '/packages/amplify-headless-interface/lib',
@@ -314,7 +318,7 @@ module.exports = {
     '/packages/graphql-transformer-*/lib',
     '/packages/amplify-headless-interface/lib',
     '/packages/amplify-util-headless-input/lib',
-    'packages/amplify-graphql-*transformer*/lib',
+    '/packages/amplify-graphql-*transformer*/lib',
     '/packages/amplify-provider-awscloudformation/lib',
     '/packages/amplify-console-integration-tests/lib',
 

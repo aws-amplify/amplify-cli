@@ -1,4 +1,3 @@
-const open = require('open');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 
@@ -6,6 +5,7 @@ const awsRegions = require('./aws-regions.js').regions;
 const constants = require('./constants.js');
 const systemConfigManager = require('./system-config-manager');
 const obfuscationUtil = require('./utility-obfuscate');
+const { open } = require('amplify-cli-core');
 
 async function run(context) {
   const awsConfig = {

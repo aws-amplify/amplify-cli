@@ -1,4 +1,4 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 
 import aws from './aws.js';
 import _ from 'lodash';
@@ -38,7 +38,7 @@ export class S3 {
     return S3.instance;
   }
 
-  private constructor(context, cred, options = {}) {
+  private constructor(context: $TSContext, cred: $TSAny, options = {}) {
     this.context = context;
     this.s3 = new aws.S3({ ...cred, ...options });
   }
@@ -58,7 +58,7 @@ export class S3 {
     };
   }
 
-  async uploadFile(s3Params, showSpinner: boolean = true) {
+  async uploadFile(s3Params: $TSAny, showSpinner: boolean = true) {
     // envName and bucket does not change during execution, cache them into a class level
     // field.
     if (this.uploadState === undefined) {
@@ -97,7 +97,7 @@ export class S3 {
     }
   }
 
-  async getFile(s3Params, envName = this.context.amplify.getEnvInfo().envName) {
+  async getFile(s3Params: $TSAny, envName: string = this.context.amplify.getEnvInfo().envName) {
     const projectDetails = this.context.amplify.getProjectDetails();
     const projectBucket = projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
     s3Params.Bucket = projectBucket;
@@ -112,7 +112,7 @@ export class S3 {
     }
   }
 
-  async createBucket(bucketName, throwIfExists: boolean = false): Promise<string | void> {
+  async createBucket(bucketName: string, throwIfExists: boolean = false): Promise<string | void> {
     // Check if bucket exists;
     const params = {
       Bucket: bucketName,
@@ -160,7 +160,7 @@ export class S3 {
     return result;
   }
 
-  public async deleteAllObjects(bucketName): Promise<void> {
+  public async deleteAllObjects(bucketName: string): Promise<void> {
     logger('deleteAllObjects.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectVersions(bucketName);
     const chunkedResult = _.chunk(allObjects, 1000);
@@ -177,7 +177,7 @@ export class S3 {
     }
   }
 
-  public async deleteS3Bucket(bucketName) {
+  public async deleteS3Bucket(bucketName: string) {
     logger('deleteS3Bucket.s3.ifBucketExists', [{ BucketName: bucketName }])();
     if (await this.ifBucketExists(bucketName)) {
       logger('deleteS3Bucket.s3.deleteAllObjects', [{ BucketName: bucketName }])();
@@ -187,7 +187,7 @@ export class S3 {
     }
   }
 
-  public async emptyS3Bucket(bucketName) {
+  public async emptyS3Bucket(bucketName: string) {
     if (await this.ifBucketExists(bucketName)) {
       await this.deleteAllObjects(bucketName);
     }

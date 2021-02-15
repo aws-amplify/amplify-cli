@@ -79,20 +79,13 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: any)
     additionalPermissions(cwd, chain, settings);
   } else if (settings.schedulePermissions) {
     // update scheduling
-    if (
-      settings.schedulePermissions === undefined ||
-      (settings.schedulePermissions && settings.schedulePermissions.noScheduleAdd === 'true')
-    ) {
+    if (settings.schedulePermissions.noScheduleAdded) {
       chain.wait('Do you want to invoke this function on a recurring schedule?');
     } else {
       chain.wait(`Do you want to update or remove the function's schedule?`);
     }
-    if (settings.schedulePermissions === undefined) {
-      chain.sendLine('n');
-    } else {
-      chain.sendLine('y');
-      cronWalkthrough(chain, settings, 'update');
-    }
+    chain.sendLine('y');
+    cronWalkthrough(chain, settings, settings.schedulePermissions.noScheduleAdded ? 'create' : 'update');
   } else {
     // update layers
     chain.wait('Do you want to configure Lambda layers for this function?');
@@ -192,7 +185,7 @@ const coreFunction = (
   });
 };
 
-const runChain = (chain, resolve, reject) => {
+const runChain = (chain: ExecutionContext, resolve, reject) => {
   chain.run((err: Error) => {
     if (!err) {
       resolve();
@@ -247,7 +240,7 @@ export const addLambdaTrigger = (chain: ExecutionContext, cwd: string, settings:
   }
 };
 
-export const functionBuild = (cwd: string, settings: any) => {
+export const functionBuild = (cwd: string, settings: any): Promise<void> => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue building the resources?')
@@ -344,31 +337,30 @@ const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string)
 
 const addminutes = (chain: ExecutionContext) => {
   chain.wait('Enter rate for minutes(1-59)?').sendLine('5').sendCarriageReturn();
-
   return chain;
 };
 
 const addhourly = (chain: ExecutionContext) => {
   chain.wait('Enter rate for hours(1-23)?').sendLine('5').sendCarriageReturn();
-
   return chain;
 };
 
 const addWeekly = (chain: ExecutionContext) => {
-  chain.wait('Please select the  day to start Job').sendCarriageReturn();
-
+  chain
+    .wait('Select the day to invoke the function:')
+    .sendCarriageReturn()
+    .wait('Select the start time (use arrow keys):')
+    .sendCarriageReturn();
   return chain;
 };
 
 const addMonthly = (chain: ExecutionContext) => {
   chain.wait('Select date to start cron').sendCarriageReturn();
-
   return chain;
 };
 
 const addYearly = (chain: ExecutionContext) => {
   chain.wait('Select date to start cron').sendCarriageReturn();
-
   return chain;
 };
 

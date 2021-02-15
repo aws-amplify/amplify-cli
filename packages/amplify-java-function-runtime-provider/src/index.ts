@@ -61,7 +61,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
       return result;
     },
     package: params => packageResource(params, context),
-    build: params => buildResource(params),
+    build: buildResource,
     invoke: params => invokeResource(params, context),
   };
 };
