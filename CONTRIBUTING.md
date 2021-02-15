@@ -77,6 +77,8 @@ yarn clean
 yarn setup-dev
 ```
 
+Note: If you use Windows as your operating system, run `yarn setup-dev-win` instead of `yarn setup-dev`.
+
 For the question `What is the scope of this change`, enter the name of the package that received the major codebase changes. Note that the package name under the `packages/amplify-cli` folder is actually `cli`.
 
 If the git commit directly addressed certain github issues, add the issue references after the `Add issue references` prompt. However, it is NOT required to search through all the github issues to find the ones that might be relevant and reference them in your commit.
