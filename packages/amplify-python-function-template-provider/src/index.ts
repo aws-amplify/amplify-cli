@@ -9,36 +9,20 @@ export const functionTemplateContributorFactory: FunctionTemplateContributorFact
     contribute: request => {
       const selection = request.selection;
       if (selection === 'hello-world') {
-        return helloWorld();
+        return getTemplate(pathToHelloWorld);
       } else if (selection === 'crud') {
-        return crud();
+        return getTemplate(pathToCrud);
       }
       throw new Error(`Unknown python template selection ${selection}`);
     },
   };
 };
 
-export function helloWorld(): Promise<FunctionTemplateParameters> {
-  const files = fs.readdirSync(pathToHelloWorld);
+export function getTemplate(filePath: string): Promise<FunctionTemplateParameters> {
+  const files = fs.readdirSync(filePath);
   return Promise.resolve({
     functionTemplate: {
-      sourceRoot: pathToHelloWorld,
-      sourceFiles: files,
-      destMap: {
-        'index.py': 'src/index.py',
-        'event.json': 'src/event.json',
-        'setup.py': 'src/setup.py',
-      },
-      defaultEditorFile: 'src/index.py',
-    },
-  });
-}
-
-export function crud(): Promise<FunctionTemplateParameters> {
-  const files = fs.readdirSync(pathToCrud);
-  return Promise.resolve({
-    functionTemplate: {
-      sourceRoot: pathToCrud,
+      sourceRoot: filePath,
       sourceFiles: files,
       destMap: {
         'index.py': 'src/index.py',
