@@ -11,8 +11,10 @@ CORS(app)
 
 client = boto3.client('dynamodb')
 
+# Change to your API Gateway base route
 BASE_ROUTE = "/items"
 
+# Change to your dynamodb table name
 TABLE_NAME = "flaskamplifyitems"
 ENV = os.environ.get("ENV")
 TABLE = TABLE_NAME + "-" + ENV
@@ -28,6 +30,7 @@ def delete_item(item_id):
 
 @app.route(BASE_ROUTE + '/<item_id>', methods=['PUT'])
 def update_item(item_id):
+    # Change to your fields
     client.update_item(
         TableName=TABLE,
         Key={'id': {'S': item_id}},
@@ -45,8 +48,7 @@ def update_item(item_id):
 @app.route(BASE_ROUTE + '/', methods=['POST'])
 def create_item():
     request_json = request.get_json()
-    print(request)
-    print(request_json.get("text"))
+    # Change to your fields
     client.put_item(TableName=TABLE, Item={
         'id': { 'S': str(uuid4()) },
         'text': { 'S': request_json.get("text")}
