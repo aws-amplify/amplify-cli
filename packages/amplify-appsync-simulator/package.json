@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "amplify-velocity-template": "1.4.3",
-    "aws-sdk": "^2.765.0",
+    "aws-sdk": "^2.845.0",
     "chalk": "^3.0.0",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
