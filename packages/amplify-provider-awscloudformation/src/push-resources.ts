@@ -44,6 +44,7 @@ import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
+import { removeDependencyOnFunctions } from './utils/removedependentfunction';
 
 const logger = fileLogger('push-resources');
 
@@ -99,8 +100,11 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     // removing dependent functions if @model{Table} is deleted
     const apiResourceTobeUpdated = resourcesToBeUpdated.filter(resource => resource.service === 'AppSync');
-    if (apiResourceTobeUpdated) {
-      await removeDependentFunctions(context, apiResourceTobeUpdated);
+    if (apiResourceTobeUpdated.length) {
+      const functionResourceToBeUpdated = await removeDependencyOnFunctions(context, apiResourceTobeUpdated, allResources as $TSObject[]);
+      functionResourceToBeUpdated.forEach(resource => {
+        resources.push(resource);
+      });
     }
 
     validateCfnTemplates(context, resources);

@@ -47,12 +47,11 @@ export const askExecRolePermissionsQuestions = async (
   const categoryPermissionAnswer = await inquirer.prompt(categoryPermissionQuestion);
   const selectedCategories = categoryPermissionAnswer.categories as string[];
 
-  let categoryPolicies = [];
-  let resources = [];
   const crudOptions = _.values(CRUDOperation);
   const graphqlOperations = _.values(GraphQLOperation);
-  const permissions = {};
-
+  let categoryPolicies = [];
+  let permissions = {};
+  let resources = [];
   const backendDir = context.amplify.pathManager.getBackendDirPath();
 
   for (const selectedCategory of selectedCategories) {
@@ -124,65 +123,19 @@ export const askExecRolePermissionsQuestions = async (
           const permissionQuestion = selectPermissions(options, currentPermissions, resourceName);
           const permissionAnswer = await inquirer.prompt([permissionQuestion]);
           const resourcePolicy: any = permissionAnswer.options;
-
-          // overload options when user selects graphql @model-backing DynamoDB table
-          // as there is no actual storage category resource where getPermissionPolicies can derive service and provider
-          if (resourceName.endsWith(appsyncTableSuffix)) {
-            resourcePolicy.providerPlugin = 'awscloudformation';
-            resourcePolicy.service = 'DynamoDB';
-            const dynamoDBTableARNComponents = constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix);
-
-            // have to override the policy resource as Fn::ImportValue is needed to extract DynamoDB table arn
-            resourcePolicy.customPolicyResource = [
-              {
-                'Fn::Join': ['', dynamoDBTableARNComponents],
-              },
-              {
-                'Fn::Join': ['', [...dynamoDBTableARNComponents, '/index/*']],
-              },
-            ];
-          }
-
-          const { permissionPolicies, resourceAttributes } = await context.amplify.invokePluginMethod(
+          const { permissionPolicies, cfnResources } = await getResourcesforCFN(
             context,
-            selectedCategory,
             resourceName,
-            'getPermissionPolicies',
-            [context, { [resourceName]: resourcePolicy }],
+            resourcePolicy,
+            appsyncResourceName,
+            selectedCategory,
           );
-
           categoryPolicies = categoryPolicies.concat(permissionPolicies);
-
           if (!permissions[selectedCategory]) {
             permissions[selectedCategory] = {};
           }
           permissions[selectedCategory][resourceName] = resourcePolicy;
-
-          // replace resource attributes for @model-backed dynamoDB tables
-          resources = resources.concat(
-            resourceAttributes.map(attributes =>
-              attributes.resourceName && attributes.resourceName.endsWith(appsyncTableSuffix)
-                ? {
-                    resourceName: appsyncResourceName,
-                    category: 'api',
-                    attributes: ['GraphQLAPIIdOutput'],
-                    needsAdditionalDynamoDBResourceProps: true,
-                    // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
-                    _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
-                    _cfJoinComponentTableName: constructCFModelTableNameComponent(
-                      appsyncResourceName,
-                      attributes.resourceName,
-                      appsyncTableSuffix,
-                    ),
-                    _cfJoinComponentTableArn: constructCFModelTableArnComponent(
-                      appsyncResourceName,
-                      attributes.resourceName,
-                      appsyncTableSuffix,
-                    ),
-                  }
-                : attributes,
-            ),
-          );
+          resources = resources.concat(cfnResources);
         }
       }
     } catch (e) {
@@ -193,6 +146,99 @@ export const askExecRolePermissionsQuestions = async (
     }
   }
 
+  // overload options when user selects graphql @model-backing DynamoDB table
+  // as there is no actual storage category resource where getPermissionPolicies can derive service and provider
+  const { environmentMap, dependsOn, envVarStringList } = await generateEnvVariablesforCFN(context, resources, currentEnvMap);
+
+  return {
+    dependsOn,
+    topLevelComment: `${topLevelCommentPrefix}${envVarStringList}${topLevelCommentSuffix}`,
+    environmentMap,
+    mutableParametersState: { permissions },
+    categoryPolicies,
+  };
+};
+
+export type ExecRolePermissionsResponse = Required<
+  Pick<FunctionParameters, 'categoryPolicies' | 'environmentMap' | 'topLevelComment' | 'dependsOn' | 'mutableParametersState'>
+>;
+
+// Inquirer Questions
+
+const selectResourcesInCategory = (choices: DistinctChoice<any>[], currentPermissionMap: any, category: any): CheckboxQuestion => ({
+  type: 'checkbox',
+  name: 'resources',
+  message: `${_.capitalize(category)} has ${choices.length} resources in this project. Select the one you would like your Lambda to access`,
+  choices,
+  validate: answers => (_.isEmpty(answers) ? 'You must select at least one resource' : true),
+  default: fetchPermissionResourcesForCategory(currentPermissionMap, category),
+});
+
+const selectCategories = (choices: DistinctChoice<any>[], currentPermissionMap: object): CheckboxQuestion => ({
+  type: 'checkbox',
+  name: 'categories',
+  message: 'Select the categories you want this function to have access to.',
+  choices,
+  validate: answers => (_.isEmpty(answers) ? 'You must select at least one category' : true),
+  default: fetchPermissionCategories(currentPermissionMap),
+});
+
+const selectPermissions = (choices: DistinctChoice<any>[], currentPermissions: any, resourceName: any) => ({
+  type: 'checkbox',
+  name: 'options',
+  message: `Select the operations you want to permit on ${resourceName}`,
+  choices,
+  validate: answers => (_.isEmpty(answers) ? 'You must select at least one operation' : true),
+  default: currentPermissions,
+});
+
+export async function getResourcesforCFN(context, resourceName, resourcePolicy, appsyncResourceName, selectedCategory) {
+  let cfnResources = [];
+  if (resourceName.endsWith(appsyncTableSuffix)) {
+    resourcePolicy.providerPlugin = 'awscloudformation';
+    resourcePolicy.service = 'DynamoDB';
+    const dynamoDBTableARNComponents = constructCFModelTableArnComponent(appsyncResourceName, resourceName, appsyncTableSuffix);
+
+    // have to override the policy resource as Fn::ImportValue is needed to extract DynamoDB table arn
+    resourcePolicy.customPolicyResource = [
+      {
+        'Fn::Join': ['', dynamoDBTableARNComponents],
+      },
+      {
+        'Fn::Join': ['', [...dynamoDBTableARNComponents, '/index/*']],
+      },
+    ];
+  }
+
+  const { permissionPolicies, resourceAttributes } = await context.amplify.invokePluginMethod(
+    context,
+    selectedCategory,
+    resourceName,
+    'getPermissionPolicies',
+    [context, { [resourceName]: resourcePolicy }],
+  );
+
+  // replace resource attributes for @model-backed dynamoDB tables
+  cfnResources = cfnResources.concat(
+    resourceAttributes.map(attributes =>
+      attributes.resourceName && attributes.resourceName.endsWith(appsyncTableSuffix)
+        ? {
+            resourceName: appsyncResourceName,
+            category: 'api',
+            attributes: ['GraphQLAPIIdOutput'],
+            needsAdditionalDynamoDBResourceProps: true,
+            // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
+            _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
+            _cfJoinComponentTableName: constructCFModelTableNameComponent(appsyncResourceName, attributes.resourceName, appsyncTableSuffix),
+            _cfJoinComponentTableArn: constructCFModelTableArnComponent(appsyncResourceName, attributes.resourceName, appsyncTableSuffix),
+          }
+        : attributes,
+    ),
+  );
+  return { permissionPolicies, cfnResources };
+}
+
+export async function generateEnvVariablesforCFN(context, resources, currentEnvMap) {
   const environmentMap = {};
   const envVars = new Set<string>();
   const dependsOn: FunctionDependency[] = [];
@@ -243,47 +289,8 @@ export const askExecRolePermissionsQuestions = async (
 
   const envVarStringList = Array.from(envVars).sort().join('\n\t');
 
-  if (envVarStringList) {
-    context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
-  }
-
-  return {
-    dependsOn,
-    topLevelComment: `${topLevelCommentPrefix}${envVarStringList}${topLevelCommentSuffix}`,
-    environmentMap,
-    mutableParametersState: { permissions },
-    categoryPolicies,
-  };
-};
-
-export type ExecRolePermissionsResponse = Required<
-  Pick<FunctionParameters, 'categoryPolicies' | 'environmentMap' | 'topLevelComment' | 'dependsOn' | 'mutableParametersState'>
->;
-
-// Inquirer Questions
-
-const selectResourcesInCategory = (choices: DistinctChoice<any>[], currentPermissionMap: any, category: any): CheckboxQuestion => ({
-  type: 'checkbox',
-  name: 'resources',
-  message: `${_.capitalize(category)} has ${choices.length} resources in this project. Select the one you would like your Lambda to access`,
-  choices,
-  validate: answers => (_.isEmpty(answers) ? 'You must select at least one resource' : true),
-  default: fetchPermissionResourcesForCategory(currentPermissionMap, category),
-});
-
-const selectCategories = (choices: DistinctChoice<any>[], currentPermissionMap: object): CheckboxQuestion => ({
-  type: 'checkbox',
-  name: 'categories',
-  message: 'Select the categories you want this function to have access to.',
-  choices,
-  default: fetchPermissionCategories(currentPermissionMap),
-});
-
-const selectPermissions = (choices: DistinctChoice<any>[], currentPermissions: any, resourceName: any) => ({
-  type: 'checkbox',
-  name: 'options',
-  message: `Select the operations you want to permit on ${resourceName}`,
-  choices,
-  validate: answers => (_.isEmpty(answers) ? 'You must select at least one operation' : true),
-  default: currentPermissions,
-});
+if (envVarStringList) {
+  context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
+} 
+ return { environmentMap, dependsOn, envVarStringList };
+}
