@@ -23,7 +23,9 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
       });
     });
   }
-  apiResourceAddCheck(currentResources, newResources, apiResourceName, resourceSet, true);
+  if (apiResourceName) {
+    apiResourceAddCheck(currentResources, newResources, apiResourceName, resourceSet, true);
+  }
 
   currentResources.forEach(resourceName => {
     if (newResources.indexOf(resourceName) === -1) {
@@ -88,8 +90,9 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
   }
 
   // hack to add api category to current defaults if storage is added
-
-  apiResourceAddCheck(currentResources, newResources, apiResourceName, resourceSet, false);
+  if (apiResourceName) {
+    apiResourceAddCheck(currentResources, newResources, apiResourceName, resourceSet, false);
+  }
 
   currentResources.forEach(resourceName => {
     if (newResources.indexOf(resourceName) === -1) {

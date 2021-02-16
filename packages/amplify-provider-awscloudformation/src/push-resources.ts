@@ -85,7 +85,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       parameters: { options },
     } = context;
 
-    const resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
+    let resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
       if (context.exeInfo?.forcePush || context.exeInfo?.iterativeRollback) {
@@ -102,11 +102,12 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     const apiResourceTobeUpdated = resourcesToBeUpdated.filter(resource => resource.service === 'AppSync');
     if (apiResourceTobeUpdated.length) {
       const functionResourceToBeUpdated = await removeDependencyOnFunctions(context, apiResourceTobeUpdated, allResources as $TSObject[]);
-      functionResourceToBeUpdated.forEach(resource => {
-        resources.push(resource);
+      functionResourceToBeUpdated.forEach(fnResource => {
+        // filter updated function to replace with existing updated ones(in case of duplicates)
+        resources = resources.filter(resource => resource.resourceName === fnResource);
+        resources.push(fnResource);
       });
     }
-
     validateCfnTemplates(context, resources);
 
     for await (const resource of resources) {

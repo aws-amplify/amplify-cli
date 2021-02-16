@@ -30,7 +30,7 @@ export async function updateDepedentFunctionsCFN(
   );
 
   // initialize function parameters for update
-  lambdaFuncResourceNames.forEach(async lambda => {
+  for (let lambda of lambdaFuncResourceNames) {
     const resourceDirPath = path.join(backendDir, category, lambda.resourceName);
     const currentParameters = loadFunctionParameters(context, resourceDirPath);
     const selectedCategories = currentParameters.permissions;
@@ -97,7 +97,6 @@ export async function updateDepedentFunctionsCFN(
       // update amplify-meta.json
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, lambda.resourceName, 'dependsOn', lambda.dependsOn);
     }
-  });
-
+  }
   return functionMetaToBeUpdated;
 }
