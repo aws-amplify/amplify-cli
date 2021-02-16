@@ -106,7 +106,6 @@
     "moment": "^2.24.0",
     "netmask": "^1.0.6",
     "node-fetch": "^2.6.1",
-    "open": "^7.0.0",
     "ora": "^4.0.3",
     "promise-sequential": "^1.1.1",
     "proxy-agent": "^3.1.1",

@@ -5,7 +5,6 @@ import { prompt } from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
 import proxyAgent from 'proxy-agent';
-import { adminLoginFlow } from './admin-login';
 import awsRegions from './aws-regions';
 import constants from './constants';
 import setupNewUser from './setup-new-user';
@@ -346,12 +345,28 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
   let answers: $TSAny;
 
   if (availableProfiles && availableProfiles.length > 0) {
-    const authType = authConfig.type ?? (await askAuthType());
+    let authType: AuthFlow;
+    let isAdminApp = false;
+    if (authConfig?.type) {
+      authType = authConfig.type;
+    } else {
+      try {
+        const appId = resolveAppId(context);
+        isAdminApp = (await isAmplifyAdminApp(appId))?.isAdminApp || false;
+      } catch {
+        isAdminApp = false;
+      }
+      authType = await askAuthType(isAdminApp);
+    }
     if (authType === 'profile') {
       printProfileInfo(context);
       awsConfigInfo.config.useProfile = true;
       answers = await prompt(profileNameQuestion(availableProfiles, awsConfigInfo.config.profileName));
       awsConfigInfo.config.profileName = answers.profileName;
+      return;
+    } else if (authType === 'admin') {
+      awsConfigInfo.configLevel = 'amplifyAdmin';
+      awsConfigInfo.config.useProfile = false;
       return;
     }
   } else {
@@ -547,20 +562,16 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
 
   const projectConfigInfo = getConfigForEnv(context, env);
   const authType = await determineAuthFlow(context, projectConfigInfo);
-  const { print, usageData } = context;
   let awsConfig: AwsSdkConfig;
 
   if (authType.type === 'admin') {
     projectConfigInfo.configLevel = 'amplifyAdmin';
     appId = appId || authType.appId;
-    if (!doAdminTokensExist(appId)) {
-      adminLoginFlow(context, appId, env, authType.region);
-    }
     try {
-      awsConfig = await getTempCredsWithAdminTokens(appId, print);
-    } catch (error) {
-      print.error(`Failed to get credentials: ${error.message || error}`);
-      await usageData.emitError(error);
+      awsConfig = await getTempCredsWithAdminTokens(context, appId);
+    } catch (e) {
+      context.print.error(`Failed to get credentials: ${e.message || e}`);
+      await context.usageData.emitError(e);
       exitOnNextTick(1);
     }
   } else if (authType.type === 'profile') {
@@ -698,12 +709,8 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsConfig> {
     }
   } else if (awsConfigInfo.configLevel === 'amplifyAdmin') {
     const appId = resolveAppId(context);
-
-    if (!doAdminTokensExist(appId)) {
-      await adminLoginFlow(context, appId, context.amplify.getEnvInfo().envName);
-    }
     try {
-      awsConfig = await getTempCredsWithAdminTokens(appId, context.print);
+      awsConfig = await getTempCredsWithAdminTokens(context, appId);
     } catch (err) {
       context.print.error('Failed to fetch Amplify Admin credentials');
       throw new Error(err);
