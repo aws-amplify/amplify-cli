@@ -10,7 +10,7 @@
   "author": "Richard Threlkeld",
   "license": "Apache-2.0",
   "dependencies": {
-    "aws-sdk": "^2.792.0",
+    "aws-sdk": "^2.845.0",
     "aws-serverless-express": "^3.3.5",
     "body-parser": "^1.17.2",
     "express": "^4.17.1"

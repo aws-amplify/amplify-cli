@@ -7,7 +7,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "aws-sdk": "^2.790.0",
+        "aws-sdk": "^2.845.0",
         "express": "^4.17.1",
         "express-graphql": "^0.11.0",
         "graphql": "^15.4.0"
