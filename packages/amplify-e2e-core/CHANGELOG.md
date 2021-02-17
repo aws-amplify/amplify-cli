@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.15.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.14.1...amplify-e2e-core@1.15.0-beta.0) (2021-02-17)
+
+
+### Features
+
+* **amplify-cli-core:** add validations to tag Key and Value ([31eb8eb](https://github.com/aws-amplify/amplify-cli/commit/31eb8ebff2fcbd215975c8ac05287d023d544c42))
+
+
+
+
+
 ## [1.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.14.0...amplify-e2e-core@1.14.1) (2021-02-11)
 
 **Note:** Version bump only for package amplify-e2e-core
