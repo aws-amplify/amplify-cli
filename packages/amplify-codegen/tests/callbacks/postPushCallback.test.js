@@ -11,18 +11,36 @@ const MOCK_CONTEXT = {
     info: jest.fn(),
   },
 };
+const MOCK_PATH_MANAGER_PROJECT_ROOT = '/project';
 
 jest.mock('amplify-cli-core');
 jest.mock('../../src/codegen-config');
 jest.mock('../../src/utils');
 jest.mock('../../src/commands/statements');
 jest.mock('../../src/commands/types');
+// Mock the Feature flags for statements and types generation to use migrated packages
+jest.mock('amplify-cli-core', () => {
+  return {
+    FeatureFlags: {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'codegen.useDocsGeneratorPlugin') {
+          return true;
+        }
+        if (name === 'codegen.useTypesGeneratorPlugin') {
+          return true;
+        }
+      }),
+    },
+    pathManager: {
+      findProjectRoot: () => MOCK_PATH_MANAGER_PROJECT_ROOT,
+    },
+  };
+});
 
 const MOCK_PROJECT_NAME = 'MOCK_PROJECT';
 const MOCK_API_ID = 'MOCK_API_ID';
 const MOCK_API_ENDPOINT = 'MOCK_API_ENDPOINT';
 
-const MOCK_PATH_MANAGER_PROJECT_ROOT = '/project';
 const MOCK_SELECTED_PROJECT = {
   projectName: MOCK_PROJECT_NAME,
   id: MOCK_API_ID,
@@ -46,7 +64,6 @@ const LOAD_CONFIG_METHODS = {
 describe('Callback - Post Push update AppSync API', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    pathManager.findProjectRoot.mockReturnValue(MOCK_PATH_MANAGER_PROJECT_ROOT);
     loadConfig.mockReturnValue(LOAD_CONFIG_METHODS);
     getAppSyncAPIDetails.mockReturnValue(MOCK_PROJECTS);
     getSchemaDownloadLocation.mockReturnValue(MOCK_SCHEMA_DOWNLOAD_LOCATION);

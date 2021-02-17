@@ -1,13 +1,13 @@
-const loadConfig = require('../../src/codegen-config');
-const generateStatements = require('../../src/commands/statements');
-const generateTypes = require('../../src/commands/types');
-const addWalkthrough = require('../../src/walkthrough/add');
-const changeAppSyncRegions = require('../../src/walkthrough/changeAppSyncRegions');
-const { AmplifyCodeGenAPINotFoundError } = require('../../src/errors');
+const loadConfig = require('../../../src/codegen-config');
+const generateStatements = require('../../../src/commands/statements');
+const generateTypes = require('../../../src/commands/types');
+const addWalkthrough = require('../../../src/walkthrough/add');
+const changeAppSyncRegions = require('../../../src/walkthrough/changeAppSyncRegions');
+const { AmplifyCodeGenAPINotFoundError } = require('../../../src/errors');
 
-const add = require('../../src/commands/add');
+const add = require('../../../src/commands/add');
 
-const { getAppSyncAPIDetails, getAppSyncAPIInfo, getProjectAwsRegion, getSDLSchemaLocation } = require('../../src/utils');
+const { getAppSyncAPIDetails, getAppSyncAPIInfo, getProjectAwsRegion, getSDLSchemaLocation } = require('../../../src/utils');
 
 const MOCK_CONTEXT = {
   print: {
@@ -17,22 +17,22 @@ const MOCK_CONTEXT = {
     getProjectMeta: jest.fn(),
   },
 };
-jest.mock('../../src/walkthrough/add');
-jest.mock('../../src/walkthrough/changeAppSyncRegions');
-jest.mock('../../src/commands/types');
-jest.mock('../../src/commands/statements');
-jest.mock('../../src/codegen-config');
-jest.mock('../../src/utils');
-// Mock the Feature flags for statements and types generation to use migrated packages
+jest.mock('../../../src/walkthrough/add');
+jest.mock('../../../src/walkthrough/changeAppSyncRegions');
+jest.mock('../../../src/commands/types');
+jest.mock('../../../src/commands/statements');
+jest.mock('../../../src/codegen-config');
+jest.mock('../../../src/utils');
+// Mock the Feature flags for statements and types generation to use legacy packages
 jest.mock('amplify-cli-core', () => {
   return {
     FeatureFlags: {
       getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
         if (name === 'codegen.useDocsGeneratorPlugin') {
-          return true;
+          return false;
         }
         if (name === 'codegen.useTypesGeneratorPlugin') {
-          return true;
+          return false;
         }
       })
     },

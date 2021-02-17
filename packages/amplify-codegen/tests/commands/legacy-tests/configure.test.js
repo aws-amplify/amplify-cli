@@ -1,22 +1,22 @@
-const configure = require('../../src/commands/configure');
-const add = require('../../src/commands/add');
-const loadConfig = require('../../src/codegen-config');
-const configureProjectWalkThrough = require('../../src/walkthrough/configure');
+const configure = require('../../../src/commands/configure');
+const add = require('../../../src/commands/add');
+const loadConfig = require('../../../src/codegen-config');
+const configureProjectWalkThrough = require('../../../src/walkthrough/configure');
 
-jest.mock('../../src/commands/add');
-jest.mock('../../src/codegen-config');
-jest.mock('../../src/walkthrough/configure');
+jest.mock('../../../src/commands/add');
+jest.mock('../../../src/codegen-config');
+jest.mock('../../../src/walkthrough/configure');
 
-// Mock the Feature flags for statements and types generation to use migrated packages
+// Mock the Feature flags for statements and types generation to use legacy packages
 jest.mock('amplify-cli-core', () => {
   return {
     FeatureFlags: {
       getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
         if (name === 'codegen.useDocsGeneratorPlugin') {
-          return true;
+          return false;
         }
         if (name === 'codegen.useTypesGeneratorPlugin') {
-          return true;
+          return false;
         }
       })
     },

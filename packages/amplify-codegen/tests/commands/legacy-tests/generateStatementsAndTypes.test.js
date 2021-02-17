@@ -1,11 +1,11 @@
-const loadConfig = require('../../src/codegen-config');
-const generateStatements = require('../../src/commands/statements');
-const generateTypes = require('../../src/commands/types');
-const generateStatementsAndTypes = require('../../src/commands/generateStatementsAndType');
-const { AmplifyCodeGenNoAppSyncAPIAvailableError } = require('../../src/errors');
+const loadConfig = require('../../../src/codegen-config');
+const generateStatements = require('../../../src/commands/statements');
+const generateTypes = require('../../../src/commands/types');
+const generateStatementsAndTypes = require('../../../src/commands/generateStatementsAndType');
+const { AmplifyCodeGenNoAppSyncAPIAvailableError } = require('../../../src/errors');
 const path = require('path');
 
-const { ensureIntrospectionSchema, getAppSyncAPIDetails } = require('../../src/utils');
+const { ensureIntrospectionSchema, getAppSyncAPIDetails } = require('../../../src/utils');
 
 const MOCK_CONTEXT = {
   print: {
@@ -17,20 +17,20 @@ const MOCK_CONTEXT = {
   },
 };
 
-jest.mock('../../src/commands/types');
-jest.mock('../../src/commands/statements');
-jest.mock('../../src/codegen-config');
-jest.mock('../../src/utils');
-// Mock the Feature flags for statements and types generation to use migrated packages
+jest.mock('../../../src/commands/types');
+jest.mock('../../../src/commands/statements');
+jest.mock('../../../src/codegen-config');
+jest.mock('../../../src/utils');
+// Mock the Feature flags for statements and types generation to use legacy packages
 jest.mock('amplify-cli-core', () => {
   return {
     FeatureFlags: {
       getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
         if (name === 'codegen.useDocsGeneratorPlugin') {
-          return true;
+          return false;
         }
         if (name === 'codegen.useTypesGeneratorPlugin') {
-          return true;
+          return false;
         }
       })
     },

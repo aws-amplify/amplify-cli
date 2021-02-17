@@ -193,6 +193,42 @@
     zen-observable-ts "0.8.19"
     zen-push "0.2.1"
 
+"@aws-amplify/graphql-docs-generator@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-2.3.0.tgz#501f939caeca0f20e0142ee717e78c55268f12e7"
+  integrity sha512-zAOZYgwTOieh08Ywb3a9tCJ0re45jCi1Ubc4N4zFGNE7plEyQ2OqH2DbfJSf6kaCgHP/rkjV/HIrIKS4BYssSg==
+  dependencies:
+    change-case "^4.1.1"
+    graphql "^14.5.8"
+    handlebars "4.7.6"
+    prettier "^1.19.1"
+    yargs "^15.1.0"
+
+"@aws-amplify/graphql-types-generator@^2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-types-generator/-/graphql-types-generator-2.7.0.tgz#7668452c17a55643dcaf25eaa467f6e6634d14d3"
+  integrity sha512-BiAgIt7A2o4HQGXtgPiwDudJuby7FNZdfdcbq4O+rOyatABrJ11lVm1/ETq9/0jJv5VL9Vk+IbEXd1rnXh58ug==
+  dependencies:
+    "@babel/generator" "7.0.0-beta.4"
+    "@babel/types" "7.0.0-beta.4"
+    "@types/babel-generator" "^6.25.0"
+    "@types/fs-extra" "^8.1.0"
+    "@types/prettier" "^1.19.0"
+    "@types/rimraf" "^3.0.0"
+    babel-generator "^6.26.1"
+    babel-types "^6.26.0"
+    change-case "^4.1.1"
+    common-tags "^1.8.0"
+    core-js "^3.6.4"
+    fs-extra "^8.1.0"
+    glob "^7.1.6"
+    graphql "^14.5.8"
+    inflected "^2.0.4"
+    prettier "^1.19.1"
+    rimraf "^3.0.0"
+    source-map-support "^0.5.16"
+    yargs "^15.1.0"
+
 "@aws-amplify/interactions@^2.1.8":
   version "2.1.8"
   resolved "https://registry.yarnpkg.com/@aws-amplify/interactions/-/interactions-2.1.8.tgz#fa7f4df21ae52fb5942b828f79e0bf8a42f8c41d"
@@ -6126,7 +6162,7 @@
   resolved "https://registry.yarnpkg.com/@types/folder-hash/-/folder-hash-3.3.0.tgz#74647518d306b3fa6385633d6e7c58d428907f83"
   integrity sha512-Qk9EBZ44pMo2ZcLGXpWtqvtCNd+EFVGpHGH/Wc53d/+Bqaw8ha6zfV1t4lj/wH4v4QAwgQmFxJUmSyE02fr6hw==
 
-"@types/fs-extra@^8.0.1":
+"@types/fs-extra@^8.0.1", "@types/fs-extra@^8.1.0":
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-8.1.1.tgz#1e49f22d09aa46e19b51c0b013cb63d0d923a068"
   integrity sha512-TcUlBem321DFQzBNuz8p0CLLKp0VvF/XH9E4KHNmgwyp4E3AfgI5cjiIVZWlbfThBop2qxFIh4+LeY6hVWWZ2w==

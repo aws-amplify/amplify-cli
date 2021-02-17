@@ -1,11 +1,12 @@
+const { sync } = require('glob-all');
 const path = require('path');
-const { generate } = require('@aws-amplify/graphql-docs-generator');
+const { generate } = require('amplify-graphql-types-generator');
 const fs = require('fs-extra');
 
-const loadConfig = require('../../src/codegen-config');
-const generateStatements = require('../../src/commands/statements');
-const constants = require('../../src/constants');
-const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../../src/utils');
+const loadConfig = require('../../../src/codegen-config');
+const generateTypes = require('../../../src/commands/types');
+const constants = require('../../../src/constants');
+const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../../../src/utils');
 
 const MOCK_CONTEXT = {
   print: {
@@ -17,56 +18,58 @@ const MOCK_CONTEXT = {
   },
 };
 
-jest.mock('@aws-amplify/graphql-docs-generator');
-jest.mock('../../src/codegen-config');
-jest.mock('../../src/utils');
+jest.mock('glob-all');
+jest.mock('amplify-graphql-types-generator');
+jest.mock('../../../src/codegen-config');
+jest.mock('../../../src/utils');
 jest.mock('fs-extra');
-// Mock the Feature flags for statements and types generation to use migrated packages
+// Mock the Feature flags for statements and types generation to use legacy packages
 jest.mock('amplify-cli-core', () => {
   return {
     FeatureFlags: {
       getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
         if (name === 'codegen.useDocsGeneratorPlugin') {
-          return true;
+          return false;
         }
         if (name === 'codegen.useTypesGeneratorPlugin') {
-          return true;
+          return false;
         }
       })
     },
   };
 });
 
-
 const MOCK_INCLUDE_PATH = 'MOCK_INCLUDE';
-const MOCK_STATEMENTS_PATH = 'MOCK_STATEMENTS_PATH';
+const MOCK_EXCLUDE_PATH = 'MOCK_EXCLUDE';
+const MOCK_QUERIES = ['q1.gql', 'q2.gql'];
 const MOCK_SCHEMA = 'INTROSPECTION_SCHEMA.JSON';
-const MOCK_TARGET_LANGUAGE = 'TYPE_SCRIPT_OR_FLOW_OR_ANY_OTHER_LANGUAGE';
+const MOCK_TARGET = 'TYPE_SCRIPT_OR_FLOW_OR_ANY_OTHER_LANGUAGE';
 const MOCK_GENERATED_FILE_NAME = 'API.TS';
 const MOCK_API_ID = 'MOCK_API_ID';
 const MOCK_REGION = 'MOCK_AWS_REGION';
 const MOCK_PROJECT_ROOT = 'MOCK_PROJECT_ROOT';
 
+const MOCK_PROJECT = {
+  excludes: [MOCK_EXCLUDE_PATH],
+  includes: [MOCK_INCLUDE_PATH],
+  schema: MOCK_SCHEMA,
+  amplifyExtension: {
+    generatedFileName: MOCK_GENERATED_FILE_NAME,
+    codeGenTarget: MOCK_TARGET,
+    graphQLApiId: MOCK_API_ID,
+    region: MOCK_REGION,
+  },
+};
+sync.mockReturnValue(MOCK_QUERIES);
 const MOCK_APIS = [
   {
     id: MOCK_API_ID,
   },
 ];
-const MOCK_PROJECT = {
-  includes: [MOCK_INCLUDE_PATH],
-  schema: MOCK_SCHEMA,
-  amplifyExtension: {
-    generatedFileName: MOCK_GENERATED_FILE_NAME,
-    codeGenTarget: MOCK_TARGET_LANGUAGE,
-    graphQLApiId: MOCK_API_ID,
-    docsFilePath: MOCK_STATEMENTS_PATH,
-    region: MOCK_REGION,
-  },
-};
 
 getFrontEndHandler.mockReturnValue('javascript');
 
-describe('command - statements', () => {
+describe('command - types', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     fs.existsSync.mockReturnValue(true);
@@ -78,31 +81,33 @@ describe('command - statements', () => {
     getAppSyncAPIDetails.mockReturnValue(MOCK_APIS);
   });
 
-  it('should generate statements', async () => {
+  it('should generate types', async () => {
     const forceDownload = false;
-    await generateStatements(MOCK_CONTEXT, forceDownload);
+    await generateTypes(MOCK_CONTEXT, forceDownload);
     expect(getFrontEndHandler).toHaveBeenCalledWith(MOCK_CONTEXT);
     expect(loadConfig).toHaveBeenCalledWith(MOCK_CONTEXT, false);
-
-    expect(generate).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA), path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH), {
-      separateFiles: true,
-      language: MOCK_TARGET_LANGUAGE,
-    });
+    expect(sync).toHaveBeenCalledWith([MOCK_INCLUDE_PATH, `!${MOCK_EXCLUDE_PATH}`], { cwd: MOCK_PROJECT_ROOT, absolute: true });
+    expect(generate).toHaveBeenCalledWith(
+      MOCK_QUERIES,
+      path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
+      path.join(MOCK_PROJECT_ROOT, MOCK_GENERATED_FILE_NAME),
+      '',
+      MOCK_TARGET,
+      '',
+      { addTypename: true, complexObjectSupport: 'auto' }
+    );
   });
 
-  it('should generate graphql statements for non JS projects', async () => {
-    getFrontEndHandler.mockReturnValue('ios');
+  it('should not generate type if the frontend is android', async () => {
     const forceDownload = false;
-    await generateStatements(MOCK_CONTEXT, forceDownload);
-    expect(generate).toHaveBeenCalledWith(path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA), path.join(MOCK_PROJECT_ROOT, MOCK_STATEMENTS_PATH), {
-      separateFiles: true,
-      language: 'graphql',
-    });
+    getFrontEndHandler.mockReturnValue('android');
+    await generateTypes(MOCK_CONTEXT, forceDownload);
+    expect(generate).not.toHaveBeenCalled();
   });
 
   it('should download the schema if forceDownload flag is passed', async () => {
     const forceDownload = true;
-    await generateStatements(MOCK_CONTEXT, forceDownload);
+    await generateTypes(MOCK_CONTEXT, forceDownload);
     expect(ensureIntrospectionSchema).toHaveBeenCalledWith(
       MOCK_CONTEXT,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
@@ -115,7 +120,7 @@ describe('command - statements', () => {
   it('should download the schema if the schema file is missing', async () => {
     fs.existsSync.mockReturnValue(false);
     const forceDownload = false;
-    await generateStatements(MOCK_CONTEXT, forceDownload);
+    await generateTypes(MOCK_CONTEXT, forceDownload);
     expect(ensureIntrospectionSchema).toHaveBeenCalledWith(
       MOCK_CONTEXT,
       path.join(MOCK_PROJECT_ROOT, MOCK_SCHEMA),
@@ -129,7 +134,21 @@ describe('command - statements', () => {
     loadConfig.mockReturnValue({
       getProjects: jest.fn().mockReturnValue([]),
     });
-    await generateStatements(MOCK_CONTEXT, false);
+    await generateTypes(MOCK_CONTEXT, false);
     expect(MOCK_CONTEXT.print.info).toHaveBeenCalledWith(constants.ERROR_CODEGEN_NO_API_CONFIGURED);
+  });
+
+  it('should not generate types when includePattern is empty', async () => {
+    MOCK_PROJECT.includes = [];
+    await generateTypes(MOCK_CONTEXT, true);
+    expect(generate).not.toHaveBeenCalled();
+    expect(sync).not.toHaveBeenCalled();
+  });
+
+  it('should not generate type when generatedFileName is missing', async () => {
+    MOCK_PROJECT.amplifyExtension.generatedFileName = '';
+    await generateTypes(MOCK_CONTEXT, true);
+    expect(generate).not.toHaveBeenCalled();
+    expect(sync).not.toHaveBeenCalled();
   });
 });
