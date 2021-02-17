@@ -5,7 +5,7 @@ const askCodeGenTargetLanguage = require('./questions/languageTarget');
 const askCodeGeneQueryFilePattern = require('./questions/queryFilePattern');
 const askTargetFileName = require('./questions/generatedFileName');
 const askMaxDepth = require('./questions/maxDepth');
-const { getFrontEndHandler, getIncludePattern } = require('../utils/');
+const { getFrontEndHandler, getIncludePattern, getGraphQLDocPath } = require('../utils/');
 
 function deepCopy(obj) {
   return JSON.parse(JSON.stringify(obj));
@@ -55,7 +55,7 @@ async function configureProjectWalkThrough(context, amplifyConfig, withoutInit =
     amplifyExtension.generatedFileName = '';
   }
   amplifyExtension.codeGenTarget = targetLanguage;
-
+  amplifyExtension.docsFilePath = getGraphQLDocPath(frontend, includePatternDefault.graphQLDirectory, selectedProjectConfig.includes)
   amplifyExtension.maxDepth = await askMaxDepth(amplifyExtension.maxDepth);
 
   return selectedProjectConfig;

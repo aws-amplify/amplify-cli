@@ -49,7 +49,7 @@ describe('Add walk-through', () => {
     expect(askCodegenTargetLanguage).toHaveBeenCalledWith(MOCK_CONTEXT, undefined, undefined, undefined, undefined);
     expect(askCodegneQueryFilePattern).toHaveBeenCalledWith(['src/graphql/**/*.js']);
     expect(askGeneratedFileName).toHaveBeenCalledWith('API', MOCK_TARGET_LANGUAGE);
-    expect(getGraphQLDocPath).toHaveBeenCalledWith(MOCK_FRONTEND_HANDLER, MOCK_DOWNLOAD_LOCATION);
+    expect(getGraphQLDocPath).toHaveBeenCalledWith(MOCK_FRONTEND_HANDLER, 'src/graphql', MOCK_INCLUDE_PATTERN);
     expect(results).toEqual({
       target: MOCK_TARGET_LANGUAGE,
       includePattern: MOCK_INCLUDE_PATTERN,
