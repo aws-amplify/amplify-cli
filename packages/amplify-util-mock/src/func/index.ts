@@ -61,7 +61,7 @@ export async function start(context: $TSContext) {
 interface InvokerOptions {
   timeout?: string;
 }
-export const timeConstrainedInvoker = async <T>(promise: Promise<T>, options: InvokerOptions): Promise<T> => {
+export const timeConstrainedInvoker = async <T>(promise: Promise<T>, options?: InvokerOptions): Promise<T> => {
   const { timer, cancel } = getCancellableTimer(options);
   try {
     return await Promise.race([promise, timer]);
@@ -70,7 +70,7 @@ export const timeConstrainedInvoker = async <T>(promise: Promise<T>, options: In
   }
 };
 
-const getCancellableTimer = ({ timeout }: InvokerOptions) => {
+const getCancellableTimer = ({ timeout }: InvokerOptions = {}) => {
   const inputTimeout = Number.parseInt(timeout, 10);
   const lambdaTimeoutSeconds = !!inputTimeout && inputTimeout > 0 ? inputTimeout : DEFAULT_TIMEOUT_SECONDS;
   const timeoutErrorMessage = `Lambda execution timed out after ${lambdaTimeoutSeconds} seconds. Press ctrl + C to exit the process.
