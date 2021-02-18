@@ -1235,7 +1235,7 @@ $util.qr($PkMap.put('createdAt' , 'ByCreatedAt'))
 ## [End] Set query expression for @key **
 ## [Start] Set query expression for @key **
 #set( $filterArgsMap = $ctx.args.filter.get(\\"and\\") )
-#if( !$util.isNullOrEmpty($filterArgsMap) )
+#if( !$util.isNullOrEmpty($filterArgsMap)) && $util.isNull($ctx.args.lastSync) )
   #set( $json = $filterArgsMap )
   #foreach( $item in $json )
     #set( $ind = $foreach.index )
