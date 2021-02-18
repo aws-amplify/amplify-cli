@@ -23,7 +23,7 @@ export 'SimpleModel.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = \\"c93024b4cb5966d577b5aa548edfb992\\";
+  String version = \\"dc3c6d4f5a93c447c05a7adb901ee79e\\";
   @override
   List<ModelSchema> modelSchemas = [SimpleModel.schema];
   static final ModelProvider _instance = ModelProvider();

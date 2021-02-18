@@ -338,7 +338,7 @@ describe('Metadata visitor', () => {
                 "name": "SimpleNonModelType",
               },
             },
-            "version": "ace65a3762ae8764a52a487c71055733",
+            "version": "c67353403fbe0ce39751869febc23e9b",
           }
         `);
         expect(generateModelSpy).toHaveBeenCalledTimes(1);
@@ -422,7 +422,7 @@ describe('Metadata visitor', () => {
                     }
                 }
             },
-            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
+            \\"version\\": \\"c67353403fbe0ce39751869febc23e9b\\"
         };"
       `);
     });
@@ -499,7 +499,7 @@ describe('Metadata visitor', () => {
                     }
                 }
             },
-            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
+            \\"version\\": \\"c67353403fbe0ce39751869febc23e9b\\"
         };"
       `);
     });
@@ -642,7 +642,7 @@ describe('Metadata visitor', () => {
                     }
                 }
             },
-            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
+            \\"version\\": \\"c67353403fbe0ce39751869febc23e9b\\"
         };"
       `);
     });
@@ -750,7 +750,7 @@ describe('Metadata visitor', () => {
                     }
                 }
             },
-            \\"version\\": \\"ace65a3762ae8764a52a487c71055733\\"
+            \\"version\\": \\"c67353403fbe0ce39751869febc23e9b\\"
         };"
       `);
     });
@@ -854,7 +854,7 @@ describe('Metadata visitor for auth process in field level', () => {
             },
             \\"enums\\": {},
             \\"nonModels\\": {},
-            \\"version\\": \\"bff2efaf6e138056991c723932df2763\\"
+            \\"version\\": \\"07b159e5243ee5817fb1e965dbc3ffdb\\"
         };"
       `);
     });
@@ -943,7 +943,7 @@ describe('Metadata visitor for auth process in field level', () => {
             },
             \\"enums\\": {},
             \\"nonModels\\": {},
-            \\"version\\": \\"bff2efaf6e138056991c723932df2763\\"
+            \\"version\\": \\"07b159e5243ee5817fb1e965dbc3ffdb\\"
         };"
       `);
     });

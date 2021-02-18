@@ -391,6 +391,7 @@ export class AppSyncModelVisitor<
             name: field.name,
             directives: fieldDirectives,
             type: field.type,
+            isNullable: field.isNullable,
           };
         })
         .sort((a, b) => sortFields(a, b));
@@ -401,11 +402,7 @@ export class AppSyncModelVisitor<
       });
     });
     typeArr.sort(sortFields);
-    return crypto
-      .createHash('MD5')
-      .update(JSON.stringify(typeArr))
-      .digest()
-      .toString('hex');
+    return crypto.createHash('MD5').update(JSON.stringify(typeArr)).digest().toString('hex');
   }
 
   /**
