@@ -23,6 +23,15 @@ export async function analyzeProjectHeadless(context: $TSContext) {
   }
 }
 
+async function displayDefaults(context) {
+  const defaultEnv = 'dev';
+  const defaultProjectName = getDefaultProjectName(process.cwd());
+
+  context.print.info('We will apply the following configuration:');
+  context.print.info('Project information');
+  context.print.info(`| Name: ${defaultProjectName}`);
+}
+
 export async function analyzeProject(context): Promise<$TSContext> {
   if (!context.parameters.options.app || !context.parameters.options.quickstart) {
     context.print.warning('Note: It is recommended to run this command from the root of your app directory');
@@ -30,6 +39,10 @@ export async function analyzeProject(context): Promise<$TSContext> {
   const projectPath = process.cwd();
   context.exeInfo.isNewProject = isNewProject(context);
   const projectName = await getProjectName(context);
+  const useDefaults = await context.amplify.confirmPrompt('Initialize the project with the above configuration?');
+  if (useDefaults) {
+    context.exeInfo.inputParams.yes = true;
+  }
   const envName = await getEnvName(context);
 
   let defaultEditor = getDefaultEditor();
@@ -77,6 +90,10 @@ function setExeInfo(context: $TSContext, projectPath: String, defaultEditor?: St
   context.exeInfo.metaData = {};
 
   return context;
+}
+
+function getDefaultProjectName(projectPath) {
+  return normalizeProjectName(path.basename(projectPath));
 }
 
 /* Begin getProjectName */
