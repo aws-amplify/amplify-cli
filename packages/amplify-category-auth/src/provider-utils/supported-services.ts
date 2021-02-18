@@ -733,7 +733,7 @@ export const supportedServices = {
         key: 'hostedUI',
         question: 'Do you want to use an OAuth flow?',
         learnMore:
-        'When you create a user pool in Amazon Cognito and configure a domain for it, Amazon Cognito automatically provisions a hosted web UI to let you add sign-up and sign-in pages to your app. Note: Selecting "No" will remove the existing oAuth configuration, if any.',
+        'When you create a user pool in Amazon Cognito and configure a domain for it, Amazon Cognito automatically provisions a hosted web UI to let you add sign-up and sign-in pages to your app. Note: Selecting "No" will remove any existing oAuth configuration.',
         required: true,
         type: 'list',
         map: 'booleanOptions',
