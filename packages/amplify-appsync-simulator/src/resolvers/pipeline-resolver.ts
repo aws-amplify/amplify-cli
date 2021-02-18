@@ -25,9 +25,10 @@ export class AppSyncPipelineResolver extends AppSyncBaseResolver {
     let stash = {};
     let templateErrors;
     let isReturn;
+    let hadException: boolean;
 
     // Pipeline request mapping template
-    ({ result, stash, errors: templateErrors, isReturn } = requestMappingTemplate.render(
+    ({ result, stash, errors: templateErrors, isReturn, hadException } = requestMappingTemplate.render(
       { source, arguments: args, stash },
       context,
       info,
@@ -35,15 +36,20 @@ export class AppSyncPipelineResolver extends AppSyncBaseResolver {
 
     context.appsyncErrors = [...context.appsyncErrors, ...(templateErrors || [])];
 
-    if (isReturn) {
-      //Request mapping template called #return, don't process further
+    if (isReturn || hadException) {
+      //Request mapping template called #return or an exception occurred, don't process further
       return result;
     }
 
     let prevResult = result;
     for (let fnName of this.config.functions) {
       const fnResolver = this.simulatorContext.getFunction(fnName);
-      ({ result: prevResult, stash } = await fnResolver.resolve(source, args, stash, prevResult, context, info));
+      ({ result: prevResult, stash, hadException } = await fnResolver.resolve(source, args, stash, prevResult, context, info));
+
+      // If an exception occurred, do not continue processing.
+      if (hadException) {
+        return prevResult;
+      }
     }
 
     // pipeline response mapping template
