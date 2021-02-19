@@ -70,7 +70,7 @@ export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: 
   const outDir = path.join(srcRoot, buildDir);
 
   const isWindows = process.platform.startsWith('win');
-  const executableName = isWindows && buildType ? MAIN_BINARY_WIN : MAIN_BINARY;
+  const executableName = isWindows && buildType === BuildType.DEV ? MAIN_BINARY_WIN : MAIN_BINARY;
   const executablePath = path.join(outDir, executableName);
 
   if (!lastBuildTimeStamp || isBuildStale(srcRoot, lastBuildTimeStamp, outDir)) {
