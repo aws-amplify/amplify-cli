@@ -786,7 +786,7 @@ async function formNestedStack(
 
         if (dependsOn) {
           for (let i = 0; i < dependsOn.length; i += 1) {
-            for (let j = 0; j < dependsOn[i].attributes.length; j += 1) {
+            for (let j = 0; j < dependsOn[i]?.attributes?.length || 0; j += 1) {
               // If the depends on resource is an imported resource we cannot form GetAtt type reference
               // since there is no such thing. We have to read the output.{AttributeName} from the meta
               // and inject the value itself into the parameters block
