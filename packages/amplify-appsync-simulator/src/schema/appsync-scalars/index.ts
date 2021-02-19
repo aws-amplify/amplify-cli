@@ -1,12 +1,14 @@
+import { URL } from 'url';
 import { GraphQLInt, GraphQLScalarType, GraphQLError, Kind, StringValueNode } from 'graphql';
 import { isValidNumber } from 'libphonenumber-js';
 
 import { GraphQLDate, GraphQLTime, GraphQLDateTime } from 'graphql-iso-date';
 
-import { EmailAddressResolver, URLResolver } from 'graphql-scalars';
-
+const EMAIL_ADDRESS_REGEX = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 const IPV4_REGEX = /^(?:(?:(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(?:\/(?:[0-9]|[1-2][0-9]|3[0-2]))?)$/;
 const IPV6_REGEX = /^(?:(?:(?:[0-9A-Fa-f]{1,4}:){6}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))|::(?:[0-9A-Fa-f]{1,4}:){5}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))|(?:[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){4}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){0,1}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){3}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){0,2}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:){2}(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){0,3}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}:(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){0,4}[0-9A-Fa-f]{1,4})?::(?:[0-9A-Fa-f]{1,4}:[0-9A-Fa-f]{1,4}|(?:(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}(?:0?0?[0-9]|0?[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))|(?:(?:[0-9A-Fa-f]{1,4}:){0,5}[0-9A-Fa-f]{1,4})?::[0-9A-Fa-f]{1,4}|(?:(?:[0-9A-Fa-f]{1,4}:){0,6}[0-9A-Fa-f]{1,4})?::)(?:\/(?:0?0?[0-9]|0?[1-9][0-9]|1[01][0-9]|12[0-8]))?)$/;
+
+// Some of the custom scalars in this file are inspired by the graphql-scalars npm module.
 
 const phoneValidator = (ast, options) => {
   const { country = 'US' } = options;
@@ -139,7 +141,7 @@ const AWSIPAddress = new GraphQLScalarType({
 });
 
 const parseJson = (value: string) => {
-  if (typeof value !== "string") {
+  if (typeof value !== 'string') {
     throw new GraphQLError(`Unable to parse ${value} as valid JSON.`);
   }
 
@@ -148,7 +150,7 @@ const parseJson = (value: string) => {
   } catch (error) {
     throw new TypeError(`Unable to parse ${value} as valid JSON.`);
   }
-}
+};
 
 const AWSJSON = new GraphQLScalarType({
   name: 'AWSJSON',
@@ -168,14 +170,63 @@ const AWSJSON = new GraphQLScalarType({
   },
 });
 
+const validateEmail = value => {
+  if (typeof value !== 'string') {
+    throw new TypeError(`Value is not string: ${value}`);
+  }
+
+  if (!EMAIL_ADDRESS_REGEX.test(value)) {
+    throw new TypeError(`Value is not a valid email address: ${value}`);
+  }
+
+  return value;
+};
+
+const AWSEmail = new GraphQLScalarType({
+  name: 'AWSEmail',
+  description:
+    'A field whose value conforms to the standard internet email address format as specified in RFC822: https://www.w3.org/Protocols/rfc822/.',
+  serialize: validateEmail,
+  parseValue: validateEmail,
+  parseLiteral(ast) {
+    if (ast.kind !== Kind.STRING) {
+      throw new GraphQLError(`Can only validate strings as email addresses but got a: ${ast.kind}`);
+    }
+
+    return validateEmail(ast.value);
+  },
+});
+
+const parseUrlValue = value => (value ? new URL(value.toString()) : value);
+
+const AWSURL = new GraphQLScalarType({
+  name: 'AWSURL',
+  description: 'A field whose value conforms to the standard URL format as specified in RFC3986: https://www.ietf.org/rfc/rfc3986.txt.',
+  serialize(value) {
+    if (value) {
+      return new URL(value.toString()).toString();
+    }
+
+    return value;
+  },
+  parseValue: parseUrlValue,
+  parseLiteral(ast) {
+    if (ast.kind !== Kind.STRING) {
+      throw new GraphQLError(`Can only validate strings as URLs but got a: ${ast.kind}`);
+    }
+
+    return parseUrlValue(ast.value);
+  },
+});
+
 export const scalars = {
   AWSJSON,
   AWSDate,
   AWSTime,
   AWSDateTime,
   AWSPhone: new AWSPhone({ name: 'AWSPhone', description: 'AWSPhone' }),
-  AWSEmail: EmailAddressResolver,
-  AWSURL: URLResolver,
+  AWSEmail,
+  AWSURL,
   AWSTimestamp,
   AWSIPAddress,
 };
