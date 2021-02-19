@@ -1,12 +1,14 @@
-import { TemplateContext } from './RelationalDBSchemaTransformer';
+import * as fs from 'fs-extra';
+
+import { compoundExpression, forEach, iff, list, methodCall, obj, print, ref, ret, set, str } from 'graphql-mapping-template';
+import { graphqlName, plurality, toUpper } from 'graphql-transformer-common';
+
+import AppSync from 'cloudform-types/types/appSync';
 import { DocumentNode } from 'graphql';
 import { Fn } from 'cloudform-types';
-import AppSync from 'cloudform-types/types/appSync';
-import { print, obj, set, str, list, forEach, ref, compoundExpression, iff, methodCall, ret } from 'graphql-mapping-template';
-import { graphqlName, toUpper, plurality } from 'graphql-transformer-common';
-import { ResourceConstants } from './ResourceConstants';
 import { RelationalDBMappingTemplate } from './RelationalDBMappingTemplate';
-import * as fs from 'fs-extra';
+import { ResourceConstants } from './ResourceConstants';
+import { TemplateContext } from './RelationalDBSchemaTransformer';
 
 const s3BaseUrl = 's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/resolvers/${ResolverFileName}';
 const resolverFileName = 'ResolverFileName';
@@ -72,19 +74,11 @@ export class RelationalDBResolverGenerator {
    * @param mutationTypeName - will be 'Mutation'
    */
   private makeCreateRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
-    const fieldName = graphqlName('create' + toUpper(type));
-    let createSql = `INSERT INTO ${type} $colStr VALUES $valStr`;
-    let selectSql;
-    if (this.typePrimaryKeyTypeMap.get(type).includes('String')) {
-      selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.create${toUpper(
-        type,
-      )}Input.${this.typePrimaryKeyMap.get(type)}\'`;
-    } else {
-      selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.create${toUpper(
-        type,
-      )}Input.${this.typePrimaryKeyMap.get(type)}`;
-    }
-
+    const tableName = this.getTableName(type);
+    const operationType = GRAPHQL_RESOLVER_OPERATION.Create;
+    const fieldName = this.getFieldName(type, operationType);
+    const createSql = this.generateInsertStatement(type);
+    const selectSql = this.generateSelectByPrimaryKeyStatement(type, operationType);
     const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`;
 
@@ -92,9 +86,9 @@ export class RelationalDBResolverGenerator {
       compoundExpression([
         set(ref('cols'), list([])),
         set(ref('vals'), list([])),
-        forEach(ref('entry'), ref(`ctx.args.create${toUpper(type)}Input.keySet()`), [
+        forEach(ref('entry'), ref(`ctx.args.create${tableName}Input.keySet()`), [
           set(ref('discard'), ref(`cols.add($entry)`)),
-          set(ref('discard'), ref(`vals.add("'$ctx.args.create${toUpper(type)}Input[$entry]'")`)),
+          set(ref('discard'), ref(`vals.add("'$ctx.args.create${tableName}Input[$entry]'")`)),
         ]),
         set(ref('valStr'), ref('vals.toString().replace("[","(").replace("]",")")')),
         set(ref('colStr'), ref('cols.toString().replace("[","(").replace("]",")")')),
@@ -136,20 +130,16 @@ export class RelationalDBResolverGenerator {
    * @param queryTypeName  - will be 'Query'
    */
   private makeGetRelationalResolver(type: string, queryTypeName: string = 'Query') {
-    const fieldName = graphqlName('get' + toUpper(type));
-    let sql;
-    if (this.typePrimaryKeyTypeMap.get(type).includes('String')) {
-      sql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.${this.typePrimaryKeyMap.get(type)}\'`;
-    } else {
-      sql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`;
-    }
+    const operationType = GRAPHQL_RESOLVER_OPERATION.Get;
+    const fieldName = this.getFieldName(type, operationType);
+    const selectSql = this.generateSelectByPrimaryKeyStatement(type, operationType);
     const reqFileName = `${queryTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${queryTypeName}.${fieldName}.res.vtl`;
 
     const reqTemplate = print(
       compoundExpression([
         RelationalDBMappingTemplate.rdsQuery({
-          statements: list([str(sql)]),
+          statements: list([str(selectSql)]),
         }),
       ]),
     );
@@ -196,28 +186,19 @@ export class RelationalDBResolverGenerator {
    * @param mutationTypeName - will be 'Mutation'
    */
   private makeUpdateRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
-    const fieldName = graphqlName('update' + toUpper(type));
-    const updateSql = `UPDATE ${type} SET $update WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(
-      type,
-    )}Input.${this.typePrimaryKeyMap.get(type)}`;
-    let selectSql;
-    if (this.typePrimaryKeyTypeMap.get(type).includes('String')) {
-      selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.update${toUpper(
-        type,
-      )}Input.${this.typePrimaryKeyMap.get(type)}\'`;
-    } else {
-      selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(
-        type,
-      )}Input.${this.typePrimaryKeyMap.get(type)}`;
-    }
+    const tableName = this.getTableName(type);
+    const operationType = GRAPHQL_RESOLVER_OPERATION.Update;
+    const fieldName = this.getFieldName(type, operationType);
+    const updateSql = this.generateUpdateStatement(type);
+    const selectSql = this.generateSelectByPrimaryKeyStatement(type, operationType);
     const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`;
 
     const reqTemplate = print(
       compoundExpression([
         set(ref('updateList'), obj({})),
-        forEach(ref('entry'), ref(`ctx.args.update${toUpper(type)}Input.keySet()`), [
-          set(ref('discard'), ref(`updateList.put($entry, "'$ctx.args.update${toUpper(type)}Input[$entry]'")`)),
+        forEach(ref('entry'), ref(`ctx.args.update${tableName}Input.keySet()`), [
+          set(ref('discard'), ref(`updateList.put($entry, "'$ctx.args.update${tableName}Input[$entry]'")`)),
         ]),
         set(ref('update'), ref(`updateList.toString().replace("{","").replace("}","")`)),
         RelationalDBMappingTemplate.rdsQuery({
@@ -269,14 +250,10 @@ export class RelationalDBResolverGenerator {
    * @param mutationTypeName - will be 'Mutation'
    */
   private makeDeleteRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
-    const fieldName = graphqlName('delete' + toUpper(type));
-    let selectSql;
-    if (this.typePrimaryKeyTypeMap.get(type).includes('String')) {
-      selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.${this.typePrimaryKeyMap.get(type)}\'`;
-    } else {
-      selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`;
-    }
-    const deleteSql = `DELETE FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`;
+    const operationType = GRAPHQL_RESOLVER_OPERATION.Delete;
+    const fieldName = this.getFieldName(type, operationType);
+    const selectSql = this.generateSelectByPrimaryKeyStatement(type, operationType);
+    const deleteSql = this.generateDeleteStatement(type);
     const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`;
     const reqTemplate = print(
@@ -330,13 +307,13 @@ export class RelationalDBResolverGenerator {
    * @param queryTypeName - will be 'Query'
    */
   private makeListRelationalResolver(type: string, queryTypeName: string = 'Query') {
-    const fieldName = graphqlName('list' + plurality(toUpper(type)));
-    const sql = `SELECT * FROM ${type}`;
+    const fieldName = graphqlName(GRAPHQL_RESOLVER_OPERATION.List + plurality(toUpper(type)));
+    const selectSql = this.generateSelectStatement(type);
     const reqFileName = `${queryTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${queryTypeName}.${fieldName}.res.vtl`;
     const reqTemplate = print(
       RelationalDBMappingTemplate.rdsQuery({
-        statements: list([str(sql)]),
+        statements: list([str(selectSql)]),
       }),
     );
     const resTemplate = print(ref('utils.toJson($utils.rds.toJsonObject($ctx.result)[0])'));
@@ -363,4 +340,124 @@ export class RelationalDBResolverGenerator {
 
     return resolver;
   }
+
+  /**
+   * Generate the table name to use on sql statements
+   *
+   * @param type - the graphql type to infer the table name
+   * @returns string with the table name
+   */
+  private getTableName(type: string): string {
+    return toUpper(type);
+  }
+
+  /**
+   * Using the CRUDL+Q and the graphql type generate the graphql operation name
+   *
+   * @param type - the graphql type to infer the table name
+   * @param operationType The CRUDL+Q (Create, Retrieve, Update, Delete, List + Queries) operation name
+   *
+   * @returns string with the graphql operation name
+   */
+  private getFieldName(type: string, operationType: GRAPHQL_RESOLVER_OPERATION): string {
+    const tableName = this.getTableName(type);
+    return graphqlName(`${operationType}${tableName}`);
+  }
+
+  /**
+   * Generate the primary key column name to use on sql statements
+   *
+   * @param type - the graphql type to get the primary key
+   * @returns string with the table name
+   */
+  private getTablePrimaryKey(type: string): string {
+    return this.typePrimaryKeyMap.get(type);
+  }
+
+  /**
+   * Check if the type of the primary key is string to apply different transformation on sql statements
+   *
+   * @param type - the graphql type to check
+   * @returns boolean true if the primary key is a string type, otherwise false
+   */
+  private isPrimaryKeyAStringType(type: string): boolean {
+    return this.typePrimaryKeyTypeMap.get(type).includes('String');
+  }
+
+  /**
+   * Generate the select sql statement to retrieve all rows
+   *
+   * @param type - the graphql type
+   * @returns string with the sql statement
+   */
+  private generateSelectStatement(type: string): string {
+    const tableName = this.getTableName(type);
+    return `SELECT * FROM ${tableName}`;
+  }
+
+  /**
+   * Generate the select sql statement filter by the primary key
+   *
+   * @param type - the graphql type
+   * @param operationType The CRUDL+Q (Create, Retrieve, Update, Delete, List + Queries) operation name
+   * @returns string with the sql statement
+   */
+  private generateSelectByPrimaryKeyStatement(type: string, operationType: GRAPHQL_RESOLVER_OPERATION): string {
+    const tableName = this.getTableName(type);
+    const primaryKey = this.getTablePrimaryKey(type);
+    const hasToAppendOperationInput = ![GRAPHQL_RESOLVER_OPERATION.Get, GRAPHQL_RESOLVER_OPERATION.Delete].includes(operationType);
+    const operationInput = hasToAppendOperationInput ? `${operationType}${tableName}Input.` : '';
+    if (this.isPrimaryKeyAStringType(type)) {
+      return `SELECT * FROM ${tableName} WHERE ${primaryKey}=\'$ctx.args.${operationInput}${primaryKey}\'`;
+    }
+    return `SELECT * FROM ${tableName} WHERE ${primaryKey}=$ctx.args.${operationInput}${primaryKey}`;
+  }
+
+  /**
+   * Generate the insert sql statement
+   *
+   * @param type - the graphql type
+   * @returns string with the sql statement
+   */
+  private generateInsertStatement(type: string): string {
+    const tableName = this.getTableName(type);
+    return `INSERT INTO ${tableName} $colStr VALUES $valStr`;
+  }
+
+  /**
+   * Generate the update sql statement
+   *
+   * @param type - the graphql type
+   * @returns string with the sql statement
+   */
+  private generateUpdateStatement(type: string): string {
+    const tableName = this.getTableName(type);
+    const primaryKey = this.getTablePrimaryKey(type);
+    if (this.isPrimaryKeyAStringType(type)) {
+      return `UPDATE ${type} SET $update WHERE ${primaryKey}=\'$ctx.args.update${tableName}Input.${primaryKey}\'`;
+    }
+    return `UPDATE ${type} SET $update WHERE ${primaryKey}=$ctx.args.update${tableName}Input.${primaryKey}}`;
+  }
+
+  /**
+   * Generate the delete sql statement
+   *
+   * @param type - the graphql type
+   * @returns string with the sql statement
+   */
+  private generateDeleteStatement(type: string): string {
+    const primaryKey = this.getTablePrimaryKey(type);
+    if (this.isPrimaryKeyAStringType(type)) {
+      return `DELETE FROM ${type} WHERE ${primaryKey}=\'$ctx.args.${primaryKey}\'`;
+    }
+    return `DELETE FROM ${type} WHERE ${primaryKey}=$ctx.args.${primaryKey}`;
+  }
+}
+
+enum GRAPHQL_RESOLVER_OPERATION {
+  Create = 'create',
+  Delete = 'delete',
+  Get = 'get',
+  List = 'list',
+  Update = 'update',
 }
