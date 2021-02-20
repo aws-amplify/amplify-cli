@@ -32,7 +32,7 @@ This section should get you running with **Amplify CLI** and get you familiar wi
 1. Ensure you have [Node.js](https://nodejs.org/en/download/) installed, which comes bundled with [`npm`](https://github.com/npm/cli). Use it to install or upgrade [`yarn`](https://classic.yarnpkg.com/en/docs/install):
 
    ```sh
-   npm install --global yarn
+   npm install --global yarn lerna rimraf
    ```
 
    > If you are using Yarn v2, run `yarn set version classic` to change to Yarn Classic.
