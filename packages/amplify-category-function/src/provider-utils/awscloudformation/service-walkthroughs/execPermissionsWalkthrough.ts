@@ -123,7 +123,7 @@ export const askExecRolePermissionsQuestions = async (
           const permissionQuestion = selectPermissions(options, currentPermissions, resourceName);
           const permissionAnswer = await inquirer.prompt([permissionQuestion]);
           const resourcePolicy: any = permissionAnswer.options;
-          const { permissionPolicies, cfnResources } = await getResourcesforCFN(
+          const { permissionPolicies, cfnResources } = await getResourcesforCfn(
             context,
             resourceName,
             resourcePolicy,
@@ -148,7 +148,7 @@ export const askExecRolePermissionsQuestions = async (
 
   // overload options when user selects graphql @model-backing DynamoDB table
   // as there is no actual storage category resource where getPermissionPolicies can derive service and provider
-  const { environmentMap, dependsOn, envVarStringList } = await generateEnvVariablesforCFN(context, resources, currentEnvMap);
+  const { environmentMap, dependsOn, envVarStringList } = await generateEnvVariablesforCfn(context, resources, currentEnvMap);
 
   return {
     dependsOn,
@@ -192,7 +192,7 @@ const selectPermissions = (choices: DistinctChoice<any>[], currentPermissions: a
   default: currentPermissions,
 });
 
-export async function getResourcesforCFN(context, resourceName, resourcePolicy, appsyncResourceName, selectedCategory) {
+export async function getResourcesforCfn(context, resourceName, resourcePolicy, appsyncResourceName, selectedCategory) {
   let cfnResources = [];
   if (resourceName.endsWith(appsyncTableSuffix)) {
     resourcePolicy.providerPlugin = 'awscloudformation';
@@ -238,7 +238,7 @@ export async function getResourcesforCFN(context, resourceName, resourcePolicy, 
   return { permissionPolicies, cfnResources };
 }
 
-export async function generateEnvVariablesforCFN(context, resources, currentEnvMap) {
+export async function generateEnvVariablesforCfn(context, resources, currentEnvMap) {
   const environmentMap = {};
   const envVars = new Set<string>();
   const dependsOn: FunctionDependency[] = [];

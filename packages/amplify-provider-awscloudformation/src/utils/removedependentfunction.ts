@@ -2,7 +2,7 @@ import { appsyncTableSuffix } from 'amplify-category-function/lib/provider-utils
 import { $TSContext, $TSObject, pathManager } from 'amplify-cli-core';
 import path from 'path';
 import * as TransformPackage from 'graphql-transformer-core';
-import { updateDepedentFunctionsCFN } from 'amplify-category-function';
+import { updateDepedentFunctionsCfn } from 'amplify-category-function';
 
 export async function removeDependencyOnFunctions(
   context: $TSContext,
@@ -15,7 +15,7 @@ export async function removeDependencyOnFunctions(
   const currentBackendDir = pathManager.getCurrentCloudBackendDirPath();
   const modelsDeleted = await getSchemadiff(currentBackendDir, backendDir, apiResource[0].resourceName);
   if (modelsDeleted.length) {
-    functionResource = await updateDepedentFunctionsCFN(context, allResources, backendDir, modelsDeleted, apiResource[0].resourceName);
+    functionResource = await updateDepedentFunctionsCfn(context, allResources, backendDir, modelsDeleted, apiResource[0].resourceName);
   }
   return functionResource;
 }

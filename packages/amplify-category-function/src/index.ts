@@ -16,7 +16,7 @@ export { ServiceName } from './provider-utils/awscloudformation/utils/constants'
 import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 export { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
-export { updateDepedentFunctionsCFN } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
+export { updateDepedentFunctionsCfn } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 
 export async function add(context, providerName, service, parameters) {
