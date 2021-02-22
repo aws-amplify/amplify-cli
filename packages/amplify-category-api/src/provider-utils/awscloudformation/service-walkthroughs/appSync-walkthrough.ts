@@ -361,7 +361,7 @@ async function askAdditionalQuestions(context, authConfig, defaultAuthType, mode
 async function askResolverConflictQuestion(context, modelTypes?) {
   let resolverConfig: any = {};
 
-  if (await context.prompt.confirm('Configure conflict detection?')) {
+  if (await context.prompt.confirm('Enable conflict detection?')) {
     const askConflictResolutionStrategy = async msg => {
       let conflictResolutionStrategy;
 
