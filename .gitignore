@@ -64,3 +64,4 @@ packages/amplify-java-function-runtime-provider/resources/localinvoke/bin/
 packages/**/reports/junit/*
 test.out.log
 *.tsbuildinfo
+packages/amplify-graphiql-explorer/.eslintcache

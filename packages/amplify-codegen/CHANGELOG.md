@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.21.1...amplify-codegen@2.21.2) (2021-02-17)
+
+**Note:** Version bump only for package amplify-codegen
+
+
+
+
+
+## [2.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.21.0...amplify-codegen@2.21.1) (2021-02-11)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** set sourceDir path to correct graphql schema location ([#6512](https://github.com/aws-amplify/amplify-cli/issues/6512)) ([6edf229](https://github.com/aws-amplify/amplify-cli/commit/6edf2298ebbabda57230f9e0b9c6c4f504f8a275)), closes [aws-amplify/amplify-cli#5483](https://github.com/aws-amplify/amplify-cli/issues/5483) [aws-amplify/amplify-cli#5483](https://github.com/aws-amplify/amplify-cli/issues/5483)
+
+
+
+
+
+# [2.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.20.5...amplify-codegen@2.21.0) (2021-02-10)
+
+
+### Features
+
+* add Flutter  support for Admin UI ([#6516](https://github.com/aws-amplify/amplify-cli/issues/6516)) ([d9ee44b](https://github.com/aws-amplify/amplify-cli/commit/d9ee44be73f43b11da2a07d21fd60108f49b1608))
+
+
+
+
+
 ## [2.20.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.20.4...amplify-codegen@2.20.5) (2021-01-08)
 
 

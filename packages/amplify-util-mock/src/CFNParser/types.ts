@@ -6,10 +6,10 @@ export type CloudFormationParsedResource = {
 };
 
 export type CloudFormationParseContext = {
-  params: any;
+  params: Record<string, string>;
   conditions: object;
   resources: Record<string, CloudFormationParsedResource>;
-  exports: object;
+  exports: Record<string, string>;
 };
 
 export type CloudFormationWalkContext = CloudFormationParseContext & {

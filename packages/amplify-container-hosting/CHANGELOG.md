@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.2.0...amplify-container-hosting@1.2.1) (2021-02-17)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
+# [1.2.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.1.3...amplify-container-hosting@1.2.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
+## [1.1.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.1.2...amplify-container-hosting@1.1.3) (2021-02-10)
+
+
+### Bug Fixes
+
+* use consistent commonjs syntax when exporting members in js files ([#6405](https://github.com/aws-amplify/amplify-cli/issues/6405)) ([80fbd13](https://github.com/aws-amplify/amplify-cli/commit/80fbd13b43b77ea1b4d55d17fa849bef5bc38d45))
+
+
+
+
+
 ## [1.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.1.1...amplify-container-hosting@1.1.2) (2021-01-08)
 
 **Note:** Version bump only for package amplify-container-hosting

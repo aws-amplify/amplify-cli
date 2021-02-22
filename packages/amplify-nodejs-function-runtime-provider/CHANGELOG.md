@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.4.3...amplify-nodejs-function-runtime-provider@1.5.0) (2021-02-17)
+
+
+### Bug Fixes
+
+* mock handles and prints child proc errors ([#6601](https://github.com/aws-amplify/amplify-cli/issues/6601)) ([ce075d9](https://github.com/aws-amplify/amplify-cli/commit/ce075d91c0b93885229ab3c6000a450c6b8cc56a))
+
+
+### Features
+
+* fully populate mock function environment variables ([#6551](https://github.com/aws-amplify/amplify-cli/issues/6551)) ([dceb13a](https://github.com/aws-amplify/amplify-cli/commit/dceb13a76a85a05940078868a3e2e1ca85656938))
+* Separate prod and dev lambda function builds ([#6494](https://github.com/aws-amplify/amplify-cli/issues/6494)) ([2977c6a](https://github.com/aws-amplify/amplify-cli/commit/2977c6a886b33a38ef46f898a2adc1ffdb6d228b))
+
+
+
+
+
+## [1.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.4.2...amplify-nodejs-function-runtime-provider@1.4.3) (2021-02-10)
+
+
+### Bug Fixes
+
+* **amplify-nodejs-function-runtime-provider:** fix lambda error format ([#6350](https://github.com/aws-amplify/amplify-cli/issues/6350)) ([0cf5282](https://github.com/aws-amplify/amplify-cli/commit/0cf5282deed96638cc6e9cd286b4d9c3de0b8542)), closes [#5553](https://github.com/aws-amplify/amplify-cli/issues/5553)
+
+
+
+
+
 ## [1.4.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.4.1...amplify-nodejs-function-runtime-provider@1.4.2) (2020-12-31)
 
 

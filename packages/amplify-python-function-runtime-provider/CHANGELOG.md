@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.5.8...amplify-python-function-runtime-provider@1.6.0) (2021-02-17)
+
+
+### Bug Fixes
+
+* fix messed up merge ([#6612](https://github.com/aws-amplify/amplify-cli/issues/6612)) ([0e5d85b](https://github.com/aws-amplify/amplify-cli/commit/0e5d85be780c800aad2322ebb2b5598187c97ae8))
+* mock handles and prints child proc errors ([#6601](https://github.com/aws-amplify/amplify-cli/issues/6601)) ([ce075d9](https://github.com/aws-amplify/amplify-cli/commit/ce075d91c0b93885229ab3c6000a450c6b8cc56a))
+
+
+### Features
+
+* fully populate mock function environment variables ([#6551](https://github.com/aws-amplify/amplify-cli/issues/6551)) ([dceb13a](https://github.com/aws-amplify/amplify-cli/commit/dceb13a76a85a05940078868a3e2e1ca85656938))
+* Separate prod and dev lambda function builds ([#6494](https://github.com/aws-amplify/amplify-cli/issues/6494)) ([2977c6a](https://github.com/aws-amplify/amplify-cli/commit/2977c6a886b33a38ef46f898a2adc1ffdb6d228b))
+
+
+
+
+
+## [1.5.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.5.7...amplify-python-function-runtime-provider@1.5.8) (2021-02-11)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
+## [1.5.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.5.6...amplify-python-function-runtime-provider@1.5.7) (2021-02-10)
+
+**Note:** Version bump only for package amplify-python-function-runtime-provider
+
+
+
+
+
 ## [1.5.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.5.5...amplify-python-function-runtime-provider@1.5.6) (2021-01-08)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider

@@ -37,6 +37,7 @@ import {
 } from './utils';
 import { validateModelSchema } from './validation';
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
   return obj && typeof obj === 'function';
 }

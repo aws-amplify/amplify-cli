@@ -738,7 +738,7 @@ const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): Meta
 
   if (answers.authSelections === 'identityPoolAndUserPool') {
     output.IdentityPoolId = answers.identityPoolId!;
-    output.IdentityPoolName = answers.identityPool?.IdentityPoolName!;
+    output.IdentityPoolName = answers.identityPool?.IdentityPoolName;
 
     if (answers.identityPool!.SupportedLoginProviders) {
       for (const key of Object.keys(answers.identityPool!.SupportedLoginProviders || {})) {

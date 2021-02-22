@@ -1,6 +1,6 @@
 import { CloudFormationParseContext } from './types';
-import { isPlainObject, isInteger } from 'lodash';
-import { isString, isArray, isObject } from 'util';
+import { isPlainObject } from 'lodash';
+import { importModelTableResolver } from './import-model-table-resolver';
 
 export function cfnJoin(valNode: [string, string[]], { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
   if (!(Array.isArray(valNode) && valNode.length === 2 && Array.isArray(valNode[1]))) {
@@ -12,14 +12,8 @@ export function cfnJoin(valNode: [string, string[]], { params, conditions, resou
 }
 
 export function cfnSub(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
-  if (isString(valNode)) {
-    exports[valNode] = templateReplace(valNode, params);
-    return processValue(valNode, {
-      params,
-      conditions,
-      resources,
-      exports,
-    });
+  if (typeof valNode === 'string') {
+    return templateReplace(valNode, params);
   }
   if (!Array.isArray(valNode) && valNode.length !== 2) {
     throw new Error(`FN::Sub expects an array with 2 elements instead got ${JSON.stringify(valNode)}`);
@@ -27,7 +21,7 @@ export function cfnSub(valNode, { params, conditions, resources, exports }: Clou
   const strTemplate = valNode[0];
   const subs = valNode[1];
 
-  if (!isString(strTemplate)) {
+  if (typeof strTemplate !== 'string') {
     throw new Error(`FN::Sub expects template to be an a string instead got ${JSON.stringify(strTemplate)}`);
   }
   if (!isPlainObject(subs)) {
@@ -57,7 +51,7 @@ function templateReplace(template: string, args: any = {}) {
   });
 }
 
-export function cfnGetAtt(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+export function cfnGetAtt(valNode, { resources }: CloudFormationParseContext, processValue) {
   if (!Array.isArray(valNode) && valNode.length !== 2) {
     throw new Error(`FN::GetAtt expects an array with 2 elements instead got ${JSON.stringify(valNode)}`);
   }
@@ -94,12 +88,12 @@ export function cfnSplit(valNode, { params, conditions, resources, exports }: Cl
   return str.split(delim);
 }
 
-export function cfnRef(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+export function cfnRef(valNode, { params, resources }: CloudFormationParseContext, processValue) {
   let key;
-  if (isString(valNode)) {
+  if (typeof valNode === 'string') {
     key = valNode;
-  } else if (isArray(valNode) && valNode.length === 1) {
-    key = processValue(valNode[1]);
+  } else if (Array.isArray(valNode) && valNode.length === 1) {
+    key = processValue(valNode[0]);
   } else {
     throw new Error(`Ref expects a string or an array with 1 item. Instead got ${JSON.stringify(valNode)}`);
   }
@@ -118,20 +112,20 @@ export function cfnRef(valNode, { params, conditions, resources, exports }: Clou
   return key;
 }
 
-export function cfnSelect(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
+export function cfnSelect(valNode, parseContext: CloudFormationParseContext, processValue) {
   if (!Array.isArray(valNode) && valNode.length !== 2) {
     throw new Error(`FN::Select expects an array with 2 elements instead got ${JSON.stringify(valNode)}`);
   }
 
   const index = parseInt(valNode[0], 10);
-  if (!Array.isArray(valNode[1])) {
-    throw new Error(`FN::Select expects list item to be an array instead got ${JSON.stringify(valNode)}`);
+  const selectionList = Array.isArray[valNode[1]] ? valNode[1] : processValue(valNode[1], parseContext);
+  if (!Array.isArray(selectionList)) {
+    throw new Error(`FN::Select expects list item to be an array instead got ${JSON.stringify(selectionList)}`);
   }
-  if (index >= valNode[1].length) {
-    throw new Error(`FN::Select expects index tp be less than or equal to size of listOfObject ${JSON.stringify(valNode)}`);
+  if (index >= selectionList.length) {
+    throw new Error(`FN::Select expects index to be less than or equal to the length of list: ${JSON.stringify(selectionList)}`);
   }
-  const map = valNode[1].map(item => processValue(item, { params, conditions, resources, exports }));
-  return map[index];
+  return processValue(selectionList[index]);
 }
 
 export function cfnIf(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
@@ -186,19 +180,15 @@ export function cfnOr(valNode, { params, conditions, resources, exports }: Cloud
 }
 
 export function cfnImportValue(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
-  if (!(isPlainObject(valNode) || isString(valNode))) {
+  if (!(isPlainObject(valNode) || typeof valNode === 'string')) {
     throw new Error(`FN::ImportValue expects an array with  1 elements instead got ${JSON.stringify(valNode)}`);
   }
   const key = processValue(valNode, { params, conditions, resources, exports });
-  if (!Object.keys(exports).includes(key)) {
-    console.warn(`Fn::ImportValue could not find ${key} in exports. Using unsubstituted value.`);
-    return key;
-  }
-  return exports[key];
+  return exports[key] ?? importModelTableResolver(key, params.env);
 }
 
-export function cfnCondition(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
-  if (!isString(valNode)) {
+export function cfnCondition(valNode, { conditions }: CloudFormationParseContext, processValue) {
+  if (typeof valNode !== 'string') {
     throw new Error(`Condition should be a string value, instead got ${JSON.stringify(valNode)}`);
   }
   if (!(valNode in conditions)) {

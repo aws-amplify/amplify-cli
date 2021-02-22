@@ -88,7 +88,7 @@ export async function handleFile(
     });
   } catch (e) {
     if (numTries > 0) {
-      await new Promise((res, rej) => setTimeout(() => res(), backoffMS));
+      await new Promise<void>((res, rej) => setTimeout(() => res(), backoffMS));
       await handleFile(handler, key, body, backoffMS * 2, numTries - 1);
     }
     throw e;

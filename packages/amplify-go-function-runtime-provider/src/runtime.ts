@@ -1,4 +1,11 @@
-import { CheckDependenciesResult, PackageRequest, PackageResult, BuildRequest, BuildResult } from 'amplify-function-plugin-interface/src';
+import {
+  CheckDependenciesResult,
+  PackageRequest,
+  PackageResult,
+  BuildRequest,
+  BuildResult,
+  BuildType,
+} from 'amplify-function-plugin-interface';
 import * as which from 'which';
 import execa from 'execa';
 import archiver from 'archiver';
@@ -35,7 +42,7 @@ export const executeCommand = (
   return output.stdout;
 };
 
-const isBuildStale = (resourceDir: string, lastBuildTimestamp: Date, outDir: string) => {
+const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date, outDir: string) => {
   // If output directory does not exists or empty, rebuild required
   if (!fs.existsSync(outDir) || glob.sync(`${outDir}/**`).length == 0) {
     return true;
@@ -45,45 +52,29 @@ const isBuildStale = (resourceDir: string, lastBuildTimestamp: Date, outDir: str
   const srcDir = path.join(resourceDir, SRC);
   const dirTime = new Date(fs.statSync(srcDir).mtime);
 
-  if (dirTime > lastBuildTimestamp) {
+  if (dirTime > lastBuildTimeStamp) {
     return true;
   }
 
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/${SRC}/**`)
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimestamp);
+    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
 
   return !!fileUpdatedAfterLastBuild;
 };
 
-export const buildResourceInternal = async (
-  request: BuildRequest,
-  context: any,
-  force: boolean,
-  forLocalInvoke: boolean,
-): Promise<BuildResult> => {
+export const buildResource = async ({ buildType, srcRoot, lastBuildTimeStamp }: BuildRequest): Promise<BuildResult> => {
   let rebuilt = false;
 
-  const buildDir = forLocalInvoke === true ? BIN_LOCAL : BIN;
-  const outDir = path.join(request.srcRoot, buildDir);
+  const buildDir = buildType === BuildType.DEV ? BIN_LOCAL : BIN;
+  const outDir = path.join(srcRoot, buildDir);
 
-  const isWindows = /^win/.test(process.platform);
-  const executableName = isWindows && forLocalInvoke ? MAIN_BINARY_WIN : MAIN_BINARY;
+  const isWindows = process.platform.startsWith('win');
+  const executableName = isWindows && buildType === BuildType.DEV ? MAIN_BINARY_WIN : MAIN_BINARY;
   const executablePath = path.join(outDir, executableName);
 
-  // For local invoke we've to use the build timestamp of the binary built
-  let timestampToCheck;
-
-  if (forLocalInvoke === true) {
-    if (fs.existsSync(executablePath)) {
-      timestampToCheck = new Date(fs.statSync(executablePath).mtime);
-    }
-  } else {
-    timestampToCheck = request.lastBuildTimestamp;
-  }
-
-  if (force === true || !timestampToCheck || isBuildStale(request.srcRoot, timestampToCheck, outDir)) {
-    const srcDir = path.join(request.srcRoot, SRC);
+  if (!lastBuildTimeStamp || isBuildStale(srcRoot, lastBuildTimeStamp, outDir)) {
+    const srcDir = path.join(srcRoot, SRC);
 
     // Clean and/or create the output directory
     if (fs.existsSync(outDir)) {
@@ -94,7 +85,7 @@ export const buildResourceInternal = async (
 
     const envVars: any = {};
 
-    if (forLocalInvoke === false) {
+    if (buildType === BuildType.PROD) {
       envVars.GOOS = 'linux';
       envVars.GOARCH = 'amd64';
     }
@@ -156,12 +147,9 @@ export const checkDependencies = async (_runtimeValue: string): Promise<CheckDep
   };
 };
 
-export const buildResource = async (request: BuildRequest, context: any): Promise<BuildResult> =>
-  buildResourceInternal(request, context, false, false);
-
 export const packageResource = async (request: PackageRequest, context: any): Promise<PackageResult> => {
   // check if repackaging is needed
-  if (!request.lastPackageTimestamp || request.lastBuildTimestamp > request.lastPackageTimestamp) {
+  if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp) {
     const packageHash = await context.amplify.hashDir(request.srcRoot, [DIST]);
     const zipFn = process.platform.startsWith('win') ? winZip : nixZip;
     await zipFn(request.srcRoot, request.dstFilename, context.print);
@@ -185,13 +173,13 @@ const winZip = async (src: string, dest: string, print: any) => {
   print.warning('See https://github.com/aws/aws-lambda-go/issues/13#issuecomment-358729411.');
 };
 
-const nixZip = async (src: string, dest: string) => {
+const nixZip = async (src: string, dest: string): Promise<void> => {
   const outDir = path.join(src, BIN);
   const mainFile = path.join(outDir, MAIN_BINARY);
 
   // zip source and dependencies and write to specified file
   const file = fs.createWriteStream(dest);
-  return new Promise(async (resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     file.on('close', () => {
       resolve();
     });

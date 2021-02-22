@@ -13,7 +13,7 @@ const defaultSettings = {
 };
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey'];
-export default function amplifyConfigure(settings: AmplifyConfiguration, verbose: Boolean = isCI() ? false : true) {
+export default function amplifyConfigure(settings: AmplifyConfiguration, verbose: Boolean = isCI() ? false : true): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
   if (missingParam.length) {
@@ -39,7 +39,7 @@ export default function amplifyConfigure(settings: AmplifyConfiguration, verbose
       .wait('Profile Name:')
       .sendline(s.profileName)
       .wait('Successfully set up the new user.')
-      .run(function(err: Error) {
+      .run(function (err: Error) {
         if (!err) {
           resolve();
         } else {

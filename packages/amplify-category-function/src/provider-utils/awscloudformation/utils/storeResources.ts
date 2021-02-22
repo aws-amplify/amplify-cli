@@ -23,7 +23,7 @@ export function createFunctionResources(context: $TSContext, parameters: Functio
   copyTemplateFiles(context, parameters);
   saveMutableState(parameters);
   saveCFNParameters(parameters);
-  context.amplify.leaveBreadcrumbs(context, categoryName, parameters.resourceName, createBreadcrumbs(parameters));
+  context.amplify.leaveBreadcrumbs(categoryName, parameters.resourceName, createBreadcrumbs(parameters));
 }
 
 export const createLayerArtifacts = (context: $TSContext, parameters: LayerParameters, latestVersion: number = 1): string => {
@@ -127,7 +127,7 @@ function copyTemplateFiles(context: $TSContext, parameters: FunctionParameters |
   let templateParams: $TSAny = parameters;
   if ('trigger' in parameters) {
     let triggerEnvs = context.amplify.loadEnvResourceParameters(context, 'function', parameters.resourceName);
-    parameters.triggerEnvs = JSON.parse(parameters.triggerEnvs) || [];
+    parameters.triggerEnvs = JSONUtilities.parse(parameters.triggerEnvs) || [];
 
     parameters.triggerEnvs.forEach(c => {
       triggerEnvs[c.key] = c.value;

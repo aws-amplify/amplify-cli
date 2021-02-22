@@ -58,10 +58,10 @@ function fetcher(params: Object, additionalHeaders): Promise<any> {
     headers,
     body: JSON.stringify(params),
   })
-    .then(function(response) {
+    .then(function (response) {
       return response.json();
     })
-    .then(function(responseBody) {
+    .then(function (responseBody) {
       try {
         return JSON.parse(responseBody);
       } catch (e) {
@@ -76,7 +76,7 @@ const DEFAULT_QUERY = `# shift-option/alt-click on a query below to jump to it i
 
 type State = {
   schema?: GraphQLSchema | null;
-  query: string;
+  query?: string;
   explorerIsOpen: boolean;
   authModalVisible: boolean;
   jwtToken?: string;
@@ -92,7 +92,7 @@ type State = {
 };
 
 class App extends Component<{}, State> {
-  _graphiql: GraphiQL;
+  _graphiql?: GraphiQL;
   state: State = {
     schema: null,
     query: DEFAULT_QUERY,
@@ -108,8 +108,8 @@ class App extends Component<{}, State> {
     },
   };
 
-  constructor(props, ...rest) {
-    super(props, ...rest);
+  constructor(props) {
+    super(props);
     this.fetch = this.fetch.bind(this);
   }
   async componentDidMount() {
@@ -120,7 +120,7 @@ class App extends Component<{}, State> {
       query: getIntrospectionQuery(),
     });
 
-    const editor = this._graphiql.getQueryEditor();
+    const editor = this._graphiql?.getQueryEditor();
     editor.setOption('extraKeys', {
       ...(editor.options.extraKeys || {}),
       'Shift-Alt-LeftClick': this._handleInspectOperation,
@@ -186,7 +186,7 @@ class App extends Component<{}, State> {
     el && el.scrollIntoView();
   };
 
-  _handleEditQuery = (query: string): void => this.setState({ query });
+  _handleEditQuery = (query: string | undefined): void => this.setState({ query });
 
   _handleToggleExplorer = () => {
     this.setState({ explorerIsOpen: !this.state.explorerIsOpen });
@@ -302,36 +302,38 @@ class App extends Component<{}, State> {
             schema={schema}
             query={query}
             onEdit={this._handleEditQuery}
-            onRunOperation={operationName => this._graphiql.handleRunQuery(operationName)}
+            onRunOperation={operationName => this._graphiql?.handleRunQuery(operationName)}
             explorerIsOpen={this.state.explorerIsOpen}
             onToggleExplorer={this._handleToggleExplorer}
           />
           <GraphiQL
-            ref={ref => (this._graphiql = ref)}
+            ref={ref => (this._graphiql = ref as GraphiQL)}
             fetcher={this.fetch}
-            schema={schema}
+            schema={schema!}
             query={query}
             onEditQuery={this._handleEditQuery}
           >
             <GraphiQL.Toolbar>
               <GraphiQL.Button
-                onClick={() => this._graphiql.handlePrettifyQuery()}
+                onClick={() => this._graphiql?.handlePrettifyQuery()}
                 label='Prettify'
                 title='Prettify Query (Shift-Ctrl-P)'
               />
-              <GraphiQL.Button onClick={() => this._graphiql.handleToggleHistory()} label='History' title='Show History' />
+              <GraphiQL.Button onClick={() => this._graphiql?.handleToggleHistory()} label='History' title='Show History' />
               <GraphiQL.Button onClick={this._handleToggleExplorer} label='Explorer' title='Toggle Explorer' />
               <GraphiQL.Button onClick={this.toggleAuthModal} label='Update Auth' title='Auth Setting' />
-              <GraphiQL.Select label='Auth' onSelect={this.switchAuthMode}>
+              <GraphiQL.Menu
+                label={`Auth - ${AUTH_TYPE_TO_NAME[this.state.currentAuthMode]} `}
+                title={AUTH_TYPE_TO_NAME[this.state.currentAuthMode]}
+              >
                 {authModes.map(mode => (
-                  <GraphiQL.SelectOption
+                  <GraphiQL.MenuItem
+                    title={AUTH_TYPE_TO_NAME[mode]}
                     label={`Use: ${AUTH_TYPE_TO_NAME[mode]}`}
-                    value={mode}
-                    key={mode}
-                    selected={mode === this.state.currentAuthMode}
+                    onSelect={() => this.switchAuthMode(mode)}
                   />
                 ))}
-              </GraphiQL.Select>
+              </GraphiQL.Menu>
             </GraphiQL.Toolbar>
           </GraphiQL>
         </div>

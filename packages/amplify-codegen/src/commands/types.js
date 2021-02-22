@@ -1,11 +1,15 @@
 const glob = require('glob-all');
 const path = require('path');
-const { generate } = require('amplify-graphql-types-generator');
 const Ora = require('ora');
 
 const constants = require('../constants');
 const loadConfig = require('../codegen-config');
 const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
+const { FeatureFlags } = require('amplify-cli-core');
+const { getTypesgenPackage } = require('../utils/getTypesgenPackage');
+
+const typesgenPackageMigrationflag = 'codegen.useTypesGeneratorPlugin';
+const { generate } = getTypesgenPackage(FeatureFlags.getBoolean(typesgenPackageMigrationflag));
 
 async function generateTypes(context, forceDownloadSchema, withoutInit = false, decoupleFrontend = '') {
   let frontend = decoupleFrontend;

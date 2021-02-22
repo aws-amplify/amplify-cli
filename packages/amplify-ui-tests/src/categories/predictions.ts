@@ -1,7 +1,7 @@
 import { isCI, getCLIPath } from '../utils';
 import * as nexpect from 'nexpect';
 
-export function addIdentityText(cwd: string, settings: any = {}, verbose: boolean = !isCI()) {
+export function addIdentityText(cwd: string, settings: any = {}, verbose: boolean = !isCI()): Promise<void> {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'predictions'], { cwd, stripColors: true, verbose })
@@ -25,7 +25,7 @@ export function addIdentityText(cwd: string, settings: any = {}, verbose: boolea
   });
 }
 
-export function addConvertWithDefault(cwd: string, settings: any = {}, verbose: boolean = !isCI()) {
+export function addConvertWithDefault(cwd: string, settings: any = {}, verbose: boolean = !isCI()): Promise<void> {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(getCLIPath(), ['add', 'predictions'], { cwd, stripColors: true, verbose })

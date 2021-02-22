@@ -1,14 +1,14 @@
 import { nspawn as spawn, getCLIPath, getSocialProviders } from 'amplify-e2e-core';
 
-export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }) {
+export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
       .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
-      .wait('Do you want to use an AWS profile?')
-      .sendLine('yes')
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn();
 
@@ -26,15 +26,15 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
   });
 }
 
-export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName: string; currentEnvName: string }) {
+export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName: string; currentEnvName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
       .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
-      .wait('Do you want to use an AWS profile?')
-      .sendConfirmYes()
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn()
       .wait(`already imported to '${settings.currentEnvName}' environment, do you want to import it to the new environment`)
@@ -50,7 +50,7 @@ export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName:
   });
 }
 
-export function checkoutEnvironment(cwd: string, settings: { envName: string }) {
+export function checkoutEnvironment(cwd: string, settings: { envName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'checkout', settings.envName], { cwd, stripColors: true })
       .wait('Initialized your environment successfully.')
@@ -65,13 +65,11 @@ export function checkoutEnvironment(cwd: string, settings: { envName: string }) 
 }
 
 // Test multiple Environments by passing settings.numEnv
-export function listEnvironment(cwd: string, settings: { numEnv?: number }) {
+export function listEnvironment(cwd: string, settings: { numEnv?: number }): Promise<void> {
   return new Promise((resolve, reject) => {
     let numEnv = settings.numEnv || 1;
     let regex = /\|\s\*?[a-z]{2,10}\s+\|/;
-    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true })
-      .wait('| Environments |')
-      .wait('| ------------ |');
+    const chain = spawn(getCLIPath(), ['env', 'list'], { cwd, stripColors: true }).wait('| Environments |').wait('| ------------ |');
 
     for (let i = 0; i < numEnv; ++i) {
       chain.wait(regex);
@@ -125,7 +123,7 @@ export function getEnvironment(cwd: string, settings: { envName: string }): Prom
   but nexpect can't wait() on the spinner output
   See amplify-cli/src/initialize-env.js
 */
-export function pullEnvironment(cwd: string) {
+export function pullEnvironment(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'pull'], { cwd, stripColors: true }).run((err: Error) => {
       if (!err) {
@@ -137,7 +135,7 @@ export function pullEnvironment(cwd: string) {
   });
 }
 
-export function addEnvironmentHostedUI(cwd: string, settings: { envName: string }) {
+export function addEnvironmentHostedUI(cwd: string, settings: { envName: string }): Promise<void> {
   const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders();
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
@@ -145,8 +143,8 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
       .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
-      .wait('Do you want to use an AWS profile?')
-      .sendLine('yes')
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn()
       .wait('Enter your Facebook App ID for your OAuth flow:')
@@ -172,7 +170,7 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
   });
 }
 
-export function importEnvironment(cwd: string, settings: { envName: string; providerConfig: string }) {
+export function importEnvironment(cwd: string, settings: { envName: string; providerConfig: string }): Promise<void> {
   const cmd_array = [
     'env',
     'import',
@@ -198,7 +196,7 @@ export function importEnvironment(cwd: string, settings: { envName: string; prov
   });
 }
 
-export function removeEnvironment(cwd: string, settings: { envName: string }) {
+export function removeEnvironment(cwd: string, settings: { envName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'remove', settings.envName], { cwd, stripColors: true })
       .wait(`Are you sure you want to continue?`)

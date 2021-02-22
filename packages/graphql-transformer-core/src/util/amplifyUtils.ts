@@ -11,6 +11,7 @@ import { FeatureFlagProvider } from '../FeatureFlags';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
   cantAddLSILaterRule,
+  cantRemoveLSILater,
   cantEditGSIKeySchemaRule,
   cantEditKeySchemaRule,
   cantEditLSIKeySchemaRule,
@@ -64,6 +65,7 @@ export async function buildProject(opts: ProjectOptions) {
           // LSI
           cantEditKeySchemaRule,
           cantAddLSILaterRule,
+          cantRemoveLSILater,
           cantEditLSIKeySchemaRule,
         ];
 
@@ -74,6 +76,7 @@ export async function buildProject(opts: ProjectOptions) {
           // LSI
           cantEditKeySchemaRule,
           cantAddLSILaterRule,
+          cantRemoveLSILater,
           cantEditLSIKeySchemaRule,
           // GSI
           cantEditGSIKeySchemaRule,

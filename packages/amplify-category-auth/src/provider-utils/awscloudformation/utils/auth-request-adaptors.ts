@@ -87,8 +87,8 @@ const mutableAttributeAdaptor = (
   identityPoolConfig?: CognitoIdentityPoolConfiguration | CognitoIdentityPoolModification,
 ) => {
   return {
-    useDefault: 'manual' as 'manual',
-    updateFlow: 'manual' as 'manual',
+    useDefault: 'manual' as const,
+    updateFlow: 'manual' as const,
     authSelections: includeIdentityPool ? 'identityPoolAndUserPool' : ('userPoolOnly' as 'userPoolOnly' | 'identityPoolAndUserPool'),
     userPoolGroups: (userPoolConfig.userPoolGroups?.length || 0) > 0,
     userPoolGroupList: (userPoolConfig.userPoolGroups || []).map(group => group.groupName), // TODO may need to map "customPolicy"

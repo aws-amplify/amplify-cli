@@ -57,6 +57,7 @@ async function addWalkThrough(context, skip = [], withoutInit, decoupleFrontend,
 
   const includePatternDefault = getIncludePattern(targetLanguage, schemaLocation);
   const includePathGlob = join(includePatternDefault.graphQLDirectory, '**', includePatternDefault.graphQLExtension);
+  const docsFilePathDefault = includePatternDefault.graphQLDirectory;
 
   if (!skip.includes('includePattern')) {
     answers.includePattern = await determineValue(inputParams, yesFlag, 'includePattern', [includePathGlob], () =>
@@ -65,7 +66,7 @@ async function addWalkThrough(context, skip = [], withoutInit, decoupleFrontend,
   }
   if (!skip.includes('shouldGenerateDocs')) {
     answers.shouldGenerateDocs = await determineValue(inputParams, yesFlag, 'generateDocs', true, () => askShouldGenerateDocs());
-    answers.docsFilePath = getGraphQLDocPath(frontend, schemaLocation);
+    answers.docsFilePath = getGraphQLDocPath(frontend, docsFilePathDefault, answers.includePattern);
   }
 
   if (answers.shouldGenerateDocs && !skip.includes('maxDepth')) {

@@ -1,22 +1,10 @@
 import path from 'path';
 import fs from 'fs-extra';
-import glob from 'glob';
-import * as execa from 'execa';
+import execa from 'execa';
 import { InvocationRequest } from 'amplify-function-plugin-interface';
-import { buildCore } from './build';
 import { executableName } from '../constants';
 
 export const invoke = async (request: InvocationRequest): Promise<string> => {
-  await buildCore(
-    {
-      env: request.env,
-      runtime: request.runtime,
-      srcRoot: request.srcRoot,
-      lastBuildTimestamp: request.lastBuildTimestamp,
-    },
-    'Debug',
-  );
-
   const sourcePath = path.join(request.srcRoot, 'src');
   let result: execa.ExecaSyncReturnValue<string>;
   let tempDir: string = '';
@@ -25,17 +13,17 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
     tempDir = fs.mkdtempSync(path.join(request.srcRoot, 'amplify'));
     eventFile = path.join(tempDir, 'event.json');
     fs.writeFileSync(eventFile, request.event);
-    result = execa.sync(
+    const execPromise = execa(
       executableName,
       ['lambda-test-tool-3.1', '--no-ui', '--function-handler', request.handler, '--payload', eventFile, '--pause-exit', 'false'],
       {
         cwd: sourcePath,
-        env: {
-          ...process.env,
-          ...request.envVars,
-        },
+        env: request.envVars,
       },
     );
+    execPromise.stderr.pipe(process.stderr);
+    execPromise.stdout.pipe(process.stdout);
+    result = await execPromise;
   } finally {
     // Clean up
     if (tempDir && fs.existsSync(tempDir)) {
@@ -48,5 +36,14 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
     throw new Error(`Test failed, exit code was ${result.exitCode}`);
   }
 
-  return result.stdout;
+  const { stdout } = result;
+  const lines = stdout.split('\n');
+  const lastLine = lines[lines.length - 1];
+  let output = lastLine;
+  try {
+    output = JSON.parse(lastLine);
+  } catch (err) {
+    // swallow this and return the raw line
+  }
+  return output;
 };

@@ -28,14 +28,11 @@ const regionOptions = [
   'ap-south-1',
 ];
 
-const profileOptions = [
-  'cancel',
-  'update',
-  'remove',
-];
+const profileOptions = ['cancel', 'update', 'remove'];
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
-export function amplifyConfigure(settings: AmplifyConfiguration) {
+
+export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   const missingParam = MANDATORY_PARAMS.filter(p => !Object.keys(s).includes(p));
   if (missingParam.length) {
@@ -75,10 +72,12 @@ export function amplifyConfigure(settings: AmplifyConfiguration) {
   });
 }
 
-export function amplifyConfigureProject(settings: { cwd: string, enableContainers: boolean}) {
+export function amplifyConfigureProject(settings: { cwd: string; enableContainers: boolean }): Promise<void> {
   const { enableContainers = false, cwd } = settings;
 
-  const confirmContainers: keyof Pick<ExecutionContext, 'sendConfirmYes' | 'sendConfirmNo'> = enableContainers ? 'sendConfirmYes': 'sendConfirmNo';
+  const confirmContainers: keyof Pick<ExecutionContext, 'sendConfirmYes' | 'sendConfirmNo'> = enableContainers
+    ? 'sendConfirmYes'
+    : 'sendConfirmNo';
 
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true })
@@ -86,7 +85,7 @@ export function amplifyConfigureProject(settings: { cwd: string, enableContainer
       .sendCarriageReturn()
       .wait('Choose your default editor:')
       .sendCarriageReturn()
-      .wait('Choose the type of app that you\'re building')
+      .wait("Choose the type of app that you're building")
       .sendCarriageReturn()
       .wait('What javascript framework are you using')
       .sendCarriageReturn()
@@ -104,14 +103,12 @@ export function amplifyConfigureProject(settings: { cwd: string, enableContainer
 
     singleSelect(chain, profileOptions[0], profileOptions);
 
-    chain
-      .wait('Successfully made configuration changes to your project.')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    chain.wait('Successfully made configuration changes to your project.').run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }

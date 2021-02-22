@@ -1,6 +1,6 @@
 import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 
-export function addPinpoint(cwd: string, settings: any) {
+export function addPinpoint(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
@@ -25,7 +25,7 @@ export function addPinpoint(cwd: string, settings: any) {
   });
 }
 
-export function addKinesis(cwd: string, settings: any) {
+export function addKinesis(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
@@ -53,7 +53,7 @@ export function addKinesis(cwd: string, settings: any) {
   });
 }
 
-export function removeAnalytics(cwd: string, settings: any) {
+export function removeAnalytics(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')

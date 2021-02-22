@@ -1,6 +1,9 @@
 import { getCLIPath, nspawn as spawn } from '..';
 
-export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDir?: boolean; appId?: string; withRestore?: boolean }) {
+export function amplifyPull(
+  cwd: string,
+  settings: { override?: boolean; emptyDir?: boolean; appId?: string; withRestore?: boolean },
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const tableHeaderRegex = /\|\sCategory\s+\|\sResource\sname\s+\|\sOperation\s+\|\sProvider\splugin\s+\|/;
     const tableSeperator = /\|(\s-+\s\|){4}/;
@@ -19,8 +22,8 @@ export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDi
 
     if (settings.emptyDir) {
       chain
-        .wait('Do you want to use an AWS profile')
-        .sendLine('y')
+        .wait('Select the authentication method you want to use:')
+        .sendCarriageReturn()
         .wait('Please choose the profile you want to use')
         .sendCarriageReturn()
         .wait('Choose your default editor:')
@@ -40,11 +43,7 @@ export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDi
         .wait('Do you plan on modifying this backend?')
         .sendLine('y');
     } else {
-      chain
-        .wait('Pre-pull status')
-        .wait('Current Environment')
-        .wait(tableHeaderRegex)
-        .wait(tableSeperator);
+      chain.wait('Pre-pull status').wait('Current Environment').wait(tableHeaderRegex).wait(tableSeperator);
     }
 
     if (settings.override) {
@@ -58,11 +57,7 @@ export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDi
     if (settings.emptyDir) {
       chain.wait(/Successfully pulled backend environment .+ from the cloud\./).wait("Run 'amplify pull' to sync upstream changes.");
     } else {
-      chain
-        .wait('Post-pull status')
-        .wait('Current Environment')
-        .wait(tableHeaderRegex)
-        .wait(tableSeperator);
+      chain.wait('Post-pull status').wait('Current Environment').wait(tableHeaderRegex).wait(tableSeperator);
     }
 
     chain.run((err: Error) => {

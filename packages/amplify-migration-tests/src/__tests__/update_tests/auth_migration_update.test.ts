@@ -1,15 +1,18 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
-import { join } from 'path';
-import * as fs from 'fs-extra';
-import { addAuthWithCustomTrigger, updateAuthWithoutCustomTrigger } from 'amplify-e2e-core';
 import {
+  addAuthWithCustomTrigger,
+  amplifyPushAuth,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getLambdaFunction,
+  getProjectMeta,
   getUserPool,
   getUserPoolClients,
-  getLambdaFunction,
-  createNewProjectDir,
-  deleteProjectDir,
-  getProjectMeta,
+  updateAuthWithoutCustomTrigger,
 } from 'amplify-e2e-core';
+import * as fs from 'fs-extra';
+import { join } from 'path';
+import { initJSProjectWithProfile } from '../../migration-helpers';
 
 describe('amplify auth migration', () => {
   let projRoot: string;

@@ -7,8 +7,8 @@ import { preInitSetup } from '../../init-steps/preInitSetup';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { initFrontend } from '../../init-steps/s1-initFrontend';
 import { scaffoldProjectHeadless } from '../../init-steps/s8-scaffoldHeadless';
-
-jest.mock('child_process', () => ({ execSync: jest.fn() }));
+import { getPackageManager, normalizePackageManagerForOS } from '../../packageManagerHelpers';
+jest.mock('child_process');
 jest.mock('fs-extra');
 
 (readJSON as jest.Mock).mockReturnValue({});
@@ -17,10 +17,7 @@ jest.mock('fs-extra');
 (existsSync as jest.Mock).mockReturnValue(true);
 (readdirSync as jest.Mock).mockReturnValue([]);
 
-jest.mock('../../packageManagerHelpers', () => ({
-  getPackageManager: () => 'yarn',
-  normalizePackageManagerForOS: () => 'yarn',
-}));
+jest.mock('../../packageManagerHelpers');
 
 describe('amplify init: ', () => {
   const mockGetProjectConfigFilePath = jest.spyOn(pathManager, 'getProjectConfigFilePath');
@@ -28,6 +25,9 @@ describe('amplify init: ', () => {
   const mockGetDotConfigDirPath = jest.spyOn(pathManager, 'getDotConfigDirPath');
   const mockGetBackendDirPath = jest.spyOn(pathManager, 'getBackendDirPath');
   const mockGetGitIgnoreFilePath = jest.spyOn(pathManager, 'getGitIgnoreFilePath');
+
+  (getPackageManager as jest.Mock).mockReturnValue('yarn');
+  (normalizePackageManagerForOS as jest.Mock).mockReturnValue('yarn');
 
   const mockGetProjectConfig = jest.fn(() => ({}));
 

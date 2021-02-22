@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.27.9...amplify-util-mock@3.28.0) (2021-02-17)
+
+
+### Bug Fixes
+
+* fix messed up merge ([#6612](https://github.com/aws-amplify/amplify-cli/issues/6612)) ([0e5d85b](https://github.com/aws-amplify/amplify-cli/commit/0e5d85be780c800aad2322ebb2b5598187c97ae8))
+* mock bug fixes and e2e test updates ([#6626](https://github.com/aws-amplify/amplify-cli/issues/6626)) ([af76446](https://github.com/aws-amplify/amplify-cli/commit/af76446d18bf626ca5f91c3ad41081175c959807))
+* mock handles and prints child proc errors ([#6601](https://github.com/aws-amplify/amplify-cli/issues/6601)) ([ce075d9](https://github.com/aws-amplify/amplify-cli/commit/ce075d91c0b93885229ab3c6000a450c6b8cc56a))
+
+
+### Features
+
+* fully populate mock function environment variables ([#6551](https://github.com/aws-amplify/amplify-cli/issues/6551)) ([dceb13a](https://github.com/aws-amplify/amplify-cli/commit/dceb13a76a85a05940078868a3e2e1ca85656938))
+* Separate prod and dev lambda function builds ([#6494](https://github.com/aws-amplify/amplify-cli/issues/6494)) ([2977c6a](https://github.com/aws-amplify/amplify-cli/commit/2977c6a886b33a38ef46f898a2adc1ffdb6d228b))
+
+
+
+
+
+## [3.27.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.27.8...amplify-util-mock@3.27.9) (2021-02-11)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** expose errors from util.validate ([#6514](https://github.com/aws-amplify/amplify-cli/issues/6514)) ([8273037](https://github.com/aws-amplify/amplify-cli/commit/82730371ed0292e762d45313a7fa8de062c860dd)), closes [#6068](https://github.com/aws-amplify/amplify-cli/issues/6068)
+
+
+
+
+
+## [3.27.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.27.7...amplify-util-mock@3.27.8) (2021-02-10)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** off-by-one array reference and general refactor ([#6462](https://github.com/aws-amplify/amplify-cli/issues/6462)) ([9acdc7e](https://github.com/aws-amplify/amplify-cli/commit/9acdc7e5b8aebc1fcbcd43e25c0fcdd5842f2427))
+* **amplify-velocity-template:** support 'get' and 'set' of array vars ([#5747](https://github.com/aws-amplify/amplify-cli/issues/5747)) ([b5f917a](https://github.com/aws-amplify/amplify-cli/commit/b5f917a81524feb64ec7e674c6213cb47fd7794c)), closes [#5741](https://github.com/aws-amplify/amplify-cli/issues/5741)
+* optimize mock package imports ([#6455](https://github.com/aws-amplify/amplify-cli/issues/6455)) ([1b64a14](https://github.com/aws-amplify/amplify-cli/commit/1b64a147cbb3b56ce6f8465318d611de5d724685))
+
+
+
+
+
 ## [3.27.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.27.6...amplify-util-mock@3.27.7) (2021-01-08)
 
 

@@ -151,12 +151,6 @@ export const updateTrigger = async triggerOptions => {
       for (let v = 0; v < values.length; v += 1) {
         await copyFunctions(key, values[v], category, context, targetPath);
       }
-      const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-      const parametersPath = path.join(projectBackendDirPath, 'function', functionName);
-      const dirContents = fs.readdirSync(parametersPath);
-      if (dirContents.includes('parameters.json')) {
-        JSONUtilities.writeJson(path.join(parametersPath, 'parameters.json'), { modules: values.join() });
-      }
 
       await cleanFunctions(key, values, category, context, targetPath);
     }

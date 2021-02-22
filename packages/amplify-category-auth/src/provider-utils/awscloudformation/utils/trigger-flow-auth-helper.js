@@ -29,13 +29,6 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     triggerEnvs[r] = context.amplify.getTriggerEnvVariables(context, { key: r, modules: triggers[r] }, 'auth');
   });
 
-  const parameters = {
-    authResourceName,
-    triggerEnvs,
-    parentStack: { Ref: 'AWS::StackId' },
-    triggers,
-  };
-
   // creating array of trigger names
   const keys = Object.keys(triggers);
 
@@ -46,9 +39,12 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     for (let t = 0; t < keys.length; t += 1) {
       const functionName = `${authResourceName}${keys[t]}`;
       const targetPath = `${targetDir}/function/${functionName}/src`;
+
       if (previouslySaved && previouslySaved[keys[t]]) {
         const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', functionName);
-        await triggerEnvParams(context, keys[t], values[t], functionName, currentEnvVariables);
+
+        await saveTriggerEnvParamsToTeamProviderInfo(context, keys[t], values[t], functionName, currentEnvVariables);
+
         const triggerOptions = {
           key: keys[t],
           values: values[t],
@@ -65,10 +61,13 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           parentResource: authResourceName,
           skipEdit: true,
         };
+
         const updatedLambda = await context.amplify.updateTrigger(triggerOptions);
+
         triggerKeyValues = Object.assign(triggerKeyValues, updatedLambda);
       } else {
-        await triggerEnvParams(context, keys[t], values[t], functionName);
+        await saveTriggerEnvParamsToTeamProviderInfo(context, keys[t], values[t], functionName);
+
         const triggerOptions = {
           key: keys[t],
           values: values[t],
@@ -79,11 +78,14 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
           parentStack: 'auth',
           targetPath,
           triggerTemplate: `${keys[t]}.json.ejs`,
+          triggerEventPath: `${keys[t]}.event.json`,
           triggerDir: path.join(triggerAssetRoot, keys[t]),
           parentResource: authResourceName,
           skipEdit: true,
         };
+
         const newLambda = await context.amplify.addTrigger(triggerOptions);
+
         triggerKeyValues = Object.assign(triggerKeyValues, newLambda);
       }
     }
@@ -99,11 +101,11 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     coreAnswers.parentStack = { Ref: 'AWS::StackId' };
   }
 
-  return parameters.triggers;
+  return triggers;
 }
 
 // saving input-based trigger env variables to the team-provider
-const triggerEnvParams = async (context, key, value, functionName, currentEnvVars) => {
+const saveTriggerEnvParamsToTeamProviderInfo = async (context, key, value, functionName, currentEnvVars) => {
   const envs = await context.amplify.getTriggerEnvInputs(context, path.join(triggerAssetRoot, key), key, value, currentEnvVars);
   context.amplify.saveEnvResourceParameters(context, 'function', functionName, envs);
 };

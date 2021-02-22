@@ -28,7 +28,7 @@ export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnl
   idpAmazonAppId: string;
 };
 
-export function addAuthWithDefault(cwd: string, settings: any = {}) {
+export function addAuthWithDefault(cwd: string, settings: any = {}): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication')
@@ -48,7 +48,7 @@ export function addAuthWithDefault(cwd: string, settings: any = {}) {
   });
 }
 
-export function runAmplifyAuthConsole(cwd: string) {
+export function runAmplifyAuthConsole(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['auth', 'console'], { cwd, stripColors: true })
       .wait('Which console')
@@ -64,7 +64,7 @@ export function runAmplifyAuthConsole(cwd: string) {
   });
 }
 
-export function removeAuthWithDefault(cwd: string) {
+export function removeAuthWithDefault(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'auth'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
@@ -82,7 +82,7 @@ export function removeAuthWithDefault(cwd: string) {
   });
 }
 
-export function addAuthWithGroupTrigger(cwd: string, settings: any) {
+export function addAuthWithGroupTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -114,7 +114,7 @@ export function addAuthWithGroupTrigger(cwd: string, settings: any) {
   });
 }
 
-export function addAuthViaAPIWithTrigger(cwd: string, settings: any) {
+export function addAuthViaAPIWithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services:')
@@ -162,7 +162,7 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any) {
   });
 }
 
-export function addAuthWithCustomTrigger(cwd: string, settings: any) {
+export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -242,7 +242,7 @@ export function addAuthWithCustomTrigger(cwd: string, settings: any) {
   });
 }
 
-export function updateAuthSignInSignOutUrl(cwd: string, settings: any) {
+export function updateAuthSignInSignOutUrl(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
       .wait('What do you want to do?')
@@ -276,7 +276,7 @@ export function updateAuthSignInSignOutUrl(cwd: string, settings: any) {
   });
 }
 
-export function updateAuthWithoutCustomTrigger(cwd: string, settings: any) {
+export function updateAuthWithoutCustomTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
       .wait('What do you want to do?')
@@ -331,7 +331,7 @@ export function updateAuthWithoutCustomTrigger(cwd: string, settings: any) {
   });
 }
 
-export function addAuthWithRecaptchaTrigger(cwd: string, settings: any) {
+export function addAuthWithRecaptchaTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -365,7 +365,7 @@ export function addAuthWithRecaptchaTrigger(cwd: string, settings: any) {
   });
 }
 
-export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any) {
+export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
       .wait('What do you want to do')
@@ -417,7 +417,7 @@ export function updateAuthRemoveRecaptchaTrigger(cwd: string, settings: any) {
   });
 }
 
-export function addAuthWithSignInSignOutUrl(cwd: string, settings: any) {
+export function addAuthWithSignInSignOutUrl(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -453,7 +453,7 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any) {
   });
 }
 
-export function addAuthWithDefaultSocial(cwd: string, settings: any) {
+export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const {
       FACEBOOK_APP_ID,
@@ -514,7 +514,7 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any) {
   });
 }
 
-export function addAuthUserPoolOnly(cwd: string, settings: any) {
+export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -688,7 +688,7 @@ export function addAuthUserPoolOnly(cwd: string, settings: any) {
   });
 }
 
-export function addAuthWithGroupsAndAdminAPI(cwd: string, settings: any) {
+export function addAuthWithGroupsAndAdminAPI(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration')
@@ -763,7 +763,7 @@ export function addAuthWithGroupsAndAdminAPI(cwd: string, settings: any) {
   });
 }
 
-export function addAuthWithMaxOptions(cwd: string, settings: any) {
+export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -944,7 +944,7 @@ export function addAuthWithMaxOptions(cwd: string, settings: any) {
 }
 
 //add default auth with pre token generation trigger
-export function addAuthWithPreTokenGenerationTrigger(projectDir: string) {
+export function addAuthWithPreTokenGenerationTrigger(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd: projectDir, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration')
@@ -974,7 +974,7 @@ export function addAuthWithPreTokenGenerationTrigger(projectDir: string) {
   });
 }
 
-export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]) {
+export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]): Promise<void> {
   if (groupNames.length == 0) {
     return;
   }
@@ -1017,7 +1017,7 @@ export function updateAuthAddUserGroups(projectDir: string, groupNames: string[]
   });
 }
 
-export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserPoolOnlyWithOAuthSettings) {
+export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserPoolOnlyWithOAuthSettings): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -1107,7 +1107,10 @@ export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserP
   });
 }
 
-export function addAuthIdentityPoolAndUserPoolWithOAuth(cwd: string, settings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings) {
+export function addAuthIdentityPoolAndUserPoolWithOAuth(
+  cwd: string,
+  settings: AddAuthIdentityPoolAndUserPoolWithOAuthSettings,
+): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -1218,7 +1221,7 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(cwd: string, settings: A
   });
 }
 
-export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoolOnlyNoOAuthSettings) {
+export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoolOnlyNoOAuthSettings): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
