@@ -5,7 +5,9 @@ function getGraphQLDocPath(frontend, graphQLDirectory, includePathGlob) {
   if (frontend === 'android') {
     return join(graphQLDirectory, 'com/amazonaws/amplify/generated/graphql');
   }
-  return includePathGlob ? globParent(includePathGlob) : graphQLDirectory;
+  return includePathGlob && includePathGlob.length
+    ? globParent(includePathGlob[0])
+    : graphQLDirectory;
 }
 
 module.exports = getGraphQLDocPath;
