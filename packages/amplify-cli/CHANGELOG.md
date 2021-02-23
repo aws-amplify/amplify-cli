@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.44.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.44.0...@aws-amplify/cli@4.44.1-beta.0) (2021-02-23)
+
+
+### Bug Fixes
+
+* [#6153](https://github.com/aws-amplify/amplify-cli/issues/6153) highlight the destructive delete prompt ([#6528](https://github.com/aws-amplify/amplify-cli/issues/6528)) ([13333b2](https://github.com/aws-amplify/amplify-cli/commit/13333b2e7a128b9b33dc08960422d3183dcb7e28))
+
+
+
+
+
 # [4.44.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.43.0...@aws-amplify/cli@4.44.0) (2021-02-17)
 
 

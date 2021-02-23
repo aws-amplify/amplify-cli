@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.6.0...amplify-go-function-runtime-provider@1.6.1-beta.0) (2021-02-23)
+
+
+### Bug Fixes
+
+* go build on win ([#6686](https://github.com/aws-amplify/amplify-cli/issues/6686)) ([966726c](https://github.com/aws-amplify/amplify-cli/commit/966726cd2b5dd245e837e9f9a3556bedee57e7e2))
+
+
+
+
+
 # [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.5.8...amplify-go-function-runtime-provider@1.6.0) (2021-02-17)
 
 
