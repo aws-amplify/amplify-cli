@@ -1,14 +1,140 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
+import * as yaml from 'js-yaml';
+import _ from 'lodash';
 import glob from 'glob';
 import { coerce, lt } from 'semver';
 import { Context } from './domain/context';
 import { ConfirmQuestion } from 'inquirer';
-import { pathManager, stateManager } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 
-const prevLambdaRuntimeVersions = ['nodejs8.10', 'nodejs10.x'];
+const previousLambdaRuntimeVersions = ['nodejs8.10', 'nodejs10.x'];
 const lambdaRuntimeVersion = 'nodejs12.x';
+
+// Register custom tags for yaml parser
+const CF_SCHEMA = new yaml.Schema([
+  new yaml.Type('!Ref', {
+    kind: 'scalar',
+    construct: function (data) {
+      return { Ref: data };
+    },
+  }),
+  new yaml.Type('!Condition', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { Condition: data };
+    },
+  }),
+  new yaml.Type('!Equals', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Equals': data };
+    },
+  }),
+  new yaml.Type('!Not', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Not': data };
+    },
+  }),
+  new yaml.Type('!Sub', {
+    kind: 'scalar',
+    construct: function (data) {
+      return { 'Fn::Sub': data };
+    },
+  }),
+  new yaml.Type('!Sub', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Sub': data };
+    },
+  }),
+  new yaml.Type('!If', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::If': data };
+    },
+  }),
+  new yaml.Type('!Join', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Join': data };
+    },
+  }),
+  new yaml.Type('!Select', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Select': data };
+    },
+  }),
+  new yaml.Type('!FindInMap', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::FindInMap': data };
+    },
+  }),
+  new yaml.Type('!GetAtt', {
+    kind: 'scalar',
+    construct: function (data) {
+      return { 'Fn::GetAtt': data };
+    },
+  }),
+  new yaml.Type('!GetAtt', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::GetAtt': data };
+    },
+  }),
+  new yaml.Type('!GetAZs', {
+    kind: 'scalar',
+    construct: function (data) {
+      return { 'Fn::GetAZs': data };
+    },
+  }),
+  new yaml.Type('!Base64', {
+    kind: 'mapping',
+    construct: function (data) {
+      return { 'Fn::Base64': data };
+    },
+  }),
+  new yaml.Type('!Split', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Split': data };
+    },
+  }),
+  new yaml.Type('!Cidr', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Cidr': data };
+    },
+  }),
+  new yaml.Type('!ImportValue', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::ImportValue': data };
+    },
+  }),
+  new yaml.Type('!Transform', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Transform': data };
+    },
+  }),
+  new yaml.Type('!And', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::And': data };
+    },
+  }),
+  new yaml.Type('!Or', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Or': data };
+    },
+  }),
+]);
 
 export async function checkProjectConfigVersion(context: Context): Promise<void> {
   const { constants } = context.amplify;
@@ -77,9 +203,7 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
       }
 
       context.print.info('');
-      context.print.success(
-        `Node.js runtime version successfully updated  to ${lambdaRuntimeVersion} in all the CloudFormation templates.`,
-      );
+      context.print.success(`Node.js runtime version successfully updated to ${lambdaRuntimeVersion} in all the CloudFormation templates.`);
       context.print.warning('Run “amplify push” to deploy the updated templates to the cloud.');
 
       result = true;
@@ -93,35 +217,66 @@ async function checkLambdaCustomResourceNodeVersion(context: Context, projectPat
 }
 
 function checkFileContent(fileContent: string): boolean {
-  for (const prevLambdaRuntimeVersion of prevLambdaRuntimeVersions) {
-    if (fileContent.includes(prevLambdaRuntimeVersion)) {
-      return true;
-    }
-  }
+  const { cfnTemplate } = getCFNTemplate(fileContent);
 
-  return false;
+  const resources = _.get(cfnTemplate, 'Resources', {});
+  const lambdaFunctions = _.filter(
+    resources,
+    r => r.Type === 'AWS::Lambda::Function' && previousLambdaRuntimeVersions.includes(_.get(r, ['Properties', 'Runtime'], undefined)),
+  );
+
+  return lambdaFunctions.length > 0;
 }
 
-function updateFileContent(fileString: string): string {
-  let result = fileString;
+function updateFileContent(fileContent: string): string {
+  const { isJson, cfnTemplate } = getCFNTemplate(fileContent);
 
-  for (const prevLambdaRuntimeVersion of prevLambdaRuntimeVersions) {
-    result = result.replace(prevLambdaRuntimeVersion, lambdaRuntimeVersion);
+  const resources = _.get(cfnTemplate, 'Resources', {});
+  const lambdaFunctions = _.filter(
+    resources,
+    r => r.Type === 'AWS::Lambda::Function' && previousLambdaRuntimeVersions.includes(_.get(r, ['Properties', 'Runtime'], undefined)),
+  );
+
+  lambdaFunctions.map(f => (f.Properties.Runtime = lambdaRuntimeVersion));
+
+  let result: string | undefined;
+
+  if (isJson) {
+    result = JSONUtilities.stringify(cfnTemplate);
+  } else {
+    result = yaml.dump(cfnTemplate);
   }
 
-  return result;
+  return result!;
+}
+
+function isJsonFileContent(fileContent: string): boolean {
+  // We use the first character to determine if the content is json or yaml because historically the CLI could
+  // have emitted JSON with YML extension, so we can't rely on filename extension.
+  return fileContent?.trim()[0] === '{'; // CFN templates are always objects, never arrays
+}
+
+function getCFNTemplate(fileContent: string): { isJson; cfnTemplate: Record<string, any> } {
+  // We use the first character to determine if the content is json or yaml because historically the CLI could
+  // have emitted JSON with YML extension, so we can't rely on filename extension.
+  const isJson = isJsonFileContent(fileContent);
+
+  let cfnTemplate: Record<string, any>;
+
+  if (isJson) {
+    cfnTemplate = JSONUtilities.parse<Record<string, any>>(fileContent);
+  } else {
+    cfnTemplate = yaml.load(fileContent, { schema: CF_SCHEMA }) as Record<string, any>;
+  }
+
+  return { isJson, cfnTemplate };
 }
 
 async function promptForConfirmation(context: Context, filesToUpdate: string[]): Promise<boolean> {
   context.print.info('');
   context.print.info('Amplify CLI uses AWS Lambda to manage part of your backend resources.');
   context.print.info(
-    `In response to the Lambda Runtime support deprecation schedule, the Node.js runtime needs to be updated from ${prevLambdaRuntimeVersions.join(
-      ', ',
-    )} to ${lambdaRuntimeVersion} in the following template files:`,
-  );
-  context.print.warning(
-    `Node.js runtime needs to be updated from ${prevLambdaRuntimeVersions.join(
+    `In response to the Lambda Runtime support deprecation schedule, the Node.js runtime needs to be updated from ${previousLambdaRuntimeVersions.join(
       ', ',
     )} to ${lambdaRuntimeVersion} in the following template files:`,
   );

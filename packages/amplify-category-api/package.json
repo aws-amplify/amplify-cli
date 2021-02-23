@@ -71,9 +71,13 @@
     "graphql-relational-schema-transformer": "2.16.1",
     "graphql-transformer-core": "6.25.1",
     "inquirer": "^7.3.3",
+    "js-yaml": "^4.0.0",
     "open": "^7.0.0",
     "ora": "^4.0.3",
     "uuid": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.0"
   },
   "jest": {
     "testURL": "http://localhost",
