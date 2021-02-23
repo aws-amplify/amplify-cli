@@ -87,6 +87,24 @@
     "@aws-amplify/api-graphql" "^1.2.5"
     "@aws-amplify/api-rest" "^1.2.5"
 
+"@aws-amplify/appsync-modelgen-plugin@1.22.9":
+  version "1.22.9"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.22.9.tgz#4e8f1fe3c5d1de81a3eec8404baf70287b0a21a8"
+  integrity sha512-RBG2rN4DP9ofyw4RQ32SNPdZN59BrojgVkmXBqgnlqJIbsyQeY6enfUsHQOnJnpYpAKtwurLBrtYPha18XIHYg==
+  dependencies:
+    "@graphql-codegen/plugin-helpers" "^1.12.2"
+    "@graphql-codegen/visitor-plugin-common" "1.12.2"
+    "@graphql-tools/utils" "^6.0.18"
+    "@types/node" "^12.12.6"
+    "@types/pluralize" "0.0.29"
+    chalk "^3.0.0"
+    change-case "^4.1.1"
+    dart-style "1.3.2-dev"
+    lower-case-first "^2.0.1"
+    pluralize "^8.0.0"
+    strip-indent "^3.0.0"
+    ts-dedent "^1.1.0"
+
 "@aws-amplify/appsync-modelgen-plugin@^1.22.6":
   version "1.22.6"
   resolved "https://registry.npmjs.org/@aws-amplify/appsync-modelgen-plugin/-/appsync-modelgen-plugin-1.22.6.tgz#d701ac3947d3f727dd0bacb1fea67dbd7a438b35"
@@ -193,6 +211,17 @@
     zen-observable-ts "0.8.19"
     zen-push "0.2.1"
 
+"@aws-amplify/graphql-docs-generator@2.3.2":
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-2.3.2.tgz#dc901292e67d1c4315363976c45780f9667256ee"
+  integrity sha512-djQs2ph3Zhzi4Jzp4BwKSocuucSJcZ4cTO4l0V9CSM2ElXRG5wO291ukVLyey42FntfHqN1iPv715P6Pd12lQA==
+  dependencies:
+    change-case "^4.1.1"
+    graphql "^14.5.8"
+    handlebars "4.7.6"
+    prettier "^1.19.1"
+    yargs "^15.1.0"
+
 "@aws-amplify/graphql-docs-generator@^2.3.0":
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-docs-generator/-/graphql-docs-generator-2.3.0.tgz#501f939caeca0f20e0142ee717e78c55268f12e7"
@@ -202,6 +231,31 @@
     graphql "^14.5.8"
     handlebars "4.7.6"
     prettier "^1.19.1"
+    yargs "^15.1.0"
+
+"@aws-amplify/graphql-types-generator@2.7.3":
+  version "2.7.3"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/graphql-types-generator/-/graphql-types-generator-2.7.3.tgz#3f19bfd26ad2040d41110c62718cc815cf320c8b"
+  integrity sha512-JYGjKiMix57N5Pq/xtjAMVHpYkg1zRxd9UW2KUT+8P8eoFDw6BRWxJOw3MOzyg6gpdxIC/7yZBwR7UC6B0LuLQ==
+  dependencies:
+    "@babel/generator" "7.0.0-beta.4"
+    "@babel/types" "7.0.0-beta.4"
+    "@types/babel-generator" "^6.25.0"
+    "@types/fs-extra" "^8.1.0"
+    "@types/prettier" "^1.19.0"
+    "@types/rimraf" "^3.0.0"
+    babel-generator "^6.26.1"
+    babel-types "^6.26.0"
+    change-case "^4.1.1"
+    common-tags "^1.8.0"
+    core-js "^3.6.4"
+    fs-extra "^8.1.0"
+    glob "^7.1.6"
+    graphql "^14.5.8"
+    inflected "^2.0.4"
+    prettier "^1.19.1"
+    rimraf "^3.0.0"
+    source-map-support "^0.5.16"
     yargs "^15.1.0"
 
 "@aws-amplify/graphql-types-generator@^2.7.0":
@@ -7104,6 +7158,30 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
+
+amplify-codegen@^2.22.2:
+  version "2.22.2"
+  resolved "https://registry.yarnpkg.com/amplify-codegen/-/amplify-codegen-2.22.2.tgz#7976a7c82f1d33a8b40c6216b94dda965b226aa2"
+  integrity sha512-1AHGeQ1qEE3z4onWAhlrvnxTRyWXhBHEMjW/Zsj6OG9dsbtB1xgNVXH7VHTurv5fVcHap6okSRsPK5DFfJuOGQ==
+  dependencies:
+    "@aws-amplify/appsync-modelgen-plugin" "1.22.9"
+    "@aws-amplify/graphql-docs-generator" "2.3.2"
+    "@aws-amplify/graphql-types-generator" "2.7.3"
+    "@graphql-codegen/core" "1.8.3"
+    amplify-cli-core "^1.17.0"
+    amplify-codegen-appsync-model-plugin "^1.22.3"
+    amplify-graphql-docs-generator "^2.2.1"
+    amplify-graphql-types-generator "^2.7.0"
+    chalk "^3.0.0"
+    fs-extra "^8.1.0"
+    glob-all "^3.1.0"
+    glob-parent "5.1.1"
+    graphql "^14.5.8"
+    graphql-config "^2.2.1"
+    graphql-transformer-core "^6.26.2"
+    inquirer "^7.3.3"
+    ora "^4.0.3"
+    slash "^3.0.0"
 
 ansi-align@^3.0.0:
   version "3.0.0"
