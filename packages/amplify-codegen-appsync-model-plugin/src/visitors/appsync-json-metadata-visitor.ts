@@ -48,6 +48,7 @@ export type AssociationHasMany = AssociationBaseType & {
 };
 type AssociationHasOne = AssociationHasMany & {
   connectionType: CodeGenConnectionType.HAS_ONE;
+  targetName: string;
 };
 
 type AssociationBelongsTo = AssociationBaseType & {
@@ -168,8 +169,11 @@ export class AppSyncJSONVisitor<
     if (field.connectionInfo) {
       const { connectionInfo } = field;
       const connectionAttribute: any = { connectionType: connectionInfo.kind };
-      if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY || connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
+      if (connectionInfo.kind === CodeGenConnectionType.HAS_MANY) {
         connectionAttribute.associatedWith = this.getFieldName(connectionInfo.associatedWith);
+      } else if (connectionInfo.kind === CodeGenConnectionType.HAS_ONE) {
+        connectionAttribute.associatedWith = this.getFieldName(connectionInfo.associatedWith);
+        connectionAttribute.targetName = connectionInfo.targetName;
       } else {
         connectionAttribute.targetName = connectionInfo.targetName;
       }
