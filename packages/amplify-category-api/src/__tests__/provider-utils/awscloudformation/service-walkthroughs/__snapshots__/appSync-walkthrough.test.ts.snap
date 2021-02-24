@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`correct Auth Config dont configure additional auth types  1`] = `
+Object {
+  "additionalAuthenticationProviders": Array [
+    Object {
+      "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+    },
+  ],
+  "defaultAuthentication": Object {
+    "authenticationType": "AWS_IAM",
+  },
+}
+`;

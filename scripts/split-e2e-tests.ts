@@ -3,7 +3,7 @@ import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
 
-const CONCURRENCY = 3;
+const CONCURRENCY = 4;
 const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-2',
   'us-west-2',
@@ -18,22 +18,76 @@ const AWS_REGIONS_TO_RUN_TESTS = [
 // or when a test suite changes drastically
 
 const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
+  //<10m
   'src/__tests__/plugin.test.ts',
-  'src/__tests__/datastore-modegen.test.ts',
-  'src/__tests__/interactions.test.ts',
-  'src/__tests__/hosting.test.ts',
+  'src/__tests__/init-special-case.test.ts',
+  'src/__tests__/datastore-modelgen.test.ts',
+  'src/__tests__/amplify-configure.test.ts',
   'src/__tests__/init.test.ts',
+  'src/__tests__/tags.test.ts',
+  //<15m
+  'src/__tests__/schema-versioned.test.ts',
+  'src/__tests__/schema-data-access-patterns.test.ts',
+  'src/__tests__/interactions.test.ts',
+  'src/__tests__/schema-predictions.test.ts',
   'src/__tests__/amplify-app.test.ts',
+  'src/__tests__/hosting.test.ts',
   'src/__tests__/analytics.test.ts',
-  'src/__tests__/hostingPROD.test.ts',
+  'src/__tests__/feature-flags.test.ts',
+  'src/__tests__/schema-iterative-update-2.test.ts',
+  'src/__tests__/containers-api.test.ts',
+  //<20m
   'src/__tests__/predictions.test.ts',
+  'src/__tests__/hostingPROD.test.ts',
+  //<25m
+  'src/__tests__/schema-auth-10.test.ts',
+  'src/__tests__/schema-key.test.ts',
+  'src/__tests__/auth_1.test.ts',
+  'src/__tests__/auth_5.test.ts',
+  'src/__tests__/function_3.test.ts',
+  'src/__tests__/schema-iterative-update-1.test.ts',
+  //<30m
+  'src/__tests__/schema-auth-3.test.ts',
   'src/__tests__/delete.test.ts',
-  'src/__tests__/storage.test.ts',
-  'src/__tests__/migration/api.key.migration.test.ts',
+  'src/__tests__/function_2.test.ts',
+  'src/__tests__/auth_3.test.ts',
+  'src/__tests__/layer.test.ts',
+  //<35m
+  'src/__tests__/migration/api.key.migration1.test.ts',
+  'src/__tests__/auth_4.test.ts',
+  'src/__tests__/schema-auth-7.test.ts',
+  'src/__tests__/schema-auth-8.test.ts',
+  'src/__tests__/schema-searchable.test.ts',
+  'src/__tests__/schema-auth-4.test.ts',
+  'src/__tests__/api_3.test.ts',
+  'src/__tests__/import_auth_1.test.ts',
+  'src/__tests__/import_auth_2.test.ts',
+  'src/__tests__/import_s3_1.test.ts',
+  'src/__tests__/import_dynamodb_1.test.ts',
+  //<40m
+  'src/__tests__/env.test.ts',
+  'src/__tests__/auth_2.test.ts',
+  'src/__tests__/schema-auth-9.test.ts',
+  'src/__tests__/schema-auth-11.test.ts',
+  'src/__tests__/migration/api.key.migration2.test.ts',
+  'src/__tests__/function_1.test.ts',
+  'src/__tests__/schema-auth-1.test.ts',
+  'src/__tests__/function_4.test.ts',
+  //<45m
+  'src/__tests__/schema-function.test.ts',
+  'src/__tests__/schema-model.test.ts',
   'src/__tests__/migration/api.connection.migration.test.ts',
-  'src/__tests__/api.test.ts',
-  'src/__tests__/auth.test.ts',
-  'src/__tests__/function.test.ts',
+  'src/__tests__/schema-connection.test.ts',
+  'src/__tests__/schema-auth-6.test.ts',
+  'src/__tests__/schema-iterative-update-3.test.ts',
+  //<50m
+  'src/__tests__/schema-auth-2.test.ts',
+  'src/__tests__/api_1.test.ts',
+  'src/__tests__/schema-auth-5.test.ts',
+  //<55m
+  'src/__tests__/storage.test.ts',
+  'src/__tests__/api_2.test.ts',
+  'src/__tests__/schema-iterative-update-4.test.ts',
 ];
 
 /**
@@ -61,6 +115,7 @@ export type CircleCIConfig = {
   jobs: {
     [name: string]: {
       steps: Record<string, any>;
+      environment: Record<string, string>;
     };
   };
   workflows: {
@@ -109,6 +164,7 @@ function splitTests(
     const newJob = {
       ...job,
       environment: {
+        ...job.environment,
         TEST_SUITE: suite,
         CLI_REGION: testRegion,
       },
@@ -248,13 +304,20 @@ function saveConfig(config: CircleCIConfig): void {
 }
 function main(): void {
   const config = loadConfig();
-  const splitConfig = splitTests(
+  const splitNodeTests = splitTests(
     config,
     'amplify_e2e_tests',
     'build_test_deploy',
     join(process.cwd(), 'packages', 'amplify-e2e-tests'),
     CONCURRENCY,
   );
-  saveConfig(splitConfig);
+  const splitPkgTests = splitTests(
+    splitNodeTests,
+    'amplify_e2e_tests_pkg_linux',
+    'build_test_deploy',
+    join(process.cwd(), 'packages', 'amplify-e2e-tests'),
+    CONCURRENCY,
+  );
+  saveConfig(splitPkgTests);
 }
 main();

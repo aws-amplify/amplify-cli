@@ -3,6 +3,274 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.20.1...amplify-migration-tests@2.20.2) (2021-02-17)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.20.0...amplify-migration-tests@2.20.1) (2021-02-11)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+# [2.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.11...amplify-migration-tests@2.20.0) (2021-02-10)
+
+
+### Features
+
+* **graphql-key-transformer:** change default to add GSIs when using [@key](https://github.com/key) ([#5648](https://github.com/aws-amplify/amplify-cli/issues/5648)) ([4287c63](https://github.com/aws-amplify/amplify-cli/commit/4287c630295c304c7ff8343922926b4830b75cd4))
+
+
+
+
+
+## [2.19.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.10...amplify-migration-tests@2.19.11) (2021-01-08)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.19.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.9...amplify-migration-tests@2.19.10) (2020-12-31)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.19.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.8...amplify-migration-tests@2.19.9) (2020-12-21)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.19.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.7...amplify-migration-tests@2.19.8) (2020-12-16)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.19.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.6...amplify-migration-tests@2.19.7) (2020-12-11)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.19.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.5...amplify-migration-tests@2.19.6) (2020-12-07)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.19.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.4...amplify-migration-tests@2.19.5) (2020-11-30)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.19.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.3...amplify-migration-tests@2.19.4) (2020-11-27)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.19.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.2...amplify-migration-tests@2.19.3) (2020-11-26)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.19.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.1...amplify-migration-tests@2.19.2) (2020-11-24)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.11...amplify-migration-tests@2.19.1) (2020-11-22)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+
+
+# 2.19.0 (2020-11-22)
+
+
+### Bug Fixes
+
+* add AttributeTypeEnum for connections on models with no codegen ([#4102](https://github.com/aws-amplify/amplify-cli/issues/4102)) ([4e92402](https://github.com/aws-amplify/amplify-cli/commit/4e92402e0b0fae30501972f3ad16203fc19ba287))
+* e2e init and prediction test failures ([#4195](https://github.com/aws-amplify/amplify-cli/issues/4195)) ([2ea6a42](https://github.com/aws-amplify/amplify-cli/commit/2ea6a42829086d0c6ab10acd77cbbd0fc9320938))
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+### Features
+
+* Multienv support for Lambda layers ([#5081](https://github.com/aws-amplify/amplify-cli/issues/5081)) ([4af1363](https://github.com/aws-amplify/amplify-cli/commit/4af13634bcdd58511712249e6774fc9f287c9ef5))
+
+
+
+
+
+## [2.18.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.11...amplify-migration-tests@2.18.14) (2020-11-20)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+
+
+## [2.18.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.11...amplify-migration-tests@2.18.13) (2020-11-20)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+
+
+## [2.18.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.11...amplify-migration-tests@2.18.12) (2020-11-19)
+
+
+### Bug Fixes
+
+* team provider migration ([#5733](https://github.com/aws-amplify/amplify-cli/issues/5733)) ([d18f795](https://github.com/aws-amplify/amplify-cli/commit/d18f795560f0e671f63f1dcbe38931c951794619))
+
+
+
+
+
+## [2.18.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.10...amplify-migration-tests@2.18.11) (2020-11-08)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.9...amplify-migration-tests@2.18.10) (2020-10-30)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.8...amplify-migration-tests@2.18.9) (2020-10-27)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.7...amplify-migration-tests@2.18.8) (2020-10-22)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.6...amplify-migration-tests@2.18.7) (2020-10-17)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.5...amplify-migration-tests@2.18.6) (2020-10-09)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.4...amplify-migration-tests@2.18.5) (2020-10-07)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.3...amplify-migration-tests@2.18.4) (2020-10-01)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.2...amplify-migration-tests@2.18.3) (2020-09-25)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.1...amplify-migration-tests@2.18.2) (2020-09-16)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.18.0...amplify-migration-tests@2.18.1) (2020-09-09)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+# [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.18...amplify-migration-tests@2.18.0) (2020-09-03)
+
+
+### Features
+
+* Multienv support for Lambda layers ([#5081](https://github.com/aws-amplify/amplify-cli/issues/5081)) ([4af1363](https://github.com/aws-amplify/amplify-cli/commit/4af13634bcdd58511712249e6774fc9f287c9ef5))
+
+
+
+
+
 ## [2.17.18](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.17.17...amplify-migration-tests@2.17.18) (2020-08-31)
 
 **Note:** Version bump only for package amplify-migration-tests

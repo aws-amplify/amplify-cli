@@ -1,7 +1,8 @@
-import { Fn, DeletionPolicy, Refs } from 'cloudform';
+import { $TSContext } from 'amplify-cli-core';
+import { Fn, DeletionPolicy, Refs } from 'cloudform-types';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
-import { Permission, LayerParameters, getLayerMetadataFactory, LayerMetadata } from './layerParams';
+import { getLayerMetadataFactory, isMultiEnvLayer, LayerMetadata, LayerParameters, Permission } from './layerParams';
 
 function generateLayerCfnObjBase() {
   const cfnObj = {
@@ -15,19 +16,27 @@ function generateLayerCfnObjBase() {
       env: {
         Type: 'String',
       },
+      s3Key: {
+        Type: 'String',
+      },
+      deploymentBucketName: {
+        Type: 'String',
+      },
     },
     Resources: {},
     Conditions: {
       HasEnvironmentParameter: Fn.Not(Fn.Equals(Fn.Ref('env'), 'NONE')),
     },
   };
+
   return cfnObj;
 }
 
 /**
  * generates CFN for Layer and Layer permissions when updating layerVersion
  */
-export function generateLayerCfnObj(context, parameters: LayerParameters) {
+export function generateLayerCfnObj(context: $TSContext, parameters: LayerParameters) {
+  const multiEnvLayer = isMultiEnvLayer(context, parameters.layerName);
   const layerData = getLayerMetadataFactory(context)(parameters.layerName);
   const outputObj = {
     Outputs: {
@@ -39,31 +48,38 @@ export function generateLayerCfnObj(context, parameters: LayerParameters) {
   };
   let cfnObj = { ...generateLayerCfnObjBase(), ...outputObj };
   const POLICY_RETAIN = DeletionPolicy.Retain;
-  const latestVersion = layerData.getLatestVersion();
+  const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
+
   const layer = new Lambda.LayerVersion({
     CompatibleRuntimes: parameters.runtimes.map(runtime => runtime.cloudTemplateValue),
     Content: {
       S3Bucket: Fn.Ref('deploymentBucketName'),
       S3Key: Fn.Ref('s3Key'),
     },
-    Description: `Lambda layer version ${latestVersion}`,
-    LayerName: parameters.layerName,
+    Description: Fn.Sub('Lambda layer version ${latestVersion}', { latestVersion: Fn.Ref('layerVersion') }),
+    LayerName: layerName,
   });
   layer.deletionPolicy(POLICY_RETAIN);
   _.assign(layer, { UpdateReplacePolicy: POLICY_RETAIN });
 
   cfnObj.Resources['LambdaLayer'] = layer;
   Object.entries(parameters.layerVersionMap).forEach(([key]) => {
-    const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build);
+    const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build, multiEnvLayer);
     answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
   });
   return cfnObj;
 }
 
-function assignLayerPermissions(layerData: LayerMetadata, version: string, layerName: string, isContentUpdated: boolean) {
+function assignLayerPermissions(
+  layerData: LayerMetadata,
+  version: string,
+  layerName: string,
+  isContentUpdated: boolean,
+  multiEnvLayer: boolean,
+) {
   const layerVersionPermissionBase = {
     Action: 'lambda:GetLayerVersion',
-    LayerVersionArn: createLayerversionArn(layerData, layerName, version, isContentUpdated),
+    LayerVersionArn: createLayerVersionArn(layerData, layerName, version, isContentUpdated, multiEnvLayer),
   };
 
   const result = [];
@@ -114,7 +130,13 @@ function assignLayerPermissions(layerData: LayerMetadata, version: string, layer
   return result;
 }
 
-function createLayerversionArn(layerData: LayerMetadata, layerName: string, version: string, isContentUpdated: boolean) {
+function createLayerVersionArn(
+  layerData: LayerMetadata,
+  layerName: string,
+  version: string,
+  isContentUpdated: boolean,
+  multiEnvLayer: boolean,
+) {
   //arn:aws:lambda:us-west-2:136981144547:layer:layers089e3f8b-dev:1
   if (isContentUpdated) {
     // if runtime/Content updated
@@ -122,8 +144,15 @@ function createLayerversionArn(layerData: LayerMetadata, layerName: string, vers
       return Fn.Ref('LambdaLayer');
     }
   }
+  if (multiEnvLayer) {
+    return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}-${env}:${layerVersion}', {
+      layerName,
+      env: Fn.Ref('env'),
+      layerVersion: version,
+    });
+  }
   return Fn.Sub('arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:${layerName}:${layerVersion}', {
-    layerName: layerName,
+    layerName,
     layerVersion: version,
   });
 }

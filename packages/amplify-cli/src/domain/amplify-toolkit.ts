@@ -1,8 +1,8 @@
 import * as path from 'path';
-import { $TSAny } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { Context } from './context';
 
 export class AmplifyToolkit {
-  private _buildResources: any;
   private _confirmPrompt: any;
   private _constants: any;
   private _constructExeInfo: any;
@@ -57,6 +57,7 @@ export class AmplifyToolkit {
   private _loadEnvResourceParameters: any;
   private _saveEnvResourceParameters: any;
   private _removeResourceParameters: any;
+  private _removeDeploymentSecrets: any;
   private _triggerFlow: any;
   private _addTrigger: any;
   private _updateTrigger: any;
@@ -76,13 +77,18 @@ export class AmplifyToolkit {
   private _leaveBreadcrumbs: any;
   private _readBreadcrumbs: any;
   private _loadRuntimePlugin: any;
+  private _getImportedAuthProperties: any;
+  private _cleanUpTasks: Array<Function>;
+  private _invokePluginMethod?: <T>(
+    context: $TSContext,
+    category: string,
+    service: string | null,
+    method: string,
+    args: any[],
+  ) => Promise<T>;
 
   private _amplifyHelpersDirPath: string = path.normalize(path.join(__dirname, '../extensions/amplify-helpers'));
 
-  get buildResources(): any {
-    this._buildResources = this._buildResources || require(path.join(this._amplifyHelpersDirPath, 'build-resources')).buildResources;
-    return this._buildResources;
-  }
   get confirmPrompt(): any {
     this._confirmPrompt = this._confirmPrompt || require(path.join(this._amplifyHelpersDirPath, 'confirm-prompt')).confirmPrompt;
     return this._confirmPrompt;
@@ -342,6 +348,12 @@ export class AmplifyToolkit {
     return this._removeResourceParameters;
   }
 
+  get removeDeploymentSecrets(): any {
+    this._removeDeploymentSecrets =
+      this._removeDeploymentSecrets || require(path.join(this._amplifyHelpersDirPath, 'envResourceParams')).removeDeploymentSecrets;
+    return this._removeDeploymentSecrets;
+  }
+
   get triggerFlow(): any {
     this._triggerFlow = this._triggerFlow || require(path.join(this._amplifyHelpersDirPath, 'trigger-flow')).triggerFlow;
     return this._triggerFlow;
@@ -434,4 +446,29 @@ export class AmplifyToolkit {
       this._loadRuntimePlugin || require(path.join(this._amplifyHelpersDirPath, 'load-runtime-plugin')).loadRuntimePlugin;
     return this._loadRuntimePlugin;
   }
+
+  get getImportedAuthProperties(): any {
+    this._getImportedAuthProperties =
+      this._getImportedAuthProperties ||
+      require(path.join(this._amplifyHelpersDirPath, 'get-imported-auth-properties')).getImportedAuthProperties;
+    return this._getImportedAuthProperties;
+  }
+
+  get invokePluginMethod(): any {
+    this._invokePluginMethod =
+      this._invokePluginMethod || require(path.join(this._amplifyHelpersDirPath, 'invoke-plugin-method')).invokePluginMethod;
+    return this._invokePluginMethod;
+  }
+
+  constructor() {
+    this._cleanUpTasks = new Array();
+  }
+
+  addCleanUpTask = (task: (context: Context) => void) => {
+    this._cleanUpTasks.push(task);
+  };
+
+  runCleanUpTasks = async (context: Context) => {
+    await Promise.all(this._cleanUpTasks.map(task => task(context)));
+  };
 }

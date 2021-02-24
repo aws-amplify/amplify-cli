@@ -1,13 +1,30 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
+import { InvalidEnvironmentNameError, stateManager, exitOnNextTick, $TSContext } from 'amplify-cli-core';
 import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
-import { stateManager } from 'amplify-cli-core';
 
-export async function analyzeProject(context) {
-  if (!context.parameters.options.app) {
+export async function analyzeProjectHeadless(context: $TSContext) {
+  const projectPath = process.cwd();
+  const projectName = path.basename(projectPath);
+  const env = getDefaultEnv(context);
+  setProjectConfig(context, projectName);
+  setExeInfo(context, projectPath, undefined, env);
+  // default behavior in quickstart used to be android.
+  // default to that here unless different param specified
+  const { frontend } = context?.parameters?.options;
+  if (!frontend) {
+    context.print.warning('No frontend specified. Defaulting to android.');
+    context.exeInfo.projectConfig.frontend = 'android';
+  } else {
+    context.exeInfo.projectConfig.frontend = frontend;
+  }
+}
+
+export async function analyzeProject(context): Promise<$TSContext> {
+  if (!context.parameters.options.app || !context.parameters.options.quickstart) {
     context.print.warning('Note: It is recommended to run this command from the root of your app directory');
   }
   const projectPath = process.cwd();
@@ -22,26 +39,41 @@ export async function analyzeProject(context) {
   }
 
   context.exeInfo.isNewEnv = isNewEnv(envName);
+  context.exeInfo.forcePush = !!context?.parameters?.options?.forcePush;
 
-  if ((context.exeInfo.inputParams && context.exeInfo.inputParams.yes) || context.parameters.options.forcePush) {
-    context.exeInfo.forcePush = true;
-  } else {
-    context.exeInfo.forcePush = false;
+  // If it is a new env and we have an existing environment save that name so
+  // it can be used to gather resource information like env specific to clone import resources
+  if (context.exeInfo.isNewEnv && !context.exeInfo.isNewProject) {
+    const currentLocalEnvInfo = stateManager.getLocalEnvInfo(undefined, {
+      throwIfNotExist: false,
+    });
+
+    if (currentLocalEnvInfo) {
+      context.exeInfo.sourceEnvName = currentLocalEnvInfo.envName;
+    }
   }
 
+  setProjectConfig(context, projectName);
+  setExeInfo(context, projectPath, defaultEditor, envName);
+
+  return context;
+}
+
+function setProjectConfig(context: $TSContext, projectName: string) {
+  context.exeInfo.isNewProject = isNewProject(context);
   context.exeInfo.projectConfig = {
     projectName,
     version: amplifyCLIConstants.PROJECT_CONFIG_VERSION,
   };
+}
 
+function setExeInfo(context: $TSContext, projectPath: String, defaultEditor?: String, envName?: String) {
   context.exeInfo.localEnvInfo = {
     projectPath,
     defaultEditor,
     envName,
   };
-
   context.exeInfo.teamProviderInfo = {};
-
   context.exeInfo.metaData = {};
 
   return context;
@@ -97,6 +129,14 @@ async function getEditor(context) {
 }
 /* End getEditor */
 
+function getDefaultEnv(context): string | undefined {
+  const defaultEnv = 'dev';
+  if (isNewProject(context) || !context.amplify.getAllEnvs().includes(defaultEnv)) {
+    return defaultEnv;
+  }
+  return undefined;
+}
+
 async function getEnvName(context) {
   let envName;
 
@@ -112,18 +152,16 @@ async function getEnvName(context) {
       return envName;
     }
     context.print.error(INVALID_ENV_NAME_MSG);
-    process.exit(1);
+    await context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
+    exitOnNextTick(1);
   } else if (context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
     context.print.error('Environment name missing');
-    process.exit(1);
+    await context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
+    exitOnNextTick(1);
   }
 
   const newEnvQuestion = async () => {
-    let defaultEnvName;
-    if (isNewProject(context) || !context.amplify.getAllEnvs().includes('dev')) {
-      defaultEnvName = 'dev';
-    }
-
+    let defaultEnvName = getDefaultEnv(context);
     const envNameQuestion: inquirer.InputQuestion = {
       type: 'input',
       name: 'envName',

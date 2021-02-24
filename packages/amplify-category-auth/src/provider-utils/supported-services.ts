@@ -9,7 +9,7 @@ export const supportedServices = {
         default: true,
         learnMore:
           "This utility allows you to set up Amazon Cognito User Pools and Identity Pools for your application.\nAmazon Cognito User Pool makes it easy for developers to add sign-up and sign-in functionality to web and mobile applications. It serves as your own identity provider to maintain a user directory. It supports user registration and sign-in, as well as provisioning identity tokens for signed-in users.\nAmazon Cognito identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been authenticated and received a token. An identity pool is a store of user identity data specific to your account.\nIf you choose to use the default configuration, this utility will set up both a Userpool and an Identity Pool.\nIf you choose the 'Default configuration with Social Provider (Federation)', the providers will be federated with Cognito User Pools.\nIn either case, User Pools will be federated with Identity Pools allowing any users logging in to get both identity tokens as well as AWS Credentials.",
-        map: 'defaultPrompMap',
+        map: 'defaultPromptMap',
         andConditions: [
           {
             preventEdit: 'always',
@@ -231,7 +231,7 @@ export const supportedServices = {
       {
         key: 'amazonAppId',
         prefix:
-          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
+          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. Head to https://docs.amplify.aws/lib/auth/social/q/platform/js#setup-your-auth-provider to learn more. \n",
         question: 'Enter your Amazon App ID for your identity pool: ',
         required: true,
         andConditions: [
@@ -308,7 +308,7 @@ export const supportedServices = {
       {
         key: 'adminQueries',
         question: 'Do you want to add an admin queries API?',
-        learnMore: 'This flow will help you add multiple user pool groups to your user-pool',
+        learnMore: 'Admin Queries API let you perform user admin functions from your frontend. See https://docs.amplify.aws/cli/auth/admin#admin-queries-api for more.',
         required: true,
         type: 'list',
         map: 'booleanOptions',
@@ -733,7 +733,7 @@ export const supportedServices = {
         key: 'hostedUI',
         question: 'Do you want to use an OAuth flow?',
         learnMore:
-          'When you create a user pool in Amazon Cognito and configure a domain for it, Amazon Cognito automatically provisions a hosted web UI to let you add sign-up and sign-in pages to your app.',
+        'When you create a user pool in Amazon Cognito and configure a domain for it, Amazon Cognito automatically provisions a hosted web UI to let you add sign-up and sign-in pages to your app. Selecting "No" will remove any existing OAuth configuration.',
         required: true,
         type: 'list',
         map: 'booleanOptions',
@@ -1141,7 +1141,7 @@ export const supportedServices = {
       {
         key: 'loginwithamazonAppIdUserPool',
         prefix:
-          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. \n",
+          " \n You've opted to allow users to authenticate via Amazon.  If you haven't already, you'll need to create an Amazon App ID. Head to https://docs.amplify.aws/lib/auth/social/q/platform/js#setup-your-auth-provider to learn more. \n",
         question: 'Enter your Amazon App ID for your OAuth flow: ',
         required: true,
         andConditions: [
@@ -1168,7 +1168,7 @@ export const supportedServices = {
     cfnFilename: 'auth-template.yml.ejs',
     defaultValuesFilename: 'cognito-defaults.js',
     serviceWalkthroughFilename: 'auth-questions.js',
-    stringMapFilename: 'string-maps.js',
+    stringMapsFilename: 'string-maps.js',
     provider: 'awscloudformation',
   },
 };

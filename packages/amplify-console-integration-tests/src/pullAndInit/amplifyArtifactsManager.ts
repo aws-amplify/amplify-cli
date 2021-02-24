@@ -2,6 +2,14 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as util from '../util';
 
+export function removeDotConfigDir(projectRootDirPath: string) {
+  const amplifyDirPath = path.join(projectRootDirPath, 'amplify');
+
+  const dotConfigDirPath = path.join(amplifyDirPath, '.config');
+
+  fs.removeSync(dotConfigDirPath);
+}
+
 export function removeFilesForTeam(projectRootDirPath: string) {
   const amplifyDirPath = path.join(projectRootDirPath, 'amplify');
 
@@ -72,4 +80,13 @@ export function getTeamProviderInfo(projectRootDirPath: string) {
     teamProviderInfo = util.readJsonFileSync(teamProviderInfoFilePath);
   }
   return teamProviderInfo;
+}
+
+export function getProjectConfig(projectRootDirPath: string) {
+  let projectConfig;
+  const projectConfigPath = path.join(projectRootDirPath, 'amplify', '.config', 'project-config.json');
+  if (fs.existsSync(projectConfigPath)) {
+    projectConfig = util.readJsonFileSync(projectConfigPath);
+  }
+  return projectConfig;
 }

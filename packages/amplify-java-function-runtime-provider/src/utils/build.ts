@@ -1,15 +1,16 @@
-import path from 'path';
+import { join } from 'path';
 import * as execa from 'execa';
 import fs from 'fs-extra';
 import glob from 'glob';
-import { shimPath, shimJarPath } from './constants';
+import { packageName, relativeShimJarPath, relativeShimSrcPath } from './constants';
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
+import { pathManager } from 'amplify-cli-core';
 
 export const buildResource = async (request: BuildRequest): Promise<BuildResult> => {
-  const resourceDir = path.join(request.srcRoot);
-  const projectPath = path.join(resourceDir);
+  const resourceDir = join(request.srcRoot);
+  const projectPath = join(resourceDir);
 
-  if (!request.lastBuildTimestamp || isBuildStale(request.srcRoot, request.lastBuildTimestamp)) {
+  if (!request.lastBuildTimeStamp || isBuildStale(request.srcRoot, request.lastBuildTimeStamp)) {
     installDependencies(projectPath);
 
     return { rebuilt: true };
@@ -21,8 +22,10 @@ export const buildResource = async (request: BuildRequest): Promise<BuildResult>
 const installDependencies = (resourceDir: string) => {
   runPackageManager(resourceDir, 'build');
 
-  if (!fs.existsSync(shimJarPath)) {
-    runPackageManager(shimPath, 'jar');
+  // ensure invoker shim is built
+  const packageLibDir = pathManager.getAmplifyPackageLibDirPath(packageName);
+  if (!fs.existsSync(join(packageLibDir, relativeShimJarPath))) {
+    runPackageManager(join(packageLibDir, relativeShimSrcPath), 'jar');
   }
 };
 
@@ -39,16 +42,16 @@ const runPackageManager = (cwd: string, buildArgs: string) => {
   }
 };
 
-const isBuildStale = (resourceDir: string, lastBuildTimestamp: Date) => {
+const isBuildStale = (resourceDir: string, lastBuildTimeStamp: Date) => {
   const dirTime = new Date(fs.statSync(resourceDir).mtime);
 
-  if (dirTime > lastBuildTimestamp) {
+  if (dirTime > lastBuildTimeStamp) {
     return true;
   }
 
   const fileUpdatedAfterLastBuild = glob
     .sync(`${resourceDir}/*/!(build | dist)/**`)
-    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimestamp);
+    .find(file => new Date(fs.statSync(file).mtime) > lastBuildTimeStamp);
 
   return !!fileUpdatedAfterLastBuild;
 };

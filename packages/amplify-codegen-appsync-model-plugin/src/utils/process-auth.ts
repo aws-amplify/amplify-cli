@@ -67,7 +67,7 @@ export function processAuthDirective(directives: CodeGenDirectives): AuthDirecti
           return {
             // transformer looks for cognito:username when identityClaim is set to username
             provider: DEFAULT_AUTH_PROVIDER,
-            ownerField: DEFAULT_OWNER_FIELD,
+            ownerField: rule.ownerField ? rule.ownerField : DEFAULT_OWNER_FIELD,
             ...rule,
             identityClaim: identityClaim === 'username' ? 'cognito:username' : identityClaim,
             operations,

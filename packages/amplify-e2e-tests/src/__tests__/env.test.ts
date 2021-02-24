@@ -60,7 +60,7 @@ describe('environment commands', () => {
   });
 
   it('init a project, pull, add auth, pull to override auth change', async () => {
-    await initJSProjectWithProfile(projRoot, {});
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
     await amplifyPull(projRoot, { override: false });
     await addAuthWithDefault(projRoot, {});
     await amplifyPull(projRoot, { override: true });
@@ -127,7 +127,7 @@ describe('environment commands with Cognito Triggers', () => {
   });
 
   it('init a project, pull environment', async () => {
-    await pullEnvironment(projRoot, {});
+    await pullEnvironment(projRoot);
     const meta = getProjectMeta(projRoot);
     await validate(meta);
   });
@@ -155,7 +155,7 @@ describe('environment commands with recaptcha trigger', () => {
     await validate(meta);
   });
   it('init a project, pull environment', async () => {
-    await pullEnvironment(projRoot, {});
+    await pullEnvironment(projRoot);
     const meta = getProjectMeta(projRoot);
     await validate(meta);
   });
@@ -183,7 +183,7 @@ describe('environment commands with HostedUI params', () => {
   });
 
   it('init a project, pull environment', async () => {
-    await pullEnvironment(projRoot, {});
+    await pullEnvironment(projRoot);
     const meta = getProjectMeta(projRoot);
     await validate(meta);
   });

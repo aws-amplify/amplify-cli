@@ -1,11 +1,8 @@
+import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as path from 'path';
+import { amplifyCLIConstants } from './constants';
 
-export function leaveBreadcrumbs(context, category, resourceName, breadcrumbs) {
-  const destPath = path.join(
-    context.amplify.pathManager.getBackendDirPath(),
-    category,
-    resourceName,
-    context.amplify.constants.BreadcrumbsFileName,
-  );
-  context.amplify.writeObjectAsJson(destPath, breadcrumbs, true);
+export function leaveBreadcrumbs(category: string, resourceName: string, breadcrumbs: unknown) {
+  const destPath = path.join(pathManager.getBackendDirPath(), category, resourceName, amplifyCLIConstants.BreadcrumbsFileName);
+  JSONUtilities.writeJson(destPath, breadcrumbs);
 }

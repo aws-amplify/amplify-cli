@@ -22,6 +22,7 @@ exports[`SearchableModelTransformer with external versioning 1`] = `
   \\"params\\": {
       \\"body\\":     {
                 #if( $context.args.nextToken )\\"search_after\\": [$util.toJson($context.args.nextToken)], #end
+                #if( $context.args.from )\\"from\\": $context.args.from, #end
                 \\"size\\": #if( $context.args.limit ) $context.args.limit #else 100 #end,
                 \\"sort\\": [{$sortField0: { \\"order\\" : $util.toJson($sortDirection) }}],
                 \\"version\\": true,
@@ -136,7 +137,7 @@ input ModelPostFilterInput {
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
 }
 
 input CreatePostInput {
@@ -183,22 +184,7 @@ input SearchableStringFilterInput {
   exists: Boolean
   wildcard: String
   regexp: String
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
+  range: [String]
 }
 
 input SearchableIntFilterInput {
@@ -224,6 +210,23 @@ input SearchableFloatFilterInput {
 input SearchableBooleanFilterInput {
   eq: Boolean
   ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
 }
 
 input SearchablePostFilterInput {
@@ -352,8 +355,8 @@ type Query {
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
   getUser(id: ID!): User
   listUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String): ModelUserConnection
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection
-  searchUsers(filter: SearchableUserFilterInput, sort: SearchableUserSortInput, limit: Int, nextToken: String): SearchableUserConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchUsers(filter: SearchableUserFilterInput, sort: SearchableUserSortInput, limit: Int, nextToken: String, from: Int): SearchableUserConnection
 }
 
 input CreatePostInput {
@@ -433,22 +436,7 @@ input SearchableStringFilterInput {
   exists: Boolean
   wildcard: String
   regexp: String
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
+  range: [String]
 }
 
 input SearchableIntFilterInput {
@@ -474,6 +462,23 @@ input SearchableFloatFilterInput {
 input SearchableBooleanFilterInput {
   eq: Boolean
   ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
 }
 
 input SearchablePostFilterInput {
@@ -617,7 +622,7 @@ input ModelPostFilterInput {
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
 }
 
 input CreatePostInput {
@@ -649,22 +654,7 @@ input SearchableStringFilterInput {
   exists: Boolean
   wildcard: String
   regexp: String
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
+  range: [String]
 }
 
 input SearchableIntFilterInput {
@@ -690,6 +680,23 @@ input SearchableFloatFilterInput {
 input SearchableBooleanFilterInput {
   eq: Boolean
   ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
 }
 
 input SearchablePostFilterInput {
@@ -809,7 +816,7 @@ input ModelPostFilterInput {
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
-  customSearchPost(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection
+  customSearchPost(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
 }
 
 input CreatePostInput {
@@ -856,22 +863,7 @@ input SearchableStringFilterInput {
   exists: Boolean
   wildcard: String
   regexp: String
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
+  range: [String]
 }
 
 input SearchableIntFilterInput {
@@ -897,6 +889,23 @@ input SearchableFloatFilterInput {
 input SearchableBooleanFilterInput {
   eq: Boolean
   ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
 }
 
 input SearchablePostFilterInput {
@@ -1016,7 +1025,7 @@ input ModelPostFilterInput {
 type Query {
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
 }
 
 input CreatePostInput {
@@ -1063,22 +1072,7 @@ input SearchableStringFilterInput {
   exists: Boolean
   wildcard: String
   regexp: String
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
+  range: [String]
 }
 
 input SearchableIntFilterInput {
@@ -1104,6 +1098,23 @@ input SearchableFloatFilterInput {
 input SearchableBooleanFilterInput {
   eq: Boolean
   ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
 }
 
 input SearchablePostFilterInput {

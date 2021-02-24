@@ -14,6 +14,13 @@
   </a>
 </p>
 
+### Reporting Bugs/Feature Requests
+
+[![Open Bugs](https://img.shields.io/github/issues/aws-amplify/amplify-cli/bug?color=d73a4a&label=bugs)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+[![Feature Requests](https://img.shields.io/github/issues/aws-amplify/amplify-cli/feature-request?color=ff9001&label=feature%20requests)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+label%3Afeature-request+is%3Aopen)
+[![Enhancements](https://img.shields.io/github/issues/aws-amplify/amplify-cli/enhancement?color=4287f5&label=enhancement)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement)
+[![Closed Issues](https://img.shields.io/github/issues-closed/aws-amplify/amplify-cli?color=%2325CC00&label=issues%20closed)](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+is%3Aclosed+)
+
 # AWS Amplify CLI
 
 The AWS Amplify CLI is a toolchain which includes a robust feature set for simplifying mobile and web application development. The CLI uses AWS CloudFormation and nested stacks to allow you to add or modify configurations locally before you push them for execution in your account.
@@ -84,21 +91,22 @@ The Amplify CLI supports the commands shown in the following table.
 
 ## Developing
 
-To set up your local dev environment, go to the `amplify-cli` directory and then run the following:<br>
-`yarn config set workspaces-experimental true`<br>
-`npm run setup-dev`
+To set up your local development environment, go to [Local Environment Setup](https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md#local-environment-setup).
 
-To test your category, do the following:<br>
-`cd <your test front-end project>` <br>
-`amplify-dev init` <br>
-`amplify-dev <your category> <subcommand>`<br>
+To test your category, do the following:
+
+```sh
+cd <your-test-front-end-project>
+amplify-dev init
+amplify-dev <your-category> <subcommand>
+```
 
 Before pushing code or sending a pull request, do the following:
 
-- At the command line, run `npm run lint` at the top-level directory. This invokes lerna to check for lint errors in all of our packages.
-- You can use `eslint` to fix some of the lint errors. To use it, go to the package that has errors and run `lint-fix`
+- At the command line, run `yarn lint` at the top-level directory. This invokes eslint to check for lint errors in all of our packages.
+- You can use `yarn lint` to find some of the lint errors. To attempt fix them, go to the package that has errors and run `yarn lint-fix`
 - If there are any remaining lint errors, resolve them manually. Linting your code is a best practice that ensures good code quality so it's important that you don't skip this step.
 
 ## Contributing
 
-See the contribution guideline. https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md
+We are thankful for any contributions from the community. Look at our [Contribution Guidelines](https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md).

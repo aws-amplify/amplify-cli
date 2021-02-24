@@ -24,6 +24,7 @@ const ID_CONDITIONS = [
   'exists',
   'wildcard',
   'regexp',
+  'range',
 ];
 const STRING_CONDITIONS = ID_CONDITIONS;
 const INT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
@@ -35,7 +36,7 @@ export function makeSearchableScalarInputObject(type: string): InputObjectTypeDe
   const conditions = getScalarConditions(type);
   const fields: InputValueDefinitionNode[] = conditions.map((condition: string) => ({
     kind: Kind.INPUT_VALUE_DEFINITION,
-    name: { kind: 'Name' as 'Name', value: condition },
+    name: { kind: 'Name' as const, value: condition },
     type: getScalarFilterInputType(condition, type, name),
     // TODO: Service does not support new style descriptions so wait.
     // description: field.description,
@@ -103,7 +104,7 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
       // TODO: Service does not support new style descriptions so wait.
       // description: field.description,
       directives: [],
-    }
+    },
   );
   return {
     kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,

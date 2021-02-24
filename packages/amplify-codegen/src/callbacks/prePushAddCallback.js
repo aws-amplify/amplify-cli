@@ -2,8 +2,11 @@ const { normalizeInputParams } = require('../utils/input-params-manager');
 const constants = require('../constants');
 const askShouldGenerateCode = require('../walkthrough/questions/generateCode');
 const addWalkThrough = require('../walkthrough/add');
-const { isCodegenConfigured } = require('../utils');
+const { getFrontEndHandler, isCodegenConfigured } = require('../utils');
 const prePushUpdateCallback = require('./prePushUpdateCallback');
+const path = require('path');
+const { isDataStoreEnabled } = require('graphql-transformer-core');
+const { pathManager } = require('amplify-cli-core');
 
 async function prePushAddCallback(context, resourceName) {
   // when codegen is already configured
@@ -13,11 +16,15 @@ async function prePushAddCallback(context, resourceName) {
 
   let shouldGenerateCode = false;
   if (context.exeInfo.inputParams) {
-    normalizeInputParams(context);
-    const inputParams = context.exeInfo.inputParams[constants.Label];
-    const yesFlag = context.exeInfo.inputParams.yes;
+    const frontend = getFrontEndHandler(context);
 
-    shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, () => askShouldGenerateCode());
+    if (frontend !== 'flutter') {
+      normalizeInputParams(context);
+      const inputParams = context.exeInfo.inputParams[constants.Label];
+      const yesFlag = context.exeInfo.inputParams.yes;
+
+      shouldGenerateCode = await determineValue(inputParams, yesFlag, 'generateCode', true, () => askShouldGenerateCode());
+    }
   } else {
     shouldGenerateCode = await askShouldGenerateCode();
   }
@@ -35,6 +42,7 @@ async function prePushAddCallback(context, resourceName) {
       },
     };
     return {
+      shouldGenerateModels: await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', resourceName)),
       gqlConfig: newProject,
       shouldGenerateDocs: answers.shouldGenerateDocs,
     };

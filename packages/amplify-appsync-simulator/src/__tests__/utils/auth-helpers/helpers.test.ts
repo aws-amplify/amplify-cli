@@ -62,6 +62,11 @@ describe('auth helpers', () => {
       expect(isValidOIDCToken(token, configuredAuthTypes)).toBeTruthy();
     });
 
+    it('should return true when token has allowed issuer ending with slash', () => {
+      token.iss = 'http://amazon.com/';
+      expect(isValidOIDCToken(token, configuredAuthTypes)).toBeTruthy();
+    });
+
     it('should return false when token does not have valid issuer', () => {
       token.iss = 'invalid-issuer';
       expect(isValidOIDCToken(token, configuredAuthTypes)).toBeFalsy();

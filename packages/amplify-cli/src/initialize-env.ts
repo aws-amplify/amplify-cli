@@ -1,13 +1,13 @@
-import sequential from 'promise-sequential';
+import _ from 'lodash';
 import ora from 'ora';
-import { stateManager, $TSMeta, $TSContext } from 'amplify-cli-core';
+import sequential from 'promise-sequential';
+import { stateManager, $TSAny, $TSMeta, $TSContext } from 'amplify-cli-core';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
-
 const spinner = ora('');
 
 export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $TSMeta) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
-  let isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
 
   try {
     const { projectPath } = context.exeInfo.localEnvInfo;
@@ -15,7 +15,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     const amplifyMeta: $TSMeta = {};
     const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
 
-    amplifyMeta.providers = teamProviderInfo[currentEnv];
+    amplifyMeta.providers = _.pick(teamProviderInfo[currentEnv], 'awscloudformation');
 
     if (!currentAmplifyMeta) {
       // Get current-cloud-backend's amplify-meta
@@ -25,12 +25,12 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     }
 
     if (!context.exeInfo.restoreBackend) {
-      populateAmplifyMeta(context, amplifyMeta);
+      populateAmplifyMeta(projectPath, amplifyMeta);
     }
 
-    const categoryInitializationTasks: (() => Promise<any>)[] = [];
+    const categoryInitializationTasks: (() => Promise<$TSAny>)[] = [];
 
-    const initializedCategories = Object.keys(context.amplify.getProjectMeta());
+    const initializedCategories = Object.keys(stateManager.getMeta());
     const categoryPluginInfoList = context.amplify.getAllCategoryPluginInfo(context);
     const availableCategories = Object.keys(categoryPluginInfoList).filter(key => initializedCategories.includes(key));
 
@@ -50,8 +50,8 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
 
     const providerPlugins = getProviderPlugins(context);
 
-    const initializationTasks: (() => Promise<any>)[] = [];
-    const providerPushTasks: (() => Promise<any>)[] = [];
+    const initializationTasks: (() => Promise<$TSAny>)[] = [];
+    const providerPushTasks: (() => Promise<$TSAny>)[] = [];
 
     context.exeInfo.projectConfig.providers.forEach(provider => {
       const providerModule = require(providerPlugins[provider]);
@@ -62,7 +62,12 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
       isPulling ? `Fetching updates to backend environment: ${currentEnv} from the cloud.` : `Initializing your environment: ${currentEnv}`,
     );
 
-    await sequential(initializationTasks);
+    try {
+      await sequential(initializationTasks);
+    } catch (e) {
+      context.print.error(`Could not initialize '${currentEnv}': ${e.message}`);
+      process.exit(1);
+    }
 
     spinner.succeed(
       isPulling ? `Successfully pulled backend environment ${currentEnv} from the cloud.` : 'Initialized provider successfully.',
@@ -82,8 +87,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     }
 
     if (context.exeInfo.forcePush) {
-      for (let i = 0; i < context.exeInfo.projectConfig.providers.length; i += 1) {
-        const provider = context.exeInfo.projectConfig.providers[i];
+      for (let provider of context.exeInfo.projectConfig.providers) {
         const providerModule = require(providerPlugins[provider]);
         const resourceDefiniton = await context.amplify.getResourceStatus(undefined, undefined, provider);
         providerPushTasks.push(() => providerModule.pushResources(context, resourceDefiniton));
@@ -102,12 +106,8 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
   }
 }
 
-function populateAmplifyMeta(context: $TSContext, amplifyMeta: $TSMeta) {
-  const { projectPath } = context.exeInfo.localEnvInfo;
-
+function populateAmplifyMeta(projectPath: string, amplifyMeta: $TSMeta) {
   const backendConfig = stateManager.getBackendConfig(projectPath);
-
   Object.assign(amplifyMeta, backendConfig);
-
   stateManager.setMeta(projectPath, amplifyMeta);
 }

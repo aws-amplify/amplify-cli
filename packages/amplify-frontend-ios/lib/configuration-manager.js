@@ -1,19 +1,13 @@
 function init(context) {
-  return new Promise(resolve => {
-    resolve(context);
-  });
+  return Promise.resolve(context);
 }
 
 function onInitSuccessful(context) {
-  return new Promise(resolve => {
-    resolve(context);
-  });
+  return Promise.resolve(context);
 }
 
 function configure(context) {
-  return new Promise(resolve => {
-    resolve(context);
-  });
+  return Promise.resolve(context);
 }
 
 module.exports = {

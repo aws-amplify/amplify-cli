@@ -1,15 +1,19 @@
 const inquirer = require('inquirer');
 const path = require('path');
+const os = require('os');
 // FIXME: may be removed from here, since addResource can pass category to addWalkthrough
 const category = 'analytics';
 const service = 'Kinesis';
+const { ResourceAlreadyExistsError, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 
 async function addWalkthrough(context, defaultValuesFilename, serviceMetadata) {
   const resourceName = resourceAlreadyExists(context);
 
   if (resourceName) {
-    context.print.warning('Kinesis resource have already been added to your project.');
-    process.exit(0);
+    const errMessage = 'Kinesis resource have already been added to your project.';
+    context.print.warning(errMessage);
+    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    exitOnNextTick(0);
   }
   return configure(context, defaultValuesFilename, serviceMetadata);
 }
@@ -70,20 +74,30 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
       unauthPolicyName: defaultValues.unauthPolicyName,
     };
 
-    // Check for authorization rules and settings
-
-    const { checkRequirements, externalAuthEnable } = require('amplify-category-auth');
-
-    const apiRequirements = {
+    const analyticsRequirements = {
       authSelections: 'identityPoolOnly',
       allowUnauthenticatedIdentities: true,
     };
-    // getting requirement satisfaction map
-    const satisfiedRequirements = await checkRequirements(apiRequirements, context, 'api', targetResourceName);
-    // checking to see if any requirements are unsatisfied
-    const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
-    if (foundUnmetRequirements) {
+    const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+      analyticsRequirements,
+      context,
+      'analytics',
+      targetResourceName,
+    ]);
+
+    // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
+    // configuration.
+    if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
+      throw new Error(checkResult.errors.join(os.EOL));
+    }
+
+    if (checkResult.errors && checkResult.errors.length > 0) {
+      context.print.warning(checkResult.errors.join(os.EOL));
+    }
+
+    // If auth is not imported and there were errors, adjust or enable auth configuration
+    if (!checkResult.authEnabled || !checkResult.requirementsMet) {
       context.print.warning('Adding analytics would add the Auth category to the project if not already added.');
       if (
         await amplify.confirmPrompt(
@@ -91,24 +105,36 @@ function configure(context, defaultValuesFilename, serviceMetadata, resourceName
         )
       ) {
         try {
-          await externalAuthEnable(context, 'api', targetResourceName, apiRequirements);
-        } catch (e) {
-          context.print.error(e);
-          throw e;
+          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+            context,
+            'analytics',
+            targetResourceName,
+            analyticsRequirements,
+          ]);
+        } catch (error) {
+          context.print.error(error);
+          throw error;
         }
       } else {
         try {
           context.print.warning(
             'Authorize only authenticated users to send analytics events. Use "amplify update auth" to modify this behavior.',
           );
-          apiRequirements.allowUnauthenticatedIdentities = false;
-          await externalAuthEnable(context, 'api', targetResourceName, apiRequirements);
-        } catch (e) {
-          context.print.error(e);
-          throw e;
+          analyticsRequirements.allowUnauthenticatedIdentities = false;
+          await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+            context,
+            'analytics',
+            targetResourceName,
+            analyticsRequirements,
+          ]);
+        } catch (error) {
+          context.print.error(error);
+          throw error;
         }
       }
     }
+
+    // At this point we have a valid auth configuration either imported or added/updated.
 
     // allow overwrite in update case: resourceName specified
     await amplify.copyBatch(context, copyJobs, {}, !!resourceName, params);
@@ -130,8 +156,10 @@ async function updateWalkthrough(context, defaultValuesFilename, serviceMetadata
 
   let targetResourceName;
   if (kinesisResources.length === 0) {
-    context.print.error('No Kinesis streams resource to update. Please use "amplify add analytics" command to create a new Kinesis stream');
-    process.exit(0);
+    const errMessage = 'No Kinesis streams resource to update. Please use "amplify add analytics" command to create a new Kinesis stream';
+    context.print.error(errMessage);
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
     return;
   } else if (kinesisResources.length === 1) {
     [targetResourceName] = kinesisResources;

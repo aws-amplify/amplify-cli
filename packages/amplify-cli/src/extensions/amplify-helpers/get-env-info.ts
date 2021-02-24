@@ -6,6 +6,7 @@ class UndeterminedEnvironmentError extends Error {
       "Current environment cannot be determined\nUse 'amplify init' in the root of your app directory to initialize your project with Amplify",
     );
     this.name = 'UndeterminedEnvironmentError';
+    this.stack = undefined;
   }
 }
 

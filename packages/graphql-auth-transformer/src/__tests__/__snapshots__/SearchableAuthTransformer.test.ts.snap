@@ -80,7 +80,7 @@ input ModelPostFilterInput {
 }
 
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String): SearchablePostConnection @aws_api_key @aws_iam
+  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection @aws_api_key @aws_iam
   getPost(id: ID!): Post @aws_api_key @aws_iam
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection @aws_api_key @aws_iam
 }
@@ -127,22 +127,7 @@ input SearchableStringFilterInput {
   exists: Boolean
   wildcard: String
   regexp: String
-}
-
-input SearchableIDFilterInput {
-  ne: ID
-  gt: ID
-  lt: ID
-  gte: ID
-  lte: ID
-  eq: ID
-  match: ID
-  matchPhrase: ID
-  matchPhrasePrefix: ID
-  multiMatch: ID
-  exists: Boolean
-  wildcard: ID
-  regexp: ID
+  range: [String]
 }
 
 input SearchableIntFilterInput {
@@ -168,6 +153,23 @@ input SearchableFloatFilterInput {
 input SearchableBooleanFilterInput {
   eq: Boolean
   ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
 }
 
 input SearchablePostFilterInput {

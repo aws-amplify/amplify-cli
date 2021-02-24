@@ -28,19 +28,4 @@ describe('api directives @auth batch 7', () => {
     const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth3');
     expect(testresult).toBeTruthy();
   });
-
-  it('auth fieldLevelAuth4', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth4');
-    expect(testresult).toBeTruthy();
-  });
-
-  it('auth fieldLevelAuth5', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth5');
-    expect(testresult).toBeTruthy();
-  });
-
-  it('auth fieldLevelAuth6', async () => {
-    const testresult = await testSchema(projectDir, 'auth', 'fieldLevelAuth6');
-    expect(testresult).toBeTruthy();
-  });
 });

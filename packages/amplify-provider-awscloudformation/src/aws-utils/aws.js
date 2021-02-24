@@ -23,7 +23,7 @@ try {
 }
 
 const proxyAgent = require('proxy-agent');
-const configurationManager = require('../../lib/configuration-manager');
+const configurationManager = require('../configuration-manager');
 
 aws.configureWithCreds = async context => {
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;

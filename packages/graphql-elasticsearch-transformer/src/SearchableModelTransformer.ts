@@ -1,5 +1,5 @@
 import { Transformer, TransformerContext, getDirectiveArguments, gql, InvalidDirectiveError } from 'graphql-transformer-core';
-import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
+import { DirectiveNode, ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
 import { ResourceFactory } from './resources';
 import {
   makeSearchableScalarInputObject,
@@ -16,6 +16,7 @@ import {
   blankObject,
   makeListType,
   makeInputValueDefinition,
+  STANDARD_SCALARS,
 } from 'graphql-transformer-common';
 import { Expression, str } from 'graphql-mapping-template';
 import { ResolverResourceIDs, SearchableResourceIDs, ModelResourceIDs, getBaseType, ResourceConstants } from 'graphql-transformer-common';
@@ -137,6 +138,7 @@ export class SearchableModelTransformer extends Transformer {
             makeInputValueDefinition('sort', makeNamedType(`Searchable${def.name.value}SortInput`)),
             makeInputValueDefinition('limit', makeNamedType('Int')),
             makeInputValueDefinition('nextToken', makeNamedType('String')),
+            makeInputValueDefinition('from', makeNamedType('Int')),
           ],
           makeNamedType(`Searchable${def.name.value}Connection`),
         ),
@@ -174,30 +176,11 @@ export class SearchableModelTransformer extends Transformer {
 
   private generateSearchableInputs(ctx: TransformerContext, def: ObjectTypeDefinitionNode): void {
     // Create the Scalar filter inputs
-    if (!this.typeExist('SearchableStringFilterInput', ctx)) {
-      const searchableStringFilterInput = makeSearchableScalarInputObject('String');
-      ctx.addInput(searchableStringFilterInput);
-    }
-
-    if (!this.typeExist('SearchableIDFilterInput', ctx)) {
-      const searchableIDFilterInput = makeSearchableScalarInputObject('ID');
-      ctx.addInput(searchableIDFilterInput);
-    }
-
-    if (!this.typeExist('SearchableIntFilterInput', ctx)) {
-      const searchableIntFilterInput = makeSearchableScalarInputObject('Int');
-      ctx.addInput(searchableIntFilterInput);
-    }
-
-    if (!this.typeExist('SearchableFloatFilterInput', ctx)) {
-      const searchableFloatFilterInput = makeSearchableScalarInputObject('Float');
-      ctx.addInput(searchableFloatFilterInput);
-    }
-
-    if (!this.typeExist('SearchableBooleanFilterInput', ctx)) {
-      const searchableBooleanFilterInput = makeSearchableScalarInputObject('Boolean');
-      ctx.addInput(searchableBooleanFilterInput);
-    }
+    const inputs: string[] = Object.keys(STANDARD_SCALARS);
+    inputs
+      .filter((input: string) => !this.typeExist(`Searchable${input}FilterInput`, ctx))
+      .map((input: string) => makeSearchableScalarInputObject(input))
+      .forEach((node: InputObjectTypeDefinitionNode) => ctx.addInput(node));
 
     const searchableXQueryFilterInput = makeSearchableXFilterInputObject(def);
     if (!this.typeExist(searchableXQueryFilterInput.name.value, ctx)) {

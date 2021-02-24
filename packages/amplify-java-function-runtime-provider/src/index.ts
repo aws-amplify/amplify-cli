@@ -5,6 +5,8 @@ import { checkJava, checkJavaCompiler, checkGradle } from './utils/detect';
 import { invokeResource } from './utils/invoke';
 import { CheckDependenciesResult } from 'amplify-function-plugin-interface/src';
 import path from 'path';
+import { relativeShimSrcPath } from './utils/constants';
+import { GetPackageAssetPaths } from 'amplify-cli-core';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
@@ -59,7 +61,9 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
       return result;
     },
     package: params => packageResource(params, context),
-    build: params => buildResource(params),
+    build: buildResource,
     invoke: params => invokeResource(params, context),
   };
 };
+
+export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativeShimSrcPath];

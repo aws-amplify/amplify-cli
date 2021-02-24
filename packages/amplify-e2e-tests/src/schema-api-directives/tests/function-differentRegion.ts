@@ -20,7 +20,7 @@ import { updateSchemaInTestProject, testQueries } from '../common';
 import { randomizedFunctionName } from '../functionTester';
 
 export async function runTest(projectDir: string, testModule: any) {
-  const functionRegion = process.env.CLI_REGION === 'us-west-2' ? 'us-east-1' : 'us-west-2';
+  const functionRegion = process.env.CLI_REGION === 'us-west-2' ? 'us-east-2' : 'us-west-2';
   const functionProjectDirPath = path.join(path.dirname(projectDir), path.basename(projectDir) + '-function');
 
   try {

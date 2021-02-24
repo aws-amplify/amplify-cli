@@ -16,6 +16,8 @@ import {
   AmplifyPostPushEventData,
   AmplifyPrePullEventData,
   AmplifyPostPullEventData,
+  AmplifyPreCodegenModelsEventData,
+  AmplifyPostCodegenModelsEventData,
 } from './domain/amplify-event';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 
@@ -28,6 +30,17 @@ export async function executeCommand(context: Context) {
     const selectedPluginInfo = await selectPluginForExecution(context, pluginCandidates);
     await executePluginModuleCommand(context, selectedPluginInfo);
   }
+}
+
+function isContainersEnabled(context) {
+  const { frontend } = context.amplify.getProjectConfig();
+  if (frontend) {
+    const { config: { ServerlessContainers = false } = {} } = context.amplify.getProjectConfig()[frontend];
+
+    return ServerlessContainers;
+  }
+
+  return false;
 }
 
 async function selectPluginForExecution(context: Context, pluginCandidates: PluginInfo[]): Promise<PluginInfo> {
@@ -116,6 +129,13 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
       });
       //put console hosting plugin at the top
       pluginCandidates = consoleHostingPlugins.concat(otherPlugins);
+    }
+
+    const amplifyMeta = context.amplify.getProjectMeta();
+    const { Region } = amplifyMeta.providers['awscloudformation'];
+
+    if (!isContainersEnabled(context) || Region !== 'us-east-1') {
+      pluginCandidates = pluginCandidates.filter(plugin => !plugin.manifest.services?.includes('ElasticContainer'));
     }
 
     const answer = await inquirer.prompt({
@@ -217,19 +237,26 @@ const legacyCommandExecutor = async (context: Context, plugin: PluginInfo) => {
   }
 };
 
+const EVENT_EMITTING_PLUGINS = new Set([constants.CORE, constants.CODEGEN]);
+
 async function raisePreEvent(context: Context) {
-  if (context.input.plugin === constants.CORE) {
-    switch (context.input.command) {
-      case 'init':
-        await raisePreInitEvent(context);
-        break;
-      case 'push':
-        await raisePrePushEvent(context);
-        break;
-      case 'pull':
-        await raisePrePullEvent(context);
-        break;
-    }
+  const { command, plugin } = context.input;
+  if (!plugin || !EVENT_EMITTING_PLUGINS.has(plugin)) {
+    return;
+  }
+  switch (command) {
+    case 'init':
+      await raisePreInitEvent(context);
+      break;
+    case 'push':
+      await raisePrePushEvent(context);
+      break;
+    case 'pull':
+      await raisePrePullEvent(context);
+      break;
+    case 'models':
+      await raisePreCodegenModelsEvent(context);
+      break;
   }
 }
 
@@ -245,19 +272,28 @@ async function raisePrePullEvent(context: Context) {
   await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PrePull, new AmplifyPrePullEventData()));
 }
 
+async function raisePreCodegenModelsEvent(context: Context) {
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PreCodegenModels, new AmplifyPreCodegenModelsEventData()));
+}
+
 async function raisePostEvent(context: Context) {
-  if (context.input.plugin === constants.CORE) {
-    switch (context.input.command) {
-      case 'init':
-        await raisePostInitEvent(context);
-        break;
-      case 'push':
-        await raisePostPushEvent(context);
-        break;
-      case 'pull':
-        await raisePostPullEvent(context);
-        break;
-    }
+  const { command, plugin } = context.input;
+  if (!plugin || !EVENT_EMITTING_PLUGINS.has(plugin)) {
+    return;
+  }
+  switch (command) {
+    case 'init':
+      await raisePostInitEvent(context);
+      break;
+    case 'push':
+      await raisePostPushEvent(context);
+      break;
+    case 'pull':
+      await raisePostPullEvent(context);
+      break;
+    case 'models':
+      await raisePostCodegenModelsEvent(context);
+      break;
   }
 }
 
@@ -271,6 +307,10 @@ async function raisePostPushEvent(context: Context) {
 
 async function raisePostPullEvent(context: Context) {
   await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostPull, new AmplifyPostPullEventData()));
+}
+
+async function raisePostCodegenModelsEvent(context: Context) {
+  await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostCodegenModels, new AmplifyPostCodegenModelsEventData()));
 }
 
 export async function raiseEvent(context: Context, args: AmplifyEventArgs) {

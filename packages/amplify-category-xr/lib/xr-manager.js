@@ -1,18 +1,18 @@
 const fs = require('fs-extra');
 const path = require('path');
 const inquirer = require('inquirer');
-const open = require('open');
 const chalk = require('chalk');
 const { URL } = require('url');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
+const { open } = require('amplify-cli-core');
 
 const SUMERIAN_CONSOLE_URL = 'https://console.aws.amazon.com/sumerian/home/start';
 
 async function ensureSetup(context, resourceName) {
   if (!isXRSetup(context)) {
-    await authHelper.ensureAuth(context);
+    await authHelper.ensureAuth(context, resourceName);
   }
   await setupAccess(context, resourceName);
 }
@@ -229,6 +229,7 @@ async function remove(context) {
     .catch(err => {
       context.print.info(err.stack);
       context.usageData.emitError(err);
+      process.exitCode = 1;
     });
 }
 

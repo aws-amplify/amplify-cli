@@ -17,6 +17,7 @@ import {
   deleteProjectDir,
   getSocialProviders,
   getAmplifyDirPath,
+  isDeploymentSecretForEnvExists,
 } from 'amplify-e2e-core';
 import { headlessInit } from '../src/pullAndInit/initProject';
 import { headlessPull, authConfigPull } from '../src/pullAndInit/pullProject';
@@ -27,6 +28,8 @@ import {
   removeFilesForThirdParty,
   checkAmplifyFolderStructure,
   getTeamProviderInfo,
+  getProjectConfig,
+  removeDotConfigDir,
 } from '../src/pullAndInit/amplifyArtifactsManager';
 import * as util from '../src/util';
 
@@ -93,6 +96,7 @@ describe('amplify console build', () => {
       envName,
       appId,
     };
+    removeDotConfigDir(projectDirPath);
     await headlessInit(projectDirPath, amplifyParam, providersParam, codegenParam);
     expect(checkAmplifyFolderStructure(projectDirPath)).toBeTruthy();
     teamProviderInfo = getTeamProviderInfo(projectDirPath);
@@ -142,6 +146,7 @@ describe('amplify console build', () => {
     const clonedProjectDirPath = await util.createNewProjectDir('console-cloned');
     fs.copySync(originalProjectDirPath, clonedProjectDirPath);
     removeFilesForThirdParty(clonedProjectDirPath);
+    removeDotConfigDir(clonedProjectDirPath);
     envName = 'devteamb';
     const appIdB = await createConsoleApp(projectName, amplifyClient);
     backendParams = generateBackendEnvParams(appIdB, projectName, envName);
@@ -199,9 +204,11 @@ describe('amplify app console tests', () => {
       AMAZON_APP_ID,
       AMAZON_APP_SECRET,
     } = getSocialProviders();
-    await initJSProjectWithProfile(projRoot, { name: 'authConsoleTest', envName });
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: 'authConsoleTest', envName });
     await addAuthWithDefaultSocial(projRoot, {});
+    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeTruthy();
     await amplifyPushAuth(projRoot);
+    expect(isDeploymentSecretForEnvExists(projRoot, envName)).toBeFalsy();
     let teamInfo = getTeamProviderInfo(projRoot);
     expect(teamInfo).toBeDefined();
     let appId = teamInfo[envName].awscloudformation.AmplifyAppId;
@@ -211,7 +218,7 @@ describe('amplify app console tests', () => {
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
     let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
 
     deleteAmplifyDir(projRoot);
 
@@ -232,12 +239,57 @@ describe('amplify app console tests', () => {
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
     authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
+
+    // with frontend
+    const frontendConfig = deleteAmplifyDir(projRoot);
+    await headlessPull(
+      projRoot,
+      { envName, appId },
+      providersParam,
+      {
+        auth: {
+          facebookAppIdUserPool: FACEBOOK_APP_ID,
+          facebookAppSecretUserPool: FACEBOOK_APP_SECRET,
+          googleAppIdUserPool: GOOGLE_APP_ID,
+          googleAppSecretUserPool: GOOGLE_APP_SECRET,
+          loginwithamazonAppIdUserPool: AMAZON_APP_ID,
+          loginwithamazonAppSecretUserPool: AMAZON_APP_SECRET,
+        },
+      },
+      {
+        frontend: 'javascript',
+        config: {
+          BuildCommand: 'yarn run build',
+          DistributionDir: 'build',
+          SourceDir: 'src',
+          StartCommand: 'yarn run start',
+        },
+        framework: 'react-native',
+      },
+    );
+
+    const projectConfig = getProjectConfig(projRoot);
+    expect(projectConfig).toEqual({
+      providers: ['awscloudformation'],
+      projectName: 'authConsoleTest',
+      version: '3.0',
+      frontend: 'javascript',
+      javascript: {
+        framework: 'react-native',
+        config: {
+          SourceDir: 'src',
+          DistributionDir: 'build',
+          BuildCommand: 'yarn run build',
+          StartCommand: 'yarn run start',
+        },
+      },
+    });
   });
 
   it('test pull with auth config', async () => {
     const envName = 'dev';
-    await initJSProjectWithProfile(projRoot, { name: 'authConsoleTest', envName });
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: 'authConsoleTest', envName });
     await addAuthWithDefaultSocial(projRoot, {});
     await amplifyPushAuth(projRoot);
     let teamInfo = getTeamProviderInfo(projRoot);
@@ -249,7 +301,7 @@ describe('amplify app console tests', () => {
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
     let authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
 
     deleteAmplifyDir(projRoot);
 
@@ -261,6 +313,6 @@ describe('amplify app console tests', () => {
     expect(appId).toBeDefined();
     expect(teamInfo[envName].categories.auth).toBeDefined();
     authTeamInfo = Object.keys(teamInfo[envName].categories.auth).map(key => teamInfo[envName].categories.auth[key])[0];
-    expect(authTeamInfo).toHaveProperty('hostedUIProviderCreds');
+    expect(authTeamInfo).not.toHaveProperty('hostedUIProviderCreds');
   });
 });

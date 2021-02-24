@@ -23,6 +23,7 @@ module.exports = {
         context.print.error(err.message);
         console.log(err.stack);
         context.usageData.emitError(err);
+        process.exitCode = 1;
       });
   },
 };

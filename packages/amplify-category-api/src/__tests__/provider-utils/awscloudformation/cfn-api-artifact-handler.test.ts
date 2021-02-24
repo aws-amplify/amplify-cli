@@ -25,6 +25,7 @@ jest.mock('../../../provider-utils/awscloudformation/utils/amplify-meta-utils', 
   getAppSyncResourceName: jest.fn(() => testApiName),
   getAppSyncAuthConfig: jest.fn(() => ({})),
   authConfigHasApiKey: jest.fn(() => true),
+  getImportedAuthUserPoolId: jest.fn(() => undefined),
 }));
 
 const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;

@@ -3,7 +3,6 @@ import { dataStoreLearnMore } from '../sync-conflict-handler-assets/syncAssets';
 import inquirer from 'inquirer';
 import fs from 'fs-extra';
 import path from 'path';
-import open from 'open';
 import { rootAssetDir } from '../aws-constants';
 import { collectDirectivesByTypeNames, readProjectConfiguration, ConflictHandlerType } from 'graphql-transformer-core';
 import { category } from '../../../category-constants';
@@ -12,8 +11,18 @@ import { authConfigToAppSyncAuthType } from '../utils/auth-config-to-app-sync-au
 import { resolverConfigToConflictResolution } from '../utils/resolver-config-to-conflict-resolution-bi-di-mapper';
 import _ from 'lodash';
 import { getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from '../utils/amplify-meta-utils';
+import {
+  ResourceAlreadyExistsError,
+  ResourceDoesNotExistError,
+  UnknownResourceTypeError,
+  exitOnNextTick,
+  stateManager,
+  $TSContext,
+  open,
+} from 'amplify-cli-core';
 
 const serviceName = 'AppSync';
+const elasticContainerServiceName = 'ElasticContainer';
 const providerName = 'awscloudformation';
 const graphqlSchemaDir = path.join(rootAssetDir, 'graphql-schemas');
 
@@ -36,38 +45,108 @@ const authProviderChoices = [
   },
 ];
 
-export const openConsole = context => {
-  const amplifyMeta = context.amplify.getProjectMeta();
+export const openConsole = async (context: $TSContext) => {
+  const amplifyMeta = stateManager.getMeta();
   const categoryAmplifyMeta = amplifyMeta[category];
-  let appSyncMeta;
-  Object.keys(categoryAmplifyMeta).forEach(resourceName => {
-    if (categoryAmplifyMeta[resourceName].service === serviceName && categoryAmplifyMeta[resourceName].output) {
-      appSyncMeta = categoryAmplifyMeta[resourceName].output;
-    }
+  const { Region } = amplifyMeta.providers[providerName];
+
+  const graphQLApis = Object.keys(categoryAmplifyMeta).filter(resourceName => {
+    const resource = categoryAmplifyMeta[resourceName];
+
+    return (
+      resource.output &&
+      (resource.service === serviceName || (resource.service === elasticContainerServiceName && resource.apiType === 'GRAPHQL'))
+    );
   });
 
-  if (appSyncMeta) {
-    const { GraphQLAPIIdOutput } = appSyncMeta;
-    const { Region } = amplifyMeta.providers[providerName];
+  if (graphQLApis) {
+    let url;
+    let selectedApi = graphQLApis[0];
 
-    const consoleUrl = `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
-    open(consoleUrl, { wait: false });
+    if (graphQLApis.length > 1) {
+      ({ selectedApi } = await inquirer.prompt({
+        type: 'list',
+        name: 'selectedApi',
+        choices: graphQLApis,
+        message: 'Please select the API',
+      }));
+    }
+
+    const selectedResource = categoryAmplifyMeta[selectedApi];
+
+    if (selectedResource.service === serviceName) {
+      const {
+        output: { GraphQLAPIIdOutput },
+      } = selectedResource;
+      const appId = amplifyMeta.providers[providerName].AmplifyAppId;
+      if (!appId) {
+        throw new Error('Missing AmplifyAppId in amplify-meta.json');
+      }
+
+      url = `https://console.aws.amazon.com/appsync/home?region=${Region}#/${GraphQLAPIIdOutput}/v1/queries`;
+
+      const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
+      const { isAdminApp, region } = await providerPlugin.isAmplifyAdminApp(appId);
+      if (isAdminApp) {
+        if (region !== Region) {
+          context.print.warning(`Region mismatch: Amplify service returned '${region}', but found '${Region}' in amplify-meta.json.`);
+        }
+        const { envName } = context.amplify.getEnvInfo();
+        const baseUrl: string = providerPlugin.adminBackendMap[region].amplifyAdminUrl;
+        url = `${baseUrl}/admin/${appId}/${envName}/datastore`;
+      }
+    } else {
+      // Elastic Container API
+      const {
+        output: { PipelineName, ServiceName, ClusterName },
+      } = selectedResource;
+      const codePipeline = 'CodePipeline';
+      const elasticContainer = 'ElasticContainer';
+
+      const { selectedConsole } = await inquirer.prompt({
+        name: 'selectedConsole',
+        message: 'Which console you want to open',
+        type: 'list',
+        choices: [
+          {
+            name: 'Elastic Container Service (Deployed container status)',
+            value: elasticContainer,
+          },
+          {
+            name: 'CodePipeline (Container build status)',
+            value: codePipeline,
+          },
+        ],
+      });
+
+      if (selectedConsole === elasticContainer) {
+        url = `https://console.aws.amazon.com/ecs/home?region=${Region}#/clusters/${ClusterName}/services/${ServiceName}/details`;
+      } else if (selectedConsole === codePipeline) {
+        url = `https://${Region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${PipelineName}/view`;
+      } else {
+        context.print.error('Option not available');
+        return;
+      }
+    }
+
+    open(url, { wait: false });
   } else {
     context.print.error('AppSync API is not pushed in the cloud.');
   }
 };
 
-export const serviceWalkthrough = async (context, defaultValuesFilename, serviceMetadata) => {
+export const serviceWalkthrough = async (context: $TSContext, defaultValuesFilename, serviceMetadata) => {
   const resourceName = resourceAlreadyExists(context);
   let authConfig;
   let defaultAuthType;
   let resolverConfig;
 
   if (resourceName) {
-    context.print.warning(
-      'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.',
-    );
-    process.exit(0);
+    const errMessage =
+      'You already have an AppSync API in your project. Use the "amplify update api" command to update your existing AppSync API.';
+    context.print.warning(errMessage);
+    await context.usageData.emitError(new ResourceAlreadyExistsError(errMessage));
+    exitOnNextTick(0);
   }
 
   const { amplify } = context;
@@ -175,8 +254,10 @@ export const updateWalkthrough = async (context): Promise<UpdateApiRequest> => {
     const backEndDir = context.amplify.pathManager.getBackendDirPath();
     resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
   } else {
-    context.print.error('No AppSync resource to update. Use the "amplify add api" command to update your existing AppSync API.');
-    process.exit(0);
+    const errMessage = 'No AppSync resource to update. Use the "amplify add api" command to update your existing AppSync API.';
+    context.print.error(errMessage);
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
   }
 
   // Get models
@@ -420,13 +501,12 @@ async function askDefaultAuthQuestion(context) {
   };
 }
 
-async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) {
+export async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) {
+  const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
+  authConfig.additionalAuthenticationProviders = [];
   if (await context.prompt.confirm('Configure additional auth types?')) {
-    authConfig.additionalAuthenticationProviders = [];
     // Get additional auth configured
     const remainingAuthProviderChoices = authProviderChoices.filter(p => p.value !== defaultAuthType);
-
-    const currentAuthConfig = getAppSyncAuthConfig(context.amplify.getProjectMeta());
     const currentAdditionalAuth = ((currentAuthConfig && currentAuthConfig.additionalAuthenticationProviders
       ? currentAuthConfig.additionalAuthenticationProviders
       : []) as any[]).map(authProvider => authProvider.authenticationType);
@@ -448,8 +528,11 @@ async function askAdditionalAuthQuestions(context, authConfig, defaultAuthType) 
 
       authConfig.additionalAuthenticationProviders.push(config);
     }
+  } else {
+    authConfig.additionalAuthenticationProviders = (currentAuthConfig?.additionalAuthenticationProviders || []).filter(
+      p => p.authenticationType !== defaultAuthType,
+    );
   }
-
   return authConfig;
 }
 
@@ -490,29 +573,28 @@ async function askAuthQuestions(authType, context, printLeadText = false) {
     return openIDConnectConfig;
   }
 
-  context.print.error(`Unknown authType: ${authType}`);
-  process.exit(1);
+  const errMessage = `Unknown authType: ${authType}`;
+  context.print.error(errMessage);
+  await context.usageData.emitError(new UnknownResourceTypeError(errMessage));
+  exitOnNextTick(1);
 }
 
 async function askUserPoolQuestions(context) {
   let authResourceName = checkIfAuthExists(context);
 
   if (!authResourceName) {
-    try {
-      const { add } = require('amplify-category-auth');
-
-      authResourceName = await add(context);
-    } catch (e) {
-      context.print.error('Auth plugin not installed in the CLI. You need to install it to use this feature.');
-    }
+    authResourceName = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'add', [context]);
   } else {
     context.print.info('Use a Cognito user pool configured as a part of this project.');
   }
 
+  // Added resources are prefixed with auth
+  authResourceName = `auth${authResourceName}`;
+
   return {
     authenticationType: 'AMAZON_COGNITO_USER_POOLS',
     userPoolConfig: {
-      userPoolId: `auth${authResourceName}`,
+      userPoolId: authResourceName,
     },
   };
 }
@@ -639,50 +721,16 @@ export const migrate = async context => {
   });
 };
 
-export const getIAMPolicies = (resourceName, crudOptions, context) => {
+export const getIAMPolicies = (resourceName, operations, context) => {
   let policy = {};
-  const actions = [];
+  const resources = [];
 
-  crudOptions.forEach(crudOption => {
-    switch (crudOption) {
-      case 'create':
-        actions.push('appsync:Create*', 'appsync:StartSchemaCreation', 'appsync:GraphQL');
-        break;
-      case 'update':
-        actions.push('appsync:Update*');
-        break;
-      case 'read':
-        actions.push('appsync:Get*', 'appsync:List*');
-        break;
-      case 'delete':
-        actions.push('appsync:Delete*');
-        break;
-      default:
-        console.log(`${crudOption} not supported`);
-    }
-  });
+  operations.forEach(operation => resources.push(buildPolicyResource(resourceName, operation)));
 
   policy = {
     Effect: 'Allow',
-    Action: actions,
-    Resource: [
-      {
-        'Fn::Join': [
-          '',
-          [
-            'arn:aws:appsync:',
-            { Ref: 'AWS::Region' },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':apis/',
-            {
-              Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
-            },
-            '/*',
-          ],
-        ],
-      },
-    ],
+    Action: ['appsync:GraphQL'],
+    Resource: resources,
   };
 
   const attributes = ['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput'];
@@ -691,6 +739,25 @@ export const getIAMPolicies = (resourceName, crudOptions, context) => {
   }
 
   return { policy, attributes };
+};
+
+const buildPolicyResource = (resourceName, operation) => {
+  return {
+    'Fn::Join': [
+      '',
+      [
+        'arn:aws:appsync:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':apis/',
+        {
+          Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
+        },
+        `/types/${operation}/*`,
+      ],
+    ],
+  };
 };
 
 const templateSchemaFilter = authConfig => {

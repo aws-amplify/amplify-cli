@@ -61,7 +61,7 @@ function getTemplateMappings(context) {
 }
 
 async function addResource(context, category, service, options) {
-  await authHelper.ensureAuth(context);
+  await authHelper.ensureAuth(context, ''); // There is no resourceName available this early
   serviceMetadata = context.amplify.readJsonFile(`${__dirname}/../supported-services.json`)[service];
   const { cfnFilename } = serviceMetadata;
   const { defaultValuesFilename, serviceWalkthroughFilename } = serviceMetadata;

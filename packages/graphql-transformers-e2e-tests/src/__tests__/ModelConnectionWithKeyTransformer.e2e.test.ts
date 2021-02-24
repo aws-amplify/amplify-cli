@@ -7,8 +7,7 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
 import { Output } from 'aws-sdk/clients/cloudformation';
 import { GraphQLClient } from '../GraphQLClient';
-import { deploy } from '../deployNestedStacks';
-import emptyBucket from '../emptyBucket';
+import { cleanupStackAfterTest, deploy } from '../deployNestedStacks';
 import { S3Client } from '../S3Client';
 import { default as S3 } from 'aws-sdk/clients/s3';
 import { default as moment } from 'moment';
@@ -106,7 +105,11 @@ beforeAll(async () => {
         project: DProject @connection(name: "DProjectDTeam")
     }
 
-    type Model1 @model(subscriptions: null) @key(fields: ["id", "sort" ])
+    type Model1
+    @model(subscriptions: null)
+    @key(fields: ["id", "sort"])
+    @key(name: "byName", fields: ["name", "id"])
+    @key(name: "byNameIdAndSort", fields: ["name","id","sort"])
     {
         id: ID!
         sort: Int!
@@ -116,15 +119,37 @@ beforeAll(async () => {
     {
         id: ID!
         connection: Model1 @connection(sortField: "modelOneSort")
-        modelOneSort: Int!
+        modelOneSort: Int
+    }
+
+    type Model3 @model(subscriptions: null)
+    {
+      id: ID!
+      connectionPK: ID
+      connectionSort: Int
+      connectionSK: String
+      connectionName: String
+      connection: Model1 @connection(keyField:"connectionPK", sortField: "connectionSort")
+      connections: [Model1] @connection(keyName: "byName", fields: ["connectionSK"])
+      connectionsWithCompositeKey: [Model4]
+      @connection(
+        keyName: "byNameIdAndSort"
+        fields: ["connectionName", "connectionPK", "connectionSort"])
+    }
+
+    type Model4 @model(subscriptions: null) @key(name: "byNameIdAndSort", fields: ["name", "id", "sort"])
+    {
+      id: ID!
+      sort: Int!
+      name: String!
     }
     `;
 
   const transformer = new GraphQLTransform({
     transformers: [
       new DynamoDBModelTransformer(),
-      new ModelConnectionTransformer(),
       new KeyTransformer(),
+      new ModelConnectionTransformer(),
       new ModelAuthTransformer({
         authConfig: {
           defaultAuthentication: {
@@ -147,7 +172,6 @@ beforeAll(async () => {
     console.error(`Failed to create S3 bucket: ${e}`);
   }
   try {
-    console.log('Creating Stack ' + STACK_NAME);
     const finishedStack = await deploy(
       customS3Client,
       cf,
@@ -162,9 +186,7 @@ beforeAll(async () => {
 
     // Arbitrary wait to make sure everything is ready.
     await cf.wait(5, () => Promise.resolve());
-    console.log('Successfully created stack ' + STACK_NAME);
     expect(finishedStack).toBeDefined();
-    console.log(JSON.stringify(finishedStack, null, 4));
     const getApiEndpoint = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIEndpointOutput);
     const getApiKey = outputValueSelector(ResourceConstants.OUTPUTS.GraphQLAPIApiKeyOutput);
     const endpoint = getApiEndpoint(finishedStack.Outputs);
@@ -179,26 +201,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  try {
-    console.log('Deleting stack ' + STACK_NAME);
-    await cf.deleteStack(STACK_NAME);
-    await cf.waitForStack(STACK_NAME);
-    console.log('Successfully deleted stack ' + STACK_NAME);
-  } catch (e) {
-    if (e.code === 'ValidationError' && e.message === `Stack with id ${STACK_NAME} does not exist`) {
-      // The stack was deleted. This is good.
-      expect(true).toEqual(true);
-      console.log('Successfully deleted stack ' + STACK_NAME);
-    } else {
-      console.error(e);
-      expect(true).toEqual(false);
-    }
-  }
-  try {
-    await emptyBucket(BUCKET_NAME);
-  } catch (e) {
-    console.error(`Failed to empty S3 bucket: ${e}`);
-  }
+  await cleanupStackAfterTest(BUCKET_NAME, STACK_NAME, cf);
 });
 
 /**
@@ -513,4 +516,239 @@ test('Unnamed connection with sortField parameter only #2100', async () => {
   expect(item.connection).toBeDefined();
   expect(item.connection.id).toEqual('M11');
   expect(item.connection.sort).toEqual(10);
+});
+
+test('Connection with null sort key returns null when getting a single item', async () => {
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M11 {
+        createModel1(input: {id: "Null-M11", sort: 10, name: "M1-1"}) {
+            id
+            name
+            sort
+        }
+    }
+    `,
+    {},
+  );
+
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M21 {
+        createModel2(input: {id: "Null-M21", model2ConnectionId: "Null-M11"}) {
+            id
+        }
+    }
+    `,
+    {},
+  );
+
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M31 {
+        createModel3(input: {id: "Null-M31", connectionPK: "Null-M11"}) {
+            id
+            connectionPK
+        }
+    }
+    `,
+    {},
+  );
+
+  const queryResponse = await GRAPHQL_CLIENT.query(
+    `
+    query Query {
+        getModel2(id: "Null-M21") {
+            id
+            connection {
+                id
+            }
+        }
+    }
+    `,
+    {},
+  );
+  expect(queryResponse.data.getModel2).toBeDefined();
+  const item = queryResponse.data.getModel2;
+  expect(item.id).toEqual('Null-M21');
+  expect(item.connection).toEqual(null);
+
+  const queryResponse2 = await GRAPHQL_CLIENT.query(
+    `
+    query Query {
+        getModel3(id: "Null-M31") {
+            id
+            connection {
+                id
+            }
+        }
+    }
+    `,
+    {},
+  );
+  expect(queryResponse2.data.getModel3).toBeDefined();
+  const item2 = queryResponse2.data.getModel3;
+  expect(item2.id).toEqual('Null-M31');
+  expect(item2.connection).toEqual(null);
+});
+
+test('Connection with null partition key returns null when getting a list of items', async () => {
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M11 {
+        createModel1(input: {id: "Null-List-M11", sort: 909, name: "Null-List-M1-1"}) {
+            id
+            name
+            sort
+        }
+    }
+    `,
+    {},
+  );
+
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M31 {
+        createModel3(input: {id: "Null-List-M31", connectionSort: 909, connectionSK: "Null-List-M1-1"}) {
+            id
+            connectionSK
+        }
+    }
+    `,
+    {},
+  );
+
+  await GRAPHQL_CLIENT.query(
+    `
+    mutation M32 {
+        createModel3(input: {id: "Null-List-M32", connectionPK: "Null-List-M11"}) {
+            id
+            connectionPK
+        }
+    }
+    `,
+    {},
+  );
+
+  const queryResponse = await GRAPHQL_CLIENT.query(
+    `
+    query Query {
+        getModel3(id: "Null-List-M32") {
+            id
+            connections {
+              items {
+                id
+              }
+            }
+        }
+    }
+    `,
+    {},
+  );
+  expect(queryResponse.data.getModel3).toBeDefined();
+  const item = queryResponse.data.getModel3;
+  expect(item.id).toEqual('Null-List-M32');
+  expect(item.connections.items.length).toEqual(0);
+
+  const queryResponse2 = await GRAPHQL_CLIENT.query(
+    `
+    query Query {
+        getModel3(id: "Null-List-M31") {
+            id
+            connections {
+              items {
+                id
+                name
+              }
+            }
+        }
+    }
+    `,
+    {},
+  );
+  expect(queryResponse2.data.getModel3).toBeDefined();
+  const item2 = queryResponse2.data.getModel3;
+  expect(item2.id).toEqual('Null-List-M31');
+  expect(item2.connections.items.length).toEqual(1);
+  expect(item2.connections.items[0].id).toEqual('Null-List-M11');
+});
+
+test('Connection with null key attributes returns empty array', async () => {
+  // https://github.com/aws-amplify/amplify-cli/pull/5153#pullrequestreview-506028382
+  const mutationResponse = await GRAPHQL_CLIENT.query(
+    `
+    mutation createModel3WithMissingPKConnectionField {
+      createModel3(input: {id: "Null-Connection-PK-M34", connectionSort: 909, connectionPK: "unused-pk"}) {
+        connectionsWithCompositeKey {
+          items {
+            id
+            name
+            sort
+          }
+        }
+      }
+    }
+    `,
+    {},
+  );
+
+  expect(mutationResponse.data.createModel3).toBeDefined();
+  const item = mutationResponse.data.createModel3;
+  expect(item.connectionsWithCompositeKey.items.length).toEqual(0);
+  expect(mutationResponse.errors).not.toBeDefined();
+
+  const mutationResponse2 = await GRAPHQL_CLIENT.query(
+    `
+    mutation createModel4 {
+      createModel4(input: {id: "1", sort: 1, name: "model4Name"}) {
+        id
+      }
+    }
+    `,
+    {},
+  );
+
+  const mutationResponse3 = await GRAPHQL_CLIENT.query(
+    `
+    mutation createModel3WithMissingSortConnectionField {
+      createModel3(input: {id: "Null-Connection-PK-M34-3", connectionSort: 1, connectionName: "model4Name"}) {
+        connectionsWithCompositeKey {
+          items {
+            id
+            name
+            sort
+          }
+        }
+      }
+    }
+    `,
+    {},
+  );
+
+  expect(mutationResponse3.data.createModel3).toBeDefined();
+  const item3 = mutationResponse3.data.createModel3;
+  expect(item3.connectionsWithCompositeKey.items.length).toEqual(0);
+  expect(mutationResponse3.errors).not.toBeDefined();
+
+  const mutationResponse4 = await GRAPHQL_CLIENT.query(
+    `
+    mutation createModel3WithAllConnectionFields {
+      createModel3(input: {id: "Null-Connection-PK-M34-4", connectionSort: 1, connectionName: "model4Name", connectionPK: "1"}) {
+        connectionsWithCompositeKey {
+          items {
+            id
+            name
+            sort
+          }
+        }
+      }
+    }
+    `,
+    {},
+  );
+
+  expect(mutationResponse4.data.createModel3).toBeDefined();
+  const item4 = mutationResponse4.data.createModel3;
+  expect(item4.connectionsWithCompositeKey.items.length).toEqual(1);
+  expect(mutationResponse4.errors).not.toBeDefined();
 });

@@ -55,7 +55,7 @@ export class CloudFormationClient {
         Parameters: params,
         TemplateBody: JSON.stringify(template),
       },
-      this.client
+      this.client,
     );
   }
 
@@ -77,7 +77,7 @@ export class CloudFormationClient {
             return reject(`No stack named: ${name}`);
           }
           resolve(data.Stacks[0]);
-        }
+        },
       );
     });
   }
@@ -107,18 +107,14 @@ export class CloudFormationClient {
       'UPDATE_ROLLBACK_IN_PROGRESS',
     ],
     maxPolls: number = 1000,
-    pollInterval: number = 20
+    pollInterval: number = 20,
   ): Promise<CloudFormation.Stack> {
     const stack = await this.describeStack(name);
     if (success.includes(stack.StackStatus)) {
-      console.log(`Cloudformation successfully deployed...`);
       return Promise.resolve(stack);
     } else if (failure.includes(stack.StackStatus)) {
-      console.log(`Cloudformation failed...`);
-      console.log(JSON.stringify(stack, null, 4));
       return Promise.reject(new Error(`Stack ${stack.StackName} failed with status "${stack.StackStatus}"`));
     } else if (poll.includes(stack.StackStatus)) {
-      console.log(`Polling cloudformation...`);
       if (maxPolls === 0) {
         return Promise.reject(new Error(`Stack did not finish before hitting the max poll count.`));
       } else {
@@ -130,7 +126,7 @@ export class CloudFormationClient {
           failure,
           poll,
           maxPolls - 1,
-          pollInterval
+          pollInterval,
         );
       }
     }

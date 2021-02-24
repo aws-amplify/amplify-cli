@@ -1,10 +1,11 @@
 import path from 'path';
 import fs from 'fs-extra';
 import portfinder from 'portfinder';
+import { $TSContext, pathManager } from 'amplify-cli-core';
 
-import { InvocationRequest, BuildRequest } from 'amplify-function-plugin-interface';
-import { buildResourceInternal, executeCommand } from './runtime';
-import { MAIN_SOURCE, MAX_PORT, BASE_PORT, BIN_LOCAL, MAIN_BINARY, MAIN_BINARY_WIN } from './constants';
+import { InvocationRequest } from 'amplify-function-plugin-interface';
+import { executeCommand } from './runtime';
+import { MAIN_SOURCE, MAX_PORT, BASE_PORT, BIN_LOCAL, MAIN_BINARY, MAIN_BINARY_WIN, packageName, relativeShimSrcPath } from './constants';
 import execa, { ExecaChildProcess } from 'execa';
 
 // Go typing standards dictating JSON properties with PascalCase format
@@ -16,7 +17,7 @@ type LambdaResult = {
 const UNKNOWN_ERROR = 'Unknown error occurred during the execution of the Lambda function';
 
 const buildLocalInvoker = async (context: any) => {
-  const localInvokerDir = path.join(__dirname, '..', 'resources', 'localinvoke');
+  const localInvokerDir = path.join(pathManager.getAmplifyPackageLibDirPath(packageName), relativeShimSrcPath);
   const isWindows = /^win/.test(process.platform);
   const localInvokeExecutableName = isWindows === true ? MAIN_BINARY_WIN : MAIN_BINARY;
   const localInvokeExecutablePath = path.join(localInvokerDir, localInvokeExecutableName);
@@ -40,7 +41,10 @@ const startLambda = (request: InvocationRequest, portNumber: number, lambda: { e
 
   const lambdaProcess: ExecaChildProcess = execa.command(lambda.executable, {
     env: envVars,
+    extendEnv: false,
     cwd: lambda.cwd,
+    stderr: 'inherit',
+    stdout: 'inherit',
   });
 
   return lambdaProcess;
@@ -59,17 +63,8 @@ const stopLambda = async (lambdaProcess: ExecaChildProcess) => {
   }
 };
 
-export const localInvoke = async (request: InvocationRequest, context: any) => {
+export const localInvoke = async (request: InvocationRequest, context: $TSContext) => {
   const localInvoker = await buildLocalInvoker(context);
-
-  // Make sure that local invocation works with the latest source we issue a build request for the function resource
-  const buildRequest: BuildRequest = {
-    env: request.env,
-    srcRoot: request.srcRoot,
-    runtime: request.runtime,
-  };
-
-  const buildResult = await buildResourceInternal(buildRequest, context, false, true);
 
   // Find a free tcp port for the Lambda to launch on
   const portNumber = await portfinder.getPortPromise({
@@ -105,7 +100,11 @@ export const localInvoke = async (request: InvocationRequest, context: any) => {
     const lambdaResult: LambdaResult = JSON.parse(processResult.stdout);
 
     if (lambdaResult.Response) {
-      return lambdaResult.Response;
+      try {
+        return JSON.parse(lambdaResult.Response);
+      } catch {
+        return lambdaResult.Response;
+      }
     } else {
       throw new Error(lambdaResult.Error || UNKNOWN_ERROR);
     }

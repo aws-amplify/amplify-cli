@@ -1,6 +1,6 @@
-import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '../../src';
+import { nspawn as spawn, KEY_DOWN_ARROW, getCLIPath } from '..';
 
-export function addPinpoint(cwd: string, settings: any) {
+export function addPinpoint(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
@@ -9,6 +9,7 @@ export function addPinpoint(cwd: string, settings: any) {
       .sendLine(settings.wrongName)
       .wait('Resource name should be alphanumeric')
       .send('\b')
+      .delay(1000) // Some delay required for autocomplete and terminal to catch up
       .sendLine(settings.rightName)
       .wait('Apps need authorization to send analytics events. Do you want to allow guests')
       .sendLine('n')
@@ -24,7 +25,7 @@ export function addPinpoint(cwd: string, settings: any) {
   });
 }
 
-export function addKinesis(cwd: string, settings: any) {
+export function addKinesis(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'analytics'], { cwd, stripColors: true })
       .wait('Select an Analytics provider')
@@ -33,8 +34,8 @@ export function addKinesis(cwd: string, settings: any) {
       .wait('Enter a Stream name')
       .sendLine(settings.wrongName)
       .wait('Name is invalid.')
-      .sendCarriageReturn()
       .send('\b')
+      .delay(1000) // Some delay required for autocomplete and terminal to catch up
       .sendLine(settings.rightName)
       .wait('Enter number of shards')
       .sendCarriageReturn()
@@ -52,7 +53,7 @@ export function addKinesis(cwd: string, settings: any) {
   });
 }
 
-export function removeAnalytics(cwd: string, settings: any) {
+export function removeAnalytics(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'analytics'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')

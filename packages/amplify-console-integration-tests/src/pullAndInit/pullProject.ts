@@ -14,11 +14,22 @@ const defaultSettings = {
   profileName: '\r',
 };
 
+export type FrontendConfig = {
+  frontend: string;
+  framework: string;
+  config: {
+    SourceDir: string;
+    DistributionDir: string;
+    BuildCommand: string;
+    StartCommand: string;
+  };
+};
 export function headlessPull(
   projectRootDirPath: string,
   amplifyParam: Object,
   providersParam: Object,
   categoryConfig?: Object,
+  frontendConfig?: FrontendConfig,
 ): Promise<void> {
   const pullCommand: string[] = [
     'pull',
@@ -30,6 +41,7 @@ export function headlessPull(
     '--yes',
   ];
   if (categoryConfig) pullCommand.push(...['--categories', JSON.stringify(categoryConfig)]);
+  if (frontendConfig) pullCommand.push('--frontend', JSON.stringify(frontendConfig));
   return new Promise((resolve, reject) => {
     spawn(util.getCLIPath(), pullCommand, { cwd: projectRootDirPath, stripColors: true }).run((err: Error) => {
       if (!err) {
@@ -50,8 +62,8 @@ export function authConfigPull(projectRootDirPath: string, params: { appId: stri
   const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders();
   return new Promise((resolve, reject) => {
     spawn(util.getCLIPath(), pullCommand, { cwd: projectRootDirPath, stripColors: true })
-      .wait('Do you want to use an AWS profile?')
-      .sendLine('y')
+      .wait('Select the authentication method you want to use:')
+      .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendLine(s.profileName)
       .wait('Choose your default editor:')

@@ -1,10 +1,12 @@
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
+import { JSONUtilities } from 'amplify-cli-core';
 import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
 import { categoryName, layerParametersFileName } from '../utils/constants';
 import { category } from '../../../constants';
 import { hashLayerVersionContents } from './packageLayer';
+import { getLayerRuntimes } from './layerRuntimes';
 
 export type LayerVersionMap = Record<number, Pick<LayerVersionMetadata, 'permissions' | 'hash'>>;
 
@@ -18,7 +20,7 @@ export type LayerParameters = {
   build: boolean;
 };
 
-export type StoredLayerParameters = Pick<LayerParameters, 'runtimes' | 'layerVersionMap'>;
+export type StoredLayerParameters = Pick<Partial<LayerParameters>, 'runtimes' | 'layerVersionMap'>;
 
 export enum Permission {
   private = 'private',
@@ -80,12 +82,14 @@ class LayerState implements LayerMetadata {
 
   private storedParams: StoredLayerParameters;
   private newVersionHash: string;
-  constructor(context, storedParams: StoredLayerParameters, layerName: string) {
+  constructor(context, layerName: string) {
     this.context = context;
     this.layerName = layerName;
-    this.storedParams = storedParams;
-    this.runtimes = storedParams.runtimes;
-    Object.entries(storedParams.layerVersionMap).forEach(([versionNumber, versionData]) => {
+    this.storedParams = getStoredLayerState(context, layerName);
+    this.runtimes = isMultiEnvLayer(context, layerName)
+      ? getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), layerName)
+      : this.storedParams.runtimes;
+    Object.entries(this.storedParams.layerVersionMap).forEach(([versionNumber, versionData]) => {
       this.versionMap.set(Number(versionNumber), new LayerVersionState(versionData));
     });
   }
@@ -242,13 +246,49 @@ class LayerVersionState implements LayerVersionMetadata {
 
 export const getLayerMetadataFactory = (context: any): LayerMetadataFactory => {
   return layerName => {
+    return new LayerState(context, layerName);
+  };
+};
+
+export function isMultiEnvLayer(context: any, layerName: string) {
+  const layerParametersPath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, layerName, layerParametersFileName);
+  return !fs.existsSync(layerParametersPath);
+}
+
+const getStoredLayerState = (context: any, layerName: string) => {
+  if (isMultiEnvLayer(context, layerName)) {
+    const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+    const { envName } = context.amplify.getEnvInfo();
+    if (!fs.existsSync(teamProviderInfoPath)) {
+      throw new Error('team-provider-info.json is missing');
+    }
+    const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath) as StoredLayerParameters;
+    let layerState: StoredLayerParameters = _.get(
+      teamProviderInfo,
+      [envName, 'nonCFNdata', categoryName, layerName],
+      undefined,
+    ) as StoredLayerParameters;
+
+    // In case of `amplify pull`, team-provider-info won't be populated at first
+    if (layerState === undefined) {
+      layerState = _.get(context.amplify.getProjectMeta(), [categoryName, layerName], undefined);
+
+      if (layerState === undefined) {
+        throw new Error('Local layer state missing from team-provider-info.json and amplify-meta.json');
+      }
+
+      _.set(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName], layerState);
+      JSONUtilities.writeJson(teamProviderInfoPath, teamProviderInfo);
+    }
+
+    return layerState;
+  } else {
     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
     const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
     if (!fs.existsSync(resourceDirPath)) {
       return undefined;
     }
     const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-    const obj = context.amplify.readJsonFile(parametersFilePath) as StoredLayerParameters;
-    return new LayerState(context, obj, layerName);
-  };
+    return JSONUtilities.readJson(parametersFilePath) as StoredLayerParameters;
+  }
 };

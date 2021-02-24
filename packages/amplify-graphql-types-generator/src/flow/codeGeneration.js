@@ -308,7 +308,7 @@ export function propertyFromField(context, field) {
   }
 }
 
-export function propertyDeclarations(generator, properties, isInput) {
+export function propertyDeclarations(generator, properties, isOptional) {
   if (!properties) return;
   properties.forEach(property => {
     if (isAbstractType(getNamedType(property.type || property.fieldType))) {
@@ -355,23 +355,12 @@ export function propertyDeclarations(generator, properties, isInput) {
         (property.inlineFragments && property.inlineFragments.length > 0) ||
         (property.fragmentSpreads && property.fragmentSpreads.length > 0)
       ) {
-        const fields = property.fields.map(field => {
-          if (field.fieldName === '__typename') {
-            return {
-              ...field,
-              typeName: `"${property.typeName}"`,
-              type: { name: `"${property.typeName}"` },
-            };
-          } else {
-            return field;
-          }
-        });
         propertyDeclaration(generator, property, () => {
-          const properties = propertiesFromFields(generator.context, fields);
-          propertyDeclarations(generator, properties, isInput);
+          const properties = propertiesFromFields(generator.context, property.fields);
+          propertyDeclarations(generator, properties, isOptional);
         });
       } else {
-        propertyDeclaration(generator, { ...property, isInput });
+        propertyDeclaration(generator, { ...property, isOptional });
       }
     }
   });

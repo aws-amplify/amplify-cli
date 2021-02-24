@@ -1,7 +1,7 @@
 import { amplifyPublishWithoutUpdate, createReactTestProject, resetBuildCommand } from 'amplify-e2e-core';
 
 import { initJSProjectWithProfile, deleteProject } from 'amplify-e2e-core';
-import { addDEVHosting, removeHosting, amplifyPushWithoutCodegen } from 'amplify-e2e-core';
+import { addDEVHosting, removeHosting, amplifyPushWithoutCodegen, extractHostingBucketInfo, deleteS3Bucket } from 'amplify-e2e-core';
 import { deleteProjectDir, getProjectMeta } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -17,15 +17,17 @@ describe('amplify add hosting', () => {
   });
 
   afterAll(async () => {
+    const hostingBucket = extractHostingBucketInfo(projRoot);
     await removeHosting(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
     await deleteProject(projRoot);
+    if (hostingBucket) {
+      try {
+        await deleteS3Bucket(hostingBucket);
+      } catch {}
+    }
     deleteProjectDir(projRoot);
   });
-
-  beforeEach(async () => {});
-
-  afterEach(async () => {});
 
   it('push creates correct amplify artifacts', async () => {
     expect(fs.existsSync(path.join(projRoot, 'amplify', 'backend', 'hosting', 'S3AndCloudFront'))).toBe(true);
@@ -34,7 +36,7 @@ describe('amplify add hosting', () => {
     expect(projectMeta.hosting.S3AndCloudFront).toBeDefined();
   });
 
-  it('publish successfuly', async () => {
+  it('publish successfully', async () => {
     let error;
     try {
       await amplifyPublishWithoutUpdate(projRoot);

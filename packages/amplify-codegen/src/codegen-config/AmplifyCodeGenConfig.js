@@ -58,7 +58,7 @@ class AmplifyCodeGenConfig {
       newProject.extensions = extensions;
     }
 
-    const projects = this.gqlConfig.projects || {};
+    const projects = this.gqlConfig.config.projects || {};
     projects[project.projectName] = this.constructor.normalizePath(newProject);
     this.gqlConfig.config.projects = projects;
   }

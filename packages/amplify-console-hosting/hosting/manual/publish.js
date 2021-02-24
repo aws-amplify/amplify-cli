@@ -9,16 +9,14 @@ const ora = require('ora');
 
 const ZIPPING_MESSAGE = 'Zipping artifacts.. ';
 const ZIPPING_SUCCESS_MESSAGE = 'Zipping artifacts completed.';
-const ZIPPING_FAILURE_MESSAGE = 'Zipping artifacts failed.';
-
+const ZIPPING_FAILURE_MESSAGE =
+  'Zipping artifacts failed. This is often due to an invalid distribution directory path. Run "amplify configure project" to check if your Distribution Directory is pointing to a valid path.';
 
 async function publish(context, doSkipBuild, doSkipPush) {
   let artifactsPath = null;
   try {
     if (!doSkipPush) {
-      await context
-        .amplify
-        .pushResources(context, constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME);
+      await context.amplify.pushResources(context, constants.CATEGORY, constants.CONSOLE_RESOURCE_NAME);
     }
     if (!doSkipBuild) {
       await buildArtifacts(context);
@@ -28,13 +26,13 @@ async function publish(context, doSkipBuild, doSkipPush) {
     const env = utils.getCurrEnv(context);
     const spinner = ora();
     spinner.start(ZIPPING_MESSAGE);
-    artifactsPath = await zipArtifacts(context).catch((err) => {
+    artifactsPath = await zipArtifacts(context).catch(err => {
       spinner.fail(ZIPPING_FAILURE_MESSAGE);
       throw err;
     });
     spinner.succeed(ZIPPING_SUCCESS_MESSAGE);
     await amplifyUtils.publishFileToAmplify(appId, env, artifactsPath, amplifyClient);
-    console.log(amplifyUtils.getDefaultDomainForBranch(appId, env));
+    context.print.info(amplifyUtils.getDefaultDomainForBranch(appId, env));
   } finally {
     if (artifactsPath) {
       fs.removeSync(artifactsPath);

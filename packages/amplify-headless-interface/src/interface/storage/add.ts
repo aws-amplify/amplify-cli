@@ -1,5 +1,6 @@
 /**
- * Defines acceptable payloads to amplify add storage --stdin
+ * Headless mode for add storage is not yet implemented.
+ * This interface is subject to change and should not be used.
  */
 export interface AddStorageRequest {
   version: 1;

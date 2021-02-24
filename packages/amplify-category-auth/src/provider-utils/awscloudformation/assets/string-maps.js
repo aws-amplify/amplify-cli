@@ -11,7 +11,7 @@ const learnMoreOption = [
   },
 ];
 
-const defaultPrompMap = [
+const defaultPromptMap = [
   {
     name: 'Default configuration',
     value: 'default',
@@ -186,7 +186,7 @@ const attributeProviderMap = {
   },
   given_name: {
     facebook: {
-      attr: 'given_name',
+      attr: 'first_name',
       scope: 'public_profile',
     },
     google: {
@@ -572,7 +572,7 @@ const getAllMaps = edit => {
     mfaOptions,
     mfaMethods,
     emailRegistration,
-    defaultPrompMap,
+    defaultPromptMap,
     booleanOptions,
     signInOptions,
     socialLoginOptions,
@@ -596,7 +596,7 @@ module.exports = {
   mfaOptions,
   mfaMethods,
   emailRegistration,
-  defaultPrompMap,
+  defaultPromptMap,
   booleanOptions,
   signInOptions,
   socialLoginOptions,

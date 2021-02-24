@@ -4,32 +4,27 @@ module.exports = {
     'airbnb',
     'eslint:recommended',
     'plugin:prettier/recommended',
-    'plugin:react/recommended',  // Uses the recommended rules from @eslint-plugin-react
-    'plugin:@typescript-eslint/eslint-recommended',  // Uses the recommended rules from the @typescript-eslint/eslint-plugin
-    'plugin:@typescript-eslint/recommended',  // Uses the recommended rules from the @typescript-eslint/eslint-plugin
-    'prettier/@typescript-eslint',  // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
+    'plugin:react/recommended', // Uses the recommended rules from @eslint-plugin-react
+    'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
+    'prettier/@typescript-eslint', // Uses eslint-config-prettier to disable ESLint rules from @typescript-eslint/eslint-plugin that would conflict with prettier
   ],
-  parser: '@typescript-eslint/parser',  // Specifies the ESLint parser
+  parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   env: {
     es6: true,
     node: true,
     jest: true,
   },
   parserOptions: {
-    ecmaVersion: 2020,  // Allows for the parsing of modern ECMAScript features
-    sourceType: 'module',  // Allows for the use of imports
+    ecmaVersion: 2020, // Allows for the parsing of modern ECMAScript features
+    sourceType: 'module', // Allows for the use of imports
     ecmaFeatures: {
-      jsx: true,  // Allows for the parsing of JSX
+      jsx: true, // Allows for the parsing of JSX
       arrowFunctions: true,
       modules: true,
       module: true,
     },
   },
-  plugins: [
-    '@typescript-eslint',
-    'prettier',
-    'spellcheck',
-  ],
+  plugins: ['@typescript-eslint', 'prettier', 'spellcheck'],
   settings: {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
@@ -38,34 +33,27 @@ module.exports = {
       typescript: {},
     },
     react: {
-      version: 'detect',  // Tells eslint-plugin-react to automatically detect the version of React to use
+      version: 'detect', // Tells eslint-plugin-react to automatically detect the version of React to use
     },
   },
   rules: {
-    "spellcheck/spell-checker": [1,
+    'spellcheck/spell-checker': [
+      1,
       {
-        "comments": false,
-        "strings": true,
-        "identifiers": false,
-        "lang": "en_US",
-        "skipWords": [
-            "dict",
-            "aff",
-            "hunspellchecker",
-            "hunspell",
-            "utils",
-            "aws",
-            "sdk",
+        comments: false,
+        strings: true,
+        identifiers: false,
+        lang: 'en_US',
+        skipWords: ['dict', 'aff', 'hunspellchecker', 'hunspell', 'utils', 'aws', 'sdk'],
+        skipIfMatch: [
+          'http://[^s]*',
+          '^[-\\w]+/[-\\w\\.]+$', //For MIME Types
         ],
-        "skipIfMatch": [
-            "http://[^s]*",
-            "^[-\\w]+\/[-\\w\\.]+$" //For MIME Types
+        skipWordIfMatch: [
+          '^foobar.*$', // words that begin with foobar will not be checked
         ],
-        "skipWordIfMatch": [
-            "^foobar.*$" // words that begin with foobar will not be checked
-        ],
-        "minLength": 3
-     }
+        minLength: 3,
+      },
     ],
     // Existing rules
     'comma-dangle': 'off', // https://eslint.org/docs/rules/comma-dangle
@@ -77,13 +65,12 @@ module.exports = {
     // New rules
     'class-methods-use-this': 'off',
     'import/extensions': 'off',
-    'import/no-default-export': 'error',
     'import/prefer-default-export': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-var-requires': 'off',
 
     // TODO Rules to enable linter pass for upgrade, fix them first
-    'eqeqeq': 'off',
+    eqeqeq: 'off',
     'func-names': 'off',
     'lines-between-class-members': 'off',
     'max-classes-per-file': 'off',
@@ -93,7 +80,6 @@ module.exports = {
     'no-shadow': 'off',
     'no-unneeded-ternary': 'off',
     'no-unreachable': 'off',
-    'no-unused-expressions': 'off',
     'no-useless-catch': 'off',
     'no-useless-return': 'off',
     'object-shorthand': 'off',
@@ -112,7 +98,6 @@ module.exports = {
     'prettier/prettier': 'off',
 
     // TODO needs to be enabled when fixing valid warnings of this error
-    'no-constant-condition': ['error', { 'checkLoops': false }],
     //'no-param-reassign': ['error', { 'props': false }],
     'no-param-reassign': 'off', // https://eslint.org/docs/rules/no-param-reassign
     //'no-plusplus': ['error', { 'allowForLoopAfterthoughts': true }], // https://eslint.org/docs/rules/no-plusplus
@@ -126,7 +111,14 @@ module.exports = {
     'no-use-before-define': 'off', // https://eslint.org/docs/rules/no-use-before-define
     'prefer-destructuring': 'off', // https://eslint.org/docs/rules/prefer-destructuring
     'prefer-object-spread': 'off', // https://eslint.org/docs/rules/prefer-object-spread
-    '@typescript-eslint/camelcase': 'off',
+    '@typescript-eslint/naming-convention': ['error', {
+      selector: 'default',
+      format: null
+    }, {
+        selector: ['class', 'interface'],
+        format: ['PascalCase']
+      }
+    ],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
@@ -138,10 +130,9 @@ module.exports = {
     'no-return-await': 'off', // https://eslint.org/docs/rules/no-return-await
 
     // TSLint existing rules
-    '@typescript-eslint/class-name-casing': 'error',
-    'curly': 'off', // Enable later
+    curly: 'off', // Enable later
     'guard-for-in': 'error',
-    'indent': 'off', // Enable later
+    indent: 'off', // Enable later
     //'indent': ['error', 2],
     'no-labels': 'error',
     'no-caller': 'error',
@@ -152,8 +143,7 @@ module.exports = {
     'no-eval': 'error',
     'dot-notation': 'off', // Enable later
     'no-trailing-spaces': 'error',
-    'no-unused-expressions': 'error',
-    'semi': 'off', // Enable later,
+    semi: 'off', // Enable later,
     '@typescript-eslint/typedef': 'off', // Enable later
     //'@typescript-eslint/typedef': ['error', { propertyDeclaration:true, variableDeclaration: true, memberVariableDeclaration: true }],
 
@@ -167,17 +157,16 @@ module.exports = {
     'no-template-curly-in-string': 'off', // Review one-by-one
     'import/first': 'off',
     'no-case-declarations': 'off',
-    'yoda': 'off',
+    yoda: 'off',
     'no-undef-init': 'off',
     'vars-on-top': 'off',
     'no-var': 'off',
     'lines-around-directive': 'off',
-    'strict': 'off',
+    strict: 'off',
     'import/export': 'off',
     'default-case': 'off',
     'no-return-assign': 'off',
     'import/no-duplicates': 'off',
-    '@typescript-eslint/interface-name-prefix': 'off',
     'no-throw-literal': 'off',
     'react/static-property-placement': 'off',
     'import/no-extraneous-dependencies': 'off',
@@ -214,8 +203,70 @@ module.exports = {
     'no-constant-condition': 'off',
     'operator-assignment': 'off',
     'import/no-named-default': 'off',
+    'prefer-arrow-callback': 'off',
+    'arrow-body-style': 'off',
+    'camelcase': 'off'
   },
-  'ignorePatterns': [
+  overrides: [
+    {
+      files: ['packages/amplify-graphql-transformer-*/**/*.ts', 'packages/amplify-graphql-model-transformer/**/*.ts'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'error',
+        '@typescript-eslint/no-inferrable-types': 'error',
+        '@typescript-eslint/ban-types': 'error',
+        '@typescript-eslint/prefer-namespace-keyword': 'error',
+        '@typescript-eslint/no-namespace': 'error',
+        'no-template-curly-in-string': 'error', // Review one-by-one
+        'import/first': 'error',
+        yoda: 'error',
+        'no-undef-init': 'error',
+        'vars-on-top': 'error',
+        'no-var': 'error',
+        'lines-around-directive': 'error',
+        strict: 'error',
+        'import/export': 'error',
+        'default-case': 'error',
+        'no-return-assign': 'error',
+        'import/no-duplicates': 'error',
+        'no-throw-literal': 'error',
+        'react/static-property-placement': 'error',
+        'import/no-extraneous-dependencies': 'error',
+        'spaced-comment': 'error',
+        '@typescript-eslint/no-array-constructor': 'error',
+        'prefer-rest-params': 'error',
+        'no-useless-escape': 'error',
+        'eol-last': 'error',
+        'no-useless-concat': 'error',
+        'no-multi-str': 'error',
+        'array-callback-return': 'error',
+        '@typescript-eslint/consistent-type-assertions': 'error',
+        'no-extra-boolean-cast': 'error',
+        'no-async-promise-executor': 'error',
+        'no-nested-ternary': 'error',
+        'no-unused-expressions': 'error',
+        'no-sequences': 'error',
+        'react/jsx-filename-extension': 'error',
+        'react/state-in-constructor': 'error',
+        'react/no-access-state-in-setstate': 'error',
+        'react/jsx-closing-tag-location': 'error',
+        'react/sort-comp': 'error',
+        'jsx-a11y/label-has-associated-control': 'error',
+        'no-empty': 'error',
+        'import/no-unresolved': 'error',
+        'no-useless-constructor': 'error',
+        'import/no-useless-path-segments': 'error',
+        'no-cond-assign': 'error',
+        'new-cap': 'error',
+        'no-new': 'error',
+        'no-restricted-globals': 'error',
+        'no-constant-condition': 'error',
+        'operator-assignment': 'error',
+        'import/no-named-default': 'error',
+      },
+    },
+  ],
+  ignorePatterns: [
+    'scripts/',
     'node_modules',
     'dist',
     'build',
@@ -241,28 +292,37 @@ module.exports = {
     '/packages/graphql-predictions-transformer/lambdaFunction',
 
     // Ignore output directories of typescript project until move to tsc and fixing src locations
+    '/packages/amplify-*-function-*/lib',
     '/packages/amplify-appsync-simulator/lib',
     '/packages/amplify-category-api/lib',
     '/packages/amplify-category-auth/lib',
     '/packages/amplify-category-function/lib',
-    '/packages/amplify-*-function-*/lib',
-    '/packages/amplify-cli/lib',
+    '/packages/amplify-category-storage/lib',
     '/packages/amplify-cli-core/lib',
+    '/packages/amplify-cli/lib',
+    '/packages/amplify-cli-logger/lib',
     '/packages/amplify-codegen-appsync-model-plugin/lib',
     '/packages/amplify-e2e-core/lib',
-    '/packages/amplify-migration-tests/lib',
+    '/packages/amplify-function-plugin-interface/lib',
     '/packages/amplify-graphql-docs-generator/lib',
     '/packages/amplify-graphql-types-generator/lib',
+    '/packages/amplify-headless-interface/lib',
+    '/packages/amplify-migration-tests/lib',
+    '/packages/amplify-provider-awscloudformation/lib',
     '/packages/amplify-storage-simulator/lib',
     '/packages/amplify-ui-tests/lib',
+    '/packages/amplify-util-headless-input/lib',
     '/packages/amplify-util-mock/lib',
-    '/packages/graphql-mapping-template/lib',
     '/packages/graphql-*-transformer/lib',
+    '/packages/graphql-mapping-template/lib',
     '/packages/graphql-transformer-*/lib',
     '/packages/amplify-headless-interface/lib',
     '/packages/amplify-util-headless-input/lib',
+    '/packages/amplify-graphql-*transformer*/lib',
+    '/packages/amplify-provider-awscloudformation/lib',
+    '/packages/amplify-console-integration-tests/lib',
 
     // Ignore CHANGELOG.md files
-    '/packages/*/CHANGELOG.md'
-  ]
+    '/packages/*/CHANGELOG.md',
+  ],
 };

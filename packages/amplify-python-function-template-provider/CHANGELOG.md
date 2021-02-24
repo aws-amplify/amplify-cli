@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.3...amplify-python-function-template-provider@1.3.4) (2021-02-17)
+
+**Note:** Version bump only for package amplify-python-function-template-provider
+
+
+
+
+
+## [1.3.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.2...amplify-python-function-template-provider@1.3.3) (2021-02-10)
+
+
+### Bug Fixes
+
+* add src files to python venv when mocking ([#6454](https://github.com/aws-amplify/amplify-cli/issues/6454)) ([4653062](https://github.com/aws-amplify/amplify-cli/commit/465306278fd1d7452beab96a4b97ca53f3885664))
+* enables cors support for lambda proxy integrations for python ([#6477](https://github.com/aws-amplify/amplify-cli/issues/6477)) ([44d1ce3](https://github.com/aws-amplify/amplify-cli/commit/44d1ce34786b6d1161d48332d7d026414a126c89))
+
+
+
+
+
+## [1.3.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.1...amplify-python-function-template-provider@1.3.2) (2020-12-11)
+
+**Note:** Version bump only for package amplify-python-function-template-provider
+
+
+
+
+
+## [1.3.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.2.1...amplify-python-function-template-provider@1.3.1) (2020-11-22)
+
+**Note:** Version bump only for package amplify-python-function-template-provider
+
+
+
+
+
+# 1.3.0 (2020-11-22)
+
+
+### Bug Fixes
+
+* dotnet fucntion provider fixes, package.json cleanup, add pkg refs ([#3826](https://github.com/aws-amplify/amplify-cli/issues/3826)) ([75361fb](https://github.com/aws-amplify/amplify-cli/commit/75361fb266f15ba954a8b8e935874c74f66eb11a))
+* move py test event to src/event.json ([#3851](https://github.com/aws-amplify/amplify-cli/issues/3851)) ([1c4a0cb](https://github.com/aws-amplify/amplify-cli/commit/1c4a0cb5022869fc6aa3c358e9a4c8935fec2b54))
+
+
+### Features
+
+* Lambda layers ([#4697](https://github.com/aws-amplify/amplify-cli/issues/4697)) ([4e97400](https://github.com/aws-amplify/amplify-cli/commit/4e974007d95c894ab4108a2dff8d5996e7e3ce25))
+* **amplify-python-runtime-provider:** implement python runtime provider ([#3787](https://github.com/aws-amplify/amplify-cli/issues/3787)) ([8996cb1](https://github.com/aws-amplify/amplify-cli/commit/8996cb11015873f1236340680694188fd17c0f2e))
+
+
+
+
+
 ## [1.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.2.0...amplify-python-function-template-provider@1.2.1) (2020-08-31)
 
 **Note:** Version bump only for package amplify-python-function-template-provider

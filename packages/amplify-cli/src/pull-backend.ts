@@ -1,8 +1,8 @@
-import * as fs from 'fs-extra';
 import { initializeEnv } from './initialize-env';
-import { postPullCodeGenCheck } from './amplify-service-helper';
+import { postPullCodegen } from './amplify-service-helper';
+import { exitOnNextTick, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 
-export async function pullBackend(context, inputParams) {
+export async function pullBackend(context: $TSContext, inputParams: $TSAny) {
   context.exeInfo = context.amplify.getProjectDetails();
   context.exeInfo.inputParams = inputParams;
   context.print.info('');
@@ -24,23 +24,23 @@ export async function pullBackend(context, inputParams) {
         context.print.info(
           `To merge local and upstream changes, commit all backend code changes to Git, perform a merge, resolve conflicts, and then run 'amplify push'.`,
         );
-        process.exit(0);
+        context.usageData.emitSuccess();
+        exitOnNextTick(0);
       }
     }
   }
 
   await initializeEnv(context);
   ensureBackendConfigFile(context);
-  await postPullCodeGenCheck(context);
+  await postPullCodegen(context);
   context.print.info('Post-pull status:');
   await context.amplify.showResourceTable();
   context.print.info('');
 }
 
-function ensureBackendConfigFile(context) {
+function ensureBackendConfigFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  const backendConfigFilePath = context.amplify.pathManager.getBackendConfigFilePath(projectPath);
-  if (!fs.existsSync(backendConfigFilePath)) {
-    fs.writeFileSync(backendConfigFilePath, '{}', 'utf8');
+  if (!stateManager.backendConfigFileExists(projectPath)) {
+    stateManager.setBackendConfig(projectPath, {});
   }
 }

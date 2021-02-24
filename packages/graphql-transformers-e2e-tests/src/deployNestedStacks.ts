@@ -3,6 +3,9 @@ import { CloudFormationClient } from './CloudFormationClient';
 import * as fs from 'fs';
 import * as path from 'path';
 import { DeploymentResources } from 'graphql-transformer-core/lib/DeploymentResources';
+import { deleteUserPool } from './cognitoUtils';
+import CognitoIdentityServiceProvider from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import emptyBucket from './emptyBucket';
 
 function deleteDirectory(directory: string) {
   const files = fs.readdirSync(directory);
@@ -44,7 +47,6 @@ async function uploadDirectory(client: S3Client, directory: string, bucket: stri
       const fileKey = s3Location;
       await client.wait(0.25, () => Promise.resolve());
       const fileContents = await fs.readFileSync(contentPath);
-      console.log(`Uploading file to ${bucket}/${fileKey}`);
       await client.client
         .putObject({
           Bucket: bucket,
@@ -131,52 +133,46 @@ export async function deploy(
   buildPath: string,
   bucketName: string,
   rootKey: string,
-  buildTimeStamp: string
+  buildTimeStamp: string,
 ) {
   try {
     if (!fs.existsSync(buildPath)) {
       fs.mkdirSync(buildPath);
     }
-    console.log(`Cleaning up previous deployments...`);
+
     deleteDirectory(buildPath);
-    console.log(`Done cleaning up previous deployments.`);
   } catch (e) {
     console.error(`Error cleaning up build directory: ${e}`);
   }
   try {
-    console.log('Adding APIKey to deployment');
     addAPIKeys(deploymentResources);
-    console.log('Finished adding APIKey to deployment');
 
-    console.log('Writing deployment to disk...');
     writeDeploymentToDisk(deploymentResources, buildPath);
-    console.log('Finished writing deployment to disk.');
   } catch (e) {
     console.error(`Error writing files to disk: ${e}`);
     throw e;
   }
+
   const s3RootKey = `${rootKey}/${buildTimeStamp}`;
   try {
-    console.log('Uploading deployment to S3...');
     await uploadDirectory(s3Client, buildPath, bucketName, s3RootKey);
-    console.log('Finished uploading deployment to S3.');
   } catch (e) {
-    console.log(`Error uploading deployment to s3: ${e}`);
+    console.error(`Error uploading deployment to s3: ${e}`);
     throw e;
   }
+
   try {
-    console.log(`Deploying root stack...`);
     await cf.createStack(deploymentResources.rootStack, stackName, {
       ...params,
       S3DeploymentBucket: bucketName,
       S3DeploymentRootKey: s3RootKey,
     });
     const finishedStack = await cf.waitForStack(stackName);
-    console.log(`Done deploying root stack...`);
+
     await cf.wait(10, () => Promise.resolve());
     return finishedStack;
   } catch (e) {
-    console.log(`Error deploying cloudformation stack: ${e}`);
+    console.error(`Error deploying cloudformation stack: ${e}`);
     throw e;
   }
 }
@@ -201,3 +197,26 @@ function addAPIKeys(stack: DeploymentResources) {
     };
   }
 }
+
+export const cleanupStackAfterTest = async (
+  bucketName: string,
+  stackName: string,
+  cf: CloudFormationClient,
+  cognitoParams?: { cognitoClient: CognitoIdentityServiceProvider; userPoolId: string },
+) => {
+  try {
+    await cf.deleteStack(stackName);
+
+    if (cognitoParams) {
+      await deleteUserPool(cognitoParams.cognitoClient, cognitoParams.userPoolId);
+    }
+
+    await cf.waitForStack(stackName);
+  } catch (e) {
+    if (!(e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`)) {
+      throw e;
+    }
+  }
+
+  await emptyBucket(bucketName);
+};

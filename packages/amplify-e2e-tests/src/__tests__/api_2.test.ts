@@ -8,8 +8,6 @@ import {
   addApiWithSchema,
   addApiWithSchemaAndConflictDetection,
   addRestApi,
-  updateApiSchema,
-  updateApiWithMultiAuth,
   updateAPIWithResolutionStrategy,
   apiUpdateToggleDataStore,
   addFunction,
@@ -21,7 +19,7 @@ import {
   getProjectMeta,
   getTransformConfig,
 } from 'amplify-e2e-core';
-import { TRANSFORM_CURRENT_VERSION, TRANSFORM_BASE_VERSION, writeTransformerConfiguration } from 'graphql-transformer-core';
+import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import _ from 'lodash';
 
 // to deal with bug in cognito-identity-js
@@ -54,7 +52,7 @@ describe('amplify add api (GraphQL)', () => {
     const { output } = meta.api[name];
     const url = output.GraphQLAPIEndpointOutput as string;
     const apiKey = output.GraphQLAPIKeyOutput as string;
-    
+
     const appSyncClient = new AWSAppSyncClient({
       url,
       region,
@@ -64,12 +62,9 @@ describe('amplify add api (GraphQL)', () => {
         apiKey,
       },
     });
-    
+
     const createMutation = /* GraphQL */ `
-      mutation CreateNote(
-        $input: CreateNoteInput!
-        $condition: ModelNoteConditionInput
-      ) {
+      mutation CreateNote($input: CreateNoteInput!, $condition: ModelNoteConditionInput) {
         createNote(input: $input, condition: $condition) {
           noteId
           note
@@ -82,22 +77,19 @@ describe('amplify add api (GraphQL)', () => {
       }
     `;
     const createInput = {
-      input:{
+      input: {
         noteId: '1',
-        note: 'initial note'
-      }
+        note: 'initial note',
+      },
     };
     const createResult = await appSyncClient.mutate({
       mutation: gql(createMutation),
       fetchPolicy: 'no-cache',
       variables: createInput,
-    })
+    });
 
     const updateMutation = /* GraphQL */ `
-      mutation UpdateNote(
-        $input: UpdateNoteInput!
-        $condition: ModelNoteConditionInput
-      ) {
+      mutation UpdateNote($input: UpdateNoteInput!, $condition: ModelNoteConditionInput) {
         updateNote(input: $input, condition: $condition) {
           noteId
           note
@@ -113,7 +105,7 @@ describe('amplify add api (GraphQL)', () => {
       input: {
         noteId: createResult.data.createNote.noteId,
         note: 'note updated',
-        _version: createResult.data.createNote._version
+        _version: createResult.data.createNote._version,
       },
     };
 
@@ -121,7 +113,7 @@ describe('amplify add api (GraphQL)', () => {
       mutation: gql(updateMutation),
       fetchPolicy: 'no-cache',
       variables: updateInput,
-    })
+    });
 
     expect(updateResult.data).toBeDefined();
     expect(updateResult.data.updateNote).toBeDefined();

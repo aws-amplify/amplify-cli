@@ -1,14 +1,23 @@
 import path from 'path';
 import { category } from './constants';
 export { category } from './constants';
-import { FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import { BuildType, FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import sequential from 'promise-sequential';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { supportedServices } from './provider-utils/supported-services';
 import _ from 'lodash';
-export { packageLayer, hashLayerResource } from './provider-utils/awscloudformation/utils/packageLayer';
+export { buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
+export { buildResource } from './provider-utils/awscloudformation/utils/build';
+export { packageResource } from './provider-utils/awscloudformation/utils/package';
+export { hashLayerResource } from './provider-utils/awscloudformation/utils/packageLayer';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
+import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
+import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
+export { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
+
+export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 
 export async function add(context, providerName, service, parameters) {
   const options = {
@@ -70,8 +79,9 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
 
   Object.keys(resourceOpsMapping).forEach(resourceName => {
     try {
-      const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
-      if (providerController) {
+      const providerName = amplifyMeta[category][resourceName].providerPlugin;
+      if (providerName) {
+        const providerController = require(`./provider-utils/${providerName}/index`);
         const { policy, attributes } = providerController.getPermissionPolicies(
           context,
           amplifyMeta[category][resourceName].service,
@@ -93,7 +103,8 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
 
 export async function initEnv(context) {
   const { amplify } = context;
-  const { resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus(category);
+  const { envName } = amplify.getEnvInfo();
+  const { allResources, resourcesToBeCreated, resourcesToBeDeleted, resourcesToBeUpdated } = await amplify.getResourceStatus(category);
 
   // getResourceStatus will add dependencies of other types even when filtering by category, so we need to filter them out here
   const resourceCategoryFilter = resource => resource.category === category;
@@ -108,33 +119,70 @@ export async function initEnv(context) {
     const { resourceName, service } = functionResource;
     return async () => {
       const config = await updateConfigOnEnvInit(context, resourceName, service);
-      context.amplify.saveEnvResourceParameters(context, category, resourceName, config);
+      amplify.saveEnvResourceParameters(context, category, resourceName, config);
     };
   });
+
+  // Need to fetch metadata from #current-cloud-backend, since amplifyMeta
+  // gets regenerated in intialize-env.ts in the amplify-cli package
+  const teamProviderInfo = stateManager.getTeamProviderInfo();
+  const currentAmplifyMeta = stateManager.getCurrentMeta();
+  const amplifyMeta = stateManager.getMeta();
+  const changedResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
+  allResources
+    .filter(resourceCategoryFilter)
+    .filter(r => !changedResources.includes(r))
+    .forEach(r => {
+      const { resourceName, service }: { resourceName: string; service: string } = r;
+
+      const s3Bucket = _.get(currentAmplifyMeta, [category, resourceName, 's3Bucket'], undefined);
+      if (s3Bucket) {
+        const tpiResourceParams = _.get(teamProviderInfo, [envName, 'categories', category, resourceName], {});
+        _.assign(tpiResourceParams, s3Bucket);
+        _.set(teamProviderInfo, [envName, 'categories', category, resourceName], tpiResourceParams);
+        _.set(amplifyMeta, [category, resourceName, 's3Bucket'], s3Bucket);
+      }
+
+      if (service === ServiceName.LambdaLayer) {
+        const lvmPath = [category, resourceName, 'layerVersionMap'];
+        const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
+        if (isMultiEnvLayer(context, resourceName)) {
+          _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
+        }
+        _.set(amplifyMeta, lvmPath, currentVersionMap);
+      }
+    });
+
+  stateManager.setMeta(undefined, amplifyMeta);
+  stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
 
   await sequential(functionTasks);
 }
 
-// returns a function that can be used to invoke the lambda locally
-export async function getInvoker(context: any, params: InvokerParameters): Promise<({ event: any }) => Promise<any>> {
-  const resourcePath = path.join(context.amplify.pathManager.getBackendDirPath(), category, params.resourceName);
-  const breadcrumbs: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(context, category, params.resourceName);
-  const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, breadcrumbs.pluginId);
+// Returns a wrapper around FunctionRuntimeLifecycleManager.invoke() that can be used to invoke the function with only an event
+export async function getInvoker(
+  context: $TSContext,
+  { handler, resourceName, envVars }: InvokerParameters,
+): Promise<({ event: unknown }) => Promise<$TSAny>> {
+  const resourcePath = path.join(pathManager.getBackendDirPath(), category, resourceName);
+  const { pluginId, functionRuntime }: FunctionBreadcrumbs = context.amplify.readBreadcrumbs(category, resourceName);
+  const runtimeManager: FunctionRuntimeLifecycleManager = await context.amplify.loadRuntimePlugin(context, pluginId);
 
-  const lastBuildTimestampStr = (await context.amplify.getResourceStatus(category, params.resourceName)).allResources.find(
-    resource => resource.resourceName === params.resourceName,
-  ).lastBuildTimeStamp as string;
-
-  return async request =>
-    await runtimeManager.invoke({
-      handler: params.handler,
-      event: JSON.stringify(request.event),
-      env: context.amplify.getEnvInfo().envName,
-      runtime: breadcrumbs.functionRuntime,
+  return ({ event }) =>
+    runtimeManager.invoke({
+      handler: handler,
+      event: JSON.stringify(event),
+      runtime: functionRuntime,
       srcRoot: resourcePath,
-      envVars: params.envVars,
-      lastBuildTimestamp: lastBuildTimestampStr ? new Date(lastBuildTimestampStr) : undefined,
+      envVars: envVars,
     });
+}
+
+export function getBuilder(context: $TSContext, resourceName: string, buildType: BuildType): () => Promise<void> {
+  const lastBuildTimeStamp = _.get(stateManager.getMeta(), [category, resourceName, buildTypeKeyMap[buildType]]);
+  return async () => {
+    await buildFunction(context, { resourceName, buildType, lastBuildTimeStamp });
+  };
 }
 
 export function isMockable(context: any, resourceName: string): IsMockableResponse {
@@ -146,10 +194,13 @@ export function isMockable(context: any, resourceName: string): IsMockableRespon
     };
   }
   const { service, dependsOn } = resourceValue;
-  const dependsOnLayers = dependsOn
-    .filter(dependency => dependency.category === 'function')
-    .map(val => _.get(context.amplify.getProjectMeta(), [val.category, val.resourceName]))
-    .filter(val => val.service === ServiceName.LambdaLayer);
+
+  const dependsOnLayers = Array.isArray(dependsOn)
+    ? dependsOn
+        .filter(dependency => dependency.category === 'function')
+        .map(val => _.get(context.amplify.getProjectMeta(), [val.category, val.resourceName]))
+        .filter(val => val.service === ServiceName.LambdaLayer)
+    : [];
 
   const hasLayer = service === ServiceName.LambdaFunction && Array.isArray(dependsOnLayers) && dependsOnLayers.length !== 0;
   if (hasLayer) {

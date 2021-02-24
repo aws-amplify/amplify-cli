@@ -18,16 +18,17 @@ export const checkIfAuthExists = context => {
   const { amplifyMeta } = amplify.getProjectDetails();
   let authResourceName;
   const authServiceName = 'Cognito';
-  const authCategory = 'auth';
+  const authCategoryName = 'auth';
 
-  if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
-    const categoryResources = amplifyMeta[authCategory];
+  if (amplifyMeta[authCategoryName] && Object.keys(amplifyMeta[authCategoryName]).length > 0) {
+    const categoryResources = amplifyMeta[authCategoryName];
     Object.keys(categoryResources).forEach(resource => {
       if (categoryResources[resource].service === authServiceName) {
         authResourceName = resource;
       }
     });
   }
+
   return authResourceName;
 };
 

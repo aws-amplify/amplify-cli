@@ -20,6 +20,7 @@ def main():
   parser.add_argument('--esarn', metavar='ESARN', help='event source ARN', required=True)
   parser.add_argument('--ak', metavar='AK', help='aws access key')
   parser.add_argument('--sk', metavar='AS', help='aws secret key')
+  parser.add_argument('--st', metavar='AT', help='aws session token')
   args = parser.parse_args()
   scan_limit = 300
 
@@ -27,18 +28,19 @@ def main():
     credentials = boto3.Session().get_credentials()
     args.sk = args.sk or credentials.secret_key
     args.ak = args.ak or credentials.access_key
+    args.st = args.st or credentials.token
 
   client = boto3.client('lambda', region_name=args.rn)
-  import_dynamodb_items_to_es(args.tn, args.sk, args.ak, args.rn, args.esarn, args.lf, scan_limit)
+  import_dynamodb_items_to_es(args.tn, args.sk, args.ak, args.st, args.rn, args.esarn, args.lf, scan_limit)
 
-def import_dynamodb_items_to_es(table_name, aws_secret, aws_access, aws_region, event_source_arn, lambda_f, scan_limit):
+def import_dynamodb_items_to_es(table_name, aws_secret, aws_access, aws_token, aws_region, event_source_arn, lambda_f, scan_limit):
   global reports
   global partSize
   global object_amount
 
   logger = logging.getLogger()
   logger.setLevel(logging.INFO)
-  session = Session(aws_access_key_id=aws_access, aws_secret_access_key=aws_secret, region_name=aws_region)
+  session = Session(aws_access_key_id=aws_access, aws_secret_access_key=aws_secret, aws_session_token=aws_token, region_name=aws_region)
   dynamodb = session.resource('dynamodb')
   logger.info('dynamodb: %s', dynamodb)
   ddb_table_name = table_name

@@ -2,6 +2,7 @@ const constants = require('./constants');
 const path = require('path');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
+const { isPackaged } = require('amplify-cli-core');
 
 const CUSTOM_CONFIG_BLACK_LIST = [
   'aws_user_files_s3_dangerously_connect_to_http_endpoint_for_testing',
@@ -120,7 +121,8 @@ function getAWSExportsObject(resources) {
         Object.assign(configOutput, getAppSyncConfig(serviceResourceMapping[service], projectRegion));
         break;
       case 'API Gateway':
-        Object.assign(configOutput, getAPIGWConfig(serviceResourceMapping[service], projectRegion));
+      case 'ElasticContainer':
+        Object.assign(configOutput, getAPIGWConfig(serviceResourceMapping[service], projectRegion, configOutput));
         break;
       case 'Pinpoint':
         Object.assign(configOutput, getPinpointConfig(serviceResourceMapping[service], projectRegion));
@@ -189,7 +191,17 @@ async function getCurrentAWSExports(context) {
   let awsExports = {};
 
   if (fs.existsSync(targetFilePath)) {
-    awsExports = require(targetFilePath).default;
+    if (isPackaged) {
+      // if packaged, we can't load an ES6 module because pkg doesn't support it yet
+      const es5export = 'module.exports = {default: awsmobile};\n';
+      const es6export = 'export default awsmobile;\n';
+      const fileContents = fs.readFileSync(targetFilePath, 'utf-8');
+      fs.writeFileSync(targetFilePath, fileContents.replace(es6export, es5export));
+      awsExports = require(targetFilePath).default;
+      fs.writeFileSync(targetFilePath, fileContents);
+    } else {
+      awsExports = require(targetFilePath).default;
+    }
   }
 
   return awsExports;
@@ -319,19 +331,21 @@ function getAppSyncConfig(appsyncResources, projectRegion) {
   return config;
 }
 
-function getAPIGWConfig(apigwResources, projectRegion) {
+function getAPIGWConfig(apigwResources, projectRegion, configOutput) {
   // There can be multiple api gateway resource
 
   const apigwConfig = {
-    aws_cloud_logic_custom: [],
+    aws_cloud_logic_custom: configOutput.aws_cloud_logic_custom || [],
   };
 
   for (let i = 0; i < apigwResources.length; i += 1) {
-    apigwConfig.aws_cloud_logic_custom.push({
-      name: apigwResources[i].output.ApiName,
-      endpoint: apigwResources[i].output.RootUrl,
-      region: projectRegion,
-    });
+    if (apigwResources[i].output.ApiName && apigwResources[i].output.RootUrl) { // only REST endpoints contains this information
+      apigwConfig.aws_cloud_logic_custom.push({
+        name: apigwResources[i].output.ApiName,
+        endpoint: apigwResources[i].output.RootUrl,
+        region: projectRegion,
+      });
+    }
   }
   return apigwConfig;
 }

@@ -8,5 +8,5 @@ type Todo
   id2: ID!
   name: String!
   name2: String!
-  version: Int!
+  version: String!
 }

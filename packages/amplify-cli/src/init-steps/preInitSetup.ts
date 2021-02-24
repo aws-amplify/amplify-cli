@@ -1,12 +1,10 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as url from 'url';
 import { execSync } from 'child_process';
-import { pathManager, $TSContext } from 'amplify-cli-core';
+import { $TSContext, NonEmptyDirectoryError, exitOnNextTick } from 'amplify-cli-core';
 import { getPackageManager } from '../packageManagerHelpers';
 import { normalizePackageManagerForOS } from '../packageManagerHelpers';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';
-import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 
 export async function preInitSetup(context: $TSContext) {
   if (context.parameters.options.app) {
@@ -19,12 +17,6 @@ export async function preInitSetup(context: $TSContext) {
     await installPackage();
     await setLocalEnvDefaults(context);
   }
-
-  if (context.parameters.options.quickstart) {
-    await createAmplifySkeleton();
-    process.exit(0);
-  }
-
   return context;
 }
 
@@ -41,8 +33,8 @@ async function validateGithubRepo(context: $TSContext, repoUrl: string) {
     execSync(`git ls-remote ${repoUrl}`, { stdio: 'ignore' });
   } catch (e) {
     context.print.error('Invalid remote github url');
-
-    process.exit(1);
+    await context.usageData.emitError(e);
+    exitOnNextTick(1);
   }
 }
 
@@ -55,14 +47,17 @@ async function cloneRepo(context: $TSContext, repoUrl: string) {
   const files = fs.readdirSync(process.cwd());
 
   if (files.length > 0) {
-    context.print.error('Please ensure you run this command in an empty directory');
-    process.exit(1);
+    const errMessage = 'Please ensure you run this command in an empty directory';
+    context.print.error(errMessage);
+    await context.usageData.emitError(new NonEmptyDirectoryError(errMessage));
+    exitOnNextTick(1);
   }
 
   try {
     execSync(`git clone ${repoUrl} .`, { stdio: 'inherit' });
   } catch (e) {
-    process.exit(1);
+    await context.usageData.emitError(e);
+    exitOnNextTick(1);
   }
 }
 
@@ -101,16 +96,4 @@ async function setLocalEnvDefaults(context: $TSContext) {
   context.exeInfo.inputParams.amplify.envName = envName;
 
   await generateLocalEnvInfoFile(context);
-}
-
-/**
- * Extract amplify project structure with backend-config and project-config
- */
-async function createAmplifySkeleton() {
-  insertAmplifyIgnore(pathManager.getGitIgnoreFilePath(process.cwd()));
-
-  const skeletonLocalDir = path.join(__dirname, '..', '..', 'templates', 'amplify-skeleton');
-  const skeletonProjectDir = path.join(pathManager.getAmplifyDirPath(process.cwd()));
-
-  await fs.copy(skeletonLocalDir, skeletonProjectDir);
 }

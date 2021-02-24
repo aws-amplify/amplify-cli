@@ -1,11 +1,15 @@
 const path = require('path');
 const fs = require('fs-extra');
 const Ora = require('ora');
-const { generate } = require('amplify-graphql-docs-generator');
 
 const loadConfig = require('../codegen-config');
 const constants = require('../constants');
 const { ensureIntrospectionSchema, getFrontEndHandler, getAppSyncAPIDetails } = require('../utils');
+const { FeatureFlags } = require('amplify-cli-core');
+const { getDocsgenPackage } = require('../utils/getDocsgenPackage');
+
+const docsgenPackageMigrationflag = 'codegen.useDocsGeneratorPlugin';
+const { generate } = getDocsgenPackage(FeatureFlags.getBoolean(docsgenPackageMigrationflag));
 
 async function generateStatements(context, forceDownloadSchema, maxDepth, withoutInit = false, decoupleFrontend = '') {
   try {

@@ -47,11 +47,12 @@ function debug(message, title = 'DEBUG') {
 }
 
 function table(data, options: any = {}) {
-  let t: any[];
+  let t: CLITable.Table;
   switch (options.format) {
     case 'markdown': {
       const header = data.shift();
       t = new CLITable({
+        style: { head: ['reset'] }, // "no color"
         head: header,
         chars: CLI_TABLE_MARKDOWN,
       });
@@ -60,12 +61,15 @@ function table(data, options: any = {}) {
       break;
     }
     case 'lean': {
-      t = new CLITable();
+      t = new CLITable({
+        style: { head: ['reset'] }, // "no color"
+      });
       t.push(...data);
       break;
     }
     default: {
       t = new CLITable({
+        style: { head: ['reset'] }, // "no color"
         chars: CLI_TABLE_COMPACT,
       });
       t.push(...data);

@@ -1,11 +1,12 @@
-import { Compile, parse } from 'amplify-velocity-template';
-import { AmplifyAppSyncSimulator } from '..';
 import { AmplifyAppSyncSimulatorAuthenticationType, AppSyncVTLTemplate } from '../type-definition';
-import { create as createUtil, TemplateSentError } from './util';
+import { Compile, parse } from 'amplify-velocity-template';
+import { TemplateSentError, create as createUtil, ValidateError } from './util';
 import { map as convertToJavaTypes, map } from './value-mapper/mapper';
+
+import { AmplifyAppSyncSimulator } from '..';
+import { AppSyncGraphQLExecutionContext } from '../utils/graphql-runner';
 import { GraphQLResolveInfo } from 'graphql';
 import { createInfo } from './util/info';
-import { AppSyncGraphQLExecutionContext } from '../utils/graphql-runner';
 
 export type AppSyncSimulatorRequestContext = {
   jwt?: {
@@ -39,7 +40,7 @@ export class VelocityTemplate {
       });
       this.template = template;
     } catch (e) {
-      const lineDetails = `${e.hash.line}:${e.hash.loc.first_column}`;
+      const lineDetails = `${e.hash.line}:${e.hash.loc?.first_column ? e.hash.loc.first_column : ''}`;
       const fileName = template.path ? `${template.path}:${lineDetails}` : lineDetails;
       const templateError = new VelocityTemplateParseError(`Error:Parse error on ${fileName} \n${e.message}`);
       templateError.stack = e.stack;
@@ -52,8 +53,16 @@ export class VelocityTemplate {
     info?: GraphQLResolveInfo,
   ): { result; stash; errors; isReturn: boolean } {
     const context = this.buildRenderContext(ctxValues, requestContext, info);
-
-    const templateResult = this.compiler.render(context);
+    let templateResult;
+    try {
+      templateResult = this.compiler.render(context);
+    } catch (e) {
+      const lastError = context.util.errors.length && context.util.errors[context.util.errors.length - 1];
+      if (lastError && lastError instanceof ValidateError) {
+        return { result: lastError.data, errors: [...context.util.errors], isReturn: true, stash: context.ctx.stash.toJSON() };
+      }
+      return { result: null, errors: [...context.util.errors], isReturn: false, stash: context.ctx.stash.toJSON() };
+    }
     const isReturn = this.compiler._state.return; // If the template has #return, then set the value
     const stash = context.ctx.stash.toJSON();
     try {
@@ -114,7 +123,13 @@ export class VelocityTemplate {
       result: convertToJavaTypes(result),
       // surfacing the errorType to ensure the type is included in $ctx.error
       // Mapping Template Errors: https://docs.aws.amazon.com/appsync/latest/devguide/troubleshooting-and-common-mistakes.html#mapping-template-errors
-      error: error ? { ...error, type: error.extensions.errorType } : error,
+      error: error
+        ? {
+            ...error,
+            type: error.type || error.extensions?.errorType || 'UnknownErrorType',
+            message: error.message || `Error: ${error}`,
+          }
+        : error,
     };
 
     if (typeof prevResult !== 'undefined') {
@@ -129,16 +144,5 @@ export class VelocityTemplate {
       context: vtlContext,
       ctx: vtlContext,
     };
-  }
-
-  private getRemoteIpAddress(request) {
-    if (request && request.connection && request.connection.remoteAddress) {
-      if (request.connection.remoteAddress.startsWith('::ffff:')) {
-        // IPv4 address in v6 format
-        return [request.connection.remoteAddress.replace('::ffff:', '')];
-      }
-      return [request.connection.remoteAddress];
-    }
-    return ['0.0.0.0'];
   }
 }

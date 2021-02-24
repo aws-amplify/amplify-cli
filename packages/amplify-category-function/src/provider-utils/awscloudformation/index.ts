@@ -1,7 +1,8 @@
-import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate } from 'amplify-function-plugin-interface';
-import { LayerParameters } from './utils/layerParams';
+import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext } from 'amplify-function-plugin-interface';
+import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './utils/layerParams';
+import { chooseParamsOnEnvInit } from './utils/layerHelpers';
 import { supportedServices } from '../supported-services';
-import { ServiceName, provider, parametersFileName } from './utils/constants';
+import { ServiceName, provider, functionParametersFileName } from './utils/constants';
 import { category as categoryName } from '../../constants';
 import {
   createFunctionResources,
@@ -10,13 +11,14 @@ import {
   createLayerArtifacts,
   updateLayerArtifacts,
 } from './utils/storeResources';
+import { getLayerRuntimes } from './utils/layerRuntimes';
 import { ServiceConfig } from '../supportedServicesType';
 import _ from 'lodash';
 import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
 import fs from 'fs-extra';
 import path from 'path';
-import open from 'open';
 import { IsMockableResponse } from '../..';
+import { JSONUtilities, open } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function
@@ -115,7 +117,7 @@ export async function addFunctionResource(
   print.info(
     '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
   );
-  return completeParams.functionName;
+  return completeParams.resourceName;
 }
 
 export async function addLayerResource(
@@ -196,7 +198,7 @@ export async function updateFunctionResource(context, category, service, paramet
       context.amplify.pathManager.getBackendDirPath(),
       categoryName,
       resourceToUpdate,
-      parametersFileName,
+      functionParametersFileName,
     );
     let previousParameters;
 
@@ -204,23 +206,29 @@ export async function updateFunctionResource(context, category, service, paramet
       previousParameters = context.amplify.readJsonFile(parametersFilePath);
 
       if ('trigger' in previousParameters) {
-        parameters = _.assign(parameters, previousParameters);
+        parameters = _.assign({}, previousParameters, parameters);
+
+        if (parameters.triggerEnvs && parameters.triggerEnvs instanceof String) {
+          parameters.triggerEnvs = JSONUtilities.parse(parameters.triggerEnvs) || [];
+        }
       }
     }
-    saveMutableState(context, parameters);
+
+    saveMutableState(parameters);
+    saveCFNParameters(parameters);
   } else {
     parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
     if (parameters.dependsOn) {
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
     }
-    saveMutableState(context, parameters);
-    saveCFNParameters(context, parameters);
+    saveMutableState(parameters);
+    saveCFNParameters(parameters);
   }
 
   if (!parameters || (parameters && !parameters.skipEdit)) {
-    const breadcrumb = context.amplify.readBreadcrumbs(context, categoryName, parameters.resourceName);
+    const breadcrumb = context.amplify.readBreadcrumbs(categoryName, parameters.resourceName);
     const displayName = 'trigger' in parameters ? parameters.resourceName : undefined;
-    await openEditor(context, category, parameters.resourceName, { defaultEditorFile: breadcrumb.defaultEditorFile }, displayName);
+    await openEditor(context, category, parameters.resourceName, { defaultEditorFile: breadcrumb.defaultEditorFile }, displayName, false);
   }
 
   return parameters.resourceName;
@@ -251,9 +259,16 @@ function printLayerSuccessMessages(context: any, parameters: LayerParameters, ac
   print.info('"amplify push" - builds all of your local backend resources and provisions them in the cloud');
 }
 
-async function openEditor(context, category: string, resourceName: string, template: Partial<FunctionTemplate>, displayName = 'local') {
+async function openEditor(
+  context,
+  category: string,
+  resourceName: string,
+  template: Partial<FunctionTemplate>,
+  displayName = 'local',
+  defaultConfirm = true,
+) {
   const targetDir = context.amplify.pathManager.getBackendDirPath();
-  if (await context.amplify.confirmPrompt(`Do you want to edit the ${displayName} lambda function now?`)) {
+  if (await context.amplify.confirmPrompt(`Do you want to edit the ${displayName} lambda function now?`, defaultConfirm)) {
     let targetFile = '';
 
     // try to load the default editor file from the function template
@@ -306,31 +321,52 @@ function getHeadlessParams(context, resourceName) {
 }
 
 export async function updateConfigOnEnvInit(context: any, resourceName: string, service: ServiceName) {
-  const srvcMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
-  const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
-  const functionParametersPath = path.join(
-    context.amplify.pathManager.getBackendDirPath(),
-    categoryName,
-    resourceName,
-    'function-parameters.json',
-  );
-  let resourceParams: any = {};
-  const functionParametersExists = fs.existsSync(functionParametersPath);
-  if (functionParametersExists) {
-    resourceParams = context.amplify.readJsonFile(functionParametersPath);
-  }
-  let envParams = {};
+  if (service === ServiceName.LambdaFunction) {
+    const srvcMetaData: ServiceConfig<FunctionParameters> = supportedServices[service];
+    const providerPlugin = context.amplify.getPluginInstance(context, srvcMetaData.provider);
+    const functionParametersPath = path.join(
+      context.amplify.pathManager.getBackendDirPath(),
+      categoryName,
+      resourceName,
+      'function-parameters.json',
+    );
+    let resourceParams: any = {};
+    const functionParametersExists = fs.existsSync(functionParametersPath);
+    if (functionParametersExists) {
+      resourceParams = context.amplify.readJsonFile(functionParametersPath);
+    }
+    let envParams = {};
 
-  // headless mode
-  if (isInHeadlessMode(context)) {
-    const functionParams = getHeadlessParams(context, resourceName);
-    return functionParams;
-  }
+    // headless mode
+    if (isInHeadlessMode(context)) {
+      const functionParams = getHeadlessParams(context, resourceName);
+      return functionParams;
+    }
 
-  if (resourceParams.trigger === true) {
-    envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
+    if (resourceParams.trigger === true) {
+      envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
+    }
+
+    return envParams;
+  } else if (isMultiEnvLayer(context, resourceName) && service === ServiceName.LambdaLayer) {
+    const teamProviderParams: StoredLayerParameters = await chooseParamsOnEnvInit(context, resourceName);
+
+    const providerContext: ProviderContext = {
+      provider,
+      service,
+      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+    };
+
+    const layerEnvParams = {
+      ...teamProviderParams,
+      build: true,
+      layerName: resourceName,
+      providerContext,
+      runtimes: getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), resourceName),
+    };
+
+    updateLayerArtifacts(context, layerEnvParams, 1);
   }
-  return envParams;
 }
 
 async function initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData: ServiceConfig<FunctionParameters>) {

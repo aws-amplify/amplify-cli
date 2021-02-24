@@ -1,44 +1,69 @@
+import { $TSAny, $TSContext, exitOnNextTick, ResourceDoesNotExistError, ServiceSelection } from 'amplify-cli-core';
 import * as inquirer from 'inquirer';
+
 import { getProjectConfig } from './get-project-config';
 import { getProviderPlugins } from './get-provider-plugins';
 
-function filterServicesByEnabledProviders(context, enabledProviders, supportedServices) {
+type ServiceSelectionOption = {
+  name: string;
+  value: ServiceSelection;
+};
+
+function filterServicesByEnabledProviders(context: $TSContext, enabledProviders: string[], supportedServices) {
   const providerPlugins = getProviderPlugins(context);
 
-  const filteredServices: any[] = [];
+  const filteredServices: $TSAny[] = [];
 
-  Object.keys(supportedServices).forEach(service => {
-    if (enabledProviders.includes(supportedServices[service].provider)) {
-      filteredServices.push({
-        service,
-        providerPlugin: providerPlugins[supportedServices[service].provider],
-        providerName: supportedServices[service].provider,
-        alias: supportedServices[service].alias,
-      });
-    }
-  });
+  if (supportedServices !== undefined && enabledProviders !== undefined) {
+    Object.keys(supportedServices).forEach(serviceName => {
+      const { provider, alias } = supportedServices[serviceName];
+
+      if (enabledProviders.includes(provider)) {
+        filteredServices.push({
+          service: serviceName,
+          providerPlugin: providerPlugins[provider],
+          providerName: provider,
+          alias: alias,
+        });
+      }
+    });
+  }
 
   return filteredServices;
 }
 
-function serviceQuestionWalkthrough(context, supportedServices, category, customQuestion = null) {
-  const options: any[] = [];
-  for (let i = 0; i < supportedServices.length; ++i) {
-    const optionName = supportedServices[i].alias || `${supportedServices[i].providerName}:${supportedServices[i].service}`;
+async function serviceQuestionWalkthrough(
+  context: $TSContext,
+  supportedServices,
+  category,
+  customQuestion = null,
+  optionNameOverrides?: Record<string, string>,
+): Promise<ServiceSelection> {
+  const options: ServiceSelectionOption[] = [];
+  for (const supportedService of supportedServices) {
+    let optionName = supportedService.alias || `${supportedService.providerName}:${supportedService.service}`;
+
+    if (optionNameOverrides && optionNameOverrides[supportedService.service]) {
+      optionName = optionNameOverrides[supportedService.service];
+    }
+
     options.push({
       name: optionName,
       value: {
-        provider: supportedServices[i].providerPlugin,
-        service: supportedServices[i].service,
-        providerName: supportedServices[i].providerName,
+        provider: supportedService.providerPlugin,
+        service: supportedService.service,
+        providerName: supportedService.providerName,
       },
     });
   }
 
   if (options.length === 0) {
-    context.print.error(`No services defined by configured providers for category: ${category}`);
-    process.exit(1);
+    const errMessage = `No services defined by configured providers for category: ${category}`;
+    context.print.error(errMessage);
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(1);
   }
+
   if (options.length === 1) {
     // No need to ask questions
     context.print.info(`Using service: ${options[0].value.service}, provided by: ${options[0].value.providerName}`);
@@ -56,11 +81,19 @@ function serviceQuestionWalkthrough(context, supportedServices, category, custom
     },
   ];
 
-  return inquirer.prompt(question).then(answer => answer.service);
+  const answer = await inquirer.prompt<{ service: ServiceSelection }>(question);
+
+  return answer.service;
 }
 
-export function serviceSelectionPrompt(context, category, supportedServices, customQuestion = null) {
+export function serviceSelectionPrompt(
+  context: $TSContext,
+  category: string,
+  supportedServices: $TSAny,
+  customQuestion: $TSAny = null,
+  optionNameOverrides?: Record<string, string>,
+): Promise<ServiceSelection> {
   const { providers } = getProjectConfig();
   supportedServices = filterServicesByEnabledProviders(context, providers, supportedServices);
-  return serviceQuestionWalkthrough(context, supportedServices, category, customQuestion);
+  return serviceQuestionWalkthrough(context, supportedServices, category, customQuestion, optionNameOverrides);
 }

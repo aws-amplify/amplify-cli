@@ -1,6 +1,13 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
-import { addSampleInteraction } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, getBot } from 'amplify-e2e-core';
+import {
+  addSampleInteraction,
+  amplifyPushAuth,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getBot,
+  getProjectMeta,
+  initJSProjectWithProfile,
+} from 'amplify-e2e-core';
 
 describe('amplify add interactions', () => {
   let projRoot: string;

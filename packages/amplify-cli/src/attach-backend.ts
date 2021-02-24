@@ -1,11 +1,11 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { pathManager, stateManager, $TSContext } from 'amplify-cli-core';
+import { pathManager, stateManager, $TSContext, FeatureFlags } from 'amplify-cli-core';
 import { queryProvider } from './attach-backend-steps/a10-queryProvider';
 import { analyzeProject } from './attach-backend-steps/a20-analyzeProject';
 import { initFrontend } from './attach-backend-steps/a30-initFrontend';
 import { generateFiles } from './attach-backend-steps/a40-generateFiles';
-import { postPullCodeGenCheck } from './amplify-service-helper';
+import { postPullCodegen } from './amplify-service-helper';
 import { initializeEnv } from './initialize-env';
 
 const backupAmplifyDirName = 'amplify-backup';
@@ -18,6 +18,13 @@ export async function attachBackend(context: $TSContext, inputParams) {
 
   try {
     await queryProvider(context);
+
+    // After pulling down backend reload feature flag values as new values can affect the remaining
+    // operations of the pull command.
+    if (FeatureFlags.isInitialized()) {
+      await FeatureFlags.reloadValues();
+    }
+
     await analyzeProject(context);
     await initFrontend(context);
     await generateFiles(context);
@@ -49,7 +56,7 @@ async function onSuccess(context: $TSContext) {
     }
   }
 
-  await postPullCodeGenCheck(context);
+  await postPullCodegen(context);
 
   if (!inputParams.yes) {
     const confirmKeepCodebase = await context.amplify.confirmPrompt('Do you plan on modifying this backend?', true);

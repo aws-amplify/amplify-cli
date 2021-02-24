@@ -12,7 +12,7 @@ const defaultSettings = {
   phone: process.env.CYPRESS_COGNITO_SIGN_IN_PHONE_NUMBER ? process.env.CYPRESS_COGNITO_SIGN_IN_PHONE_NUMBER : '6666666666',
 };
 
-export function gitCloneSampleApp(cwd: string, settings: { repo: string }, verbose: boolean = !isCI()) {
+export function gitCloneSampleApp(cwd: string, settings: { repo: string }, verbose: boolean = !isCI()): Promise<void> {
   return new Promise((resolve, reject) => {
     nexpect.spawn('git', ['clone', settings.repo], { cwd, stripColors: true, verbose }).run(err => {
       if (err) {
@@ -24,9 +24,9 @@ export function gitCloneSampleApp(cwd: string, settings: { repo: string }, verbo
   });
 }
 
-export function setupCypress(cwd: string) {
+export function setupCypress(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    exec('CYPRESS_INSTALL_BINARY=0 npm install', { cwd: cwd }, function(err: Error) {
+    exec('CYPRESS_INSTALL_BINARY=0 npm install', { cwd: cwd }, function (err: Error) {
       if (err) {
         reject(err);
       } else {
@@ -36,7 +36,7 @@ export function setupCypress(cwd: string) {
   });
 }
 
-export function buildApp(cwd: string, settings?: any, verbose: boolean = !isCI()) {
+export function buildApp(cwd: string, settings?: any, verbose: boolean = !isCI()): Promise<void> {
   return new Promise((resolve, reject) => {
     nexpect.spawn('yarn', { cwd, stripColors: true, verbose }).run(err => {
       if (err) {
@@ -48,7 +48,7 @@ export function buildApp(cwd: string, settings?: any, verbose: boolean = !isCI()
   });
 }
 
-export function runCypressTest(cwd: string, settings?: any, verbose: boolean = true) {
+export function runCypressTest(cwd: string, settings?: any, verbose: boolean = true): Promise<boolean> {
   let isPassed: boolean = true;
   let options = ['cypress', 'run'];
   if (!isCI()) {
@@ -57,7 +57,7 @@ export function runCypressTest(cwd: string, settings?: any, verbose: boolean = t
   return new Promise(resolve => {
     nexpect
       .spawn('yarn', options, { cwd, stripColors: true, verbose })
-      .run(function(err: Error, outputs: string[], exitCode: string | number) {
+      .run(function (err: Error, outputs: string[], exitCode: string | number) {
         if (err || exitCode) {
           isPassed = false;
         }
@@ -89,7 +89,7 @@ export async function signUpNewUser(cwd: string, settings: any = {}, verbose: bo
   return s;
 }
 
-function signUpUser(cwd: string, settings: any, verbose: boolean = !isCI()) {
+function signUpUser(cwd: string, settings: any, verbose: boolean = !isCI()): Promise<void> {
   return new Promise((resolve, reject) => {
     nexpect
       .spawn(
@@ -107,9 +107,9 @@ function signUpUser(cwd: string, settings: any, verbose: boolean = !isCI()) {
           `Name=email,Value=${settings.email}`,
           `Name=phone_number,Value=+1${settings.phone}`,
         ],
-        { cwd, stripColors: true, verbose }
+        { cwd, stripColors: true, verbose },
       )
-      .run(function(err: Error) {
+      .run(function (err: Error) {
         if (!err) {
           resolve();
         } else {
@@ -124,6 +124,6 @@ function comfirmSignUp(cwd: string, settings: any, verbose: boolean = !isCI()) {
   exec(`aws cognito-idp admin-confirm-sign-up --user-pool-id ${settings.userPoolId} --username ${settings.username}`);
   exec(
     `aws cognito-idp admin-update-user-attributes --user-pool-id ${settings.userPoolId} --username ${settings.username}` +
-      ` --user-attributes Name=email_verified,Value=true`
+      ` --user-attributes Name=email_verified,Value=true`,
   );
 }

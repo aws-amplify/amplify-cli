@@ -1,8 +1,16 @@
-import { run } from './commands/api/console';
+import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
 import fs from 'fs-extra';
 import path from 'path';
+import { run } from './commands/api/console';
 import { getCfnApiArtifactHandler } from './provider-utils/awscloudformation/cfn-api-artifact-handler';
-import { validateAddApiRequest, validateUpdateApiRequest } from 'amplify-util-headless-input';
+
+export { NETWORK_STACK_LOGICAL_ID } from './category-constants'
+export { DEPLOYMENT_MECHANISM } from './provider-utils/awscloudformation/base-api-stack';
+export { EcsStack } from './provider-utils/awscloudformation/ecs-apigw-stack';
+export { EcsAlbStack } from './provider-utils/awscloudformation/ecs-alb-stack';
+export { getGitHubOwnerRepoFromPath } from './provider-utils/awscloudformation/utils/github';
+export { generateContainersArtifacts, ApiResource, processDockerConfig } from './provider-utils/awscloudformation/utils/containers-artifacts';
+export { getContainers } from './provider-utils/awscloudformation/docker-compose';
 
 const category = 'api';
 
@@ -58,6 +66,13 @@ export async function initEnv(context) {
    * configured an RDS datasource
    */
   const backendConfigFilePath = amplify.pathManager.getBackendConfigFilePath();
+
+  // If this is a mobile hub migrated project without locally added resources then there is no
+  // backend config exists yet.
+  if (!fs.existsSync(backendConfigFilePath)) {
+    return;
+  }
+
   const backendConfig = amplify.readJsonFile(backendConfigFilePath);
 
   if (!backendConfig[category]) {
@@ -146,8 +161,9 @@ export async function getPermissionPolicies(context, resourceOpsMapping) {
   await Promise.all(
     Object.keys(resourceOpsMapping).map(async resourceName => {
       try {
-        const providerController = require(`./provider-utils/${amplifyMeta[category][resourceName].providerPlugin}/index`);
-        if (providerController) {
+        const providerName = amplifyMeta[category][resourceName].providerPlugin;
+        if (providerName) {
+          const providerController = require(`./provider-utils/${providerName}/index`);
           const { policy, attributes } = await providerController.getPermissionPolicies(
             context,
             amplifyMeta[category][resourceName].service,

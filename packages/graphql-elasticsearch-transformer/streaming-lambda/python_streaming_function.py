@@ -104,7 +104,7 @@ def post_to_es(payload):
                     'ES post unsuccessful, errors present, took=%sms', es_ret['took'])
                 # Filter errors
                 es_errors = [item for item in es_ret['items']
-                            if item.get('index').get('error')]
+                            if item.get('index', {}).get('error')]
                 logger.error('List of items with errors: %s',
                             json.dumps(es_errors))
             else:

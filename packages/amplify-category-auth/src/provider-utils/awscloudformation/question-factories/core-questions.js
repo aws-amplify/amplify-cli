@@ -1,7 +1,6 @@
 const inquirer = require('inquirer');
 const { uniq, flatten } = require('lodash');
 const chalk = require('chalk');
-const chalkpipe = require('chalk-pipe');
 
 function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, currentAnswers, context) {
   // eslint-disable-line max-len
@@ -14,9 +13,8 @@ function parseInputs(input, amplify, defaultValuesFilename, stringMapsFilename, 
   // Can also have some validations here based on the input json
   // Uncool implementation here
 
-  const prefix = input.prefix
-    ? `${'\n'} ${chalkpipe(null, input.prefixColor ? chalk[input.prefixColor] : chalk.green)(input.prefix)} ${'\n'}`
-    : '';
+  const questionChalk = input.prefixColor ? chalk[input.prefixColor] : chalk.green;
+  const prefix = input.prefix ? `${'\n'} ${questionChalk(input.prefix)} ${'\n'}` : '';
 
   let question = {
     name: input.key,

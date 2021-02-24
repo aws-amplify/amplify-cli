@@ -14,6 +14,7 @@ module.exports = {
     } catch (err) {
       context.print.error(err.toString());
       context.usageData.emitError(err);
+      process.exitCode = 1;
     }
   },
 };

@@ -4,15 +4,17 @@ import { pythonPackage } from './util/packageUtils';
 import { pythonInvoke } from './util/invokeUtil';
 import { checkDeps } from './util/depUtils';
 import path from 'path';
+import { relativeShimPath } from './constants';
+import { GetPackageAssetPaths } from 'amplify-cli-core';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
-    contribute: request => {
+    contribute: async request => {
       const selection = request.selection;
       if (selection !== 'python') {
-        return Promise.reject(new Error(`Unknown selection ${selection}`));
+        throw new Error(`Unknown selection ${selection}`);
       }
-      return Promise.resolve({
+      return {
         runtime: {
           name: 'Python',
           value: 'python',
@@ -20,11 +22,13 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           defaultHandler: 'index.handler',
           layerExecutablePath: path.join('python', 'lib', 'python3.8', 'site-packages'),
         },
-      });
+      };
     },
     checkDependencies: checkDeps,
     package: request => pythonPackage(context, request),
     build: pythonBuild,
-    invoke: request => pythonBuild(request).then(() => pythonInvoke(context, request)),
+    invoke: request => pythonInvoke(context, request),
   };
 };
+
+export const getPackageAssetPaths: GetPackageAssetPaths = async () => [relativeShimPath];

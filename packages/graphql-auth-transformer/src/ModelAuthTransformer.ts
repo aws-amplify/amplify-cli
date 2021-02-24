@@ -130,6 +130,7 @@ const validateAuthModes = (authConfig: AppSyncAuthConfiguration) => {
 
 export type ModelAuthTransformerConfig = {
   authConfig?: AppSyncAuthConfiguration;
+  addAwsIamAuthInOutputSchema?: boolean;
 };
 
 export type ConfiguredAuthProviders = {
@@ -266,7 +267,7 @@ export class ModelAuthTransformer extends Transformer {
     ctx.mergeConditions(template.Conditions);
     this.updateAPIAuthentication(ctx);
     if (!ctx.metadata.has(AUTH_NON_MODEL_TYPES)) {
-      ctx.metadata.set(AUTH_NON_MODEL_TYPES, new Set<string>());
+      ctx.metadata.set(AUTH_NON_MODEL_TYPES, new Map<string, Set<string>>());
     }
   };
 
@@ -350,6 +351,9 @@ export class ModelAuthTransformer extends Transformer {
     // Assign default providers to rules where no provider was explicitly defined
     this.ensureDefaultAuthProviderAssigned(rules);
     this.validateRules(rules);
+
+    // add owner fields to type that may not been only present in auth rules.
+    this.addOwnerFieldsToObject(ctx, def.name.value, rules);
     // Check the rules if we've to generate IAM policies for Unauth role or not
     this.setAuthPolicyFlag(rules);
     this.setUnauthPolicyFlag(rules);
@@ -454,6 +458,10 @@ Static group authorization should perform as expected.`,
 
     // Get and validate the auth rules.
     const rules = this.getAuthRulesFromDirective(directive);
+    if (!isParentTypeBuiltinType) {
+      // add owner fields to the type
+      this.addOwnerFieldsToObject(ctx, parent.name.value, rules);
+    }
     // Assign default providers to rules where no provider was explicitly defined
     this.ensureDefaultAuthProviderAssigned(rules);
     this.validateFieldRules(rules, isParentTypeBuiltinType, modelDirective !== undefined);
@@ -524,7 +532,16 @@ Static group authorization should perform as expected.`,
   };
 
   private propagateAuthDirectivesToNestedTypes(type: ObjectTypeDefinitionNode, rules: AuthRule[], ctx: TransformerContext) {
-    const seenNonModelTypes: Set<string> = ctx.metadata.get(AUTH_NON_MODEL_TYPES);
+    const seenNonModelTypes: Map<string, Set<string>> = ctx.metadata.get(AUTH_NON_MODEL_TYPES);
+
+    const getDirectivesToAdd = (nonModelName: string): { current: DirectiveNode[]; old?: Set<string> } => {
+      const directives = this.getDirectivesForRules(rules, true);
+      if (seenNonModelTypes.has(nonModelName)) {
+        const nonModelDirectives: Set<string> = seenNonModelTypes.get(nonModelName);
+        return { current: directives.filter(directive => !nonModelDirectives.has(directive.name.value)), old: nonModelDirectives };
+      }
+      return { current: directives };
+    };
 
     const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
       if (fieldType) {
@@ -538,21 +555,21 @@ Static group authorization should perform as expected.`,
     };
     const nonModelFieldTypes = type.fields.map(f => ctx.getType(getBaseType(f.type)) as TypeDefinitionNode).filter(nonModelTypePredicate);
     for (const nonModelFieldType of nonModelFieldTypes) {
-      if (!seenNonModelTypes.has(nonModelFieldType.name.value)) {
-        // add to the set of seen non model types
-        seenNonModelTypes.add(nonModelFieldType.name.value);
-        const directives = this.getDirectivesForRules(rules, false);
-        // Add the directives to the Type node itself
-        if (directives.length > 0) {
-          this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
-        }
-        const hasIAM = directives.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
+      const directives = getDirectivesToAdd(nonModelFieldType.name.value);
+      if (directives.current.length > 0) {
+        // merge back the newly added auth directives with what already exists in the set
+        const totalDirectives = new Set<string>([
+          ...directives.current.map(dir => dir.name.value),
+          ...(directives.old ? directives.old : []),
+        ]);
+        seenNonModelTypes.set(nonModelFieldType.name.value, totalDirectives);
+        this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives.current);
+        const hasIAM =
+          directives.current.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
         if (hasIAM) {
           this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
           this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
         }
-
-        // Recursively process the nested types if there is any
         this.propagateAuthDirectivesToNestedTypes(<ObjectTypeDefinitionNode>nonModelFieldType, rules, ctx);
       }
     }
@@ -676,9 +693,7 @@ Static group authorization should perform as expected.`,
 Either make the field optional, set auth on the object and not the field, or disable subscriptions for the object (setting level to off or public)\n`);
         }
         // operation check in the protected field
-        resolver.Properties.ResponseMappingTemplate = print(
-          this.resources.operationCheckExpression(ctx.getMutationTypeName(), field.name.value),
-        );
+        resolver.Properties.ResponseMappingTemplate = print(this.resources.operationCheckExpression(ctx.getMutationTypeName(), field));
       }
       // If a resolver exists, a @connection for example. Prepend it to the req.
       const templateParts = [print(authExpression), resolver.Properties.RequestMappingTemplate];
@@ -1663,7 +1678,7 @@ operations will be generated by the CLI.`,
             // member is accessible.
             const directives = this.getDirectivesForRules(rules, false);
             if (directives.length > 0) {
-              this.addDirectivesToField(ctx, inputDef.name.value, field.name.value, directives);
+              this.addDirectivesToOperation(ctx, inputDef.name.value, field.name.value, directives);
             }
 
             if (isListType(field.type)) {
@@ -1922,7 +1937,34 @@ operations will be generated by the CLI.`,
     ctx.putType(subscription);
   }
 
+  /**
+   * Add owner fields to the type to make the owners accessible in selection set
+   * @param ctx TransformerContext
+   * @param object ObjectDefinitionNode
+   * @param rules Authorization rules
+   */
+  private addOwnerFieldsToObject(ctx: TransformerContext, typeName: string, rules: AuthRule[]): void {
+    if (ctx.featureFlags.getBoolean('addMissingOwnerFields', true)) {
+      const object = ctx.getObject(typeName);
+      const ownerRules = rules.filter(rule => rule.allow === 'owner');
+      const existingFields = Object.keys(getFieldArguments(object));
+      const ownerFields = Array.from(new Set(ownerRules.map(rule => rule.ownerField || DEFAULT_OWNER_FIELD)).values());
+      const fieldsToAdd = ownerFields.filter(field => !existingFields.includes(field));
+      const modelType: any = ctx.getType(object.name.value);
+      if (fieldsToAdd.length) {
+        for (let ownerField of fieldsToAdd) {
+          modelType.fields.push(makeField(ownerField, [], makeNamedType('String')));
+        }
+        ctx.putType(modelType);
+      }
+    }
+  }
+
   private addOwner(ctx: TransformerContext, parent: string) {
+    if (ctx.featureFlags.getBoolean('addMissingOwnerFields', true)) {
+      // owner field is already added, return
+      return;
+    }
     const modelType: any = ctx.getType(parent);
     const fields = getFieldArguments(modelType);
     if (!('owner' in fields)) {
@@ -1999,6 +2041,11 @@ operations will be generated by the CLI.`,
   private getDirectivesForRules(rules: AuthRule[], addDefaultIfNeeded: boolean = true): DirectiveNode[] {
     if (!rules || rules.length === 0) {
       return [];
+    }
+
+    // Check for Amplify Admin
+    if (this.configuredAuthProviders.hasIAM && this.config.addAwsIamAuthInOutputSchema) {
+      rules.push({ allow: 'private', provider: 'iam' });
     }
 
     const directives: DirectiveNode[] = new Array();

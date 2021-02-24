@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const chalk = require('chalk');
-const chalkpipe = require('chalk-pipe');
+const _ = require('lodash');
 const { uniq, pullAll } = require('lodash');
 const path = require('path');
 const { Sort } = require('enquirer');
@@ -68,7 +68,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     // LEARN MORE BLOCK
     if (new RegExp(/learn/i).test(answer[questionObj.key]) && questionObj.learnMore) {
       const helpText = `\n${questionObj.learnMore.replace(new RegExp('[\\n]', 'g'), '\n\n')}\n\n`;
-      questionObj.prefix = chalkpipe(null, chalk.green)(helpText);
+      questionObj.prefix = chalk.green(helpText);
       // ITERATOR BLOCK
     } else if (
       /*
@@ -184,7 +184,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
   }
 
   // formatting oAuthMetaData
-  structureoAuthMetaData(coreAnswers, context, getAllDefaults, amplify);
+  structureOAuthMetadata(coreAnswers, context, getAllDefaults, amplify);
 
   if (coreAnswers.usernameAttributes && !Array.isArray(coreAnswers.usernameAttributes)) {
     if (coreAnswers.usernameAttributes === 'username') {
@@ -198,6 +198,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     ...coreAnswers,
     userPoolGroupList,
     adminQueryGroup,
+    serviceName: 'Cognito',
   };
 }
 
@@ -400,7 +401,7 @@ function identityPoolProviders(coreAnswers, projectType) {
 /*
   Format hosted UI providers data per lambda spec
   hostedUIProviderMeta is saved in parameters.json.
-  hostedUIprovierCreds is saved in team-providers.
+  hostedUIprovierCreds is saved in deployment-secrets.
 */
 function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
   if (coreAnswers.useDefault === 'default') {
@@ -411,7 +412,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
     ? JSON.parse(JSON.stringify(answers.requiredAttributes)).concat('username')
     : ['email', 'username'];
   const res = {};
-  if (oAuthProviders) {
+  if (answers.hostedUI) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
         const delimmiter = el === 'Facebook' ? ',' : ' ';
@@ -452,13 +453,12 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
 /*
   Format hosted UI oAuth data per lambda spec
 */
-function structureoAuthMetaData(coreAnswers, context, defaults, amplify) {
+function structureOAuthMetadata(coreAnswers, context, defaults, amplify) {
   if (coreAnswers.useDefault === 'default' && context.updatingAuth) {
     delete context.updatingAuth.oAuthMetadata;
     return null;
   }
-  const prev = context.updatingAuth ? context.updatingAuth : {};
-  const answers = Object.assign(prev, coreAnswers);
+  const answers = Object.assign({}, context.updatingAuth, coreAnswers);
   let { AllowedOAuthFlows, AllowedOAuthScopes, CallbackURLs, LogoutURLs } = answers;
   if (CallbackURLs && coreAnswers.newCallbackURLs) {
     CallbackURLs = CallbackURLs.concat(coreAnswers.newCallbackURLs);
@@ -566,7 +566,7 @@ async function lambdaFlow(context, answers) {
   return triggers || answers;
 }
 
-function getIAMPolicies(resourceName, crudOptions) {
+function getIAMPolicies(context, resourceName, crudOptions) {
   let policy = {};
   const actions = [];
 
@@ -674,24 +674,36 @@ function getIAMPolicies(resourceName, crudOptions) {
     }
   });
 
+  let userPoolReference;
+
+  const { amplifyMeta } = context.amplify.getProjectDetails();
+
+  const authResource = _.get(amplifyMeta, [category, resourceName], undefined);
+
+  if (!authResource) {
+    throw new Error(`Cannot get resource: ${resourceName} from '${category}' category.`);
+  }
+
+  if (authResource.serviceType === 'imported') {
+    const userPoolId = _.get(authResource, ['output', 'UserPoolId'], undefined);
+
+    if (!userPoolId) {
+      throw new Error(`Cannot read the UserPoolId attribute value from the output section of resource: '${resourceName}'.`);
+    }
+
+    userPoolReference = userPoolId;
+  } else {
+    userPoolReference = {
+      Ref: `${category}${resourceName}UserPoolId`,
+    };
+  }
+
   policy = {
     Effect: 'Allow',
     Action: actions,
     Resource: [
       {
-        'Fn::Join': [
-          '',
-          [
-            'arn:aws:cognito-idp:',
-            { Ref: 'AWS::Region' },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':userpool/',
-            {
-              Ref: `${category}${resourceName}UserPoolId`,
-            },
-          ],
-        ],
+        'Fn::Join': ['', ['arn:aws:cognito-idp:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':userpool/', userPoolReference]],
       },
     ],
   };
@@ -705,6 +717,7 @@ module.exports = {
   serviceWalkthrough,
   userPoolProviders,
   parseOAuthCreds,
-  structureoAuthMetaData,
+  structureOAuthMetadata,
   getIAMPolicies,
+  identityPoolProviders,
 };

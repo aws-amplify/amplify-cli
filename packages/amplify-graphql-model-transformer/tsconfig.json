@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib"
+  },
+  "references": [
+    {"path": "../amplify-graphql-transformer-interfaces"},
+    {"path": "../graphql-mapping-template"}
+  ]
+}

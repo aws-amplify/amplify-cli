@@ -1,4 +1,5 @@
 const constants = require('./constants');
+const _ = require('lodash');
 const path = require('path');
 const fs = require('fs-extra');
 const graphQLConfig = require('graphql-config');
@@ -44,14 +45,10 @@ function createAmplifyConfig(context, amplifyResources, cloudAmplifyResources) {
 
   if (fs.existsSync(srcDirPath)) {
     const targetFilePath = path.join(srcDirPath, constants.amplifyConfigFilename);
-    let amplifyConfig;
-    if (fs.existsSync(targetFilePath)) {
-      amplifyConfig = context.amplify.readJsonFile(targetFilePath);
-    }
 
     // Native GA release requires entire awsconfiguration inside amplifyconfiguration auth plugin
     const newAWSConfig = getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources);
-    amplifyConfig = amplifyConfigHelper.generateConfig(context, amplifyConfig, newAWSConfig);
+    const amplifyConfig = amplifyConfigHelper.generateConfig(context, newAWSConfig);
 
     const jsonString = JSON.stringify(amplifyConfig, null, 4);
     fs.writeFileSync(targetFilePath, jsonString, 'utf8');
@@ -174,14 +171,17 @@ function getCognitoConfig(cognitoResources, projectRegion) {
   }
 
   if (cognitoResource.output.UserPoolId) {
+    const defaultPool = {
+      PoolId: cognitoResource.output.UserPoolId,
+      AppClientId: cognitoResource.output.AppClientID,
+      Region: projectRegion,
+    };
+    if (cognitoResource.output.AppClientSecret) {
+      _.set(defaultPool, 'AppClientSecret', cognitoResource.output.AppClientSecret);
+    }
     Object.assign(cognitoConfig, {
       CognitoUserPool: {
-        Default: {
-          PoolId: cognitoResource.output.UserPoolId,
-          AppClientId: cognitoResource.output.AppClientID,
-          AppClientSecret: cognitoResource.output.AppClientSecret,
-          Region: projectRegion,
-        },
+        Default: defaultPool,
       },
     });
   }

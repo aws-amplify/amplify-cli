@@ -1,13 +1,18 @@
 import inquirer from 'inquirer';
 import path from 'path';
 import fs from 'fs-extra';
+import os from 'os';
 import uuid from 'uuid';
 import { rootAssetDir } from '../aws-constants';
 import { checkForPathOverlap, validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
-import { ServiceName as FunctionServiceName } from 'amplify-category-function';
+import { ResourceDoesNotExistError, exitOnNextTick, $TSContext, stateManager, open } from 'amplify-cli-core';
+
+// keep in sync with ServiceName in amplify-category-function, but probably it will not change
+const FunctionServiceNameLambdaFunction = 'Lambda';
 
 const category = 'api';
 const serviceName = 'API Gateway';
+const elasticContainerServiceName = 'ElasticContainer';
 const parametersFileName = 'api-params.json';
 const cfnParametersFilename = 'parameters.json';
 
@@ -33,12 +38,16 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
   const defaultValuesSrc = `${__dirname}/../default-values/${defaultValuesFilename}`;
   const { getAllDefaults } = await import(defaultValuesSrc);
   const allDefaultValues = getAllDefaults(amplify.getProjectDetails());
-  const resources = allResources.filter(resource => resource.service === serviceName).map(resource => resource.resourceName);
+  const resources = allResources
+    .filter(resource => resource.service === serviceName && resource.mobileHubMigrated !== true)
+    .map(resource => resource.resourceName);
 
   // There can only be one appsync resource
   if (resources.length === 0) {
-    context.print.error('No REST API resource to update. Please use "amplify add api" command to create a new REST API');
-    process.exit(0);
+    const errMessage = 'No REST API resource to update. Please use "amplify add api" command to create a new REST API';
+    context.print.error(errMessage);
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
     return;
   }
 
@@ -68,10 +77,10 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
   const updateApi = await inquirer.prompt(question);
 
   if (updateApi.resourceName === 'AdminQueries') {
-    context.print.warning(
-      `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`,
-    );
-    process.exit(0);
+    const errMessage = `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`;
+    context.print.warning(errMessage);
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
   }
 
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
@@ -206,9 +215,7 @@ async function askPrivacy(context, answers, currentPath) {
     const userPoolGroupList = await context.amplify.getUserPoolGroupList(context);
 
     let permissionSelected = 'Auth/Guest Users';
-    let allowUnauthenticatedIdentities = false;
     const privacy: any = {};
-    const { checkRequirements, externalAuthEnable } = await import('amplify-category-auth');
 
     if (userPoolGroupList.length > 0) {
       do {
@@ -274,43 +281,16 @@ async function askPrivacy(context, answers, currentPath) {
         privacy.auth = await askReadWrite('Authenticated', context, authPrivacy);
 
         const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
-        // getting requirement satisfaction map
-        const satisfiedRequirements = await checkRequirements(apiRequirements, context);
-        // checking to see if any requirements are unsatisfied
-        const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
-        // if requirements are unsatisfied, trigger auth
-
-        if (foundUnmetRequirements) {
-          try {
-            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-          } catch (e) {
-            context.print.error(e);
-            throw e;
-          }
-        }
+        await ensureAuth(context, apiRequirements, answers.resourceName);
       }
 
       if (answer.privacy === 'protected') {
         privacy.auth = await askReadWrite('Authenticated', context, authPrivacy);
         privacy.unauth = await askReadWrite('Guest', context, unauthPrivacy);
-        allowUnauthenticatedIdentities = true;
-        const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities };
-        // getting requirement satisfaction map
-        const satisfiedRequirements = await checkRequirements(apiRequirements, context);
-        // checking to see if any requirements are unsatisfied
-        const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
+        const apiRequirements = { authSelections: 'identityPoolAndUserPool', allowUnauthenticatedIdentities: true };
 
-        // if requirements are unsatisfied, trigger auth
-
-        if (foundUnmetRequirements) {
-          try {
-            await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-          } catch (e) {
-            context.print.error(e);
-            throw e;
-          }
-        }
+        await ensureAuth(context, apiRequirements, answers.resourceName);
       }
     }
 
@@ -318,21 +298,8 @@ async function askPrivacy(context, answers, currentPath) {
       // Enable Auth if not enabled
 
       const apiRequirements = { authSelections: 'identityPoolAndUserPool' };
-      // getting requirement satisfaction map
-      const satisfiedRequirements = await checkRequirements(apiRequirements, context);
-      // checking to see if any requirements are unsatisfied
-      const foundUnmetRequirements = Object.values(satisfiedRequirements).includes(false);
 
-      // if requirements are unsatisfied, trigger auth
-
-      if (foundUnmetRequirements) {
-        try {
-          await externalAuthEnable(context, 'api', answers.resourceName, apiRequirements);
-        } catch (e) {
-          context.print.error(e);
-          throw e;
-        }
-      }
+      await ensureAuth(context, apiRequirements, answers.resourceName);
 
       // Get Auth resource name
       const authResourceName = await getAuthResourceName(context);
@@ -379,6 +346,40 @@ async function askPrivacy(context, answers, currentPath) {
       }
     }
     return privacy;
+  }
+}
+
+async function ensureAuth(context, apiRequirements, resourceName) {
+  const checkResult = await context.amplify.invokePluginMethod(context, 'auth', undefined, 'checkRequirements', [
+    apiRequirements,
+    context,
+    'api',
+    resourceName,
+  ]);
+
+  // If auth is imported and configured, we have to throw the error instead of printing since there is no way to adjust the auth
+  // configuration.
+  if (checkResult.authImported === true && checkResult.errors && checkResult.errors.length > 0) {
+    throw new Error(checkResult.errors.join(os.EOL));
+  }
+
+  if (checkResult.errors && checkResult.errors.length > 0) {
+    context.print.warning(checkResult.errors.join(os.EOL));
+  }
+
+  // If auth is not imported and there were errors, adjust or enable auth configuration
+  if (!checkResult.authEnabled || !checkResult.requirementsMet) {
+    try {
+      await context.amplify.invokePluginMethod(context, 'auth', undefined, 'externalAuthEnable', [
+        context,
+        'api',
+        resourceName,
+        apiRequirements,
+      ]);
+    } catch (error) {
+      context.print.error(error);
+      throw error;
+    }
   }
 }
 
@@ -582,7 +583,7 @@ function functionsExist(context) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
-    if (functionResources[resourceName].service === FunctionServiceName.LambdaFunction) {
+    if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
       lambdaFunctions.push(resourceName);
     }
   });
@@ -608,12 +609,6 @@ async function askLambdaSource(context, functionType, path, currentPath) {
 }
 
 async function newLambdaFunction(context, path) {
-  let add;
-  try {
-    ({ add } = await import('amplify-category-function'));
-  } catch (e) {
-    throw new Error('Function plugin not installed in the CLI. You need to install it to use this feature.');
-  }
   context.api = {
     path,
     // ExpressJS represents path parameters as /:param instead of /{param}. This expression performs this replacement.
@@ -629,17 +624,23 @@ async function newLambdaFunction(context, path) {
     },
   };
 
-  return add(context, 'awscloudformation', FunctionServiceName.LambdaFunction, params).then(resourceName => {
-    context.print.success('Succesfully added the Lambda function locally');
-    return { lambdaFunction: resourceName };
-  });
+  const resourceName = await context.amplify.invokePluginMethod(context, 'function', undefined, 'add', [
+    context,
+    'awscloudformation',
+    FunctionServiceNameLambdaFunction,
+    params,
+  ]);
+
+  context.print.success('Succesfully added the Lambda function locally');
+
+  return { lambdaFunction: resourceName };
 }
 
 async function askLambdaFromProject(context, currentPath) {
   const functionResources = context.amplify.getProjectDetails().amplifyMeta.function;
   const lambdaFunctions = [];
   Object.keys(functionResources).forEach(resourceName => {
-    if (functionResources[resourceName].service === FunctionServiceName.LambdaFunction) {
+    if (functionResources[resourceName].service === FunctionServiceNameLambdaFunction) {
       lambdaFunctions.push(resourceName);
     }
   });
@@ -732,23 +733,6 @@ export async function migrate(context, projectPath, resourceName) {
   fs.writeFileSync(cfnParametersFilePath, jsonString, 'utf8');
 }
 
-// function checkIfAuthExists(context) {
-//   const { amplify } = context;
-//   const { amplifyMeta } = amplify.getProjectDetails();
-//   let authExists = false;
-//   const authServiceName = 'Cognito';
-//   const authCategory = 'auth';
-
-//   if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
-//     const categoryResources = amplifyMeta[authCategory];
-//     Object.keys(categoryResources).forEach((resource) => {
-//       if (categoryResources[resource].service === authServiceName) {
-//         authExists = true;
-//       }
-//     });
-//   }
-//   return authExists;
-// }
 function convertToCRUD(privacy) {
   if (privacy === 'r') {
     privacy = ['/GET'];
@@ -809,3 +793,76 @@ export function getIAMPolicies(resourceName, crudOptions) {
 
   return { policy, attributes };
 }
+
+export const openConsole = async (context: $TSContext) => {
+  const amplifyMeta = stateManager.getMeta();
+  const categoryAmplifyMeta = amplifyMeta[category];
+  const { Region } = amplifyMeta.providers.awscloudformation;
+
+  const restApis = Object.keys(categoryAmplifyMeta).filter(resourceName => {
+    const resource = categoryAmplifyMeta[resourceName];
+    return (
+      resource.output &&
+      (resource.service === serviceName || (resource.service === elasticContainerServiceName && resource.apiType === 'REST'))
+    );
+  });
+
+  if (restApis) {
+    let url;
+    let selectedApi = restApis[0];
+
+    if (restApis.length > 1) {
+      ({ selectedApi } = await inquirer.prompt({
+        type: 'list',
+        name: 'selectedApi',
+        choices: restApis,
+        message: 'Please select the API',
+      }));
+    }
+    const selectedResource = categoryAmplifyMeta[selectedApi];
+
+    if (selectedResource.service === serviceName) {
+      const {
+        output: { ApiId },
+      } = selectedResource;
+
+      url = `https://${Region}.console.aws.amazon.com/apigateway/home?region=${Region}#/apis/${ApiId}/resources/`;
+    } else {
+      // Elastic Container API
+      const {
+        output: { PipelineName, ServiceName, ClusterName },
+      } = selectedResource;
+      const codePipeline = 'CodePipeline';
+      const elasticContainer = 'ElasticContainer';
+
+      const { selectedConsole } = await inquirer.prompt({
+        name: 'selectedConsole',
+        message: 'Which console you want to open',
+        type: 'list',
+        choices: [
+          {
+            name: 'Elastic Container Service (Deployed container status)',
+            value: elasticContainer,
+          },
+          {
+            name: 'CodePipeline (Container build status)',
+            value: codePipeline,
+          },
+        ],
+      });
+
+      if (selectedConsole === elasticContainer) {
+        url = `https://console.aws.amazon.com/ecs/home?region=${Region}#/clusters/${ClusterName}/services/${ServiceName}/details`;
+      } else if (selectedConsole === codePipeline) {
+        url = `https://${Region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${PipelineName}/view`;
+      } else {
+        context.print.error('Option not available');
+        return;
+      }
+    }
+
+    open(url, { wait: false });
+  } else {
+    context.print.error('There are no REST APIs pushed to the cloud');
+  }
+};

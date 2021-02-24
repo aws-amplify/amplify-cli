@@ -1,7 +1,9 @@
-import uuid from 'uuid';
-import { Permission, LayerPermission } from '../utils/layerParams';
+import { JSONUtilities } from 'amplify-cli-core';
+import { ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
-import { ListQuestion } from 'inquirer';
+import uuid from 'uuid';
+import { categoryName } from './constants';
+import { Permission, LayerPermission } from '../utils/layerParams';
 
 export interface LayerInputParams {
   layerPermissions?: Permission[];
@@ -29,8 +31,8 @@ export function layerNameQuestion(context: any) {
       validate: input => {
         input = input.trim();
         const meta = context.amplify.getProjectMeta();
-        if (!/^[a-zA-Z0-9]{1,140}$/.test(input)) {
-          return 'Lambda layer names must be 1-140 alphanumeric characters.';
+        if (!/^[a-zA-Z0-9]{1,129}$/.test(input)) {
+          return 'Lambda layer names must be 1-129 alphanumeric characters.';
         } else if (meta.function && meta.function.hasOwnProperty(input)) {
           return `A Lambda layer with the name ${input} already exists in this project.`;
         }
@@ -151,6 +153,58 @@ export function previousPermissionsQuestion(layerName: string): ListQuestion[] {
         },
       ],
       default: 0,
+    },
+  ];
+}
+
+export async function chooseParamsOnEnvInit(context: any, layerName: string) {
+  const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+  const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
+  const filteredEnvs = Object.keys(teamProviderInfo).filter(env =>
+    _.has(teamProviderInfo, [env, 'nonCFNdata', categoryName, layerName, 'layerVersionMap']),
+  );
+  const currentEnv = context.amplify.getEnvInfo().envName;
+  if (filteredEnvs.includes(currentEnv)) {
+    return _.get(teamProviderInfo, [currentEnv, 'nonCFNdata', categoryName, layerName]);
+  }
+  context.print.info(`Adding Lambda layer ${layerName} to ${currentEnv} environment.`);
+  const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
+  let envName;
+  if (!yesFlagSet) {
+    envName = (await prompt(chooseParamsOnEnvInitQuestion(layerName, filteredEnvs))).envName;
+  }
+  const defaultPermission = [{ type: 'private' }];
+  if (yesFlagSet || envName === undefined) {
+    return {
+      runtimes: [],
+      layerVersionMap: {
+        1: {
+          permissions: defaultPermission,
+        },
+      },
+    };
+  }
+  const layerToCopy = teamProviderInfo[envName].nonCFNdata.function[layerName];
+  const latestVersion = Math.max(...Object.keys(layerToCopy.layerVersionMap || {}).map(v => Number(v)));
+  const permissions = latestVersion ? layerToCopy.layerVersionMap[latestVersion].permissions : defaultPermission;
+  return {
+    runtimes: layerToCopy.runtimes,
+    layerVersionMap: {
+      1: { permissions },
+    },
+  };
+}
+
+function chooseParamsOnEnvInitQuestion(layerName: string, filteredEnvs: string[]): ListQuestion[] {
+  const choices = filteredEnvs
+    .map(env => ({ name: env, value: env }))
+    .concat([{ name: 'Apply default access (Only this AWS account)', value: undefined }]);
+  return [
+    {
+      type: 'list',
+      name: 'envName',
+      message: `Choose the environment to import the layer access settings from:`,
+      choices,
     },
   ];
 }

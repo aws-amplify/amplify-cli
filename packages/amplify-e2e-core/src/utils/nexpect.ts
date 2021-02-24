@@ -58,7 +58,12 @@ export type ExecutionContext = {
   sendLine: (line: string) => ExecutionContext;
   sendCarriageReturn: () => ExecutionContext;
   send: (line: string) => ExecutionContext;
+  sendKeyDown: (repeat?: number) => ExecutionContext;
+  sendKeyUp: (repeat?: number) => ExecutionContext;
+  sendConfirmYes: () => ExecutionContext;
+  sendConfirmNo: () => ExecutionContext;
   sendEof: () => ExecutionContext;
+  delay: (milliseconds: number) => ExecutionContext;
   run: (cb: (err: any, signal?: any) => void) => ExecutionContext;
 };
 
@@ -102,14 +107,14 @@ function chain(context: Context): ExecutionContext {
 
       return chain(context);
     },
-    expect: function(expectation: string | RegExp): ExecutionContext {
+    expect: function (expectation: string | RegExp): ExecutionContext {
       let _expect: ExecutionStep = {
         fn: data => {
           return testExpectation(data, expectation, context);
         },
         name: '_expect',
         shift: true,
-        description: '[expect] ' + expectation,
+        description: `[expect] ${expectation}`,
         requiresInput: true,
         expectation: expectation,
       };
@@ -118,7 +123,7 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
 
-    wait: function(expectation: string | RegExp, callback = (data: string) => {}): ExecutionContext {
+    wait: function (expectation: string | RegExp, callback = (data: string) => {}): ExecutionContext {
       let _wait: ExecutionStep = {
         fn: data => {
           var val = testExpectation(data, expectation, context);
@@ -129,28 +134,28 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_wait',
         shift: false,
-        description: '[wait] ' + expectation,
+        description: `[wait] ${expectation}`,
         requiresInput: true,
         expectation: expectation,
       };
       context.queue.push(_wait);
       return chain(context);
     },
-    sendLine: function(line: string): ExecutionContext {
+    sendLine: function (line: string): ExecutionContext {
       let _sendline: ExecutionStep = {
         fn: () => {
-          context.process.write(line + EOL);
+          context.process.write(`${line}${EOL}`);
           return true;
         },
         name: '_sendline',
         shift: true,
-        description: '[sendline] ' + line,
+        description: `[sendline] ${line}`,
         requiresInput: false,
       };
       context.queue.push(_sendline);
       return chain(context);
     },
-    sendCarriageReturn: function(): ExecutionContext {
+    sendCarriageReturn: function (): ExecutionContext {
       let _sendline: ExecutionStep = {
         fn: () => {
           context.process.write(EOL);
@@ -158,13 +163,13 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_sendline',
         shift: true,
-        description: '[sendline] ',
+        description: '[sendline] <CR>',
         requiresInput: false,
       };
       context.queue.push(_sendline);
       return chain(context);
     },
-    send: function(line: string): ExecutionContext {
+    send: function (line: string): ExecutionContext {
       var _send: ExecutionStep = {
         fn: () => {
           context.process.write(line);
@@ -172,13 +177,75 @@ function chain(context: Context): ExecutionContext {
         },
         name: '_send',
         shift: true,
-        description: '[send] ' + line,
+        description: `[send] ${line}`,
         requiresInput: false,
       };
       context.queue.push(_send);
       return chain(context);
     },
-    sendEof: function(): ExecutionContext {
+    sendKeyDown: function (repeat?: number): ExecutionContext {
+      const repeatitions = repeat ? Math.max(1, repeat) : 1;
+      var _send: ExecutionStep = {
+        fn: () => {
+          for (let i = 0; i < repeatitions; i++) {
+            context.process.write(KEY_DOWN_ARROW);
+          }
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: `'[send] <Down> (${repeatitions})`,
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
+    sendKeyUp: function (repeat?: number): ExecutionContext {
+      const repeatitions = repeat ? Math.max(1, repeat) : 1;
+      var _send: ExecutionStep = {
+        fn: () => {
+          for (let i = 0; i < repeatitions; i++) {
+            context.process.write(KEY_UP_ARROW);
+          }
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: `'[send] <Up> (${repeatitions})`,
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
+    sendConfirmYes: function (): ExecutionContext {
+      var _send: ExecutionStep = {
+        fn: () => {
+          context.process.write(`Y${EOL}`);
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: `'[send] Y <CR>`,
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
+    sendConfirmNo: function (): ExecutionContext {
+      var _send: ExecutionStep = {
+        fn: () => {
+          context.process.write(`N${EOL}`);
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: `'[send] N <CR>`,
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
+    sendEof: function (): ExecutionContext {
       var _sendEof: ExecutionStep = {
         fn: () => {
           context.process.write('');
@@ -192,7 +259,24 @@ function chain(context: Context): ExecutionContext {
       context.queue.push(_sendEof);
       return chain(context);
     },
-    run: function(callback: (err: any, code?: number, signal?: string | number) => void): ExecutionContext {
+    delay: function (milliseconds: number): ExecutionContext {
+      var _delay: ExecutionStep = {
+        fn: () => {
+          const startCallback = Date.now();
+
+          while (Date.now() - startCallback < milliseconds) {}
+
+          return true;
+        },
+        shift: true,
+        name: '_delay',
+        description: `'[delay] (${milliseconds})`,
+        requiresInput: false,
+      };
+      context.queue.push(_delay);
+      return chain(context);
+    },
+    run: function (callback: (err: any, code?: number, signal?: string | number) => void): ExecutionContext {
       let errState: any = null;
       let responded = false;
       let stdout: string[] = [];
@@ -205,8 +289,9 @@ function chain(context: Context): ExecutionContext {
         if (code !== 0) {
           if (code === EXIT_CODE_TIMEOUT) {
             const err = new Error(
-              `Killed the process as no output receive for ${context.noOutputTimeout /
-                1000} Sec. The no output timeout is set to ${context.noOutputTimeout / 1000}`,
+              `Killed the process as no output receive for ${context.noOutputTimeout / 1000} Sec. The no output timeout is set to ${
+                context.noOutputTimeout / 1000
+              }`,
             );
             return onError(err, true);
           } else if (code === 127) {
@@ -269,7 +354,8 @@ function chain(context: Context): ExecutionContext {
           onError(new Error('Cannot process non-function on nexpect stack.'), true);
           return false;
         } else if (
-          ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName) === -1
+          ['_expect', '_sendline', '_send', '_wait', '_sendEof', '_delay', '_pauseRecording', '_resumeRecording'].indexOf(currentFnName) ===
+          -1
         ) {
           //
           // If the `currentFn` is a function, but not those set by `.sendline()` or
@@ -356,7 +442,7 @@ function chain(context: Context): ExecutionContext {
           data = strip(data);
         }
 
-        var lines = data.split(EOL).filter(function(line) {
+        var lines = data.split(EOL).filter(function (line) {
           return line.length > 0 && line !== '\r';
         });
         stdout = stdout.concat(lines);
@@ -455,7 +541,7 @@ function testExpectation(data: string, expectation: string | RegExp, context: Co
 }
 
 function createUnexpectedEndError(message: string, remainingQueue: ExecutionStep[]) {
-  const desc: string[] = remainingQueue.map(function(it) {
+  const desc: string[] = remainingQueue.map(function (it) {
     return it.description;
   });
   var msg = message + '\n' + desc.join('\n');
@@ -493,10 +579,32 @@ export function nspawn(command: string | string[], params: string[] = [], option
     command = command[0];
   }
 
+  let childEnv = undefined;
+  let pushEnv = undefined;
+
+  // For push operations in E2E we have to explicitly disable the Amplify Console App creation
+  // as for the tests that need it, it is already enabled for init, setting the env var here
+  // disables the post push check we have in the CLI.
+  if (params.length > 0 && params[0].toLowerCase() === 'push') {
+    pushEnv = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
+
+  // If we have an environment passed in we've to add the current process' environment, otherwised the forked
+  // process would not have $PATH and others that is required to run amplify-cli successfully.
+  if (options.env || pushEnv) {
+    childEnv = {
+      ...process.env,
+      ...pushEnv,
+      ...options.env,
+    };
+  }
+
   let context: Context = {
     command: command,
     cwd: options.cwd || undefined,
-    env: options.env || undefined,
+    env: childEnv || undefined,
     ignoreCase: options.ignoreCase || true,
     noOutputTimeout: options.noOutputTimeout || DEFAULT_NO_OUTPUT_TIMEOUT,
     params: params,

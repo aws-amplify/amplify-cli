@@ -1,8 +1,21 @@
+import {
+  addApiWithSchema,
+  addFunction,
+  addLayer,
+  amplifyPush,
+  amplifyPushAuth,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  getProjectMeta,
+  invokeFunction,
+  overrideFunctionSrc,
+  updateFunction,
+  updateLayer,
+  validateLayerMetadata,
+} from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
-import { addFunction, addLayer, invokeFunction, updateFunction, updateLayer, validateLayerMetadata } from 'amplify-e2e-core';
-import { createNewProjectDir, deleteProjectDir, getProjectMeta, overrideFunctionSrc } from 'amplify-e2e-core';
-import { addApiWithSchema } from 'amplify-e2e-core';
+import { initJSProjectWithProfile } from '../../migration-helpers';
 
 describe('amplify function migration', () => {
   let projRoot: string;
@@ -112,6 +125,23 @@ describe('amplify function migration', () => {
     );
     await amplifyPushAuth(projRoot, true);
     const meta = getProjectMeta(projRoot);
-    await validateLayerMetadata(layerName, meta);
+    await validateLayerMetadata(projRoot, layerName, meta, 'integtest');
+  });
+
+  it('Add a layer, upgrade cli, update and push', async () => {
+    const [shortId] = uuid().split('-');
+    await initJSProjectWithProfile(projRoot, {});
+    const layerName = `test${shortId}`;
+    const layerSettings = {
+      layerName,
+      versionChanged: true,
+      runtimes: ['nodejs'],
+    };
+    await addLayer(projRoot, layerSettings);
+    await amplifyPushAuth(projRoot);
+    await updateLayer(projRoot, { ...layerSettings, runtimes: ['python'], numLayers: 1, permissions: [] }, true);
+    await amplifyPushAuth(projRoot, true);
+    const meta = getProjectMeta(projRoot);
+    await validateLayerMetadata(projRoot, layerName, meta, 'integtest');
   });
 });

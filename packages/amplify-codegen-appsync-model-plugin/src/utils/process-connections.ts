@@ -20,6 +20,7 @@ export type CodeGenFieldConnectionBelongsTo = CodeGenConnectionTypeBase & {
 export type CodeGenFieldConnectionHasOne = CodeGenConnectionTypeBase & {
   kind: CodeGenConnectionType.HAS_ONE;
   associatedWith: CodeGenField;
+  targetName: string;
 };
 
 export type CodeGenFieldConnectionHasMany = CodeGenConnectionTypeBase & {
@@ -186,6 +187,7 @@ export function processConnections(
             associatedWith: otherSideField,
             connectedModel: otherSide,
             isConnectingFieldAutoCreated,
+            targetName: connectionFields[0] || makeConnectionAttributeName(model.name, field.name),
           };
         } else {
           /*
@@ -198,7 +200,9 @@ export function processConnections(
             license: License;
           }
           */
-          throw new Error('DataStore does not support 1 to 1 connection with both sides of connection as optional field');
+          throw new Error(
+            `DataStore does not support 1 to 1 connection with both sides of connection as optional field: ${model.name}.${field.name}`,
+          );
         }
       }
     } else {

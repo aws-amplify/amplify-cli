@@ -99,6 +99,12 @@ export interface TransformConfig {
    * Such as sync configuration for appsync local support
    */
   ResolverConfig?: ResolverConfig;
+
+  /**
+   * List of custom transformer plugins
+   */
+  transformers?: string[];
+  warningESMessage?: boolean;
 }
 /**
  * try to load transformer config from specified projectDir
@@ -128,6 +134,11 @@ export async function writeConfig(projectDir: string, config: TransformConfig): 
   await fs.writeFile(configFilePath, JSON.stringify(config, null, 4));
   return config;
 }
+
+export const isDataStoreEnabled = async (projectDir: string): Promise<boolean> => {
+  const transformerConfig = await loadConfig(projectDir);
+  return transformerConfig?.ResolverConfig?.project !== undefined || transformerConfig?.ResolverConfig?.models !== undefined;
+};
 
 /**
  * Given an absolute path to an amplify project directory, load the

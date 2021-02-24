@@ -6,10 +6,11 @@ const chalk = require('chalk');
 const columnify = require('columnify');
 
 const aws = require('./aws.js');
-const S3 = require('./aws-s3');
-const providerName = require('../../lib/constants').ProviderName;
+const { S3 } = require('./aws-s3');
+const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
-const configurationManager = require('../../lib/configuration-manager');
+const configurationManager = require('../configuration-manager');
+const { stateManager } = require('amplify-cli-core');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -83,6 +84,7 @@ class CloudFormation {
     return new Promise(resolve => {
       this.pollQueue.once('empty', () => {
         const failedStacks = this.stackEvents.filter(ev => CNF_ERROR_STATUS.includes(ev.ResourceStatus));
+
         try {
           const trace = this.generateFailedStackErrorMsgs(failedStacks);
           console.log(`\n\n${chalk.reset.red.bold('Following resources failed')}\n`);
@@ -93,6 +95,10 @@ class CloudFormation {
           resolve();
         } catch (e) {
           Promise.reject(e);
+        } finally {
+          if (this.pollForEvents) {
+            clearInterval(this.pollForEvents);
+          }
         }
       });
     });
@@ -188,6 +194,15 @@ class CloudFormation {
       });
   }
 
+  getStackParameters(stackName) {
+    return this.cfn
+      .describeStack({ StackName: stackName })
+      .promise()
+      .then(data => {
+        return data.Parameters;
+      });
+  }
+
   updateResourceStack(dir, cfnFile) {
     const filePath = path.normalize(path.join(dir, cfnFile));
     const projectDetails = this.context.amplify.getProjectDetails();
@@ -198,7 +213,7 @@ class CloudFormation {
     const authRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].AuthRoleName : '';
     const unauthRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName : '';
 
-    const Tags = this.context.amplify.getTags();
+    const Tags = this.context.amplify.getTags(this.context);
 
     if (!stackName) {
       throw new Error('Project stack has not been created yet. Use amplify init to initialize the project.');
@@ -207,13 +222,13 @@ class CloudFormation {
       throw new Error('Project deployment bucket has not been created yet. Use amplify init to initialize the project.');
     }
 
-    return new S3(this.context)
+    return S3.getInstance(this.context)
       .then(s3 => {
         const s3Params = {
           Body: fs.createReadStream(filePath),
           Key: cfnFile,
         };
-        return s3.uploadFile(s3Params);
+        return s3.uploadFile(s3Params, false);
       })
       .then(bucketName => {
         const templateURL = `https://s3.amazonaws.com/${bucketName}/${cfnFile}`;
@@ -247,7 +262,6 @@ class CloudFormation {
                 ],
                 Tags,
               };
-
               cfnModel.updateStack(cfnParentStackParams, updateErr => {
                 self.readStackEvents(stackName);
 
@@ -277,81 +291,77 @@ class CloudFormation {
       });
   }
 
-  updateamplifyMetaFileWithStackOutputs(parentStackName) {
+  async updateamplifyMetaFileWithStackOutputs(parentStackName) {
     const cfnParentStackParams = {
       StackName: parentStackName,
     };
     const projectDetails = this.context.amplify.getProjectDetails();
     const { amplifyMeta } = projectDetails;
+    const result = await this.cfn.describeStackResources(cfnParentStackParams).promise();
+    const resources = result.StackResources.filter(
+      resource =>
+        ![
+          'DeploymentBucket',
+          'AuthRole',
+          'UnauthRole',
+          'UpdateRolesWithIDPFunction',
+          'UpdateRolesWithIDPFunctionOutputs',
+          'UpdateRolesWithIDPFunctionRole',
+        ].includes(resource.LogicalResourceId),
+    );
 
-    const cfnModel = this.cfn;
-    return cfnModel
-      .describeStackResources(cfnParentStackParams)
-      .promise()
-      .then(result => {
-        let resources = result.StackResources;
-        resources = resources.filter(
-          resource =>
-            ![
-              'DeploymentBucket',
-              'AuthRole',
-              'UnauthRole',
-              'UpdateRolesWithIDPFunction',
-              'UpdateRolesWithIDPFunctionOutputs',
-              'UpdateRolesWithIDPFunctionRole',
-            ].includes(resource.LogicalResourceId),
-        );
+    if (resources.length > 0) {
+      const promises = [];
 
-        const promises = [];
+      for (let i = 0; i < resources.length; i++) {
+        const cfnNestedStackParams = {
+          StackName: resources[i].PhysicalResourceId,
+        };
 
-        for (let i = 0; i < resources.length; i += 1) {
-          const cfnNestedStackParams = {
-            StackName: resources[i].PhysicalResourceId,
-          };
-          promises.push(this.describeStack(cfnNestedStackParams));
-        }
+        promises.push(this.describeStack(cfnNestedStackParams));
+      }
 
-        return Promise.all(promises).then(stackResult => {
-          Object.keys(amplifyMeta).forEach(category => {
-            Object.keys(amplifyMeta[category]).forEach(resource => {
-              const logicalResourceId = category + resource;
-              const index = resources.findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
-              if (index !== -1) {
-                const formattedOutputs = formatOutputs(stackResult[index].Stacks[0].Outputs);
+      const stackResult = await Promise.all(promises);
 
-                const updatedMeta = this.context.amplify.updateamplifyMetaAfterResourceUpdate(
-                  category,
-                  resource,
-                  'output',
-                  formattedOutputs,
-                );
+      Object.keys(amplifyMeta)
+        .filter(k => k !== 'providers')
+        .forEach(category => {
+          Object.keys(amplifyMeta[category]).forEach(resource => {
+            const logicalResourceId = category + resource;
+            const index = resources.findIndex(resourceItem => resourceItem.LogicalResourceId === logicalResourceId);
 
-                // Check to see if this is an AppSync resource and if we've to remove the GraphQLAPIKeyOutput from meta or not
-                if (amplifyMeta[category][resource]) {
-                  const resourceObject = amplifyMeta[category][resource];
+            if (index !== -1) {
+              const formattedOutputs = formatOutputs(stackResult[index].Stacks[0].Outputs);
 
-                  if (
-                    resourceObject.service === 'AppSync' &&
-                    resourceObject.output &&
-                    resourceObject.output.GraphQLAPIKeyOutput &&
-                    !formattedOutputs.GraphQLAPIKeyOutput
-                  ) {
-                    const updatedResourceObject = updatedMeta[category][resource];
+              const updatedMeta = this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, resource, 'output', formattedOutputs);
 
-                    if (updatedResourceObject.output.GraphQLAPIKeyOutput) {
-                      delete updatedResourceObject.output.GraphQLAPIKeyOutput;
-                    }
+              // Check to see if this is an AppSync resource and if we've to remove the GraphQLAPIKeyOutput from meta or not
+              if (amplifyMeta[category][resource]) {
+                const resourceObject = amplifyMeta[category][resource];
+
+                if (
+                  resourceObject.service === 'AppSync' &&
+                  resourceObject.output &&
+                  resourceObject.output.GraphQLAPIKeyOutput &&
+                  !formattedOutputs.GraphQLAPIKeyOutput
+                ) {
+                  const updatedResourceObject = updatedMeta[category][resource];
+
+                  if (updatedResourceObject.output.GraphQLAPIKeyOutput) {
+                    delete updatedResourceObject.output.GraphQLAPIKeyOutput;
                   }
-
-                  const amplifyMetaFilePath = this.context.amplify.pathManager.getAmplifyMetaFilePath();
-                  const jsonString = JSON.stringify(updatedMeta, null, 4);
-                  fs.writeFileSync(amplifyMetaFilePath, jsonString, 'utf8');
                 }
+
+                if (resourceObject.service === 'S3AndCloudFront' && resourceObject.output) {
+                  updatedMeta[category][resource].output = formattedOutputs;
+                }
+
+                stateManager.setMeta(undefined, updatedMeta);
               }
-            });
+            }
           });
         });
-      });
+    }
   }
 
   listExports(nextToken = null) {
@@ -468,12 +478,12 @@ function showEvents(events) {
       });
       return res;
     });
-    console.log(
-      columnify(e, {
-        columns: COLUMNS,
-        showHeaders: false,
-      }),
-    );
+
+    const formattedEvents = columnify(e, {
+      columns: COLUMNS,
+      showHeaders: false,
+    });
+    console.log(formattedEvents);
   }
 }
 

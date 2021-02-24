@@ -1,6 +1,6 @@
-const open = require('open');
 const ora = require('ora');
 const inquirer = require('inquirer');
+const { open } = require('amplify-cli-core');
 
 const constants = require('./constants');
 const authHelper = require('./auth-helper');
@@ -115,7 +115,7 @@ async function createPinpointApp(context, resourceName) {
   context.exeInfo.pinpointApp = pinpointApp; // needed for authHelper.ensureAuth(context);
 
   context.print.info('');
-  await authHelper.ensureAuth(context);
+  await authHelper.ensureAuth(context, resourceName);
   context.print.info('');
 
   return resourceName;

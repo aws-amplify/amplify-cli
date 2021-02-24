@@ -152,7 +152,7 @@ type Subscription {
 "
 `;
 
-exports[`DynmoDB transformer should add not default primary key when ID is defined 1`] = `
+exports[`DynamoDB transformer should add not default primary key when ID is defined 1`] = `
 "## [Start] Set default values. **
 #set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **

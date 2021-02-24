@@ -14,6 +14,11 @@ const typeDefs: TypeDef[] = [
     relativeSourcePaths: [path.join('auth', 'add.ts')],
   },
   {
+    typeName: 'UpdateAuthRequest',
+    category: 'auth',
+    relativeSourcePaths: ['add.ts', 'update.ts'].map(file => path.join('auth', file)),
+  },
+  {
     typeName: 'AddApiRequest',
     category: 'api',
     relativeSourcePaths: [path.join('api', 'add.ts')],
@@ -27,7 +32,7 @@ const typeDefs: TypeDef[] = [
     typeName: 'UpdateApiRequest',
     category: 'api',
     relativeSourcePaths: ['add.ts', 'update.ts'].map(file => path.join('api', file)),
-  }
+  },
 ];
 
 const schemaFileName = (typeName: string) => `${typeName}.schema.json`;
@@ -53,6 +58,7 @@ typeDefs.forEach(typeDef => {
   }
   fs.ensureFileSync(schemaFilePath);
   fs.writeFileSync(schemaFilePath, JSON.stringify(typeSchema, undefined, 4));
+  console.log(`Schema version ${version} written for type ${typeDef.typeName}.`);
 });
 
 // Interface types are expected to be exported as "typeName" in the file

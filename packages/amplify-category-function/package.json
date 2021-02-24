@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "2.23.4",
+  "version": "2.30.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",
@@ -14,22 +14,24 @@
   "scripts": {
     "build": "tsc",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "test": "jest"
+    "test": "jest",
+    "watch": "tsc -w"
   },
   "keywords": [
     "amplify",
     "aws"
   ],
   "dependencies": {
-    "amplify-category-storage": "2.7.4",
-    "amplify-function-plugin-interface": "1.4.1",
-    "enquirer": "^2.3.5",
+    "amplify-cli-core": "1.17.0",
+    "amplify-function-plugin-interface": "1.7.0",
+    "cloudform-types": "^4.2.0",
+    "enquirer": "^2.3.6",
     "folder-hash": "^3.3.2",
     "fs-extra": "^8.1.0",
     "globby": "^11.0.1",
-    "graphql-transformer-core": "6.21.3",
-    "inquirer": "^7.0.3",
-    "inquirer-datepicker": "^1.1.0",
+    "graphql-transformer-core": "6.26.2",
+    "inquirer": "^7.3.3",
+    "inquirer-datepicker": "^2.0.0",
     "jstreemap": "^1.28.2",
     "lodash": "^4.17.19",
     "mime-types": "^2.1.26",

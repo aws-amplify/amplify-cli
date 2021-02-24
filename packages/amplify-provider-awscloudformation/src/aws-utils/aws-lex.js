@@ -1,5 +1,5 @@
 const aws = require('./aws.js');
-const configurationManager = require('../../lib/configuration-manager');
+const configurationManager = require('../configuration-manager');
 
 const serviceRegionMap = {
   'us-east-1': 'us-east-1',
