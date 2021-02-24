@@ -97,7 +97,6 @@ async function getRefreshedTokens(context: $TSContext, appId: string) {
       // Refresh stored tokens
       authConfig.accessToken.jwtToken = refreshedTokens.AccessToken;
       authConfig.idToken.jwtToken = refreshedTokens.IdToken;
-      authConfig.refreshToken.token = refreshedTokens.RefreshToken;
       stateManager.setAmplifyAdminConfigEntry(appId, authConfig);
     } catch {
       // Refresh failed, fall back to login
