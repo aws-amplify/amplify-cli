@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.28.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.28.0...amplify-util-mock@3.28.1) (2021-02-24)
+
+
+### Bug Fixes
+
+* handle no mock args ([#6659](https://github.com/aws-amplify/amplify-cli/issues/6659)) ([6b97ffa](https://github.com/aws-amplify/amplify-cli/commit/6b97ffa34d387c6a6e1e494d8f25db33710de5fa))
+
+
+
+
+
 # [3.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.27.9...amplify-util-mock@3.28.0) (2021-02-17)
 
 
