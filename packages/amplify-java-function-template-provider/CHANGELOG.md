@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.3...amplify-java-function-template-provider@1.5.4-beta.0) (2021-02-24)
+
+
+### Bug Fixes
+
+* func plugin interface version ([41a6e75](https://github.com/aws-amplify/amplify-cli/commit/41a6e754cf27aaec95853e8a61a499ddcc9dd3c8))
+
+
+
+
+
 ## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.2...amplify-java-function-template-provider@1.5.3) (2021-02-17)
 
 **Note:** Version bump only for package amplify-java-function-template-provider

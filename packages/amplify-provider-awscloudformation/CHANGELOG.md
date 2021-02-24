@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.39.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.39.1-beta.0...amplify-provider-awscloudformation@4.39.1-beta.1) (2021-02-24)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** Amplify Admin authentication token refresh ([#6721](https://github.com/aws-amplify/amplify-cli/issues/6721)) ([bda37b4](https://github.com/aws-amplify/amplify-cli/commit/bda37b45939266c700fc8cab6b17807ea12a2c32))
+
+
+
+
+
 ## [4.39.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.39.0...amplify-provider-awscloudformation@4.39.1-beta.0) (2021-02-23)
 
 

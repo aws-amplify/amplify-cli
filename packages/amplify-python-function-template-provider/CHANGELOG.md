@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.4...amplify-python-function-template-provider@1.3.5-beta.0) (2021-02-24)
+
+
+### Bug Fixes
+
+* func plugin interface version ([41a6e75](https://github.com/aws-amplify/amplify-cli/commit/41a6e754cf27aaec95853e8a61a499ddcc9dd3c8))
+
+
+
+
+
 ## [1.3.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.3...amplify-python-function-template-provider@1.3.4) (2021-02-17)
 
 **Note:** Version bump only for package amplify-python-function-template-provider

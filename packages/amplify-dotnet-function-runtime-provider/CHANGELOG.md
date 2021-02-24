@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.5.0...amplify-dotnet-function-runtime-provider@1.5.1-beta.0) (2021-02-24)
+
+
+### Bug Fixes
+
+* func plugin interface version ([41a6e75](https://github.com/aws-amplify/amplify-cli/commit/41a6e754cf27aaec95853e8a61a499ddcc9dd3c8))
+
+
+
+
+
 # [1.5.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-runtime-provider@1.4.1...amplify-dotnet-function-runtime-provider@1.5.0) (2021-02-17)
 
 
