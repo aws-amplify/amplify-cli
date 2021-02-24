@@ -15,7 +15,7 @@ describe('getGraphQLDocPath', () => {
 
   it('should return parent folder for include glob path when frontend is not android and include path is defined', () => {
     const graphQLDirectory = getIncludePatterns('javascript').graphQLDirectory;
-    const includePathGlob = 'path/to/graphql/**/*.js';
+    const includePathGlob = ['path/to/graphql/**/*.js'];
     expect(getGraphQLDocPath('javascript', graphQLDirectory, includePathGlob)).toEqual('path/to/graphql');
   });
 });
