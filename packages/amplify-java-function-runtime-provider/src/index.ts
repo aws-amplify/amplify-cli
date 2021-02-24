@@ -3,7 +3,7 @@ import { buildResource } from './utils/build';
 import { packageResource } from './utils/package';
 import { checkJava, checkJavaCompiler, checkGradle } from './utils/detect';
 import { invokeResource } from './utils/invoke';
-import { CheckDependenciesResult } from 'amplify-function-plugin-interface/src';
+import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
 import path from 'path';
 import { relativeShimSrcPath } from './utils/constants';
 import { GetPackageAssetPaths } from 'amplify-cli-core';
