@@ -15,8 +15,5 @@
     "build": "tsc",
     "clean": "rimraf ./lib",
     "watch": "tsc -w"
-  },
-  "devDependencies": {
-    "amplify-cli-core": "1.17.1"
   }
 }
