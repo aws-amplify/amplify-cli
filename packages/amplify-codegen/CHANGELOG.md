@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.21.2...amplify-codegen@2.21.3) (2021-02-24)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** correct docFilePath in codegen add and configure ([#6530](https://github.com/aws-amplify/amplify-cli/issues/6530)) ([f82b069](https://github.com/aws-amplify/amplify-cli/commit/f82b0694953c74dc904505e03a9b8e4a24287053))
+* **amplify-codegen:** use correct array type for includePattern ([#6722](https://github.com/aws-amplify/amplify-cli/issues/6722)) ([e384524](https://github.com/aws-amplify/amplify-cli/commit/e384524d7f783a3c2f7dd27381ffcf1a6a293b68))
+
+
+
+
+
 ## [2.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-codegen@2.21.1...amplify-codegen@2.21.2) (2021-02-17)
 
 **Note:** Version bump only for package amplify-codegen

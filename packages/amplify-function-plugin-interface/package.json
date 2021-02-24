@@ -1,6 +1,6 @@
 {
   "name": "amplify-function-plugin-interface",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Interface for plugins that provide additional functionality to function category plugins",
   "repository": {
     "type": "git",
@@ -17,6 +17,6 @@
     "watch": "tsc -w"
   },
   "devDependencies": {
-    "amplify-cli-core": "1.17.0"
+    "amplify-cli-core": "1.17.1"
   }
 }
