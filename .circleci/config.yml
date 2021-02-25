@@ -17,7 +17,7 @@ jobs:
           create-repo: false
           dockerfile: Dockerfile
           repo: amplify-cli-e2e-base-image-repo
-          tag: "latest"
+          tag: "latest,${CIRCLE_SHA1}"
 
 workflows:
   version: 2.1
