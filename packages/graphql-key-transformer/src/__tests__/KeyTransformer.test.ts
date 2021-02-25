@@ -343,8 +343,16 @@ describe('check schema input', () => {
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    const schema = out.schema;
-    expect(schema).toMatchSnapshot();
+    const schema = parse(out.schema);
+
+    const DeleteCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+    ) as InputObjectTypeDefinitionNode | undefined;
+    expect(DeleteCallInput).toBeDefined();
+    const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
+    expect(receiverIdField).toBeDefined();
+    const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
+    expect(senderIdField).toBeUndefined();
   });
 
   it('@model mutation with user defined create args ', () => {
@@ -371,7 +379,15 @@ describe('check schema input', () => {
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
-    const schema = out.schema;
-    expect(schema).toMatchSnapshot();
+    const schema = parse(out.schema);
+
+    const DeleteCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+    ) as InputObjectTypeDefinitionNode | undefined;
+    expect(DeleteCallInput).toBeDefined();
+    const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
+    expect(receiverIdField).toBeDefined();
+    const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
+    expect(senderIdField).toBeDefined();
   });
 });
