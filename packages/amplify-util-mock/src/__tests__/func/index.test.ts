@@ -136,4 +136,16 @@ describe('function start', () => {
     expect(inquirer_mock.prompt.mock.calls[0][0][0].choices).toStrictEqual(['func1', 'func2', 'func3']);
     expect(getBuilder_mock.mock.calls[0][1]).toBe('func2');
   });
+
+  it('handles no options specified', async () => {
+    const invoker = jest.fn().mockResolvedValue(null);
+    getInvoker_mock.mockResolvedValueOnce(invoker);
+    inquirer_mock.prompt.mockResolvedValueOnce({ eventName: 'event.json' });
+
+    const context_stub_copy = _.merge({}, context_stub);
+    context_stub_copy.input.options = undefined;
+    await start(context_stub_copy);
+    expect(invoker.mock.calls.length).toBe(1);
+    expect(context_stub_copy.print.error.mock.calls.length).toBe(0);
+  });
 });

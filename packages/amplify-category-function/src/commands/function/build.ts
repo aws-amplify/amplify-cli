@@ -15,10 +15,7 @@ export const run = async (context: $TSContext) => {
   const confirmContinue =
     !!resourceName ||
     context.input?.options?.yes ||
-    (await context.amplify.confirmPrompt(
-      'This will build all functions and layers in your project. Are you sure you want to continue?',
-      false,
-    ));
+    (await context.amplify.confirmPrompt('Are you sure you want to continue building the resources?', false));
   if (!confirmContinue) {
     return;
   }

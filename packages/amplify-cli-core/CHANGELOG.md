@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.17.0...amplify-cli-core@1.17.1) (2021-02-24)
+
+**Note:** Version bump only for package amplify-cli-core
+
+
+
+
+
+# [1.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.16.0...amplify-cli-core@1.17.0) (2021-02-17)
+
+
+### Features
+
+* **amplify-cli-core:** add validations to tag Key and Value ([31eb8eb](https://github.com/aws-amplify/amplify-cli/commit/31eb8ebff2fcbd215975c8ac05287d023d544c42))
+* Separate prod and dev lambda function builds ([#6494](https://github.com/aws-amplify/amplify-cli/issues/6494)) ([2977c6a](https://github.com/aws-amplify/amplify-cli/commit/2977c6a886b33a38ef46f898a2adc1ffdb6d228b))
+
+
+
+
+
 # [1.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.15.0...amplify-cli-core@1.16.0) (2021-02-11)
 
 

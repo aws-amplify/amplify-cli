@@ -1,6 +1,6 @@
 const { sync } = require('glob-all');
 const path = require('path');
-const { generate } = require('amplify-graphql-types-generator');
+const { generate } = require('@aws-amplify/graphql-types-generator');
 const fs = require('fs-extra');
 
 const loadConfig = require('../../src/codegen-config');
@@ -19,10 +19,25 @@ const MOCK_CONTEXT = {
 };
 
 jest.mock('glob-all');
-jest.mock('amplify-graphql-types-generator');
+jest.mock('@aws-amplify/graphql-types-generator');
 jest.mock('../../src/codegen-config');
 jest.mock('../../src/utils');
 jest.mock('fs-extra');
+// Mock the Feature flags for statements and types generation to use migrated packages
+jest.mock('amplify-cli-core', () => {
+  return {
+    FeatureFlags: {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'codegen.useDocsGeneratorPlugin') {
+          return true;
+        }
+        if (name === 'codegen.useTypesGeneratorPlugin') {
+          return true;
+        }
+      })
+    },
+  };
+});
 
 const MOCK_INCLUDE_PATH = 'MOCK_INCLUDE';
 const MOCK_EXCLUDE_PATH = 'MOCK_EXCLUDE';

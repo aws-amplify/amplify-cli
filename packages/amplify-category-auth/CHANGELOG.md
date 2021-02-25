@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.28.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.28.1...amplify-category-auth@2.28.2) (2021-02-24)
+
+
+### Bug Fixes
+
+* **auth:** update oauth prompt help text to mention that selecting "no" will remove existing configuration ([#6670](https://github.com/aws-amplify/amplify-cli/issues/6670)) ([83ec192](https://github.com/aws-amplify/amplify-cli/commit/83ec1923bdeffc328d0e97b658657894a79f4ca0))
+* insert hostedUIProviderCreds empty array on hostedUI ([#6485](https://github.com/aws-amplify/amplify-cli/issues/6485)) ([5ebee51](https://github.com/aws-amplify/amplify-cli/commit/5ebee516373c0544f1400f054eb382bb5b887253))
+
+
+### Reverts
+
+* Revert "fix: insert hostedUIProviderCreds empty array on hostedUI (#6485)" (#6682) ([4185595](https://github.com/aws-amplify/amplify-cli/commit/41855953b074fe4179a68a4acaf9796515e12688)), closes [#6485](https://github.com/aws-amplify/amplify-cli/issues/6485) [#6682](https://github.com/aws-amplify/amplify-cli/issues/6682)
+
+
+
+
+
+## [2.28.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.28.0...amplify-category-auth@2.28.1) (2021-02-17)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
 # [2.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.27.0...amplify-category-auth@2.28.0) (2021-02-11)
 
 

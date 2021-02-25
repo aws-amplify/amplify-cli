@@ -1,11 +1,11 @@
-import open from 'open';
 import ora from 'ora';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, open } from 'amplify-cli-core';
 
 import { adminVerifyUrl, adminBackendMap, isAmplifyAdminApp } from './utils/admin-helpers';
 import { AdminLoginServer } from './utils/admin-login-server';
 
-export async function adminLoginFlow(context: $TSContext, appId: string, envName: string, region?: string) {
+export async function adminLoginFlow(context: $TSContext, appId: string, envName?: string, region?: string) {
+  envName = envName || context.amplify.getEnvInfo().envName;
   if (!region) {
     const { isAdminApp, region: _region } = await isAmplifyAdminApp(appId);
     if (!isAdminApp) {

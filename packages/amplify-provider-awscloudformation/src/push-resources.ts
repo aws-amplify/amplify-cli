@@ -471,7 +471,6 @@ async function prepareBuildableResources(context: $TSContext, resources: $TSAny[
 }
 
 async function prepareResource(context: $TSContext, resource: $TSAny) {
-  // currently the only category that has a "buildable" resource is the functions category, hence the hardcoding
   resource.lastBuildTimeStamp = await context.amplify.invokePluginMethod(context, 'function', undefined, 'buildResource', [
     context,
     resource,

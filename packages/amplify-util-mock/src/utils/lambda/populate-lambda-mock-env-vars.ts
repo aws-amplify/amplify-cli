@@ -22,7 +22,13 @@ export const populateLambdaMockEnvVars = async (context: $TSContext, processedLa
 
 const getAwsCredentials = async (_, context: $TSContext): Promise<Record<string, string>> => {
   const env = stateManager.getLocalEnvInfo().envName;
-  const awsConfig = await loadConfigurationForEnv(context, env, resolveAppId(context));
+  let appId: string | undefined = undefined;
+  try {
+    appId = resolveAppId(context);
+  } catch {
+    // swallow no appId found as it's not necessary for mocking
+  }
+  const awsConfig = await loadConfigurationForEnv(context, env, appId);
   return {
     AWS_ACCESS_KEY_ID: awsConfig.accessKeyId,
     AWS_SECRET_ACCESS_KEY: awsConfig.secretAccessKey,

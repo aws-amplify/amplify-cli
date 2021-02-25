@@ -10,7 +10,7 @@ import {
   fetchPermissionResourcesForCategory,
   fetchPermissionsForResourceInCategory,
 } from '../utils/permissionMapUtils';
-import { FunctionParameters, FunctionDependency } from 'amplify-function-plugin-interface/src';
+import { FunctionParameters, FunctionDependency } from 'amplify-function-plugin-interface';
 import { appsyncTableSuffix } from '../utils/constants';
 import { getAppSyncResourceName } from '../utils/appSyncHelper';
 import { stateManager, FeatureFlags } from 'amplify-cli-core';
@@ -241,9 +241,7 @@ export const askExecRolePermissionsQuestions = async (
     });
   }
 
-  const envVarStringList = Array.from(envVars)
-    .sort()
-    .join('\n\t');
+  const envVarStringList = Array.from(envVars).sort().join('\n\t');
 
   context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
 
