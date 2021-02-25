@@ -51,6 +51,6 @@ RUN sudo apt-get install apt-transport-https
 RUN sudo apt-get update
 RUN sudo apt-get install dotnet-sdk-3.1
 RUN dotnet --version
-RUN sudo dotnet tool install --tool-path /usr/local/.net/tools amazon.lambda.tools
-RUN sudo dotnet tool install --tool-path /usr/local/.net/tools amazon.lambda.testtool-3.1
-ENV PATH=${PATH}:/usr/local/.net/tools
+RUN dotnet tool install --tool-path /usr/local/.net/tools amazon.lambda.tools
+RUN dotnet tool install --tool-path /usr/local/.net/tools amazon.lambda.testtool-3.1
+ENV PATH=${PATH}:/home/circleci/.dotnet/tools
