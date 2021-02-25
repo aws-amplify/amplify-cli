@@ -219,14 +219,14 @@ export class KeyTransformer extends Transformer {
       if (createResolver) {
         createResolver.Properties.RequestMappingTemplate = joinSnippets([
           this.validateKeyArgumentSnippet(directive, 'create'),
-          ensureCompositeKeySnippet(directive),
+          ensureCompositeKeySnippet(directive, true),
           createResolver.Properties.RequestMappingTemplate,
         ]);
       }
       if (updateResolver) {
         updateResolver.Properties.RequestMappingTemplate = joinSnippets([
           this.validateKeyArgumentSnippet(directive, 'update'),
-          ensureCompositeKeySnippet(directive),
+          ensureCompositeKeySnippet(directive, true),
           updateResolver.Properties.RequestMappingTemplate,
         ]);
       }
@@ -485,20 +485,26 @@ export class KeyTransformer extends Transformer {
   // When issuing an create/update mutation that creates/changes one part of a composite sort key,
   // you must supply the entire key so that the underlying composite key can be resaved
   // in a create/update operation. We only need to update for composite sort keys on secondary indexes.
+  // There is some tight coupling between setting 'hasSeenSomeKeyArg' in this method and calling ensureCompositeKeySnippet with conditionallySetSortKey = true
+  // That function expects this function to set 'hasSeenSomeKeyArg'.
   private validateKeyArgumentSnippet = (directive: DirectiveNode, keyOperation: 'create' | 'update'): string => {
     const directiveArgs: KeyArguments = getDirectiveArguments(directive);
     if (!this.isPrimaryKey(directive) && directiveArgs.fields.length > 2) {
       const sortKeyFields = directiveArgs.fields.slice(1);
       return printBlock(`Validate ${keyOperation} mutation for @key '${directiveArgs.name}'`)(
         compoundExpression([
-          set(ref('hasSeenSomeKeyArg'), bool(false)),
+          set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(false)),
           set(ref('keyFieldNames'), list(sortKeyFields.map(f => str(f)))),
           forEach(ref('keyFieldName'), ref('keyFieldNames'), [
-            iff(raw(`$ctx.args.input.containsKey("$keyFieldName")`), set(ref('hasSeenSomeKeyArg'), bool(true)), true),
+            iff(
+              raw(`$ctx.args.input.containsKey("$keyFieldName")`),
+              set(ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg), bool(true)),
+              true,
+            ),
           ]),
           forEach(ref('keyFieldName'), ref('keyFieldNames'), [
             iff(
-              raw(`$hasSeenSomeKeyArg && !$ctx.args.input.containsKey("$keyFieldName")`),
+              raw(`$${ResourceConstants.SNIPPETS.HasSeenSomeKeyArg} && !$ctx.args.input.containsKey("$keyFieldName")`),
               raw(
                 `$util.error("When ${keyOperation.replace(/.$/, 'ing')} any part of the composite sort key for @key '${
                   directiveArgs.name
@@ -895,7 +901,11 @@ function modelObjectKey(args: KeyArguments, isMutation: boolean) {
   throw new InvalidDirectiveError('@key directives must include at least one field.');
 }
 
-function ensureCompositeKeySnippet(dir: DirectiveNode): string {
+/**
+ * @param dir The directive to generate a resolver for
+ * @param conditionallySetSortKey Whether or not to check hasSeenSomeKeyArg before setting the composite sort key (see https://github.com/aws-amplify/amplify-cli/issues/6634)
+ */
+function ensureCompositeKeySnippet(dir: DirectiveNode, conditionallySetSortKey: boolean = false): string {
   const args: KeyArguments = getDirectiveArguments(dir);
   const argsPrefix = 'ctx.args.input';
   if (args.fields.length > 2) {
@@ -915,7 +925,12 @@ function ensureCompositeKeySnippet(dir: DirectiveNode): string {
           ),
           qref(`$${ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap}.put("${condensedSortKey}", "${dynamoDBFriendlySortKeyName}")`),
         ),
-        qref(`$ctx.args.input.put("${condensedSortKey}","${condensedSortKeyValue}")`),
+        conditionallySetSortKey
+          ? iff(
+              ref(ResourceConstants.SNIPPETS.HasSeenSomeKeyArg),
+              qref(`$ctx.args.input.put("${condensedSortKey}","${condensedSortKeyValue}")`),
+            )
+          : qref(`$ctx.args.input.put("${condensedSortKey}","${condensedSortKeyValue}")`),
       ]),
     );
   }
