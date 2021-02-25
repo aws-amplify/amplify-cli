@@ -915,7 +915,7 @@ function ensureCompositeKeySnippet(dir: DirectiveNode): string {
           ),
           qref(`$${ResourceConstants.SNIPPETS.DynamoDBNameOverrideMap}.put("${condensedSortKey}", "${dynamoDBFriendlySortKeyName}")`),
         ),
-        qref(`$ctx.args.input.put("${condensedSortKey}","${condensedSortKeyValue}")`),
+        iff(ref('hasSeenSomeKeyArg'), qref(`$ctx.args.input.put("${condensedSortKey}","${condensedSortKeyValue}")`)),
       ]),
     );
   }

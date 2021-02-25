@@ -26,7 +26,9 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 #else
   $util.qr($dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
 #end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#if( $hasSeenSomeKeyArg )
+  $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#end
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
 #set( $condition = {
@@ -157,7 +159,9 @@ $util.toJson($ctx.result)
 #else
   $util.qr($dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
 #end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#if( $hasSeenSomeKeyArg )
+  $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
@@ -633,7 +637,9 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 #else
   $util.qr($dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
 #end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#if( $hasSeenSomeKeyArg )
+  $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#end
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
 #set( $condition = {
@@ -765,7 +771,9 @@ $util.toJson($ctx.result)
 #else
   $util.qr($dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
 #end
-$util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#if( $hasSeenSomeKeyArg )
+  $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
