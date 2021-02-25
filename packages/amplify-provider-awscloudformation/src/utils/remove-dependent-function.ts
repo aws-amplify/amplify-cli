@@ -2,7 +2,7 @@ import { appsyncTableSuffix } from 'amplify-category-function/lib/provider-utils
 import { $TSContext, $TSObject, pathManager } from 'amplify-cli-core';
 import path from 'path';
 import * as TransformPackage from 'graphql-transformer-core';
-import { updateDepedentFunctionsCfn } from 'amplify-category-function';
+import { updateDependentFunctionsCfn } from 'amplify-category-function';
 
 export async function removeDependencyOnFunctions(
   context: $TSContext,
@@ -13,14 +13,14 @@ export async function removeDependencyOnFunctions(
   let functionResource;
   const backendDir = pathManager.getBackendDirPath();
   const currentBackendDir = pathManager.getCurrentCloudBackendDirPath();
-  const modelsDeleted = await getSchemadiff(currentBackendDir, backendDir, apiResource[0].resourceName);
+  const modelsDeleted = await getSchemaDiff(currentBackendDir, backendDir, apiResource[0].resourceName);
   if (modelsDeleted.length) {
-    functionResource = await updateDepedentFunctionsCfn(context, allResources, backendDir, modelsDeleted, apiResource[0].resourceName);
+    functionResource = await updateDependentFunctionsCfn(context, allResources, backendDir, modelsDeleted, apiResource[0].resourceName);
   }
   return functionResource;
 }
 
-export async function getSchemadiff(currentBackendDir: string, BackendDir: string, apiResourceName: string) {
+export async function getSchemaDiff(currentBackendDir: string, BackendDir: string, apiResourceName: string) {
   const deployedModelNames = await getDeployedModelNames(currentBackendDir, apiResourceName);
   const currentModelNames = await getDeployedModelNames(BackendDir, apiResourceName);
   var modelsDeleted = deployedModelNames.filter(val => !currentModelNames.includes(val));

@@ -1,4 +1,4 @@
-import { updateDepedentFunctionsCfn } from '../../../../provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
+import { updateDependentFunctionsCfn } from '../../../../provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 import { loadFunctionParameters } from '../../../../provider-utils/awscloudformation/utils/loadFunctionParameters';
 import {
   getResourcesforCfn,
@@ -110,7 +110,7 @@ test('update dependent functions', async () => {
         },
       },
     });
-  const fnMetaToBeUpdated = await updateDepedentFunctionsCfn(
+  const fnMetaToBeUpdated = await updateDependentFunctionsCfn(
     (contextStub as unknown) as $TSContext,
     allResources,
     backendDir,
@@ -140,7 +140,7 @@ test('update dependent functions', async () => {
         },
       },
     });
-  const fnMetaToBeUpdated = await updateDepedentFunctionsCfn(
+  const fnMetaToBeUpdated = await updateDependentFunctionsCfn(
     (contextStub as unknown) as $TSContext,
     allResources,
     backendDir,

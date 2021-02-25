@@ -7,7 +7,7 @@ import path from 'path';
 import { functionParametersFileName, ServiceName } from './constants';
 import { category } from '../../../constants';
 
-export async function updateDepedentFunctionsCfn(
+export async function updateDependentFunctionsCfn(
   context: $TSContext,
   allResources: $TSObject[],
   backendDir: string,
@@ -16,7 +16,7 @@ export async function updateDepedentFunctionsCfn(
 ) {
   // remove function parameters from if there is dependency
   /*
-    1) get tyhe List of functions
+    1) get the List of functions
     2) check the functions parameters.json for dependency and api
     3) update CFN and functional parameters file if table is deleted.
     */
@@ -91,7 +91,7 @@ export async function updateDepedentFunctionsCfn(
       //update function-parameters file
       const parametersFilePath = path.join(resourceDirPath, functionParametersFileName);
       JSONUtilities.writeJson(parametersFilePath, currentParameters);
-      // update depensON for lambda
+      // update dependsOn for lambda
       lambda.dependsOn = functionParameters.dependsOn;
       functionMetaToBeUpdated.push(lambda);
       // update amplify-meta.json

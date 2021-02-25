@@ -209,7 +209,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
   });
 
-  it.only('inits a project with a simple model , add a function and removes the depedent @model', async () => {
+  it('inits a project with a simple model , add a function and removes the depedent @model', async () => {
     const projectName = 'blogapp';
     const nextSchema = 'initial_key_blog.graphql';
     const initialSchema = 'two-model-schema.graphql';

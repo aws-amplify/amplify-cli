@@ -5,12 +5,12 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
   const currentResources = [];
   const newResources = [];
   let deletedResources = [];
-  let resourceSet = new Set();
+  let categorySet = new Set();
 
   if (currentDefaults.permissions) {
     Object.keys(currentDefaults.permissions).forEach(category => {
       Object.keys(currentDefaults.permissions[category]).forEach(resourceName => {
-        resourceSet.add(category);
+        categorySet.add(category);
         currentResources.push(`${category.toUpperCase()}_${resourceName.toUpperCase()}_`);
       });
     });
@@ -24,7 +24,7 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
     });
   }
   if (apiResourceName) {
-    apiResourceAddCheck(currentResources, newResources, apiResourceName, resourceSet, true);
+    apiResourceAddCheck(currentResources, newResources, apiResourceName, categorySet, true);
   }
 
   currentResources.forEach(resourceName => {
@@ -71,11 +71,11 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
   const newResources = [];
   const deletedResources = [];
 
-  let resourceSet = new Set();
+  let categorySet = new Set();
   if (currentDefaults.permissions) {
     Object.keys(currentDefaults.permissions).forEach(category => {
       Object.keys(currentDefaults.permissions[category]).forEach(resourceName => {
-        resourceSet.add(category);
+        categorySet.add(category);
         currentResources.push(`${category}${resourceName}`);
       });
     });
@@ -91,7 +91,7 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
 
   // hack to add api category to current defaults if storage is added
   if (apiResourceName) {
-    apiResourceAddCheck(currentResources, newResources, apiResourceName, resourceSet, false);
+    apiResourceAddCheck(currentResources, newResources, apiResourceName, categorySet, false);
   }
 
   currentResources.forEach(resourceName => {
