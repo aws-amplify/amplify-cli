@@ -269,6 +269,30 @@ test('Test that sort direction and filter input are generated if default list qu
   expect(todoInputType).toBeDefined();
 });
 
+test('GSI composite sort keys are wrapped in conditional to check presence in mutation', () => {
+  const validSchema = /* GraphQL */ `
+    type Person
+      @model
+      @key(fields: ["id", "firstName", "lastName"])
+      @key(name: "byNameAndAge", fields: ["firstName", "age", "birthDate"], queryField: "getPersonByNameByDate")
+      @key(name: "byNameAndNickname", fields: ["firstName", "lastName", "nickname"]) {
+      id: ID!
+      firstName: String!
+      lastName: String!
+      birthDate: AWSDate
+      nickname: String
+      age: Int
+    }
+  `;
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+  });
+
+  const result = transformer.transform(validSchema);
+  expect(result?.resolvers?.['Mutation.createPerson.req.vtl']).toMatchSnapshot();
+  expect(result?.resolvers?.['Mutation.updatePerson.req.vtl']).toMatchSnapshot();
+});
+
 function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitionNode | undefined {
   return doc.definitions.find((def: DefinitionNode) => def.kind === Kind.INPUT_OBJECT_TYPE_DEFINITION && def.name.value === type) as
     | InputObjectTypeDefinitionNode
