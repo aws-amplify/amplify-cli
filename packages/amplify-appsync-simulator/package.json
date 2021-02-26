@@ -35,7 +35,6 @@
     "express": "^4.17.1",
     "graphql": "^14.5.8",
     "graphql-iso-date": "^3.6.1",
-    "graphql-scalars": "^1.0.6",
     "graphql-subscriptions": "^1.1.0",
     "graphql-tools": "^4.0.6",
     "graphql-type-json": "^0.3.1",
