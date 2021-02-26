@@ -191,14 +191,14 @@ export class KeyTransformer extends Transformer {
       if (createResolver) {
         createResolver.Properties.RequestMappingTemplate = joinSnippets([
           this.setKeySnippet(directive, true),
-          ensureCompositeKeySnippet(directive),
+          ensureCompositeKeySnippet(directive, false),
           createResolver.Properties.RequestMappingTemplate,
         ]);
       }
       if (updateResolver) {
         updateResolver.Properties.RequestMappingTemplate = joinSnippets([
           this.setKeySnippet(directive, true),
-          ensureCompositeKeySnippet(directive),
+          ensureCompositeKeySnippet(directive, false),
           updateResolver.Properties.RequestMappingTemplate,
         ]);
       }
@@ -232,7 +232,7 @@ export class KeyTransformer extends Transformer {
       }
       if (deleteResolver) {
         deleteResolver.Properties.RequestMappingTemplate = joinSnippets([
-          ensureCompositeKeySnippet(directive),
+          ensureCompositeKeySnippet(directive, false),
           deleteResolver.Properties.RequestMappingTemplate,
         ]);
       }
@@ -905,7 +905,7 @@ function modelObjectKey(args: KeyArguments, isMutation: boolean) {
  * @param dir The directive to generate a resolver for
  * @param conditionallySetSortKey Whether or not to check hasSeenSomeKeyArg before setting the composite sort key (see https://github.com/aws-amplify/amplify-cli/issues/6634)
  */
-function ensureCompositeKeySnippet(dir: DirectiveNode, conditionallySetSortKey: boolean = false): string {
+function ensureCompositeKeySnippet(dir: DirectiveNode, conditionallySetSortKey: boolean): string {
   const args: KeyArguments = getDirectiveArguments(dir);
   const argsPrefix = 'ctx.args.input';
   if (args.fields.length > 2) {
