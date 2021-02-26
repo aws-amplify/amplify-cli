@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.28.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.28.2...amplify-category-auth@2.28.3-beta.0) (2021-02-26)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
 ## [2.28.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.28.1...amplify-category-auth@2.28.2) (2021-02-24)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.35.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.34.3...amplify-e2e-tests@2.35.0-beta.0) (2021-02-26)
+
+
+### Features
+
+* **graphql-key-transformer:** only modify GSI sort key when present ([#6742](https://github.com/aws-amplify/amplify-cli/issues/6742)) ([7cbd396](https://github.com/aws-amplify/amplify-cli/commit/7cbd39632181a5bc323ac3ad3a835a358c74adf6))
+
+
+
+
+
 ## [2.34.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.34.2...amplify-e2e-tests@2.34.3) (2021-02-24)
 
 **Note:** Version bump only for package amplify-e2e-tests
