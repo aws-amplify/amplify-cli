@@ -3,6 +3,7 @@ const fs = require('fs-extra');
 
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');
+const frameworkConfigMapping = require('./lib/framework-config-mapping');
 const configManager = require('./lib/configuration-manager');
 const server = require('./lib/server');
 const publisher = require('./lib/publisher');
@@ -30,6 +31,14 @@ async function createFrontendConfigs(context, amplifyResources, amplifyCloudReso
   const cloudOutputsForFrontend = amplifyCloudResources.outputsForFrontend;
   // createAmplifyConfig(context, outputsByCategory);
   return await createAWSExports(context, newOutputsForFrontend, cloudOutputsForFrontend);
+}
+
+function setFrontendDefaults(context, projectPath) {
+  return configManager.setFrontendDefaults(context, projectPath);
+}
+
+function displayFrontendDefaults(context, projectPath) {
+  return configManager.displayFrontendDefaults(context, projectPath);
 }
 
 const initializeAwsExports = destDir => {
@@ -74,6 +83,8 @@ module.exports = {
   init,
   onInitSuccessful,
   configure,
+  displayFrontendDefaults,
+  setFrontendDefaults,
   publish,
   run,
   createFrontendConfigs,

@@ -2,7 +2,9 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import { InvalidEnvironmentNameError, stateManager, exitOnNextTick, $TSContext } from 'amplify-cli-core';
-import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
+import { normalizeEditor, editorSelection, editors } from '../extensions/amplify-helpers/editor-selection';
+import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
+import { getSuitableFrontend } from './s1-initFrontend';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
 
@@ -23,13 +25,44 @@ export async function analyzeProjectHeadless(context: $TSContext) {
   }
 }
 
-async function displayDefaults(context) {
-  const defaultEnv = 'dev';
-  const defaultProjectName = getDefaultProjectName(process.cwd());
-
-  context.print.info('We will apply the following configuration:');
-  context.print.info('Project information');
+function displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName) {
+  context.print.success('We will apply the following configuration:\n');
+  context.print.info('Project Information');
   context.print.info(`| Name: ${defaultProjectName}`);
+  context.print.info(`| Environment: ${defaultEnv}`);
+  context.print.info(`| Default editor: ${defaultEditorName}`);
+}
+
+function setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditor) {
+  setExeInfo(context, projectPath, defaultEditor, defaultEnv);
+  setProjectConfig(context, defaultProjectName);
+  context.exeInfo.inputParams.amplify = {};
+  context.exeInfo.inputParams.amplify.projectName = defaultProjectName;
+  context.exeInfo.inputParams.amplify.envName = defaultEnv;
+  context.exeInfo.inputParams.amplify.defaultEditor = defaultEditor;
+}
+
+async function displayAndSetDefaults(context, projectPath, projectName) {
+  const defaultProjectName = projectName;
+  const defaultEnv = getDefaultEnv(context);
+  const defaultEditorName = editors.length > 0 ? editors[0].name : 'Visual Studio Code';
+  const defaultEditor = editors.length > 0 ? editors[0].value : 'vscode';
+
+  await displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
+
+  const frontendPlugins = getFrontendPlugins(context);
+  const defaultFrontend = getSuitableFrontend(frontendPlugins, projectPath);
+  const frontendModule = require(frontendPlugins[defaultFrontend]);
+
+  await frontendModule.displayFrontendDefaults(context, projectPath);
+  context.print.info('');
+
+  const useDefaults = await context.amplify.confirmPrompt('Initialize the project with the above configuration?');
+
+  if (useDefaults) {
+    await setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditor);
+    await frontendModule.setFrontendDefaults(context, projectPath);
+  }
 }
 
 export async function analyzeProject(context): Promise<$TSContext> {
@@ -39,10 +72,7 @@ export async function analyzeProject(context): Promise<$TSContext> {
   const projectPath = process.cwd();
   context.exeInfo.isNewProject = isNewProject(context);
   const projectName = await getProjectName(context);
-  const useDefaults = await context.amplify.confirmPrompt('Initialize the project with the above configuration?');
-  if (useDefaults) {
-    context.exeInfo.inputParams.yes = true;
-  }
+  await displayAndSetDefaults(context, projectPath, projectName);
   const envName = await getEnvName(context);
 
   let defaultEditor = getDefaultEditor();
@@ -90,10 +120,6 @@ function setExeInfo(context: $TSContext, projectPath: String, defaultEditor?: St
   context.exeInfo.metaData = {};
 
   return context;
-}
-
-function getDefaultProjectName(projectPath) {
-  return normalizeProjectName(path.basename(projectPath));
 }
 
 /* Begin getProjectName */
