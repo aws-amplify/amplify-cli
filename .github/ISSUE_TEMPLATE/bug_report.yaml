@@ -1,43 +1,58 @@
----
 name: Bug report
-title: ''
 about: Create a report to help us improve Amplify CLI
+title: ""
 issue_body: true
 body:
 - type: markdown
   attributes:
     value: Thanks for taking the time to fill out this bug report! Try to include as much information as you can. 
-
 - type: markdown
   attributes:
-    value: > **Note**: If your issue/bug is regarding the AWS Amplify Console service, please log it in the [Amplify Console GitHub Issue Tracker](https://github.com/aws-amplify/amplify-console/issues).
+    value: |
+      > **Note**: If your issue is regarding the AWS Amplify Console service, please log it in the [Amplify Console GitHub Issue Tracker](https://github.com/aws-amplify/amplify-console/issues).
 
-- type: input
+- type: checkboxes
   attributes:
-    label: Amplify CLI Version
-    description: You can use `amplify -v` to check the amplify cli version on your system
-    placeholder: 4.44.0
-  validations:
-    required: true
-
-- type: input
+    label: |
+      Before opening, please confirm.
+    description: 
+    options:
+      - label: I have installed the latest version of the Amplify CLI (<img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />), and confirmed that the issue still persists.
+        required: true
+      - label: I have [searched for duplicate or closed issues](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+).
+        required: true
+      - label: I have read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md#bug-reports).
+        required: true
+      - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
+      - required: true
+ 
+- type: markdown
   attributes:
-    label: What operating system are you using?
-    description: 'For example: Mac, Windows, Ubuntu'
-  validations:
-      required: true
-
+    value: |
+      ## Environment
 - type: input
   attributes:
     label: What version of Node.js are you using?
-    description: You can use `node -v` to check the node version on your system
+    description: You can use `node -v` to check the node version on your system.
   validations:
-      required: true
-
+    required: true
+- type: input
+  attributes:
+    label: Amplify CLI Version
+    description: You can use `amplify -v` to check the amplify cli version on your system.
+    placeholder: "4.44.0"
+  validations:
+    required: true
+- type: input
+  attributes:
+    label: What operating system are you using?
+    description: "For example: Mac, Windows, Ubuntu."
+  validations:
+    required: true
 - type: dropdown
   attributes:
-    label: What categories are being used?
-    description: 
+    label: Amplify Categories
+    description: What categories are being used?
     multiple: true
     options:
       - auth
@@ -49,24 +64,26 @@ body:
       - notifications
       - interactions
       - predictions
+      - xr
       - None
   validations:
     required: true
-
+- type: markdown
+  attributes:
+    value: |
+      ## Details
 - type: textarea
   attributes:
     label: Describe the bug
     description: A clear and concise description of what the bug is. Markdown formatting supported.
   validations:
     required: true
-  
 - type: textarea
   attributes:
     label: Expected behavior
     description: A clear and concise description of what you expected to happen. Markdown formatting supported.
   validations:
     required: true
-
 - type: textarea
   attributes:
     label: Reproduction steps
@@ -78,30 +95,32 @@ body:
       ...
   validations:
     required: true
-
 - type: textarea
   attributes:
     label: Log output
-    description: Include any relevant log output under `~/.amplify/logs/amplify-cli-<issue-date>.log`. Markdown formatting supported.
+    description: |
+      For example, error messages, or stack traces.
 
-- type: textarea
-  attributes:
-    label: Additional context
-    description: Add any other context about the problem here. Markdown formatting supported..
+      Include any relevant log output under:
+      
+      ```
+      ~/.amplify/logs/amplify-cli-<issue-date>.log
+      ``` 
+      
+    value: |
+      ```
+      # Put your logs below this line
 
-- type: checkboxes
-  attributes:
-    label: Before opening, please confirm.
-    description: 
-    options:
-      - label: I have installed the latest version of the Amplify CLI (<img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />), and confirmed that the issue still persists.
-        required: true
-      - label: I have [searched for duplicate or closed issues](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+).
-        required: true
-      - label: I have read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md#bug-reports).
-        required: true
-      - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
-      - required: true
+      ```
 
----
+- type: markdown
+    attributes:
+      value: |
+        ## Additional information
+  - type: markdown
+    attributes:
+      value: >
+        If you have any additional information for us, use the field below.
+        Please note, you can attach screenshots or screen recordings here, by
+        dragging and dropping files in the field below.
 
