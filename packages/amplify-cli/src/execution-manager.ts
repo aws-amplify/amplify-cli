@@ -33,14 +33,8 @@ export async function executeCommand(context: Context) {
 }
 
 function isContainersEnabled(context) {
-  const { frontend } = context.amplify.getProjectConfig();
-  if (frontend) {
-    const { config: { ServerlessContainers = false } = {} } = context.amplify.getProjectConfig()[frontend];
-
-    return ServerlessContainers;
-  }
-
-  return false;
+  const projectConfig = context.amplify.getProjectConfig();
+  return projectConfig?.[projectConfig.frontend]?.config?.ServerlessContainers ?? false;
 }
 
 async function selectPluginForExecution(context: Context, pluginCandidates: PluginInfo[]): Promise<PluginInfo> {
