@@ -1,6 +1,9 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
+title: ''
+labels: feature-request
+assignees: ''
 
 ---
 >**Note**: If your feature-request is regarding the AWS Amplify Console service, please log it in the 
