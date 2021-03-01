@@ -17,7 +17,7 @@ export class AmplifySimulatorFunction extends AppSyncBaseResolver {
     }
   }
 
-  async resolve(source, args, stash, prevResult, context, info): Promise<{ result: any; stash: any }> {
+  async resolve(source, args, stash, prevResult, context, info): Promise<{ result: any; stash: any; hadException: boolean }> {
     let result = null;
     let error = null;
     const requestMappingTemplate = this.getRequestMappingTemplate();
@@ -27,11 +27,12 @@ export class AmplifySimulatorFunction extends AppSyncBaseResolver {
     const requestTemplateResult = await requestMappingTemplate.render({ source, arguments: args, stash, prevResult }, context, info);
     context.appsyncErrors = [...context.appsyncErrors, ...requestTemplateResult.errors];
 
-    if (requestTemplateResult.isReturn) {
-      // #return was used in template, bail and don't run data invoker
+    if (requestTemplateResult.isReturn || requestTemplateResult.hadException) {
+      // #return was used in template, or an exception occurred. Bail and don't run data invoker.
       return {
         result: requestTemplateResult.result,
         stash: requestTemplateResult.stash,
+        hadException: requestTemplateResult.hadException,
       };
     }
     try {
@@ -51,6 +52,7 @@ export class AmplifySimulatorFunction extends AppSyncBaseResolver {
     return {
       stash: responseMappingResult.stash,
       result: responseMappingResult.result,
+      hadException: responseMappingResult.hadException,
     };
   }
 }

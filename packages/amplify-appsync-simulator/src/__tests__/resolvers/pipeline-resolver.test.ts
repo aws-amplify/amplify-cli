@@ -199,5 +199,27 @@ describe('Pipeline Resolvers', () => {
       expect(result).toEqual('RESPONSE_TEMPLATE_RESULT');
       expect(context.appsyncErrors).toEqual(['REQUEST_TEMPLATE_ERROR', 'RESPONSE_TEMPLATE_ERROR']);
     });
+
+    it('bails out early on terminal error', async () => {
+      resolver = new AppSyncPipelineResolver(baseConfig, simulatorContext);
+      fnImpl.fn1 = {
+        resolve: jest.fn().mockImplementation((source, args, stash, prevResult, context, info) => {
+          const err = new Error('fn1-ERROR');
+          context.appsyncErrors = [...context.appsyncErrors, err];
+          return {
+            result: err.message,
+            stash: { ...stash, exeSeq: [...(stash.exeSeq || []), 'fn1'] },
+            hadException: true,
+          };
+        }),
+      };
+
+      const source = 'SOURCE';
+      const context = {
+        appsyncErrors: [],
+      };
+      const result = await resolver.resolve(source, {}, context, {});
+      expect(result).toEqual('fn1-ERROR');
+    });
   });
 });
