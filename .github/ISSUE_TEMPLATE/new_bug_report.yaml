@@ -1,4 +1,4 @@
-name: Bug report
+name: New Bug report
 about: Create a report to help us improve Amplify CLI
 title: ""
 issue_body: true
@@ -29,10 +29,12 @@ body:
       ## Environment
 - type: input
   attributes:
-    label: What version of Node.js are you using?
+    label: How did you install the Amplify CLI?
+    description: "For example: npm, yarn, etc."
+- type: input
+  attributes:
+    label: If applicable, what version of Node.js are you using?
     description: You can use `node -v` to check the node version on your system.
-  validations:
-    required: true
 - type: input
   attributes:
     label: Amplify CLI Version
@@ -137,10 +139,10 @@ body:
     attributes:
       value: |
         ## Additional information
-  - type: markdown
-    attributes:
-      value: >
-        If you have any additional information, workarounds, etc. for us, use the field below.
-        Please note, you can attach screenshots or screen recordings here, by
-        dragging and dropping files in the field below.
+- type: markdown
+  attributes:
+    value: >
+      If you have any additional information, workarounds, etc. for us, use the field below.
+      Please note, you can attach screenshots or screen recordings here, by
+      dragging and dropping files in the field below.
 
