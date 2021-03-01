@@ -105,8 +105,8 @@ describe('create artifacts', () => {
 
   it('writes the default custom resources stack', async () => {
     await cfnApiArtifactHandler.createArtifacts(addRequestStub);
-    expect(fs_mock.copyFileSync.mock.calls.length).toBe(1);
-    expect(fs_mock.copyFileSync.mock.calls[0]).toEqual([
+    expect(fs_mock.copyFileSync.mock.calls.length).toBe(2);
+    expect(fs_mock.copyFileSync.mock.calls[1]).toEqual([
       path.join(rootAssetDir, 'cloudformation-templates', 'defaultCustomResources.json'),
       path.join(backendDirPathStub, category, addRequestStub.serviceConfiguration.apiName, 'stacks', 'CustomResources.json'),
     ]);
@@ -114,7 +114,7 @@ describe('create artifacts', () => {
 
   it('writes the selected template schema to project', async () => {
     await cfnApiArtifactHandler.createArtifacts(addRequestStub);
-    expect(fs_mock.writeFileSync.mock.calls.length).toBe(2);
+    expect(fs_mock.writeFileSync.mock.calls.length).toBe(1);
     expect(fs_mock.writeFileSync.mock.calls[0]).toEqual([
       path.join(backendDirPathStub, category, addRequestStub.serviceConfiguration.apiName, 'schema.graphql'),
       addRequestStub.serviceConfiguration.transformSchema,
