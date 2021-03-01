@@ -3,11 +3,11 @@ import { makeId } from './make-id';
 export const validAlphanumericRegex = /^[a-zA-Z0-9]+$/;
 export const invalidAlphanumericRegex = /[^a-zA-Z0-9]/g;
 
-export function isProjectNameValid(projectName) {
-  return projectName && projectName.length >= 3 && projectName.length <= 20 && validAlphanumericRegex.test(projectName);
+export function isProjectNameValid(projectName: string) {
+  return !!projectName && projectName.length >= 3 && projectName.length <= 20 && validAlphanumericRegex.test(projectName);
 }
 
-export function normalizeProjectName(projectName) {
+export function normalizeProjectName(projectName: string) {
   if (!projectName) {
     projectName = `amplify${makeId(5)}`;
   }

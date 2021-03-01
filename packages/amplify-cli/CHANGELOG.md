@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.44.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.44.1...@aws-amplify/cli@4.44.2) (2021-02-26)
+
+
+
+## 4.44.2 (2021-02-26)
+
+
+### Bug Fixes
+
+* truncate long app names on pull ([#6741](https://github.com/aws-amplify/amplify-cli/issues/6741)) ([748b252](https://github.com/aws-amplify/amplify-cli/commit/748b2524115e6ea071e09430f0d8174110c84829))
+
+
+
+
+
 ## [4.44.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.44.0...@aws-amplify/cli@4.44.1) (2021-02-24)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.21.3...graphql-key-transformer@2.22.0) (2021-02-26)
+
+
+### Features
+
+* **graphql-key-transformer:** only modify GSI sort key when present ([#6742](https://github.com/aws-amplify/amplify-cli/issues/6742)) ([7cbd396](https://github.com/aws-amplify/amplify-cli/commit/7cbd39632181a5bc323ac3ad3a835a358c74adf6))
+
+
+
+
+
 ## [2.21.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.21.2...graphql-key-transformer@2.21.3) (2021-02-24)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "2.29.2",
+  "version": "2.29.3",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -62,14 +62,14 @@
     "@aws-cdk/cx-api": "~1.72.0",
     "@aws-cdk/region-info": "~1.72.0",
     "@graphql-tools/merge": "^6.0.18",
-    "amplify-cli-core": "1.17.1",
+    "amplify-cli-core": "1.17.2",
     "amplify-util-headless-input": "1.4.3",
     "chalk": "^3.0.0",
     "constructs": "^3.2.0",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
-    "graphql-relational-schema-transformer": "2.16.3",
-    "graphql-transformer-core": "6.26.3",
+    "graphql-relational-schema-transformer": "2.16.4",
+    "graphql-transformer-core": "6.26.4",
     "inquirer": "^7.3.3",
     "ora": "^4.0.3",
     "uuid": "^3.4.0"
