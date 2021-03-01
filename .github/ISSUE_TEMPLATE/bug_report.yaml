@@ -10,12 +10,10 @@ body:
   attributes:
     value: |
       > **Note**: If your issue is regarding the AWS Amplify Console service, please log it in the [Amplify Console GitHub Issue Tracker](https://github.com/aws-amplify/amplify-console/issues).
-
 - type: checkboxes
   attributes:
     label: |
       Before opening, please confirm.
-    description: 
     options:
       - label: I have installed the latest version of the Amplify CLI (<img src="https://img.shields.io/npm/v/@aws-amplify/cli.svg" />), and confirmed that the issue still persists.
         required: true
@@ -25,7 +23,6 @@ body:
         required: true
       - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
       - required: true
- 
 - type: markdown
   attributes:
     value: |
@@ -40,7 +37,7 @@ body:
   attributes:
     label: Amplify CLI Version
     description: You can use `amplify -v` to check the amplify cli version on your system.
-    placeholder: "4.44.0"
+    placeholder: "4.44.2"
   validations:
     required: true
 - type: input
@@ -52,7 +49,7 @@ body:
 - type: dropdown
   attributes:
     label: Amplify Categories
-    description: What categories are being used?
+    description: What [Amplify categories](https://github.com/aws-amplify/amplify-cli#category-specific-commands) are being used?
     multiple: true
     options:
       - auth
@@ -72,6 +69,28 @@ body:
   attributes:
     value: |
       ## Details
+- type: dropdown
+  attributes:
+    label: Amplify Commands
+    description: If applicable, what Amplify CLI commands (`amplify ...`) are surfacing the issue?
+    multiple: true
+    options:
+      - configure 
+      - init 
+      - configure project
+      - add 
+      - update
+      - push 
+      - pull
+      - publish
+      - status 
+      - serve 
+      - delete
+      - codegen 
+      - env 
+      - None
+  validations:
+    required: true
 - type: textarea
   attributes:
     label: Describe the bug
@@ -87,9 +106,11 @@ body:
 - type: textarea
   attributes:
     label: Reproduction steps
-    description: How do you trigger this bug? Please walk us through it step by step. Screenshots can be provided in the issue body below. Markdown formatting supported.
+    description: | 
+      How do you trigger this bug? Please walk us through it step by step. 
+      Screenshots can be provided in the issue body below. Markdown formatting supported.
     value: |
-      1.
+      1. 
       2.
       3.
       ...
@@ -112,7 +133,6 @@ body:
       # Put your logs below this line
 
       ```
-
 - type: markdown
     attributes:
       value: |
@@ -120,7 +140,7 @@ body:
   - type: markdown
     attributes:
       value: >
-        If you have any additional information for us, use the field below.
+        If you have any additional information, workarounds, etc. for us, use the field below.
         Please note, you can attach screenshots or screen recordings here, by
         dragging and dropping files in the field below.
 
