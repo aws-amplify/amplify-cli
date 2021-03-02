@@ -1,5 +1,5 @@
-name: New Bug report
-about: Create a report to help us improve Amplify CLI
+name: Bug report
+description: Create a report to help us improve Amplify CLI
 title: ""
 issue_body: true
 body:
