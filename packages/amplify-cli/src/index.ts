@@ -33,9 +33,36 @@ import { logInput } from './conditional-local-logging-init';
 
 EventEmitter.defaultMaxListeners = 1000;
 
+// Change stacktrace limit to max value to capture more details if needed
+Error.stackTraceLimit = Number.MAX_SAFE_INTEGER;
+
+let errorHandler = (e: Error) => {};
+
+process.on('uncaughtException', function (error) {
+  // Invoke the configured error handler if it is already configured
+  if (errorHandler) {
+    errorHandler(error);
+  } else {
+    // Fall back to pure console logging as we have no context, etc in this case
+    if (error.message) {
+      console.error(error.message);
+    }
+
+    if (error.stack) {
+      console.log(error.stack);
+    }
+
+    exitOnNextTick(1);
+  }
+});
+
+// In this handler we have to rethrow the error otherwise the process stucks there.
+process.on('unhandledRejection', function (error) {
+  throw error;
+});
+
 // entry from commandline
 export async function run() {
-  let errorHandler = (e: Error) => {};
   try {
     deleteOldVersion();
     let pluginPlatform = await getPluginPlatform();
