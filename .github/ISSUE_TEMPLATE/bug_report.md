@@ -11,6 +11,7 @@ A clear and concise description of what the bug is.
 
 **Amplify CLI Version**
 You can use `amplify -v` to check the amplify cli version on your system
+In case of regression also mention the prior working Amplify version
 
 **To Reproduce**
 Steps to reproduce the behavior or terminal output if applicable
