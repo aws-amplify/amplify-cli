@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.39.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.39.1...amplify-provider-awscloudformation@4.39.2) (2021-02-26)
+
+**Note:** Version bump only for package amplify-provider-awscloudformation
+
+
+
+
+
+## [4.39.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.39.0...amplify-provider-awscloudformation@4.39.1) (2021-02-24)
+
+
+
+## 4.44.1 (2021-02-24)
+
+
+### Bug Fixes
+
+* insert hostedUIProviderCreds empty array on hostedUI ([#6485](https://github.com/aws-amplify/amplify-cli/issues/6485)) ([5ebee51](https://github.com/aws-amplify/amplify-cli/commit/5ebee516373c0544f1400f054eb382bb5b887253))
+* **amplify-provider-awscloudformation:** Amplify Admin authentication token refresh ([#6721](https://github.com/aws-amplify/amplify-cli/issues/6721)) ([bda37b4](https://github.com/aws-amplify/amplify-cli/commit/bda37b45939266c700fc8cab6b17807ea12a2c32))
+* **amplify-provider-awscloudformation:** use right creds when waiting for ddb table ([#6646](https://github.com/aws-amplify/amplify-cli/issues/6646)) ([e746d2a](https://github.com/aws-amplify/amplify-cli/commit/e746d2a215a596603aa5fe0d5b38e1bae6d14c08))
+
+
+### Reverts
+
+* Revert "fix: insert hostedUIProviderCreds empty array on hostedUI (#6485)" (#6682) ([4185595](https://github.com/aws-amplify/amplify-cli/commit/41855953b074fe4179a68a4acaf9796515e12688)), closes [#6485](https://github.com/aws-amplify/amplify-cli/issues/6485) [#6682](https://github.com/aws-amplify/amplify-cli/issues/6682)
+
+
+
+
+
 # [4.39.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.38.0...amplify-provider-awscloudformation@4.39.0) (2021-02-17)
 
 

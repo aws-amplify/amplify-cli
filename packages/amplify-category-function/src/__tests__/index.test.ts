@@ -1,4 +1,4 @@
-import { initEnv, isMockable } from '../../src';
+import { initEnv, isMockable } from '..';
 import sequential from 'promise-sequential';
 import { stateManager } from 'amplify-cli-core';
 

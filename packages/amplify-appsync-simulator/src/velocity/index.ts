@@ -51,7 +51,7 @@ export class VelocityTemplate {
     ctxValues: AppSyncVTLRenderContext,
     requestContext: AppSyncGraphQLExecutionContext,
     info?: GraphQLResolveInfo,
-  ): { result; stash; errors; isReturn: boolean } {
+  ): { result; stash; errors; isReturn: boolean; hadException: boolean } {
     const context = this.buildRenderContext(ctxValues, requestContext, info);
     let templateResult;
     try {
@@ -59,19 +59,25 @@ export class VelocityTemplate {
     } catch (e) {
       const lastError = context.util.errors.length && context.util.errors[context.util.errors.length - 1];
       if (lastError && lastError instanceof ValidateError) {
-        return { result: lastError.data, errors: [...context.util.errors], isReturn: true, stash: context.ctx.stash.toJSON() };
+        return {
+          result: lastError.data,
+          errors: [...context.util.errors],
+          isReturn: true,
+          stash: context.ctx.stash.toJSON(),
+          hadException: true,
+        };
       }
-      return { result: null, errors: [...context.util.errors], isReturn: false, stash: context.ctx.stash.toJSON() };
+      return { result: null, errors: [...context.util.errors], isReturn: false, stash: context.ctx.stash.toJSON(), hadException: true };
     }
     const isReturn = this.compiler._state.return; // If the template has #return, then set the value
     const stash = context.ctx.stash.toJSON();
     try {
       const result = JSON.parse(templateResult);
-      return { result, stash, errors: context.util.errors, isReturn };
+      return { result, stash, errors: context.util.errors, isReturn, hadException: false };
     } catch (e) {
       if (isReturn) {
         // # when template has #return, if the value is non JSON, we pass that along
-        return { result: templateResult, stash, errors: context.util.errors, isReturn };
+        return { result: templateResult, stash, errors: context.util.errors, isReturn, hadException: false };
       }
       const errorMessage = `Unable to convert ${templateResult} to class com.amazonaws.deepdish.transform.model.lambda.LambdaVersionedConfig.`;
       throw new TemplateSentError(errorMessage, 'MappingTemplate', null, null, info);

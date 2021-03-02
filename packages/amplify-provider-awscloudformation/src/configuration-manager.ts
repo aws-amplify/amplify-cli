@@ -771,8 +771,11 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
     appId = resolveAppId(context);
     if (appId) {
       adminAppConfig = await isAmplifyAdminApp(appId);
-      if (adminAppConfig.isAdminApp && doAdminTokensExist(appId) && projectConfig?.configLevel === 'amplifyAdmin') {
-        return { type: 'admin', appId, region: adminAppConfig.region };
+      if (adminAppConfig.isAdminApp && adminAppConfig.region) {
+        region = adminAppConfig.region;
+        if (doAdminTokensExist(appId) && projectConfig?.configLevel === 'amplifyAdmin') {
+          return { type: 'admin', appId, region };
+        }
       }
     }
   } catch (e) {
@@ -803,6 +806,9 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
   }
 
   const authType = await askAuthType(adminAppConfig?.isAdminApp);
+  if (authType === 'admin') {
+    return { type: authType, appId, region };
+  }
   return { type: authType };
 }
 

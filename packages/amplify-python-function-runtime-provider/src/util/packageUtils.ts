@@ -1,4 +1,4 @@
-import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface/src';
+import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface';
 import archiver from 'archiver';
 import { getPipenvDir } from './pyUtils';
 import path from 'path';

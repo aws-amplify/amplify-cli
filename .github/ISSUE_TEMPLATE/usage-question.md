@@ -1,6 +1,9 @@
 ---
 name: Usage Question
 about: Ask a question about AWS Amplify CLI usage
+title: ''
+labels: question
+assignees: ''
 
 ---
 >**Note**: If your question is regarding the AWS Amplify Console service, please log it in the 

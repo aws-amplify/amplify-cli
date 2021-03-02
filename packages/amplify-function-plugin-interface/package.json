@@ -1,6 +1,6 @@
 {
   "name": "amplify-function-plugin-interface",
-  "version": "1.7.0",
+  "version": "1.7.2",
   "description": "Interface for plugins that provide additional functionality to function category plugins",
   "repository": {
     "type": "git",
@@ -15,8 +15,5 @@
     "build": "tsc",
     "clean": "rimraf ./lib",
     "watch": "tsc -w"
-  },
-  "devDependencies": {
-    "amplify-cli-core": "1.17.0"
   }
 }

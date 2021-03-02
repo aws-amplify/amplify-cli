@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.44.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.44.1...@aws-amplify/cli@4.44.2) (2021-02-26)
+
+
+
+## 4.44.2 (2021-02-26)
+
+
+### Bug Fixes
+
+* truncate long app names on pull ([#6741](https://github.com/aws-amplify/amplify-cli/issues/6741)) ([748b252](https://github.com/aws-amplify/amplify-cli/commit/748b2524115e6ea071e09430f0d8174110c84829))
+
+
+
+
+
+## [4.44.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.44.0...@aws-amplify/cli@4.44.1) (2021-02-24)
+
+
+### Bug Fixes
+
+* [#6153](https://github.com/aws-amplify/amplify-cli/issues/6153) highlight the destructive delete prompt ([#6528](https://github.com/aws-amplify/amplify-cli/issues/6528)) ([13333b2](https://github.com/aws-amplify/amplify-cli/commit/13333b2e7a128b9b33dc08960422d3183dcb7e28))
+
+
+
+
+
 # [4.44.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.43.0...@aws-amplify/cli@4.44.0) (2021-02-17)
 
 
