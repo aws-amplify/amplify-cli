@@ -13340,11 +13340,6 @@ graphql-request@^1.5.0:
   dependencies:
     cross-fetch "2.2.2"
 
-graphql-scalars@^1.0.6:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/graphql-scalars/-/graphql-scalars-1.2.7.tgz#dad338ffa5f415615770b01281c83d710d9b314d"
-  integrity sha512-bkB/OEsfiYm/hMwSnZfg91SZ3ChOM6Dnw5LZkUN68IXtBGKrBxjw8kXbD3bBXhWpjaKshvNVG7ZK3vFtfBmwrQ==
-
 graphql-schema-diff@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/graphql-schema-diff/-/graphql-schema-diff-2.2.0.tgz#6a0ee84b9ac324db6daf00884ac189b582ee3eb7"
@@ -17773,6 +17768,14 @@ open@7.1.0:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/open/-/open-7.1.0.tgz#68865f7d3cb238520fa1225a63cf28bcf8368a1c"
   integrity sha512-lLPI5KgOwEYCDKXf4np7y1PBEkj7HYIyP2DY8mVDRnx0VIIu6bNrRB0R66TuO7Mack6EnTNLm4uvcl1UoklTpA==
+  dependencies:
+    is-docker "^2.0.0"
+    is-wsl "^2.1.1"
+
+open@^7.0.0, open@^7.3.1:
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/open/-/open-7.4.2.tgz#b8147e26dcf3e426316c730089fd71edd29c2321"
+  integrity sha512-MVHddDVweXZF3awtlAS+6pgKLlm/JgxZ90+/NBurBoQctVOOB/zDdVjcyPzQ+0laDGbsWgrRkflI65sQeOgT9Q==
   dependencies:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
