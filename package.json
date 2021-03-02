@@ -67,9 +67,10 @@
   "dependencies": {
     "lerna": "^3.16.4"
   },
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": ["packages/*"],
+    "nohoist": ["@aws-amplify/cli/amplify-codegen"]
+  },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.10.5",
