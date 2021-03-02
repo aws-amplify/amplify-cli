@@ -75,6 +75,8 @@ async function handleAmplifyEvent(context, args) {
   }
 }
 
+const getPackageAssetPaths = async () => ['resources'];
+
 module.exports = {
   constants,
   scanProject,
@@ -89,4 +91,5 @@ module.exports = {
   executeAmplifyCommand,
   handleAmplifyEvent,
   deleteConfig: deleteAmplifyConfig,
+  getPackageAssetPaths,
 };

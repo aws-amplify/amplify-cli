@@ -16,13 +16,15 @@
     "aws"
   ],
   "scripts": {
+    "build": "node ./scripts/native-bindings-gen",
     "test": "jest",
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "amplify-app": "2.23.5",
+    "execa": "^4.1.0",
     "fs-extra": "^8.1.0",
-    "graphql-config": "^2.2.1"
+    "graphql-config": "^2.2.1",
+    "lodash": "^4.17.21"
   },
   "jest": {
     "collectCoverage": true,
