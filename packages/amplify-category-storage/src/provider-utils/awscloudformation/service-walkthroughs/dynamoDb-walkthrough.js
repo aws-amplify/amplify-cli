@@ -249,12 +249,6 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
 
   partitionKeyType = answers.AttributeDefinitions[primaryAttrTypeIndex].AttributeType;
 
-  const primaryKeyAttrIndex = indexableAttributeList.indexOf(partitionKeyName);
-
-  if (primaryKeyAttrIndex > -1) {
-    indexableAttributeList.splice(primaryKeyAttrIndex, 1);
-  }
-
   usedAttributeDefinitions.add(partitionKeyName);
 
   let sortKeyName;
@@ -278,7 +272,7 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
         type: inputs[5].type,
         name: inputs[5].key,
         message: inputs[5].question,
-        choices: indexableAttributeList,
+        choices: indexableAttributeList.filter(att => att !== partitionKeyName),
       };
       const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
 
@@ -318,11 +312,9 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
   if (await amplify.confirmPrompt('Do you want to add global secondary indexes to your table?')) {
     let continuewithGSIQuestions = true;
     const gsiList = [];
-    // Generates a clone of the attribute list
-    const availableAttributes = indexableAttributeList.slice();
 
     while (continuewithGSIQuestions) {
-      if (availableAttributes.length > 0) {
+      if (indexableAttributeList.length > 0) {
         const gsiAttributeQuestion = {
           type: inputs[6].type,
           name: inputs[6].key,
@@ -333,11 +325,13 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           name: inputs[7].key,
           message: inputs[7].question,
           validate: amplify.inputValidation(inputs[3]),
-          choices: availableAttributes,
+          choices: indexableAttributeList,
         };
 
         /*eslint-disable*/
         const gsiPrimaryAnswer = await inquirer.prompt([gsiAttributeQuestion, gsiPrimaryKeyQuestion]);
+
+        const gsiPrimaryKeyName = gsiPrimaryAnswer[inputs[7].key];
 
         /* eslint-enable */
         const gsiItem = {
@@ -351,27 +345,23 @@ async function configure(context, defaultValuesFilename, serviceMetadata, resour
           IndexName: gsiPrimaryAnswer[inputs[6].key],
           KeySchema: [
             {
-              AttributeName: gsiPrimaryAnswer[inputs[7].key],
+              AttributeName: gsiPrimaryKeyName,
               KeyType: 'HASH',
             },
           ],
         };
 
-        usedAttributeDefinitions.add(gsiPrimaryAnswer[inputs[7].key]);
+        usedAttributeDefinitions.add(gsiPrimaryKeyName);
 
-        const gsiPrimaryAttrIndex = indexableAttributeList.indexOf(gsiPrimaryAnswer[inputs[7].key]);
+        const sortKeyOptions = indexableAttributeList.filter(att => att !== gsiPrimaryKeyName);
 
-        if (gsiPrimaryAttrIndex > -1) {
-          availableAttributes.splice(gsiPrimaryAttrIndex, 1);
-        }
-
-        if (availableAttributes.length > 0) {
+        if (sortKeyOptions.length > 0) {
           if (await amplify.confirmPrompt('Do you want to add a sort key to your global secondary index?')) {
             const sortKeyQuestion = {
               type: inputs[8].type,
               name: inputs[8].key,
               message: inputs[8].question,
-              choices: availableAttributes,
+              choices: sortKeyOptions,
             };
 
             const sortKeyAnswer = await inquirer.prompt([sortKeyQuestion]);
