@@ -14,7 +14,10 @@ import {
 } from 'amplify-e2e-core';
 
 describe('java function tests', () => {
-  const helloWorldSuccessOutput = '{"greetings":"Hello John Doe!"}';
+  const helloWorldSuccessObj = {
+    greetings: 'Hello John Doe!',
+  };
+  const helloWorldSuccessString = '  "greetings": "Hello John Doe!"';
   let projRoot: string;
   let funcName: string;
 
@@ -43,7 +46,7 @@ describe('java function tests', () => {
   it('add java hello world function and mock locally', async () => {
     await functionMockAssert(projRoot, {
       funcName,
-      successString: helloWorldSuccessOutput,
+      successString: helloWorldSuccessString,
       eventFile: 'src/event.json',
     }); // will throw if successString is not in output
   });
@@ -52,7 +55,7 @@ describe('java function tests', () => {
     const payload = '{"firstName":"John","lastName" : "Doe"}';
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
-    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(helloWorldSuccessOutput));
+    expect(JSON.parse(response.Payload.toString())).toEqual(helloWorldSuccessObj);
   });
 });
 

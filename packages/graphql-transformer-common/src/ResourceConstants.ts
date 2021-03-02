@@ -110,5 +110,6 @@ export class ResourceConstants {
     IsOwnerAuthorizedVariable: 'isOwnerAuthorized',
     IsLocalOwnerAuthorizedVariable: 'isLocalOwnerAuthorized',
     SyncResolverKey: 'syncResolverKey',
+    HasSeenSomeKeyArg: 'hasSeenSomeKeyArg',
   };
 }

@@ -1,215 +1,123 @@
-import * as execa from 'execa';
+import * as path from 'path';
 import { invoke } from '../../utils/invoke';
-import { InvokeOptions } from '../../utils/invokeUtils';
 
-jest.mock('execa');
-const execa_mock = execa as jest.Mocked<typeof execa>;
-class ExecaChildProcessMock {
-  public stdout = {
-    on: jest.fn(),
-  };
-  public on = jest.fn();
-  public catch = jest.fn();
-  public send = jest.fn();
-}
-const defaultOptions: InvokeOptions = {
-  event: 'some event',
-  handler: 'some handler',
-  packageFolder: '.',
+jest.mock('../../utils/executorPath', () => ({
+  executorPath: path.resolve(path.join(__dirname, '../../../lib/utils/execute.js')),
+}));
+
+const stubObjectEvent = {
+  test: 'event',
 };
 
-const findEvent = (eventName: string, calls: any[]) => {
-  return calls.find(call => call[0] == eventName);
+const stubStringEvent = 'test event';
+
+const invokeOpts = (name: string) => ({
+  handler: `handlers.${name}`,
+  packageFolder: __dirname,
+  event: JSON.stringify(stubStringEvent),
+});
+
+const objectEvent = {
+  event: JSON.stringify(stubObjectEvent),
 };
 
-const callCb = (eventNamel: string, data: any, mocked: jest.Mock) => {
-  const dataCallback = findEvent(eventNamel, mocked.mock.calls)[1];
-  dataCallback(data);
-};
-
-const EXIT_ERROR = new Error('process finishs with 1');
-const exitWithError = (mocked: ExecaChildProcessMock) => {
-  mocked.catch.mock.calls[0][0](EXIT_ERROR);
-};
-
-describe('invoke', () => {
-  describe('close event happens before exit', () => {
-    it('should succeed', async () => {
-      const mockInstance = new ExecaChildProcessMock();
-      execa_mock.node.mockImplementation(file => mockInstance as any);
-      const promise = invoke(defaultOptions);
-      callCb('data', '\n', mockInstance.stdout.on);
-      callCb(
-        'data',
-        JSON.stringify({
-          result: { attribute: 1 },
-        }),
-        mockInstance.stdout.on,
-      );
-
-      //Closes happens before exit
-      callCb('close', undefined, mockInstance.on);
-      exitWithError(mockInstance);
-
-      await expect(promise).resolves.toEqual({ attribute: 1 });
+describe('invoke async func', () => {
+  it('handles object return val', async () => {
+    const result = await invoke({
+      ...invokeOpts('asyncReturnEvent'),
+      ...objectEvent,
     });
+    expect(result).toEqual(stubObjectEvent);
   });
 
-  describe('close event happens after exit', () => {
-    it('should succeed', async () => {
-      const mockInstance = new ExecaChildProcessMock();
-      execa_mock.node.mockImplementation(file => mockInstance as any);
-      const promise = invoke(defaultOptions);
-      callCb('data', '\n', mockInstance.stdout.on);
-      callCb(
-        'data',
-        JSON.stringify({
-          result: { attribute: 1 },
-        }),
-        mockInstance.stdout.on,
-      );
-
-      //Closes happens before exit
-      exitWithError(mockInstance);
-      callCb('close', undefined, mockInstance.on);
-
-      await expect(promise).resolves.toEqual({ attribute: 1 });
+  it('handles string return val', async () => {
+    const result = await invoke({
+      ...invokeOpts('asyncReturnEvent'),
     });
+    expect(result).toEqual(stubStringEvent);
   });
 
-  describe('close event happens up to 2 seconds after exit', () => {
-    it('should succeed', async () => {
-      const mockInstance = new ExecaChildProcessMock();
-      execa_mock.node.mockImplementation(file => mockInstance as any);
-      const promise = invoke(defaultOptions);
-      callCb('data', '\n', mockInstance.stdout.on);
-      callCb(
-        'data',
-        JSON.stringify({
-          result: { attribute: 1 },
-        }),
-        mockInstance.stdout.on,
-      );
-
-      //Closes happens before exit
-      exitWithError(mockInstance);
-      setTimeout(() => {
-        callCb('close', undefined, mockInstance.on);
-      }, 1800);
-
-      await expect(promise).resolves.toEqual({ attribute: 1 });
+  it('handles undefined return val', async () => {
+    const result = await invoke({
+      ...invokeOpts('asyncReturnUndefined'),
+      ...objectEvent,
     });
-
-    it('should reject with error body', async () => {
-      const mockInstance = new ExecaChildProcessMock();
-      execa_mock.node.mockImplementation(file => mockInstance as any);
-      const promise = invoke(defaultOptions);
-      callCb('data', '\n', mockInstance.stdout.on);
-      callCb(
-        'data',
-        JSON.stringify({
-          error: 'some error',
-        }),
-        mockInstance.stdout.on,
-      );
-
-      //Closes happens before exit
-      exitWithError(mockInstance);
-      setTimeout(() => {
-        callCb('close', undefined, mockInstance.on);
-      }, 500);
-
-      await expect(promise).rejects.toEqual('some error');
-    });
+    expect(result).toBeNull();
   });
 
-  describe('close event happens after 2 seconds after exit', () => {
-    it('should reject', async () => {
-      const mockInstance = new ExecaChildProcessMock();
-      execa_mock.node.mockImplementation(file => mockInstance as any);
-      const promise = invoke(defaultOptions);
-      callCb('data', '\n', mockInstance.stdout.on);
-      callCb(
-        'data',
-        JSON.stringify({
-          result: { attribute: 1 },
-        }),
-        mockInstance.stdout.on,
-      );
-
-      //Closes happens before exit
-      exitWithError(mockInstance);
-      setTimeout(() => {
-        callCb('close', undefined, mockInstance.on);
-      }, 2800);
-
-      await expect(promise).rejects.not.toBeNull();
+  it('handles null return val', async () => {
+    const nullEvent = null;
+    const result = await invoke({
+      ...invokeOpts('asyncReturnEvent'),
+      event: JSON.stringify(nullEvent),
     });
+    expect(result).toEqual(nullEvent);
   });
 
-  describe('body with error', () => {
-    it('should reject', async () => {
-      const mockInstance = new ExecaChildProcessMock();
-      execa_mock.node.mockImplementation(file => mockInstance as any);
-      const promise = invoke(defaultOptions);
-      callCb('data', '\n', mockInstance.stdout.on);
-      callCb(
-        'data',
-        JSON.stringify({
-          error: { message: 'some error' },
-        }),
-        mockInstance.stdout.on,
-      );
-
-      //Closes happens before exit
-      exitWithError(mockInstance);
-      callCb('close', undefined, mockInstance.on);
-
-      await expect(promise).rejects.toEqual({
-        message: 'some error',
-      });
-    });
+  it('handles large data returned', async () => {
+    const result = await invoke(invokeOpts('asyncReturnLargeData'));
+    const { expectedLargeData } = require('./handlers');
+    expect(result).toEqual(expectedLargeData);
   });
 
-  describe('without data', () => {
-    it('should reject', async () => {
-      const mockInstance = new ExecaChildProcessMock();
-      execa_mock.node.mockImplementation(file => mockInstance as any);
-      const promise = invoke(defaultOptions);
-      //Closes happens before exit
-      exitWithError(mockInstance);
-      callCb('close', undefined, mockInstance.on);
-
-      await expect(promise).rejects.toEqual(EXIT_ERROR.message);
-    });
+  it('handles error thrown', () => {
+    return expect(invoke(invokeOpts('asyncRejectWithError'))).rejects.toThrowErrorMatchingInlineSnapshot(`"asyncRejectWithError failure"`);
   });
 
-  describe('body with invalid JSON', () => {
-    it('should reject', async () => {
-      const mockInstance = new ExecaChildProcessMock();
-      execa_mock.node.mockImplementation(file => mockInstance as any);
-      const promise = invoke(defaultOptions);
-      const invalidJson = 'Invalid Json {[';
+  it('handles string thrown', () => {
+    return expect(invoke(invokeOpts('asyncRejectWithString'))).rejects.toMatchInlineSnapshot(`"asyncRejectWithString failure"`);
+  });
+});
 
-      callCb('data', '\n', mockInstance.stdout.on);
-      callCb('data', invalidJson, mockInstance.stdout.on);
-
-      //Closes happens before exit
-      exitWithError(mockInstance);
-      callCb('close', undefined, mockInstance.on);
-
-      await expect(promise).resolves.toEqual(invalidJson);
+describe('invoke callback func', () => {
+  it('handles object returned', async () => {
+    const result = await invoke({
+      ...invokeOpts('callbackReturnEvent'),
+      event: JSON.stringify(objectEvent),
     });
+
+    expect(result).toEqual(objectEvent);
   });
 
-  describe('unexpected throw', () => {
-    it('should reject', async () => {
-      const error = new Error('unexpected error');
-      execa_mock.node.mockImplementation(file => {
-        throw error;
-      });
-      const promise = invoke(defaultOptions);
-      await expect(promise).rejects.toEqual(error);
+  it('handles error object', () => {
+    return expect(invoke(invokeOpts('callbackRejectWithError'))).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"callbackRejectWithError failure"`,
+    );
+  });
+
+  it('handles error string', () => {
+    return expect(invoke(invokeOpts('callbackRejectWithString'))).rejects.toMatchInlineSnapshot(`"callbackRejectWithString failure"`);
+  });
+
+  it('handles error thrown', () => {
+    return expect(invoke(invokeOpts('syncRejectWithError'))).rejects.toThrowErrorMatchingInlineSnapshot(`"syncRejectWithError failure"`);
+  });
+
+  it('handles string thrown', () => {
+    return expect(invoke(invokeOpts('syncRejectWithString'))).rejects.toMatchInlineSnapshot(`"syncRejectWithString failure"`);
+  });
+});
+
+describe('invoke invalid func', () => {
+  it('handles reference error', () => {
+    return expect(invoke(invokeOpts('referenceError'))).rejects.toThrowErrorMatchingInlineSnapshot(`"console.dne is not a function"`);
+  });
+
+  it('handles function does not exist', () => {
+    return expect(invoke(invokeOpts('doesntExist'))).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Could not load lambda handler function due to Error: Lambda handler handlers has no exported function named doesntExist"`,
+    );
+  });
+
+  it('handles syntax error', async () => {
+    return expect(
+      invoke({
+        handler: 'handlerWithSyntaxError.syntaxError',
+        packageFolder: __dirname,
+        ...objectEvent,
+      }),
+    ).rejects.toMatchObject({
+      message: /Could not load lambda handler function due to SyntaxError: Unexpected token.*/,
     });
   });
 });

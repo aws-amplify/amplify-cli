@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.18.8...amplify-frontend-ios@2.18.9) (2021-02-26)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.18.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.18.7...amplify-frontend-ios@2.18.8) (2021-02-24)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.18.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.18.6...amplify-frontend-ios@2.18.7) (2021-02-17)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.18.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.18.5...amplify-frontend-ios@2.18.6) (2021-02-11)
+
+**Note:** Version bump only for package amplify-frontend-ios
+
+
+
+
+
+## [2.18.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.18.4...amplify-frontend-ios@2.18.5) (2021-02-10)
+
+
+### Bug Fixes
+
+* appclient secret output default to false ([#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)) ([3da53b7](https://github.com/aws-amplify/amplify-cli/commit/3da53b7c9aacf718ebd8ea63e59928425af20764))
+
+
+
+
+
 ## [2.18.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.18.3...amplify-frontend-ios@2.18.4) (2021-01-13)
 
 **Note:** Version bump only for package amplify-frontend-ios

@@ -1,10 +1,10 @@
 import archiver from 'archiver';
 import fs from 'fs-extra';
 import path from 'path';
-import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface/src';
+import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface';
 
 export async function packageResource(request: PackageRequest, context: any): Promise<PackageResult> {
-  if (!request.lastPackageTimestamp || request.lastBuildTimestamp > request.lastPackageTimestamp!) {
+  if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp!) {
     const packageHash = !request.skipHashing
       ? ((await context.amplify.hashDir(path.join(request.srcRoot, 'src'), ['node_modules'])) as string)
       : undefined;

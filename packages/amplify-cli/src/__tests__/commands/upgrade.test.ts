@@ -23,7 +23,7 @@ jest.mock('chalk', () => ({
   blueBright: jest.fn().mockImplementation(input => input),
 }));
 
-const context_stub_typed = context_stub as $TSContext;
+const context_stub_typed = (context_stub as unknown) as $TSContext;
 
 describe('run upgrade using node CLI', () => {
   beforeEach(() => {

@@ -22,7 +22,7 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
     const requestMappingTemplate = this.getRequestMappingTemplate();
     const responseMappingTemplate = this.getResponseMappingTemplate();
     const dataLoader = this.simulatorContext.getDataLoader(this.config.dataSourceName);
-    const { result: requestPayload, errors: requestTemplateErrors, isReturn } = requestMappingTemplate.render(
+    const { result: requestPayload, errors: requestTemplateErrors, isReturn, hadException } = requestMappingTemplate.render(
       { source, arguments: args },
       context,
       info,
@@ -30,8 +30,8 @@ export class AppSyncUnitResolver extends AppSyncBaseResolver {
     context.appsyncErrors = [...context.appsyncErrors, ...requestTemplateErrors];
     let result = null;
     let error;
-    if (isReturn) {
-      // template has #return bail and return the value specified in the template
+    if (isReturn || hadException) {
+      // Template has #return, or an exception occurred. Bail and return the value specified in the template.
       return requestPayload;
     }
     try {

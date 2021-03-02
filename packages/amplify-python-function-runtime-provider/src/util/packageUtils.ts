@@ -1,4 +1,4 @@
-import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface/src';
+import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface';
 import archiver from 'archiver';
 import { getPipenvDir } from './pyUtils';
 import path from 'path';
@@ -6,7 +6,7 @@ import fs from 'fs-extra';
 
 // packages python lambda functions and writes the archive to the specified file
 export async function pythonPackage(context: any, params: PackageRequest): Promise<PackageResult> {
-  if (!params.lastPackageTimestamp || params.lastBuildTimestamp > params.lastPackageTimestamp) {
+  if (!params.lastPackageTimeStamp || params.lastBuildTimeStamp > params.lastPackageTimeStamp) {
     // zip source and dependencies and write to specified file
     const file = fs.createWriteStream(params.dstFilename);
     const packageHash = await context.amplify.hashDir(params.srcRoot, ['dist']);

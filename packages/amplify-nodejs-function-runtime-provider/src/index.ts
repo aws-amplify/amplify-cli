@@ -6,12 +6,12 @@ import path from 'path';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
-    contribute: request => {
+    contribute: async request => {
       const selection = request.selection;
       if (selection !== 'nodejs') {
-        return Promise.reject(new Error(`Unknown selection ${selection}`));
+        throw new Error(`Unknown selection ${selection}`);
       }
-      return Promise.resolve({
+      return {
         runtime: {
           name: 'NodeJS',
           value: 'nodejs',
@@ -37,19 +37,17 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
             },
           ],
         },
-      });
+      };
     },
-    checkDependencies: () => Promise.resolve({ hasRequiredDependencies: true }),
+    checkDependencies: async () => ({ hasRequiredDependencies: true }),
     package: params => packageResource(params, context),
-    build: params => buildResource(params),
-    invoke: async params => {
-      await buildResource(params);
-      return invoke({
+    build: buildResource,
+    invoke: async params =>
+      invoke({
         packageFolder: path.join(params.srcRoot, 'src'),
         handler: params.handler,
         event: params.event,
         environment: params.envVars,
-      });
-    },
+      }),
   };
 };

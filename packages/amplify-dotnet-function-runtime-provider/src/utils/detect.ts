@@ -1,6 +1,6 @@
 import * as which from 'which';
 import * as execa from 'execa';
-import { CheckDependenciesResult } from 'amplify-function-plugin-interface/src';
+import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
 import { executableName, currentSupportedVersion } from '../constants';
 import inquirer from 'inquirer';
 

@@ -104,3 +104,9 @@ export type CloudFormationProcessedResource = {
 export type CloudFormationTemplateFetcher = {
   getCloudFormationStackTemplate: (templateName: string) => CloudFormationTemplate;
 };
+
+export type ProcessedLambdaFunction = CloudFormationProcessedResourceResult & {
+  name: string;
+  handler: string;
+  environment: Record<string, string>;
+};

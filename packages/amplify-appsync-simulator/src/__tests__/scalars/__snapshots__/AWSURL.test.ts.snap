@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AWSURL parse Should reject an invalid URL 1`] = `"Invalid URL: invalid-url"`;
+
+exports[`AWSURL serialize Should reject an invalid URL 1`] = `"Invalid URL: invalid-url"`;

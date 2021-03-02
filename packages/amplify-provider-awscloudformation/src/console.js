@@ -1,4 +1,4 @@
-const open = require('open');
+const { open } = require('amplify-cli-core');
 const constants = require('./constants');
 
 function run(context) {

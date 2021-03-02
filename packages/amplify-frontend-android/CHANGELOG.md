@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.14.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.14.4...amplify-frontend-android@2.14.5) (2021-02-10)
+
+
+### Bug Fixes
+
+* appclient secret output default to false ([#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)) ([3da53b7](https://github.com/aws-amplify/amplify-cli/commit/3da53b7c9aacf718ebd8ea63e59928425af20764))
+
+
+
+
+
 ## [2.14.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.14.3...amplify-frontend-android@2.14.4) (2021-01-13)
 
 

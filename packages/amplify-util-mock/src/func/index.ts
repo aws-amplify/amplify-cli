@@ -1,23 +1,91 @@
-import { JSONUtilities, pathManager, $TSContext } from 'amplify-cli-core';
-import { getInvoker, category, isMockable } from 'amplify-category-function';
+import { getInvoker, category, isMockable, getBuilder } from 'amplify-category-function';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { loadMinimalLambdaConfig } from '../utils/lambda/loadMinimal';
-import { hydrateAllEnvVars } from '../utils';
+import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import _ from 'lodash';
+import { BuildType } from 'amplify-function-plugin-interface';
+import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
 
 const DEFAULT_TIMEOUT_SECONDS = 10;
 
 export async function start(context: $TSContext) {
-  if (!context.input.subCommands || context.input.subCommands.length < 1) {
-    throw new Error('Specify the function name to invoke with "amplify mock function <function name>"');
+  const ampMeta = stateManager.getMeta();
+  let resourceName = context?.input?.subCommands?.[0];
+  if (!resourceName) {
+    const choices = _.keys(_.get(ampMeta, ['function'])).filter(resourceName => isMockable(context, resourceName).isMockable);
+    if (choices.length < 1) {
+      throw new Error('There are no mockable functions in the project. Use `amplify add function` to create one.');
+    } else if (choices.length == 1) {
+      resourceName = choices[0];
+    } else {
+      const resourceNameQuestion = [
+        {
+          type: 'list',
+          name: 'resourceName',
+          message: 'Select the function to mock',
+          choices,
+        },
+      ];
+      ({ resourceName } = await inquirer.prompt<{ resourceName: string }>(resourceNameQuestion));
+    }
+  } else {
+    const mockable = isMockable(context, resourceName);
+    if (!mockable.isMockable) {
+      throw new Error(`Unable to mock ${resourceName}. ${mockable.reason}`);
+    }
   }
 
-  const resourceName = context.input.subCommands[0];
-  // check that the resource is mockable
-  const mockable = isMockable(context, resourceName);
-  if (!mockable.isMockable) {
-    throw new Error(`Unable to mock ${resourceName}. ${mockable.reason}`);
+  const event = await resolveEvent(context, resourceName);
+  const lambdaConfig = await loadLambdaConfig(context, resourceName);
+  if (!lambdaConfig?.handler) {
+    throw new Error(`Could not parse handler for ${resourceName} from cloudformation file`);
   }
+  context.print.blue('Ensuring latest function changes are built...');
+  await getBuilder(context, resourceName, BuildType.DEV)();
+  const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars: lambdaConfig.environment });
+  context.print.blue('Starting execution...');
+  try {
+    const result = await timeConstrainedInvoker(invoker({ event }), context.input.options);
+    const stringResult =
+      typeof result === 'object' ? JSON.stringify(result, undefined, 2) : typeof result === 'undefined' ? 'undefined' : result;
+    context.print.success('Result:');
+    context.print.info(typeof result === 'undefined' ? '' : stringResult);
+  } catch (err) {
+    context.print.error(`${resourceName} failed with the following error:`);
+    context.print.info(err);
+  } finally {
+    context.print.blue('Finished execution.');
+  }
+}
+
+interface InvokerOptions {
+  timeout?: string;
+}
+export const timeConstrainedInvoker = async <T>(promise: Promise<T>, options?: InvokerOptions): Promise<T> => {
+  const { timer, cancel } = getCancellableTimer(options);
+  try {
+    return await Promise.race([promise, timer]);
+  } finally {
+    cancel();
+  }
+};
+
+const getCancellableTimer = ({ timeout }: InvokerOptions = {}) => {
+  const inputTimeout = Number.parseInt(timeout, 10);
+  const lambdaTimeoutSeconds = !!inputTimeout && inputTimeout > 0 ? inputTimeout : DEFAULT_TIMEOUT_SECONDS;
+  const timeoutErrorMessage = `Lambda execution timed out after ${lambdaTimeoutSeconds} seconds. Press ctrl + C to exit the process.
+    To increase the lambda timeout use the --timeout parameter to set a value in seconds.
+    Note that the maximum Lambda execution time is 15 minutes:
+    https://aws.amazon.com/about-aws/whats-new/2018/10/aws-lambda-supports-functions-that-can-run-up-to-15-minutes/\n`;
+  let timeoutObj;
+  const timer = new Promise<never>((_, reject) => {
+    timeoutObj = setTimeout(() => reject(new Error(timeoutErrorMessage)), lambdaTimeoutSeconds * 1000);
+  });
+  const cancel = () => clearTimeout(timeoutObj);
+  return { timer, cancel };
+};
+
+const resolveEvent = async (context: $TSContext, resourceName: string): Promise<unknown> => {
   const { amplify } = context;
   const resourcePath = path.join(pathManager.getBackendDirPath(), category, resourceName);
   const eventNameValidator = amplify.inputValidation({
@@ -39,7 +107,7 @@ export async function start(context: $TSContext) {
   }
 
   if (promptForEvent) {
-    const resourceQuestions = [
+    const eventNameQuestion = [
       {
         type: 'input',
         name: 'eventName',
@@ -48,45 +116,13 @@ export async function start(context: $TSContext) {
         default: 'src/event.json',
       },
     ];
-    const resourceAnswers = await inquirer.prompt(resourceQuestions);
+    const resourceAnswers = await inquirer.prompt(eventNameQuestion);
     eventName = resourceAnswers.eventName as string;
   }
 
-  const event = JSONUtilities.readJson(path.resolve(path.join(resourcePath, eventName)));
-  const lambdaConfig = loadMinimalLambdaConfig(resourceName, { env: context.amplify.getEnvInfo().envName });
-  if (!lambdaConfig || !lambdaConfig.handler) {
-    throw new Error(`Could not parse handler for ${resourceName} from cloudformation file`);
-  }
-  const { allResources } = await context.amplify.getResourceStatus();
-
-  const envVars = hydrateAllEnvVars(allResources, lambdaConfig.environment);
-  const invoker = await getInvoker(context, { resourceName, handler: lambdaConfig.handler, envVars });
-  context.print.success('Starting execution...');
-  await timeConstrainedInvoker(invoker({ event }), context.input.options)
-    .then(result => {
-      const msg = typeof result === 'object' ? JSON.stringify(result) : result;
-      context.print.success('Result:');
-      context.print.info(typeof result === 'undefined' ? '' : msg);
-    })
-    .catch(error => {
-      context.print.error(`${resourceName} failed with the following error:`);
-      context.print.info(error);
-    })
-    .then(() => context.print.success('Finished execution.'));
-}
+  return JSONUtilities.readJson(path.resolve(path.join(resourcePath, eventName)));
+};
 
 interface InvokerOptions {
   timeout?: string;
 }
-export const timeConstrainedInvoker: <T>(p: Promise<T>, opts: InvokerOptions) => Promise<T> = (promise, options): Promise<any> =>
-  Promise.race([promise, getTimer(options)]);
-
-const getTimer = (options: { timeout?: string }) => {
-  const inputTimeout = Number.parseInt(options?.timeout, 10);
-  const lambdaTimeoutSeconds = !!inputTimeout && inputTimeout > 0 ? inputTimeout : DEFAULT_TIMEOUT_SECONDS;
-  const timeoutErrorMessage = `Lambda execution timed out after ${lambdaTimeoutSeconds} seconds. Press ctrl + C to exit the process.
-    To increase the lambda timeout use the --timeout parameter to set a value in seconds.
-    Note that the maximum Lambda execution time is 15 minutes:
-    https://aws.amazon.com/about-aws/whats-new/2018/10/aws-lambda-supports-functions-that-can-run-up-to-15-minutes/\n`;
-  return new Promise((_, reject) => setTimeout(() => reject(new Error(timeoutErrorMessage)), lambdaTimeoutSeconds * 1000));
-};

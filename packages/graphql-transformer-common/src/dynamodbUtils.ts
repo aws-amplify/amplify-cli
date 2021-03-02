@@ -54,7 +54,7 @@ export function makeModelScalarKeyConditionInputObject(type: string): InputObjec
   const conditions = getScalarKeyConditions(type);
   const fields: InputValueDefinitionNode[] = conditions.map((condition: string) => ({
     kind: Kind.INPUT_VALUE_DEFINITION,
-    name: { kind: 'Name' as 'Name', value: condition },
+    name: { kind: 'Name' as const, value: condition },
     type: condition === 'between' ? makeListType(makeNamedType(type)) : makeNamedType(type),
     directives: [],
   }));

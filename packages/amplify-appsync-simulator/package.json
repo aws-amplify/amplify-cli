@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "1.25.0",
+  "version": "1.25.3",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -19,14 +19,15 @@
   "scripts": {
     "copy-assets": "yarn rimraf ./public && yarn copyfiles -u 3 \"../amplify-graphiql-explorer/build/**/*\" ./public",
     "build": "yarn copy-assets && tsc",
+    "build-tests": "tsc --build tsconfig.tests.json",
     "clean": "rimraf ./lib",
     "watch": "tsc -w",
     "start": "node ./lib/index.js",
     "test": "jest"
   },
   "dependencies": {
-    "amplify-velocity-template": "1.4.2",
-    "aws-sdk": "^2.765.0",
+    "amplify-velocity-template": "1.4.3",
+    "aws-sdk": "^2.845.0",
     "chalk": "^3.0.0",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
@@ -34,7 +35,6 @@
     "express": "^4.17.1",
     "graphql": "^14.5.8",
     "graphql-iso-date": "^3.6.1",
-    "graphql-scalars": "^1.0.6",
     "graphql-subscriptions": "^1.1.0",
     "graphql-tools": "^4.0.6",
     "graphql-type-json": "^0.3.1",
@@ -64,7 +64,7 @@
     "@types/node": "^10.17.13",
     "@types/pino": "5.15.3",
     "@types/ws": "^7.2.3",
-    "amplify-graphiql-explorer": "1.4.1"
+    "amplify-graphiql-explorer": "1.4.2"
   },
   "jest": {
     "testRunner": "jest-circus/runner",

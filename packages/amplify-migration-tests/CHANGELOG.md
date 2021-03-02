@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.20.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.20.3...amplify-migration-tests@2.20.4) (2021-02-26)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.20.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.20.2...amplify-migration-tests@2.20.3) (2021-02-24)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.20.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.20.1...amplify-migration-tests@2.20.2) (2021-02-17)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+## [2.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.20.0...amplify-migration-tests@2.20.1) (2021-02-11)
+
+**Note:** Version bump only for package amplify-migration-tests
+
+
+
+
+
+# [2.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.11...amplify-migration-tests@2.20.0) (2021-02-10)
+
+
+### Features
+
+* **graphql-key-transformer:** change default to add GSIs when using [@key](https://github.com/key) ([#5648](https://github.com/aws-amplify/amplify-cli/issues/5648)) ([4287c63](https://github.com/aws-amplify/amplify-cli/commit/4287c630295c304c7ff8343922926b4830b75cd4))
+
+
+
+
+
 ## [2.19.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.19.10...amplify-migration-tests@2.19.11) (2021-01-08)
 
 **Note:** Version bump only for package amplify-migration-tests

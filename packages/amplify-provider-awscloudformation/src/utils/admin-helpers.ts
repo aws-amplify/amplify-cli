@@ -2,14 +2,15 @@ import { stateManager, $TSContext } from 'amplify-cli-core';
 import aws from 'aws-sdk';
 import _ from 'lodash';
 import fetch from 'node-fetch';
-import { AuthConfig, CognitoAccessToken, CognitoIdToken } from './auth-types';
+import { adminLoginFlow } from '../admin-login';
+import { AdminAuthConfig, AwsSdkConfig, CognitoAccessToken, CognitoIdToken } from './auth-types';
 
 export const adminVerifyUrl = (appId: string, envName: string, region: string): string => {
   const baseUrl = adminBackendMap[region].amplifyAdminUrl;
   return `${baseUrl}/admin/${appId}/${envName}/verify/`;
 };
 
-export function doAdminCredentialsExist(appId: string): boolean {
+export function doAdminTokensExist(appId: string): boolean {
   if (!appId) {
     throw `Failed to check if admin credentials exist: appId is undefined`;
   }
@@ -27,21 +28,80 @@ export async function isAmplifyAdminApp(appId: string): Promise<{ isAdminApp: bo
   return { isAdminApp: !!appState.appId, region: appState.region };
 }
 
+export async function getTempCredsWithAdminTokens(context: $TSContext, appId: string): Promise<AwsSdkConfig> {
+  if (!doAdminTokensExist(appId)) {
+    await adminLoginFlow(context, appId);
+  }
+  const authConfig = await getRefreshedTokens(context, appId);
+  const { idToken, IdentityId, region } = authConfig;
+  // use tokens to get creds and assign to config
+  const awsConfig = await getAdminCognitoCredentials(idToken, IdentityId, region);
+  aws.config.update(awsConfig);
+  // need to use Cognito creds to get STS creds - otherwise
+  // users will not be able to provision Cognito resources
+  return await getAdminStsCredentials(idToken, region);
+}
+
 async function getAdminAppState(appId: string, region: string) {
   const res = await fetch(`${adminBackendMap[region].appStateUrl}/AppState/?appId=${appId}`);
   return res.json();
 }
 
-export async function getRefreshedTokens(appId: string, print: $TSContext['print']) {
+async function getAdminCognitoCredentials(idToken: CognitoIdToken, identityId: string, region: string): Promise<AwsSdkConfig> {
+  const cognitoIdentity = new aws.CognitoIdentity({ region });
+  const login = idToken.payload.iss.replace('https://', '');
+  const { Credentials } = await cognitoIdentity
+    .getCredentialsForIdentity({
+      IdentityId: identityId,
+      Logins: {
+        [login]: idToken.jwtToken,
+      },
+    })
+    .promise();
+
+  return {
+    accessKeyId: Credentials.AccessKeyId,
+    expiration: Credentials.Expiration,
+    region,
+    secretAccessKey: Credentials.SecretKey,
+    sessionToken: Credentials.SessionToken,
+  };
+}
+
+async function getAdminStsCredentials(idToken: CognitoIdToken, region: string): Promise<AwsSdkConfig> {
+  const sts = new aws.STS();
+  const { Credentials } = await sts
+    .assumeRole({
+      RoleArn: idToken.payload['cognito:preferred_role'],
+      RoleSessionName: 'amplifyadmin',
+    })
+    .promise();
+
+  return {
+    accessKeyId: Credentials.AccessKeyId,
+    expiration: Credentials.Expiration,
+    region,
+    secretAccessKey: Credentials.SecretAccessKey,
+    sessionToken: Credentials.SessionToken,
+  };
+}
+
+async function getRefreshedTokens(context: $TSContext, appId: string) {
   // load token, check expiry, refresh if needed
-  const authConfig: AuthConfig = stateManager.getAmplifyAdminConfigEntry(appId);
+  const authConfig: AdminAuthConfig = stateManager.getAmplifyAdminConfigEntry(appId);
 
   if (isJwtExpired(authConfig.idToken)) {
-    const refreshedTokens = await refreshJWTs(authConfig, print);
-    // Refresh stored tokens
-    authConfig.idToken.jwtToken = refreshedTokens.IdToken;
-    authConfig.accessToken.jwtToken = refreshedTokens.AccessToken;
-    stateManager.setAmplifyAdminConfigEntry(appId, authConfig);
+    let refreshedTokens: aws.CognitoIdentityServiceProvider.AuthenticationResultType;
+    try {
+      refreshedTokens = (await refreshJWTs(authConfig)).AuthenticationResult;
+      // Refresh stored tokens
+      authConfig.accessToken.jwtToken = refreshedTokens.AccessToken;
+      authConfig.idToken.jwtToken = refreshedTokens.IdToken;
+      stateManager.setAmplifyAdminConfigEntry(appId, authConfig);
+    } catch {
+      // Refresh failed, fall back to login
+      await adminLoginFlow(context, appId, null, authConfig.region);
+    }
   }
   return authConfig;
 }
@@ -52,21 +112,15 @@ function isJwtExpired(token: CognitoAccessToken | CognitoIdToken) {
   return secSinceEpoch >= expiration - 60;
 }
 
-async function refreshJWTs(authConfig: AuthConfig, print: $TSContext['print']) {
+async function refreshJWTs(authConfig: AdminAuthConfig) {
   const CognitoISP = new aws.CognitoIdentityServiceProvider({ region: authConfig.region });
-  try {
-    const result = await CognitoISP.initiateAuth({
-      AuthFlow: 'REFRESH_TOKEN',
-      AuthParameters: {
-        REFRESH_TOKEN: authConfig.refreshToken.token,
-      },
-      ClientId: authConfig.accessToken.payload.client_id, // App client id from identityPool
-    }).promise();
-    return result.AuthenticationResult;
-  } catch (e) {
-    print.error('Failed to refresh tokens.');
-    throw e;
-  }
+  return await CognitoISP.initiateAuth({
+    AuthFlow: 'REFRESH_TOKEN',
+    AuthParameters: {
+      REFRESH_TOKEN: authConfig.refreshToken.token,
+    },
+    ClientId: authConfig.accessToken.payload.client_id, // App client id from identityPool
+  }).promise();
 }
 
 export const adminBackendMap: {

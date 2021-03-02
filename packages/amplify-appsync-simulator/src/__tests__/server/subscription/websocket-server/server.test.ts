@@ -10,7 +10,7 @@ import { MESSAGE_TYPES } from '../../../../server/subscription/websocket-server/
 const SOCKET_TIMEOUT = 10000;
 jest.setTimeout(60000);
 
-async function waitForConnection(socket: WS) {
+async function waitForConnection(socket: WS): Promise<void> {
   return new Promise((resolve, reject) => {
     let done = false;
     const timeoutHandle = setTimeout(() => {

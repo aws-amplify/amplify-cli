@@ -16,7 +16,7 @@ describe('amplify configure', () => {
   });
 });
 
-function testAmplifyConfigureValidation() {
+function testAmplifyConfigureValidation(): Promise<void> {
   const validMockAWSAccessKeyId = 'MOCK_KLNS6VBMOLVRGX';
   const defaultAWSAccessKeyId = '<YOUR_ACCESS_KEY_ID>';
   const accessKeyIdWithSpace = 'MOCK_JKLN 6VBMOLVRGX';

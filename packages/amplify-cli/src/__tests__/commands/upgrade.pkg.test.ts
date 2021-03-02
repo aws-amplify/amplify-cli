@@ -3,7 +3,6 @@ import { run } from '../../commands/upgrade';
 import fetch, { Response } from 'node-fetch';
 import { $TSContext } from 'amplify-cli-core';
 import * as core from 'amplify-cli-core';
-import { Readable } from 'stream';
 
 jest.mock('fs-extra');
 const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;
@@ -42,7 +41,7 @@ const mockStream = {
 const core_mock = core as jest.Mocked<typeof core>;
 core_mock.pathManager.getHomeDotAmplifyDirPath = jest.fn().mockReturnValue('homedir');
 
-const context_stub_typed = context_stub as $TSContext;
+const context_stub_typed = (context_stub as unknown) as $TSContext;
 
 // save original process.platform
 const originalPlatform = process.platform;

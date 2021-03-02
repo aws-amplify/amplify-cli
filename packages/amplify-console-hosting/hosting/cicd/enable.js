@@ -1,5 +1,5 @@
-const open = require('open');
 const utils = require('../../utils/amplify-context-utils');
+const { open } = require('amplify-cli-core');
 const questions = require('../../modules/questions/question-generator');
 const configUtils = require('../../utils/config-utils');
 const constants = require('../../constants/plugin-constants');
@@ -38,9 +38,11 @@ async function enable(context) {
 
 async function validateCICDApp(context, appId) {
   const amplifyClient = await clientFactory.getAmplifyClient(context);
-  const result = await amplifyClient.listBranches({
-    appId,
-  }).promise();
+  const result = await amplifyClient
+    .listBranches({
+      appId,
+    })
+    .promise();
   if (result.branches.length === 0) {
     throw new ValidationError("No hosting URL found. Run 'amplify add hosting' again to set up hosting with Amplify Console.");
   }

@@ -28,7 +28,7 @@ exports.handler = function(event, context) {
     let intentParams = [
         <% for(var i = 0; i < props.intents.length; i++) { %>
         {
-            "name": "<%- props.intents[i].intentName %>",
+            "name": "<%- props.intents[i].intentName%>" + "_" + process.env.ENV,
             <% if(props.intents[i].confirmationQuestion) { %>
             "confirmationPrompt": {
                 "maxAttempts": 2, 
@@ -107,7 +107,7 @@ exports.handler = function(event, context) {
         "intents": [
         <% for(var i = 0; i < props.intents.length; i++) { %>
             {
-                "intentName": "<%- props.intents[i].intentName %>",
+                "intentName": "<%- props.intents[i].intentName %>" + "_" + process.env.ENV,
                 "intentVersion": "$LATEST"
             },
         <% } %>
