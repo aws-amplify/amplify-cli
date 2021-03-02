@@ -24,6 +24,7 @@ import { formUserAgentParam } from './aws-utils/user-agent';
 import constants, { ProviderName as providerName } from './constants';
 import { uploadAppSyncFiles } from './upload-appsync-files';
 import { prePushGraphQLCodegen, postPushGraphQLCodegen } from './graphql-codegen';
+import { adminModelgen } from './admin-modelgen';
 import { prePushAuthTransform } from './auth-transform';
 import { transformGraphQLSchema } from './transform-graphql-schema';
 import { displayHelpfulURLs } from './display-helpful-urls';
@@ -311,6 +312,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       .filter(resource => resource.category === 'auth' && resource.service === 'Cognito' && resource.providerPlugin === 'awscloudformation')
       .map(({ category, resourceName }) => context.amplify.removeDeploymentSecrets(context, category, resourceName));
 
+    await adminModelgen(context, resources);
     spinner.succeed('All resources are updated in the cloud');
 
     await displayHelpfulURLs(context, resources);
