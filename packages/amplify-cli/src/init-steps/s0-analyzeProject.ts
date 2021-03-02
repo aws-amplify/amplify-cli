@@ -25,8 +25,7 @@ export async function analyzeProjectHeadless(context: $TSContext) {
   }
 }
 
-function displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName) {
-  context.print.success('We will apply the following configuration:\n');
+export function displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName) {
   context.print.info('Project Information');
   context.print.info(`| Name: ${defaultProjectName}`);
   context.print.info(`| Environment: ${defaultEnv}`);
@@ -47,6 +46,9 @@ async function displayAndSetDefaults(context, projectPath, projectName) {
   const defaultEnv = getDefaultEnv(context);
   const defaultEditorName = editors.length > 0 ? editors[0].name : 'Visual Studio Code';
   const defaultEditor = editors.length > 0 ? editors[0].value : 'vscode';
+
+  context.print.success('We will apply the following configuration:');
+  context.print.info('');
 
   await displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
 

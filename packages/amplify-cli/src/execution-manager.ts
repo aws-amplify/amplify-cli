@@ -32,7 +32,7 @@ export async function executeCommand(context: Context) {
   }
 }
 
-function isContainersEnabled(context) {
+export function isContainersEnabled(context) {
   const projectConfig = context.amplify.getProjectConfig();
   return projectConfig?.[projectConfig.frontend]?.config?.ServerlessContainers ?? false;
 }
