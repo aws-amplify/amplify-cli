@@ -138,9 +138,9 @@ body:
 
       ```
 - type: markdown
-    attributes:
-      value: |
-        ## Additional information
+  attributes:
+    value: |
+      ## Additional information
 - type: markdown
   attributes:
     value: >
