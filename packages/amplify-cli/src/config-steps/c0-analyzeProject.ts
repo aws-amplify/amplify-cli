@@ -1,5 +1,5 @@
 import * as path from 'path';
-import inquirer, { InputQuestion } from 'inquirer';
+import inquirer, { ListQuestion, InputQuestion } from 'inquirer';
 import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { getEnvInfo } from '../extensions/amplify-helpers/get-env-info';
@@ -42,6 +42,19 @@ export async function analyzeProject(context) {
   await displayContainersInfo(context);
   context.print.info('');
 
+  const { configurationSetting } = await inquirer.prompt(configureSettingQuestion);
+  if (configurationSetting !== 'project') {
+    context.exeInfo.inputParams.yes = true;
+    if (configurationSetting === 'containers') {
+      context.exeInfo.inputParams.containerSetting = true;
+    } else if (configurationSetting === 'profile') {
+      context.exeInfo.inputParams.profileSetting = true;
+    }
+  } else {
+    context.exeInfo.inputParams.containerSetting = true;
+    context.exeInfo.inputParams.profileSetting = true;
+  }
+
   await configureProjectName(context);
   await configureEditor(context);
 
@@ -58,6 +71,18 @@ async function displayContainersInfo(context) {
   const containerDeploymentStatus = isContainersEnabled(context) ? 'Yes' : 'No';
   context.print.info(`| Leverage container-based deployments: ${containerDeploymentStatus}`);
 }
+
+const configureSettingQuestion: ListQuestion = {
+  type: 'list',
+  name: 'configurationSetting',
+  message: 'Which setting do you want to configure?',
+  choices: [
+    { name: 'Project information', value: 'project' },
+    { name: 'AWS Profile setting', value: 'profile' },
+    { name: 'Advanced: Container-based deployments', value: 'containers' },
+  ],
+  default: 'project',
+};
 
 async function configureProjectName(context) {
   let { projectName } = context.exeInfo.projectConfig;

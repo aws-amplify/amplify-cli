@@ -3,7 +3,6 @@ const fs = require('fs-extra');
 
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');
-const frameworkConfigMapping = require('./lib/framework-config-mapping');
 const configManager = require('./lib/configuration-manager');
 const server = require('./lib/server');
 const publisher = require('./lib/publisher');

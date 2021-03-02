@@ -59,9 +59,7 @@ async function displayAndSetDefaults(context, projectPath, projectName) {
   await frontendModule.displayFrontendDefaults(context, projectPath);
   context.print.info('');
 
-  const useDefaults = await context.amplify.confirmPrompt('Initialize the project with the above configuration?');
-
-  if (useDefaults) {
+  if (await context.amplify.confirmPrompt('Initialize the project with the above configuration?')) {
     await setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditor);
     await frontendModule.setFrontendDefaults(context, projectPath);
   }
