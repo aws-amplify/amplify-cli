@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface/src';
+import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface';
 
 export async function packageResource(request: PackageRequest, context: any): Promise<PackageResult> {
-  if (!request.lastPackageTimestamp || request.lastBuildTimestamp > request.lastPackageTimestamp) {
+  if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp) {
     const packageHash = (await context.amplify.hashDir(path.join(request.srcRoot, 'src'), ['build'])) as string;
     const output = fs.createWriteStream(request.dstFilename);
 

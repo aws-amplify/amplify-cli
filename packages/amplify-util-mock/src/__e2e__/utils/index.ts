@@ -5,9 +5,11 @@ import * as path from 'path';
 import { v4 } from 'uuid';
 import { processTransformerStacks } from '../../CFNParser/appsync-resource-processor';
 import { configureDDBDataSource, createAndUpdateTable } from '../../utils/dynamo-db';
-import { invoke } from '../../utils/lambda/invoke';
 import { getFunctionDetails } from './lambda-helper';
 import { DynamoDB } from 'aws-sdk';
+import { functionRuntimeContributorFactory } from 'amplify-nodejs-function-runtime-provider';
+
+const invoke = functionRuntimeContributorFactory({}).invoke;
 
 jest.mock('amplify-cli-core', () => ({
   pathManager: {
@@ -32,7 +34,7 @@ export async function launchDDBLocal() {
   return { emulator, dbPath, client };
 }
 
-export async function deploy(transformerOutput: any, client?: DynamoDB) {
+export async function deploy(transformerOutput: any, client?: DynamoDB): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
   let config: any = processTransformerStacks(transformerOutput);
   config.appSync.apiKey = 'da-fake-api-key';
 
@@ -44,6 +46,24 @@ export async function deploy(transformerOutput: any, client?: DynamoDB) {
   const simulator = await runAppSyncSimulator(config);
   return { simulator, config };
 }
+
+export async function reDeploy(
+  transformerOutput: any,
+  simulator: AmplifyAppSyncSimulator,
+  client?: DynamoDB,
+): Promise<{ config: any; simulator: AmplifyAppSyncSimulator }> {
+  let config: any = processTransformerStacks(transformerOutput);
+  config.appSync.apiKey = 'da-fake-api-key';
+
+  if (client) {
+    await createAndUpdateTable(client, config);
+    config = configureDDBDataSource(config, client.config);
+  }
+  configureLambdaDataSource(config);
+  simulator?.reload(config);
+  return { simulator, config };
+}
+
 async function configureLambdaDataSource(config) {
   config.dataSources
     .filter(d => d.type === 'AWS_LAMBDA')
@@ -55,8 +75,10 @@ async function configureLambdaDataSource(config) {
       d.invoke = payload => {
         logDebug('Invoking lambda with config', lambdaConfig);
         return invoke({
-          ...lambdaConfig,
-          event: payload,
+          srcRoot: lambdaConfig.packageFolder,
+          runtime: 'nodejs',
+          handler: `${functionName}.${lambdaConfig.handler}`,
+          event: JSON.stringify(payload),
         });
       };
     });
@@ -77,7 +99,7 @@ export async function terminateDDB(emulator, dbPath) {
   }
 }
 
-export async function runAppSyncSimulator(config, port?: number, wsPort?: number) {
+export async function runAppSyncSimulator(config, port?: number, wsPort?: number): Promise<AmplifyAppSyncSimulator> {
   const appsyncSimulator = new AmplifyAppSyncSimulator({ port, wsPort });
   await appsyncSimulator.start();
   await appsyncSimulator.init(config);

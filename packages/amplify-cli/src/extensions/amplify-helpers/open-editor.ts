@@ -1,4 +1,6 @@
 import * as fs from 'fs-extra';
+import * as which from 'which';
+import open from 'open';
 import execa, { sync as execaSync } from 'execa';
 import * as inquirer from 'inquirer';
 import * as envEditor from 'env-editor';
@@ -19,47 +21,77 @@ export async function openEditor(context, filePath, waitToContinue = true) {
 
   if (editorSelected !== 'none') {
     const editorArguments: string[] = [];
-    const editor = envEditor.getEditor(editorSelected);
+
+    let editor: envEditor.Editor;
+
+    editor = envEditor.getEditor(editorSelected);
 
     if (!editor) {
-      console.error(
-        `Selected editor '${editorSelected}' was not found in your machine. Please open your favorite editor and modify the file if needed.`,
+      context.print.error(
+        `Selected editor '${editorSelected}' was not found in your machine. Open your favorite editor and modify the file if needed.`,
       );
     }
-    const editorPath = editor.paths.find(p => fs.existsSync(p));
 
-    if (editorSelected === 'vscode') {
-      editorArguments.push('--goto');
+    let editorPath: string | undefined = editor.paths.find(p => fs.existsSync(p));
+
+    // Check if the binary can be located with which
+    if (!editorPath) {
+      const resolvedBinary = which.sync(editor.binary, {
+        nothrow: true,
+      });
+
+      if (resolvedBinary !== null) {
+        editorPath = resolvedBinary;
+      }
     }
 
-    editorArguments.push(filePath);
+    // In case if the selected editor was found.
+    if (!editorPath) {
+      context.print.warning(`Couldn’t find selected code editor (${editorSelected}) on your machine.`);
 
-    try {
-      if (!editor.isTerminalEditor) {
-        const subProcess = execa(editorPath || editor.binary, editorArguments, {
-          detached: true,
-          stdio: 'ignore',
-        });
+      const openFile = await context.amplify.confirmPrompt('Try opening with system-default editor instead?', true);
 
-        subProcess.on('error', err => {
-          context.print.error(
-            `Selected editor ${editorSelected} was not found in your machine. Please manually edit the file created at ${filePath}`,
-          );
-        });
+      if (openFile) {
+        await open(filePath, { wait: waitToContinue });
 
-        subProcess.unref();
-        context.print.info(`Please edit the file in your editor: ${filePath}`);
         if (waitToContinue) {
           await inquirer.prompt(continueQuestion);
         }
-      } else {
-        await execaSync(editorPath || editor.binary, editorArguments, {
-          detached: true,
-          stdio: 'inherit',
-        });
       }
-    } catch (e) {
-      context.print.error(`Selected default editor not found in your machine. Please manually edit the file created at ${filePath}`);
+    } else {
+      if (editorSelected === 'vscode') {
+        editorArguments.push('--goto');
+      }
+
+      editorArguments.push(filePath);
+
+      try {
+        if (!editor.isTerminalEditor) {
+          const subProcess = execa(editorPath, editorArguments, {
+            detached: true,
+            stdio: 'ignore',
+          });
+
+          subProcess.on('error', err => {
+            context.print.error(
+              `Selected editor ${editorSelected} was not found in your machine. Manually edit the file created at ${filePath}`,
+            );
+          });
+
+          subProcess.unref();
+          context.print.info(`Edit the file in your editor: ${filePath}`);
+          if (waitToContinue) {
+            await inquirer.prompt(continueQuestion);
+          }
+        } else {
+          await execaSync(editorPath, editorArguments, {
+            detached: true,
+            stdio: 'inherit',
+          });
+        }
+      } catch (e) {
+        context.print.error(`Selected default editor not found in your machine. Manually edit the file created at ${filePath}`);
+      }
     }
   }
 }

@@ -4,7 +4,6 @@ import { print } from '../extensions/amplify-helpers/print';
 export function onFailure(e) {
   // If no stack present it means we already printed a friendly error message and cleared the stack.
   if (e.stack) {
-    print.error('init failed');
     print.info(util.inspect(e));
   }
 

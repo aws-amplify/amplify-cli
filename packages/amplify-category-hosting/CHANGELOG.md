@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.6.2...amplify-category-hosting@2.6.3) (2021-02-26)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+## [2.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.6.1...amplify-category-hosting@2.6.2) (2021-02-24)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+## [2.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.6.0...amplify-category-hosting@2.6.1) (2021-02-17)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
+# [2.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.5.1...amplify-category-hosting@2.6.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
 ## [2.5.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.4.6...amplify-category-hosting@2.5.1) (2020-11-22)
 
 **Note:** Version bump only for package amplify-category-hosting

@@ -1,6 +1,6 @@
 import { nspawn as spawn, getCLIPath } from 'amplify-e2e-core';
 
-export function addCodegen(cwd: string, settings: any) {
+export function addCodegen(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const run = spawn(getCLIPath(), ['codegen', 'add'], { cwd, stripColors: true });
     if (!(settings.ios || settings.android)) {

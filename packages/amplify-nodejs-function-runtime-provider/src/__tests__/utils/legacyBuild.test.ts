@@ -2,6 +2,7 @@ import glob from 'glob';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import { buildResource } from '../../../src/utils/legacyBuild';
+import { BuildType } from 'amplify-function-plugin-interface';
 
 jest.mock('glob');
 jest.mock('fs-extra');
@@ -25,10 +26,10 @@ describe('legacy build resource', () => {
     fs_mock.statSync.mockImplementation(file => ({ mtime: new Date(stubFileTimestamps.get(file.toString())!) } as any));
 
     const result = await buildResource({
-      lastBuildTimestamp: new Date(timestamp),
+      lastBuildTimeStamp: new Date(timestamp),
       srcRoot: 'resourceDir',
-      env: 'something',
       runtime: 'other',
+      buildType: BuildType.PROD,
     });
 
     expect(result.rebuilt).toEqual(false);

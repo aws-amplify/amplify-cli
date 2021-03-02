@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import * as execa from 'execa';
-import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface/src';
+import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface';
 import { executableName } from '../constants';
 
 export const packageAssemblies = async (request: PackageRequest, context: any): Promise<PackageResult> => {

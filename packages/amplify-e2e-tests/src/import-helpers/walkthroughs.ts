@@ -201,7 +201,7 @@ export const headlessPull = (
   });
 };
 
-export const importS3 = (cwd: string, autoCompletePrefix: string) => {
+export const importS3 = (cwd: string, autoCompletePrefix: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['storage', 'import'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -222,7 +222,7 @@ export const importS3 = (cwd: string, autoCompletePrefix: string) => {
   });
 };
 
-export const removeImportedS3WithDefault = (cwd: string) => {
+export const removeImportedS3WithDefault = (cwd: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['storage', 'remove'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
@@ -240,7 +240,7 @@ export const removeImportedS3WithDefault = (cwd: string) => {
   });
 };
 
-export const importDynamoDBTable = (cwd: string, autoCompletePrefix: string) => {
+export const importDynamoDBTable = (cwd: string, autoCompletePrefix: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['storage', 'import'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -264,7 +264,7 @@ export const importDynamoDBTable = (cwd: string, autoCompletePrefix: string) => 
 
 // As of Today it is the same that we have for S3, duplicated to make sure we not break when updating the flow of only one
 // of these.
-export const removeImportedDynamoDBWithDefault = (cwd: string) => {
+export const removeImportedDynamoDBWithDefault = (cwd: string): Promise<void> => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['storage', 'remove'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')

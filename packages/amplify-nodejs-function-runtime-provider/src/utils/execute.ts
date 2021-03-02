@@ -1,108 +1,87 @@
-import { existsSync } from 'fs-extra';
-import { InvokeOptions } from './invokeUtils';
+import { existsSync, createWriteStream } from 'fs-extra';
+import { InvokeOptions } from './invoke';
 import path from 'path';
-import _ from 'lodash';
 import exit from 'exit';
 
-//  copied from amplify-util-mock with slight modifications
-
-// handler is a string like 'path/to/handler.func'
-async function loadHandler(root: string, handler: string): Promise<Function> {
-  const handlerParts = path.parse(handler);
+process.on('message', async (options: InvokeOptions) => {
+  const parentPipe = createWriteStream('', { fd: 3 });
+  parentPipe.setDefaultEncoding('utf-8');
   try {
-    const handler = await import(path.join(root, handlerParts.dir, handlerParts.name));
-    return handler[handlerParts.ext.replace('.', '')];
-  } catch (err) {
-    throw new Error(`Could not load lambda handler function due to ${err}`);
-  }
-}
-
-export function invokeFunction(options: InvokeOptions) {
-  return new Promise(async (resolve, reject) => {
-    let returned = false;
-
-    const context = {
-      done(error: any, result: any) {
-        if (!returned) {
-          returned = true;
-          if (error === null || typeof error === 'undefined') {
-            context.succeed(result);
-          } else {
-            context.fail(error);
-          }
-        }
-      },
-      succeed(result: any) {
-        returned = true;
-        resolve(result);
-      },
-      fail(error: any) {
-        returned = true;
-        reject(error);
-      },
-      awsRequestId: 'LAMBDA_INVOKE',
-      logStreamName: 'LAMBDA_INVOKE',
-    };
-
-    if (options.packageFolder) {
-      const p = path.resolve(options.packageFolder);
-      if (!existsSync(p)) {
-        context.fail(`packageFolder ${options.packageFolder} does not exist`);
-        return;
-      }
-      process.chdir(p);
-    } else {
-      context.fail('packageFolder is not defined');
-      return;
-    }
-
-    if (!options.handler) {
-      context.fail('handler is not defined');
-      return;
-    }
-
-    if (options.context) {
-      Object.assign(context, options.context);
-    }
-
-    const callback = (error: any, object: any) => {
-      context.done(error, object);
-    };
-
-    const lambdaHandler = await loadHandler(options.packageFolder, options.handler);
-    const { event } = options;
-    try {
-      const response = lambdaHandler(JSON.parse(event), context, callback);
-      if (typeof response === 'object' && typeof response.then === 'function') {
-        const result = await response;
-        if (result !== undefined) {
-          context.done(null, result);
-        } else {
-          context.done(null, null);
-        }
-      } else if (response !== undefined) {
-        context.done(null, null);
-      }
-    } catch (e) {
-      context.done(e, null);
-    }
-  });
-}
-
-process.on('message', async options => {
-  try {
-    const result = await invokeFunction(JSON.parse(options));
-    process.stdout.write('\n');
-    process.stdout.write(JSON.stringify({ result, error: null }));
+    const result = await invokeFunction(options);
+    parentPipe.write(JSON.stringify({ result }));
   } catch (error) {
-    let lambdaError = typeof error === 'string' ? { message: 'Unknown Error' } : { message: error.message, stack: error.stack };
-    process.stdout.write('\n');
-    process.stdout.write(
-      JSON.stringify({
-        result: null,
-        error: { type: 'Lambda:Unhandled', ...lambdaError },
-      }),
-    );
+    let plainError = error;
+    if (typeof error === 'object') {
+      plainError = Object.getOwnPropertyNames(error).reduce((acc, key) => {
+        acc[key] = error[key];
+        return acc;
+      }, {} as Record<string, any>);
+    }
+    parentPipe.write(JSON.stringify({ error: plainError }));
   }
   exit(0);
 });
+
+const invokeFunction = async (options: InvokeOptions) => {
+  if (options.packageFolder) {
+    const p = path.resolve(options.packageFolder);
+    if (!existsSync(p)) {
+      throw new Error(`Lambda package folder ${options.packageFolder} does not exist`);
+    }
+    process.chdir(p);
+  } else {
+    throw new Error(`Invalid lambda invoke request. No package folder specified.`);
+  }
+  if (!options.handler) {
+    throw new Error('Invalid lambda invoke request. No handler specified.');
+  }
+
+  const lambdaHandler = await loadHandler(options.packageFolder, options.handler);
+  const event = JSON.parse(options.event);
+
+  const lambdaMockContext = {
+    functionName: 'mock-function-name',
+    functionVersion: '1',
+    invokedFunctionArn: 'mock-function-arn',
+    memoryLimitInMB: '128',
+    awsRequestId: 'LAMBDA_INVOKE',
+    logGroupName: 'LAMBDA_INVOKE',
+    logStreamName: 'LAMBDA_INVOKE',
+    callbackWaitsForEmptyEventLoop: true,
+    ...options.context,
+  };
+
+  return new Promise(async (resolve, reject) => {
+    const callback = (error: any, response: any) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(response);
+      }
+    };
+    try {
+      const lambdaPromise = lambdaHandler(event, lambdaMockContext, callback);
+      if (typeof lambdaPromise === 'object' && typeof lambdaPromise.then === 'function') {
+        resolve(await lambdaPromise);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+// handler is a string like 'path/to/handler.func'
+const loadHandler = async (root: string, handler: string): Promise<Function> => {
+  const handlerParts = path.parse(handler);
+  try {
+    const handler = await import(path.join(root, handlerParts.dir, handlerParts.name));
+    const handlerFuncName = handlerParts.ext.replace('.', '');
+    const handlerFunc = handler?.[handlerFuncName];
+    if (typeof handlerFunc !== 'function') {
+      throw new Error(`Lambda handler ${handlerParts.name} has no exported function named ${handlerFuncName}`);
+    }
+    return handlerFunc;
+  } catch (err) {
+    throw new Error(`Could not load lambda handler function due to ${err}`);
+  }
+};

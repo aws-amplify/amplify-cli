@@ -4,6 +4,7 @@ export class TemplateSentError extends Error {
   extensions: any;
   constructor(public message: string, public errorType: string, public data: any, public errorInfo: any, info: GraphQLResolveInfo) {
     super(message);
+    Object.setPrototypeOf(this, TemplateSentError.prototype);
     const fieldName = info.fieldName;
     let path = info.path;
     const pathArray = [];
@@ -36,10 +37,12 @@ export class TemplateSentError extends Error {
 export class Unauthorized extends TemplateSentError {
   constructor(gqlMessage, info: GraphQLResolveInfo) {
     super(gqlMessage, 'Unauthorized', {}, {}, info);
+    Object.setPrototypeOf(this, Unauthorized.prototype);
   }
 }
-export class ValidateError extends Error {
-  constructor(public message: string, public type: string, public data: any) {
-    super(message);
+export class ValidateError extends TemplateSentError {
+  constructor(public message: string, info: GraphQLResolveInfo, public type: string = 'CustomTemplateException', public data: any = null) {
+    super(message, type, {}, {}, info);
+    Object.setPrototypeOf(this, ValidateError.prototype);
   }
 }

@@ -1,6 +1,9 @@
 import { getCLIPath, nspawn as spawn } from '..';
 
-export function amplifyPull(cwd: string, settings: { override?: boolean; emptyDir?: boolean; appId?: string; withRestore?: boolean }) {
+export function amplifyPull(
+  cwd: string,
+  settings: { override?: boolean; emptyDir?: boolean; appId?: string; withRestore?: boolean },
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const tableHeaderRegex = /\|\sCategory\s+\|\sResource\sname\s+\|\sOperation\s+\|\sProvider\splugin\s+\|/;
     const tableSeperator = /\|(\s-+\s\|){4}/;

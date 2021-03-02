@@ -2,7 +2,7 @@ import * as which from 'which';
 import * as execa from 'execa';
 import * as semver from 'semver';
 import { minJavaVersion, minGradleVersion } from './constants';
-import { CheckDependenciesResult } from 'amplify-function-plugin-interface/src';
+import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
 
 export const checkJava = async (): Promise<CheckDependenciesResult> => {
   const executablePath = which.sync('java', {

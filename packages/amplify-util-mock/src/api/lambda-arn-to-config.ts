@@ -1,10 +1,14 @@
-import { LambdaFunctionConfig } from '../CFNParser/lambda-resource-processor';
 import { keys } from 'lodash';
+import { $TSAny, $TSContext, stateManager } from 'amplify-cli-core';
+import _ = require('lodash');
+import { ServiceName } from 'amplify-category-function';
+import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
+import { ProcessedLambdaFunction } from '../CFNParser/stack/types';
 
 /**
  * Attempts to match an arn object against the array of lambdas configured in the project
  */
-export const lambdaArnToConfig = (arn: any, provisionedLambdas: LambdaFunctionConfig[]): LambdaFunctionConfig => {
+export const lambdaArnToConfig = (context: $TSContext, arn: $TSAny): Promise<ProcessedLambdaFunction> => {
   const errorSuffix =
     '\nSee https://docs.amplify.aws/cli/graphql-transformer/function for information on how to configure Lambda resolvers.';
   let searchString = '';
@@ -22,13 +26,17 @@ export const lambdaArnToConfig = (arn: any, provisionedLambdas: LambdaFunctionCo
   } else {
     throw new Error(`Cannot interpret Lambda ARN [${JSON.stringify(arn)}]${errorSuffix}`);
   }
-  const lambdaConfig = provisionedLambdas.find(funcConfig => searchString.includes(funcConfig.name));
-  if (!lambdaConfig) {
+  const lambdaNames = _.entries<{ service: string }>(_.get(stateManager.getMeta(), ['function']))
+    .filter(([_, funcMeta]) => funcMeta.service === ServiceName.LambdaFunction)
+    .map(([key]) => key);
+  const foundLambdaName = lambdaNames.find(name => searchString.includes(name));
+  if (!foundLambdaName) {
     throw new Error(
       `Did not find a Lambda matching ARN [${JSON.stringify(
         arn,
       )}] in the project. Local mocking only supports Lambdas that are configured in the project.${errorSuffix}`,
     );
   }
-  return lambdaConfig;
+  // lambdaArnToConfig is only called in the context of initializing a mock API, so setting overrideApiToLocal to true here
+  return loadLambdaConfig(context, foundLambdaName, true);
 };

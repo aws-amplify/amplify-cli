@@ -1,10 +1,10 @@
 import path from 'path';
 import fs from 'fs-extra';
 import portfinder from 'portfinder';
-import { pathManager } from 'amplify-cli-core';
+import { $TSContext, pathManager } from 'amplify-cli-core';
 
-import { InvocationRequest, BuildRequest } from 'amplify-function-plugin-interface';
-import { buildResourceInternal, executeCommand } from './runtime';
+import { InvocationRequest } from 'amplify-function-plugin-interface';
+import { executeCommand } from './runtime';
 import { MAIN_SOURCE, MAX_PORT, BASE_PORT, BIN_LOCAL, MAIN_BINARY, MAIN_BINARY_WIN, packageName, relativeShimSrcPath } from './constants';
 import execa, { ExecaChildProcess } from 'execa';
 
@@ -41,7 +41,10 @@ const startLambda = (request: InvocationRequest, portNumber: number, lambda: { e
 
   const lambdaProcess: ExecaChildProcess = execa.command(lambda.executable, {
     env: envVars,
+    extendEnv: false,
     cwd: lambda.cwd,
+    stderr: 'inherit',
+    stdout: 'inherit',
   });
 
   return lambdaProcess;
@@ -60,17 +63,8 @@ const stopLambda = async (lambdaProcess: ExecaChildProcess) => {
   }
 };
 
-export const localInvoke = async (request: InvocationRequest, context: any) => {
+export const localInvoke = async (request: InvocationRequest, context: $TSContext) => {
   const localInvoker = await buildLocalInvoker(context);
-
-  // Make sure that local invocation works with the latest source we issue a build request for the function resource
-  const buildRequest: BuildRequest = {
-    env: request.env,
-    srcRoot: request.srcRoot,
-    runtime: request.runtime,
-  };
-
-  const buildResult = await buildResourceInternal(buildRequest, context, false, true);
 
   // Find a free tcp port for the Lambda to launch on
   const portNumber = await portfinder.getPortPromise({

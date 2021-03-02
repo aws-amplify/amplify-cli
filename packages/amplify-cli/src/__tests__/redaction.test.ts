@@ -42,7 +42,7 @@ describe('input-redaction', () => {
     expect(redactedCategoriesJsonFromOptions.notifications.Pinpoint.Email.RoleArn).toEqual(replacementstring);
     expect(redactedCategoriesJsonFromOptions.notifications.Pinpoint.FCM.ApiKey).toEqual(replacementstring);
     const deletedInput = redactInput(input, true, replacementstring);
-    expect(deletedInput.argv).toBeFalsy();
+    expect(deletedInput.argv).toEqual([]);
     expect(deletedInput.options).toBeFalsy();
   });
 });

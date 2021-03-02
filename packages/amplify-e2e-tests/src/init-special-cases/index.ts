@@ -41,7 +41,7 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
   }
 }
 
-async function initWorkflow(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region: string }) {
+async function initWorkflow(cwd: string, settings: { accessKeyId: string; secretAccessKey: string; region: string }): Promise<void> {
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {

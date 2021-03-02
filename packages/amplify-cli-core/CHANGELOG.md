@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.17.1...amplify-cli-core@1.17.2) (2021-02-26)
+
+**Note:** Version bump only for package amplify-cli-core
+
+
+
+
+
+## [1.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.17.0...amplify-cli-core@1.17.1) (2021-02-24)
+
+**Note:** Version bump only for package amplify-cli-core
+
+
+
+
+
+# [1.17.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.16.0...amplify-cli-core@1.17.0) (2021-02-17)
+
+
+### Features
+
+* **amplify-cli-core:** add validations to tag Key and Value ([31eb8eb](https://github.com/aws-amplify/amplify-cli/commit/31eb8ebff2fcbd215975c8ac05287d023d544c42))
+* Separate prod and dev lambda function builds ([#6494](https://github.com/aws-amplify/amplify-cli/issues/6494)) ([2977c6a](https://github.com/aws-amplify/amplify-cli/commit/2977c6a886b33a38ef46f898a2adc1ffdb6d228b))
+
+
+
+
+
+# [1.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.15.0...amplify-cli-core@1.16.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
+# [1.15.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.14.1...amplify-cli-core@1.15.0) (2021-02-10)
+
+
+### Bug Fixes
+
+* fix appsync permission assignment from functions ([#5342](https://github.com/aws-amplify/amplify-cli/issues/5342)) ([b2e2dd0](https://github.com/aws-amplify/amplify-cli/commit/b2e2dd0071c1a451ba032cf7f8cfe7cf6381a96e))
+* **amplify-category-function:** use ref for S3Bucket and S3Key in CFN ([#6358](https://github.com/aws-amplify/amplify-cli/issues/6358)) ([84a141a](https://github.com/aws-amplify/amplify-cli/commit/84a141ac4812d95c27b14c8d9f81e4a5c8fadef8))
+* optimize mock package imports ([#6455](https://github.com/aws-amplify/amplify-cli/issues/6455)) ([1b64a14](https://github.com/aws-amplify/amplify-cli/commit/1b64a147cbb3b56ce6f8465318d611de5d724685))
+
+
+### Features
+
+* **graphql-key-transformer:** change default to add GSIs when using [@key](https://github.com/key) ([#5648](https://github.com/aws-amplify/amplify-cli/issues/5648)) ([4287c63](https://github.com/aws-amplify/amplify-cli/commit/4287c630295c304c7ff8343922926b4830b75cd4))
+
+
+
+
+
 ## [1.14.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.14.0...amplify-cli-core@1.14.1) (2021-01-08)
 
 

@@ -1,18 +1,40 @@
-import { category as categoryName } from '../../constants';
+import { $TSContext } from 'amplify-cli-core';
+import { ServiceName } from '../..';
+import { category } from '../../constants';
+import { PackageRequestMeta } from '../../provider-utils/awscloudformation/types/packaging-types';
+import { buildFunction } from '../../provider-utils/awscloudformation/utils/buildFunction';
+import { packageResource } from '../../provider-utils/awscloudformation/utils/package';
 
-const subcommand = 'build';
+export const name = 'build';
 
-module.exports = {
-  name: subcommand,
-  run: async context => {
-    const { amplify, parameters } = context;
-    const resourceName = parameters.first;
+/**
+ * To maintain existing behavior, this function builds and then packages lambda functions
+ */
+export const run = async (context: $TSContext) => {
+  const resourceName = context?.input?.subCommands?.[0];
+  const confirmContinue =
+    !!resourceName ||
+    context.input?.options?.yes ||
+    (await context.amplify.confirmPrompt('Are you sure you want to continue building the resources?', false));
+  if (!confirmContinue) {
+    return;
+  }
+  try {
+    const resourcesToBuild = (await getSelectedResources(context, resourceName))
+      .filter(resource => resource.build)
+      .filter(resource => resource.service === ServiceName.LambdaFunction);
+    for await (const resource of resourcesToBuild) {
+      resource.lastBuildTimeStamp = await buildFunction(context, resource);
+      await packageResource(context, resource);
+    }
+  } catch (err) {
+    context.print.info(err.stack);
+    context.print.error('There was an error building the function resources');
+    context.usageData.emitError(err);
+    process.exitCode = 1;
+  }
+};
 
-    return amplify.buildResources(context, categoryName, resourceName).catch(err => {
-      context.print.info(err.stack);
-      context.print.error('There was an error building the function resources');
-      context.usageData.emitError(err);
-      process.exitCode = 1;
-    });
-  },
+const getSelectedResources = async (context: $TSContext, resourceName?: string) => {
+  return (await context.amplify.getResourceStatus(category, resourceName)).allResources as PackageRequestMeta[];
 };

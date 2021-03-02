@@ -1,8 +1,10 @@
 import * as path from 'path';
-import { JSONUtilities, pathManager, $TSAny, $TSContext } from 'amplify-cli-core';
+import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { amplifyCLIConstants } from './constants';
+import { leaveBreadcrumbs } from './leave-breadcrumbs';
 
-export function readBreadcrumbs(context: $TSContext, category: string, resourceName: string): $TSAny {
-  const breadcrumbsPath = path.join(pathManager.getBackendDirPath(), category, resourceName, context.amplify.constants.BreadcrumbsFileName);
+export function readBreadcrumbs(category: string, resourceName: string) {
+  const breadcrumbsPath = path.join(pathManager.getBackendDirPath(), category, resourceName, amplifyCLIConstants.BreadcrumbsFileName);
   let breadcrumbs = JSONUtilities.readJson(breadcrumbsPath, {
     throwIfNotExist: false,
   });
@@ -15,7 +17,7 @@ export function readBreadcrumbs(context: $TSContext, category: string, resourceN
       useLegacyBuild: true,
     };
 
-    context.amplify.leaveBreadcrumbs(context, category, resourceName, breadcrumbs);
+    leaveBreadcrumbs(category, resourceName, breadcrumbs);
   }
   return breadcrumbs;
 }

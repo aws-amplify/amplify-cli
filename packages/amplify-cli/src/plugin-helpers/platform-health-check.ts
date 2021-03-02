@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { PluginInfo } from '../domain/plugin-info';
 import { PluginPlatform } from '../domain/plugin-platform';
 import { JSONUtilities, $TSAny } from 'amplify-cli-core';
+import { satisfies } from 'semver';
 
 export type PluginDescription = {
   name: string;
@@ -84,7 +85,7 @@ function isMatching(pluginDescription: PluginDescription, pluginInfo: PluginInfo
   let result = pluginDescription.packageName === pluginInfo.packageName && pluginDescription.type === pluginInfo.manifest.type;
 
   if (result && pluginDescription.packageVersion) {
-    result = pluginDescription.packageVersion === pluginInfo.packageVersion;
+    result = satisfies(pluginInfo.packageVersion, pluginDescription.packageVersion);
   }
 
   return result;

@@ -12,7 +12,7 @@ export type AddDynamoDBSettings = {
   gsiName: string;
 };
 
-export function addSimpleDDB(cwd: string, settings: any) {
+export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -46,7 +46,7 @@ export function addSimpleDDB(cwd: string, settings: any) {
   });
 }
 
-export function addDDBWithTrigger(cwd: string, settings: any) {
+export function addDDBWithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -84,7 +84,7 @@ export function addDDBWithTrigger(cwd: string, settings: any) {
   });
 }
 
-export function updateDDBWithTrigger(cwd: string, settings: any) {
+export function updateDDBWithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -114,7 +114,7 @@ export function updateDDBWithTrigger(cwd: string, settings: any) {
   });
 }
 
-export function updateSimpleDDBwithGSI(cwd: string, settings: any) {
+export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -155,7 +155,7 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any) {
   });
 }
 
-export function addSimpleDDBwithGSI(cwd: string, settings: any) {
+export function addSimpleDDBwithGSI(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -186,7 +186,10 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any) {
       .wait('Please provide the GSI name')
       .sendLine('gsi1')
       .wait('Please choose partition key for the GSI')
+      .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
+      .wait('Do you want to add a sort key to your global secondary index?')
+      .sendLine('n')
       .wait('Do you want to add more global secondary indexes to your table')
       .sendLine('n')
       .wait('Do you want to add a Lambda Trigger for your Table')
@@ -202,7 +205,7 @@ export function addSimpleDDBwithGSI(cwd: string, settings: any) {
   });
 }
 
-export function addS3(cwd: string, settings: any) {
+export function addS3(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -229,7 +232,7 @@ export function addS3(cwd: string, settings: any) {
 }
 
 // Adds auth and S3 to test case where user adds storage without adding auth first
-export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any) {
+export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -264,7 +267,7 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any) {
   });
 }
 
-export function addS3WithGuestAccess(cwd: string, settings: any) {
+export function addS3WithGuestAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -297,7 +300,7 @@ export function addS3WithGuestAccess(cwd: string, settings: any) {
 }
 
 // Expects 2 existing user pool groups
-export function addS3WithGroupAccess(cwd: string, settings: any) {
+export function addS3WithGroupAccess(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -333,7 +336,7 @@ export function addS3WithGroupAccess(cwd: string, settings: any) {
   });
 }
 
-export function addS3WithTrigger(cwd: string, settings: any) {
+export function addS3WithTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -366,7 +369,7 @@ export function addS3WithTrigger(cwd: string, settings: any) {
   });
 }
 
-export function updateS3AddTrigger(cwd: string, settings: any) {
+export function updateS3AddTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['update', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
@@ -399,7 +402,7 @@ export function updateS3AddTrigger(cwd: string, settings: any) {
   });
 }
 
-export function addS3Storage(projectDir: string) {
+export function addS3Storage(projectDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
@@ -440,7 +443,7 @@ export function addS3Storage(projectDir: string) {
   });
 }
 
-export function addS3StorageWithSettings(projectDir: string, settings: AddStorageSettings) {
+export function addS3StorageWithSettings(projectDir: string, settings: AddStorageSettings): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true });
 
@@ -481,7 +484,7 @@ export function addS3StorageWithSettings(projectDir: string, settings: AddStorag
   });
 }
 
-export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: AddDynamoDBSettings) {
+export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: AddDynamoDBSettings): Promise<void> {
   return new Promise((resolve, reject) => {
     let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true, noOutputTimeout: 3001 });
 

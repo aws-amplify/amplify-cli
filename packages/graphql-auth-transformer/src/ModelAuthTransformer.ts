@@ -267,7 +267,7 @@ export class ModelAuthTransformer extends Transformer {
     ctx.mergeConditions(template.Conditions);
     this.updateAPIAuthentication(ctx);
     if (!ctx.metadata.has(AUTH_NON_MODEL_TYPES)) {
-      ctx.metadata.set(AUTH_NON_MODEL_TYPES, new Set<string>());
+      ctx.metadata.set(AUTH_NON_MODEL_TYPES, new Map<string, Set<string>>());
     }
   };
 
@@ -532,7 +532,16 @@ Static group authorization should perform as expected.`,
   };
 
   private propagateAuthDirectivesToNestedTypes(type: ObjectTypeDefinitionNode, rules: AuthRule[], ctx: TransformerContext) {
-    const seenNonModelTypes: Set<string> = ctx.metadata.get(AUTH_NON_MODEL_TYPES);
+    const seenNonModelTypes: Map<string, Set<string>> = ctx.metadata.get(AUTH_NON_MODEL_TYPES);
+
+    const getDirectivesToAdd = (nonModelName: string): { current: DirectiveNode[]; old?: Set<string> } => {
+      const directives = this.getDirectivesForRules(rules, true);
+      if (seenNonModelTypes.has(nonModelName)) {
+        const nonModelDirectives: Set<string> = seenNonModelTypes.get(nonModelName);
+        return { current: directives.filter(directive => !nonModelDirectives.has(directive.name.value)), old: nonModelDirectives };
+      }
+      return { current: directives };
+    };
 
     const nonModelTypePredicate = (fieldType: TypeDefinitionNode): TypeDefinitionNode | undefined => {
       if (fieldType) {
@@ -546,21 +555,21 @@ Static group authorization should perform as expected.`,
     };
     const nonModelFieldTypes = type.fields.map(f => ctx.getType(getBaseType(f.type)) as TypeDefinitionNode).filter(nonModelTypePredicate);
     for (const nonModelFieldType of nonModelFieldTypes) {
-      if (!seenNonModelTypes.has(nonModelFieldType.name.value)) {
-        // add to the set of seen non model types
-        seenNonModelTypes.add(nonModelFieldType.name.value);
-        const directives = this.getDirectivesForRules(rules, false);
-        // Add the directives to the Type node itself
-        if (directives.length > 0) {
-          this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives);
-        }
-        const hasIAM = directives.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
+      const directives = getDirectivesToAdd(nonModelFieldType.name.value);
+      if (directives.current.length > 0) {
+        // merge back the newly added auth directives with what already exists in the set
+        const totalDirectives = new Set<string>([
+          ...directives.current.map(dir => dir.name.value),
+          ...(directives.old ? directives.old : []),
+        ]);
+        seenNonModelTypes.set(nonModelFieldType.name.value, totalDirectives);
+        this.extendTypeWithDirectives(ctx, nonModelFieldType.name.value, directives.current);
+        const hasIAM =
+          directives.current.filter(directive => directive.name.value === 'aws_iam') || this.configuredAuthProviders.default === 'iam';
         if (hasIAM) {
           this.unauthPolicyResources.add(`${nonModelFieldType.name.value}/null`);
           this.authPolicyResources.add(`${nonModelFieldType.name.value}/null`);
         }
-
-        // Recursively process the nested types if there is any
         this.propagateAuthDirectivesToNestedTypes(<ObjectTypeDefinitionNode>nonModelFieldType, rules, ctx);
       }
     }

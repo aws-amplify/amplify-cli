@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.28.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.28.2...amplify-category-auth@2.28.3) (2021-02-26)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+## [2.28.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.28.1...amplify-category-auth@2.28.2) (2021-02-24)
+
+
+### Bug Fixes
+
+* **auth:** update oauth prompt help text to mention that selecting "no" will remove existing configuration ([#6670](https://github.com/aws-amplify/amplify-cli/issues/6670)) ([83ec192](https://github.com/aws-amplify/amplify-cli/commit/83ec1923bdeffc328d0e97b658657894a79f4ca0))
+* insert hostedUIProviderCreds empty array on hostedUI ([#6485](https://github.com/aws-amplify/amplify-cli/issues/6485)) ([5ebee51](https://github.com/aws-amplify/amplify-cli/commit/5ebee516373c0544f1400f054eb382bb5b887253))
+
+
+### Reverts
+
+* Revert "fix: insert hostedUIProviderCreds empty array on hostedUI (#6485)" (#6682) ([4185595](https://github.com/aws-amplify/amplify-cli/commit/41855953b074fe4179a68a4acaf9796515e12688)), closes [#6485](https://github.com/aws-amplify/amplify-cli/issues/6485) [#6682](https://github.com/aws-amplify/amplify-cli/issues/6682)
+
+
+
+
+
+## [2.28.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.28.0...amplify-category-auth@2.28.1) (2021-02-17)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+# [2.28.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.27.0...amplify-category-auth@2.28.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
+# [2.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.26.4...amplify-category-auth@2.27.0) (2021-02-10)
+
+
+### Bug Fixes
+
+* [#6397](https://github.com/aws-amplify/amplify-cli/issues/6397) - auth update overwrite parameters ([#6403](https://github.com/aws-amplify/amplify-cli/issues/6403)) ([75f5ace](https://github.com/aws-amplify/amplify-cli/commit/75f5ace173a6b36b943e2110845e411a2cce5d6d))
+* appclient secret output default to false ([#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)) ([3da53b7](https://github.com/aws-amplify/amplify-cli/commit/3da53b7c9aacf718ebd8ea63e59928425af20764))
+* apply empty arrays as default values but not undefined values ([#6445](https://github.com/aws-amplify/amplify-cli/issues/6445)) ([c2d2a6c](https://github.com/aws-amplify/amplify-cli/commit/c2d2a6cbffaed255a4cac7738d4691dda25e8710))
+* correct given_name fb attribute mapping ([#6510](https://github.com/aws-amplify/amplify-cli/issues/6510)) ([c26d958](https://github.com/aws-amplify/amplify-cli/commit/c26d95866a0496b26d4d7581eb2096b87390f50e))
+* generating condition for user pool ([#6426](https://github.com/aws-amplify/amplify-cli/issues/6426)) ([4f35e08](https://github.com/aws-amplify/amplify-cli/commit/4f35e08e38900f59e4b98da1417deb204f072f6a))
+
+
+### Features
+
+* add support for importing userpool with no appclient secret ([#6404](https://github.com/aws-amplify/amplify-cli/issues/6404)) ([4ce4138](https://github.com/aws-amplify/amplify-cli/commit/4ce413829f14aa90ca9ca27510249f1c6c39909f)), closes [#6333](https://github.com/aws-amplify/amplify-cli/issues/6333)
+
+
+
+
+
 ## [2.26.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.26.3...amplify-category-auth@2.26.4) (2021-01-08)
 
 **Note:** Version bump only for package amplify-category-auth

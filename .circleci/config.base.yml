@@ -874,6 +874,7 @@ workflows:
                 - iterative-update
                 - release
                 - compute-functions
+                - ci-build-tag-update
           requires:
             - build
       - build_pkg_binaries:
@@ -893,6 +894,7 @@ workflows:
                 - master
                 - compute-functions
                 - iterative-update
+                - ci-build-tag-update
           requires:
             - publish_to_local_registry
       - done_with_node_e2e_tests:

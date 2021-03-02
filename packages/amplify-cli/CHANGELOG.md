@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.44.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.44.1...@aws-amplify/cli@4.44.2) (2021-02-26)
+
+
+
+## 4.44.2 (2021-02-26)
+
+
+### Bug Fixes
+
+* truncate long app names on pull ([#6741](https://github.com/aws-amplify/amplify-cli/issues/6741)) ([748b252](https://github.com/aws-amplify/amplify-cli/commit/748b2524115e6ea071e09430f0d8174110c84829))
+
+
+
+
+
+## [4.44.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.44.0...@aws-amplify/cli@4.44.1) (2021-02-24)
+
+
+### Bug Fixes
+
+* [#6153](https://github.com/aws-amplify/amplify-cli/issues/6153) highlight the destructive delete prompt ([#6528](https://github.com/aws-amplify/amplify-cli/issues/6528)) ([13333b2](https://github.com/aws-amplify/amplify-cli/commit/13333b2e7a128b9b33dc08960422d3183dcb7e28))
+
+
+
+
+
+# [4.44.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.43.0...@aws-amplify/cli@4.44.0) (2021-02-17)
+
+
+### Features
+
+* Separate prod and dev lambda function builds ([#6494](https://github.com/aws-amplify/amplify-cli/issues/6494)) ([2977c6a](https://github.com/aws-amplify/amplify-cli/commit/2977c6a886b33a38ef46f898a2adc1ffdb6d228b))
+
+
+
+
+
+# [4.43.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.42.0...@aws-amplify/cli@4.43.0) (2021-02-11)
+
+
+### Features
+
+* dont open urls when CLI is running in CI ([#6503](https://github.com/aws-amplify/amplify-cli/issues/6503)) ([27546a7](https://github.com/aws-amplify/amplify-cli/commit/27546a78159ea95c636dbbd094fe6a4f7fb8f8f4)), closes [#5973](https://github.com/aws-amplify/amplify-cli/issues/5973)
+
+
+
+
+
+# [4.42.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.41.2...@aws-amplify/cli@4.42.0) (2021-02-10)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** use ref for S3Bucket and S3Key in CFN ([#6358](https://github.com/aws-amplify/amplify-cli/issues/6358)) ([84a141a](https://github.com/aws-amplify/amplify-cli/commit/84a141ac4812d95c27b14c8d9f81e4a5c8fadef8))
+* [#6397](https://github.com/aws-amplify/amplify-cli/issues/6397) - auth update overwrite parameters ([#6403](https://github.com/aws-amplify/amplify-cli/issues/6403)) ([75f5ace](https://github.com/aws-amplify/amplify-cli/commit/75f5ace173a6b36b943e2110845e411a2cce5d6d))
+* check for local env file and then fall back on exeinfo ([#6500](https://github.com/aws-amplify/amplify-cli/issues/6500)) ([d2bc6d8](https://github.com/aws-amplify/amplify-cli/commit/d2bc6d86ada45fbda8014a54ed2d09459411d7ab))
+* persist s3bucket metadata on pull and env change ([#6502](https://github.com/aws-amplify/amplify-cli/issues/6502)) ([357f787](https://github.com/aws-amplify/amplify-cli/commit/357f787c2d816e1defa1d0909b06f82775c35255))
+
+
+### Features
+
+* add Flutter  support for Admin UI ([#6516](https://github.com/aws-amplify/amplify-cli/issues/6516)) ([d9ee44b](https://github.com/aws-amplify/amplify-cli/commit/d9ee44be73f43b11da2a07d21fd60108f49b1608))
+
+
+
+
+
 ## [4.41.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.41.1...@aws-amplify/cli@4.41.2) (2021-01-13)
 
 **Note:** Version bump only for package @aws-amplify/cli
