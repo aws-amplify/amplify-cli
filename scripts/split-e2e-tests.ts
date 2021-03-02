@@ -207,7 +207,7 @@ function splitTests(
             return {
               [newJobName]: {
                 ...Object.values(workflowJob)[0],
-                requires: [...(workflowJob[jobName].requires || []), ...(requires ? [requires] : [])],
+                requires: [...(requires ? [requires] : workflowJob[jobName].requires || [])],
               },
             };
           }
