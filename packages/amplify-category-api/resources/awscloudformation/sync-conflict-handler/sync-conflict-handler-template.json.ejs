@@ -38,7 +38,7 @@
             "FunctionName": {
                 "Fn::If": [
                     "ShouldNotCreateEnvResources",
-                    "<%= props.functionName %>", 
+                    "<%= props.functionName %>",
                     {
 
                         "Fn::Join": [
@@ -51,7 +51,7 @@
                                 }
                             ]
                         ]
-                    }      
+                    }
                 ]
             },
             "Environment": {
@@ -59,14 +59,14 @@
                     "ENV": {
                         "Ref": "env"
                     },
-                    "REGION": { 
+                    "REGION": {
                         "Ref": "AWS::Region"
                     }
                     <% if (props.resourceProperties && props.resourceProperties.length > 0) { %>,<%- props.resourceProperties%> <% } %>
                 }
             },
             "Role": { "Fn::GetAtt" : ["LambdaExecutionRole", "Arn"] },
-            "Runtime": "nodejs10.x",
+            "Runtime": "nodejs14.x",
             "Timeout": "25"
           }
         },
@@ -76,7 +76,7 @@
                 "RoleName": {
                     "Fn::If": [
                         "ShouldNotCreateEnvResources",
-                        "<%=props.roleName %>", 
+                        "<%=props.roleName %>",
                         {
 
                             "Fn::Join": [
@@ -89,7 +89,7 @@
                                     }
                                 ]
                             ]
-                        } 
+                        }
                     ]
                 },
                 "AssumeRolePolicyDocument": {
@@ -127,7 +127,7 @@
                             "Resource": { "Fn::Sub" : [ "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*", { "region": {"Ref": "AWS::Region"},  "account": {"Ref": "AWS::AccountId"}, "lambda": {"Ref": "LambdaFunction"}} ]}
                         }<% if (props.database && props.database.resourceName) { %>,
                         {
-                            "Effect": "Allow", 
+                            "Effect": "Allow",
                             "Action": ["dynamodb:GetItem","dynamodb:Query","dynamodb:Scan","dynamodb:PutItem","dynamodb:UpdateItem","dynamodb:DeleteItem"],
                             "Resource": [
                             <% if (props.database && props.database.Arn) { %>
@@ -140,7 +140,7 @@
                                             "index/*"
                                         ]
                                     ]
-                                }      
+                                }
                             <% } else { %>
                                 { "Ref": "storage<%= props.database.resourceName %>Arn" },
                                 {
@@ -151,7 +151,7 @@
                                             "index/*"
                                         ]
                                     ]
-                                }      
+                                }
                             <% } %>
                             ]
                         }

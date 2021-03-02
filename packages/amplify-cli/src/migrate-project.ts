@@ -2,6 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import chalk from 'chalk';
 import ora from 'ora';
+import { coerce, lt } from 'semver';
 import { pathManager, stateManager, $TSObject, $TSContext, JSONUtilities, $TSAny } from 'amplify-cli-core';
 import { makeId } from './extensions/amplify-helpers/make-id';
 import { amplifyCLIConstants } from './extensions/amplify-helpers/constants';
@@ -30,7 +31,10 @@ export async function migrateProject(context: $TSContext) {
     return;
   }
 
-  if (projectConfig.version !== amplifyCLIConstants.PROJECT_CONFIG_VERSION) {
+  const currentProjectVersion = coerce(projectConfig.version);
+  const minProjectVersion = coerce(amplifyCLIConstants.MIN_MIGRATION_PROJECT_CONFIG_VERSION);
+
+  if (lt(currentProjectVersion!, minProjectVersion!)) {
     if (await context.prompt.confirm(confirmMigrateMessage)) {
       const infoMessage =
         `${chalk.bold('The CLI is going to take the following actions during the migration step:')}\n` +
@@ -164,7 +168,7 @@ function generateMigrationInfo(projectConfig, projectPath) {
   const migrationInfo: $TSObject = {
     projectPath,
     initVersion: projectConfig.version,
-    newVersion: amplifyCLIConstants.PROJECT_CONFIG_VERSION,
+    newVersion: amplifyCLIConstants.CURRENT_PROJECT_CONFIG_VERSION,
   };
   migrationInfo.amplifyMeta = stateManager.getMeta(projectPath);
   migrationInfo.currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
@@ -219,7 +223,7 @@ function generateNewProjectConfig(projectConfig) {
   }
 
   delete newProjectConfig.frontendHandler;
-  newProjectConfig.version = amplifyCLIConstants.PROJECT_CONFIG_VERSION;
+  newProjectConfig.version = amplifyCLIConstants.CURRENT_PROJECT_CONFIG_VERSION;
 
   // Modify provider handler
   const providers = Object.keys(projectConfig.providers);

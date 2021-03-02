@@ -63,7 +63,7 @@ function setProjectConfig(context: $TSContext, projectName: string) {
   context.exeInfo.isNewProject = isNewProject(context);
   context.exeInfo.projectConfig = {
     projectName,
-    version: amplifyCLIConstants.PROJECT_CONFIG_VERSION,
+    version: amplifyCLIConstants.CURRENT_PROJECT_CONFIG_VERSION,
   };
 }
 

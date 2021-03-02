@@ -14,7 +14,7 @@ export async function analyzeProject(context: $TSContext) {
 
   context.exeInfo.forcePush = !!context?.parameters?.options?.forcePush;
 
-  context.exeInfo.projectConfig.version = amplifyCLIConstants.PROJECT_CONFIG_VERSION;
+  context.exeInfo.projectConfig.version = amplifyCLIConstants.CURRENT_PROJECT_CONFIG_VERSION;
 
   context.exeInfo.localEnvInfo.defaultEditor = defaultEditor;
   return context;
