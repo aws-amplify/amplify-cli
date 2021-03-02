@@ -14,10 +14,10 @@ export const generalUtils = {
     return jsStringEscape(value);
   },
   urlEncode(value) {
-    return encodeURI(value);
+    return encodeURIComponent(value);
   },
   urlDecode(value) {
-    return decodeURI(value);
+    return decodeURIComponent(value);
   },
   base64Encode(value) {
     // eslint-disable-next-line
