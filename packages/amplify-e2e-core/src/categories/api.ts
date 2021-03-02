@@ -117,7 +117,7 @@ export function addApiWithSchemaAndConflictDetection(cwd: string, schemaFile: st
       .sendLine(KEY_DOWN_ARROW) // Down
       .wait(/.*Configure additional auth types.*/)
       .sendLine('n')
-      .wait(/.*Configure conflict detection.*/)
+      .wait(/.*Enable conflict detection.*/)
       .sendLine('y')
       .wait(/.*Select the default resolution strategy.*/)
       .sendCarriageReturn()
@@ -184,7 +184,7 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
       .sendLine('1000')
       .wait(/.*Enter the number of milliseconds a token is valid after being authenticated.*/)
       .sendLine('2000')
-      .wait('Configure conflict detection?')
+      .wait('Enable conflict detection?')
       .sendLine('n')
       .wait(/.*Successfully updated resource.*/)
       .sendEof()
@@ -235,7 +235,7 @@ export function updateAPIWithResolutionStrategy(cwd: string, settings: any) {
       .sendLine(KEY_DOWN_ARROW) // Down
       .wait(/.*Configure additional auth types.*/)
       .sendLine('n')
-      .wait(/.*Configure conflict detection.*/)
+      .wait(/.*Enable conflict detection.*/)
       .sendLine('y')
       .wait(/.*Select the default resolution strategy.*/)
       .sendLine(KEY_DOWN_ARROW) // Down
@@ -360,7 +360,7 @@ export function addApi(projectDir: string, settings?: any) {
           setupAuthType(authType, chain, settings);
         });
 
-        chain.wait('Configure conflict detection?').sendCarriageReturn(); //No
+        chain.wait('Enable conflict detection?').sendCarriageReturn(); //No
       } else {
         chain.wait('Do you want to configure advanced settings for the GraphQL API').sendCarriageReturn(); //No
       }

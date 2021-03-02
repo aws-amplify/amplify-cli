@@ -1,5 +1,5 @@
 'use strict';
-module.exports = function(Velocity, utils) {
+module.exports = function (Velocity, utils) {
   /**
    * blocks语法处理
    */
@@ -7,7 +7,7 @@ module.exports = function(Velocity, utils) {
     /**
      * 处理代码库: if foreach macro
      */
-    getBlock: function(block) {
+    getBlock: function (block) {
       var ast = block[0];
       var ret = '';
 
@@ -34,13 +34,13 @@ module.exports = function(Velocity, utils) {
           ret = this._render(block);
       }
 
-      return ret || '';
+      return ret === undefined ? '' : ret;
     },
 
     /**
      * define
      */
-    setBlockDefine: function(block) {
+    setBlockDefine: function (block) {
       var ast = block[0];
       var _block = block.slice(1);
       var defines = this.defines;
@@ -51,7 +51,7 @@ module.exports = function(Velocity, utils) {
     /**
      * define macro
      */
-    setBlockMacro: function(block) {
+    setBlockMacro: function (block) {
       var ast = block[0];
       var _block = block.slice(1);
       var macros = this.macros;
@@ -62,7 +62,7 @@ module.exports = function(Velocity, utils) {
       };
     },
 
-    getMacroBody: function(asts) {
+    getMacroBody: function (asts) {
       const ast = asts[0];
       var _block = asts.slice(1);
       var bodyContent = this.eval(_block, {});
@@ -72,7 +72,7 @@ module.exports = function(Velocity, utils) {
     /**
      * parse macro call
      */
-    getMacro: function(ast, bodyContent) {
+    getMacro: function (ast, bodyContent) {
       var macro = this.macros[ast.id];
       var ret = '';
 
@@ -84,16 +84,16 @@ module.exports = function(Velocity, utils) {
         if (macro && macro.apply) {
           utils.forEach(
             ast.args,
-            function(a) {
+            function (a) {
               jsArgs.push(this.getLiteral(a));
             },
-            this
+            this,
           );
 
           var self = this;
 
           // bug修复：此处由于闭包特性，导致eval函数执行时的this对象是上一次函数执行时的this对象，渲染时上下文发生错误。
-          jsmacros.eval = function() {
+          jsmacros.eval = function () {
             return self.eval.apply(self, arguments);
           };
 
@@ -119,14 +119,14 @@ module.exports = function(Velocity, utils) {
 
         utils.forEach(
           args,
-          function(ref, i) {
+          function (ref, i) {
             if (callArgs[i]) {
               local[ref.id] = this.getLiteral(callArgs[i]);
             } else {
               local[ref.id] = undefined;
             }
           },
-          this
+          this,
         );
 
         ret = this.eval(asts, local, contextId);
@@ -142,7 +142,7 @@ module.exports = function(Velocity, utils) {
      * @param contextId {string}
      * @return {string}
      */
-    eval: function(str, local, contextId) {
+    eval: function (str, local, contextId) {
       if (!local) {
         if (utils.isArray(str)) {
           return this._render(str);
@@ -175,7 +175,7 @@ module.exports = function(Velocity, utils) {
     /**
      * parse #foreach
      */
-    getBlockEach: function(block) {
+    getBlockEach: function (block) {
       var ast = block[0];
       var _from = this.getLiteral(ast.from);
       var _block = block.slice(1);
@@ -198,7 +198,7 @@ module.exports = function(Velocity, utils) {
         var len = _from.length;
         utils.forEach(
           _from,
-          function(val, i) {
+          function (val, i) {
             if (this._state.break) {
               return;
             }
@@ -214,13 +214,13 @@ module.exports = function(Velocity, utils) {
             this.local[contextId] = local;
             ret += this._render(_block, contextId);
           },
-          this
+          this,
         );
       } else {
         var len = utils.keys(_from).length;
         utils.forEach(
           utils.keys(_from),
-          function(key, i) {
+          function (key, i) {
             if (this._state.break) {
               return;
             }
@@ -234,7 +234,7 @@ module.exports = function(Velocity, utils) {
             this.local[contextId] = local;
             ret += this._render(_block, contextId);
           },
-          this
+          this,
         );
       }
 
@@ -254,13 +254,13 @@ module.exports = function(Velocity, utils) {
     /**
      * parse #if
      */
-    getBlockIf: function(block) {
+    getBlockIf: function (block) {
       var received = false;
       var asts = [];
 
       utils.some(
         block,
-        function(ast) {
+        function (ast) {
           if (ast.condition) {
             if (received) {
               return true;
@@ -277,7 +277,7 @@ module.exports = function(Velocity, utils) {
 
           return false;
         },
-        this
+        this,
       );
 
       // keep current condition fix #77

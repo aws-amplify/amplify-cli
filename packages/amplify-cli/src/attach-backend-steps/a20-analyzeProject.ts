@@ -1,26 +1,26 @@
 import { normalizeEditor, editorSelection } from '../extensions/amplify-helpers/editor-selection';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
-import { stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
+import { normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 
-export async function analyzeProject(context) {
+export async function analyzeProject(context: $TSContext) {
   let defaultEditor = getDefaultEditor();
 
   if (!defaultEditor) {
     defaultEditor = await getEditor(context);
   }
 
+  context.exeInfo.projectConfig.projectName = normalizeProjectName(context.exeInfo.projectConfig.projectName);
+
   context.exeInfo.forcePush = !!context?.parameters?.options?.forcePush;
 
-  context.exeInfo.projectConfig.version = amplifyCLIConstants.PROJECT_CONFIG_VERSION;
+  context.exeInfo.projectConfig.version = amplifyCLIConstants.CURRENT_PROJECT_CONFIG_VERSION;
 
   context.exeInfo.localEnvInfo.defaultEditor = defaultEditor;
   return context;
 }
 
-/* End getProjectName */
-
-/* Begin getEditor */
-async function getEditor(context) {
+async function getEditor(context: $TSContext) {
   let editor;
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.defaultEditor) {
     editor = normalizeEditor(context.exeInfo.inputParams.amplify.defaultEditor);

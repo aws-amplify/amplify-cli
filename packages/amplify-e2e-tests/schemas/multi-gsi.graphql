@@ -1,0 +1,14 @@
+type Person
+  @model
+  @key(fields: ["id", "firstName", "lastName"])
+  @key(name: "byNameAndAge", fields: ["firstName", "age", "birthDate"], queryField: "getPersonByNameAndAge")
+  @key(name: "byNicknameAndHeight", fields: ["firstName", "nickname", "height"], queryField: "getPersonByNicknameAndHeight") {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  birthDate: AWSDate
+  nickname: String
+  age: Int
+  height: Int
+  eyeColor: String
+}

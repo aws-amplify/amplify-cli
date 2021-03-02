@@ -2,10 +2,18 @@ import * as inquirer from 'inquirer';
 import { JSONUtilities } from 'amplify-cli-core';
 import { merge } from 'lodash';
 
-export const editors = [
+const editors = [
   {
     name: 'Visual Studio Code',
     value: 'vscode',
+  },
+  {
+    name: 'Android Studio',
+    value: 'android-studio',
+  },
+  {
+    name: 'Xcode (Mac OS only)',
+    value: 'xcode',
   },
   {
     name: 'Atom Editor',

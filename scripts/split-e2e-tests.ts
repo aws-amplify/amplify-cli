@@ -25,6 +25,7 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/amplify-configure.test.ts',
   'src/__tests__/init.test.ts',
   'src/__tests__/tags.test.ts',
+  'src/__tests__/notifications.test.ts',
   //<15m
   'src/__tests__/schema-versioned.test.ts',
   'src/__tests__/schema-data-access-patterns.test.ts',
@@ -294,12 +295,12 @@ function getRequiredJob(jobNames: string[], index: number, concurrency: number =
 
 function loadConfig(): CircleCIConfig {
   const configFile = join(process.cwd(), '.circleci', 'config.base.yml');
-  return <CircleCIConfig>yaml.safeLoad(fs.readFileSync(configFile, 'utf8'));
+  return <CircleCIConfig>yaml.load(fs.readFileSync(configFile, 'utf8'));
 }
 
 function saveConfig(config: CircleCIConfig): void {
   const configFile = join(process.cwd(), '.circleci', 'config.yml');
-  const output = ['# auto generated file. Edit config.base.yaml if you want to change', yaml.safeDump(config)];
+  const output = ['# auto generated file. Edit config.base.yaml if you want to change', yaml.dump(config)];
   fs.writeFileSync(configFile, output.join('\n'));
 }
 function main(): void {

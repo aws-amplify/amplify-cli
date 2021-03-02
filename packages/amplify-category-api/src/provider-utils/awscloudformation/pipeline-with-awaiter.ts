@@ -13,7 +13,6 @@ import * as path from 'path';
 import { DEPLOYMENT_MECHANISM } from './base-api-stack';
 import { getGitHubOwnerRepoFromPath } from './utils/github';
 
-
 type PipelineAwaiterProps = {
   pipeline: codepipeline.Pipeline;
   artifactBucketName?: string;
@@ -25,6 +24,9 @@ export type GitHubSourceActionInfo = {
   path: string;
   tokenSecretArn: string;
 };
+
+// TODO update when CDK is updated to newer version that supports NODEJS_14_X
+const lambdaRuntimeNodeVersion = lambda.Runtime.NODEJS_12_X;
 
 const lambdasDir = path.resolve(__dirname, '../../../resources/awscloudformation/lambdas');
 
@@ -38,7 +40,7 @@ class PipelineAwaiter extends cdk.Construct {
     const onEventHandlerCode = fs.readFileSync(pipelineOnEventCodeFilePath, 'utf8');
 
     const onEventHandler = new lambda.Function(scope, `${id}CustomEventHandler`, {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambdaRuntimeNodeVersion,
       handler: 'index.handler',
       code: lambda.Code.fromInline(onEventHandlerCode),
       timeout: cdk.Duration.seconds(15),
@@ -48,7 +50,7 @@ class PipelineAwaiter extends cdk.Construct {
     const isCompleteHandlerCode = fs.readFileSync(pipelineCodeFilePath, 'utf8');
 
     const isCompleteHandler = new lambda.Function(scope, `${id}CustomCompleteHandler`, {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambdaRuntimeNodeVersion,
       handler: 'index.handler',
       timeout: cdk.Duration.seconds(15),
       code: lambda.Code.fromInline(isCompleteHandlerCode),
@@ -172,19 +174,22 @@ export class PipelineWithAwaiter extends cdk.Construct {
       sourceOutput,
     });
 
-    const environmentVariables = containersInfo.reduce((acc, c) => {
-      acc[`${c.container.containerName}_REPOSITORY_URI`] = {
-        type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-        value: c.repository.repositoryUri,
-      };
+    const environmentVariables = containersInfo.reduce(
+      (acc, c) => {
+        acc[`${c.container.containerName}_REPOSITORY_URI`] = {
+          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          value: c.repository.repositoryUri,
+        };
 
-      return acc;
-    }, {
-      AWS_ACCOUNT_ID: {
-        type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-        value: cdk.Aws.ACCOUNT_ID
-      }
-    } as Record<string, codebuild.BuildEnvironmentVariable>);
+        return acc;
+      },
+      {
+        AWS_ACCOUNT_ID: {
+          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          value: cdk.Aws.ACCOUNT_ID,
+        },
+      } as Record<string, codebuild.BuildEnvironmentVariable>,
+    );
 
     const stagesWithDeploy = ([] as codepipeline.StageOptions[]).concat(prebuildStages, [
       {
@@ -212,7 +217,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
               const action = new lambda.Function(scope, 'PreDeployLambda', {
                 code: lambda.Code.fromInline(lambdaHandlerCode),
                 handler: 'index.handler',
-                runtime: lambda.Runtime.NODEJS_12_X,
+                runtime: lambdaRuntimeNodeVersion,
                 environment: {
                   DESIRED_COUNT: `${desiredCount}`,
                   CLUSTER_NAME: service.cluster,
@@ -278,7 +283,7 @@ export class PipelineWithAwaiter extends cdk.Construct {
       });
     }
 
-    new cdk.CfnOutput(scope, 'PipelineName', { value: this.pipelineName })
+    new cdk.CfnOutput(scope, 'PipelineName', { value: this.pipelineName });
   }
 
   getPipelineName(): string {
@@ -336,7 +341,7 @@ function createPreBuildStages(
           lambda: new lambda.Function(scope, 'PreBuildLambda', {
             code: lambda.S3Code.fromBucket(bucket, 'codepipeline-action-buildspec-generator-lambda.zip'),
             handler: 'index.handler',
-            runtime: lambda.Runtime.NODEJS_12_X,
+            runtime: lambdaRuntimeNodeVersion,
             timeout: cdk.Duration.seconds(15),
           }),
           inputs: [preBuildOutput],

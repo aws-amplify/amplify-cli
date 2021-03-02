@@ -1,8 +1,10 @@
 const fs = require('fs-extra');
+const _ = require('lodash');
 const sequential = require('promise-sequential');
 const pinpointHelper = require('./pinpoint-helper');
 const constants = require('./constants');
 const notificationManager = require('./notifications-manager');
+const { stateManager } = require('amplify-cli-core');
 
 async function initEnv(context) {
   const pinpointNotificationsMeta = await constructPinpointNotificationsMeta(context);
@@ -18,6 +20,31 @@ async function constructPinpointNotificationsMeta(context) {
   let pinpointApp;
   let serviceBackendConfig;
   let pinpointNotificationsMeta;
+
+  // For pull we have to get the pinpoint application for notifications category
+  // from cloud meta and as no new resources are created during pull, we should not look for
+  // Pinpoint app in analytics category.
+  const isPulling = context.input.command === 'pull' || (context.input.command === 'env' && context.input.subCommands[0] === 'pull');
+
+  if (isPulling) {
+    const currentAmplifyMeta = stateManager.getCurrentMeta(undefined, {
+      throwIfNotExist: false,
+    });
+
+    if (currentAmplifyMeta) {
+      const notificationsMeta = currentAmplifyMeta[constants.CategoryName];
+
+      // We only support single resource for notificaitons
+      if (notificationsMeta && Object.keys(notificationsMeta).length > 0) {
+        const pinpointResource = _.get(notificationsMeta, Object.keys(notificationsMeta)[0], undefined);
+        pinpointApp = {
+          Id: pinpointResource.output.Id,
+        };
+        pinpointApp.Name = pinpointResource.output.Name || pinpointResource.output.appName;
+        pinpointApp.Region = pinpointResource.output.Region;
+      }
+    }
+  }
 
   const { teamProviderInfo, localEnvInfo, amplifyMeta } = context.exeInfo;
 

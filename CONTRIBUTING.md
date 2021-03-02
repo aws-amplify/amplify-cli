@@ -9,7 +9,7 @@ Whether it's a bug report, new feature, correction, or additional documentation,
   - [Architecture of the codebase](#architecture-of-the-codebase)
   - [Steps towards contributions](#steps-towards-contributions)
 - [Pull Requests](#pull-requests)
-- [Bugs](#bugs)
+- [Bug Reports](#bug-reports)
 - [Commits](#commits)
   - [Git Hooks](#git-hooks)
 - [Tests](#tests)
@@ -99,21 +99,36 @@ Don't include any build files i.e. `dist/` in your PR. These will be built upon 
 1. Go through the [Local Environment Setup](#local-environment-setup)
 1. Within your local fork, create a new branch based on the issue you're addressing - e.g. `git checkout -b category-auth/admin-auth-support`
    - Use grouping tokens at the beginning of the branch names. For e.g, if you are working on changes specific to `amplify-category-auth`, then you could start the branch name as `category-auth/...`
-   - Use slashes to seperate parts of branch names
+   - Use slashes to separate parts of branch names
 1. Once your work is committed and you're ready to share, run `yarn test`. Manually test your changes in a sample app with different edge cases and also test across different platforms if possible.
 1. Run `yarn lint` to find any linting errors
 1. Then, push your branch: `git push origin HEAD` (pushes the current branch to origin remote)
 1. Open GitHub to create a PR from your newly published branch. Fill out the PR template and submit a PR.
 1. Finally, the Amplify CLI team will review your PR. Add reviewers based on the core member who is tracking the issue with you or code owners. _In the meantime, address any automated check that fail (such as linting, unit tests, etc. in CI)_
 
-## Bugs
+## Bug Reports
 
-Bug reports and feature suggestions are welcome. When filing a bug, try to include as much information as you can. Details like these are incredibly useful:
+Bug reports and feature suggestions are always welcome. Good bug reports are extremely helpful, so thanks in advance!
+
+When filing a bug, please try to be as detailed as possible. In addition to the bug report form information, details like these are incredibly useful:
 
 - A reproducible test case or series of steps
-- The date/commit of the code you're running
+- The date/commit/version(s) of the code you're running
 - Any modifications you've made relevant to the bug
 - Anything unusual about your environment or deployment
+
+
+Guidelines for bug reports:
+
+- Check to see if a [duplicate or closed issue](https://github.com/aws-amplify/amplify-cli/issues?q=is%3Aissue+) already exists!
+- Provide a short and descriptive issue title
+- Remove any sensitive data from your examples or snippets
+- Format any code snippets using [Markdown](https://docs.github.com/en/github/writing-on-github/creating-and-highlighting-code-blocks) syntax
+- If you're not using the latest version of the CLI, see if the issue still persists after upgrading - this helps to isolate regressions!
+
+
+Finally, thank you for taking the time to read this, and taking the time to write a good bug report.
+
 
 ## Commits
 
