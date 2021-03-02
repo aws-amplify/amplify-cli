@@ -144,6 +144,7 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
 
   // define this now so we can use it later to remove a listener.
   let prematureExit;
+  let waiter;
   // This is a fairly complex set of logic to retry starting
   // the emulator if it fails to start. We need this logic due
   // to possible race conditions between when we find an open
@@ -151,12 +152,31 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
   // in jest where each test file is running in it's own process
   // each competing for the open port.
   try {
-    const waiter = wait(opts.startTimeout);
+    waiter = wait(opts.startTimeout);
     await Promise.race([
-      new Promise(accept => {
-        function readStdoutBuffer(buffer) {
-          if (buffer.toString().indexOf(opts.port) !== -1) {
+      new Promise((accept, reject) => {
+        let stdout = '';
+        let stderr = '';
+
+        function readStderrBuffer(buffer) {
+          stderr += buffer.toString();
+
+          // Check stderr for any known errors.
+          if (/^Invalid directory for database creation.$/.test(stderr)) {
             proc.stdout.removeListener('data', readStdoutBuffer);
+            proc.stderr.removeListener('data', readStderrBuffer);
+            const err = new Error('invalid directory for database creation');
+            err.code = 'bad_config';
+            reject(err);
+          }
+        }
+
+        function readStdoutBuffer(buffer) {
+          stdout += buffer.toString();
+
+          if (stdout.indexOf(opts.port) !== -1) {
+            proc.stdout.removeListener('data', readStdoutBuffer);
+            proc.stderr.removeListener('data', readStderrBuffer);
             log.info('Emulator has started but need to verify socket');
             accept(
               waitPort({
@@ -167,6 +187,7 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
             );
           }
         }
+        proc.stderr.on('data', readStderrBuffer);
         proc.stdout.on('data', readStdoutBuffer);
       }),
       waiter.promise.then(startingTimeout),
@@ -181,10 +202,6 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
         proc.on('exit', prematureExit);
       }),
     ]);
-    // eventually the process will exit... ensure our logic only
-    // will run on _premature_ exits.
-    proc.removeListener('exit', prematureExit);
-    waiter.cancel();
 
     log.info('Successfully launched emulator on', {
       port,
@@ -201,6 +218,11 @@ async function launch(givenOptions = {}, retry = 0, startTime = Date.now()) {
       return wait(retryInterval).promise.then(() => launch(givenOptions, retry + 1, startTime));
     }
     throw err;
+  } finally {
+    waiter && waiter.cancel();
+    if (typeof prematureExit === 'function') {
+      proc.removeListener('exit', prematureExit);
+    }
   }
 
   return new Emulator(proc, opts);
