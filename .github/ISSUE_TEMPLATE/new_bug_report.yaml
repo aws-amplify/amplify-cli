@@ -25,7 +25,7 @@ body:
       - label: I have read the guide for [submitting bug reports](https://github.com/aws-amplify/amplify-cli/blob/master/CONTRIBUTING.md#bug-reports).
         required: true
       - label: I have done my best to include a minimal, self-contained set of instructions for consistently reproducing the issue.
-      - required: true
+        required: true
 - type: markdown
   attributes:
     value: |
@@ -66,7 +66,7 @@ body:
       - interactions
       - predictions
       - xr
-      - None
+      - Not applicable
   validations:
     required: true
 - type: markdown
@@ -92,7 +92,7 @@ body:
       - delete
       - codegen 
       - env 
-      - None
+      - Not applicable
   validations:
     required: true
 - type: textarea
