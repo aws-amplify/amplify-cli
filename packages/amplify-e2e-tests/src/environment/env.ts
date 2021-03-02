@@ -136,7 +136,6 @@ export function pullEnvironment(cwd: string): Promise<void> {
 }
 
 export function addEnvironmentHostedUI(cwd: string, settings: { envName: string }): Promise<void> {
-  const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders();
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
@@ -147,18 +146,6 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
       .sendCarriageReturn()
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn()
-      .wait('Enter your Facebook App ID for your OAuth flow:')
-      .sendLine(FACEBOOK_APP_ID)
-      .wait('Enter your Facebook App Secret for your OAuth flow:')
-      .sendLine(FACEBOOK_APP_SECRET)
-      .wait('Enter your Google Web Client ID for your OAuth flow:')
-      .sendLine(GOOGLE_APP_ID)
-      .wait('Enter your Google Web Client Secret for your OAuth flow:')
-      .sendLine(GOOGLE_APP_SECRET)
-      .wait('Enter your Amazon App ID for your OAuth flow:')
-      .sendLine(AMAZON_APP_ID)
-      .wait('Enter your Amazon App Secret for your OAuth flow:')
-      .sendLine(AMAZON_APP_SECRET)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
