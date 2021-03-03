@@ -727,12 +727,12 @@ function getOrDefault(o: any, k: string, d: any) {
   return o[k] || d;
 }
 
-export function getSanityCheckRulesFactory(appSyncApiToBeCreated: boolean, ff: FeatureFlagProvider) {
+export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagProvider) {
   let diffRules: DiffRule[] = [];
   let projectRules: ProjectRule[] = [];
   // If we have iterative GSI upgrades enabled it means we only do sanity check on LSIs
   // as the other checks will be carried out as series of updates.
-  if (!appSyncApiToBeCreated) {
+  if (!isNewAppSyncAPI) {
     if (ff.getBoolean('enableIterativeGSIUpdates')) {
       diffRules.push(
         // LSI

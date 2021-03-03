@@ -32,7 +32,7 @@ import {
   readProjectConfiguration,
   buildAPIProject,
   TransformConfig,
-  getSanityCheckRulesFactory,
+  getSanityCheckRules,
 } from 'graphql-transformer-core';
 
 import { print } from 'graphql';
@@ -325,8 +325,7 @@ export async function transformGraphQLSchema(context, options) {
   }
   resources = resources.filter(resource => resource.service === 'AppSync');
   // check if api is in update status or create status
-  const appSyncApiToBeCreated: boolean =
-    resourcesToBeCreated.filter(resource => resource.service === 'AppSync').length === 0 ? false : true;
+  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter(resource => resource.service === 'AppSync').length === 0 ? false : true;
 
   if (!resourceDir) {
     // There can only be one appsync resource
@@ -475,7 +474,7 @@ export async function transformGraphQLSchema(context, options) {
   }
 
   const ff = new AmplifyCLIFeatureFlagAdapter();
-  const sanityCheckRulesList = getSanityCheckRulesFactory(appSyncApiToBeCreated, ff);
+  const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff);
 
   const buildConfig = {
     ...options,

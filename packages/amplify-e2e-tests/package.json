@@ -18,10 +18,7 @@
   "private": true,
   "scripts": {
     "e2e": "npm run setup-profile && jest --verbose",
-    "setup-profile": "ts-node ./src/configure_tests.ts",
-    "build": "tsc",
-    "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "watch": "tsc --watch"
+    "setup-profile": "ts-node ./src/configure_tests.ts"
   },
   "dependencies": {
     "amplify-cli-core": "1.18.0",
