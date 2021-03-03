@@ -16,6 +16,7 @@ export class AdminLoginServer {
   private port = 4242; // placeholder
   private server: http.Server;
   private print: $TSContext['print'];
+  private host = '0.0.0.0'; // using this ip address for the host forces express to listen on IPV4 even if IPV6 is available
 
   private corsOptions: {
     origin: string[];
@@ -38,7 +39,12 @@ export class AdminLoginServer {
 
   public async startServer(callback: () => void) {
     await this.setupRoute(callback);
-    this.server = this.app.listen(this.getPort());
+    // Need to specify hostname for WSL
+    this.server = this.app.listen(this.getPort(), this.getHost());
+  }
+
+  private getHost() {
+    return this.host;
   }
 
   // TODO: scan for available ports across a range like mock
