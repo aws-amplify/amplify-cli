@@ -22,7 +22,7 @@ export async function updateDependentFunctionsCfn(
     */
   // if the function is deleted -> not possible as have to remove api
   let functionMetaToBeUpdated = [];
-  const lambdaFuncResourceNames = allResources.filter(
+  const lambdaFuncResources = allResources.filter(
     resource =>
       resource.service === ServiceName.LambdaFunction &&
       resource.mobileHubMigrated !== true &&
@@ -30,7 +30,7 @@ export async function updateDependentFunctionsCfn(
   );
 
   // initialize function parameters for update
-  for (let lambda of lambdaFuncResourceNames) {
+  for (let lambda of lambdaFuncResources) {
     const resourceDirPath = path.join(backendDir, category, lambda.resourceName);
     const currentParameters = loadFunctionParameters(context, resourceDirPath);
     const selectedCategories = currentParameters.permissions;

@@ -102,11 +102,8 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     const apiResourceTobeUpdated = resourcesToBeUpdated.filter(resource => resource.service === 'AppSync');
     if (apiResourceTobeUpdated.length) {
       const functionResourceToBeUpdated = await removeDependencyOnFunctions(context, apiResourceTobeUpdated, allResources as $TSObject[]);
-      functionResourceToBeUpdated.forEach(fnResource => {
-        // filter updated function to replace with existing updated ones(in case of duplicates)
-        resources = resources.filter(resource => resource.resourceName === fnResource);
-        resources.push(fnResource);
-      });
+      // filter updated function to replace with existing updated ones(in case of duplicates)
+      resources = _.uniqBy(resources.concat(functionResourceToBeUpdated), `resourceName`);
     }
     validateCfnTemplates(context, resources);
 

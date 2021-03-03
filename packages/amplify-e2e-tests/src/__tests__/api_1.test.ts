@@ -210,10 +210,10 @@ describe('amplify add api (GraphQL)', () => {
   });
 
   it('inits a project with a simple model , add a function and removes the depedent @model', async () => {
-    const projectName = 'blogapp';
+    const random = Math.floor(Math.random() * 10000);
+    const projectName = `blogapp`;
     const nextSchema = 'initial_key_blog.graphql';
     const initialSchema = 'two-model-schema.graphql';
-    const random = Math.floor(Math.random() * 10000);
     const fnName = `integtestfn${random}`;
     await initJSProjectWithProfile(projRoot, { name: projectName });
     await addApiWithSchema(projRoot, initialSchema);
@@ -237,7 +237,7 @@ describe('amplify add api (GraphQL)', () => {
     await amplifyPushUpdate(projRoot);
     const meta = getProjectMeta(projRoot);
     const region = meta.providers.awscloudformation.Region;
-    const { output } = meta.api.simplemodel;
+    const { output } = meta.api.blogapp;
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
 
     expect(GraphQLAPIIdOutput).toBeDefined();

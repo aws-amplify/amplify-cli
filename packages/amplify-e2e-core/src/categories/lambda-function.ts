@@ -46,7 +46,7 @@ const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: a
     settings.additionalPermissions.choices,
   );
   // when single resource, it gets autoselected
-  if (settings.additionalPermissions.resources.length > 1) {
+  if (settings.additionalPermissions.resourceChoices.length > 1) {
     multiSelect(
       chain.wait(/Select the (operations you want to permit on *|one you would like your *)/),
       settings.additionalPermissions.resources,
