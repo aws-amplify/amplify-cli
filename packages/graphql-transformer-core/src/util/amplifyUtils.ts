@@ -60,10 +60,9 @@ export async function buildProject(opts: ProjectOptions) {
       opts.minify,
     );
 
-    if (opts.currentCloudBackendDirectory) {
-    }
-    const lastBuildPath = path.join(opts.currentCloudBackendDirectory, 'build');
-    const thisBuildPath = path.join(opts.projectDirectory, 'build');
+    const lastBuildPath =
+      opts.currentCloudBackendDirectory !== undefined ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
+    const thisBuildPath = opts.projectDirectory !== undefined ? path.join(opts.projectDirectory, 'build') : undefined;
 
     await sanityCheckProject(
       lastBuildPath,
@@ -729,24 +728,24 @@ function getOrDefault(o: any, k: string, d: any) {
 }
 
 export function getSanityCheckRulesFactory(appSyncApiToBeCreated: boolean, ff: FeatureFlagProvider) {
-  let diffRules: DiffRule[];
-  let projectRules: ProjectRule[];
+  let diffRules: DiffRule[] = [];
+  let projectRules: ProjectRule[] = [];
   // If we have iterative GSI upgrades enabled it means we only do sanity check on LSIs
   // as the other checks will be carried out as series of updates.
   if (!appSyncApiToBeCreated) {
     if (ff.getBoolean('enableIterativeGSIUpdates')) {
-      diffRules = [
+      diffRules.push(
         // LSI
         cantEditKeySchemaRule,
         cantAddLSILaterRule,
         cantRemoveLSILater,
         cantEditLSIKeySchemaRule,
-      ];
+      );
 
       // Project level rules
-      projectRules = [cantHaveMoreThan500ResourcesRule];
+      projectRules.push(cantHaveMoreThan500ResourcesRule);
     } else {
-      diffRules = [
+      diffRules.push(
         // LSI
         cantEditKeySchemaRule,
         cantAddLSILaterRule,
@@ -755,9 +754,9 @@ export function getSanityCheckRulesFactory(appSyncApiToBeCreated: boolean, ff: F
         // GSI
         cantEditGSIKeySchemaRule,
         cantAddAndRemoveGSIAtSameTimeRule,
-      ];
+      );
 
-      projectRules = [cantHaveMoreThan500ResourcesRule, cantMutateMultipleGSIAtUpdateTimeRule];
+      projectRules.push(cantHaveMoreThan500ResourcesRule, cantMutateMultipleGSIAtUpdateTimeRule);
     }
   }
   return { diffRules, projectRules };

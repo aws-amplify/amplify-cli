@@ -474,9 +474,8 @@ export async function transformGraphQLSchema(context, options) {
     searchableTransformerFlag = true;
   }
 
-  const gsiIterativeFlag: string = 'enableIterativeGSIUpdates';
   const ff = new AmplifyCLIFeatureFlagAdapter();
-  const sanityCheckRulesList = getSanityCheckRulesFactory(appSyncApiToBeCreated, ff.getBoolean(gsiIterativeFlag));
+  const sanityCheckRulesList = getSanityCheckRulesFactory(appSyncApiToBeCreated, ff);
 
   const buildConfig = {
     ...options,
