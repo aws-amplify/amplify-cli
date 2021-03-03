@@ -21,7 +21,7 @@ export class AmplifyBackend {
     return AmplifyBackend.instance;
   }
 
-  constructor(context: $TSContext, creds, options = {}) {
+  private constructor(context: $TSContext, creds, options = {}) {
     this.context = context;
     this.amplifyBackend = new aws.AmplifyBackend({ ...creds, ...options });
   }

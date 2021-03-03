@@ -8,24 +8,24 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { AmplifyBackend } from './aws-utils/aws-amplify-backend';
 
 export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
-  resources = resources.filter(resource => resource.service === 'AppSync');
+  const appSyncResources = resources.filter(resource => resource.service === 'AppSync');
 
-  if (resources.length === 0) {
+  if (appSyncResources.length === 0) {
     return;
   }
-  const resource = resources[0];
-  const { resourceName } = resource;
+
+  const { appSyncResourceName } = appSyncResources[0];
 
   const amplifyMeta = stateManager.getMeta();
   const localEnvInfo = stateManager.getLocalEnvInfo();
 
-  const appId = amplifyMeta.providers[providerName].AmplifyAppId;
+  const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
   if (!appId) {
     throw new Error('Could not find AmplifyAppId in amplify-meta.json.');
   }
   const envName = localEnvInfo.envName;
   const { isAdminApp } = await isAmplifyAdminApp(appId);
-  const isDSEnabled = await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', resourceName));
+  const isDSEnabled = await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', appSyncResourceName));
 
   if (!isAdminApp || !isDSEnabled) {
     return;
@@ -38,7 +38,7 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
       .generateBackendAPIModels({
         AppId: appId,
         BackendEnvironmentName: envName,
-        ResourceName: resourceName,
+        ResourceName: appSyncResourceName,
       })
       .promise();
 
