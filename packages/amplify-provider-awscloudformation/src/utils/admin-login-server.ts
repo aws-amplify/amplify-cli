@@ -15,7 +15,9 @@ export class AdminLoginServer {
   private appId: string;
   private port = 4242; // placeholder
   private server: http.Server;
+  private serverLocalhost: http.Server;
   private print: $TSContext['print'];
+  private host = '127.0.0.1';
 
   private corsOptions: {
     origin: string[];
@@ -38,7 +40,13 @@ export class AdminLoginServer {
 
   public async startServer(callback: () => void) {
     await this.setupRoute(callback);
-    this.server = this.app.listen(this.getPort());
+    // Need to specify hostname for WSL
+    this.server = this.app.listen(this.getPort(), this.getHost());
+    this.serverLocalhost = this.app.listen(this.getPort());
+  }
+
+  private getHost() {
+    return this.host;
   }
 
   // TODO: scan for available ports across a range like mock
@@ -123,5 +131,6 @@ export class AdminLoginServer {
 
   shutdown() {
     this.server.close();
+    this.serverLocalhost.close();
   }
 }
