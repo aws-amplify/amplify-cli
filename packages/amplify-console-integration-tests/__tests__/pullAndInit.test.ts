@@ -273,7 +273,7 @@ describe('amplify app console tests', () => {
     expect(projectConfig).toEqual({
       providers: ['awscloudformation'],
       projectName: 'authConsoleTest',
-      version: '3.0',
+      version: '3.1',
       frontend: 'javascript',
       javascript: {
         framework: 'react-native',
