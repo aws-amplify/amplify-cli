@@ -13,8 +13,8 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
   if (appSyncResources.length === 0) {
     return;
   }
-
-  const { appSyncResourceName } = appSyncResources[0];
+  const appSyncResource = appSyncResources[0];
+  const { resourceName } = appSyncResource;
 
   const amplifyMeta = stateManager.getMeta();
   const localEnvInfo = stateManager.getLocalEnvInfo();
@@ -25,7 +25,7 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
   }
   const envName = localEnvInfo.envName;
   const { isAdminApp } = await isAmplifyAdminApp(appId);
-  const isDSEnabled = await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', appSyncResourceName));
+  const isDSEnabled = await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', resourceName));
 
   if (!isAdminApp || !isDSEnabled) {
     return;
@@ -38,7 +38,7 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
       .generateBackendAPIModels({
         AppId: appId,
         BackendEnvironmentName: envName,
-        ResourceName: appSyncResourceName,
+        ResourceName: resourceName,
       })
       .promise();
 
