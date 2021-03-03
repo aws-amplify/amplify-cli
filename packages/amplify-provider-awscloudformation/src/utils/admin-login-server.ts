@@ -15,9 +15,8 @@ export class AdminLoginServer {
   private appId: string;
   private port = 4242; // placeholder
   private server: http.Server;
-  private serverLocalhost: http.Server;
   private print: $TSContext['print'];
-  private host = '127.0.0.1';
+  private host = '0.0.0.0'; // using this ip address for the host forces express to listen on IPV4 even if IPV6 is available
 
   private corsOptions: {
     origin: string[];
@@ -42,7 +41,6 @@ export class AdminLoginServer {
     await this.setupRoute(callback);
     // Need to specify hostname for WSL
     this.server = this.app.listen(this.getPort(), this.getHost());
-    this.serverLocalhost = this.app.listen(this.getPort());
   }
 
   private getHost() {
@@ -131,6 +129,5 @@ export class AdminLoginServer {
 
   shutdown() {
     this.server.close();
-    this.serverLocalhost.close();
   }
 }

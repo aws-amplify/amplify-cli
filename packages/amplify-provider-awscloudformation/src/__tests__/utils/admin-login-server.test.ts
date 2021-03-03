@@ -30,7 +30,7 @@ jest.mock('express', () => {
 });
 
 describe('AdminLoginServer', () => {
-  test('run server with 127.0.0.1', async () => {
+  test('run server with 0.0.0.0', async () => {
     const adminLoginServer = new AdminLoginServer('appId', 'http://example.com', context_stub.print);
 
     await new Promise<void>(resolve => {
@@ -39,6 +39,6 @@ describe('AdminLoginServer', () => {
     });
     expect(useMock).toBeCalled();
     expect(postMock).toBeCalled();
-    expect(listenMock).toBeCalledWith(4242, '127.0.0.1');
+    expect(listenMock).toBeCalledWith(4242, '0.0.0.0');
   });
 });
