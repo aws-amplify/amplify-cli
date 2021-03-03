@@ -351,6 +351,7 @@ describe('check schema input', () => {
     expect(DeleteCallInput).toBeDefined();
     const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
     expect(receiverIdField).toBeDefined();
+    expect(receiverIdField.type.kind).toBe('NonNullType');
     const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
     expect(senderIdField).toBeUndefined();
   });
@@ -387,7 +388,9 @@ describe('check schema input', () => {
     expect(DeleteCallInput).toBeDefined();
     const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
     expect(receiverIdField).toBeDefined();
+    expect(receiverIdField.type.kind).toBe('NonNullType');
     const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
     expect(senderIdField).toBeDefined();
+    expect(senderIdField.type.kind).toBe('NonNullType');
   });
 });
