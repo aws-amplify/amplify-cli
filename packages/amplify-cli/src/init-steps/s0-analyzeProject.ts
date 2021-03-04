@@ -26,7 +26,7 @@ export async function analyzeProjectHeadless(context: $TSContext) {
 }
 
 export function displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName) {
-  context.print.info('Project Information');
+  context.print.info('Project information');
   context.print.info(`| Name: ${defaultProjectName}`);
   context.print.info(`| Environment: ${defaultEnv}`);
   context.print.info(`| Default editor: ${defaultEditorName}`);
@@ -44,8 +44,14 @@ function setConfigurationDefaults(context, projectPath, defaultProjectName, defa
 async function displayAndSetDefaults(context, projectPath, projectName) {
   const defaultProjectName = projectName;
   const defaultEnv = getDefaultEnv(context);
-  const defaultEditorName = editors.length > 0 ? editors[0].name : 'Visual Studio Code';
-  const defaultEditor = editors.length > 0 ? editors[0].value : 'vscode';
+  let defaultEditor;
+  if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.defaultEditor) {
+    defaultEditor = normalizeEditor(context.exeInfo.inputParams.amplify.defaultEditor);
+  } else {
+    defaultEditor = editors.length > 0 ? editors[0].value : 'vscode';
+  }
+  const editorIndex = editors.findIndex(editorEntry => editorEntry.value === defaultEditor);
+  const defaultEditorName = editorIndex > -1 ? editors[editorIndex].name : 'Visual Studio Code';
 
   context.print.success('We will apply the following configuration:');
   context.print.info('');
@@ -59,8 +65,8 @@ async function displayAndSetDefaults(context, projectPath, projectName) {
   await frontendModule.displayFrontendDefaults(context, projectPath);
   context.print.info('');
 
-  if (await context.amplify.confirmPrompt('Initialize the project with the above configuration?')) {
-    await setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditor);
+  if (context.exeInfo.inputParams.yes || (await context.amplify.confirmPrompt('Initialize the project with the above configuration?'))) {
+    await setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
     await frontendModule.setFrontendDefaults(context, projectPath);
   }
 }
@@ -172,8 +178,25 @@ async function getEditor(context) {
 }
 /* End getEditor */
 
+const isEnvNameValid = inputEnvName => {
+  return /^[a-z]{2,10}$/.test(inputEnvName);
+};
+
+const INVALID_ENV_NAME_MSG = 'Environment name must be between 2 and 10 characters, and lowercase only.';
+
 function getDefaultEnv(context): string | undefined {
-  const defaultEnv = 'dev';
+  let defaultEnv = 'dev';
+
+  if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.envName) {
+    if (isEnvNameValid(context.exeInfo.inputParams.amplify.envName)) {
+      defaultEnv = context.exeInfo.inputParams.amplify.envName;
+      return defaultEnv;
+    }
+    context.print.error(INVALID_ENV_NAME_MSG);
+    context.usageData.emitError(new InvalidEnvironmentNameError(INVALID_ENV_NAME_MSG));
+    exitOnNextTick(1);
+  }
+
   if (isNewProject(context) || !context.amplify.getAllEnvs().includes(defaultEnv)) {
     return defaultEnv;
   }
@@ -182,12 +205,6 @@ function getDefaultEnv(context): string | undefined {
 
 async function getEnvName(context) {
   let envName;
-
-  const isEnvNameValid = inputEnvName => {
-    return /^[a-z]{2,10}$/.test(inputEnvName);
-  };
-
-  const INVALID_ENV_NAME_MSG = 'Environment name must be between 2 and 10 characters, and lowercase only.';
 
   if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.envName) {
     if (isEnvNameValid(context.exeInfo.inputParams.amplify.envName)) {
