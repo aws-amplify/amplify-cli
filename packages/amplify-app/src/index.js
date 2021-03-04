@@ -423,8 +423,10 @@ async function createIosHelperFiles() {
     fs.writeFileSync(amplifyConfigFile, configJsonStr);
   }
 
+  console.log('Checking for existing amplify project...');
   if (fs.existsSync(path.join(amplifyDir, 'backend'))) {
     await addAmplifyFiles();
+    console.log('Generating Amplify configuration files');
   }
 }
 
