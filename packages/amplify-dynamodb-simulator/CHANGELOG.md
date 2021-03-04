@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.12-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.17.11...amplify-dynamodb-simulator@1.17.12-beta.0) (2021-03-04)
+
+
+### Bug Fixes
+
+* **amplify-dynamodb-simulator:** detect errors logged to stderr ([#6769](https://github.com/aws-amplify/amplify-cli/issues/6769)) ([72b7c0a](https://github.com/aws-amplify/amplify-cli/commit/72b7c0aa4a78e3e1b40b3a3c3c6d5f87bca79005))
+
+
+
+
+
 ## [1.17.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-dynamodb-simulator@1.17.10...amplify-dynamodb-simulator@1.17.11) (2021-02-26)
 
 **Note:** Version bump only for package amplify-dynamodb-simulator

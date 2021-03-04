@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.40.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.39.2...amplify-provider-awscloudformation@4.40.0-beta.0) (2021-03-04)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** specify 127.0.0.1 as hostname ([#6780](https://github.com/aws-amplify/amplify-cli/issues/6780)) ([db8b557](https://github.com/aws-amplify/amplify-cli/commit/db8b5575a7c04a46c59a06db6753b55d5f9e4e19))
+* add check for undefined attributes during push ([#6687](https://github.com/aws-amplify/amplify-cli/issues/6687)) ([08da6b2](https://github.com/aws-amplify/amplify-cli/commit/08da6b2783385168f01ab70300980d61548d7402))
+
+
+### Features
+
+* remove OAuth prompt from pull and new env ([#6739](https://github.com/aws-amplify/amplify-cli/issues/6739)) ([8ff15a6](https://github.com/aws-amplify/amplify-cli/commit/8ff15a6ea2c3c687f0344fb4e17547097cd575ea))
+* **amplify-codegen:** Migrate codegen ([#6730](https://github.com/aws-amplify/amplify-cli/issues/6730)) ([9c7a69a](https://github.com/aws-amplify/amplify-cli/commit/9c7a69a7d72e31c42572f3ebf2131c6053f96abd))
+
+
+
+
+
 ## [4.39.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.39.1...amplify-provider-awscloudformation@4.39.2) (2021-02-26)
 
 **Note:** Version bump only for package amplify-provider-awscloudformation

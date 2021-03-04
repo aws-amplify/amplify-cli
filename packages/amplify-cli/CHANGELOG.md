@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.45.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.44.2...@aws-amplify/cli@4.45.0-beta.0) (2021-03-04)
+
+
+### Bug Fixes
+
+* [#5765](https://github.com/aws-amplify/amplify-cli/issues/5765) add support for android studio, xcode ([#6527](https://github.com/aws-amplify/amplify-cli/issues/6527)) ([092afa2](https://github.com/aws-amplify/amplify-cli/commit/092afa2340762cac781336ac411d489e3affccb0))
+* [#6681](https://github.com/aws-amplify/amplify-cli/issues/6681), handling case when no frontend plugins found ([#6688](https://github.com/aws-amplify/amplify-cli/issues/6688)) ([fd9f50f](https://github.com/aws-amplify/amplify-cli/commit/fd9f50f39a3cf97bae902cf10c42ce54d1ae3d5b))
+* **cli:** add defensive coding to isContainersEnabled() ([#6758](https://github.com/aws-amplify/amplify-cli/issues/6758)) ([78bb42d](https://github.com/aws-amplify/amplify-cli/commit/78bb42d6f73d774741a4d5dc93ae31176becac62))
+
+
+### Features
+
+* **amplify-codegen:** Migrate codegen ([#6730](https://github.com/aws-amplify/amplify-cli/issues/6730)) ([9c7a69a](https://github.com/aws-amplify/amplify-cli/commit/9c7a69a7d72e31c42572f3ebf2131c6053f96abd))
+
+
+
+
+
 ## [4.44.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.44.1...@aws-amplify/cli@4.44.2) (2021-02-26)
 
 

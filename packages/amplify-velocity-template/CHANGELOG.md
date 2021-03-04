@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.3...amplify-velocity-template@1.4.4-beta.0) (2021-03-04)
+
+
+### Bug Fixes
+
+* **amplify-velocity-template:** propagate null block return values ([#6711](https://github.com/aws-amplify/amplify-cli/issues/6711)) ([168e126](https://github.com/aws-amplify/amplify-cli/commit/168e126c0f96c88e9ff6adf6fecd36caa884a72b))
+
+
+
+
+
 ## [1.4.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.2...amplify-velocity-template@1.4.3) (2021-02-10)
 
 
