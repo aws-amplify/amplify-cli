@@ -44,6 +44,11 @@ function getBackendConfig(projectRoot: string) {
   return JSON.parse(fs.readFileSync(backendFConfigFilePath, 'utf8'));
 }
 
+function getLocalEnvInfo(projectRoot: string) {
+  const localEnvInfoFilePath: string = path.join(projectRoot, 'amplify', '.config', 'local-env-info.json');
+  return JSON.parse(fs.readFileSync(localEnvInfoFilePath, 'utf8'));
+}
+
 function getCloudBackendConfig(projectRoot: string) {
   const currentCloudPath: string = path.join(projectRoot, 'amplify', '#current-cloud-backend', 'backend-config.json');
   return JSON.parse(fs.readFileSync(currentCloudPath, 'utf8'));
@@ -133,4 +138,5 @@ export {
   getParameters,
   getCloudBackendConfig,
   setParameters,
+  getLocalEnvInfo,
 };

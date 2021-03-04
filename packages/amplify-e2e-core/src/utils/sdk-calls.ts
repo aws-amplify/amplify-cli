@@ -11,6 +11,7 @@ import {
   CloudWatchEvents,
   Kinesis,
   CloudFormation,
+  AmplifyBackend,
 } from 'aws-sdk';
 import _ from 'lodash';
 
@@ -225,4 +226,22 @@ export const getCloudWatchEventRule = async (targetName: string, region: string)
     console.log(e);
   }
   return ruleName;
+};
+
+export const setupAmplifyAdminUI = async (appId: string, region: string) => {
+  const amplifyBackend = new AmplifyBackend({ region });
+
+  return await amplifyBackend.createBackendConfig({ AppId: appId }).promise();
+};
+
+export const getAmplifyBackendJobStatus = async (jobId: string, appId: string, envName: string, region: string) => {
+  const amplifyBackend = new AmplifyBackend({ region });
+
+  return await amplifyBackend
+    .getBackendJob({
+      JobId: jobId,
+      AppId: appId,
+      BackendEnvironmentName: envName,
+    })
+    .promise();
 };
