@@ -2,11 +2,11 @@
 version: 2.1
 machine:
   environment:
-    PATH: ${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin
+    PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
 defaults:
   working_directory: ~/repo
   docker: &ref_0
-    - image: circleci/node:12
+    - image: 'circleci/node:12'
       auth:
         username: $DOCKERHUB_USERNAME
         password: $DOCKERHUB_ACCESS_TOKEN
@@ -138,11 +138,11 @@ jobs:
       - run: yarn cache clean --force
       - run: yarn run production-build
       - save_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
           paths:
             - ~/.cache
       - save_cache:
-          key: amplify-cli-ssh-deps-{{ .Branch }}
+          key: 'amplify-cli-ssh-deps-{{ .Branch }}'
           paths:
             - ~/.ssh
       - persist_to_workspace:
@@ -156,7 +156,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
       - run:
           name: Update OS Packages
           command: sudo apt-get update
@@ -178,7 +178,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
       - run: *ref_2
       - run:
           name: Install Java
@@ -199,7 +199,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
       - run:
           name: Publish to verdaccio
           command: |
@@ -221,15 +221,15 @@ jobs:
           name: Save new amplify GitHub tag
           command: node scripts/echo-current-cli-version.js > .amplify-pkg-version
       - save_cache:
-          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
           paths:
             - ~/verdaccio-cache/
       - save_cache:
-          key: amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}
+          key: 'amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}'
           paths:
             - ~/repo/UNIFIED_CHANGELOG.md
       - save_cache:
-          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
+          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
           paths:
             - ~/repo/.amplify-pkg-version
   build_pkg_binaries:
@@ -240,9 +240,9 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
       - restore_cache:
-          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
       - run: *ref_2
       - run:
           name: Start verdaccio and package CLI
@@ -254,7 +254,7 @@ jobs:
             yarn pkg-all
             unsetNpmRegistryUrl
       - save_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
           paths:
             - ~/repo/out
   graphql_e2e_tests:
@@ -265,7 +265,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
       - run:
           name: Run GraphQL end-to-end tests
           command: >-
@@ -282,7 +282,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
       - run:
           name: Update OS Packages
           command: sudo apt-get update
@@ -304,7 +304,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
       - run: *ref_2
       - run: *ref_1
       - run: *ref_3
@@ -312,7 +312,7 @@ jobs:
       - run: *ref_5
       - run: *ref_6
       - run:
-          name: Start verdaccio, install node CLI and amplify-app
+          name: 'Start verdaccio, install node CLI and amplify-app'
           command: |
             source .circleci/local_publish_helpers.sh
             startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -349,9 +349,9 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
       - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
       - run: *ref_2
       - run: *ref_1
       - run: *ref_3
@@ -388,7 +388,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
       - run: *ref_2
       - run:
           name: Run tests migrating from CLI v4.0.0
@@ -412,7 +412,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
       - run:
           name: Update OS Packages
           command: sudo apt-get update
@@ -436,7 +436,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
       - run: *ref_2
       - run:
           name: Run tests migrating from latest CLI
@@ -458,7 +458,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
+          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
       - run:
           name: Start verdaccio and Install Amplify CLI
           command: |
@@ -483,7 +483,7 @@ jobs:
   integration_test:
     working_directory: ~/repo
     docker:
-      - image: cypress/base:10.18.0
+      - image: 'cypress/base:10.18.0'
         environment:
           TERM: dumb
     resource_class: large
@@ -541,7 +541,7 @@ jobs:
 
             node_modules/.bin/cypress run --spec $(find . -type f -name
             'auth_spec*')
-      - run: sudo kill -9 $(lsof -t -i:3000)
+      - run: 'sudo kill -9 $(lsof -t -i:3000)'
       - run: cd .circleci/ && chmod +x delete_auth.sh
       - run: expect .circleci/delete_auth.exp
       - run:
@@ -598,10 +598,10 @@ jobs:
           at: ./
       - restore_cache:
           keys:
-            - amplify-cli-ssh-deps-{{ .Branch }}
+            - 'amplify-cli-ssh-deps-{{ .Branch }}'
       - run:
           name: Authenticate with npm
-          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+          command: 'echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc'
       - run:
           name: Publish Amplify CLI
           command: |
@@ -620,11 +620,11 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}
+          key: 'amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}'
       - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
       - restore_cache:
-          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
+          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
       - run:
           name: Compress binaries
           command: |
@@ -643,7 +643,7 @@ jobs:
     resource_class: large
     steps:
       - restore_cache:
-          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
+          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
       - run:
           name: Install packaged Amplify CLI
           command: >
@@ -665,9 +665,9 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
+          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
       - restore_cache:
-          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
+          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
       - run:
           name: Publish Amplify CLI GitHub release
           command: |
@@ -676,7 +676,7 @@ jobs:
   integration_test_js:
     working_directory: ~/repo
     docker:
-      - image: cypress/base:10.18.0
+      - image: 'cypress/base:10.18.0'
         environment:
           TERM: dumb
     steps:
@@ -805,7 +805,7 @@ jobs:
           path: ../uitest_logs
   integration_test_android:
     docker:
-      - image: circleci/android:api-27-node
+      - image: 'circleci/android:api-27-node'
     environment:
       JVM_OPTS: '-Xms1024m -Xmx3584m'
       JAVA_TOOL_OPTIONS: '-Xms1024m -Xmx3584m'
@@ -815,7 +815,7 @@ jobs:
       - attach_workspace:
           at: ./
       - run:
-          name: Install Android platforms 18, 21, 23
+          name: 'Install Android platforms 18, 21, 23'
           command: >
             sudo yes | sdkmanager "platforms;android-18" "platforms;android-21"
             "platforms;android-23"
