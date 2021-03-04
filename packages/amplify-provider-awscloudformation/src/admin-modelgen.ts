@@ -21,7 +21,8 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
 
   const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
   if (!appId) {
-    throw new Error('Could not find AmplifyAppId in amplify-meta.json.');
+    context.print.error('Could not find AmplifyAppId in amplify-meta.json.');
+    return;
   }
   const envName = localEnvInfo.envName;
   const { isAdminApp } = await isAmplifyAdminApp(appId);
