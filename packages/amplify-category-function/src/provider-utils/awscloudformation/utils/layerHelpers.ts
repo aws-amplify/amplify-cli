@@ -1,8 +1,7 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
 import uuid from 'uuid';
-import { categoryName } from './constants';
 import { Permission, LayerPermission } from '../utils/layerParams';
 
 export interface LayerInputParams {
@@ -22,7 +21,8 @@ export function layerVersionQuestion(versions: number[]) {
   ];
 }
 
-export function layerNameQuestion(context: any) {
+// TODO check if name exists in cloud
+export function layerNameQuestion(context: $TSContext) {
   return [
     {
       type: 'input',
@@ -31,9 +31,9 @@ export function layerNameQuestion(context: any) {
       validate: input => {
         input = input.trim();
         const meta = context.amplify.getProjectMeta();
-        if (!/^[a-zA-Z0-9]{1,129}$/.test(input)) {
-          return 'Lambda layer names must be 1-129 alphanumeric characters.';
-        } else if (meta.function && meta.function.hasOwnProperty(input)) {
+        if (!/^[a-zA-Z0-9]{1,108}$/.test(input)) {
+          return 'Lambda layer names must be 1-108 alphanumeric characters.';
+        } else if (meta?.function.hasOwnProperty(input)) {
           return `A Lambda layer with the name ${input} already exists in this project.`;
         }
         return true;
@@ -134,7 +134,7 @@ export function layerOrgAccessQuestion(defaultOrgs?: string[]) {
   ];
 }
 
-export function previousPermissionsQuestion(layerName: string): ListQuestion[] {
+export function previousPermissionsQuestion(): ListQuestion[] {
   return [
     {
       type: 'list',
@@ -157,57 +157,57 @@ export function previousPermissionsQuestion(layerName: string): ListQuestion[] {
   ];
 }
 
-export async function chooseParamsOnEnvInit(context: any, layerName: string) {
-  const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
-  const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
-  const filteredEnvs = Object.keys(teamProviderInfo).filter(env =>
-    _.has(teamProviderInfo, [env, 'nonCFNdata', categoryName, layerName, 'layerVersionMap']),
-  );
-  const currentEnv = context.amplify.getEnvInfo().envName;
-  if (filteredEnvs.includes(currentEnv)) {
-    return _.get(teamProviderInfo, [currentEnv, 'nonCFNdata', categoryName, layerName]);
-  }
-  context.print.info(`Adding Lambda layer ${layerName} to ${currentEnv} environment.`);
-  const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
-  let envName;
-  if (!yesFlagSet) {
-    envName = (await prompt(chooseParamsOnEnvInitQuestion(layerName, filteredEnvs))).envName;
-  }
-  const defaultPermission = [{ type: 'private' }];
-  if (yesFlagSet || envName === undefined) {
-    return {
-      runtimes: [],
-      layerVersionMap: {
-        1: {
-          permissions: defaultPermission,
-        },
-      },
-    };
-  }
-  const layerToCopy = teamProviderInfo[envName].nonCFNdata.function[layerName];
-  const latestVersion = Math.max(...Object.keys(layerToCopy.layerVersionMap || {}).map(v => Number(v)));
-  const permissions = latestVersion ? layerToCopy.layerVersionMap[latestVersion].permissions : defaultPermission;
-  return {
-    runtimes: layerToCopy.runtimes,
-    layerVersionMap: {
-      1: { permissions },
-    },
-  };
-}
+// export async function chooseParamsOnEnvInit(context: $TSContext, layerName: string) {
+//   const teamProviderInfo = stateManager.getTeamProviderInfo();
+//   const filteredEnvs = Object.keys(teamProviderInfo).filter(env =>
+//     _.has(teamProviderInfo, [env, 'nonCFNdata', categoryName, layerName, 'layerVersionMap']),
+//   );
+//   const currentEnv = context.amplify.getEnvInfo().envName;
+//   if (filteredEnvs.includes(currentEnv)) {
+//     return _.get(teamProviderInfo, [currentEnv, 'nonCFNdata', categoryName, layerName]);
+//   }
+//   context.print.info(`Adding Lambda layer ${layerName} to ${currentEnv} environment.`);
+//   const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
+//   let envName;
+//   if (!yesFlagSet) {
+//     envName = (await prompt(chooseParamsOnEnvInitQuestion(layerName, filteredEnvs))).envName;
+//   }
+//   const defaultPermission = [{ type: 'private' }];
+//   if (yesFlagSet || envName === undefined) {
+//     return {
+//       runtimes: [],
+//       layerVersionMap: {
+//         1: {
+//           permissions: defaultPermission,
+//         },
+//       },
+//     };
+//   }
+//   const layerToCopy = teamProviderInfo[envName].nonCFNdata.function[layerName];
+//   const latestVersion = Math.max(...Object.keys(layerToCopy.layerVersionMap || {}).map(v => Number(v)));
+//   const permissions = latestVersion ? layerToCopy.layerVersionMap[latestVersion].permissions : defaultPermission;
+//   return {
+//     runtimes: layerToCopy.runtimes,
+//     layerVersionMap: {
+//       1: { permissions },
+//     },
+//   };
+// }
 
-function chooseParamsOnEnvInitQuestion(layerName: string, filteredEnvs: string[]): ListQuestion[] {
-  const choices = filteredEnvs
-    .map(env => ({ name: env, value: env }))
-    .concat([{ name: 'Apply default access (Only this AWS account)', value: undefined }]);
-  return [
-    {
-      type: 'list',
-      name: 'envName',
-      message: `Choose the environment to import the layer access settings from:`,
-      choices,
-    },
-  ];
-}
+// TODO - use whatever is in parameters.json instead
+// function chooseParamsOnEnvInitQuestion(layerName: string, filteredEnvs: string[]): ListQuestion[] {
+//   const choices = filteredEnvs
+//     .map(env => ({ name: env, value: env }))
+//     .concat([{ name: 'Apply default access (Only this AWS account)', value: undefined }]);
+//   return [
+//     {
+//       type: 'list',
+//       name: 'envName',
+//       message: `Choose the environment to import the layer access settings from:`,
+//       choices,
+//     },
+//   ];
+// }
 
 export function layerInputParamsToLayerPermissionArray(parameters: LayerInputParams): LayerPermission[] {
   const { layerPermissions } = parameters;

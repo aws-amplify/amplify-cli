@@ -11,7 +11,7 @@ export const convertLambdaLayerMetaToLayerCFNArray = (
 ): (string | { 'Fn::Sub': string })[] => {
   return input.map(layer => {
     if (layer.type === 'ProjectLayer') {
-      if (isMultiEnvLayer(context, layer.resourceName)) {
+      if (isMultiEnvLayer(layer.resourceName)) {
         return convertProjectLayer(layer, env);
       }
       return convertProjectLayer(layer);

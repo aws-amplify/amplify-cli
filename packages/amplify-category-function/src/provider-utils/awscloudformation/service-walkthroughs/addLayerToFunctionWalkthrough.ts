@@ -1,3 +1,4 @@
+import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import { FunctionParameters, FunctionRuntime, LambdaLayer, FunctionDependency } from 'amplify-function-plugin-interface';
 import _ from 'lodash';
 import { askLayerSelection, askCustomArnQuestion, askLayerOrderQuestion } from '../utils/addLayerToFunctionUtils';
@@ -13,7 +14,7 @@ const confirmationPrompt = 'Do you want to configure Lambda layers for this func
  * @param defaultConfirm Determines whether the confirmation question defaults to yes or no
  */
 export const addLayersToFunctionWalkthrough = async (
-  context,
+  context: $TSContext,
   runtime: Pick<FunctionRuntime, 'value'>,
   previousSelections: LambdaLayer[] = [],
   defaultConfirm = false,
@@ -29,10 +30,10 @@ export const addLayersToFunctionWalkthrough = async (
   let askArnQuestion: boolean;
   ({ lambdaLayers, dependsOn, askArnQuestion } = await askLayerSelection(
     getLayerMetadataFactory(context),
-    context.amplify.getProjectMeta(),
+    stateManager.getMeta(),
     runtime.value,
     previousSelections,
-    context.amplify.pathManager.getBackendDirPath(),
+    pathManager.getBackendDirPath(),
   ));
 
   if (askArnQuestion) {

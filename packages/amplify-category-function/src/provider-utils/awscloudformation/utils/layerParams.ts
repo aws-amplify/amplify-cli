@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
-import { JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, pathManager } from 'amplify-cli-core';
 import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
 import { categoryName, layerParametersFileName } from '../utils/constants';
 import { category } from '../../../constants';
@@ -74,21 +74,30 @@ export interface OrgsLayer {
   orgs: string[];
 }
 
+export interface LayerVersionCfnMetadata {
+  CompatibleRuntimes: string[];
+  CreatedDate: string;
+  Description: string;
+  LayerVersionArn: string;
+  LogicalName?: string;
+  Version: number;
+  Content?: {
+    S3Key: string;
+    S3Bucket: string;
+  };
+}
+
 class LayerState implements LayerMetadata {
   readonly layerName: string;
   runtimes: LayerRuntime[];
-  private context;
   private versionMap: Map<number, LayerVersionState> = new Map();
 
   private storedParams: StoredLayerParameters;
   private newVersionHash: string;
-  constructor(context, layerName: string) {
-    this.context = context;
+  constructor(context: $TSContext, layerName: string) {
     this.layerName = layerName;
-    this.storedParams = getStoredLayerState(context, layerName);
-    this.runtimes = isMultiEnvLayer(context, layerName)
-      ? getLayerRuntimes(context.amplify.pathManager.getBackendDirPath(), layerName)
-      : this.storedParams.runtimes;
+    // this.storedParams = getStoredLayerState(context, layerName);
+    this.runtimes = isMultiEnvLayer(layerName) ? getLayerRuntimes(pathManager.getBackendDirPath(), layerName) : this.storedParams.runtimes;
     Object.entries(this.storedParams.layerVersionMap).forEach(([versionNumber, versionData]) => {
       this.versionMap.set(Number(versionNumber), new LayerVersionState(versionData));
     });
@@ -169,7 +178,7 @@ class LayerState implements LayerMetadata {
   }
 
   private hashLayer() {
-    const layerPath = path.join(this.context.amplify.pathManager.getBackendDirPath(), category, this.layerName);
+    const layerPath = path.join(pathManager.getBackendDirPath(), category, this.layerName);
     return hashLayerVersionContents(layerPath);
   }
 
@@ -244,51 +253,51 @@ class LayerVersionState implements LayerVersionMetadata {
   }
 }
 
-export const getLayerMetadataFactory = (context: any): LayerMetadataFactory => {
+export const getLayerMetadataFactory = (context: $TSContext): LayerMetadataFactory => {
   return layerName => {
     return new LayerState(context, layerName);
   };
 };
 
-export function isMultiEnvLayer(context: any, layerName: string) {
-  const layerParametersPath = path.join(context.amplify.pathManager.getBackendDirPath(), categoryName, layerName, layerParametersFileName);
+export function isMultiEnvLayer(layerName: string) {
+  const layerParametersPath = path.join(pathManager.getBackendDirPath(), categoryName, layerName, layerParametersFileName);
   return !fs.existsSync(layerParametersPath);
 }
 
-const getStoredLayerState = (context: any, layerName: string) => {
-  if (isMultiEnvLayer(context, layerName)) {
-    const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
-    const { envName } = context.amplify.getEnvInfo();
-    if (!fs.existsSync(teamProviderInfoPath)) {
-      throw new Error('team-provider-info.json is missing');
-    }
-    const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath) as StoredLayerParameters;
-    let layerState: StoredLayerParameters = _.get(
-      teamProviderInfo,
-      [envName, 'nonCFNdata', categoryName, layerName],
-      undefined,
-    ) as StoredLayerParameters;
+// const getStoredLayerState = (context: any, layerName: string) => {
+//   if (isMultiEnvLayer(layerName)) {
+//     const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+//     const { envName } = context.amplify.getEnvInfo();
+//     if (!fs.existsSync(teamProviderInfoPath)) {
+//       throw new Error('team-provider-info.json is missing');
+//     }
+//     const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath) as StoredLayerParameters;
+//     let layerState: StoredLayerParameters = _.get(
+//       teamProviderInfo,
+//       [envName, 'nonCFNdata', categoryName, layerName],
+//       undefined,
+//     ) as StoredLayerParameters;
 
-    // In case of `amplify pull`, team-provider-info won't be populated at first
-    if (layerState === undefined) {
-      layerState = _.get(context.amplify.getProjectMeta(), [categoryName, layerName], undefined);
+//     // In case of `amplify pull`, team-provider-info won't be populated at first
+//     if (layerState === undefined) {
+//       layerState = _.get(context.amplify.getProjectMeta(), [categoryName, layerName], undefined);
 
-      if (layerState === undefined) {
-        throw new Error('Local layer state missing from team-provider-info.json and amplify-meta.json');
-      }
+//       if (layerState === undefined) {
+//         throw new Error('Local layer state missing from team-provider-info.json and amplify-meta.json');
+//       }
 
-      _.set(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName], layerState);
-      JSONUtilities.writeJson(teamProviderInfoPath, teamProviderInfo);
-    }
+//       _.set(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName], layerState);
+//       JSONUtilities.writeJson(teamProviderInfoPath, teamProviderInfo);
+//     }
 
-    return layerState;
-  } else {
-    const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-    const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
-    if (!fs.existsSync(resourceDirPath)) {
-      return undefined;
-    }
-    const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
-    return JSONUtilities.readJson(parametersFilePath) as StoredLayerParameters;
-  }
-};
+//     return layerState;
+//   } else {
+//     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+//     const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
+//     if (!fs.existsSync(resourceDirPath)) {
+//       return undefined;
+//     }
+//     const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
+//     return JSONUtilities.readJson(parametersFilePath) as StoredLayerParameters;
+//   }
+// };

@@ -15,7 +15,6 @@ import { ServiceName } from './provider-utils/awscloudformation/utils/constants'
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
-export { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 
@@ -148,7 +147,7 @@ export async function initEnv(context) {
       if (service === ServiceName.LambdaLayer) {
         const lvmPath = [category, resourceName, 'layerVersionMap'];
         const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
-        if (isMultiEnvLayer(context, resourceName)) {
+        if (isMultiEnvLayer(resourceName)) {
           _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
         }
         _.set(amplifyMeta, lvmPath, currentVersionMap);

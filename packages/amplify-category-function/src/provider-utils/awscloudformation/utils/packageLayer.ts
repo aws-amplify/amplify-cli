@@ -8,16 +8,7 @@ import { hashElement } from 'folder-hash';
 import { $TSContext, pathManager } from 'amplify-cli-core';
 import { ServiceName, provider } from './constants';
 import { previousPermissionsQuestion } from './layerHelpers';
-import {
-  getLayerMetadataFactory,
-  isMultiEnvLayer,
-  Permission,
-  PrivateLayer,
-  LayerParameters,
-  LayerMetadata,
-  LayerRuntime,
-} from './layerParams';
-import { getLayerRuntimes } from './layerRuntimes';
+import { getLayerMetadataFactory, Permission, PrivateLayer, LayerParameters, LayerMetadata, LayerRuntime } from './layerParams';
 import crypto from 'crypto';
 import { updateLayerArtifacts } from './storeResources';
 import globby from 'globby';
@@ -116,15 +107,15 @@ async function ensureLayerVersion(context: $TSContext, layerName: string) {
     },
   };
 
-  if (isMultiEnvLayer(context, layerName)) {
-    additionalLayerParams.runtimes = getLayerRuntimes(pathManager.getBackendDirPath(), layerName);
-  }
+  // if (isMultiEnvLayer(layerName)) {
+  //   additionalLayerParams.runtimes = getLayerRuntimes(pathManager.getBackendDirPath(), layerName);
+  // }
 
   const layerParameters = { ...storedParams, ...additionalLayerParams } as LayerParameters;
-  updateLayerArtifacts(context, layerParameters, latestVersion, { cfnFile: isNewVersion });
+  await updateLayerArtifacts(context, layerParameters, { cfnFile: isNewVersion });
 }
 
-async function setNewVersionPermissions(context: any, layerName: string, layerState: LayerMetadata) {
+async function setNewVersionPermissions(context: $TSContext, layerName: string, layerState: LayerMetadata) {
   const defaultPermissions: PrivateLayer[] = [{ type: Permission.private }];
   let usePrevPermissions = true;
   const latestVersion = layerState.getLatestVersion();
@@ -135,7 +126,7 @@ async function setNewVersionPermissions(context: any, layerName: string, layerSt
   if (yesFlagSet) {
     context.print.warning(`Permissions from previous layer version carried forward to new version by default`);
   } else if (hasNonDefaultPerms) {
-    usePrevPermissions = (await prompt(previousPermissionsQuestion(layerName))).usePreviousPermissions;
+    usePrevPermissions = (await prompt(previousPermissionsQuestion())).usePreviousPermissions;
   }
   if (!usePrevPermissions) {
     layerState.setPermissionsForVersion(latestVersion, defaultPermissions);
@@ -180,7 +171,7 @@ const safeHash = async (path: string, opts?: any): Promise<string> => {
   return '';
 };
 
-function validFilesize(path, maxSize = 250) {
+function validFilesize(path: string, maxSize = 250) {
   try {
     const { size } = fs.statSync(path);
     const fileSize = Math.round(size / 1024 ** 2);

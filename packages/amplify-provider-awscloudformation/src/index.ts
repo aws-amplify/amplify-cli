@@ -25,6 +25,7 @@ import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 import { resolveAppId } from './utils/resolve-appId';
 import { loadConfigurationForEnv } from './configuration-manager';
+import { Lambda } from './aws-utils/aws-lambda';
 
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
@@ -106,6 +107,7 @@ module.exports = {
   init,
   initEnv,
   isAmplifyAdminApp,
+  Lambda,
   onInitSuccessful,
   configure,
   configureNewUser,

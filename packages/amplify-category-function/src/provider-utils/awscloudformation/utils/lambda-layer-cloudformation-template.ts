@@ -2,17 +2,14 @@ import { $TSContext } from 'amplify-cli-core';
 import { Fn, DeletionPolicy, Refs } from 'cloudform-types';
 import _ from 'lodash';
 import Lambda from 'cloudform-types/types/lambda';
-import { getLayerMetadataFactory, isMultiEnvLayer, LayerMetadata, LayerParameters, Permission } from './layerParams';
+import { isMultiEnvLayer, LayerMetadata, LayerParameters, LayerVersionCfnMetadata, Permission } from './layerParams';
+import uuid from 'uuid';
 
 function generateLayerCfnObjBase() {
   const cfnObj = {
     AWSTemplateFormatVersion: '2010-09-09',
     Description: 'Lambda layer resource stack creation using Amplify CLI',
     Parameters: {
-      layerVersion: {
-        Type: 'String',
-        Default: '1',
-      },
       env: {
         Type: 'String',
       },
@@ -24,9 +21,6 @@ function generateLayerCfnObjBase() {
       },
     },
     Resources: {},
-    Conditions: {
-      HasEnvironmentParameter: Fn.Not(Fn.Equals(Fn.Ref('env'), 'NONE')),
-    },
   };
 
   return cfnObj;
@@ -35,42 +29,53 @@ function generateLayerCfnObjBase() {
 /**
  * generates CFN for Layer and Layer permissions when updating layerVersion
  */
-export function generateLayerCfnObj(context: $TSContext, parameters: LayerParameters) {
-  const multiEnvLayer = isMultiEnvLayer(context, parameters.layerName);
-  const layerData = getLayerMetadataFactory(context)(parameters.layerName);
+export function generateLayerCfnObj(context: $TSContext, parameters: LayerParameters, versionList: LayerVersionCfnMetadata[]) {
+  context.print.debug('generateLayerCfnObj()');
+  const multiEnvLayer = isMultiEnvLayer(parameters.layerName);
+  const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
+  const [shortId] = uuid().split('-');
+  const logicalName = `LambdaLayerVersion${shortId}`;
+  // const layerData = getLayerMetadataFactory(context)(parameters.layerName);
   const outputObj = {
     Outputs: {
       Arn: {
-        Value: Fn.Ref('LambdaLayer'),
+        Value: Fn.Ref(logicalName),
       },
       Region: { Value: Refs.Region },
     },
   };
-  let cfnObj = { ...generateLayerCfnObjBase(), ...outputObj };
-  const POLICY_RETAIN = DeletionPolicy.Retain;
-  const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
+  const cfnObj = generateLayerCfnObjBase();
+  for (const layerVersion of versionList) {
+    if (layerVersion.LogicalName) {
+      cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObj(layerName, layerVersion);
+    } else {
+      cfnObj.Resources[logicalName] = constructLayerVersionCfnObj(layerName, layerVersion);
+    }
+  }
 
-  const layer = new Lambda.LayerVersion({
-    CompatibleRuntimes: parameters.runtimes.map(runtime => runtime.cloudTemplateValue),
-    Content: {
-      S3Bucket: Fn.Ref('deploymentBucketName'),
-      S3Key: Fn.Ref('s3Key'),
-    },
-    Description: Fn.Sub('Lambda layer version ${latestVersion}', { latestVersion: Fn.Ref('layerVersion') }),
-    LayerName: layerName,
-  });
-  layer.deletionPolicy(POLICY_RETAIN);
-  _.assign(layer, { UpdateReplacePolicy: POLICY_RETAIN });
-
-  cfnObj.Resources['LambdaLayer'] = layer;
-  Object.entries(parameters.layerVersionMap).forEach(([key]) => {
-    const answer = assignLayerPermissions(layerData, key, parameters.layerName, parameters.build, multiEnvLayer);
-    answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
-  });
+  // Object.entries(parameters.layerVersionMap).forEach(([key]) => {
+  //   const answer = assignLayerVersionPermissions(layerData, key, parameters.layerName, parameters.build, multiEnvLayer);
+  //   answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
+  // });
   return cfnObj;
 }
 
-function assignLayerPermissions(
+function constructLayerVersionCfnObj(layerName, layerVersion: LayerVersionCfnMetadata) {
+  const newLayerVersion = new Lambda.LayerVersion({
+    CompatibleRuntimes: layerVersion.CompatibleRuntimes,
+    Content: layerVersion.Content ?? {
+      S3Bucket: Fn.Ref('deploymentBucketName'),
+      S3Key: Fn.Ref('s3Key'),
+    },
+    Description: '', // TODO Implement
+    LayerName: layerName,
+  });
+  newLayerVersion.deletionPolicy(DeletionPolicy.Delete);
+  _.assign(newLayerVersion, { UpdateReplacePolicy: DeletionPolicy.Retain });
+  return newLayerVersion;
+}
+
+function assignLayerVersionPermissions(
   layerData: LayerMetadata,
   version: string,
   layerName: string,
@@ -141,7 +146,7 @@ function createLayerVersionArn(
   if (isContentUpdated) {
     // if runtime/Content updated
     if (layerData.getLatestVersion() === Number(version)) {
-      return Fn.Ref('LambdaLayer');
+      return Fn.Ref('LambdaLayerVersion'); // TODO use logical name
     }
   }
   if (multiEnvLayer) {

@@ -9,7 +9,7 @@ export const pagedAWSCall = async <TAPIResult, TData, TNextToken, TParams = $TSO
 ): Promise<TData[]> => {
   assert(action, 'missing argument: action');
   assert(accessor, 'missing argument: accessor');
-  assert(getNextToken, 'missing argument getNextToken');
+  assert(getNextToken, 'missing argument: getNextToken');
 
   let result: TData[] = [];
   let response: TAPIResult;
