@@ -875,7 +875,12 @@ async function formNestedStack(
               } else {
                 const dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
 
-                parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
+                //parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
+                const parameterOutputValue = _.get(dependentResource, ['output', dependsOn[i].attributes[j]], undefined);
+                parameterValue =
+                  parameterOutputValue === undefined
+                    ? { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] }
+                    : parameterOutputValue;
               }
 
               const parameterKey = `${dependsOn[i].category}${dependsOn[i].resourceName}${dependsOn[i].attributes[j]}`;
