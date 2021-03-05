@@ -1,4 +1,4 @@
-import { getEnvInfo } from '../../../../src/extensions/amplify-helpers/get-env-info';
+import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
 import { stateManager } from 'amplify-cli-core';
 
 jest.mock('amplify-cli-core', () => ({
