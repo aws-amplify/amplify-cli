@@ -139,7 +139,11 @@ export class StackEventMonitor {
       if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
         return;
       }
-      throw e;
+      if (e.code === 'Throttling') {
+        // ignore throttling error
+      } else {
+        throw e;
+      }
     }
 
     events.reverse();
