@@ -4,6 +4,16 @@ orbs:
 machine:
   environment:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
+
+node12: &node12
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:12
+      auth:
+        username: $DOCKERHUB_USERNAME
+        password: $DOCKERHUB_ACCESS_TOKEN
+  resource_class: large
+
 defaults: &defaults
   working_directory: ~/repo
   docker:
@@ -27,6 +37,7 @@ run_e2e_tests: &run_e2e_tests
     unsetNpmRegistryUrl
   no_output_timeout: 90m
 
+
 install_cli_from_local_registery: &install_cli_from_local_registery
   name: Start verdaccio, install node CLI and amplify-app
   command: |
@@ -40,7 +51,7 @@ install_cli_from_local_registery: &install_cli_from_local_registery
 
 jobs:
   build:
-    <<: *defaults
+    <<: *node12
     steps:
       - checkout
       - run: yarn run production-build
@@ -57,12 +68,15 @@ jobs:
           paths: .
 
   test:
-    <<: *defaults
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
       - restore_cache:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Java
+          command: sudo apt-get install default-jdk
       - run:
           name: Lint
           command: yarn lint
@@ -74,7 +88,7 @@ jobs:
           command: yarn coverage
 
   mock_e2e_tests:
-    <<: *defaults
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
