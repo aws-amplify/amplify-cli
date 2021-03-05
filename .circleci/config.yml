@@ -8,7 +8,7 @@ machine:
 node12:
   working_directory: ~/repo
   docker: &ref_0
-    - image: circleci/node:12
+    - image: circleci/node:10
       auth:
         username: $DOCKERHUB_USERNAME
         password: $DOCKERHUB_ACCESS_TOKEN
