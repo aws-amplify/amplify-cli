@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.36.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.36.0-beta.0...amplify-e2e-tests@2.36.0-beta.1) (2021-03-05)
+
+
+### Features
+
+* generate datastore models for Admin CMS to consume post-deployment from CLI ([#6771](https://github.com/aws-amplify/amplify-cli/issues/6771)) ([0e74b65](https://github.com/aws-amplify/amplify-cli/commit/0e74b657491e53eb04376bb727eb442b59b2cf4c))
+
+
+
+
+
 # [2.36.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.35.0...amplify-e2e-tests@2.36.0-beta.0) (2021-03-04)
 
 
