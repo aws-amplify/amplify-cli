@@ -166,9 +166,11 @@ describe('amplify add api (GraphQL)', () => {
     const name = `dsadminui`;
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name });
 
-    const meta = getProjectMeta(projRoot);
+    let meta = getProjectMeta(projRoot);
     const appId = meta.providers?.[providerName]?.AmplifyAppId;
     const region = meta.providers?.[providerName]?.Region;
+
+    expect(appId).toBeDefined();
 
     const localEnvInfo = getLocalEnvInfo(projRoot);
     const envName = localEnvInfo.envName;
@@ -179,13 +181,16 @@ describe('amplify add api (GraphQL)', () => {
     await addApiWithSchemaAndConflictDetection(projRoot, 'simple_model.graphql');
     await amplifyPush(projRoot);
 
+    meta = getProjectMeta(projRoot);
+
     const { output } = meta.api[name];
     const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
-    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
 
     expect(GraphQLAPIIdOutput).toBeDefined();
     expect(GraphQLAPIEndpointOutput).toBeDefined();
     expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
 
     expect(graphqlApi).toBeDefined();
     expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
