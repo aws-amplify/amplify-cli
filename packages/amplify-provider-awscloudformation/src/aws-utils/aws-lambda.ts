@@ -27,7 +27,7 @@ export class Lambda {
   }
 
   public async listLayerVersions(layerNameOrArn: string) {
-    const startingParams: ListLayerVersionsRequest = { LayerName: layerNameOrArn, MaxItems: 20 };
+    const startingParams: ListLayerVersionsRequest = { LayerName: layerNameOrArn, MaxItems: 2 }; // TODO, raise to reasonable limit. Set to 2 for testing
     const result = await pagedAWSCall<ListLayerVersionsResponse, LayerVersionsListItem, string>(
       async (params: ListLayerVersionsRequest, nextMarker?: string) => {
         params = nextMarker ? { ...params, Marker: nextMarker } : params;

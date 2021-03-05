@@ -1,17 +1,10 @@
-import { $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
-import { hashElement, HashElementOptions } from 'folder-hash';
-import * as fs from 'fs-extra';
-import globby from 'globby';
-import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
+import { $TSContext } from 'amplify-cli-core';
+import { ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
 import ora from 'ora';
 import path from 'path';
 import uuid from 'uuid';
-import { categoryName, layerParametersFileName, provider, ServiceName } from './constants';
-import { getLayerConfiguration } from './layerConfiguration';
-import { LayerParameters, LayerPermission, LayerVersionMetadata, PermissionEnum } from './layerParams';
-import { updateLayerArtifacts } from './storeResources';
-import crypto from 'crypto';
+import { Permission, LayerPermission } from '../utils/layerParams';
 
 export interface LayerInputParams {
   layerPermissions?: PermissionEnum[];
@@ -43,24 +36,25 @@ export function layerNameQuestion(projectName: string): InputQuestion {
       }
       return true;
     },
-    default: () => {
-      const [shortId] = uuid().split('-');
-      return `layer-${shortId}`;
-    },
-  };
+  ];
 }
 
-export function layerPermissionsQuestion(params?: PermissionEnum[]): CheckboxQuestion {
-  return {
-    type: 'checkbox',
-    name: 'layerPermissions',
-    message:
-      'The current AWS account will always have access to this layer.\nOptionally, configure who else can access this layer. (Hit <Enter> to skip)',
-    choices: [
-      {
-        name: 'Specific AWS accounts',
-        value: PermissionEnum.AwsAccounts,
-        checked: _.includes(params, PermissionEnum.AwsAccounts),
+// TODO check if name exists in cloud
+export function layerNameQuestion(context: $TSContext) {
+  return [
+    {
+      type: 'input',
+      name: 'layerName',
+      message: 'Provide a name for your Lambda layer:',
+      validate: input => {
+        input = input.trim();
+        const meta = context.amplify.getProjectMeta();
+        if (!/^[a-zA-Z0-9]{1,108}$/.test(input)) {
+          return 'Lambda layer names must be 1-108 alphanumeric characters.';
+        } else if (meta?.function.hasOwnProperty(input)) {
+          return `A Lambda layer with the name ${input} already exists in this project.`;
+        }
+        return true;
       },
       {
         name: 'Specific AWS organization',
@@ -110,93 +104,87 @@ export async function layerOrgAccessPrompt(defaultOrgs?: string[]): Promise<stri
         if (!/^o-[a-zA-Z0-9]{10,32}$/.test(orgId.trim())) {
           return 'The organization ID starts with "o-" followed by a 10-32 character-long alphanumeric string.';
         }
-      }
-      return true;
+        return true;
+      },
+      default: hasDefaults ? defaultOrgs.join(',') : undefined,
     },
-    default: hasDefaults ? defaultOrgs.join(',') : undefined,
-  });
-  return _.uniq(answer.authorizedOrgIds.split(',').map((orgId: string) => orgId.trim()));
+  ];
 }
 
-export function previousPermissionsQuestion(): ListQuestion {
-  return {
-    type: 'list',
-    name: 'usePreviousPermissions',
-    message: 'What permissions do you want to grant to this new layer version?',
-    choices: [
-      {
-        name: 'The same permission as the latest layer version',
-        short: 'Previous version permissions',
-        value: true,
-      },
-      {
-        name: 'Only accessible by the current account. You can always edit this later with: amplify update function',
-        short: 'Private',
-        value: false,
-      },
-    ],
-    default: 0,
-  };
-}
-
-export function layerInputParamsToLayerPermissionArray(parameters: LayerInputParams): LayerPermission[] {
-  const { layerPermissions = [] } = parameters;
-
-  if (layerPermissions.filter(p => p === PermissionEnum.Public).length > 0) {
-    return [
-      {
-        type: PermissionEnum.Public,
-      },
-    ];
-  }
-
-  const permissionObj: Array<LayerPermission> = [];
-  layerPermissions.forEach(val => {
-    let obj: LayerPermission;
-    if (val === PermissionEnum.Public) {
-      obj = {
-        type: PermissionEnum.Public,
-      };
-    } else if (val === PermissionEnum.AwsOrg) {
-      obj = {
-        type: PermissionEnum.AwsOrg,
-        orgs: parameters.orgIds,
-      };
-    } else if (val === PermissionEnum.AwsAccounts) {
-      obj = {
-        type: PermissionEnum.AwsAccounts,
-        accounts: parameters.accountIds,
-      };
-    }
-    permissionObj.push(obj);
-  });
-
-  const privateObj: LayerPermission = {
-    type: PermissionEnum.Private,
-  };
-  permissionObj.push(privateObj); // layer is always accessible by the aws account of the owner
-  return permissionObj;
-}
-
-export function loadStoredLayerParameters(context: $TSContext, layerName: string): LayerParameters {
-  const backendDirPath = pathManager.getBackendDirPath();
-  const { permissions, runtimes } = getLayerConfiguration(backendDirPath, layerName);
-  return {
-    layerName,
-    runtimes,
-    permissions,
-    providerContext: {
-      provider: provider,
-      service: ServiceName.LambdaLayer,
-      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+export function previousPermissionsQuestion(): ListQuestion[] {
+  return [
+    {
+      type: 'list',
+      name: 'usePreviousPermissions',
+      message: 'What permissions do you want to grant to this new layer version?',
+      choices: [
+        {
+          name: 'The same permission as the latest layer version',
+          short: 'Previous version permissions',
+          value: true,
+        },
+        {
+          name: 'Only accessible by the current account. You can always edit this later with: amplify update function',
+          short: 'Private',
+          value: false,
+        },
+      ],
+      default: 0,
     },
-    build: true,
-  };
+  ];
 }
 
-export function getLayerPath(layerName: string) {
-  return path.join(pathManager.getBackendDirPath(), categoryName, layerName);
-}
+// export async function chooseParamsOnEnvInit(context: $TSContext, layerName: string) {
+//   const teamProviderInfo = stateManager.getTeamProviderInfo();
+//   const filteredEnvs = Object.keys(teamProviderInfo).filter(env =>
+//     _.has(teamProviderInfo, [env, 'nonCFNdata', categoryName, layerName, 'layerVersionMap']),
+//   );
+//   const currentEnv = context.amplify.getEnvInfo().envName;
+//   if (filteredEnvs.includes(currentEnv)) {
+//     return _.get(teamProviderInfo, [currentEnv, 'nonCFNdata', categoryName, layerName]);
+//   }
+//   context.print.info(`Adding Lambda layer ${layerName} to ${currentEnv} environment.`);
+//   const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
+//   let envName;
+//   if (!yesFlagSet) {
+//     envName = (await prompt(chooseParamsOnEnvInitQuestion(layerName, filteredEnvs))).envName;
+//   }
+//   const defaultPermission = [{ type: 'private' }];
+//   if (yesFlagSet || envName === undefined) {
+//     return {
+//       runtimes: [],
+//       layerVersionMap: {
+//         1: {
+//           permissions: defaultPermission,
+//         },
+//       },
+//     };
+//   }
+//   const layerToCopy = teamProviderInfo[envName].nonCFNdata.function[layerName];
+//   const latestVersion = Math.max(...Object.keys(layerToCopy.layerVersionMap || {}).map(v => Number(v)));
+//   const permissions = latestVersion ? layerToCopy.layerVersionMap[latestVersion].permissions : defaultPermission;
+//   return {
+//     runtimes: layerToCopy.runtimes,
+//     layerVersionMap: {
+//       1: { permissions },
+//     },
+//   };
+// }
+
+// TODO - use whatever is in parameters.json instead
+// function chooseParamsOnEnvInitQuestion(layerName: string, filteredEnvs: string[]): ListQuestion[] {
+//   const choices = filteredEnvs
+//     .map(env => ({ name: env, value: env }))
+//     .concat([{ name: 'Apply default access (Only this AWS account)', value: undefined }]);
+//   return [
+//     {
+//       type: 'list',
+//       name: 'envName',
+//       message: `Choose the environment to import the layer access settings from:`,
+//       choices,
+//     },
+//   ];
+// }
 
 export async function isNewVersion(layerName: string) {
   const previousHash = loadPreviousLayerHash(layerName);

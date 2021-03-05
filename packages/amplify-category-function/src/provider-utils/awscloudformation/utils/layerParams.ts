@@ -1,3 +1,7 @@
+import fs from 'fs-extra';
+import _ from 'lodash';
+import path from 'path';
+import { $TSContext, pathManager } from 'amplify-cli-core';
 import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
 
 export type LayerRuntime = Pick<FunctionRuntime, 'name' | 'value' | 'layerExecutablePath' | 'runtimePluginId'> & {
@@ -37,27 +41,179 @@ export interface OrgsLayer {
   orgs: string[];
 }
 
-export interface LayerVersionMetadata {
-  LayerVersionArn: string;
-  Version: number;
-  Description: string;
-  CreatedDate: string;
-  CompatibleRuntimes: string[];
-  LicenseInfo: string;
-  LogicalName: string;
-  permissions: LayerPermission[];
-}
-
 export interface LayerVersionCfnMetadata {
-  CompatibleRuntimes?: string[];
-  CreatedDate?: string;
-  Description?: string;
-  LayerVersionArn?: string;
-  LogicalName: string;
-  Version?: number;
+  CompatibleRuntimes: string[];
+  CreatedDate: string;
+  Description: string;
+  LayerVersionArn: string;
+  LogicalName?: string;
+  Version: number;
   Content?: {
     S3Key: string;
     S3Bucket: string;
   };
-  permissions?: LayerPermission[];
 }
+
+class LayerState implements LayerMetadata {
+  readonly layerName: string;
+  runtimes: LayerRuntime[];
+  private versionMap: Map<number, LayerVersionState> = new Map();
+
+  private storedParams: StoredLayerParameters;
+  private newVersionHash: string;
+  constructor(context: $TSContext, layerName: string) {
+    this.layerName = layerName;
+    // this.storedParams = getStoredLayerState(context, layerName);
+    this.runtimes = isMultiEnvLayer(layerName) ? getLayerRuntimes(pathManager.getBackendDirPath(), layerName) : this.storedParams.runtimes;
+    Object.entries(this.storedParams.layerVersionMap).forEach(([versionNumber, versionData]) => {
+      this.versionMap.set(Number(versionNumber), new LayerVersionState(versionData));
+    });
+  }
+
+  getVersion(version: number): LayerVersionMetadata {
+    return this.versionMap.get(version);
+  }
+
+  listVersions(): number[] {
+    return Array.from(this.versionMap.keys()).sort((a, b) => Number(b) - Number(a));
+  }
+
+  getLatestVersion(): number {
+    const versions = this.listVersions();
+    return versions.length > 0 ? versions[0] : undefined;
+  }
+
+  getHash(version: number): string {
+    return this.getVersion(version).hash;
+  }
+
+  // sets the hash for a new (not yet pushed) layer version
+  // once a hash is set for a version, this should indicate that the version is "finialized" (ie pushed or about to be pushed)
+  // hashes are immutable once set
+  async setNewVersionHash() {
+    const latestVersion = this.getLatestVersion();
+    // if the latest version doesn't already have a hash
+    if (!this.getHash(latestVersion)) {
+      const newHash = this.newVersionHash || (await this.hashLayer());
+      this.getVersion(latestVersion).hash = newHash;
+      this.storedParams.layerVersionMap[latestVersion].hash = newHash;
+      this.newVersionHash = undefined; // reset the newVersionHash now that the latest one is set
+    }
+  }
+
+  // updates the layer metadata with a new version if changes are detected
+  // if a new version is detected, the permissions from the previous version are carried forward to the new version
+  // returns true if a new version was detected, false otherwise
+  // it does not set a hash for a new version if detected because the version could change more before a push
+  async syncVersions(): Promise<boolean> {
+    const latestVersion = this.getLatestVersion();
+    const currHash = this.getHash(latestVersion);
+    if (!currHash) {
+      return false;
+    }
+    this.newVersionHash = await this.hashLayer();
+    if (currHash !== this.newVersionHash) {
+      this.addNewLayerVersion();
+      return true;
+    }
+    return false;
+  }
+
+  updateCompatibleRuntimes(runtimes: LayerRuntime[]) {
+    const existingRuntimeVals = this.runtimes.map(runtime => runtime.value).sort();
+    const newRuntimeVals = runtimes.map(runtime => runtime.value).sort();
+    const areRuntimesSame = _.isEqual(existingRuntimeVals, newRuntimeVals);
+    if (!areRuntimesSame) {
+      this.updateRuntimes(runtimes);
+      if (this.isLatestVersionFinalized()) {
+        this.addNewLayerVersion();
+      }
+    }
+  }
+
+  setPermissionsForVersion(version: number, permissions: LayerPermission[]) {
+    this.storedParams.layerVersionMap[version].permissions = permissions;
+    this.versionMap.get(version).setPermissions(permissions);
+  }
+
+  toStoredLayerParameters(): StoredLayerParameters {
+    return _.cloneDeep(this.storedParams);
+  }
+
+  private isLatestVersionFinalized(): boolean {
+    return this.getHash(this.getLatestVersion()) !== undefined;
+  }
+
+  private hashLayer() {
+    const layerPath = path.join(pathManager.getBackendDirPath(), category, this.layerName);
+    return hashLayerVersionContents(layerPath);
+  }
+
+  private updateRuntimes(runtimes: LayerRuntime[]) {
+    this.runtimes = runtimes;
+    this.storedParams.runtimes = runtimes;
+  }
+
+  private addNewLayerVersion() {
+    const currVersion = this.getLatestVersion();
+    const newVersion = currVersion + 1;
+    const prevPermissions = this.getVersion(currVersion).permissions;
+    this.storedParams.layerVersionMap[newVersion] = {
+      permissions: _.cloneDeep(prevPermissions),
+    };
+    this.versionMap.set(newVersion, new LayerVersionState(this.storedParams.layerVersionMap[newVersion]));
+  }
+}
+
+class LayerVersionState implements LayerVersionMetadata {
+  permissions: LayerPermission[];
+}
+
+export const getLayerMetadataFactory = (context: $TSContext): LayerMetadataFactory => {
+  return layerName => {
+    return new LayerState(context, layerName);
+  };
+};
+
+export function isMultiEnvLayer(layerName: string) {
+  const layerParametersPath = path.join(pathManager.getBackendDirPath(), categoryName, layerName, layerParametersFileName);
+  return !fs.existsSync(layerParametersPath);
+}
+
+// const getStoredLayerState = (context: any, layerName: string) => {
+//   if (isMultiEnvLayer(layerName)) {
+//     const teamProviderInfoPath = context.amplify.pathManager.getProviderInfoFilePath();
+//     const { envName } = context.amplify.getEnvInfo();
+//     if (!fs.existsSync(teamProviderInfoPath)) {
+//       throw new Error('team-provider-info.json is missing');
+//     }
+//     const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath) as StoredLayerParameters;
+//     let layerState: StoredLayerParameters = _.get(
+//       teamProviderInfo,
+//       [envName, 'nonCFNdata', categoryName, layerName],
+//       undefined,
+//     ) as StoredLayerParameters;
+
+//     // In case of `amplify pull`, team-provider-info won't be populated at first
+//     if (layerState === undefined) {
+//       layerState = _.get(context.amplify.getProjectMeta(), [categoryName, layerName], undefined);
+
+//       if (layerState === undefined) {
+//         throw new Error('Local layer state missing from team-provider-info.json and amplify-meta.json');
+//       }
+
+//       _.set(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName], layerState);
+//       JSONUtilities.writeJson(teamProviderInfoPath, teamProviderInfo);
+//     }
+
+//     return layerState;
+//   } else {
+//     const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
+//     const resourceDirPath = path.join(projectBackendDirPath, categoryName, layerName);
+//     if (!fs.existsSync(resourceDirPath)) {
+//       return undefined;
+//     }
+//     const parametersFilePath = path.join(resourceDirPath, layerParametersFileName);
+//     return JSONUtilities.readJson(parametersFilePath) as StoredLayerParameters;
+//   }
+// };

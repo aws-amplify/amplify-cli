@@ -1,40 +1,7 @@
 import { DeletionPolicy, Fn, IntrinsicFunction, Refs } from 'cloudform-types';
 import Lambda from 'cloudform-types/types/lambda';
-import _ from 'lodash';
+import { isMultiEnvLayer, LayerMetadata, LayerParameters, LayerVersionCfnMetadata, Permission } from './layerParams';
 import uuid from 'uuid';
-import { isMultiEnvLayer } from './layerHelpers';
-import { LayerParameters, LayerPermission, LayerVersionCfnMetadata, PermissionEnum } from './layerParams';
-
-/**
- * generates CloudFormation for Layer versions and Layer permissions
- */
-export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerParameters, versionList: LayerVersionCfnMetadata[] = []) {
-  const multiEnvLayer = isMultiEnvLayer(parameters.layerName);
-  const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
-  let logicalName;
-  if (isNewVersion) {
-    const [shortId] = uuid().split('-');
-    logicalName = `LambdaLayerVersion${shortId}`;
-    versionList.push({ LogicalName: logicalName });
-  } else {
-    logicalName = versionList[versionList.length - 1].LogicalName;
-  }
-  const outputObj = {
-    Outputs: {
-      Arn: {
-        Value: Fn.Ref(logicalName),
-      },
-    },
-  };
-  const cfnObj = getLayerCfnObjBase();
-  for (const layerVersion of versionList) {
-    cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion);
-    const shortId = layerVersion.LogicalName.replace('LambdaLayerVersion', '');
-    const permissionObjects = constructLayerVersionPermissionObjects(layerVersion, parameters, shortId);
-    permissionObjects.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
-  }
-  return { ...cfnObj, ...outputObj };
-}
 
 function getLayerCfnObjBase() {
   return {
@@ -42,9 +9,6 @@ function getLayerCfnObjBase() {
     Description: 'Lambda layer resource stack creation using Amplify CLI',
     Parameters: {
       env: {
-        Type: 'String',
-      },
-      deploymentBucketName: {
         Type: 'String',
       },
       s3Key: {
@@ -62,14 +26,48 @@ function getLayerCfnObjBase() {
   };
 }
 
-function constructLayerVersionCfnObject(layerName: string | IntrinsicFunction, layerVersion: LayerVersionCfnMetadata) {
+/**
+ * generates CFN for Layer and Layer permissions when updating layerVersion
+ */
+export function generateLayerCfnObj(context: $TSContext, parameters: LayerParameters, versionList: LayerVersionCfnMetadata[]) {
+  context.print.debug('generateLayerCfnObj()');
+  const multiEnvLayer = isMultiEnvLayer(parameters.layerName);
+  const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
+  const [shortId] = uuid().split('-');
+  const logicalName = `LambdaLayerVersion${shortId}`;
+  // const layerData = getLayerMetadataFactory(context)(parameters.layerName);
+  const outputObj = {
+    Outputs: {
+      Arn: {
+        Value: Fn.Ref(logicalName),
+      },
+      Region: { Value: Refs.Region },
+    },
+  };
+  const cfnObj = generateLayerCfnObjBase();
+  for (const layerVersion of versionList) {
+    if (layerVersion.LogicalName) {
+      cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObj(layerName, layerVersion);
+    } else {
+      cfnObj.Resources[logicalName] = constructLayerVersionCfnObj(layerName, layerVersion);
+    }
+  }
+
+  // Object.entries(parameters.layerVersionMap).forEach(([key]) => {
+  //   const answer = assignLayerVersionPermissions(layerData, key, parameters.layerName, parameters.build, multiEnvLayer);
+  //   answer.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
+  // });
+  return cfnObj;
+}
+
+function constructLayerVersionCfnObj(layerName, layerVersion: LayerVersionCfnMetadata) {
   const newLayerVersion = new Lambda.LayerVersion({
-    CompatibleRuntimes: layerVersion.CompatibleRuntimes || Fn.Ref('runtimes'),
-    Content: {
+    CompatibleRuntimes: layerVersion.CompatibleRuntimes,
+    Content: layerVersion.Content ?? {
       S3Bucket: Fn.Ref('deploymentBucketName'),
       S3Key: Fn.Ref('s3Key'),
     },
-    Description: layerVersion.Description || Fn.Ref('description'),
+    Description: '', // TODO Implement
     LayerName: layerName,
   });
   newLayerVersion.deletionPolicy(DeletionPolicy.Delete);
@@ -77,8 +75,13 @@ function constructLayerVersionCfnObject(layerName: string | IntrinsicFunction, l
   return newLayerVersion;
 }
 
-function constructLayerVersionPermissionObjects(layerVersion: LayerVersionCfnMetadata, layerParameters: LayerParameters, shortId: string) {
-  const permissions = layerVersion.permissions || layerParameters.permissions;
+function assignLayerVersionPermissions(
+  layerData: LayerMetadata,
+  version: string,
+  layerName: string,
+  isContentUpdated: boolean,
+  multiEnvLayer: boolean,
+) {
   const layerVersionPermissionBase = {
     Action: 'lambda:GetLayerVersion',
     LayerVersionArn: getLayerVersionArn(layerVersion),
@@ -99,42 +102,18 @@ function constructLayerVersionPermissionObjects(layerVersion: LayerVersionCfnMet
 
   const layerVersionPermissions: { name: string; policy: object }[] = [];
 
-  permissions.forEach((permission: LayerPermission) => {
-    switch (permission.type) {
-      case PermissionEnum.Private:
-        layerVersionPermissions.push({
-          name: `LambdaLayerPermission${PermissionEnum.Private}${shortId}`,
-          policy: new Lambda.LayerVersionPermission({
-            ...layerVersionPermissionBase,
-            Principal: Refs.AccountId,
-          }),
-        });
-        break;
-      case PermissionEnum.AwsAccounts:
-        permission.accounts.forEach(acctId =>
-          layerVersionPermissions.push({
-            name: `LambdaLayerPermission${PermissionEnum.AwsAccounts}${acctId}${shortId}`,
-            policy: new Lambda.LayerVersionPermission({
-              ...layerVersionPermissionBase,
-              Principal: acctId,
-            }),
-          }),
-        );
-        break;
-      case PermissionEnum.AwsOrg:
-        permission.orgs.forEach(orgId =>
-          layerVersionPermissions.push({
-            name: `LambdaLayerPermission${PermissionEnum.AwsOrg}${orgId.replace('-', '')}${shortId}`,
-            policy: new Lambda.LayerVersionPermission({
-              ...layerVersionPermissionBase,
-              OrganizationId: orgId,
-              Principal: '*',
-            }),
-          }),
-        );
-        break;
-      default:
-        throw new Error(`Invalid permission type ${permission.type}`);
+function createLayerVersionArn(
+  layerData: LayerMetadata,
+  layerName: string,
+  version: string,
+  isContentUpdated: boolean,
+  multiEnvLayer: boolean,
+) {
+  //arn:aws:lambda:us-west-2:136981144547:layer:layers089e3f8b-dev:1
+  if (isContentUpdated) {
+    // if runtime/Content updated
+    if (layerData.getLatestVersion() === Number(version)) {
+      return Fn.Ref('LambdaLayerVersion'); // TODO use logical name
     }
   });
   return layerVersionPermissions;

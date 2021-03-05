@@ -143,6 +143,15 @@ export async function initEnv(context) {
         _.set(teamProviderInfo, [envName, 'categories', category, resourceName], tpiResourceParams);
         _.set(amplifyMeta, [category, resourceName, 's3Bucket'], s3Bucket);
       }
+
+      if (service === ServiceName.LambdaLayer) {
+        const lvmPath = [category, resourceName, 'layerVersionMap'];
+        const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
+        if (isMultiEnvLayer(resourceName)) {
+          _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
+        }
+        _.set(amplifyMeta, lvmPath, currentVersionMap);
+      }
     });
   resourcesToBeCreated.forEach(resource => {
     const { resourceName, service } = resource;

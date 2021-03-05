@@ -6,8 +6,15 @@ import { LayerConfiguration, loadLayerConfigurationFile } from './layerConfigura
 import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import { ServiceName } from './constants';
 import _ from 'lodash';
-import { loadPreviousLayerHash, ensureLayerVersion, validFilesize } from './layerHelpers';
-import { zipPackage } from './zipResource';
+import { hashElement } from 'folder-hash';
+import { $TSContext, pathManager } from 'amplify-cli-core';
+import { ServiceName, provider } from './constants';
+import { previousPermissionsQuestion } from './layerHelpers';
+import { getLayerMetadataFactory, Permission, PrivateLayer, LayerParameters, LayerMetadata, LayerRuntime } from './layerParams';
+import crypto from 'crypto';
+import { updateLayerArtifacts } from './storeResources';
+import globby from 'globby';
+import { Packager, PackageRequestMeta } from '../types/packaging-types';
 
 /**
  * Packages lambda  layer  code and artifacts into a lambda-compatible .zip file
@@ -41,19 +48,66 @@ export const packageLayer: Packager = async (context, resource) => {
     service: ServiceName.LambdaLayer,
     currentHash: previousHash !== currentHash,
   };
-  const packageResult = await runtimePlugin.package(packageRequest);
-  const packageHash = packageResult.packageHash;
-  if (packageHash) {
-    await zipPackage(packageResult.zipEntries, destination);
-  }
-  const zipFilename = packageHash
-    ? `${resource.resourceName}-${packageHash}-build.zip`
-    : resource.distZipFilename ?? `${resource.category}-${resource.resourceName}-build.zip`;
-  // check zip size is less than 250MB
-  if (validFilesize(context, destination)) {
-    context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: 'versionHash', hashValue: currentHash });
-  } else {
-    throw new Error('File size greater than 250MB');
+
+  // if (isMultiEnvLayer(layerName)) {
+  //   additionalLayerParams.runtimes = getLayerRuntimes(pathManager.getBackendDirPath(), layerName);
+  // }
+
+  const layerParameters = { ...storedParams, ...additionalLayerParams } as LayerParameters;
+  await updateLayerArtifacts(context, layerParameters, { cfnFile: isNewVersion });
+}
+
+async function setNewVersionPermissions(context: $TSContext, layerName: string, layerState: LayerMetadata) {
+  const defaultPermissions: PrivateLayer[] = [{ type: Permission.private }];
+  let usePrevPermissions = true;
+  const latestVersion = layerState.getLatestVersion();
+  const latestVersionState = layerState.getVersion(latestVersion);
+  const hasNonDefaultPerms =
+    latestVersionState.isPublic() || latestVersionState.listAccountAccess().length > 0 || latestVersionState.listOrgAccess().length > 0;
+  const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
+  if (yesFlagSet) {
+    context.print.warning(`Permissions from previous layer version carried forward to new version by default`);
+  } else if (hasNonDefaultPerms) {
+    usePrevPermissions = (await prompt(previousPermissionsQuestion())).usePreviousPermissions;
   }
   return { zipFilename, zipFilePath: destination };
 };
+
+// hashes just the content that will be zipped into the layer version.
+// for efficiency, it only hashes package.json files in the node_modules folder of nodejs layers
+export const hashLayerVersionContents = async (layerPath: string): Promise<string> => {
+  const nodePath = path.join(layerPath, 'lib', 'nodejs');
+  const nodeHashOptions = {
+    files: {
+      include: ['package.json'],
+    },
+  };
+  const pyPath = path.join(layerPath, 'lib', 'python');
+  const optPath = path.join(layerPath, 'opt');
+
+  const joinedHashes = (await Promise.all([safeHash(nodePath, nodeHashOptions), safeHash(pyPath), safeHash(optPath)])).join();
+
+  return crypto.createHash('sha256').update(joinedHashes).digest('base64');
+};
+
+// wrapper around hashElement that will return an empty string if the path does not exist
+const safeHash = async (path: string, opts?: any): Promise<string> => {
+  if (fs.pathExistsSync(path)) {
+    return (
+      await hashElement(path, opts).catch(() => {
+        throw new Error(`An error occurred hashing directory ${path}`);
+      })
+    ).hash;
+  }
+  return '';
+};
+
+function validFilesize(path: string, maxSize = 250) {
+  try {
+    const { size } = fs.statSync(path);
+    const fileSize = Math.round(size / 1024 ** 2);
+    return fileSize < maxSize;
+  } catch (error) {
+    return new Error(`Calculating file size failed: ${path}`);
+  }
+}

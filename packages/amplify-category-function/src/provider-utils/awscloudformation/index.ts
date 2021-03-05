@@ -1,9 +1,7 @@
-import { $TSAny, $TSContext, JSONUtilities, open, pathManager, stateManager } from 'amplify-cli-core';
-import { FunctionParameters, FunctionTemplate, FunctionTriggerParameters, ProviderContext } from 'amplify-function-plugin-interface';
-import fs from 'fs-extra';
-import _ from 'lodash';
-import path from 'path';
-import { IsMockableResponse } from '../..';
+import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext } from 'amplify-function-plugin-interface';
+import { isMultiEnvLayer, LayerParameters } from './utils/layerParams';
+import { supportedServices } from '../supported-services';
+import { ServiceName, provider, functionParametersFileName } from './utils/constants';
 import { category as categoryName } from '../../constants';
 import { supportedServices } from '../supported-services';
 import { ServiceConfig } from '../supportedServicesType';
@@ -19,6 +17,13 @@ import {
   saveMutableState,
   updateLayerArtifacts,
 } from './utils/storeResources';
+import { ServiceConfig } from '../supportedServicesType';
+import _ from 'lodash';
+import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
+import fs from 'fs-extra';
+import path from 'path';
+import { IsMockableResponse } from '../..';
+import { $TSAny, $TSContext, JSONUtilities, open, pathManager, stateManager } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function
@@ -162,6 +167,31 @@ export async function updateResource(
   }
 }
 
+export async function updateLayerResource(
+  context: $TSContext,
+  service: ServiceName,
+  serviceConfig: ServiceConfig<LayerParameters>,
+  parameters?: Partial<LayerParameters>,
+): Promise<void> {
+  if (!serviceConfig) {
+    throw `amplify-category-function is not configured to provide service type ${service}`;
+  }
+
+  if (!parameters) {
+    parameters = {};
+    parameters.providerContext = {
+      provider: provider,
+      service: service,
+      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+    };
+  }
+  const completeParams = (await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters)) as LayerParameters;
+
+  // write out updated resources
+  await updateLayerArtifacts(context, completeParams);
+  printLayerSuccessMessages(context, completeParams, 'updated');
+}
+
 export async function updateFunctionResource(
   context: $TSContext,
   category: string,
@@ -208,31 +238,6 @@ export async function updateFunctionResource(
   }
 
   return parameters.resourceName;
-}
-
-export async function updateLayerResource(
-  context: $TSContext,
-  service: ServiceName,
-  serviceConfig: ServiceConfig<LayerParameters>,
-  parameters?: Partial<LayerParameters>,
-): Promise<void> {
-  if (!serviceConfig) {
-    throw `amplify-category-function is not configured to provide service type ${service}`;
-  }
-
-  if (!parameters) {
-    parameters = {};
-    parameters.providerContext = {
-      provider: provider,
-      service: service,
-      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
-    };
-  }
-  const completeParams = (await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters)) as LayerParameters;
-
-  // write out updated resources
-  await updateLayerArtifacts(context, completeParams, { layerParams: completeParams.selectedVersion === undefined });
-  printLayerSuccessMessages(context, completeParams, 'updated');
 }
 
 function printLayerSuccessMessages(context: $TSContext, parameters: LayerParameters, action: string): void {
@@ -345,14 +350,23 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
 
     return envParams;
   } else if (isMultiEnvLayer(resourceName) && service === ServiceName.LambdaLayer) {
-    const projectPath = pathManager.findProjectRoot();
-    const currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
-    const amplifyMeta = stateManager.getMeta(projectPath);
-    const currentCloudVersionHash: string = _.get(currentAmplifyMeta, [categoryName, resourceName, 'versionHash'], undefined);
+    // const teamProviderParams: StoredLayerParameters = await chooseParamsOnEnvInit(context, resourceName);
 
-    if (currentCloudVersionHash) {
-      _.set(amplifyMeta, [categoryName, resourceName, 'versionHash'], currentCloudVersionHash);
-    }
+    const providerContext: ProviderContext = {
+      provider,
+      service,
+      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+    };
+
+    // const layerEnvParams = {
+    //   // ...teamProviderParams,
+    //   build: true,
+    //   layerName: resourceName,
+    //   providerContext,
+    //   runtimes: getLayerRuntimes(pathManager.getBackendDirPath(), resourceName),
+    // };
+
+    // updateLayerArtifacts(context, layerEnvParams, 1);
   }
 }
 
