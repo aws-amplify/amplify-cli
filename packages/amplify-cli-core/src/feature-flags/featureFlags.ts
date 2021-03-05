@@ -540,11 +540,11 @@ export class FeatureFlags {
         defaultValueForNewProjects: true,
       },
       {
-        name: 'skipOverrideMutationInput',
+        name: 'skipOverrideMutationInputTypes',
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
-      }
+      },
     ]);
 
     this.registerFlag('frontend-ios', [
@@ -595,7 +595,7 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
-      }
+      },
     ]);
 
     this.registerFlag('appSync', [
@@ -604,7 +604,7 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
-      }
+      },
     ]);
   };
 }
