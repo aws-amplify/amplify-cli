@@ -1,5 +1,5 @@
 import { parse, InputObjectTypeDefinitionNode, DefinitionNode, DocumentNode, Kind } from 'graphql';
-import { GraphQLTransform, InvalidDirectiveError, SyncConfig, ConflictHandlerType } from 'graphql-transformer-core';
+import { GraphQLTransform, InvalidDirectiveError, SyncConfig, ConflictHandlerType, FeatureFlagProvider } from 'graphql-transformer-core';
 import { KeyTransformer } from '../KeyTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 
@@ -298,3 +298,99 @@ function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitio
     | InputObjectTypeDefinitionNode
     | undefined;
 }
+
+describe('check schema input', () => {
+  let ff: FeatureFlagProvider;
+  beforeEach(() => {
+    ff = {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'skipOverrideMutationInputTypes') {
+          return true;
+        }
+      }),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    };
+  });
+
+  it('@model mutation with user defined null args ', () => {
+    const validSchema = /* GraphQL */ `
+      type Call
+        @model(queries: null, mutations: null)
+        @key(fields: ["receiverId", "senderId"])
+        @key(name: "bySender", fields: ["senderId", "receiverId"]) {
+        senderId: ID!
+        receiverId: ID!
+      }
+
+      type Mutation {
+        createCall(input: CreateCallInput!): Call
+        deleteCall(input: DeleteCallInput!): Call
+      }
+
+      input CreateCallInput {
+        receiverId: ID!
+      }
+
+      input DeleteCallInput {
+        receiverId: ID!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+      featureFlags: ff,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+
+    const DeleteCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+    ) as InputObjectTypeDefinitionNode | undefined;
+    expect(DeleteCallInput).toBeDefined();
+    const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
+    expect(receiverIdField).toBeDefined();
+    expect(receiverIdField.type.kind).toBe('NonNullType');
+    const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
+    expect(senderIdField).toBeUndefined();
+  });
+
+  it('@model mutation with user defined create args ', () => {
+    const validSchema = /* GraphQL */ `
+      type Call
+        @model(queries: null, mutations: { delete: "testDelete" })
+        @key(fields: ["receiverId", "senderId"])
+        @key(name: "bySender", fields: ["senderId", "receiverId"]) {
+        senderId: ID!
+        receiverId: ID!
+      }
+
+      input CreateCallInput {
+        receiverId: ID!
+      }
+
+      input DeleteCallInput {
+        receiverId: ID!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+      featureFlags: ff,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+
+    const DeleteCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+    ) as InputObjectTypeDefinitionNode | undefined;
+    expect(DeleteCallInput).toBeDefined();
+    const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
+    expect(receiverIdField).toBeDefined();
+    expect(receiverIdField.type.kind).toBe('NonNullType');
+    const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
+    expect(senderIdField).toBeDefined();
+    expect(senderIdField.type.kind).toBe('NonNullType');
+  });
+});

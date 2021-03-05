@@ -454,22 +454,35 @@ export class KeyTransformer extends Transformer {
     if (this.isPrimaryKey(directive)) {
       const directiveArgs: KeyArguments = getDirectiveArguments(directive);
 
+      // check @model mutation argument to update schema or not
+      let shouldMakeCreate = true;
+      let shouldMakeUpdate = true;
+      let shouldMakeDelete = true;
+
+      if (ctx.featureFlags.getBoolean('skipOverrideMutationInputTypes', false)) {
+        const modelDirective = definition.directives.find(dir => dir.name.value === 'model');
+        const modelDirectiveArgs = getDirectiveArguments(modelDirective);
+        // Figure out which mutations to make and if they have name overrides
+        shouldMakeCreate = !!modelDirectiveArgs?.mutations?.create;
+        shouldMakeUpdate = !!modelDirectiveArgs?.mutations?.update;
+        shouldMakeDelete = !!modelDirectiveArgs?.mutations?.delete;
+      }
       const hasIdField = definition.fields.find(f => f.name.value === 'id');
       if (!hasIdField) {
         const createInput = ctx.getType(
           ModelResourceIDs.ModelCreateInputObjectName(definition.name.value),
         ) as InputObjectTypeDefinitionNode;
-        if (createInput) {
+        if (createInput && shouldMakeCreate) {
           ctx.putType(replaceCreateInput(definition, createInput, directiveArgs.fields));
         }
       }
 
       const updateInput = ctx.getType(ModelResourceIDs.ModelUpdateInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
-      if (updateInput) {
+      if (updateInput && shouldMakeUpdate) {
         ctx.putType(replaceUpdateInput(definition, updateInput, directiveArgs.fields));
       }
       const deleteInput = ctx.getType(ModelResourceIDs.ModelDeleteInputObjectName(definition.name.value)) as InputObjectTypeDefinitionNode;
-      if (deleteInput) {
+      if (deleteInput && shouldMakeDelete) {
         ctx.putType(replaceDeleteInput(definition, deleteInput, directiveArgs.fields));
       }
     }
