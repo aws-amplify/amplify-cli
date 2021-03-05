@@ -127,7 +127,7 @@ export type CircleCIConfig = {
 };
 
 function getTestFiles(dir: string, pattern = '**/*.test.ts'): string[] {
-  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir }));
+  return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })).reverse();
 }
 
 function generateJobName(baseName: string, testSuitePath: string): string {
@@ -207,7 +207,7 @@ function splitTests(
             return {
               [newJobName]: {
                 ...Object.values(workflowJob)[0],
-                requires: [...(workflowJob[jobName].requires || []), ...(requires ? [requires] : [])],
+                requires: [...(requires ? [requires] : workflowJob[jobName].requires || [])],
               },
             };
           }
