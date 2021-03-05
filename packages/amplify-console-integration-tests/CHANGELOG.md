@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.3.16...amplify-console-integration-tests@1.4.0) (2021-03-05)
+
+
+### Features
+
+* remove OAuth prompt from pull and new env ([#6739](https://github.com/aws-amplify/amplify-console-integration-tests/issues/6739)) ([8ff15a6](https://github.com/aws-amplify/amplify-console-integration-tests/commit/8ff15a6ea2c3c687f0344fb4e17547097cd575ea))
+
+
+
+
+
 ## [1.3.16](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.3.15...amplify-console-integration-tests@1.3.16) (2021-02-26)
 
 **Note:** Version bump only for package amplify-console-integration-tests

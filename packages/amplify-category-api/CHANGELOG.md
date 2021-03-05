@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.29.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.29.3...amplify-category-api@2.29.4) (2021-03-05)
+
+
+### Bug Fixes
+
+* wording: Enable, instead of Configure, conflict detection ([#6708](https://github.com/aws-amplify/amplify-cli/issues/6708)) ([dac6ae9](https://github.com/aws-amplify/amplify-cli/commit/dac6ae94af47dd01da25ea4f61efd5442cb4c06b))
+
+
+
+
+
 ## [2.29.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.29.2...amplify-category-api@2.29.3) (2021-02-26)
 
 **Note:** Version bump only for package amplify-category-api

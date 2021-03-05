@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.17.2...amplify-cli-core@1.18.0) (2021-03-05)
+
+
+### Features
+
+* **FF-codegen:** add feature flags for new codegen features ([#6732](https://github.com/aws-amplify/amplify-cli/issues/6732)) ([d00a8e9](https://github.com/aws-amplify/amplify-cli/commit/d00a8e95721c2fb27ef650fa2099e12de7d99705))
+
+
+
+
+
 ## [1.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.17.1...amplify-cli-core@1.17.2) (2021-02-26)
 
 **Note:** Version bump only for package amplify-cli-core

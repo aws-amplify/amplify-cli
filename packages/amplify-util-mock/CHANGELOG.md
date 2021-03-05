@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.29.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.28.2...amplify-util-mock@3.29.0) (2021-03-05)
+
+
+### Bug Fixes
+
+* **amplify-codegen:** update dependency on amplify-codegen to latest ([#6796](https://github.com/aws-amplify/amplify-cli/issues/6796)) ([33f4c15](https://github.com/aws-amplify/amplify-cli/commit/33f4c156153ef6398659dd5c24a7de8b0d9b13f2))
+
+
+### Features
+
+* **amplify-codegen:** Migrate codegen ([#6730](https://github.com/aws-amplify/amplify-cli/issues/6730)) ([9c7a69a](https://github.com/aws-amplify/amplify-cli/commit/9c7a69a7d72e31c42572f3ebf2131c6053f96abd))
+
+
+
+
+
 ## [3.28.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.28.1...amplify-util-mock@3.28.2) (2021-02-26)
 
 

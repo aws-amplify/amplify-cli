@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.29.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.28.3...amplify-category-auth@2.29.0) (2021-03-05)
+
+
+### Features
+
+* remove OAuth prompt from pull and new env ([#6739](https://github.com/aws-amplify/amplify-cli/issues/6739)) ([8ff15a6](https://github.com/aws-amplify/amplify-cli/commit/8ff15a6ea2c3c687f0344fb4e17547097cd575ea))
+
+
+
+
+
 ## [2.28.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.28.2...amplify-category-auth@2.28.3) (2021-02-26)
 
 **Note:** Version bump only for package amplify-category-auth

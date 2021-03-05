@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.25.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.25.3...amplify-appsync-simulator@1.25.4) (2021-03-05)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** bail out early on exceptions ([#6663](https://github.com/aws-amplify/amplify-cli/issues/6663)) ([59d66fe](https://github.com/aws-amplify/amplify-cli/commit/59d66fe2653a4328d0a3114800b6a9ad11e796b1))
+* **amplify-appsync-simulator:** remove graphql-scalars dependency ([#6680](https://github.com/aws-amplify/amplify-cli/issues/6680)) ([f12c994](https://github.com/aws-amplify/amplify-cli/commit/f12c994f299a391a29cba2299f7854cbd2d97fbe))
+
+
+
+
+
 ## [1.25.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.25.2...amplify-appsync-simulator@1.25.3) (2021-02-24)
 
 **Note:** Version bump only for package amplify-appsync-simulator

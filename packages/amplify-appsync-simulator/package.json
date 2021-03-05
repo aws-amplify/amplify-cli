@@ -1,6 +1,6 @@
 {
   "name": "amplify-appsync-simulator",
-  "version": "1.25.3",
+  "version": "1.25.4",
   "description": "An AppSync Simulator to test AppSync API.",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "amplify-velocity-template": "1.4.3",
+    "amplify-velocity-template": "1.4.4",
     "aws-sdk": "^2.845.0",
     "chalk": "^3.0.0",
     "cors": "^2.8.5",
@@ -64,7 +64,7 @@
     "@types/node": "^10.17.13",
     "@types/pino": "5.15.3",
     "@types/ws": "^7.2.3",
-    "amplify-graphiql-explorer": "1.4.2"
+    "amplify-graphiql-explorer": "1.4.3"
   },
   "jest": {
     "testRunner": "jest-circus/runner",

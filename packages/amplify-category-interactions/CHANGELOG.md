@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.6.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.6.1...amplify-category-interactions@2.6.2) (2021-03-05)
+
+
+### Bug Fixes
+
+* adding envName for intents ([#6572](https://github.com/aws-amplify/amplify-cli/issues/6572)) ([1f7a657](https://github.com/aws-amplify/amplify-cli/commit/1f7a657ceb498f086007ec05bc1f8ba46b69b536))
+
+
+
+
+
 ## [2.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-interactions@2.5.4...amplify-category-interactions@2.6.1) (2020-11-22)
 
 **Note:** Version bump only for package amplify-category-interactions

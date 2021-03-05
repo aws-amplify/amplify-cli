@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.36.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.35.0...amplify-e2e-tests@2.36.0) (2021-03-05)
+
+
+
+# 4.45.0 (2021-03-05)
+
+
+### Bug Fixes
+
+* pull issue with multi-env notifications [#6475](https://github.com/aws-amplify/amplify-cli/issues/6475) ([#6525](https://github.com/aws-amplify/amplify-cli/issues/6525)) ([b0803d1](https://github.com/aws-amplify/amplify-cli/commit/b0803d1a361c15db8ad6e32648f29402539aa2e4))
+
+
+### Features
+
+* generate datastore models for Admin CMS to consume post-deployment from CLI ([#6771](https://github.com/aws-amplify/amplify-cli/issues/6771)) ([0e74b65](https://github.com/aws-amplify/amplify-cli/commit/0e74b657491e53eb04376bb727eb442b59b2cf4c))
+* remove OAuth prompt from pull and new env ([#6739](https://github.com/aws-amplify/amplify-cli/issues/6739)) ([8ff15a6](https://github.com/aws-amplify/amplify-cli/commit/8ff15a6ea2c3c687f0344fb4e17547097cd575ea))
+
+
+
+
+
 # [2.35.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.34.3...amplify-e2e-tests@2.35.0) (2021-02-26)
 
 

@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.16.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.15.2...amplify-e2e-core@1.16.0) (2021-03-05)
+
+
+### Bug Fixes
+
+* allow selecting all columns for GSIs ([#6689](https://github.com/aws-amplify/amplify-cli/issues/6689)) ([c33d29a](https://github.com/aws-amplify/amplify-cli/commit/c33d29a0398449379e49f023d068504c47872667))
+* pull issue with multi-env notifications [#6475](https://github.com/aws-amplify/amplify-cli/issues/6475) ([#6525](https://github.com/aws-amplify/amplify-cli/issues/6525)) ([b0803d1](https://github.com/aws-amplify/amplify-cli/commit/b0803d1a361c15db8ad6e32648f29402539aa2e4))
+* wording: Enable, instead of Configure, conflict detection ([#6708](https://github.com/aws-amplify/amplify-cli/issues/6708)) ([dac6ae9](https://github.com/aws-amplify/amplify-cli/commit/dac6ae94af47dd01da25ea4f61efd5442cb4c06b))
+
+
+### Features
+
+* generate datastore models for Admin CMS to consume post-deployment from CLI ([#6771](https://github.com/aws-amplify/amplify-cli/issues/6771)) ([0e74b65](https://github.com/aws-amplify/amplify-cli/commit/0e74b657491e53eb04376bb727eb442b59b2cf4c))
+
+
+
+
+
 ## [1.15.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.15.1...amplify-e2e-core@1.15.2) (2021-02-26)
 
 **Note:** Version bump only for package amplify-e2e-core
