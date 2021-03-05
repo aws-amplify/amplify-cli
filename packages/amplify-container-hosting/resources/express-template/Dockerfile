@@ -1,4 +1,4 @@
-FROM public.ecr.aws/bitnami/node:14.15.1-debian-10-r8
+FROM public.ecr.aws/bitnami/node:14-prod-debian-10
 
 WORKDIR /app
 

@@ -48,9 +48,7 @@ export async function createNewProjectDir(
   projectName: string,
   prefix = path.join(fs.realpathSync(os.tmpdir()), amplifyTestsDir),
 ): Promise<string> {
-  const currentHash = execSync('git rev-parse --short HEAD', { cwd: __dirname })
-    .toString()
-    .trim();
+  const currentHash = execSync('git rev-parse --short HEAD', { cwd: __dirname }).toString().trim();
   let projectDir;
   do {
     const randomId = await global.getRandomId();
@@ -58,6 +56,7 @@ export async function createNewProjectDir(
   } while (fs.existsSync(projectDir));
 
   fs.ensureDirSync(projectDir);
+  console.log(projectDir);
   return projectDir;
 }
 
