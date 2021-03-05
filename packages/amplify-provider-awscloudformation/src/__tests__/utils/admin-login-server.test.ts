@@ -1,20 +1,7 @@
 import { AdminLoginServer } from '../../utils/admin-login-server';
 import { $TSContext } from 'amplify-cli-core';
-import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 
-const runtimePlugin_stub = ({
-  checkDependencies: jest.fn().mockResolvedValue({ hasRequiredDependencies: true }),
-  build: jest.fn().mockResolvedValue({ rebuilt: true }),
-} as unknown) as jest.Mocked<FunctionRuntimeLifecycleManager>;
-
-const context_stub = ({
-  amplify: {
-    readBreadcrumbs: jest.fn().mockReturnValue({ pluginId: 'testPluginId' }),
-    loadRuntimePlugin: jest.fn().mockResolvedValue(runtimePlugin_stub),
-    updateamplifyMetaAfterBuild: jest.fn(),
-  },
-} as unknown) as jest.Mocked<$TSContext>;
-
+const context_stub = ({} as unknown) as jest.Mocked<$TSContext>;
 const useMock = jest.fn();
 const postMock = jest.fn(async () => {});
 const listenMock = jest.fn();
