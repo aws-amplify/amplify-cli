@@ -4,13 +4,12 @@ const _ = require('lodash');
 const BottleNeck = require('bottleneck');
 const chalk = require('chalk');
 const columnify = require('columnify');
-
 const aws = require('./aws.js');
 const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
 const configurationManager = require('../configuration-manager');
-const { stateManager } = require('amplify-cli-core');
+const { JSONUtilities, pathManager, stateManager } = require('amplify-cli-core');
 
 const CFN_MAX_CONCURRENT_REQUEST = 5;
 const CFN_POLL_TIME = 5 * 1000; // 5 secs wait to check if  new stacks are created by root stack
@@ -333,12 +332,25 @@ class CloudFormation {
             if (index !== -1) {
               const formattedOutputs = formatOutputs(stackResult[index].Stacks[0].Outputs);
 
+              // Check to see if Identity Pool has been removed
+              if (amplifyMeta[category][resource]) {
+                const resourceObject = amplifyMeta[category][resource];
+                if (resourceObject.service === 'Cognito') {
+                  const resourceDirPath = path.join(pathManager.getBackendDirPath(), 'auth', resource, 'parameters.json');
+                  const authParameters = JSONUtilities.readJson(resourceDirPath);
+                  if (!authParameters.identityPoolName) {
+                    formattedOutputs.IdentityPoolId = null;
+                    formattedOutputs.IdentityPoolName = null;
+                  }
+                }
+              }
+
               const updatedMeta = this.context.amplify.updateamplifyMetaAfterResourceUpdate(category, resource, 'output', formattedOutputs);
 
-              // Check to see if this is an AppSync resource and if we've to remove the GraphQLAPIKeyOutput from meta or not
               if (amplifyMeta[category][resource]) {
                 const resourceObject = amplifyMeta[category][resource];
 
+                // Check to see if this is an AppSync resource and if we've to remove the GraphQLAPIKeyOutput from meta or not
                 if (
                   resourceObject.service === 'AppSync' &&
                   resourceObject.output &&
