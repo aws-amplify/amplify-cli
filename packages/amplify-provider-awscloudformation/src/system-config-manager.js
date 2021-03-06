@@ -295,11 +295,13 @@ function validateCredentials(credentials, profileName) {
   if (credentials && credentials.accessKeyId === undefined) {
     const err = new Error(`Profile configuration is invalid for: ${profileName}, missing aws_access_key_id`);
     logger('validateCredentials', [profileName])(err);
+    err.stack = undefined;
     throw err;
   }
   if (credentials && credentials.secretAccessKey === undefined) {
     const err = new Error(`Profile configuration is invalid for: ${profileName}, missing aws_secret_access_key`);
     logger('validateCredentials', [profileName])(err);
+    err.stack = undefined;
     throw err;
   }
 }
