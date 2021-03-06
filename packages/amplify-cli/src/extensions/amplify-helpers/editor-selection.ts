@@ -2,7 +2,7 @@ import * as inquirer from 'inquirer';
 import { JSONUtilities } from 'amplify-cli-core';
 import { merge } from 'lodash';
 
-const editors = [
+export const editors = [
   {
     name: 'Visual Studio Code',
     value: 'vscode',

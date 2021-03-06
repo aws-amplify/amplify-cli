@@ -78,7 +78,10 @@ export async function analyzeProject(context): Promise<$TSContext> {
   const projectPath = process.cwd();
   context.exeInfo.isNewProject = isNewProject(context);
   const projectName = await getProjectName(context);
-  await displayAndSetDefaults(context, projectPath, projectName);
+  if (context.parameters.command !== 'env') {
+    await displayAndSetDefaults(context, projectPath, projectName);
+  }
+
   const envName = await getEnvName(context);
 
   let defaultEditor = getDefaultEditor();
