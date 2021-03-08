@@ -313,6 +313,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       .map(({ category, resourceName }) => context.amplify.removeDeploymentSecrets(context, category, resourceName));
 
     await adminModelgen(context, resources);
+
     spinner.succeed('All resources are updated in the cloud');
 
     await displayHelpfulURLs(context, resources);
