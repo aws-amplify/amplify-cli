@@ -13,6 +13,7 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
   if (appSyncResources.length === 0) {
     return;
   }
+
   const appSyncResource = appSyncResources[0];
   const { resourceName } = appSyncResource;
 
@@ -20,10 +21,11 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
   const localEnvInfo = stateManager.getLocalEnvInfo();
 
   const appId = amplifyMeta?.providers?.[providerName]?.AmplifyAppId;
+
   if (!appId) {
-    context.print.error('Could not find AmplifyAppId in amplify-meta.json.');
     return;
   }
+
   const envName = localEnvInfo.envName;
   const { isAdminApp } = await isAmplifyAdminApp(appId);
   const isDSEnabled = await isDataStoreEnabled(path.join(pathManager.getBackendDirPath(), 'api', resourceName));
@@ -31,9 +33,11 @@ export async function adminModelgen(context: $TSContext, resources: $TSAny[]) {
   if (!isAdminApp || !isDSEnabled) {
     return;
   }
+
   // Generate DataStore Models for Admin UI CMS to consume
-  const spinner = ora('Generating models in the cloud…\n').start();
+  const spinner = ora('Generating models in the cloud...\n').start();
   const amplifyBackendInstance = await AmplifyBackend.getInstance(context);
+
   try {
     const jobStartDetails = await amplifyBackendInstance.amplifyBackend
       .generateBackendAPIModels({
