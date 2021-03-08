@@ -540,14 +540,11 @@ workflows:
             - publish_to_local_registry
   build_test_deploy:
     jobs:
-      - build:
-          context: amplify-cli-ecr
+      - build
       - test:
-          context: amplify-cli-ecr
           requires:
             - build
       - mock_e2e_tests:
-          context: amplify-cli-ecr
           requires:
             - build
       - graphql_e2e_tests:
