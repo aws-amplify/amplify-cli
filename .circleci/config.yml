@@ -611,7 +611,7 @@ jobs:
     steps: *ref_4
     environment:
       TEST_SUITE: src/__tests__/schema-auth-6.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: us-east-2
   schema-connection-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
