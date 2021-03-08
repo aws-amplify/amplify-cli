@@ -32,7 +32,7 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
   return localDirHash !== cloudDirHash;
 }
 
-function getHashForResourceDir(dirPath, files?: string[]) {
+export function getHashForResourceDir(dirPath, files?: string[]) {
   const options: HashElementOptions = {
     folders: { exclude: ['.*', 'node_modules', 'test_coverage', 'dist', 'build'] },
     files: {

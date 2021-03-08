@@ -3,6 +3,7 @@ import * as path from 'path';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import glob from 'glob';
 import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
+import { getHashForResourceDir } from './resource-status';
 import { JSONUtilities, pathManager, stateManager, $TSAny, $TSMeta, $TSObject, ResourceTuple } from 'amplify-cli-core';
 import { ServiceName } from 'amplify-category-function';
 import _ from 'lodash';
@@ -64,7 +65,7 @@ function moveBackendResourcesToCurrentCloudBackend(resources: $TSObject[]) {
     // in the case that the resource is being deleted, the sourceDir won't exist
     if (fs.pathExistsSync(sourceDir)) {
       fs.copySync(sourceDir, targetDir);
-      if (resource.service === ServiceName.LambdaFunction) {
+      if (resource?.service === ServiceName.LambdaFunction) {
         removeNodeModulesDir(targetDir);
       }
     }
@@ -195,18 +196,6 @@ export async function updateamplifyMetaAfterPush(resources: $TSObject[]) {
   stateManager.setMeta(undefined, amplifyMeta);
 
   moveBackendResourcesToCurrentCloudBackend(resources);
-}
-
-// This functions is also on resource-status, might need to be exported from somewhere else
-function getHashForResourceDir(dirPath, files?: string[]) {
-  const options: HashElementOptions = {
-    folders: { exclude: ['.*', 'node_modules', 'test_coverage'] },
-    files: {
-      include: files,
-    },
-  };
-
-  return hashElement(dirPath, options).then(result => result.hash);
 }
 
 export function updateamplifyMetaAfterBuild({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD) {
