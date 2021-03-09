@@ -609,6 +609,8 @@ export function nspawn(command: string | string[], params: string[] = [], option
       delete childEnv.BUILD_NUMBER;
       delete childEnv.TRAVIS;
       delete childEnv.GITHUB_ACTIONS;
+      delete childEnv.CIRCLECI;
+      delete childEnv.CIRCLE_PULL_REQUEST;
     }
   }
 
