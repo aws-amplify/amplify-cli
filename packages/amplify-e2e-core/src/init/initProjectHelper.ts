@@ -44,19 +44,10 @@ export function initJSProjectWithProfile(cwd: string, settings: Object): Promise
     };
   }
 
-  // Undo ci-info detection, required for some tests
-  if (s.disableCIDetection === true) {
-    delete process.env.CI;
-    delete process.env.CONTINUOUS_INTEGRATION;
-    delete process.env.BUILD_NUMBER;
-    delete process.env.TRAVIS;
-    delete process.env.GITHUB_ACTIONS;
-  }
-
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env, disableCIDetection: s.disableAmplifyAppCreation })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')

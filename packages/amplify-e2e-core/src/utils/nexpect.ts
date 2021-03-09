@@ -73,6 +73,7 @@ export type SpawnOptions = {
   env?: object | any;
   stripColors?: boolean;
   ignoreCase?: boolean;
+  disableCIDetection?: boolean;
 };
 
 function chain(context: Context): ExecutionContext {
@@ -593,12 +594,22 @@ export function nspawn(command: string | string[], params: string[] = [], option
 
   // If we have an environment passed in we've to add the current process' environment, otherwised the forked
   // process would not have $PATH and others that is required to run amplify-cli successfully.
-  if (options.env || pushEnv) {
+  // to be able to disable CI detection we do need to pass in a childEnv
+  if (options.env || pushEnv || options.disableCIDetection === true) {
     childEnv = {
       ...process.env,
       ...pushEnv,
       ...options.env,
     };
+
+    // Undo ci-info detection, required for some tests
+    if (options.disableCIDetection === true) {
+      delete childEnv.CI;
+      delete childEnv.CONTINUOUS_INTEGRATION;
+      delete childEnv.BUILD_NUMBER;
+      delete childEnv.TRAVIS;
+      delete childEnv.GITHUB_ACTIONS;
+    }
   }
 
   let context: Context = {
