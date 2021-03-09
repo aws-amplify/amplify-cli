@@ -36,7 +36,7 @@ export const amplifyRegions = [
 
 export function initJSProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-  let env = undefined;
+  let env;
 
   if (s.disableAmplifyAppCreation === true) {
     env = {
