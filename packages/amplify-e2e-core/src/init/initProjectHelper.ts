@@ -47,7 +47,7 @@ export function initJSProjectWithProfile(cwd: string, settings: Object): Promise
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env, disableCIDetection: s.disableAmplifyAppCreation })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Enter a name for the environment')
