@@ -1,7 +1,12 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import glob from 'glob';
-import { CloudFormation, Fn, Template } from 'cloudform-types';
+import { CloudFormation, Fn, Refs, Template } from 'cloudform-types';
+import {
+  UserPoolConfig,
+  AdditionalAuthenticationProvider,
+  OpenIDConnectConfig,
+} from 'cloudform-types/types/appSync/graphQlApi';
 import { DeploymentResources } from '../DeploymentResources';
 import { GraphQLTransform, StackMapping } from '../GraphQLTransform';
 import { ResourceConstants } from 'graphql-transformer-common';
@@ -502,6 +507,75 @@ interface AmplifyApiV1Project {
   schema: string;
   parameters: any;
   template: Template;
+}
+
+/**
+ *
+ * @param authconfig auth config provided by amplify will return the parameters to use
+ */
+export function getAuthConfigParameters(authConfig: any): any {
+  const authParameters: any = {};
+  authParameters.AuthenticationType = authConfig.defaultAuthentication.authenticationType;
+  switch(authConfig.defaultAuthentication.authenticationType) {
+    case 'AMAZON_COGNITO_USER_POOLS':
+      authParameters.UserPoolConfig = assignCognitoConfig();
+      break;
+    case 'OPENID_CONNECT':
+      if (!authConfig.defaultAuthentication.openIDConnectConfig) {
+        throw new Error('openIDConnectConfig is not configured for defaultAuthentication');
+      }
+      authParameters.OpenIDConnectConfig = assignOpenIDConnectConfig(authConfig.defaultAuthentication.openIDConnectConfig);
+      break;
+  }
+  //** If additional auth modes create */
+  if (authConfig.additionalAuthenticationProviders && authConfig.additionalAuthenticationProviders.length > 0) {
+    const additionalAuthenticationProviders = new Array<AdditionalAuthenticationProvider>();
+    for (const sourceProvider of authConfig.additionalAuthenticationProviders) {
+      let provider: AdditionalAuthenticationProvider;
+      switch (sourceProvider.authenticationType) {
+        case 'AMAZON_COGNITO_USER_POOLS':
+          provider = {
+            AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+            UserPoolConfig: assignCognitoConfig(),
+          }
+          break;
+        case 'API_KEY':
+          provider = { AuthenticationType: 'API_KEY' };
+          break;
+        case 'AWS_IAM':
+          provider = { AuthenticationType: 'API_IAM' };
+          break;
+        case 'OPENID_CONNECT':
+          if (!sourceProvider.openIDConnectConfig) {
+            throw new Error('openIDConnectConfig is not configured for provider');
+          }
+          provider = {
+            AuthenticationType: 'OPENID_CONNECT',
+            OpenIDConnectConfig: assignOpenIDConnectConfig(sourceProvider.openIDConnectConfig),
+          };
+          break;
+      }
+      additionalAuthenticationProviders.push(provider);
+    }
+    authParameters.AdditionalAuthenticationProviders = additionalAuthenticationProviders;
+  }
+  return authParameters;
+}
+
+const assignCognitoConfig = () => {
+  return new UserPoolConfig({
+    UserPoolId: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId),
+    AwsRegion: Refs.Region,
+  });
+};
+
+const assignOpenIDConnectConfig = (config: any) => {
+  return new OpenIDConnectConfig({
+    Issuer: config.issuerUrl,
+    ClientId: config.clientId,
+    IatTTL: config.iatTTL,
+    AuthTTL: config.authTTL,
+  });
 }
 
 /**

@@ -78,6 +78,13 @@ export class ResourceFactory {
         Description: 'The id of an existing User Pool to connect. If this is changed, a user pool will not be created for you.',
         Default: ResourceConstants.NONE,
       }),
+      [ResourceConstants.PARAMETERS.DefaultAuthenticationType]: new StringParameter({
+        Description: 'The default authentication type used in the GraphQL API'
+      }),
+      [ResourceConstants.PARAMETERS.AdditionalAuthenticationTypes]: new StringParameter({
+        Description: 'Additional authentication types used in the GraphQL API',
+        Default: ResourceConstants.NONE
+      })
     };
   }
 
@@ -142,12 +149,13 @@ export class ResourceFactory {
     let properties: GraphQLApiProperties = {
       ...apiRecord.Properties,
       Name: apiRecord.Properties.Name,
-      AuthenticationType: authConfig.defaultAuthentication.authenticationType,
+      AuthenticationType: Fn.Ref(ResourceConstants.PARAMETERS.DefaultAuthenticationType),
       UserPoolConfig: undefined,
       OpenIDConnectConfig: undefined,
     };
 
     switch (authConfig.defaultAuthentication.authenticationType) {
+      // reference configuration done in parameters
       case 'AMAZON_COGNITO_USER_POOLS':
         properties.UserPoolConfig = new UserPoolConfig({
           UserPoolId: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId),
@@ -159,7 +167,6 @@ export class ResourceFactory {
         if (!authConfig.defaultAuthentication.openIDConnectConfig) {
           throw new Error('openIDConnectConfig is not configured for defaultAuthentication');
         }
-
         properties.OpenIDConnectConfig = this.assignOpenIDConnectConfig(authConfig.defaultAuthentication.openIDConnectConfig);
         break;
     }
@@ -168,13 +175,13 @@ export class ResourceFactory {
     if (authConfig.additionalAuthenticationProviders && authConfig.additionalAuthenticationProviders.length > 0) {
       const additionalAuthenticationProviders = new Array<AdditionalAuthenticationProvider>();
 
-      for (const sourceProvider of authConfig.additionalAuthenticationProviders) {
+      for (const [index, sourceProvider] of authConfig.additionalAuthenticationProviders.entries()) {
         let provider: AdditionalAuthenticationProvider;
 
         switch (sourceProvider.authenticationType) {
           case 'AMAZON_COGNITO_USER_POOLS':
             provider = {
-              AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+              AuthenticationType: Fn.Select(index, Fn.Split(',', Fn.Ref(ResourceConstants.PARAMETERS.AdditionalAuthenticationTypes))),
               UserPoolConfig: new UserPoolConfig({
                 UserPoolId: Fn.Ref(ResourceConstants.PARAMETERS.AuthCognitoUserPoolId),
                 AwsRegion: Refs.Region,
@@ -183,29 +190,26 @@ export class ResourceFactory {
             break;
           case 'API_KEY':
             provider = {
-              AuthenticationType: 'API_KEY',
+              AuthenticationType: Fn.Select(index, Fn.Split(',', Fn.Ref(ResourceConstants.PARAMETERS.AdditionalAuthenticationTypes))),
             };
             break;
           case 'AWS_IAM':
             provider = {
-              AuthenticationType: 'AWS_IAM',
+              AuthenticationType: Fn.Select(index, Fn.Split(',', Fn.Ref(ResourceConstants.PARAMETERS.AdditionalAuthenticationTypes))),
             };
             break;
           case 'OPENID_CONNECT':
             if (!sourceProvider.openIDConnectConfig) {
               throw new Error('openIDConnectConfig is not configured for provider');
             }
-
             provider = {
-              AuthenticationType: 'OPENID_CONNECT',
+              AuthenticationType: Fn.Select(index, Fn.Ref(ResourceConstants.PARAMETERS.AdditionalAuthenticationTypes)),
               OpenIDConnectConfig: this.assignOpenIDConnectConfig(sourceProvider.openIDConnectConfig),
             };
             break;
         }
-
         additionalAuthenticationProviders.push(provider);
       }
-
       properties.AdditionalAuthenticationProviders = additionalAuthenticationProviders;
     }
 

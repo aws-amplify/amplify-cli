@@ -31,7 +31,7 @@ import {
   InputValueDefinitionNode,
 } from 'graphql/language/ast';
 import { _Kind } from 'graphql/language/kinds';
-import { ResolverConfig } from './util';
+import { ResolverConfig, AppSyncAuthConfig } from './util';
 import { makeOperationType } from 'graphql-transformer-common';
 import { FeatureFlagProvider } from './FeatureFlags';
 export interface MappingParameters {
@@ -112,6 +112,8 @@ export class TransformerContext {
   private stackMapping: StackMapping = new Map();
 
   private resolverConfig: ResolverConfig;
+
+  private authConfig: AppSyncAuthConfig;
 
   private transformerVersion: Number;
 
@@ -752,6 +754,14 @@ export class TransformerContext {
       throw new Error(`Resolver Configuration has already been added to the context`);
     }
     this.resolverConfig = resolverConfig;
+  }
+
+  public setAuthConfig(authConfig: AppSyncAuthConfig) {
+    this.authConfig = authConfig;
+  }
+
+  public getAuthConfig() {
+    return this.authConfig;
   }
 
   public getResolverConfig(): ResolverConfig {

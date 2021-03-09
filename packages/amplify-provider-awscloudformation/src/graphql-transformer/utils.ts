@@ -3,7 +3,12 @@ import * as path from 'path';
 import { DeploymentResources } from '@aws-amplify/graphql-transformer-core';
 import rimraf from 'rimraf';
 import { JSONUtilities } from 'amplify-cli-core';
-import { Template } from 'cloudform';
+import {
+  UserPoolConfig,
+  AdditionalAuthenticationProvider,
+  OpenIDConnectConfig,
+} from 'cloudform-types/types/appSync/graphQlApi';
+import { Fn, Refs, Template } from 'cloudform-types';
 import { Diff, diff as getDiffs } from 'deep-diff';
 
 const ROOT_STACK_FILE_NAME = 'cloudformation-template.json';
@@ -22,6 +27,11 @@ export interface GQLDiff {
   next: DiffableProject;
   current: DiffableProject;
 }
+
+export interface AuthParametersConfig {
+  DefaultAuthenticationType: string;
+  AdditionalAuthenticationTypes: string[];
+};
 
 export const getGQLDiff = (currentBackendDir: string, cloudBackendDir: string): GQLDiff => {
   const currentBuildDir = path.join(currentBackendDir, 'build');
@@ -199,4 +209,14 @@ export function throwIfNotJSONExt(stackFile: string) {
   if (extension !== '.json') {
     throw new Error(`Invalid extension ${extension} for stack ${stackFile}`);
   }
+}
+
+export const getAuthConfigParameters = (authConfig: any): AuthParametersConfig => {
+  return {
+    DefaultAuthenticationType: authConfig.defaultAuthentication.authenticationType,
+    AdditionalAuthenticationTypes: authConfig.additionalAuthenticationProviders.reduce( (acc: string[], val: any) => {
+      acc.push(val.authenticationType);
+      return acc;
+    }, []).join(",")
+  };
 }

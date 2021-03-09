@@ -1,3 +1,4 @@
+export * from './amplifyUtils';
 export * from './getDirectiveArguments';
 export * from './getFieldArguments';
 export * from './gql';

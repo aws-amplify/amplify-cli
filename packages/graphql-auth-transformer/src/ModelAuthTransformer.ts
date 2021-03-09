@@ -255,8 +255,6 @@ export class ModelAuthTransformer extends Transformer {
     const apiRecord = ctx.getResource(ResourceConstants.RESOURCES.GraphQLAPILogicalID) as GraphQLAPI;
     const updated = this.resources.updateGraphQLAPIWithAuth(apiRecord, this.config.authConfig);
     ctx.setResource(ResourceConstants.RESOURCES.GraphQLAPILogicalID, updated);
-
-    // Check if we need to create an API key resource or not.
   };
 
   public before = (ctx: TransformerContext): void => {

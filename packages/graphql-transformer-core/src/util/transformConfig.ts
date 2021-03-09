@@ -40,6 +40,11 @@ export type SyncConfigLAMBDA = {
 };
 export type SyncConfig = SyncConfigOPTIMISTIC | SyncConfigSERVER | SyncConfigLAMBDA;
 
+
+export type AppSyncAuthConfig = {
+  config: any;
+};
+
 export type ResolverConfig = {
   project?: SyncConfig;
   models?: {

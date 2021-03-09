@@ -62,6 +62,8 @@ export class ResourceConstants {
 
     // Auth
     AuthCognitoUserPoolId: 'AuthCognitoUserPoolId',
+    DefaultAuthenticationType: 'DefaultAuthenticationType',
+    AdditionalAuthenticationTypes: 'AdditionalAuthenticationTypes'
   };
   public static MAPPINGS = {};
   public static CONDITIONS = {

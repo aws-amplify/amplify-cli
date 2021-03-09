@@ -13,10 +13,11 @@ import { FunctionTransformer } from 'graphql-function-transformer';
 import { HttpTransformer } from 'graphql-http-transformer';
 import { PredictionsTransformer } from 'graphql-predictions-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
+import { getAuthConfigParameters } from './graphql-transformer'
 import { ProviderName as providerName } from './constants';
 import { AmplifyCLIFeatureFlagAdapter } from './utils/amplify-cli-feature-flag-adapter';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
-import { JSONUtilities, stateManager } from 'amplify-cli-core';
+import { JSONUtilities, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 
 import {
   collectDirectivesByTypeNames,
@@ -214,7 +215,7 @@ async function transformerVersionCheck(context, resourceDir, cloudBackendDirecto
   }
 }
 
-async function warningMessage(context, warningMessage) {
+async function warningMessage(context: $TSContext, warningMessage: string) {
   if (context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes) {
     context.print.warning(`\n${warningMessage}\n`);
   } else {
@@ -289,8 +290,10 @@ async function migrateProject(context, options) {
     throw e;
   }
 }
-
-export async function transformGraphQLSchema(context, options) {
+/**
+ * TODO: Change to $TSContext when pathManager mapping is included
+ */
+export async function transformGraphQLSchema(context: $TSAny, options: $TSAny) {
   const useExperimentalPipelineTransformer = FeatureFlags.getBoolean('graphQLTransformer.useExperimentalPipelinedTransformer');
   if (useExperimentalPipelineTransformer) {
     return transformGraphQLSchemaV6(context, options);
@@ -430,6 +433,8 @@ export async function transformGraphQLSchema(context, options) {
     }
   }
 
+  // create auth config to be passed into paramters
+  parameters = { ...parameters, ...getAuthConfigParameters(authConfig) };
   // for the predictions directive get storage config
   const s3Resource = s3ResourceAlreadyExists(context);
   const storageConfig = s3Resource ? getBucketName(context, s3Resource, backEndDir) : undefined;
@@ -493,7 +498,8 @@ export async function transformGraphQLSchema(context, options) {
 place .graphql files in a directory at ${schemaDirPath}`);
 
   if (!options.dryRun) {
-    JSONUtilities.writeJson(parametersFilePath, parameters);
+    // add authconfig to parameters
+    JSONUtilities.writeJson(parametersFilePath, { ...parameters });
   }
 
   return transformerOutput;
