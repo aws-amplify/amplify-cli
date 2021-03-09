@@ -5,10 +5,8 @@ import {
   nspawn as spawn,
   getCLIPath,
   addFunction,
-  functionBuild,
   initJSProjectWithProfile,
   deleteProject,
-  amplifyPushAuth,
   getBackendAmplifyMeta,
   addAuthWithDefault,
   createNewProjectDir,
@@ -20,7 +18,6 @@ describe('nodejs version migration tests', () => {
 
   beforeEach(async () => {
     projectRoot = await createNewProjectDir('node-function');
-    // projectRoot = '/Users/attila/workspaces/amplify-projects/nodertest';
   });
 
   afterEach(async () => {
@@ -78,8 +75,8 @@ describe('nodejs version migration tests', () => {
 
     fs.writeFileSync(functionStackFileName, functionStackContent, 'utf-8');
 
-    // Executing amplify version triggers the migration
-    await amplifyNodeMigration(projectRoot);
+    // Executing amplify push triggers the migration
+    await amplifyNodeMigrationAndPush(projectRoot);
 
     projectConfigContent = fs.readFileSync(projectConfigFileName).toString();
     authStackContent = fs.readFileSync(authStackFileName).toString();
@@ -88,18 +85,17 @@ describe('nodejs version migration tests', () => {
     expect(projectConfigContent.indexOf('3.1')).toBeGreaterThan(0);
     expect(authStackContent.indexOf('nodejs12.x')).toBeGreaterThan(0);
     expect(functionStackContent.indexOf('nodejs12.x')).toBeGreaterThan(0);
-
-    // Do a push to make sure it succeeds after migration
-    await functionBuild(projectRoot, {});
-    await amplifyPushAuth(projectRoot);
   });
 
-  function amplifyNodeMigration(cwd: string) {
+  function amplifyNodeMigrationAndPush(cwd: string) {
     return new Promise((resolve, reject) => {
-      spawn(getCLIPath(), ['version'], { cwd, stripColors: true })
+      spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
         .wait('Confirm to update the Node.js runtime version to nodejs')
         .sendConfirmYes()
         .wait('Node.js runtime version successfully updated')
+        .wait('Are you sure you want to continue?')
+        .sendLine('y')
+        .wait(/.*/)
         .run((err: Error) => {
           if (!err) {
             resolve(undefined);
