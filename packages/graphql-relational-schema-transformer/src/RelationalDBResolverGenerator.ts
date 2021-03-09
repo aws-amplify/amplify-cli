@@ -197,9 +197,16 @@ export class RelationalDBResolverGenerator {
    */
   private makeUpdateRelationalResolver(type: string, mutationTypeName: string = 'Mutation') {
     const fieldName = graphqlName('update' + toUpper(type));
-    const updateSql = `UPDATE ${type} SET $update WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(
-      type,
-    )}Input.${this.typePrimaryKeyMap.get(type)}`;
+    let updateSql;
+    if (this.typePrimaryKeyTypeMap.get(type).includes('String')) {
+      updateSql = `UPDATE ${type} SET $update WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.update${toUpper(
+        type,
+      )}Input.${this.typePrimaryKeyMap.get(type)}\'`;
+    } else {
+      updateSql = `UPDATE ${type} SET $update WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.update${toUpper(
+        type,
+      )}Input.${this.typePrimaryKeyMap.get(type)}`;
+    }
     let selectSql;
     if (this.typePrimaryKeyTypeMap.get(type).includes('String')) {
       selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.update${toUpper(
@@ -276,7 +283,12 @@ export class RelationalDBResolverGenerator {
     } else {
       selectSql = `SELECT * FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`;
     }
-    const deleteSql = `DELETE FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`;
+    let deleteSql;
+    if (this.typePrimaryKeyTypeMap.get(type).includes('String')) {
+      deleteSql = `DELETE FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=\'$ctx.args.${this.typePrimaryKeyMap.get(type)}\'`;
+    } else {
+      deleteSql = `DELETE FROM ${type} WHERE ${this.typePrimaryKeyMap.get(type)}=$ctx.args.${this.typePrimaryKeyMap.get(type)}`;
+    }
     const reqFileName = `${mutationTypeName}.${fieldName}.req.vtl`;
     const resFileName = `${mutationTypeName}.${fieldName}.res.vtl`;
     const reqTemplate = print(
