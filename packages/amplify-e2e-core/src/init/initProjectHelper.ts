@@ -16,6 +16,7 @@ const defaultSettings = {
   region: process.env.CLI_REGION,
   local: false,
   disableAmplifyAppCreation: true,
+  disableCIDetection: false,
 };
 
 export const amplifyRegions = [
@@ -35,12 +36,21 @@ export const amplifyRegions = [
 
 export function initJSProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };
-  let env;
+  let env = undefined;
 
   if (s.disableAmplifyAppCreation === true) {
     env = {
       CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
     };
+  }
+
+  // Undo ci-info detection, required for some tests
+  if (s.disableCIDetection === true) {
+    delete process.env.CI;
+    delete process.env.CONTINUOUS_INTEGRATION;
+    delete process.env.BUILD_NUMBER;
+    delete process.env.TRAVIS;
+    delete process.env.GITHUB_ACTIONS;
   }
 
   addCircleCITags(cwd);

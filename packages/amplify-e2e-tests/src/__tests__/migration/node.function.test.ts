@@ -26,7 +26,9 @@ describe('nodejs version migration tests', () => {
   });
 
   it('init a project and add simple function and migrate node version', async () => {
-    await initJSProjectWithProfile(projectRoot, {});
+    await initJSProjectWithProfile(projectRoot, {
+      disableCIDetection: true,
+    });
 
     const random = Math.floor(Math.random() * 10000);
     const functionName = `nodefunction${random}`;
