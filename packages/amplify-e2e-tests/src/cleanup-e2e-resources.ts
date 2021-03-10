@@ -7,15 +7,24 @@ import fs from 'fs-extra';
 import path from 'path';
 import { deleteS3Bucket } from 'amplify-e2e-core';
 
-import { AWS_REGIONS_TO_RUN_TESTS } from '../../../scripts/e2e-test-regions';
+// Ensure to update scripts/split-e2e-tests.ts is also updated this gets updated
+const AWS_REGIONS_TO_RUN_TESTS = [
+  'us-east-2',
+  'us-west-2',
+  'eu-west-2',
+  'eu-central-1',
+  'ap-northeast-1',
+  'ap-southeast-1',
+  'ap-southeast-2',
+];
 
 const reportPath = path.normalize(path.join(__dirname, '..', 'amplify-e2e-reports', 'stale-resources.json'));
 
-const MULTI_JOB_APP = '<Amplify App resued by muliple apps>';
+const MULTI_JOB_APP = '<Amplify App reused by multiple apps>';
 const ORPHAN = '<orphan>';
 const UNKNOWN = '<unknown>';
 
-export type CircleCIJobDetails = {
+type CircleCIJobDetails = {
   build_url: string;
   branch: string;
   build_num: number;
@@ -27,7 +36,7 @@ export type CircleCIJobDetails = {
   workflows: { workflow_id: string };
 };
 
-export type StackInfo = {
+type StackInfo = {
   stackName: string;
   stackStatus: string;
   resourcesFailedToDelete?: string[];
@@ -36,19 +45,19 @@ export type StackInfo = {
   cciInfo: CircleCIJobDetails;
 };
 
-export type AmplifyAppInfo = {
+type AmplifyAppInfo = {
   appId: string;
   name: string;
   region: string;
   backends: Record<string, StackInfo>;
 };
 
-export type S3BucketInfo = {
+type S3BucketInfo = {
   name: string;
   cciInfo?: CircleCIJobDetails;
 };
 
-export type ReportEntry = {
+type ReportEntry = {
   jobId?: string;
   workflowId?: string;
   lifecycle?: string;
@@ -65,6 +74,7 @@ const configureAws = (): void => {
   if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
     throw new Error('AWS credentials are not configured. Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables');
   }
+
   aws.config.update({
     credentials: {
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -83,7 +93,7 @@ const configureAws = (): void => {
  */
 const getAmplifyApps = async (region: string): Promise<AmplifyAppInfo[]> => {
   const amplifyClient = new aws.Amplify({ region });
-  const amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 100 as max supported is 50
+  const amplifyApps = await amplifyClient.listApps({ maxResults: 50 }).promise(); // keeping it to 50 as max supported is 50
   const result: AmplifyAppInfo[] = [];
   for (const app of amplifyApps.apps) {
     const backends: Record<string, StackInfo> = {};
@@ -102,7 +112,7 @@ const getAmplifyApps = async (region: string): Promise<AmplifyAppInfo[]> => {
       appId: app.appId,
       name: app.name,
       region,
-      backends: backends,
+      backends,
     });
   }
   return result;
@@ -115,14 +125,14 @@ const getAmplifyApps = async (region: string): Promise<AmplifyAppInfo[]> => {
  */
 export const getJobId = (tags: aws.CloudFormation.Tags = []): number | undefined => {
   const jobId = tags.find(tag => tag.Key === 'circleci:build_id')?.Value;
-  return jobId ? Number.parseInt(jobId, 10) : undefined;
+  return jobId && Number.parseInt(jobId, 10);
 };
 
 /**
  * Gets detail about a stack including the details about CircleCI job that created the stack. If a stack
- * has status of `DELETE_FAILED` then it also includes the list of physical id of resources that caused 
+ * has status of `DELETE_FAILED` then it also includes the list of physical id of resources that caused
  * deletion failures
- * 
+ *
  * @param stackName name of the stack
  * @param region region
  * @returns stack details
@@ -134,7 +144,7 @@ const getStackDetails = async (stackName: string, region: string): Promise<Stack
   const stackStatus = stack.Stacks[0].StackStatus;
   let resourcesFailedToDelete: string[] = [];
   if (stackStatus === 'DELETE_FAILED') {
-    // We need to investigate if  we should go ahead and remove the resources to prevent account getting cluttered
+    //Todo: We need to investigate if we should go ahead and remove the resources to prevent account getting cluttered
     const resources = await cfnClient.listStackResources({ StackName: stackName }).promise();
     resourcesFailedToDelete = resources.StackResourceSummaries.filter(r => r.ResourceStatus === 'DELETE_FAILED').map(
       r => r.LogicalResourceId,
@@ -147,7 +157,7 @@ const getStackDetails = async (stackName: string, region: string): Promise<Stack
     resourcesFailedToDelete,
     region,
     tags: tags.reduce((acc, tag) => ({ ...acc, [tag.Key]: tag.Value }), {}),
-    cciInfo: jobId ? await getJobCircleCIDetails(jobId) : undefined,
+    cciInfo: jobId && (await getJobCircleCIDetails(jobId)),
   };
 };
 
@@ -173,8 +183,12 @@ const getStacks = async (region: string): Promise<StackInfo[]> => {
   const rootStacks = stacks.StackSummaries.filter(stack => !stack.RootId);
   const results: StackInfo[] = [];
   for (const stack of rootStacks) {
-    const details = await getStackDetails(stack.StackName, region);
-    details && results.push(details);
+    try {
+      const details = await getStackDetails(stack.StackName, region);
+      details && results.push(details);
+    } catch {
+      // don't want to barf and fail e2e tests
+    }
   }
   return results;
 };
@@ -238,8 +252,8 @@ export const getS3Buckets = async (): Promise<S3BucketInfo[]> => {
 
 /**
  * extract and moves CircleCI job details
- * @param record 
- * @returns 
+ * @param record
+ * @returns
  */
 export const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppInfo) => {
   return {
@@ -258,7 +272,7 @@ export const extractCCIJobInfo = (record: S3BucketInfo | StackInfo | AmplifyAppI
  * @param amplifyApp list of AmplifyApps
  * @param cfnStacks list of Cloudformation stacks
  * @param s3Buckets list of S3 Buckets
- * @returns 
+ * @returns
  */
 export const mergeResourcesByCCIJob = (
   amplifyApp: AmplifyAppInfo[],
@@ -279,10 +293,12 @@ export const mergeResourcesByCCIJob = (
     if (Object.keys(appInfo.backends).length === 0) {
       return ORPHAN;
     }
+
     const buildIds = _.groupBy(appInfo.backends, backendInfo => _.get(backendInfo, ['cciInfo', 'build_num'], UNKNOWN));
     if (Object.keys(buildIds).length === 1) {
       return Object.keys(buildIds)[0];
     }
+
     return MULTI_JOB_APP;
   });
 
@@ -301,7 +317,8 @@ export const mergeResourcesByCCIJob = (
 
   _.mergeWith(
     result,
-    stacksByJobId, (_, key) => key !== ORPHAN,
+    stacksByJobId,
+    (_, key) => key !== ORPHAN,
     (val, src, key) => {
       return {
         ...val,
@@ -312,18 +329,15 @@ export const mergeResourcesByCCIJob = (
     },
   );
 
-  _.mergeWith(
-    result,
-    bucketByJobId,
-    (val, src, key) => {
-      return {
-        ...val,
-        ...extractCCIJobInfo(src),
-        jobId: key,
-        buckets: src,
-      };
-    },
-  );
+  _.mergeWith(result, bucketByJobId, (val, src, key) => {
+    return {
+      ...val,
+      ...extractCCIJobInfo(src),
+      jobId: key,
+      buckets: src,
+    };
+  });
+
   return result;
 };
 
