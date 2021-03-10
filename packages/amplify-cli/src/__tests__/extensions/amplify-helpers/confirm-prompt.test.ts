@@ -9,7 +9,7 @@ jest.mock('inquirer', () => {
 });
 
 describe('confirmPrompt', () => {
-  it('return ans object', async () => {
+  it('returns an object', async () => {
     const result = await confirmPrompt('test', true);
     expect(result).toStrictEqual({
       name: 'yesno',
