@@ -113,10 +113,6 @@ body:
     description: | 
       How do you trigger this bug? Please walk us through it step by step. 
       Screenshots can be provided in the issue body below. Markdown formatting supported.
-
-      If applicable, please include your GraphQL schema(s). 
-
-      **Be sure to remove any sensitive data.**
     placeholder: |
       1. 
       2.
@@ -124,6 +120,23 @@ body:
       ...
   validations:
     required: true
+- type: textarea
+  attributes:
+    label: GraphQL schema(s)
+    description: |
+      If applicable, please include your GraphQL schema(s). 
+
+      **Be sure to remove any sensitive data.** 
+    value: |
+      <details>
+      
+      ```graphql
+      # Put schemas below this line
+
+
+      ```
+
+      </details>
 - type: textarea
   attributes:
     label: Log output
@@ -134,15 +147,20 @@ body:
       
       ```
       ~/.amplify/logs/amplify-cli-<issue-date>.log
-      ``` 
+      ```
 
-      **Be sure to remove any sensitive data.**
+      **Be sure to remove any sensitive data.** 
       
     value: |
+      <details>
+      
       ```
       # Put your logs below this line
 
+
       ```
+
+      </details>
 - type: markdown
   attributes:
     value: |
