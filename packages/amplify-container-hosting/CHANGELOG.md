@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.2.4...amplify-container-hosting@1.2.5-beta.0) (2021-03-11)
+
+**Note:** Version bump only for package amplify-container-hosting
+
+
+
+
+
 ## [1.2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.2.3...amplify-container-hosting@1.2.4) (2021-03-05)
 
 **Note:** Version bump only for package amplify-container-hosting

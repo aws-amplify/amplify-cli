@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.18.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.18.0...amplify-cli-core@1.18.1-beta.0) (2021-03-11)
+
+
+### Bug Fixes
+
+* e2e fix PR [#6059](https://github.com/aws-amplify/amplify-cli/issues/6059) ([#6807](https://github.com/aws-amplify/amplify-cli/issues/6807)) ([3a9058e](https://github.com/aws-amplify/amplify-cli/commit/3a9058ee68ffb2b883d2cb000a2ec1adede22fbf))
+* gql compiler fix for user defined mutation ([#6059](https://github.com/aws-amplify/amplify-cli/issues/6059)) ([063d84f](https://github.com/aws-amplify/amplify-cli/commit/063d84ff3d31762a4434f3146623132536f4667d))
+
+
+
+
+
 # [1.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.17.2...amplify-cli-core@1.18.0) (2021-03-05)
 
 

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.45.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.45.0...@aws-amplify/cli@4.45.1-beta.0) (2021-03-11)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 # [4.45.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.44.2...@aws-amplify/cli@4.45.0) (2021-03-05)
 
 
