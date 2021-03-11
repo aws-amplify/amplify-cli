@@ -27,7 +27,7 @@ interface E2Econfiguration {
   USER_POOL_ID?: string;
 }
 
-const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: process.env.CLI_REGION || 'us-west-2' });
+const cognitoClient = new CognitoClient({ apiVersion: '2016-04-19', region: 'us-west-2' });
 
 export function configureAmplify(userPoolId: string, userPoolClientId: string, identityPoolId?: string) {
   Amplify.configure({
