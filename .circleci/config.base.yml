@@ -5,7 +5,7 @@ machine:
   environment:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
 
-node12: &node12
+node10: &node10
   working_directory: ~/repo
   docker:
     - image: circleci/node:10
@@ -22,6 +22,14 @@ defaults: &defaults
         aws_access_key_id: $ECR_ACCESS_KEY
         aws_secret_access_key: $ECR_SECRET_ACCESS_KEY
   resource_class: large
+
+clean_e2e_resources: &clean_e2e_resources
+  name: Cleanup resources
+  command: |
+    pwd
+    cd packages/amplify-e2e-tests
+    yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
+  working_directory: ~/repo
 
 run_e2e_tests: &run_e2e_tests
   name: Run Amplify end-to-end tests
@@ -50,7 +58,7 @@ install_cli_from_local_registery: &install_cli_from_local_registery
 
 jobs:
   build:
-    <<: *node12
+    <<: *node10
     steps:
       - checkout
       - run: yarn run production-build
@@ -67,7 +75,7 @@ jobs:
           paths: .
 
   test:
-    <<: *node12
+    <<: *node10
     steps:
       - attach_workspace:
           at: ./
@@ -87,7 +95,7 @@ jobs:
           command: yarn coverage
 
   mock_e2e_tests:
-    <<: *node12
+    <<: *node10
     steps:
       - attach_workspace:
           at: ./
@@ -515,6 +523,39 @@ jobs:
           command: |
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-release.ts $version
+  cleanup_resources:
+    <<: *node10
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: 'Run cleanup script'
+          command: |
+            cd packages/amplify-e2e-tests
+            yarn clean-e2e-resources
+          no_output_timeout: 90m
+      - store_artifacts:
+          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
+    working_directory: ~/repo
+
+  cleanup_resources_after_e2e_runs:
+    <<: *node10
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: 'Run cleanup script'
+          command: |
+            cd packages/amplify-e2e-tests
+            yarn clean-e2e-resources workflow ${CIRCLE_WORKFLOW_ID}
+          no_output_timeout: 90m
+      - store_artifacts:
+          path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
+    working_directory: ~/repo
 
 workflows:
   version: 2
@@ -538,6 +579,20 @@ workflows:
           requires:
             - build
             - publish_to_local_registry
+  e2e_resource_cleanup:
+    triggers:
+      - schedule:
+          cron: '45 0,12 * * *'
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build
+      - cleanup_resources:
+          requires:
+            - build
+
   build_test_deploy:
     jobs:
       - build
@@ -594,6 +649,8 @@ workflows:
                 - master
       - amplify_e2e_tests:
           context: amplify-cli-ecr
+          post-steps:
+            - run: *clean_e2e_resources
           filters:
             branches:
               only:
@@ -608,6 +665,8 @@ workflows:
             - amplify_e2e_tests
       - amplify_e2e_tests_pkg_linux:
           context: amplify-cli-ecr
+          post-steps:
+            - run: *clean_e2e_resources
           filters:
             branches:
               only:
@@ -648,6 +707,8 @@ workflows:
             - build
       - amplify_console_integration_tests:
           context: amplify-cli-ecr
+          post-steps:
+            - run: *clean_e2e_resources
           filters:
             branches:
               only:
@@ -671,6 +732,14 @@ workflows:
             branches:
               only:
                 - release
+      - cleanup_resources_after_e2e_runs:
+          requires:
+            - done_with_pkg_linux_e2e_tests
+            - amplify_migration_tests_latest
+            - amplify_migration_tests_v4
+            - amplify_migration_tests_v4_30_0
+            - done_with_node_e2e_tests
+
       - deploy:
           context: amplify-cli-ecr
           requires:
