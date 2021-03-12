@@ -32,9 +32,11 @@ else
   exit 1
 fi
 
-# Detect architecture
+# Detect architecture and fallback to Rosetta when using M1 Macbook
 MACHINE_TYPE=`uname -m`
 if [[ $MACHINE_TYPE == "x86_64" ]]; then
+  ARCH='x64'
+elif [[ $OSTYPE =="darwin"* && $MACHINE_TYPE == "arm64" ]]; then
   ARCH='x64'
 else
   echo "$red Sorry, there's no Amplify CLI binary installer available for $MACHINE_TYPE architecture."
