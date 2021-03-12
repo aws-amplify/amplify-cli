@@ -108,6 +108,13 @@ Object {
       "category": "storage",
       "resourceName": "mock_api",
     },
+    Object {
+      "attributes": Array [
+        "userPoolId",
+      ],
+      "category": "auth",
+      "resourceName": "mock_api",
+    },
   ],
   "envVarStringList": "AUTH_MOCK_API_USERPOOLID
 	STORAGE_MOCK_API_RANDOMBUCKET",

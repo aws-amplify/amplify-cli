@@ -272,7 +272,7 @@ export async function generateEnvVariablesforCfn(context, resources, currentEnvM
       envVars.add(envName);
     });
 
-    if (!dependsOn.find(dep => dep.resourceName === resourceName)) {
+    if (!dependsOn.find(dep => dep.resourceName === resourceName && dep.category === category)) {
       dependsOn.push({
         category: resource.category,
         resourceName: resource.resourceName,
