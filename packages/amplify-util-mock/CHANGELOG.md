@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.29.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.29.1...amplify-util-mock@3.29.2) (2021-03-12)
+
+
+
+## 4.45.2 (2021-03-12)
+
+
+### Bug Fixes
+
+* bump codegen versions ([#6871](https://github.com/aws-amplify/amplify-cli/issues/6871)) ([e53175d](https://github.com/aws-amplify/amplify-cli/commit/e53175d96136fba57662b1a035d3cea4a65a7601))
+
+
+
+
+
 ## [3.29.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.29.0...amplify-util-mock@3.29.1) (2021-03-11)
 
 **Note:** Version bump only for package amplify-util-mock
