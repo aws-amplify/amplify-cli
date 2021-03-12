@@ -79,19 +79,19 @@ body:
     description: If applicable, what Amplify CLI commands (`amplify ...`) are surfacing the issue?
     multiple: true
     options:
-      - configure 
-      - init 
+      - add
+      - codegen
+      - configure
       - configure project
-      - add 
-      - update
-      - push 
-      - pull
-      - publish
-      - status 
-      - serve 
       - delete
-      - codegen 
-      - env 
+      - env
+      - init
+      - publish
+      - pull
+      - push
+      - serve
+      - status
+      - update
       - Not applicable
   validations:
     required: true
