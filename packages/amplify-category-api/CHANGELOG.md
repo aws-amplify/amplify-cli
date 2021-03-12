@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.29.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.29.4...amplify-category-api@2.29.5) (2021-03-11)
+
+
+### Reverts
+
+* Revert "docs: add readme to vtl resolvers directory (#6718)" (#6845) ([1b67327](https://github.com/aws-amplify/amplify-cli/commit/1b67327f4885c611708c73256094456ab95b67ef)), closes [#6718](https://github.com/aws-amplify/amplify-cli/issues/6718) [#6845](https://github.com/aws-amplify/amplify-cli/issues/6845)
+
+
+
+
+
 ## [2.29.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.29.3...amplify-category-api@2.29.4) (2021-03-05)
 
 

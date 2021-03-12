@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.23.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.23.9...graphql-auth-transformer@6.23.10) (2021-03-11)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
 ## [6.23.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.23.8...graphql-auth-transformer@6.23.9) (2021-03-05)
 
 **Note:** Version bump only for package graphql-auth-transformer

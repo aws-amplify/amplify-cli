@@ -54,7 +54,12 @@ export const deleteS3Bucket = async (bucket: string) => {
         ...continuationToken,
       })
       .promise();
+
     results.Versions?.forEach(({ Key, VersionId }) => {
+      objectKeyAndVersion.push({ Key, VersionId });
+    });
+
+    results.DeleteMarkers?.forEach(({ Key, VersionId }) => {
       objectKeyAndVersion.push({ Key, VersionId });
     });
 
