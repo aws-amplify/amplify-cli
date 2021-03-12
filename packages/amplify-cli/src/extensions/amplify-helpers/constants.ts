@@ -1,4 +1,4 @@
-export const amplifyCLIConstants = {
+export const amplifyCLIConstants = Object.freeze({
   AmplifyCLIDirName: 'amplify',
   DotAmplifyDirName: '.amplify',
   DotConfigamplifyCLISubDirName: '.config',
@@ -24,4 +24,4 @@ export const amplifyCLIConstants = {
   CURRENT_PROJECT_CONFIG_VERSION: '3.1',
   BreadcrumbsFileName: 'amplify.state',
   LogDirectory: '.amplify-log',
-};
+} as const);
