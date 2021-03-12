@@ -46,7 +46,7 @@
     "amplify-category-xr": "2.7.5",
     "amplify-cli-core": "1.18.1",
     "amplify-cli-logger": "1.1.0",
-    "amplify-codegen": "^2.22.4",
+    "amplify-codegen": "^2.23.1",
     "amplify-console-hosting": "1.7.5",
     "amplify-container-hosting": "1.2.5",
     "amplify-dotnet-function-runtime-provider": "1.5.2",
