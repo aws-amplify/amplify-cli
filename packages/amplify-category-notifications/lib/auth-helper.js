@@ -3,6 +3,7 @@ const os = require('os');
 const constants = require('./constants');
 
 const providerName = 'awscloudformation';
+const policyNamePrefix = 'pinpoint_amplify-';
 const spinner = ora('');
 
 async function ensureAuth(context, resourceName) {
@@ -58,6 +59,46 @@ async function attachPolicyToRole(context, policy, roleName) {
       }
     });
   });
+}
+
+async function deletePolicy(context, policyArn) {
+  const params = {
+    PolicyArn: policyArn,
+  };
+  const iamClient = await getIamClient(context);
+  return iamClient.deletePolicy(params).promise();
+}
+
+async function detachPolicyFromRole(context, policyArn, roleName) {
+  const params = {
+    PolicyArn: policyArn,
+    RoleName: roleName,
+  };
+  const iamClient = await getIamClient(context);
+  return iamClient.detachRolePolicy(params).promise();
+}
+
+async function listAttachedRolePolicies(context, roleName) {
+  const params = { RoleName: roleName };
+  const iamClient = await getIamClient(context);
+  return iamClient.listAttachedRolePolicies(params).promise();
+}
+
+async function deleteRolePolicy(context) {
+  const amplifyMeta = context.amplify.getProjectMeta();
+  const authRoleName = amplifyMeta.providers[providerName].AuthRoleName;
+  const unAuthRoleName = amplifyMeta.providers[providerName].UnauthRoleName;
+  const rolePolicies = await listAttachedRolePolicies(context, authRoleName);
+
+  if (rolePolicies && Array.isArray(rolePolicies.AttachedPolicies)) {
+    const policy = rolePolicies.AttachedPolicies.find(policy => policy.PolicyName.startsWith(policyNamePrefix));
+
+    if (policy) {
+      await detachPolicyFromRole(context, policy.PolicyArn, authRoleName);
+      await detachPolicyFromRole(context, policy.PolicyArn, unAuthRoleName);
+      await deletePolicy(context, policy.PolicyArn);
+    }
+  }
 }
 
 async function checkAuth(context, resourceName) {
@@ -125,9 +166,10 @@ function getPolicyDoc(context) {
 }
 
 function getPolicyName(context) {
-  return `pinpoint_amplify-${context.amplify.makeId(8)}`;
+  return `${policyNamePrefix}${context.amplify.makeId(8)}`;
 }
 
 module.exports = {
+  deleteRolePolicy,
   ensureAuth,
 };
