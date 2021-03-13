@@ -199,7 +199,9 @@ export const getCloudWatchLogs = async (region: string, logGroupName: string, lo
 
 export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: any) => {
   const service = profileConfig ? new CloudFormation(profileConfig) : new CloudFormation({ region });
-  return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(stack => stack.StackName === stackName);
+  return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(
+    stack => stack.StackName === stackName || stack.StackId === stackName,
+  );
 };
 
 export const putKinesisRecords = async (data: string, partitionKey: string, streamName: string, region: string) => {
