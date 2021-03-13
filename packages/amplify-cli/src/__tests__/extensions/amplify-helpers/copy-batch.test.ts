@@ -1,4 +1,4 @@
-import { copyBatch } from '../../..//extensions/amplify-helpers/copy-batch';
+import { copyBatch } from '../../../extensions/amplify-helpers/copy-batch';
 import { JSONUtilities, $TSContext, $TSCopyJob } from 'amplify-cli-core';
 
 let exists = false;
