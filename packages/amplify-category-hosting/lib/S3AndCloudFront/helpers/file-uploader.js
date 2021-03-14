@@ -27,8 +27,10 @@ async function run(context, distributionDirPath) {
     cloudFrontS3CanonicalUserId = originAccessIdentity.S3CanonicalUserId;
   }
 
-  fileList.forEach(filePath => {
-    uploadFileTasks.push(() => uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, cloudFrontS3CanonicalUserId));
+  fileList.forEach(file => {
+    uploadFileTasks.push(() =>
+      uploadFile(s3Client, hostingBucketName, distributionDirPath, file.filePath, file.meta, cloudFrontS3CanonicalUserId),
+    );
   });
 
   const spinner = new Ora('Uploading files...');
@@ -61,7 +63,7 @@ function getHostingBucketName(context) {
   return amplifyMeta[constants.CategoryName][serviceName].output.HostingBucketName;
 }
 
-async function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, cloudFrontS3CanonicalUserId) {
+async function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, fileMeta, cloudFrontS3CanonicalUserId) {
   let relativeFilePath = path.relative(distributionDirPath, filePath);
   // make Windows-style relative paths compatible to S3
   relativeFilePath = relativeFilePath.replace(/\\/g, '/');
@@ -73,6 +75,7 @@ async function uploadFile(s3Client, hostingBucketName, distributionDirPath, file
     Key: relativeFilePath,
     Body: fileStream,
     ContentType: contentType || 'text/plain',
+    ...fileMeta,
   };
 
   if (cloudFrontS3CanonicalUserId) {
