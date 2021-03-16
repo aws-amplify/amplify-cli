@@ -18,7 +18,7 @@
             "Type": "String",
             "Default": "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>"
           }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].attributes.length - 1) { %>,<% } %>
-        
+
           <% } %>
           <% } %>
     <% } %>
@@ -34,7 +34,7 @@
         }
     },
     "Resources": {
-        <%if (props.privacy.auth) { %>
+        <%if (!props.generateConsolidatedManagedPolicies && props.privacy.auth) { %>
         "PolicyAPIGW<%= props.apiName %>auth": {
             "DependsOn": [
               "<%= props.apiName %>"
@@ -77,10 +77,10 @@
                             {
                               "Fn::If": [
                                 "ShouldNotCreateEnvResources",
-                                "Prod", 
+                                "Prod",
                                 {
                                   "Ref": "env"
-                                } 
+                                }
                               ]
                             },
                               "<%= props.paths[i].privacy.auth[x] %>",
@@ -108,10 +108,10 @@
                             {
                               "Fn::If": [
                                 "ShouldNotCreateEnvResources",
-                                "Prod", 
+                                "Prod",
                                 {
                                   "Ref": "env"
-                                } 
+                                }
                               ]
                             },
                               "<%= props.paths[i].privacy.auth[x] %>",
@@ -168,7 +168,7 @@
                       "execute-api:Invoke"
                     ],
                      "Resource": [
-                    
+
                     <% for(var x=0; x < props.paths[i].privacy.userPoolGroups[selectedUserPoolGroupList[j]].length; x++) { %>
                       {
                         "Fn::Join": [
@@ -190,10 +190,10 @@
                             {
                               "Fn::If": [
                                 "ShouldNotCreateEnvResources",
-                                "Prod", 
+                                "Prod",
                                 {
                                   "Ref": "env"
-                                } 
+                                }
                               ]
                             },
                               "<%= props.paths[i].privacy.userPoolGroups[selectedUserPoolGroupList[j]][x] %>",
@@ -245,7 +245,7 @@
           <% } %>
         <% } %>
         <% } %>
-        <%if (props.privacy.unauth) { %>
+        <%if (!props.generateConsolidatedManagedPolicies && props.privacy.unauth) { %>
         "PolicyAPIGW<%= props.apiName %>unauth": {
             "DependsOn": [
               "<%= props.apiName %>"
@@ -288,10 +288,10 @@
                             {
                               "Fn::If": [
                                 "ShouldNotCreateEnvResources",
-                                "Prod", 
+                                "Prod",
                                 {
                                   "Ref": "env"
-                                } 
+                                }
                               ]
                             },
                               "<%= props.paths[i].privacy.unauth[x] %>",
@@ -383,7 +383,7 @@
                           }
                       ]
                   ]
-                } 
+                }
               ]
             },
             "schemes": [
@@ -458,7 +458,7 @@
                       }
                     }
                   },
-                  <%if (!props.paths[i].privacy.open) { %>        
+                  <%if (!props.paths[i].privacy.open) { %>
                     "security": [
                         {
                           "sigv4": []
@@ -480,11 +480,11 @@
                               "Ref": "AWS::Region"
                             },
                             ":lambda:path/2015-03-31/functions/",
-                            <% if (props.paths[i].lambdaArn ) { %> 
-                            "<%= props.paths[i].lambdaArn %>", 
+                            <% if (props.paths[i].lambdaArn ) { %>
+                            "<%= props.paths[i].lambdaArn %>",
                             <% } else { %>
                             {
-                                
+
                                 "Ref": "function<%= props.paths[i].lambdaFunction %>Arn"
                             },
                             <% } %>
@@ -565,7 +565,7 @@
                       }
                     }
                   },
-                  <%if (!props.paths[i].privacy.open) { %>        
+                  <%if (!props.paths[i].privacy.open) { %>
                     "security": [
                         {
                           "sigv4": []
@@ -587,11 +587,11 @@
                             "Ref": "AWS::Region"
                           },
                           ":lambda:path/2015-03-31/functions/",
-                          <% if (props.paths[i].lambdaArn) { %> 
+                          <% if (props.paths[i].lambdaArn) { %>
                             "<%= props.paths[i].lambdaArn %>",
                           <% } else { %>
                           {
-                            
+
                             "Ref": "function<%= props.paths[i].lambdaFunction %>Arn"
                           },
                           <% } %>
@@ -604,7 +604,7 @@
                     "type": "aws_proxy"
                   }
                 }
-              }<% if (i !== props.paths.length - 1) { %>,<% } %>   
+              }<% if (i !== props.paths.length - 1) { %>,<% } %>
               <% } %>
             },
             "securityDefinitions": {
@@ -646,9 +646,9 @@
         }
       },
 
-      <%if (props.functionArns) { %>            
+      <%if (props.functionArns) { %>
         <% for (var i=0; i < props.functionArns.length; i++) { %>
-        
+
         "function<%= props.functionArns[i].lambdaFunction.replace(/[^0-9a-zA-Z]/gi, '') %>Permission<%= props.apiName %>": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
@@ -683,7 +683,7 @@
         },
         <% } %>
         <% } %>
-        
+
       "DeploymentAPIGW<%= props.apiName %><%= props.uuid %>": {
         "Type": "AWS::ApiGateway::Deployment",
         "Properties": {
@@ -691,10 +691,10 @@
           "StageName": {
             "Fn::If": [
               "ShouldNotCreateEnvResources",
-              "Prod", 
+              "Prod",
               {
                 "Ref": "env"
-              } 
+              }
             ]
           },
           "RestApiId": {

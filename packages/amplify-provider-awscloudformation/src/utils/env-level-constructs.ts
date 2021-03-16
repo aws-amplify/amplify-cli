@@ -4,6 +4,7 @@ import { S3 } from '../aws-utils/aws-s3';
 import constants from '../constants';
 import { NetworkStack } from '../network/stack';
 import { getEnvironmentNetworkInfo } from '../network/environment-info';
+import { consolidateApiGatewayPolicies } from './consolidate-apigw-policies';
 
 const { ProviderName: providerName } = constants;
 
@@ -14,7 +15,11 @@ export async function createEnvLevelConstructs(context) {
 
   const updatedMeta = {};
 
-  Object.assign(updatedMeta, await createNetworkResources(context, stackName, hasContainers));
+  Object.assign(
+    updatedMeta,
+    await createNetworkResources(context, stackName, hasContainers),
+    await consolidateApiGatewayPolicies(context, stackName),
+  );
 
   context.amplify.updateProvideramplifyMeta(providerName, updatedMeta);
 

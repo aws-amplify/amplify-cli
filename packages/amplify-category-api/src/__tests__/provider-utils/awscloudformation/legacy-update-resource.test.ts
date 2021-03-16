@@ -2,6 +2,15 @@ import { legacyUpdateResource } from '../../../provider-utils/awscloudformation/
 import { category } from '../../../category-constants';
 
 jest.mock('fs-extra');
+jest.mock('amplify-cli-core', () => {
+  return {
+    FeatureFlags: {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        return true;
+      }),
+    },
+  };
+});
 
 describe('legacy update resource', () => {
   const contextStub = {

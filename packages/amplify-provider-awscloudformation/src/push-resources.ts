@@ -41,6 +41,7 @@ import { DeploymentStep, DeploymentOp } from './iterative-deployment/deployment-
 import { DeploymentStateManager } from './iterative-deployment/deployment-state-manager';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
+import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/consolidate-apigw-policies';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 
@@ -740,7 +741,38 @@ async function formNestedStack(
   const { amplifyMeta } = projectDetails;
   let authResourceName: string;
 
-  const { NetworkStackS3Url } = amplifyMeta.providers[constants.ProviderName];
+  const { APIGatewayAuthURL, NetworkStackS3Url } = amplifyMeta.providers[constants.ProviderName];
+
+  if (APIGatewayAuthURL) {
+    const stack = {
+      Type: 'AWS::CloudFormation::Stack',
+      Properties: {
+        TemplateURL: APIGatewayAuthURL,
+        Parameters: {
+          authRoleName: {
+            Ref: 'AuthRoleName',
+          },
+          unauthRoleName: {
+            Ref: 'UnauthRoleName',
+          },
+          env: context.exeInfo.localEnvInfo.envName,
+        },
+      },
+    };
+    const apis = amplifyMeta?.api ?? {};
+
+    Object.keys(apis).forEach(apiName => {
+      const api = apis[apiName];
+
+      if (loadApiWithPrivacyParams(context, apiName, api)) {
+        stack.Properties.Parameters[apiName] = {
+          'Fn::GetAtt': [api.providerMetadata.logicalId, 'Outputs.ApiId'],
+        };
+      }
+    });
+
+    nestedStack.Resources[APIGW_AUTH_STACK_LOGICAL_ID] = stack;
+  }
 
   if (NetworkStackS3Url) {
     nestedStack.Resources[NETWORK_STACK_LOGICAL_ID] = {

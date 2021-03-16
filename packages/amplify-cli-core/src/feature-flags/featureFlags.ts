@@ -612,5 +612,14 @@ export class FeatureFlags {
         defaultValueForNewProjects: true,
       },
     ]);
+
+    this.registerFlag('restAPI', [
+      {
+        name: 'generateConsolidatedManagedPolicies',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+    ]);
   };
 }

@@ -303,9 +303,30 @@ export function addRestApi(cwd: string, settings: any) {
           .sendLine('n');
       }
 
+      chain.wait('Restrict API access');
+
+      if (settings.restrictAccess) {
+        chain.sendLine('y').wait('Who should have access');
+
+        if (!settings.allowGuestUsers) {
+          chain
+            .sendCarriageReturn() // Authenticated users only
+            .wait('What kind of access do you want for Authenticated users')
+            .sendLine('a'); // CRUD permissions
+        } else {
+          chain
+            .sendLine(KEY_DOWN_ARROW)
+            .sendCarriageReturn() // Authenticated and Guest users
+            .wait('What kind of access do you want for Authenticated users')
+            .sendLine('a') // CRUD permissions for authenticated users
+            .wait('What kind of access do you want for Guest users')
+            .sendLine('a'); // CRUD permissions for guest users
+        }
+      } else {
+        chain.sendLine('n'); // Do not restrict access
+      }
+
       chain
-        .wait('Restrict API access')
-        .sendLine('n')
         .wait('Do you want to add another path')
         .sendLine('n')
         .sendEof()

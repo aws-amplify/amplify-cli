@@ -12,6 +12,7 @@ import {
   Kinesis,
   CloudFormation,
   AmplifyBackend,
+  IAM,
 } from 'aws-sdk';
 import _ from 'lodash';
 
@@ -251,4 +252,14 @@ export const getAmplifyBackendJobStatus = async (jobId: string, appId: string, e
       BackendEnvironmentName: envName,
     })
     .promise();
+};
+
+export const listRolePolicies = async (roleName: string, region: string) => {
+  const service = new IAM({ region });
+  return (await service.listRolePolicies({ RoleName: roleName }).promise()).PolicyNames;
+};
+
+export const listAttachedRolePolicies = async (roleName: string, region: string) => {
+  const service = new IAM({ region });
+  return (await service.listAttachedRolePolicies({ RoleName: roleName }).promise()).AttachedPolicies;
 };
