@@ -123,7 +123,7 @@ describe('getCurrentBackendConfigFilePath', () => {
 });
 
 describe('getAmplifyMetaFilePath', () => {
-  it('return normalized amplify met file path', () => {
+  it('return normalized amplify meta file path', () => {
     const result = getAmplifyMetaFilePath();
     const backendDir = getBackendDirPath();
     expect(result).toBe(path.normalize(path.join(backendDir, amplifyCLIConstants.amplifyMetaFileName)));
