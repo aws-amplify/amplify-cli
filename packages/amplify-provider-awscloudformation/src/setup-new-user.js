@@ -6,6 +6,7 @@ const constants = require('./constants.js');
 const systemConfigManager = require('./system-config-manager');
 const obfuscationUtil = require('./utility-obfuscate');
 const { open } = require('amplify-cli-core');
+const isOnWsl = require('is-wsl');
 
 async function run(context) {
   const awsConfig = {
@@ -43,9 +44,13 @@ async function run(context) {
     },
   ]);
 
-  const deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', userName).replace('{region}', awsConfig.region);
+  let deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', userName).replace('{region}', awsConfig.region);
+  const isOnWindows = /^win/.test(process.platform);
+  if (isOnWindows || isOnWsl) {
+    deepLinkURL = deepLinkURL.replace('$new', '`$new');
+  }
   context.print.info('Complete the user creation using the AWS console');
-  context.print.info(chalk.green(deepLinkURL));
+  context.print.info(chalk.green(deepLinkURL.replace('`', '')));
   open(deepLinkURL, { wait: false }).catch(() => {});
   await context.amplify.pressEnterToContinue.run({ message: 'Press Enter to continue' });
 
