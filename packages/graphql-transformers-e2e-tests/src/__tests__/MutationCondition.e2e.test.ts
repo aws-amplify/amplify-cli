@@ -986,8 +986,7 @@ describe(`Deployed Mutation Condition tests`, () => {
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
-
-    expect(createResponse.data.qcreatePost.id).toBeDefined();
+    expect(createResponse.data.createPost.id).toBeDefined();
 
     // Update P1 if rating === 5 (but it is 4)
     const updateMutationFailure = gql`
