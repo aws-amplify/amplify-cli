@@ -7,6 +7,7 @@ import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-p
 import { getSuitableFrontend } from './s1-initFrontend';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
+import { print } from '../context-extensions';
 
 export async function analyzeProjectHeadless(context: $TSContext) {
   const projectPath = process.cwd();
@@ -26,10 +27,10 @@ export async function analyzeProjectHeadless(context: $TSContext) {
 }
 
 export function displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName) {
-  context.print.info('Project information');
-  context.print.info(`| Name: ${defaultProjectName}`);
-  context.print.info(`| Environment: ${defaultEnv}`);
-  context.print.info(`| Default editor: ${defaultEditorName}`);
+  print.info('Project information');
+  print.info(`| Name: ${defaultProjectName}`);
+  print.info(`| Environment: ${defaultEnv}`);
+  print.info(`| Default editor: ${defaultEditorName}`);
 }
 
 function setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditor) {
@@ -53,8 +54,8 @@ async function displayAndSetDefaults(context, projectPath, projectName) {
   const editorIndex = editors.findIndex(editorEntry => editorEntry.value === defaultEditor);
   const defaultEditorName = editorIndex > -1 ? editors[editorIndex].name : 'Visual Studio Code';
 
-  context.print.success('The following configuration will be applied:');
-  context.print.info('');
+  print.success('The following configuration will be applied:');
+  print.info('');
 
   await displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
 
@@ -63,7 +64,7 @@ async function displayAndSetDefaults(context, projectPath, projectName) {
   const frontendModule = require(frontendPlugins[defaultFrontend]);
 
   await frontendModule.displayFrontendDefaults(context, projectPath);
-  context.print.info('');
+  print.info('');
 
   if (context.exeInfo.inputParams.yes || (await context.amplify.confirmPrompt('Initialize the project with the above configuration?'))) {
     await setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditorName);
