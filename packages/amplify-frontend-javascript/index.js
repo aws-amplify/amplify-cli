@@ -32,6 +32,14 @@ async function createFrontendConfigs(context, amplifyResources, amplifyCloudReso
   return await createAWSExports(context, newOutputsForFrontend, cloudOutputsForFrontend);
 }
 
+function setFrontendDefaults(context, projectPath) {
+  return configManager.setFrontendDefaults(context, projectPath);
+}
+
+function displayFrontendDefaults(context, projectPath) {
+  return configManager.displayFrontendDefaults(context, projectPath);
+}
+
 const initializeAwsExports = destDir => {
   const dest = path.resolve(destDir, 'aws-exports.js');
   if (!fs.existsSync(dest)) {
@@ -74,6 +82,8 @@ module.exports = {
   init,
   onInitSuccessful,
   configure,
+  displayFrontendDefaults,
+  setFrontendDefaults,
   publish,
   run,
   createFrontendConfigs,

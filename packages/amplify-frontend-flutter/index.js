@@ -42,6 +42,14 @@ function run(context) {
   return context;
 }
 
+function displayFrontendDefaults(context, projectPath) {
+  configManager.displayFrontendDefaults(context);
+}
+
+function setFrontendDefaults(context, projectPath) {
+  configManager.setFrontendDefaults(context);
+}
+
 async function executeAmplifyCommand(context) {
   let commandPath = path.normalize(path.join(__dirname, 'commands'));
   if (context.input.command === 'help') {
@@ -74,6 +82,8 @@ module.exports = {
   configure,
   publish,
   run,
+  displayFrontendDefaults,
+  setFrontendDefaults,
   createFrontendConfigs,
   executeAmplifyCommand,
   handleAmplifyEvent,
