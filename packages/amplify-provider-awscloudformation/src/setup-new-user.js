@@ -45,7 +45,7 @@ async function run(context) {
   ]);
 
   let deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', userName).replace('{region}', awsConfig.region);
-  const isOnWindows = /^win/.test(process.platform);
+  const isOnWindows = process.platform === 'win32';
   if (isOnWindows || isOnWsl) {
     deepLinkURL = deepLinkURL.replace('$new', '`$new');
   }
