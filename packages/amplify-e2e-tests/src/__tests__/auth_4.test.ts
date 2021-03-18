@@ -5,6 +5,7 @@ import {
   initIosProjectWithProfile,
   deleteProject,
   amplifyPushAuth,
+  addFeatureFlag,
 } from 'amplify-e2e-core';
 import {
   addAuthWithRecaptchaTrigger,
@@ -23,6 +24,7 @@ import {
   getUserPool,
   getUserPoolClients,
   getLambdaFunction,
+  getFunction,
 } from 'amplify-e2e-core';
 import _ from 'lodash';
 
@@ -73,15 +75,32 @@ describe('amplify updating auth...', () => {
     expect(userPool.UserPool).toBeDefined();
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
-    expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist,custom');
+    expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist,custom');
 
     await updateAuthWithoutCustomTrigger(projRoot, {});
     await amplifyPushAuth(projRoot);
     const updatedFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     const updatedDirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${Object.keys(meta.auth)[0]}PreSignup/src`);
     expect(updatedDirContents.includes('custom.js')).toBeFalsy();
-    expect(updatedDirContents.includes('email-filter-blacklist.js')).toBeTruthy();
-    expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-blacklist');
+    expect(updatedDirContents.includes('email-filter-denylist.js')).toBeTruthy();
+    expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist');
+    expect(lambdaFunction.Configuration.Environment.Variables.DOMAINDENYLIST).toEqual('amazon.com');
+  });
+
+  it('...should init a project and add auth with a custom trigger using legacy language', async () => {
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    addFeatureFlag(projRoot, 'auth', 'useinclusiveterminology', false);
+    await addAuthWithCustomTrigger(projRoot, { useInclusiveTerminology: false });
+    await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const authName = Object.keys(meta.auth)[0];
+    const functionName = `${authName}PreSignup-integtest`;
+    const lambdaFunction = await getFunction(functionName, meta.providers.awscloudformation.Region);
+    const dirContents = fs.readdirSync(`${projRoot}/amplify/backend/function/${authName}PreSignup/src`);
+    expect(lambdaFunction).toBeDefined();
+    expect(lambdaFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist-legacy,custom');
+    expect(lambdaFunction.Configuration.Environment.Variables.DOMAINBLACKLIST).toEqual('amazon.com');
+    expect(dirContents.includes('email-filter-denylist-legacy.js')).toBeTruthy();
   });
 
   it('...should init an android project and add customAuth flag, and remove flag when custom auth triggers are removed upon update ', async () => {
