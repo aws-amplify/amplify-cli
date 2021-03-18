@@ -2015,6 +2015,7 @@ workflows:
             branches:
               only:
                 - master
+                - initDXTest
                 - compute-functions
                 - iterative-update
           requires:
