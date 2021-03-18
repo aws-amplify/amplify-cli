@@ -888,7 +888,7 @@ test('authorized group is allowed to listen to onUpdate', async () => {
       complete: () => {},
       error: err => {
         console.log(JSON.stringify(err, null, 4));
-        resolve(err);
+        reject(err);
       },
     });
   });
@@ -936,7 +936,7 @@ test('authorized group is allowed to listen to onDelete', async () => {
       },
       error: err => {
         console.log(JSON.stringify(err, null, 4));
-        resolve(err);
+        reject(err);
       },
     });
   });
@@ -1118,7 +1118,7 @@ test('test that subscription with apiKey onUpdate', async () => {
     `,
     authMode: GRAPHQL_AUTH_MODE.API_KEY,
   }) as Observable<any>;
-  const subscriptionPromise = new Promise((resolve, _) => {
+  const subscriptionPromise = new Promise((resolve, reject) => {
     const subscription = observer.subscribe(
       (event: any) => {
         const todo = event.value.data.onUpdateTodo;
@@ -1130,7 +1130,7 @@ test('test that subscription with apiKey onUpdate', async () => {
       },
       err => {
         console.log(JSON.stringify(err, null, 4));
-        resolve(undefined);
+        reject(undefined);
       },
     );
   });
