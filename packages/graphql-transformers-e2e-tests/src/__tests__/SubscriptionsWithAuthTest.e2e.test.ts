@@ -613,7 +613,6 @@ beforeAll(async () => {
     // "The security token included in the request is invalid" errors
     await new Promise(res => setTimeout(res, PROPAGATION_DELAY));
   } catch (e) {
-    console.error(e);
     expect(true).toEqual(false);
   }
 });
@@ -798,7 +797,6 @@ test('Test a subscription on delete', async () => {
         resolve(undefined);
       },
       error: err => {
-        console.log(err);
         reject(err);
       },
     });
@@ -905,7 +903,6 @@ test('authorized group is allowed to listen to onUpdate', async () => {
       },
       complete: () => {},
       error: err => {
-        console.log(JSON.stringify(err, null, 4));
         reject(err);
       },
     });
@@ -956,7 +953,6 @@ test('authorized group is allowed to listen to onDelete', async () => {
         resolve(undefined);
       },
       error: err => {
-        console.log(JSON.stringify(err, null, 4));
         reject(err);
       },
     });
@@ -1080,7 +1076,6 @@ test('Test that IAM can listen and read to onCreatePost', async () => {
         resolve(undefined);
       },
       err => {
-        console.error(JSON.stringify(err, null, 4));
         reject(err);
       },
     );
@@ -1163,7 +1158,6 @@ test('test that subscription with apiKey onUpdate', async () => {
         resolve(undefined);
       },
       err => {
-        console.log(JSON.stringify(err, null, 4));
         reject(undefined);
       },
     );
