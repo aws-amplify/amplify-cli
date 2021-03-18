@@ -92,28 +92,26 @@ function listPublishMeta(context, publishMeta) {
 }
 
 async function addMeta(context, publishMeta) {
-  const answer = await inquirer.prompt(
-    {
-      name: 'patternToAdd',
-      type: 'input',
-      message: 'Meta pattern to add: ',
-    },
-    {
-      name: 'keyToAdd',
-      type: 'input',
-      message: 'Meta key to add: ',
-    },
-    {
-      name: 'valueToAdd',
-      type: 'input',
-      message: 'Meta value to add: ',
-    },
-  );
+  const answerPattern = await inquirer.prompt({
+    name: 'patternToAdd',
+    type: 'input',
+    message: 'Metadata pattern to add: ',
+  });
+  const answerKey = await inquirer.prompt({
+    name: 'keyToAdd',
+    type: 'input',
+    message: 'Metadata key to add: ',
+  });
+  const answerValue = await inquirer.prompt({
+    name: 'valueToAdd',
+    type: 'input',
+    message: 'Metadata value to add: ',
+  });
 
-  if (answer.patternToAdd && answer.keyToAdd && answer.valueToAdd) {
-    const pattern = answer.patternToAdd.trim();
-    const key = answer.keyToAdd.trim();
-    const value = answer.valueToAdd.trim();
+  if (answerPattern.patternToAdd && answerKey.keyToAdd && answerValue.valueToAdd) {
+    const pattern = answerPattern.patternToAdd.trim();
+    const key = answerKey.keyToAdd.trim();
+    const value = answerValue.valueToAdd.trim();
 
     if (pattern.length > 0 && key.length > 0 && value.length >= 0) {
       publishMeta.push({ pattern: pattern, key: key, value: value });

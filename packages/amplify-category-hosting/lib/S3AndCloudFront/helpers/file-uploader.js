@@ -70,12 +70,14 @@ async function uploadFile(s3Client, hostingBucketName, distributionDirPath, file
 
   const fileStream = fs.createReadStream(filePath);
   const contentType = mime.lookup(relativeFilePath);
+  let metaData = {};
+  if (fileMeta && fileMeta.length > 0) metaData = { Metadata: { ...fileMeta[0] } };
   const uploadParams = {
     Bucket: hostingBucketName,
     Key: relativeFilePath,
     Body: fileStream,
     ContentType: contentType || 'text/plain',
-    ...fileMeta,
+    ...metaData,
   };
 
   if (cloudFrontS3CanonicalUserId) {

@@ -8,7 +8,9 @@ function scan(context, distributionDirPath, WebsiteConfiguration) {
   if (fs.existsSync(distributionDirPath)) {
     const ignored = publishIgnoreConfig.getIgnore(context);
     const meta = publishMetaConfig.getMeta(context);
+
     fileList = recursiveScan(distributionDirPath, [], ignored, meta, distributionDirPath);
+
     if (fileList.length === 0) {
       const message = 'The distribution folder is empty';
       context.print.info('');
@@ -49,7 +51,7 @@ function recursiveScan(dir, filelist, amplifyIgnore, amplifyMeta, amplifyRoot) {
     const filePath = path.join(dir, file);
     if (fs.statSync(filePath).isDirectory()) {
       if (!publishIgnoreConfig.isIgnored(filePath, amplifyIgnore, amplifyRoot)) {
-        filelist = recursiveScan(filePath, filelist, amplifyIgnore, amplifyRoot);
+        filelist = recursiveScan(filePath, filelist, amplifyIgnore, amplifyMeta, amplifyRoot);
       }
     } else if (!publishIgnoreConfig.isIgnored(filePath, amplifyIgnore, amplifyRoot)) {
       const metaData = publishMetaConfig.getMetaKeyValue(filePath, amplifyMeta, amplifyRoot);
