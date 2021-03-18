@@ -1789,6 +1789,7 @@ workflows:
             branches:
               only:
                 - master
+                - initDXTest
     jobs:
       - build
       - cleanup_resources:
@@ -1810,6 +1811,7 @@ workflows:
               only:
                 - master
                 - iterative-update
+                - initDXTest
           requires:
             - build
             - mock_e2e_tests
@@ -1820,6 +1822,7 @@ workflows:
               only:
                 - master
                 - beta
+                - initDXTest
           requires:
             - build
             - mock_e2e_tests
@@ -1830,6 +1833,7 @@ workflows:
               only:
                 - master
                 - beta
+                - initDXTest
                 - backendManager
                 - iterative-update
                 - release
@@ -1848,6 +1852,7 @@ workflows:
             branches:
               only:
                 - master
+                - initDXTest
       - done_with_node_e2e_tests:
           context: amplify-cli-ecr
           requires:
@@ -1916,6 +1921,7 @@ workflows:
             branches:
               only:
                 - master
+                - initDXTest
           requires:
             - build
       - amplify_migration_tests_v4:
@@ -1924,6 +1930,7 @@ workflows:
             branches:
               only:
                 - master
+                - initDXTest
           requires:
             - build
       - amplify_migration_tests_v4_30_0:
@@ -1935,6 +1942,7 @@ workflows:
                 - graphqlschemae2e
                 - feat-import
                 - test-fix-status
+                - initDXTest
           requires:
             - build
       - amplify_console_integration_tests:
