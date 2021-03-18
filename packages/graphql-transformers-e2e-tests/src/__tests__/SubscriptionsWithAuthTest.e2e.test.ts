@@ -25,6 +25,10 @@ import {
   configureAmplify,
 } from '../cognitoUtils';
 import 'isomorphic-fetch';
+import { API } from 'aws-amplify';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { withTimeOut } from '../promiseWithTimeout';
+import * as Observable from 'zen-observable';
 
 // tslint:disable: no-use-before-declare
 
@@ -43,6 +47,7 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 const SUBSCRIPTION_DELAY = 10000;
 const PROPAGATION_DELAY = 5000;
 const JEST_TIMEOUT = 2000000;
+const SUBSCRIPTION_TIMEOUT = 10000;
 
 jest.setTimeout(JEST_TIMEOUT);
 
@@ -87,6 +92,8 @@ let GRAPHQL_IAM_AUTH_CLIENT: AWSAppSyncClient<any> = undefined;
 let GRAPHQL_APIKEY_CLIENT: AWSAppSyncClient<any> = undefined;
 
 let USER_POOL_ID = undefined;
+
+let API_KEY: string = undefined;
 
 const USERNAME1 = 'user1@test.com';
 const USERNAME2 = 'user2@test.com';
@@ -170,7 +177,13 @@ async function deleteBucket(name: string) {
     awsS3Client.deleteBucket(params, (err, data) => (err ? rej(err) : res(data)));
   });
 }
-
+beforeEach(async () => {
+  try {
+    await Auth.signOut();
+  } catch (ex) {
+    // don't need to fail tests on this error
+  }
+});
 beforeAll(async () => {
   // Create a stack for the post model with auth enabled.
   if (!fs.existsSync(LOCAL_BUILD_ROOT)) {
@@ -493,6 +506,7 @@ beforeAll(async () => {
     GRAPHQL_ENDPOINT = getApiEndpoint(finishedStack.Outputs);
 
     const apiKey = getApiKey(finishedStack.Outputs);
+    API_KEY = apiKey;
     expect(apiKey).toBeTruthy();
 
     const getIdentityPoolId = outputValueSelector('IdentityPoolId');
@@ -589,12 +603,16 @@ beforeAll(async () => {
         apiKey,
       },
     });
+    API.configure({
+      aws_appsync_graphqlEndpoint: GRAPHQL_ENDPOINT,
+      aws_appsync_region: AWS_REGION,
+      aws_appsync_authenticationType: 'AMAZON_COGNITO_USER_POOLS',
+    });
 
     // Wait for any propagation to avoid random
     // "The security token included in the request is invalid" errors
     await new Promise(res => setTimeout(res, PROPAGATION_DELAY));
   } catch (e) {
-    console.error(e);
     expect(true).toEqual(false);
   }
 });
@@ -610,7 +628,9 @@ afterAll(async () => {
 // tests using cognito
 test('Test that only authorized members are allowed to view subscriptions', async () => {
   // subscribe to create students as user 2
-  const observer = GRAPHQL_CLIENT_2.subscribe({
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
     query: gql`
       subscription OnCreateStudent {
         onCreateStudent {
@@ -622,11 +642,12 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
-    const subscription = observer.subscribe((event: any) => {
-      const student = event.data.onCreateStudent;
+    subscription = observer.subscribe((event: any) => {
+      const student = event.value.data.onCreateStudent;
       subscription.unsubscribe();
       expect(student.name).toEqual('student1');
       expect(student.email).toEqual('student1@domain.com');
@@ -643,13 +664,17 @@ test('Test that only authorized members are allowed to view subscriptions', asyn
     ssn: 'AAA-01-SSSS',
   });
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateStudent Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
 
 test('Test that an user not in the group is not allowed to view the subscription', async () => {
   // subscribe to create students as user 3
   // const observer = onCreateStudent(GRAPHQL_CLIENT_3)
-  const observer = GRAPHQL_CLIENT_3.subscribe({
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME3, REAL_PASSWORD);
+  const observer = API.graphql({
     query: gql`
       subscription OnCreateStudent {
         onCreateStudent {
@@ -661,12 +686,13 @@ test('Test that an user not in the group is not allowed to view the subscription
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
-    observer.subscribe({
+    subscription = observer.subscribe({
       error: (err: any) => {
-        expect(err.errors[0].message).toEqual(
+        expect(err.error.errors[0].message).toEqual(
           'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreateStudent on type Subscription"}]}',
         );
         resolve(undefined);
@@ -682,12 +708,16 @@ test('Test that an user not in the group is not allowed to view the subscription
     ssn: 'BBB-00-SNSN',
   });
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
 
 test('Test a subscription on update', async () => {
   // subscribe to update students as user 2
-  const observer = GRAPHQL_CLIENT_2.subscribe({
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME2, REAL_PASSWORD);
+  const observer = API.graphql({
     query: gql`
       subscription OnUpdateStudent {
         onUpdateStudent {
@@ -699,11 +729,12 @@ test('Test a subscription on update', async () => {
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
-    const subscription = observer.subscribe((event: any) => {
-      const student = event.data.onUpdateStudent;
+    subscription = observer.subscribe((event: any) => {
+      const student = event.value.data.onUpdateStudent;
       subscription.unsubscribe();
       expect(student.id).toEqual(student3ID);
       expect(student.name).toEqual('student3');
@@ -730,12 +761,16 @@ test('Test a subscription on update', async () => {
     email: 'emailChanged@domain.com',
   });
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnUpdateStudent Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
 
 test('Test a subscription on delete', async () => {
   // subscribe to onDelete as user 2
-  const observer = GRAPHQL_CLIENT_2.subscribe({
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME2, REAL_PASSWORD);
+  const observer = API.graphql({
     query: gql`
       subscription OnDeleteStudent {
         onDeleteStudent {
@@ -747,12 +782,13 @@ test('Test a subscription on delete', async () => {
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, reject) => {
-    const subscription = observer.subscribe({
+    subscription = observer.subscribe({
       next: event => {
-        const student = event.data.onDeleteStudent;
+        const student = event.value.data.onDeleteStudent;
         subscription.unsubscribe();
         expect(student.id).toEqual(student4ID);
         expect(student.name).toEqual('student4');
@@ -761,7 +797,6 @@ test('Test a subscription on delete', async () => {
         resolve(undefined);
       },
       error: err => {
-        console.log(err);
         reject(err);
       },
     });
@@ -780,13 +815,17 @@ test('Test a subscription on delete', async () => {
 
   await deleteStudent(GRAPHQL_CLIENT_1, { id: student4ID });
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnDeleteStudent Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
 
 test('test that group is only allowed to listen to subscriptions and listen to onCreate', async () => {
   const memberID = '001';
   const memberName = 'username00';
   // test that a user that only read can't mutate
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME2, REAL_PASSWORD);
   try {
     await createMember(GRAPHQL_CLIENT_2, { id: '001', name: 'notUser' });
   } catch (err) {
@@ -795,7 +834,7 @@ test('test that group is only allowed to listen to subscriptions and listen to o
   }
 
   // though they should see when a new member is created
-  const observer = GRAPHQL_CLIENT_2.subscribe({
+  const observer = API.graphql({
     query: gql`
       subscription OnCreateMember {
         onCreateMember {
@@ -806,11 +845,12 @@ test('test that group is only allowed to listen to subscriptions and listen to o
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
-    const subscription = observer.subscribe((event: any) => {
-      const member = event.data.onCreateMember;
+    subscription = observer.subscribe((event: any) => {
+      const member = event.value.data.onCreateMember;
       subscription.unsubscribe();
       expect(member).toBeDefined();
       expect(member.id).toEqual(memberID);
@@ -820,15 +860,23 @@ test('test that group is only allowed to listen to subscriptions and listen to o
   });
   await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
-  await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
+  const createMemberResponse = await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
+  expect(createMemberResponse.data.createMember.id).toEqual(memberID);
+  expect(createMemberResponse.data.createMember.name).toEqual(memberName);
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateMember Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
 
 test('authorized group is allowed to listen to onUpdate', async () => {
   const memberID = '001update';
-  const memberName = 'newUsername';
-  const observer = GRAPHQL_CLIENT_2.subscribe({
+  const oldMemberName = 'oldUsername';
+  const newMemberName = 'newUsername';
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME2, REAL_PASSWORD);
+
+  const observer = API.graphql({
     query: gql`
       subscription OnUpdateMember {
         onUpdateMember {
@@ -839,39 +887,46 @@ test('authorized group is allowed to listen to onUpdate', async () => {
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
 
   const subscriptionPromise = new Promise((resolve, reject) => {
-    const subscription = observer.subscribe({
+    subscription = observer.subscribe({
       next: event => {
-        subscription.unsubscribe();
-        const subResponse = event.data.onUpdateMember;
+        const subResponse = event.value.data.onUpdateMember;
         subscription.unsubscribe();
         expect(subResponse).toBeDefined();
         expect(subResponse.id).toEqual(memberID);
-        expect(subResponse.name).toEqual(memberName);
+        expect(subResponse.name).toEqual(newMemberName);
         resolve(undefined);
       },
       complete: () => {},
       error: err => {
-        console.log(err);
         reject(err);
       },
     });
   });
-  await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
+  const createMemberResponse = await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: oldMemberName });
+  expect(createMemberResponse.data.createMember.id).toEqual(memberID);
+  expect(createMemberResponse.data.createMember.name).toEqual(oldMemberName);
   await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
-  await updateMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
+  const updateMemberResponse = await updateMember(GRAPHQL_CLIENT_1, { id: memberID, name: newMemberName });
+  expect(updateMemberResponse.data.updateMember.id).toEqual(memberID);
+  expect(updateMemberResponse.data.updateMember.name).toEqual(newMemberName);
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnUpdateMember Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
 
 test('authorized group is allowed to listen to onDelete', async () => {
   const memberID = '001delete';
   const memberName = 'newUsername';
-  const observer = GRAPHQL_CLIENT_2.subscribe({
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME2, REAL_PASSWORD);
+  const observer = API.graphql({
     query: gql`
       subscription OnDeleteMember {
         onDeleteMember {
@@ -882,14 +937,15 @@ test('authorized group is allowed to listen to onDelete', async () => {
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
 
   const subscriptionPromise = new Promise((resolve, reject) => {
-    const subscription = observer.subscribe({
+    subscription = observer.subscribe({
       next: event => {
         subscription.unsubscribe();
-        const subResponse = event.data.onDeleteMember;
+        const subResponse = event.value.data.onDeleteMember;
         subscription.unsubscribe();
         expect(subResponse).toBeDefined();
         expect(subResponse.id).toEqual(memberID);
@@ -897,23 +953,29 @@ test('authorized group is allowed to listen to onDelete', async () => {
         resolve(undefined);
       },
       error: err => {
-        console.log(err);
         reject(err);
       },
     });
   });
 
-  await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
+  const createMemberResponse = await createMember(GRAPHQL_CLIENT_1, { id: memberID, name: memberName });
+  expect(createMemberResponse.data.createMember.id).toEqual(memberID);
+  expect(createMemberResponse.data.createMember.name).toEqual(memberName);
   await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
   // user that is authorized creates the update the mutation
-  await deleteMember(GRAPHQL_CLIENT_1, { id: memberID });
+  const deleteMemberResponse = await deleteMember(GRAPHQL_CLIENT_1, { id: memberID });
+  expect(deleteMemberResponse.data.deleteMember.id).toEqual(memberID);
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnDeleteMember Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
 
 // ownerField Tests
 test('Test subscription onCreatePost with ownerField', async () => {
-  const observer = GRAPHQL_CLIENT_1.subscribe({
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
     query: gql`
     subscription OnCreatePost {
         onCreatePost(postOwner: "${USERNAME1}") {
@@ -922,11 +984,12 @@ test('Test subscription onCreatePost with ownerField', async () => {
             postOwner
         }
     }`,
-    fetchPolicy: 'network-only',
-  });
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
-    const subscription = observer.subscribe((event: any) => {
-      const post = event.data.onCreatePost;
+    subscription = observer.subscribe((event: any) => {
+      const post = event.value.data.onCreatePost;
       subscription.unsubscribe();
       expect(post.title).toEqual('someTitle');
       expect(post.postOwner).toEqual(USERNAME1);
@@ -935,16 +998,22 @@ test('Test subscription onCreatePost with ownerField', async () => {
   });
   await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
 
-  await createPost(GRAPHQL_CLIENT_1, {
+  const createPostResponse = await createPost(GRAPHQL_CLIENT_1, {
     title: 'someTitle',
     postOwner: USERNAME1,
   });
+  expect(createPostResponse.data.createPost.title).toEqual('someTitle');
+  expect(createPostResponse.data.createPost.postOwner).toEqual(USERNAME1);
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreatePost Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
 
 test('Test onCreatePost with optional argument', async () => {
-  const failedObserver = GRAPHQL_CLIENT_1.subscribe({
+  reconfigureAmplifyAPI('AMAZON_COGNITO_USER_POOLS');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const failedObserver = API.graphql({
     query: gql`
       subscription OnCreatePost {
         onCreatePost {
@@ -954,13 +1023,14 @@ test('Test onCreatePost with optional argument', async () => {
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
+    authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
-    const subscription = failedObserver.subscribe(
+    subscription = failedObserver.subscribe(
       event => {},
       err => {
-        expect(err.errors[0].message).toEqual(
+        expect(err.error.errors[0].message).toEqual(
           'Connection failed: {"errors":[{"errorType":"Unauthorized","message":"Not Authorized to access onCreatePost on type Subscription"}]}',
         );
         resolve(undefined);
@@ -968,14 +1038,19 @@ test('Test onCreatePost with optional argument', async () => {
     );
   });
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreatePost Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
 
 // iam tests
 test('Test that IAM can listen and read to onCreatePost', async () => {
   const postID = 'subscriptionID';
   const postTitle = 'titleMadeByPostOwner';
-  const observer = GRAPHQL_IAM_AUTH_CLIENT.subscribe({
+
+  reconfigureAmplifyAPI('AWS_IAM');
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
     query: gql`
       subscription OnCreatePost {
         onCreatePost {
@@ -985,12 +1060,14 @@ test('Test that IAM can listen and read to onCreatePost', async () => {
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
-  const subscriptionPromise = new Promise((resolve, _) => {
-    const subscription = observer.subscribe(
+    authMode: GRAPHQL_AUTH_MODE.AWS_IAM,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+
+  const subscriptionPromise = new Promise((resolve, reject) => {
+    subscription = observer.subscribe(
       (event: any) => {
-        const post = event.data.onCreatePost;
+        const post = event.value.data.onCreatePost;
         subscription.unsubscribe();
         expect(post).toBeDefined();
         expect(post.id).toEqual(postID);
@@ -999,19 +1076,24 @@ test('Test that IAM can listen and read to onCreatePost', async () => {
         resolve(undefined);
       },
       err => {
-        console.error(JSON.stringify(err, null, 4));
+        reject(err);
       },
     );
   });
   await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
 
-  await createPost(GRAPHQL_CLIENT_1, { id: postID, title: postTitle, postOwner: USERNAME1 });
-
-  return subscriptionPromise;
+  const createPostResponse = await createPost(GRAPHQL_CLIENT_1, { id: postID, title: postTitle, postOwner: USERNAME1 });
+  expect(createPostResponse.data.createPost.id).toEqual(postID);
+  expect(createPostResponse.data.createPost.title).toEqual(postTitle);
+  expect(createPostResponse.data.createPost.postOwner).toEqual(USERNAME1);
+  await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
+  await subscriptionPromise;
 });
 
 test('test that subcsription with apiKey', async () => {
-  const observer = GRAPHQL_APIKEY_CLIENT.subscribe({
+  reconfigureAmplifyAPI('API_KEY', API_KEY);
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
     query: gql`
       subscription OnCreateTodo {
         onCreateTodo {
@@ -1021,12 +1103,13 @@ test('test that subcsription with apiKey', async () => {
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
+    authMode: GRAPHQL_AUTH_MODE.API_KEY,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
 
   const subscriptionPromise = new Promise((resolve, _) => {
-    const subscription = observer.subscribe((event: any) => {
-      const post = event.data.onCreateTodo;
+    subscription = observer.subscribe((event: any) => {
+      const post = event.value.data.onCreateTodo;
       subscription.unsubscribe();
       expect(post.description).toEqual('someDescription');
       expect(post.name).toBeNull();
@@ -1036,16 +1119,22 @@ test('test that subcsription with apiKey', async () => {
 
   await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
 
-  await createTodo(GRAPHQL_IAM_AUTH_CLIENT, {
+  const createTodoResponse = await createTodo(GRAPHQL_IAM_AUTH_CLIENT, {
     description: 'someDescription',
     name: 'todo1',
   });
+  expect(createTodoResponse.data.createTodo.description).toEqual('someDescription');
+  expect(createTodoResponse.data.createTodo.name).toEqual(null);
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'OnCreateTodo Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
 
 test('test that subscription with apiKey onUpdate', async () => {
-  const observer = GRAPHQL_APIKEY_CLIENT.subscribe({
+  reconfigureAmplifyAPI('API_KEY', API_KEY);
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
     query: gql`
       subscription OnUpdateTodo {
         onUpdateTodo {
@@ -1055,17 +1144,23 @@ test('test that subscription with apiKey onUpdate', async () => {
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
-  const subscriptionPromise = new Promise((resolve, _) => {
-    const subscription = observer.subscribe((event: any) => {
-      const todo = event.data.onUpdateTodo;
-      subscription.unsubscribe();
-      expect(todo.id).toEqual(todo2ID);
-      expect(todo.description).toEqual('todo2newDesc');
-      expect(todo.name).toBeNull();
-      resolve(undefined);
-    });
+    authMode: GRAPHQL_AUTH_MODE.API_KEY,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
+  const subscriptionPromise = new Promise((resolve, reject) => {
+    subscription = observer.subscribe(
+      (event: any) => {
+        const todo = event.value.data.onUpdateTodo;
+        subscription.unsubscribe();
+        expect(todo.id).toEqual(todo2ID);
+        expect(todo.description).toEqual('todo2newDesc');
+        expect(todo.name).toBeNull();
+        resolve(undefined);
+      },
+      err => {
+        reject(undefined);
+      },
+    );
   });
   await new Promise(res => setTimeout(res, SUBSCRIPTION_DELAY));
 
@@ -1079,16 +1174,22 @@ test('test that subscription with apiKey onUpdate', async () => {
   expect(todo2.data.createTodo.name).toBeNull();
 
   // update the description on todo
-  await updateTodo(GRAPHQL_IAM_AUTH_CLIENT, {
+  const updateResponse = await updateTodo(GRAPHQL_IAM_AUTH_CLIENT, {
     id: todo2ID,
     description: 'todo2newDesc',
   });
+  expect(updateResponse.data.updateTodo.id).toEqual(todo2ID);
+  expect(updateResponse.data.updateTodo.description).toEqual('todo2newDesc');
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, 'createTodo Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
 
 test('test that subscription with apiKey onDelete', async () => {
-  const observer = GRAPHQL_APIKEY_CLIENT.subscribe({
+  reconfigureAmplifyAPI('API_KEY', API_KEY);
+  await Auth.signIn(USERNAME1, REAL_PASSWORD);
+  const observer = API.graphql({
     query: gql`
       subscription OnDeleteTodo {
         onDeleteTodo {
@@ -1098,11 +1199,12 @@ test('test that subscription with apiKey onDelete', async () => {
         }
       }
     `,
-    fetchPolicy: 'network-only',
-  });
+    authMode: GRAPHQL_AUTH_MODE.API_KEY,
+  }) as Observable<any>;
+  let subscription: ZenObservable.Subscription;
   const subscriptionPromise = new Promise((resolve, _) => {
-    const subscription = observer.subscribe((event: any) => {
-      const todo = event.data.onDeleteTodo;
+    subscription = observer.subscribe((event: any) => {
+      const todo = event.value.data.onDeleteTodo;
       subscription.unsubscribe();
       expect(todo.id).toEqual(todo3ID);
       expect(todo.description).toEqual('deleteTodoDesc');
@@ -1126,8 +1228,27 @@ test('test that subscription with apiKey onDelete', async () => {
     id: todo3ID,
   });
 
-  return subscriptionPromise;
+  return withTimeOut(subscriptionPromise, SUBSCRIPTION_TIMEOUT, ' OnDelete Todo Subscription timed out', () => {
+    subscription?.unsubscribe();
+  });
 });
+
+function reconfigureAmplifyAPI(appSyncAuthType: string, apiKey?: string) {
+  if (appSyncAuthType === 'API_KEY') {
+    API.configure({
+      aws_appsync_graphqlEndpoint: GRAPHQL_ENDPOINT,
+      aws_appsync_region: AWS_REGION,
+      aws_appsync_authenticationType: appSyncAuthType,
+      aws_appsync_apiKey: apiKey,
+    });
+  } else {
+    API.configure({
+      aws_appsync_graphqlEndpoint: GRAPHQL_ENDPOINT,
+      aws_appsync_region: AWS_REGION,
+      aws_appsync_authenticationType: appSyncAuthType,
+    });
+  }
+}
 
 // mutations
 async function createMember(client: AWSAppSyncClient<any>, input: MemberInput) {
