@@ -43,9 +43,9 @@ if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
 (global as any).WebSocket = require('ws');
 
 // delay times
-const SUBSCRIPTION_DELAY = 5000;
+const SUBSCRIPTION_DELAY = 10000;
 const PROPAGATION_DELAY = 5000;
-const JEST_TIMEOUT = 1000000;
+const JEST_TIMEOUT = 2000000;
 
 jest.setTimeout(JEST_TIMEOUT);
 
