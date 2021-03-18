@@ -19,21 +19,24 @@ export async function analyzeProject(context) {
   Object.assign(context.exeInfo.localEnvInfo, { projectPath });
 
   let { projectName } = context.exeInfo.projectConfig;
-  let { defaultEditor, envName } = context.exeInfo.localEnvInfo;
+  const { defaultEditor, envName } = context.exeInfo.localEnvInfo;
 
   context.print.info('');
   await displayConfigurationDefaults(context, projectName, envName, defaultEditor);
 
   const frontendPlugins = getFrontendPlugins(context);
-  const frontend = context.exeInfo.projectConfig.frontend;
+  let frontend = context.exeInfo.projectConfig.frontend;
+  if (!frontend) {
+    frontend = 'javascript';
+  }
   const frontendModule = require(frontendPlugins[frontend]);
   await frontendModule.displayFrontendDefaults(context, projectPath);
   context.print.info('');
 
   const envAwsInfo = stateManager.getLocalAWSInfo();
-  if (envAwsInfo && envAwsInfo[envName]) {
+  if (typeof envAwsInfo?.[envName] === 'object') {
     const awsInfo = envAwsInfo[envName];
-    if (awsInfo['useProfile'] && awsInfo['profileName']) {
+    if (awsInfo.useProfile && awsInfo.profileName) {
       await displayProfileSetting(context, awsInfo['profileName']);
       context.print.info('');
     }
@@ -42,7 +45,7 @@ export async function analyzeProject(context) {
   await displayContainersInfo(context);
   context.print.info('');
 
-  const { configurationSetting } = await inquirer.prompt(configureSettingQuestion);
+  const configurationSetting = await getConfigurationSetting();
   if (configurationSetting !== 'project') {
     context.exeInfo.inputParams.yes = true;
     if (configurationSetting === 'containers') {
@@ -61,28 +64,33 @@ export async function analyzeProject(context) {
   return context;
 }
 
-async function displayProfileSetting(context, profileName) {
+function displayProfileSetting(context, profileName) {
   context.print.info('AWS Profile setting');
   context.print.info(`| Selected profile: ${profileName}`);
 }
 
-async function displayContainersInfo(context) {
+function displayContainersInfo(context) {
   context.print.info('Advanced: Container-based deployments');
   const containerDeploymentStatus = isContainersEnabled(context) ? 'Yes' : 'No';
   context.print.info(`| Leverage container-based deployments: ${containerDeploymentStatus}`);
 }
 
-const configureSettingQuestion: ListQuestion = {
-  type: 'list',
-  name: 'configurationSetting',
-  message: 'Which setting do you want to configure?',
-  choices: [
-    { name: 'Project information', value: 'project' },
-    { name: 'AWS Profile setting', value: 'profile' },
-    { name: 'Advanced: Container-based deployments', value: 'containers' },
-  ],
-  default: 'project',
-};
+async function getConfigurationSetting() {
+  const configureSettingQuestion: ListQuestion = {
+    type: 'list',
+    name: 'configurationSetting',
+    message: 'Which setting do you want to configure?',
+    choices: [
+      { name: 'Project information', value: 'project' },
+      { name: 'AWS Profile setting', value: 'profile' },
+      { name: 'Advanced: Container-based deployments', value: 'containers' },
+    ],
+    default: 'project',
+  };
+
+  const { configurationSetting } = await inquirer.prompt(configureSettingQuestion);
+  return configurationSetting;
+}
 
 async function configureProjectName(context) {
   let { projectName } = context.exeInfo.projectConfig;

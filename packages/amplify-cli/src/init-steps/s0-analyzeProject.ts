@@ -45,7 +45,7 @@ async function displayAndSetDefaults(context, projectPath, projectName) {
   const defaultProjectName = projectName;
   const defaultEnv = getDefaultEnv(context);
   let defaultEditor;
-  if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.defaultEditor) {
+  if (context?.exeInfo?.inputParams?.amplify?.defaultEditor) {
     defaultEditor = normalizeEditor(context.exeInfo.inputParams.amplify.defaultEditor);
   } else {
     defaultEditor = editors.length > 0 ? editors[0].value : 'vscode';
@@ -53,7 +53,7 @@ async function displayAndSetDefaults(context, projectPath, projectName) {
   const editorIndex = editors.findIndex(editorEntry => editorEntry.value === defaultEditor);
   const defaultEditorName = editorIndex > -1 ? editors[editorIndex].name : 'Visual Studio Code';
 
-  context.print.success('We will apply the following configuration:');
+  context.print.success('The following configuration will be applied:');
   context.print.info('');
 
   await displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
@@ -190,7 +190,7 @@ const INVALID_ENV_NAME_MSG = 'Environment name must be between 2 and 10 characte
 function getDefaultEnv(context): string | undefined {
   let defaultEnv = 'dev';
 
-  if (context.exeInfo.inputParams.amplify && context.exeInfo.inputParams.amplify.envName) {
+  if (context?.exeInfo?.inputParams?.amplify?.envName) {
     if (isEnvNameValid(context.exeInfo.inputParams.amplify.envName)) {
       defaultEnv = context.exeInfo.inputParams.amplify.envName;
       return defaultEnv;
