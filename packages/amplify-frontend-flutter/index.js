@@ -42,11 +42,11 @@ function run(context) {
   return context;
 }
 
-function displayFrontendDefaults(context, projectPath) {
+function displayFrontendDefaults(context) {
   configManager.displayFrontendDefaults(context);
 }
 
-function setFrontendDefaults(context, projectPath) {
+function setFrontendDefaults(context) {
   configManager.setFrontendDefaults(context);
 }
 
