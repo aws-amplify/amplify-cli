@@ -1,5 +1,7 @@
 // Some convenience types for the existing service walkthrough logic
 
+import { $TSObject } from 'amplify-cli-core';
+
 export type ServiceQuestionsResult = ServiceQuestionsBaseResult &
   OAuthResult &
   SocialProviderResult &
@@ -105,3 +107,13 @@ export enum TriggerType {
   VerifyAuthChallengeResponse = 'VerifyAuthChallengeResponse',
   PreTokenGeneration = 'PreTokenGeneration',
 }
+
+export type AuthTriggerConnection = {
+  fnName: String;
+  triggerKey: TriggerType;
+};
+
+export type AuthTriggerConfig = {
+  triggers: $TSObject;
+  authLambdaConfig: AuthTriggerConnection;
+};

@@ -43,9 +43,20 @@ describe('When handling selected triggers...', () => {
     const mockAnswers = {
       triggers: {
         PostConfirmation: ['add-to-group'],
+        PostAuthentication: ['custom'],
       },
+      authLambdaConfig: [
+        {
+          PostConfirmation: 'demoFnPostConfirmation',
+        },
+        {
+          PostAuthentication: 'demoFnPostAuthentication',
+        },
+      ],
+      resourceName: 'demoFn',
     };
-    const triggers = await handleTriggers(context, mockAnswers);
+    const { triggers, authLambdaConfig } = await handleTriggers(context, mockAnswers);
     expect(triggers).toEqual(mockAnswers.triggers);
+    expect(authLambdaConfig).toEqual(mockAnswers.authLambdaConfig);
   });
 });

@@ -884,8 +884,9 @@ async function formNestedStack(
               }
 
               const parameterKey = `${dependsOn[i].category}${dependsOn[i].resourceName}${dependsOn[i].attributes[j]}`;
-
-              parameters[parameterKey] = parameterValue;
+              if (!isAuthTrigger(dependentResource)) {
+                parameters[parameterKey] = parameterValue;
+              }
             }
 
             if (dependsOn[i].exports) {
@@ -1007,4 +1008,8 @@ export async function generateAndUploadRootStack(context: $TSContext, destinatio
   };
 
   await s3Client.uploadFile(s3Params, false);
+}
+
+function isAuthTrigger(dependentResource: $TSObject) {
+  return dependentResource.category === 'function' && dependentResource.triggerProvider === 'Cognito';
 }
