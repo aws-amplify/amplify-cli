@@ -1104,7 +1104,7 @@ function setSyncQueryFilterSnippet() {
     compoundExpression([
       set(ref('filterArgsMap'), ref('ctx.args.filter.get("and")')),
       ifElse(
-        raw(`!$util.isNullOrEmpty($filterArgsMap) && $util.isNull($ctx.args.lastSync)`),
+        raw(`!$util.isNullOrEmpty($filterArgsMap) && ($util.isNull($ctx.args.lastSync) || $ctx.args.lastSync == 0)`),
         compoundExpression([
           set(ref('json'), raw(`$filterArgsMap`)),
           forEach(ref('item'), ref(`json`), [

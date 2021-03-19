@@ -77,13 +77,13 @@ const CF_SCHEMA = new yaml.Schema([
   new yaml.Type('!GetAtt', {
     kind: 'scalar',
     construct: function (data) {
-      return { 'Fn::GetAtt': data };
+      return { 'Fn::GetAtt': Array.isArray(data) ? data : data.split('.') };
     },
   }),
   new yaml.Type('!GetAtt', {
     kind: 'sequence',
     construct: function (data) {
-      return { 'Fn::GetAtt': data };
+      return { 'Fn::GetAtt': Array.isArray(data) ? data : data.split('.') };
     },
   }),
   new yaml.Type('!GetAZs', {

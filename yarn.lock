@@ -8791,6 +8791,13 @@ axios@^0.19.0:
   dependencies:
     follow-redirects "1.5.10"
 
+axios@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.npmjs.org/axios/-/axios-0.20.0.tgz#057ba30f04884694993a8cd07fa394cff11c50bd"
+  integrity sha512-ANA4rr2BDcmmAQLOKft2fufrtuvlqR+cXNNinUmvfeSNCOF98PZL+7M/v1zIdGo7OLjEA9J2gXJL+j4zGsl0bA==
+  dependencies:
+    follow-redirects "^1.10.0"
+
 axios@^0.21.1:
   version "0.21.1"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
@@ -10053,6 +10060,13 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
   dependencies:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
+
+circleci-api@^4.1.3:
+  version "4.1.3"
+  resolved "https://registry.npmjs.org/circleci-api/-/circleci-api-4.1.3.tgz#cafd80bc1905c6064724636741b4b5b231ed34d0"
+  integrity sha512-Km6H8LB3nNbFUjErhI+sNQrcHcU7dCBnQEi4ckBtQMkCXh+2gDvaYchfkeuIaA1hkakQT5sLmdPbYzhKbvsOMg==
+  dependencies:
+    axios "^0.20.0"
 
 cjs-module-lexer@^0.6.0:
   version "0.6.0"
