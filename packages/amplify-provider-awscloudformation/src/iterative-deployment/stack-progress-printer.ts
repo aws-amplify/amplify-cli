@@ -15,6 +15,8 @@ export class StackProgressPrinter implements IStackProgressPrinter {
     this.events.push(event);
   };
   print = () => {
+    // CFN sorts the events by descending
+    this.events = this.events.reverse();
     if (this.events.length > 0 && this.isRunning) {
       console.log('\n');
       const COLUMNS = ['ResourceStatus', 'LogicalResourceId', 'ResourceType', 'Timestamp', 'ResourceStatusReason'];
