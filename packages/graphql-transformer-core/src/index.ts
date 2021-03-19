@@ -14,6 +14,7 @@ import {
   revertAPIMigration,
   CLOUDFORMATION_FILE_NAME,
   PARAMETERS_FILE_NAME,
+  getSanityCheckRules,
 } from './util/amplifyUtils';
 import {
   readSchema as readProjectSchema,
@@ -68,4 +69,5 @@ export {
   DeploymentResources,
   CLOUDFORMATION_FILE_NAME,
   PARAMETERS_FILE_NAME,
+  getSanityCheckRules,
 };

@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`get sanity check rules sanitycheck rule list when api is in update status and ff enabled 1`] = `
+Array [
+  "cantEditKeySchemaRule",
+  "cantAddLSILaterRule",
+  "cantRemoveLSILater",
+  "cantEditLSIKeySchemaRule",
+]
+`;
+
+exports[`get sanity check rules sanitycheck rule list when api is in update status and ff enabled 2`] = `
+Array [
+  "cantHaveMoreThan500ResourcesRule",
+]
+`;
+
+exports[`get sanity check rules sanitycheck rule list when api is in update status and no ff enabled 1`] = `
+Array [
+  "cantEditKeySchemaRule",
+  "cantAddLSILaterRule",
+  "cantRemoveLSILater",
+  "cantEditLSIKeySchemaRule",
+  "cantEditGSIKeySchemaRule",
+  "cantAddAndRemoveGSIAtSameTimeRule",
+]
+`;
+
+exports[`get sanity check rules sanitycheck rule list when api is in update status and no ff enabled 2`] = `
+Array [
+  "cantHaveMoreThan500ResourcesRule",
+  "cantMutateMultipleGSIAtUpdateTimeRule",
+]
+`;

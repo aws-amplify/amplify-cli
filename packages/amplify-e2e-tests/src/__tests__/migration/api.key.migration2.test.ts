@@ -1,6 +1,7 @@
 import { initJSProjectWithProfile, deleteProject, amplifyPush, amplifyPushUpdate, addFeatureFlag } from 'amplify-e2e-core';
-import { addApiWithSchema, updateApiSchema } from 'amplify-e2e-core';
+import { addApiWithSchema, updateApiSchema, getProjectMeta } from 'amplify-e2e-core';
 import { createNewProjectDir, deleteProjectDir } from 'amplify-e2e-core';
+import { addEnvironment } from '../../environment/env';
 
 describe('amplify add api', () => {
   let projRoot: string;
@@ -23,6 +24,25 @@ describe('amplify add api', () => {
 
     updateApiSchema(projRoot, projectName, nextSchema);
     await amplifyPushUpdate(projRoot, /GraphQL endpoint:.*/);
+  });
+
+  it('init project, allow editing keyschema when adding environment', async () => {
+    const projectName = 'migratingkey';
+    const initialSchema = 'migrations_key/initial_schema.graphql';
+    const nextSchema1 = 'migrations_key/cant_change_key_schema.graphql';
+
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await amplifyPush(projRoot);
+    await addEnvironment(projRoot, { envName: 'test' });
+    updateApiSchema(projRoot, projectName, nextSchema1);
+    await amplifyPush(projRoot);
+    const { output } = getProjectMeta(projRoot).api[projectName];
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
   });
 
   it('init project, run invalid migration trying to add more than one gsi, and check for error', async () => {

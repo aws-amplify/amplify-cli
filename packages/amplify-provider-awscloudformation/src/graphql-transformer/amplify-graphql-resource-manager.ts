@@ -10,6 +10,7 @@ import {
   cantAddAndRemoveGSIAtSameTimeRule,
   cantBatchMutateGSIAtUpdateTimeRule,
   cantEditGSIKeySchemaRule,
+  cantHaveMoreThan500ResourcesRule,
   sanityCheckDiffs,
 } from 'graphql-transformer-core';
 
@@ -94,7 +95,9 @@ export class GraphQLResourceManager {
         cantAddAndRemoveGSIAtSameTimeRule,
       ];
 
-      sanityCheckDiffs(gqlDiff.diff, gqlDiff.current, gqlDiff.next, diffRules);
+      const projectRules = [cantHaveMoreThan500ResourcesRule];
+
+      sanityCheckDiffs(gqlDiff.diff, gqlDiff.current, gqlDiff.next, diffRules, projectRules);
     } catch (err) {
       if (err.name !== 'InvalidGSIMigrationError') {
         throw err;

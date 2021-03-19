@@ -32,6 +32,7 @@ import {
   readProjectConfiguration,
   buildAPIProject,
   TransformConfig,
+  getSanityCheckRules,
 } from 'graphql-transformer-core';
 
 import { print } from 'graphql';
@@ -323,6 +324,8 @@ export async function transformGraphQLSchema(context, options) {
     resources = resources.concat(allResources);
   }
   resources = resources.filter(resource => resource.service === 'AppSync');
+  // check if api is in update status or create status
+  const isNewAppSyncAPI: boolean = resourcesToBeCreated.filter(resource => resource.service === 'AppSync').length === 0 ? false : true;
 
   if (!resourceDir) {
     // There can only be one appsync resource
@@ -470,6 +473,9 @@ export async function transformGraphQLSchema(context, options) {
     searchableTransformerFlag = true;
   }
 
+  const ff = new AmplifyCLIFeatureFlagAdapter();
+  const sanityCheckRulesList = getSanityCheckRules(isNewAppSyncAPI, ff);
+
   const buildConfig = {
     ...options,
     buildParameters,
@@ -479,10 +485,10 @@ export async function transformGraphQLSchema(context, options) {
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
     minify: options.minify,
-    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
+    featureFlags: ff,
+    sanityCheckRules: sanityCheckRulesList,
   };
   const transformerOutput = await buildAPIProject(buildConfig);
-
   context.print.success(`\nGraphQL schema compiled successfully.\n\nEdit your schema at ${schemaFilePath} or \
 place .graphql files in a directory at ${schemaDirPath}`);
 

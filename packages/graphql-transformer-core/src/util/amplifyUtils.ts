@@ -38,6 +38,12 @@ export interface ProjectOptions {
   buildParameters?: Object;
   minify?: boolean;
   featureFlags: FeatureFlagProvider;
+  sanityCheckRules: SanityCheckRules;
+}
+
+export interface SanityCheckRules {
+  projectRules: ProjectRule[];
+  diffRules: DiffRule[];
 }
 
 export async function buildProject(opts: ProjectOptions) {
@@ -54,43 +60,17 @@ export async function buildProject(opts: ProjectOptions) {
       opts.minify,
     );
 
-    if (opts.currentCloudBackendDirectory) {
-      let diffRules: DiffRule[];
-      let projectRules: ProjectRule[];
+    const lastBuildPath =
+      opts.currentCloudBackendDirectory !== undefined ? path.join(opts.currentCloudBackendDirectory, 'build') : undefined;
+    const thisBuildPath = opts.projectDirectory !== undefined ? path.join(opts.projectDirectory, 'build') : undefined;
 
-      // If we have iterative GSI upgrades enabled it means we only do sanity check on LSIs
-      // as the other checks will be carried out as series of updates.
-      if (opts.featureFlags.getBoolean('enableIterativeGSIUpdates')) {
-        diffRules = [
-          // LSI
-          cantEditKeySchemaRule,
-          cantAddLSILaterRule,
-          cantRemoveLSILater,
-          cantEditLSIKeySchemaRule,
-        ];
-
-        // Project level rules
-        projectRules = [cantHaveMoreThan500ResourcesRule];
-      } else {
-        diffRules = [
-          // LSI
-          cantEditKeySchemaRule,
-          cantAddLSILaterRule,
-          cantRemoveLSILater,
-          cantEditLSIKeySchemaRule,
-          // GSI
-          cantEditGSIKeySchemaRule,
-          cantAddAndRemoveGSIAtSameTimeRule,
-        ];
-
-        projectRules = [cantHaveMoreThan500ResourcesRule, cantMutateMultipleGSIAtUpdateTimeRule];
-      }
-
-      const lastBuildPath = path.join(opts.currentCloudBackendDirectory, 'build');
-      const thisBuildPath = path.join(opts.projectDirectory, 'build');
-
-      await sanityCheckProject(lastBuildPath, thisBuildPath, opts.rootStackFileName, diffRules, projectRules);
-    }
+    await sanityCheckProject(
+      lastBuildPath,
+      thisBuildPath,
+      opts.rootStackFileName,
+      opts.sanityCheckRules.diffRules,
+      opts.sanityCheckRules.projectRules,
+    );
   }
 
   return builtProject;
@@ -745,4 +725,39 @@ function stacksDirectoryPath(rootPath: string) {
 
 function getOrDefault(o: any, k: string, d: any) {
   return o[k] || d;
+}
+
+export function getSanityCheckRules(isNewAppSyncAPI: boolean, ff: FeatureFlagProvider) {
+  let diffRules: DiffRule[] = [];
+  let projectRules: ProjectRule[] = [];
+  // If we have iterative GSI upgrades enabled it means we only do sanity check on LSIs
+  // as the other checks will be carried out as series of updates.
+  if (!isNewAppSyncAPI) {
+    if (ff.getBoolean('enableIterativeGSIUpdates')) {
+      diffRules.push(
+        // LSI
+        cantEditKeySchemaRule,
+        cantAddLSILaterRule,
+        cantRemoveLSILater,
+        cantEditLSIKeySchemaRule,
+      );
+
+      // Project level rules
+      projectRules.push(cantHaveMoreThan500ResourcesRule);
+    } else {
+      diffRules.push(
+        // LSI
+        cantEditKeySchemaRule,
+        cantAddLSILaterRule,
+        cantRemoveLSILater,
+        cantEditLSIKeySchemaRule,
+        // GSI
+        cantEditGSIKeySchemaRule,
+        cantAddAndRemoveGSIAtSameTimeRule,
+      );
+
+      projectRules.push(cantHaveMoreThan500ResourcesRule, cantMutateMultipleGSIAtUpdateTimeRule);
+    }
+  }
+  return { diffRules, projectRules };
 }
