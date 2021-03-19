@@ -26,8 +26,7 @@ export function createInfo(info: GraphQLResolveInfo) {
 
   const fieldNode = info.fieldNodes.find(f => f.name.value === info.fieldName);
   if (fieldNode && fieldNode.selectionSet) {
-    const query = print(fieldNode);
-    selectionSetGraphQL = query.substr(query.indexOf('{'));
+    selectionSetGraphQL = print(fieldNode.selectionSet);
     selectionSetList = getSelectionSet(fieldNode.selectionSet.selections);
   }
 
