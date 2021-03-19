@@ -67,7 +67,6 @@ export class UsageData implements IUsageData {
       this.projectSettings,
       this.inputOptions,
     );
-    console.log(JSON.stringify(payload, null, 4));
     return this.send(payload);
   }
 
