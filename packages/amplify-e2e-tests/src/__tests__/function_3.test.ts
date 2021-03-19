@@ -52,7 +52,7 @@ describe('python function tests', () => {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
   };
-  const message: string = JSON.stringify('Hello from your new Amplify Python lambda!');
+  const message: string = 'Hello from your new Amplify Python lambda!';
   const helloWorldSuccessOutput = {
     statusCode: statusCode,
     headers: headers,
