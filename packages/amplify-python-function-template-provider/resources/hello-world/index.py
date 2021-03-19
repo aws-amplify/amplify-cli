@@ -1,6 +1,9 @@
+import json
+
 def handler(event, context):
   print('received event:')
   print(event)
+  
   return {
       'statusCode': 200,
       'headers': {
@@ -8,5 +11,5 @@ def handler(event, context):
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
       },
-      'body': "Hello from your new Amplify Python lambda!"
+      'body': json.dumps('Hello from your new Amplify Python lambda!')
   }
