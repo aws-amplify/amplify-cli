@@ -17,6 +17,7 @@ import {
   UnknownResourceTypeError,
   exitOnNextTick,
   stateManager,
+  FeatureFlags,
   $TSContext,
   open,
 } from 'amplify-cli-core';
@@ -721,15 +722,39 @@ export const migrate = async context => {
   });
 };
 
-export const getIAMPolicies = (resourceName, operations, context) => {
-  let policy = {};
+export const getIAMPolicies = (resourceName: string, operations: string[], context: any) => {
+  let policy: any = {};
   const resources = [];
-
-  operations.forEach(operation => resources.push(buildPolicyResource(resourceName, operation)));
+  const actions = [];
+  if (!FeatureFlags.getBoolean('appSync.generateGraphQLPermissions')) {
+    operations.forEach(crudOption => {
+      switch (crudOption) {
+        case 'create':
+          actions.push('appsync:Create*', 'appsync:StartSchemaCreation', 'appsync:GraphQL');
+          resources.push(buildPolicyResource(resourceName, '/*'));
+          break;
+        case 'update':
+          actions.push('appsync:Update*');
+          break;
+        case 'read':
+          actions.push('appsync:Get*', 'appsync:List*');
+          break;
+        case 'delete':
+          actions.push('appsync:Delete*');
+          break;
+        default:
+          console.log(`${crudOption} not supported`);
+      }
+    });
+    resources.push(buildPolicyResource(resourceName, null));
+  } else {
+    actions.push('appsync:GraphQL');
+    operations.forEach(operation => resources.push(buildPolicyResource(resourceName, `/types/${operation}/*`)));
+  }
 
   policy = {
     Effect: 'Allow',
-    Action: ['appsync:GraphQL'],
+    Action: actions,
     Resource: resources,
   };
 
@@ -741,7 +766,7 @@ export const getIAMPolicies = (resourceName, operations, context) => {
   return { policy, attributes };
 };
 
-const buildPolicyResource = (resourceName, operation) => {
+const buildPolicyResource = (resourceName: string, path: string | null) => {
   return {
     'Fn::Join': [
       '',
@@ -754,8 +779,8 @@ const buildPolicyResource = (resourceName, operation) => {
         {
           Ref: `${category}${resourceName}GraphQLAPIIdOutput`,
         },
-        `/types/${operation}/*`,
-      ],
+        ...(path ? [path] : [])
+      ]
     ],
   };
 };
