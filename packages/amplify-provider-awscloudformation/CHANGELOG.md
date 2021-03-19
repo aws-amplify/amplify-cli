@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.40.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.40.1...amplify-provider-awscloudformation@4.40.2) (2021-03-12)
+
+
+
+## 4.45.2 (2021-03-12)
+
+
+### Bug Fixes
+
+* bump codegen versions ([#6871](https://github.com/aws-amplify/amplify-cli/issues/6871)) ([e53175d](https://github.com/aws-amplify/amplify-cli/commit/e53175d96136fba57662b1a035d3cea4a65a7601))
+
+
+
+
+
+## [4.40.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.40.0...amplify-provider-awscloudformation@4.40.1) (2021-03-11)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** handle throttling ([8ceb271](https://github.com/aws-amplify/amplify-cli/commit/8ceb27167e41d8c329b35fdc0f380e9e810fb5c0))
+
+
+
+
+
 # [4.40.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.39.2...amplify-provider-awscloudformation@4.40.0) (2021-03-05)
 
 

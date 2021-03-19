@@ -79,19 +79,19 @@ body:
     description: If applicable, what Amplify CLI commands (`amplify ...`) are surfacing the issue?
     multiple: true
     options:
-      - configure 
-      - init 
+      - add
+      - codegen
+      - configure
       - configure project
-      - add 
-      - update
-      - push 
-      - pull
-      - publish
-      - status 
-      - serve 
       - delete
-      - codegen 
-      - env 
+      - env
+      - init
+      - publish
+      - pull
+      - push
+      - serve
+      - status
+      - update
       - Not applicable
   validations:
     required: true
@@ -122,6 +122,23 @@ body:
     required: true
 - type: textarea
   attributes:
+    label: GraphQL schema(s)
+    description: |
+      If applicable, please include your GraphQL schema(s). 
+
+      **Be sure to remove any sensitive data.** 
+    value: |
+      <details>
+      
+      ```graphql
+      # Put schemas below this line
+
+
+      ```
+
+      </details>
+- type: textarea
+  attributes:
     label: Log output
     description: |
       For example, error messages, or stack traces.
@@ -130,13 +147,20 @@ body:
       
       ```
       ~/.amplify/logs/amplify-cli-<issue-date>.log
-      ``` 
+      ```
+
+      **Be sure to remove any sensitive data.** 
       
     value: |
+      <details>
+      
       ```
       # Put your logs below this line
 
+
       ```
+
+      </details>
 - type: markdown
   attributes:
     value: |

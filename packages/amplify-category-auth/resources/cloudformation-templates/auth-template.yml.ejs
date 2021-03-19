@@ -176,6 +176,7 @@ Resources:
       <% } %>
       MfaConfiguration: !Ref mfaConfiguration
       SmsVerificationMessage: !Ref smsVerificationMessage
+      SmsAuthenticationMessage: !Ref smsAuthenticationMessage
       SmsConfiguration:
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>

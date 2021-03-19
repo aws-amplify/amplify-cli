@@ -610,7 +610,7 @@ test(`Test 'public' authStrategy`, async () => {
       }
     `;
 
-    const response = await APIKEY_GRAPHQL_CLIENT.mutate({
+    const response = await APIKEY_GRAPHQL_CLIENT.mutate<any>({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -674,7 +674,7 @@ test(`Test 'public' provider: 'iam' authStrategy`, async () => {
       }
     `;
 
-    const response = await IAM_UNAUTHCLIENT.mutate({
+    const response = await IAM_UNAUTHCLIENT.mutate<any>({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -738,7 +738,7 @@ test(`Test 'private' authStrategy`, async () => {
       }
     `;
 
-    const response = await USER_POOL_AUTH_CLIENT.mutate({
+    const response = await USER_POOL_AUTH_CLIENT.mutate<any>({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -804,7 +804,7 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
       }
     `;
 
-    const response = await IAM_UNAUTHCLIENT.mutate({
+    const response = await IAM_UNAUTHCLIENT.mutate<any>({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -880,7 +880,7 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
       }
     `;
 
-    const response = await USER_POOL_AUTH_CLIENT.mutate({
+    const response = await USER_POOL_AUTH_CLIENT.mutate<any>({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -890,7 +890,7 @@ test(`Test 'private' provider: 'iam' authStrategy`, async () => {
 
     const postIdOwner = response.data.createPostOwnerIAM.id;
 
-    const responseIAM = await IAM_UNAUTHCLIENT.mutate({
+    const responseIAM = await IAM_UNAUTHCLIENT.mutate<any>({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -1008,7 +1008,7 @@ describe(`Test IAM protected field operations`, () => {
   beforeAll(async () => {
     try {
       // - Create UserPool - no secret - Success
-      const response = await USER_POOL_AUTH_CLIENT.mutate({
+      const response = await USER_POOL_AUTH_CLIENT.mutate<any>({
         mutation: createMutation,
         fetchPolicy: 'no-cache',
       });
@@ -1016,7 +1016,7 @@ describe(`Test IAM protected field operations`, () => {
       postIdNoSecret = response.data.createPostSecretFieldIAM.id;
 
       // - Create IAM - with secret - Success
-      const responseIAMSecret = await IAM_UNAUTHCLIENT.mutate({
+      const responseIAMSecret = await IAM_UNAUTHCLIENT.mutate<any>({
         mutation: createMutationWithSecret,
         fetchPolicy: 'no-cache',
       });
@@ -1138,7 +1138,7 @@ describe(`Connection tests with @auth on type`, () => {
   beforeAll(async () => {
     try {
       // Add a comment with ApiKey - Succeed
-      const response = await APIKEY_GRAPHQL_CLIENT.mutate({
+      const response = await APIKEY_GRAPHQL_CLIENT.mutate<any>({
         mutation: createPostMutation,
         fetchPolicy: 'no-cache',
       });
@@ -1146,7 +1146,7 @@ describe(`Connection tests with @auth on type`, () => {
       postId = response.data.createPostConnection.id;
 
       // Add a comment with UserPool - Succeed
-      const commentResponse = await USER_POOL_AUTH_CLIENT.mutate({
+      const commentResponse = await USER_POOL_AUTH_CLIENT.mutate<any>({
         mutation: createCommentMutation,
         fetchPolicy: 'no-cache',
         variables: {
@@ -1164,7 +1164,7 @@ describe(`Connection tests with @auth on type`, () => {
   it('Create a Post with UserPool - Fail', async () => {
     expect.assertions(1);
     await expect(
-      USER_POOL_AUTH_CLIENT.mutate({
+      USER_POOL_AUTH_CLIENT.mutate<any>({
         mutation: createPostMutation,
         fetchPolicy: 'no-cache',
       }),
@@ -1174,7 +1174,7 @@ describe(`Connection tests with @auth on type`, () => {
   it('Add a comment with ApiKey - Fail', async () => {
     expect.assertions(1);
     await expect(
-      APIKEY_GRAPHQL_CLIENT.mutate({
+      APIKEY_GRAPHQL_CLIENT.mutate<any>({
         mutation: createCommentMutation,
         fetchPolicy: 'no-cache',
         variables: {
@@ -1292,7 +1292,7 @@ describe(`IAM Tests`, () => {
   beforeAll(async () => {
     try {
       // - Create API Key - Success
-      const response = await APIKEY_GRAPHQL_CLIENT.mutate({
+      const response = await APIKEY_GRAPHQL_CLIENT.mutate<any>({
         mutation: createMutation,
         fetchPolicy: 'no-cache',
       });

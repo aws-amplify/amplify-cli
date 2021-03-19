@@ -454,7 +454,8 @@ function formatOutputs(outputs) {
 }
 
 function showEvents(events) {
-  events = events.sort((a, b) => new Date(a.Timestamp) > new Date(b.Timestamp));
+  // CFN sorts the events by descending
+  events = events.reverse();
 
   if (events.length > 0) {
     console.log('\n');

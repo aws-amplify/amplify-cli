@@ -964,7 +964,7 @@ describe(`Deployed Mutation Condition tests`, () => {
     `;
 
     try {
-      await APIKEY_CLIENT.mutate({
+      await APIKEY_CLIENT.mutate<any>({
         mutation: createMutation,
         fetchPolicy: 'no-cache',
       });
@@ -982,11 +982,10 @@ describe(`Deployed Mutation Condition tests`, () => {
       }
     `;
 
-    const createResponse = await APIKEY_CLIENT.mutate({
+    const createResponse = await APIKEY_CLIENT.mutate<any>({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
-
     expect(createResponse.data.createPost.id).toBeDefined();
 
     // Update P1 if rating === 5 (but it is 4)
@@ -1002,7 +1001,7 @@ describe(`Deployed Mutation Condition tests`, () => {
     `;
 
     try {
-      await APIKEY_CLIENT.mutate({
+      await APIKEY_CLIENT.mutate<any>({
         mutation: updateMutationFailure,
         fetchPolicy: 'no-cache',
       });
@@ -1023,7 +1022,7 @@ describe(`Deployed Mutation Condition tests`, () => {
       }
     `;
 
-    const updateResponse = await APIKEY_CLIENT.mutate({
+    const updateResponse = await APIKEY_CLIENT.mutate<any>({
       mutation: updateMutationSuccess,
       fetchPolicy: 'no-cache',
     });
@@ -1041,7 +1040,7 @@ describe(`Deployed Mutation Condition tests`, () => {
       }
     `;
 
-    const createResponse = await APIKEY_CLIENT.mutate({
+    const createResponse = await APIKEY_CLIENT.mutate<any>({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -1063,7 +1062,7 @@ describe(`Deployed Mutation Condition tests`, () => {
       }
     `;
 
-    const updateResponse = await APIKEY_CLIENT.mutate({
+    const updateResponse = await APIKEY_CLIENT.mutate<any>({
       mutation: updateMutation,
       fetchPolicy: 'no-cache',
     });
@@ -1081,7 +1080,7 @@ describe(`Deployed Mutation Condition tests`, () => {
       }
     `;
 
-    const createResponse = await APIKEY_CLIENT.mutate({
+    const createResponse = await APIKEY_CLIENT.mutate<any>({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -1101,7 +1100,7 @@ describe(`Deployed Mutation Condition tests`, () => {
       }
     `;
 
-    const deleteResponse = await APIKEY_CLIENT.mutate({
+    const deleteResponse = await APIKEY_CLIENT.mutate<any>({
       mutation: deleteMutation,
       fetchPolicy: 'no-cache',
     });
@@ -1119,7 +1118,7 @@ describe(`Deployed Mutation Condition tests`, () => {
       }
     `;
 
-    const createResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
+    const createResponse = await USER_POOL_AUTH_CLIENT_1.mutate<any>({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -1139,7 +1138,7 @@ describe(`Deployed Mutation Condition tests`, () => {
     `;
 
     try {
-      await USER_POOL_AUTH_CLIENT_2.mutate({
+      await USER_POOL_AUTH_CLIENT_2.mutate<any>({
         mutation: updateMutation,
         fetchPolicy: 'no-cache',
       });
@@ -1160,7 +1159,7 @@ describe(`Deployed Mutation Condition tests`, () => {
     `;
 
     try {
-      await USER_POOL_AUTH_CLIENT_1.mutate({
+      await USER_POOL_AUTH_CLIENT_1.mutate<any>({
         mutation: updateMutation2,
         fetchPolicy: 'no-cache',
       });
@@ -1182,7 +1181,7 @@ describe(`Deployed Mutation Condition tests`, () => {
       }
     `;
 
-    const updateResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
+    const updateResponse = await USER_POOL_AUTH_CLIENT_1.mutate<any>({
       mutation: updateMutation3,
       fetchPolicy: 'no-cache',
     });
@@ -1201,7 +1200,7 @@ describe(`Deployed Mutation Condition tests`, () => {
       }
     `;
 
-    const createResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
+    const createResponse = await USER_POOL_AUTH_CLIENT_1.mutate<any>({
       mutation: createMutation,
       fetchPolicy: 'no-cache',
     });
@@ -1218,7 +1217,7 @@ describe(`Deployed Mutation Condition tests`, () => {
     `;
 
     try {
-      await USER_POOL_AUTH_CLIENT_2.mutate({
+      await USER_POOL_AUTH_CLIENT_2.mutate<any>({
         mutation: deleteMutation,
         fetchPolicy: 'no-cache',
       });
@@ -1236,7 +1235,7 @@ describe(`Deployed Mutation Condition tests`, () => {
     `;
 
     try {
-      await USER_POOL_AUTH_CLIENT_1.mutate({
+      await USER_POOL_AUTH_CLIENT_1.mutate<any>({
         mutation: deleteMutation2,
         fetchPolicy: 'no-cache',
       });
@@ -1255,7 +1254,7 @@ describe(`Deployed Mutation Condition tests`, () => {
       }
     `;
 
-    const deleteResponse = await USER_POOL_AUTH_CLIENT_1.mutate({
+    const deleteResponse = await USER_POOL_AUTH_CLIENT_1.mutate<any>({
       mutation: deleteMutation3,
       fetchPolicy: 'no-cache',
     });

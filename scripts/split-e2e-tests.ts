@@ -2,8 +2,8 @@ import * as yaml from 'js-yaml';
 import * as glob from 'glob';
 import { join } from 'path';
 import * as fs from 'fs-extra';
-
 const CONCURRENCY = 4;
+// Ensure to update packages/amplify-e2e-tests/src/cleanup-e2e-resources.ts is also updated this gets updated
 const AWS_REGIONS_TO_RUN_TESTS = [
   'us-east-2',
   'us-west-2',
@@ -126,7 +126,7 @@ export type CircleCIConfig = {
   };
 };
 
-function getTestFiles(dir: string, pattern = '**/*.test.ts'): string[] {
+function getTestFiles(dir: string, pattern = 'src/**/*.test.ts'): string[] {
   return sortTestsBasedOnTime(glob.sync(pattern, { cwd: dir })).reverse();
 }
 
