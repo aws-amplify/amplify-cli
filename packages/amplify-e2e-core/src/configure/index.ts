@@ -1,5 +1,4 @@
 import { nspawn as spawn, getCLIPath, singleSelect } from '..';
-import { ExecutionContext } from '../utils';
 
 type AmplifyConfiguration = {
   accessKeyId: string;

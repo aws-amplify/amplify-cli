@@ -7,7 +7,6 @@ import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-p
 import { getSuitableFrontend } from './s1-initFrontend';
 import { isProjectNameValid, normalizeProjectName } from '../extensions/amplify-helpers/project-name-validation';
 import { amplifyCLIConstants } from '../extensions/amplify-helpers/constants';
-import { print } from '../context-extensions';
 
 export async function analyzeProjectHeadless(context: $TSContext) {
   const projectPath = process.cwd();
