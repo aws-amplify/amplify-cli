@@ -28,6 +28,7 @@ const regionOptions = [
   'ap-south-1',
 ];
 
+const configurationOptions = ['project', 'profile', 'containers'];
 const profileOptions = ['cancel', 'update', 'remove'];
 
 const MANDATORY_PARAMS = ['accessKeyId', 'secretAccessKey', 'region'];
@@ -75,33 +76,16 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
 export function amplifyConfigureProject(settings: { cwd: string; enableContainers: boolean }): Promise<void> {
   const { enableContainers = false, cwd } = settings;
 
-  const confirmContainers: keyof Pick<ExecutionContext, 'sendConfirmYes' | 'sendConfirmNo'> = enableContainers
-    ? 'sendConfirmYes'
-    : 'sendConfirmNo';
-
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true })
-      .wait('Enter a name for the project')
-      .sendCarriageReturn()
-      .wait('Choose your default editor:')
-      .sendCarriageReturn()
-      .wait("Choose the type of app that you're building")
-      .sendCarriageReturn()
-      .wait('What javascript framework are you using')
-      .sendCarriageReturn()
-      .wait('Source Directory Path:')
-      .sendCarriageReturn()
-      .wait('Distribution Directory Path:')
-      .sendCarriageReturn()
-      .wait('Build Command:')
-      .sendCarriageReturn()
-      .wait('Start Command:')
-      .sendCarriageReturn()
-      .wait('Do you want to enable container-based deployments?')
-      [confirmContainers]()
-      .wait('Do you want to update or remove the project level AWS profile?');
-
-    singleSelect(chain, profileOptions[0], profileOptions);
+    const chain = spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true }).wait('Which setting do you want to configure?');
+    if (enableContainers) {
+      singleSelect(chain, 'containers', configurationOptions);
+      chain.wait('Do you want to enable container-based deployments?').sendLine('y');
+    } else {
+      singleSelect(chain, 'profile', configurationOptions);
+      chain.wait('Do you want to update or remove the project level AWS profile?');
+      singleSelect(chain, profileOptions[0], profileOptions);
+    }
 
     chain.wait('Successfully made configuration changes to your project.').run((err: Error) => {
       if (!err) {

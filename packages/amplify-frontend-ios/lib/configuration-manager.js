@@ -12,11 +12,11 @@ function configure(context) {
   return Promise.resolve(context);
 }
 
-export function displayFrontendDefaults(context) {
+function displayFrontendDefaults(context) {
   context.print.info(`| App type: ${constants.Label}`);
 }
 
-export function setFrontendDefaults(context) {
+function setFrontendDefaults(context) {
   context.exeInfo.inputParams.amplify.frontend = constants.Label;
 }
 
@@ -24,4 +24,6 @@ module.exports = {
   init,
   onInitSuccessful,
   configure,
+  displayFrontendDefaults,
+  setFrontendDefaults,
 };

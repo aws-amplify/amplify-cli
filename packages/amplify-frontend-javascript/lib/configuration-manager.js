@@ -166,7 +166,7 @@ function guessFramework(context, projectPath) {
   return frameWork;
 }
 
-export function displayFrontendDefaults(context, projectPath) {
+function displayFrontendDefaults(context, projectPath) {
   context.print.info(`| App type: javascript`);
 
   const defaultFramework = guessFramework(context, projectPath);
@@ -179,7 +179,7 @@ export function displayFrontendDefaults(context, projectPath) {
   context.print.info(`| Start Command: ${projectConfiguration.StartCommand}`);
 }
 
-export function setFrontendDefaults(context, projectPath) {
+function setFrontendDefaults(context, projectPath) {
   const defaultFramework = guessFramework(context, projectPath);
   const projectConfiguration = getProjectConfiguration(context, defaultFramework);
 
@@ -196,4 +196,6 @@ module.exports = {
   init,
   onInitSuccessful,
   configure,
+  displayFrontendDefaults,
+  setFrontendDefaults,
 };

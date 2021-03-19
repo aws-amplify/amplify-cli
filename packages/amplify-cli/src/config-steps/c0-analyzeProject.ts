@@ -46,15 +46,13 @@ export async function analyzeProject(context) {
   context.print.info('');
 
   const configurationSetting = await getConfigurationSetting();
-  if (configurationSetting !== 'project') {
+
+  if (configurationSetting === 'containers') {
     context.exeInfo.inputParams.yes = true;
-    if (configurationSetting === 'containers') {
-      context.exeInfo.inputParams.containerSetting = true;
-    } else if (configurationSetting === 'profile') {
-      context.exeInfo.inputParams.profileSetting = true;
-    }
-  } else {
     context.exeInfo.inputParams.containerSetting = true;
+  }
+  if (configurationSetting === 'profile') {
+    context.exeInfo.inputParams.yes = true;
     context.exeInfo.inputParams.profileSetting = true;
   }
 

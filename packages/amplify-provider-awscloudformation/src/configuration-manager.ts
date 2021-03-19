@@ -77,11 +77,11 @@ export async function configure(context: $TSContext) {
   context.exeInfo = context.exeInfo || context.amplify.getProjectDetails();
   normalizeInputParams(context);
   context.exeInfo.awsConfigInfo = getCurrentConfig(context);
-  if (!context.exeInfo.inputParams.profileSetting) {
+  if (context.exeInfo.inputParams.containerSetting) {
     await enableServerlessContainers(context);
   }
 
-  if (!context.exeInfo.inputParams.containerSetting) {
+  if (context.exeInfo.inputParams.profileSetting) {
     await newUserCheck(context);
     printProfileInfo(context);
     await setProjectConfigAction(context);
