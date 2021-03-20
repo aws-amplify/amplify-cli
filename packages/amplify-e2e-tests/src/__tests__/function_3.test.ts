@@ -97,7 +97,11 @@ describe('python function tests', () => {
     const payload = '{"test":"event"}';
     await amplifyPushAuth(projRoot);
     const response = await functionCloudInvoke(projRoot, { funcName, payload });
-    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(JSON.stringify(helloWorldSuccessOutput)));
+    const helloWorldSuccessOutputCloud = {
+      ...helloWorldSuccessOutput,
+      body: JSON.stringify(helloWorldSuccessOutput.body),
+    };
+    expect(JSON.parse(response.Payload.toString())).toEqual(JSON.parse(JSON.stringify(helloWorldSuccessOutputCloud)));
   });
 });
 
