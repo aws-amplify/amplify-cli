@@ -27,4 +27,25 @@ describe('amplify env: ', () => {
     });
     expect(mockEnvListRun).toHaveBeenCalledTimes(2);
   });
+
+  it('invalid env subcommand should give a warning', async () => {
+    const mockContextInvalidEnvSubcommand = {
+      amplify: {
+        showHelp: jest.fn()
+      },
+      parameters: {},
+      input: {
+        subCommands: ['test12345'],
+      },
+      print:{
+        warning: jest.fn(),
+        info: jest.fn(),
+      }
+    };
+    await runEnvCmd(mockContextInvalidEnvSubcommand);
+    expect(mockContextInvalidEnvSubcommand.amplify.showHelp).toBeCalled();
+    expect(mockContextInvalidEnvSubcommand.print.warning.mock.calls[0][0]).toMatchInlineSnapshot(
+      `"Cannot find command: 'amplify env test12345'"`,
+    );
+  })
 });
