@@ -17,6 +17,9 @@ import { getInvoker } from 'amplify-category-function';
 import { lambdaArnToConfig } from './lambda-arn-to-config';
 import { timeConstrainedInvoker } from '../func';
 
+export const GRAPHQL_API_ENDPOINT_OUTPUT = 'GraphQLAPIEndpointOutput';
+export const GRAPHQL_API_KEY_OUTPUT = 'GraphQLAPIKeyOutput';
+export const MOCK_API_KEY = 'da2-fakeApiId123456';
 export const MOCK_API_PORT = 20002;
 
 export class APITest {

@@ -1,6 +1,6 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
-import { MOCK_API_PORT } from '../../api/api';
+import { GRAPHQL_API_ENDPOINT_OUTPUT, GRAPHQL_API_KEY_OUTPUT, MOCK_API_KEY, MOCK_API_PORT } from '../../api/api';
 
 /**
  * Loads all parameters that should be passed into the lambda CFN template when resolving values
@@ -61,9 +61,18 @@ const getAmplifyMetaParams = (
         );
         print.warning('This attribute will be undefined in the mock environment until you run `amplify push`');
       }
-      if (overrideApiToLocal && attribute === 'GraphQLAPIEndpointOutput') {
-        val = `http://localhost:${MOCK_API_PORT}/graphql`;
+
+      if (overrideApiToLocal) {
+        switch (attribute) {
+          case GRAPHQL_API_ENDPOINT_OUTPUT:
+            val = `http://localhost:${MOCK_API_PORT}/graphql`;
+            break;
+          case GRAPHQL_API_KEY_OUTPUT:
+            val = MOCK_API_KEY;
+            break;
+        }
       }
+
       acc[dependency.category + dependency.resourceName + attribute] = val;
     });
     return acc;
