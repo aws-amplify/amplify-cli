@@ -35,7 +35,7 @@ export function displayConfigurationDefaults(context, defaultProjectName, defaul
 function setConfigurationDefaults(context, projectPath, defaultProjectName, defaultEnv, defaultEditor) {
   setExeInfo(context, projectPath, defaultEditor, defaultEnv);
   setProjectConfig(context, defaultProjectName);
-  context.exeInfo.inputParams.amplify = {};
+  context.exeInfo.inputParams.amplify = context.exeInfo.inputParams.amplify || {};
   context.exeInfo.inputParams.amplify.projectName = defaultProjectName;
   context.exeInfo.inputParams.amplify.envName = defaultEnv;
   context.exeInfo.inputParams.amplify.defaultEditor = defaultEditor;
