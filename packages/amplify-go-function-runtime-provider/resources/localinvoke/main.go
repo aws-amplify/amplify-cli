@@ -111,9 +111,10 @@ func createInvokeRequest(input LambdaInput) (*messages.InvokeRequest, error) {
 
 	if Deadline == nil {
 		now := time.Now()
+		deadline := now.Add(input.Timeout)
 		Deadline = &messages.InvokeRequest_Timestamp{
-			Seconds: int64(now.Unix()),
-			Nanos:   int64(now.Nanosecond()),
+			Seconds: int64(deadline.Unix()),
+			Nanos:   int64(deadline.Nanosecond()),
 		}
 	}
 
@@ -156,7 +157,7 @@ func main() {
 
 		// Invoke lambda
 		response, err := invokeLambda(LambdaInput{
-			Timeout: time.Duration(envelope.TimeoutMilliseconds),
+			Timeout: time.Duration(envelope.TimeoutMilliseconds * 1000000),
 			Port:    envelope.Port,
 			Payload: payload,
 		})
