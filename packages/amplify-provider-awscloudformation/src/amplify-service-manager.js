@@ -8,6 +8,7 @@ const { ProviderName, AmplifyAppIdLabel } = require('./constants');
 const { checkAmplifyServiceIAMPermission } = require('./amplify-service-permission-check');
 const { stateManager } = require('amplify-cli-core');
 const { fileLogger } = require('./utils/aws-logger');
+const { loadConfigurationForEnv } = require('./configuration-manager');
 const logger = fileLogger('amplify-service-manager');
 
 async function init(amplifyServiceParams) {
@@ -211,7 +212,8 @@ async function deleteEnv(context, envName, awsConfig) {
       teamProviderInfo[envName][ProviderName] &&
       teamProviderInfo[envName][ProviderName][AmplifyAppIdLabel]
     ) {
-      const amplifyClient = await getConfiguredAmplifyClient(context, awsConfig);
+      const envConfig = await loadConfigurationForEnv(context, envName);
+      const amplifyClient = await getConfiguredAmplifyClient(context, { ...awsConfig, ...envConfig });
       if (!amplifyClient) {
         // This happens when the Amplify service is not available in the region
         return;
