@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.17-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.16...amplify-category-storage@2.10.17-beta.0) (2021-03-22)
+
+
+### Bug Fixes
+
+* use non-duplicate names for lambda execution role ([#5814](https://github.com/aws-amplify/amplify-cli/issues/5814)) ([33d6c35](https://github.com/aws-amplify/amplify-cli/commit/33d6c35f94b87b15be75601173637ef662d40076))
+
+
+
+
+
 ## [2.10.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.15...amplify-category-storage@2.10.16) (2021-03-11)
 
 **Note:** Version bump only for package amplify-category-storage

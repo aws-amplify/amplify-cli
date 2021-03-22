@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.29.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.29.1...amplify-category-auth@2.29.2-beta.0) (2021-03-22)
+
+
+### Bug Fixes
+
+* add sms auth message to cfn template ([#6789](https://github.com/aws-amplify/amplify-cli/issues/6789)) ([7f9ea84](https://github.com/aws-amplify/amplify-cli/commit/7f9ea84f741ec9001dac9be55944d05c4534acb3))
+
+
+
+
+
 ## [2.29.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.29.0...amplify-category-auth@2.29.1) (2021-03-11)
 
 **Note:** Version bump only for package amplify-category-auth

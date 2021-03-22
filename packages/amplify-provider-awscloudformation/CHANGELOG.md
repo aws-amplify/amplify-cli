@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.40.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.40.2...amplify-provider-awscloudformation@4.40.3-beta.0) (2021-03-22)
+
+
+### Bug Fixes
+
+* detect changes in dockerfile ([#6495](https://github.com/aws-amplify/amplify-cli/issues/6495)) ([2333dec](https://github.com/aws-amplify/amplify-cli/commit/2333decdd61c2a5421a7030723f20d05f3c00269)), closes [#6359](https://github.com/aws-amplify/amplify-cli/issues/6359)
+* do not attempt to modify a file when reading it ([#5783](https://github.com/aws-amplify/amplify-cli/issues/5783)) ([2cfa2b5](https://github.com/aws-amplify/amplify-cli/commit/2cfa2b58d0469dce8a5644b3280480196d995ea4))
+* **amplify-provider-awscloudformation:** Fix amplify configure opening wrong IAM User Creation URL in Windows & WSL ([#6908](https://github.com/aws-amplify/amplify-cli/issues/6908)) ([a5ad84d](https://github.com/aws-amplify/amplify-cli/commit/a5ad84d28aaa2daddd9ddb6df7bee93e5d2bef73))
+* **amplify-provider-awscloudformation:** reverse asc events ([#6803](https://github.com/aws-amplify/amplify-cli/issues/6803)) ([ae02803](https://github.com/aws-amplify/amplify-cli/commit/ae0280302f7a6632f74f1184a4b928319965df55)), closes [#6578](https://github.com/aws-amplify/amplify-cli/issues/6578)
+* stop sanity check when resource is in create status ([#6349](https://github.com/aws-amplify/amplify-cli/issues/6349)) ([45e0246](https://github.com/aws-amplify/amplify-cli/commit/45e0246306136e513c735899b030f94bb004a330))
+
+
+
+
+
 ## [4.40.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.40.1...amplify-provider-awscloudformation@4.40.2) (2021-03-12)
 
 

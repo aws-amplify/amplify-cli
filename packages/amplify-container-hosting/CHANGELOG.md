@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.6-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.2.5...amplify-container-hosting@1.2.6-beta.0) (2021-03-22)
+
+
+### Bug Fixes
+
+* detect changes in dockerfile ([#6495](https://github.com/aws-amplify/amplify-cli/issues/6495)) ([2333dec](https://github.com/aws-amplify/amplify-cli/commit/2333decdd61c2a5421a7030723f20d05f3c00269)), closes [#6359](https://github.com/aws-amplify/amplify-cli/issues/6359)
+
+
+
+
+
 ## [1.2.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-container-hosting@1.2.4...amplify-container-hosting@1.2.5) (2021-03-11)
 
 **Note:** Version bump only for package amplify-container-hosting

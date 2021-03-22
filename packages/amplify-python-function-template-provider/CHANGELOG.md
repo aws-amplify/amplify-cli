@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.7-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.6...amplify-python-function-template-provider@1.3.7-beta.0) (2021-03-22)
+
+
+### Bug Fixes
+
+* adding JSON stringify to example python function ([#6493](https://github.com/aws-amplify/amplify-cli/issues/6493)) ([a6584e2](https://github.com/aws-amplify/amplify-cli/commit/a6584e2920764be10108a799d93222e3c3397ef1)), closes [/github.com/aws-amplify/amplify-js/issues/6390#issuecomment-740757548](https://github.com//github.com/aws-amplify/amplify-js/issues/6390/issues/issuecomment-740757548)
+
+
+
+
+
 ## [1.3.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-template-provider@1.3.4...amplify-python-function-template-provider@1.3.6) (2021-02-26)
 
 

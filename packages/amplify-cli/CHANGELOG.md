@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.46.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.45.2...@aws-amplify/cli@4.46.0-beta.0) (2021-03-22)
+
+
+### Bug Fixes
+
+* **cli:** freeze constants object to not be changed ([#6821](https://github.com/aws-amplify/amplify-cli/issues/6821)) ([10a4160](https://github.com/aws-amplify/amplify-cli/commit/10a41601912d00770b2fae6e2884c6a57d69ee80))
+* detect changes in dockerfile ([#6495](https://github.com/aws-amplify/amplify-cli/issues/6495)) ([2333dec](https://github.com/aws-amplify/amplify-cli/commit/2333decdd61c2a5421a7030723f20d05f3c00269)), closes [#6359](https://github.com/aws-amplify/amplify-cli/issues/6359)
+* fix s3Cloudfront exception on push ([#6913](https://github.com/aws-amplify/amplify-cli/issues/6913)) ([1799089](https://github.com/aws-amplify/amplify-cli/commit/1799089ef8f84bb2a7b853e62d95b62eeea8cd31))
+
+
+### Features
+
+* **cli:** add 'amplify env ls' alias ([#6618](https://github.com/aws-amplify/amplify-cli/issues/6618)) ([50a5775](https://github.com/aws-amplify/amplify-cli/commit/50a5775a4468ea88e3ba5050c0365b29691afb61))
+
+
+
+
+
 ## [4.45.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.45.1...@aws-amplify/cli@4.45.2) (2021-03-12)
 
 
