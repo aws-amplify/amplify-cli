@@ -20,7 +20,7 @@ export const run = async context => {
     try {
       commandModule = require(path.normalize(path.join(__dirname, 'env', subcommand)));
     } catch (e) {
-      if(subCommands){
+      if (subCommands) {
         context.print.warning(`Cannot find command: 'amplify env ${subCommands.join(' ')}'`);
       }
       displayHelp(context);
