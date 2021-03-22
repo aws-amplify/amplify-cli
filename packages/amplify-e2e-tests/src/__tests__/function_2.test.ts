@@ -24,7 +24,9 @@ import {
   updateFunction,
   overrideFunctionCode,
   getBackendConfig,
-  addFeatureFlag
+  addFeatureFlag,
+  addAuthWithGroupsAndAdminAPI,
+  getFunction,
 } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
@@ -40,6 +42,35 @@ describe('nodejs', () => {
     afterEach(async () => {
       await deleteProject(projRoot);
       deleteProjectDir(projRoot);
+    });
+
+    it('add lambda with AdminQueries API permissions', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+      await addAuthWithGroupsAndAdminAPI(projRoot, {});
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['api'],
+            resources: ['AdminQueries'],
+            choices: ['auth', 'function', 'api'],
+            operations: ['create', 'update', 'read', 'delete'],
+          },
+        },
+        'nodejs',
+      );
+      await amplifyPushAuth(projRoot);
+      const meta = getProjectMeta(projRoot);
+      const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      expect(functionArn).toBeDefined();
+      expect(functionName).toBeDefined();
+      expect(region).toBeDefined();
+      const cloudFunction = await getFunction(functionName, region);
+      expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
     });
 
     it('lambda with s3 permissions should be able to call listObjects', async () => {
@@ -441,8 +472,10 @@ describe('nodejs', () => {
       const lambdaCFN = readJsonFile(
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
-      const urlKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter( value => value.endsWith('GRAPHQLAPIENDPOINTOUTPUT'))[0];
-      const payloadObj = { urlKey, mutation: createTodo, variables: { input: { name: 'todo', description: 'sampleDesc' }} };
+      const urlKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value =>
+        value.endsWith('GRAPHQLAPIENDPOINTOUTPUT'),
+      )[0];
+      const payloadObj = { urlKey, mutation: createTodo, variables: { input: { name: 'todo', description: 'sampleDesc' } } };
       const fnResponse = await invokeFunction(functionName, JSON.stringify(payloadObj), region);
 
       expect(fnResponse.StatusCode).toBe(200);
@@ -485,7 +518,9 @@ describe('nodejs', () => {
       const lambdaCFN = readJsonFile(
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
-      const idKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter( value => value.endsWith('GRAPHQLAPIIDOUTPUT'))[0];
+      const idKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value =>
+        value.endsWith('GRAPHQLAPIIDOUTPUT'),
+      )[0];
       const fnResponse = await invokeFunction(functionName, JSON.stringify({ idKey }), region);
 
       expect(fnResponse.StatusCode).toBe(200);
