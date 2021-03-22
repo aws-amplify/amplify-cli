@@ -1,6 +1,6 @@
 import {
-  getResourcesforCfn,
-  generateEnvVariablesforCfn,
+  getResourcesForCfn,
+  generateEnvVariablesForCfn,
 } from '../../../../provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 import {
   constructCFModelTableNameComponent,
@@ -50,7 +50,7 @@ test('check CFN resources for storage', async () => {
       },
     },
   };
-  expect(await getResourcesforCfn(contextStub, resourceName, {}, appsyncResourceName, 'storage')).toMatchSnapshot();
+  expect(await getResourcesForCfn(contextStub, resourceName, {}, appsyncResourceName, 'storage')).toMatchSnapshot();
 });
 
 test('check CFN resources', async () => {
@@ -64,7 +64,7 @@ test('check CFN resources', async () => {
       },
     },
   };
-  expect(await getResourcesforCfn(contextStub, resourceName, {}, appsyncResourceName, 'api')).toMatchSnapshot();
+  expect(await getResourcesForCfn(contextStub, resourceName, {}, appsyncResourceName, 'api')).toMatchSnapshot();
 });
 
 test('env resources for CFN for DDB table and api', async () => {
@@ -85,7 +85,7 @@ test('env resources for CFN for DDB table and api', async () => {
       resourceName: 'mock_api',
     },
   ];
-  expect(await generateEnvVariablesforCfn(contextStub, resources, {})).toMatchSnapshot();
+  expect(await generateEnvVariablesForCfn(contextStub, resources, {})).toMatchSnapshot();
 });
 
 test('env resources for CFN for auth and storage for api', async () => {
@@ -106,5 +106,5 @@ test('env resources for CFN for auth and storage for api', async () => {
       resourceName: 'mock_api',
     },
   ];
-  expect(await generateEnvVariablesforCfn(contextStub, resources, {})).toMatchSnapshot();
+  expect(await generateEnvVariablesForCfn(contextStub, resources, {})).toMatchSnapshot();
 });

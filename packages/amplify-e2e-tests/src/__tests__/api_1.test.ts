@@ -25,7 +25,6 @@ import path from 'path';
 import { existsSync } from 'fs';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import _ from 'lodash';
-import { addFunctionWithAuthAccess } from '../schema-api-directives/tests/function-example2';
 
 describe('amplify add api (GraphQL)', () => {
   let projRoot: string;
@@ -126,7 +125,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(error.message).toContain(`${tableName} not found`);
   });
 
-  it('inits a project with a simple model and then migrates the api', async () => {
+  it.only('inits a project with a simple model and then migrates the api', async () => {
     const projectName = 'blogapp';
     const initialSchema = 'initial_key_blog.graphql';
     const nextSchema = 'next_key_blog.graphql';
@@ -209,7 +208,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
   });
 
-  it('inits a project with a simple model , add a function and removes the depedent @model', async () => {
+  it.only('inits a project with a simple model , add a function and removes the depedent @model', async () => {
     const random = Math.floor(Math.random() * 10000);
     const projectName = `blogapp`;
     const nextSchema = 'initial_key_blog.graphql';

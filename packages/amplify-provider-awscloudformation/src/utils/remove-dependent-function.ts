@@ -24,10 +24,10 @@ export async function removeDependencyOnFunctions(
   return functionResource;
 }
 
-export async function getSchemaDiff(currentBackendDir: string, BackendDir: string, apiResourceName: string) {
+export async function getSchemaDiff(currentBackendDir: string, backendDir: string, apiResourceName: string) {
   const deployedModelNames = await getDeployedModelNames(currentBackendDir, apiResourceName);
-  const currentModelNames = await getDeployedModelNames(BackendDir, apiResourceName);
-  var modelsDeleted = deployedModelNames.filter(val => !currentModelNames.includes(val));
+  const currentModelNames = await getDeployedModelNames(backendDir, apiResourceName);
+  const modelsDeleted = deployedModelNames.filter(val => !currentModelNames.includes(val));
   return modelsDeleted;
 }
 

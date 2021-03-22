@@ -1,6 +1,6 @@
 import { $TSContext, $TSObject, JSONUtilities } from 'amplify-cli-core';
 import { FunctionParameters } from 'amplify-function-plugin-interface';
-import { getResourcesforCfn, generateEnvVariablesforCfn } from '../service-walkthroughs/execPermissionsWalkthrough';
+import { getResourcesForCfn, generateEnvVariablesForCfn } from '../service-walkthroughs/execPermissionsWalkthrough';
 import { updateCFNFileForResourcePermissions } from '../service-walkthroughs/lambda-walkthrough';
 import { loadFunctionParameters } from './loadFunctionParameters';
 import path from 'path';
@@ -61,7 +61,7 @@ export async function updateDependentFunctionsCfn(
         for (const resourceName of Object.keys(selectedResources)) {
           if (!modelsDeleted.includes(resourceName)) {
             resourcePolicy = selectedResources[resourceName];
-            const { permissionPolicies, cfnResources } = await getResourcesforCfn(
+            const { permissionPolicies, cfnResources } = await getResourcesForCfn(
               context,
               resourceName,
               resourcePolicy,
@@ -79,7 +79,7 @@ export async function updateDependentFunctionsCfn(
       }
     }
     if (deletedModelFound) {
-      const { environmentMap, dependsOn } = await generateEnvVariablesforCfn(context, resources, {});
+      const { environmentMap, dependsOn } = await generateEnvVariablesForCfn(context, resources, {});
       functionParameters.categoryPolicies = categoryPolicies;
       functionParameters.mutableParametersState = { permissions };
       functionParameters.environmentMap = environmentMap;

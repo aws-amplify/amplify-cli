@@ -1,8 +1,8 @@
 import { updateDependentFunctionsCfn } from '../../../../provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 import { loadFunctionParameters } from '../../../../provider-utils/awscloudformation/utils/loadFunctionParameters';
 import {
-  getResourcesforCfn,
-  generateEnvVariablesforCfn,
+  getResourcesForCfn,
+  generateEnvVariablesForCfn,
 } from '../../../../provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 import { $TSContext } from 'amplify-cli-core';
 import { FunctionDependency } from 'amplify-function-plugin-interface/src';
@@ -68,8 +68,8 @@ const backendDir = 'randomPath';
 const apiResourceName = 'mock_api';
 
 const loadResourceParameters_mock = loadFunctionParameters as jest.MockedFunction<typeof loadFunctionParameters>;
-const getResourcesforCFN_mock = getResourcesforCfn as jest.MockedFunction<typeof getResourcesforCfn>;
-const generateEnvVariablesforCFN_mock = generateEnvVariablesforCfn as jest.MockedFunction<typeof generateEnvVariablesforCfn>;
+const getResourcesforCFN_mock = getResourcesForCfn as jest.MockedFunction<typeof getResourcesForCfn>;
+const generateEnvVariablesforCFN_mock = generateEnvVariablesForCfn as jest.MockedFunction<typeof generateEnvVariablesForCfn>;
 
 const cfnResources = [{ resourceName: 'storageattr1@model(appsync)' }, { resourceName: 'storageattr2@model(appsync)' }];
 const permissionPolicies = 'randomPermissionsforapiandstorage';

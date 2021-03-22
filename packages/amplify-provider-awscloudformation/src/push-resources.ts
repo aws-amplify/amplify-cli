@@ -103,7 +103,9 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     if (apiResourceTobeUpdated.length) {
       const functionResourceToBeUpdated = await removeDependencyOnFunctions(context, apiResourceTobeUpdated, allResources as $TSObject[]);
       // filter updated function to replace with existing updated ones(in case of duplicates)
-      resources = _.uniqBy(resources.concat(functionResourceToBeUpdated), `resourceName`);
+      if (functionResourceToBeUpdated !== undefined && functionResourceToBeUpdated.length > 0) {
+        resources = _.uniqBy(resources.concat(functionResourceToBeUpdated), `resourceName`);
+      }
     }
     validateCfnTemplates(context, resources);
 
