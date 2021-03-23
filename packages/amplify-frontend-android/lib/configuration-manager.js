@@ -30,21 +30,6 @@ function normalizeInputParams(context) {
   context.exeInfo.inputParams[constants.Label] = inputParams;
 }
 
-function displayFrontendDefaults(context) {
-  context.print.info(`| App type: android`);
-  context.print.info(`| Res directory: ${constants.defaultResDir}`);
-}
-
-function setFrontendDefaults(context) {
-  context.exeInfo.inputParams.amplify.frontend = constants.Label;
-
-  let inputParams = {};
-  context.exeInfo.inputParams[constants.Label] = inputParams;
-  inputParams.config = {};
-  inputParams.config.ResDir = constants.defaultResDir;
-  context.exeInfo.inputParams[constants.Label] = inputParams;
-}
-
 async function confirmConfiguration(context) {
   if (!context.exeInfo.projectConfig[constants.Label]) {
     context.exeInfo.projectConfig[constants.Label] = {};
@@ -65,7 +50,7 @@ async function confirmConfiguration(context) {
         type: 'input',
         name: 'ResDir',
         message: 'Where is your Res directory: ',
-        default: config.ResDir || constants.defaultResDir,
+        default: config.ResDir || 'app/src/main/res',
       },
     ];
     const answers = await inquirer.prompt(configurationSettings);
@@ -77,6 +62,4 @@ module.exports = {
   init,
   onInitSuccessful,
   configure,
-  displayFrontendDefaults,
-  setFrontendDefaults,
 };
