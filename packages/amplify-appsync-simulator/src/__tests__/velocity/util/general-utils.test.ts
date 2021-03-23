@@ -87,3 +87,16 @@ describe('$utils.toJson', () => {
     expect(generalUtils.toJson(object)).toBe('false');
   });
 });
+
+describe('$util.urlEncode and $util.urlDecode following application/x-www-form-urlencoded specification', () => {
+  // Appsync does not encode the asterisk
+  const reservedChars = "!#$%&'()+,/:;=?@[]";
+  const encodedReservedChars = '%21%23%24%25%26%27%28%29%2B%2C%2F%3A%3B%3D%3F%40%5B%5D';
+  it('should encode reserved chars from application/x-www-form-urlencoded', () => {
+    expect(generalUtils.urlEncode(reservedChars)).toBe(encodedReservedChars);
+  });
+
+  it('should not decode reserved chars from application/x-www-form-urlencoded', () => {
+    expect(generalUtils.urlDecode(encodedReservedChars)).toBe(reservedChars);
+  });
+});

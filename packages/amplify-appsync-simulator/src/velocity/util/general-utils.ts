@@ -14,10 +14,13 @@ export const generalUtils = {
     return jsStringEscape(value);
   },
   urlEncode(value) {
-    return encodeURI(value);
+    // Stringent in adhering to RFC 3986 ( except the asterisk that appsync ingores to encode )
+    return encodeURIComponent(value).replace(/[!'()]/g, function (c) {
+      return '%' + c.charCodeAt(0).toString(16).toUpperCase();
+    });
   },
   urlDecode(value) {
-    return decodeURI(value);
+    return decodeURIComponent(value);
   },
   base64Encode(value) {
     // eslint-disable-next-line
