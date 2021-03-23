@@ -33,8 +33,6 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
     spawn(getCLIPath(testingWithLatestCodebase), ['init'], { cwd, stripColors: true, env })
       .wait('Enter a name for the project')
       .sendLine(s.name)
-      .wait('Initialize the project with the above configuration?')
-      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')

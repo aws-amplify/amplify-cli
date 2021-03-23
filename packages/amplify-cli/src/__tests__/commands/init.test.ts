@@ -47,7 +47,6 @@ describe('amplify init: ', () => {
     },
     parameters: {
       options: {},
-      command: 'env', // to avoid default dx flow
     },
     usageData: {
       emitError: jest.fn(),
@@ -56,8 +55,6 @@ describe('amplify init: ', () => {
     print: {
       warning: jest.fn(),
       error: jest.fn(),
-      info: jest.fn(),
-      success: jest.fn(),
     },
     migrationInfo: jest.fn(),
     projectHasMobileHubResources: jest.fn(),

@@ -21,14 +21,6 @@ function onInitSuccessful(context) {
   return initializer.onInitSuccessful(context);
 }
 
-function displayFrontendDefaults(context, projectPath) {
-  return configManager.displayFrontendDefaults(context);
-}
-
-function setFrontendDefaults(context, projectPath) {
-  return configManager.setFrontendDefaults(context);
-}
-
 function createFrontendConfigs(context, amplifyResources, amplifyCloudResources) {
   const newOutputsForFrontend = amplifyResources.outputsForFrontend;
   const cloudOutputsForFrontend = amplifyCloudResources.outputsForFrontend;
@@ -77,8 +69,6 @@ module.exports = {
   scanProject,
   init,
   onInitSuccessful,
-  displayFrontendDefaults,
-  setFrontendDefaults,
   configure,
   publish,
   run,
