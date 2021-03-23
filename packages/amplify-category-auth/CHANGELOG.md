@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.29.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.29.2...amplify-category-auth@2.29.3-beta.0) (2021-03-23)
+
+
+### Bug Fixes
+
+* exclude env add from check ([a7e0351](https://github.com/aws-amplify/amplify-cli/commit/a7e035126e264abf1c075b17cbd9a82fa3963481))
+
+
+
+
+
 ## [2.29.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.29.1...amplify-category-auth@2.29.2) (2021-03-23)
 
 

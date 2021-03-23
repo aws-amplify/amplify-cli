@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.46.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.46.0...@aws-amplify/cli@4.46.1-beta.0) (2021-03-23)
+
+
+### Reverts
+
+* Revert "Init and Configure DX changes (#6745)" ([9078b69](https://github.com/aws-amplify/amplify-cli/commit/9078b69b5842c99f0624797a5e897353bacb65d0)), closes [#6745](https://github.com/aws-amplify/amplify-cli/issues/6745)
+
+
+
+
+
 # [4.46.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.45.2...@aws-amplify/cli@4.46.0) (2021-03-23)
 
 
