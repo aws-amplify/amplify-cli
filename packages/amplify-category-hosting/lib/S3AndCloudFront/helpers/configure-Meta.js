@@ -164,7 +164,7 @@ function getMetaKeyValue(filePath, publishMeta, metaRoot) {
         pattern = path.normalize(path.join(metaRoot, pattern));
       }
       if (minimatch(filePath, pattern, { matchBase: true })) {
-        result.push({ [key]: value });
+        result.push({ key: key, value: value });
       }
     }
   }

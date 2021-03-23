@@ -9,6 +9,15 @@ const constants = require('../../constants');
 const category = 'hosting';
 const serviceName = 'S3AndCloudFront';
 const providerName = 'awscloudformation';
+const systemParams = [
+  'ContentType',
+  'CacheControl',
+  'ContentDisposition',
+  'ContentEncoding',
+  'ContentLanguage',
+  'Expires',
+  'WebsiteRedirectLocation',
+];
 
 async function run(context, distributionDirPath) {
   const { WebsiteConfiguration } = context.exeInfo.template.Resources.S3Bucket.Properties;
@@ -62,7 +71,14 @@ function getHostingBucketName(context) {
   const { amplifyMeta } = context.exeInfo;
   return amplifyMeta[constants.CategoryName][serviceName].output.HostingBucketName;
 }
-
+const convertArrayToObject = (array, key, value) =>
+  array.reduce(
+    (obj, item) => ({
+      ...obj,
+      [item[key]]: item[value],
+    }),
+    {},
+  );
 async function uploadFile(s3Client, hostingBucketName, distributionDirPath, filePath, fileMeta, cloudFrontS3CanonicalUserId) {
   let relativeFilePath = path.relative(distributionDirPath, filePath);
   // make Windows-style relative paths compatible to S3
@@ -71,13 +87,28 @@ async function uploadFile(s3Client, hostingBucketName, distributionDirPath, file
   const fileStream = fs.createReadStream(filePath);
   const contentType = mime.lookup(relativeFilePath);
   let metaData = {};
-  if (fileMeta && fileMeta.length > 0) metaData = { Metadata: { ...fileMeta[0] } };
+  let systemMetaData = {};
+  if (fileMeta && fileMeta.length > 0) {
+    const metaDataList = convertArrayToObject(
+      fileMeta.filter(x => !systemParams.includes(x.key)),
+      'key',
+      'value',
+    );
+    const systemMetaDataList = convertArrayToObject(
+      fileMeta.filter(x => systemParams.includes(x.key)),
+      'key',
+      'value',
+    );
+    metaData = { Metadata: { ...metaDataList } };
+    systemMetaData = { ...systemMetaDataList };
+  }
   const uploadParams = {
     Bucket: hostingBucketName,
     Key: relativeFilePath,
     Body: fileStream,
     ContentType: contentType || 'text/plain',
     ...metaData,
+    ...systemMetaData,
   };
 
   if (cloudFrontS3CanonicalUserId) {

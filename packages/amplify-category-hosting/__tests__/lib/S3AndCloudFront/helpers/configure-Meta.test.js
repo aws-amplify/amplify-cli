@@ -96,6 +96,6 @@ describe('configure-Meta', () => {
 
   test('getMetaKeyValue', async () => {
     const result = configureMeta.getMetaKeyValue('dist/metaFile', [{ pattern: 'metaFile', key: 'testKey1', value: 'testValue1' }], 'dist');
-    expect(result).toEqual([{ testKey1: 'testValue1' }]);
+    expect(result).toEqual([{ key: 'testKey1', value: 'testValue1' }]);
   });
 });
