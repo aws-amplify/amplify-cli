@@ -6,9 +6,7 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  describeCloudFormationStack,
   getAppId,
-  getProjectMeta,
   getTeamProviderInfo,
   initJSProjectWithProfile,
 } from 'amplify-e2e-core';
@@ -72,13 +70,6 @@ describe('notification category test', () => {
       await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
 
       expectLocalAndPulledTeamNotificationMatching(projectRoot, projectRootPull);
-
-      // Delete the project now to assert that CFN is able to clean up successfully.
-      const { StackId: stackId, Region: region } = getProjectMeta(projectRoot).providers.awscloudformation;
-      await deleteProject(projectRoot);
-      ignoreProjectDeleteErrors = true;
-      const stack = await describeCloudFormationStack(stackId, region);
-      expect(stack.StackStatus).toEqual('DELETE_COMPLETE');
     } finally {
       deleteProjectDir(projectRootPull);
     }
