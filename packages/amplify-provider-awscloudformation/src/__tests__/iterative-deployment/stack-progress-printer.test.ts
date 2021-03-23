@@ -5,6 +5,21 @@ import columnify from 'columnify';
 const printer: IStackProgressPrinter = new StackProgressPrinter();
 jest.mock('columnify');
 
+// Make sure that chalk colors are stripped for the test.
+function chalkMock(input) {
+  if (input instanceof Date) {
+    return input.toString();
+  }
+
+  return input;
+}
+
+jest.mock('chalk', () => ({
+  green: jest.fn().mockImplementation(chalkMock),
+  red: jest.fn().mockImplementation(chalkMock),
+  reset: jest.fn().mockImplementation(chalkMock),
+}));
+
 describe('StackProgressPrinter', () => {
   test('print events order by Timestamp', () => {
     printer.addActivity({
