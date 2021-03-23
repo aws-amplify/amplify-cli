@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.4.16...amplify-dotnet-function-template-provider@1.4.17) (2021-03-23)
+
+**Note:** Version bump only for package amplify-dotnet-function-template-provider
+
+
+
+
+
 ## [1.4.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-dotnet-function-template-provider@1.4.15...amplify-dotnet-function-template-provider@1.4.16) (2021-03-11)
 
 **Note:** Version bump only for package amplify-dotnet-function-template-provider

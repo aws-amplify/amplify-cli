@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.37.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.36.1...amplify-e2e-tests@2.37.0) (2021-03-23)
+
+
+
+# 4.46.0 (2021-03-20)
+
+
+### Bug Fixes
+
+* adding JSON stringify to example python function ([#6493](https://github.com/aws-amplify/amplify-cli/issues/6493)) ([a6584e2](https://github.com/aws-amplify/amplify-cli/commit/a6584e2920764be10108a799d93222e3c3397ef1)), closes [/github.com/aws-amplify/amplify-js/issues/6390#issuecomment-740757548](https://github.com//github.com/aws-amplify/amplify-js/issues/6390/issues/issuecomment-740757548)
+* **amplify-category-api:** mantain ff in iam api policy ([#6723](https://github.com/aws-amplify/amplify-cli/issues/6723)) ([51e5e1b](https://github.com/aws-amplify/amplify-cli/commit/51e5e1b53514a05788dd824a48991c0db0b9705d)), closes [#6675](https://github.com/aws-amplify/amplify-cli/issues/6675)
+* stop sanity check when resource is in create status ([#6349](https://github.com/aws-amplify/amplify-cli/issues/6349)) ([45e0246](https://github.com/aws-amplify/amplify-cli/commit/45e0246306136e513c735899b030f94bb004a330))
+
+
+### Features
+
+* **amplify-e2e-tests:** removed json stringify ([#6920](https://github.com/aws-amplify/amplify-cli/issues/6920)) ([3f3bc24](https://github.com/aws-amplify/amplify-cli/commit/3f3bc24d60693c9093c21e8f5a2df20f4e3d084f))
+
+
+
+
+
 ## [2.36.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.36.0...amplify-e2e-tests@2.36.1) (2021-03-11)
 
 **Note:** Version bump only for package amplify-e2e-tests

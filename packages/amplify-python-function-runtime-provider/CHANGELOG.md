@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.6.4...amplify-python-function-runtime-provider@1.6.5) (2021-03-23)
+
+
+### Bug Fixes
+
+* set sys.modules when loading python handler ([#6788](https://github.com/aws-amplify/amplify-cli/issues/6788)) ([009e304](https://github.com/aws-amplify/amplify-cli/commit/009e304cc95ca5f73cd93efc55c62c0875f26acf))
+
+
+
+
+
 ## [1.6.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.6.3...amplify-python-function-runtime-provider@1.6.4) (2021-03-11)
 
 **Note:** Version bump only for package amplify-python-function-runtime-provider

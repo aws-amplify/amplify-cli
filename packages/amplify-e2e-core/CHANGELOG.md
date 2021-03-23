@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.16.1...amplify-e2e-core@1.16.2) (2021-03-23)
+
+
+### Bug Fixes
+
+* **amplify-category-api:** mantain ff in iam api policy ([#6723](https://github.com/aws-amplify/amplify-cli/issues/6723)) ([51e5e1b](https://github.com/aws-amplify/amplify-cli/commit/51e5e1b53514a05788dd824a48991c0db0b9705d)), closes [#6675](https://github.com/aws-amplify/amplify-cli/issues/6675)
+
+
+
+
+
 ## [1.16.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.16.0...amplify-e2e-core@1.16.1) (2021-03-11)
 
 **Note:** Version bump only for package amplify-e2e-core

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.7.5...amplify-category-predictions@2.7.6) (2021-03-23)
+
+
+### Bug Fixes
+
+* use non-duplicate names for lambda execution role ([#5814](https://github.com/aws-amplify/amplify-cli/issues/5814)) ([33d6c35](https://github.com/aws-amplify/amplify-cli/commit/33d6c35f94b87b15be75601173637ef662d40076))
+
+
+
+
+
 ## [2.7.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.7.4...amplify-category-predictions@2.7.5) (2021-03-11)
 
 **Note:** Version bump only for package amplify-category-predictions

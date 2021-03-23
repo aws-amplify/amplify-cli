@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.25.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.25.4...amplify-appsync-simulator@1.25.5) (2021-03-23)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** graphql info selectionset ([#5602](https://github.com/aws-amplify/amplify-cli/issues/5602)) ([b73f438](https://github.com/aws-amplify/amplify-cli/commit/b73f438dc245bd4de9dc8374d2aa0fbb8a44c0fa))
+
+
+
+
+
 ## [1.25.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.25.3...amplify-appsync-simulator@1.25.4) (2021-03-05)
 
 
