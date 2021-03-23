@@ -100,6 +100,6 @@ export function showAllHelp(context) {
 
   showHelp(header, commands);
   context.print.info('');
-  listCategories(context);
+  context.print.info(`where <category> is one of: ${listCategories(context)}`);
   context.print.info('');
 }

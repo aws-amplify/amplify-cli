@@ -1,3 +1,3 @@
 export const run = async context => {
-  await context.amplify.listCategories(context);
+  context.print.info(context.amplify.listCategories(context));
 };
