@@ -86,6 +86,7 @@
     "@typescript-eslint/parser": "^4.14.2",
     "babel-loader": "^8.1.0",
     "babel-eslint": "^10.1.0",
+    "@zkochan/cmd-shim": "^5.1.0",
     "cmd-shim": "^3.0.3",
     "codecov": "^3.7.0",
     "commitizen": "^3.1.2",

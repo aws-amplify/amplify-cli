@@ -7618,6 +7618,13 @@
     mkdirp-promise "^5.0.1"
     mz "^2.5.0"
 
+"@zkochan/cmd-shim@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@zkochan/cmd-shim/-/cmd-shim-5.1.0.tgz#f72bb870731130795113b3f8dc4cb3c3f5e91533"
+  integrity sha512-i8bPf1u6Kv1qMBG2JqHvqpdo/+sMaOB5Ohonpm04fvBWZ7y4M0rfI7tbHYVCokWX4BUMR5Cpu4KRSFy+YuxSqQ==
+  dependencies:
+    is-windows "^1.0.2"
+
 JSONStream@^1.0.4, JSONStream@^1.3.4:
   version "1.3.5"
   resolved "https://registry.yarnpkg.com/JSONStream/-/JSONStream-1.3.5.tgz#3208c1f08d3a4d99261ab64f92302bc15e111ca0"
