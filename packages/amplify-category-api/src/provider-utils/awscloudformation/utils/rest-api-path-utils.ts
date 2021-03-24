@@ -1,7 +1,7 @@
 // validatePathName checks that the provided path name is of a valid path structure.
 // Examples of valid path structures: /book, /book/{isbn}, /book/{isbn}/page/{pageNum}
 export const validatePathName = (name: string) => {
-  // "Whitelist" the path /
+  // Allow the path /
   if (name === '/') {
     return true;
   }
