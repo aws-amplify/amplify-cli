@@ -2,6 +2,8 @@ import { GraphQLResolveInfo } from 'graphql';
 import { AmplifyAppSyncSimulator } from '../..';
 import { AmplifyAppSyncSimulatorAuthenticationType } from '../../type-definition';
 import { VelocityTemplate } from '../../velocity';
+import { JavaArray } from '../../velocity/value-mapper/array';
+import { JavaMap } from '../../velocity/value-mapper/map';
 import { mockInfo } from './util/general-utils.test';
 
 describe('VelocityTemplate', () => {
@@ -125,6 +127,59 @@ describe('VelocityTemplate', () => {
       );
       expect(result.errors).toEqual([]);
       expect(result.result).toEqual('the same value');
+    });
+  });
+
+  describe('buildRenderContext', () => {
+    it('should generate a context ', () => {
+      const template = new VelocityTemplate(
+        {
+          path: 'INLINE_TEMPLATE',
+          content: '$util.toJson("hello world")',
+        },
+        simulator,
+      );
+      const info = {
+        fieldName: 'someField',
+        fieldNodes: [
+          {
+            kind: 'Field',
+            name: {
+              kind: 'Name',
+              value: 'someField',
+            },
+          },
+        ],
+        parentType: 'Query',
+      } as unknown;
+      const buildRenderContext = jest.spyOn(template as any, 'buildRenderContext');
+      const values = {
+        array: ['some', 'values'],
+        mapObject: { some: 'value' },
+      };
+      template.render(
+        {
+          arguments: values,
+          source: values,
+          stash: values,
+          result: values,
+        },
+        {
+          headers: { Key: 'value' },
+          requestAuthorizationMode: AmplifyAppSyncSimulatorAuthenticationType.API_KEY,
+        },
+        info as GraphQLResolveInfo,
+      );
+
+      expect(buildRenderContext).toHaveBeenCalled();
+      const ctx = buildRenderContext.mock.results[0].value.ctx;
+      expect(ctx.args.array).toBeInstanceOf(JavaArray);
+      expect(ctx.args.mapObject).toBeInstanceOf(JavaMap);
+      expect(ctx.source.array).toBeInstanceOf(JavaArray);
+      expect(ctx.source.mapObject).toBeInstanceOf(JavaMap);
+      expect(ctx.stash.array).toBeInstanceOf(JavaArray);
+      expect(ctx.stash.mapObject).toBeInstanceOf(JavaMap);
+      expect(ctx.info.selectionSetList).toBeInstanceOf(JavaArray);
     });
   });
 });
