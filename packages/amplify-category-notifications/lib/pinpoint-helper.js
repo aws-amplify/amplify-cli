@@ -137,6 +137,7 @@ async function deletePinpointApp(context) {
     pinpointApp = scanCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName]);
   }
   if (pinpointApp) {
+    await authHelper.deleteRolePolicy(context);
     pinpointApp = await deleteApp(context, pinpointApp.Id);
     removeCategoryMetaForPinpoint(amplifyMeta[constants.CategoryName], pinpointApp.Id);
     removeCategoryMetaForPinpoint(amplifyMeta[constants.AnalyticsCategoryName], pinpointApp.Id);
