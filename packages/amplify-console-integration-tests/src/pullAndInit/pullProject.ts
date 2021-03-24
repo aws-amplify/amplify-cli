@@ -53,7 +53,11 @@ export function headlessPull(
   });
 }
 
-export function authConfigPull(projectRootDirPath: string, params: { appId: string; envName: string }, settings: Object = {}) {
+export function authConfigPull(
+  projectRootDirPath: string,
+  params: { appId: string; envName: string },
+  settings: Object = {},
+): Promise<void> {
   const pullCommand: string[] = ['pull'];
   Object.keys(params).forEach(key => {
     if (params[key]) pullCommand.push(...[`--${key}`, JSON.stringify(params[key])]);

@@ -16,7 +16,7 @@ const defaultSettings = {
   profileName: '\r',
 };
 
-export function initJSProjectWithProfile(cwd: string, providersParam: any) {
+export function initJSProjectWithProfile(cwd: string, providersParam: any): Promise<void> {
   const s = { ...defaultSettings };
 
   addCircleCITags(cwd);
@@ -52,7 +52,7 @@ export function initJSProjectWithProfile(cwd: string, providersParam: any) {
   });
 }
 
-export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true) {
+export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true): Promise<void> {
   return new Promise((resolve, reject) => {
     const noOutputTimeout = 10 * 60 * 1000; // 10 minutes
     spawn(getCLIPath(), ['delete'], { cwd, stripColors: true, noOutputTimeout })
@@ -70,7 +70,7 @@ export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = tru
   });
 }
 
-export function addEnvironment(cwd: string, settings: any) {
+export function addEnvironment(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add', '--providers', JSON.stringify(settings.providersParam)], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
@@ -88,7 +88,7 @@ export function addEnvironment(cwd: string, settings: any) {
   });
 }
 
-export function addManualHosting(cwd: string) {
+export function addManualHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Hosting with Amplify Console*/)
@@ -105,7 +105,7 @@ export function addManualHosting(cwd: string) {
   });
 }
 
-export function addCICDHostingWithoutFrontend(cwd: string) {
+export function addCICDHostingWithoutFrontend(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Hosting with Amplify Console*/)
@@ -127,7 +127,7 @@ export function addCICDHostingWithoutFrontend(cwd: string) {
   });
 }
 
-export function amplifyPublish(cwd: string) {
+export function amplifyPublish(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['publish'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
@@ -142,7 +142,7 @@ export function amplifyPublish(cwd: string) {
   });
 }
 
-export function amplifyConfigure(cwd: string) {
+export function amplifyConfigure(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['hosting', 'configure'], { cwd, stripColors: true })
       .wait(/.*We recommends you open AWS Amplify Console*/)
@@ -157,7 +157,7 @@ export function amplifyConfigure(cwd: string) {
   });
 }
 
-export function amplifyServe(cwd: string) {
+export function amplifyServe(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['hosting', 'configure'], { cwd, stripColors: true })
       .wait(/.*You have set up Manual deployment*/)
@@ -172,7 +172,7 @@ export function amplifyServe(cwd: string) {
   });
 }
 
-export function amplifyStatus(cwd: string, expectedStatus: string) {
+export function amplifyStatus(cwd: string, expectedStatus: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let regex = new RegExp(`.*${expectedStatus}*`);
     spawn(getCLIPath(), ['status'], { cwd, stripColors: true })
@@ -188,7 +188,7 @@ export function amplifyStatus(cwd: string, expectedStatus: string) {
   });
 }
 
-export function amplifyPush(cwd: string) {
+export function amplifyPush(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
@@ -203,7 +203,7 @@ export function amplifyPush(cwd: string) {
   });
 }
 
-export function removeHosting(cwd: string) {
+export function removeHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Are you sure you want to delete the resource*/)
@@ -219,7 +219,7 @@ export function removeHosting(cwd: string) {
   });
 }
 
-export function removeNonExistingHosting(cwd: string) {
+export function removeNonExistingHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Hosting with Amplify Console*/)
@@ -235,7 +235,7 @@ export function removeNonExistingHosting(cwd: string) {
   });
 }
 
-export function removeHostingEnabledInConsole(cwd: string) {
+export function removeHostingEnabledInConsole(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['remove', 'hosting'], { cwd, stripColors: true })
       .wait(/.*Hosting with Amplify Console*/)
@@ -251,7 +251,7 @@ export function removeHostingEnabledInConsole(cwd: string) {
   });
 }
 
-export function checkoutEnv(cwd: string, env: string) {
+export function checkoutEnv(cwd: string, env: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'checkout', env], { cwd, stripColors: true }).run((err: Error) => {
       if (!err) {
