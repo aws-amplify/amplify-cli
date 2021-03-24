@@ -9,6 +9,14 @@ export async function removeEnvFromCloud(context, envName, deleteS3) {
   context.print.info('');
   context.print.info(`Deleting env:${envName}`);
 
+  // Pinpoint attaches an IAM policy to several roles, which blocks CFN from
+  // deleting the roles. Work around that by deleting Pinpoint first.
+  const categoryPluginInfoList = getAllCategoryPluginInfo(context);
+  if (categoryPluginInfoList.notifications) {
+    const notificationsModule = require(categoryPluginInfoList.notifications[0].packageLocation);
+    await notificationsModule.deletePinpointAppForEnv(context, envName);
+  }
+
   providers.forEach(providerName => {
     const pluginModule = require(providerPlugins[providerName]);
     providerPromises.push(pluginModule.deleteEnv(context, envName, deleteS3));
@@ -21,11 +29,5 @@ export async function removeEnvFromCloud(context, envName, deleteS3) {
     context.print.error(`Error in deleting env:${envName}`);
     context.print.info(e.message);
     throw e;
-  }
-
-  const categoryPluginInfoList = getAllCategoryPluginInfo(context);
-  if (categoryPluginInfoList.notifications) {
-    const notificationsModule = require(categoryPluginInfoList.notifications[0].packageLocation);
-    await notificationsModule.deletePinpointAppForEnv(context, envName);
   }
 }
