@@ -16,6 +16,7 @@
   ],
   "private": true,
   "scripts": {
+    "build-tests": "tsc --build tsconfig.tests.json",
     "console-integration": "npm run setup-profile && jest",
     "setup-profile": "ts-node ./src/setup-profile.ts"
   },
@@ -78,7 +79,7 @@
     "globals": {
       "window": {},
       "ts-jest": {
-        "diagnostics": false
+        "tsconfig": "<rootDir>/tsconfig.tests.json"
       }
     }
   },
