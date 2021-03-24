@@ -1,6 +1,6 @@
 const fs = require('fs-extra');
 const path = require('path');
-
+const { loadConfigurationForEnv } = require('./configuration-manager');
 const Cloudformation = require('./aws-utils/aws-cfn');
 const { S3 } = require('./aws-utils/aws-s3');
 const { deleteEnv } = require('./amplify-service-manager');
@@ -8,8 +8,9 @@ const { S3BackendZipFileName, ProviderName } = require('./constants');
 const { downloadZip, extractZip } = require('./zip-util');
 
 async function run(context, envName, deleteS3) {
-  const cfn = await new Cloudformation(context, null);
-  const s3 = await S3.getInstance(context, {});
+  const credentials = await loadConfigurationForEnv(context, envName);
+  const cfn = await new Cloudformation(context, null, credentials);
+  const s3 = await S3.getInstance(context, credentials);
   let removeBucket = false;
   let deploymentBucketName;
   let storageCategoryBucketName;
