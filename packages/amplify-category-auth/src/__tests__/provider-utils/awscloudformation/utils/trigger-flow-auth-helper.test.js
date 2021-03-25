@@ -47,10 +47,12 @@ describe('When handling selected triggers...', () => {
       },
       authLambdaConfig: [
         {
-          PostConfirmation: 'demoFnPostConfirmation',
+          fnName: 'demoFnPostConfirmation',
+          triggerKey: 'PostConfirmation',
         },
         {
-          PostAuthentication: 'demoFnPostAuthentication',
+          fnName: 'demoFnPostAuthentication',
+          triggerKey: 'PostAuthentication',
         },
       ],
       resourceName: 'demoFn',

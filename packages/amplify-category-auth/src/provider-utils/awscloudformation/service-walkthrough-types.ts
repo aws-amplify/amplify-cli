@@ -103,7 +103,7 @@ export enum TriggerType {
   PostAuthentication = 'PostAuthentication',
   PostConfirmation = 'PostConfirmation',
   PreAuthentication = 'PreAuthentication',
-  PreSignup = 'PreSignup',
+  PreSignup = 'PreSignUp',
   VerifyAuthChallengeResponse = 'VerifyAuthChallengeResponse',
   PreTokenGeneration = 'PreTokenGeneration',
 }
@@ -111,9 +111,10 @@ export enum TriggerType {
 export type AuthTriggerConnection = {
   fnName: String;
   triggerKey: TriggerType;
+  fnArn?: String;
 };
 
 export type AuthTriggerConfig = {
   triggers: $TSObject;
-  authLambdaConfig: AuthTriggerConnection;
+  authLambdaConfig: AuthTriggerConnection[];
 };

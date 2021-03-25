@@ -3,7 +3,7 @@ import * as path from 'path';
 import { existsSync, copySync, outputFileSync } from 'fs-extra';
 import uuid from 'uuid';
 import { cfnTemplateRoot, privateKeys, adminAuthAssetRoot, triggerRoot, ENV_SPECIFIC_PARAMS } from '../constants';
-import { pathManager, JSONUtilities } from 'amplify-cli-core';
+import { pathManager, JSONUtilities, FeatureFlags } from 'amplify-cli-core';
 import { get } from 'lodash';
 import { authProviders } from '../assets/string-maps';
 import _ from 'lodash';
@@ -28,7 +28,7 @@ export const getResourceSynthesizer = (context: any, cfnFilename: string, provid
   await createUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
   await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
   await copyCfnTemplate(context, category, request, cfnFilename);
-  await generateNestedAuthTriggerTemplate(context, category, request, cfnFilename);
+  await generateNestedAuthTriggerTemplate(context, category, request);
   saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
   await copyS3Assets(request);
   return request;
@@ -90,7 +90,7 @@ export const getResourceUpdater = (context: any, cfnFilename: string, provider: 
 
   if (request.updateFlow !== 'updateUserPoolGroups' && request.updateFlow !== 'updateAdminQueries') {
     await copyCfnTemplate(context, category, request, cfnFilename);
-    await generateNestedAuthTriggerTemplate(context, category, request, cfnFilename);
+    await generateNestedAuthTriggerTemplate(context, category, request);
     saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
   }
   await copyS3Assets(request);
@@ -102,6 +102,7 @@ export const getResourceUpdater = (context: any, cfnFilename: string, provider: 
  */
 export const copyCfnTemplate = async (context: any, category: string, options: any, cfnFilename: string) => {
   const targetDir = path.join(pathManager.getBackendDirPath(), category, options.resourceName);
+  // enable feature flag to remove trigger dependency from auth template
 
   const copyJobs = [
     {
@@ -165,14 +166,17 @@ export const removeDeprecatedProps = (props: any) => {
 const lambdaTriggers = async (coreAnswers: any, context: any, previouslySaved: any) => {
   const { handleTriggers } = require('./trigger-flow-auth-helper');
   let triggerKeyValues = {};
-  let authLambdaConfig: AuthTriggerConnection;
+  let authLambdaConfig: AuthTriggerConnection[];
   if (coreAnswers.triggers) {
     const triggerConfig: AuthTriggerConfig = await handleTriggers(context, coreAnswers, previouslySaved);
     triggerKeyValues = triggerConfig.triggers;
     authLambdaConfig = triggerConfig.authLambdaConfig;
     coreAnswers.triggers = triggerKeyValues ? JSONUtilities.stringify(triggerKeyValues) : '{}';
-    coreAnswers.authLambdaConfig = authLambdaConfig ? JSONUtilities.stringify(authLambdaConfig) : '{}';
 
+    if (FeatureFlags.getBoolean('auth.breakCircularDependency')) {
+      coreAnswers.authLambdaConfig = authLambdaConfig ? JSONUtilities.stringify(authLambdaConfig) : '[]';
+      coreAnswers.breakCircularDependency = FeatureFlags.getBoolean('auth.breakCircularDependency');
+    }
     if (triggerKeyValues) {
       coreAnswers.parentStack = { Ref: 'AWS::StackId' };
     }
@@ -189,6 +193,9 @@ const lambdaTriggers = async (coreAnswers: any, context: any, previouslySaved: a
   // remove unused coreAnswers.triggers key
   if (coreAnswers.triggers && coreAnswers.triggers === '[]') {
     delete coreAnswers.triggers;
+  }
+
+  if (coreAnswers.authLambdaConfig && coreAnswers.authLambdaConfig === '[]') {
     delete coreAnswers.authLambdaConfig;
   }
 

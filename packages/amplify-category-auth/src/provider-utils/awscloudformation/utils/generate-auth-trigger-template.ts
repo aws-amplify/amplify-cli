@@ -8,14 +8,13 @@ import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { AuthTriggerConnection } from '../service-walkthrough-types';
 import { CustomResource, CustomResourceProps, RemovalPolicy } from '@aws-cdk/core';
 import * as logs from '@aws-cdk/aws-logs';
+import { Permission } from '@aws-cdk/aws-lambda';
 
 type CustomResourceAuthStackProps = Readonly<{
   description: string;
-  authLambdaConfig: any[];
-  userpoolId: string;
+  authLambdaConfig: AuthTriggerConnection[];
 }>;
 
-export const APIGW_AUTH_STACK_LOGICAL_ID = 'APIGatewayAuthStack';
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 
 export class CustomResourceAuthStack extends cdk.Stack {
@@ -31,18 +30,23 @@ export class CustomResourceAuthStack extends cdk.Stack {
       type: 'String',
     });
 
+    const userpoolArn = new cdk.CfnParameter(this, 'userpoolArn', {
+      type: 'String',
+    });
+
     new cdk.CfnCondition(this, 'ShouldNotCreateEnvResources', {
       expression: cdk.Fn.conditionEquals(env, 'NONE'),
     });
 
     props.authLambdaConfig.forEach(config => {
-      const fnName = new cdk.CfnParameter(this, `${Object.values(config)[0]}Name`, {
+      const fnName = new cdk.CfnParameter(this, `function${config.fnName}Name`, {
         type: 'String',
       });
-      const fnArn = new cdk.CfnParameter(this, `${Object.values(config)[0]}Arn`, {
+      const fnArn = new cdk.CfnParameter(this, `function${config.fnName}Arn`, {
         type: 'String',
       });
-      config[Object.keys(config)[0]] = fnArn.valueAsString;
+      createPermissionToInvokeLambda(this, fnName, userpoolArn, config);
+      config.fnArn = fnArn.valueAsString;
     });
 
     createCustomResource(this, props.authLambdaConfig, userpoolId);
@@ -54,18 +58,26 @@ export class CustomResourceAuthStack extends cdk.Stack {
   }
 }
 
-export async function generateNestedAuthTriggerTemplate(context: $TSContext, category: string, request: $TSObject, cfnFilename: string) {
-  const { authLambdaConfig, userpoolId } = request;
-  const cfnObject = await createCustomResourceforAuthTrigger(context, JSON.parse(authLambdaConfig), userpoolId);
+export async function generateNestedAuthTriggerTemplate(context: $TSContext, category: string, request: $TSObject) {
+  const cfnFileName = 'auth-trigger-cloudformation-template.json';
   const targetDir = path.join(pathManager.getBackendDirPath(), category, request.resourceName);
-  JSONUtilities.writeJson(path.join(targetDir, `auth-trigger-cloudformation-template.json`), cfnObject);
+  const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
+  const { authLambdaConfig } = request;
+  if (authLambdaConfig !== undefined && authLambdaConfig.length !== 0) {
+    const cfnObject = await createCustomResourceforAuthTrigger(context, JSON.parse(authLambdaConfig));
+    JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
+  } else {
+    // delete the custom stack template if the triggers arent defined
+    if (fs.existsSync(authTriggerCfnFilePath)) {
+      fs.unlinkSync(authTriggerCfnFilePath);
+    }
+  }
 }
 
-async function createCustomResourceforAuthTrigger(context: any, authLambdaConfig: AuthTriggerConnection[], userpoolId: string) {
+async function createCustomResourceforAuthTrigger(context: any, authLambdaConfig: AuthTriggerConnection[]) {
   const stack = new CustomResourceAuthStack(undefined as any, 'Amplify', {
     description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
     authLambdaConfig: authLambdaConfig,
-    userpoolId: userpoolId,
   });
   const cfn = stack.toCloudFormation();
   return cfn;
@@ -81,14 +93,14 @@ function createCustomResource(stack: cdk.Stack, authLambdaConfig: AuthTriggerCon
         'let responseData = {};',
         'exports.handler = function(event, context) {',
         '  try {',
-        '    let userPoolId = event.ResourceProperties.userPoolId;',
-        '    let lambdaConfig = event.ResourceProperties.AuthLambdaConfig',
+        '    let userPoolId = event.ResourceProperties.userpoolId;',
+        '    let lambdaConfig = event.ResourceProperties.lambdaConfig',
         '    let config = {}',
-        '   lambdaConfig.foreach(lambda => {config[`${lambda.triggerKey}`] = lambdaConfig.fnName;})',
+        '   lambdaConfig.forEach(lambda => config[`${lambda.triggerKey}`] = lambda.fnArn)',
         '    let promises = [];',
         "    if (event.RequestType == 'Delete') {",
         '        const authParams = { UserPoolId: userPoolId, LambdaConfig: {}}',
-        '        const cognitoclient = new AWS.CognitoIdentityServiceProvider(authParams);',
+        '        const cognitoclient = new aws.CognitoIdentityServiceProvider();',
         '        promises.push(cognitoclient.updateUserPool(authParams).promise());',
         '        Promise.all(promises)',
         '         .then((res) => {',
@@ -97,14 +109,14 @@ function createCustomResource(stack: cdk.Stack, authLambdaConfig: AuthTriggerCon
         '         });',
         '    }',
         "    if (event.RequestType == 'Update' || event.RequestType == 'Create') {",
-        '        const authParams = { UserPoolId: userPoolId, LambdaConfig: lambdaConfig}',
-        '        const cognitoclient = new AWS.CognitoIdentityServiceProvider(authParams);',
+        '        const authParams = { UserPoolId: userPoolId, LambdaConfig: config}',
+        '        const cognitoclient = new aws.CognitoIdentityServiceProvider();',
         '        promises.push(cognitoclient.updateUserPool(authParams).promise());',
         '        Promise.all(promises)',
         '         .then((res) => {',
         '            console.log("createORupdate" + res);',
         '            console.log("response data" + JSON.stringify(res));',
-        '            response.send(event, context, response.SUCCESS, {});',
+        '            response.send(event, context, response.SUCCESS, {res});',
         '         });',
         '    }',
         '  } catch(err) {',
@@ -116,7 +128,7 @@ function createCustomResource(stack: cdk.Stack, authLambdaConfig: AuthTriggerCon
         '};',
       ]),
     ),
-    handler: 'handler',
+    handler: 'index.handler',
   });
   if (authTriggerFn.role) {
     authTriggerFn.role.addToPrincipalPolicy(
@@ -134,8 +146,18 @@ function createCustomResource(stack: cdk.Stack, authLambdaConfig: AuthTriggerCon
     resourceType: 'Custom::CustomAuthTriggerResourceOutputs',
     removalPolicy: RemovalPolicy.DESTROY,
   });
+}
 
-  // The result obtained from the output of custom resource
-  const streamArn = customResourceOutputs.getAtt('LatestStreamArn').toString();
-  console.log(streamArn);
+function createPermissionToInvokeLambda(
+  stack: cdk.Stack,
+  fnName: cdk.CfnParameter,
+  userpoolArn: cdk.CfnParameter,
+  config: AuthTriggerConnection,
+) {
+  return new lambda.CfnPermission(stack, `UserPool${config.triggerKey}LambdaInvokePermission`, {
+    action: 'lambda:InvokeFunction',
+    functionName: fnName.valueAsString,
+    principal: 'cognito-idp.amazonaws.com',
+    sourceArn: userpoolArn.valueAsString,
+  });
 }

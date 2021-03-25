@@ -1,4 +1,11 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush, validateNodeModulesDirRemoval } from 'amplify-e2e-core';
+import {
+  initJSProjectWithProfile,
+  deleteProject,
+  amplifyPushAuth,
+  amplifyPush,
+  validateNodeModulesDirRemoval,
+  updateFunction,
+} from 'amplify-e2e-core';
 import { addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger } from 'amplify-e2e-core';
 import {
   createNewProjectDir,
@@ -83,6 +90,41 @@ describe('amplify add auth...', () => {
 
     const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
     expect(userPool.UserPool).toBeDefined();
+    validateNodeModulesDirRemoval(projRoot);
+    expect(clients).toHaveLength(2);
+    expect(lambdaFunction).toBeDefined();
+    expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
+  });
+
+  it('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
+    await initJSProjectWithProfile(projRoot, defaultsSettings);
+    await addAuthViaAPIWithTrigger(projRoot, {});
+    await updateFunction(
+      projRoot,
+      {
+        functionTemplate: 'Hello World',
+        additionalPermissions: {
+          permissions: ['storage'],
+          choices: ['function', 'auth', 'api', 'storage'],
+          resources: ['Todo:@model(appsync)'],
+          resourceChoices: ['Todo:@model(appsync)'],
+          operations: ['read'],
+        },
+      },
+      'nodejs',
+    );
+    await amplifyPush(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
+    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const id = authMeta.output.UserPoolId;
+    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
+    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
+    const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
+    expect(userPool.UserPool).toBeDefined();
+    expect(Object.keys(userPool.UserPool.LambdaConfig)[0]).toBe('PostConfirmation');
+    expect(Object.values(userPool.UserPool.LambdaConfig)[0]).toBe(meta.function[functionName.split('-')[0]].output.Arn);
     validateNodeModulesDirRemoval(projRoot);
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();

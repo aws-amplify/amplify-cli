@@ -43,7 +43,8 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
       const functionName = `${authResourceName}${keys[t]}`;
       const targetPath = `${targetDir}/function/${functionName}/src`;
       let config = {};
-      config[keys[t]] = functionName;
+      config['triggerKey'] = keys[t] === 'PreSignup' ? 'PreSignUp' : keys[t];
+      config['fnName'] = functionName;
       authLambdaConfig.push(config);
 
       if (previouslySaved && previouslySaved[keys[t]]) {
