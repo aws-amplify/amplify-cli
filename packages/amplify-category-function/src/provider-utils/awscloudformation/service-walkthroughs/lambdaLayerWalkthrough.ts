@@ -71,7 +71,6 @@ export async function updateLayerWalkthrough(
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
-
   if (resources.length === 1) {
     parameters.layerName = resources[0];
   } else if (lambdaToUpdate && resources.includes(lambdaToUpdate)) {
@@ -146,8 +145,8 @@ export async function updateLayerWalkthrough(
     const defaultPermission: PrivateLayer = { type: PermissionEnum.Private };
     parameters.permissions = storedLayerParameters.permissions || [defaultPermission];
   }
-
   parameters.runtimes = storedLayerParameters.runtimes;
   parameters.build = true;
+  console.log('parameters:', parameters);
   return parameters;
 }

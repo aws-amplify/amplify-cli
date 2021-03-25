@@ -145,3 +145,10 @@ function validFilesize(path: string, maxSize = 250) {
     return new Error(`Calculating file size failed: ${path}`);
   }
 }
+
+// function storeLayerHash(layerName: string, hash?: string): void {
+//   console.log(`storeLayerHash(${layerName}, ${hash})`)
+//   const meta: $TSMeta = stateManager.getMeta();
+//   _.set(meta, [categoryName, layerName, 'versionHash'], hash);
+//   stateManager.setMeta(undefined, meta);
+// }
