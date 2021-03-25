@@ -26,6 +26,8 @@ import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBServ
 import { resolveAppId } from './utils/resolve-appId';
 import { loadConfigurationForEnv } from './configuration-manager';
 import { Lambda } from './aws-utils/aws-lambda';
+import CloudFormation from './aws-utils/aws-cfn';
+import { $TSContext } from 'amplify-cli-core';
 
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
@@ -115,7 +117,8 @@ module.exports = {
   init,
   initEnv,
   isAmplifyAdminApp,
-  Lambda,
+  getCloudFormationSdk,
+  getLambdaSdk,
   onInitSuccessful,
   configure,
   configureNewUser,

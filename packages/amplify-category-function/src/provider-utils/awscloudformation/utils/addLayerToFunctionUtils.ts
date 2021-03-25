@@ -5,7 +5,7 @@ import { ServiceName } from './constants';
 import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
 import enquirer from 'enquirer';
 import { loadLayerDataFromCloud } from './layerHelpers';
-import { getLayerRuntimes } from './layerConfiguration';
+import { getLayerRuntimes } from './layerRuntimes';
 import { $TSContext, $TSMeta, pathManager } from 'amplify-cli-core';
 
 const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';

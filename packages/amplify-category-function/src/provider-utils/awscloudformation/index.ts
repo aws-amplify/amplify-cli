@@ -1,5 +1,6 @@
 import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext } from 'amplify-function-plugin-interface';
-import { isMultiEnvLayer, LayerParameters } from './utils/layerParams';
+import { isMultiEnvLayer } from './utils/layerHelpers';
+import { LayerParameters } from './utils/layerParams';
 import { supportedServices } from '../supported-services';
 import { ServiceName, provider, functionParametersFileName } from './utils/constants';
 import { category as categoryName } from '../../constants';
@@ -167,31 +168,6 @@ export async function updateResource(
   }
 }
 
-export async function updateLayerResource(
-  context: $TSContext,
-  service: ServiceName,
-  serviceConfig: ServiceConfig<LayerParameters>,
-  parameters?: Partial<LayerParameters>,
-): Promise<void> {
-  if (!serviceConfig) {
-    throw `amplify-category-function is not configured to provide service type ${service}`;
-  }
-
-  if (!parameters) {
-    parameters = {};
-    parameters.providerContext = {
-      provider: provider,
-      service: service,
-      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
-    };
-  }
-  const completeParams = (await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters)) as LayerParameters;
-
-  // write out updated resources
-  await updateLayerArtifacts(context, completeParams);
-  printLayerSuccessMessages(context, completeParams, 'updated');
-}
-
 export async function updateFunctionResource(
   context: $TSContext,
   category: string,
@@ -238,6 +214,31 @@ export async function updateFunctionResource(
   }
 
   return parameters.resourceName;
+}
+
+export async function updateLayerResource(
+  context: $TSContext,
+  service: ServiceName,
+  serviceConfig: ServiceConfig<LayerParameters>,
+  parameters?: Partial<LayerParameters>,
+): Promise<void> {
+  if (!serviceConfig) {
+    throw `amplify-category-function is not configured to provide service type ${service}`;
+  }
+
+  if (!parameters) {
+    parameters = {};
+    parameters.providerContext = {
+      provider: provider,
+      service: service,
+      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+    };
+  }
+  const completeParams = (await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters)) as LayerParameters;
+
+  // write out updated resources
+  await updateLayerArtifacts(context, completeParams, { layerParams: completeParams.selectedVersion === undefined });
+  printLayerSuccessMessages(context, completeParams, 'updated');
 }
 
 function printLayerSuccessMessages(context: $TSContext, parameters: LayerParameters, action: string): void {
