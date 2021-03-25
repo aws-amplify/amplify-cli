@@ -1,25 +1,24 @@
-import { constructCFModelTableNameComponent, constructCFModelTableArnComponent } from '../utils/cloudformationHelpers';
-import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
-import path from 'path';
+import { $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
 import * as TransformPackage from 'graphql-transformer-core';
+import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
-import { topLevelCommentPrefix, topLevelCommentSuffix, envVarPrintoutPrefix, CRUDOperation, GraphQLOperation } from '../../../constants';
-import { ServiceName } from '../utils/constants';
+import path from 'path';
+import { CRUDOperation, envVarPrintoutPrefix, GraphQLOperation, topLevelCommentPrefix, topLevelCommentSuffix } from '../../../constants';
+import { getAppSyncResourceName } from '../utils/appSyncHelper';
+import { constructCFModelTableArnComponent, constructCFModelTableNameComponent } from '../utils/cloudformationHelpers';
+import { appsyncTableSuffix, ServiceName } from '../utils/constants';
 import {
   fetchPermissionCategories,
   fetchPermissionResourcesForCategory,
   fetchPermissionsForResourceInCategory,
 } from '../utils/permissionMapUtils';
-import { FunctionParameters, FunctionDependency } from 'amplify-function-plugin-interface';
-import { appsyncTableSuffix } from '../utils/constants';
-import { getAppSyncResourceName } from '../utils/appSyncHelper';
-import { stateManager, FeatureFlags } from 'amplify-cli-core';
 
 /**
  * This whole file desperately needs to be refactored
  */
 export const askExecRolePermissionsQuestions = async (
-  context,
+  context: $TSContext,
   resourceNameToUpdate: string,
   currentPermissionMap?,
   currentEnvMap?,
@@ -53,7 +52,7 @@ export const askExecRolePermissionsQuestions = async (
   const graphqlOperations = _.values(GraphQLOperation);
   const permissions = {};
 
-  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const backendDir = pathManager.getBackendDirPath();
 
   for (const selectedCategory of selectedCategories) {
     let resourcesList = selectedCategory in amplifyMeta ? Object.keys(amplifyMeta[selectedCategory]) : [];

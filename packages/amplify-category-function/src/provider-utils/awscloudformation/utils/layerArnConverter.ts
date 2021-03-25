@@ -1,5 +1,5 @@
 import { LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
-import { isMultiEnvLayer } from './layerParams';
+import { isMultiEnvLayer } from './layerHelpers';
 
 /**
  * Convert the internal LambdaLayer[] structure into an array that can be JSON.stringify-ed into valid CFN

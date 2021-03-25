@@ -13,7 +13,6 @@ export { packageResource } from './provider-utils/awscloudformation/utils/packag
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/packageLayer';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
-import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
@@ -142,15 +141,6 @@ export async function initEnv(context) {
         _.assign(tpiResourceParams, s3Bucket);
         _.set(teamProviderInfo, [envName, 'categories', category, resourceName], tpiResourceParams);
         _.set(amplifyMeta, [category, resourceName, 's3Bucket'], s3Bucket);
-      }
-
-      if (service === ServiceName.LambdaLayer) {
-        const lvmPath = [category, resourceName, 'layerVersionMap'];
-        const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
-        if (isMultiEnvLayer(resourceName)) {
-          _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
-        }
-        _.set(amplifyMeta, lvmPath, currentVersionMap);
       }
     });
   resourcesToBeCreated.forEach(resource => {

@@ -415,6 +415,16 @@ class CloudFormation {
     });
   }
 
+  async listStackResources(stackId) {
+    const meta = stateManager.getMeta();
+    stackId = stackId || _.get(meta, ['providers', providerName, 'StackId'], undefined);
+    if (!stackId) {
+      throw new Error(`StackId not found in amplify-meta for provider ${providerName}`);
+    }
+    // StackName param can be a StackName, StackId, or a PhysicalResourceId
+    return this.cfn.listStackResources({ StackName: stackId }).promise();
+  }
+
   deleteResourceStack(envName) {
     const { teamProviderInfo } = this.context.amplify.getProjectDetails();
     const teamProvider = teamProviderInfo[envName][providerName];

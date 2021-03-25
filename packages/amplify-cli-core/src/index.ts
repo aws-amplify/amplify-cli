@@ -229,7 +229,7 @@ interface AmplifyToolkit {
   updateamplifyMetaAfterPush: (resources: $TSObject[]) => void;
   // buildType is from amplify-function-plugin-interface but can't be imported here because it would create a circular dependency
   updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: string) => void;
-  updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string) => void;
+  updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string, hash?: { resourceKey: string; hashValue: string }) => void;
   updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSAny) => $TSAny;
   updateBackendConfigAfterResourceUpdate: () => $TSAny;
   updateBackendConfigAfterResourceRemove: () => $TSAny;

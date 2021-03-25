@@ -134,7 +134,7 @@ function provideInformation(context, lambdaToUpdate, functionRuntime, currentPar
  * TODO this function needs to be refactored so it doesn't have side-effects of writing to CFN files
  */
 export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: string) {
-  const lambdaFuncResourceNames = ((await context.amplify.getResourceStatus()).allResources as any[])
+  const lambdaFuncResourceNames = ((await context.amplify.getResourceStatus()).allResources as $TSAny[])
     .filter(resource => resource.service === ServiceName.LambdaFunction && resource.mobileHubMigrated !== true)
     .map(resource => resource.resourceName);
 
