@@ -243,7 +243,9 @@ export const askExecRolePermissionsQuestions = async (
 
   const envVarStringList = Array.from(envVars).sort().join('\n\t');
 
-  context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
+  if (envVarStringList) {
+    context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
+  }
 
   return {
     dependsOn,
