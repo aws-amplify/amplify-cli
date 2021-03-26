@@ -95,10 +95,3 @@ export async function checkContentChanges(context: $TSContext, resources: Array<
     }
   }
 }
-
-// function storeLayerHash(layerName: string, hash?: string): void {
-//   console.log(`storeLayerHash(${layerName}, ${hash})`)
-//   const meta: $TSMeta = stateManager.getMeta();
-//   _.set(meta, [categoryName, layerName, 'versionHash'], hash);
-//   stateManager.setMeta(undefined, meta);
-// }

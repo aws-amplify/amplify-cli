@@ -150,7 +150,6 @@ export async function updateLayerWalkthrough(
   }
   parameters.runtimes = storedLayerParameters.runtimes;
   parameters.build = true;
-  console.log('parameters:', parameters);
   return parameters;
 }
 
