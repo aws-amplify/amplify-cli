@@ -161,7 +161,7 @@ function copyTemplateFiles(context: $TSContext, parameters: FunctionParameters |
 
   const copyJobParams: $TSAny = parameters;
   if ('lambdaLayers' in parameters) {
-    const layerCFNValues = convertLambdaLayerMetaToLayerCFNArray(context, parameters.lambdaLayers, context.amplify.getEnvInfo().envName);
+    const layerCFNValues = convertLambdaLayerMetaToLayerCFNArray(parameters.lambdaLayers, context.amplify.getEnvInfo().envName);
     copyJobParams.lambdaLayersCFNArray = layerCFNValues;
   }
   context.amplify.copyBatch(context, [cloudTemplateJob], copyJobParams, false);
@@ -195,7 +195,6 @@ function createLayerCfnFile(parameters: LayerParameters, layerDirPath: string) {
 }
 
 async function updateLayerCfnFile(context: $TSContext, parameters: LayerParameters, layerDirPath: string) {
-  context.print.blue(`updateLayerCfnFile()`);
   let layerVersionList = [];
   if (loadPreviousLayerHash(parameters.layerName)) {
     layerVersionList = await loadLayerDataFromCloud(context, parameters.layerName);
@@ -227,7 +226,6 @@ const addLayerToAmplifyMeta = (context: $TSContext, parameters: LayerParameters)
 };
 
 const updateLayerInAmplifyMeta = (parameters: LayerParameters) => {
-  console.log(`updateLayerInAmplifyMeta()`, parameters);
   assignParametersInAmplifyMeta(parameters.layerName, amplifyMetaAndBackendParams(parameters));
 };
 

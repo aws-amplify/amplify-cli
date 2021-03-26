@@ -1,15 +1,14 @@
+import { FunctionDependency, LambdaLayer } from 'amplify-function-plugin-interface';
+import enquirer from 'enquirer';
+import inquirer, { CheckboxQuestion, InputQuestion, ListQuestion } from 'inquirer';
+import { category } from '../../../../constants';
 import {
-  askLayerSelection,
-  provideExistingARNsPrompt,
   askCustomArnQuestion,
   askLayerOrderQuestion,
+  askLayerSelection,
+  provideExistingARNsPrompt,
 } from '../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils';
-import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
-import enquirer from 'enquirer';
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
-import { LambdaLayer, FunctionDependency } from 'amplify-function-plugin-interface';
-import { category } from '../../../../constants';
-import { LayerMetadataFactory } from '../../../../provider-utils/awscloudformation/utils/layerParams';
 import { getLayerRuntimes } from '../../../../provider-utils/awscloudformation/utils/layerRuntimes';
 
 jest.mock('inquirer');
@@ -23,17 +22,15 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/layerRuntimes', ()
 const getLayerRuntimes_mock = getLayerRuntimes as jest.MockedFunction<typeof getLayerRuntimes>;
 const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
 const enquirer_mock = enquirer as jest.Mocked<typeof enquirer>;
-const layerMetadataFactory_stub: LayerMetadataFactory = () =>
-  ({
-    listVersions: () => [3, 2, 1],
-    syncVersions: async () => true,
-  } as any);
+
+const context_stub = {
+  amplify: {
+    getEnvInfo: jest.fn().mockReturnValue({ envName: 'mockEnv' }),
+    getProviderPlugins: jest.fn(),
+  },
+} as any;
 
 const runtimeValue = 'lolcode';
-
-const backendDirPath = 'randomvalue';
-
-const layerName = 'randomLayer';
 
 const amplifyMetaStub = {
   function: {
@@ -74,7 +71,7 @@ describe('layer selection question', () => {
 
   it('returns empty and prompts for arns when no layers available', async () => {
     const amplifyMetaStub = {};
-    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, [], 'fake-backend-path');
+    const result = await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, []);
     expect(result.lambdaLayers).toStrictEqual([]);
     expect(result.dependsOn).toStrictEqual([]);
     expect(result.askArnQuestion).toBe(true);
@@ -85,13 +82,7 @@ describe('layer selection question', () => {
       layerSelections: [],
     }));
 
-    const result = await askLayerSelection(
-      layerMetadataFactory_stub,
-      amplifyMetaStub,
-      runtimeValue,
-      previousSelectionsStub,
-      'fake-backend-path',
-    );
+    await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
     expect((inquirer_mock.prompt.mock.calls[0][0] as CheckboxQuestion).choices[1].checked).toBe(true);
   });
 
@@ -100,7 +91,7 @@ describe('layer selection question', () => {
       layerSelections: [provideExistingARNsPrompt],
     }));
 
-    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, [], 'fake-backend-path');
+    const result = await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, []);
     expect(result.askArnQuestion).toBe(true);
   });
 
@@ -112,7 +103,7 @@ describe('layer selection question', () => {
       versionSelection: 2,
     }));
 
-    await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub, 'fake-backend-path');
+    await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
     expect((inquirer_mock.prompt.mock.calls[1][0] as ListQuestion).default).toBe('2');
   });
 
@@ -124,7 +115,7 @@ describe('layer selection question', () => {
       versionSelection: 2,
     }));
 
-    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, [], 'fake-backend-path');
+    const result = await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, []);
     const expectedLambdaLayers: LambdaLayer[] = [
       {
         type: 'ProjectLayer',

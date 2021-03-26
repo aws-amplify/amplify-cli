@@ -4,11 +4,7 @@ import { isMultiEnvLayer } from './layerHelpers';
 /**
  * Convert the internal LambdaLayer[] structure into an array that can be JSON.stringify-ed into valid CFN
  */
-export const convertLambdaLayerMetaToLayerCFNArray = (
-  context: any,
-  input: LambdaLayer[],
-  env: string,
-): (string | { 'Fn::Sub': string })[] => {
+export const convertLambdaLayerMetaToLayerCFNArray = (input: LambdaLayer[], env: string): (string | { 'Fn::Sub': string })[] => {
   return input.map(layer => {
     if (layer.type === 'ProjectLayer') {
       if (isMultiEnvLayer(layer.resourceName)) {

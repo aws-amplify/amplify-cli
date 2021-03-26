@@ -133,7 +133,7 @@ export async function initEnv(context) {
     .filter(resourceCategoryFilter)
     .filter(r => !changedResources.includes(r))
     .forEach(r => {
-      const { resourceName, service }: { resourceName: string; service: string } = r;
+      const { resourceName }: { resourceName: string } = r;
 
       const s3Bucket = _.get(currentAmplifyMeta, [category, resourceName, 's3Bucket'], undefined);
       if (s3Bucket) {

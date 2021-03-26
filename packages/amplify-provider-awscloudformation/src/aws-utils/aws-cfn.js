@@ -417,7 +417,7 @@ class CloudFormation {
 
   async listStackResources(stackId) {
     const meta = stateManager.getMeta();
-    stackId = stackId || _.get(meta, ['providers', providerName, 'StackId'], undefined);
+    stackId = stackId || _.get(meta, ['providers', providerName, 'StackName'], undefined);
     if (!stackId) {
       throw new Error(`StackId not found in amplify-meta for provider ${providerName}`);
     }

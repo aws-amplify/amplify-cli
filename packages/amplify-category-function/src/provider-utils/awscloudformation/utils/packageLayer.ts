@@ -1,17 +1,16 @@
+import { $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
 import archiver from 'archiver';
+import crypto from 'crypto';
+import { hashElement, HashElementOptions } from 'folder-hash';
 import fs from 'fs-extra';
 import glob from 'glob';
-import { prompt } from 'inquirer';
-import path from 'path';
-import _ from 'lodash';
-import { hashElement, HashElementOptions } from 'folder-hash';
-import { $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
-import { ServiceName, provider, categoryName } from './constants';
-import { getLayerPath, loadStoredLayerParameters, previousPermissionsQuestion } from './layerHelpers';
-import crypto from 'crypto';
-import { updateLayerArtifacts } from './storeResources';
 import globby from 'globby';
+import _ from 'lodash';
+import path from 'path';
 import { Packager, PackageRequestMeta } from '../types/packaging-types';
+import { categoryName } from './constants';
+import { getLayerPath, loadStoredLayerParameters } from './layerHelpers';
+import { updateLayerArtifacts } from './storeResources';
 
 export const packageLayer: Packager = async (context, resource) => {
   const previousHash = loadPreviousLayerHash(resource.resourceName);
@@ -22,7 +21,6 @@ export const packageLayer: Packager = async (context, resource) => {
 export function loadPreviousLayerHash(layerName: string): string {
   const meta: $TSMeta = stateManager.getMeta();
   const previousHash = _.get(meta, [categoryName, layerName, 'versionHash'], undefined);
-  console.log(`loadPreviousHash(${layerName}) => ${previousHash}`);
   return previousHash;
 }
 
@@ -126,24 +124,6 @@ async function ensureLayerVersion(context: $TSContext, layerName: string, previo
   return currentHash;
 }
 
-// async function setNewVersionPermissions(context: $TSContext, layerName: string, layerState: LayerMetadata) {
-//   const defaultPermissions: PrivateLayer[] = [{ type: Permission.private }];
-//   let usePrevPermissions = true;
-//   const latestVersion = layerState.getLatestVersion();
-//   const latestVersionState = layerState.getVersion(latestVersion);
-//   const hasNonDefaultPerms =
-//     latestVersionState.isPublic() || latestVersionState.listAccountAccess().length > 0 || latestVersionState.listOrgAccess().length > 0;
-//   const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
-//   if (yesFlagSet) {
-//     context.print.warning(`Permissions from previous layer version carried forward to new version by default`);
-//   } else if (hasNonDefaultPerms) {
-//     usePrevPermissions = (await prompt(previousPermissionsQuestion())).usePreviousPermissions;
-//   }
-//   if (!usePrevPermissions) {
-//     layerState.setPermissionsForVersion(latestVersion, defaultPermissions);
-//   }
-// }
-
 // wrapper around hashElement that will return an empty string if the path does not exist
 const safeHash = async (path: string, opts?: HashElementOptions): Promise<string> => {
   if (fs.pathExistsSync(path)) {
@@ -165,10 +145,3 @@ function validFilesize(path: string, maxSize = 250) {
     return new Error(`Calculating file size failed: ${path}`);
   }
 }
-
-// function storeLayerHash(layerName: string, hash?: string): void {
-//   console.log(`storeLayerHash(${layerName}, ${hash})`)
-//   const meta: $TSMeta = stateManager.getMeta();
-//   _.set(meta, [categoryName, layerName, 'versionHash'], hash);
-//   stateManager.setMeta(undefined, meta);
-// }

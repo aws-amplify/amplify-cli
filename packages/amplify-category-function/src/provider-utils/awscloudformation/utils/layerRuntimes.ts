@@ -22,27 +22,6 @@ export const saveLayerRuntimes = (layerDirPath: string, runtimes: LayerRuntime[]
   JSONUtilities.writeJson(runtimesFilePath, runtimes);
 };
 
-// async function loadAvailableLayerRuntimePlugins(context: $TSContext) {
-//   const layerRuntimePlugins = context.pluginPlatform.plugins.functionRuntime.filter(
-//     runtimePlugin => runtimePlugin.manifest.functionRuntime.conditions.services.includes(ServiceName.LambdaLayer),
-//   );
-//   console.log(layerRuntimePlugins);
-//   const loadedPlugins = layerRuntimePlugins.map(
-//     async plugin => {
-//       const loadedPlugin = await loadPluginFromFactory(plugin.packageLocation, 'functionRuntimeContributorFactory', context);
-//       const depCheck = await (loadedPlugin as FunctionRuntimeLifecycleManager).checkDependencies(plugin.manifest.functionRuntime.value);
-//       if (!depCheck.hasRequiredDependencies) {
-//         context.print.warning(
-//           depCheck.errorMessage || 'Some dependencies required for building and packaging this runtime are not installed',
-//         );
-//       }
-//       return loadedPlugin;
-//     },
-//   );
-//   console.log(loadedPlugins);
-//   return Promise.all(loadedPlugins);
-// }
-
 export function loadLayerCloudTemplateRuntimes(layerName: string): string[] {
   const { runtimes } = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
   return runtimes;

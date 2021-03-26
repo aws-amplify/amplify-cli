@@ -1,7 +1,6 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
-import { FunctionParameters, FunctionRuntime, LambdaLayer, FunctionDependency } from 'amplify-function-plugin-interface';
-import _ from 'lodash';
-import { askLayerSelection, askCustomArnQuestion, askLayerOrderQuestion } from '../utils/addLayerToFunctionUtils';
+import { FunctionDependency, FunctionParameters, FunctionRuntime, LambdaLayer } from 'amplify-function-plugin-interface';
+import { askCustomArnQuestion, askLayerOrderQuestion, askLayerSelection } from '../utils/addLayerToFunctionUtils';
 
 const confirmationPrompt = 'Do you want to configure Lambda layers for this function?';
 
