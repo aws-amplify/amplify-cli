@@ -13,6 +13,19 @@ type ApiGatewayAuthStackProps = Readonly<{
   apiGateways: any[];
 }>;
 
+type ApiGatewayPolicyCreationState = {
+  apiGateway: $TSAny;
+  apiRef: cdk.CfnParameter;
+  env: cdk.CfnParameter;
+  path: $TSAny;
+  methods: $TSAny;
+  roleCount: number;
+  roleName: cdk.CfnParameter;
+  policyDocSize: number;
+  managedPolicy: iam.CfnManagedPolicy;
+  namePrefix: string;
+};
+
 export const APIGW_AUTH_STACK_LOGICAL_ID = 'APIGatewayAuthStack';
 const API_PARAMS_FILE = 'api-params.json';
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -54,69 +67,73 @@ export class ApiGatewayAuthStack extends cdk.Stack {
         type: 'String',
       });
 
-      if (apiGateway.params.privacy.auth) {
-        apiGateway.params.paths.forEach(path => {
-          const authMethods = path?.privacy?.auth ?? [];
+      const state: ApiGatewayPolicyCreationState = {
+        apiGateway,
+        apiRef,
+        env,
+        path: null,
+        methods: null,
+        roleCount: 0,
+        roleName: null,
+        policyDocSize: 0,
+        managedPolicy: null,
+        namePrefix: '',
+      };
 
-          authMethods.forEach(method => {
-            const policySizeIncrease = computePolicySizeIncrease(
-              method.length,
-              path.policyResourceName.length,
-              apiGateway.resourceName.length,
-            );
+      apiGateway.params.paths.forEach(path => {
+        state.path = path;
 
-            authPolicyDocSize += policySizeIncrease;
-            // If a managed policy hasn't been created yet, or the maximum
-            // managed policy size has been exceeded, then create a new policy.
-            if (authRoleCount === 0 || authPolicyDocSize > MAX_MANAGED_POLICY_SIZE) {
-              // Initial size of 100 for version, statement, etc.
-              authPolicyDocSize = 100 + policySizeIncrease;
-              authRoleCount++;
-              authManagedPolicy = createManagedPolicy(this, `PolicyAPIGWAuth${authRoleCount}`, (authRoleName as unknown) as string);
-            }
+        if (apiGateway.params.privacy.auth) {
+          state.methods = path?.privacy?.auth ?? [];
+          state.roleCount = authRoleCount;
+          state.roleName = authRoleName;
+          state.policyDocSize = authPolicyDocSize;
+          state.managedPolicy = authManagedPolicy;
+          state.namePrefix = 'PolicyAPIGWAuth';
+          this.createPoliciesFromResources(state);
+          ({ roleCount: authRoleCount, policyDocSize: authPolicyDocSize, managedPolicy: authManagedPolicy } = state);
+        }
 
-            authManagedPolicy.policyDocument.Statement[0].Resource.push(
-              createApiResource(this.region, this.account, apiRef, env, method, `${path.policyResourceName}/*`),
-              createApiResource(this.region, this.account, apiRef, env, method, path.policyResourceName),
-            );
-          });
-        });
-      }
-
-      if (apiGateway.params.privacy.unauth) {
-        apiGateway.params.paths.forEach(path => {
-          const authMethods = path?.privacy?.unauth ?? [];
-
-          authMethods.forEach(method => {
-            const policySizeIncrease = computePolicySizeIncrease(
-              method.length,
-              path.policyResourceName.length,
-              apiGateway.resourceName.length,
-            );
-
-            unauthPolicyDocSize += policySizeIncrease;
-            // If a managed policy hasn't been created yet, or the maximum
-            // managed policy size has been exceeded, then create a new policy.
-            if (unauthRoleCount === 0 || unauthPolicyDocSize > MAX_MANAGED_POLICY_SIZE) {
-              // Initial size of 100 for version, statement, etc.
-              unauthPolicyDocSize = 100 + policySizeIncrease;
-              unauthRoleCount++;
-              unauthManagedPolicy = createManagedPolicy(this, `PolicyAPIGWUnauth${unauthRoleCount}`, (unauthRoleName as unknown) as string);
-            }
-
-            unauthManagedPolicy.policyDocument.Statement[0].Resource.push(
-              createApiResource(this.region, this.account, apiRef, env, method, `${path.policyResourceName}/*`),
-              createApiResource(this.region, this.account, apiRef, env, method, path.policyResourceName),
-            );
-          });
-        });
-      }
+        if (apiGateway.params.privacy.unauth) {
+          state.methods = path?.privacy?.unauth ?? [];
+          state.roleCount = unauthRoleCount;
+          state.roleName = unauthRoleName;
+          state.policyDocSize = unauthPolicyDocSize;
+          state.managedPolicy = unauthManagedPolicy;
+          state.namePrefix = 'PolicyAPIGWUnauth';
+          this.createPoliciesFromResources(state);
+          ({ roleCount: unauthRoleCount, policyDocSize: unauthPolicyDocSize, managedPolicy: unauthManagedPolicy } = state);
+        }
+      });
     });
   }
 
   toCloudFormation() {
     prepareApp(this);
     return this._toCloudFormation();
+  }
+
+  private createPoliciesFromResources(options: ApiGatewayPolicyCreationState) {
+    const { apiGateway, apiRef, env, roleName, path, methods, namePrefix } = options;
+
+    methods.forEach(method => {
+      const policySizeIncrease = computePolicySizeIncrease(method.length, path.policyResourceName.length, apiGateway.resourceName.length);
+
+      options.policyDocSize += policySizeIncrease;
+      // If a managed policy hasn't been created yet, or the maximum
+      // managed policy size has been exceeded, then create a new policy.
+      if (options.roleCount === 0 || options.policyDocSize > MAX_MANAGED_POLICY_SIZE) {
+        // Initial size of 100 for version, statement, etc.
+        options.policyDocSize = 100 + policySizeIncrease;
+        options.roleCount++;
+        options.managedPolicy = createManagedPolicy(this, `${namePrefix}${options.roleCount}`, (roleName as unknown) as string);
+      }
+
+      options.managedPolicy.policyDocument.Statement[0].Resource.push(
+        createApiResource(this.region, this.account, apiRef, env, method, `${path.policyResourceName}/*`),
+        createApiResource(this.region, this.account, apiRef, env, method, path.policyResourceName),
+      );
+    });
   }
 }
 
