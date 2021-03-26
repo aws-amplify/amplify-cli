@@ -30,6 +30,21 @@ function normalizeInputParams(context) {
   context.exeInfo.inputParams[constants.Label] = inputParams;
 }
 
+function displayFrontendDefaults(context) {
+  context.print.info(`| App type: flutter`);
+  context.print.info(`| Configuration file location: ${constants.defaultResDir}`);
+}
+
+function setFrontendDefaults(context) {
+  context.exeInfo.inputParams.amplify.frontend = constants.Label;
+
+  let inputParams = {};
+  context.exeInfo.inputParams[constants.Label] = inputParams;
+  inputParams.config = {};
+  inputParams.config.ResDir = constants.defaultResDir;
+  context.exeInfo.inputParams[constants.Label] = inputParams;
+}
+
 async function confirmConfiguration(context) {
   if (!context.exeInfo.projectConfig[constants.Label]) {
     context.exeInfo.projectConfig[constants.Label] = {};
@@ -61,4 +76,6 @@ module.exports = {
   init,
   onInitSuccessful,
   configure,
+  displayFrontendDefaults,
+  setFrontendDefaults,
 };
