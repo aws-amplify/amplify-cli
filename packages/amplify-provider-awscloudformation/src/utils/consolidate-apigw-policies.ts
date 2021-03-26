@@ -1,6 +1,5 @@
 import * as path from 'path';
-import * as fs from 'fs-extra';
-import { FeatureFlags } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, FeatureFlags, JSONUtilities } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
@@ -121,7 +120,7 @@ export class ApiGatewayAuthStack extends cdk.Stack {
   }
 }
 
-function createManagedPolicy(stack: cdk.Stack, policyName: string, roleName: string) {
+function createManagedPolicy(stack: cdk.Stack, policyName: string, roleName: string): iam.CfnManagedPolicy {
   return new iam.CfnManagedPolicy(stack, policyName, {
     roles: [roleName],
     managedPolicyName: policyName,
@@ -156,7 +155,7 @@ function computePolicySizeIncrease(methodLength: number, pathLength: number, nam
   return 380 + 2 * (methodLength + pathLength + nameLength);
 }
 
-export async function consolidateApiGatewayPolicies(context: any, stackName: string): Promise<object> {
+export async function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): Promise<$TSObject> {
   if (!FeatureFlags.getBoolean('restAPI.generateConsolidatedManagedPolicies')) {
     return {};
   }
@@ -183,7 +182,7 @@ export async function consolidateApiGatewayPolicies(context: any, stackName: str
   return createApiGatewayAuthResources(context, stackName, apiGateways);
 }
 
-async function createApiGatewayAuthResources(context: any, stackName: string, apiGateways: any): Promise<object> {
+async function createApiGatewayAuthResources(context: $TSContext, stackName: string, apiGateways: $TSAny): Promise<object> {
   const stack = new ApiGatewayAuthStack(undefined, 'Amplify', {
     description: 'API Gateway policy stack created using Amplify CLI',
     stackName,
@@ -196,7 +195,7 @@ async function createApiGatewayAuthResources(context: any, stackName: string, ap
   };
 }
 
-async function uploadCfnToS3(context: any, cfnFile: string, cfnData: object): Promise<string> {
+async function uploadCfnToS3(context: $TSContext, cfnFile: string, cfnData: object): Promise<string> {
   const s3 = await S3.getInstance(context);
   const s3Params = {
     Body: JSON.stringify(cfnData, null, 2),
@@ -207,13 +206,13 @@ async function uploadCfnToS3(context: any, cfnFile: string, cfnData: object): Pr
   return `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${cfnFile}`;
 }
 
-export function loadApiWithPrivacyParams(context: object, name: string, resource: any): object | undefined {
+export function loadApiWithPrivacyParams(context: $TSContext, name: string, resource: any): object | undefined {
   if (resource.providerPlugin !== ProviderName || resource.service !== 'API Gateway') {
     return;
   }
 
   const apiParamsPath = path.join(getResourceDirPath(context, 'api', name), API_PARAMS_FILE);
-  const apiParams = JSON.parse(fs.readFileSync(apiParamsPath, 'utf8'));
+  const apiParams: any = JSONUtilities.readJson(apiParamsPath, { throwIfNotExist: false }) ?? {};
 
   if (apiParams?.privacy?.auth === 0 && apiParams?.privacy?.unauth === 0) {
     return;
