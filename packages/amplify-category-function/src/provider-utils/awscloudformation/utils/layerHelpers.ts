@@ -2,6 +2,7 @@ import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
+import ora from 'ora';
 import path from 'path';
 import uuid from 'uuid';
 import { categoryName, layerParametersFileName, provider, ServiceName } from './constants';
@@ -139,58 +140,6 @@ export function previousPermissionsQuestion(): ListQuestion {
   };
 }
 
-// export async function chooseParamsOnEnvInit(context: $TSContext, layerName: string) {
-//   const teamProviderInfo = stateManager.getTeamProviderInfo();
-//   const filteredEnvs = Object.keys(teamProviderInfo).filter(env =>
-//     _.has(teamProviderInfo, [env, 'nonCFNdata', categoryName, layerName, 'layerVersionMap']),
-//   );
-//   const currentEnv = context.amplify.getEnvInfo().envName;
-//   if (filteredEnvs.includes(currentEnv)) {
-//     return _.get(teamProviderInfo, [currentEnv, 'nonCFNdata', categoryName, layerName]);
-//   }
-//   context.print.info(`Adding Lambda layer ${layerName} to ${currentEnv} environment.`);
-//   const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
-//   let envName;
-//   if (!yesFlagSet) {
-//     envName = (await prompt(chooseParamsOnEnvInitQuestion(layerName, filteredEnvs))).envName;
-//   }
-//   const defaultPermission = [{ type: 'private' }];
-//   if (yesFlagSet || envName === undefined) {
-//     return {
-//       runtimes: [],
-//       layerVersionMap: {
-//         1: {
-//           permissions: defaultPermission,
-//         },
-//       },
-//     };
-//   }
-//   const layerToCopy = teamProviderInfo[envName].nonCFNdata.function[layerName];
-//   const latestVersion = Math.max(...Object.keys(layerToCopy.layerVersionMap || {}).map(v => Number(v)));
-//   const permissions = latestVersion ? layerToCopy.layerVersionMap[latestVersion].permissions : defaultPermission;
-//   return {
-//     runtimes: layerToCopy.runtimes,
-//     layerVersionMap: {
-//       1: { permissions },
-//     },
-//   };
-// }
-
-// TODO - use whatever is in parameters.json instead
-// function chooseParamsOnEnvInitQuestion(layerName: string, filteredEnvs: string[]): ListQuestion[] {
-//   const choices = filteredEnvs
-//     .map(env => ({ name: env, value: env }))
-//     .concat([{ name: 'Apply default access (Only this AWS account)', value: undefined }]);
-//   return [
-//     {
-//       type: 'list',
-//       name: 'envName',
-//       message: `Choose the environment to import the layer access settings from:`,
-//       choices,
-//     },
-//   ];
-// }
-
 export function layerInputParamsToLayerPermissionArray(parameters: LayerInputParams): LayerPermission[] {
   const { layerPermissions = [] } = parameters;
 
@@ -278,9 +227,7 @@ export function getLayerPath(layerName: string) {
 
 export async function isNewVersion(layerName: string) {
   const previousHash = loadPreviousLayerHash(layerName);
-  console.log('previousHash', previousHash);
   const currentHash = await hashLayerVersionContents(getLayerPath(layerName));
-  console.log('currentHash', currentHash);
   return previousHash !== currentHash;
 }
 
@@ -301,6 +248,7 @@ interface LayerVersionMetadata {
 }
 
 export async function loadLayerDataFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
+  const spinner = ora('Loading layer data from the cloud...').start();
   let layerMetadata: LayerVersionMetadata[];
   try {
     const { envName }: { envName: string } = context.amplify.getEnvInfo();
@@ -343,9 +291,8 @@ export async function loadLayerDataFromCloud(context: $TSContext, layerName: str
           } else if (permissionTypeString.startsWith(PermissionEnum.AwsAccounts)) {
             accountIds.push(permissionTypeString.replace(PermissionEnum.AwsAccounts, ''));
           } else if (permissionTypeString.startsWith(PermissionEnum.AwsOrg)) {
-            let orgId = permissionTypeString.replace(PermissionEnum.AwsOrg + 'o', '');
-            orgId = 'o-' + orgId;
-            orgIds.push(permissionTypeString.replace(PermissionEnum.AwsOrg, ''));
+            const orgId = permissionTypeString.replace(PermissionEnum.AwsOrg + 'o', 'o-');
+            orgIds.push(orgId);
           }
 
           if (accountIds.length > 0) {
@@ -365,9 +312,11 @@ export async function loadLayerDataFromCloud(context: $TSContext, layerName: str
     layerMetadata = layerVersionList;
   } catch (e) {
     // TODO error handling
+    spinner.fail();
     context.print.error(`An error occurred getting latest layer version metadata for "${layerName}": ${e}`);
     throw e;
   }
   console.log(`processed layerMetadata from cloud:`, layerMetadata);
+  spinner.stop();
   return layerMetadata;
 }

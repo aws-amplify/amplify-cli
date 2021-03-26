@@ -195,7 +195,6 @@ function createLayerCfnFile(parameters: LayerParameters, layerDirPath: string) {
 }
 
 async function updateLayerCfnFile(context: $TSContext, parameters: LayerParameters, layerDirPath: string) {
-  context.print.blue(`updateLayerCfnFile()`);
   let layerVersionList = [];
   if (loadPreviousLayerHash(parameters.layerName)) {
     layerVersionList = await loadLayerDataFromCloud(context, parameters.layerName);
@@ -227,7 +226,6 @@ const addLayerToAmplifyMeta = (context: $TSContext, parameters: LayerParameters)
 };
 
 const updateLayerInAmplifyMeta = (parameters: LayerParameters) => {
-  console.log(`updateLayerInAmplifyMeta()`, parameters);
   assignParametersInAmplifyMeta(parameters.layerName, amplifyMetaAndBackendParams(parameters));
 };
 

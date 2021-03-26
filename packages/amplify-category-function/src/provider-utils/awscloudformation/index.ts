@@ -1,14 +1,14 @@
-import { FunctionParameters, FunctionTriggerParameters, FunctionTemplate, ProviderContext } from 'amplify-function-plugin-interface';
-import { isMultiEnvLayer } from './utils/layerHelpers';
-import { LayerParameters } from './utils/layerParams';
-import { supportedServices } from '../supported-services';
-import { ServiceName, provider, functionParametersFileName } from './utils/constants';
+import { $TSAny, $TSContext, JSONUtilities, open, pathManager, stateManager } from 'amplify-cli-core';
+import { FunctionParameters, FunctionTemplate, FunctionTriggerParameters, ProviderContext } from 'amplify-function-plugin-interface';
+import fs from 'fs-extra';
+import _ from 'lodash';
+import path from 'path';
+import { IsMockableResponse } from '../..';
 import { category as categoryName } from '../../constants';
 import { supportedServices } from '../supported-services';
 import { ServiceConfig } from '../supportedServicesType';
 import { functionParametersFileName, provider, ServiceName } from './utils/constants';
 import { convertToComplete, isComplete, merge } from './utils/funcParamsUtils';
-import { getLayerConfiguration } from './utils/layerConfiguration';
 import { isMultiEnvLayer } from './utils/layerHelpers';
 import { LayerParameters } from './utils/layerParams';
 import {
@@ -18,13 +18,6 @@ import {
   saveMutableState,
   updateLayerArtifacts,
 } from './utils/storeResources';
-import { ServiceConfig } from '../supportedServicesType';
-import _ from 'lodash';
-import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
-import fs from 'fs-extra';
-import path from 'path';
-import { IsMockableResponse } from '../..';
-import { $TSAny, $TSContext, JSONUtilities, open, pathManager, stateManager } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function

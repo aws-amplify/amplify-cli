@@ -34,11 +34,7 @@ function getLayerCfnObjBase() {
 /**
  * generates CloudFormation for Layer versions and Layer permissions
  */
-export function generateLayerCfnObj(
-  isNewVersion: boolean,
-  parameters: LayerParameters,
-  versionList: LayerVersionCfnMetadata[] = [],
-): object {
+export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerParameters, versionList: LayerVersionCfnMetadata[] = []) {
   const multiEnvLayer = isMultiEnvLayer(parameters.layerName);
   const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
   let logicalName;
@@ -49,7 +45,6 @@ export function generateLayerCfnObj(
   } else {
     logicalName = versionList[versionList.length - 1].LogicalName;
   }
-  // const layerData = getLayerMetadataFactory(context)(parameters.layerName);
   const outputObj = {
     Outputs: {
       Arn: {

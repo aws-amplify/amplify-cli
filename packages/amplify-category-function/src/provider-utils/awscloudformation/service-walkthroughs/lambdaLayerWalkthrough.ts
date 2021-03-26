@@ -115,11 +115,11 @@ export async function updateLayerWalkthrough(
     defaultLayerPermissions = permissions.map(permission => permission.type);
     defaultOrgs = permissions
       .filter(p => p.type === PermissionEnum.AwsOrg)
-      .reduce((acc: string[], permission: OrgsLayer) => (acc = [...acc, ...permission.orgs]), []);
+      .reduce((orgs: string[], permission: OrgsLayer) => (orgs = [...orgs, ...permission.orgs]), []);
 
     defaultAccounts = permissions
       .filter(p => p.type === PermissionEnum.AwsAccounts)
-      .reduce((acc: string[], permission: AccountsLayer) => (acc = [...acc, ...permission.accounts]), []);
+      .reduce((accounts: string[], permission: AccountsLayer) => (accounts = [...accounts, ...permission.accounts]), []);
 
     // select permission strategy
     _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion(defaultLayerPermissions)));
@@ -137,7 +137,6 @@ export async function updateLayerWalkthrough(
     }
 
     // update layer version based on inputs
-    console.log('layerInputParameters:', layerInputParameters);
     parameters.permissions = layerInputParamsToLayerPermissionArray(layerInputParameters);
 
     // layerState.setPermissionsForVersion(selectedVersion, layerPermissions);
@@ -147,6 +146,5 @@ export async function updateLayerWalkthrough(
   }
   parameters.runtimes = storedLayerParameters.runtimes;
   parameters.build = true;
-  console.log('parameters:', parameters);
   return parameters;
 }
