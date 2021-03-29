@@ -16,42 +16,6 @@ const defaultSettings = {
   profileName: '\r',
 };
 
-export function initJSProjectWithProfile(cwd: string, providersParam: any): Promise<void> {
-  const s = { ...defaultSettings };
-
-  addCircleCITags(cwd);
-
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init', '--providers', JSON.stringify(providersParam)], { cwd, stripColors: true })
-      .wait('Enter a name for the project')
-      .sendLine(s.name)
-      .wait('Enter a name for the environment')
-      .sendLine(s.envName)
-      .wait('Choose your default editor:')
-      .sendLine(s.editor)
-      .wait("Choose the type of app that you're building")
-      .sendLine(s.appType)
-      .wait('What javascript framework are you using')
-      .sendLine(s.framework)
-      .wait('Source Directory Path:')
-      .sendLine(s.srcDir)
-      .wait('Distribution Directory Path:')
-      .sendLine(s.distDir)
-      .wait('Build Command:')
-      .sendLine(s.buildCmd)
-      .wait('Start Command:')
-      .sendCarriageReturn()
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
-
 export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = true): Promise<void> {
   return new Promise((resolve, reject) => {
     const noOutputTimeout = 10 * 60 * 1000; // 10 minutes

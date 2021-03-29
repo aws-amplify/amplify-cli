@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 
@@ -17,6 +18,7 @@ const defaultSettings = {
   local: false,
   disableAmplifyAppCreation: true,
   disableCIDetection: false,
+  providerConfig: undefined,
 };
 
 export const amplifyRegions = [
@@ -46,8 +48,15 @@ export function initJSProjectWithProfile(cwd: string, settings: Object): Promise
 
   addCircleCITags(cwd);
 
+  const cliArgs = ['init'];
+  const providerConfigSpecified = _.isObject(s.providerConfig);
+
+  if (providerConfigSpecified) {
+    cliArgs.push('--providers', JSON.stringify(s.providerConfig));
+  }
+
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection })
+    const chain = spawn(getCLIPath(), cliArgs, { cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection })
       .wait('Enter a name for the project')
       .sendLine(s.name)
       .wait('Initialize the project with the above configuration?')
@@ -67,20 +76,24 @@ export function initJSProjectWithProfile(cwd: string, settings: Object): Promise
       .wait('Build Command:')
       .sendLine(s.buildCmd)
       .wait('Start Command:')
-      .sendCarriageReturn()
-      .wait('Using default provider  awscloudformation')
-      .wait('Select the authentication method you want to use:')
-      .sendCarriageReturn()
-      .wait('Please choose the profile you want to use')
-      .sendLine(s.profileName)
-      .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+      .sendCarriageReturn();
+
+    if (!providerConfigSpecified) {
+      chain
+        .wait('Using default provider  awscloudformation')
+        .wait('Select the authentication method you want to use:')
+        .sendCarriageReturn()
+        .wait('Please choose the profile you want to use')
+        .sendLine(s.profileName);
+    }
+
+    chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 

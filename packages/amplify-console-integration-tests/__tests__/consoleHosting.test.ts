@@ -8,7 +8,6 @@ import {
   addCICDHostingWithoutFrontend,
   amplifyStatus,
   checkoutEnv,
-  initJSProjectWithProfile,
   deleteProject,
   addEnvironment,
 } from '../src/consoleHosting/consoleHosting';
@@ -18,6 +17,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { TYPE_MANUAL } from '../src/consoleHosting/constants';
 import { ORIGINAL_ENV, NEW_ENV } from '../src/consoleHosting/constants';
+import { initJSProjectWithProfile } from 'amplify-e2e-core';
 
 describe('amplify console add hosting', () => {
   let projRoot: string;
@@ -32,7 +32,7 @@ describe('amplify console add hosting', () => {
 
   beforeEach(async () => {
     projRoot = await createTestProject();
-    await initJSProjectWithProfile(projRoot, providersParam);
+    await initJSProjectWithProfile(projRoot, { providerConfig: providersParam, disableAmplifyAppCreation: false });
   });
 
   afterEach(async () => {
