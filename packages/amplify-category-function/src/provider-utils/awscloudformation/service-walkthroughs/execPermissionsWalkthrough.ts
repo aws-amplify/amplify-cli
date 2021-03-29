@@ -289,8 +289,8 @@ export async function generateEnvVariablesForCfn(context, resources, currentEnvM
 
   const envVarStringList = Array.from(envVars).sort().join('\n\t');
 
-if (envVarStringList) {
-  context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
-} 
- return { environmentMap, dependsOn, envVarStringList };
+  if (envVarStringList) {
+    context.print.info(`${envVarPrintoutPrefix}${envVarStringList}`);
+  }
+  return { environmentMap, dependsOn, envVarStringList };
 }

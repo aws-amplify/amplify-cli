@@ -125,7 +125,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(error.message).toContain(`${tableName} not found`);
   });
 
-  it.only('inits a project with a simple model and then migrates the api', async () => {
+  it('inits a project with a simple model and then migrates the api', async () => {
     const projectName = 'blogapp';
     const initialSchema = 'initial_key_blog.graphql';
     const nextSchema = 'next_key_blog.graphql';
@@ -208,7 +208,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
   });
 
-  it.only('inits a project with a simple model , add a function and removes the depedent @model', async () => {
+  it('inits a project with a simple model , add a function and removes the depedent @model', async () => {
     const random = Math.floor(Math.random() * 10000);
     const projectName = `blogapp`;
     const nextSchema = 'initial_key_blog.graphql';
