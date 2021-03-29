@@ -109,12 +109,12 @@ export enum TriggerType {
 }
 
 export type AuthTriggerConnection = {
-  fnName: String;
-  triggerKey: TriggerType;
-  fnArn?: String;
+  lambdaFunctionName: String;
+  triggerType: TriggerType;
+  lambdaFunctionArn?: String;
 };
 
 export type AuthTriggerConfig = {
   triggers: $TSObject;
-  authLambdaConfig: AuthTriggerConnection[];
+  authTriggerConnections: AuthTriggerConnection[];
 };

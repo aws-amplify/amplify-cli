@@ -37,15 +37,15 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
   const values = Object.values(triggers);
 
   // Auth lambda config for Triggers
-  let authLambdaConfig = [];
+  let authTriggerConnections = [];
   if (triggers) {
     for (let t = 0; t < keys.length; t += 1) {
       const functionName = `${authResourceName}${keys[t]}`;
       const targetPath = `${targetDir}/function/${functionName}/src`;
       let config = {};
-      config['triggerKey'] = keys[t] === 'PreSignup' ? 'PreSignUp' : keys[t];
-      config['fnName'] = functionName;
-      authLambdaConfig.push(config);
+      config['triggerType'] = keys[t] === 'PreSignup' ? 'PreSignUp' : keys[t];
+      config['lambdaFunctionName'] = functionName;
+      authTriggerConnections.push(config);
 
       if (previouslySaved && previouslySaved[keys[t]]) {
         const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', functionName);
@@ -108,7 +108,7 @@ async function handleTriggers(context, coreAnswers, previouslySaved) {
     coreAnswers.parentStack = { Ref: 'AWS::StackId' };
   }
 
-  return { triggers, authLambdaConfig };
+  return { triggers, authTriggerConnections };
 }
 
 // saving input-based trigger env variables to the team-provider

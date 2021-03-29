@@ -62,7 +62,7 @@ export const getResourceUpdater = (context: any, cfnFilename: string, provider: 
   }
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
-  const previouslySaved = _.get(providerPlugin.loadResourceParameters(context, 'auth', request.resourceName), ['triggers'], undefined);
+  const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', request.resourceName)?.triggers;
   await lambdaTriggers(request, context, JSON.parse(previouslySaved));
 
   if ((!request.updateFlow && !request.thirdPartyAuth) || (request.updateFlow === 'manual' && !request.thirdPartyAuth)) {
@@ -166,15 +166,18 @@ export const removeDeprecatedProps = (props: any) => {
 const lambdaTriggers = async (coreAnswers: any, context: any, previouslySaved: any) => {
   const { handleTriggers } = require('./trigger-flow-auth-helper');
   let triggerKeyValues = {};
-  let authLambdaConfig: AuthTriggerConnection[];
+  let authTriggerConnections: AuthTriggerConnection[];
   if (coreAnswers.triggers) {
     const triggerConfig: AuthTriggerConfig = await handleTriggers(context, coreAnswers, previouslySaved);
     triggerKeyValues = triggerConfig.triggers;
-    authLambdaConfig = triggerConfig.authLambdaConfig;
+    authTriggerConnections = triggerConfig.authTriggerConnections;
     coreAnswers.triggers = triggerKeyValues ? JSONUtilities.stringify(triggerKeyValues) : '{}';
 
     if (FeatureFlags.getBoolean('auth.breakCircularDependency')) {
-      coreAnswers.authLambdaConfig = authLambdaConfig ? JSONUtilities.stringify(authLambdaConfig) : '[]';
+      coreAnswers.authTriggerConnections = authTriggerConnections ? JSONUtilities.stringify(authTriggerConnections) : '[]';
+      if (coreAnswers.authTriggerConnections === '[]') {
+        delete coreAnswers.authTriggerConnections;
+      }
       coreAnswers.breakCircularDependency = FeatureFlags.getBoolean('auth.breakCircularDependency');
     }
     if (triggerKeyValues) {
@@ -193,10 +196,6 @@ const lambdaTriggers = async (coreAnswers: any, context: any, previouslySaved: a
   // remove unused coreAnswers.triggers key
   if (coreAnswers.triggers && coreAnswers.triggers === '[]') {
     delete coreAnswers.triggers;
-  }
-
-  if (coreAnswers.authLambdaConfig && coreAnswers.authLambdaConfig === '[]') {
-    delete coreAnswers.authLambdaConfig;
   }
 
   // handle dependsOn data

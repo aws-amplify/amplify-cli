@@ -1,4 +1,4 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush, addAuthWithGroupsAndAdminAPI } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, amplifyPush } from 'amplify-e2e-core';
 import { addFunction, functionBuild, addLambdaTrigger } from 'amplify-e2e-core';
 import { addSimpleDDB } from 'amplify-e2e-core';
 import { addKinesis } from 'amplify-e2e-core';
@@ -228,14 +228,6 @@ describe('nodejs', () => {
       expect(table1Arn).toBeDefined();
       expect(table1Region).toBeDefined();
       expect(table1StreamArn).toBeDefined();
-    });
-
-    it('init a project and add Admin Queries with user pool groups and Admin API', async () => {
-      await initJSProjectWithProfile(projRoot, {});
-      await addAuthWithGroupsAndAdminAPI(projRoot, {});
-      await add(projRoot, {});
-      await amplifyPushAuth(projRoot);
-      await validate(projRoot);
     });
   });
 });

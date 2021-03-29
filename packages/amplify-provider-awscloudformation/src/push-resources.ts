@@ -824,17 +824,17 @@ async function formNestedStack(
     stack.DependsOn.push(authRootStackResourceName);
 
     const { dependsOn } = authResource[Object.keys(authResource)[0]];
-    if (dependsOn) {
-      for (let i = 0; i < dependsOn.length; i += 1) {
-        const dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
-        stack.DependsOn.push(dependsOnStackName);
-        for (let j = 0; j < dependsOn[i]?.attributes?.length || 0; j += 1) {
-          const parameterKey = `${dependsOn[i].category}${dependsOn[i].resourceName}${dependsOn[i].attributes[j]}`;
-          const parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
-          stack.Properties.Parameters[parameterKey] = parameterValue;
-        }
-      }
-    }
+
+    dependsOn.forEach(resource => {
+      const dependsOnStackName = resource.category + resource.resourceName;
+      stack.DependsOn.push(dependsOnStackName);
+      const dependsOnAttributes = resource?.attributes;
+      dependsOnAttributes.forEach(attribute => {
+        const parameterKey = `${resource.category}${resource.resourceName}${attribute}`;
+        const parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${attribute}`] };
+        stack.Properties.Parameters[parameterKey] = parameterValue;
+      });
+    });
     nestedStack.Resources[AUTH_TRIGGER_STACK] = stack;
   }
 
@@ -913,7 +913,6 @@ async function formNestedStack(
               } else {
                 const dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
 
-                //parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
                 const parameterOutputValue = _.get(dependentResource, ['output', dependsOn[i].attributes[j]], undefined);
                 parameterValue =
                   parameterOutputValue === undefined
@@ -1049,10 +1048,9 @@ export async function generateAndUploadRootStack(context: $TSContext, destinatio
 }
 
 function isAuthTrigger(dependsOnResource: $TSObject) {
-  if (FeatureFlags.getBoolean('auth.breakCircularDependency')) {
-    return dependsOnResource.category === 'function' && dependsOnResource.triggerProvider === 'Cognito';
-  } else {
-    // in case if no FF , return false to disable this fn
-    return false;
-  }
+  return (
+    FeatureFlags.getBoolean('auth.breakCircularDependency') &&
+    dependsOnResource.category === 'function' &&
+    dependsOnResource.triggerProvider === 'Cognito'
+  );
 }
