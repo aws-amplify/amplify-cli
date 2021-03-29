@@ -3,7 +3,7 @@ import { preDeployPullBackend } from '../pre-deployment-pull';
 import { attachBackend } from '../attach-backend';
 import { constructInputParams } from '../amplify-service-helper';
 import { run as envCheckout } from './env/checkout';
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager, EnvironmentDoesNotExistError, AppIdMismatchError } from 'amplify-cli-core';
 import _ from 'lodash';
 
 export const run = async (context: $TSContext) => {
@@ -31,11 +31,13 @@ export const run = async (context: $TSContext) => {
     if (inputAppId && appId && inputAppId !== appId) {
       context.print.error('Amplify appId mismatch.');
       context.print.info(`You are currently working in the amplify project with Id ${appId}`);
+      await context.usageData.emitError(new AppIdMismatchError());
       process.exit(1);
     } else if (!appId) {
       context.print.error(`Environment '${envName}' not found.`);
       context.print.info(`Try running "amplify env add" to add a new environment.`);
       context.print.info(`If this backend already exists, try restoring its definition in your team-provider-info.json file.`);
+      await context.usageData.emitError(new EnvironmentDoesNotExistError());
       process.exit(1);
     }
 
