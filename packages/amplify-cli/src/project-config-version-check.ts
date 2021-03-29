@@ -77,13 +77,13 @@ const CF_SCHEMA = new yaml.Schema([
   new yaml.Type('!GetAtt', {
     kind: 'scalar',
     construct: function (data) {
-      return { 'Fn::GetAtt': data };
+      return { 'Fn::GetAtt': Array.isArray(data) ? data : data.split('.') };
     },
   }),
   new yaml.Type('!GetAtt', {
     kind: 'sequence',
     construct: function (data) {
-      return { 'Fn::GetAtt': data };
+      return { 'Fn::GetAtt': Array.isArray(data) ? data : data.split('.') };
     },
   }),
   new yaml.Type('!GetAZs', {
@@ -143,11 +143,26 @@ export async function checkProjectConfigVersion(context: Context): Promise<void>
   if (projectPath) {
     const projectConfig = stateManager.getProjectConfig(projectPath, {
       throwIfNotExist: false,
-      default: {},
+      default: undefined,
     });
+
+    // If we do not have a projectConig, just bail out, probably it is an
+    // uninitialized project
+    if (!projectConfig?.version) {
+      return;
+    }
 
     const currentProjectVersion = coerce(projectConfig.version);
     const minProjectVersion = coerce(constants.MIN_NODE12_PROJECT_CONFIG_VERSION);
+
+    // If coerceProjectVersion fails for some reason bail out
+    if (currentProjectVersion === null) {
+      const error = new Error(`Invalid project version was found in project-config.json: '${projectConfig.version}'`);
+
+      error.stack = undefined;
+
+      throw error;
+    }
 
     if (lt(currentProjectVersion!, minProjectVersion!)) {
       await checkLambdaCustomResourceNodeVersion(context, projectPath);

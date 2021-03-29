@@ -5,7 +5,7 @@
   "author": "Amazon Web Services",
   "license": "MIT",
   "dependencies": {
-    "@aws-amplify/cli": "^4.29.0"
+    "@aws-amplify/cli": "latest"
   },
   "pkg": {
     "assets": [

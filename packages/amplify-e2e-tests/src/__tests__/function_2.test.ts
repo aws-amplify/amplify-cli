@@ -1,5 +1,6 @@
 import {
   addApiWithSchema,
+  addApi,
   addAuthWithDefault,
   addDDBWithTrigger,
   addFunction,
@@ -18,8 +19,14 @@ import {
   initJSProjectWithProfile,
   invokeFunction,
   overrideFunctionSrc,
+  addNodeJSDependencies,
   readJsonFile,
   updateFunction,
+  overrideFunctionCode,
+  getBackendConfig,
+  addFeatureFlag,
+  addAuthWithGroupsAndAdminAPI,
+  getFunction,
 } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
@@ -35,6 +42,35 @@ describe('nodejs', () => {
     afterEach(async () => {
       await deleteProject(projRoot);
       deleteProjectDir(projRoot);
+    });
+
+    it('add lambda with AdminQueries API permissions', async () => {
+      await initJSProjectWithProfile(projRoot, {});
+      const random = Math.floor(Math.random() * 10000);
+      const fnName = `integtestfn${random}`;
+      await addAuthWithGroupsAndAdminAPI(projRoot, {});
+      await addFunction(
+        projRoot,
+        {
+          name: fnName,
+          functionTemplate: 'Hello World',
+          additionalPermissions: {
+            permissions: ['api'],
+            resources: ['AdminQueries'],
+            choices: ['auth', 'function', 'api'],
+            operations: ['create', 'update', 'read', 'delete'],
+          },
+        },
+        'nodejs',
+      );
+      await amplifyPushAuth(projRoot);
+      const meta = getProjectMeta(projRoot);
+      const { Arn: functionArn, Name: functionName, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
+      expect(functionArn).toBeDefined();
+      expect(functionName).toBeDefined();
+      expect(region).toBeDefined();
+      const cloudFunction = await getFunction(functionName, region);
+      expect(cloudFunction.Configuration.FunctionArn).toEqual(functionArn);
     });
 
     it('lambda with s3 permissions should be able to call listObjects', async () => {
@@ -394,12 +430,26 @@ describe('nodejs', () => {
       expect(functionMeta).toStrictEqual(updatedFunctionMeta);
     });
 
-    it('should add api key from api to env vars', async () => {
-      await initJSProjectWithProfile(projRoot, {});
+    it('should be able to query AppSync with minimal permissions with featureFlag', async () => {
       const random = Math.floor(Math.random() * 10000);
-      const apiName = `apiwithapikey${random}`;
-      await addApiWithSchema(projRoot, 'simple_model.graphql', { apiName });
-      const fnName = `apikeyenvvar${random}`;
+      const fnName = `apienvvar${random}`;
+      const createTodo = `
+      mutation CreateTodo($input: CreateTodoInput!) {
+        createTodo(input: $input) {
+          id
+          name
+          description
+          createdAt
+          updatedAt
+        }
+      }
+    `;
+      await initJSProjectWithProfile(projRoot, {});
+      await addApi(projRoot, {
+        IAM: {},
+      });
+      const beforeMeta = getBackendConfig(projRoot);
+      const apiName = Object.keys(beforeMeta.api)[0];
       await addFunction(
         projRoot,
         {
@@ -409,25 +459,44 @@ describe('nodejs', () => {
             permissions: ['api'],
             choices: ['api'],
             resources: [apiName],
-            operations: ['Query'],
+            operations: ['Mutation'],
           },
         },
         'nodejs',
       );
-
+      addNodeJSDependencies(projRoot, fnName, ['aws-appsync', 'isomorphic-fetch', 'graphql-tag']);
+      overrideFunctionCode(projRoot, fnName, 'mutation-appsync.js');
+      await amplifyPush(projRoot);
+      const meta = getProjectMeta(projRoot);
+      const { Region: region, Name: functionName } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
       const lambdaCFN = readJsonFile(
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
-      const envVarsObj = lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables;
-      expect(_.keys(envVarsObj)).toContain(`API_${apiName.toUpperCase()}_GRAPHQLAPIKEYOUTPUT`);
+      const urlKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value =>
+        value.endsWith('GRAPHQLAPIENDPOINTOUTPUT'),
+      )[0];
+      const payloadObj = { urlKey, mutation: createTodo, variables: { input: { name: 'todo', description: 'sampleDesc' } } };
+      const fnResponse = await invokeFunction(functionName, JSON.stringify(payloadObj), region);
+
+      expect(fnResponse.StatusCode).toBe(200);
+      expect(fnResponse.Payload).toBeDefined();
+      const gqlResponse = JSON.parse(fnResponse.Payload as string);
+
+      expect(gqlResponse.data).toBeDefined();
+      expect(gqlResponse.data.createTodo.name).toEqual('todo');
+      expect(gqlResponse.data.createTodo.description).toEqual('sampleDesc');
     });
 
-    it('should be able to query AppSync with minimal permissions with featureFlag', async () => {
-      await initJSProjectWithProfile(projRoot, {});
+    it('should be able to make console calls with feature flag turned off', async () => {
       const random = Math.floor(Math.random() * 10000);
-      const apiName = `apiwithapikey${random}`;
-      await addApiWithSchema(projRoot, 'simple_model.graphql', { apiName });
-      const fnName = `apikeyenvvar${random}`;
+      const fnName = `apienvvar${random}`;
+      await initJSProjectWithProfile(projRoot, {});
+      await addApi(projRoot, {
+        IAM: {},
+      });
+      const beforeMeta = getBackendConfig(projRoot);
+      const apiName = Object.keys(beforeMeta.api)[0];
+      addFeatureFlag(projRoot, 'appsync', 'generategraphqlpermissions', false);
       await addFunction(
         projRoot,
         {
@@ -437,20 +506,28 @@ describe('nodejs', () => {
             permissions: ['api'],
             choices: ['api'],
             resources: [apiName],
-            operations: ['Query'],
+            operations: ['read'],
           },
         },
         'nodejs',
       );
-
+      overrideFunctionCode(projRoot, fnName, 'get-api-appsync.js');
+      await amplifyPush(projRoot);
+      const meta = getProjectMeta(projRoot);
+      const { Region: region, Name: functionName } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
       const lambdaCFN = readJsonFile(
         path.join(projRoot, 'amplify', 'backend', 'function', fnName, `${fnName}-cloudformation-template.json`),
       );
-      const envVarsObj = lambdaCFN.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement;
-      envVarsObj.forEach(statement => {
-        expect(statement.Action).toContain('appsync:GraphQL');
-        expect(statement.Resource[0]['Fn::Join'][1]).toContain('/types/Query/*');
-      });
+      const idKey = Object.keys(lambdaCFN.Resources.LambdaFunction.Properties.Environment.Variables).filter(value =>
+        value.endsWith('GRAPHQLAPIIDOUTPUT'),
+      )[0];
+      const fnResponse = await invokeFunction(functionName, JSON.stringify({ idKey }), region);
+
+      expect(fnResponse.StatusCode).toBe(200);
+      expect(fnResponse.Payload).toBeDefined();
+      const apiResponse = JSON.parse(fnResponse.Payload as string);
+      expect(apiResponse.graphqlApi).toBeDefined();
+      expect(apiResponse.graphqlApi.name).toContain(apiName);
     });
   });
 });

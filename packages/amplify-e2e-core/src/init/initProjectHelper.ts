@@ -16,6 +16,7 @@ const defaultSettings = {
   region: process.env.CLI_REGION,
   local: false,
   disableAmplifyAppCreation: true,
+  disableCIDetection: false,
 };
 
 export const amplifyRegions = [
@@ -46,9 +47,11 @@ export function initJSProjectWithProfile(cwd: string, settings: Object): Promise
   addCircleCITags(cwd);
 
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env })
+    spawn(getCLIPath(), ['init'], { cwd, stripColors: true, env, disableCIDetection: s.disableCIDetection })
       .wait('Enter a name for the project')
       .sendLine(s.name)
+      .wait('Initialize the project with the above configuration?')
+      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
@@ -96,6 +99,8 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
+      .wait('Initialize the project with the above configuration?')
+      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
@@ -137,6 +142,8 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
+      .wait('Initialize the project with the above configuration?')
+      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
@@ -170,6 +177,8 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object): Pr
     let chain = spawn(getCLIPath(), ['init'], { cwd, stripColors: true })
       .wait('Enter a name for the project')
       .sendLine(s.name)
+      .wait('Initialize the project with the above configuration?')
+      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')
@@ -215,6 +224,8 @@ export function initProjectWithAccessKey(
     })
       .wait('Enter a name for the project')
       .sendLine(s.name)
+      .wait('Initialize the project with the above configuration?')
+      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(s.envName)
       .wait('Choose your default editor:')

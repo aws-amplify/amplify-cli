@@ -105,8 +105,8 @@ describe('create artifacts', () => {
 
   it('writes the default custom resources stack', async () => {
     await cfnApiArtifactHandler.createArtifacts(addRequestStub);
-    expect(fs_mock.copyFileSync.mock.calls.length).toBe(1);
-    expect(fs_mock.copyFileSync.mock.calls[0]).toEqual([
+    expect(fs_mock.copyFileSync.mock.calls.length).toBe(2);
+    expect(fs_mock.copyFileSync.mock.calls[1]).toEqual([
       path.join(rootAssetDir, 'cloudformation-templates', 'defaultCustomResources.json'),
       path.join(backendDirPathStub, category, addRequestStub.serviceConfiguration.apiName, 'stacks', 'CustomResources.json'),
     ]);

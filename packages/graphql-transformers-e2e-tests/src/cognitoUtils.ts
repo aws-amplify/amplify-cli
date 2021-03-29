@@ -60,13 +60,13 @@ export async function signupUser(userPoolId: string, name: string, pw: string) {
 export async function authenticateUser(user: any, details: any, realPw: string) {
   return new Promise((res, rej) => {
     user.authenticateUser(details, {
-      onSuccess: function(result: any) {
+      onSuccess: function (result: any) {
         res(result);
       },
-      onFailure: function(err: any) {
+      onFailure: function (err: any) {
         rej(err);
       },
-      newPasswordRequired: function(userAttributes: any, requiredAttributes: any) {
+      newPasswordRequired: function (userAttributes: any, requiredAttributes: any) {
         user.completeNewPasswordChallenge(realPw, user.Attributes, this);
       },
     });

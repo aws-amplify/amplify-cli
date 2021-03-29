@@ -77,18 +77,22 @@ export async function configure(context: $TSContext) {
   context.exeInfo = context.exeInfo || context.amplify.getProjectDetails();
   normalizeInputParams(context);
   context.exeInfo.awsConfigInfo = getCurrentConfig(context);
-  await enableServerlessContainers(context);
+  if (context.exeInfo.inputParams.containerSetting) {
+    await enableServerlessContainers(context);
+  }
 
-  await newUserCheck(context);
-  printProfileInfo(context);
-  await setProjectConfigAction(context);
-  return await carryOutConfigAction(context);
+  if (context.exeInfo.inputParams.profileSetting) {
+    await newUserCheck(context);
+    printProfileInfo(context);
+    await setProjectConfigAction(context);
+    return await carryOutConfigAction(context);
+  }
 }
 
 async function enableServerlessContainers(context: $TSContext) {
   const frontend = context.exeInfo.projectConfig.frontend;
   const { config = {} } = context.exeInfo.projectConfig[frontend] || {};
-
+  // TODO: check for headless mode parameter to avoid the question
   const { ServerlessContainers } = await prompt({
     type: 'confirm',
     name: 'ServerlessContainers',

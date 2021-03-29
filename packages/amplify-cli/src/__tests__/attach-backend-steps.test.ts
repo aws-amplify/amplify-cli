@@ -8,7 +8,7 @@ const contextStub = {
   exeInfo: {
     projectConfig: {
       projectName: 'this-is-a-possible-name-from-the-console!',
-      version: '3.0',
+      version: '3.1',
     },
     localEnvInfo: {},
   },

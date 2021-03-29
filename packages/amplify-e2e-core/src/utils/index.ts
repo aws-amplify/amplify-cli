@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
+import execa from 'execa';
 
 export * from './add-circleci-tags';
 export * from './api';
@@ -35,6 +36,17 @@ export function deleteAmplifyDir(root: string) {
 export function overrideFunctionSrc(root: string, name: string, code: string) {
   let indexPath = path.join(getPathToFunction(root, name), 'src', 'index.js');
   fs.writeFileSync(indexPath, code);
+}
+
+export function overrideFunctionCode(root: string, name: string, fileName: string) {
+  let indexPath = path.join(getPathToFunction(root, name), 'src', 'index.js');
+  let functionPath = path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'functions', fileName);
+  fs.copySync(functionPath, indexPath);
+}
+
+export function addNodeJSDependencies(root: string, name: string, dependencies: string[]) {
+  let indexPath = path.join(getPathToFunction(root, name), 'src');
+  execa.commandSync(`yarn add ${dependencies.join(' ')}`, { cwd: indexPath });
 }
 
 export function getFunctionSrc(root: string, name: string): Buffer {

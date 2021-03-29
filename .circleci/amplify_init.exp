@@ -3,6 +3,8 @@ set repo [lindex $argv 0];
 spawn ./.circleci/amplify_init.sh $repo
 expect "Enter a name for the project"
 send -- "unauth\r"
+expect "Initialize the project with the above configuration?"
+send -- "n\r"
 expect "Enter a name for the environment"
 send -- "integtest\r"
 expect -exact "Choose your default editor:"

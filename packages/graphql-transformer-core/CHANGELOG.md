@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.27.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.26.6...graphql-transformer-core@6.27.0) (2021-03-23)
+
+
+### Bug Fixes
+
+* stop sanity check when resource is in create status ([#6349](https://github.com/aws-amplify/amplify-cli/issues/6349)) ([45e0246](https://github.com/aws-amplify/amplify-cli/commit/45e0246306136e513c735899b030f94bb004a330))
+
+
+### Features
+
+* allows adding graphql datasource with an empty graphql schema file ([#4464](https://github.com/aws-amplify/amplify-cli/issues/4464)) ([2b71a2d](https://github.com/aws-amplify/amplify-cli/commit/2b71a2df31585ad06674417b7003dfb70d5b785d))
+
+
+
+
+
+## [6.26.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.26.5...graphql-transformer-core@6.26.6) (2021-03-11)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
+## [6.26.5](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.26.4...graphql-transformer-core@6.26.5) (2021-03-05)
+
+**Note:** Version bump only for package graphql-transformer-core
+
+
+
+
+
 ## [6.26.4](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.26.3...graphql-transformer-core@6.26.4) (2021-02-26)
 
 **Note:** Version bump only for package graphql-transformer-core

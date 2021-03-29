@@ -4,6 +4,9 @@ import { populateCfnParams } from '../../../utils/lambda/populate-cfn-params';
 
 jest.mock('amplify-cli-core');
 jest.mock('../../../api/api', () => ({
+  GRAPHQL_API_ENDPOINT_OUTPUT: 'GraphQLAPIEndpointOutput',
+  GRAPHQL_API_KEY_OUTPUT: 'GraphQLAPIKeyOutput',
+  MOCK_API_KEY: 'da2-fakeApiId123456',
   MOCK_API_PORT: '666',
 }));
 
@@ -68,7 +71,7 @@ const meta_stub = {
 
 describe('populate cfn params', () => {
   it('includes CFN pseudo parameters', () => {
-    expect(populateCfnParams({}, undefined)).toMatchObject({
+    expect(populateCfnParams({} as any, undefined)).toMatchObject({
       env: 'test',
       'AWS::Region': 'test-region',
       'AWS::AccountId': '1234',
@@ -84,7 +87,7 @@ describe('populate cfn params', () => {
       },
     });
 
-    expect(populateCfnParams({}, undefined)).toMatchObject({
+    expect(populateCfnParams({} as any, undefined)).toMatchObject({
       env: 'test',
       'AWS::Region': 'us-test-1',
       'AWS::AccountId': '12345678910',
@@ -95,7 +98,7 @@ describe('populate cfn params', () => {
 
   it('gets dependsOn params from amplify-meta', () => {
     stateManager_mock.getMeta.mockReturnValueOnce(meta_stub);
-    expect(populateCfnParams({}, 'func1')).toMatchObject({
+    expect(populateCfnParams({} as any, 'func1')).toMatchObject({
       apimyApiapiName: 'testApiName',
       storagemytabletableName: 'testTableName',
       storagemytabletableArn: 'testTableArn',
@@ -106,8 +109,17 @@ describe('populate cfn params', () => {
     const meta_stub_copy = _.cloneDeep(meta_stub);
     meta_stub_copy.function.func1.dependsOn[1].attributes.push('GraphQLAPIEndpointOutput');
     stateManager_mock.getMeta.mockReturnValueOnce(meta_stub_copy);
-    expect(populateCfnParams({ warning: jest.fn() }, 'func1', true)).toMatchObject({
+    expect(populateCfnParams({ warning: jest.fn() } as any, 'func1', true)).toMatchObject({
       apimyApiGraphQLAPIEndpointOutput: `http://localhost:666/graphql`,
+    });
+  });
+
+  it('overwrites api key when specified', () => {
+    const meta_stub_copy = _.cloneDeep(meta_stub);
+    meta_stub_copy.function.func1.dependsOn[1].attributes.push('GraphQLAPIKeyOutput');
+    stateManager_mock.getMeta.mockReturnValueOnce(meta_stub_copy);
+    expect(populateCfnParams({ warning: jest.fn() } as any, 'func1', true)).toMatchObject({
+      apimyApiGraphQLAPIKeyOutput: 'da2-fakeApiId123456',
     });
   });
 
@@ -116,7 +128,7 @@ describe('populate cfn params', () => {
     meta_stub_copy.function.func1.dependsOn[1].attributes.push('GraphQLAPIEndpointOutput');
     stateManager_mock.getMeta.mockReturnValueOnce(meta_stub_copy);
     const warningMock = jest.fn();
-    const result = populateCfnParams({ warning: warningMock }, 'func1');
+    const result = populateCfnParams({ warning: warningMock } as any, 'func1');
     expect(typeof result).toBe('object');
     expect(result.apimyApiGraphQLAPIEndpointOutput).toBeUndefined();
     expect(warningMock.mock.calls).toMatchInlineSnapshot(`
@@ -136,10 +148,10 @@ describe('populate cfn params', () => {
       someOtherParam: 'this is the value',
     };
     stateManager_mock.getResourceParametersJson.mockReturnValueOnce(expectedMap);
-    expect(populateCfnParams({}, 'func1')).toMatchObject(expectedMap);
+    expect(populateCfnParams({} as any, 'func1')).toMatchObject(expectedMap);
   });
 
   it('includes params from team-provider-info.json', () => {
-    expect(populateCfnParams({}, 'func1')).toMatchObject(teamProviderParam);
+    expect(populateCfnParams({} as any, 'func1')).toMatchObject(teamProviderParam);
   });
 });

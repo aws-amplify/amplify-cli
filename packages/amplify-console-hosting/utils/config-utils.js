@@ -50,10 +50,6 @@ async function initCurrBackendMeta(context, category, resourceName, type, timeSt
     currMetaContent[category] = {};
   }
 
-  if (!currMetaContent[category][resourceName]) {
-    currMetaContent[category][resourceName] = {};
-  }
-
   currMetaContent[category][resourceName] = metaData;
   fs.writeFileSync(currMetaFilePath, JSON.stringify(currMetaContent, null, 4));
 
@@ -67,10 +63,6 @@ async function initCurrBackendMeta(context, category, resourceName, type, timeSt
 
   if (!backendConfig[category]) {
     backendConfig[category] = {};
-  }
-
-  if (!backendConfig[category][resourceName]) {
-    backendConfig[category][resourceName] = {};
   }
 
   backendConfig[category][resourceName] = {
@@ -101,10 +93,6 @@ function initTeamProviderInfo(context, category, resourceName, type) {
 
   if (!teamProviderInfo[currEnv][categories][category]) {
     teamProviderInfo[currEnv][categories][category] = {};
-  }
-
-  if (!teamProviderInfo[currEnv][categories][category][resourceName]) {
-    teamProviderInfo[currEnv][categories][category][resourceName] = {};
   }
 
   const appId = utils.getAppIdForCurrEnv(context);
@@ -165,10 +153,6 @@ function initBackendConfig(context, category, resourceName, type) {
     backendConfig[category] = {};
   }
 
-  if (!backendConfig[category][resourceName]) {
-    backendConfig[category][resourceName] = {};
-  }
-
   backendConfig[category][resourceName] = {
     service: resourceName,
     providerPlugin: type === constants.TYPE_CICD ? undefined : constants.PROVIDER,
@@ -183,14 +167,12 @@ function loadConsoleConfigFromTeamProviderinfo(context) {
   const resource = constants.CONSOLE_RESOURCE_NAME;
   const teamProviderInfo = utils.getTeamProviderInfo(context);
   const currEnv = utils.getCurrEnv(context);
-  if (
+
+  return (
     teamProviderInfo[currEnv][categories] &&
     teamProviderInfo[currEnv][categories][category] &&
     teamProviderInfo[currEnv][categories][category][resource]
-  ) {
-    return teamProviderInfo[currEnv][categories][category][resource];
-  }
-  return undefined;
+  );
 }
 
 async function storeCurrentCloudBackend(context) {

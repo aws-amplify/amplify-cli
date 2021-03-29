@@ -59,6 +59,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     const stacksDirectoryPath = path.join(resourceDir, stacksDirName);
     if (!fs.existsSync(stacksDirectoryPath)) {
       fs.mkdirSync(stacksDirectoryPath);
+      fs.copyFileSync(path.join(rootAssetDir, 'resolver-readme', 'RESOLVER_README.md'), path.join(resolverDirectoryPath, 'README.md'));
     }
 
     // During API add, make sure we're creating a transform.conf.json file with the latest version the CLI supports.

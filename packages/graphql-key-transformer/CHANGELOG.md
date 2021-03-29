@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.22.3](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.22.2...graphql-key-transformer@2.22.3) (2021-03-23)
+
+
+### Bug Fixes
+
+* **graphql-key-transformer:** check if lastSync == 0 ([#6859](https://github.com/aws-amplify/amplify-cli/issues/6859)) ([f3b1d1d](https://github.com/aws-amplify/amplify-cli/commit/f3b1d1d66fa2705a6ee73b5732c3919cd77632f7))
+
+
+
+
+
+## [2.22.2](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.22.1...graphql-key-transformer@2.22.2) (2021-03-11)
+
+
+### Bug Fixes
+
+* gql compiler fix for user defined mutation ([#6059](https://github.com/aws-amplify/amplify-cli/issues/6059)) ([063d84f](https://github.com/aws-amplify/amplify-cli/commit/063d84ff3d31762a4434f3146623132536f4667d))
+
+
+
+
+
+## [2.22.1](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.22.0...graphql-key-transformer@2.22.1) (2021-03-05)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
 # [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.21.3...graphql-key-transformer@2.22.0) (2021-02-26)
 
 

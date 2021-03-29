@@ -18,6 +18,7 @@ def main(argv):
   # load handler
   spec = importlib.util.spec_from_file_location("module.name", handlerFile)
   handlerModule = importlib.util.module_from_spec(spec)
+  sys.modules[spec.name] = handlerModule
   spec.loader.exec_module(handlerModule)
   handler = getattr(handlerModule, handlerName)
   

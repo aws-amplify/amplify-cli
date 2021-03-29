@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.10.17](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.16...amplify-category-storage@2.10.17) (2021-03-23)
+
+
+### Bug Fixes
+
+* use non-duplicate names for lambda execution role ([#5814](https://github.com/aws-amplify/amplify-cli/issues/5814)) ([33d6c35](https://github.com/aws-amplify/amplify-cli/commit/33d6c35f94b87b15be75601173637ef662d40076))
+
+
+
+
+
+## [2.10.16](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.15...amplify-category-storage@2.10.16) (2021-03-11)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.10.15](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.14...amplify-category-storage@2.10.15) (2021-03-05)
+
+
+### Bug Fixes
+
+* allow selecting all columns for GSIs ([#6689](https://github.com/aws-amplify/amplify-cli/issues/6689)) ([c33d29a](https://github.com/aws-amplify/amplify-cli/commit/c33d29a0398449379e49f023d068504c47872667))
+
+
+
+
+
 ## [2.10.14](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.13...amplify-category-storage@2.10.14) (2021-02-26)
 
 **Note:** Version bump only for package amplify-category-storage

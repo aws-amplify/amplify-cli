@@ -35,10 +35,10 @@ const builtInScalarMap = {
   [GraphQLID.name]: 'GraphQLID',
 };
 
-const INFLECTOR_BLACK_LIST = ['delta'];
+const INFLECTOR_DENY_LIST = ['delta'];
 
-(Inflector as any).inflections('en', function(inflect: any) {
-  INFLECTOR_BLACK_LIST.forEach(w => {
+(Inflector as any).inflections('en', function (inflect: any) {
+  INFLECTOR_DENY_LIST.forEach(w => {
     inflect.uncountable(w, w);
   });
 });
@@ -182,7 +182,7 @@ export class Helpers {
         isOptional: !(field.type instanceof GraphQLNonNull),
         description: field.description || null,
         name: field.name,
-      }
+      },
     );
   }
 
@@ -218,9 +218,9 @@ export class Helpers {
             Object.entries(value).map(([key, value]) => {
               return `"${key}": ${expressionFromValue(value)}`;
             }),
-            ', '
+            ', ',
           ) || ':',
-          ']'
+          ']',
         );
       } else {
         return JSON.stringify(value);
@@ -233,9 +233,9 @@ export class Helpers {
         args.map(arg => {
           return `"${arg.name}": ${expressionFromValue(arg.value)}`;
         }),
-        ', '
+        ', ',
       ) || ':',
-      ']'
+      ']',
     );
   }
 

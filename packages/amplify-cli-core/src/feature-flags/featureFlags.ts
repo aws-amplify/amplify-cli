@@ -539,6 +539,12 @@ export class FeatureFlags {
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
       },
+      {
+        name: 'skipOverrideMutationInputTypes',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
     ]);
 
     this.registerFlag('frontend-ios', [
@@ -553,6 +559,12 @@ export class FeatureFlags {
     this.registerFlag('auth', [
       {
         name: 'enableCaseInsensitivity',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+      {
+        name: 'useInclusiveTerminology',
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
@@ -589,7 +601,7 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
-      }
+      },
     ]);
 
     this.registerFlag('appSync', [
@@ -598,7 +610,7 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
-      }
+      },
     ]);
   };
 }

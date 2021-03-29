@@ -1,0 +1,51 @@
+describe('amplify env: ', () => {
+  const mockExit = jest.fn();
+  jest.mock('amplify-cli-core', () => ({
+    exitOnNextTick: mockExit,
+  }));
+  const { run: runEnvCmd } = require('../../commands/env');
+  const envList = require('../../commands/env/list');
+  jest.mock('../../commands/env/list');
+
+  it('env run method should exist', () => {
+    expect(runEnvCmd).toBeDefined();
+  });
+
+  it('env ls is an alias for env list', async () => {
+    const mockEnvListRun = jest.spyOn(envList, 'run');
+    await runEnvCmd({
+      input: {
+        subCommands: ['list'],
+      },
+      parameters: {},
+    });
+    await runEnvCmd({
+      input: {
+        subCommands: ['ls'],
+      },
+      parameters: {},
+    });
+    expect(mockEnvListRun).toHaveBeenCalledTimes(2);
+  });
+
+  it('invalid env subcommand should give a warning', async () => {
+    const mockContextInvalidEnvSubcommand = {
+      amplify: {
+        showHelp: jest.fn()
+      },
+      parameters: {},
+      input: {
+        subCommands: ['test12345'],
+      },
+      print:{
+        warning: jest.fn(),
+        info: jest.fn(),
+      }
+    };
+    await runEnvCmd(mockContextInvalidEnvSubcommand);
+    expect(mockContextInvalidEnvSubcommand.amplify.showHelp).toBeCalled();
+    expect(mockContextInvalidEnvSubcommand.print.warning.mock.calls[0][0]).toMatchInlineSnapshot(
+      `"Cannot find command: 'amplify env test12345'"`,
+    );
+  })
+});

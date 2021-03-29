@@ -11,6 +11,7 @@ import {
   CloudWatchEvents,
   Kinesis,
   CloudFormation,
+  AmplifyBackend,
 } from 'aws-sdk';
 import _ from 'lodash';
 
@@ -53,7 +54,12 @@ export const deleteS3Bucket = async (bucket: string) => {
         ...continuationToken,
       })
       .promise();
+
     results.Versions?.forEach(({ Key, VersionId }) => {
+      objectKeyAndVersion.push({ Key, VersionId });
+    });
+
+    results.DeleteMarkers?.forEach(({ Key, VersionId }) => {
       objectKeyAndVersion.push({ Key, VersionId });
     });
 
@@ -193,7 +199,9 @@ export const getCloudWatchLogs = async (region: string, logGroupName: string, lo
 
 export const describeCloudFormationStack = async (stackName: string, region: string, profileConfig?: any) => {
   const service = profileConfig ? new CloudFormation(profileConfig) : new CloudFormation({ region });
-  return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(stack => stack.StackName === stackName);
+  return (await service.describeStacks({ StackName: stackName }).promise()).Stacks.find(
+    stack => stack.StackName === stackName || stack.StackId === stackName,
+  );
 };
 
 export const putKinesisRecords = async (data: string, partitionKey: string, streamName: string, region: string) => {
@@ -225,4 +233,22 @@ export const getCloudWatchEventRule = async (targetName: string, region: string)
     console.log(e);
   }
   return ruleName;
+};
+
+export const setupAmplifyAdminUI = async (appId: string, region: string) => {
+  const amplifyBackend = new AmplifyBackend({ region });
+
+  return await amplifyBackend.createBackendConfig({ AppId: appId }).promise();
+};
+
+export const getAmplifyBackendJobStatus = async (jobId: string, appId: string, envName: string, region: string) => {
+  const amplifyBackend = new AmplifyBackend({ region });
+
+  return await amplifyBackend
+    .getBackendJob({
+      JobId: jobId,
+      AppId: appId,
+      BackendEnvironmentName: envName,
+    })
+    .promise();
 };

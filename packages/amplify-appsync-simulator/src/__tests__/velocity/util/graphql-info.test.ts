@@ -219,3 +219,88 @@ it('should generate a valid graphql info object', () => {
       '{\n  otherField\n  aliasedField: otherField\n  ...fragment\n  ... on FragmentType {\n    aliasedInlineFragmentField: inlineFragmentField\n    inlineFragmentField\n  }\n  someOtherField(varName: $foo) {\n    subField\n    aliasedSubField: subField\n    ...subfragment\n  }\n}',
   });
 });
+
+it('should generate a valid graphql info object with an object param value', () => {
+  // @ts-ignore
+  const info = createInfo({
+    fieldName: 'someField',
+    fieldNodes: [
+      {
+        kind: 'Field',
+        name: {
+          kind: 'Name',
+          value: 'someField',
+        },
+        arguments: [
+          {
+            kind: 'Argument',
+            name: {
+              kind: 'Name',
+              value: 'param',
+            },
+            value: {
+              kind: 'ObjectValue',
+              fields: [
+                {
+                  kind: 'ObjectField',
+                  name: {
+                    kind: 'Name',
+                    value: 'bazz',
+                  },
+                  value: {
+                    kind: 'StringValue',
+                    value: 'buzz',
+                  },
+                },
+                {
+                  kind: 'ObjectField',
+                  name: {
+                    kind: 'Name',
+                    value: 'fizz',
+                  },
+                  value: {
+                    kind: 'ObjectValue',
+                    fields: [
+                      {
+                        kind: 'ObjectField',
+                        name: {
+                          kind: 'Name',
+                          value: 'fuzz',
+                        },
+                        value: {
+                          kind: 'StringValue',
+                          value: 'fazz',
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+        selectionSet: {
+          kind: 'SelectionSet',
+          selections: [
+            {
+              kind: 'Field',
+              name: {
+                kind: 'Name',
+                value: 'otherField',
+              },
+            },
+          ],
+        },
+      },
+    ],
+    // @ts-ignore
+    parentType: 'Query',
+  });
+  expect(info).toEqual({
+    fieldName: 'someField',
+    variables: undefined,
+    parentTypeName: 'Query',
+    selectionSetList: ['otherField'],
+    selectionSetGraphQL: '{\n  otherField\n}',
+  });
+});

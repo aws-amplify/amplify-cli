@@ -82,6 +82,8 @@ export function initProjectForPinpoint(cwd: string): Promise<void> {
     })
       .wait('Enter a name for the project')
       .sendLine(settings.name)
+      .wait('Initialize the project with the above configuration?')
+      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Choose your default editor:')

@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import { getEnvInfo } from '../../../../src/extensions/amplify-helpers/get-env-info';
+import { getEnvInfo } from '../../../extensions/amplify-helpers/get-env-info';
 import { saveEnvResourceParameters } from '../../../../src/extensions/amplify-helpers/envResourceParams';
 import { pathManager, stateManager, $TSContext } from 'amplify-cli-core';
 

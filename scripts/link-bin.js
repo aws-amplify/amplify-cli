@@ -1,5 +1,5 @@
 const lnk = require('lnk');
-const cmdShim = require('cmd-shim');
+const cmdShim = require('@zkochan/cmd-shim');
 const path = require('path');
 const fs = require('fs-extra');
 const childProcess = require('child_process');
@@ -13,10 +13,7 @@ const src = path.join(process.cwd(), process.argv[2]);
 
 let dest;
 if (process.argv.length === 4) {
-  const yarnGlobalBin = childProcess
-    .execSync('yarn global bin')
-    .toString()
-    .trim();
+  const yarnGlobalBin = childProcess.execSync('yarn global bin').toString().trim();
   dest = path.join(yarnGlobalBin, process.argv[3]);
 } else {
   dest = path.isAbsolute(process.argv[4])

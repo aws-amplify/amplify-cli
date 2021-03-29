@@ -166,8 +166,36 @@ function guessFramework(context, projectPath) {
   return frameWork;
 }
 
+function displayFrontendDefaults(context, projectPath) {
+  context.print.info(`| App type: javascript`);
+
+  const defaultFramework = guessFramework(context, projectPath);
+  const projectConfiguration = getProjectConfiguration(context, defaultFramework);
+
+  context.print.info(`| Javascript framework: ${defaultFramework}`);
+  context.print.info(`| Source Directory Path: ${projectConfiguration.SourceDir}`);
+  context.print.info(`| Distribution Directory Path: ${projectConfiguration.DistributionDir}`);
+  context.print.info(`| Build Command: ${projectConfiguration.BuildCommand}`);
+  context.print.info(`| Start Command: ${projectConfiguration.StartCommand}`);
+}
+
+function setFrontendDefaults(context, projectPath) {
+  const defaultFramework = guessFramework(context, projectPath);
+  const projectConfiguration = getProjectConfiguration(context, defaultFramework);
+
+  context.exeInfo.inputParams.amplify.frontend = 'javascript';
+
+  let inputParams = {};
+  context.exeInfo.inputParams[JAVASCRIPT] = inputParams;
+  inputParams.framework = defaultFramework;
+  inputParams.config = projectConfiguration;
+  context.exeInfo.inputParams[JAVASCRIPT] = inputParams;
+}
+
 module.exports = {
   init,
   onInitSuccessful,
   configure,
+  displayFrontendDefaults,
+  setFrontendDefaults,
 };

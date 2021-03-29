@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.18.0...amplify-category-notifications@2.18.1) (2021-03-05)
+
+
+### Bug Fixes
+
+* pull issue with multi-env notifications [#6475](https://github.com/aws-amplify/amplify-cli/issues/6475) ([#6525](https://github.com/aws-amplify/amplify-cli/issues/6525)) ([b0803d1](https://github.com/aws-amplify/amplify-cli/commit/b0803d1a361c15db8ad6e32648f29402539aa2e4))
+
+
+
+
+
 # [2.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.17.2...amplify-category-notifications@2.18.0) (2021-02-11)
 
 

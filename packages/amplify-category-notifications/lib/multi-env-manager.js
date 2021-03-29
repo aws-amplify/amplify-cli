@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const _ = require('lodash');
 const sequential = require('promise-sequential');
+const authHelper = require('./auth-helper');
 const pinpointHelper = require('./pinpoint-helper');
 const constants = require('./constants');
 const notificationManager = require('./notifications-manager');
@@ -144,6 +145,7 @@ async function deletePinpointAppForEnv(context, envName) {
     };
     const pinpointClient = await pinpointHelper.getPinpointClient(context, 'delete', envName);
 
+    await authHelper.deleteRolePolicy(context);
     return pinpointClient
       .deleteApp(params)
       .promise()

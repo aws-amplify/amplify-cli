@@ -3,6 +3,7 @@ import * as path from 'path';
 import { existsSync } from 'fs';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
+const providerName = 'awscloudformation';
 
 import {
   addApiWithSchema,
@@ -17,7 +18,9 @@ import {
   deleteProjectDir,
   getAppSyncApi,
   getProjectMeta,
+  getLocalEnvInfo,
   getTransformConfig,
+  enableAdminUI,
 } from 'amplify-e2e-core';
 import { TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import _ from 'lodash';
@@ -48,7 +51,7 @@ describe('amplify add api (GraphQL)', () => {
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const region = meta['providers']['awscloudformation']['Region'] as string;
+    const region = meta['providers'][providerName]['Region'] as string;
     const { output } = meta.api[name];
     const url = output.GraphQLAPIEndpointOutput as string;
     const apiKey = output.GraphQLAPIKeyOutput as string;
@@ -127,6 +130,7 @@ describe('amplify add api (GraphQL)', () => {
     const name = `conflictdetection`;
     await initJSProjectWithProfile(projRoot, { name });
     await addApiWithSchemaAndConflictDetection(projRoot, 'simple_model.graphql');
+
     await amplifyPush(projRoot);
 
     const meta = getProjectMeta(projRoot);
@@ -156,6 +160,40 @@ describe('amplify add api (GraphQL)', () => {
     const disableDSConfig = getTransformConfig(projRoot, name);
     expect(disableDSConfig).toBeDefined();
     expect(_.isEmpty(disableDSConfig.ResolverConfig)).toBe(true);
+  });
+
+  it('init a project with conflict detection enabled and admin UI enabled to generate datastore models in the cloud', async () => {
+    const name = `dsadminui`;
+    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name });
+
+    let meta = getProjectMeta(projRoot);
+    const appId = meta.providers?.[providerName]?.AmplifyAppId;
+    const region = meta.providers?.[providerName]?.Region;
+
+    expect(appId).toBeDefined();
+
+    const localEnvInfo = getLocalEnvInfo(projRoot);
+    const envName = localEnvInfo.envName;
+
+    // setupAdminUI
+    await enableAdminUI(appId, envName, region);
+
+    await addApiWithSchemaAndConflictDetection(projRoot, 'simple_model.graphql');
+    await amplifyPush(projRoot);
+
+    meta = getProjectMeta(projRoot);
+
+    const { output } = meta.api[name];
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, meta.providers.awscloudformation.Region);
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
   });
 
   it('init a sync enabled project and update conflict resolution strategy', async () => {

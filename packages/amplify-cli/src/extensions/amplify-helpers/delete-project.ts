@@ -68,10 +68,8 @@ export async function getConfirmation(context, env?) {
   const environmentText = env ? `'${env}' environment` : 'all the environments';
   return {
     proceed: await context.amplify.confirmPrompt(
-      chalk.yellow(
-        `Are you sure you want to continue? This ${chalk.red(
-          'CANNOT',
-        )} be undone. (This will delete ${environmentText} of the project from the cloud${
+      chalk.red(
+        `Are you sure you want to continue? This CANNOT be undone. (This will delete ${environmentText} of the project from the cloud${
           env ? '' : ' and wipe out all the local files created by Amplify CLI'
         })`,
       ),

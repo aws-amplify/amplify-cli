@@ -1,4 +1,4 @@
-export const amplifyCLIConstants = {
+export const amplifyCLIConstants = Object.freeze({
   AmplifyCLIDirName: 'amplify',
   DotAmplifyDirName: '.amplify',
   DotConfigamplifyCLISubDirName: '.config',
@@ -6,7 +6,6 @@ export const amplifyCLIConstants = {
   CurrentCloudBackendamplifyCLISubDirName: '#current-cloud-backend',
   ProjectConfigFileName: 'project-config.json',
   amplifyMetaFileName: 'amplify-meta.json',
-  BrandName: 'Amplify Framework',
   CliName: 'amplify',
   DateTimeFormatString: 'YYYY-MM-DD-HH-mm-ss',
   DateTimeFormatStringCompact: 'YYYYMMDDHHmmss',
@@ -24,4 +23,4 @@ export const amplifyCLIConstants = {
   CURRENT_PROJECT_CONFIG_VERSION: '3.1',
   BreadcrumbsFileName: 'amplify.state',
   LogDirectory: '.amplify-log',
-};
+} as const);

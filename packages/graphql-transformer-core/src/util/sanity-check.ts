@@ -47,7 +47,7 @@ export const sanityCheckDiffs = (
   current: DiffableProject,
   next: DiffableProject,
   diffRules: DiffRule[],
-  projectRules: ProjectRule[] = [cantHaveMoreThan500ResourcesRule],
+  projectRules: ProjectRule[],
 ): void => {
   // Project rules run on the full set of diffs, the current build, and the next build.
 
@@ -347,8 +347,8 @@ export function cantRemoveLSILater(diff: Diff, currentBuild: DiffableProject, ne
     const stackName = path.basename(diff.path[1], '.json');
     throwError(stackName, tableName);
   }
- // if removing one lsi
-  if(diff.kind === 'A' && diff.item.kind === 'D' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') {
+  // if removing one lsi
+  if (diff.kind === 'A' && diff.item.kind === 'D' && diff.path.length === 6 && diff.path[5] === 'LocalSecondaryIndexes') {
     const tableName = diff.path[3];
     const stackName = path.basename(diff.path[1], '.json');
     throwError(stackName, tableName);

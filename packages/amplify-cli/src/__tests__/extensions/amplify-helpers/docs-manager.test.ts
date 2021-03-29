@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import { writeReadMeFile } from '../../../../src/extensions/amplify-helpers/docs-manager';
+import { writeReadMeFile } from '../../../extensions/amplify-helpers/docs-manager';
 
 jest.mock('fs-extra');
 

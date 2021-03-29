@@ -121,7 +121,7 @@ export class VelocityTemplate {
     const vtlContext = {
       arguments: args,
       args,
-      info: createInfo(info),
+      info: convertToJavaTypes(createInfo(info)),
       request: { headers: requestContext.headers },
       identity,
       stash: convertToJavaTypes(stash || {}),

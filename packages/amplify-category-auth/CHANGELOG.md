@@ -3,6 +3,51 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.29.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.29.2...amplify-category-auth@2.29.3) (2021-03-24)
+
+
+
+## 4.46.1 (2021-03-23)
+
+
+### Bug Fixes
+
+* exclude env add from check ([a7e0351](https://github.com/aws-amplify/amplify-cli/commit/a7e035126e264abf1c075b17cbd9a82fa3963481))
+
+
+
+
+
+## [2.29.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.29.1...amplify-category-auth@2.29.2) (2021-03-23)
+
+
+### Bug Fixes
+
+* add sms auth message to cfn template ([#6789](https://github.com/aws-amplify/amplify-cli/issues/6789)) ([7f9ea84](https://github.com/aws-amplify/amplify-cli/commit/7f9ea84f741ec9001dac9be55944d05c4534acb3))
+
+
+
+
+
+## [2.29.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.29.0...amplify-category-auth@2.29.1) (2021-03-11)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+# [2.29.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.28.3...amplify-category-auth@2.29.0) (2021-03-05)
+
+
+### Features
+
+* remove OAuth prompt from pull and new env ([#6739](https://github.com/aws-amplify/amplify-cli/issues/6739)) ([8ff15a6](https://github.com/aws-amplify/amplify-cli/commit/8ff15a6ea2c3c687f0344fb4e17547097cd575ea))
+
+
+
+
+
 ## [2.28.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.28.2...amplify-category-auth@2.28.3) (2021-02-26)
 
 **Note:** Version bump only for package amplify-category-auth

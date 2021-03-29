@@ -34,14 +34,6 @@ import {
 import * as util from '../src/util';
 
 describe('amplify console build', () => {
-  beforeAll(() => {});
-
-  afterAll(() => {});
-
-  beforeEach(() => {});
-
-  afterEach(async () => {});
-
   it('connects to team project', async () => {
     const amplifyClient = getConfiguredAmplifyClient();
     const projectName = 'cliintegrationteam';
@@ -91,20 +83,24 @@ describe('amplify console build', () => {
 
     await createBackendEnvironment(backendParams, amplifyClient);
 
-    removeFilesForTeam(projectDirPath);
     amplifyParam = {
       envName,
       appId,
     };
-    removeDotConfigDir(projectDirPath);
-    await headlessInit(projectDirPath, amplifyParam, providersParam, codegenParam);
-    expect(checkAmplifyFolderStructure(projectDirPath)).toBeTruthy();
-    teamProviderInfo = getTeamProviderInfo(projectDirPath);
+
+    const projectDirPathForEnvB = await util.createNewProjectDir('console');
+    await headlessInit(projectDirPathForEnvB, amplifyParam, providersParam, codegenParam);
+
+    expect(checkAmplifyFolderStructure(projectDirPathForEnvB)).toBeTruthy();
+
+    teamProviderInfo = getTeamProviderInfo(projectDirPathForEnvB);
     expect(teamProviderInfo).toBeDefined();
     expect(teamProviderInfo['envb']).toBeDefined();
 
     // clean up after the tests
     await headlessDelete(projectDirPath);
+    await headlessDelete(projectDirPathForEnvB);
+
     await deleteConsoleApp(appId, amplifyClient);
     util.deleteProjectDir(projectDirPath);
   });
@@ -273,7 +269,7 @@ describe('amplify app console tests', () => {
     expect(projectConfig).toEqual({
       providers: ['awscloudformation'],
       projectName: 'authConsoleTest',
-      version: '3.0',
+      version: '3.1',
       frontend: 'javascript',
       javascript: {
         framework: 'react-native',
