@@ -5,9 +5,12 @@ import { DeployMachineContext, DeploymentMachineOp } from './state-machine';
 export const collectError = (context: DeployMachineContext, err: any, meta: any) => {
   return {
     ...context,
-    errors: [...(context.errors ? context.errors : []), { error: err.data, stateValue: meta.state.value, currentIndex: context.currentIndex }]
-  }
-}
+    errors: [
+      ...(context.errors ? context.errors : []),
+      { error: err.data, stateValue: JSON.stringify(meta.state.value), currentIndex: context.currentIndex },
+    ],
+  };
+};
 
 export const isRollbackComplete = (context: DeployMachineContext) => {
   return context.currentIndex < 0;
@@ -60,5 +63,5 @@ export const getBucketKey = (keyOrUrl: string, bucketName: string): string => {
 };
 
 export const getHttpUrl = (keyOrUrl: string, bucketName: string): string => {
-  return keyOrUrl.startsWith('https://') ? keyOrUrl : `https://s3.amazonaws.com/${path.join(bucketName, keyOrUrl)}`;
+  return keyOrUrl.startsWith('https://') ? keyOrUrl : `https://s3.amazonaws.com/${bucketName}/${keyOrUrl}`;
 };
