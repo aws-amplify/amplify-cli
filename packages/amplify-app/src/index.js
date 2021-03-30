@@ -12,7 +12,7 @@ const { engines } = require('../package.json');
 const { initializeAwsExports } = require('amplify-frontend-javascript');
 const { initializeAmplifyConfiguration } = require('amplify-frontend-flutter');
 const { callAmplify } = require('./call-amplify');
-
+import Ora from 'ora';
 const isWin = process.platform.startsWith('win');
 const npm = isWin ? 'npm.cmd' : 'npm';
 const amplifyCliPackageName = '@aws-amplify/cli';
@@ -425,8 +425,10 @@ async function createIosHelperFiles() {
 
   console.log('Checking for existing amplify project...');
   if (fs.existsSync(path.join(amplifyDir, 'backend'))) {
+    const spinner = new Ora('Generating Amplify configuration files...');
+    spinner.start();
     await addAmplifyFiles();
-    console.log('Generating Amplify configuration files');
+    spinner.succeed();
   }
 }
 
