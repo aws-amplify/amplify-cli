@@ -36,6 +36,39 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean
   });
 }
 
+/**
+ *
+ * @param cwd
+ * @param stackIdx
+ * @param testingWithLatestCodebase
+ * @returns
+ * Used to stop an iterative deployment
+ */
+export function cancelIterativeAmplifyPush(
+  cwd: string,
+  stackIdx: { current: number; max: number },
+  testingWithLatestCodebase: boolean = false,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendLine('y')
+      .wait(`Deploying stack (${stackIdx.current} of ${stackIdx.max})`)
+      .wait(/.*UPDATE_IN_PROGRESS*/)
+      .sendLine('\x03')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          if (err.message !== `Killed the process as no output receive for 1200 Sec. The no output timeout is set to 1200`) {
+            reject(err);
+          }
+          resolve();
+        }
+      });
+  });
+}
+
 export function amplifyPushWithoutCodegen(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
@@ -110,5 +143,21 @@ export function amplifyPushLayer(
         reject(err);
       }
     });
+  });
+}
+
+export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodebase: boolean = false) {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['push', '--iterative-rollback'], { cwd, stripColors: true })
+      .wait('Are you sure you want to continue?')
+      .sendLine('y')
+      .wait(/.*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve({});
+        } else {
+          reject(err);
+        }
+      });
   });
 }

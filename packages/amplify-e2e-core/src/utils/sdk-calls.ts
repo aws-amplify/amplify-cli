@@ -204,6 +204,38 @@ export const describeCloudFormationStack = async (stackName: string, region: str
   );
 };
 
+export const getNestedStackID = async (stackName: string, region: string, logicalId: string) => {
+  const cfnClient = new CloudFormation({ region });
+  return (await cfnClient.describeStackResources({ StackName: stackName, LogicalResourceId: logicalId }).promise()).StackResources[0]
+    .PhysicalResourceId;
+};
+
+export const getTableName = async (region: string, table: string, StackId: string): Promise<string | null> => {
+  const cfnClient = new CloudFormation({ region });
+  const apiResources = await cfnClient
+    .describeStackResources({
+      StackName: StackId,
+    })
+    .promise();
+  for (const resource of apiResources.StackResources) {
+    if (table === resource.LogicalResourceId) {
+      const tableStack = await cfnClient
+        .describeStacks({
+          StackName: resource.PhysicalResourceId,
+        })
+        .promise();
+      const tableName = tableStack.Stacks[0].Outputs.reduce((acc, out) => {
+        if (out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`) {
+          acc.push(out.OutputValue);
+        }
+        return acc;
+      }, []);
+      return tableName[0];
+    }
+  }
+  return null;
+};
+
 export const putKinesisRecords = async (data: string, partitionKey: string, streamName: string, region: string) => {
   const kinesis = new Kinesis({ region });
 
