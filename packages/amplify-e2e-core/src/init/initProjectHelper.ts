@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 
@@ -49,8 +48,7 @@ export function initJSProjectWithProfile(cwd: string, settings: Object): Promise
   addCircleCITags(cwd);
 
   const cliArgs = ['init'];
-  const providerConfigSpecified = _.isObject(s.providerConfig);
-
+  const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
   if (providerConfigSpecified) {
     cliArgs.push('--providers', JSON.stringify(s.providerConfig));
   }
@@ -88,10 +86,10 @@ export function initJSProjectWithProfile(cwd: string, settings: Object): Promise
     }
 
     chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
-      if (!err) {
-        resolve();
-      } else {
+      if (err) {
         reject(err);
+      } else {
+        resolve();
       }
     });
   });
