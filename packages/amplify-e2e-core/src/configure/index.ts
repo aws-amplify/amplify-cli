@@ -14,7 +14,7 @@ const defaultSettings = {
   userName: '\r',
 };
 
-const regionOptions = [
+export const amplifyRegions = [
   'us-east-1',
   'us-east-2',
   'us-west-2',
@@ -26,6 +26,7 @@ const regionOptions = [
   'ap-southeast-1',
   'ap-southeast-2',
   'ap-south-1',
+  'ca-central-1',
 ];
 
 const profileOptions = ['cancel', 'update', 'remove'];
@@ -46,7 +47,7 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
       .sendCarriageReturn()
       .wait('Specify the AWS Region');
 
-    singleSelect(chain, s.region, regionOptions);
+    singleSelect(chain, s.region, amplifyRegions);
 
     chain
       .wait('user name:')
