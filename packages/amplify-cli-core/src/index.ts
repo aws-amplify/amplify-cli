@@ -185,7 +185,7 @@ interface AmplifyToolkit {
   makeId: (n?: number) => string;
   openEditor: (context: $TSContext, target: string, waitToContinue?: boolean) => Promise<void>;
   onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
-  pathManager: () => $TSAny;
+  pathManager: $TSAny;
   pressEnterToContinue: () => $TSAny;
   pushResources: (
     context: $TSContext,

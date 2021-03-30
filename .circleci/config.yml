@@ -1087,6 +1087,22 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-locking.test.ts
       CLI_REGION: ap-southeast-1
+  schema-iterative-rollback-2-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps: *ref_4
+    environment:
+      TEST_SUITE: src/__tests__/schema-iterative-rollback-2.test.ts
+      CLI_REGION: ap-southeast-2
+  schema-iterative-rollback-1-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps: *ref_4
+    environment:
+      TEST_SUITE: src/__tests__/schema-iterative-rollback-1.test.ts
+      CLI_REGION: us-east-2
   migration-node-function-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1094,7 +1110,7 @@ jobs:
     steps: *ref_4
     environment:
       TEST_SUITE: src/__tests__/migration/node.function.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
   function_5-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1102,7 +1118,7 @@ jobs:
     steps: *ref_4
     environment:
       TEST_SUITE: src/__tests__/function_5.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
   api_4-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1110,7 +1126,7 @@ jobs:
     steps: *ref_4
     environment:
       TEST_SUITE: src/__tests__/api_4.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
   schema-iterative-update-4-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
     docker: *ref_1
@@ -1731,6 +1747,26 @@ jobs:
       TEST_SUITE: src/__tests__/schema-iterative-update-locking.test.ts
       CLI_REGION: ap-southeast-1
     steps: *ref_5
+  schema-iterative-rollback-2-amplify_e2e_tests_pkg_linux:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+      TEST_SUITE: src/__tests__/schema-iterative-rollback-2.test.ts
+      CLI_REGION: ap-southeast-2
+    steps: *ref_5
+  schema-iterative-rollback-1-amplify_e2e_tests_pkg_linux:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+      TEST_SUITE: src/__tests__/schema-iterative-rollback-1.test.ts
+      CLI_REGION: us-east-2
+    steps: *ref_5
   migration-node-function-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
     docker: *ref_1
@@ -1739,7 +1775,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/migration/node.function.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-west-2
     steps: *ref_5
   function_5-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -1749,7 +1785,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/function_5.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-west-2
     steps: *ref_5
   api_4-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -1759,7 +1795,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/api_4.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: eu-central-1
     steps: *ref_5
 workflows:
   version: 2
@@ -1856,19 +1892,19 @@ workflows:
             - hostingPROD-amplify_e2e_tests
             - amplify-app-amplify_e2e_tests
             - init-amplify_e2e_tests
-            - function_5-amplify_e2e_tests
+            - schema-iterative-rollback-1-amplify_e2e_tests
             - predictions-amplify_e2e_tests
             - schema-predictions-amplify_e2e_tests
             - amplify-configure-amplify_e2e_tests
-            - api_4-amplify_e2e_tests
-            - function_3-amplify_e2e_tests
+            - migration-node-function-amplify_e2e_tests
             - containers-api-amplify_e2e_tests
             - interactions-amplify_e2e_tests
             - datastore-modelgen-amplify_e2e_tests
-            - auth_5-amplify_e2e_tests
+            - function_5-amplify_e2e_tests
             - schema-iterative-update-2-amplify_e2e_tests
             - schema-data-access-patterns-amplify_e2e_tests
             - init-special-case-amplify_e2e_tests
+            - api_4-amplify_e2e_tests
             - auth_1-amplify_e2e_tests
             - feature-flags-amplify_e2e_tests
             - schema-versioned-amplify_e2e_tests
@@ -1880,26 +1916,26 @@ workflows:
             - schema-auth-10-amplify_e2e_tests
             - hosting-amplify_e2e_tests
             - tags-amplify_e2e_tests
-            - migration-node-function-amplify_e2e_tests
+            - schema-iterative-rollback-2-amplify_e2e_tests
       - done_with_pkg_linux_e2e_tests:
           context: amplify-cli-ecr
           requires:
             - hostingPROD-amplify_e2e_tests_pkg_linux
             - amplify-app-amplify_e2e_tests_pkg_linux
             - init-amplify_e2e_tests_pkg_linux
-            - function_5-amplify_e2e_tests_pkg_linux
+            - schema-iterative-rollback-1-amplify_e2e_tests_pkg_linux
             - predictions-amplify_e2e_tests_pkg_linux
             - schema-predictions-amplify_e2e_tests_pkg_linux
             - amplify-configure-amplify_e2e_tests_pkg_linux
-            - api_4-amplify_e2e_tests_pkg_linux
-            - function_3-amplify_e2e_tests_pkg_linux
+            - migration-node-function-amplify_e2e_tests_pkg_linux
             - containers-api-amplify_e2e_tests_pkg_linux
             - interactions-amplify_e2e_tests_pkg_linux
             - datastore-modelgen-amplify_e2e_tests_pkg_linux
-            - auth_5-amplify_e2e_tests_pkg_linux
+            - function_5-amplify_e2e_tests_pkg_linux
             - schema-iterative-update-2-amplify_e2e_tests_pkg_linux
             - schema-data-access-patterns-amplify_e2e_tests_pkg_linux
             - init-special-case-amplify_e2e_tests_pkg_linux
+            - api_4-amplify_e2e_tests_pkg_linux
             - auth_1-amplify_e2e_tests_pkg_linux
             - feature-flags-amplify_e2e_tests_pkg_linux
             - schema-versioned-amplify_e2e_tests_pkg_linux
@@ -1911,7 +1947,7 @@ workflows:
             - schema-auth-10-amplify_e2e_tests_pkg_linux
             - hosting-amplify_e2e_tests_pkg_linux
             - tags-amplify_e2e_tests_pkg_linux
-            - migration-node-function-amplify_e2e_tests_pkg_linux
+            - schema-iterative-rollback-2-amplify_e2e_tests_pkg_linux
       - amplify_migration_tests_latest:
           context: amplify-cli-ecr
           filters:
@@ -2061,7 +2097,7 @@ workflows:
           filters: *ref_8
           requires:
             - schema-auth-7-amplify_e2e_tests
-      - function_5-amplify_e2e_tests:
+      - schema-iterative-rollback-1-amplify_e2e_tests:
           context: amplify-cli-ecr
           post-steps: *ref_7
           filters: *ref_8
@@ -2121,7 +2157,7 @@ workflows:
           filters: *ref_8
           requires:
             - auth_4-amplify_e2e_tests
-      - api_4-amplify_e2e_tests:
+      - migration-node-function-amplify_e2e_tests:
           context: amplify-cli-ecr
           post-steps: *ref_7
           filters: *ref_8
@@ -2181,6 +2217,12 @@ workflows:
           filters: *ref_8
           requires:
             - migration-api-key-migration1-amplify_e2e_tests
+      - function_5-amplify_e2e_tests:
+          context: amplify-cli-ecr
+          post-steps: *ref_7
+          filters: *ref_8
+          requires:
+            - function_3-amplify_e2e_tests
       - schema-auth-5-amplify_e2e_tests:
           context: amplify-cli-ecr
           post-steps: *ref_7
@@ -2235,6 +2277,12 @@ workflows:
           filters: *ref_8
           requires:
             - layer-amplify_e2e_tests
+      - api_4-amplify_e2e_tests:
+          context: amplify-cli-ecr
+          post-steps: *ref_7
+          filters: *ref_8
+          requires:
+            - auth_5-amplify_e2e_tests
       - api_1-amplify_e2e_tests:
           context: amplify-cli-ecr
           post-steps: *ref_7
@@ -2391,7 +2439,7 @@ workflows:
           filters: *ref_8
           requires:
             - schema-auth-8-amplify_e2e_tests
-      - migration-node-function-amplify_e2e_tests:
+      - schema-iterative-rollback-2-amplify_e2e_tests:
           context: amplify-cli-ecr
           post-steps: *ref_7
           filters: *ref_8
@@ -2459,7 +2507,7 @@ workflows:
           filters: *ref_10
           requires:
             - schema-auth-7-amplify_e2e_tests_pkg_linux
-      - function_5-amplify_e2e_tests_pkg_linux:
+      - schema-iterative-rollback-1-amplify_e2e_tests_pkg_linux:
           context: amplify-cli-ecr
           post-steps: *ref_9
           filters: *ref_10
@@ -2523,7 +2571,7 @@ workflows:
           filters: *ref_10
           requires:
             - auth_4-amplify_e2e_tests_pkg_linux
-      - api_4-amplify_e2e_tests_pkg_linux:
+      - migration-node-function-amplify_e2e_tests_pkg_linux:
           context: amplify-cli-ecr
           post-steps: *ref_9
           filters: *ref_10
@@ -2587,6 +2635,12 @@ workflows:
           filters: *ref_10
           requires:
             - migration-api-key-migration1-amplify_e2e_tests_pkg_linux
+      - function_5-amplify_e2e_tests_pkg_linux:
+          context: amplify-cli-ecr
+          post-steps: *ref_9
+          filters: *ref_10
+          requires:
+            - function_3-amplify_e2e_tests_pkg_linux
       - schema-auth-5-amplify_e2e_tests_pkg_linux:
           context: amplify-cli-ecr
           post-steps: *ref_9
@@ -2645,6 +2699,12 @@ workflows:
           filters: *ref_10
           requires:
             - layer-amplify_e2e_tests_pkg_linux
+      - api_4-amplify_e2e_tests_pkg_linux:
+          context: amplify-cli-ecr
+          post-steps: *ref_9
+          filters: *ref_10
+          requires:
+            - auth_5-amplify_e2e_tests_pkg_linux
       - api_1-amplify_e2e_tests_pkg_linux:
           context: amplify-cli-ecr
           post-steps: *ref_9
@@ -2813,7 +2873,7 @@ workflows:
           filters: *ref_10
           requires:
             - schema-auth-8-amplify_e2e_tests_pkg_linux
-      - migration-node-function-amplify_e2e_tests_pkg_linux:
+      - schema-iterative-rollback-2-amplify_e2e_tests_pkg_linux:
           context: amplify-cli-ecr
           post-steps: *ref_9
           filters: *ref_10
