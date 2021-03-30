@@ -1,14 +1,13 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSContext, $TSObject, FeatureFlags, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { AuthTriggerConnection } from '../service-walkthrough-types';
-import { CustomResource, CustomResourceProps, RemovalPolicy } from '@aws-cdk/core';
-import * as logs from '@aws-cdk/aws-logs';
-import { Permission } from '@aws-cdk/aws-lambda';
+import { CustomResource, RemovalPolicy } from '@aws-cdk/core';
+import { authTriggerAssetFilePath } from '../constants';
 
 type CustomResourceAuthStackProps = Readonly<{
   description: string;
@@ -62,14 +61,16 @@ export async function generateNestedAuthTriggerTemplate(context: $TSContext, cat
   const cfnFileName = 'auth-trigger-cloudformation-template.json';
   const targetDir = path.join(pathManager.getBackendDirPath(), category, request.resourceName);
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
-  const { authLambdaConfig } = request;
-  if (authLambdaConfig?.length > 0) {
-    const cfnObject = await createCustomResourceforAuthTrigger(context, JSON.parse(authLambdaConfig));
+  const { authTriggerConnections } = request;
+  if (authTriggerConnections?.length > 0) {
+    const cfnObject = await createCustomResourceforAuthTrigger(context, JSON.parse(authTriggerConnections));
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
     // delete the custom stack template if the triggers arent defined
-    if (fs.existsSync(authTriggerCfnFilePath)) {
+    try {
       fs.unlinkSync(authTriggerCfnFilePath);
+    } catch (err) {
+      // if its not present do nothing
     }
   }
 }
@@ -83,51 +84,11 @@ async function createCustomResourceforAuthTrigger(context: any, authTriggerConne
   return cfn;
 }
 
-function createCustomResource(stack: cdk.Stack, authLambdaConfig: AuthTriggerConnection[], userpoolId: cdk.CfnParameter) {
+function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTriggerConnection[], userpoolId: cdk.CfnParameter) {
+  const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
     runtime: lambda.Runtime.NODEJS_10_X,
-    code: lambda.Code.fromInline(
-      cdk.Fn.join('\n', [
-        "const response = require('cfn-response');",
-        "const aws = require('aws-sdk');",
-        'let responseData = {};',
-        'exports.handler = function(event, context) {',
-        '  try {',
-        '    let userPoolId = event.ResourceProperties.userpoolId;',
-        '    let lambdaConfig = event.ResourceProperties.lambdaConfig',
-        '    let config = {}',
-        '   lambdaConfig.forEach(lambda => config[`${lambda.triggerKey}`] = lambda.fnArn)',
-        '    let promises = [];',
-        "    if (event.RequestType == 'Delete') {",
-        '        const authParams = { UserPoolId: userPoolId, LambdaConfig: {}}',
-        '        const cognitoclient = new aws.CognitoIdentityServiceProvider();',
-        '        promises.push(cognitoclient.updateUserPool(authParams).promise());',
-        '        Promise.all(promises)',
-        '         .then((res) => {',
-        '            console.log("delete response data " + JSON.stringify(res));',
-        '            response.send(event, context, response.SUCCESS, {});',
-        '         });',
-        '    }',
-        "    if (event.RequestType == 'Update' || event.RequestType == 'Create') {",
-        '        const authParams = { UserPoolId: userPoolId, LambdaConfig: config}',
-        '        const cognitoclient = new aws.CognitoIdentityServiceProvider();',
-        '        promises.push(cognitoclient.updateUserPool(authParams).promise());',
-        '        Promise.all(promises)',
-        '         .then((res) => {',
-        '            console.log("createOrUpdate " + res);',
-        '            console.log("response data " + JSON.stringify(res));',
-        '            response.send(event, context, response.SUCCESS, {res});',
-        '         });',
-        '    }',
-        '  } catch(err) {',
-        '       console.log(err.stack);',
-        '       responseData = {Error: err};',
-        '       response.send(event, context, response.FAILED, responseData);',
-        '       throw err;',
-        '  }',
-        '};',
-      ]),
-    ),
+    code: lambda.Code.fromInline(triggerCode),
     handler: 'index.handler',
   });
   if (authTriggerFn.role) {
@@ -142,9 +103,8 @@ function createCustomResource(stack: cdk.Stack, authLambdaConfig: AuthTriggerCon
   // The custom resource that uses the provider to supply value
   const customResourceOutputs = new CustomResource(stack, 'CustomAuthTriggerResource', {
     serviceToken: authTriggerFn.functionArn,
-    properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authLambdaConfig },
+    properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authTriggerConnections },
     resourceType: 'Custom::CustomAuthTriggerResourceOutputs',
-    removalPolicy: RemovalPolicy.DESTROY,
   });
 }
 

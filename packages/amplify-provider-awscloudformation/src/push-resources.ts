@@ -43,8 +43,7 @@ import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/c
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
-import { AUTH_TRIGGER_STACK } from './utils/upload-auth-trigger-template';
-export const APIGW_AUTH_STACK_LOGICAL_ID = 'APIGatewayAuthStack';
+import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 
 const logger = fileLogger('push-resources');
 
@@ -683,7 +682,7 @@ function getCfnFiles(category: string, resourceName: string) {
 
   const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
     cwd: resourceDir,
-    ignore: [parametersJson],
+    ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
   });
 
   return {

@@ -45,20 +45,20 @@ describe('When handling selected triggers...', () => {
         PostConfirmation: ['add-to-group'],
         PostAuthentication: ['custom'],
       },
-      authLambdaConfig: [
+      authTriggerConnections: [
         {
-          fnName: 'demoFnPostConfirmation',
-          triggerKey: 'PostConfirmation',
+          lambdaFunctionName: 'demoFnPostConfirmation',
+          triggerType: 'PostConfirmation',
         },
         {
-          fnName: 'demoFnPostAuthentication',
-          triggerKey: 'PostAuthentication',
+          lambdaFunctionName: 'demoFnPostAuthentication',
+          triggerType: 'PostAuthentication',
         },
       ],
       resourceName: 'demoFn',
     };
-    const { triggers, authLambdaConfig } = await handleTriggers(context, mockAnswers);
+    const { triggers, authTriggerConnections } = await handleTriggers(context, mockAnswers);
     expect(triggers).toEqual(mockAnswers.triggers);
-    expect(authLambdaConfig).toEqual(mockAnswers.authLambdaConfig);
+    expect(authTriggerConnections).toEqual(mockAnswers.authTriggerConnections);
   });
 });
