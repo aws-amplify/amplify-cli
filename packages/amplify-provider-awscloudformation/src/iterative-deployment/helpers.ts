@@ -63,3 +63,16 @@ export const getBucketKey = (keyOrUrl: string, bucketName: string): string => {
 export const getHttpUrl = (keyOrUrl: string, bucketName: string): string => {
   return keyOrUrl.startsWith('https://') ? keyOrUrl : `https://s3.amazonaws.com/${bucketName}/${keyOrUrl}`;
 };
+
+export const getPreRollbackOperationHandler = (
+  fn: (stack: Readonly<DeploymentMachineOp>) => Promise<void>,
+): ((context: Readonly<DeployMachineContext>) => Promise<void>) => {
+  return (context: DeployMachineContext) => {
+    if (context.prevDeploymentIndex >= 0 && context.prevDeploymentIndex < context.stacks.length) {
+      const stack = context.stacks[context.prevDeploymentIndex];
+      const step = stack.rollback;
+      return fn(step);
+    }
+    return Promise.resolve();
+  };
+};

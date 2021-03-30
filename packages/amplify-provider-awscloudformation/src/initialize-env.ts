@@ -2,15 +2,16 @@ const fs = require('fs-extra');
 const path = require('path');
 const glob = require('glob');
 const _ = require('lodash');
-const { JSONUtilities, PathConstants, stateManager } = require('amplify-cli-core');
 const Cloudformation = require('./aws-utils/aws-cfn');
 const { S3 } = require('./aws-utils/aws-s3');
 const { downloadZip, extractZip } = require('./zip-util');
 const { S3BackendZipFileName } = require('./constants');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('initialize-env');
+import { JSONUtilities, PathConstants, stateManager, $TSMeta, $TSContext } from 'amplify-cli-core';
 
-async function run(context, providerMetadata) {
+export async function run(context: $TSContext, providerMetadata: $TSMeta) {
+  const s3 = await S3.getInstance(context);
   if (context.exeInfo && context.exeInfo.isNewEnv) {
     return context;
   }
@@ -20,7 +21,7 @@ async function run(context, providerMetadata) {
   const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
   const backendDir = context.amplify.pathManager.getBackendDirPath();
 
-  const s3 = await S3.getInstance(context);
+  const cfnItem = await new Cloudformation(context);
   const file = await downloadZip(s3, tempDir, S3BackendZipFileName);
   const unzippeddir = await extractZip(tempDir, file);
 
@@ -48,7 +49,6 @@ async function run(context, providerMetadata) {
   }
 
   fs.copySync(unzippeddir, currentCloudBackendDir);
-
   if (context.exeInfo.restoreBackend) {
     fs.removeSync(backendDir);
     fs.copySync(unzippeddir, backendDir);
@@ -56,7 +56,6 @@ async function run(context, providerMetadata) {
 
   fs.removeSync(tempDir);
 
-  const cfnItem = await new Cloudformation(context);
   logger('run.cfn.updateamplifyMetaFileWithStackOutputs', [{ StackName: providerMetadata.StackName }])();
   await cfnItem.updateamplifyMetaFileWithStackOutputs(providerMetadata.StackName);
 
@@ -110,7 +109,3 @@ async function run(context, providerMetadata) {
     stateManager.setCurrentMeta(undefined, amplifyMeta);
   }
 }
-
-module.exports = {
-  run,
-};
