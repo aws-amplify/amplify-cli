@@ -20,6 +20,7 @@ import {
   profileNameQuestion,
   removeProjectComfirmQuestion,
   updateOrRemoveQuestion,
+  retryAuthConfig,
 } from './question-flows/configuration-questions';
 
 interface AwsConfig extends AwsSecrets {
@@ -225,7 +226,32 @@ async function initialize(context: $TSContext, authConfig?: AuthFlowConfig) {
 
   validateConfig(context);
   if (!awsConfigInfo.configValidated) {
-    throw new Error('Invalid configuration settings');
+    context.print.error('Invalid configuration settings!');
+    const { retryConfirmation } = await prompt(retryAuthConfig);
+    if (retryConfirmation) {
+      // Cleaning up broken configurations
+      if (authConfig.type === 'admin') {
+        context.exeInfo.awsConfigInfo = {
+          configLevel: 'amplifyAdmin',
+          config: {},
+        };
+      } else if (authConfig.type === 'accessKeys') {
+        context.exeInfo.awsConfigInfo = {
+          configLevel: 'project',
+          config: { useProfile: false },
+        };
+      } else {
+        context.exeInfo.awsConfigInfo = {
+          configLevel: 'project',
+          config: defaultAWSConfig,
+        };
+      }
+
+      return initialize(context, authConfig);
+    } else {
+      context.print.error('Exiting...');
+      exitOnNextTick(1);
+    }
   }
 
   return context;

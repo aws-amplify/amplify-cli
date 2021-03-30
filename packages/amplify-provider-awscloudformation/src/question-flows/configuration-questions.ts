@@ -83,3 +83,10 @@ export const updateOrRemoveQuestion: ListQuestion = {
   ],
   default: 'cancel',
 };
+
+export const retryAuthConfig: ConfirmQuestion = {
+  type: 'confirm',
+  name: 'retryConfirmation',
+  message: 'Do you want to retry configuration?',
+  default: false,
+};
