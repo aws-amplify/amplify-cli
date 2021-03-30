@@ -31,19 +31,17 @@ export async function attachUsageData(context: Context) {
 const getVersion = (context: Context) => context.pluginPlatform.plugins.core[0].packageVersion;
 
 const getProjectSettings = (): ProjectSettings => {
-  const projectSettings = {};
+  const projectSettings: ProjectSettings = {};
   if (stateManager.projectConfigExists()) {
     const projectConfig = stateManager.getProjectConfig();
     const frontend = projectConfig['frontend'];
-    projectSettings['frontend'] = frontend;
-    if (projectConfig[frontend] && projectConfig[frontend].framework) {
-      projectSettings['framework'] = projectConfig[frontend].framework;
-    }
+    projectSettings.frontend = frontend;
+    projectSettings.framework = projectConfig?.[frontend].framework;
   }
 
   if (stateManager.localEnvInfoExists()) {
     const { defaultEditor } = stateManager.getLocalEnvInfo();
-    projectSettings['editor'] = defaultEditor;
+    projectSettings.editor = defaultEditor;
   }
 
   return projectSettings;
