@@ -387,6 +387,8 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
         ? obfuscateUtil.obfuscate(awsConfigInfo.config.secretAccessKey)
         : constants.DefaultAWSSecretAccessKey,
       awsConfigInfo.config.region || constants.DefaultAWSRegion,
+      validateAccessKeyId,
+      validateSecretAccessKey,
       obfuscateUtil.transform,
     ),
   );
@@ -840,4 +842,17 @@ async function askAuthType(isAdminAvailable: boolean = false): Promise<AuthFlow>
   const { authChoice }: { authChoice?: AuthFlow } = await prompt(authTypeQuestion(choices));
 
   return authChoice;
+}
+
+// Regex adapted from: https://aws.amazon.com/blogs/security/a-safer-way-to-distribute-aws-credentials-to-ec2/
+
+function validateAccessKeyId(input: $TSAny): string | boolean {
+  const INVALID_ACCESS_KEY_ID = 'Access Key ID must be 20 characters, and uppercase alphanumeric only.';
+  const accessKeyIdRegex = /^[A-Z0-9]{20}$/;
+  return accessKeyIdRegex.test(input) ? true : INVALID_ACCESS_KEY_ID;
+}
+function validateSecretAccessKey(input: $TSAny): string | boolean {
+  const INVALID_SECRET_ACCESS_KEY = 'Secret Access Key must be 40 characters, and base-64 string only.';
+  const secretAccessKeyRegex = /^[A-Za-z0-9/+=]{40}$/;
+  return secretAccessKeyRegex.test(input) ? true : INVALID_SECRET_ACCESS_KEY;
 }
