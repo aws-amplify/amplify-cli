@@ -1,3 +1,4 @@
+import { $TSContext } from 'amplify-cli-core';
 import { FunctionDependency, LambdaLayer } from 'amplify-function-plugin-interface';
 import enquirer from 'enquirer';
 import inquirer, { CheckboxQuestion, InputQuestion, ListQuestion } from 'inquirer';
@@ -9,7 +10,8 @@ import {
   provideExistingARNsPrompt,
 } from '../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils';
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
-import { getLayerRuntimes } from '../../../../provider-utils/awscloudformation/utils/layerRuntimes';
+import { getLayerRuntimes } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
+import { LayerVersionMetadata, loadLayerDataFromCloud } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
 
 jest.mock('inquirer');
 jest.mock('enquirer', () => ({ prompt: jest.fn() }));
@@ -23,12 +25,14 @@ const getLayerRuntimes_mock = getLayerRuntimes as jest.MockedFunction<typeof get
 const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
 const enquirer_mock = enquirer as jest.Mocked<typeof enquirer>;
 
-const context_stub = {
+const context_stub = ({
   amplify: {
     getEnvInfo: jest.fn().mockReturnValue({ envName: 'mockEnv' }),
     getProviderPlugins: jest.fn(),
   },
-} as any;
+} as unknown) as $TSContext;
+
+const loadLayerDataFromCloud_mock = loadLayerDataFromCloud as jest.MockedFunction<typeof loadLayerDataFromCloud>;
 
 const runtimeValue = 'lolcode';
 

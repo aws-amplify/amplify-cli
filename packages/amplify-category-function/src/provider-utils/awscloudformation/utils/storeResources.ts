@@ -7,9 +7,9 @@ import { category as categoryName } from '../../../constants';
 import { functionParametersFileName, parametersFileName, provider, ServiceName } from './constants';
 import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
+import { createLayerConfiguration, saveLayerPermissions } from './layerConfiguration';
 import { isMultiEnvLayer, isNewVersion, loadLayerDataFromCloud } from './layerHelpers';
 import { LayerParameters, LayerRuntime } from './layerParams';
-import { saveLayerRuntimes } from './layerRuntimes';
 import { loadPreviousLayerHash } from './packageLayer';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
@@ -51,7 +51,7 @@ export const updateLayerArtifacts = async (
   const layerDirPath = ensureLayerFolders(parameters);
 
   if (options.layerParams) {
-    JSONUtilities.writeJson(path.join(layerDirPath, 'layer-permissions.json'), parameters.permissions);
+    saveLayerPermissions(layerDirPath, parameters.permissions);
   }
   if (options.cfnFile) {
     await updateLayerCfnFile(context, parameters, layerDirPath);
@@ -97,25 +97,14 @@ export function saveCFNParameters(
 
 function createLayerState(parameters: LayerParameters, layerDirPath: string) {
   writeLayerRuntimesToParametersFile(parameters);
-  if (isMultiEnvLayer(parameters.layerName)) {
-    saveLayerRuntimes(layerDirPath, parameters.runtimes);
-    JSONUtilities.writeJson(path.join(layerDirPath, 'layer-permissions.json'), parameters.permissions);
-  } else {
-    // TODO handle non-multienv layers
-    // createLayerParametersFile(parameters, layerDirPath, isMultiEnvLayer(parameters.layerName));
-  }
+  createLayerConfiguration(layerDirPath, { permissions: parameters.permissions, runtimes: parameters.runtimes });
 }
 
-function writeLayerRuntimesToParametersFile(parameters: LayerParameters): void {
+function writeLayerRuntimesToParametersFile(parameters: LayerParameters) {
   const runtimes = parameters.runtimes.reduce((runtimes, r) => {
-    if (Array.isArray(r.cloudTemplateValue)) {
-      runtimes.concat(r.cloudTemplateValue);
-    } else {
-      runtimes.push(r.cloudTemplateValue);
-    }
+    runtimes = runtimes.concat(r.cloudTemplateValues);
     return runtimes;
   }, []);
-  console.log('runtimes:', runtimes);
   stateManager.setResourceParametersJson(undefined, categoryName, parameters.layerName, { runtimes });
 }
 

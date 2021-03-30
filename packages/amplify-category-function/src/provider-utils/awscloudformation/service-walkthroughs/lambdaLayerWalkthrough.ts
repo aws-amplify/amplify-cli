@@ -32,7 +32,15 @@ export async function createLayerWalkthrough(
   _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));
 
   const runtimeReturn = await runtimeWalkthrough(context, parameters);
-  parameters.runtimes = runtimeReturn.map(val => val.runtime) as LayerRuntime[];
+
+  // need to map cloudTemplateValue: string => cloudTemplateValues: string[]
+  parameters.runtimes = runtimeReturn.map(val => ({
+    name: val.runtime.name,
+    value: val.runtime.value,
+    layerExecutablePath: val.runtime.layerExecutablePath,
+    cloudTemplateValues: [val.runtime.cloudTemplateValue],
+    layerDefaultFiles: val.runtime?.layerDefaultFiles ?? [],
+  })) as LayerRuntime[];
 
   let layerInputParameters: LayerInputParams = {};
   _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion()));

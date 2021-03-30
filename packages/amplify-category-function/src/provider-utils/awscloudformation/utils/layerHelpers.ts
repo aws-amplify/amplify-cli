@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, pathManager } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
@@ -6,8 +6,8 @@ import ora from 'ora';
 import path from 'path';
 import uuid from 'uuid';
 import { categoryName, layerParametersFileName, provider, ServiceName } from './constants';
-import { PermissionEnum, LayerParameters, LayerPermission } from './layerParams';
-import { getLayerRuntimes } from './layerRuntimes';
+import { getLayerConfiguration } from './layerConfiguration';
+import { LayerParameters, LayerPermission, PermissionEnum } from './layerParams';
 import { hashLayerVersionContents, loadPreviousLayerHash } from './packageLayer';
 export interface LayerInputParams {
   layerPermissions?: PermissionEnum[];
@@ -208,10 +208,11 @@ export function validFilesize(context: $TSContext, zipPath: string, maxSize = 25
 
 export function loadStoredLayerParameters(context: $TSContext, layerName: string): LayerParameters {
   const backendDirPath = pathManager.getBackendDirPath();
+  const { permissions, runtimes } = getLayerConfiguration(backendDirPath, layerName);
   return {
     layerName,
-    runtimes: getLayerRuntimes(backendDirPath, layerName),
-    permissions: JSONUtilities.readJson(path.join(backendDirPath, categoryName, layerName, 'layer-permissions.json')),
+    runtimes,
+    permissions,
     providerContext: {
       provider: provider,
       service: ServiceName.LambdaLayer,
@@ -236,7 +237,7 @@ export function isMultiEnvLayer(layerName: string) {
   return !fs.existsSync(layerParametersPath);
 }
 
-interface LayerVersionMetadata {
+export interface LayerVersionMetadata {
   LayerVersionArn: string;
   Version: number;
   Description: string;
