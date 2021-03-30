@@ -136,7 +136,7 @@ export class S3 {
 
   async getAllObjectVersions(
     bucketName: string,
-    continuationToken: Required<Pick<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = null,
+    continuationToken: Pick<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker' | 'Prefix'> = null,
   ) {
     const result = await pagedAWSCall<
       ListObjectVersionsOutput,
@@ -155,9 +155,28 @@ export class S3 {
       },
       (response?) => response.Versions?.map(({ Key, VersionId }) => ({ Key, VersionId })),
       async (response?) =>
-        response && response.IsTruncated ? { KeyMarker: response.NextKeyMarker, VersionIdMarker: response.NextVersionIdMarker } : undefined,
+        response && response.IsTruncated
+          ? { KeyMarker: response.NextKeyMarker, VersionIdMarker: response.NextVersionIdMarker, Prefix: response.Prefix }
+          : undefined,
     );
     return result;
+  }
+
+  public async deleteDirectory(bucketName: string, dirPath: string): Promise<void> {
+    logger('deleteDirectory.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
+    const allObjects = await this.getAllObjectVersions(bucketName, { Prefix: dirPath });
+    const chunkedResult = _.chunk(allObjects, 1000);
+    for (let chunk of chunkedResult) {
+      logger('deleteDirectory.s3.deleteObjects', [{ Bucket: bucketName }])();
+      await this.s3
+        .deleteObjects({
+          Bucket: bucketName,
+          Delete: {
+            Objects: chunk,
+          },
+        })
+        .promise();
+    }
   }
 
   public async deleteAllObjects(bucketName: string): Promise<void> {

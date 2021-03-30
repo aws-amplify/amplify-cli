@@ -1,5 +1,5 @@
 import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
-import { DeploymentOp, DeploymentStep } from '../iterative-deployment/deployment-manager';
+import { DeploymentOp, DeploymentStep, DEPLOYMENT_META } from '../iterative-deployment';
 import { DiffChanges, DiffableProject, getGQLDiff } from './utils';
 import { DynamoDB, Template } from 'cloudform-types';
 import { GSIChange, getGSIDiffs } from './gsi-diff-helpers';
@@ -86,7 +86,6 @@ export class GraphQLResourceManager {
 
   run = async (): Promise<DeploymentStep[]> => {
     const gqlDiff = getGQLDiff(this.backendApiProjectRoot, this.cloudBackendApiProjectRoot);
-
     try {
       const diffRules = [
         // GSI
@@ -103,16 +102,13 @@ export class GraphQLResourceManager {
         throw err;
       }
     }
-
     this.gsiManagement(gqlDiff.diff, gqlDiff.current, gqlDiff.next);
-
     return await this.getDeploymentSteps();
   };
 
   // save states to build with a copy of build on every deploy
   getDeploymentSteps = async (): Promise<DeploymentStep[]> => {
     if (this.templateState.isEmpty()) return [];
-
     let count = 1;
 
     const gqlSteps = new Array<DeploymentStep>();
@@ -129,11 +125,12 @@ export class GraphQLResourceManager {
 
     // copy the last deployment state as current state
     let previousStepPath = cloudBuildDir;
-    let rollbackStep: DeploymentOp = await this.getCurrentlyDeployedStackStep();
+    let prevStep: DeploymentOp = await this.getCurrentlyDeployedStackStep();
+    let prevMetaKey = prevStep.prevMetaKey;
 
     while (!this.templateState.isEmpty()) {
       const stepNumber = count.toString().padStart(2, '0');
-      const stepPath = path.join(stateFileDir, `${stepNumber}`);
+      const stepPath = path.join(stateFileDir, stepNumber);
 
       fs.copySync(previousStepPath, stepPath);
       previousStepPath = stepPath;
@@ -142,7 +139,7 @@ export class GraphQLResourceManager {
       const tableNames = [];
       tables.forEach(tableName => {
         tableNames.push(tableNameMap.get(tableName));
-        const filepath = path.join(stateFileDir, stepNumber, 'stacks', `${tableName}.json`);
+        const filepath = path.join(stepPath, 'stacks', `${tableName}.json`);
         fs.ensureDirSync(path.dirname(filepath));
         JSONUtilities.writeJson(filepath, this.templateState.pop(tableName));
       });
@@ -150,6 +147,7 @@ export class GraphQLResourceManager {
       const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildHash}/states/${stepNumber}`;
       const deploymentStep: DeploymentOp = {
         stackTemplatePathOrUrl: `${deploymentRootKey}/cloudformation-template.json`,
+        prevMetaKey: prevMetaKey,
         parameters: { ...parameters, S3DeploymentRootKey: deploymentRootKey },
         stackName: this.resourceMeta.stackId,
         tableNames: tableNames,
@@ -157,16 +155,19 @@ export class GraphQLResourceManager {
         // clientRequestToken: `${buildHash}-step-${stepNumber}`,
       };
 
+      // save the current deployment step in the state
+      const deploymentStateStep = path.join(stepPath, DEPLOYMENT_META);
+      JSONUtilities.writeJson(deploymentStateStep, deploymentStep);
+
       gqlSteps.push({
         deployment: deploymentStep,
-        rollback: rollbackStep,
+        rollback: prevStep,
       });
-
       // Current deployment step is the rollback step for next step
-      rollbackStep = deploymentStep;
+      prevStep = deploymentStep;
+      prevMetaKey = `${deploymentRootKey}/${DEPLOYMENT_META}`;
       count++;
     }
-
     return gqlSteps;
   };
 
@@ -186,18 +187,28 @@ export class GraphQLResourceManager {
     fs.copySync(cloudBuildDir, stepPath);
 
     const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildHash}/states/${stepNumber}`;
-    return {
+    const currentDeployedStep: DeploymentOp = {
       stackTemplatePathOrUrl: `${deploymentRootKey}/cloudformation-template.json`,
+      prevMetaKey: `${deploymentRootKey}/${DEPLOYMENT_META}`,
       parameters: { ...parameters, S3DeploymentRootKey: deploymentRootKey },
       stackName: this.resourceMeta.stackId,
       capabilities,
       tableNames: [],
     };
+    // save the current deployment step in the state
+    const deploymentStateStep = path.join(stepPath, DEPLOYMENT_META);
+    JSONUtilities.writeJson(deploymentStateStep, currentDeployedStep);
+    return currentDeployedStep;
   };
 
   public getStateFilesDirectory = (): string => {
     const buildDir = path.join(this.backendApiProjectRoot, 'build');
     return path.join(buildDir, 'states');
+  };
+
+  public getCloudStateFilesDirectory = async (): Promise<string> => {
+    const buildHash = await hashDirectory(this.backendApiProjectRoot);
+    return `${ROOT_APPSYNC_S3_KEY}/${buildHash}/states`;
   };
 
   private gsiManagement = (diffs: DiffChanges<DiffableProject>, currentState: DiffableProject, nextState: DiffableProject) => {
