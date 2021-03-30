@@ -8,6 +8,11 @@ import { BuildType } from 'amplify-function-plugin-interface';
 jest.mock('amplify-cli-core');
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 stateManager_mock.getMeta.mockReturnValue({
+  providers: {
+    awscloudformation: {
+      Region: 'myMockRegion',
+    },
+  },
   function: {
     testFunc: {
       lastBuildTimeStamp: 'lastBuildTimeStamp',
@@ -39,7 +44,7 @@ describe('awscloudformation function provider', () => {
           },
         }),
       },
-    };
+    } as $TSContext;
     openConsole(contextStub, ServiceName.LambdaFunction);
     const openMock = open as any;
     expect(openMock.mock.calls.length).toBe(1);
