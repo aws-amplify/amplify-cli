@@ -9,6 +9,7 @@ export type RecordingHeader = {
   title: string;
   env: any;
 };
+
 export type RecordingFrame = [number, 'o' | 'i', string];
 export type Recording = {
   header: RecordingHeader;
@@ -41,7 +42,7 @@ export class Recorder {
         height: rows,
         timestamp: null,
         title: 'Recording',
-        env: options,
+        env: {},
       },
       frames: [],
     };
