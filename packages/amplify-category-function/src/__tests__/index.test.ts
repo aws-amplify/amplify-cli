@@ -19,6 +19,7 @@ const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 describe('function category provider', () => {
   describe('initialize environment', () => {
     it('only initializes function category resources', async () => {
+      console.log(process.env);
       const resourcesToBeCreated = [
         {
           category: 'function',
