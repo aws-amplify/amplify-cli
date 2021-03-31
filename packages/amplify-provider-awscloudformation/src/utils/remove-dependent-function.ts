@@ -9,10 +9,37 @@ export async function removeDependencyOnFunctions(
 ): Promise<$TSObject[]> {
   // get #current-cloud-backed and cloud backend schema.graphql
   let functionResource;
+  let functionResourceNames;
   const backendDir = pathManager.getBackendDirPath();
   const currentBackendDir = pathManager.getCurrentCloudBackendDirPath();
   const modelsDeleted = await getSchemaDiff(currentBackendDir, backendDir, apiResource[0].resourceName);
   if (modelsDeleted.length) {
+    functionResourceNames = await context.amplify.invokePluginMethod(context, 'function', undefined, 'getDependentFunctionsCfn', [
+      context,
+      allResources,
+      backendDir,
+      modelsDeleted,
+    ]);
+
+    // if(functionResourceNames.length){
+    //   const authSelectionQuestion = {
+    //     type: 'select',
+    //     name: 'authSelections',
+    //     message: 'What type of auth resource do you want to import?',
+    //     choices: [
+    //       { name: 'Cognito User Pool and Identity Pool', value: 'identityPoolAndUserPool' },
+    //       { name: 'Cognito User Pool only', value: 'userPoolOnly' },
+    //     ],
+    //     result(value: string) {
+    //       return (this as any).focused.value;
+    //     },
+    //     initial: 0,
+    //   };
+
+    //   const { authSelections } = await enquirer.prompt(authSelectionQuestion as any); // any case needed because async validation TS definition is not up to date
+    //   answers.authSelections = authSelections!;
+    // }
+
     functionResource = await context.amplify.invokePluginMethod(context, 'function', undefined, 'updateDependentFunctionsCfn', [
       context,
       allResources,
