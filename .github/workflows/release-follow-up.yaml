@@ -1,0 +1,16 @@
+# https://github.com/marketplace/actions/release-follow-up
+# Follow up on issues and PRs after a release is published. 
+# The corresponding pending-release label will be removed if 
+# it's present and the referenced-in-release label added.
+name: release-follow-up
+on:
+  release:
+    types: [published]
+
+jobs:
+  follow-up:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: siegerts/release-follow-up-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
