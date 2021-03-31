@@ -5,8 +5,39 @@ import uuid from 'uuid';
 import { isMultiEnvLayer } from './layerHelpers';
 import { LayerParameters, LayerPermission, LayerVersionCfnMetadata, PermissionEnum } from './layerParams';
 
-function generateLayerCfnObjBase() {
-  const cfnObj = {
+/**
+ * generates CloudFormation for Layer versions and Layer permissions
+ */
+export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerParameters, versionList: LayerVersionCfnMetadata[] = []) {
+  const multiEnvLayer = isMultiEnvLayer(parameters.layerName);
+  const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
+  let logicalName;
+  if (isNewVersion) {
+    const [shortId] = uuid().split('-');
+    logicalName = `LambdaLayerVersion${shortId}`;
+    versionList.push({ LogicalName: logicalName });
+  } else {
+    logicalName = versionList[versionList.length - 1].LogicalName;
+  }
+  const outputObj = {
+    Outputs: {
+      Arn: {
+        Value: Fn.Ref(logicalName),
+      },
+    },
+  };
+  const cfnObj = getLayerCfnObjBase();
+  for (const layerVersion of versionList) {
+    cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion);
+    const shortId = layerVersion.LogicalName.replace('LambdaLayerVersion', '');
+    const permissionObjects = constructLayerVersionPermissionObjects(layerVersion, parameters, shortId);
+    permissionObjects.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
+  }
+  return { ...cfnObj, ...outputObj };
+}
+
+function getLayerCfnObjBase() {
+  return {
     AWSTemplateFormatVersion: '2010-09-09',
     Description: 'Lambda layer resource stack creation using Amplify CLI',
     Parameters: {
@@ -29,40 +60,6 @@ function generateLayerCfnObjBase() {
     },
     Resources: {},
   };
-
-  return cfnObj;
-}
-
-/**
- * generates CloudFormation for Layer versions and Layer permissions
- */
-export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerParameters, versionList: LayerVersionCfnMetadata[] = []) {
-  const multiEnvLayer = isMultiEnvLayer(parameters.layerName);
-  const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
-  let logicalName;
-  if (isNewVersion) {
-    const [shortId] = uuid().split('-');
-    logicalName = `LambdaLayerVersion${shortId}`;
-    versionList.push({ LogicalName: logicalName });
-  } else {
-    logicalName = versionList[versionList.length - 1].LogicalName;
-  }
-  const outputObj = {
-    Outputs: {
-      Arn: {
-        Value: Fn.Ref(logicalName),
-      },
-      // Region: { Value: Refs.Region }, // TODO Do we need this?
-    },
-  };
-  const cfnObj = generateLayerCfnObjBase();
-  for (const layerVersion of versionList) {
-    cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion);
-    const shortId = layerVersion.LogicalName.replace('LambdaLayerVersion', '');
-    const permissionObjects = generateLayerVersionPermissionObjects(layerVersion, parameters, shortId);
-    permissionObjects.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
-  }
-  return { ...cfnObj, ...outputObj };
 }
 
 function constructLayerVersionCfnObject(layerName: string | IntrinsicFunction, layerVersion: LayerVersionCfnMetadata) {
@@ -80,7 +77,7 @@ function constructLayerVersionCfnObject(layerName: string | IntrinsicFunction, l
   return newLayerVersion;
 }
 
-function generateLayerVersionPermissionObjects(layerVersion: LayerVersionCfnMetadata, layerParameters: LayerParameters, shortId: string) {
+function constructLayerVersionPermissionObjects(layerVersion: LayerVersionCfnMetadata, layerParameters: LayerParameters, shortId: string) {
   const permissions = layerVersion.permissions || layerParameters.permissions;
   const layerVersionPermissionBase = {
     Action: 'lambda:GetLayerVersion',
