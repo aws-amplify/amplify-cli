@@ -801,7 +801,7 @@ async function formNestedStack(
     nestedStack.Resources[APIGW_AUTH_STACK_LOGICAL_ID] = stack;
   }
 
-  if (AuthTriggerTemplateURL !== '') {
+  if (AuthTriggerTemplateURL) {
     const stack = {
       Type: 'AWS::CloudFormation::Stack',
       Properties: {

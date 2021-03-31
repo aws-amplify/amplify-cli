@@ -6,7 +6,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { AuthTriggerConnection } from '../service-walkthrough-types';
-import { CustomResource, RemovalPolicy } from '@aws-cdk/core';
+import { CustomResource } from '@aws-cdk/core';
 import { authTriggerAssetFilePath } from '../constants';
 
 type CustomResourceAuthStackProps = Readonly<{
@@ -101,7 +101,7 @@ function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTrig
     );
   }
   // The custom resource that uses the provider to supply value
-  const customResourceOutputs = new CustomResource(stack, 'CustomAuthTriggerResource', {
+  new CustomResource(stack, 'CustomAuthTriggerResource', {
     serviceToken: authTriggerFn.functionArn,
     properties: { userpoolId: userpoolId.valueAsString, lambdaConfig: authTriggerConnections },
     resourceType: 'Custom::CustomAuthTriggerResourceOutputs',
@@ -114,7 +114,7 @@ function createPermissionToInvokeLambda(
   userpoolArn: cdk.CfnParameter,
   config: AuthTriggerConnection,
 ) {
-  const lambdaPermission = new lambda.CfnPermission(stack, `UserPool${config.triggerType}LambdaInvokePermission`, {
+  new lambda.CfnPermission(stack, `UserPool${config.triggerType}LambdaInvokePermission`, {
     action: 'lambda:InvokeFunction',
     functionName: fnName.valueAsString,
     principal: 'cognito-idp.amazonaws.com',

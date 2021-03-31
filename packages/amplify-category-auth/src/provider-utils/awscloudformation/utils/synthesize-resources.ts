@@ -178,8 +178,8 @@ const lambdaTriggers = async (coreAnswers: any, context: any, previouslySaved: a
       if (coreAnswers.authTriggerConnections === '[]') {
         delete coreAnswers.authTriggerConnections;
       }
-      coreAnswers.breakCircularDependency = FeatureFlags.getBoolean('auth.breakCircularDependency');
     }
+    coreAnswers.breakCircularDependency = FeatureFlags.getBoolean('auth.breakCircularDependency');
     if (triggerKeyValues) {
       coreAnswers.parentStack = { Ref: 'AWS::StackId' };
     }
