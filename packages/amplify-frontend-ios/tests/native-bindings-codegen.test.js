@@ -47,7 +47,7 @@ describe('amplify-xcode native bindings codegen', () => {
 /**
  * ${commandSchema.abstract}
  * @param {Object} params
- * @param {String} params.${commandParam.name} ${commandParam.help}
+ * @param {String} params.${commandParam.name} - ${commandParam.help}
  */`;
       const result = generateFunctionBodyData(commandSchema);
       expect(result.__FUNCTION_NAME__).toEqual('commandName');

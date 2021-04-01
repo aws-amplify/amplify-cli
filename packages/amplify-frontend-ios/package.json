@@ -16,7 +16,7 @@
     "aws"
   ],
   "scripts": {
-    "build": "node ./scripts/native-bindings-gen",
+    "generate-xcode-bindings": "node ./scripts/native-bindings-gen",
     "test": "jest",
     "test-watch": "jest --watch"
   },

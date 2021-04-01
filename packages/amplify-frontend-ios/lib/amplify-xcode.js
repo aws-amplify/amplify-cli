@@ -28,52 +28,40 @@ const amplifyXcodePath = () => path.join(pathManager.getAmplifyPackageLibDirPath
 /**
  * Import Amplify configuration files
  * @param {Object} params
- * @param {String} params.path Project base path
+ * @param {String} params.path - Project base path
  */
 async function importConfig(params) {
   let command = `${amplifyXcodePath()} import-config`;
   if (params['path']) {
     command += ` --path=${params['path']}`;
   }
-  try {
-    await execa.command(command, { stdout: 'inherit' });
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  await execa.command(command, { stdout: 'inherit' });
 }
 
 /**
  * Import Amplify models
  * @param {Object} params
- * @param {String} params.path Project base path
+ * @param {String} params.path - Project base path
  */
 async function importModels(params) {
   let command = `${amplifyXcodePath()} import-models`;
   if (params['path']) {
     command += ` --path=${params['path']}`;
   }
-  try {
-    await execa.command(command, { stdout: 'inherit' });
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  await execa.command(command, { stdout: 'inherit' });
 }
 
 /**
  * Generates a JSON description of the CLI and its commands
  * @param {Object} params
- * @param {String} params.output-path Path to save the output of generated schema file
+ * @param {String} params.output-path - Path to save the output of generated schema file
  */
 async function generateSchema(params) {
   let command = `${amplifyXcodePath()} generate-schema`;
   if (params['output-path']) {
     command += ` --output-path=${params['output-path']}`;
   }
-  try {
-    await execa.command(command, { stdout: 'inherit' });
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  await execa.command(command, { stdout: 'inherit' });
 }
 
 module.exports = {

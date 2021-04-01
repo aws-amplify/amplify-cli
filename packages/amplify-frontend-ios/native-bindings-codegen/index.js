@@ -22,7 +22,7 @@ const generateFunctionDocs = (abstract, parameters) => {
 /**
  * ${abstract}
  * @param {Object} params
-${parameters.map(p => ` * @param {${p.type}} params.${p.name} ${p.help}`).join('\n')}
+${parameters.map(p => ` * @param {${p.type}} params.${p.name} - ${p.help}`).join('\n')}
  */`;
 };
 

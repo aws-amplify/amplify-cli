@@ -2,9 +2,5 @@
 async function <%= __FUNCTION_NAME__ %>(params) {
   let command = `${amplifyXcodePath()} <%= __COMMAND_NAME__ %>`;
 <%=__COMMAND_PARAMS__ %>
-  try {
-    await execa.command(command, {stdout: 'inherit'});
-  } catch (error) {
-    throw new Error(error.message);
-  }
+  await execa.command(command, { stdout: 'inherit' });
 }
