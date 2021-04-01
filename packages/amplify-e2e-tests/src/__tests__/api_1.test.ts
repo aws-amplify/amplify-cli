@@ -20,6 +20,7 @@ import {
   amplifyPushWithoutCodegen,
   addFunction,
   getTable,
+  amplifyPushUpdateforDependentModel,
 } from 'amplify-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -208,7 +209,7 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
   });
 
-  it('inits a project with a simple model , add a function and removes the depedent @model', async () => {
+  it.only('inits a project with a simple model , add a function and removes the depedent @model', async () => {
     const random = Math.floor(Math.random() * 10000);
     const projectName = `blogapp`;
     const nextSchema = 'initial_key_blog.graphql';
@@ -233,7 +234,7 @@ describe('amplify add api (GraphQL)', () => {
     );
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema);
-    await amplifyPushUpdate(projRoot);
+    await amplifyPushUpdateforDependentModel(projRoot);
     const meta = getProjectMeta(projRoot);
     const region = meta.providers.awscloudformation.Region;
     const { output } = meta.api.blogapp;

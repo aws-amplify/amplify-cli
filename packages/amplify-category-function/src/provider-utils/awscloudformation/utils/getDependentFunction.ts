@@ -4,12 +4,7 @@ import path from 'path';
 import { ServiceName } from './constants';
 import { category } from '../../../constants';
 
-export async function getDependentFunctionsCfn(
-  context: $TSContext,
-  allResources: $TSObject[],
-  backendDir: string,
-  modelsDeleted: string[],
-) {
+export async function getDependentFunctions(context: $TSContext, allResources: $TSObject[], backendDir: string, modelsDeleted: string[]) {
   //get the List of functions dependent on deleted model
   let functionNamesToBeUpdated = [];
   const lambdaFuncResources = allResources.filter(

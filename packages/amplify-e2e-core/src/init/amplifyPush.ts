@@ -98,6 +98,29 @@ export function amplifyPushUpdate(cwd: string, waitForText?: RegExp, testingWith
   });
 }
 
+export function amplifyPushUpdateforDependentModel(
+  cwd: string,
+  waitForText?: RegExp,
+  testingWithLatestCodebase: boolean = false,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendLine('y')
+      .wait(waitForText || /.*/)
+      .wait('Do you want to remove the GraphQL model access on these affected functions?')
+      .sendLine('y')
+      .wait(waitForText || /.*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })

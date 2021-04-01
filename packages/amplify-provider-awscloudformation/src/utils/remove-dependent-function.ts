@@ -14,41 +14,42 @@ export async function removeDependencyOnFunctions(
   const currentBackendDir = pathManager.getCurrentCloudBackendDirPath();
   const modelsDeleted = await getSchemaDiff(currentBackendDir, backendDir, apiResource[0].resourceName);
   if (modelsDeleted.length) {
-    functionResourceNames = await context.amplify.invokePluginMethod(context, 'function', undefined, 'getDependentFunctionsCfn', [
+    functionResourceNames = await context.amplify.invokePluginMethod(context, 'function', undefined, 'getDependentFunctions', [
       context,
       allResources,
       backendDir,
       modelsDeleted,
     ]);
+    if (functionResourceNames.length) {
+      context.print.info('');
 
-    // if(functionResourceNames.length){
-    //   const authSelectionQuestion = {
-    //     type: 'select',
-    //     name: 'authSelections',
-    //     message: 'What type of auth resource do you want to import?',
-    //     choices: [
-    //       { name: 'Cognito User Pool and Identity Pool', value: 'identityPoolAndUserPool' },
-    //       { name: 'Cognito User Pool only', value: 'userPoolOnly' },
-    //     ],
-    //     result(value: string) {
-    //       return (this as any).focused.value;
-    //     },
-    //     initial: 0,
-    //   };
+      context.print.warning(`Functions ${functionResourceNames} have access to a removed GraphQL API model(s) ${modelsDeleted}`);
 
-    //   const { authSelections } = await enquirer.prompt(authSelectionQuestion as any); // any case needed because async validation TS definition is not up to date
-    //   answers.authSelections = authSelections!;
-    // }
+      let continueToPush = context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
+      let forcePush = context?.exeInfo?.forcePush;
 
-    functionResource = await context.amplify.invokePluginMethod(context, 'function', undefined, 'updateDependentFunctionsCfn', [
-      context,
-      allResources,
-      backendDir,
-      modelsDeleted,
-      apiResource[0].resourceName,
-    ]);
+      if (!continueToPush && !forcePush) {
+        continueToPush = await context.amplify.confirmPrompt(
+          'Do you want to remove the GraphQL model access on these affected functions?',
+          false,
+        );
+      }
+      if (continueToPush || forcePush) {
+        functionResource = await context.amplify.invokePluginMethod(context, 'function', undefined, 'updateDependentFunctionsCfn', [
+          context,
+          allResources,
+          backendDir,
+          modelsDeleted,
+          apiResource[0].resourceName,
+        ]);
+      } else {
+        throw new Error(
+          `In order to successfully deploy. Run “amplify update function” on the affected functions${functionResourceNames} and remove the access permission to ${modelsDeleted}.`,
+        );
+      }
+    }
+    return functionResource;
   }
-  return functionResource;
 }
 
 export async function getSchemaDiff(currentBackendDir: string, backendDir: string, apiResourceName: string) {
