@@ -393,4 +393,38 @@ describe('check schema input', () => {
     expect(senderIdField).toBeDefined();
     expect(senderIdField.type.kind).toBe('NonNullType');
   });
+
+  it('id field should be optional in updateInputObjects when it is not a primary key', () => {
+    const validSchema = /* GraphQL */ `
+      type Review
+        @model(subscriptions: { level: off })
+        @key(fields: ["owner", "serviceId"])
+        @key(name: "byService", fields: ["serviceId", "createdAt"], queryField: "listReviewsByService")
+        @key(name: "byStatus", fields: ["owner", "status", "createdAt"], queryField: "listReviewsByStatus")
+        @key(name: "byId", fields: ["id"], queryField: "listReviewsById") {
+        id: ID!
+        serviceId: ID!
+        owner: String!
+        rating: Int
+        title: String
+        status: String
+        createdAt: AWSDateTime!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+      featureFlags: ff,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+
+    const UpdateReviewInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'UpdateReviewInput',
+    ) as InputObjectTypeDefinitionNode | undefined;
+    expect(UpdateReviewInput).toBeDefined();
+    const idField = UpdateReviewInput.fields.find(f => f.name.value === 'id');
+    expect(idField).toBeDefined();
+    expect(idField.type.kind).toBe('NonNullType');
+  });
 });
