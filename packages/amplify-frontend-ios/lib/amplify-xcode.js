@@ -23,7 +23,7 @@ const { pathManager } = require('amplify-cli-core');
 
 const BINARY_PATH = 'resources/amplify-xcode';
 const PACKAGE_NAME = 'amplify-frontend-ios';
-const amplifyXcodePath = path.join(pathManager.getAmplifyPackageLibDirPath(PACKAGE_NAME), BINARY_PATH);
+const amplifyXcodePath = () => path.join(pathManager.getAmplifyPackageLibDirPath(PACKAGE_NAME), BINARY_PATH);
 
 /**
  * Import Amplify configuration files
@@ -31,12 +31,12 @@ const amplifyXcodePath = path.join(pathManager.getAmplifyPackageLibDirPath(PACKA
  * @param {String} params.path Project base path
  */
 async function importConfig(params) {
-  let command = `${amplifyXcodePath} import-config`;
+  let command = `${amplifyXcodePath()} import-config`;
   if (params['path']) {
     command += ` --path=${params['path']}`;
   }
   try {
-    execa.command(command).stdout.pipe(process.stdout);
+    await execa.command(command, { stdout: 'inherit' });
   } catch (error) {
     throw new Error(error.message);
   }
@@ -48,12 +48,12 @@ async function importConfig(params) {
  * @param {String} params.path Project base path
  */
 async function importModels(params) {
-  let command = `${amplifyXcodePath} import-models`;
+  let command = `${amplifyXcodePath()} import-models`;
   if (params['path']) {
     command += ` --path=${params['path']}`;
   }
   try {
-    execa.command(command).stdout.pipe(process.stdout);
+    await execa.command(command, { stdout: 'inherit' });
   } catch (error) {
     throw new Error(error.message);
   }
@@ -65,12 +65,12 @@ async function importModels(params) {
  * @param {String} params.output-path Path to save the output of generated schema file
  */
 async function generateSchema(params) {
-  let command = `${amplifyXcodePath} generate-schema`;
+  let command = `${amplifyXcodePath()} generate-schema`;
   if (params['output-path']) {
     command += ` --output-path=${params['output-path']}`;
   }
   try {
-    execa.command(command).stdout.pipe(process.stdout);
+    await execa.command(command, { stdout: 'inherit' });
   } catch (error) {
     throw new Error(error.message);
   }

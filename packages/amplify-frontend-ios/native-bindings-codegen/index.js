@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 const CODEGEN_TEMPLATES_FOLDER = 'templates';
 
-const canonicalFunctionName = commanName => _.camelCase(commanName);
+const canonicalFunctionName = commandName => _.camelCase(commandName);
 
 const getTemplate = templatName => {
   const templatePath = path.join(__dirname, CODEGEN_TEMPLATES_FOLDER, templatName);
