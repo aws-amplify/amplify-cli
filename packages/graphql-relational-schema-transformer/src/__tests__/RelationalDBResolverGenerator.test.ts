@@ -1,8 +1,9 @@
+import * as fs from 'fs-extra';
+
+import { JSONMappingParameters } from 'cloudform-types/types/kinesisAnalyticsV2/applicationReferenceDataSource';
 import { RelationalDBResolverGenerator } from '../RelationalDBResolverGenerator';
 import { TemplateContext } from '../RelationalDBSchemaTransformer';
 import { parse } from 'graphql';
-import { JSONMappingParameters } from 'cloudform-types/types/kinesisAnalyticsV2/applicationReferenceDataSource';
-import * as fs from 'fs-extra';
 
 jest.mock('fs-extra', () => ({
   writeFileSync: jest.fn(),
@@ -76,6 +77,33 @@ test('verify generated templates', () => {
 
   simplePrimaryKeyMap.set('Tomatoes', 'Id');
   simplePrimaryKeyTypeMap.set('Tomatoes', 'String');
+  const context = new TemplateContext(schema, simplePrimaryKeyMap, simpleStringFieldMap, simpleIntFieldMap, simplePrimaryKeyTypeMap);
+  const generator = new RelationalDBResolverGenerator(context);
+  generator.createRelationalResolvers('testFilePath');
+  expect(fs.writeFileSync.mock.calls.length).toBe(10);
+  fs.writeFileSync.mock.calls.forEach(call => {
+    expect(call.length).toBe(3);
+    expect(call[0]).toMatchSnapshot();
+    expect(call[1]).toMatchSnapshot();
+    expect(call[2]).toBe('utf8');
+  });
+});
+
+test('verify generated templates using a Int primary key', () => {
+  // SETUP
+  const schema = parse(`
+      type Apples {
+        id: Int
+        name: String
+      }
+    `);
+  let simpleStringFieldMap = new Map<string, string[]>();
+  let simpleIntFieldMap = new Map<string, string[]>();
+  let simplePrimaryKeyMap = new Map<string, string>();
+  let simplePrimaryKeyTypeMap = new Map<string, string>();
+
+  simplePrimaryKeyMap.set('Apples', 'Id');
+  simplePrimaryKeyTypeMap.set('Apples', 'Int');
   const context = new TemplateContext(schema, simplePrimaryKeyMap, simpleStringFieldMap, simpleIntFieldMap, simplePrimaryKeyTypeMap);
   const generator = new RelationalDBResolverGenerator(context);
   generator.createRelationalResolvers('testFilePath');
