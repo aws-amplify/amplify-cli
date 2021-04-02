@@ -266,10 +266,25 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   if (selectedSettings.includes(lambdaLayerSetting)) {
     const currentFunctionParameters: any =
       JSONUtilities.readJson(path.join(resourceDirPath, functionParametersFileName), { throwIfNotExist: false }) || {};
-    merge(
-      functionParameters,
-      await addLayersToFunctionWalkthrough(context, { value: functionRuntime }, currentFunctionParameters.lambdaLayers, true),
+    const { lambdaLayers, dependsOn } = await addLayersToFunctionWalkthrough(
+      context,
+      { value: functionRuntime },
+      currentFunctionParameters.lambdaLayers,
+      true,
     );
+    if (lambdaLayers.length) {
+      _.assign(functionParameters, { lambdaLayers, dependsOn });
+    } else {
+      const oldLambdaLayers = currentFunctionParameters.lambdaLayers;
+      functionParameters.lambdaLayers = [];
+      oldLambdaLayers.forEach(layer => {
+        if (layer.type === 'ProjectLayer') {
+          functionParameters.dependsOn = functionParameters.dependsOn.filter(
+            resource => !(resource.category === 'function' && resource.resourceName === layer.resourceName),
+          );
+        }
+      });
+    }
     // writing to the CFN here because it's done above for the schedule and the permissions but we should really pull all of it into another function
     const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
     const cfnFilePath = path.join(resourceDirPath, cfnFileName);
