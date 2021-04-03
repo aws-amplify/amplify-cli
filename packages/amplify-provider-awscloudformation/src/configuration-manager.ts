@@ -720,7 +720,6 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsConfig> {
         await context.usageData.emitError(e);
         exitOnNextTick(1);
       }
-      awsConfig = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
     } else {
       awsConfig = {
         accessKeyId: awsConfigInfo.config.accessKeyId,
