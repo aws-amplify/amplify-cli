@@ -298,7 +298,7 @@ function validateCredentials(credentials, profileName) {
     missingKeys.push('aws_secret_access_key');
   }
   if (missingKeys.length > 0) {
-    const err = new Error(`${profileName} profile configuration is invalid: missing ${missingKeys.join(', ')}`);
+    const err = new Error(`Profile configuration for '${profileName}' is invalid: missing ${missingKeys.join(', ')}`);
     logger('validateCredentials', [profileName])(err);
     err.stack = undefined;
     throw err;
