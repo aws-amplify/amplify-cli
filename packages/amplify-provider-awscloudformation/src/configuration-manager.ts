@@ -22,6 +22,7 @@ import {
   updateOrRemoveQuestion,
   retryAuthConfig,
 } from './question-flows/configuration-questions';
+import { STS } from 'aws-sdk';
 
 interface AwsConfig extends AwsSecrets {
   useProfile?: boolean;
@@ -224,7 +225,7 @@ async function initialize(context: $TSContext, authConfig?: AuthFlowConfig) {
     }
   }
 
-  validateConfig(context);
+  await validateConfig(context);
   if (!awsConfigInfo.configValidated) {
     context.print.error('Invalid configuration settings!');
     const { retryConfirmation } = await prompt(retryAuthConfig);
@@ -273,7 +274,7 @@ async function create(context: $TSContext) {
     await promptForAuthConfig(context);
   }
 
-  validateConfig(context);
+  await validateConfig(context);
   if (awsConfigInfo.configValidated) {
     persistLocalEnvConfig(context);
   } else {
@@ -290,7 +291,7 @@ async function update(context: $TSContext) {
   } else {
     await promptForAuthConfig(context);
   }
-  validateConfig(context);
+  await validateConfig(context);
   if (awsConfigInfo.configValidated) {
     updateProjectConfig(context);
   } else {
@@ -427,7 +428,7 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
   awsConfigInfo.config.region = answers.region;
 }
 
-function validateConfig(context: $TSContext) {
+async function validateConfig(context: $TSContext) {
   const { awsConfigInfo } = context.exeInfo;
   awsConfigInfo.configValidated = false;
   if (awsConfigInfo.configLevel === 'general' || awsConfigInfo.configLevel === 'amplifyAdmin') {
@@ -445,6 +446,17 @@ function validateConfig(context: $TSContext) {
         awsConfigInfo.config.secretAccessKey !== constants.DefaultAWSSecretAccessKey &&
         awsConfigInfo.config.region &&
         awsRegions.regions.includes(awsConfigInfo.config.region);
+      const sts = new STS({
+        credentials: {
+          accessKeyId: awsConfigInfo.config.accessKeyId,
+          secretAccessKey: awsConfigInfo.config.secretAccessKey,
+        },
+      });
+      try {
+        await sts.getCallerIdentity({}).promise();
+      } catch (err) {
+        awsConfigInfo.configValidated = false;
+      }
     }
   }
   return context;
