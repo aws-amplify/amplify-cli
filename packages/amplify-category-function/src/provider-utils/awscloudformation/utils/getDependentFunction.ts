@@ -4,9 +4,14 @@ import path from 'path';
 import { ServiceName } from './constants';
 import { category } from '../../../constants';
 
-export async function getDependentFunctions(context: $TSContext, allResources: $TSObject[], backendDir: string, modelsDeleted: string[]) {
+export async function lambdasWithApiDependency(
+  context: $TSContext,
+  allResources: $TSObject[],
+  backendDir: string,
+  modelsDeleted: string[],
+) {
   //get the List of functions dependent on deleted model
-  let functionNamesToBeUpdated = [];
+  let dependentFunctions = [];
   const lambdaFuncResources = allResources.filter(
     resource =>
       resource.service === ServiceName.LambdaFunction &&
@@ -15,19 +20,18 @@ export async function getDependentFunctions(context: $TSContext, allResources: $
   );
 
   // initialize function parameters for update
-  for (let lambda of lambdaFuncResources) {
+  for (const lambda of lambdaFuncResources) {
     const resourceDirPath = path.join(backendDir, category, lambda.resourceName);
     const currentParameters = loadFunctionParameters(context, resourceDirPath);
     const selectedCategories = currentParameters.permissions;
     let deletedModelFound: boolean = true;
 
-    for (const selectedCategory of Object.keys(selectedCategories)) {
-      const selectedResources = selectedCategories[selectedCategory];
-      deletedModelFound = Object.keys(selectedResources).some(r => modelsDeleted.indexOf(r) >= 0);
+    for (const selectedResources of Object.values(selectedCategories)) {
+      deletedModelFound = Object.keys(selectedResources).some(r => modelsDeleted.includes(r));
       if (deletedModelFound) {
-        functionNamesToBeUpdated.push(lambda.resourceName);
+        dependentFunctions.push(lambda);
       }
     }
   }
-  return functionNamesToBeUpdated;
+  return dependentFunctions;
 }

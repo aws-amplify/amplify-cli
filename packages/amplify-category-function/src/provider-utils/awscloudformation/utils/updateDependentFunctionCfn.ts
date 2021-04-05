@@ -4,12 +4,12 @@ import { getResourcesForCfn, generateEnvVariablesForCfn } from '../service-walkt
 import { updateCFNFileForResourcePermissions } from '../service-walkthroughs/lambda-walkthrough';
 import { loadFunctionParameters } from './loadFunctionParameters';
 import path from 'path';
-import { functionParametersFileName, ServiceName } from './constants';
+import { functionParametersFileName } from './constants';
 import { category } from '../../../constants';
 
 export async function updateDependentFunctionsCfn(
   context: $TSContext,
-  allResources: $TSObject[],
+  dependentFunctionResource: $TSObject[],
   backendDir: string,
   modelsDeleted: string[],
   apiResource: string,
@@ -21,16 +21,8 @@ export async function updateDependentFunctionsCfn(
     3) update CFN and functional parameters file if table is deleted.
     */
   // if the function is deleted -> not possible as have to remove api
-  let functionMetaToBeUpdated = [];
-  const lambdaFuncResources = allResources.filter(
-    resource =>
-      resource.service === ServiceName.LambdaFunction &&
-      resource.mobileHubMigrated !== true &&
-      resource.dependsOn.find(val => val.category === 'api'),
-  );
-
   // initialize function parameters for update
-  for (let lambda of lambdaFuncResources) {
+  for (let lambda of dependentFunctionResource) {
     const resourceDirPath = path.join(backendDir, category, lambda.resourceName);
     const currentParameters = loadFunctionParameters(context, resourceDirPath);
     const selectedCategories = currentParameters.permissions;
@@ -38,7 +30,6 @@ export async function updateDependentFunctionsCfn(
     let permissions = {};
     let resources = [];
     let resourcePolicy = {};
-    let deletedModelFound: boolean = true;
     const functionParameters: Partial<FunctionParameters> = {
       resourceName: lambda.resourceName,
       environmentMap: {
@@ -55,48 +46,40 @@ export async function updateDependentFunctionsCfn(
       // update function parameters resouce parameters with deleted models data
       // remove the deleted @model
       const selectedResources = selectedCategories[selectedCategory];
-      // check for @model depedency on function , if found then generate new policies removing deleted model
-      deletedModelFound = Object.keys(selectedResources).some(r => modelsDeleted.indexOf(r) >= 0);
-      if (deletedModelFound) {
-        for (const resourceName of Object.keys(selectedResources)) {
-          if (!modelsDeleted.includes(resourceName)) {
-            resourcePolicy = selectedResources[resourceName];
-            const { permissionPolicies, cfnResources } = await getResourcesForCfn(
-              context,
-              resourceName,
-              resourcePolicy,
-              apiResource,
-              selectedCategory,
-            );
-            categoryPolicies = categoryPolicies.concat(permissionPolicies);
-            if (!permissions[selectedCategory]) {
-              permissions[selectedCategory] = {};
-            }
-            permissions[selectedCategory][resourceName] = resourcePolicy;
-            resources = resources.concat(cfnResources);
+      for (const resourceName of Object.keys(selectedResources)) {
+        if (!modelsDeleted.includes(resourceName)) {
+          resourcePolicy = selectedResources[resourceName];
+          const { permissionPolicies, cfnResources } = await getResourcesForCfn(
+            context,
+            resourceName,
+            resourcePolicy,
+            apiResource,
+            selectedCategory,
+          );
+          categoryPolicies = categoryPolicies.concat(permissionPolicies);
+          if (!permissions[selectedCategory]) {
+            permissions[selectedCategory] = {};
           }
+          permissions[selectedCategory][resourceName] = resourcePolicy;
+          resources = resources.concat(cfnResources);
         }
       }
     }
-    if (deletedModelFound) {
-      const { environmentMap, dependsOn } = await generateEnvVariablesForCfn(context, resources, {});
-      functionParameters.categoryPolicies = categoryPolicies;
-      functionParameters.mutableParametersState = { permissions };
-      functionParameters.environmentMap = environmentMap;
-      functionParameters.dependsOn = dependsOn;
-      functionParameters.lambdaLayers = currentParameters.lambdaLayers;
-      updateCFNFileForResourcePermissions(resourceDirPath, functionParameters, currentParameters, apiResource);
-      // assign new permissions to current permissions to update function-parameters file
-      currentParameters.permissions = permissions;
-      //update function-parameters file
-      const parametersFilePath = path.join(resourceDirPath, functionParametersFileName);
-      JSONUtilities.writeJson(parametersFilePath, currentParameters);
-      // update dependsOn for lambda
-      lambda.dependsOn = functionParameters.dependsOn;
-      functionMetaToBeUpdated.push(lambda);
-      // update amplify-meta.json
-      context.amplify.updateamplifyMetaAfterResourceUpdate(category, lambda.resourceName, 'dependsOn', lambda.dependsOn);
-    }
+    const { environmentMap, dependsOn } = await generateEnvVariablesForCfn(context, resources, {});
+    functionParameters.categoryPolicies = categoryPolicies;
+    functionParameters.mutableParametersState = { permissions };
+    functionParameters.environmentMap = environmentMap;
+    functionParameters.dependsOn = dependsOn;
+    functionParameters.lambdaLayers = currentParameters.lambdaLayers;
+    updateCFNFileForResourcePermissions(resourceDirPath, functionParameters, currentParameters, apiResource);
+    // assign new permissions to current permissions to update function-parameters file
+    currentParameters.permissions = permissions;
+    //update function-parameters file
+    const parametersFilePath = path.join(resourceDirPath, functionParametersFileName);
+    JSONUtilities.writeJson(parametersFilePath, currentParameters);
+    // update dependsOn for lambda
+    lambda.dependsOn = functionParameters.dependsOn;
+    // update amplify-meta.json
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, lambda.resourceName, 'dependsOn', lambda.dependsOn);
   }
-  return functionMetaToBeUpdated;
 }

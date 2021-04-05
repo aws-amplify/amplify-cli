@@ -8,47 +8,44 @@ export async function removeDependencyOnFunctions(
   allResources: $TSObject[],
 ): Promise<$TSObject[]> {
   // get #current-cloud-backed and cloud backend schema.graphql
-  let functionResource;
-  let functionResourceNames;
+  let dependentFunctionResource;
   const backendDir = pathManager.getBackendDirPath();
   const currentBackendDir = pathManager.getCurrentCloudBackendDirPath();
   const modelsDeleted = await getSchemaDiff(currentBackendDir, backendDir, apiResource[0].resourceName);
   if (modelsDeleted.length) {
-    functionResourceNames = await context.amplify.invokePluginMethod(context, 'function', undefined, 'getDependentFunctions', [
+    dependentFunctionResource = await context.amplify.invokePluginMethod(context, 'function', undefined, 'lambdasWithApiDependency', [
       context,
       allResources,
       backendDir,
       modelsDeleted,
     ]);
-    if (functionResourceNames.length) {
+    if (dependentFunctionResource.length) {
+      const dependentFunctionsNames = dependentFunctionResource.map(lambda => lambda.resourceName);
       context.print.info('');
 
-      context.print.warning(`Functions ${functionResourceNames} have access to a removed GraphQL API model(s) ${modelsDeleted}`);
+      context.print.warning(`Functions ${dependentFunctionsNames} have access to removed GraphQL API model(s) ${modelsDeleted}`);
 
-      let continueToPush = context.exeInfo && context.exeInfo.inputParams && context.exeInfo.inputParams.yes;
-      let forcePush = context?.exeInfo?.forcePush;
+      const continueToPush = !!context?.exeInfo?.inputParams?.yes;
 
-      if (!continueToPush && !forcePush) {
-        continueToPush = await context.amplify.confirmPrompt(
-          'Do you want to remove the GraphQL model access on these affected functions?',
-          false,
-        );
-      }
-      if (continueToPush || forcePush) {
-        functionResource = await context.amplify.invokePluginMethod(context, 'function', undefined, 'updateDependentFunctionsCfn', [
+      const dependentFunctionsPushPrompt = await context.amplify.confirmPrompt(
+        'Do you want to remove the GraphQL model access on these affected functions?',
+        false,
+      );
+      if (!continueToPush && dependentFunctionsPushPrompt) {
+        await context.amplify.invokePluginMethod(context, 'function', undefined, 'updateDependentFunctionsCfn', [
           context,
-          allResources,
+          dependentFunctionResource,
           backendDir,
           modelsDeleted,
           apiResource[0].resourceName,
         ]);
       } else {
         throw new Error(
-          `In order to successfully deploy. Run “amplify update function” on the affected functions${functionResourceNames} and remove the access permission to ${modelsDeleted}.`,
+          `In order to successfully deploy. Run “amplify update function” on the affected functions${dependentFunctionsNames} and remove the access permission to ${modelsDeleted}.`,
         );
       }
     }
-    return functionResource;
+    return dependentFunctionResource;
   }
 }
 

@@ -5,7 +5,7 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
   const currentResources = [];
   const newResources = [];
   let deletedResources = [];
-  let categorySet = new Set();
+  const categorySet = new Set();
 
   if (currentDefaults.permissions) {
     Object.keys(currentDefaults.permissions).forEach(category => {
@@ -71,7 +71,7 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
   const newResources = [];
   const deletedResources = [];
 
-  let categorySet = new Set();
+  const categorySet = new Set();
   if (currentDefaults.permissions) {
     Object.keys(currentDefaults.permissions).forEach(category => {
       Object.keys(currentDefaults.permissions[category]).forEach(resourceName => {
@@ -241,16 +241,8 @@ export function constructCloudWatchEventComponent(cfnFilePath: string, cfnConten
 }
 
 function apiResourceAddCheck(currentResources, newResources, apiResourceName, resourceSet, isEnvParams) {
-  let apiAddflag: boolean = true;
-  if (!resourceSet.has('api')) {
-    for (const resource of newResources) {
-      if (resource.includes('storage')) {
-        apiAddflag = false;
-        break;
-      }
-    }
-    if (apiAddflag) {
-      isEnvParams ? currentResources.push(`API_${apiResourceName.toUpperCase()}_`) : currentResources.push(`api${apiResourceName}`);
-    }
+  const apiAddFlag = resourceSet.has('api') || !newResources.find(resource => resource.includes('storage'));
+  if (apiAddFlag) {
+    isEnvParams ? currentResources.push(`API_${apiResourceName.toUpperCase()}_`) : currentResources.push(`api${apiResourceName}`);
   }
 }
