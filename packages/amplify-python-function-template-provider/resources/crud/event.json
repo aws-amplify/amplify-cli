@@ -1,1 +1,1 @@
-{ "test": "event" }
+{ "path": "/items", "httpMethod": "GET", "queryStringParameters": ""}
