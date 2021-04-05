@@ -13,18 +13,18 @@ export async function uploadAuthTriggerTemplate(context: $TSContext) {
   let { amplifyMeta } = context.amplify.getProjectDetails();
   const authResource = amplifyMeta?.auth ?? {};
   const authTriggerCfnFilePath = path.join(pathManager.getBackendDirPath(), category, Object.keys(authResource)[0], AUTH_TRIGGER_TEMPLATE);
+  const S3_UPLOAD_PATH = path.join(category, AUTH_TRIGGER_TEMPLATE);
+  let cfnObject: $TSObject;
   try {
-    const cfnObject: $TSObject = JSONUtilities.readJson(authTriggerCfnFilePath);
-    const S3_UPLOAD_PATH = path.join(category, AUTH_TRIGGER_TEMPLATE);
-
-    return {
-      AuthTriggerTemplateURL: await uploadCfnToS3(context, S3_UPLOAD_PATH, cfnObject),
-    };
-  } catch {
+    cfnObject = JSONUtilities.readJson(authTriggerCfnFilePath);
+  } catch (err) {
     return {
       AuthTriggerTemplateURL: '',
     };
   }
+  return {
+    AuthTriggerTemplateURL: await uploadCfnToS3(context, S3_UPLOAD_PATH, cfnObject),
+  };
 }
 
 async function uploadCfnToS3(context: any, cfnFile: string, cfnData: object): Promise<string> {

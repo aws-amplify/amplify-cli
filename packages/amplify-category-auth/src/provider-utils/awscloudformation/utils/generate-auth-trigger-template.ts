@@ -1,11 +1,11 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { AuthTriggerConnection } from '../service-walkthrough-types';
+import { AuthTriggerConnection, ServiceQuestionsResult } from '../service-walkthrough-types';
 import { CustomResource } from '@aws-cdk/core';
 import { authTriggerAssetFilePath } from '../constants';
 
@@ -57,12 +57,12 @@ export class CustomResourceAuthStack extends cdk.Stack {
   }
 }
 
-export async function generateNestedAuthTriggerTemplate(context: $TSContext, category: string, request: $TSObject) {
+export async function generateNestedAuthTriggerTemplate(context: $TSContext, category: string, request: ServiceQuestionsResult) {
   const cfnFileName = 'auth-trigger-cloudformation-template.json';
-  const targetDir = path.join(pathManager.getBackendDirPath(), category, request.resourceName);
+  const targetDir = path.join(pathManager.getBackendDirPath(), category, request.resourceName!);
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
   const { authTriggerConnections } = request;
-  if (authTriggerConnections?.length > 0) {
+  if (authTriggerConnections) {
     const cfnObject = await createCustomResourceforAuthTrigger(context, JSON.parse(authTriggerConnections));
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {

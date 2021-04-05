@@ -62,7 +62,7 @@ export const getResourceUpdater = (context: any, cfnFilename: string, provider: 
   }
 
   const providerPlugin = context.amplify.getPluginInstance(context, provider);
-  const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', request.resourceName)?.triggers;
+  const previouslySaved = providerPlugin.loadResourceParameters(context, 'auth', request.resourceName).triggers || '{}';
   await lambdaTriggers(request, context, JSON.parse(previouslySaved));
 
   if ((!request.updateFlow && !request.thirdPartyAuth) || (request.updateFlow === 'manual' && !request.thirdPartyAuth)) {
@@ -174,8 +174,9 @@ const lambdaTriggers = async (coreAnswers: any, context: any, previouslySaved: a
     coreAnswers.triggers = triggerKeyValues ? JSONUtilities.stringify(triggerKeyValues) : '{}';
 
     if (FeatureFlags.getBoolean('auth.breakCircularDependency')) {
-      coreAnswers.authTriggerConnections = authTriggerConnections ? JSONUtilities.stringify(authTriggerConnections) : '[]';
-      if (coreAnswers.authTriggerConnections === '[]') {
+      if (Array.isArray(authTriggerConnections) && authTriggerConnections.length > 0) {
+        coreAnswers.authTriggerConnections = JSONUtilities.stringify(authTriggerConnections);
+      } else {
         delete coreAnswers.authTriggerConnections;
       }
     }
