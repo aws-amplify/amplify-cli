@@ -67,7 +67,7 @@ export const copyCfnTemplate = (context, category, options, cfnFilename) => {
   ];
   const optionsWithFeatureFlags = {
     ...options,
-    generateConsolidatedManagedPolicies: FeatureFlags.getBoolean('restAPI.generateConsolidatedManagedPolicies'),
+    consolidateManagedPolicies: FeatureFlags.getBoolean('restAPI.consolidateManagedPolicies'),
   };
 
   // copy over the files

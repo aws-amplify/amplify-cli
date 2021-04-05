@@ -10,7 +10,7 @@ import { getResourceDirPath } from '../resourceParams';
 type ApiGatewayAuthStackProps = Readonly<{
   description: string;
   stackName: string;
-  apiGateways: any[];
+  apiGateways: $TSAny[];
 }>;
 
 type ApiGatewayPolicyCreationState = {
@@ -32,7 +32,7 @@ const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const MAX_MANAGED_POLICY_SIZE = 6_144;
 const S3_UPLOAD_PATH = 'api/apiGwAuthStackTemplate.json';
 
-export class ApiGatewayAuthStack extends cdk.Stack {
+class ApiGatewayAuthStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: ApiGatewayAuthStackProps) {
     super(scope, id, props);
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
@@ -173,7 +173,7 @@ function computePolicySizeIncrease(methodLength: number, pathLength: number, nam
 }
 
 export async function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): Promise<$TSObject> {
-  if (!FeatureFlags.getBoolean('restAPI.generateConsolidatedManagedPolicies')) {
+  if (!FeatureFlags.getBoolean('restAPI.consolidateManagedPolicies')) {
     return {};
   }
 

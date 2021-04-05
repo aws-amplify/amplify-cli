@@ -615,7 +615,7 @@ export class FeatureFlags {
 
     this.registerFlag('restAPI', [
       {
-        name: 'generateConsolidatedManagedPolicies',
+        name: 'consolidateManagedPolicies',
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,

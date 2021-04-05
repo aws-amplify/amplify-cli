@@ -34,7 +34,7 @@
         }
     },
     "Resources": {
-        <%if (!props.generateConsolidatedManagedPolicies && props.privacy.auth) { %>
+        <%if (!props.consolidateManagedPolicies && props.privacy.auth) { %>
         "PolicyAPIGW<%= props.apiName %>auth": {
             "DependsOn": [
               "<%= props.apiName %>"
@@ -245,7 +245,7 @@
           <% } %>
         <% } %>
         <% } %>
-        <%if (!props.generateConsolidatedManagedPolicies && props.privacy.unauth) { %>
+        <%if (!props.consolidateManagedPolicies && props.privacy.unauth) { %>
         "PolicyAPIGW<%= props.apiName %>unauth": {
             "DependsOn": [
               "<%= props.apiName %>"
