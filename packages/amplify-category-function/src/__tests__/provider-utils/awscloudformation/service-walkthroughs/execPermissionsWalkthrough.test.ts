@@ -79,11 +79,6 @@ test('env resources for CFN for DDB table and api', async () => {
       category: 'api',
       resourceName: 'mock_api',
     },
-    {
-      attributes: ['GraphQLAPIIdOutput'],
-      category: 'api',
-      resourceName: 'mock_api',
-    },
   ];
   expect(await generateEnvVariablesForCfn(contextStub, resources, {})).toMatchSnapshot();
 });
