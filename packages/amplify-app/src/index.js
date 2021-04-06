@@ -12,7 +12,7 @@ const { engines } = require('../package.json');
 const { initializeAwsExports } = require('amplify-frontend-javascript');
 const { initializeAmplifyConfiguration } = require('amplify-frontend-flutter');
 const { callAmplify } = require('./call-amplify');
-import Ora from 'ora';
+const Ora = require('ora');
 const isWin = process.platform.startsWith('win');
 const npm = isWin ? 'npm.cmd' : 'npm';
 const amplifyCliPackageName = '@aws-amplify/cli';
