@@ -136,7 +136,7 @@ export class DeploymentManager {
             if (state.matches('idle')) {
               this.spinner.text = `Starting deployment`;
             } else if (state.matches('deploy')) {
-              this.spinner.text = `Deploying stack (${maxDeployed} of ${state.context.stacks.length})`;
+              this.spinner.text = `Deploying (${maxDeployed} of ${state.context.stacks.length})`;
             } else if (state.matches('rollback')) {
               this.spinner.text = `Rolling back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`;
             } else if (state.matches('deployed')) {
@@ -313,7 +313,7 @@ export class DeploymentManager {
   };
 
   private waitForActiveTables = async (tables: string[]): Promise<void> => {
-    if (tables.length) console.log('\nWaiting for DynamoDB table indices to be ready');
+    if(tables.length) console.log(`Waiting for DynamoDB table indices to be ready`);
     const throttledGetTableStatus = throttle(this.getTableStatus, this.options.throttleDelay);
     const waiters = tables.map(name => {
       return new Promise(resolve => {
