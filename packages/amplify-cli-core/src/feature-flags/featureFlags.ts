@@ -660,5 +660,44 @@ export class FeatureFlags {
         defaultValueForNewProjects: true,
       },
     ]);
+
+    this.registerFlag('latestRegionSupport', [
+      {
+        name: 'pinpoint',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+      {
+        name: 'translate',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+      {
+        name: 'transcribe',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+      {
+        name: 'rekognition',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+      {
+        name: 'textract',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+      {
+        name: 'comprehend',
+        type: 'number',
+        defaultValueForExistingProjects: 0,
+        defaultValueForNewProjects: 1,
+      },
+    ]);
   };
 }
