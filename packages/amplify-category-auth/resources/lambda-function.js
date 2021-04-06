@@ -1,6 +1,6 @@
 const response = require('cfn-response');
 const aws = require('aws-sdk');
-let responseData = {};
+
 exports.handler = function (event, context) {
   try {
     const userPoolId = event.ResourceProperties.userpoolId;
