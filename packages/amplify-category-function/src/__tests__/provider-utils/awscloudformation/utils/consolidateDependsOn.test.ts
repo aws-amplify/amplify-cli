@@ -5,12 +5,6 @@ import { lambdaLayerSetting, resourceAccessSetting } from '../../../../provider-
 test('check when lambdaLayer selected and resourceSetting present', async () => {
   const contextStub = {
     function: {
-      // i5732692fb708: {
-      //   service: "LambdaLayer",
-      // },
-      // i5732f46becd3: {
-      //   service: "LambdaLayer",
-      // },
       i5732697ec2c4: {
         service: 'Lambda',
         dependsOn: [
@@ -19,20 +13,6 @@ test('check when lambdaLayer selected and resourceSetting present', async () => 
             resourceName: 'i573239366e8a',
             attributes: ['UserPoolId'],
           },
-          // {
-          //   category: "function",
-          //   resourceName: "i5732692fb708",
-          //   attributes: [
-          //     "Arn"
-          //   ]
-          // },
-          // {
-          //   category: "function",
-          //   resourceName: "i5732f46becd3",
-          //   attributes: [
-          //     "Arn"
-          //   ]
-          // }
         ],
       },
     },

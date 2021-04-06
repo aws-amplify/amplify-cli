@@ -1,11 +1,11 @@
-import { $TSObject } from 'amplify-cli-core';
+import { $TSMeta } from 'amplify-cli-core';
 import { FunctionDependency } from 'amplify-function-plugin-interface';
 import _ from 'lodash';
 import { category } from '../../../constants';
 import { lambdaLayerSetting, resourceAccessSetting, ServiceName } from './constants';
 
 export const consolidateDependsOnForLambda = (
-  projectMeta: $TSObject,
+  projectMeta: $TSMeta,
   currentDependsOn: FunctionDependency[],
   lambdaToUpdate: string,
   selectedSettings: string[],
@@ -21,10 +21,10 @@ export const consolidateDependsOnForLambda = (
   }
   if (selectedSettings.includes(lambdaLayerSetting)) {
     //  insert resource dependsOn
-    const prevLayersDependsOn: FunctionDependency[] = prevFunctionParametersDependsOn.filter(
+    const prevDependsOnExcludingLayers: FunctionDependency[] = prevFunctionParametersDependsOn.filter(
       resource => _.get(projectMeta, [category, resource.resourceName, 'service'], []) !== ServiceName.LambdaLayer,
     );
-    updatedDependsOn = currentDependsOn.concat(prevLayersDependsOn);
+    updatedDependsOn = currentDependsOn.concat(prevDependsOnExcludingLayers);
   }
   return updatedDependsOn;
 };
