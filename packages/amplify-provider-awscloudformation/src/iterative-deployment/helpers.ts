@@ -1,5 +1,3 @@
-import * as path from 'path';
-
 import { DeployMachineContext, DeploymentMachineOp } from './state-machine';
 
 export const collectError = (context: DeployMachineContext, err: any, meta: any) => {
