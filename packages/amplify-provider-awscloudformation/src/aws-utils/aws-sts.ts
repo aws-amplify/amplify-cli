@@ -1,13 +1,14 @@
-import AWS from 'aws-sdk';
-import aws from './aws';
+import aws from './aws.js';
 import { loadConfiguration } from '../configuration-manager';
-import { $TSContext } from 'amplify-cli-core';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 
 export class STS {
-  public sts: AWS.STS;
+  private static instance: STS;
+  private readonly context: $TSContext;
+  private readonly sts: AWS.STS;
 
-  constructor(private readonly context: $TSContext, options = {}) {
-    const instancePromise = (async () => {
+  static async getInstance(context: $TSContext, options = {}): Promise<STS> {
+    if (!STS.instance) {
       let cred = {};
       try {
         cred = await loadConfiguration(context);
@@ -15,11 +16,17 @@ export class STS {
         // ignore missing config
       }
 
-      this.sts = new (aws as typeof AWS).STS({ ...cred, ...options });
+      STS.instance = new STS(context, cred, options);
+    }
+    return STS.instance;
+  }
 
-      return this;
-    })();
+  private constructor(context: $TSContext, cred: $TSAny, options = {}) {
+    this.context = context;
+    this.sts = new aws.STS({ ...cred, options });
+  }
 
-    return <STS>(<unknown>instancePromise);
+  async getCallerIdentity(): Promise<AWS.STS.GetCallerIdentityResponse> {
+    return await this.sts.getCallerIdentity().promise();
   }
 }
