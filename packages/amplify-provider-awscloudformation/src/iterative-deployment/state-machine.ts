@@ -48,9 +48,9 @@ export type DeploymentMachineState = State<
 
 export type StateMachineError = {
   error: Error;
-  stateValue: number;
+  stateValue: string;
   currentIndex: number;
-}
+};
 export interface DeployMachineSchema {
   states: {
     idle: {};

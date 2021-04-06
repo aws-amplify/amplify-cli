@@ -31,9 +31,9 @@ export class DeploymentError extends Error {
     this.name = `DeploymentError`;
     const stackTrace = [];
     for (const err of errors) {
-      stackTrace.push(`Index: ${err.currentIndex} State: ${err.stateValue}\n${err.error.stack}`);
+      stackTrace.push(`Index: ${err.currentIndex} State: ${err.stateValue} Message: ${err.error.message}`);
     }
-    this.stack = JSON.stringify(stackTrace);
+    this.message = JSON.stringify(stackTrace);
   }
 }
 
