@@ -27,11 +27,10 @@ export async function removeDependencyOnFunctions(
 
       const continueToPush = !!context?.exeInfo?.inputParams?.yes;
 
-      const dependentFunctionsPushPrompt = await context.amplify.confirmPrompt(
-        'Do you want to remove the GraphQL model access on these affected functions?',
-        false,
-      );
-      if (!continueToPush && dependentFunctionsPushPrompt) {
+      if (
+        !continueToPush &&
+        (await context.amplify.confirmPrompt('Do you want to remove the GraphQL model access on these affected functions?', false))
+      ) {
         await context.amplify.invokePluginMethod(context, 'function', undefined, 'updateDependentFunctionsCfn', [
           context,
           dependentFunctionResource,
