@@ -56,6 +56,14 @@ const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
 
+
+const deploymentInProgressErrorMessage = (context: $TSContext) => {
+  context.print.error('A deployment in progress.');
+  context.print.error('If you believe the prior deployment was aborted, run:');
+  context.print.error('"amplify push --iterative-rollbacl" to rollback the prior deployment');
+  context.print.error('"amplify push --force" to rollback the prior deployment and re-deploy');
+}
+
 export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
   let iterativeDeploymentWasInvoked = false;
@@ -119,9 +127,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     // If there is a deployment already in progress we have to fail the push operation as another
     // push in between could lead non-recoverable stacks and files.
     if (deploymentStateManager.isDeploymentInProgress()) {
-      context.print.error('A deployment is already in progress for the project, cannot push resources until it finishes.');
-      context.print.error('If the deployment in the cloud is inactive run `amplify push --iterative-rollback` to undo changes.');
-      context.print.error('Run `amplify push --force` to undo and push new changes.');
+      deploymentInProgressErrorMessage(context);
       return;
     }
 
@@ -150,7 +156,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
           // If start cannot update because a deployment has started between the start of this method and this point
           // we have to return before uploading any artifacts that could fail the other deployment.
           if (!(await deploymentStateManager.startDeployment(deploymentStepStates))) {
-            context.print.error('A deployment is already in progress for the project, cannot push resources until it finishes.');
+            deploymentInProgressErrorMessage(context);
             return;
           }
         }
