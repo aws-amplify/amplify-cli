@@ -55,10 +55,7 @@ export type ProjectSettings = {
   framework?: string;
 };
 
-export type InputOptions = {
-  [key: string]: string | boolean;
-};
-
+export type InputOptions = Record<string, string | boolean>;
 export class SerializableError {
   name: string;
   constructor(error: Error) {

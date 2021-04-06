@@ -25,7 +25,7 @@ jest.mock('../app-config');
 
 describe('test attachUsageData', () => {
   const version = 'latestversion';
-  let mockContext = jest.genMockFromModule<Context>('../domain/context');
+  const mockContext = jest.genMockFromModule<Context>('../domain/context');
 
   mockContext.input = new Input([
     '/Users/userName/.nvm/versions/node/v8.11.4/bin/node',
