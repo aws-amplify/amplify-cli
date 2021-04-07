@@ -306,7 +306,7 @@ export function addRestApi(cwd: string, settings: any) {
       chain.wait('Restrict API access');
 
       if (settings.restrictAccess) {
-        chain.sendLine('y').wait('Who should have access');
+        chain.sendConfirmYes().wait('Who should have access');
 
         if (!settings.allowGuestUsers) {
           chain
@@ -323,7 +323,7 @@ export function addRestApi(cwd: string, settings: any) {
             .sendLine('a'); // CRUD permissions for guest users
         }
       } else {
-        chain.sendLine('n'); // Do not restrict access
+        chain.sendConfirmNo(); // Do not restrict access
       }
 
       chain
