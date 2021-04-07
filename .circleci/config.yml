@@ -453,7 +453,7 @@ jobs:
           command: >
             cd ../aws-amplify-cypress-auth
 
-            yarn add cypress --save
+            yarn add cypress@6.8.0 --save
 
             cp ../repo/cypress.json .
 
