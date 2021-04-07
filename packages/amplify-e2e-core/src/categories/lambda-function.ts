@@ -148,6 +148,7 @@ const coreFunction = (
         chain.sendLine('y').wait('Do you want to access other resources in this project from your Lambda function?');
         if (settings.additionalPermissions) {
           // other permissions flow
+          chain.sendLine('y');
           additionalPermissions(cwd, chain, settings);
         } else {
           chain.sendLine('n');
