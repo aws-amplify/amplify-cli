@@ -206,33 +206,34 @@ export const describeCloudFormationStack = async (stackName: string, region: str
 
 export const getNestedStackID = async (stackName: string, region: string, logicalId: string) => {
   const cfnClient = new CloudFormation({ region });
-  return (await cfnClient.describeStackResources({ StackName: stackName, LogicalResourceId: logicalId }).promise()).StackResources[0]
-    .PhysicalResourceId;
+  const resource = await cfnClient.describeStackResources({ StackName: stackName, LogicalResourceId: logicalId }).promise();
+  return resource?.StackResources?.[0] ?? null;
 };
 
-export const getTableName = async (region: string, table: string, StackId: string): Promise<string | null> => {
+/**
+ * Collects table resource id from parent stack
+ * @param region region the stack exists in
+ * @param table name of the table used in the appsync schema
+ * @param StackId id of the parent stack
+ * @returns
+ */
+
+export const getTableResourceId = async (region: string, table: string, StackId: string): Promise<string | null> => {
   const cfnClient = new CloudFormation({ region });
   const apiResources = await cfnClient
     .describeStackResources({
       StackName: StackId,
     })
     .promise();
-  for (const resource of apiResources.StackResources) {
-    if (table === resource.LogicalResourceId) {
-      const tableStack = await cfnClient
-        .describeStacks({
-          StackName: resource.PhysicalResourceId,
-        })
-        .promise();
-      const tableName = tableStack.Stacks[0].Outputs.reduce((acc, out) => {
-        if (out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`) {
-          acc.push(out.OutputValue);
-        }
-        return acc;
-      }, []);
-      return tableName[0];
+  const resource = apiResources.StackResources.find((stackResource) => table === stackResource.LogicalResourceId);
+  if (resource) {
+    const tableStack = await cfnClient.describeStacks({ StackName: resource.PhysicalResourceId }).promise();
+    if (tableStack?.Stacks?.length > 0) {
+      const tableName = tableStack.Stacks[0].Outputs.find(
+        (out) => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
+      return tableName.OutputValue[0];
     }
-  }
+  };
   return null;
 };
 

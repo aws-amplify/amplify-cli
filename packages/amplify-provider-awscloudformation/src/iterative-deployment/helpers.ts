@@ -68,8 +68,8 @@ export const getPreRollbackOperationHandler = (
   fn: (stack: Readonly<DeploymentMachineOp>) => Promise<void>,
 ): ((context: Readonly<DeployMachineContext>) => Promise<void>) => {
   return (context: DeployMachineContext) => {
-    if (context.prevDeploymentIndex >= 0 && context.prevDeploymentIndex < context.stacks.length) {
-      const stack = context.stacks[context.prevDeploymentIndex];
+    if (context.previousDeploymentIndex >= 0 && context.previousDeploymentIndex < context.stacks.length) {
+      const stack = context.stacks[context.previousDeploymentIndex];
       const step = stack.rollback;
       return fn(step);
     }

@@ -13,6 +13,9 @@ const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJav
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-s3');
 
+// https://stackoverflow.com/questions/52703321/make-some-properties-optional-in-a-typescript-type
+type OptionalExceptFor<T, TRequired extends keyof T> = Partial<T> & Pick<T, TRequired>
+
 export class S3 {
   private static instance: S3;
   private readonly context: $TSContext;
@@ -136,12 +139,12 @@ export class S3 {
 
   async getAllObjectVersions(
     bucketName: string,
-    continuationToken: Pick<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker' | 'Prefix'> = null,
+    options: OptionalExceptFor<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'> = null,
   ) {
     const result = await pagedAWSCall<
       ListObjectVersionsOutput,
       Required<ObjectIdentifier>,
-      typeof continuationToken,
+      typeof options,
       ListObjectVersionsRequest
     >(
       async (param, nextToken?) => {
@@ -151,11 +154,11 @@ export class S3 {
       },
       {
         Bucket: bucketName,
-        ...continuationToken,
+        ...options,
       },
       (response?) => response.Versions?.map(({ Key, VersionId }) => ({ Key, VersionId })),
       async (response?) =>
-        response && response.IsTruncated
+        response?.IsTruncated
           ? { KeyMarker: response.NextKeyMarker, VersionIdMarker: response.NextVersionIdMarker, Prefix: response.Prefix }
           : undefined,
     );
@@ -183,8 +186,9 @@ export class S3 {
     logger('deleteAllObjects.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectVersions(bucketName);
     const chunkedResult = _.chunk(allObjects, 1000);
-    for (let chunk of chunkedResult) {
-      logger('deleteAllObjects.s3.deleteObjects', [{ Bucket: bucketName }])();
+    const chunkedResultLength = chunkedResult.length;
+    chunkedResult.forEach ( async (chunk, idx) => {
+      logger(`deleteAllObjects.s3.deleteObjects (${idx} of ${chunkedResultLength})`, [{ Bucket: bucketName }])();
       await this.s3
         .deleteObjects({
           Bucket: bucketName,
@@ -193,7 +197,7 @@ export class S3 {
           },
         })
         .promise();
-    }
+    });
   }
 
   public async deleteS3Bucket(bucketName: string) {

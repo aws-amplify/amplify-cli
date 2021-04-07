@@ -162,7 +162,7 @@ describe('deployment state manager', () => {
     const currentStatus = deploymentStateManager.getStatus();
     expect(currentStatus.status).toBe(DeploymentStatus.DEPLOYED);
 
-    let isInProgress = deploymentStateManager.isDeploymentInProgress();
+    const isInProgress = deploymentStateManager.isDeploymentInProgress();
 
     expect(isInProgress).toBe(false);
   });

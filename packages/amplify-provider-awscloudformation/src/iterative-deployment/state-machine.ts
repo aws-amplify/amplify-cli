@@ -13,7 +13,7 @@ import { send } from 'xstate/lib/actions';
 
 export type DeploymentMachineOp = {
   stackTemplatePath: string;
-  prevMetaKey?: string;
+  previousMetaKey?: string;
   parameters: Record<string, string>;
   tableNames: string[];
   stackName: string;
@@ -34,7 +34,7 @@ export type DeployMachineContext = {
   stacks: DeploymentMachineStep[];
   currentIndex: number;
   errors?: StateMachineError[];
-  prevDeploymentIndex?: number;
+  previousDeploymentIndex?: number;
 };
 
 export type DeploymentMachineEvents = 'IDLE' | 'DEPLOY' | 'ROLLBACK' | 'INDEX' | 'DONE' | 'NEXT';
@@ -82,10 +82,14 @@ export interface DeployMachineSchema {
 export interface DeploymentRollbackSchema {
   states: {
     idle: {};
+    preRollback: {
+      states: {
+        previousDeploymentReadyCheck: {},
+        previousTableReadyCheck: {}
+      }
+    },
     rollback: {
       states: {
-        preRollbackCheck: {};
-        preTableWaitCheck: {};
         enterRollback: {};
         triggerRollback: {};
         rollingBack: {};
@@ -289,36 +293,42 @@ export function createRollbackDeploymentMachine(initialContext: DeployMachineCon
         idle: {
           on: {
             ROLLBACK: {
-              target: 'rollback',
+              target: 'preRollback',
             },
           },
         },
-        rollback: {
-          id: 'rollback',
-          initial: 'preRollbackCheck',
+        preRollback: {
+          id: 'pre-rollback',
+          initial: 'previousDeploymentReadyCheck',
           states: {
-            preRollbackCheck: {
-              id: 'pre-rollback-deployment-check',
+            previousDeploymentReadyCheck: {
+              id: 'previous-deployment-ready-check',
               invoke: {
                 src: getPreRollbackOperationHandler(helperFns.rollbackWaitFn),
-                onDone: { target: 'preTableWaitCheck' },
+                onDone: { target: 'previousTableReadyCheck' },
                 onError: {
                   target: '#failed',
                   actions: assign(collectError),
                 },
               },
             },
-            preTableWaitCheck: {
-              id: 'pre-rollback-table-wait-check',
+            previousTableReadyCheck: {
+              id: 'previous-table-ready-check',
               invoke: {
                 src: getPreRollbackOperationHandler(helperFns.preRollbackTableCheck),
-                onDone: { target: 'enterRollback' },
+                onDone: { target: '#rollback' },
                 onError: {
                   target: '#failed',
                   actions: assign(collectError),
-                },
-              },
-            },
+                }
+              }
+            }
+          }
+        },
+        rollback: {
+          id: 'rollback',
+          initial: 'enterRollback',
+          states: {
             enterRollback: {
               invoke: {
                 id: 'enter-rollback',
