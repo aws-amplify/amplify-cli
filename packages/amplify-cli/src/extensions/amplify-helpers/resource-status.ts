@@ -356,7 +356,11 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     amplifyMeta = stateManager.getBackendConfig();
   } else {
     const error = new Error(
-      "You are not working inside a valid Amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project, or 'amplify pull' to pull down an existing project.",
+      `
+      No Amplify backend project files detected within this folder. Either initialize a new Amplify project or pull an existing project.
+      - "amplify init" to initialize a new Amplify project
+      - "amplify pull <app-id>" to pull your existing Amplify project. Find the <app-id> in the AWS Console or Amplify Admin UI.
+      `,
     );
 
     error.name = 'NotInitialized';
