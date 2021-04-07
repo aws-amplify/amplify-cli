@@ -22,7 +22,7 @@ describe('Iterative Rollback - add 2 @keys ', () => {
 
   beforeAll(async () => {
     projectDir = await createNewProjectDir('iterativeRollback');
-    await initJSProjectWithProfile(projectDir, { disableAmplifyAppCreation: false });
+    await initJSProjectWithProfile(projectDir, {});
     addFeatureFlag(projectDir, 'graphqltransformer', 'enableiterativegsiupdates', true);
   });
   afterAll(async () => {

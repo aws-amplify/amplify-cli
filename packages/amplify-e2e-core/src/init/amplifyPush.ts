@@ -1,4 +1,4 @@
-import { getCLIPath, KEY_DOWN_ARROW, nspawn as spawn } from '..';
+import { getCLIPath, KEY_DOWN_ARROW, CONTROL_C, nspawn as spawn } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
@@ -52,17 +52,14 @@ export function cancelIterativeAmplifyPush(
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait(`Deploying stack (${stackIdx.current} of ${stackIdx.max})`)
       .wait(/.*UPDATE_IN_PROGRESS*/)
-      .sendLine('\x03')
+      .sendCtrlC()
       .run((err: Error) => {
-        if (!err) {
-          resolve();
+        if (err && !/Killed the process as no output receive for/.test(err.message)) {
+          reject(err);
         } else {
-          if (err.message !== `Killed the process as no output receive for 1200 Sec. The no output timeout is set to 1200`) {
-            reject(err);
-          }
           resolve();
         }
       });
@@ -151,7 +148,6 @@ export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodeb
     spawn(getCLIPath(testingWithLatestCodebase), ['push', '--iterative-rollback'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue?')
       .sendLine('y')
-      .wait(/.*/)
       .run((err: Error) => {
         if (!err) {
           resolve({});

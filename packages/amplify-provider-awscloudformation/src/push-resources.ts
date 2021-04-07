@@ -34,7 +34,7 @@ import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import archiver from './utils/archiver';
 import amplifyServiceManager from './amplify-service-manager';
-import { DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, IterativeRollback } from './iterative-deployment';
+import { DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback } from './iterative-deployment';
 import { Fn, Template } from 'cloudform-types';
 import { getGqlUpdatedResource } from './graphql-transformer/utils';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
@@ -58,10 +58,10 @@ const parametersJson = 'parameters.json';
 
 
 const deploymentInProgressErrorMessage = (context: $TSContext) => {
-  context.print.error('A deployment in progress.');
-  context.print.error('If you believe the prior deployment was aborted, run:');
-  context.print.error('"amplify push --iterative-rollbacl" to rollback the prior deployment');
-  context.print.error('"amplify push --force" to rollback the prior deployment and re-deploy');
+  context.print.error('A deployment is in progress.');
+  context.print.error('If the prior rollback was aborted, run:');
+  context.print.error('"amplify push --iterative-rollback" to rollback the prior deployment');
+  context.print.error('"amplify push --force" to re-deploy');
 }
 
 export async function run(context: $TSContext, resourceDefinition: $TSObject) {
@@ -86,8 +86,10 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
       if (context.exeInfo?.forcePush || context.exeInfo?.iterativeRollback) {
-        await IterativeRollback.run(context, cloudformationMeta, deploymentStateManager);
-        if (context.exeInfo?.iterativeRollback) return;
+        await runIterativeRollback(context, cloudformationMeta, deploymentStateManager);
+        if (context.exeInfo?.iterativeRollback) {
+          return;
+        }
       }
     }
 
@@ -210,8 +212,12 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
         await deploymentManager.deploy(deploymentStateManager);
 
         // delete the intermidiate states as it is ephemeral
-        if (stateFolder.local && fs.existsSync(stateFolder.local)) {
-          fs.removeSync(stateFolder.local);
+        if (stateFolder.local) {
+          try {
+            fs.removeSync(stateFolder.local);
+          } catch (err) {
+            context.print.error(`Could not delete state directory locally: ${err}`)
+          }
         }
         if (stateFolder.cloud) {
           const s3 = await S3.getInstance(context);

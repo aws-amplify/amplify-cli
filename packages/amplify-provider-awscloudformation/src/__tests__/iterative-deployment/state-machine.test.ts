@@ -234,7 +234,7 @@ describe('rollback state machine', () => {
   };
 
   const initialContext: DeployMachineContext = {
-    prevDeploymentIndex: 2,
+    previousDeploymentIndex: 2,
     currentIndex: 3,
     region: 'us-east-2',
     deploymentBucket: 'https://s3.amazonaws.com/amplify-multideploytest-dev-162313-deployment',

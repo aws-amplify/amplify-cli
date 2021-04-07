@@ -531,7 +531,7 @@ export class FeatureFlags {
         name: 'enableIterativeGSIUpdates',
         type: 'boolean',
         defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: false,
+        defaultValueForNewProjects: true,
       },
       {
         name: 'secondaryKeyAsGSI',
