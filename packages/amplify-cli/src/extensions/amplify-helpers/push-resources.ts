@@ -14,8 +14,9 @@ export async function pushResources(
 ) {
   if (context.parameters.options['iterative-rollback']) {
     // validate --iterative-rollback with --force
-    if (context.parameters.options.force)
-      throw new Error("Consider runnning 'amplify push --force' to iteratively rollback and deploy new changes.");
+    if (context.parameters.options.force){
+      throw new Error("'--iterative-rollback' and '--force' cannot be used together. Consider runnning 'amplify push --force' to iteratively rollback and redeploy.");
+    }
     context.exeInfo.iterativeRollback = true;
   }
   if (context.parameters.options.env) {
@@ -29,6 +30,7 @@ export async function pushResources(
       context.exeInfo.projectConfig = stateManager.getProjectConfig(undefined, {
         throwIfNotExist: false,
       });
+
       context.exeInfo.localEnvInfo = getEnvInfo();
       if (context.exeInfo.localEnvInfo.envName !== envName) {
         context.exeInfo.localEnvInfo.envName = envName;
@@ -58,7 +60,7 @@ export async function pushResources(
 
   if (!continueToPush) {
     if (context.exeInfo.iterativeRollback) {
-      context.print.info('The CLI will rollback an the last known iterative deployment.');
+      context.print.info('The CLI will rollback the last known iterative deployment.');
     }
     continueToPush = await context.amplify.confirmPrompt('Are you sure you want to continue?');
   }

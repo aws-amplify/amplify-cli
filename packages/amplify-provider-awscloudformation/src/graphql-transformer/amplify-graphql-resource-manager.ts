@@ -125,8 +125,8 @@ export class GraphQLResourceManager {
 
     // copy the last deployment state as current state
     let previousStepPath = cloudBuildDir;
-    let prevStep: DeploymentOp = await this.getCurrentlyDeployedStackStep();
-    let prevMetaKey = prevStep.prevMetaKey;
+    let previousStep: DeploymentOp = await this.getCurrentlyDeployedStackStep();
+    let previousMetaKey = previousStep.previousMetaKey;
 
     while (!this.templateState.isEmpty()) {
       const stepNumber = count.toString().padStart(2, '0');
@@ -139,15 +139,15 @@ export class GraphQLResourceManager {
       const tableNames = [];
       tables.forEach(tableName => {
         tableNames.push(tableNameMap.get(tableName));
-        const filepath = path.join(stepPath, 'stacks', `${tableName}.json`);
-        fs.ensureDirSync(path.dirname(filepath));
-        JSONUtilities.writeJson(filepath, this.templateState.pop(tableName));
+        const tableNameStackFilePath = path.join(stepPath, 'stacks', `${tableName}.json`);
+        fs.ensureDirSync(path.dirname(tableNameStackFilePath));
+        JSONUtilities.writeJson(tableNameStackFilePath, this.templateState.pop(tableName));
       });
 
       const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildHash}/states/${stepNumber}`;
       const deploymentStep: DeploymentOp = {
         stackTemplatePathOrUrl: `${deploymentRootKey}/cloudformation-template.json`,
-        prevMetaKey: prevMetaKey,
+        previousMetaKey: previousMetaKey,
         parameters: { ...parameters, S3DeploymentRootKey: deploymentRootKey },
         stackName: this.resourceMeta.stackId,
         tableNames: tableNames,
@@ -156,16 +156,16 @@ export class GraphQLResourceManager {
       };
 
       // save the current deployment step in the state
-      const deploymentStateStep = path.join(stepPath, DEPLOYMENT_META);
-      JSONUtilities.writeJson(deploymentStateStep, deploymentStep);
+      const deploymentStepStatePath = path.join(stepPath, DEPLOYMENT_META);
+      JSONUtilities.writeJson(deploymentStepStatePath, deploymentStep);
 
       gqlSteps.push({
         deployment: deploymentStep,
-        rollback: prevStep,
+        rollback: previousStep,
       });
       // Current deployment step is the rollback step for next step
-      prevStep = deploymentStep;
-      prevMetaKey = `${deploymentRootKey}/${DEPLOYMENT_META}`;
+      previousStep = deploymentStep;
+      previousMetaKey = `${deploymentRootKey}/${DEPLOYMENT_META}`;
       count++;
     }
     return gqlSteps;
@@ -189,7 +189,7 @@ export class GraphQLResourceManager {
     const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${buildHash}/states/${stepNumber}`;
     const currentDeployedStep: DeploymentOp = {
       stackTemplatePathOrUrl: `${deploymentRootKey}/cloudformation-template.json`,
-      prevMetaKey: `${deploymentRootKey}/${DEPLOYMENT_META}`,
+      previousMetaKey: `${deploymentRootKey}/${DEPLOYMENT_META}`,
       parameters: { ...parameters, S3DeploymentRootKey: deploymentRootKey },
       stackName: this.resourceMeta.stackId,
       capabilities,

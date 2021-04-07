@@ -2,7 +2,7 @@ import {
   $TSContext,
   DeploymentState,
   DeploymentStatus,
-  StepStatusParams,
+  StepStatusParameters,
   DeploymentStepState,
   DeploymentStepStatus,
   IDeploymentStateManager,
@@ -55,6 +55,9 @@ export class DeploymentStateManager implements IDeploymentStateManager {
       this.currentState = persistedState;
     }
 
+    // if running a deployment after a rollback refresh the currentState direction to 1
+    this.direction = 1;
+
     this.currentState.startedAt = new Date().toISOString();
     this.currentState.finishedAt = undefined;
     this.currentState.currentStepIndex = 0;
@@ -89,14 +92,14 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     await this.saveState();
   };
 
-  public startCurrentStep = async (params?: StepStatusParams): Promise<void> => {
+  public startCurrentStep = async (params?: StepStatusParameters): Promise<void> => {
     if (this.direction === 1) {
       if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_DEPLOYMENT) {
         throw new Error(`Cannot start step then the current step is in ${this.getCurrentStep().status} status.`);
       }
       const currentStep = this.getCurrentStep();
       currentStep.status = DeploymentStepStatus.DEPLOYING;
-      if (params?.prevMetaKey) currentStep.prevMetaKey = params.prevMetaKey;
+      if (params?.previousMetaKey) currentStep.previousMetaKey = params.previousMetaKey;
     } else if (this.direction === -1) {
       if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_ROLLBACK) {
         throw new Error(`Cannot start step then the current step is in ${this.getCurrentStep().status} status.`);
@@ -128,8 +131,9 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     } else if (this.direction === -1 && this.currentState.currentStepIndex === 0) {
       const currentStep = this.getCurrentStep();
       currentStep.status = DeploymentStepStatus.ROLLED_BACK;
-      if (currentStep?.prevMetaKey) delete currentStep.prevMetaKey;
-
+      if (currentStep?.previousMetaKey) {
+        delete currentStep.previousMetaKey;
+      }
       this.currentState.currentStepIndex = 0;
       this.currentState.finishedAt = new Date().toISOString();
       this.currentState.status = DeploymentStatus.ROLLED_BACK;
@@ -140,7 +144,9 @@ export class DeploymentStateManager implements IDeploymentStateManager {
       } else if (this.direction === -1) {
         const currentStep = this.getCurrentStep();
         currentStep.status = DeploymentStepStatus.ROLLED_BACK;
-        if (currentStep?.prevMetaKey) delete currentStep.prevMetaKey;
+        if (currentStep?.previousMetaKey) {
+          delete currentStep.previousMetaKey;
+        }
       }
 
       this.currentState.currentStepIndex += this.direction;

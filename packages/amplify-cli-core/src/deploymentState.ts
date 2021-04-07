@@ -9,10 +9,10 @@ export type DeploymentState = {
 
 export type DeploymentStepState = {
   status: DeploymentStepStatus;
-  prevMetaKey?: string;
+  previousMetaKey?: string;
 };
 
-export type StepStatusParams = Omit<DeploymentStepState, 'status'>;
+export type StepStatusParameters = Omit<DeploymentStepState, 'status'>;
 
 export enum DeploymentStatus {
   'IDLE' = 'IDLE',
@@ -38,7 +38,7 @@ export interface IDeploymentStateManager {
   failDeployment(): Promise<void>;
   updateStatus(status: DeploymentStatus): Promise<void>;
   updateCurrentStepStatus(status: DeploymentStepStatus): Promise<void>;
-  startCurrentStep(params?: StepStatusParams): Promise<void>;
+  startCurrentStep(parameters?: StepStatusParameters): Promise<void>;
   advanceStep(): Promise<void>;
   startRollback(): Promise<void>;
 

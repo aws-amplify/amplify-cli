@@ -135,6 +135,8 @@ export class DeploymentManager {
             maxDeployed = Math.max(maxDeployed, state.context.currentIndex + 1);
             if (state.matches('idle')) {
               this.spinner.text = `Starting deployment`;
+            } else if (state.matches('deploy.waitForTablesToBeReady')) {
+              this.spinner.text = `Waiting for DynamoDB indices to be ready`;
             } else if (state.matches('deploy')) {
               this.spinner.text = `Deploying (${maxDeployed} of ${state.context.stacks.length})`;
             } else if (state.matches('rollback')) {
@@ -180,7 +182,7 @@ export class DeploymentManager {
     const machine = createRollbackDeploymentMachine(
       {
         currentIndex: maxDeployed,
-        prevDeploymentIndex: currentStepIndex,
+        previousDeploymentIndex: currentStepIndex,
         deploymentBucket: this.deploymentBucket,
         region: this.region,
         stacks: this.deployment,
@@ -194,10 +196,14 @@ export class DeploymentManager {
           if (state.changed) {
             if (state.matches('idle')) {
               this.spinner.text = `Starting rollback`;
+            } else if (state.matches('preRollback')) {
+              this.spinner.text = `Waiting for previous deployment to finish`;
+            } else if (state.matches('rollback.waitForTablesToBeReady')) {
+              this.spinner.text = `Waiting for DynamoDB indices to be ready`;
             } else if (state.matches('rollback')) {
               this.spinner.text = `Rolling back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`;
             } else if (state.matches('rolledBack')) {
-              this.spinner.succeed(`Rollback Schema successfully`);
+              this.spinner.succeed(`Rolled back succesfully`);
             }
           }
 
@@ -273,7 +279,6 @@ export class DeploymentManager {
       await this.deploymentStateManager?.startRollback();
       await this.deploymentStateManager?.startCurrentStep();
     } catch (err) {
-      console.log(err);
       // ignore, rollback should not fail because updating the deployment status fails
     }
   };
@@ -313,7 +318,6 @@ export class DeploymentManager {
   };
 
   private waitForActiveTables = async (tables: string[]): Promise<void> => {
-    if(tables.length) console.log(`Waiting for DynamoDB table indices to be ready`);
     const throttledGetTableStatus = throttle(this.getTableStatus, this.options.throttleDelay);
     const waiters = tables.map(name => {
       return new Promise(resolve => {
@@ -331,7 +335,6 @@ export class DeploymentManager {
 
   private waitForIndices = async (stackParams: DeploymentMachineOp) => {
     if (stackParams.tableNames.length) {
-      console.log('\nWaiting for DynamoDB table indices to be ready');
       // cfn is async to ddb gsi creation the api can return true before the gsi creation starts
       await new Promise(res => setTimeout(res, 2000));
     }
@@ -344,9 +347,8 @@ export class DeploymentManager {
     return Promise.resolve();
   };
 
-  private preRollbackTableCheck = async (stackParams: DeploymentMachineOp) => {
+  private preRollbackTableCheck = async (stackParams: DeploymentMachineOp): Promise<void> => {
     await this.waitForActiveTables(stackParams.tableNames);
-    return Promise.resolve();
   };
 
   private stackPollFn = (deploymentStep: DeploymentMachineOp): (() => void) => {
@@ -365,7 +367,7 @@ export class DeploymentManager {
 
   private doDeploy = async (currentStack: DeploymentMachineOp): Promise<void> => {
     try {
-      await this.deploymentStateManager?.startCurrentStep({ prevMetaKey: currentStack.prevMetaKey });
+      await this.deploymentStateManager?.startCurrentStep({ previousMetaKey: currentStack.previousMetaKey });
     } catch {
       // deployment should not fail because status could not be saved
     }
