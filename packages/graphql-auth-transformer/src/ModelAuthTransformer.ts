@@ -363,8 +363,6 @@ export class ModelAuthTransformer extends Transformer {
     // type will be emitted as well in case of IAM.
     this.propagateAuthDirectivesToNestedTypes(def, rules, ctx);
 
-    const { operationRules, queryRules } = this.splitRules(rules);
-
     // Retrieve the configuration options for the related @model directive
     const modelConfiguration = new ModelDirectiveConfiguration(modelDirective, def);
     // Get the directives we need to add to the GraphQL nodes
@@ -376,6 +374,8 @@ export class ModelAuthTransformer extends Transformer {
     }
 
     this.addTypeToResourceReferences(def.name.value, rules);
+
+    const { operationRules, queryRules } = this.splitRules(rules);
 
     // For each operation evaluate the rules and apply the changes to the relevant resolver.
     this.protectCreateMutation(
