@@ -95,7 +95,7 @@ exports[`verify generated templates 16`] = `
 $utils.toJson($output[0])"
 `;
 
-exports[`verify generated templates 17`] = `"testFilePath/Query.listTomatoess.req.vtl"`;
+exports[`verify generated templates 17`] = `"testFilePath/Query.listTomatoes.req.vtl"`;
 
 exports[`verify generated templates 18`] = `
 "{
@@ -104,7 +104,7 @@ exports[`verify generated templates 18`] = `
 }"
 `;
 
-exports[`verify generated templates 19`] = `"testFilePath/Query.listTomatoess.res.vtl"`;
+exports[`verify generated templates 19`] = `"testFilePath/Query.listTomatoes.res.vtl"`;
 
 exports[`verify generated templates 20`] = `"$utils.toJson($utils.rds.toJsonObject($ctx.result)[0])"`;
 
@@ -203,7 +203,7 @@ exports[`verify generated templates using a Int primary key 16`] = `
 $utils.toJson($output[0])"
 `;
 
-exports[`verify generated templates using a Int primary key 17`] = `"testFilePath/Query.listAppless.req.vtl"`;
+exports[`verify generated templates using a Int primary key 17`] = `"testFilePath/Query.listApples.req.vtl"`;
 
 exports[`verify generated templates using a Int primary key 18`] = `
 "{
@@ -212,6 +212,6 @@ exports[`verify generated templates using a Int primary key 18`] = `
 }"
 `;
 
-exports[`verify generated templates using a Int primary key 19`] = `"testFilePath/Query.listAppless.res.vtl"`;
+exports[`verify generated templates using a Int primary key 19`] = `"testFilePath/Query.listApples.res.vtl"`;
 
 exports[`verify generated templates using a Int primary key 20`] = `"$utils.toJson($utils.rds.toJsonObject($ctx.result)[0])"`;
