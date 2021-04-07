@@ -43,6 +43,7 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
+import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 
 const logger = fileLogger('push-resources');
 
@@ -584,13 +585,15 @@ async function updateCloudFormationNestedStack(
 
   JSONUtilities.writeJson(nestedStackFilepath, nestedStack);
 
+  const transformedStackPath = await preProcessCFNTemplate(nestedStackFilepath);
+
   const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated));
   const providerDirectory = path.normalize(path.join(backEndDir, providerName));
 
-  const log = logger('updateCloudFormationNestedStack', [providerDirectory, nestedStackFilepath]);
+  const log = logger('updateCloudFormationNestedStack', [providerDirectory, transformedStackPath]);
   try {
     log();
-    await cfnItem.updateResourceStack(path.normalize(path.join(backEndDir, providerName)), nestedStackFileName);
+    await cfnItem.updateResourceStack(transformedStackPath);
   } catch (error) {
     log(error);
     throw error;
@@ -667,29 +670,23 @@ function getCfnFiles(category: string, resourceName: string) {
   };
 }
 
-function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSAny, amplifyMeta: $TSMeta) {
+async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSAny, amplifyMeta: $TSMeta) {
   const promises = [];
 
   for (const { category, resourceName } of resourcesToBeUpdated) {
     const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
 
     for (const cfnFile of cfnFiles) {
-      promises.push(uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceName, amplifyMeta));
+      const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
+      promises.push(uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta));
     }
   }
 
   return Promise.all(promises);
 }
 
-async function uploadTemplateToS3(
-  context: $TSContext,
-  resourceDir: string,
-  cfnFile: string,
-  category: string,
-  resourceName: string,
-  amplifyMeta: $TSMeta,
-) {
-  const filePath = path.normalize(path.join(resourceDir, cfnFile));
+async function uploadTemplateToS3(context: $TSContext, filePath: string, category: string, resourceName: string, amplifyMeta: $TSMeta) {
+  const cfnFile = path.parse(filePath).base;
   const s3 = await S3.getInstance(context);
 
   const s3Params = {

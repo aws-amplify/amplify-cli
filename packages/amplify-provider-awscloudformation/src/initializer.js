@@ -1,6 +1,6 @@
 const moment = require('moment');
 const path = require('path');
-const { pathManager, PathConstants, stateManager } = require('amplify-cli-core');
+const { pathManager, PathConstants, stateManager, JSONUtilities } = require('amplify-cli-core');
 const glob = require('glob');
 const archiver = require('./utils/archiver');
 const fs = require('fs-extra');
@@ -13,6 +13,7 @@ const configurationManager = require('./configuration-manager');
 const amplifyServiceManager = require('./amplify-service-manager');
 const amplifyServiceMigrate = require('./amplify-service-migrate');
 const { fileLogger } = require('./utils/aws-logger');
+const { preProcessCFNTemplate } = require('./pre-push-cfn-processor/cfn-pre-processor');
 const logger = fileLogger('attach-backend');
 
 async function run(context) {
@@ -41,17 +42,18 @@ async function run(context) {
     const authRoleName = `${stackName}-authRole`;
     const unauthRoleName = `${stackName}-unauthRole`;
 
-    let nestedStack = context.amplify.readJsonFile(initTemplateFilePath);
+    const transformedCFNPath = await preProcessCFNTemplate(initTemplateFilePath);
+
+    const rootStack = JSONUtilities.readJson(transformedCFNPath);
     // Track Amplify Console generated stacks
     if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
-      nestedStack.Description = 'Root Stack for AWS Amplify Console';
+      rootStack.Description = 'Root Stack for AWS Amplify Console';
     }
-    nestedStack = JSON.stringify(nestedStack);
 
     const params = {
       StackName: stackName,
       Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
-      TemplateBody: nestedStack,
+      TemplateBody: JSON.stringify(rootStack),
       Parameters: [
         {
           ParameterKey: 'DeploymentBucketName',

@@ -1,5 +1,6 @@
 import { ServiceSelection } from './serviceSelection';
 
+export * from './cfnUtilities';
 export * from './cliContext';
 export * from './cliContextEnvironmentProvider';
 export * from './cliEnvironmentProvider';
