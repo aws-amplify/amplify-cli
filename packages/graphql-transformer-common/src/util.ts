@@ -1,8 +1,12 @@
 import md5 from 'md5';
+import pluralize from 'pluralize';
 
 export function plurality(val: string): string {
   if (!val.trim()) {
     return '';
+  }
+  if (pluralize.isPlural(val.trim())) {
+    return val;
   }
   return val.concat('s');
 }
