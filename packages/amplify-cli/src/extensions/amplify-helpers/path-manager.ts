@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
 import { amplifyCLIConstants } from './constants';
+import { NotInitializedError } from 'amplify-cli-core';
 
 /* Helpers */
 
@@ -50,7 +51,7 @@ export function getAmplifyDirPath(projectPath?) {
   if (projectPath) {
     return path.normalize(path.join(projectPath, amplifyCLIConstants.AmplifyCLIDirName));
   }
-  throw createNotInitializedError();
+  throw new NotInitializedError();
 }
 
 // ///////////////////level 1
@@ -73,7 +74,7 @@ export function getAmplifyRcFilePath(projectPath?) {
   if (projectPath) {
     return path.normalize(path.join(projectPath, '.amplifyrc'));
   }
-  throw createNotInitializedError();
+  throw new NotInitializedError();
 }
 
 export function getGitIgnoreFilePath(projectPath?) {
@@ -83,7 +84,7 @@ export function getGitIgnoreFilePath(projectPath?) {
   if (projectPath) {
     return path.normalize(path.join(projectPath, '.gitignore'));
   }
-  throw createNotInitializedError();
+  throw new NotInitializedError();
 }
 
 // ///////////////////level 2
@@ -114,19 +115,4 @@ export function getAmplifyMetaFilePath(projectPath?) {
 
 export function getCurrentAmplifyMetaFilePath(projectPath?) {
   return path.normalize(path.join(getCurrentCloudBackendDirPath(projectPath), amplifyCLIConstants.amplifyMetaFileName));
-}
-
-function createNotInitializedError() {
-  const error = new Error(
-    `
-      No Amplify backend project files detected within this folder. Either initialize a new Amplify project or pull an existing project.
-      - "amplify init" to initialize a new Amplify project
-      - "amplify pull <app-id>" to pull your existing Amplify project. Find the <app-id> in the AWS Console or Amplify Admin UI.
-      `,
-  );
-
-  error.name = 'NotInitialized';
-  error.stack = undefined;
-
-  return error;
 }

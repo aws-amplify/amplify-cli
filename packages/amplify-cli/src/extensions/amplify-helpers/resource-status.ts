@@ -8,7 +8,7 @@ import { getEnvInfo } from './get-env-info';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
 import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-policy';
-import { pathManager, stateManager, $TSMeta, $TSAny, Tag } from 'amplify-cli-core';
+import { pathManager, stateManager, $TSMeta, $TSAny, Tag, NotInitializedError } from 'amplify-cli-core';
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, isLambdaLayer = false) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
@@ -355,18 +355,7 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
   } else if (amplifyProjectInitStatus === CLOUD_NOT_INITIALIZED) {
     amplifyMeta = stateManager.getBackendConfig();
   } else {
-    const error = new Error(
-      `
-      No Amplify backend project files detected within this folder. Either initialize a new Amplify project or pull an existing project.
-      - "amplify init" to initialize a new Amplify project
-      - "amplify pull <app-id>" to pull your existing Amplify project. Find the <app-id> in the AWS Console or Amplify Admin UI.
-      `,
-    );
-
-    error.name = 'NotInitialized';
-    error.stack = undefined;
-
-    throw error;
+    throw new NotInitializedError();
   }
 
   let resourcesToBeCreated: any = getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
