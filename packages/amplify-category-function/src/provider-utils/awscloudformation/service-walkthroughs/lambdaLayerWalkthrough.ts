@@ -14,6 +14,7 @@ import {
   loadLayerDataFromCloud,
   loadPreviousLayerHash,
   loadStoredLayerParameters,
+  previousPermissionsQuestion,
 } from '../utils/layerHelpers';
 import {
   AccountsLayer,
@@ -156,4 +157,23 @@ export async function updateLayerWalkthrough(
   parameters.runtimes = storedLayerParameters.runtimes;
   parameters.build = true;
   return parameters;
+}
+
+export async function lambdaLayerNewVersionWalkthrough(params: LayerParameters, timestampString: string): Promise<LayerParameters> {
+  const changeLayerPermissions = await inquirer.prompt(previousPermissionsQuestion());
+  let permissions = params.permissions;
+  if (!changeLayerPermissions.usePreviousPermissions) {
+    permissions = [{ type: PermissionEnum.Private }];
+  }
+  const descriptionResponse = await inquirer.prompt({
+    name: 'description',
+    default: `Updated layer version: ${timestampString}`,
+    message: 'Description:',
+  });
+
+  return {
+    ...params,
+    permissions,
+    description: descriptionResponse.description,
+  };
 }

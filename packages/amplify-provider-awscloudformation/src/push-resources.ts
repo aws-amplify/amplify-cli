@@ -43,6 +43,7 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
+import { prePushLambdaLayerPrompt } from './prePushLambdaLayerPrompt';
 
 const logger = fileLogger('push-resources');
 
@@ -103,7 +104,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
         await context.amplify.invokePluginMethod(context, 'hosting', 'ElasticContainer', 'generateHostingResources', [context, resource]);
       }
     }
-
+    await prePushLambdaLayerPrompt(context, resources);
     await prepareBuildableResources(context, resources);
 
     await transformGraphQLSchema(context, {
