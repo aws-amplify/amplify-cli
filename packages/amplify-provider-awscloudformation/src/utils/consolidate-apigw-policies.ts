@@ -3,7 +3,6 @@ import { $TSAny, $TSContext, $TSObject, FeatureFlags, JSONUtilities } from 'ampl
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { S3 } from '../aws-utils/aws-s3';
 import { ProviderName } from '../constants';
 import { getResourceDirPath } from '../resourceParams';
 
@@ -30,7 +29,7 @@ export const APIGW_AUTH_STACK_LOGICAL_ID = 'APIGatewayAuthStack';
 const API_PARAMS_FILE = 'api-params.json';
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const MAX_MANAGED_POLICY_SIZE = 6_144;
-const S3_UPLOAD_PATH = 'api/apiGwAuthStackTemplate.json';
+const S3_UPLOAD_PATH = `api/${APIGW_AUTH_STACK_LOGICAL_ID}.json`;
 
 class ApiGatewayAuthStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: ApiGatewayAuthStackProps) {
@@ -172,7 +171,7 @@ function computePolicySizeIncrease(methodLength: number, pathLength: number, nam
   return 380 + 2 * (methodLength + pathLength + nameLength);
 }
 
-export async function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): Promise<$TSObject> {
+export function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): $TSObject {
   if (!FeatureFlags.getBoolean('restAPI.consolidateManagedPolicies')) {
     return {};
   }
@@ -199,28 +198,22 @@ export async function consolidateApiGatewayPolicies(context: $TSContext, stackNa
   return createApiGatewayAuthResources(context, stackName, apiGateways);
 }
 
-async function createApiGatewayAuthResources(context: $TSContext, stackName: string, apiGateways: $TSAny): Promise<object> {
+function createApiGatewayAuthResources(context: $TSContext, stackName: string, apiGateways: $TSAny): $TSObject {
   const stack = new ApiGatewayAuthStack(undefined, 'Amplify', {
     description: 'API Gateway policy stack created using Amplify CLI',
     stackName,
     apiGateways,
   });
   const cfn = stack.toCloudFormation();
+  const { amplify } = context;
+  const { DeploymentBucketName } = amplify.getProjectMeta()?.providers?.[ProviderName] ?? {};
+  const cfnPath = path.join((amplify.pathManager as any).getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
+
+  JSONUtilities.writeJson(cfnPath, cfn);
 
   return {
-    APIGatewayAuthURL: await uploadCfnToS3(context, S3_UPLOAD_PATH, cfn),
+    APIGatewayAuthURL: `https://s3.amazonaws.com/${DeploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`,
   };
-}
-
-async function uploadCfnToS3(context: $TSContext, cfnFile: string, cfnData: object): Promise<string> {
-  const s3 = await S3.getInstance(context);
-  const s3Params = {
-    Body: JSON.stringify(cfnData, null, 2),
-    Key: `amplify-cfn-templates/${cfnFile}`,
-  };
-  const projectBucket = await s3.uploadFile(s3Params);
-
-  return `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${cfnFile}`;
 }
 
 export function loadApiWithPrivacyParams(context: $TSContext, name: string, resource: any): object | undefined {

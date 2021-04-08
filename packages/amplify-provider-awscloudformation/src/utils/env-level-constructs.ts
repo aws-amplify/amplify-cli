@@ -18,7 +18,7 @@ export async function createEnvLevelConstructs(context) {
   Object.assign(
     updatedMeta,
     await createNetworkResources(context, stackName, hasContainers),
-    await consolidateApiGatewayPolicies(context, stackName),
+    consolidateApiGatewayPolicies(context, stackName),
   );
 
   context.amplify.updateProvideramplifyMeta(providerName, updatedMeta);
