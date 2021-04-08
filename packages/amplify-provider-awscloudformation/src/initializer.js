@@ -13,7 +13,7 @@ const configurationManager = require('./configuration-manager');
 const amplifyServiceManager = require('./amplify-service-manager');
 const amplifyServiceMigrate = require('./amplify-service-migrate');
 const { fileLogger } = require('./utils/aws-logger');
-const { preProcessCFNTemplate } = require('./pre-push-cfn-processor/cfn-pre-processor');
+const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
 const logger = fileLogger('attach-backend');
 
 async function run(context) {
@@ -42,9 +42,8 @@ async function run(context) {
     const authRoleName = `${stackName}-authRole`;
     const unauthRoleName = `${stackName}-unauthRole`;
 
-    const transformedCFNPath = await preProcessCFNTemplate(initTemplateFilePath);
-
-    const rootStack = JSONUtilities.readJson(transformedCFNPath);
+    const rootStack = JSONUtilities.readJson(initTemplateFilePath);
+    await prePushCfnTemplateModifier(rootStack);
     // Track Amplify Console generated stacks
     if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
       rootStack.Description = 'Root Stack for AWS Amplify Console';

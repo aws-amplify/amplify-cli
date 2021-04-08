@@ -2,6 +2,55 @@ import * as yaml from 'js-yaml';
 import { Template } from 'cloudform-types';
 import { JSONUtilities } from './jsonUtilities';
 import * as fs from 'fs-extra';
+import * as path from 'path';
+
+export async function readCFNTemplate(filePath: string): Promise<TemplateAndFormatTuple> {
+  if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile) {
+    throw new Error(`No CloudFormation template found at ${filePath}`);
+  }
+  const fileContent = await fs.readFile(filePath, 'utf8');
+  // We use the first character to determine if the content is json or yaml because historically the CLI could
+  // have emitted JSON with YML extension, so we can't rely on filename extension.
+  const isJson = isJsonFileContent(fileContent);
+  const cfnTemplate = isJson ? JSONUtilities.parse<Template>(fileContent) : (yaml.load(fileContent, { schema: CF_SCHEMA }) as Template);
+  const templateFormat = isJson ? CFNTemplateFormat.JSON : CFNTemplateFormat.YAML;
+  return { templateFormat, cfnTemplate };
+}
+
+export type TemplateAndFormatTuple = {
+  templateFormat: CFNTemplateFormat;
+  cfnTemplate: Template;
+};
+
+export enum CFNTemplateFormat {
+  JSON = 'json',
+  YAML = 'yaml',
+}
+
+export type WriteCFNTemplateOptions = {
+  templateFormat?: CFNTemplateFormat;
+};
+
+const writeCFNTemplateDefaultOptions: Required<WriteCFNTemplateOptions> = {
+  templateFormat: CFNTemplateFormat.JSON,
+};
+
+export async function writeCFNTemplate(template: object, filePath: string, options?: WriteCFNTemplateOptions): Promise<void> {
+  const mergedOptions = { ...writeCFNTemplateDefaultOptions, ...options };
+  let serializedTemplate: string | undefined;
+  switch (mergedOptions.templateFormat) {
+    case CFNTemplateFormat.JSON:
+      serializedTemplate = JSONUtilities.stringify(template);
+      break;
+    case CFNTemplateFormat.YAML:
+      serializedTemplate = yaml.dump(template);
+      break;
+    default:
+      throw new Error(`Unexpected CFN template format ${mergedOptions.templateFormat}`);
+  }
+  await fs.ensureDir(path.parse(filePath).dir);
+  return fs.writeFile(filePath, serializedTemplate);
+}
 
 // Register custom tags for yaml parser
 const CF_SCHEMA = new yaml.Schema([
@@ -131,46 +180,4 @@ function isJsonFileContent(fileContent: string): boolean {
   // We use the first character to determine if the content is json or yaml because historically the CLI could
   // have emitted JSON with YML extension, so we can't rely on filename extension.
   return fileContent?.trim()[0] === '{'; // CFN templates are always objects, never arrays
-}
-
-export async function readCFNTemplate(filePath: string): Promise<{ templateFormat: CFNTemplateFormat; cfnTemplate: Template }> {
-  if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile) {
-    throw new Error(`No CloudFormation template found at ${filePath}`);
-  }
-  const fileContent = await fs.readFile(filePath, 'utf8');
-  // We use the first character to determine if the content is json or yaml because historically the CLI could
-  // have emitted JSON with YML extension, so we can't rely on filename extension.
-  const isJson = isJsonFileContent(fileContent);
-  const cfnTemplate = isJson ? JSONUtilities.parse<Template>(fileContent) : (yaml.load(fileContent, { schema: CF_SCHEMA }) as Template);
-  const templateFormat = isJson ? CFNTemplateFormat.JSON : CFNTemplateFormat.YAML;
-  return { templateFormat, cfnTemplate };
-}
-
-export enum CFNTemplateFormat {
-  JSON = 'json',
-  YAML = 'yaml',
-}
-
-export type WriteCFNTemplateOptions = {
-  templateFormat?: CFNTemplateFormat;
-};
-
-const writeCFNTemplateDefaultOptions: Required<WriteCFNTemplateOptions> = {
-  templateFormat: CFNTemplateFormat.JSON,
-};
-
-export function writeCFNTemplate(template: object, filePath: string, options?: WriteCFNTemplateOptions): Promise<void> {
-  const mergedOptions = { ...writeCFNTemplateDefaultOptions, ...options };
-  let serializedTemplate: string | undefined;
-  switch (mergedOptions.templateFormat) {
-    case CFNTemplateFormat.JSON:
-      serializedTemplate = JSONUtilities.stringify(template);
-      break;
-    case CFNTemplateFormat.YAML:
-      serializedTemplate = yaml.dump(template);
-      break;
-    default:
-      throw new Error(`Unexpected CFN template format ${mergedOptions.templateFormat}`);
-  }
-  return fs.writeFile(filePath, serializedTemplate);
 }
