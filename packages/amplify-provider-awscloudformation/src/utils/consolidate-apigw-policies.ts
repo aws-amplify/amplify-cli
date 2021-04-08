@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { $TSAny, $TSContext, $TSObject, FeatureFlags, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
@@ -172,10 +172,6 @@ function computePolicySizeIncrease(methodLength: number, pathLength: number, nam
 }
 
 export function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): $TSObject {
-  if (!FeatureFlags.getBoolean('restAPI.consolidateManagedPolicies')) {
-    return {};
-  }
-
   const apiGateways = [];
   const { amplifyMeta } = context.amplify.getProjectDetails();
   const apis = amplifyMeta?.api ?? {};

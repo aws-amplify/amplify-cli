@@ -1,7 +1,6 @@
 import { serviceMetadataFor } from './utils/dynamic-imports';
 import fs from 'fs-extra';
 import path from 'path';
-import { FeatureFlags } from 'amplify-cli-core';
 import { parametersFileName, cfnParametersFilename, rootAssetDir } from './aws-constants';
 
 // this is the old logic for generating resources in the project directory
@@ -65,13 +64,9 @@ export const copyCfnTemplate = (context, category, options, cfnFilename) => {
       target: `${targetDir}/${category}/${options.resourceName}/${options.resourceName}-cloudformation-template.json`,
     },
   ];
-  const optionsWithFeatureFlags = {
-    ...options,
-    consolidateManagedPolicies: FeatureFlags.getBoolean('restAPI.consolidateManagedPolicies'),
-  };
 
   // copy over the files
-  return context.amplify.copyBatch(context, copyJobs, optionsWithFeatureFlags, true, false);
+  return context.amplify.copyBatch(context, copyJobs, options, true, false);
 };
 
 export const addPolicyResourceNameToPaths = paths => {
