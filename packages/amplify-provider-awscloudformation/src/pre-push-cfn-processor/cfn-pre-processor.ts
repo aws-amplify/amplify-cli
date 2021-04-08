@@ -8,7 +8,9 @@ const buildDir = 'build';
 
 /**
  * Runs transformations on a CFN template and returns a path to the transformed template
- * @param filePath the original template path (expects a path within the Amplify backend directory)
+ *
+ * Expects to be run in an initialized Amplify project
+ * @param filePath the original template path
  * @returns The file path of the modified template
  */
 export async function preProcessCFNTemplate(filePath: string): Promise<string> {

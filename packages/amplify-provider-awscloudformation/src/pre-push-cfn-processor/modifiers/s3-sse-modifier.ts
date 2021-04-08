@@ -1,5 +1,4 @@
 import Bucket, { BucketEncryption, ServerSideEncryptionByDefault, ServerSideEncryptionRule } from 'cloudform-types/types/s3/bucket';
-import _ from 'lodash';
 import { ResourceModifier } from '../pre-push-cfn-modifier';
 
 export const applyS3SSEModification: ResourceModifier = async (resource: Bucket) => {

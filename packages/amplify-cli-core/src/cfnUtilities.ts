@@ -4,7 +4,7 @@ import { JSONUtilities } from './jsonUtilities';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-export async function readCFNTemplate(filePath: string): Promise<TemplateAndFormatTuple> {
+export async function readCFNTemplate(filePath: string): Promise<{ templateFormat: CFNTemplateFormat; cfnTemplate: Template }> {
   if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile) {
     throw new Error(`No CloudFormation template found at ${filePath}`);
   }
@@ -16,11 +16,6 @@ export async function readCFNTemplate(filePath: string): Promise<TemplateAndForm
   const templateFormat = isJson ? CFNTemplateFormat.JSON : CFNTemplateFormat.YAML;
   return { templateFormat, cfnTemplate };
 }
-
-export type TemplateAndFormatTuple = {
-  templateFormat: CFNTemplateFormat;
-  cfnTemplate: Template;
-};
 
 export enum CFNTemplateFormat {
   JSON = 'json',
