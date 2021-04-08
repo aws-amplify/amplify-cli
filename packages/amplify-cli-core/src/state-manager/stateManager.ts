@@ -218,7 +218,6 @@ export class StateManager {
 
   setResourceParametersJson = (projectPath: string | undefined, category: string, resourceName: string, parameters: $TSAny): void => {
     const filePath = pathManager.getResourceParamatersFilePath(projectPath, category, resourceName);
-
     JSONUtilities.writeJson(filePath, parameters);
   };
 

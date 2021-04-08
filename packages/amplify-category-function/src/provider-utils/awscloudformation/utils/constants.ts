@@ -12,6 +12,8 @@ export const appsyncTableSuffix = '@model(appsync)';
 export const resourceAccessSetting = 'Resource access permissions';
 export const cronJobSetting = 'Scheduled recurring invocation';
 export const lambdaLayerSetting = 'Lambda layers configuration';
+export const accessPermissions = 'Access permissions';
+export const description = 'Description';
 
 export const enum ServiceName {
   LambdaFunction = 'Lambda',

@@ -41,6 +41,7 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
+import { prePushLambdaLayerPrompt } from './prePushLambdaLayerPrompt';
 
 const logger = fileLogger('push-resources');
 
@@ -56,13 +57,12 @@ const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
 
-
 const deploymentInProgressErrorMessage = (context: $TSContext) => {
   context.print.error('A deployment is in progress.');
   context.print.error('If the prior rollback was aborted, run:');
   context.print.error('"amplify push --iterative-rollback" to rollback the prior deployment');
   context.print.error('"amplify push --force" to re-deploy');
-}
+};
 
 export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
@@ -118,7 +118,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
         await context.amplify.invokePluginMethod(context, 'hosting', 'ElasticContainer', 'generateHostingResources', [context, resource]);
       }
     }
-
+    await prePushLambdaLayerPrompt(context, resources);
     await prepareBuildableResources(context, resources);
 
     await transformGraphQLSchema(context, {
@@ -216,7 +216,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
           try {
             fs.removeSync(stateFolder.local);
           } catch (err) {
-            context.print.error(`Could not delete state directory locally: ${err}`)
+            context.print.error(`Could not delete state directory locally: ${err}`);
           }
         }
         if (stateFolder.cloud) {
