@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.16.3-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.16.2...amplify-e2e-core@1.16.3-beta.0) (2021-04-08)
+
+
+### Bug Fixes
+
+* **cli:** use more inclusive language ([#6919](https://github.com/aws-amplify/amplify-cli/issues/6919)) ([bb70464](https://github.com/aws-amplify/amplify-cli/commit/bb70464d6c24fa931c0eb80d234a496d936913f5))
+
+
+### Reverts
+
+* Revert "Init and Configure DX changes (#6745)" ([9078b69](https://github.com/aws-amplify/amplify-cli/commit/9078b69b5842c99f0624797a5e897353bacb65d0)), closes [#6745](https://github.com/aws-amplify/amplify-cli/issues/6745)
+
+
+
+
+
 ## [1.16.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.16.1...amplify-e2e-core@1.16.2) (2021-03-23)
 
 

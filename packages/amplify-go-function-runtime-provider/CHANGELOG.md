@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.6.4...amplify-go-function-runtime-provider@1.6.5-beta.0) (2021-04-08)
+
+
+### Bug Fixes
+
+* **amplify-go-function-runtime-provider:** update deadline logic ([#6929](https://github.com/aws-amplify/amplify-cli/issues/6929)) ([d67af76](https://github.com/aws-amplify/amplify-cli/commit/d67af7689efecdd9282eba8cfd678223f729cf64))
+
+
+
+
+
 ## [1.6.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.6.3...amplify-go-function-runtime-provider@1.6.4) (2021-03-11)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider

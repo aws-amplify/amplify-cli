@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.29.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.29.4...amplify-util-mock@3.29.5-beta.0) (2021-04-08)
+
+
+### Bug Fixes
+
+* **amplify-util-mock:** mock appsync key when server is running ([#6923](https://github.com/aws-amplify/amplify-cli/issues/6923)) ([1ee817c](https://github.com/aws-amplify/amplify-cli/commit/1ee817cf40efb73930ca17360ef3c35e04dd8c1b))
+
+
+
+
+
 ## [3.29.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.29.3...amplify-util-mock@3.29.4) (2021-03-24)
 
 **Note:** Version bump only for package amplify-util-mock

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.18.12-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.18.11...amplify-frontend-ios@2.18.12-beta.0) (2021-04-08)
+
+
+### Reverts
+
+* Revert "Init and Configure DX changes (#6745)" ([9078b69](https://github.com/aws-amplify/amplify-cli/commit/9078b69b5842c99f0624797a5e897353bacb65d0)), closes [#6745](https://github.com/aws-amplify/amplify-cli/issues/6745)
+
+
+
+
+
 ## [2.18.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.18.10...amplify-frontend-ios@2.18.11) (2021-03-11)
 
 **Note:** Version bump only for package amplify-frontend-ios
