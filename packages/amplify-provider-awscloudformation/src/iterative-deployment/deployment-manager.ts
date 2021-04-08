@@ -31,9 +31,9 @@ export class DeploymentError extends Error {
     this.name = `DeploymentError`;
     const stackTrace = [];
     for (const err of errors) {
-      stackTrace.push(`Index: ${err.currentIndex} State: ${err.stateValue}\n${err.error.stack}`);
+      stackTrace.push(`Index: ${err.currentIndex} State: ${err.stateValue} Message: ${err.error.message}`);
     }
-    this.stack = JSON.stringify(stackTrace);
+    this.message = JSON.stringify(stackTrace);
   }
 }
 
@@ -230,7 +230,7 @@ export class DeploymentManager {
     }
   };
 
-  private getTableStatus = async (tableName: string, region: string): Promise<boolean> => {
+  private getTableStatus = async (tableName: string): Promise<boolean> => {
     assert(tableName, 'table name should be passed');
 
     const response = await this.ddbClient.describeTable({ TableName: tableName }).promise();
@@ -239,13 +239,17 @@ export class DeploymentManager {
   };
 
   private waitForIndices = async (stackParams: DeploymentMachineOp) => {
-    if (stackParams.tableNames.length) console.log('\nWaiting for DynamoDB table indices to be ready');
+    if (stackParams.tableNames.length) {
+      console.log('\nWaiting for DynamoDB table indices to be ready');
+      // cfn is async to ddb gsi creation the api can return true before the gsi creation starts
+      await new Promise(res => setTimeout(res, 2000));
+    }
     const throttledGetTableStatus = throttle(this.getTableStatus, this.options.throttleDelay);
 
     const waiters = stackParams.tableNames.map(name => {
       return new Promise(resolve => {
         let interval = setInterval(async () => {
-          const areIndexesReady = await throttledGetTableStatus(name, this.region);
+          const areIndexesReady = await throttledGetTableStatus(name);
           if (areIndexesReady) {
             clearInterval(interval);
             resolve(undefined);

@@ -111,6 +111,8 @@ export class GraphQLResourceManager {
 
   // save states to build with a copy of build on every deploy
   getDeploymentSteps = async (): Promise<DeploymentStep[]> => {
+    if (this.templateState.isEmpty()) return [];
+
     let count = 1;
 
     const gqlSteps = new Array<DeploymentStep>();

@@ -41,7 +41,7 @@ const appSyncOptions = ['Query', 'Mutation', 'Subscription'];
 
 const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: any) => {
   multiSelect(
-    chain.sendLine('y').wait('Select the categories you want this function to have access to'),
+    chain.wait('Select the categories you want this function to have access to'),
     settings.additionalPermissions.permissions,
     settings.additionalPermissions.choices,
   );
@@ -148,6 +148,7 @@ const coreFunction = (
         chain.sendLine('y').wait('Do you want to access other resources in this project from your Lambda function?');
         if (settings.additionalPermissions) {
           // other permissions flow
+          chain.sendLine('y');
           additionalPermissions(cwd, chain, settings);
         } else {
           chain.sendLine('n');

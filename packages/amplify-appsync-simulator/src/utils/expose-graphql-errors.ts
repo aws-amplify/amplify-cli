@@ -9,17 +9,14 @@
  *
  */
 
-import { GraphQLError } from 'graphql';
 export function exposeGraphQLErrors(errors = []) {
-  return errors
-    .filter(e => e.extensions || e instanceof GraphQLError)
-    .map(e => {
-      if (e.extensions) {
-        const additionalProps = Object.entries(e.extensions).reduce((sum, [k, v]) => {
-          return { ...sum, [k]: { value: v, enumerable: true } };
-        }, {});
-        return Object.defineProperties({}, additionalProps);
-      }
-      return e;
-    });
+  return errors.map(e => {
+    if (e.extensions) {
+      const additionalProps = Object.entries(e.extensions).reduce((sum, [k, v]) => {
+        return { ...sum, [k]: { value: v, enumerable: true } };
+      }, {});
+      return Object.defineProperties({}, additionalProps);
+    }
+    return e;
+  });
 }
