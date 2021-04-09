@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.38.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.37.1...amplify-e2e-tests@2.38.1) (2021-04-09)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add lambda with AdminQueries API permissions ([#6935](https://github.com/aws-amplify/amplify-cli/issues/6935)) ([756b0f7](https://github.com/aws-amplify/amplify-cli/commit/756b0f70e3b060a4603290c0ab1ff7e3033d6021)), closes [#6576](https://github.com/aws-amplify/amplify-cli/issues/6576)
+* **cli:** use more inclusive language ([#6919](https://github.com/aws-amplify/amplify-cli/issues/6919)) ([bb70464](https://github.com/aws-amplify/amplify-cli/commit/bb70464d6c24fa931c0eb80d234a496d936913f5))
+
+
+
+
+
 ## [2.37.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.37.0...amplify-e2e-tests@2.37.1) (2021-03-24)
 
 

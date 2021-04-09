@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.25.6...amplify-appsync-simulator@1.26.1) (2021-04-09)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** expose other than GraphQLError ([#6625](https://github.com/aws-amplify/amplify-cli/issues/6625)) ([b72a29c](https://github.com/aws-amplify/amplify-cli/commit/b72a29c8c4d302ff99e53ad179f99bc7442f2c59))
+* **amplify-appsync-simulator:** map info to Java objects ([#6915](https://github.com/aws-amplify/amplify-cli/issues/6915)) ([434c2aa](https://github.com/aws-amplify/amplify-cli/commit/434c2aa5f3cdeb4e98355971d29d4c0d17986944))
+* **cli:** use more inclusive language ([#6919](https://github.com/aws-amplify/amplify-cli/issues/6919)) ([bb70464](https://github.com/aws-amplify/amplify-cli/commit/bb70464d6c24fa931c0eb80d234a496d936913f5))
+
+
+
+
+
 ## [1.25.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.25.5...amplify-appsync-simulator@1.25.6) (2021-03-24)
 
 **Note:** Version bump only for package amplify-appsync-simulator

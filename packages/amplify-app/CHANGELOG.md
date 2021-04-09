@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.21.6...amplify-app@2.23.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* amplify-app import -> require ([#7022](https://github.com/aws-amplify/amplify-cli/issues/7022)) ([bc92eb8](https://github.com/aws-amplify/amplify-cli/commit/bc92eb8239e1cacf77b31530ab9cd78d9d2d507a))
+
+
+### Features
+
+* added more explicit messaging ([#6797](https://github.com/aws-amplify/amplify-cli/issues/6797)) ([eb9257e](https://github.com/aws-amplify/amplify-cli/commit/eb9257eaee117d0ed53ebc23aa28ecd7b7510fa1))
+
+
+
+
+
 ## [2.21.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.21.5...amplify-app@2.21.6) (2021-03-11)
 
 **Note:** Version bump only for package amplify-app
