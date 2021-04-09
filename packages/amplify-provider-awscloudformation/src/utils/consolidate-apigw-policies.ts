@@ -184,7 +184,9 @@ export function consolidateApiGatewayPolicies(context: $TSContext, stackName: st
       return;
     }
 
-    apiGateways.push({ ...resource, resourceName, params: apiParams });
+    const api = { ...resource, resourceName, params: apiParams };
+    updateExistingApiCfn(context, api);
+    apiGateways.push(api);
   });
 
   if (apiGateways.length === 0) {
@@ -225,4 +227,30 @@ export function loadApiWithPrivacyParams(context: $TSContext, name: string, reso
   }
 
   return apiParams;
+}
+
+function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
+  const { resourceName } = api.params;
+  const cfnTemplate = path.join(getResourceDirPath(context, 'api', resourceName), `${resourceName}-cloudformation-template.json`);
+  const cfn: any = JSONUtilities.readJson(cfnTemplate, { throwIfNotExist: false }) ?? {};
+  const resources = cfn?.Resources ?? {};
+  let modified = false;
+
+  for (const resourceName in resources) {
+    const resource = resources[resourceName];
+
+    if (resource.Type === 'AWS::IAM::Policy') {
+      const roles = resource?.Properties?.Roles;
+      const roleName = roles?.[0].Ref;
+
+      if (roles.length === 1 && (roleName === 'authRoleName' || roleName === 'unauthRoleName')) {
+        delete resources[resourceName];
+        modified = true;
+      }
+    }
+  }
+
+  if (modified) {
+    JSONUtilities.writeJson(cfnTemplate, cfn);
+  }
 }
