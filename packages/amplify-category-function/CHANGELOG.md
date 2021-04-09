@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.30.5...amplify-category-function@2.31.1-beta.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* remove validator on function categories access prompt ([#6766](https://github.com/aws-amplify/amplify-cli/issues/6766)) ([a326934](https://github.com/aws-amplify/amplify-cli/commit/a3269348f089326cb88af4f0607c99f61006536e)), closes [#6719](https://github.com/aws-amplify/amplify-cli/issues/6719)
+* **amplify-category-function:** add condition for info printing ([#6967](https://github.com/aws-amplify/amplify-cli/issues/6967)) ([0c99bf6](https://github.com/aws-amplify/amplify-cli/commit/0c99bf672427dedd273d4100568894fa1fefd31e)), closes [/github.com/aws-amplify/amplify-cli/pull/6766#issuecomment-805291533](https://github.com//github.com/aws-amplify/amplify-cli/pull/6766/issues/issuecomment-805291533)
+
+
+
+
+
 ## [2.30.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.30.4...amplify-category-function@2.30.5) (2021-03-23)
 
 **Note:** Version bump only for package amplify-category-function

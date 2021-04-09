@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.47.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.46.1...@aws-amplify/cli@4.47.1-beta.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* update delete prompt text color to red ([#6881](https://github.com/aws-amplify/amplify-cli/issues/6881)) ([0546850](https://github.com/aws-amplify/amplify-cli/commit/0546850484fac85023573b4bbeba7d46c0b34970))
+* **amplify-cli:** add a warning on entering invalid subcommand for amplify env ([#6925](https://github.com/aws-amplify/amplify-cli/issues/6925)) ([2dfd2ac](https://github.com/aws-amplify/amplify-cli/commit/2dfd2acac1a721e174818eebd36332679197d25d))
+
+
+
+
+
 ## [4.46.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.46.0...@aws-amplify/cli@4.46.1) (2021-03-24)
 
 

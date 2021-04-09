@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.42.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.40.3...amplify-provider-awscloudformation@4.42.0-beta.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* **amplify-provider-awscloudformation:** add slow down on index check ([#7012](https://github.com/aws-amplify/amplify-cli/issues/7012)) ([f70855c](https://github.com/aws-amplify/amplify-cli/commit/f70855cc51523a9446dbaa79b771eac488b64a77))
+* **amplify-provider-awscloudformation:** fix http path for s3 url ([#6981](https://github.com/aws-amplify/amplify-cli/issues/6981)) ([24457ed](https://github.com/aws-amplify/amplify-cli/commit/24457eda4bff45cdb5354733db26af27171dee1b))
+* **amplify-provider-awscloudformation:** fix state dir creation when there are no template state changes ([#7010](https://github.com/aws-amplify/amplify-cli/issues/7010)) ([f5cbdcb](https://github.com/aws-amplify/amplify-cli/commit/f5cbdcbdf9b4bea84b48c668e8016524574b3afe))
+* **amplify-provider-awscloudformation:** fix test ([#6955](https://github.com/aws-amplify/amplify-cli/issues/6955)) ([27030ea](https://github.com/aws-amplify/amplify-cli/commit/27030eaae7ad83b32af18aa448743a994eb23d9d))
+* **amplify-provider-awscloudformation:** overriding credentials for env ([#6941](https://github.com/aws-amplify/amplify-cli/issues/6941)) ([d647827](https://github.com/aws-amplify/amplify-cli/commit/d647827ed0792d3c764de88d874d917231c055f5)), closes [#4952](https://github.com/aws-amplify/amplify-cli/issues/4952)
+
+
+### Features
+
+* **amplify-provider-awscloudformation:** add CFN logging ([#6161](https://github.com/aws-amplify/amplify-cli/issues/6161)) ([f51b6af](https://github.com/aws-amplify/amplify-cli/commit/f51b6aff928862594ed30bcab15d827ef6ca24da)), closes [#6119](https://github.com/aws-amplify/amplify-cli/issues/6119)
+
+
+### Reverts
+
+* Revert "Init and Configure DX changes (#6745)" ([9078b69](https://github.com/aws-amplify/amplify-cli/commit/9078b69b5842c99f0624797a5e897353bacb65d0)), closes [#6745](https://github.com/aws-amplify/amplify-cli/issues/6745)
+
+
+
+
+
 ## [4.40.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.40.2...amplify-provider-awscloudformation@4.40.3) (2021-03-23)
 
 
