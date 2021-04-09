@@ -66,6 +66,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
       await sequential(initializationTasks);
     } catch (e) {
       context.print.error(`Could not initialize '${currentEnv}': ${e.message}`);
+      context.usageData.emitError(e);
       process.exit(1);
     }
 

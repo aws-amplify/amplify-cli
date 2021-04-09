@@ -7,6 +7,7 @@ export class UsageDataPayload {
   installationUuid: string;
   amplifyCliVersion: string;
   input: Input | null;
+  inputOptions: InputOptions;
   timestamp: string;
   error!: SerializableError;
   payloadVersion: string;
@@ -15,7 +16,19 @@ export class UsageDataPayload {
   nodeVersion: string;
   state: string;
   isCi: boolean;
-  constructor(sessionUuid: string, installationUuid: string, version: string, input: Input, error: Error | null, state: string) {
+  accountId: string;
+  projectSetting: ProjectSettings;
+  constructor(
+    sessionUuid: string,
+    installationUuid: string,
+    version: string,
+    input: Input,
+    error: Error | null,
+    state: string,
+    accountId: string,
+    project: ProjectSettings,
+    inputOptions: InputOptions,
+  ) {
     this.sessionUuid = sessionUuid;
     this.installationUuid = installationUuid;
     this.amplifyCliVersion = version;
@@ -26,12 +39,23 @@ export class UsageDataPayload {
     this.nodeVersion = process.versions.node;
     this.state = state;
     this.payloadVersion = getLatestPayloadVersion();
+    this.accountId = accountId;
     this.isCi = ci.isCI;
+    this.projectSetting = project;
+    this.inputOptions = inputOptions;
     if (error) {
       this.error = new SerializableError(error);
     }
   }
 }
+
+export type ProjectSettings = {
+  frontend?: string;
+  editor?: string;
+  framework?: string;
+};
+
+export type InputOptions = Record<string, string | boolean>;
 export class SerializableError {
   name: string;
   constructor(error: Error) {

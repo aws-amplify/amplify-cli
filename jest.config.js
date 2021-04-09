@@ -37,7 +37,6 @@ module.exports = {
     '<rootDir>/packages/amplify-cli',
     '<rootDir>/packages/amplify-cli-core',
     '<rootDir>/packages/amplify-cli-logger',
-    '<rootDir>/packages/amplify-codegen',
     '<rootDir>/packages/amplify-codegen-appsync-model-plugin',
     '<rootDir>/packages/amplify-dynamodb-simulator',
     '<rootDir>/packages/amplify-frontend-android',

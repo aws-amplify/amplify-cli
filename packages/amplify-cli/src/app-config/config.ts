@@ -54,7 +54,7 @@ class Config {
 }
 
 class UsageDataConfig {
-  installationUuid: String;
+  installationUuid: string;
   isUsageTrackingEnabled: boolean;
 
   constructor() {
