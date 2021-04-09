@@ -3,10 +3,10 @@ import { pythonBuild } from './util/buildUtils';
 import { pythonPackage } from './util/packageUtils';
 import { pythonInvoke } from './util/invokeUtil';
 import { checkDeps } from './util/depUtils';
+import path from 'path';
 import { layerPythonPipFile, relativeShimPath } from './constants';
 import { GetPackageAssetPaths } from 'amplify-cli-core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import fs from 'fs-extra';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
