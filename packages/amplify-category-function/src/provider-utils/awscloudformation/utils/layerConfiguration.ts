@@ -4,7 +4,7 @@ import path from 'path';
 import { categoryName } from './constants';
 import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
-type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes'>;
+export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes'>;
 const layerConfigurationFileName = 'layer-configuration.json';
 
 export function createLayerConfiguration(layerDirPath: string, parameters: LayerConfiguration) {
@@ -40,7 +40,7 @@ export function saveLayerPermissions(layerDirPath: string, permissions: LayerPer
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 
-function loadLayerConfigurationFile(backendDirPath: string, layerName: string) {
+export function loadLayerConfigurationFile(backendDirPath: string, layerName: string) {
   const layerConfigFilePath = path.join(backendDirPath, categoryName, layerName, layerConfigurationFileName);
   return JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
 }
@@ -51,5 +51,5 @@ function loadLayerCloudTemplateRuntimes(layerName: string): string[] {
 }
 
 function toStoredRuntimeMetadata(runtimes: LayerRuntime[]) {
-  return runtimes.map(runtime => _.pick(runtime, 'value', 'name', 'layerExecutablePath'));
+  return runtimes.map(runtime => _.pick(runtime, 'value', 'name', 'runtimePluginId', 'layerExecutablePath', 'layerDefaultFiles'));
 }

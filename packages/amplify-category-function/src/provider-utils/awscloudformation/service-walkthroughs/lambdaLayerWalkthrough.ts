@@ -37,6 +37,7 @@ export async function createLayerWalkthrough(
     layerExecutablePath: val.runtime.layerExecutablePath,
     cloudTemplateValues: [val.runtime.cloudTemplateValue],
     layerDefaultFiles: val.runtime?.layerDefaultFiles ?? [],
+    runtimePluginId: val.runtimePluginId,
   })) as LayerRuntime[];
 
   let layerInputParameters: LayerInputParams = {};
