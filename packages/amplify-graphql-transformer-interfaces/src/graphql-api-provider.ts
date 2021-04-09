@@ -1,7 +1,7 @@
 import { NoneDataSource, HttpDataSource, DynamoDbDataSource, LambdaDataSource, BaseDataSource, CfnResolver } from '@aws-cdk/aws-appsync';
 import { IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
 import { ITable } from '@aws-cdk/aws-dynamodb';
-import { CfnResource, Construct, IAsset, IConstruct, Stack } from '@aws-cdk/core';
+import { CfnResource, Construct, Duration, IAsset, IConstruct, Stack } from '@aws-cdk/core';
 import { Grant, IGrantable, IRole } from '@aws-cdk/aws-iam';
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
@@ -90,6 +90,7 @@ export interface GraphQLAPIProvider {
     layers?: ILayerVersion[],
     role?: IRole,
     environment?: { [key: string]: string },
+    timeout?: Duration,
     stack?: Stack,
   ) => IFunction;
 
