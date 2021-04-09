@@ -580,11 +580,7 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
     }
   } else if (authType.type === 'profile') {
     try {
-      if (authType?.profileName) {
-        awsConfig = await systemConfigManager.getProfiledAwsConfig(context, authType.profileName);
-      } else {
-        throw Error('Project configuration invalid. Missing profile name.');
-      }
+      awsConfig = await systemConfigManager.getProfiledAwsConfig(context, authType.profileName);
     } catch (e) {
       context.print.error(`Failed to get profile: ${e.message || e}`);
       await context.usageData.emitError(e);
@@ -710,11 +706,7 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsConfig> {
   if (awsConfigInfo.configLevel === 'project') {
     if (awsConfigInfo.config.useProfile) {
       try {
-        if (awsConfigInfo.config.profileName) {
-          awsConfig = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
-        } else {
-          throw Error('Project configuration invalid. Missing profile name.');
-        }
+        awsConfig = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
       } catch (e) {
         context.print.error(`Failed to get profile: ${e.message || e}`);
         await context.usageData.emitError(e);
