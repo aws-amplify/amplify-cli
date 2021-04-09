@@ -3,12 +3,6 @@
     "Description": "API Gateway resource stack creation using Amplify CLI",
     <% if (props.dependsOn) { %>
     "Parameters": {
-        "authRoleName": {
-            "Type":  "String"
-        },
-        "unauthRoleName": {
-            "Type":  "String"
-        },
         "env": {
             "Type": "String"
         }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>

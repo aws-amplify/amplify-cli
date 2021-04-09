@@ -30,16 +30,18 @@ const API_PARAMS_FILE = 'api-params.json';
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
 const MAX_MANAGED_POLICY_SIZE = 6_144;
 const S3_UPLOAD_PATH = `api/${APIGW_AUTH_STACK_LOGICAL_ID}.json`;
+const AUTH_ROLE_NAME = 'authRoleName';
+const UNAUTH_ROLE_NAME = 'unauthRoleName';
 
 class ApiGatewayAuthStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: ApiGatewayAuthStackProps) {
     super(scope, id, props);
     this.templateOptions.templateFormatVersion = CFN_TEMPLATE_FORMAT_VERSION;
 
-    const authRoleName = new cdk.CfnParameter(this, 'authRoleName', {
+    const authRoleName = new cdk.CfnParameter(this, AUTH_ROLE_NAME, {
       type: 'String',
     });
-    const unauthRoleName = new cdk.CfnParameter(this, 'unauthRoleName', {
+    const unauthRoleName = new cdk.CfnParameter(this, UNAUTH_ROLE_NAME, {
       type: 'String',
     });
     const env = new cdk.CfnParameter(this, 'env', {
@@ -231,11 +233,24 @@ export function loadApiWithPrivacyParams(context: $TSContext, name: string, reso
 
 function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
   const { resourceName } = api.params;
-  const cfnTemplate = path.join(getResourceDirPath(context, 'api', resourceName), `${resourceName}-cloudformation-template.json`);
+  const resourceDir = getResourceDirPath(context, 'api', resourceName);
+  const cfnTemplate = path.join(resourceDir, `${resourceName}-cloudformation-template.json`);
+  const paramsFile = path.join(resourceDir, 'parameters.json');
   const cfn: any = JSONUtilities.readJson(cfnTemplate, { throwIfNotExist: false }) ?? {};
+  const parameterJson = JSONUtilities.readJson(paramsFile, { throwIfNotExist: false }) ?? {};
+  const parameters = cfn?.Parameters ?? {};
   const resources = cfn?.Resources ?? {};
   let modified = false;
 
+  for (const parameterName in parameters) {
+    if (parameterName === AUTH_ROLE_NAME || parameterName === UNAUTH_ROLE_NAME) {
+      delete parameters[parameterName];
+      delete parameterJson[parameterName];
+      modified = true;
+    }
+  }
+
+  // eslint-disable-next-line guard-for-in
   for (const resourceName in resources) {
     const resource = resources[resourceName];
 
@@ -243,7 +258,7 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
       const roles = resource?.Properties?.Roles;
       const roleName = roles?.[0].Ref;
 
-      if (roles.length === 1 && (roleName === 'authRoleName' || roleName === 'unauthRoleName')) {
+      if (roles.length === 1 && (roleName === AUTH_ROLE_NAME || roleName === UNAUTH_ROLE_NAME)) {
         delete resources[resourceName];
         modified = true;
       }
@@ -252,5 +267,6 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
 
   if (modified) {
     JSONUtilities.writeJson(cfnTemplate, cfn);
+    JSONUtilities.writeJson(paramsFile, parameterJson);
   }
 }
