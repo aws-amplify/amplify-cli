@@ -1,6 +1,5 @@
 import { pathManager, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { ProviderName as providerName } from '../constants';
 import { prePushCfnTemplateModifier } from './pre-push-cfn-modifier';
 
@@ -21,7 +20,6 @@ export async function preProcessCFNTemplate(filePath: string): Promise<string> {
   const backendDir = pathManager.getBackendDirPath();
   const pathSuffix = filePath.startsWith(backendDir) ? filePath.slice(backendDir.length) : path.parse(filePath).base;
   const newPath = path.join(backendDir, providerName, buildDir, pathSuffix);
-  await fs.ensureDir(path.parse(newPath).dir);
 
   await writeCFNTemplate(cfnTemplate, newPath, { templateFormat });
   return newPath;

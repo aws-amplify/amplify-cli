@@ -4,6 +4,7 @@ import { S3 } from '../aws-utils/aws-s3';
 import constants from '../constants';
 import { NetworkStack } from '../network/stack';
 import { getEnvironmentNetworkInfo } from '../network/environment-info';
+import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
 
 const { ProviderName: providerName } = constants;
 
@@ -51,6 +52,7 @@ async function createNetworkResources(context: any, stackName: string, needsVpc:
   });
 
   const cfn = stack.toCloudFormation();
+  await prePushCfnTemplateModifier(cfn);
 
   const cfnFile = 'networkingStackTemplate.json';
 
