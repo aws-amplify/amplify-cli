@@ -284,7 +284,25 @@ function getProfileCredentials(profileName) {
       }
     });
   }
-  return normalizeKeys(profileCredentials);
+  profileCredentials = normalizeKeys(profileCredentials);
+  validateCredentials(profileCredentials, profileName);
+  return profileCredentials;
+}
+
+function validateCredentials(credentials, profileName) {
+  const missingKeys = [];
+  if (!credentials?.accessKeyId) {
+    missingKeys.push('aws_access_key_id');
+  }
+  if (!credentials?.secretAccessKey) {
+    missingKeys.push('aws_secret_access_key');
+  }
+  if (missingKeys.length > 0) {
+    const err = new Error(`Profile configuration for '${profileName}' is invalid: missing ${missingKeys.join(', ')}`);
+    logger('validateCredentials', [profileName])(err);
+    err.stack = undefined;
+    throw err;
+  }
 }
 
 function normalizeKeys(config) {
