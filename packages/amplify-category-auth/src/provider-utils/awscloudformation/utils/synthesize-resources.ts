@@ -6,7 +6,6 @@ import { cfnTemplateRoot, privateKeys, adminAuthAssetRoot, triggerRoot, ENV_SPEC
 import { pathManager, JSONUtilities, FeatureFlags } from 'amplify-cli-core';
 import { get } from 'lodash';
 import { authProviders } from '../assets/string-maps';
-import _ from 'lodash';
 import { generateNestedAuthTriggerTemplate } from './generate-auth-trigger-template';
 
 const category = 'auth';

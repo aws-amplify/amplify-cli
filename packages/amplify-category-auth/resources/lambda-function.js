@@ -12,7 +12,7 @@ exports.handler = function (event, context) {
       const authParams = { UserPoolId: userPoolId, LambdaConfig: {} };
       const cognitoclient = new aws.CognitoIdentityServiceProvider();
       promises.push(cognitoclient.updateUserPool(authParams).promise());
-      Promise.all(promises)
+      (async () => await Promise.all(promises))()
         .then(res => {
           console.log('delete response data ' + JSON.stringify(res));
           response.send(event, context, response.SUCCESS, {});
@@ -27,7 +27,7 @@ exports.handler = function (event, context) {
       console.log(authParams);
       const cognitoclient = new aws.CognitoIdentityServiceProvider();
       promises.push(cognitoclient.updateUserPool(authParams).promise());
-      Promise.all(promises)
+      (async () => await Promise.all(promises))()
         .then(res => {
           console.log('createOrUpdate ' + res);
           console.log('response data ' + JSON.stringify(res));
@@ -40,6 +40,6 @@ exports.handler = function (event, context) {
     }
   } catch (err) {
     console.log(err.stack);
-    response.send(event, context, response.FAILED, { err });
+    (async () => await response.send(event, context, response.FAILED, { err }))();
   }
 };
