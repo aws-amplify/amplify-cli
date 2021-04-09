@@ -216,7 +216,6 @@ export interface ProjectLayer {
   type: 'ProjectLayer';
   resourceName: string;
   version: number;
-  description: string;
 }
 
 export interface ExternalLayer {
