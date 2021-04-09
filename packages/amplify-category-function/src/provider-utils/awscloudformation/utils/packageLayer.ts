@@ -81,22 +81,29 @@ export async function checkContentChanges(context: $TSContext, resources: Array<
     context.print.info(prepushNotificationMessage.join(EOL));
     context.print.info('');
 
-    if (!(await context.prompt.confirm('Accept the suggested layer version configurations?', true))) {
-      for (const resource of changedResources) {
-        const parameters = await lambdaLayerNewVersionWalkthrough(
-          loadStoredLayerParameters(context, resource.resourceName),
-          timestampString,
-        );
-        await updateLayerArtifacts(context, parameters);
+    const accepted = await context.prompt.confirm('Accept the suggested layer version configurations?', true);
+    for (const resource of changedResources) {
+      let parameters = loadStoredLayerParameters(context, resource.resourceName);
+      if (accepted) {
+        parameters = await lambdaLayerNewVersionWalkthrough(parameters, timestampString);
+      } else {
+        parameters.description = `Updated layer version ${timestampString}`;
       }
+
+      await updateLayerArtifacts(context, parameters);
     }
   }
 }
 
+async function getChangedResources(resources: Array<any>): Promise<Array<any>> {
+  const resourceCheck = await Promise.all(resources.map(checkLambdaLayerChanges));
+  return resources.filter((_, i) => resourceCheck[i]);
+}
+
 async function checkLambdaLayerChanges(resource: any): Promise<boolean> {
   const { resourceName } = resource;
-  const currentHash = await hashLayerVersionContents(getLayerPath(resourceName));
   const previousHash = loadPreviousLayerHash(resourceName);
-  console.log(previousHash);
-  return previousHash ? currentHash !== previousHash : false;
+  if (!previousHash) return false;
+  const currentHash = await hashLayerVersionContents(getLayerPath(resourceName));
+  return currentHash !== previousHash;
 }

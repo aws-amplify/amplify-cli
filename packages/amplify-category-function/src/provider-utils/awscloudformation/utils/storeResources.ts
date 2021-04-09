@@ -101,6 +101,7 @@ export function saveCFNParameters(
 
 function createLayerState(parameters: LayerParameters, layerDirPath: string) {
   writeLayerRuntimesToParametersFile(parameters);
+  saveLayerDescription(parameters.layerName, parameters.description);
   createLayerConfiguration(layerDirPath, { permissions: parameters.permissions, runtimes: parameters.runtimes });
 }
 
