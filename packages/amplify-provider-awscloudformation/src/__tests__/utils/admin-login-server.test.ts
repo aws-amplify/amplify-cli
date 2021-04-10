@@ -5,6 +5,7 @@ const context_stub = ({} as unknown) as jest.Mocked<$TSContext>;
 const useMock = jest.fn();
 const postMock = jest.fn(async () => {});
 const listenMock = jest.fn();
+const serverCloseMock = jest.fn();
 
 jest.mock('express', () => {
   return () => {
@@ -27,5 +28,18 @@ describe('AdminLoginServer', () => {
     expect(useMock).toBeCalled();
     expect(postMock).toBeCalled();
     expect(listenMock).toBeCalledWith(4242, '0.0.0.0');
+  });
+  
+  test('shut down running server', async () => {
+    const adminLoginServer = new AdminLoginServer('appId', 'http://example.com', context_stub.print);
+    listenMock.mockReturnValue({ close: serverCloseMock });
+
+    await new Promise<void>(resolve => {
+      adminLoginServer.startServer(() => {
+      });
+      resolve();
+    });
+    adminLoginServer.shutdown();
+    expect(serverCloseMock).toBeCalled();
   });
 });
