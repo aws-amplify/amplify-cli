@@ -79,6 +79,7 @@
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.10.5",
     "@babel/plugin-proposal-numeric-separator": "^7.10.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.13.12",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "@babel/plugin-transform-typescript": "7.10.5",
     "@commitlint/cli": "^8.1.0",
