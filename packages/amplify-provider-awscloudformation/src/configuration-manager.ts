@@ -9,7 +9,7 @@ import awsRegions from './aws-regions';
 import constants from './constants';
 import setupNewUser from './setup-new-user';
 import obfuscateUtil from './utility-obfuscate';
-import systemConfigManager from './system-config-manager';
+import * as systemConfigManager from './system-config-manager';
 import { doAdminTokensExist, getTempCredsWithAdminTokens, isAmplifyAdminApp } from './utils/admin-helpers';
 import { resolveAppId } from './utils/resolve-appId';
 import { AuthFlow, AuthFlowConfig, AwsSdkConfig } from './utils/auth-types';
