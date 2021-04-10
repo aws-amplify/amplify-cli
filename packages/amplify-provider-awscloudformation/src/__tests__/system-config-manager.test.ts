@@ -1,5 +1,5 @@
-import { getProfileCredentials } from '../system-config-manager';
 import fs from 'fs-extra';
+const { getProfileCredentials } = require('../system-config-manager');
 
 jest.mock('../utils/aws-logger', () => ({
   fileLogger: () => jest.fn(() => jest.fn()),
