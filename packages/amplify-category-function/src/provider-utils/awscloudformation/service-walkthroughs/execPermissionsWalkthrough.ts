@@ -49,9 +49,9 @@ export const askExecRolePermissionsQuestions = async (
 
   const crudOptions = _.values(CRUDOperation);
   const graphqlOperations = _.values(GraphQLOperation);
-  let categoryPolicies = [];
-  let permissions = {};
-  let resources = [];
+  const categoryPolicies = [];
+  const permissions = {};
+  const resources = [];
   const backendDir = context.amplify.pathManager.getBackendDirPath();
 
   for (const selectedCategory of selectedCategories) {
@@ -130,12 +130,12 @@ export const askExecRolePermissionsQuestions = async (
             appsyncResourceName,
             selectedCategory,
           );
-          categoryPolicies = categoryPolicies.concat(permissionPolicies);
+          categoryPolicies.push(...permissionPolicies);
           if (!permissions[selectedCategory]) {
             permissions[selectedCategory] = {};
           }
           permissions[selectedCategory][resourceName] = resourcePolicy;
-          resources = resources.concat(cfnResources);
+          resources.push(...cfnResources);
         }
       }
     } catch (e) {
@@ -193,7 +193,6 @@ const selectPermissions = (choices: DistinctChoice<any>[], currentPermissions: a
 });
 
 export async function getResourcesForCfn(context, resourceName, resourcePolicy, appsyncResourceName, selectedCategory) {
-  let cfnResources = [];
   if (resourceName.endsWith(appsyncTableSuffix)) {
     resourcePolicy.providerPlugin = 'awscloudformation';
     resourcePolicy.service = 'DynamoDB';
@@ -219,21 +218,19 @@ export async function getResourcesForCfn(context, resourceName, resourcePolicy, 
   );
 
   // replace resource attributes for @model-backed dynamoDB tables
-  cfnResources = cfnResources.concat(
-    resourceAttributes.map(attributes =>
-      attributes.resourceName && attributes.resourceName.endsWith(appsyncTableSuffix)
-        ? {
-            resourceName: appsyncResourceName,
-            category: 'api',
-            attributes: ['GraphQLAPIIdOutput'],
-            needsAdditionalDynamoDBResourceProps: true,
-            // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
-            _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
-            _cfJoinComponentTableName: constructCFModelTableNameComponent(appsyncResourceName, attributes.resourceName, appsyncTableSuffix),
-            _cfJoinComponentTableArn: constructCFModelTableArnComponent(appsyncResourceName, attributes.resourceName, appsyncTableSuffix),
-          }
-        : attributes,
-    ),
+  const cfnResources = resourceAttributes.map(attributes =>
+    attributes.resourceName && attributes.resourceName.endsWith(appsyncTableSuffix)
+      ? {
+          resourceName: appsyncResourceName,
+          category: 'api',
+          attributes: ['GraphQLAPIIdOutput'],
+          needsAdditionalDynamoDBResourceProps: true,
+          // data to pass so we construct additional resourceProps for lambda envvar for @model back dynamoDB tables
+          _modelName: attributes.resourceName.replace(`:${appsyncTableSuffix}`, 'Table'),
+          _cfJoinComponentTableName: constructCFModelTableNameComponent(appsyncResourceName, attributes.resourceName, appsyncTableSuffix),
+          _cfJoinComponentTableArn: constructCFModelTableArnComponent(appsyncResourceName, attributes.resourceName, appsyncTableSuffix),
+        }
+      : attributes,
   );
   return { permissionPolicies, cfnResources };
 }

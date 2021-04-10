@@ -353,7 +353,7 @@ export function updateCFNFileForResourcePermissions(
     apiResourceName,
   );
 
-  if (!cfnContent.Resources.AmplifyResourcesPolicy) {
+  if (cfnContent.Resources.AmplifyResourcesPolicy > 0) {
     cfnContent.Resources.AmplifyResourcesPolicy = {
       DependsOn: ['LambdaExecutionRole'],
       Type: 'AWS::IAM::Policy',
@@ -366,16 +366,12 @@ export function updateCFNFileForResourcePermissions(
         ],
         PolicyDocument: {
           Version: '2012-10-17',
-          Statement: [],
+          Statement: functionParameters.categoryPolicies,
         },
       },
     };
-  }
-
-  if (functionParameters.categoryPolicies.length === 0) {
-    delete cfnContent.Resources.AmplifyResourcesPolicy;
   } else {
-    cfnContent.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement = functionParameters.categoryPolicies;
+    delete cfnContent.Resources.AmplifyResourcesPolicy;
   }
 
   cfnContent.Resources.LambdaFunction.Properties.Environment.Variables = getNewCFNEnvVariables(

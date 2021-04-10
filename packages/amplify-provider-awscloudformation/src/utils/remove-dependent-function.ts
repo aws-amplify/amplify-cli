@@ -1,8 +1,8 @@
 import { $TSAny, $TSContext, $TSObject, pathManager } from 'amplify-cli-core';
 import path from 'path';
-import * as TransformPackage from 'graphql-transformer-core';
+import { readProjectConfiguration, collectDirectivesByTypeNames } from 'graphql-transformer-core';
 
-export async function removeDependencyOnFunctions(
+export async function ensureValidFunctionModelDependencies(
   context: $TSContext,
   apiResource: $TSObject,
   allResources: $TSObject[],
@@ -11,15 +11,19 @@ export async function removeDependencyOnFunctions(
   let dependentFunctionResource;
   const backendDir = pathManager.getBackendDirPath();
   const currentBackendDir = pathManager.getCurrentCloudBackendDirPath();
-  const modelsDeleted = await getSchemaDiff(currentBackendDir, backendDir, apiResource[0].resourceName);
-  if (modelsDeleted.length) {
+  const modelsDeleted = await getModelNameDiff(currentBackendDir, backendDir, apiResource[0].resourceName);
+  if (modelsDeleted.length === 0) {
+    return dependentFunctionResource;
+  } else {
     dependentFunctionResource = await context.amplify.invokePluginMethod(context, 'function', undefined, 'lambdasWithApiDependency', [
       context,
       allResources,
       backendDir,
       modelsDeleted,
     ]);
-    if (dependentFunctionResource.length) {
+    if (dependentFunctionResource.length === 0) {
+      return dependentFunctionResource;
+    } else {
       const dependentFunctionsNames = dependentFunctionResource.map(lambda => lambda.resourceName);
       context.print.info('');
 
@@ -48,19 +52,19 @@ export async function removeDependencyOnFunctions(
   }
 }
 
-export async function getSchemaDiff(currentBackendDir: string, backendDir: string, apiResourceName: string) {
-  const deployedModelNames = await getDeployedModelNames(currentBackendDir, apiResourceName);
-  const currentModelNames = await getDeployedModelNames(backendDir, apiResourceName);
+async function getModelNameDiff(currentBackendDir: string, backendDir: string, apiResourceName: string) {
+  const deployedModelNames = await getModelNames(currentBackendDir, apiResourceName);
+  const currentModelNames = await getModelNames(backendDir, apiResourceName);
   const modelsDeleted = deployedModelNames.filter(val => !currentModelNames.includes(val));
   return modelsDeleted;
 }
 
-export async function getDeployedModelNames(backendDir: string, apiResourceName: string) {
+async function getModelNames(backendDir: string, apiResourceName: string) {
   // need all object type name definition node with @model directives present
   const appsyncTableSuffix = '@model(appsync)';
   const resourceDirPath = path.join(backendDir, 'api', apiResourceName);
-  const project = await TransformPackage.readProjectConfiguration(resourceDirPath);
-  const directivesMap: $TSAny = TransformPackage.collectDirectivesByTypeNames(project.schema);
+  const project = await readProjectConfiguration(resourceDirPath);
+  const directivesMap: $TSAny = collectDirectivesByTypeNames(project.schema);
   const modelNames = Object.keys(directivesMap.types)
     .filter(typeName => directivesMap.types[typeName].includes('model'))
     .map(modelName => `${modelName}:${appsyncTableSuffix}`);

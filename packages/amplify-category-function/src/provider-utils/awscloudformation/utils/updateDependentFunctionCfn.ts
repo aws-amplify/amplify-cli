@@ -22,7 +22,7 @@ export async function updateDependentFunctionsCfn(
     */
   // if the function is deleted -> not possible as have to remove api
   // initialize function parameters for update
-  for (let lambda of dependentFunctionResource) {
+  for (const lambda of dependentFunctionResource) {
     const resourceDirPath = path.join(backendDir, category, lambda.resourceName);
     const currentParameters = loadFunctionParameters(context, resourceDirPath);
     const selectedCategories = currentParameters.permissions;
