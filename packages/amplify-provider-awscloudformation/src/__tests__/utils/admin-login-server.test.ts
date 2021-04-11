@@ -35,9 +35,7 @@ describe('AdminLoginServer', () => {
     listenMock.mockReturnValue({ close: serverCloseMock });
 
     await new Promise<void>(resolve => {
-      adminLoginServer.startServer(() => {
-      });
-      resolve();
+      adminLoginServer.startServer(resolve);
     });
     adminLoginServer.shutdown();
     expect(serverCloseMock).toBeCalled();
