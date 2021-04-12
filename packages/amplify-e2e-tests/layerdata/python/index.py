@@ -1,6 +1,6 @@
-from testfunc import testString
+import string
 def handler(event, context):
   print('received event:', event)
   return {
-    'message': testString
+    'message': string.ascii_lowercase
   }

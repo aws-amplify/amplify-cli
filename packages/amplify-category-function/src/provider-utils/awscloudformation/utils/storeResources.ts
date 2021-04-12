@@ -8,9 +8,8 @@ import { functionParametersFileName, parametersFileName, provider, ServiceName }
 import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { createLayerConfiguration, saveLayerPermissions } from './layerConfiguration';
-import { isMultiEnvLayer, isNewVersion, loadLayerDataFromCloud } from './layerHelpers';
+import { isMultiEnvLayer, isNewVersion, loadLayerDataFromCloud, loadPreviousLayerHash } from './layerHelpers';
 import { LayerParameters, LayerRuntime } from './layerParams';
-import { loadPreviousLayerHash } from './packageLayer';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether

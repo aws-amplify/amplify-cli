@@ -10,7 +10,7 @@ import _ from 'lodash';
 export { buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 export { buildResource } from './provider-utils/awscloudformation/utils/build';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
-export { hashLayerResource } from './provider-utils/awscloudformation/utils/packageLayer';
+export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
