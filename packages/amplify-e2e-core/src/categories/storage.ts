@@ -486,7 +486,7 @@ export function addS3StorageWithSettings(projectDir: string, settings: AddStorag
 
 export function addDynamoDBWithGSIWithSettings(projectDir: string, settings: AddDynamoDBSettings): Promise<void> {
   return new Promise((resolve, reject) => {
-    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true, noOutputTimeout: 3001 });
+    let chain = spawn(getCLIPath(), ['add', 'storage'], { cwd: projectDir, stripColors: true, noOutputTimeout: 10001 });
 
     singleSelect(chain.wait('Please select from one of the below mentioned services:'), 'NoSQL Database', [
       'Content (Images, audio, video, etc.)',
