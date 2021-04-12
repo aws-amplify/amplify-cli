@@ -48,4 +48,14 @@ describe('amplify-resource-state-utils', () => {
     const tableNames = await getTableNames(cfnClientStub, tables, StackID);
     expect(tableNames).toEqual(expectedTableNameMap);
   });
+
+  test('test getPreviousDeploymentRecord', async () => {
+    const expectedPrevDeploymentRecord = {
+      'capabilities': ['CAPABILITY_IAM'],
+      'parameters': { 'TestParameterKey1': 'TestParameterValue1' },
+    };
+    const prevDeploymentRecord = await getPreviousDeploymentRecord(cfnClientStub, StackID);
+
+    expect(prevDeploymentRecord).toEqual(expectedPrevDeploymentRecord);
+  });
 });
