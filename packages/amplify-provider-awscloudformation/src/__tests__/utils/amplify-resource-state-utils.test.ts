@@ -51,8 +51,8 @@ describe('amplify-resource-state-utils', () => {
 
   test('test getPreviousDeploymentRecord', async () => {
     const expectedPrevDeploymentRecord = {
-      'capabilities': ['CAPABILITY_IAM'],
-      'parameters': { 'TestParameterKey1': 'TestParameterValue1' },
+      capabilities: ['CAPABILITY_IAM'],
+      parameters: { TestParameterKey1: 'TestParameterValue1' },
     };
     const prevDeploymentRecord = await getPreviousDeploymentRecord(cfnClientStub, StackID);
 
