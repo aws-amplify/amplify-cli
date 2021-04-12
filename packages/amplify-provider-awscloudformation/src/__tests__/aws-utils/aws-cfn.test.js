@@ -2,6 +2,7 @@ jest.mock('columnify');
 
 const CloudFormation = require('../../aws-utils/aws-cfn');
 const columnify = require('columnify');
+const { times } = require('lodash');
 
 describe('CloudFormation', () => {
   test('showNewEvents shows events order by Timestamp', async () => {
@@ -26,14 +27,15 @@ describe('CloudFormation', () => {
       showHeaders: false,
     };
     expect(columnify).toBeCalledTimes(1);
-    expect(columnify.mock.calls[0][0]).toMatchInlineSnapshot(`
+    const timestamps = columnify.mock.calls[0][0];
+    expect(timestamps.map(obj => Object.keys(obj))).toMatchInlineSnapshot(`
       Array [
-        Object {
-          "Timestamp": "[0mTue Dec 31 2019 16:00:00 GMT-0800 (Pacific Standard Time)[0m",
-        },
-        Object {
-          "Timestamp": "[0mThu Dec 31 2020 16:00:00 GMT-0800 (Pacific Standard Time)[0m",
-        },
+        Array [
+          "Timestamp",
+        ],
+        Array [
+          "Timestamp",
+        ],
       ]
     `);
     expect(columnify.mock.calls[0][1]).toEqual(columns);
