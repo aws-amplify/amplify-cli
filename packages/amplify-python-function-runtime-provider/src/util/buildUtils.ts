@@ -2,7 +2,6 @@ import fs from 'fs-extra';
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
 import glob from 'glob';
 import execa from 'execa';
-import { getPythonBinaryName } from './pyUtils';
 
 export async function pythonBuild(params: BuildRequest): Promise<BuildResult> {
   if (!params.lastBuildTimeStamp || isBuildStale(params.srcRoot, params.lastBuildTimeStamp)) {
