@@ -7,11 +7,7 @@ export async function packageResource(request: PackageRequest, context: any): Pr
   if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp || request.currentHash) {
     const resourcePath = request.service ? request.srcRoot : path.join(request.srcRoot, 'src');
     const packageHash = !request.skipHashing ? ((await context.amplify.hashDir(resourcePath, ['node_modules'])) as string) : undefined;
-    const zipEntries: ZipEntry[] = [];
-    if (request.service) {
-      const libGlob = glob.sync(resourcePath);
-      const layerDirPath = path.join(request.srcRoot, '..', '..');
-      const optPath = path.join(layerDirPath, 'opt');
+    const output = fs.createWriteStream(request.dstFilename);
 
       const conflicts: string[] = [];
       libGlob.forEach(lib => {
@@ -41,8 +37,11 @@ export async function packageResource(request: PackageRequest, context: any): Pr
       zipEntries.push({
         sourceFolder: resourcePath,
       });
-    }
-    return Promise.resolve({ packageHash, zipEntries });
+      const zip = archiver.create('zip', {});
+      zip.pipe(output);
+      zip.directory(path.join(resourcePath), false);
+      zip.finalize();
+    });
   }
   return Promise.resolve({});
 }

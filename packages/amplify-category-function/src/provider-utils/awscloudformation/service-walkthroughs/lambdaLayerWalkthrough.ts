@@ -12,6 +12,7 @@ import {
   layerPermissionsQuestion,
   layerVersionQuestion,
   loadLayerDataFromCloud,
+  loadPreviousLayerHash,
   loadStoredLayerParameters,
 } from '../utils/layerHelpers';
 import {
@@ -23,7 +24,6 @@ import {
   PermissionEnum,
   PrivateLayer,
 } from '../utils/layerParams';
-import { loadPreviousLayerHash } from '../utils/packageLayer';
 
 export async function createLayerWalkthrough(
   context: $TSContext,
