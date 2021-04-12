@@ -54,7 +54,7 @@ const defaultConfig = {
 };
 
 function getAngularConfig(context) {
-  const projectRoot = context.exeInfo.localEnvInfo.projectPath;
+  const projectRoot = context.exeInfo && context.exeInfo.localEnvInfo ? context.exeInfo.localEnvInfo.projectPath : process.cwd();
   const angularConfigFile = path.join(projectRoot, 'angular.json');
   let angularProjectConfig;
   try {
