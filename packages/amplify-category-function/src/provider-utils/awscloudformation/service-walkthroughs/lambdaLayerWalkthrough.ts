@@ -12,6 +12,7 @@ import {
   layerPermissionsQuestion,
   layerVersionQuestion,
   loadLayerDataFromCloud,
+  loadPreviousLayerHash,
   loadStoredLayerParameters,
 } from '../utils/layerHelpers';
 import { AccountsLayer, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum, PrivateLayer } from '../utils/layerParams';

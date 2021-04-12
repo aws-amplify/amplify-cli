@@ -51,5 +51,5 @@ function loadLayerCloudTemplateRuntimes(layerName: string): string[] {
 }
 
 function toStoredRuntimeMetadata(runtimes: LayerRuntime[]) {
-  return runtimes.map(runtime => _.pick(runtime, 'value', 'name', 'runtimePluginId', 'layerExecutablePath', 'layerDefaultFiles'));
+  return runtimes.map(runtime => _.pick(runtime, 'value', 'name', 'runtimePluginId', 'layerExecutablePath'));
 }

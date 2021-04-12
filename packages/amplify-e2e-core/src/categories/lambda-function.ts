@@ -259,7 +259,7 @@ export const functionBuild = (cwd: string, settings: any): Promise<void> => {
 
 export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
   const runtimeName = getRuntimeDisplayName(runtime);
-  chain.wait('Choose the runtime that you want to use');
+  chain.wait('Choose the runtime that you want to use:');
 
   // reset cursor to top of list because node is default but it throws off offset calculations
   moveUp(chain, runtimeChoices.indexOf(getRuntimeDisplayName('nodejs')));

@@ -87,6 +87,8 @@ export type PackageRequest = {
   lastBuildTimeStamp: Date;
   lastPackageTimeStamp?: Date;
   skipHashing?: boolean;
+  service?: string;
+  currentHash?: boolean;
 };
 
 // Result of building a function
