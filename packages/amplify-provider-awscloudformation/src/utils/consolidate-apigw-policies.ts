@@ -141,7 +141,6 @@ class ApiGatewayAuthStack extends cdk.Stack {
 function createManagedPolicy(stack: cdk.Stack, policyName: string, roleName: string): iam.CfnManagedPolicy {
   return new iam.CfnManagedPolicy(stack, policyName, {
     roles: [roleName],
-    managedPolicyName: policyName,
     policyDocument: {
       Version: '2012-10-17',
       Statement: [{ Effect: 'Allow', Action: ['execute-api:Invoke'], Resource: [] }],
