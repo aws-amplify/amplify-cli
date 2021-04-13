@@ -191,6 +191,8 @@ jobs:
             cd packages/graphql-transformers-e2e-tests/ && yarn e2e
             --maxWorkers=3
           no_output_timeout: 90m
+          environment:
+            AMPLIFY_CLI_DISABLE_LOGGING: "true"
       - store_test_results:
           path: packages/graphql-transformers-e2e-tests/
   amplify_sudo_install_test:
