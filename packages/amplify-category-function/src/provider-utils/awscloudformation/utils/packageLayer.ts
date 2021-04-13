@@ -65,7 +65,8 @@ export const packageLayer: Packager = async (context, resource) => {
 };
 
 export async function checkContentChanges(context: $TSContext, resources: Array<$TSAny>): Promise<void> {
-  const changedResources = resources.filter(checkLambdaLayerChanges);
+  const changedResources = await getChangedResources(resources);
+
   if (changedResources.length > 0) {
     context.print.info('Content changes in Lambda layers detected.');
     context.print.info('Suggested configuration for new layer versions:');
@@ -81,10 +82,11 @@ export async function checkContentChanges(context: $TSContext, resources: Array<
     context.print.info(prepushNotificationMessage.join(EOL));
     context.print.info('');
 
-    const accepted = await context.prompt.confirm('Accept the suggested layer version configurations?', true);
+    const accepted =
+      context.input.options?.yes || (await context.prompt.confirm('Accept the suggested layer version configurations?', true));
     for (const resource of changedResources) {
       let parameters = loadStoredLayerParameters(context, resource.resourceName);
-      if (accepted) {
+      if (!accepted) {
         parameters = await lambdaLayerNewVersionWalkthrough(parameters, timestampString);
       } else {
         parameters.description = `Updated layer version ${timestampString}`;
@@ -95,7 +97,7 @@ export async function checkContentChanges(context: $TSContext, resources: Array<
   }
 }
 
-async function getChangedResources(resources: Array<any>): Promise<Array<any>> {
+async function getChangedResources(resources: Array<$TSAny>): Promise<Array<$TSAny>> {
   const resourceCheck = await Promise.all(resources.map(checkLambdaLayerChanges));
   return resources.filter((_, i) => resourceCheck[i]);
 }
