@@ -5,6 +5,7 @@ export * from './cliContext';
 export * from './cliContextEnvironmentProvider';
 export * from './cliEnvironmentProvider';
 export * from './feature-flags';
+export * from './permissionBoundaryState';
 export * from './jsonUtilities';
 export * from './jsonValidationError';
 export * from './serviceSelection';
