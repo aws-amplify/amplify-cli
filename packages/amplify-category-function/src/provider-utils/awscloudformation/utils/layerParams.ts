@@ -36,6 +36,18 @@ export interface OrgsLayer {
   type: PermissionEnum.AwsOrg;
   orgs: string[];
 }
+
+export interface LayerVersionMetadata {
+  LayerVersionArn: string;
+  Version: number;
+  Description: string;
+  CreatedDate: string;
+  CompatibleRuntimes: string[];
+  LicenseInfo: string;
+  LogicalName: string;
+  permissions: LayerPermission[];
+}
+
 export interface LayerVersionCfnMetadata {
   CompatibleRuntimes?: string[];
   CreatedDate?: string;

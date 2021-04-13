@@ -72,7 +72,6 @@ export const askLayerSelection = async (
       message: versionSelectionPrompt(layerName),
       choices: layerVersions.map(layerVersion => layerVersion.Version.toString()),
       default: currentVersion,
-      filter: numStr => parseInt(numStr, 10),
     };
 
     const versionSelection = (await inquirer.prompt(layerVersionPrompt)).versionSelection as number;

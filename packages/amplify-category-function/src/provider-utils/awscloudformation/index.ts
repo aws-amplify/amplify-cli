@@ -9,6 +9,7 @@ import { supportedServices } from '../supported-services';
 import { ServiceConfig } from '../supportedServicesType';
 import { functionParametersFileName, provider, ServiceName } from './utils/constants';
 import { convertToComplete, isComplete, merge } from './utils/funcParamsUtils';
+import { getLayerConfiguration } from './utils/layerConfiguration';
 import { isMultiEnvLayer } from './utils/layerHelpers';
 import { LayerParameters } from './utils/layerParams';
 import {
@@ -344,23 +345,14 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
 
     return envParams;
   } else if (isMultiEnvLayer(resourceName) && service === ServiceName.LambdaLayer) {
-    // const teamProviderParams: StoredLayerParameters = await chooseParamsOnEnvInit(context, resourceName);
+    const projectPath = pathManager.findProjectRoot();
+    const currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
+    const amplifyMeta = stateManager.getMeta(projectPath);
+    const currentCloudVersionHash: string = _.get(currentAmplifyMeta, [categoryName, resourceName, 'versionHash'], undefined);
 
-    const providerContext: ProviderContext = {
-      provider,
-      service,
-      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
-    };
-
-    // const layerEnvParams = {
-    //   // ...teamProviderParams,
-    //   build: true,
-    //   layerName: resourceName,
-    //   providerContext,
-    //   runtimes: getLayerRuntimes(pathManager.getBackendDirPath(), resourceName),
-    // };
-
-    // updateLayerArtifacts(context, layerEnvParams, 1);
+    if (currentCloudVersionHash) {
+      _.set(amplifyMeta, [categoryName, resourceName, 'versionHash'], currentCloudVersionHash);
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-import { $TSContext, pathManager } from 'amplify-cli-core';
+import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
@@ -7,7 +7,7 @@ import path from 'path';
 import uuid from 'uuid';
 import { categoryName, layerParametersFileName, provider, ServiceName } from './constants';
 import { getLayerConfiguration } from './layerConfiguration';
-import { LayerParameters, LayerPermission, PermissionEnum } from './layerParams';
+import { LayerParameters, LayerPermission, LayerVersionMetadata, PermissionEnum } from './layerParams';
 import { hashLayerVersionContents, loadPreviousLayerHash } from './packageLayer';
 export interface LayerInputParams {
   layerPermissions?: PermissionEnum[];
@@ -15,38 +15,33 @@ export interface LayerInputParams {
   orgIds?: string[];
 }
 
-export function layerVersionQuestion(versions: number[]): ListQuestion {
+export function layerVersionQuestion(versions: string[]): ListQuestion {
   return {
     type: 'list',
     name: 'layerVersion',
     message: 'Select the layer version to update:',
-    choices: versions.map(v => String(v)),
+    choices: versions,
   };
 }
 
-// TODO check if name exists in cloud
-export function layerNameQuestion(context: $TSContext): InputQuestion {
+export function layerNameQuestion(projectName: string): InputQuestion {
   return {
     type: 'input',
     name: 'layerName',
     message: 'Provide a name for your Lambda layer:',
     validate: (input: string) => {
       input = input.trim();
-      const meta = context.amplify.getProjectMeta();
-      if (!/^[a-zA-Z0-9]{1,108}$/.test(input)) {
-        return 'Lambda layer names must be 1-108 alphanumeric characters.';
-      } else if (meta?.function?.hasOwnProperty(input)) {
+      const meta = stateManager.getMeta();
+      if (!/^[a-zA-Z0-9-_]{1,87}$/.test(input)) {
+        return 'Lambda layer names must be 1-87 characters long. Only alphanumeric, -, and _ characters supported.';
+      } else if (meta?.function?.input || meta?.function?.[`${projectName}-${input}`]) {
         return `A Lambda layer with the name ${input} already exists in this project.`;
       }
       return true;
     },
     default: () => {
-      const appName = context.amplify
-        .getProjectDetails()
-        .projectConfig.projectName.toLowerCase()
-        .replace(/[^a-zA-Z0-9]/gi, '');
       const [shortId] = uuid().split('-');
-      return `${appName}${shortId}`;
+      return `layer-${shortId}`;
     },
   };
 }
@@ -208,17 +203,6 @@ export async function isNewVersion(layerName: string) {
 export function isMultiEnvLayer(layerName: string) {
   const layerParametersPath = path.join(getLayerPath(layerName), layerParametersFileName);
   return !fs.existsSync(layerParametersPath);
-}
-
-export interface LayerVersionMetadata {
-  LayerVersionArn: string;
-  Version: number;
-  Description: string;
-  CreatedDate: string;
-  CompatibleRuntimes: string[];
-  LicenseInfo: string;
-  LogicalName: string;
-  permissions: LayerPermission[];
 }
 
 export async function loadLayerDataFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {

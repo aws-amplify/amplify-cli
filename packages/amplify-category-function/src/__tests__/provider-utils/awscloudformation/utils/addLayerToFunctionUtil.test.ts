@@ -11,7 +11,8 @@ import {
 } from '../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils';
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
 import { getLayerRuntimes } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
-import { LayerVersionMetadata, loadLayerDataFromCloud } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
+import { loadLayerDataFromCloud } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
+import { LayerVersionMetadata } from '../../../../provider-utils/awscloudformation/utils/layerParams';
 
 jest.mock('inquirer');
 jest.mock('enquirer', () => ({ prompt: jest.fn() }));

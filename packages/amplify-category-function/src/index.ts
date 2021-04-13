@@ -125,9 +125,10 @@ export async function initEnv(context) {
 
   // Need to fetch metadata from #current-cloud-backend, since amplifyMeta
   // gets regenerated in intialize-env.ts in the amplify-cli package
-  const teamProviderInfo = stateManager.getTeamProviderInfo();
-  const currentAmplifyMeta = stateManager.getCurrentMeta();
-  const amplifyMeta = stateManager.getMeta();
+  const projectPath = pathManager.findProjectRoot();
+  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
+  const currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
+  const amplifyMeta = stateManager.getMeta(projectPath);
   const changedResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
   allResources
     .filter(resourceCategoryFilter)
@@ -155,8 +156,8 @@ export async function initEnv(context) {
     }
   });
 
-  stateManager.setMeta(undefined, amplifyMeta);
-  stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+  stateManager.setMeta(projectPath, amplifyMeta);
+  stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
 
   await sequential(functionTasks);
 }
