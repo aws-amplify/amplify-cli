@@ -255,11 +255,14 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
 
     if (resource.Type === 'AWS::IAM::Policy') {
       const roles = resource?.Properties?.Roles;
-      const roleName = roles?.[0].Ref;
 
-      if (roles.length === 1 && (roleName === AUTH_ROLE_NAME || roleName === UNAUTH_ROLE_NAME)) {
-        delete resources[resourceName];
-        modified = true;
+      if (Array.isArray(roles) && roles.length === 1) {
+        const roleName = roles[0].Ref;
+
+        if (roleName === AUTH_ROLE_NAME || roleName === UNAUTH_ROLE_NAME) {
+          delete resources[resourceName];
+          modified = true;
+        }
       }
     }
   }

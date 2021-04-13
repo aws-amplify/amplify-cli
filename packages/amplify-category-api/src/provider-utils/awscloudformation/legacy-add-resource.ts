@@ -1,3 +1,4 @@
+import { JSONUtilities } from 'amplify-cli-core';
 import { serviceMetadataFor } from './utils/dynamic-imports';
 import fs from 'fs-extra';
 import path from 'path';
@@ -33,11 +34,10 @@ export const legacyAddResource = async (serviceWalkthroughPromise: Promise<any>,
     fs.ensureDirSync(resourceDirPath);
 
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);
-    const jsonString = JSON.stringify(parameters, null, 4);
-    fs.writeFileSync(parametersFilePath, jsonString, 'utf8');
+    JSONUtilities.writeJson(parametersFilePath, parameters);
 
     const cfnParametersFilePath = path.join(resourceDirPath, cfnParametersFilename);
-    fs.writeFileSync(cfnParametersFilePath, '{}', 'utf8');
+    JSONUtilities.writeJson(cfnParametersFilePath, {});
   }
   context.amplify.updateamplifyMetaAfterResourceAdd(category, answers.resourceName, options);
   return answers.resourceName;
