@@ -225,14 +225,18 @@ export interface LayerVersionMetadata {
   permissions: LayerPermission[];
 }
 
+export function getLayerName(context: $TSContext, layerName: string): string {
+  const { envName }: { envName: string } = context.amplify.getEnvInfo();
+  return isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName;
+}
+
 export async function loadLayerDataFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
   const spinner = ora('Loading layer data from the cloud...').start();
   let layerMetadata: LayerVersionMetadata[];
   try {
-    const { envName }: { envName: string } = context.amplify.getEnvInfo();
     const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
     const Lambda = await providerPlugin.getLambdaSdk(context);
-    const layerVersionList = await Lambda.listLayerVersions(isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName);
+    const layerVersionList = await Lambda.listLayerVersions(getLayerName(context, layerName));
     const Cfn = await providerPlugin.getCloudFormationSdk(context);
     const stackList = await Cfn.listStackResources();
     const layerStacks = stackList?.StackResourceSummaries?.filter(stack => stack.LogicalResourceId.includes(layerName));

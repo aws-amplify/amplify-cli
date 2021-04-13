@@ -46,8 +46,10 @@ export class Lambda {
     for (let version of versions) {
       params.VersionNumber = version;
       try {
+        logger('Lambda.deleteLayerVersion', [params])();
         await this.lambda.deleteLayerVersion(params).promise();
       } catch (e) {
+        logger('Lambda.deleteLayerVersion', [params])(e);
         this.context.print.error(e); // TODO full error handling
       }
     }
