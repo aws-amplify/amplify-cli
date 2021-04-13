@@ -1,8 +1,10 @@
 import { $TSContext, pathManager } from 'amplify-cli-core';
 import { BuildType, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
-import { buildFunction } from '../../../../provider-utils/awscloudformation/utils/buildFunction';
+import { buildLayer } from '../../../../provider-utils/awscloudformation/utils/buildLayer';
+import { loadLayerConfigurationFile } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
 
 jest.mock('amplify-cli-core');
+jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration');
 
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 pathManager_mock.getBackendDirPath.mockReturnValue('mockpath');
@@ -22,6 +24,24 @@ describe('build function', () => {
       updateamplifyMetaAfterBuild: jest.fn(),
     },
   } as unknown) as jest.Mocked<$TSContext>;
+
+  const loadLayerConfigurationFile_mock = loadLayerConfigurationFile as jest.MockedFunction<typeof loadLayerConfigurationFile>;
+  loadLayerConfigurationFile_mock.mockReturnValue({
+    permissions: [
+      {
+        type: 'Private',
+      },
+    ],
+    runtimes: [
+      {
+        value: 'nodejs',
+        name: 'NodeJS',
+        runtimePluginId: 'amplify-nodejs-function-runtime-provider',
+        layerExecutablePath: 'nodejs',
+      },
+    ],
+  });
+
   it('delegates dependency checks to the runtime manager before building', async () => {
     let depCheck = false;
     runtimePlugin_stub.checkDependencies.mockImplementationOnce(async () => {
@@ -40,34 +60,24 @@ describe('build function', () => {
       };
     });
 
-    await buildFunction(context_stub, { resourceName: 'testFunc' });
+    await buildLayer(context_stub, { resourceName: 'testFunc' });
 
     expect(runtimePlugin_stub.checkDependencies.mock.calls.length).toBe(1);
     expect(runtimePlugin_stub.build.mock.calls.length).toBe(1);
   });
 
   it('updates amplify meta after prod', async () => {
-    await buildFunction(context_stub, { resourceName: 'testFunc' });
+    await buildLayer(context_stub, { resourceName: 'testFunc' });
 
     expect((context_stub.amplify.updateamplifyMetaAfterBuild as jest.Mock).mock.calls[0]).toEqual([
       { category: 'function', resourceName: 'testFunc' },
       'PROD',
     ]);
   });
-
-  it('updates amplify meta after dev build', async () => {
-    await buildFunction(context_stub, { resourceName: 'testFunc', buildType: BuildType.DEV });
-
-    expect((context_stub.amplify.updateamplifyMetaAfterBuild as jest.Mock).mock.calls[0]).toEqual([
-      { category: 'function', resourceName: 'testFunc' },
-      'DEV',
-    ]);
-  });
-
   it('doesnt update amplify meta if function not rebuilt', async () => {
     runtimePlugin_stub.build.mockResolvedValueOnce({ rebuilt: false });
 
-    await buildFunction(context_stub, { resourceName: 'testFunc' });
+    await buildLayer(context_stub, { resourceName: 'testFunc' });
 
     expect((context_stub.amplify.updateamplifyMetaAfterBuild as jest.Mock).mock.calls.length).toBe(0);
   });
