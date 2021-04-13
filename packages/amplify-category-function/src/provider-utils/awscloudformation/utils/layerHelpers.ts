@@ -1,6 +1,6 @@
-import { $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
-import { hashElement, HashElementOptions } from 'folder-hash';
-import * as fs from 'fs-extra';
+import { $TSAny, $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
+import { HashElementOptions, hashElement } from 'folder-hash';
+import fs from 'fs-extra';
 import globby from 'globby';
 import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
@@ -352,3 +352,16 @@ export const hashLayerResource = async (layerPath: string): Promise<string> => {
     .update(await hashLayerVersionContents(layerPath))
     .digest('base64');
 };
+
+export async function getChangedResources(resources: Array<$TSAny>): Promise<Array<$TSAny>> {
+  const resourceCheck = await Promise.all(resources.map(checkLambdaLayerChanges));
+  return resources.filter((_, i) => resourceCheck[i]);
+}
+
+async function checkLambdaLayerChanges(resource: any): Promise<boolean> {
+  const { resourceName } = resource;
+  const previousHash = loadPreviousLayerHash(resourceName);
+  if (!previousHash) return false;
+  const currentHash = await hashLayerVersionContents(getLayerPath(resourceName));
+  return currentHash !== previousHash;
+}

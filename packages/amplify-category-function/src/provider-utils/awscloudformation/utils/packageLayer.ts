@@ -1,18 +1,19 @@
 import { $TSAny, $TSContext, pathManager } from 'amplify-cli-core';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import _ from 'lodash';
+import chalk from 'chalk';
+import { EOL } from 'os';
+
 import { LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
 import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import { ServiceName } from './constants';
 import _ from 'lodash';
-import { loadPreviousLayerHash, ensureLayerVersion, validFilesize } from './layerHelpers';
 import { zipPackage } from './zipResource';
+import { loadPreviousLayerHash, ensureLayerVersion, validFilesize, loadStoredLayerParameters, getChangedResources } from './layerHelpers';
 import { Packager } from '../types/packaging-types';
 import { accessPermissions, description } from './constants';
-import { getLayerPath, loadStoredLayerParameters } from './layerHelpers';
 import { updateLayerArtifacts } from './storeResources';
-import chalk from 'chalk';
-import { EOL } from 'os';
 import { lambdaLayerNewVersionWalkthrough } from '../service-walkthroughs/lambdaLayerWalkthrough';
 
 /**
@@ -95,17 +96,4 @@ export async function checkContentChanges(context: $TSContext, resources: Array<
       await updateLayerArtifacts(context, parameters);
     }
   }
-}
-
-async function getChangedResources(resources: Array<$TSAny>): Promise<Array<$TSAny>> {
-  const resourceCheck = await Promise.all(resources.map(checkLambdaLayerChanges));
-  return resources.filter((_, i) => resourceCheck[i]);
-}
-
-async function checkLambdaLayerChanges(resource: any): Promise<boolean> {
-  const { resourceName } = resource;
-  const previousHash = loadPreviousLayerHash(resourceName);
-  if (!previousHash) return false;
-  const currentHash = await hashLayerVersionContents(getLayerPath(resourceName));
-  return currentHash !== previousHash;
 }
