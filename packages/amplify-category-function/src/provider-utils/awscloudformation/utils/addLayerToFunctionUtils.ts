@@ -5,11 +5,12 @@ import { ServiceName } from './constants';
 import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
 import enquirer from 'enquirer';
 import { loadLayerDataFromCloud } from './layerHelpers';
-import { getLayerRuntimes } from './layerConfiguration';
+import { getLayerRuntimes, loadLayerConfigurationFile } from './layerConfiguration';
 import { $TSContext, $TSMeta, pathManager } from 'amplify-cli-core';
 
 const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
 export const provideExistingARNsPrompt = 'Provide existing Lambda layer ARNs';
+const defaultlayerVersionPrompt = 'Always choose latest version';
 const versionSelectionPrompt = (layerName: string) => `Select a version for ${layerName}:`;
 const ARNEntryPrompt = (remainingLayers: number) => `Enter up to ${remainingLayers} existing Lambda layer ARNs (comma-separated):`;
 const layerOrderPrompt = 'Modify the layer order (Layers with conflicting files will overwrite contents of layers earlier in the list):';
@@ -62,23 +63,38 @@ export const askLayerSelection = async (
   const askArnQuestion = layerSelections.includes(provideExistingARNsPrompt);
   layerSelections = layerSelections.filter(selection => selection !== provideExistingARNsPrompt);
 
+  let layerVersionArrPrompt: string[];
+
   for await (let layerName of layerSelections) {
     const currentSelectionDefaults = filterProjectLayers(previousSelections).find(sel => sel.resourceName === layerName);
     const currentVersion = currentSelectionDefaults ? currentSelectionDefaults.version.toString() : undefined;
     const layerVersions = await loadLayerDataFromCloud(context, layerName);
+    const logicalIdForUnDeployedLayer = loadLayerConfigurationFile(pathManager.getBackendDirPath(), layerName).logicalId;
+    layerVersionArrPrompt = layerVersions.map(layerVersion => layerVersion.Version.toString());
+    if (!layerVersionArrPrompt.length) {
+      layerVersionArrPrompt.push('1'); // new latest version if no layers are pushed
+    }
+
+    layerVersionArrPrompt.unshift(defaultlayerVersionPrompt);
     const layerVersionPrompt: ListQuestion = {
       type: 'list',
       name: 'versionSelection',
       message: versionSelectionPrompt(layerName),
-      choices: layerVersions.map(layerVersion => layerVersion.Version.toString()),
-      default: currentVersion,
+      choices: layerVersionArrPrompt,
+      default: defaultlayerVersionPrompt,
     };
 
-    const versionSelection = (await inquirer.prompt(layerVersionPrompt)).versionSelection as number;
+    const versionSelection = (await inquirer.prompt(layerVersionPrompt)).versionSelection;
+    const isLatest = versionSelection.toString() === defaultlayerVersionPrompt ? true : false;
+    const selectedVersion = versionSelection.toString() === defaultlayerVersionPrompt ? layerVersionArrPrompt[1] : versionSelection;
+    const logicalId = layerVersions.length ? layerVersions[0].LogicalName : logicalIdForUnDeployedLayer;
+
     lambdaLayers.push({
       type: 'ProjectLayer',
       resourceName: layerName,
-      version: versionSelection,
+      version: selectedVersion,
+      isLatest: isLatest,
+      logicalId: logicalId,
     });
     dependsOn.push({
       category,

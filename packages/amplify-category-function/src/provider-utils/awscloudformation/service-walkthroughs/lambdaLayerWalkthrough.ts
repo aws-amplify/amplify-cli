@@ -1,6 +1,7 @@
 import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
 import inquirer, { InputQuestion } from 'inquirer';
 import _ from 'lodash';
+import uuid from 'uuid';
 import { ServiceName } from '../utils/constants';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
 import {
@@ -41,7 +42,7 @@ export async function createLayerWalkthrough(
     runtimePluginId: val.runtimePluginId,
   })) as LayerRuntime[];
 
-  let layerInputParameters: LayerInputParams = {};
+  const layerInputParameters: LayerInputParams = {};
   _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion()));
 
   for (const permission of layerInputParameters.layerPermissions) {

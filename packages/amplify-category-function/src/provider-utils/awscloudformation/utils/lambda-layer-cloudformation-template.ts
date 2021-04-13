@@ -21,6 +21,7 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
   } else {
     logicalName = versionList[versionList.length - 1].LogicalName;
   }
+  parameters.logicalId = logicalName;
   const outputObj = {
     Outputs: {
       Arn: {
