@@ -47,14 +47,12 @@ export const getBucketEncryption = async (bucket: string) => {
   const params = {
     Bucket: bucket,
   };
-  const result = await s3.getBucketEncryption(params).promise();
-  if (result.$response.error) {
-    throw new Error(result.$response.error.message);
+  try {
+    const result = await s3.getBucketEncryption(params).promise();
+    return result.ServerSideEncryptionConfiguration;
+  } catch (err) {
+    throw new Error(`Error fetching SSE info for bucket ${bucket}. Underlying error was [${err.message}]`);
   }
-  if (!result.$response.data) {
-    throw new Error(`no response data from getBucketEncryption on bucket ${bucket}`);
-  }
-  return result.$response.data;
 };
 
 export const deleteS3Bucket = async (bucket: string) => {

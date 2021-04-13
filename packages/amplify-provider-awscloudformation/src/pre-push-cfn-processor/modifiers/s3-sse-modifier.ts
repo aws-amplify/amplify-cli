@@ -17,4 +17,5 @@ export const applyS3SSEModification: ResourceModifier = async (resource: Bucket)
       }),
     ],
   });
+  return resource;
 };

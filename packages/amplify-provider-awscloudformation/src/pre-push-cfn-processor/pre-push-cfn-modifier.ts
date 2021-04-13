@@ -7,23 +7,25 @@ import { Template } from 'cloudform-types';
 export type TemplateModifier = (template: Template) => Promise<void>;
 
 // modifies the resource in-place
-export type ResourceModifier = (resource: Resource) => Promise<void>;
+export type ResourceModifier = (resource: Resource) => Promise<Resource>;
 
 export const prePushCfnTemplateModifier: TemplateModifier = async template => {
-  await Promise.all(
-    Object.values(template.Resources).map(async resource => {
-      const transformers = getResourceModifiers(resource.Type);
-      await Promise.all(transformers.map(transformer => transformer(resource)));
-    }),
-  );
+  for (const [resourceName, resource] of Object.entries(template.Resources)) {
+    const modifiers = getResourceModifiers(resource.Type);
+    let mutatedResource = _.cloneDeep(resource);
+    for (const modifier of modifiers) {
+      mutatedResource = await modifier(mutatedResource);
+    }
+    template.Resources[resourceName] = mutatedResource;
+  }
 };
 
 const getResourceModifiers = (type: string) => {
-  return _.get(resourceTransformerRegistry, type, [noopResourceTransformer]);
+  return _.get(resourceTransformerRegistry, type, [identityResourceModifier]);
 };
 
 const resourceTransformerRegistry: Record<string, ResourceModifier[]> = {
   'AWS::S3::Bucket': [applyS3SSEModification],
 };
 
-const noopResourceTransformer: ResourceModifier = async () => {};
+const identityResourceModifier: ResourceModifier = async resource => resource;

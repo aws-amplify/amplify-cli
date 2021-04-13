@@ -33,14 +33,14 @@ describe('amplify always enables SSE on S3 buckets', () => {
     const deploymentBucket = meta?.providers?.awscloudformation?.DeploymentBucketName;
     const hostingBucket = (Object.values(meta?.hosting)?.[0] as any)?.output?.HostingBucketName;
     const categoryBucket = (Object.values(meta?.storage)?.[0] as any)?.output?.BucketName;
-    expectSSEEnabledForBucket(deploymentBucket);
-    expectSSEEnabledForBucket(hostingBucket);
-    expectSSEEnabledForBucket(categoryBucket);
+    await expectSSEEnabledForBucket(deploymentBucket);
+    await expectSSEEnabledForBucket(hostingBucket);
+    await expectSSEEnabledForBucket(categoryBucket);
   });
 });
 
 const expectSSEEnabledForBucket = async (bucket?: string) => {
   expect(bucket).toBeDefined();
   const result = await getBucketEncryption(bucket);
-  expect(result?.ServerSideEncryptionConfiguration?.Rules?.[0]?.ApplyServerSideEncryptionByDefault?.SSEAlgorithm).toBe('AES256');
+  expect(result?.Rules?.[0]?.ApplyServerSideEncryptionByDefault?.SSEAlgorithm).toBe('AES256');
 };
