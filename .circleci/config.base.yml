@@ -571,13 +571,13 @@ workflows:
                 - master
     jobs:
       - build:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
       - publish_to_local_registry:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           requires:
             - build
       - amplify_console_integration_tests:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           requires:
             - build
             - publish_to_local_registry
@@ -592,6 +592,7 @@ workflows:
     jobs:
       - build
       - cleanup_resources:
+          context: cleanup-resources
           requires:
             - build
 
@@ -605,7 +606,7 @@ workflows:
           requires:
             - build
       - graphql_e2e_tests:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           filters:
             branches:
               only:
@@ -615,7 +616,7 @@ workflows:
             - build
             - mock_e2e_tests
       - integration_test:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           filters:
             branches:
               only:
@@ -625,7 +626,7 @@ workflows:
             - build
             - mock_e2e_tests
       - publish_to_local_registry:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           filters:
             branches:
               only:
@@ -638,11 +639,11 @@ workflows:
           requires:
             - build
       - build_pkg_binaries:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           requires:
             - publish_to_local_registry
       - amplify_sudo_install_test:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           requires:
             - publish_to_local_registry
           filters:
@@ -650,7 +651,9 @@ workflows:
               only:
                 - master
       - amplify_e2e_tests:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
           post-steps:
             - run: *clean_e2e_resources
           filters:
@@ -662,11 +665,13 @@ workflows:
           requires:
             - publish_to_local_registry
       - done_with_node_e2e_tests:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           requires:
             - amplify_e2e_tests
       - amplify_e2e_tests_pkg_linux:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
           post-steps:
             - run: *clean_e2e_resources
           filters:
@@ -677,11 +682,11 @@ workflows:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - done_with_pkg_linux_e2e_tests:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           requires:
             - amplify_e2e_tests_pkg_linux
       - amplify_migration_tests_latest:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           filters:
             branches:
               only:
@@ -689,7 +694,7 @@ workflows:
           requires:
             - build
       - amplify_migration_tests_v4:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           filters:
             branches:
               only:
@@ -697,7 +702,7 @@ workflows:
           requires:
             - build
       - amplify_migration_tests_v4_30_0:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           filters:
             branches:
               only:
@@ -708,7 +713,9 @@ workflows:
           requires:
             - build
       - amplify_console_integration_tests:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - cleanup-resources
           post-steps:
             - run: *clean_e2e_resources
           filters:
@@ -719,7 +726,7 @@ workflows:
             - build
             - publish_to_local_registry
       - github_prerelease:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           requires:
             - build_pkg_binaries
           filters:
@@ -727,7 +734,7 @@ workflows:
               only:
                 - release
       - github_prerelease_install_sanity_check:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           requires:
             - github_prerelease
           filters:
@@ -735,6 +742,7 @@ workflows:
               only:
                 - release
       - cleanup_resources_after_e2e_runs:
+          context: cleanup-resources
           requires:
             - done_with_pkg_linux_e2e_tests
             - amplify_migration_tests_latest
@@ -743,7 +751,9 @@ workflows:
             - done_with_node_e2e_tests
 
       - deploy:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - npm-publish
           requires:
             - test
             - mock_e2e_tests
@@ -763,7 +773,7 @@ workflows:
                 - master
                 - beta
       - github_release:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           requires:
             - deploy
           filters:
