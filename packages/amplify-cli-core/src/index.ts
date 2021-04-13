@@ -165,7 +165,7 @@ interface AmplifyToolkit {
   copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: object, force?: boolean, writeParams?: boolean | object) => $TSAny;
   crudFlow: () => $TSAny;
   deleteProject: () => $TSAny;
-  executeProviderUtils: () => $TSAny;
+  executeProviderUtils: (context: $TSContext, providerName: string, utilName: string, options: $TSAny) => $TSAny;
   getAllEnvs: () => string[];
   getPlugin: () => $TSAny;
   getCategoryPluginInfo: (context: $TSContext, category?: string, service?: string) => $TSAny;
@@ -174,7 +174,7 @@ interface AmplifyToolkit {
   getEnvDetails: () => $TSAny;
   getEnvInfo: () => $TSAny;
   getProviderPlugins: (context: $TSContext) => $TSAny;
-  getPluginInstance: () => $TSAny;
+  getPluginInstance: (context: $TSContext, pluginName: string) => $TSAny;
   getProjectConfig: () => $TSAny;
   getProjectDetails: () => $TSAny;
   getProjectMeta: () => $TSMeta;
@@ -184,7 +184,7 @@ interface AmplifyToolkit {
   inputValidation: (input: $TSAny) => $TSAny;
   listCategories: () => $TSAny;
   makeId: (n?: number) => string;
-  openEditor: () => $TSAny;
+  openEditor: (context: $TSContext, target: string, waitToContinue?: boolean) => Promise<void>;
   onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
   pathManager: $TSAny;
   pressEnterToContinue: () => $TSAny;
@@ -230,7 +230,7 @@ interface AmplifyToolkit {
   updateamplifyMetaAfterPush: (resources: $TSObject[]) => void;
   // buildType is from amplify-function-plugin-interface but can't be imported here because it would create a circular dependency
   updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: string) => void;
-  updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string) => void;
+  updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string, hash?: { resourceKey: string; hashValue: string }) => void;
   updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSAny) => $TSAny;
   updateBackendConfigAfterResourceUpdate: () => $TSAny;
   updateBackendConfigAfterResourceRemove: () => $TSAny;

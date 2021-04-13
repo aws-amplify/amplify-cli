@@ -204,10 +204,17 @@ export function updateamplifyMetaAfterBuild({ category, resourceName }: Resource
   stateManager.setMeta(undefined, amplifyMeta);
 }
 
-export function updateAmplifyMetaAfterPackage({ category, resourceName }: ResourceTuple, zipFilename: string) {
+export function updateAmplifyMetaAfterPackage(
+  { category, resourceName }: ResourceTuple,
+  zipFilename: string,
+  hash?: { resourceKey: string; hashValue: string },
+) {
   const amplifyMeta = stateManager.getMeta();
   _.set(amplifyMeta, [category, resourceName, 'lastPackageTimeStamp'], new Date());
   _.set(amplifyMeta, [category, resourceName, 'distZipFilename'], zipFilename);
+  if (hash) {
+    _.set(amplifyMeta, [category, resourceName, hash.resourceKey], hash.hashValue);
+  }
   stateManager.setMeta(undefined, amplifyMeta);
 }
 
