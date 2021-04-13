@@ -4,8 +4,9 @@ import { category } from '../../..';
 import { ServiceName } from './constants';
 import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
 import enquirer from 'enquirer';
-import { LayerMetadataFactory } from './layerParams';
-import { getLayerRuntimes } from './layerRuntimes';
+import { loadLayerDataFromCloud } from './layerHelpers';
+import { getLayerRuntimes } from './layerConfiguration';
+import { $TSContext, $TSMeta, pathManager } from 'amplify-cli-core';
 
 const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
 export const provideExistingARNsPrompt = 'Provide existing Lambda layer ARNs';
@@ -23,11 +24,10 @@ const layerARNRegex = /^arn:[a-zA-Z0-9-]+:lambda:[a-zA-Z0-9-]+:\d{12}:layer:[a-z
  * @param previousSelections previous layers added to the function (used to populate default selections)
  */
 export const askLayerSelection = async (
-  layerMetadataFactory: LayerMetadataFactory,
-  amplifyMeta,
+  context: $TSContext,
+  amplifyMeta: $TSMeta,
   runtimeValue: string,
   previousSelections: LambdaLayer[] = [],
-  backendDir: string,
 ): Promise<{ lambdaLayers: LambdaLayer[]; dependsOn: FunctionDependency[]; askArnQuestion: boolean }> => {
   const lambdaLayers: LambdaLayer[] = [];
   const dependsOn: FunctionDependency[] = [];
@@ -37,7 +37,7 @@ export const askLayerSelection = async (
     .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
     .filter(key => {
       // filter by compatible runtimes
-      return isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes || getLayerRuntimes(backendDir, key));
+      return isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes || getLayerRuntimes(pathManager.getBackendDirPath(), key));
     });
 
   if (layerOptions.length === 0) {
@@ -58,33 +58,31 @@ export const askLayerSelection = async (
     choices: choices,
     validate: (input: string[]) => input.length <= 5 || 'Select at most 5 entries from the list',
   };
-  let layerSelections = (await inquirer.prompt(layerSelectionQuestion)).layerSelections;
+  let layerSelections: string[] = (await inquirer.prompt(layerSelectionQuestion)).layerSelections;
   const askArnQuestion = layerSelections.includes(provideExistingARNsPrompt);
   layerSelections = layerSelections.filter(selection => selection !== provideExistingARNsPrompt);
 
-  for (let selection of layerSelections) {
-    const currentSelectionDefaults = filterProjectLayers(previousSelections).find(sel => sel.resourceName === selection);
+  for await (let layerName of layerSelections) {
+    const currentSelectionDefaults = filterProjectLayers(previousSelections).find(sel => sel.resourceName === layerName);
     const currentVersion = currentSelectionDefaults ? currentSelectionDefaults.version.toString() : undefined;
-    const layerState = layerMetadataFactory(selection);
-    await layerState.syncVersions(); // make sure we are reflecting the latest changes;
+    const layerVersions = await loadLayerDataFromCloud(context, layerName);
     const layerVersionPrompt: ListQuestion = {
       type: 'list',
       name: 'versionSelection',
-      message: versionSelectionPrompt(selection),
-      choices: layerState.listVersions().map(num => num.toString()),
+      message: versionSelectionPrompt(layerName),
+      choices: layerVersions.map(layerVersion => layerVersion.Version.toString()),
       default: currentVersion,
-      filter: numStr => parseInt(numStr, 10),
     };
 
     const versionSelection = (await inquirer.prompt(layerVersionPrompt)).versionSelection as number;
     lambdaLayers.push({
       type: 'ProjectLayer',
-      resourceName: selection,
+      resourceName: layerName,
       version: versionSelection,
     });
     dependsOn.push({
       category,
-      resourceName: selection,
+      resourceName: layerName,
       attributes: ['Arn'], // the layer doesn't actually depend on the ARN but there's some nasty EJS at the top of the function template that breaks without this, so here it is. Hurray for tight coupling!
     });
   }

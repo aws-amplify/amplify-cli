@@ -13,9 +13,7 @@ export { packageResource } from './provider-utils/awscloudformation/utils/packag
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/packageLayer';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
-import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
-export { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 
@@ -127,15 +125,16 @@ export async function initEnv(context) {
 
   // Need to fetch metadata from #current-cloud-backend, since amplifyMeta
   // gets regenerated in intialize-env.ts in the amplify-cli package
-  const teamProviderInfo = stateManager.getTeamProviderInfo();
-  const currentAmplifyMeta = stateManager.getCurrentMeta();
-  const amplifyMeta = stateManager.getMeta();
+  const projectPath = pathManager.findProjectRoot();
+  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
+  const currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
+  const amplifyMeta = stateManager.getMeta(projectPath);
   const changedResources = [...resourcesToBeCreated, ...resourcesToBeDeleted, ...resourcesToBeUpdated];
   allResources
     .filter(resourceCategoryFilter)
     .filter(r => !changedResources.includes(r))
     .forEach(r => {
-      const { resourceName, service }: { resourceName: string; service: string } = r;
+      const { resourceName }: { resourceName: string } = r;
 
       const s3Bucket = _.get(currentAmplifyMeta, [category, resourceName, 's3Bucket'], undefined);
       if (s3Bucket) {
@@ -143,15 +142,6 @@ export async function initEnv(context) {
         _.assign(tpiResourceParams, s3Bucket);
         _.set(teamProviderInfo, [envName, 'categories', category, resourceName], tpiResourceParams);
         _.set(amplifyMeta, [category, resourceName, 's3Bucket'], s3Bucket);
-      }
-
-      if (service === ServiceName.LambdaLayer) {
-        const lvmPath = [category, resourceName, 'layerVersionMap'];
-        const currentVersionMap = _.get(currentAmplifyMeta, lvmPath);
-        if (isMultiEnvLayer(context, resourceName)) {
-          _.set(teamProviderInfo, [envName, 'nonCFNdata', ...lvmPath], currentVersionMap);
-        }
-        _.set(amplifyMeta, lvmPath, currentVersionMap);
       }
     });
   resourcesToBeCreated.forEach(resource => {
@@ -166,8 +156,8 @@ export async function initEnv(context) {
     }
   });
 
-  stateManager.setMeta(undefined, amplifyMeta);
-  stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+  stateManager.setMeta(projectPath, amplifyMeta);
+  stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
 
   await sequential(functionTasks);
 }
