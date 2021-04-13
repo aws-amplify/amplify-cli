@@ -1,6 +1,6 @@
 import { initEnv, isMockable } from '..';
 import sequential from 'promise-sequential';
-import { stateManager } from 'amplify-cli-core';
+import { pathManager, stateManager } from 'amplify-cli-core';
 
 jest.mock('promise-sequential');
 jest.mock('amplify-cli-core', () => ({
@@ -10,6 +10,9 @@ jest.mock('amplify-cli-core', () => ({
     getTeamProviderInfo: jest.fn(),
     setMeta: jest.fn(),
     setTeamProviderInfo: jest.fn(),
+  },
+  pathManager: {
+    findProjectRoot: jest.fn(),
   },
 }));
 

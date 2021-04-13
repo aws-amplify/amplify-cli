@@ -1,4 +1,5 @@
-import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
+import { hashElement, HashElementOptions } from 'folder-hash';
 import fs from 'fs-extra';
 import globby from 'globby';
 import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
@@ -9,7 +10,9 @@ import uuid from 'uuid';
 import { categoryName, layerParametersFileName, provider, ServiceName } from './constants';
 import { getLayerConfiguration } from './layerConfiguration';
 import { LayerParameters, LayerPermission, LayerVersionMetadata, PermissionEnum } from './layerParams';
-import { hashLayerVersionContents, loadPreviousLayerHash } from './packageLayer';
+import { updateLayerArtifacts } from './storeResources';
+import crypto from 'crypto';
+
 export interface LayerInputParams {
   layerPermissions?: PermissionEnum[];
   accountIds?: string[];

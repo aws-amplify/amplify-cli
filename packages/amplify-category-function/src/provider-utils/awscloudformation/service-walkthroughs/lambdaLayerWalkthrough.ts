@@ -16,7 +16,6 @@ import {
   loadStoredLayerParameters,
 } from '../utils/layerHelpers';
 import { AccountsLayer, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum, PrivateLayer } from '../utils/layerParams';
-import { loadPreviousLayerHash } from '../utils/packageLayer';
 
 export async function createLayerWalkthrough(
   context: $TSContext,
