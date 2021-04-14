@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.1...amplify-category-function@2.31.2) (2021-04-14)
+
+
+### Bug Fixes
+
+* assign group env from source ([#7006](https://github.com/aws-amplify/amplify-cli/issues/7006)) ([139f44d](https://github.com/aws-amplify/amplify-cli/commit/139f44d3ecc3bbb5d4f25d24e8d2782a34eae281))
+
+
+
+
+
 ## [2.31.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.30.5...amplify-category-function@2.31.1) (2021-04-09)
 
 

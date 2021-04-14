@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.26.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.26.1...amplify-appsync-simulator@1.26.2) (2021-04-14)
+
+
+### Bug Fixes
+
+* **amplify-appsync-simulator:** parse AWSTimestamp literals as Ints ([#6979](https://github.com/aws-amplify/amplify-cli/issues/6979)) ([08750a6](https://github.com/aws-amplify/amplify-cli/commit/08750a6f7f9e9326a81b5d45a7ef31bd9f30595f))
+
+
+
+
+
 ## [1.26.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.25.6...amplify-appsync-simulator@1.26.1) (2021-04-09)
 
 
