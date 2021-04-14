@@ -72,6 +72,7 @@ export async function updateLayerWalkthrough(
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
+
   if (resources.length === 1) {
     parameters.layerName = resources[0];
   } else if (lambdaToUpdate && resources.includes(lambdaToUpdate)) {

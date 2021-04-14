@@ -20,10 +20,10 @@ export async function packageResource(request: PackageRequest, context: any): Pr
         });
 
         const libGlob = glob.sync(resourcePath);
-        const layerDirPath = path.join(request.srcRoot, '../../');
+        const layerDirPath = path.join(request.srcRoot, '..', '..');
         const optPath = path.join(layerDirPath, 'opt');
 
-        let conflicts: string[] = [];
+        const conflicts: string[] = [];
         libGlob.forEach(lib => {
           const basename = path.basename(lib);
           if (fs.pathExistsSync(path.join(optPath, basename))) {

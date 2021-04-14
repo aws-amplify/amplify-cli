@@ -5,7 +5,8 @@ import { pythonInvoke } from './util/invokeUtil';
 import { checkDeps } from './util/depUtils';
 import { layerPythonPipFile, relativeShimPath } from './constants';
 import { GetPackageAssetPaths } from 'amplify-cli-core';
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
@@ -20,7 +21,7 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'python',
           cloudTemplateValue: 'python3.8',
           defaultHandler: 'index.handler',
-          layerExecutablePath: 'python',
+          layerExecutablePath: path.join('python'),
           layerDefaultFiles: [
             {
               path: 'python',

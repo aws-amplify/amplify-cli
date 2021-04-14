@@ -1,6 +1,6 @@
 import { $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
 import { hashElement, HashElementOptions } from 'folder-hash';
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import globby from 'globby';
 import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
@@ -272,8 +272,6 @@ export async function loadLayerDataFromCloud(context: $TSContext, layerName: str
         });
     });
     layerMetadata = layerVersionList;
-    layerMetadata = layerMetadata.sort((a, b) => (a.Version > b.Version ? 1 : -1));
-    console.log(layerMetadata);
   } catch (e) {
     // TODO error handling
     spinner.fail();
@@ -287,11 +285,9 @@ export async function loadLayerDataFromCloud(context: $TSContext, layerName: str
 // Check hash results for content changes, bump version if so
 export async function ensureLayerVersion(context: $TSContext, layerName: string, previousHash: string) {
   const currentHash = await hashLayerVersionContents(getLayerPath(layerName));
-  const isNewVersion = previousHash !== currentHash;
-  if (isNewVersion) {
+  if (previousHash !== currentHash) {
     if (previousHash) {
       context.print.success(`Content changes in Lambda layer ${layerName} detected.`);
-      context.print.warning('Note: You need to run "amplify update function" to configure your functions with the latest layer version.');
     }
   }
 
@@ -336,13 +332,14 @@ const safeHash = async (path: string, opts?: HashElementOptions): Promise<string
   return '';
 };
 
-export function validFilesize(path: string, maxSize = 250) {
+export function validFilesize(context: $TSContext, zipPath: string, maxSize = 250) {
   try {
-    const { size } = fs.statSync(path);
+    const { size } = fs.statSync(zipPath);
     const fileSize = Math.round(size / 1024 ** 2);
     return fileSize < maxSize;
   } catch (error) {
-    return new Error(`Calculating file size failed: ${path}`);
+    context.print.error(error);
+    return new Error(`Calculating file size failed: ${zipPath}`);
   }
 }
 

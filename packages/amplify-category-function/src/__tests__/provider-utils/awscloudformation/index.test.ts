@@ -70,12 +70,12 @@ describe('awscloudformation function provider', () => {
   it('passes correct build timestamp to buildFunction', async () => {
     const prodBuilder = await getBuilder({} as $TSContext, 'testFunc', BuildType.PROD);
     await prodBuilder();
-    expect(buildFunction_mock.mock.calls[0][1].lastBuildTimeStamp).toEqual('lastBuildTimeStamp');
+    expect(buildFunction_mock.mock.calls[0][1].lastBuildTimestamp).toEqual('lastBuildTimeStamp');
 
     buildFunction_mock.mockClear();
 
     const devBuilder = await getBuilder({} as $TSContext, 'testFunc', BuildType.DEV);
     await devBuilder();
-    expect(buildFunction_mock.mock.calls[0][1].lastBuildTimeStamp).toEqual('lastDevBuildTimeStamp');
+    expect(buildFunction_mock.mock.calls[0][1].lastBuildTimestamp).toEqual('lastDevBuildTimeStamp');
   });
 });

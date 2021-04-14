@@ -8,8 +8,8 @@ export const buildResource = (context: $TSContext, resource: BuildRequestMeta & 
   if (resource.service !== ServiceName.LambdaFunction && resource.service !== ServiceName.LambdaLayer) {
     return;
   }
-  return getserviceBuilder(resource.service)(context, resource);
+  return getBuilderForService(resource.service)(context, resource);
 };
 
 // since lambdaLayers build is dfifferent from lambda function
-const getserviceBuilder = (service: string) => (service === ServiceName.LambdaLayer ? buildLayer : buildFunction);
+const getBuilderForService = (service: string) => (service === ServiceName.LambdaLayer ? buildLayer : buildFunction);

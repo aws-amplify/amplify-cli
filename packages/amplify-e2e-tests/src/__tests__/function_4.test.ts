@@ -178,7 +178,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
   });
 });
 
-describe.only('add function with layers for runtime nodeJS', () => {
+describe('add function with layers for runtime nodeJS', () => {
   let projRoot: string;
   const helloWorldSuccessOutput = 'Hello from Lambda! data';
   const random = Math.floor(Math.random() * 10000);
@@ -230,12 +230,12 @@ describe.only('add function with layers for runtime nodeJS', () => {
       functionName,
       `
       const fs = require('fs');
-      const uc = require('${settings.layerName}');
+      const upperCaseModule = require('${settings.layerName}');
       exports.handler = async (event) => {
         const data = fs.readFileSync('/opt/data.txt')
         const response = {
             statusCode: 200,
-            body: JSON.stringify(uc.upperCase(testString) + ' ' + data),
+            body: JSON.stringify(upperCaseModule.upperCase(testString) + ' ' + data),
         };
         return response;
       };

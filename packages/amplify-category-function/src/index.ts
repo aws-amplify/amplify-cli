@@ -182,9 +182,9 @@ export async function getInvoker(
 }
 
 export function getBuilder(context: $TSContext, resourceName: string, buildType: BuildType): () => Promise<void> {
-  const lastBuildTimeStamp = _.get(stateManager.getMeta(), [category, resourceName, buildTypeKeyMap[buildType]]);
+  const lastBuildTimestamp = _.get(stateManager.getMeta(), [category, resourceName, buildTypeKeyMap[buildType]]);
   return async () => {
-    await buildFunction(context, { resourceName, buildType, lastBuildTimeStamp });
+    await buildFunction(context, { resourceName, buildType, lastBuildTimestamp });
   };
 }
 

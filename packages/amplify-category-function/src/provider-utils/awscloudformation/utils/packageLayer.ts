@@ -46,7 +46,7 @@ export const packageLayer: Packager = async (context, resource) => {
     ? `${resource.resourceName}-${packageHash}-build.zip`
     : resource.distZipFilename ?? `${resource.category}-${resource.resourceName}-build.zip`;
   // check zip size is less than 250MB
-  if (validFilesize(destination)) {
+  if (validFilesize(context, destination)) {
     context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: 'versionHash', hashValue: currentHash });
   } else {
     throw new Error('File size greater than 250MB');
