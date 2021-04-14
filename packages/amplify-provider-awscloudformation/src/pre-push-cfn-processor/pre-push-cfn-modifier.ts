@@ -19,7 +19,7 @@ export const prePushCfnTemplateModifier: TemplateModifier = async template => {
   }
 };
 
-const getResourceModifiers = (type: string) => {
+const getResourceModifiers = (type: string): ResourceModifier<Resource>[] => {
   return _.get(resourceTransformerRegistry, type, [identityResourceModifier]);
 };
 
