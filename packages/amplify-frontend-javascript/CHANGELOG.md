@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.21.1...amplify-frontend-javascript@2.21.2-beta.0) (2021-04-14)
+
+
+### Bug Fixes
+
+* added project to angular ([#7069](https://github.com/aws-amplify/amplify-cli/issues/7069)) ([bdf252b](https://github.com/aws-amplify/amplify-cli/commit/bdf252b9453906b5075f2592159e026b498a3c48))
+
+
+
+
+
 ## [2.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.20.11...amplify-frontend-javascript@2.21.1) (2021-04-09)
 
 

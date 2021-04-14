@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.48.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.47.1...@aws-amplify/cli@4.48.0-beta.0) (2021-04-14)
+
+
+### Bug Fixes
+
+* **cli:** display gql schema errors on failed push ([#7001](https://github.com/aws-amplify/amplify-cli/issues/7001)) ([3e88993](https://github.com/aws-amplify/amplify-cli/commit/3e88993a4a91794690099205580cf0ae935eff40))
+* fixes e2e bug ([#7067](https://github.com/aws-amplify/amplify-cli/issues/7067)) ([18c9a31](https://github.com/aws-amplify/amplify-cli/commit/18c9a310fd6fbc25c01df40dfd7d0ad731da17d1))
+
+
+### Features
+
+* added new fields to usage data ([#6911](https://github.com/aws-amplify/amplify-cli/issues/6911)) ([dc1d256](https://github.com/aws-amplify/amplify-cli/commit/dc1d256edecec2009ca6649da0995be571886b03))
+
+
+
+
+
 ## [4.47.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.46.1...@aws-amplify/cli@4.47.1) (2021-04-09)
 
 
