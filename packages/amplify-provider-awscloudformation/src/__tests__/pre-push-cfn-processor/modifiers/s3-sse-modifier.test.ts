@@ -12,16 +12,16 @@ describe('applyS3SSEModification', () => {
 
     const bucket = _.cloneDeep(bucketBefore);
 
-    applyS3SSEModification(bucket);
-    expect(bucket).toStrictEqual(bucketBefore);
+    const result = await applyS3SSEModification(bucket);
+    expect(result).toStrictEqual(bucketBefore);
   });
 
   it('assigns config when no Parameters were present before', async () => {
     const bucket = {} as Bucket;
 
-    applyS3SSEModification(bucket);
+    const result = await applyS3SSEModification(bucket);
 
-    expect(bucket.Properties.BucketEncryption).toMatchInlineSnapshot(`
+    expect(result.Properties.BucketEncryption).toMatchInlineSnapshot(`
       BucketEncryption {
         "ServerSideEncryptionConfiguration": Array [
           ServerSideEncryptionRule {
