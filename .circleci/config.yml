@@ -1826,7 +1826,7 @@ workflows:
               only:
                 - master
     jobs:
-      - build: null
+      - build
       - publish_to_local_registry:
           requires:
             - build

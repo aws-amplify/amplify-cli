@@ -570,7 +570,7 @@ workflows:
               only:
                 - master
     jobs:
-      - build:
+      - build
       - publish_to_local_registry:
           requires:
             - build
