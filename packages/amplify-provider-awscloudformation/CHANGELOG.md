@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.43.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.42.0...amplify-provider-awscloudformation@4.43.0) (2021-04-14)
+
+
+### Bug Fixes
+
+* **amplify-e2e-core:** update source of truth for supported regions ([#6988](https://github.com/aws-amplify/amplify-cli/issues/6988)) ([bb8f8e6](https://github.com/aws-amplify/amplify-cli/commit/bb8f8e6c03baa99748d1b594fea4d18a947cac5c))
+* **amplify-provider-awscloudformation:** fix tests failing due to system-config-manager.js ([#7053](https://github.com/aws-amplify/amplify-cli/issues/7053)) ([07525b3](https://github.com/aws-amplify/amplify-cli/commit/07525b3b4361f5af673687bc265e97ceba359a13))
+* **amplify-provider-awscloudformation:** throw helpful error if profile is missing keys ([#7017](https://github.com/aws-amplify/amplify-cli/issues/7017)) ([ebdaa59](https://github.com/aws-amplify/amplify-cli/commit/ebdaa5981004b86e2f84b94d25fc84b25325ee18))
+
+
+### Features
+
+* added new fields to usage data ([#6911](https://github.com/aws-amplify/amplify-cli/issues/6911)) ([dc1d256](https://github.com/aws-amplify/amplify-cli/commit/dc1d256edecec2009ca6649da0995be571886b03))
+* differ metric agent for admin generated stacks ([#6978](https://github.com/aws-amplify/amplify-cli/issues/6978)) ([56907eb](https://github.com/aws-amplify/amplify-cli/commit/56907eb09a5c3ac464545ac437c2b738a4c004b4))
+
+
+
+
+
 # [4.42.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.40.3...amplify-provider-awscloudformation@4.42.0) (2021-04-09)
 
 

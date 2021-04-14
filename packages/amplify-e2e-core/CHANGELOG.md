@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.17.1...amplify-e2e-core@1.17.2) (2021-04-14)
+
+
+### Bug Fixes
+
+* **amplify-e2e-core:** update source of truth for supported regions ([#6988](https://github.com/aws-amplify/amplify-cli/issues/6988)) ([bb8f8e6](https://github.com/aws-amplify/amplify-cli/commit/bb8f8e6c03baa99748d1b594fea4d18a947cac5c))
+
+
+
+
+
 ## [1.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.16.2...amplify-e2e-core@1.17.1) (2021-04-09)
 
 
