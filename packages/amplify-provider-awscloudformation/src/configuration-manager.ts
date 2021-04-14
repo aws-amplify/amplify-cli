@@ -303,7 +303,6 @@ async function setProjectConfigAction(context: $TSContext) {
     } else if (inputParams.configLevel === 'project') {
       context.exeInfo.awsConfigInfo.action = 'create';
       context.exeInfo.awsConfigInfo.configLevel = 'project';
-      context.exeInfo.awsConfigInfo.config = defaultAWSConfig;
     } else {
       context.exeInfo.awsConfigInfo.action = 'none';
       context.exeInfo.awsConfigInfo.configLevel = 'general';
@@ -319,7 +318,6 @@ async function setProjectConfigAction(context: $TSContext) {
       if (answer.setProjectLevelConfig) {
         context.exeInfo.awsConfigInfo.action = 'create';
         context.exeInfo.awsConfigInfo.configLevel = 'project';
-        context.exeInfo.awsConfigInfo.config = defaultAWSConfig;
       } else {
         context.exeInfo.awsConfigInfo.action = 'none';
         context.exeInfo.awsConfigInfo.configLevel = 'general';
@@ -351,6 +349,7 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
   if (availableProfiles && availableProfiles.length > 0) {
     let authType: AuthFlow;
     let isAdminApp = false;
+
     if (authConfig?.type) {
       authType = authConfig.type;
     } else {
@@ -362,6 +361,7 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
       }
       authType = await askAuthType(isAdminApp);
     }
+
     if (authType === 'profile') {
       printProfileInfo(context);
       awsConfigInfo.config.useProfile = true;
