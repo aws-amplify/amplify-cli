@@ -114,7 +114,7 @@ jobs:
           path: packages/amplify-util-mock/
 
   publish_to_local_registry:
-    <<: *defaults
+    <<: *node10
     steps:
       - attach_workspace:
           at: ./
@@ -154,7 +154,7 @@ jobs:
             - ~/repo/.amplify-pkg-version
 
   build_pkg_binaries:
-    <<: *defaults
+    <<: *node10
     steps:
       - attach_workspace:
           at: ./
@@ -473,7 +473,7 @@ jobs:
               echo "Skipping deploy."
             fi
   github_prerelease:
-    <<: *defaults
+    <<: *node10
     steps:
       - attach_workspace:
           at: ./
@@ -497,7 +497,7 @@ jobs:
             yarn ts-node scripts/github-prerelease.ts $version
 
   github_prerelease_install_sanity_check:
-    <<: *defaults
+    <<: *node10
     steps:
       - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
@@ -512,7 +512,7 @@ jobs:
           command: |
             amplify version
   github_release:
-    <<: *defaults
+    <<: *node10
     steps:
       - attach_workspace:
           at: ./
@@ -571,13 +571,13 @@ workflows:
                 - master
     jobs:
       - build:
-          context: amplify-ecr-image-pull
       - publish_to_local_registry:
-          context: amplify-ecr-image-pull
           requires:
             - build
       - amplify_console_integration_tests:
-          context: amplify-ecr-image-pull
+          context:
+            - amplify-ecr-image-pull
+            - console-e2e-test
           requires:
             - build
             - publish_to_local_registry
@@ -626,7 +626,6 @@ workflows:
             - build
             - mock_e2e_tests
       - publish_to_local_registry:
-          context: amplify-ecr-image-pull
           filters:
             branches:
               only:
@@ -639,7 +638,6 @@ workflows:
           requires:
             - build
       - build_pkg_binaries:
-          context: amplify-ecr-image-pull
           requires:
             - publish_to_local_registry
       - amplify_sudo_install_test:
@@ -654,6 +652,7 @@ workflows:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
+            - e2e-auth-credentials
           post-steps:
             - run: *clean_e2e_resources
           filters:
@@ -686,7 +685,10 @@ workflows:
           requires:
             - amplify_e2e_tests_pkg_linux
       - amplify_migration_tests_latest:
-          context: amplify-ecr-image-pull
+          context:
+            - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - clean_e2e_resources
           filters:
             branches:
               only:
@@ -694,7 +696,10 @@ workflows:
           requires:
             - build
       - amplify_migration_tests_v4:
-          context: amplify-ecr-image-pull
+          context:
+            - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - clean_e2e_resources
           filters:
             branches:
               only:
@@ -702,7 +707,10 @@ workflows:
           requires:
             - build
       - amplify_migration_tests_v4_30_0:
-          context: amplify-ecr-image-pull
+          context:
+            - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - clean_e2e_resources
           filters:
             branches:
               only:
@@ -715,7 +723,8 @@ workflows:
       - amplify_console_integration_tests:
           context:
             - amplify-ecr-image-pull
-            - cleanup-resources
+            - e2e-auth-credentials
+            - clean_e2e_resources
           post-steps:
             - run: *clean_e2e_resources
           filters:
@@ -726,7 +735,7 @@ workflows:
             - build
             - publish_to_local_registry
       - github_prerelease:
-          context: amplify-ecr-image-pull
+          context: github-publish
           requires:
             - build_pkg_binaries
           filters:
@@ -734,7 +743,6 @@ workflows:
               only:
                 - release
       - github_prerelease_install_sanity_check:
-          context: amplify-ecr-image-pull
           requires:
             - github_prerelease
           filters:
@@ -773,7 +781,7 @@ workflows:
                 - master
                 - beta
       - github_release:
-          context: amplify-ecr-image-pull
+          context: github-publish
           requires:
             - deploy
           filters:
