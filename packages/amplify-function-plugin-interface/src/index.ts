@@ -99,6 +99,13 @@ export type BuildResult = {
 // Result of packaging a function
 export type PackageResult = {
   packageHash?: string; // undefined if no repacking necessary. Otherwise, it is a hash that uniquiely identifies the package
+  zipEntries?: ZipEntry[]; // undefined if no zipping required for anytime
+};
+
+export type ZipEntry = {
+  sourceFolder?: string; // files to zip in folder
+  packageFolder?: string; // directories to zip (layers)
+  ignoreFiles?: string[]; // ignore patterns for sourcefolder
 };
 
 export type CheckDependenciesResult = {

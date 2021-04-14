@@ -7,6 +7,7 @@ import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interfa
 import { ServiceName } from './constants';
 import _ from 'lodash';
 import { loadPreviousLayerHash, ensureLayerVersion, validFilesize } from './layerHelpers';
+import { zipPackage } from './zipResource';
 
 /**
  * Packages lambda  layer  code and artifacts into a lambda-compatible .zip file
@@ -42,6 +43,9 @@ export const packageLayer: Packager = async (context, resource) => {
   };
   const packageResult = await runtimePlugin.package(packageRequest);
   const packageHash = packageResult.packageHash;
+  if (packageHash) {
+    await zipPackage(packageResult.zipEntries, destination);
+  }
   const zipFilename = packageHash
     ? `${resource.resourceName}-${packageHash}-build.zip`
     : resource.distZipFilename ?? `${resource.category}-${resource.resourceName}-build.zip`;
