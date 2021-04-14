@@ -65,7 +65,9 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/import_auth_2.test.ts',
   'src/__tests__/import_s3_1.test.ts',
   'src/__tests__/import_dynamodb_1.test.ts',
+  'src/__tests__/schema-iterative-rollback-1.test.ts',
   //<40m
+  'src/__tests__/schema-iterative-rollback-2.test.ts',
   'src/__tests__/env.test.ts',
   'src/__tests__/auth_2.test.ts',
   'src/__tests__/schema-auth-9.test.ts',

@@ -11,7 +11,7 @@ import {
   addFeatureFlag,
   amplifyPush,
   updateApiSchema,
-  getTableName,
+  getTableResourceId,
   getNestedStackID,
   cancelIterativeAmplifyPush,
 } from 'amplify-e2e-core';
@@ -40,7 +40,7 @@ describe('Iterative Rollback - add 2 @keys ', () => {
     const { StackId: stackId, Region: region } = meta.providers.awscloudformation;
     const { logicalId } = meta.api[apiName].providerMetadata;
     const apiID = await getNestedStackID(stackId, region, logicalId);
-    const tableName = await getTableName(region, 'Record', apiID);
+    const tableName = await getTableResourceId(region, 'Record', apiID);
     let table = await getDDBTable(tableName, region);
 
     expect(table.Table.GlobalSecondaryIndexes).toBeUndefined();
