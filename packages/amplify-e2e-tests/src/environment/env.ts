@@ -12,10 +12,6 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
       .wait('Please choose the profile you want to use')
       .sendCarriageReturn();
 
-    for (let i = 0; i < settings.numLayers || 0; ++i) {
-      chain.wait('Choose the environment to import the layer access settings from:').sendCarriageReturn(); // Choose first env in list
-    }
-
     chain.wait('Initialized your environment successfully.').run((err: Error) => {
       if (!err) {
         resolve();
