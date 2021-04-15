@@ -1,12 +1,5 @@
-import {
-  amplifyConfigureProject,
-  createNewProjectDir,
-  deleteProject,
-  deleteProjectDir,
-  initJSProjectWithProfile,
-  readJsonFile,
-} from 'amplify-e2e-core';
-import * as path from 'path';
+import { amplifyConfigureProject, createNewProjectDir, deleteProject, deleteProjectDir, initJSProjectWithProfile } from 'amplify-e2e-core';
+import { stateManager } from 'amplify-cli-core';
 
 describe('amplify configure project tests', () => {
   let projRoot: string;
@@ -67,9 +60,5 @@ describe('amplify configure project tests', () => {
 });
 
 function getLocalAwsInfoForEnv(projRoot: string, envName: string) {
-  return getLocalAwsInfo(projRoot)[envName];
-}
-
-function getLocalAwsInfo(projRoot: string) {
-  return readJsonFile(path.join(projRoot, 'amplify', '.config', 'local-aws-info.json'));
+  return stateManager.getLocalAWSInfo(projRoot)[envName];
 }
