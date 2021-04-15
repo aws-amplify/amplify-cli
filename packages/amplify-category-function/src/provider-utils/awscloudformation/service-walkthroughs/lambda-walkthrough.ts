@@ -77,11 +77,6 @@ export async function createWalkthrough(
 
     // ask lambda layer questions and merge in results
     templateParameters = merge(templateParameters, await addLayersToFunctionWalkthrough(context, templateParameters.runtime));
-    if (templateParameters.lambdaLayers) {
-      const projectBackendDirPath = pathManager.getBackendDirPath();
-      const resourceDirPath = path.join(projectBackendDirPath, category, templateParameters.resourceName);
-      addLayerCFNParameters(context, templateParameters, resourceDirPath);
-    }
   }
 
   return templateParameters;

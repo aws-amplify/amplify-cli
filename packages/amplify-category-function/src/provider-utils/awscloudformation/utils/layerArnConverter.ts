@@ -31,6 +31,6 @@ const convertProjectLayer = (layer: ProjectLayer, env?: string) => {
     };
   }
   return {
-    Ref: layer.logicalId,
+    Ref: `function${layer.resourceName}Arn`,
   };
 };

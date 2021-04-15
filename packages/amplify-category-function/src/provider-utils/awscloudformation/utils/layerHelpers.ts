@@ -192,7 +192,6 @@ export function loadStoredLayerParameters(context: $TSContext, layerName: string
     },
     description,
     build: true,
-    logicalId: logicalId,
   };
 }
 

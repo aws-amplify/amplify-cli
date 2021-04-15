@@ -217,7 +217,6 @@ export interface ProjectLayer {
   resourceName: string;
   version: number;
   isLatest: boolean;
-  logicalId: string;
 }
 
 export interface ExternalLayer {

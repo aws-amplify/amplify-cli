@@ -136,7 +136,7 @@ describe('layer selection question', () => {
     }));
 
     await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
-    expect((inquirer_mock.prompt.mock.calls[1][0] as ListQuestion).default).toBe('2');
+    expect((inquirer_mock.prompt.mock.calls[1][0] as ListQuestion).default).toBe('Always choose latest version');
   });
 
   it('returns the selected layers', async () => {
@@ -153,6 +153,7 @@ describe('layer selection question', () => {
         type: 'ProjectLayer',
         resourceName: 'aLayer',
         version: 2,
+        isLatest: false,
       },
     ];
     const expectedDependsOn: FunctionDependency[] = [

@@ -69,7 +69,6 @@ export const askLayerSelection = async (
     const currentSelectionDefaults = filterProjectLayers(previousSelections).find(sel => sel.resourceName === layerName);
     const currentVersion = currentSelectionDefaults ? currentSelectionDefaults.version.toString() : undefined;
     const layerVersions = await loadLayerDataFromCloud(context, layerName);
-    const logicalIdForUnDeployedLayer = loadLayerConfigurationFile(pathManager.getBackendDirPath(), layerName).logicalId;
     layerVersionArrPrompt = layerVersions.map(layerVersion => layerVersion.Version.toString());
     if (!layerVersionArrPrompt.length) {
       layerVersionArrPrompt.push('1'); // new latest version if no layers are pushed
@@ -87,14 +86,12 @@ export const askLayerSelection = async (
     const versionSelection = (await inquirer.prompt(layerVersionPrompt)).versionSelection;
     const isLatest = versionSelection.toString() === defaultlayerVersionPrompt ? true : false;
     const selectedVersion = versionSelection.toString() === defaultlayerVersionPrompt ? layerVersionArrPrompt[1] : versionSelection;
-    const logicalId = layerVersions.length ? layerVersions[0].LogicalName : logicalIdForUnDeployedLayer;
 
     lambdaLayers.push({
       type: 'ProjectLayer',
       resourceName: layerName,
       version: selectedVersion,
       isLatest: isLatest,
-      logicalId: logicalId,
     });
     dependsOn.push({
       category,
