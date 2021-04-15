@@ -114,7 +114,7 @@ jobs:
           path: packages/amplify-util-mock/
 
   publish_to_local_registry:
-    <<: *defaults
+    <<: *node10
     steps:
       - attach_workspace:
           at: ./
@@ -154,7 +154,7 @@ jobs:
             - ~/repo/.amplify-pkg-version
 
   build_pkg_binaries:
-    <<: *defaults
+    <<: *node10
     steps:
       - attach_workspace:
           at: ./
@@ -187,7 +187,7 @@ jobs:
           name: Run GraphQL end-to-end tests
           command: cd packages/graphql-transformers-e2e-tests/ && yarn e2e --maxWorkers=3
           environment:
-            AMPLIFY_CLI_DISABLE_LOGGING: "true"
+            AMPLIFY_CLI_DISABLE_LOGGING: 'true'
           no_output_timeout: 90m
       - store_test_results:
           path: packages/graphql-transformers-e2e-tests/
@@ -227,12 +227,12 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
 
   done_with_node_e2e_tests:
-    <<: *defaults
+    <<: *node10
     steps:
       - run: echo 'Done with Node CLI E2E Tests'
 
   done_with_pkg_linux_e2e_tests:
-    <<: *defaults
+    <<: *node10
     steps:
       - run: echo 'Done with pkg CLI E2E Tests'
 
@@ -473,7 +473,7 @@ jobs:
               echo "Skipping deploy."
             fi
   github_prerelease:
-    <<: *defaults
+    <<: *node10
     steps:
       - attach_workspace:
           at: ./
@@ -497,7 +497,7 @@ jobs:
             yarn ts-node scripts/github-prerelease.ts $version
 
   github_prerelease_install_sanity_check:
-    <<: *defaults
+    <<: *node10
     steps:
       - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
@@ -512,7 +512,7 @@ jobs:
           command: |
             amplify version
   github_release:
-    <<: *defaults
+    <<: *node10
     steps:
       - attach_workspace:
           at: ./
@@ -570,14 +570,14 @@ workflows:
               only:
                 - master
     jobs:
-      - build:
-          context: amplify-cli-ecr
+      - build
       - publish_to_local_registry:
-          context: amplify-cli-ecr
           requires:
             - build
       - amplify_console_integration_tests:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - console-e2e-test
           requires:
             - build
             - publish_to_local_registry
@@ -592,6 +592,7 @@ workflows:
     jobs:
       - build
       - cleanup_resources:
+          context: cleanup-resources
           requires:
             - build
 
@@ -605,7 +606,7 @@ workflows:
           requires:
             - build
       - graphql_e2e_tests:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           filters:
             branches:
               only:
@@ -615,7 +616,9 @@ workflows:
             - build
             - mock_e2e_tests
       - integration_test:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - e2e-test-context
           filters:
             branches:
               only:
@@ -625,7 +628,6 @@ workflows:
             - build
             - mock_e2e_tests
       - publish_to_local_registry:
-          context: amplify-cli-ecr
           filters:
             branches:
               only:
@@ -638,11 +640,10 @@ workflows:
           requires:
             - build
       - build_pkg_binaries:
-          context: amplify-cli-ecr
           requires:
             - publish_to_local_registry
       - amplify_sudo_install_test:
-          context: amplify-cli-ecr
+          context: amplify-ecr-image-pull
           requires:
             - publish_to_local_registry
           filters:
@@ -650,7 +651,11 @@ workflows:
               only:
                 - master
       - amplify_e2e_tests:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-auth-credentials
+            - e2e-test-context
           post-steps:
             - run: *clean_e2e_resources
           filters:
@@ -662,11 +667,13 @@ workflows:
           requires:
             - publish_to_local_registry
       - done_with_node_e2e_tests:
-          context: amplify-cli-ecr
           requires:
             - amplify_e2e_tests
       - amplify_e2e_tests_pkg_linux:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - clean_e2e_resources
+            - e2e-test-context
           post-steps:
             - run: *clean_e2e_resources
           filters:
@@ -677,11 +684,14 @@ workflows:
             - done_with_node_e2e_tests
             - build_pkg_binaries
       - done_with_pkg_linux_e2e_tests:
-          context: amplify-cli-ecr
           requires:
             - amplify_e2e_tests_pkg_linux
       - amplify_migration_tests_latest:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - clean_e2e_resources
+            - e2e-test-context
           filters:
             branches:
               only:
@@ -689,7 +699,11 @@ workflows:
           requires:
             - build
       - amplify_migration_tests_v4:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - clean_e2e_resources
+            - e2e-test-context
           filters:
             branches:
               only:
@@ -697,7 +711,11 @@ workflows:
           requires:
             - build
       - amplify_migration_tests_v4_30_0:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - clean_e2e_resources
+            - e2e-test-context
           filters:
             branches:
               only:
@@ -708,7 +726,11 @@ workflows:
           requires:
             - build
       - amplify_console_integration_tests:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - clean_e2e_resources
+            - console-e2e-test
           post-steps:
             - run: *clean_e2e_resources
           filters:
@@ -719,7 +741,7 @@ workflows:
             - build
             - publish_to_local_registry
       - github_prerelease:
-          context: amplify-cli-ecr
+          context: github-publish
           requires:
             - build_pkg_binaries
           filters:
@@ -727,7 +749,6 @@ workflows:
               only:
                 - release
       - github_prerelease_install_sanity_check:
-          context: amplify-cli-ecr
           requires:
             - github_prerelease
           filters:
@@ -735,6 +756,7 @@ workflows:
               only:
                 - release
       - cleanup_resources_after_e2e_runs:
+          context: cleanup-resources
           requires:
             - done_with_pkg_linux_e2e_tests
             - amplify_migration_tests_latest
@@ -743,7 +765,9 @@ workflows:
             - done_with_node_e2e_tests
 
       - deploy:
-          context: amplify-cli-ecr
+          context:
+            - amplify-ecr-image-pull
+            - npm-publish
           requires:
             - test
             - mock_e2e_tests
@@ -763,7 +787,7 @@ workflows:
                 - master
                 - beta
       - github_release:
-          context: amplify-cli-ecr
+          context: github-publish
           requires:
             - deploy
           filters:
