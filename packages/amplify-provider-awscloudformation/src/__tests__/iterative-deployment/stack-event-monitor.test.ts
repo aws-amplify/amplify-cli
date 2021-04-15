@@ -9,7 +9,7 @@ const stackProgressPrinterStub = ({
 
 const cfn = ({
   describeStackEvents: () => ({
-    promise: () => ({
+    promise: () => Promise.resolve({
       NextToken: undefined,
     }),
   }),
@@ -27,9 +27,9 @@ describe('StackEventMonitor', () => {
     expect(setTimeout).toHaveBeenCalledTimes(1);
     expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 5000);
     expect(stackProgressPrinterStub.start).toBeCalled();
-    setTimeout(() => {
+    setImmediate(() => {
       expect(stackProgressPrinterStub.print).toBeCalled();
-    }, 0); // print is called asynchronously by setTimeout, so we need to queue "expect" to run after all tasks are done
+    }); // print is called asynchronously by setTimeout, so we need to queue "expect" to run after all tasks are done
   });
 
   test('stop StackEventMonitor', () => {
