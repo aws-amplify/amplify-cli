@@ -53,7 +53,7 @@ export function cancelIterativeAmplifyPush(
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
-      .wait(`Deploying stack (${stackIdx.current} of ${stackIdx.max})`)
+      .wait(`Deploying (${stackIdx.current} of ${stackIdx.max})`)
       .wait(/.*UPDATE_IN_PROGRESS*/)
       .sendCtrlC()
       .run((err: Error) => {
