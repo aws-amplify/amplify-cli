@@ -96,7 +96,7 @@ export function amplifyConfigureProject(settings: {
     const chain = spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true }).wait('Which setting do you want to configure?');
 
     if (enableContainers) {
-      singleSelect(chain, 'containers', configurationOptions);
+      singleSelect(chain, configurationOptions[2], configurationOptions);
       chain.wait('Do you want to enable container-based deployments?').sendConfirmYes();
     } else {
       singleSelect(chain, configurationOptions[1], configurationOptions);
