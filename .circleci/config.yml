@@ -234,13 +234,13 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
   done_with_node_e2e_tests:
     working_directory: ~/repo
-    docker: *ref_1
+    docker: *ref_0
     resource_class: large
     steps:
       - run: echo 'Done with Node CLI E2E Tests'
   done_with_pkg_linux_e2e_tests:
     working_directory: ~/repo
-    docker: *ref_1
+    docker: *ref_0
     resource_class: large
     steps:
       - run: echo 'Done with pkg CLI E2E Tests'
@@ -1871,7 +1871,9 @@ workflows:
             - build
             - mock_e2e_tests
       - integration_test:
-          context: amplify-ecr-image-pull
+          context:
+            - amplify-ecr-image-pull
+            - e2e-test-context
           filters:
             branches:
               only:
@@ -1904,7 +1906,6 @@ workflows:
               only:
                 - master
       - done_with_node_e2e_tests:
-          context: amplify-ecr-image-pull
           requires:
             - schema-key-amplify_e2e_tests
             - analytics-amplify_e2e_tests
@@ -1935,7 +1936,6 @@ workflows:
             - schema-versioned-amplify_e2e_tests
             - plugin-amplify_e2e_tests
       - done_with_pkg_linux_e2e_tests:
-          context: amplify-ecr-image-pull
           requires:
             - schema-key-amplify_e2e_tests_pkg_linux
             - analytics-amplify_e2e_tests_pkg_linux
@@ -1970,6 +1970,7 @@ workflows:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
             - clean_e2e_resources
+            - e2e-test-context
           filters:
             branches:
               only:
@@ -1981,6 +1982,7 @@ workflows:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
             - clean_e2e_resources
+            - e2e-test-context
           filters:
             branches:
               only:
@@ -1992,6 +1994,7 @@ workflows:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
             - clean_e2e_resources
+            - e2e-test-context
           filters:
             branches:
               only:
@@ -2006,6 +2009,7 @@ workflows:
             - amplify-ecr-image-pull
             - e2e-auth-credentials
             - clean_e2e_resources
+            - console-e2e-test
           post-steps:
             - run: *ref_6
           filters:
@@ -2073,6 +2077,7 @@ workflows:
             - amplify-ecr-image-pull
             - clean_e2e_resources
             - e2e-auth-credentials
+            - e2e-test-context
           post-steps: &ref_8
             - run: *ref_6
           filters: &ref_9
@@ -2489,6 +2494,7 @@ workflows:
           context: &ref_10
             - amplify-ecr-image-pull
             - clean_e2e_resources
+            - e2e-test-context
           post-steps: &ref_11
             - run: *ref_6
           filters: &ref_12
