@@ -43,18 +43,19 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean
  * @param testingWithLatestCodebase
  * @returns
  * Used to stop an iterative deployment
+ * Waits on the table stack to be complete and for the next stack to update in order to cancel the push
  */
 export function cancelIterativeAmplifyPush(
   cwd: string,
-  stackIdx: { current: number; max: number },
+  tableWait: RegExp | string,
   testingWithLatestCodebase: boolean = false,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
-      .wait(`Deploying (${stackIdx.current} of ${stackIdx.max})`)
-      .wait(/.*UPDATE_IN_PROGRESS*/)
+      .wait(tableWait)
+      .wait(/.*UPDATE_IN_PROGRESS GraphQLSchema*/)
       .sendCtrlC()
       .run((err: Error) => {
         if (err && !/Killed the process as no output receive for/.test(err.message)) {

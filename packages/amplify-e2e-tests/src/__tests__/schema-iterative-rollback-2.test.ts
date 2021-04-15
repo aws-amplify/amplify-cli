@@ -47,7 +47,7 @@ describe('Iterative Rollback - removing two @keys', () => {
 
     const finalSchema = path.join('iterative-push', 'multiple-key-delete', 'final-schema.graphql');
     updateApiSchema(projectDir, apiName, finalSchema);
-    await cancelIterativeAmplifyPush(projectDir, { current: 2, max: 3 });
+    await cancelIterativeAmplifyPush(projectDir, /.*UPDATE_COMPLETE SomethingTable*/);
 
     await new Promise(res => setTimeout(res, 1000));
 
