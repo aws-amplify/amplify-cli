@@ -207,7 +207,7 @@ export const describeCloudFormationStack = async (stackName: string, region: str
 export const getNestedStackID = async (stackName: string, region: string, logicalId: string) => {
   const cfnClient = new CloudFormation({ region });
   const resource = await cfnClient.describeStackResources({ StackName: stackName, LogicalResourceId: logicalId }).promise();
-  return resource?.StackResources?.[0] ?? null;
+  return resource?.StackResources?.[0]?.StackId ?? null;
 };
 
 /**
@@ -225,15 +225,14 @@ export const getTableResourceId = async (region: string, table: string, StackId:
       StackName: StackId,
     })
     .promise();
-  const resource = apiResources.StackResources.find((stackResource) => table === stackResource.LogicalResourceId);
+  const resource = apiResources.StackResources.find(stackResource => table === stackResource.LogicalResourceId);
   if (resource) {
     const tableStack = await cfnClient.describeStacks({ StackName: resource.PhysicalResourceId }).promise();
     if (tableStack?.Stacks?.length > 0) {
-      const tableName = tableStack.Stacks[0].Outputs.find(
-        (out) => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
+      const tableName = tableStack.Stacks[0].Outputs.find(out => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
       return tableName.OutputValue[0];
     }
-  };
+  }
   return null;
 };
 

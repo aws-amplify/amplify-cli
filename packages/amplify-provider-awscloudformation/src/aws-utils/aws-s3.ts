@@ -14,7 +14,7 @@ const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-s3');
 
 // https://stackoverflow.com/questions/52703321/make-some-properties-optional-in-a-typescript-type
-type OptionalExceptFor<T, TRequired extends keyof T> = Partial<T> & Pick<T, TRequired>
+type OptionalExceptFor<T, TRequired extends keyof T> = Partial<T> & Pick<T, TRequired>;
 
 export class S3 {
   private static instance: S3;
@@ -141,12 +141,7 @@ export class S3 {
     bucketName: string,
     options: OptionalExceptFor<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'> = null,
   ) {
-    const result = await pagedAWSCall<
-      ListObjectVersionsOutput,
-      Required<ObjectIdentifier>,
-      typeof options,
-      ListObjectVersionsRequest
-    >(
+    const result = await pagedAWSCall<ListObjectVersionsOutput, Required<ObjectIdentifier>, typeof options, ListObjectVersionsRequest>(
       async (param, nextToken?) => {
         const parmaWithNextToken = nextToken ? { ...param, ...nextToken } : param;
         logger('getAllObjectKey.s3.listObjectVersions', [parmaWithNextToken])();
@@ -169,13 +164,14 @@ export class S3 {
     logger('deleteDirectory.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectVersions(bucketName, { Prefix: dirPath });
     const chunkedResult = _.chunk(allObjects, 1000);
-    for (let chunk of chunkedResult) {
-      logger('deleteDirectory.s3.deleteObjects', [{ Bucket: bucketName }])();
+    const chunkedResultLength = chunkedResult.length;
+    for (let idx = 0; idx < chunkedResultLength; idx++) {
+      logger(`deleteAllObjects.s3.deleteObjects (${idx} of ${chunkedResultLength})`, [{ Bucket: bucketName }])();
       await this.s3
         .deleteObjects({
           Bucket: bucketName,
           Delete: {
-            Objects: chunk,
+            Objects: chunkedResult[idx],
           },
         })
         .promise();
@@ -187,17 +183,17 @@ export class S3 {
     const allObjects = await this.getAllObjectVersions(bucketName);
     const chunkedResult = _.chunk(allObjects, 1000);
     const chunkedResultLength = chunkedResult.length;
-    chunkedResult.forEach ( async (chunk, idx) => {
+    for (let idx = 0; idx < chunkedResultLength; idx++) {
       logger(`deleteAllObjects.s3.deleteObjects (${idx} of ${chunkedResultLength})`, [{ Bucket: bucketName }])();
       await this.s3
         .deleteObjects({
           Bucket: bucketName,
           Delete: {
-            Objects: chunk,
+            Objects: chunkedResult[idx],
           },
         })
         .promise();
-    });
+    }
   }
 
   public async deleteS3Bucket(bucketName: string) {
