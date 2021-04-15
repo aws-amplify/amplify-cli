@@ -17,7 +17,9 @@ import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
-  return await service.describeTable({ TableName: tableName }).promise();
+  if (tableName) {
+    return await service.describeTable({ TableName: tableName }).promise();
+  }
 };
 
 export const checkIfBucketExists = async (bucketName: string, region: string) => {
@@ -204,10 +206,10 @@ export const describeCloudFormationStack = async (stackName: string, region: str
   );
 };
 
-export const getNestedStackID = async (stackName: string, region: string, logicalId: string) => {
+export const getNestedStackID = async (stackName: string, region: string, logicalId: string): Promise<string> => {
   const cfnClient = new CloudFormation({ region });
   const resource = await cfnClient.describeStackResources({ StackName: stackName, LogicalResourceId: logicalId }).promise();
-  return resource?.StackResources?.[0]?.StackId ?? null;
+  return resource?.StackResources?.[0].PhysicalResourceId ?? null;
 };
 
 /**
@@ -230,7 +232,7 @@ export const getTableResourceId = async (region: string, table: string, StackId:
     const tableStack = await cfnClient.describeStacks({ StackName: resource.PhysicalResourceId }).promise();
     if (tableStack?.Stacks?.length > 0) {
       const tableName = tableStack.Stacks[0].Outputs.find(out => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
-      return tableName.OutputValue[0];
+      return tableName.OutputValue;
     }
   }
   return null;
