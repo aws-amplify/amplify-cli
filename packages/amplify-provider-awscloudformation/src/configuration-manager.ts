@@ -372,6 +372,9 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
       awsConfigInfo.configLevel = 'amplifyAdmin';
       awsConfigInfo.config.useProfile = false;
       return;
+    } else {
+      awsConfigInfo.config.useProfile = false;
+      delete awsConfigInfo.config.profileName;
     }
   } else {
     awsConfigInfo.config.useProfile = false;
