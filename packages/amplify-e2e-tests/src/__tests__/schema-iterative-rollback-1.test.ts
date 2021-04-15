@@ -47,7 +47,7 @@ describe('Iterative Rollback - add 2 @keys ', () => {
 
     const finalSchema = path.join('iterative-push', 'two-key-add', 'final-schema.graphql');
     updateApiSchema(projectDir, apiName, finalSchema);
-    await cancelIterativeAmplifyPush(projectDir, { current: 2, max: 3 });
+    await cancelIterativeAmplifyPush(projectDir, /.*UPDATE_COMPLETE RecordTable*/);
 
     await new Promise(res => setTimeout(res, 1000));
 

@@ -207,10 +207,13 @@ export class DeploymentStateManager implements IDeploymentStateManager {
   };
 
   private saveState = async (): Promise<void> => {
-    await this.s3.uploadFile({
-      Key: DeploymentStateManager.stateFileName,
-      Body: JSONUtilities.stringify(this.currentState),
-    });
+    await this.s3.uploadFile(
+      {
+        Key: DeploymentStateManager.stateFileName,
+        Body: JSONUtilities.stringify(this.currentState),
+      },
+      false,
+    );
   };
 
   private getCurrentStep = (): DeploymentStepState => this.currentState.steps[this.currentState.currentStepIndex];
