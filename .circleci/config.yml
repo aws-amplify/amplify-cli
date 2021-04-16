@@ -1834,6 +1834,7 @@ workflows:
           context:
             - amplify-ecr-image-pull
             - console-e2e-test
+            - e2e-test-context
           requires:
             - build
             - publish_to_local_registry
@@ -1861,7 +1862,9 @@ workflows:
           requires:
             - build
       - graphql_e2e_tests:
-          context: amplify-ecr-image-pull
+          context:
+            - amplify-ecr-image-pull
+            - e2e-test-context
           filters:
             branches:
               only:
@@ -2010,6 +2013,7 @@ workflows:
             - e2e-auth-credentials
             - clean_e2e_resources
             - console-e2e-test
+            - e2e-test-context
           post-steps:
             - run: *ref_6
           filters:
