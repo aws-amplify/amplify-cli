@@ -4,7 +4,7 @@ import path from 'path';
 import { categoryName } from './constants';
 import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
-export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes'>;
+export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes' | 'description'>;
 const layerConfigurationFileName = 'layer-configuration.json';
 
 export function createLayerConfiguration(layerDirPath: string, parameters: LayerConfiguration) {
@@ -19,6 +19,7 @@ export function getLayerConfiguration(backendDirPath: string, layerName: string)
   layerConfig.runtimes.forEach(runtimeMeta => {
     runtimeMeta.cloudTemplateValues = cloudTemplateValues.filter((ctv: string) => ctv.startsWith(runtimeMeta.value));
   });
+  layerConfig.description = getLayerDescription(layerName);
   return layerConfig;
 }
 
@@ -38,6 +39,18 @@ export function saveLayerPermissions(layerDirPath: string, permissions: LayerPer
   const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
   layerConfig.permissions = permissions;
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+}
+
+export function saveLayerDescription(layerName: string, description?: string) {
+  const layerConfig = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
+  stateManager.setResourceParametersJson(undefined, categoryName, layerName, {
+    ...layerConfig,
+    description,
+  });
+}
+function getLayerDescription(layerName: string): string {
+  const { description } = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
+  return description;
 }
 
 export function loadLayerConfigurationFile(backendDirPath: string, layerName: string) {
