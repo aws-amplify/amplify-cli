@@ -180,8 +180,8 @@ async function selectDatabase(context, inputs, clusterArn, secretArn, AWS) {
     // eslint-disable-next-line prefer-destructuring
     const records = dataApiResult.records;
 
-    for (let i = 0; i < records.length; i += 1) {
-      const recordValue = records[i][0].stringValue;
+    for (const record of records) {
+      const recordValue = record[0].stringValue;
       // ignore the three meta tables that the cluster creates
       if (!['information_schema', 'performance_schema', 'mysql'].includes(recordValue)) {
         databaseList.push(recordValue);
