@@ -244,8 +244,8 @@ describe('add function with layers for runtime nodeJS', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
   it('can add project layers and external layers for nodejs', async () => {
     await amplifyPushAuth(projRoot);
