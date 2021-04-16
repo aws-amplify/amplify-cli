@@ -132,6 +132,7 @@ export class DeploymentManager {
       const service = interpret(machine)
         .onTransition(async state => {
           if (state.changed) {
+            this.spinner.render();
             maxDeployed = Math.max(maxDeployed, state.context.currentIndex + 1);
             if (state.matches('idle')) {
               this.spinner.text = `Starting deployment`;
@@ -194,6 +195,7 @@ export class DeploymentManager {
       const service = interpret(machine)
         .onTransition(async state => {
           if (state.changed) {
+            this.spinner.render();
             if (state.matches('idle')) {
               this.spinner.text = `Starting rollback`;
             } else if (state.matches('preRollback')) {

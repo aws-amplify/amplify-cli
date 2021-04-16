@@ -47,14 +47,14 @@ export function amplifyPushForce(cwd: string, testingWithLatestCodebase: boolean
  */
 export function cancelIterativeAmplifyPush(
   cwd: string,
-  tableWait: RegExp | string,
+  idx: { current: number; max: number },
   testingWithLatestCodebase: boolean = false,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendConfirmYes()
-      .wait(tableWait)
+      .wait(`Deploying (${idx.current} of ${idx.max})`)
       .wait(/.*UPDATE_IN_PROGRESS GraphQLSchema*/)
       .sendCtrlC()
       .run((err: Error) => {
