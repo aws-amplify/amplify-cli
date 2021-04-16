@@ -8,7 +8,6 @@ import { EOL } from 'os';
 import { LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
 import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import { ServiceName } from './constants';
-import _ from 'lodash';
 import { zipPackage } from './zipResource';
 import { loadPreviousLayerHash, ensureLayerVersion, validFilesize, loadStoredLayerParameters, getChangedResources } from './layerHelpers';
 import { Packager } from '../types/packaging-types';
