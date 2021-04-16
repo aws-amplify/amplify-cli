@@ -77,14 +77,14 @@ function constructApi(metadata, amplifyConfig) {
             endpointType: 'REST',
             endpoint: resourceMeta.output.RootUrl,
             region,
-            authorizationType: 'AWS_IAM',
+            authorizationType: resourceMeta.authorizationType || 'AWS_IAM',
           };
         } else if (resourceMeta.service === 'ElasticContainer' && resourceMeta.apiType === 'REST') {
           amplifyConfig[categoryName].plugins[pluginName][r] = {
             endpointType: 'REST',
             endpoint: resourceMeta.output.RootUrl,
             region,
-            authorizationType: resourceMeta.restrictAccess ? "AMAZON_COGNITO_USER_POOLS" : "AWS_IAM",
+            authorizationType: resourceMeta.restrictAccess ? 'AMAZON_COGNITO_USER_POOLS' : 'AWS_IAM',
           };
         }
       }

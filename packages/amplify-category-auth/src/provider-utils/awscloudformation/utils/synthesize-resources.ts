@@ -405,6 +405,7 @@ const createAdminAuthAPI = async (context: any, authResourceName: string, functi
     const backendConfigs = {
       service: 'API Gateway',
       providerPlugin: 'awscloudformation',
+      authorizationType: 'AMAZON_COGNITO_USER_POOLS',
       dependsOn,
     };
 
