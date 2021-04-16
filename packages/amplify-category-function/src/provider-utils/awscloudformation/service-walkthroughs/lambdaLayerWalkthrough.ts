@@ -14,6 +14,7 @@ import {
   loadLayerDataFromCloud,
   loadPreviousLayerHash,
   loadStoredLayerParameters,
+  previousPermissionsQuestion,
 } from '../utils/layerHelpers';
 import { AccountsLayer, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum, PrivateLayer } from '../utils/layerParams';
 
@@ -55,6 +56,7 @@ export async function createLayerWalkthrough(
   }
   parameters.permissions = layerInputParamsToLayerPermissionArray(layerInputParameters);
   parameters.build = true;
+  parameters.description = await descriptionQuestion(new Date().toISOString(), true);
   return parameters;
 }
 
@@ -150,4 +152,33 @@ export async function updateLayerWalkthrough(
   parameters.runtimes = storedLayerParameters.runtimes;
   parameters.build = true;
   return parameters;
+}
+
+export async function lambdaLayerNewVersionWalkthrough(params: LayerParameters, timestampString: string): Promise<LayerParameters> {
+  const changeLayerPermissions = await inquirer.prompt(previousPermissionsQuestion());
+  let permissions = params.permissions;
+  if (!changeLayerPermissions.usePreviousPermissions) {
+    permissions = [{ type: PermissionEnum.Private }];
+  }
+  const description = await descriptionQuestion(timestampString);
+
+  return {
+    ...params,
+    permissions,
+    description,
+  };
+}
+
+async function descriptionQuestion(timestampString: string, newLayer: boolean = false): Promise<string> {
+  const response = await inquirer.prompt({
+    name: 'description',
+    default: `${newLayer ? 'Updated layer version' : 'Created new layer'} ${timestampString}`,
+    message: 'Description:',
+    validate: (desc: string) => {
+      if (desc.length === 0) return 'Description cannot be empty';
+      if (desc.length > 255) return 'Description cannot be more than 256 characters';
+      return true;
+    },
+  });
+  return response.description;
 }

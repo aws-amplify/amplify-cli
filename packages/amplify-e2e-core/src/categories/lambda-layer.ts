@@ -1,12 +1,13 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
-import { JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import { nspawn as spawn, ExecutionContext, getCLIPath, KEY_DOWN_ARROW } from '..';
 import { getLayerVersion, listVersions } from '../utils/sdk-calls';
 import { multiSelect } from '../utils/selectors';
-
+import { getBackendAmplifyMeta } from '../utils';
 export type LayerRuntimes = 'nodejs' | 'python';
+const PARAMETERS_FILE_NAME = 'parameters.json';
 
 const layerRuntimeChoices = ['NodeJS', 'Python'];
 const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (Anyone on AWS can use this layer)'];
@@ -31,26 +32,28 @@ export function validatePushedVersion(
   version: number,
   permissions: LayerPermission[],
 ) {
-  const layerData = getLayerDataFromTeamProviderInfo(projRoot, layerName, envName);
-  const storedPermissions: LayerPermission[] = _.get(layerData, ['layerVersionMap', `${version}`, 'permissions']);
+  const layerData = getLayerConfig(projRoot, layerName);
+  const storedPermissions: LayerPermission[] = layerData.permissions;
   permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
 }
 
-export async function validateLayerMetadata(projRoot: string, layerName: string, meta: any, envName: string) {
-  const { Arn: arn, Region: region } = meta.function[layerName].output;
-  const localLayerData = getLayerDataFromTeamProviderInfo(projRoot, layerName, envName);
-  const runtimes = getLayerRuntimes(projRoot, layerName);
-  const runtimeValues = Object.keys(runtimes).map(key => runtimes[key].cloudTemplateValue);
-  const localVersions = Object.keys(localLayerData.layerVersionMap);
+export async function validateLayerMetadata(projRoot: string, layerName: string, meta: any, envName: string, arns: string[]) {
+  const { Arn: arn } = meta.function[layerName].output;
+  const region = meta.providers.awscloudformation.Region;
+  const { runtimes } = getLayerRuntimes(projRoot, layerName);
+  const runtimeValues = runtimes;
 
   expect(arn).toBeDefined();
-  expect(region).toBeDefined();
   const cloudData = await getLayerVersion(arn, region);
   const { LayerVersions: Versions } = await listVersions(`${layerName}-${envName}`, region);
-  const cloudVersions = Versions.map(version => version.Version);
-  expect(cloudVersions.map(String).sort()).toEqual(localVersions.sort());
+  const cloudVersions = Versions.map(version => version.LayerVersionArn);
+  expect(cloudVersions.map(String).sort()).toEqual(arns.sort());
   expect(cloudData.LayerVersionArn).toEqual(arn);
   expect(cloudData.CompatibleRuntimes).toEqual(runtimeValues);
+}
+export function getCurrentLayerArnFromMeta(projroot: string, layerName: string): string {
+  const meta = getBackendAmplifyMeta(projroot);
+  return meta.function[layerName].output.Arn;
 }
 
 export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false): Promise<void> {
@@ -72,7 +75,9 @@ export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase:
     chain.wait('Choose the runtime that you want to use:');
     multiSelect(chain, runtimeDisplayNames, layerRuntimeChoices);
     chain.wait('The current AWS account will always have access to this layer.');
+
     multiSelect(chain, settings.permissions, permissionChoices);
+    chain.wait('Description').sendCarriageReturn();
     waitForLayerSuccessPrintout(chain, settings, 'created');
 
     chain.run((err: Error) => {
@@ -115,21 +120,13 @@ export function updateLayer(cwd: string, settings?: any, testingWithLatestCodeba
     if (settings.numLayers > 1) {
       chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
     }
-    const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
-    expect(settings.runtimes.length === runtimeDisplayNames.length).toBe(true);
-    chain.wait('Do you want to update the compatible runtimes?');
-    if (settings.versionChanged) {
-      chain.sendLine('y').wait('Select up to 2 compatible runtimes:');
-      multiSelect(chain, runtimeDisplayNames, layerRuntimeChoices);
-    } else {
-      chain.sendLine('n');
+
+    chain.wait('Do you want to adjust layer version permissions?').sendLine('y');
+    if (settings.versions > 0) {
+      chain.wait('Select the layer version to update').sendCarriageReturn(); // assumes updating the latest version
     }
-    chain
-      .wait('Do you want to adjust layer version permissions?')
-      .sendLine('y')
-      .wait('Select the layer version to update')
-      .sendCarriageReturn() // assumes updating the latest version
-      .wait('The current AWS account will always have access to this layer.');
+    chain.wait('The current AWS account will always have access to this layer.');
+
     multiSelect(chain, settings.permissions, permissionChoices);
 
     waitForLayerSuccessPrintout(chain, settings, 'updated');
@@ -150,8 +147,8 @@ export function addOptData(projRoot: string, layerName: string): void {
 export enum LayerPermissionName {
   awsAccounts = 'awsAccounts',
   awsOrg = 'awsOrg',
-  private = 'private',
-  public = 'public',
+  private = 'Private',
+  public = 'Public',
 }
 
 export interface LayerPermission {
@@ -160,14 +157,27 @@ export interface LayerPermission {
   orgs?: string[];
 }
 
+export function getLayerVersionArnFromCfn(projRoot: string, layerName: string): string[] {
+  const cfnFilePath = path.join(projRoot, 'amplify', layerName, `${layerName}-awscloudformation-template.json`);
+  const cfn = JSONUtilities.readJson(cfnFilePath) as $TSAny;
+  const versionLogicalNames = Object.keys(cfn.Resources).filter(key => cfn.Resources[key].Type === 'AWS::Lambda::LayerVersion');
+  return versionLogicalNames;
+}
+
+function getLayerConfig(projroot: string, layerName: string): $TSAny {
+  const layerConfigPath = path.join(projroot, 'amplify', 'backend', 'function', layerName, 'layer-configuration.json');
+  const layerConfig = JSONUtilities.readJson(layerConfigPath);
+  return layerConfig;
+}
+
 function getLayerDataFromTeamProviderInfo(projRoot: string, layerName: string, envName: string) {
   const teamProviderInfoPath = path.join(projRoot, 'amplify', 'team-provider-info.json');
   const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
   return _.get(teamProviderInfo, [envName, 'nonCFNdata', 'function', layerName]);
 }
 
-function getLayerRuntimes(projRoot: string, layerName: string) {
-  const runtimesFilePath = path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'layer-runtimes.json');
+function getLayerRuntimes(projRoot: string, layerName: string): $TSAny {
+  const runtimesFilePath = path.join(projRoot, 'amplify', 'backend', 'function', layerName, PARAMETERS_FILE_NAME);
   return JSONUtilities.readJson(runtimesFilePath);
 }
 
