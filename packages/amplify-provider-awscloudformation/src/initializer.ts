@@ -1,3 +1,7 @@
+import { $TSContext } from 'amplify-cli-core';
+import _ from 'lodash';
+import * as configurationManager from './configuration-manager';
+
 const moment = require('moment');
 const path = require('path');
 const { pathManager, PathConstants, stateManager, JSONUtilities } = require('amplify-cli-core');
@@ -9,84 +13,16 @@ const sequential = require('promise-sequential');
 const Cloudformation = require('./aws-utils/aws-cfn');
 const { S3 } = require('./aws-utils/aws-s3');
 const constants = require('./constants');
-const configurationManager = require('./configuration-manager');
 const amplifyServiceManager = require('./amplify-service-manager');
 const amplifyServiceMigrate = require('./amplify-service-migrate');
 const { fileLogger } = require('./utils/aws-logger');
 const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
 const logger = fileLogger('attach-backend');
 
-async function run(context) {
+export async function run(context) {
   await configurationManager.init(context);
-  if (!context.exeInfo || context.exeInfo.isNewEnv) {
-    context.exeInfo = context.exeInfo || {};
-    const { projectName } = context.exeInfo.projectConfig;
-    const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
-    const timeStamp = `${moment().format('Hmmss')}`;
-    const { envName = '' } = context.exeInfo.localEnvInfo;
-    let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
-    const awsConfig = await configurationManager.getAwsConfig(context);
-
-    const amplifyServiceParams = {
-      context,
-      awsConfig,
-      projectName,
-      envName,
-      stackName,
-    };
-    const { amplifyAppId, verifiedStackName, deploymentBucketName } = await amplifyServiceManager.init(amplifyServiceParams);
-
-    stackName = verifiedStackName;
-    const Tags = context.amplify.getTags(context);
-
-    const authRoleName = `${stackName}-authRole`;
-    const unauthRoleName = `${stackName}-unauthRole`;
-
-    const rootStack = JSONUtilities.readJson(initTemplateFilePath);
-    await prePushCfnTemplateModifier(rootStack);
-    // Track Amplify Console generated stacks
-    if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
-      rootStack.Description = 'Root Stack for AWS Amplify Console';
-    }
-
-    const params = {
-      StackName: stackName,
-      Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
-      TemplateBody: JSON.stringify(rootStack),
-      Parameters: [
-        {
-          ParameterKey: 'DeploymentBucketName',
-          ParameterValue: deploymentBucketName,
-        },
-        {
-          ParameterKey: 'AuthRoleName',
-          ParameterValue: authRoleName,
-        },
-        {
-          ParameterKey: 'UnauthRoleName',
-          ParameterValue: unauthRoleName,
-        },
-      ],
-      Tags,
-    };
-
-    const spinner = ora();
-    spinner.start('Initializing project in the cloud...');
-
-    try {
-      const cfnItem = await new Cloudformation(context, 'init', awsConfig);
-      const stackDescriptionData = await cfnItem.createResourceStack(params);
-
-      processStackCreationData(context, amplifyAppId, stackDescriptionData);
-      cloneCLIJSONForNewEnvironment(context);
-
-      spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
-
-      return context;
-    } catch (e) {
-      spinner.fail('Root stack creation failed');
-      throw e;
-    }
+  if (doInitializeInCloud(context)) {
+    await initializeRootStack(context);
   } else if (
     // This part of the code is invoked by the `amplify init --appId xxx` command
     // on projects that are already fully setup by `amplify init` with the Amplify CLI version prior to 4.0.0.
@@ -100,7 +36,10 @@ async function run(context) {
     context.exeInfo.inputParams.amplify.appId
   ) {
     await amplifyServiceMigrate.run(context);
+  } else {
+    setCloudFormationOutputInContext(context, {});
   }
+  cloneCLIJSONForNewEnvironment(context);
 }
 
 function processStackCreationData(context, amplifyAppId, stackDescriptiondata) {
@@ -113,17 +52,7 @@ function processStackCreationData(context, amplifyAppId, stackDescriptiondata) {
     metadata[constants.AmplifyAppIdLabel] = amplifyAppId;
   }
 
-  context.exeInfo.amplifyMeta = {};
-  if (!context.exeInfo.amplifyMeta.providers) {
-    context.exeInfo.amplifyMeta.providers = {};
-  }
-  context.exeInfo.amplifyMeta.providers[constants.ProviderName] = metadata;
-
-  if (context.exeInfo.isNewEnv) {
-    const { envName } = context.exeInfo.localEnvInfo;
-    context.exeInfo.teamProviderInfo[envName] = {};
-    context.exeInfo.teamProviderInfo[envName][constants.ProviderName] = metadata;
-  }
+  setCloudFormationOutputInContext(context, metadata);
 }
 
 function cloneCLIJSONForNewEnvironment(context) {
@@ -146,9 +75,79 @@ function cloneCLIJSONForNewEnvironment(context) {
   }
 }
 
-async function onInitSuccessful(context) {
+async function initializeRootStack(context: $TSContext) {
+  context.exeInfo = context.exeInfo || {};
+  const { projectName } = context.exeInfo.projectConfig;
+  const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
+  const timeStamp = `${moment().format('Hmmss')}`;
+  const { envName = '' } = context.exeInfo.localEnvInfo;
+  let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
+  const awsConfig = await configurationManager.getAwsConfig(context);
+
+  const amplifyServiceParams = {
+    context,
+    awsConfig,
+    projectName,
+    envName,
+    stackName,
+  };
+  const { amplifyAppId, verifiedStackName, deploymentBucketName } = await amplifyServiceManager.init(amplifyServiceParams);
+
+  stackName = verifiedStackName;
+  const Tags = context.amplify.getTags(context);
+
+  const authRoleName = `${stackName}-authRole`;
+  const unauthRoleName = `${stackName}-unauthRole`;
+
+  const rootStack = JSONUtilities.readJson(initTemplateFilePath);
+  await prePushCfnTemplateModifier(rootStack);
+  // Track Amplify Console generated stacks
+  if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
+    rootStack.Description = 'Root Stack for AWS Amplify Console';
+  }
+
+  const params = {
+    StackName: stackName,
+    Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
+    TemplateBody: JSON.stringify(rootStack),
+    Parameters: [
+      {
+        ParameterKey: 'DeploymentBucketName',
+        ParameterValue: deploymentBucketName,
+      },
+      {
+        ParameterKey: 'AuthRoleName',
+        ParameterValue: authRoleName,
+      },
+      {
+        ParameterKey: 'UnauthRoleName',
+        ParameterValue: unauthRoleName,
+      },
+    ],
+    Tags,
+  };
+
+  const spinner = ora();
+  spinner.start('Initializing project in the cloud...');
+
+  try {
+    const cfnItem = await new Cloudformation(context, 'init', awsConfig);
+    const stackDescriptionData = await cfnItem.createResourceStack(params);
+
+    processStackCreationData(context, amplifyAppId, stackDescriptionData);
+
+    spinner.succeed('Successfully created initial AWS cloud resources for deployments.');
+
+    return context;
+  } catch (e) {
+    spinner.fail('Root stack creation failed');
+    throw e;
+  }
+}
+
+export async function onInitSuccessful(context: $TSContext) {
   configurationManager.onInitSuccessful(context);
-  if (context.exeInfo.isNewEnv) {
+  if (doInitializeInCloud(context)) {
     context = await storeCurrentCloudBackend(context);
     await storeArtifactsForAmplifyService(context);
   }
@@ -219,6 +218,15 @@ function storeArtifactsForAmplifyService(context) {
   });
 }
 
+function setCloudFormationOutputInContext(context: $TSContext, cfnOutput: object) {
+  _.set(context, ['exeInfo', 'amplifyMeta', 'providers', constants.ProviderName], cfnOutput);
+
+  const { envName } = context.exeInfo.localEnvInfo;
+  if (envName) {
+    _.set(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName], cfnOutput);
+  }
+}
+
 async function uploadFile(s3, filePath, key) {
   if (fs.existsSync(filePath)) {
     const s3Params = {
@@ -244,7 +252,8 @@ function normalizeStackName(stackName) {
   return result;
 }
 
-module.exports = {
-  run,
-  onInitSuccessful,
+const doInitializeInCloud = (context: $TSContext): boolean => {
+  const isHeadlessInit = context?.input?.command === 'init' && !_.isEmpty(context?.input?.options);
+  const isPush = context?.input?.command === 'push';
+  return !context.exeInfo || (context.exeInfo.isNewEnv && isHeadlessInit) || isPush;
 };

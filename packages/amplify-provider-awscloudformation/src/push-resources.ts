@@ -43,6 +43,7 @@ import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/c
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
+import { ensureRootStack } from './ensure-root-stack';
 
 const logger = fileLogger('push-resources');
 
@@ -66,6 +67,7 @@ const deploymentInProgressErrorMessage = (context: $TSContext) => {
 };
 
 export async function run(context: $TSContext, resourceDefinition: $TSObject) {
+  context = await ensureRootStack(context);
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
   let iterativeDeploymentWasInvoked = false;
 

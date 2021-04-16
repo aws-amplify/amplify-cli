@@ -12,6 +12,7 @@ export async function postInitSetup(context) {
       await context.amplify.pushResources(context);
       await runPackage();
     } catch (e) {
+      console.log(e);
       if (e.name !== 'InvalidDirectiveError') {
         context.print.error(`An error occurred during the push operation: ${e.message}`);
       }

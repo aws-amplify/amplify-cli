@@ -9,9 +9,10 @@ const { S3BackendZipFileName } = require('./constants');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('initialize-env');
 import { JSONUtilities, PathConstants, stateManager, $TSMeta, $TSContext } from 'amplify-cli-core';
+import { rootStackExists } from './ensure-root-stack';
 
 export async function run(context: $TSContext, providerMetadata: $TSMeta) {
-  if (context.exeInfo && context.exeInfo.isNewEnv) {
+  if ((context.exeInfo && context.exeInfo.isNewEnv) || !rootStackExists()) {
     return context;
   }
 
