@@ -676,6 +676,7 @@ workflows:
           context:
             - amplify-ecr-image-pull
             - clean_e2e_resources
+            - e2e-auth-credentials
             - e2e-test-context
           post-steps:
             - run: *clean_e2e_resources

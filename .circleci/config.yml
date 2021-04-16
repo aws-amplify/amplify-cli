@@ -2498,6 +2498,7 @@ workflows:
           context: &ref_10
             - amplify-ecr-image-pull
             - clean_e2e_resources
+            - e2e-auth-credentials
             - e2e-test-context
           post-steps: &ref_11
             - run: *ref_6
