@@ -1,11 +1,11 @@
+import { stateManager } from 'amplify-cli-core';
+import { init } from './app-config';
+import { attachExtentions } from './context-extensions';
+import { NoUsageData, UsageData } from './domain/amplify-usageData';
+import { ProjectSettings } from './domain/amplify-usageData/UsageDataPayload';
 import { Context } from './domain/context';
 import { Input } from './domain/input';
 import { PluginPlatform } from './domain/plugin-platform';
-import { attachExtentions } from './context-extensions';
-import { init } from './app-config';
-import { UsageData, NoUsageData } from './domain/amplify-usageData';
-import { ProjectSettings } from './domain/amplify-usageData/UsageDataPayload';
-import { stateManager } from 'amplify-cli-core';
 
 export function constructContext(pluginPlatform: PluginPlatform, input: Input): Context {
   const context = new Context(pluginPlatform, input);
@@ -33,7 +33,7 @@ const getProjectSettings = (): ProjectSettings => {
   const projectSettings: ProjectSettings = {};
   if (stateManager.projectConfigExists()) {
     const projectConfig = stateManager.getProjectConfig();
-    const frontend = projectConfig['frontend'];
+    const frontend = projectConfig.frontend;
     projectSettings.frontend = frontend;
     projectSettings.framework = projectConfig?.frontend?.framework;
   }

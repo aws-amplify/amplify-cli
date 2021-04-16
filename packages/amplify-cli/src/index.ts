@@ -1,36 +1,36 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { isCI } from 'ci-info';
 import {
+  $TSAny,
   $TSContext,
   CLIContextEnvironmentProvider,
+  exitOnNextTick,
   FeatureFlags,
+  JSONValidationError,
   pathManager,
   stateManager,
-  exitOnNextTick,
   TeamProviderInfoMigrateError,
-  JSONValidationError,
 } from 'amplify-cli-core';
-import { Input } from './domain/input';
-import { getPluginPlatform, scan } from './plugin-manager';
-import { getCommandLineInput, verifyInput } from './input-manager';
-import { constructContext, persistContext, attachUsageData } from './context-manager';
-import { print } from './context-extensions';
-import { executeCommand } from './execution-manager';
-import { Context } from './domain/context';
-import { constants } from './domain/constants';
-import { checkProjectConfigVersion } from './project-config-version-check';
-import { notify } from './version-notifier';
-
-// Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
-// https://github.com/SBoudrias/Inquirer.js/issues/887
+import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { logInput } from './conditional-local-logging-init';
+import { print } from './context-extensions';
+import { attachUsageData, constructContext, persistContext } from './context-manager';
+import { constants } from './domain/constants';
+import { Context } from './domain/context';
+import { Input } from './domain/input';
+import { executeCommand } from './execution-manager';
+import { getCommandLineInput, verifyInput } from './input-manager';
+import { getPluginPlatform, scan } from './plugin-manager';
+import { checkProjectConfigVersion } from './project-config-version-check';
 import { rewireDeprecatedCommands } from './rewireDeprecatedCommands';
 import { ensureMobileHubCommandCompatibility } from './utils/mobilehub-support';
 import { migrateTeamProviderInfo } from './utils/team-provider-migrate';
 import { deleteOldVersion } from './utils/win-utils';
-import { logInput } from './conditional-local-logging-init';
+import { notify } from './version-notifier';
 
+// Adjust defaultMaxListeners to make sure Inquirer will not fail under Windows because of the multiple subscriptions
+// https://github.com/SBoudrias/Inquirer.js/issues/887
 EventEmitter.defaultMaxListeners = 1000;
 
 // Change stacktrace limit to max value to capture more details if needed
@@ -213,7 +213,7 @@ export async function run() {
   }
 }
 
-function ensureFilePermissions(filePath) {
+function ensureFilePermissions(filePath: string) {
   // eslint-disable-next-line no-bitwise
   if (fs.existsSync(filePath) && (fs.statSync(filePath).mode & 0o777) === 0o644) {
     fs.chmodSync(filePath, '600');
@@ -224,7 +224,7 @@ function boundErrorHandler(this: Context, e: Error) {
   this.usageData.emitError(e);
 }
 
-async function sigIntHandler(this: Context, e: any) {
+async function sigIntHandler(this: Context, e: $TSAny) {
   this.usageData.emitAbort();
 
   try {

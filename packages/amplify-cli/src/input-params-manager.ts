@@ -1,17 +1,17 @@
-import { JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSContext, JSONUtilities } from 'amplify-cli-core';
 
-export function normalizeInputParams(context) {
+export function normalizeInputParams(context: $TSContext) {
   const inputParams = {};
   Object.keys(context.parameters.options).forEach(key => {
     const normalizedKey = normalizeKey(key);
-    const normalizedValue = normalizeValue(normalizedKey, context.parameters.options[key]);
+    const normalizedValue = normalizeValue(context.parameters.options[key]);
     inputParams[normalizedKey] = normalizedValue;
   });
   transform(inputParams);
   return inputParams;
 }
 
-function normalizeKey(key) {
+function normalizeKey(key: string) {
   if (['y', 'yes'].includes(key)) {
     key = 'yes';
   }
@@ -27,7 +27,7 @@ function normalizeKey(key) {
   return key;
 }
 
-function normalizeValue(key, value) {
+function normalizeValue(value: string) {
   let normalizedValue = value;
   try {
     normalizedValue = JSONUtilities.parse(value);
@@ -37,7 +37,7 @@ function normalizeValue(key, value) {
   return normalizedValue;
 }
 
-function transform(inputParams) {
+function transform(inputParams: $TSAny) {
   inputParams.amplify = inputParams.amplify || {};
   inputParams.providers = inputParams.providers || {};
   inputParams.frontend = inputParams.frontend || {};

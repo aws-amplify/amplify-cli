@@ -169,7 +169,7 @@ interface AmplifyToolkit {
   getPlugin: () => $TSAny;
   getCategoryPluginInfo: (context: $TSContext, category?: string, service?: string) => $TSAny;
   getAllCategoryPluginInfo: (context: $TSContext) => $TSAny;
-  getFrontendPlugins: () => $TSAny;
+  getFrontendPlugins: (context: $TSContext) => $TSAny;
   getEnvDetails: () => $TSAny;
   getEnvInfo: () => $TSAny;
   getProviderPlugins: (context: $TSContext) => $TSAny;
