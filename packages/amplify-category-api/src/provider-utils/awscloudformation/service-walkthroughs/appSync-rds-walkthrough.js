@@ -191,6 +191,13 @@ async function selectDatabase(context, inputs, clusterArn, secretArn, AWS) {
     spinner.succeed('Fetched Aurora Serverless cluster.');
   } catch (err) {
     spinner.fail(err.message);
+
+    if (err.code === 'BadRequestException' && /Access denied for user/.test(err.message)) {
+      const msg =
+        `Ensure that '${secretArn}' contains your database credentials. ` +
+        'Please note that Aurora Serverless does not support IAM database authentication.';
+      context.print.error(msg);
+    }
   }
 
   if (databaseList.length > 0) {
