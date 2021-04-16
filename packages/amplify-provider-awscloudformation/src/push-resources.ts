@@ -43,7 +43,7 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
-
+import { prePushLambdaLayerPrompt } from './prePushLambdaLayerPrompt';
 const logger = fileLogger('push-resources');
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
@@ -104,6 +104,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       }
     }
 
+    await prePushLambdaLayerPrompt(context, resources);
     await prepareBuildableResources(context, resources);
 
     await transformGraphQLSchema(context, {

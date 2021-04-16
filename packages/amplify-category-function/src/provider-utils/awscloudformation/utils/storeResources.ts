@@ -7,8 +7,8 @@ import { category as categoryName } from '../../../constants';
 import { functionParametersFileName, parametersFileName, provider, ServiceName } from './constants';
 import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
-import { createLayerConfiguration, saveLayerPermissions } from './layerConfiguration';
 import { isMultiEnvLayer, isNewVersion, loadLayerDataFromCloud, loadPreviousLayerHash } from './layerHelpers';
+import { createLayerConfiguration, saveLayerDescription, saveLayerPermissions } from './layerConfiguration';
 import { LayerParameters, LayerRuntime } from './layerParams';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
@@ -40,6 +40,7 @@ const defaultOpts = {
   layerParams: true,
   cfnFile: true,
   amplifyMeta: true,
+  params: true,
 };
 export const updateLayerArtifacts = async (
   context: $TSContext,
@@ -51,6 +52,10 @@ export const updateLayerArtifacts = async (
 
   if (options.layerParams) {
     saveLayerPermissions(layerDirPath, parameters.permissions);
+  }
+
+  if (options.params) {
+    saveLayerDescription(parameters.layerName, parameters.description);
   }
   if (options.cfnFile) {
     await updateLayerCfnFile(context, parameters, layerDirPath);
@@ -96,6 +101,7 @@ export function saveCFNParameters(
 
 function createLayerState(parameters: LayerParameters, layerDirPath: string) {
   writeLayerRuntimesToParametersFile(parameters);
+  saveLayerDescription(parameters.layerName, parameters.description);
   createLayerConfiguration(layerDirPath, { permissions: parameters.permissions, runtimes: parameters.runtimes });
 }
 
