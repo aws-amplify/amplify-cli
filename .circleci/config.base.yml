@@ -578,6 +578,7 @@ workflows:
           context:
             - amplify-ecr-image-pull
             - console-e2e-test
+            - e2e-test-context
           requires:
             - build
             - publish_to_local_registry
@@ -733,6 +734,7 @@ workflows:
             - e2e-auth-credentials
             - clean_e2e_resources
             - console-e2e-test
+            - e2e-test-context
           post-steps:
             - run: *clean_e2e_resources
           filters:
