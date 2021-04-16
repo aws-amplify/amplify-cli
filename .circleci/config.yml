@@ -1861,7 +1861,9 @@ workflows:
           requires:
             - build
       - graphql_e2e_tests:
-          context: amplify-ecr-image-pull
+          context:
+            - amplify-ecr-image-pull
+            - e2e-test-context
           filters:
             branches:
               only:
