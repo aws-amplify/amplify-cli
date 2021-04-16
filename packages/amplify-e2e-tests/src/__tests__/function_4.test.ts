@@ -199,10 +199,18 @@ describe('add function with layers for runtime nodeJS', () => {
       projRoot,
       settings.layerName,
       `
-      const testString = "Hello from Lambda!"
-      module.exports = testString;
+      {
+        "version": "1.0.0",
+        "description": "",
+        "main": "index.js",
+        "dependencies": {
+          "upper-case": "^2.0.2"
+        },
+        "devDependencies": {}
+      }
+      
     `,
-      `index.js`,
+      `package.json`,
     );
 
     const layerOptions: LayerOptions = {
@@ -222,12 +230,12 @@ describe('add function with layers for runtime nodeJS', () => {
       functionName,
       `
       const fs = require('fs');
-      const testString = require('${settings.layerName}');
+      const upperCaseModule = require('${settings.layerName}');
       exports.handler = async (event) => {
         const data = fs.readFileSync('/opt/data.txt')
         const response = {
             statusCode: 200,
-            body: JSON.stringify(testString + ' ' + data),
+            body: JSON.stringify(upperCaseModule.upperCase(testString) + ' ' + data),
         };
         return response;
       };
@@ -249,7 +257,7 @@ describe('add function with layers for runtime nodeJS', () => {
 
 describe('add function with layers for runtime python', () => {
   let projRoot: string;
-  const helloWorldSuccessOutput = 'Hello from Lambda!';
+  const helloWorldSuccessOutput = 'abcdefghijklmnopqrstuvwxyz';
   const random = Math.floor(Math.random() * 10000);
   let functionName: string;
 
@@ -263,7 +271,7 @@ describe('add function with layers for runtime python', () => {
     };
     await addLayer(projRoot, settings);
     // create index.js
-    const layerCodePath = `${__dirname}/../../../amplify-e2e-tests/layerdata/python/testfunc.py`;
+    const layerCodePath = `${__dirname}/../../../amplify-e2e-tests/layerdata/python/Pipfile`;
     overrideLayerCodePython(projRoot, settings.layerName, layerCodePath);
     const layerOptions: LayerOptions = {
       select: [`${settings.layerName}`],

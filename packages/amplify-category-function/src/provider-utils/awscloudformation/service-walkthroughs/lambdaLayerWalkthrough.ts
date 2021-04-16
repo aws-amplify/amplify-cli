@@ -12,10 +12,10 @@ import {
   layerPermissionsQuestion,
   layerVersionQuestion,
   loadLayerDataFromCloud,
+  loadPreviousLayerHash,
   loadStoredLayerParameters,
 } from '../utils/layerHelpers';
 import { AccountsLayer, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum, PrivateLayer } from '../utils/layerParams';
-import { loadPreviousLayerHash } from '../utils/packageLayer';
 
 export async function createLayerWalkthrough(
   context: $TSContext,
@@ -37,6 +37,7 @@ export async function createLayerWalkthrough(
     layerExecutablePath: val.runtime.layerExecutablePath,
     cloudTemplateValues: [val.runtime.cloudTemplateValue],
     layerDefaultFiles: val.runtime?.layerDefaultFiles ?? [],
+    runtimePluginId: val.runtimePluginId,
   })) as LayerRuntime[];
 
   let layerInputParameters: LayerInputParams = {};
@@ -146,7 +147,6 @@ export async function updateLayerWalkthrough(
     const defaultPermission: PrivateLayer = { type: PermissionEnum.Private };
     parameters.permissions = storedLayerParameters.permissions || [defaultPermission];
   }
-
   parameters.runtimes = storedLayerParameters.runtimes;
   parameters.build = true;
   return parameters;
