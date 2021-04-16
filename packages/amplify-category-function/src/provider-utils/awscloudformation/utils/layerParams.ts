@@ -12,6 +12,7 @@ export type LayerParameters = {
   providerContext: ProviderContext;
   selectedVersion?: LayerVersionCfnMetadata;
   build: boolean;
+  description?: string;
 };
 
 export enum PermissionEnum {

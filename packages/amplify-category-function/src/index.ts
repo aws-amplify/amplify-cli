@@ -14,6 +14,7 @@ export { hashLayerResource } from './provider-utils/awscloudformation/utils/laye
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
+import { checkContentChanges } from './provider-utils/awscloudformation/utils/packageLayer';
 
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 
@@ -233,6 +234,12 @@ export async function executeAmplifyCommand(context) {
 export async function handleAmplifyEvent(context, args) {
   context.print.info(`${category} handleAmplifyEvent to be implemented`);
   context.print.info(`Received event args ${args}`);
+}
+
+export async function lambdaLayerPrompt(context: $TSContext, resources: Array<$TSAny>): Promise<void> {
+  const lambdaLayerResource = resources.filter(r => r.service === ServiceName.LambdaLayer && r.category === category);
+  context.print.info(JSON.stringify(lambdaLayerResource, null, 4));
+  await checkContentChanges(context, lambdaLayerResource);
 }
 
 // Object used for internal invocation of lambda functions

@@ -1,4 +1,4 @@
-import { $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
 import globby from 'globby';
@@ -180,7 +180,7 @@ export function layerInputParamsToLayerPermissionArray(parameters: LayerInputPar
 
 export function loadStoredLayerParameters(context: $TSContext, layerName: string): LayerParameters {
   const backendDirPath = pathManager.getBackendDirPath();
-  const { permissions, runtimes } = getLayerConfiguration(backendDirPath, layerName);
+  const { permissions, runtimes, description } = getLayerConfiguration(backendDirPath, layerName);
   return {
     layerName,
     runtimes,
@@ -190,6 +190,7 @@ export function loadStoredLayerParameters(context: $TSContext, layerName: string
       service: ServiceName.LambdaLayer,
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     },
+    description,
     build: true,
   };
 }
@@ -351,3 +352,16 @@ export const hashLayerResource = async (layerPath: string): Promise<string> => {
     .update(await hashLayerVersionContents(layerPath))
     .digest('base64');
 };
+
+export async function getChangedResources(resources: Array<$TSAny>): Promise<Array<$TSAny>> {
+  const resourceCheck = await Promise.all(resources.map(checkLambdaLayerChanges));
+  return resources.filter((_, i) => resourceCheck[i]);
+}
+
+async function checkLambdaLayerChanges(resource: any): Promise<boolean> {
+  const { resourceName } = resource;
+  const previousHash = loadPreviousLayerHash(resourceName);
+  if (!previousHash) return false;
+  const currentHash = await hashLayerVersionContents(getLayerPath(resourceName));
+  return currentHash !== previousHash;
+}
