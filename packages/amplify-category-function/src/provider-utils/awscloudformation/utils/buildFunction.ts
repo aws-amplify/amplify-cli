@@ -5,7 +5,7 @@ import { category } from '../../../constants';
 
 export const buildFunction = async (
   context: $TSContext,
-  { resourceName, lastBuildTimeStamp, buildType = BuildType.PROD }: BuildRequestMeta,
+  { resourceName, lastBuildTimestamp, buildType = BuildType.PROD }: BuildRequestMeta,
 ) => {
   const resourcePath = path.join(pathManager.getBackendDirPath(), category, resourceName);
   const breadcrumbs = context.amplify.readBreadcrumbs(category, resourceName);
@@ -21,7 +21,7 @@ export const buildFunction = async (
     throw new Error(`Missing required dependencies to package ${resourceName}`);
   }
 
-  const prevBuildTime = lastBuildTimeStamp ? new Date(lastBuildTimeStamp) : undefined;
+  const prevBuildTime = lastBuildTimestamp ? new Date(lastBuildTimestamp) : undefined;
 
   // build the function
   let rebuilt = false;
@@ -45,13 +45,13 @@ export const buildFunction = async (
     context.amplify.updateamplifyMetaAfterBuild({ category, resourceName }, buildType.toString());
     return new Date().toISOString();
   } else {
-    return lastBuildTimeStamp;
+    return lastBuildTimestamp;
   }
 };
 
 export interface BuildRequestMeta {
   resourceName: string;
-  lastBuildTimeStamp?: string;
+  lastBuildTimestamp?: string;
   buildType?: BuildType;
 }
 

@@ -3,9 +3,10 @@ import { pythonBuild } from './util/buildUtils';
 import { pythonPackage } from './util/packageUtils';
 import { pythonInvoke } from './util/invokeUtil';
 import { checkDeps } from './util/depUtils';
-import path from 'path';
-import { relativeShimPath } from './constants';
+import { layerPythonPipFile, relativeShimPath } from './constants';
 import { GetPackageAssetPaths } from 'amplify-cli-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactory = context => {
   return {
@@ -20,7 +21,14 @@ export const functionRuntimeContributorFactory: FunctionRuntimeContributorFactor
           value: 'python',
           cloudTemplateValue: 'python3.8',
           defaultHandler: 'index.handler',
-          layerExecutablePath: path.join('python', 'lib', 'python3.8', 'site-packages'),
+          layerExecutablePath: 'python',
+          layerDefaultFiles: [
+            {
+              path: 'python',
+              filename: 'Pipfile',
+              content: fs.readFileSync(layerPythonPipFile, 'utf-8'),
+            },
+          ],
         },
       };
     },

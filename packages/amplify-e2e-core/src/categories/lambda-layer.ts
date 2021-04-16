@@ -69,7 +69,7 @@ export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase:
     const runtimeDisplayNames = getRuntimeDisplayNames(settings.runtimes);
     expect(settings.runtimes.length === runtimeDisplayNames.length).toBe(true);
 
-    chain.wait('Select up to 2 compatible runtimes:');
+    chain.wait('Choose the runtime that you want to use:');
     multiSelect(chain, runtimeDisplayNames, layerRuntimeChoices);
     chain.wait('The current AWS account will always have access to this layer.');
     multiSelect(chain, settings.permissions, permissionChoices);
@@ -178,9 +178,9 @@ function getRuntimeDisplayNames(runtimes: LayerRuntimes[]) {
 function getLayerRuntimeInfo(runtime: LayerRuntimes) {
   switch (runtime) {
     case 'nodejs':
-      return { displayName: 'NodeJS', path: path.join('lib', runtime, 'node_modules') };
+      return { displayName: 'NodeJS', path: path.join('lib', runtime) };
     case 'python':
-      return { displayName: 'Python', path: path.join('lib', runtime, 'lib', 'python3.8', 'site-packages') };
+      return { displayName: 'Python', path: path.join('lib', runtime) };
     default:
       throw new Error(`Invalid runtime value: ${runtime}`);
   }

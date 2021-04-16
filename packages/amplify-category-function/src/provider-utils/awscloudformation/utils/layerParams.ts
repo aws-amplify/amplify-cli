@@ -1,6 +1,6 @@
 import { FunctionRuntime, ProviderContext } from 'amplify-function-plugin-interface';
 
-export type LayerRuntime = Pick<FunctionRuntime, 'name' | 'value' | 'layerExecutablePath'> & {
+export type LayerRuntime = Pick<FunctionRuntime, 'name' | 'value' | 'layerExecutablePath' | 'runtimePluginId'> & {
   cloudTemplateValues?: string[];
   layerDefaultFiles?: { path: string; filename: string; content: string }[];
 };

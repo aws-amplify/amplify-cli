@@ -56,7 +56,7 @@ export function getFunctionSrc(root: string, name: string): Buffer {
 
 //overriding code for node
 export function overrideLayerCode(root: string, name: string, code: string, fileName: string) {
-  const dirPath = path.join(getPathToFunction(root, name), 'lib', 'nodejs', 'node_modules', name);
+  const dirPath = path.join(getPathToFunction(root, name), 'lib', 'nodejs', name);
   fs.ensureDirSync(dirPath);
   const filePath = path.join(dirPath, fileName);
   fs.writeFileSync(filePath, code);
@@ -69,7 +69,7 @@ export function overrideFunctionSrcPython(root: string, name: string, source: st
 }
 
 export function overrideLayerCodePython(root: string, name: string, source: string) {
-  const dirPath = path.join(getPathToFunction(root, name), 'lib', 'python', 'lib', 'python3.8', 'site-packages');
+  const dirPath = path.join(getPathToFunction(root, name), 'lib', 'python');
   fs.ensureDirSync(dirPath);
   const destfilePath = path.join(dirPath, 'testfunc.py');
   fs.copyFileSync(source, destfilePath);

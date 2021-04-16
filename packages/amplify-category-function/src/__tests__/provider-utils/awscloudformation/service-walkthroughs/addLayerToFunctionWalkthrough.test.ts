@@ -6,7 +6,8 @@ import {
   askLayerOrderQuestion,
   askLayerSelection,
 } from '../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils';
-import { LayerVersionMetadata, loadLayerDataFromCloud } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
+import { loadLayerDataFromCloud } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
+import { LayerVersionMetadata } from '../../../../provider-utils/awscloudformation/utils/layerParams';
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers');
