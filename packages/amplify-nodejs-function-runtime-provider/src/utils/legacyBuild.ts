@@ -7,7 +7,7 @@ import path from 'path';
 
 // copied from the existing build-resources.js file in amplify-cli with changes for new interface
 export async function buildResource(request: BuildRequest): Promise<BuildResult> {
-  const resourceDir = path.join(request.srcRoot, 'src');
+  const resourceDir = request.service ? request.srcRoot : path.join(request.srcRoot, 'src');
 
   if (!request.lastBuildTimeStamp || isBuildStale(request.srcRoot, request.lastBuildTimeStamp)) {
     installDependencies(resourceDir);
