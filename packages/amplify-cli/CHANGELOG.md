@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.49.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.48.0...@aws-amplify/cli@4.49.0-beta.0) (2021-04-17)
+
+
+### Bug Fixes
+
+* **cli:** adds dart config to git ignore; rebased branch ([808edd9](https://github.com/aws-amplify/amplify-cli/commit/808edd9fa7f7431cc0d7cdb4c450be23b8a8d2ca))
+* removed sts call ([#7092](https://github.com/aws-amplify/amplify-cli/issues/7092)) ([550a135](https://github.com/aws-amplify/amplify-cli/commit/550a135c9f1271e859f08f43cd685d7fff46e949))
+
+
+### Features
+
+* **cli:** validate iterative rollback input ([9cd69c9](https://github.com/aws-amplify/amplify-cli/commit/9cd69c9732d4824601e1d33806937e574155778b))
+
+
+
+
+
 # [4.48.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.47.1...@aws-amplify/cli@4.48.0) (2021-04-14)
 
 
