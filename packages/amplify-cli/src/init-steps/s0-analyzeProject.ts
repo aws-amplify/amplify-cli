@@ -254,8 +254,9 @@ async function getEnvName(context: $TSContext) {
     await newEnvQuestion();
   } else {
     const allEnvs = context.amplify.getAllEnvs();
+    const envAddExec = checkEnvAddExec(context);
 
-    if (allEnvs.length > 0 && addNewEnv(context).exec === false) {
+    if (allEnvs.length > 0 && envAddExec === false) {
       if (await context.amplify.confirmPrompt('Do you want to use an existing environment?')) {
         const envQuestion: inquirer.ListQuestion = {
           type: 'list',
@@ -268,8 +269,8 @@ async function getEnvName(context: $TSContext) {
       } else {
         await newEnvQuestion();
       }
-    } else if (addNewEnv(context).exec === true && addNewEnv(context).envName) {
-      envName = addNewEnv(context).envName;
+    } else if (envAddExec === true && context.parameters.first) {
+      envName = context.parameters.first;
     } else {
       await newEnvQuestion();
     }
@@ -314,27 +315,14 @@ function getDefaultEditor() {
 }
 
 /**
- *Checks if `amplify env add` has been executed, and extract environment name if exists
+ *Checks if `amplify env add` has been executed
  * @param {$TSContext} context The Amplify context object
- * @returns `{exec: boolean, envName?: string | null}`
- *
- * `exec` denotes if `amplify env add` has been executed
- *
- * `envName` extracts environment name if provided
+ * @returns `boolean`
  */
-function addNewEnv(context): { exec: boolean; envName?: string | null } {
+function checkEnvAddExec(context): boolean {
   if (context.parameters.command === 'env' && context.parameters.array[0] === 'add') {
-    let envName = null;
-    if (context.parameters.first) {
-      envName = context.parameters.first;
-    }
-    return {
-      exec: true,
-      envName,
-    };
+    return true;
   } else {
-    return {
-      exec: false,
-    };
+    return false;
   }
 }
