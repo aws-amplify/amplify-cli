@@ -1,9 +1,9 @@
-import { Context } from '../domain/context';
-import { stateManager, pathManager, PathConstants } from 'amplify-cli-core';
-import _ from 'lodash';
-import { externalAuthEnable, migrate } from 'amplify-category-auth';
-import { isYesFlagSet } from './headless-input-utils';
+import { externalAuthEnable } from 'amplify-category-auth';
+import { $TSAny, PathConstants, pathManager, stateManager } from 'amplify-cli-core';
 import chalk from 'chalk';
+import _ from 'lodash';
+import { Context } from '../domain/context';
+import { isYesFlagSet } from './headless-input-utils';
 import { moveSecretsFromTeamProviderToDeployment } from './move-secrets-to-deployment';
 
 const message = `Amplify has been upgraded to handle secrets more securely by migrating some values in ${chalk.red(
@@ -50,7 +50,7 @@ function isInvalidEnvOrPulling(context: Context): boolean {
   return false;
 }
 
-function teamProviderInfoGetAuthResourceNameHasSecrets(): any | undefined {
+function teamProviderInfoGetAuthResourceNameHasSecrets(): $TSAny | undefined {
   if (stateManager.teamProviderInfoExists()) {
     const teamProviderInfo = stateManager.getTeamProviderInfo();
     const { envName } = stateManager.getLocalEnvInfo();

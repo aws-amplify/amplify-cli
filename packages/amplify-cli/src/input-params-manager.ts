@@ -59,18 +59,16 @@ function transform(inputParams: $TSAny) {
   delete inputParams.providers;
 }
 
-export function normalizeProviderName(name, providerPluginList) {
+export function normalizeProviderName(name: string, providerPluginList?: string[]) {
   if (!providerPluginList || providerPluginList.length < 1) {
     return undefined;
   }
-  name = providerPluginList.includes(name) ? name : undefined;
-  return name;
+  return providerPluginList.includes(name) ? name : undefined;
 }
 
-export function normalizeFrontendHandlerName(name, frontendPluginList) {
+export function normalizeFrontendHandlerName(name: string, frontendPluginList?: string[]) {
   if (!frontendPluginList || frontendPluginList.length < 1) {
     return undefined;
   }
-  name = frontendPluginList.includes(name) ? name : undefined;
-  return name;
+  return frontendPluginList.includes(name) ? name : undefined;
 }

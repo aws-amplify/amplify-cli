@@ -1,8 +1,9 @@
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 import * as inquirer from 'inquirer';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { normalizeFrontendHandlerName } from '../input-params-manager';
 
-export async function initFrontend(context) {
+export async function initFrontend(context: $TSContext) {
   if (!context.exeInfo.isNewProject) {
     const currentProjectConfig = context.amplify.getProjectConfig();
     Object.assign(currentProjectConfig, context.exeInfo.projectConfig);
@@ -21,7 +22,7 @@ export async function initFrontend(context) {
   return context;
 }
 
-export function getSuitableFrontend(frontendPlugins, projectPath) {
+export function getSuitableFrontend(frontendPlugins: $TSAny, projectPath: string) {
   let suitableFrontend;
   let fitToHandleScore = -1;
 
@@ -36,7 +37,7 @@ export function getSuitableFrontend(frontendPlugins, projectPath) {
   return suitableFrontend;
 }
 
-async function getFrontendHandler(context, frontendPlugins, suitableFrontend) {
+async function getFrontendHandler(context: $TSContext, frontendPlugins: $TSAny, suitableFrontend: string) {
   let frontend;
   const frontendPluginList = Object.keys(frontendPlugins);
   const { inputParams } = context.exeInfo;
