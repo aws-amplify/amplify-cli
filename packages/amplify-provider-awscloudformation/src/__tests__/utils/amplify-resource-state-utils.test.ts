@@ -3,7 +3,7 @@ import { CloudFormation } from 'aws-sdk';
 
 const cfnClientStub = ({
   describeStackResources: ({ StackName }) => ({
-    promise: () => ({
+    promise: () => Promise.resolve({
       StackResources: [{
         LogicalResourceId: 'LogicalResourceIdTest1',
         PhysicalResourceId: 'PhysicalResourceIdTest',
@@ -11,7 +11,7 @@ const cfnClientStub = ({
     }),
   }),
   describeStacks: ({ StackName }) => ({
-    promise: () => ({
+    promise: () => Promise.resolve({
       Stacks: [{
         Outputs: [
           {
