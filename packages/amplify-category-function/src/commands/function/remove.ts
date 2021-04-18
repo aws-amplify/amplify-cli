@@ -20,7 +20,6 @@ module.exports = {
       if (!resourceToBeDeleted) return;
       resourceName = resourceToBeDeleted;
     }
-    console.log(resourceName);
 
     return amplify
       .removeResource(context, categoryName, resourceName)
