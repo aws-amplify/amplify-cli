@@ -27,7 +27,7 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
     },
   };
   const cfnObj = getLayerCfnObjBase();
-  for (const layerVersion of versionList) {
+  for (const layerVersion of versionList.filter(r => r.LogicalName)) {
     cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion);
     const shortId = layerVersion.LogicalName.replace('LambdaLayerVersion', '');
     const permissionObjects = constructLayerVersionPermissionObjects(layerVersion, parameters, shortId);
