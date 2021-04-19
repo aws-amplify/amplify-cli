@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.20.0...amplify-cli-core@1.20.1) (2021-04-19)
+
+**Note:** Version bump only for package amplify-cli-core
+
+
+
+
+
+# [1.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.19.1...amplify-cli-core@1.20.0) (2021-04-14)
+
+
+### Features
+
+* added new fields to usage data ([#6911](https://github.com/aws-amplify/amplify-cli/issues/6911)) ([dc1d256](https://github.com/aws-amplify/amplify-cli/commit/dc1d256edecec2009ca6649da0995be571886b03))
+
+
+
+
+
+## [1.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.18.1...amplify-cli-core@1.19.1) (2021-04-09)
+
+
+### Bug Fixes
+
+* **cli:** use more inclusive language ([#6919](https://github.com/aws-amplify/amplify-cli/issues/6919)) ([bb70464](https://github.com/aws-amplify/amplify-cli/commit/bb70464d6c24fa931c0eb80d234a496d936913f5))
+
+
+
+
+
 ## [1.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.18.0...amplify-cli-core@1.18.1) (2021-03-11)
 
 

@@ -11,7 +11,17 @@ describe('test version manager', () => {
   });
 
   it('payload version should be the latest', () => {
-    const payload = new UsageDataPayload('', '', '', new Input([]), new Error(''), '');
+    const payload = new UsageDataPayload(
+      '',
+      '',
+      '',
+      new Input([]),
+      new Error(''),
+      '',
+      '12311232',
+      { frontend: 'javascript', editor: 'vscode', framework: 'react' },
+      {},
+    );
     expect(payload.payloadVersion).toEqual(getLatestPayloadVersion());
   });
 });

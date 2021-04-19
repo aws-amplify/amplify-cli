@@ -3,17 +3,20 @@ import { Input } from '../input';
 import https from 'https';
 import { UrlWithStringQuery } from 'url';
 import redactInput from './identifiable-input-regex';
-import { UsageDataPayload } from './UsageDataPayload';
+import { ProjectSettings, UsageDataPayload, InputOptions } from './UsageDataPayload';
 import { getUrl } from './getUsageDataUrl';
 import { IUsageData } from './IUsageData';
 import { JSONUtilities } from 'amplify-cli-core';
-
+import _ from 'lodash';
 export class UsageData implements IUsageData {
   sessionUuid: string;
+  accountId: string = '';
   installationUuid: string = '';
   version: string = '';
   input: Input;
+  projectSettings: ProjectSettings;
   url: UrlWithStringQuery;
+  inputOptions: InputOptions;
   requestTimeout: number = 100;
   private static instance: UsageData;
 
@@ -21,11 +24,16 @@ export class UsageData implements IUsageData {
     this.sessionUuid = uuid.v4();
     this.url = getUrl();
     this.input = new Input([]);
+    this.projectSettings = {};
+    this.inputOptions = {};
   }
 
-  init(installationUuid: string, version: string, input: Input): void {
+  init(installationUuid: string, version: string, input: Input, accountId: string, projectSettings: ProjectSettings): void {
     this.installationUuid = installationUuid;
+    this.accountId = accountId;
+    this.projectSettings = projectSettings;
     this.version = version;
+    this.inputOptions = input.options ? _.pick(input.options as InputOptions, ['sandboxId']) : {};
     this.input = redactInput(input, true);
   }
 
@@ -48,7 +56,17 @@ export class UsageData implements IUsageData {
   }
 
   async emit(error: Error | null, state: string): Promise<void> {
-    const payload = new UsageDataPayload(this.sessionUuid, this.installationUuid, this.version, this.input, error, state);
+    const payload = new UsageDataPayload(
+      this.sessionUuid,
+      this.installationUuid,
+      this.version,
+      this.input,
+      error,
+      state,
+      this.accountId,
+      this.projectSettings,
+      this.inputOptions,
+    );
     return this.send(payload);
   }
 

@@ -43,6 +43,7 @@ import {
   graphqlName,
   toUpper,
   getDirectiveArgument,
+  unwrapNonNull,
 } from 'graphql-transformer-common';
 import {
   makeModelConnectionType,
@@ -847,6 +848,10 @@ function replaceUpdateInput(
     fields: input.fields.map(f => {
       if (keyFields.find(k => k === f.name.value)) {
         return makeInputValueDefinition(f.name.value, wrapNonNull(withNamedNodeNamed(f.type, getBaseType(f.type))));
+      }
+
+      if (f.name.value === 'id') {
+        return makeInputValueDefinition(f.name.value, unwrapNonNull(withNamedNodeNamed(f.type, getBaseType(f.type))));
       }
 
       return f;

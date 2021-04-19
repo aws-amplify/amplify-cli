@@ -110,7 +110,7 @@ export async function run() {
 
     await FeatureFlags.initialize(contextEnvironmentProvider, useNewDefaults);
 
-    attachUsageData(context);
+    await attachUsageData(context);
 
     if (!(await migrateTeamProviderInfo(context))) {
       context.usageData.emitError(new TeamProviderInfoMigrateError());
@@ -262,7 +262,7 @@ export async function execute(input: Input): Promise<number> {
 
     const context = constructContext(pluginPlatform, input);
 
-    attachUsageData(context);
+    await attachUsageData(context);
 
     errorHandler = boundErrorHandler.bind(context);
 

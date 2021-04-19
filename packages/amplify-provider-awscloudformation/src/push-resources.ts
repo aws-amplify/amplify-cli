@@ -34,11 +34,9 @@ import { loadResourceParameters } from './resourceParams';
 import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import archiver from './utils/archiver';
 import amplifyServiceManager from './amplify-service-manager';
-import { DeploymentManager } from './iterative-deployment';
+import { DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback } from './iterative-deployment';
 import { Fn, Template } from 'cloudform-types';
 import { getGqlUpdatedResource } from './graphql-transformer/utils';
-import { DeploymentStep, DeploymentOp } from './iterative-deployment/deployment-manager';
-import { DeploymentStateManager } from './iterative-deployment/deployment-state-manager';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
@@ -58,6 +56,14 @@ const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
 
+
+const deploymentInProgressErrorMessage = (context: $TSContext) => {
+  context.print.error('A deployment is in progress.');
+  context.print.error('If the prior rollback was aborted, run:');
+  context.print.error('"amplify push --iterative-rollback" to rollback the prior deployment');
+  context.print.error('"amplify push --force" to re-deploy');
+}
+
 export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
   let iterativeDeploymentWasInvoked = false;
@@ -71,12 +77,21 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       tagsUpdated,
       allResources,
     } = resourceDefinition;
-    const clousformationMeta = context.amplify.getProjectMeta().providers.awscloudformation;
+    const cloudformationMeta = context.amplify.getProjectMeta().providers.awscloudformation;
     const {
       parameters: { options },
     } = context;
 
     const resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
+
+    if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
+      if (context.exeInfo?.forcePush || context.exeInfo?.iterativeRollback) {
+        await runIterativeRollback(context, cloudformationMeta, deploymentStateManager);
+        if (context.exeInfo?.iterativeRollback) {
+          return;
+        }
+      }
+    }
 
     await createEnvLevelConstructs(context);
 
@@ -113,25 +128,23 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     // If there is a deployment already in progress we have to fail the push operation as another
     // push in between could lead non-recoverable stacks and files.
-    if (await deploymentStateManager.isDeploymentInProgress()) {
-      context.print.error('A deployment is already in progress for the project, cannot push resources until it finishes.');
-
+    if (deploymentStateManager.isDeploymentInProgress()) {
+      deploymentInProgressErrorMessage(context);
       return;
     }
 
     let deploymentSteps: DeploymentStep[] = [];
 
     // location where the intermediate deployment steps are stored
-    let stateFolder: string;
+    let stateFolder: { local?: string; cloud?: string } = {};
 
     // Check if iterative updates are enabled or not and generate the required deployment steps if needed.
     if (FeatureFlags.getBoolean('graphQLTransformer.enableIterativeGSIUpdates')) {
       const gqlResource = getGqlUpdatedResource(resourcesToBeUpdated);
 
       if (gqlResource) {
-        const gqlManager = await GraphQLResourceManager.createInstance(context, gqlResource, clousformationMeta.StackId);
+        const gqlManager = await GraphQLResourceManager.createInstance(context, gqlResource, cloudformationMeta.StackId);
         deploymentSteps = await gqlManager.run();
-
         if (deploymentSteps.length > 1) {
           iterativeDeploymentWasInvoked = true;
 
@@ -145,13 +158,12 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
           // If start cannot update because a deployment has started between the start of this method and this point
           // we have to return before uploading any artifacts that could fail the other deployment.
           if (!(await deploymentStateManager.startDeployment(deploymentStepStates))) {
-            context.print.error('A deployment is already in progress for the project, cannot push resources until it finishes.');
-
+            deploymentInProgressErrorMessage(context);
             return;
           }
         }
-
-        stateFolder = gqlManager.getStateFilesDirectory();
+        stateFolder.local = gqlManager.getStateFilesDirectory();
+        stateFolder.cloud = await gqlManager.getCloudStateFilesDirectory();
       }
     }
 
@@ -167,7 +179,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       // If there is an API change, there will be one deployment step. But when there needs an iterative update the step count is > 1
       if (deploymentSteps.length > 1) {
         // create deployment manager
-        const deploymentManager = await DeploymentManager.createInstance(context, clousformationMeta.DeploymentBucketName, spinner, {
+        const deploymentManager = await DeploymentManager.createInstance(context, cloudformationMeta.DeploymentBucketName, spinner, {
           userAgent: formUserAgentParam(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated)),
         });
 
@@ -182,11 +194,11 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
         const finalStep: DeploymentOp = {
           stackTemplatePathOrUrl: nestedStackFileName,
           tableNames: [],
-          stackName: clousformationMeta.StackName,
+          stackName: cloudformationMeta.StackName,
           parameters: {
-            DeploymentBucketName: clousformationMeta.DeploymentBucketName,
-            AuthRoleName: clousformationMeta.AuthRoleName,
-            UnauthRoleName: clousformationMeta.UnauthRoleName,
+            DeploymentBucketName: cloudformationMeta.DeploymentBucketName,
+            AuthRoleName: cloudformationMeta.AuthRoleName,
+            UnauthRoleName: cloudformationMeta.UnauthRoleName,
           },
           capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
         };
@@ -200,8 +212,16 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
         await deploymentManager.deploy(deploymentStateManager);
 
         // delete the intermidiate states as it is ephemeral
-        if (stateFolder && fs.existsSync(stateFolder)) {
-          fs.removeSync(stateFolder);
+        if (stateFolder.local) {
+          try {
+            fs.removeSync(stateFolder.local);
+          } catch (err) {
+            context.print.error(`Could not delete state directory locally: ${err}`)
+          }
+        }
+        if (stateFolder.cloud) {
+          const s3 = await S3.getInstance(context);
+          await s3.deleteDirectory(cloudformationMeta.DeploymentBucketName, stateFolder.cloud);
         }
       } else {
         // Non iterative update

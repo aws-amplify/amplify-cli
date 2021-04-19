@@ -122,6 +122,8 @@ export async function initEnv(context) {
       amplify.saveEnvResourceParameters(context, category, resourceName, config);
     };
   });
+  const sourceEnv = context.exeInfo?.sourceEnvName;
+  const isNewEnv = context.exeInfo?.isNewEnv;
 
   // Need to fetch metadata from #current-cloud-backend, since amplifyMeta
   // gets regenerated in intialize-env.ts in the amplify-cli package
@@ -152,6 +154,17 @@ export async function initEnv(context) {
         _.set(amplifyMeta, lvmPath, currentVersionMap);
       }
     });
+  resourcesToBeCreated.forEach(resource => {
+    const { resourceName, service } = resource;
+    if (service === ServiceName.LambdaFunction) {
+      if (sourceEnv && isNewEnv) {
+        const groupName = _.get(teamProviderInfo, [sourceEnv, 'categories', category, resourceName, 'GROUP']);
+        if (groupName) {
+          _.set(teamProviderInfo, [envName, 'categories', category, resourceName, 'GROUP'], groupName);
+        }
+      }
+    }
+  });
 
   stateManager.setMeta(undefined, amplifyMeta);
   stateManager.setTeamProviderInfo(undefined, teamProviderInfo);

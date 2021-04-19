@@ -1,10 +1,13 @@
 import {
   createDeploymentMachine,
+  createRollbackDeploymentMachine,
   DeployMachineContext,
   DeploymentMachineOp,
   StateMachineHelperFunctions,
+  StateMachineRollbackHelperFunctions,
 } from '../../iterative-deployment/state-machine';
 import { interpret } from 'xstate';
+
 describe('deployment state machine', () => {
   const fns: StateMachineHelperFunctions = {
     deployFn: jest.fn().mockResolvedValue(undefined),
@@ -206,5 +209,133 @@ describe('deployment state machine', () => {
       })
       .start()
       .send('DEPLOY');
+  });
+});
+
+describe('rollback state machine', () => {
+  const fns: StateMachineRollbackHelperFunctions = {
+    preRollbackTableCheck: jest.fn().mockResolvedValue(undefined),
+    rollbackFn: jest.fn().mockResolvedValue(undefined),
+    rollbackWaitFn: jest.fn().mockResolvedValue(undefined),
+    tableReadyWaitFn: jest.fn().mockResolvedValue(undefined),
+    startRollbackFn: jest.fn().mockResolvedValue(undefined),
+    stackEventPollFn: jest.fn().mockImplementation(() => {
+      return () => {};
+    }),
+  };
+
+  const baseDeploymentStep: Omit<DeploymentMachineOp, 'stackTemplateUrl'> = {
+    parameters: {},
+    stackName: 'amplify-multideploytest-dev-162313-apimultideploytest-1E3B7HVOV09VD',
+    stackTemplatePath: 'stack1/cfn.json',
+    tableNames: ['table1'],
+    region: 'us-east-2',
+    capabilities: [],
+  };
+
+  const initialContext: DeployMachineContext = {
+    previousDeploymentIndex: 2,
+    currentIndex: 3,
+    region: 'us-east-2',
+    deploymentBucket: 'https://s3.amazonaws.com/amplify-multideploytest-dev-162313-deployment',
+    stacks: [
+      {
+        deployment: null,
+        rollback: {
+          ...baseDeploymentStep,
+          stackTemplateUrl: 'rollback1.json',
+          parameters: { rollback: 'true' },
+          tableNames: ['table1'],
+        },
+      },
+      {
+        deployment: null,
+        rollback: {
+          ...baseDeploymentStep,
+          stackTemplateUrl: 'rollback2.json',
+          parameters: { rollback: 'true' },
+          tableNames: ['table1', 'table2'],
+        },
+      },
+      {
+        deployment: null,
+        rollback: {
+          ...baseDeploymentStep,
+          stackTemplateUrl: 'rollback3.json',
+          parameters: { rollback: 'true' },
+          tableNames: ['table1', 'table3'],
+        },
+      },
+    ],
+  };
+  beforeEach(() => {
+    jest.resetAllMocks();
+    (fns.preRollbackTableCheck as jest.Mock).mockResolvedValue(undefined), (fns.rollbackFn as jest.Mock).mockResolvedValue(undefined);
+    (fns.rollbackWaitFn as jest.Mock).mockResolvedValue(undefined);
+    (fns.startRollbackFn as jest.Mock).mockResolvedValue(undefined);
+    (fns.tableReadyWaitFn as jest.Mock).mockResolvedValue(undefined);
+  });
+
+  it('should call deployment function multiple times when there are multiple stacks to be deployed', done => {
+    const machine = createRollbackDeploymentMachine(initialContext, fns);
+    interpret(machine)
+      .onTransition(state => {
+        if (state.value === 'rolledBack') {
+          // pre deployment functions only called once
+          expect(fns.preRollbackTableCheck).toHaveBeenCalledTimes(1);
+          expect(fns.rollbackWaitFn).toHaveBeenCalledTimes(4);
+          expect(fns.rollbackFn).toHaveBeenCalledTimes(3);
+
+          const firstStackArg = initialContext.stacks[2].rollback;
+
+          // Pre Stack Check
+          expect((fns.rollbackWaitFn as jest.Mock).mock.calls[0][0]).toEqual(firstStackArg);
+          // 1st stack
+          expect((fns.rollbackFn as jest.Mock).mock.calls[0][0]).toEqual(firstStackArg);
+          expect((fns.tableReadyWaitFn as jest.Mock).mock.calls[0][0]).toEqual(firstStackArg);
+          expect((fns.rollbackWaitFn as jest.Mock).mock.calls[1][0]).toEqual(firstStackArg);
+          // second stack
+
+          const secondStackArg = initialContext.stacks[1].rollback;
+          expect((fns.rollbackFn as jest.Mock).mock.calls[1][0]).toEqual(secondStackArg);
+          expect((fns.tableReadyWaitFn as jest.Mock).mock.calls[1][0]).toEqual(secondStackArg);
+          expect((fns.rollbackWaitFn as jest.Mock).mock.calls[2][0]).toEqual(secondStackArg);
+
+          // third stack
+          const thirdStackArg = initialContext.stacks[0].rollback;
+
+          expect((fns.rollbackFn as jest.Mock).mock.calls[2][0]).toEqual(thirdStackArg);
+          expect((fns.tableReadyWaitFn as jest.Mock).mock.calls[2][0]).toEqual(thirdStackArg);
+          expect((fns.rollbackWaitFn as jest.Mock).mock.calls[3][0]).toEqual(thirdStackArg);
+
+          done();
+        }
+      })
+      .start()
+      .send('ROLLBACK');
+  });
+
+  it('should go to failed state when rollback deployment fails', done => {
+    const rollbackFn = fns.rollbackFn as jest.Mock;
+    rollbackFn.mockImplementation(stack => {
+      if (stack.stackTemplateUrl === initialContext.stacks[1].rollback.stackTemplateUrl) {
+        return Promise.reject();
+      }
+      return Promise.resolve();
+    });
+
+    const machine = createRollbackDeploymentMachine(initialContext, fns);
+    interpret(machine)
+      .onTransition(state => {
+        if (state.value === 'failed') {
+          // pre deployment functions only called once
+          expect(fns.preRollbackTableCheck).toHaveBeenCalledTimes(1);
+          expect(fns.tableReadyWaitFn).toHaveBeenCalledTimes(1);
+          expect(rollbackFn).toHaveBeenCalledTimes(2);
+          done();
+        }
+      })
+      .start()
+      .send('ROLLBACK');
   });
 });

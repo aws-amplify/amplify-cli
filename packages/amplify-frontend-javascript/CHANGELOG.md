@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.21.2...amplify-frontend-javascript@2.21.3) (2021-04-19)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [2.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.21.1...amplify-frontend-javascript@2.21.2) (2021-04-14)
+
+
+### Bug Fixes
+
+* added project to angular ([#7069](https://github.com/aws-amplify/amplify-cli/issues/7069)) ([bdf252b](https://github.com/aws-amplify/amplify-cli/commit/bdf252b9453906b5075f2592159e026b498a3c48))
+
+
+
+
+
+## [2.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.20.11...amplify-frontend-javascript@2.21.1) (2021-04-09)
+
+
+### Bug Fixes
+
+* **cli:** use more inclusive language ([#6919](https://github.com/aws-amplify/amplify-cli/issues/6919)) ([bb70464](https://github.com/aws-amplify/amplify-cli/commit/bb70464d6c24fa931c0eb80d234a496d936913f5))
+
+
+### Reverts
+
+* Revert "Init and Configure DX changes (#6745)" ([9078b69](https://github.com/aws-amplify/amplify-cli/commit/9078b69b5842c99f0624797a5e897353bacb65d0)), closes [#6745](https://github.com/aws-amplify/amplify-cli/issues/6745)
+
+
+
+
+
 ## [2.20.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.20.10...amplify-frontend-javascript@2.20.11) (2021-03-11)
 
 **Note:** Version bump only for package amplify-frontend-javascript

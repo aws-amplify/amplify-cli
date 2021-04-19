@@ -28,8 +28,8 @@ describe('test usageData', () => {
   it('test instance', () => {
     const a = UsageData.Instance;
     const b = UsageData.Instance;
-    a.init(uuid.v4(), '', new Input([]));
-    b.init(uuid.v4(), '', new Input([]));
+    a.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' });
+    b.init(uuid.v4(), '', new Input([]), 'accountId', { editor: 'vscode', framework: 'react', frontend: 'javascript' });
     expect(a).toEqual(b);
   });
 });

@@ -43,7 +43,7 @@ export const run = async context => {
     }
   } catch (e) {
     context.print.error(`An error occurred during the publish operation: ${e.message || 'Unknown error occurred.'}`);
-    context.usageData.emitError(new FrontendBuildError(e.message));
+    await context.usageData.emitError(new FrontendBuildError(e.message));
     process.exit(1);
   }
 };
