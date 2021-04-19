@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-flutter@0.3.0...amplify-frontend-flutter@0.4.1) (2021-04-09)
+
+
+### Reverts
+
+* Revert "Init and Configure DX changes (#6745)" ([9078b69](https://github.com/aws-amplify/amplify-cli/commit/9078b69b5842c99f0624797a5e897353bacb65d0)), closes [#6745](https://github.com/aws-amplify/amplify-cli/issues/6745)
+
+
+
+
+
 # [0.3.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-flutter@0.2.1...amplify-frontend-flutter@0.3.0) (2021-02-10)
 
 

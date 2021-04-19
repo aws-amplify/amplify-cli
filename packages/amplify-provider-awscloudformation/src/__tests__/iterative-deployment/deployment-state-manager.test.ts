@@ -54,7 +54,7 @@ describe('deployment state manager', () => {
   });
 
   it('deployment in progress reflected correctly', async () => {
-    let isInProgress = await deploymentStateManager.isDeploymentInProgress();
+    let isInProgress = deploymentStateManager.isDeploymentInProgress();
     expect(isInProgress).toBe(false);
 
     const started = await deploymentStateManager.startDeployment([
@@ -65,7 +65,7 @@ describe('deployment state manager', () => {
 
     expect(started).toBe(true);
 
-    isInProgress = await deploymentStateManager.isDeploymentInProgress();
+    isInProgress = deploymentStateManager.isDeploymentInProgress();
     expect(isInProgress).toBe(true);
 
     await deploymentStateManager.startCurrentStep();
@@ -78,7 +78,7 @@ describe('deployment state manager', () => {
     currentStatus = deploymentStateManager.getStatus();
     expect(currentStatus.steps[0].status).toBe(DeploymentStepStatus.DEPLOYED);
 
-    isInProgress = await deploymentStateManager.isDeploymentInProgress();
+    isInProgress = deploymentStateManager.isDeploymentInProgress();
     expect(isInProgress).toBe(false);
   });
 
@@ -162,7 +162,7 @@ describe('deployment state manager', () => {
     const currentStatus = deploymentStateManager.getStatus();
     expect(currentStatus.status).toBe(DeploymentStatus.DEPLOYED);
 
-    let isInProgress = await deploymentStateManager.isDeploymentInProgress();
+    const isInProgress = deploymentStateManager.isDeploymentInProgress();
 
     expect(isInProgress).toBe(false);
   });

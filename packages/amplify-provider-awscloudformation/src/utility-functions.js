@@ -14,13 +14,13 @@ const ECR = require('./aws-utils/aws-ecr');
 const { pagedAWSCall } = require('./aws-utils/paged-call');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('utility-functions');
+const { getAccountId } = require('./amplify-sts');
 
 module.exports = {
   zipFiles: (context, [srcDir, dstZipFilePath]) => {
-    return archiver(srcDir, dstZipFilePath)
+    return archiver(srcDir, dstZipFilePath);
   },
   isDomainInZones: async (context, { domain }) => {
-
     const client = await new Route53(context);
 
     let Marker;
@@ -28,17 +28,18 @@ module.exports = {
     let zoneFound;
 
     do {
-      const { NextMarker, IsTruncated, HostedZones } = await client.route53.listHostedZones({
-        Marker,
-        MaxItems: '100'
-      }).promise();
+      const { NextMarker, IsTruncated, HostedZones } = await client.route53
+        .listHostedZones({
+          Marker,
+          MaxItems: '100',
+        })
+        .promise();
 
       zoneFound = HostedZones.find(zone => `${domain}.`.endsWith(zone.Name));
 
       Marker = NextMarker;
       truncated = IsTruncated;
-
-    } while (truncated && !zoneFound)
+    } while (truncated && !zoneFound);
 
     return zoneFound;
   },
@@ -137,6 +138,7 @@ module.exports = {
 
     return response;
   },
+  getAccountId,
   getTransformerDirectives: async (context, options) => {
     const { resourceDir } = options;
     if (!resourceDir) {

@@ -1,5 +1,6 @@
 import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
+import { amplifyRegions } from '../configure';
 
 const defaultSettings = {
   name: '\r',
@@ -19,21 +20,6 @@ const defaultSettings = {
   disableCIDetection: false,
   providerConfig: undefined,
 };
-
-export const amplifyRegions = [
-  'us-east-1',
-  'us-east-2',
-  'us-west-2',
-  'eu-west-1',
-  'eu-west-2',
-  'eu-central-1',
-  'ap-northeast-1',
-  'ap-northeast-2',
-  'ap-southeast-1',
-  'ap-southeast-2',
-  'ap-south-1',
-  'ca-central-1',
-];
 
 export function initJSProjectWithProfile(cwd: string, settings: Object): Promise<void> {
   const s = { ...defaultSettings, ...settings };

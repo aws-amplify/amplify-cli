@@ -12,7 +12,7 @@ const logger = fileLogger('system-config-manager');
 const credentialsFilePath = pathManager.getAWSCredentialsFilePath();
 const configFilePath = pathManager.getAWSConfigFilePath();
 
-function setProfile(awsConfig, profileName) {
+export function setProfile(awsConfig, profileName) {
   fs.ensureDirSync(pathManager.getDotAWSDirPath());
 
   let credentials = {};
@@ -64,7 +64,7 @@ function setProfile(awsConfig, profileName) {
   fs.writeFileSync(configFilePath, ini.stringify(config), { mode: SecretFileMode });
 }
 
-async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile) {
+export async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile?) {
   let awsConfig;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const profileConfig = getProfileConfig(profileName);
@@ -218,15 +218,14 @@ function isCredentialsExpired(roleCredentials) {
 
   if (roleCredentials && roleCredentials.expiration) {
     const TOTAL_MILLISECONDS_IN_ONE_MINUTE = 1000 * 60;
-    const now = new Date();
     const expirationDate = new Date(roleCredentials.expiration);
-    isExpired = expirationDate - now < TOTAL_MILLISECONDS_IN_ONE_MINUTE;
+    isExpired = expirationDate.getTime() - Date.now() < TOTAL_MILLISECONDS_IN_ONE_MINUTE;
   }
 
   return isExpired;
 }
 
-async function resetCache(context, profileName) {
+export async function resetCache(context, profileName) {
   let awsConfig;
   const profileConfig = getProfileConfig(profileName);
   const cacheFilePath = getCacheFilePath(context);
@@ -271,7 +270,7 @@ function getProfileConfig(profileName) {
   return normalizeKeys(profileConfig);
 }
 
-function getProfileCredentials(profileName) {
+export function getProfileCredentials(profileName) {
   let profileCredentials;
   logger('getProfileCredentials', [profileName])();
   if (fs.existsSync(credentialsFilePath)) {
@@ -284,7 +283,25 @@ function getProfileCredentials(profileName) {
       }
     });
   }
-  return normalizeKeys(profileCredentials);
+  profileCredentials = normalizeKeys(profileCredentials);
+  validateCredentials(profileCredentials, profileName);
+  return profileCredentials;
+}
+
+function validateCredentials(credentials, profileName) {
+  const missingKeys = [];
+  if (!credentials?.accessKeyId) {
+    missingKeys.push('aws_access_key_id');
+  }
+  if (!credentials?.secretAccessKey) {
+    missingKeys.push('aws_secret_access_key');
+  }
+  if (missingKeys.length > 0) {
+    const err = new Error(`Profile configuration for '${profileName}' is invalid: missing ${missingKeys.join(', ')}`);
+    logger('validateCredentials', [profileName])(err);
+    err.stack = undefined;
+    throw err;
+  }
 }
 
 function normalizeKeys(config) {
@@ -299,7 +316,7 @@ function normalizeKeys(config) {
   return config;
 }
 
-function getProfileRegion(profileName) {
+export function getProfileRegion(profileName) {
   let profileRegion;
   logger('getProfileRegion', [profileName])();
   const profileConfig = getProfileConfig(profileName);
@@ -311,7 +328,7 @@ function getProfileRegion(profileName) {
   return profileRegion;
 }
 
-function getNamedProfiles() {
+export function getNamedProfiles() {
   let namedProfiles;
   if (fs.existsSync(configFilePath)) {
     const config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
@@ -325,12 +342,3 @@ function getNamedProfiles() {
   }
   return namedProfiles;
 }
-
-module.exports = {
-  setProfile,
-  getProfiledAwsConfig,
-  getProfileCredentials,
-  getProfileRegion,
-  getNamedProfiles,
-  resetCache,
-};

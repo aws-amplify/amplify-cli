@@ -27,7 +27,7 @@ export const run = async (context: Context) => {
       await providerPlugin.adminLoginFlow(context, appId, envName);
     } catch (e) {
       context.print.error(`Failed to authenticate: ${e.message || 'Unknown error occurred.'}`);
-      context.usageData.emitError(e);
+      await context.usageData.emitError(e);
       process.exit(1);
     }
     return;

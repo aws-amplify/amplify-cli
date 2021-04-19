@@ -25,7 +25,7 @@ jest.mock('../app-config');
 
 describe('test attachUsageData', () => {
   const version = 'latestversion';
-  const mockContext: Context = jest.genMockFromModule('../domain/context');
+  const mockContext = jest.genMockFromModule<Context>('../domain/context');
 
   mockContext.input = new Input([
     '/Users/userName/.nvm/versions/node/v8.11.4/bin/node',
@@ -35,10 +35,7 @@ describe('test attachUsageData', () => {
   mockContext.pluginPlatform = new PluginPlatform();
   mockContext.pluginPlatform.plugins['core'] = [new PluginInfo('', version, '', new PluginManifest('', ''))];
 
-  beforeAll(() => {});
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  afterEach(() => {});
 
   it('constructContext', () => {
     const context = constructContext(mockContext.pluginPlatform, mockContext.input);
@@ -48,7 +45,7 @@ describe('test attachUsageData', () => {
     expect(context.input).toEqual(mockContext.input);
   });
 
-  it('test with usage data enabled', () => {
+  it('test with usage data enabled', async () => {
     const returnValue = {
       usageDataConfig: {
         installationUuid: 'uuid',
@@ -58,11 +55,17 @@ describe('test attachUsageData', () => {
     };
     const mockedInit = appConfig.init as jest.Mock;
     mockedInit.mockReturnValue(returnValue);
-    attachUsageData(mockContext);
-    expect(UsageData.UsageData.Instance.init).toBeCalledWith(returnValue.usageDataConfig.installationUuid, version, mockContext.input);
+    await attachUsageData(mockContext);
+    expect(UsageData.UsageData.Instance.init).toBeCalledWith(
+      returnValue.usageDataConfig.installationUuid,
+      version,
+      mockContext.input,
+      '',
+      {},
+    );
   });
 
-  it('test with usage data enabled', () => {
+  it('test with usage data disabled', async () => {
     const returnValue = {
       usageDataConfig: {
         installationUuid: 'uuid',
@@ -72,7 +75,13 @@ describe('test attachUsageData', () => {
     };
     const mockedInit = appConfig.init as jest.Mock;
     mockedInit.mockReturnValue(returnValue);
-    attachUsageData(mockContext);
-    expect(UsageData.NoUsageData.Instance.init).toBeCalledWith(returnValue.usageDataConfig.installationUuid, version, mockContext.input);
+    await attachUsageData(mockContext);
+    expect(UsageData.NoUsageData.Instance.init).toBeCalledWith(
+      returnValue.usageDataConfig.installationUuid,
+      version,
+      mockContext.input,
+      '',
+      {},
+    );
   });
 });

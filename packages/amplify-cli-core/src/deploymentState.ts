@@ -9,7 +9,10 @@ export type DeploymentState = {
 
 export type DeploymentStepState = {
   status: DeploymentStepStatus;
+  previousMetaKey?: string;
 };
+
+export type StepStatusParameters = Omit<DeploymentStepState, 'status'>;
 
 export enum DeploymentStatus {
   'IDLE' = 'IDLE',
@@ -33,11 +36,13 @@ export enum DeploymentStepStatus {
 export interface IDeploymentStateManager {
   startDeployment(steps: DeploymentStepState[]): Promise<boolean>;
   failDeployment(): Promise<void>;
+  updateStatus(status: DeploymentStatus): Promise<void>;
   updateCurrentStepStatus(status: DeploymentStepStatus): Promise<void>;
-  startCurrentStep(): Promise<void>;
+  startCurrentStep(parameters?: StepStatusParameters): Promise<void>;
   advanceStep(): Promise<void>;
   startRollback(): Promise<void>;
 
-  isDeploymentInProgress(): Promise<boolean>;
+  isDeploymentInProgress(): boolean;
+  isDeploymentFinished(): boolean;
   getStatus(): DeploymentState | undefined;
 }

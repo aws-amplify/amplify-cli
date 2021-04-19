@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.38.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.38.2...amplify-e2e-tests@2.38.3) (2021-04-19)
+
+
+### Bug Fixes
+
+* fix iterative delete for all objects and delete directory ([#7093](https://github.com/aws-amplify/amplify-cli/issues/7093)) ([189a826](https://github.com/aws-amplify/amplify-cli/commit/189a8260b25363caed3ab1f48b1fd9b7f4e4f829))
+* render spinner in stateChange update e2e to wait on spinner text ([#7116](https://github.com/aws-amplify/amplify-cli/issues/7116)) ([a46f2a3](https://github.com/aws-amplify/amplify-cli/commit/a46f2a32ec9bf9e75684bc93a2e7089ac3fb894d))
+
+
+
+
+
+## [2.38.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.38.1...amplify-e2e-tests@2.38.2) (2021-04-14)
+
+**Note:** Version bump only for package amplify-e2e-tests
+
+
+
+
+
+## [2.38.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.37.1...amplify-e2e-tests@2.38.1) (2021-04-09)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** add lambda with AdminQueries API permissions ([#6935](https://github.com/aws-amplify/amplify-cli/issues/6935)) ([756b0f7](https://github.com/aws-amplify/amplify-cli/commit/756b0f70e3b060a4603290c0ab1ff7e3033d6021)), closes [#6576](https://github.com/aws-amplify/amplify-cli/issues/6576)
+* **cli:** use more inclusive language ([#6919](https://github.com/aws-amplify/amplify-cli/issues/6919)) ([bb70464](https://github.com/aws-amplify/amplify-cli/commit/bb70464d6c24fa931c0eb80d234a496d936913f5))
+
+
+
+
+
 ## [2.37.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.37.0...amplify-e2e-tests@2.37.1) (2021-03-24)
 
 

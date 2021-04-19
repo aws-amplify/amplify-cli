@@ -1,5 +1,5 @@
 // *** NOTE! ***
-// If updating this list, also update the corresponding list in amplify-e2e-tests/src/configure/index.ts
+// If updating this list, also update the corresponding list in amplify-e2e-core/src/configure/index.ts
 // *** NOTE! ***
 const regionMappings = {
   'us-east-1': 'US East (N. Virginia)',

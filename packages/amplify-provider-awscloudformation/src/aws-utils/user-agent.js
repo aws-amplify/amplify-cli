@@ -1,6 +1,7 @@
 // TODO: Put this in package.json and integrate with lerna to bump up version
 
-const userAgent = 'aws-amplify-cli/0.1.0';
+// Track Amplify Admin generated stacks
+const userAgent =  !!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION ? 'aws-amplify-admin/0.1.0' : 'aws-amplify-cli/0.1.0';
 
 function formUserAgentParam(context, userAgentAction) {
   const { amplify } = context;
