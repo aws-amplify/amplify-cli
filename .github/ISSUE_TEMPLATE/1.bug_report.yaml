@@ -1,11 +1,6 @@
 name: Bug report
-<<<<<<< HEAD
-description: Create a report to help us improve Amplify CLI 
-issue_body: true
-=======
 description: Create a report to help us improve Amplify CLI
-title: ""
->>>>>>> master
+
 body:
 - type: markdown
   attributes:
