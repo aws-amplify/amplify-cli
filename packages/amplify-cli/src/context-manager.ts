@@ -19,13 +19,12 @@ export async function attachUsageData(context: Context) {
   const usageTrackingEnabled = AMPLIFY_CLI_ENABLE_USAGE_DATA
     ? AMPLIFY_CLI_ENABLE_USAGE_DATA === 'true'
     : config.usageDataConfig.isUsageTrackingEnabled;
-  const accountId = await context.amplify.executeProviderUtils(context, 'awscloudformation', 'getAccountId');
   if (usageTrackingEnabled) {
     context.usageData = UsageData.Instance;
   } else {
     context.usageData = NoUsageData.Instance;
   }
-  context.usageData.init(config.usageDataConfig.installationUuid, getVersion(context), context.input, accountId, getProjectSettings());
+  context.usageData.init(config.usageDataConfig.installationUuid, getVersion(context), context.input, '', getProjectSettings());
 }
 
 const getVersion = (context: Context) => context.pluginPlatform.plugins.core[0].packageVersion;
@@ -36,7 +35,7 @@ const getProjectSettings = (): ProjectSettings => {
     const projectConfig = stateManager.getProjectConfig();
     const frontend = projectConfig['frontend'];
     projectSettings.frontend = frontend;
-    projectSettings.framework = projectConfig?.[frontend].framework;
+    projectSettings.framework = projectConfig?.frontend?.framework;
   }
 
   if (stateManager.localEnvInfoExists()) {

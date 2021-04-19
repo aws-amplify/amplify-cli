@@ -170,7 +170,7 @@ function displayFrontendDefaults(context, projectPath) {
   context.print.info(`| App type: javascript`);
 
   const defaultFramework = guessFramework(context, projectPath);
-  const projectConfiguration = getProjectConfiguration(context, defaultFramework);
+  const projectConfiguration = getProjectConfiguration(context, defaultFramework, projectPath);
 
   context.print.info(`| Javascript framework: ${defaultFramework}`);
   context.print.info(`| Source Directory Path: ${projectConfiguration.SourceDir}`);

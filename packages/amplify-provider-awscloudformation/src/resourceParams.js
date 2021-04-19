@@ -49,6 +49,7 @@ function loadResourceParameters(context, category, resource) {
 }
 
 module.exports = {
+  getResourceDirPath,
   loadResourceParameters,
   saveResourceParameters,
 };

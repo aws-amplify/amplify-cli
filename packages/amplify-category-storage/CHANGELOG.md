@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.11.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.11.2...amplify-category-storage@2.11.3) (2021-04-19)
+
+**Note:** Version bump only for package amplify-category-storage
+
+
+
+
+
+## [2.11.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.11.1...amplify-category-storage@2.11.2) (2021-04-14)
+
+
+### Bug Fixes
+
+* adding resourceName to lambda trigger policy ([#6980](https://github.com/aws-amplify/amplify-cli/issues/6980)) ([7d26e29](https://github.com/aws-amplify/amplify-cli/commit/7d26e2905d94cdfd5ae7bf641b032440366b1816))
+
+
+
+
+
 ## [2.11.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.10.17...amplify-category-storage@2.11.1) (2021-04-09)
 
 **Note:** Version bump only for package amplify-category-storage

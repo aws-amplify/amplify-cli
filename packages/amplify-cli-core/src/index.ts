@@ -159,7 +159,7 @@ export type $TSCopyJob = any;
 
 // Temporary interface until Context refactor
 interface AmplifyToolkit {
-  confirmPrompt: (prompt: string, defaultValue?: boolean) => boolean;
+  confirmPrompt: (prompt: string, defaultValue?: boolean) => Promise<boolean>;
   constants: $TSAny;
   constructExeInfo: (context: $TSContext) => $TSAny;
   copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: object, force?: boolean, writeParams?: boolean | object) => $TSAny;
@@ -186,7 +186,7 @@ interface AmplifyToolkit {
   makeId: (n?: number) => string;
   openEditor: () => $TSAny;
   onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
-  pathManager: () => $TSAny;
+  pathManager: $TSAny;
   pressEnterToContinue: () => $TSAny;
   pushResources: (
     context: $TSContext,

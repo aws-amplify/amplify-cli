@@ -2,6 +2,7 @@ import {
   $TSContext,
   DeploymentState,
   DeploymentStatus,
+  StepStatusParameters,
   DeploymentStepState,
   DeploymentStepStatus,
   IDeploymentStateManager,
@@ -35,7 +36,7 @@ export class DeploymentStateManager implements IDeploymentStateManager {
   public static getStatusFromCloud = async (context: $TSContext): Promise<DeploymentState | null> => {
     const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
 
-    return await deploymentStateManager.getStatus();
+    return deploymentStateManager.getStatus();
   };
 
   private constructor(private readonly s3: S3, private readonly deploymentBucketName: string, private readonly envName: string) {}
@@ -53,6 +54,9 @@ export class DeploymentStateManager implements IDeploymentStateManager {
       // Use the freshly loaded state as current state
       this.currentState = persistedState;
     }
+
+    // if running a deployment after a rollback refresh the currentState direction to 1
+    this.direction = 1;
 
     this.currentState.startedAt = new Date().toISOString();
     this.currentState.finishedAt = undefined;
@@ -78,24 +82,28 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     }
   };
 
-  public updateCurrentStepStatus = async (status: DeploymentStepStatus): Promise<void> => {
-    this.getCurrentStep().status = status;
-
+  public updateStatus = async (status: DeploymentStatus): Promise<void> => {
+    this.currentState.status = status;
     await this.saveState();
   };
 
-  public startCurrentStep = async (): Promise<void> => {
+  public updateCurrentStepStatus = async (status: DeploymentStepStatus): Promise<void> => {
+    this.getCurrentStep().status = status;
+    await this.saveState();
+  };
+
+  public startCurrentStep = async (params?: StepStatusParameters): Promise<void> => {
     if (this.direction === 1) {
       if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_DEPLOYMENT) {
         throw new Error(`Cannot start step then the current step is in ${this.getCurrentStep().status} status.`);
       }
-
-      this.getCurrentStep().status = DeploymentStepStatus.DEPLOYING;
+      const currentStep = this.getCurrentStep();
+      currentStep.status = DeploymentStepStatus.DEPLOYING;
+      if (params?.previousMetaKey) currentStep.previousMetaKey = params.previousMetaKey;
     } else if (this.direction === -1) {
       if (this.getCurrentStep().status !== DeploymentStepStatus.WAITING_FOR_ROLLBACK) {
         throw new Error(`Cannot start step then the current step is in ${this.getCurrentStep().status} status.`);
       }
-
       this.getCurrentStep().status = DeploymentStepStatus.ROLLING_BACK;
     }
 
@@ -103,7 +111,7 @@ export class DeploymentStateManager implements IDeploymentStateManager {
   };
 
   public advanceStep = async (): Promise<void> => {
-    if (!(await this.isDeploymentInProgress())) {
+    if (!this.isDeploymentInProgress()) {
       throw new Error(`Cannot advance a deployment when it was not started.`);
     }
 
@@ -121,8 +129,11 @@ export class DeploymentStateManager implements IDeploymentStateManager {
       this.currentState.finishedAt = new Date().toISOString();
       this.currentState.status = DeploymentStatus.DEPLOYED;
     } else if (this.direction === -1 && this.currentState.currentStepIndex === 0) {
-      this.getCurrentStep().status = DeploymentStepStatus.ROLLED_BACK;
-
+      const currentStep = this.getCurrentStep();
+      currentStep.status = DeploymentStepStatus.ROLLED_BACK;
+      if (currentStep?.previousMetaKey) {
+        delete currentStep.previousMetaKey;
+      }
       this.currentState.currentStepIndex = 0;
       this.currentState.finishedAt = new Date().toISOString();
       this.currentState.status = DeploymentStatus.ROLLED_BACK;
@@ -131,7 +142,11 @@ export class DeploymentStateManager implements IDeploymentStateManager {
       if (this.direction === 1) {
         this.getCurrentStep().status = DeploymentStepStatus.DEPLOYED;
       } else if (this.direction === -1) {
-        this.getCurrentStep().status = DeploymentStepStatus.ROLLED_BACK;
+        const currentStep = this.getCurrentStep();
+        currentStep.status = DeploymentStepStatus.ROLLED_BACK;
+        if (currentStep?.previousMetaKey) {
+          delete currentStep.previousMetaKey;
+        }
       }
 
       this.currentState.currentStepIndex += this.direction;
@@ -141,7 +156,7 @@ export class DeploymentStateManager implements IDeploymentStateManager {
   };
 
   public startRollback = async (): Promise<void> => {
-    if (!(await this.isDeploymentInProgress()) || this.direction !== 1) {
+    if (!this.isDeploymentInProgress() || this.direction !== 1) {
       throw new Error('To rollback a deployment, the deployment must be in progress and not already rolling back.');
     }
 
@@ -156,8 +171,10 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     await this.saveState();
   };
 
-  public isDeploymentInProgress = async (): Promise<boolean> =>
+  public isDeploymentInProgress = (): boolean =>
     this.currentState.status === DeploymentStatus.DEPLOYING || this.currentState.status === DeploymentStatus.ROLLING_BACK;
+
+  public isDeploymentFinished = (): boolean => this.currentState.finishedAt !== undefined;
 
   public getStatus = (): DeploymentState | undefined => {
     return this.currentState;
@@ -186,15 +203,17 @@ export class DeploymentStateManager implements IDeploymentStateManager {
     if (stateFileContent) {
       return JSONUtilities.parse<DeploymentState>(stateFileContent);
     }
-
     return undefined;
   };
 
   private saveState = async (): Promise<void> => {
-    await this.s3.uploadFile({
-      Key: DeploymentStateManager.stateFileName,
-      Body: JSONUtilities.stringify(this.currentState),
-    });
+    await this.s3.uploadFile(
+      {
+        Key: DeploymentStateManager.stateFileName,
+        Body: JSONUtilities.stringify(this.currentState),
+      },
+      false,
+    );
   };
 
   private getCurrentStep = (): DeploymentStepState => this.currentState.steps[this.currentState.currentStepIndex];

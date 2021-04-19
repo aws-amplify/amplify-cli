@@ -25,6 +25,8 @@ export function accessKeysQuestion(
   accessKeyDefault: $TSAny,
   secretAccessKeyDefault: $TSAny,
   defaultRegion: string,
+  accessKeyValidator: $TSAny,
+  secretAccessKeyValidator: $TSAny,
   transformer: $TSAny,
 ): (PasswordQuestion | ListQuestion)[] {
   return [
@@ -34,6 +36,7 @@ export function accessKeysQuestion(
       name: 'accessKeyId',
       message: 'accessKeyId: ',
       default: accessKeyDefault,
+      validate: accessKeyValidator,
       transformer,
     },
     {
@@ -42,6 +45,7 @@ export function accessKeysQuestion(
       name: 'secretAccessKey',
       message: 'secretAccessKey: ',
       default: secretAccessKeyDefault,
+      validate: secretAccessKeyValidator,
       transformer,
     },
     {
@@ -78,4 +82,11 @@ export const updateOrRemoveQuestion: ListQuestion = {
     { name: 'Remove AWS Profile', value: 'remove' },
   ],
   default: 'cancel',
+};
+
+export const retryAuthConfig: ConfirmQuestion = {
+  type: 'confirm',
+  name: 'retryConfirmation',
+  message: 'Do you want to retry configuration?',
+  default: false,
 };

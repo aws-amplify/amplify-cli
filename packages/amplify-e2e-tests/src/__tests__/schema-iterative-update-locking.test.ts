@@ -45,7 +45,7 @@ describe('Schema iterative update - locking', () => {
 
     // Apply updates to first project
     const finalSchema = path.join('iterative-push', 'change-model-name', 'final-schema.graphql');
-    await updateApiSchema(projectRoot, apiName, finalSchema);
+    updateApiSchema(projectRoot, apiName, finalSchema);
 
     const appId = getAppId(projectRoot);
     expect(appId).toBeDefined();
@@ -57,7 +57,7 @@ describe('Schema iterative update - locking', () => {
     await amplifyPull(projectRootPull, { override: false, emptyDir: true, appId });
 
     // Apply modifications to second projects
-    await updateApiSchema(projectRootPull, apiName, finalSchema);
+    updateApiSchema(projectRootPull, apiName, finalSchema);
 
     // Start push to have iterative updates
     const firstPush = amplifyPushUpdate(projectRoot);
@@ -104,10 +104,7 @@ describe('Schema iterative update - locking', () => {
     expect(lockFileExists).toBe(true);
 
     // Start second push and expect failure
-    const secondPush = amplifyPushUpdate(
-      projectRootPull,
-      /A deployment is already in progress for the project, cannot push resources until it finishes.*/,
-    );
+    const secondPush = amplifyPushUpdate(projectRootPull, /A deployment is in progress.*/);
 
     await Promise.all([firstPush, secondPush]);
 

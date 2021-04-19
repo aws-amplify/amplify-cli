@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.49.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.48.0...@aws-amplify/cli@4.49.0) (2021-04-19)
+
+
+### Bug Fixes
+
+* **cli:** adds dart config to git ignore; rebased branch ([808edd9](https://github.com/aws-amplify/amplify-cli/commit/808edd9fa7f7431cc0d7cdb4c450be23b8a8d2ca))
+* removed sts call ([#7092](https://github.com/aws-amplify/amplify-cli/issues/7092)) ([550a135](https://github.com/aws-amplify/amplify-cli/commit/550a135c9f1271e859f08f43cd685d7fff46e949))
+
+
+### Features
+
+* **cli:** validate iterative rollback input ([9cd69c9](https://github.com/aws-amplify/amplify-cli/commit/9cd69c9732d4824601e1d33806937e574155778b))
+
+
+
+
+
+# [4.48.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.47.1...@aws-amplify/cli@4.48.0) (2021-04-14)
+
+
+### Bug Fixes
+
+* **cli:** display gql schema errors on failed push ([#7001](https://github.com/aws-amplify/amplify-cli/issues/7001)) ([3e88993](https://github.com/aws-amplify/amplify-cli/commit/3e88993a4a91794690099205580cf0ae935eff40))
+* fixes e2e bug ([#7067](https://github.com/aws-amplify/amplify-cli/issues/7067)) ([18c9a31](https://github.com/aws-amplify/amplify-cli/commit/18c9a310fd6fbc25c01df40dfd7d0ad731da17d1))
+
+
+### Features
+
+* added new fields to usage data ([#6911](https://github.com/aws-amplify/amplify-cli/issues/6911)) ([dc1d256](https://github.com/aws-amplify/amplify-cli/commit/dc1d256edecec2009ca6649da0995be571886b03))
+
+
+
+
+
 ## [4.47.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.46.1...@aws-amplify/cli@4.47.1) (2021-04-09)
 
 

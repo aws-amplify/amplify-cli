@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.17.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.17.2...amplify-e2e-core@1.17.3) (2021-04-19)
+
+
+### Bug Fixes
+
+* fix iterative delete for all objects and delete directory ([#7093](https://github.com/aws-amplify/amplify-cli/issues/7093)) ([189a826](https://github.com/aws-amplify/amplify-cli/commit/189a8260b25363caed3ab1f48b1fd9b7f4e4f829))
+* render spinner in stateChange update e2e to wait on spinner text ([#7116](https://github.com/aws-amplify/amplify-cli/issues/7116)) ([a46f2a3](https://github.com/aws-amplify/amplify-cli/commit/a46f2a32ec9bf9e75684bc93a2e7089ac3fb894d))
+
+
+
+
+
+## [1.17.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.17.1...amplify-e2e-core@1.17.2) (2021-04-14)
+
+
+### Bug Fixes
+
+* **amplify-e2e-core:** update source of truth for supported regions ([#6988](https://github.com/aws-amplify/amplify-cli/issues/6988)) ([bb8f8e6](https://github.com/aws-amplify/amplify-cli/commit/bb8f8e6c03baa99748d1b594fea4d18a947cac5c))
+
+
+
+
+
 ## [1.17.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.16.2...amplify-e2e-core@1.17.1) (2021-04-09)
 
 

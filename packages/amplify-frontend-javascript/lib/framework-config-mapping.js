@@ -53,8 +53,8 @@ const defaultConfig = {
   StartCommand: `${npm} run-script start`,
 };
 
-function getAngularConfig(context) {
-  const projectRoot = context.exeInfo.localEnvInfo.projectPath;
+function getAngularConfig(context, projectPath) {
+  const projectRoot = projectPath || context.exeInfo.localEnvInfo.projectPath;
   const angularConfigFile = path.join(projectRoot, 'angular.json');
   let angularProjectConfig;
   try {
@@ -79,10 +79,10 @@ function getAngularConfig(context) {
   };
 }
 
-function getProjectConfiguration(context, framework) {
+function getProjectConfiguration(context, framework, projectPath) {
   switch (framework) {
     case 'angular':
-      return getAngularConfig(context);
+      return getAngularConfig(context, projectPath);
     case 'ember':
       return emberConfig;
     case 'ionic':
