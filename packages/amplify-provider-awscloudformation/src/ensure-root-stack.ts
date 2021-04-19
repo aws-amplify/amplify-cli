@@ -16,6 +16,6 @@ export const ensureRootStack = async (context: $TSContext): Promise<$TSContext> 
 };
 
 export const rootStackExists = () => {
-  const meta = stateManager.getCurrentMeta();
+  const meta = stateManager.getMeta();
   return !!meta?.providers?.[constants.ProviderName]?.DeploymentBucketName;
 };

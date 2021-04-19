@@ -111,15 +111,17 @@ function generateLocalTagsFile(context: $TSContext) {
 export function generateAmplifyMetaFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
+  const isNewEnv = context.exeInfo.isNewEnv;
+
   // store amplifyMeta
-  const meta = stateManager.getMeta(projectPath, { throwIfNotExist: false }) || {};
+  const meta = isNewEnv ? stateManager.getMeta(projectPath, { throwIfNotExist: false }) || {} : {};
   _.merge(meta, context.exeInfo.amplifyMeta);
   stateManager.setMeta(projectPath, meta);
 
   // store current cloud meta
-  const currMeta = stateManager.getCurrentMeta(projectPath, { throwIfNotExist: false }) || {};
+  const currMeta = isNewEnv ? stateManager.getCurrentMeta(projectPath, { throwIfNotExist: false }) || {} : {};
   _.merge(currMeta, context.exeInfo.amplifyMeta);
-  stateManager.setCurrentMeta(projectPath, meta);
+  stateManager.setCurrentMeta(projectPath, currMeta);
 }
 
 function generateNonRuntimeFiles(context: $TSContext) {
