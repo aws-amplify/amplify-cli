@@ -68,7 +68,7 @@ function displayProfileSetting(context, profileName) {
 }
 
 function displayAdvancedSettings(context) {
-  context.print.info('Advanced:');
+  context.print.info('Advanced');
   const containerDeploymentStatus = isContainersEnabled(context) ? 'Yes' : 'No';
   context.print.info(`| Leverage container-based deployments: ${containerDeploymentStatus}`);
   const permissionBoundaryArnDisplay = getPermissionBoundaryArn() ?? '';

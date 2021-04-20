@@ -28,7 +28,7 @@ export const amplifyRegions = [
   'ca-central-1',
 ];
 
-const configurationOptions = ['Project information', 'AWS Profile setting', 'Advanced: Container-based deployments'];
+const configurationOptions = ['Project information', 'AWS Profile setting', 'Advanced'];
 const profileOptions = ['No', 'Update AWS Profile', 'Remove AWS Profile'];
 const authenticationOptions = ['AWS profile', 'AWS access keys'];
 
@@ -82,6 +82,7 @@ export function amplifyConfigureProject(settings: {
   profileOption?: string;
   authenticationOption?: string;
   region?: string;
+  permissionBoundaryArn?: string;
 }): Promise<void> {
   const {
     cwd,
@@ -90,6 +91,7 @@ export function amplifyConfigureProject(settings: {
     authenticationOption,
     configLevel = 'project',
     region = defaultSettings.region,
+    permissionBoundaryArn,
   } = settings;
 
   return new Promise((resolve, reject) => {
@@ -98,6 +100,10 @@ export function amplifyConfigureProject(settings: {
     if (enableContainers) {
       singleSelect(chain, configurationOptions[2], configurationOptions);
       chain.wait('Do you want to enable container-based deployments?').sendConfirmYes();
+    } else if (permissionBoundaryArn !== undefined) {
+      singleSelect(chain, configurationOptions[2], configurationOptions);
+      chain.wait('Do you want to enable container-based deployments?').sendConfirmNo();
+      chain.wait('Specify an IAM Policy ARN to use as a Permission Boundary').sendLine(permissionBoundaryArn);
     } else {
       singleSelect(chain, configurationOptions[1], configurationOptions);
 

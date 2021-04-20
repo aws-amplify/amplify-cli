@@ -310,3 +310,8 @@ export const listAttachedRolePolicies = async (roleName: string, region: string)
   const service = new IAM({ region });
   return (await service.listAttachedRolePolicies({ RoleName: roleName }).promise()).AttachedPolicies;
 };
+
+export const getPermissionBoundary = async (roleName: string, region) => {
+  const iamClient = new IAM({ region });
+  return (await iamClient.getRole({ RoleName: roleName }).promise())?.Role?.PermissionsBoundary?.PermissionsBoundaryArn;
+};

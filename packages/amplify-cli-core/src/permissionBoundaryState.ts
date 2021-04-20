@@ -21,6 +21,5 @@ export const setPermissionBoundaryArn: (arn?: string) => void = arn => {
   } else {
     _.set(backendConfig, backendConfigObjectPath, arn);
   }
-  const backendConfigPath = pathManager.getBackendConfigFilePath();
-  JSONUtilities.writeJson(backendConfigPath, backendConfig);
+  stateManager.setBackendConfig(undefined, backendConfig);
 };
