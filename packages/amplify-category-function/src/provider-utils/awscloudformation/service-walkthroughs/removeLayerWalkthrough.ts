@@ -1,5 +1,5 @@
-import { $TSContext, pathManager, promptConfirmationRemove, stateManager } from 'amplify-cli-core';
-import { getLayerName, isNewVersion, loadLayerDataFromCloud } from '../utils/layerHelpers';
+import { $TSContext, promptConfirmationRemove, stateManager } from 'amplify-cli-core';
+import { getLayerName, loadLayerDataFromCloud } from '../utils/layerHelpers';
 import { LayerVersionMetadata } from '../utils/layerParams';
 import inquirer, { QuestionCollection } from 'inquirer';
 import ora from 'ora';

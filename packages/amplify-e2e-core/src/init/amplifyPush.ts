@@ -1,4 +1,4 @@
-import { getCLIPath, KEY_DOWN_ARROW, nspawn as spawn } from '..';
+import { getCLIPath, nspawn as spawn } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
