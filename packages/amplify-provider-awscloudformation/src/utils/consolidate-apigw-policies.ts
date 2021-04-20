@@ -178,6 +178,10 @@ export function consolidateApiGatewayPolicies(context: $TSContext, stackName: st
   const apis = amplifyMeta?.api ?? {};
 
   Object.keys(apis).forEach(resourceName => {
+    if (resourceName === 'AdminQueries') {
+      return;
+    }
+
     const resource = apis[resourceName];
     const apiParams = loadApiWithPrivacyParams(context, resourceName, resource);
 
@@ -231,7 +235,7 @@ export function loadApiWithPrivacyParams(context: $TSContext, name: string, reso
 }
 
 function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
-  const { resourceName } = api.params;
+  const resourceName = api.resourceName || api.params.resourceName;
   const resourceDir = getResourceDirPath(context, 'api', resourceName);
   const cfnTemplate = path.join(resourceDir, `${resourceName}-cloudformation-template.json`);
   const paramsFile = path.join(resourceDir, 'parameters.json');
