@@ -281,7 +281,6 @@ export async function loadLayerDataFromCloud(context: $TSContext, layerName: str
     });
     layerMetadata = layerVersionList;
     layerMetadata.sort((a, b) => (a.Version > b.Version ? -1 : 1));
-    console.log(layerMetadata);
   } catch (e) {
     // TODO error handling
     spinner.fail();

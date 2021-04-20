@@ -178,7 +178,7 @@ describe('amplify add/update/remove function based on schedule rule', () => {
   });
 });
 
-describe.only('add function with layers for runtime nodeJS', () => {
+describe('add function with layers for runtime nodeJS', () => {
   let projRoot: string;
   const helloWorldSuccessOutput = 'Hello from Lambda! data';
   const random = Math.floor(Math.random() * 10000);
@@ -244,8 +244,8 @@ describe.only('add function with layers for runtime nodeJS', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
   it('can add project layers and external layers for nodejs', async () => {
     await amplifyPushAuth(projRoot);
