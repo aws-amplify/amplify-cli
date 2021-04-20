@@ -360,10 +360,10 @@ const addLayerCFNParameters = (context: $TSContext, functionParameters: Partial<
     const resourceName = _.get(layer as ProjectLayer, ['resourceName'], null);
     if (resourceName) {
       const param: string = `function${resourceName}Arn`;
-      if (cfnContent.Parameters[`${param}`] === undefined) {
-        cfnContent.Parameters[`${param}`] = {
+      if (cfnContent.Parameters[param] === undefined) {
+        cfnContent.Parameters[param] = {
           Type: 'String',
-          Default: `${param}`,
+          Default: param,
         };
       }
     }

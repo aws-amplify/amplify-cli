@@ -350,7 +350,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
       envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
     }
 
-    if (resourceParams.lambdaLayers.length) {
+    if (Array.isArray(resourceParams.lambdaLayers) && resourceParams.lambdaLayers.length) {
       const envName = context.amplify.getEnvInfo().envName;
       const modifiedLambdaLayers: LambdaLayer[] = [];
       modifiedLambdaLayers.push(...convertProjectLayersToExternalLayers(resourceParams.lambdaLayers, envName));
@@ -365,7 +365,6 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
     const currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
     const amplifyMeta = stateManager.getMeta(projectPath);
     const currentCloudVersionHash: string = _.get(currentAmplifyMeta, [categoryName, resourceName, 'versionHash'], undefined);
-    //TODO: check if we require version hash when changing environment
     if (currentCloudVersionHash) {
       _.set(amplifyMeta, [categoryName, resourceName, 'versionHash'], currentCloudVersionHash);
     }

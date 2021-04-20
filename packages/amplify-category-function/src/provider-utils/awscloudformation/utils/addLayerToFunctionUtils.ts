@@ -10,7 +10,7 @@ import { $TSContext, $TSMeta, pathManager } from 'amplify-cli-core';
 
 const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
 export const provideExistingARNsPrompt = 'Provide existing Lambda layer ARNs';
-const defaultlayerVersionPrompt = 'Always choose latest version';
+const defaultLayerVersionPrompt = 'Always choose latest version';
 const versionSelectionPrompt = (layerName: string) => `Select a version for ${layerName}:`;
 const ARNEntryPrompt = (remainingLayers: number) => `Enter up to ${remainingLayers} existing Lambda layer ARNs (comma-separated):`;
 const layerOrderPrompt = 'Modify the layer order (Layers with conflicting files will overwrite contents of layers earlier in the list):';
@@ -63,36 +63,35 @@ export const askLayerSelection = async (
   const askArnQuestion = layerSelections.includes(provideExistingARNsPrompt);
   layerSelections = layerSelections.filter(selection => selection !== provideExistingARNsPrompt);
 
-  let layerVersionArrPrompt: string[];
-
   for await (let layerName of layerSelections) {
     const layerVersions = await loadLayerDataFromCloud(context, layerName);
-    layerVersionArrPrompt = layerVersions.map(layerVersion => layerVersion.Version.toString());
-    if (!layerVersionArrPrompt.length) {
-      lambdaLayers.push({
-        type: 'ProjectLayer',
-        resourceName: layerName,
-        version: 1,
-        isLatestVersionSelected: true,
-        env: context.amplify.getEnvInfo().envName,
-      });
-    } else {
-      layerVersionArrPrompt.unshift(defaultlayerVersionPrompt);
+    const layerVersionArrPrompt = layerVersions.map(layerVersion => layerVersion.Version.toString());
+    // skip asking version for a new layer
+    if (Array.isArray(layerVersionArrPrompt) && layerVersionArrPrompt.length) {
+      layerVersionArrPrompt.unshift(defaultLayerVersionPrompt);
       const layerVersionPrompt: ListQuestion = {
         type: 'list',
         name: 'versionSelection',
         message: versionSelectionPrompt(layerName),
         choices: layerVersionArrPrompt,
-        default: defaultlayerVersionPrompt,
+        default: defaultLayerVersionPrompt,
       };
       const versionSelection = (await inquirer.prompt(layerVersionPrompt)).versionSelection;
-      const isLatestVersionSelected = versionSelection.toString() === defaultlayerVersionPrompt ? true : false;
-      const selectedVersion = versionSelection.toString() === defaultlayerVersionPrompt ? layerVersionArrPrompt[1] : versionSelection;
+      const isLatestVersionSelected = versionSelection.toString() === defaultLayerVersionPrompt ? true : false;
+      const selectedVersion = versionSelection.toString() === defaultLayerVersionPrompt ? layerVersionArrPrompt[1] : versionSelection;
       lambdaLayers.push({
         type: 'ProjectLayer',
         resourceName: layerName,
         version: selectedVersion,
         isLatestVersionSelected: isLatestVersionSelected,
+        env: context.amplify.getEnvInfo().envName,
+      });
+    } else {
+      lambdaLayers.push({
+        type: 'ProjectLayer',
+        resourceName: layerName,
+        version: 1,
+        isLatestVersionSelected: true,
         env: context.amplify.getEnvInfo().envName,
       });
     }

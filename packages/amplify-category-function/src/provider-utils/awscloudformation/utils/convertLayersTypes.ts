@@ -1,5 +1,7 @@
 import { ExternalLayer, LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
 import { convertProjectLayer } from './layerArnConverter';
+const externalLayer = 'ExternalLayer';
+const projectLayer = 'ProjectLayer';
 
 const LAYER_ARN_KEY = 'Fn::Sub';
 
@@ -8,17 +10,18 @@ const LAYER_ARN_KEY = 'Fn::Sub';
 export const convertProjectLayersToExternalLayers = (lambdaLayers: LambdaLayer[], envName: string): LambdaLayer[] => {
   const modifiedLambdaLayers: LambdaLayer[] = [];
   lambdaLayers.forEach(layer => {
-    if (layer.type === 'ProjectLayer' && layer.env !== envName && !layer.isLatestVersionSelected) {
+    if (layer.type === projectLayer && layer.env !== envName && !layer.isLatestVersionSelected) {
       const convertLayer: ExternalLayer = {
-        type: 'ExternalLayer',
+        type: externalLayer,
         arn: convertProjectLayer(layer, envName),
       };
       modifiedLambdaLayers.push(convertLayer);
     } else {
+      const typedProjectLayer = <ProjectLayer>layer;
       const convertLayer: ProjectLayer = {
-        type: 'ProjectLayer',
-        resourceName: (layer as ProjectLayer).resourceName,
-        version: (layer as ProjectLayer).version,
+        type: projectLayer,
+        resourceName: typedProjectLayer.resourceName,
+        version: typedProjectLayer.version,
         isLatestVersionSelected: true,
         env: envName,
       };
@@ -34,7 +37,7 @@ export const convertProjectLayersToExternalLayers = (lambdaLayers: LambdaLayer[]
 export const covertExternalLayersToProjectLayers = (lambdaLayers: LambdaLayer[], envName: string): LambdaLayer[] => {
   const modifiedLambdaLayers: LambdaLayer[] = [];
   lambdaLayers.forEach(layer => {
-    if (layer.type === 'ExternalLayer' && layer.arn.hasOwnProperty(LAYER_ARN_KEY)) {
+    if (layer.type === externalLayer && layer.arn.hasOwnProperty(LAYER_ARN_KEY)) {
       const layerArn = layer.arn[LAYER_ARN_KEY];
       const layerNameWithEnv = layerArn.split(':')[layerArn.split(':').length - 2];
       const layerVersion = parseInt(layerArn.split(':')[layerArn.split(':').length - 1], 10);
@@ -44,7 +47,7 @@ export const covertExternalLayersToProjectLayers = (lambdaLayers: LambdaLayer[],
         modifiedLambdaLayers.push(layer);
       } else {
         modifiedLambdaLayers.push({
-          type: 'ProjectLayer',
+          type: projectLayer,
           resourceName: layerName,
           version: layerVersion,
           isLatestVersionSelected: false,
