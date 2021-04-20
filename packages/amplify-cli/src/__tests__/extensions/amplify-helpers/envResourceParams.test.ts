@@ -5,7 +5,7 @@ import {
   loadEnvResourceParameters,
   removeResourceParameters,
   removeDeploymentSecrets,
-} from '../../../../src/extensions/amplify-helpers/envResourceParams';
+} from '../../../extensions/amplify-helpers/envResourceParams';
 import { pathManager, stateManager, $TSContext, DeploymentSecrets, removeFromDeploymentSecrets } from 'amplify-cli-core';
 
 jest.mock('fs-extra');
@@ -20,7 +20,7 @@ jest.mock('amplify-cli-core', () => ({
   },
   removeFromDeploymentSecrets: jest.fn(),
 }));
-jest.mock('../../../../src/extensions/amplify-helpers/get-env-info', () => ({ getEnvInfo: jest.fn() }));
+jest.mock('../../../extensions/amplify-helpers/get-env-info', () => ({ getEnvInfo: jest.fn() }));
 
 beforeEach(() => {
   jest.clearAllMocks();
