@@ -1,5 +1,4 @@
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
-import { generateLayerCfnObj } from '../../../../provider-utils/awscloudformation/utils/lambda-layer-cloudformation-template';
 import {
   LayerParameters,
   LayerPermission,
@@ -52,6 +51,23 @@ function validateOutput(layerCfn) {
 }
 
 describe('test layer CFN generation functions', () => {
+  let generateLayerCfnObj = null;
+  beforeAll(() => {
+    jest.mock('amplify-cli-core', () => ({
+      stateManager: {
+        getLocalEnvInfo: jest.fn().mockReturnValue('testenv'),
+      },
+      pathManager: {
+        getBackendDirPath: jest.fn().mockReturnValue('..'),
+      },
+      JSONUtilities: {
+        readJson: jest.fn().mockReturnValue([]),
+      },
+    }));
+    generateLayerCfnObj = require('../../../../provider-utils/awscloudformation/utils/lambda-layer-cloudformation-template')
+      .generateLayerCfnObj;
+  });
+
   it('should generate the expected CFN for a newly created LL resource', () => {
     const layerCfn = generateLayerCfnObj(true, parameters_stub);
     validateParameters(layerCfn);
@@ -69,6 +85,7 @@ describe('test layer CFN generation functions', () => {
       S3Key: 's3key',
       S3Bucket: 's3bucket',
     },
+    LegacyLayer: false,
     permissions: [{ type: PermissionEnum.Private }],
   };
 
