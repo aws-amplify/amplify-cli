@@ -14,6 +14,7 @@ export const cronJobSetting = 'Scheduled recurring invocation';
 export const lambdaLayerSetting = 'Lambda layers configuration';
 export const accessPermissions = 'Access permissions';
 export const description = 'Description';
+export const skipVersionsField = 'skipVersions';
 
 export const enum ServiceName {
   LambdaFunction = 'Lambda',

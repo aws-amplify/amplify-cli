@@ -276,6 +276,8 @@ export async function loadLayerDataFromCloud(context: $TSContext, layerName: str
             });
           }
         });
+      // temp logic for determining if legacy layer
+      layerVersion.LegacyLayer = !layerVersion.permissions || !layerVersion.LogicalName;
     });
     layerMetadata = layerVersionList;
   } catch (e) {

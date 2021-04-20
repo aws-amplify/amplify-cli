@@ -1,20 +1,11 @@
-import { stateManager } from 'amplify-cli-core';
+import { $TSAny, stateManager, getAmplifyResourceByCategories } from 'amplify-cli-core';
 import inquirer from 'inquirer';
 const category = 'function';
 import _ from 'lodash';
 import { ServiceName } from '../utils/constants';
 
-export async function removeResource(resourceName?: string): Promise<any> {
-  const amplifyMeta = stateManager.getMeta();
-  const enabledCategoryResources: { name; value } | { name; value }[] | string[] = Object.keys(amplifyMeta[category])
-    .filter(r => amplifyMeta[category][r].mobileHubMigrated !== true)
-    .map(resource => {
-      const service = _.get(amplifyMeta, [category, resource, 'service']);
-      return {
-        name: `${resource} ${service === ServiceName.LambdaLayer ? '(layer)' : '(function)'}`,
-        value: { resourceName: resource, isLambdaLayer: service === ServiceName.LambdaLayer },
-      };
-    });
+export async function removeResource(resourceName?: string): Promise<$TSAny> {
+  const enabledCategoryResources = getEnabledResources();
 
   if (resourceName) {
     const resource = enabledCategoryResources.find(categoryResource => categoryResource.value.resourceName === resourceName);
@@ -32,4 +23,14 @@ export async function removeResource(resourceName?: string): Promise<any> {
   const answer = await inquirer.prompt(question);
 
   return answer.resource;
+}
+function getEnabledResources(): { name: string; value: { resourceName: string; isLambdaLayer: boolean } }[] {
+  const amplifyMeta = stateManager.getMeta();
+  return getAmplifyResourceByCategories(category).map(resource => {
+    const service = _.get(amplifyMeta, [category, resource, 'service']);
+    return {
+      name: `${resource} ${service === ServiceName.LambdaLayer ? '(layer)' : '(function)'}`,
+      value: { resourceName: resource, isLambdaLayer: service === ServiceName.LambdaLayer },
+    };
+  });
 }
