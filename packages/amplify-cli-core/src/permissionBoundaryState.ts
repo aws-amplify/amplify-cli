@@ -1,5 +1,4 @@
-import { JSONUtilities } from './jsonUtilities';
-import { pathManager, stateManager } from './state-manager';
+import { stateManager } from './state-manager';
 import _ from 'lodash';
 
 const backendConfigObjectPath = ['providers', 'awscloudformation', 'PermissionBoundaryPolicyArn'];
