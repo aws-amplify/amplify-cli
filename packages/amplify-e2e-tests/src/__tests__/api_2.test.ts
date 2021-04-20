@@ -1,4 +1,12 @@
-import { amplifyPush, amplifyPushUpdate, deleteProject, initJSProjectWithProfile } from 'amplify-e2e-core';
+import {
+  amplifyPush,
+  amplifyPushUpdate,
+  deleteProject,
+  getPolicyVersion,
+  initJSProjectWithProfile,
+  listAttachedRolePolicies,
+  listRolePolicies,
+} from 'amplify-e2e-core';
 import * as path from 'path';
 import { existsSync } from 'fs';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
@@ -374,5 +382,48 @@ describe('amplify add api (REST)', () => {
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await addRestApi(projRoot, { existingLambda: true });
     await amplifyPushUpdate(projRoot);
+  });
+
+  it('init a project, create lambda and attach multiple rest apis', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
+    await addRestApi(projRoot, {
+      existingLambda: true,
+      restrictAccess: true,
+      allowGuestUsers: true,
+    });
+    await addRestApi(projRoot, {
+      existingLambda: true,
+      restrictAccess: true,
+      allowGuestUsers: true,
+    });
+    await addRestApi(projRoot, {
+      existingLambda: true,
+      restrictAccess: true,
+      allowGuestUsers: false,
+    });
+    await addRestApi(projRoot, { existingLambda: true });
+    await amplifyPushUpdate(projRoot);
+
+    const amplifyMeta = getProjectMeta(projRoot);
+    const meta = amplifyMeta.providers.awscloudformation;
+    const { AuthRoleName, UnauthRoleName, Region } = meta;
+
+    expect(await listRolePolicies(AuthRoleName, Region)).toEqual([]);
+    expect(await listRolePolicies(UnauthRoleName, Region)).toEqual([]);
+
+    const authPolicies = await listAttachedRolePolicies(AuthRoleName, Region);
+    expect(authPolicies.length).toBeGreaterThan(0);
+
+    for (let i = 0; i < authPolicies.length; i++) {
+      expect(authPolicies[i].PolicyName).toMatch(/PolicyAPIGWAuth\d/);
+    }
+
+    const unauthPolicies = await listAttachedRolePolicies(UnauthRoleName, Region);
+    expect(unauthPolicies.length).toBeGreaterThan(0);
+
+    for (let i = 0; i < unauthPolicies.length; i++) {
+      expect(unauthPolicies[i].PolicyName).toMatch(/PolicyAPIGWUnauth\d/);
+    }
   });
 });

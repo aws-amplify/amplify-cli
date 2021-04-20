@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { homedir } from 'os';
+import { NotInitializedError } from '../errors';
 
 export const PathConstants = {
   // in home directory
@@ -162,7 +163,7 @@ export class PathManager {
       return path.normalize(path.join(projectPath, ...segments));
     }
 
-    throw this.createNotInitializedError();
+    throw new NotInitializedError();
   };
 
   private validateProjectPath = (projectPath: string): boolean => {
@@ -195,17 +196,6 @@ export class PathManager {
     }
 
     return undefined;
-  };
-
-  private createNotInitializedError = (): Error => {
-    const error = new Error(
-      "You are not working inside a valid Amplify project.\nUse 'amplify init' in the root of your app directory to initialize your project, or 'amplify pull' to pull down an existing project.",
-    );
-
-    error.name = 'NotInitialized';
-    error.stack = undefined;
-
-    return error;
   };
 }
 

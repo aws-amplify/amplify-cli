@@ -198,7 +198,7 @@ class CloudFormation {
         if (e && e.code === 'Throttling') {
           return Promise.resolve([]);
         }
-        Promise.reject(e);
+        return Promise.reject(e);
       });
   }
 

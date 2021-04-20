@@ -12,12 +12,15 @@ import {
   Kinesis,
   CloudFormation,
   AmplifyBackend,
+  IAM,
 } from 'aws-sdk';
 import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {
   const service = new DynamoDB({ region });
-  return await service.describeTable({ TableName: tableName }).promise();
+  if (tableName) {
+    return await service.describeTable({ TableName: tableName }).promise();
+  }
 };
 
 export const checkIfBucketExists = async (bucketName: string, region: string) => {
@@ -217,6 +220,38 @@ export const describeCloudFormationStack = async (stackName: string, region: str
   );
 };
 
+export const getNestedStackID = async (stackName: string, region: string, logicalId: string): Promise<string> => {
+  const cfnClient = new CloudFormation({ region });
+  const resource = await cfnClient.describeStackResources({ StackName: stackName, LogicalResourceId: logicalId }).promise();
+  return resource?.StackResources?.[0].PhysicalResourceId ?? null;
+};
+
+/**
+ * Collects table resource id from parent stack
+ * @param region region the stack exists in
+ * @param table name of the table used in the appsync schema
+ * @param StackId id of the parent stack
+ * @returns
+ */
+
+export const getTableResourceId = async (region: string, table: string, StackId: string): Promise<string | null> => {
+  const cfnClient = new CloudFormation({ region });
+  const apiResources = await cfnClient
+    .describeStackResources({
+      StackName: StackId,
+    })
+    .promise();
+  const resource = apiResources.StackResources.find(stackResource => table === stackResource.LogicalResourceId);
+  if (resource) {
+    const tableStack = await cfnClient.describeStacks({ StackName: resource.PhysicalResourceId }).promise();
+    if (tableStack?.Stacks?.length > 0) {
+      const tableName = tableStack.Stacks[0].Outputs.find(out => out.OutputKey === `GetAtt${resource.LogicalResourceId}TableName`);
+      return tableName.OutputValue;
+    }
+  }
+  return null;
+};
+
 export const putKinesisRecords = async (data: string, partitionKey: string, streamName: string, region: string) => {
   const kinesis = new Kinesis({ region });
 
@@ -264,4 +299,14 @@ export const getAmplifyBackendJobStatus = async (jobId: string, appId: string, e
       BackendEnvironmentName: envName,
     })
     .promise();
+};
+
+export const listRolePolicies = async (roleName: string, region: string) => {
+  const service = new IAM({ region });
+  return (await service.listRolePolicies({ RoleName: roleName }).promise()).PolicyNames;
+};
+
+export const listAttachedRolePolicies = async (roleName: string, region: string) => {
+  const service = new IAM({ region });
+  return (await service.listAttachedRolePolicies({ RoleName: roleName }).promise()).AttachedPolicies;
 };

@@ -57,6 +57,7 @@ function getGitIgnoreAppendString() {
     'aws-exports.js',
     'awsconfiguration.json',
     'amplifyconfiguration.json',
+    'amplifyconfiguration.dart',
     'amplify-build-config.json',
     'amplify-gradle-config.json',
     'amplifytools.xcconfig',

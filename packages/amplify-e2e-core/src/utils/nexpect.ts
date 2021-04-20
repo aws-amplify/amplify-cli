@@ -27,6 +27,8 @@ const EXIT_CODE_GENERIC_ERROR = 3;
 // https://notes.burke.libbey.me/ansi-escape-codes/
 export const KEY_UP_ARROW = '\x1b[A';
 export const KEY_DOWN_ARROW = '\x1b[B';
+// https://donsnotes.com/tech/charsets/ascii.html
+export const CONTROL_C = '\x03';
 
 type ExecutionStep = {
   fn: (data: string) => boolean;
@@ -62,6 +64,7 @@ export type ExecutionContext = {
   sendKeyUp: (repeat?: number) => ExecutionContext;
   sendConfirmYes: () => ExecutionContext;
   sendConfirmNo: () => ExecutionContext;
+  sendCtrlC: () => ExecutionContext;
   sendEof: () => ExecutionContext;
   delay: (milliseconds: number) => ExecutionContext;
   run: (cb: (err: any, signal?: any) => void) => ExecutionContext;
@@ -241,6 +244,20 @@ function chain(context: Context): ExecutionContext {
         name: '_send',
         shift: true,
         description: `'[send] N <CR>`,
+        requiresInput: false,
+      };
+      context.queue.push(_send);
+      return chain(context);
+    },
+    sendCtrlC: function (): ExecutionContext {
+      var _send: ExecutionStep = {
+        fn: () => {
+          context.process.write(`${CONTROL_C}${EOL}`);
+          return true;
+        },
+        name: '_send',
+        shift: true,
+        description: '[send] Ctrl+C',
         requiresInput: false,
       };
       context.queue.push(_send);

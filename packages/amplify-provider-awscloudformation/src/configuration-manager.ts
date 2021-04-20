@@ -29,7 +29,9 @@ import {
   profileNameQuestion,
   removeProjectComfirmQuestion,
   updateOrRemoveQuestion,
+  retryAuthConfig,
 } from './question-flows/configuration-questions';
+import { STS } from 'aws-sdk';
 
 interface AwsConfig extends AwsSecrets {
   useProfile?: boolean;
@@ -250,9 +252,34 @@ async function initialize(context: $TSContext, authConfig?: AuthFlowConfig) {
     }
   }
 
-  validateConfig(context);
+  await validateConfig(context);
   if (!awsConfigInfo.configValidated) {
-    throw new Error('Invalid configuration settings');
+    context.print.error('Invalid configuration settings!');
+    const { retryConfirmation } = await prompt(retryAuthConfig);
+    if (retryConfirmation) {
+      // Cleaning up broken configurations
+      if (authConfig.type === 'admin') {
+        context.exeInfo.awsConfigInfo = {
+          configLevel: 'amplifyAdmin',
+          config: {},
+        };
+      } else if (authConfig.type === 'accessKeys') {
+        context.exeInfo.awsConfigInfo = {
+          configLevel: 'project',
+          config: { useProfile: false },
+        };
+      } else {
+        context.exeInfo.awsConfigInfo = {
+          configLevel: 'project',
+          config: defaultAWSConfig,
+        };
+      }
+
+      return initialize(context, authConfig);
+    } else {
+      context.print.error('Exiting...');
+      exitOnNextTick(1);
+    }
   }
 
   return context;
@@ -274,7 +301,7 @@ async function create(context: $TSContext) {
     await promptForAuthConfig(context);
   }
 
-  validateConfig(context);
+  await validateConfig(context);
   if (awsConfigInfo.configValidated) {
     persistLocalEnvConfig(context);
   } else {
@@ -291,7 +318,7 @@ async function update(context: $TSContext) {
   } else {
     await promptForAuthConfig(context);
   }
-  validateConfig(context);
+  await validateConfig(context);
   if (awsConfigInfo.configValidated) {
     updateProjectConfig(context);
   } else {
@@ -330,7 +357,6 @@ async function setProjectConfigAction(context: $TSContext) {
     } else if (inputParams.configLevel === 'project') {
       context.exeInfo.awsConfigInfo.action = 'create';
       context.exeInfo.awsConfigInfo.configLevel = 'project';
-      context.exeInfo.awsConfigInfo.config = defaultAWSConfig;
     } else {
       context.exeInfo.awsConfigInfo.action = 'none';
       context.exeInfo.awsConfigInfo.configLevel = 'general';
@@ -346,7 +372,6 @@ async function setProjectConfigAction(context: $TSContext) {
       if (answer.setProjectLevelConfig) {
         context.exeInfo.awsConfigInfo.action = 'create';
         context.exeInfo.awsConfigInfo.configLevel = 'project';
-        context.exeInfo.awsConfigInfo.config = defaultAWSConfig;
       } else {
         context.exeInfo.awsConfigInfo.action = 'none';
         context.exeInfo.awsConfigInfo.configLevel = 'general';
@@ -378,6 +403,7 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
   if (availableProfiles && availableProfiles.length > 0) {
     let authType: AuthFlow;
     let isAdminApp = false;
+
     if (authConfig?.type) {
       authType = authConfig.type;
     } else {
@@ -389,6 +415,7 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
       }
       authType = await askAuthType(isAdminApp);
     }
+
     if (authType === 'profile') {
       printProfileInfo(context);
       awsConfigInfo.config.useProfile = true;
@@ -399,6 +426,9 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
       awsConfigInfo.configLevel = 'amplifyAdmin';
       awsConfigInfo.config.useProfile = false;
       return;
+    } else {
+      awsConfigInfo.config.useProfile = false;
+      delete awsConfigInfo.config.profileName;
     }
   } else {
     awsConfigInfo.config.useProfile = false;
@@ -411,6 +441,8 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
         ? obfuscateUtil.obfuscate(awsConfigInfo.config.secretAccessKey)
         : constants.DefaultAWSSecretAccessKey,
       awsConfigInfo.config.region || constants.DefaultAWSRegion,
+      validateAccessKeyId,
+      validateSecretAccessKey,
       obfuscateUtil.transform,
     ),
   );
@@ -423,7 +455,7 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
   awsConfigInfo.config.region = answers.region;
 }
 
-function validateConfig(context: $TSContext) {
+async function validateConfig(context: $TSContext) {
   const { awsConfigInfo } = context.exeInfo;
   awsConfigInfo.configValidated = false;
   if (awsConfigInfo.configLevel === 'general' || awsConfigInfo.configLevel === 'amplifyAdmin') {
@@ -441,6 +473,17 @@ function validateConfig(context: $TSContext) {
         awsConfigInfo.config.secretAccessKey !== constants.DefaultAWSSecretAccessKey &&
         awsConfigInfo.config.region &&
         awsRegions.regions.includes(awsConfigInfo.config.region);
+      const sts = new STS({
+        credentials: {
+          accessKeyId: awsConfigInfo.config.accessKeyId,
+          secretAccessKey: awsConfigInfo.config.secretAccessKey,
+        },
+      });
+      try {
+        await sts.getCallerIdentity({}).promise();
+      } catch (err) {
+        awsConfigInfo.configValidated = false;
+      }
     }
   }
   return context;
@@ -864,4 +907,17 @@ async function askAuthType(isAdminAvailable: boolean = false): Promise<AuthFlow>
   const { authChoice }: { authChoice?: AuthFlow } = await prompt(authTypeQuestion(choices));
 
   return authChoice;
+}
+
+// Regex adapted from: https://aws.amazon.com/blogs/security/a-safer-way-to-distribute-aws-credentials-to-ec2/
+
+function validateAccessKeyId(input: $TSAny): string | boolean {
+  const INVALID_ACCESS_KEY_ID = 'Access Key ID must be 20 characters, and uppercase alphanumeric only.';
+  const accessKeyIdRegex = /^[A-Z0-9]{20}$/;
+  return accessKeyIdRegex.test(input) ? true : INVALID_ACCESS_KEY_ID;
+}
+function validateSecretAccessKey(input: $TSAny): string | boolean {
+  const INVALID_SECRET_ACCESS_KEY = 'Secret Access Key must be 40 characters, and base-64 string only.';
+  const secretAccessKeyRegex = /^[A-Za-z0-9/+=]{40}$/;
+  return secretAccessKeyRegex.test(input) ? true : INVALID_SECRET_ACCESS_KEY;
 }

@@ -1,4 +1,6 @@
-export function getFrontendPlugins(context) {
+import { $TSContext } from 'amplify-cli-core';
+
+export function getFrontendPlugins(context: $TSContext) {
   const frontendPlugins = {};
 
   context.runtime.plugins

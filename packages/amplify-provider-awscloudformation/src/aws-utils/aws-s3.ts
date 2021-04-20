@@ -13,6 +13,9 @@ const minChunkSize = 5 * 1024 * 1024; // 5 MB https://docs.aws.amazon.com/AWSJav
 const { fileLogger } = require('../utils/aws-logger');
 const logger = fileLogger('aws-s3');
 
+// https://stackoverflow.com/questions/52703321/make-some-properties-optional-in-a-typescript-type
+type OptionalExceptFor<T, TRequired extends keyof T> = Partial<T> & Pick<T, TRequired>;
+
 export class S3 {
   private static instance: S3;
   private readonly context: $TSContext;
@@ -136,14 +139,9 @@ export class S3 {
 
   async getAllObjectVersions(
     bucketName: string,
-    continuationToken: Required<Pick<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = null,
+    options: OptionalExceptFor<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'> = null,
   ) {
-    const result = await pagedAWSCall<
-      ListObjectVersionsOutput,
-      Required<ObjectIdentifier>,
-      typeof continuationToken,
-      ListObjectVersionsRequest
-    >(
+    const result = await pagedAWSCall<ListObjectVersionsOutput, Required<ObjectIdentifier>, typeof options, ListObjectVersionsRequest>(
       async (param, nextToken?) => {
         const parmaWithNextToken = nextToken ? { ...param, ...nextToken } : param;
         logger('getAllObjectKey.s3.listObjectVersions', [parmaWithNextToken])();
@@ -151,26 +149,47 @@ export class S3 {
       },
       {
         Bucket: bucketName,
-        ...continuationToken,
+        ...options,
       },
       (response?) => response.Versions?.map(({ Key, VersionId }) => ({ Key, VersionId })),
       async (response?) =>
-        response && response.IsTruncated ? { KeyMarker: response.NextKeyMarker, VersionIdMarker: response.NextVersionIdMarker } : undefined,
+        response?.IsTruncated
+          ? { KeyMarker: response.NextKeyMarker, VersionIdMarker: response.NextVersionIdMarker, Prefix: response.Prefix }
+          : undefined,
     );
     return result;
+  }
+
+  public async deleteDirectory(bucketName: string, dirPath: string): Promise<void> {
+    logger('deleteDirectory.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
+    const allObjects = await this.getAllObjectVersions(bucketName, { Prefix: dirPath });
+    const chunkedResult = _.chunk(allObjects, 1000);
+    const chunkedResultLength = chunkedResult.length;
+    for (let idx = 0; idx < chunkedResultLength; idx++) {
+      logger(`deleteAllObjects.s3.deleteObjects (${idx} of ${chunkedResultLength})`, [{ Bucket: bucketName }])();
+      await this.s3
+        .deleteObjects({
+          Bucket: bucketName,
+          Delete: {
+            Objects: chunkedResult[idx],
+          },
+        })
+        .promise();
+    }
   }
 
   public async deleteAllObjects(bucketName: string): Promise<void> {
     logger('deleteAllObjects.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectVersions(bucketName);
     const chunkedResult = _.chunk(allObjects, 1000);
-    for (let chunk of chunkedResult) {
-      logger('deleteAllObjects.s3.deleteObjects', [{ Bucket: bucketName }])();
+    const chunkedResultLength = chunkedResult.length;
+    for (let idx = 0; idx < chunkedResultLength; idx++) {
+      logger(`deleteAllObjects.s3.deleteObjects (${idx} of ${chunkedResultLength})`, [{ Bucket: bucketName }])();
       await this.s3
         .deleteObjects({
           Bucket: bucketName,
           Delete: {
-            Objects: chunk,
+            Objects: chunkedResult[idx],
           },
         })
         .promise();
