@@ -32,7 +32,7 @@ export const covertExternalLayersToProjectLayers = (lambdaLayers: LambdaLayer[],
     if (layer.type === 'ExternalLayer' && layer.arn.hasOwnProperty(LAYER_ARN_KEY)) {
       const layerArn = layer.arn[LAYER_ARN_KEY];
       const layerNameWithEnv = layerArn.split(':')[layerArn.split(':').length - 2];
-      const layerVersion = parseInt(layerArn.split(':')[layerArn.split(':').length - 1]);
+      const layerVersion = parseInt(layerArn.split(':')[layerArn.split(':').length - 1], 10);
       const layerName = layerNameWithEnv.split('-')[0];
       const layerEnv = layerNameWithEnv.split('-')[1];
       if (envName !== layerEnv) {
