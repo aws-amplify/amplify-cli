@@ -55,6 +55,8 @@ const previousSelectionsStub: LambdaLayer[] = [
     type: 'ProjectLayer',
     resourceName: 'aLayer',
     version: 2,
+    isLatestVersionSelected: false,
+    env: 'mockEnv',
   },
 ];
 
@@ -153,7 +155,8 @@ describe('layer selection question', () => {
         type: 'ProjectLayer',
         resourceName: 'aLayer',
         version: 2,
-        isLatest: false,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
     ];
     const expectedDependsOn: FunctionDependency[] = [
@@ -225,11 +228,15 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ProjectLayer',
         resourceName: 'anotherLayer',
         version: 1,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
     ];
 
@@ -238,6 +245,8 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ExternalLayer',
@@ -260,11 +269,15 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ProjectLayer',
         resourceName: 'anotherLayer',
         version: 1,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
     ];
 
@@ -273,11 +286,15 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ProjectLayer',
         resourceName: 'anotherLayer',
         version: 1,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ExternalLayer',

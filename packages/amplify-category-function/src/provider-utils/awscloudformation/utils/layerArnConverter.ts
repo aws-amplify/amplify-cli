@@ -19,8 +19,8 @@ export const convertLambdaLayerMetaToLayerCFNArray = (
   });
 };
 
-const convertProjectLayer = (layer: ProjectLayer, env?: string) => {
-  if (!layer.isLatest) {
+export const convertProjectLayer = (layer: ProjectLayer, env?: string) => {
+  if (!layer.isLatestVersionSelected) {
     if (env) {
       return {
         'Fn::Sub': `arn:aws:lambda:\${AWS::Region}:\${AWS::AccountId}:layer:${layer.resourceName}-${env}:${layer.version}`,

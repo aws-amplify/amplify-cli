@@ -5,7 +5,7 @@ import { ServiceName } from './constants';
 import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
 import enquirer from 'enquirer';
 import { loadLayerDataFromCloud } from './layerHelpers';
-import { getLayerRuntimes, loadLayerConfigurationFile } from './layerConfiguration';
+import { getLayerRuntimes } from './layerConfiguration';
 import { $TSContext, $TSMeta, pathManager } from 'amplify-cli-core';
 
 const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
@@ -66,8 +66,6 @@ export const askLayerSelection = async (
   let layerVersionArrPrompt: string[];
 
   for await (let layerName of layerSelections) {
-    const currentSelectionDefaults = filterProjectLayers(previousSelections).find(sel => sel.resourceName === layerName);
-    const currentVersion = currentSelectionDefaults ? currentSelectionDefaults.version.toString() : undefined;
     const layerVersions = await loadLayerDataFromCloud(context, layerName);
     layerVersionArrPrompt = layerVersions.map(layerVersion => layerVersion.Version.toString());
     if (!layerVersionArrPrompt.length) {
@@ -84,14 +82,15 @@ export const askLayerSelection = async (
     };
 
     const versionSelection = (await inquirer.prompt(layerVersionPrompt)).versionSelection;
-    const isLatest = versionSelection.toString() === defaultlayerVersionPrompt ? true : false;
+    const isLatestVersionSelected = versionSelection.toString() === defaultlayerVersionPrompt ? true : false;
     const selectedVersion = versionSelection.toString() === defaultlayerVersionPrompt ? layerVersionArrPrompt[1] : versionSelection;
 
     lambdaLayers.push({
       type: 'ProjectLayer',
       resourceName: layerName,
       version: selectedVersion,
-      isLatest: isLatest,
+      isLatestVersionSelected: isLatestVersionSelected,
+      env: context.amplify.getEnvInfo().envName,
     });
     dependsOn.push({
       category,

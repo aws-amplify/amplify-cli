@@ -216,12 +216,13 @@ export interface ProjectLayer {
   type: 'ProjectLayer';
   resourceName: string;
   version: number;
-  isLatest: boolean;
+  isLatestVersionSelected: boolean;
+  env: string;
 }
 
 export interface ExternalLayer {
   type: 'ExternalLayer';
-  arn: string;
+  arn: string | { 'Fn::Sub': string } | { Ref: string };
 }
 
 interface FunctionContributorCondition {
