@@ -14,8 +14,10 @@ export async function pushResources(
 ) {
   if (context.parameters.options['iterative-rollback']) {
     // validate --iterative-rollback with --force
-    if (context.parameters.options.force){
-      throw new Error("'--iterative-rollback' and '--force' cannot be used together. Consider runnning 'amplify push --force' to iteratively rollback and redeploy.");
+    if (context.parameters.options.force) {
+      throw new Error(
+        "'--iterative-rollback' and '--force' cannot be used together. Consider runnning 'amplify push --force' to iteratively rollback and redeploy.",
+      );
     }
     context.exeInfo.iterativeRollback = true;
   }

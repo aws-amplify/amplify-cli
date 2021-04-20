@@ -42,6 +42,7 @@ import { fileLogger } from './utils/aws-logger';
 import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/consolidate-apigw-policies';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
+import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 
 const logger = fileLogger('push-resources');
 
@@ -57,13 +58,12 @@ const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
 
-
 const deploymentInProgressErrorMessage = (context: $TSContext) => {
   context.print.error('A deployment is in progress.');
   context.print.error('If the prior rollback was aborted, run:');
   context.print.error('"amplify push --iterative-rollback" to rollback the prior deployment');
   context.print.error('"amplify push --force" to re-deploy');
-}
+};
 
 export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
@@ -217,7 +217,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
           try {
             fs.removeSync(stateFolder.local);
           } catch (err) {
-            context.print.error(`Could not delete state directory locally: ${err}`)
+            context.print.error(`Could not delete state directory locally: ${err}`);
           }
         }
         if (stateFolder.cloud) {
@@ -605,13 +605,15 @@ async function updateCloudFormationNestedStack(
 
   JSONUtilities.writeJson(nestedStackFilepath, nestedStack);
 
+  const transformedStackPath = await preProcessCFNTemplate(nestedStackFilepath);
+
   const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated));
   const providerDirectory = path.normalize(path.join(backEndDir, providerName));
 
-  const log = logger('updateCloudFormationNestedStack', [providerDirectory, nestedStackFilepath]);
+  const log = logger('updateCloudFormationNestedStack', [providerDirectory, transformedStackPath]);
   try {
     log();
-    await cfnItem.updateResourceStack(path.normalize(path.join(backEndDir, providerName)), nestedStackFileName);
+    await cfnItem.updateResourceStack(transformedStackPath);
   } catch (error) {
     log(error);
     throw error;
@@ -688,14 +690,15 @@ function getCfnFiles(category: string, resourceName: string) {
   };
 }
 
-function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSAny, amplifyMeta: $TSMeta) {
+async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSAny, amplifyMeta: $TSMeta) {
   const promises = [];
 
   for (const { category, resourceName } of resourcesToBeUpdated) {
     const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
 
     for (const cfnFile of cfnFiles) {
-      promises.push(uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceName, amplifyMeta));
+      const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
+      promises.push(uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta));
     }
   }
 
@@ -704,21 +707,14 @@ function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSAny, am
 
   if (APIGatewayAuthURL) {
     const resourceDir = path.join((context.amplify.pathManager as any).getBackendDirPath(), 'api');
-    promises.push(uploadTemplateToS3(context, resourceDir, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`, 'api', '', null));
+    promises.push(uploadTemplateToS3(context, path.join(resourceDir, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`), 'api', '', null));
   }
 
   return Promise.all(promises);
 }
 
-async function uploadTemplateToS3(
-  context: $TSContext,
-  resourceDir: string,
-  cfnFile: string,
-  category: string,
-  resourceName: string,
-  amplifyMeta: $TSMeta | null,
-) {
-  const filePath = path.normalize(path.join(resourceDir, cfnFile));
+async function uploadTemplateToS3(context: $TSContext, filePath: string, category: string, resourceName: string, amplifyMeta: $TSMeta) {
+  const cfnFile = path.parse(filePath).base;
   const s3 = await S3.getInstance(context);
 
   const s3Params = {

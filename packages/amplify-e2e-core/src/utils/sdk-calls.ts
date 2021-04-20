@@ -45,6 +45,19 @@ export const bucketNotExists = async (bucket: string) => {
   }
 };
 
+export const getBucketEncryption = async (bucket: string) => {
+  const s3 = new S3();
+  const params = {
+    Bucket: bucket,
+  };
+  try {
+    const result = await s3.getBucketEncryption(params).promise();
+    return result.ServerSideEncryptionConfiguration;
+  } catch (err) {
+    throw new Error(`Error fetching SSE info for bucket ${bucket}. Underlying error was [${err.message}]`);
+  }
+};
+
 export const deleteS3Bucket = async (bucket: string) => {
   const s3 = new S3();
   let continuationToken: Required<Pick<S3.ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'>> = undefined;
