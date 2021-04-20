@@ -1,7 +1,6 @@
 import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
 import inquirer, { InputQuestion } from 'inquirer';
 import _ from 'lodash';
-import uuid from 'uuid';
 import { ServiceName } from '../utils/constants';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
 import {

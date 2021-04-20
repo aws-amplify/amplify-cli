@@ -3,6 +3,8 @@ import { convertProjectLayer } from './layerArnConverter';
 
 const LAYER_ARN_KEY = 'Fn::Sub';
 
+// convert project layers to external when changing env
+// only latest version layer will remain a project layer
 export const convertProjectLayersToExternalLayers = (lambdaLayers: LambdaLayer[], envName: string): LambdaLayer[] => {
   const modifiedLambdaLayers: LambdaLayer[] = [];
   lambdaLayers.forEach(layer => {
@@ -26,6 +28,9 @@ export const convertProjectLayersToExternalLayers = (lambdaLayers: LambdaLayer[]
   return modifiedLambdaLayers;
 };
 
+//This functions convert external layers to project layers if they belong to the env
+// exmaple Arn to convert external layers to project Layers when changing env
+// "Fn::Sub": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:layer:buildlayers8mytestinglayer1-dev:2"
 export const covertExternalLayersToProjectLayers = (lambdaLayers: LambdaLayer[], envName: string): LambdaLayer[] => {
   const modifiedLambdaLayers: LambdaLayer[] = [];
   lambdaLayers.forEach(layer => {

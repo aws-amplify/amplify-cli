@@ -69,29 +69,34 @@ export const askLayerSelection = async (
     const layerVersions = await loadLayerDataFromCloud(context, layerName);
     layerVersionArrPrompt = layerVersions.map(layerVersion => layerVersion.Version.toString());
     if (!layerVersionArrPrompt.length) {
-      layerVersionArrPrompt.push('1'); // new latest version if no layers are pushed
+      lambdaLayers.push({
+        type: 'ProjectLayer',
+        resourceName: layerName,
+        version: 1,
+        isLatestVersionSelected: true,
+        env: context.amplify.getEnvInfo().envName,
+      });
+    } else {
+      layerVersionArrPrompt.unshift(defaultlayerVersionPrompt);
+      const layerVersionPrompt: ListQuestion = {
+        type: 'list',
+        name: 'versionSelection',
+        message: versionSelectionPrompt(layerName),
+        choices: layerVersionArrPrompt,
+        default: defaultlayerVersionPrompt,
+      };
+      const versionSelection = (await inquirer.prompt(layerVersionPrompt)).versionSelection;
+      const isLatestVersionSelected = versionSelection.toString() === defaultlayerVersionPrompt ? true : false;
+      const selectedVersion = versionSelection.toString() === defaultlayerVersionPrompt ? layerVersionArrPrompt[1] : versionSelection;
+      lambdaLayers.push({
+        type: 'ProjectLayer',
+        resourceName: layerName,
+        version: selectedVersion,
+        isLatestVersionSelected: isLatestVersionSelected,
+        env: context.amplify.getEnvInfo().envName,
+      });
     }
 
-    layerVersionArrPrompt.unshift(defaultlayerVersionPrompt);
-    const layerVersionPrompt: ListQuestion = {
-      type: 'list',
-      name: 'versionSelection',
-      message: versionSelectionPrompt(layerName),
-      choices: layerVersionArrPrompt,
-      default: defaultlayerVersionPrompt,
-    };
-
-    const versionSelection = (await inquirer.prompt(layerVersionPrompt)).versionSelection;
-    const isLatestVersionSelected = versionSelection.toString() === defaultlayerVersionPrompt ? true : false;
-    const selectedVersion = versionSelection.toString() === defaultlayerVersionPrompt ? layerVersionArrPrompt[1] : versionSelection;
-
-    lambdaLayers.push({
-      type: 'ProjectLayer',
-      resourceName: layerName,
-      version: selectedVersion,
-      isLatestVersionSelected: isLatestVersionSelected,
-      env: context.amplify.getEnvInfo().envName,
-    });
     dependsOn.push({
       category,
       resourceName: layerName,

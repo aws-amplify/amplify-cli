@@ -17,7 +17,6 @@ import {
 import { merge } from '../utils/funcParamsUtils';
 import { runtimeWalkthrough, templateWalkthrough } from '../utils/functionPluginLoader';
 import { convertLambdaLayerMetaToLayerCFNArray } from '../utils/layerArnConverter';
-import { layerAccountAccessPrompt } from '../utils/layerHelpers';
 import { loadFunctionParameters } from '../utils/loadFunctionParameters';
 import {
   fetchPermissionCategories,
@@ -353,10 +352,10 @@ export function migrate(context: $TSContext, projectPath: string, resourceName: 
   JSONUtilities.writeJson(cfnFilePath, newCfn);
 }
 
-const addLayerCFNParameters = (context, functionParameters: Partial<FunctionParameters>, resourceDirPath) => {
+const addLayerCFNParameters = (context: $TSContext, functionParameters: Partial<FunctionParameters>, resourceDirPath: string) => {
   const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
-  const cfnContent: any = JSONUtilities.readJson(cfnFilePath);
+  const cfnContent = JSONUtilities.readJson<$TSAny>(cfnFilePath);
   functionParameters.lambdaLayers.forEach(layer => {
     const resourceName = _.get(layer as ProjectLayer, ['resourceName'], null);
     if (resourceName) {
