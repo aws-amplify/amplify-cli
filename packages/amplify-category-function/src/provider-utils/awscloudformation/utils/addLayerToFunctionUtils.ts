@@ -66,6 +66,7 @@ export const askLayerSelection = async (
   for await (let layerName of layerSelections) {
     const layerVersions = await loadLayerDataFromCloud(context, layerName);
     const layerVersionArrPrompt = layerVersions.map(layerVersion => layerVersion.Version.toString());
+    console.log(layerVersionArrPrompt);
     // skip asking version for a new layer
     if (Array.isArray(layerVersionArrPrompt) && layerVersionArrPrompt.length) {
       layerVersionArrPrompt.unshift(defaultLayerVersionPrompt);
@@ -90,7 +91,7 @@ export const askLayerSelection = async (
       lambdaLayers.push({
         type: 'ProjectLayer',
         resourceName: layerName,
-        version: 1,
+        version: defaultLayerVersionPrompt,
         isLatestVersionSelected: true,
         env: context.amplify.getEnvInfo().envName,
       });

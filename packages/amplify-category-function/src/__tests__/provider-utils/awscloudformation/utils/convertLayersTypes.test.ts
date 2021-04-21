@@ -86,3 +86,26 @@ describe('convert ExternalLayer when checkout env if required', () => {
     expect(covertExternalLayersToProjectLayers(lambdaLayers, envName)).toMatchSnapshot();
   });
 });
+
+describe('convert Both Layer', () => {
+  const envName = 'dev';
+  const lambdaLayers: LambdaLayer[] = [
+    {
+      type: 'ExternalLayer',
+      arn: {
+        'Fn::Sub': 'arn:aws:lambda:mockRegion:mockaccountId:layer:mocklayer2-dev:2',
+      },
+    },
+    {
+      type: 'ProjectLayer',
+      resourceName: 'mocklayer4',
+      version: 4,
+      isLatestVersionSelected: true,
+      env: 'staging',
+    },
+  ];
+  test('when add/checkout to same env', () => {
+    expect(convertProjectLayersToExternalLayers(lambdaLayers, envName)).toMatchSnapshot();
+    expect(covertExternalLayersToProjectLayers(lambdaLayers, envName)).toMatchSnapshot();
+  });
+});

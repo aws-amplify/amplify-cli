@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`convert Both Layer when add/checkout to same env 1`] = `
+Array [
+  Object {
+    "env": "dev",
+    "isLatestVersionSelected": true,
+    "resourceName": "mocklayer4",
+    "type": "ProjectLayer",
+    "version": 4,
+  },
+]
+`;
+
+exports[`convert Both Layer when add/checkout to same env 2`] = `
+Array [
+  Object {
+    "env": "dev",
+    "isLatestVersionSelected": false,
+    "resourceName": "mocklayer2",
+    "type": "ProjectLayer",
+    "version": 2,
+  },
+]
+`;
+
 exports[`convert ExternalLayer when checkout env if required when add/checkout to env 1`] = `
 Array [
   Object {

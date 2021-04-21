@@ -215,7 +215,7 @@ export type LambdaLayer = ProjectLayer | ExternalLayer;
 export interface ProjectLayer {
   type: 'ProjectLayer';
   resourceName: string;
-  version: number;
+  version: number | string;
   isLatestVersionSelected: boolean;
   env: string;
 }

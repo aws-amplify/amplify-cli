@@ -10,22 +10,24 @@ const LAYER_ARN_KEY = 'Fn::Sub';
 export const convertProjectLayersToExternalLayers = (lambdaLayers: LambdaLayer[], envName: string): LambdaLayer[] => {
   const modifiedLambdaLayers: LambdaLayer[] = [];
   lambdaLayers.forEach(layer => {
-    if (layer.type === projectLayer && layer.env !== envName && !layer.isLatestVersionSelected) {
-      const convertLayer: ExternalLayer = {
-        type: externalLayer,
-        arn: convertProjectLayer(layer, envName),
-      };
-      modifiedLambdaLayers.push(convertLayer);
-    } else {
-      const typedProjectLayer = <ProjectLayer>layer;
-      const convertLayer: ProjectLayer = {
-        type: projectLayer,
-        resourceName: typedProjectLayer.resourceName,
-        version: typedProjectLayer.version,
-        isLatestVersionSelected: true,
-        env: envName,
-      };
-      modifiedLambdaLayers.push(convertLayer);
+    if (layer.type === projectLayer) {
+      if (layer.env !== envName && !layer.isLatestVersionSelected) {
+        const convertLayer: ExternalLayer = {
+          type: externalLayer,
+          arn: convertProjectLayer(layer, layer.env),
+        };
+        modifiedLambdaLayers.push(convertLayer);
+      } else {
+        const typedProjectLayer = <ProjectLayer>layer;
+        const convertLayer: ProjectLayer = {
+          type: projectLayer,
+          resourceName: typedProjectLayer.resourceName,
+          version: typedProjectLayer.version,
+          isLatestVersionSelected: true,
+          env: envName,
+        };
+        modifiedLambdaLayers.push(convertLayer);
+      }
     }
   });
   return modifiedLambdaLayers;
