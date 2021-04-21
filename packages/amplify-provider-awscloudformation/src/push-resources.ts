@@ -43,7 +43,7 @@ import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/c
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
-import { prePushLambdaLayerPrompt } from './prePushLambdaLayerPrompt';
+import { postPushLambdaLayerCleanUp, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
 
 const logger = fileLogger('push-resources');
 
@@ -328,6 +328,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     // Store current cloud backend in S3 deployment bcuket
     await storeCurrentCloudBackend(context);
+    await postPushLambdaLayerCleanUp(context, resources, projectDetails.localEnvInfo.envName);
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
 
     //check for auth resources and remove deployment secret for push
