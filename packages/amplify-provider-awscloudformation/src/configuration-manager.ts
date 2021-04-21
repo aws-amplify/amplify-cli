@@ -128,7 +128,7 @@ const updatePermissionBoundaryArn = async (context: $TSContext) => {
     default: getPermissionBoundaryArn(),
     validate: context.amplify.inputValidation({
       operator: 'regex',
-      value: '^(|arn:aws:iam::(d{12}|aws):policy/.+)$',
+      value: '^(|arn:aws:iam::(\\d{12}|aws):policy/.+)$',
       onErrorMsg: 'Specify a valid IAM Policy ARN',
       required: false,
     }),
