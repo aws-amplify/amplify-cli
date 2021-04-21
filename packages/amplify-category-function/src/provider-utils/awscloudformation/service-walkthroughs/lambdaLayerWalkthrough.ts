@@ -41,7 +41,7 @@ export async function createLayerWalkthrough(
     runtimePluginId: val.runtimePluginId,
   })) as LayerRuntime[];
 
-  let layerInputParameters: LayerInputParams = {};
+  const layerInputParameters: LayerInputParams = {};
   _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion()));
 
   for (const permission of layerInputParameters.layerPermissions) {
@@ -74,7 +74,6 @@ export async function updateLayerWalkthrough(
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
-
   if (resources.length === 1) {
     parameters.layerName = resources[0];
   } else if (lambdaToUpdate && resources.includes(lambdaToUpdate)) {

@@ -268,28 +268,7 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
       await addLayersToFunctionWalkthrough(context, { value: functionRuntime }, currentFunctionParameters.lambdaLayers, true),
     );
     // writing to the CFN here because it's done above for the schedule and the permissions but we should really pull all of it into another function
-    const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
-    const cfnFilePath = path.join(resourceDirPath, cfnFileName);
-    const cfnContent: any = JSONUtilities.readJson(cfnFilePath);
-
-    // check for layer parameters if not added
-    functionParameters.lambdaLayers.forEach(layer => {
-      const resourceName = _.get(layer as ProjectLayer, ['resourceName'], null);
-      if (resourceName) {
-        const param: string = `function${resourceName}Arn`;
-        if (cfnContent.Parameters[`${param}`] === undefined) {
-          cfnContent.Parameters[`${param}`] = {
-            Type: 'String',
-            Default: `${param}`,
-          };
-        }
-      }
-    });
-    cfnContent.Resources.LambdaFunction.Properties.Layers = convertLambdaLayerMetaToLayerCFNArray(
-      functionParameters.lambdaLayers,
-      context.amplify.getEnvInfo().envName,
-    );
-    JSONUtilities.writeJson(cfnFilePath, cfnContent);
+    addLayerCFNParameters(context, functionParameters, resourceDirPath);
   }
   // consolidate dependsOn as above logic is overwriting
   const projectMeta = stateManager.getMeta();
@@ -372,3 +351,26 @@ export function migrate(context: $TSContext, projectPath: string, resourceName: 
 
   JSONUtilities.writeJson(cfnFilePath, newCfn);
 }
+
+const addLayerCFNParameters = (context: $TSContext, functionParameters: Partial<FunctionParameters>, resourceDirPath: string) => {
+  const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
+  const cfnFilePath = path.join(resourceDirPath, cfnFileName);
+  const cfnContent = JSONUtilities.readJson<$TSAny>(cfnFilePath);
+  functionParameters.lambdaLayers.forEach(layer => {
+    const resourceName = _.get(layer as ProjectLayer, ['resourceName'], null);
+    if (resourceName) {
+      const param: string = `function${resourceName}Arn`;
+      if (cfnContent.Parameters[param] === undefined) {
+        cfnContent.Parameters[param] = {
+          Type: 'String',
+          Default: param,
+        };
+      }
+    }
+  });
+  cfnContent.Resources.LambdaFunction.Properties.Layers = convertLambdaLayerMetaToLayerCFNArray(
+    functionParameters.lambdaLayers,
+    context.amplify.getEnvInfo().envName,
+  );
+  JSONUtilities.writeJson(cfnFilePath, cfnContent);
+};
