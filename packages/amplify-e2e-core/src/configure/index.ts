@@ -115,8 +115,8 @@ export function amplifyConfigureProject(settings: {
         if (authenticationOption === authenticationOptions[0]) {
           chain.wait('Please choose the profile you want to use').sendCarriageReturn(); // Default profile
         } else if (authenticationOption === authenticationOptions[1]) {
-          chain.wait('accessKeyId:').sendLine('FAKEACCESSKEYID12345');
-          chain.wait('secretAccessKey:').sendLine('FAKESECRETACCESSKEY123456789012345678901');
+          chain.wait('accessKeyId:').sendLine(process.env.AWS_ACCESS_KEY_ID);
+          chain.wait('secretAccessKey:').sendLine(process.env.AWS_SECRET_ACCESS_KEY);
           chain.wait('region:');
           singleSelect(chain, region, amplifyRegions);
         }
