@@ -306,6 +306,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     // Store current cloud backend in S3 deployment bcuket
     await storeCurrentCloudBackend(context);
+    await postPushLambdaLayerCleanUp(context, resources, projectDetails.localEnvInfo.envName);
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
 
     //check for auth resources and remove deployment secret for push

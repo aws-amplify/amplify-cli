@@ -15,10 +15,7 @@ import { ServiceName } from './provider-utils/awscloudformation/utils/constants'
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 import { checkContentChanges } from './provider-utils/awscloudformation/utils/packageLayer';
-import {
-  deleteLayerVersionToBeRemovedByCfn,
-  saveLayerVersionToBeRemovedByCfn,
-} from './provider-utils/awscloudformation/utils/layerConfiguration';
+import { deleteLayerVersionToBeRemovedByCfn } from './provider-utils/awscloudformation/utils/layerConfiguration';
 
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 
