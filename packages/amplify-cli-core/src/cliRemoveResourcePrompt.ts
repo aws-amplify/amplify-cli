@@ -11,6 +11,6 @@ export async function promptConfirmationRemove(context: $TSContext, serviceType?
       'Are you sure you want to unlink this imported resource from this Amplify backend environment? The imported resource itself will not be deleted.';
   }
 
-  const confirm = (context.input.options && context.input.options.yes) || (await context.amplify.confirmPrompt(promptText));
+  const confirm = context.input.options?.yes || (await context.amplify.confirmPrompt(promptText));
   return confirm;
 }

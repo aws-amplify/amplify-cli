@@ -5,15 +5,19 @@ import inquirer, { QuestionCollection } from 'inquirer';
 import ora from 'ora';
 import _ from 'lodash';
 import chalk from 'chalk';
-import { saveLayerVersionSkip } from '../utils/layerConfiguration';
+import { saveLayerVersionToBeRemovedByCfn } from '../utils/layerConfiguration';
 
 const removeLayerQuestion = 'Choose the Layer versions you want to remove.';
 export async function removeWalkthrough(context: $TSContext, layerName: string) {
-  // if the layer hasn't been pushed return and remove it
-
   const allLayerVersions = await loadLayerDataFromCloud(context, layerName);
+
+  // if the layer hasn't been pushed return and remove it
+  if (allLayerVersions.length === 0) {
+    return layerName;
+  }
   const { versions } = await inquirer.prompt(question(allLayerVersions));
   const selectedLayerVersion = versions as LayerVersionMetadata[];
+
   //if nothing is selected return;
   if (selectedLayerVersion.length === 0) {
     return;
@@ -44,7 +48,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string) 
     legacyLayerSelectedVersions.map(r => r.Version),
   );
   const { envName } = stateManager.getLocalEnvInfo();
-  saveLayerVersionSkip(
+  saveLayerVersionToBeRemovedByCfn(
     layerName,
     newLayerSelectedVersions.map(r => r.Version),
     envName,

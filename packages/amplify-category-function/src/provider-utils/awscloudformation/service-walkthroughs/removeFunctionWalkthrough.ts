@@ -24,6 +24,7 @@ export async function removeResource(resourceName?: string): Promise<$TSAny> {
 
   return answer.resource;
 }
+
 function getEnabledResources(): { name: string; value: { resourceName: string; isLambdaLayer: boolean } }[] {
   const amplifyMeta = stateManager.getMeta();
   return getAmplifyResourceByCategories(category).map(resource => {

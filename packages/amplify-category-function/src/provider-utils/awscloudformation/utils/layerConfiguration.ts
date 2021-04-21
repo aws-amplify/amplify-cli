@@ -1,7 +1,7 @@
-import { $TSAny, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import path from 'path';
-import { categoryName, skipVersionsField } from './constants';
+import { categoryName, skipVersionsField, ephemeralField } from './constants';
 import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
 export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes' | 'description'>;
@@ -34,16 +34,23 @@ export function saveLayerRuntimes(layerDirPath: string, runtimes: LayerRuntime[]
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 
-export function getLayerVersionSkip(layerName: string, envName: string): number[] {
+export function getLayerVersionToBeRemovedByCfn(layerName: string, envName: string): number[] {
   const layerConfigFilePath = getLayerDirPath(layerName);
   const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
-  return _.get<number[]>(layerConfig, [skipVersionsField, envName], []);
+  return _.get<number[]>(layerConfig, [ephemeralField, skipVersionsField, envName], []);
 }
 
-export function saveLayerVersionSkip(layerName: string, skipVersions: number[], envName: string) {
+export function deleteLayerVersionToBeRemovedByCfn(layerName: string, envName: string) {
   const layerConfigFilePath = getLayerDirPath(layerName);
   const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
-  _.set(layerConfig, [skipVersionsField, envName], skipVersions);
+  recursiveOmit(layerConfig, [ephemeralField, skipVersionsField, envName]);
+  JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+}
+
+export function saveLayerVersionToBeRemovedByCfn(layerName: string, skipVersions: number[], envName: string) {
+  const layerConfigFilePath = getLayerDirPath(layerName);
+  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  _.set(layerConfig, [ephemeralField, skipVersionsField, envName], skipVersions);
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 

@@ -51,7 +51,7 @@ function validateOutput(layerCfn) {
 }
 
 describe('test layer CFN generation functions', () => {
-  let generateLayerCfnObj = null;
+  let generateLayerCfnObj;
   beforeAll(() => {
     jest.mock('amplify-cli-core', () => ({
       stateManager: {

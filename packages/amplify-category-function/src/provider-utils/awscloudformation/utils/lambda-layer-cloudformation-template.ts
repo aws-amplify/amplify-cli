@@ -3,7 +3,7 @@ import { DeletionPolicy, Fn, IntrinsicFunction, Refs } from 'cloudform-types';
 import Lambda from 'cloudform-types/types/lambda';
 import _ from 'lodash';
 import uuid from 'uuid';
-import { getLayerVersionSkip } from './layerConfiguration';
+import { getLayerVersionToBeRemovedByCfn } from './layerConfiguration';
 import { isMultiEnvLayer } from './layerHelpers';
 import { LayerParameters, LayerPermission, LayerVersionCfnMetadata, PermissionEnum } from './layerParams';
 
@@ -30,7 +30,7 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
   };
   const cfnObj = getLayerCfnObjBase();
   const { envName } = stateManager.getLocalEnvInfo();
-  const layerVersions = getLayerVersionSkip(parameters.layerName, envName);
+  const layerVersions = getLayerVersionToBeRemovedByCfn(parameters.layerName, envName);
   const skipLayerVersionSet = new Set<number>(layerVersions);
 
   for (const layerVersion of versionList.filter(r => !r.LegacyLayer && !skipLayerVersionSet.has(r.Version))) {
