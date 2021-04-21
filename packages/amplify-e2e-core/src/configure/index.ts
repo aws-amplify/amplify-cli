@@ -115,8 +115,8 @@ export function amplifyConfigureProject(settings: {
         if (authenticationOption === authenticationOptions[0]) {
           chain.wait('Please choose the profile you want to use').sendCarriageReturn(); // Default profile
         } else if (authenticationOption === authenticationOptions[1]) {
-          chain.wait('accessKeyId:').sendLine('fake-access-key-id');
-          chain.wait('secretAccessKey:').sendLine('fake-secret-access-key');
+          chain.wait('accessKeyId:').sendLine('FAKEACCESSKEYID12345');
+          chain.wait('secretAccessKey:').sendLine('FAKESECRETACCESSKEY123456789012345678901');
           chain.wait('region:');
           singleSelect(chain, region, amplifyRegions);
         }
