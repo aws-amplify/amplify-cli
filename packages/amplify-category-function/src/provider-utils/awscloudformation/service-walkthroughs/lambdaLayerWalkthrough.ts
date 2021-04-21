@@ -27,7 +27,7 @@ export async function createLayerWalkthrough(
     .projectConfig.projectName.toLowerCase()
     .replace(/[^a-zA-Z0-9]/gi, '');
   let { layerName } = await inquirer.prompt(layerNameQuestion(projectName));
-  parameters.layerName = `${projectName}-${layerName}`; // prefix with project name
+  parameters.layerName = `${projectName}${layerName}`; // prefix with project name
 
   const runtimeReturn = await runtimeWalkthrough(context, parameters);
 

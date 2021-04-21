@@ -43,7 +43,7 @@ import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
-import { prePushLambdaLayerPrompt } from './prePushLambdaLayerPrompt';
+import { postPushLambdaLayerCleanUp, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
 const logger = fileLogger('push-resources');
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
@@ -306,6 +306,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     // Store current cloud backend in S3 deployment bcuket
     await storeCurrentCloudBackend(context);
+    await postPushLambdaLayerCleanUp(context, resources, projectDetails.localEnvInfo.envName);
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
 
     //check for auth resources and remove deployment secret for push

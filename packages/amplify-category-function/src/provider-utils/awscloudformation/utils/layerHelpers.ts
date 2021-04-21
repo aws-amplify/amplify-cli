@@ -38,14 +38,14 @@ export function layerNameQuestion(projectName: string): InputQuestion {
       const meta = stateManager.getMeta();
       if (!/^[a-zA-Z0-9-_]{1,87}$/.test(input)) {
         return 'Lambda layer names must be 1-87 characters long. Only alphanumeric, -, and _ characters supported.';
-      } else if (meta?.function?.input || meta?.function?.[`${projectName}-${input}`]) {
+      } else if (meta?.function?.input || meta?.function?.[`${projectName}${input}`]) {
         return `A Lambda layer with the name ${input} already exists in this project.`;
       }
       return true;
     },
     default: () => {
       const [shortId] = uuid().split('-');
-      return `layer-${shortId}`;
+      return `layer${shortId}`;
     },
   };
 }
@@ -210,6 +210,11 @@ export function isMultiEnvLayer(layerName: string) {
   return !fs.existsSync(layerParametersPath);
 }
 
+export function getLayerName(context: $TSContext, layerName: string): string {
+  const { envName }: { envName: string } = context.amplify.getEnvInfo();
+  return isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName;
+}
+
 export async function loadLayerDataFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
   const spinner = ora('Loading layer data from the cloud...').start();
   let layerMetadata: LayerVersionMetadata[];
@@ -271,6 +276,8 @@ export async function loadLayerDataFromCloud(context: $TSContext, layerName: str
             });
           }
         });
+      // temp logic for determining if legacy layer
+      layerVersion.LegacyLayer = !layerVersion.permissions || !layerVersion.LogicalName;
     });
     layerMetadata = layerVersionList;
   } catch (e) {

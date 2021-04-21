@@ -1,7 +1,9 @@
+import { stateManager } from 'amplify-cli-core';
 import { DeletionPolicy, Fn, IntrinsicFunction, Refs } from 'cloudform-types';
 import Lambda from 'cloudform-types/types/lambda';
 import _ from 'lodash';
 import uuid from 'uuid';
+import { getLayerVersionToBeRemovedByCfn } from './layerConfiguration';
 import { isMultiEnvLayer } from './layerHelpers';
 import { LayerParameters, LayerPermission, LayerVersionCfnMetadata, PermissionEnum } from './layerParams';
 
@@ -15,7 +17,7 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
   if (isNewVersion) {
     const [shortId] = uuid().split('-');
     logicalName = `LambdaLayerVersion${shortId}`;
-    versionList.push({ LogicalName: logicalName });
+    versionList.push({ LogicalName: logicalName, LegacyLayer: false });
   } else {
     logicalName = versionList[versionList.length - 1].LogicalName;
   }
@@ -27,7 +29,11 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
     },
   };
   const cfnObj = getLayerCfnObjBase();
-  for (const layerVersion of versionList) {
+  const { envName } = stateManager.getLocalEnvInfo();
+  const layerVersions = getLayerVersionToBeRemovedByCfn(parameters.layerName, envName);
+  const skipLayerVersionSet = new Set<number>(layerVersions);
+
+  for (const layerVersion of versionList.filter(r => !r.LegacyLayer && !skipLayerVersionSet.has(r.Version))) {
     cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion);
     const shortId = layerVersion.LogicalName.replace('LambdaLayerVersion', '');
     const permissionObjects = constructLayerVersionPermissionObjects(layerVersion, parameters, shortId);

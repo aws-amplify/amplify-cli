@@ -1,7 +1,15 @@
 import * as path from 'path';
 import * as inquirer from 'inquirer';
 import _ from 'lodash';
-import { stateManager, $TSContext, pathManager, ResourceDoesNotExistError, MissingParametersError, exitOnNextTick } from 'amplify-cli-core';
+import {
+  stateManager,
+  $TSContext,
+  pathManager,
+  ResourceDoesNotExistError,
+  MissingParametersError,
+  exitOnNextTick,
+  promptConfirmationRemove,
+} from 'amplify-cli-core';
 import { updateBackendConfigAfterResourceRemove } from './update-backend-config';
 import { removeResourceParameters } from './envResourceParams';
 
@@ -91,17 +99,7 @@ export async function removeResource(
 
   const resourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
 
-  let promptText =
-    'Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.';
-
-  // For imported resources we have to show a different message to ensure customers that resource
-  // will NOT be deleted in the cloud.
-  if (serviceType === 'imported') {
-    promptText =
-      'Are you sure you want to unlink this imported resource from this Amplify backend environment? The imported resource itself will not be deleted.';
-  }
-
-  const confirm = (context.input.options && context.input.options.yes) || (await context.amplify.confirmPrompt(promptText));
+  const confirm = await promptConfirmationRemove(context, serviceType);
 
   if (!confirm) {
     return;

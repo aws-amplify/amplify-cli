@@ -1,5 +1,6 @@
 import { DeploymentSecrets } from '.';
 import _ from 'lodash';
+import { recursiveOmit } from './utils/recursiveOmit';
 
 export const mergeDeploymentSecrets = (deploymentSecretsModifier: deploymentSecretMerge): DeploymentSecrets => {
   const { currentDeploymentSecrets, category, rootStackId, envName, resource, keyName, value } = deploymentSecretsModifier;
@@ -23,24 +24,6 @@ export const removeFromDeploymentSecrets = (deploymentSecretsModifier: deploymen
     }
   }
   return currentDeploymentSecrets;
-};
-const recursiveOmit = (obj: any, path: Array<string>): void => {
-  if (path.length === 0) return;
-  const currentKey = path[0];
-  if (path.length === 1 && !!obj[currentKey]) {
-    delete obj[currentKey];
-    return;
-  }
-
-  if (!obj[currentKey]) {
-    return;
-  }
-
-  recursiveOmit(obj[currentKey], path.slice(1));
-
-  if (obj[currentKey] && _.isEmpty(obj[currentKey])) {
-    delete obj[currentKey];
-  }
 };
 
 type deploymentSecretMerge = deploymentSecretsRemove & { value: string };

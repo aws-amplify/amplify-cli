@@ -9,7 +9,7 @@ import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { isMultiEnvLayer, isNewVersion, loadLayerDataFromCloud, loadPreviousLayerHash } from './layerHelpers';
 import { createLayerConfiguration, saveLayerDescription, saveLayerPermissions } from './layerConfiguration';
-import { LayerParameters, LayerRuntime } from './layerParams';
+import { LayerParameters, LayerRuntime, LayerVersionMetadata } from './layerParams';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
@@ -161,7 +161,7 @@ function copyTemplateFiles(context: $TSContext, parameters: FunctionParameters |
   context.amplify.copyBatch(context, [cloudTemplateJob], copyJobParams, false);
 }
 
-function ensureLayerFolders(parameters: LayerParameters) {
+export function ensureLayerFolders(parameters: LayerParameters) {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const layerDirPath = path.join(projectBackendDirPath, categoryName, parameters.layerName);
   fs.ensureDirSync(path.join(layerDirPath, 'opt'));
@@ -194,10 +194,7 @@ async function updateLayerCfnFile(context: $TSContext, parameters: LayerParamete
     layerVersionList = await loadLayerDataFromCloud(context, parameters.layerName);
   }
   const _isNewVersion = await isNewVersion(parameters.layerName);
-  JSONUtilities.writeJson(
-    path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
-    generateLayerCfnObj(_isNewVersion, parameters, layerVersionList),
-  );
+  saveCFNFileWithLayerVersion(layerDirPath, parameters, _isNewVersion, layerVersionList);
 }
 
 const setParametersInAmplifyMeta = (layerName: string, parameters: LayerMetaAndBackendConfigParams) => {
@@ -291,4 +288,16 @@ function createBreadcrumbs(params: FunctionParameters | FunctionTriggerParameter
     useLegacyBuild: params.runtime.value === 'nodejs' ? true : false, // so we can update node builds in the future
     defaultEditorFile: params.functionTemplate.defaultEditorFile,
   };
+}
+
+export function saveCFNFileWithLayerVersion(
+  layerDirPath: string,
+  parameters: LayerParameters,
+  _isNewVersion: boolean,
+  layerVersionList: LayerVersionMetadata[],
+) {
+  JSONUtilities.writeJson(
+    path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
+    generateLayerCfnObj(_isNewVersion, parameters, layerVersionList),
+  );
 }
