@@ -1,7 +1,7 @@
-import { $TSAny, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import path from 'path';
-import { categoryName } from './constants';
+import { categoryName, skipVersionsField, ephemeralField } from './constants';
 import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
 export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes' | 'description'>;
@@ -34,6 +34,26 @@ export function saveLayerRuntimes(layerDirPath: string, runtimes: LayerRuntime[]
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 
+export function getLayerVersionToBeRemovedByCfn(layerName: string, envName: string): number[] {
+  const layerConfigFilePath = getLayerDirPath(layerName);
+  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  return _.get<number[]>(layerConfig, [ephemeralField, skipVersionsField, envName], []);
+}
+
+export function deleteLayerVersionToBeRemovedByCfn(layerName: string, envName: string) {
+  const layerConfigFilePath = getLayerDirPath(layerName);
+  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  recursiveOmit(layerConfig, [ephemeralField, skipVersionsField, envName]);
+  JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+}
+
+export function saveLayerVersionToBeRemovedByCfn(layerName: string, skipVersions: number[], envName: string) {
+  const layerConfigFilePath = getLayerDirPath(layerName);
+  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  _.set(layerConfig, [ephemeralField, skipVersionsField, envName], skipVersions);
+  JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+}
+
 export function saveLayerPermissions(layerDirPath: string, permissions: LayerPermission[] = [{ type: PermissionEnum.Private }]) {
   const layerConfigFilePath = path.join(layerDirPath, layerConfigurationFileName);
   const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
@@ -51,6 +71,11 @@ export function saveLayerDescription(layerName: string, description?: string) {
 function getLayerDescription(layerName: string): string {
   const { description } = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
   return description;
+}
+function getLayerDirPath(layerName: string): string {
+  const backendDirPath = pathManager.getBackendDirPath();
+  const layerConfigFilePath = path.join(backendDirPath, categoryName, layerName, layerConfigurationFileName);
+  return layerConfigFilePath;
 }
 
 export function loadLayerConfigurationFile(backendDirPath: string, layerName: string) {
