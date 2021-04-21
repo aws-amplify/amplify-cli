@@ -55,6 +55,8 @@ const previousSelectionsStub: LambdaLayer[] = [
     type: 'ProjectLayer',
     resourceName: 'aLayer',
     version: 2,
+    isLatestVersionSelected: false,
+    env: 'mockEnv',
   },
 ];
 
@@ -136,7 +138,7 @@ describe('layer selection question', () => {
     }));
 
     await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
-    expect((inquirer_mock.prompt.mock.calls[1][0] as ListQuestion).default).toBe('2');
+    expect((inquirer_mock.prompt.mock.calls[1][0] as ListQuestion).default).toBe('Always choose latest version');
   });
 
   it('returns the selected layers', async () => {
@@ -153,6 +155,8 @@ describe('layer selection question', () => {
         type: 'ProjectLayer',
         resourceName: 'aLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
     ];
     const expectedDependsOn: FunctionDependency[] = [
@@ -224,11 +228,15 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ProjectLayer',
         resourceName: 'anotherLayer',
         version: 1,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
     ];
 
@@ -237,6 +245,8 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ExternalLayer',
@@ -259,11 +269,15 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ProjectLayer',
         resourceName: 'anotherLayer',
         version: 1,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
     ];
 
@@ -272,11 +286,15 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ProjectLayer',
         resourceName: 'anotherLayer',
         version: 1,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ExternalLayer',

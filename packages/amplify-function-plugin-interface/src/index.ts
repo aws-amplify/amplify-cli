@@ -215,12 +215,14 @@ export type LambdaLayer = ProjectLayer | ExternalLayer;
 export interface ProjectLayer {
   type: 'ProjectLayer';
   resourceName: string;
-  version: number;
+  version: number | string;
+  isLatestVersionSelected: boolean;
+  env: string;
 }
 
 export interface ExternalLayer {
   type: 'ExternalLayer';
-  arn: string;
+  arn: string | { 'Fn::Sub': string } | { Ref: string };
 }
 
 interface FunctionContributorCondition {

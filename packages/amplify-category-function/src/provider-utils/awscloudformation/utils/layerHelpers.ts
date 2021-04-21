@@ -280,6 +280,7 @@ export async function loadLayerDataFromCloud(context: $TSContext, layerName: str
       layerVersion.LegacyLayer = !layerVersion.permissions || !layerVersion.LogicalName;
     });
     layerMetadata = layerVersionList;
+    layerMetadata.sort((a, b) => (a.Version > b.Version ? -1 : 1));
   } catch (e) {
     // TODO error handling
     spinner.fail();

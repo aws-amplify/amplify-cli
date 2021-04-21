@@ -29,8 +29,8 @@ export function createFunctionResources(context: $TSContext, parameters: Functio
 
 export const createLayerArtifacts = (context: $TSContext, parameters: LayerParameters): string => {
   const layerDirPath = ensureLayerFolders(parameters);
-  createLayerState(parameters, layerDirPath);
   createLayerCfnFile(parameters, layerDirPath);
+  createLayerState(parameters, layerDirPath);
   addLayerToAmplifyMeta(context, parameters);
   return layerDirPath;
 };

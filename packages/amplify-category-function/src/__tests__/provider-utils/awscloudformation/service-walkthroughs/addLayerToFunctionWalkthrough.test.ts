@@ -81,11 +81,15 @@ const layerSelectionStub: LambdaLayer[] = [
     type: 'ProjectLayer',
     resourceName: 'myLayer',
     version: 10,
+    isLatestVersionSelected: false,
+    env: 'mockEnv',
   },
   {
     type: 'ProjectLayer',
     resourceName: 'anotherLayer',
     version: 123498,
+    isLatestVersionSelected: false,
+    env: 'mockEnv',
   },
 ];
 

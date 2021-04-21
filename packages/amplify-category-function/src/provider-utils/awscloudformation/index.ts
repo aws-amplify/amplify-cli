@@ -1,5 +1,11 @@
 import { $TSAny, $TSContext, JSONUtilities, open, pathManager, stateManager } from 'amplify-cli-core';
-import { FunctionParameters, FunctionTemplate, FunctionTriggerParameters, ProviderContext } from 'amplify-function-plugin-interface';
+import {
+  FunctionParameters,
+  FunctionTemplate,
+  FunctionTriggerParameters,
+  LambdaLayer,
+  ProviderContext,
+} from 'amplify-function-plugin-interface';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
@@ -19,6 +25,7 @@ import {
   saveMutableState,
   updateLayerArtifacts,
 } from './utils/storeResources';
+import { convertProjectLayersToExternalLayers, covertExternalLayersToProjectLayers } from './utils/convertLayersTypes';
 
 /**
  * Entry point for creating a new function
@@ -343,13 +350,21 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
       envParams = await initTriggerEnvs(context, resourceParams, providerPlugin, envParams, srvcMetaData);
     }
 
+    if (Array.isArray(resourceParams.lambdaLayers) && resourceParams.lambdaLayers.length) {
+      const envName = context.amplify.getEnvInfo().envName;
+      const modifiedLambdaLayers: LambdaLayer[] = [];
+      modifiedLambdaLayers.push(...convertProjectLayersToExternalLayers(resourceParams.lambdaLayers, envName));
+      modifiedLambdaLayers.push(...covertExternalLayersToProjectLayers(resourceParams.lambdaLayers, envName));
+      resourceParams.lambdaLayers = modifiedLambdaLayers;
+      JSONUtilities.writeJson(functionParametersPath, resourceParams);
+    }
+
     return envParams;
   } else if (isMultiEnvLayer(resourceName) && service === ServiceName.LambdaLayer) {
     const projectPath = pathManager.findProjectRoot();
     const currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
     const amplifyMeta = stateManager.getMeta(projectPath);
     const currentCloudVersionHash: string = _.get(currentAmplifyMeta, [categoryName, resourceName, 'versionHash'], undefined);
-
     if (currentCloudVersionHash) {
       _.set(amplifyMeta, [categoryName, resourceName, 'versionHash'], currentCloudVersionHash);
     }

@@ -230,7 +230,7 @@ describe('add function with layers for runtime nodeJS', () => {
       functionName,
       `
       const fs = require('fs');
-      const upperCaseModule = require('${settings.layerName}');
+      const upperCaseModule = require('upper-case');
       exports.handler = async (event) => {
         const data = fs.readFileSync('/opt/data.txt')
         const response = {
