@@ -1,9 +1,11 @@
 import { $TSContext, $TSObject, FeatureFlags, JSONUtilities, pathManager } from 'amplify-cli-core';
 import path from 'path';
 import { uploadTemplateToS3 } from '../push-resources';
+import { ProviderName } from '../constants';
 
 export const AUTH_TRIGGER_TEMPLATE = 'auth-trigger-cloudformation-template.json';
 export const AUTH_TRIGGER_STACK = 'AuthTriggerCustomLambdaStack';
+const S3_UPLOAD_PATH = `auth/${AUTH_TRIGGER_TEMPLATE}`;
 
 export async function uploadAuthTriggerTemplate(context: $TSContext) {
   if (!FeatureFlags.getBoolean('auth.breakCircularDependency')) {
@@ -14,15 +16,16 @@ export async function uploadAuthTriggerTemplate(context: $TSContext) {
   const authResource = amplifyMeta?.auth ?? {};
   const resourceDir = path.join(pathManager.getBackendDirPath(), category, Object.keys(authResource)[0]);
   const authTriggerCfnFilePath = path.join(resourceDir, AUTH_TRIGGER_TEMPLATE);
-  let cfnObject: $TSObject;
+  const { DeploymentBucketName } = context.amplify.getProjectMeta()?.providers?.[ProviderName] ?? {};
   try {
-    cfnObject = JSONUtilities.readJson(authTriggerCfnFilePath);
+    JSONUtilities.readJson(authTriggerCfnFilePath);
   } catch (err) {
     return {
       AuthTriggerTemplateURL: '',
     };
   }
+  await uploadTemplateToS3(context, path.join(resourceDir, AUTH_TRIGGER_TEMPLATE), category, '', null);
   return {
-    AuthTriggerTemplateURL: await uploadTemplateToS3(context, path.join(resourceDir, AUTH_TRIGGER_TEMPLATE), category, '', null),
+    AuthTriggerTemplateURL: `https://s3.amazonaws.com/${DeploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`,
   };
 }

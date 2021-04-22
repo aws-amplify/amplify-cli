@@ -714,7 +714,13 @@ async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSA
   return Promise.all(promises);
 }
 
-async function uploadTemplateToS3(context: $TSContext, filePath: string, category: string, resourceName: string, amplifyMeta: $TSMeta) {
+export async function uploadTemplateToS3(
+  context: $TSContext,
+  filePath: string,
+  category: string,
+  resourceName: string,
+  amplifyMeta: $TSMeta,
+) {
   const cfnFile = path.parse(filePath).base;
   const s3 = await S3.getInstance(context);
 
