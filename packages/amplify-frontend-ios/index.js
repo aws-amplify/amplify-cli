@@ -1,11 +1,11 @@
 const path = require('path');
+const amplifyApp = require('amplify-app');
+const { FeatureFlags } = require('amplify-cli-core');
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');
 const configManager = require('./lib/configuration-manager');
 const constants = require('./lib/constants');
 const { createAmplifyConfig, createAWSConfig, deleteAmplifyConfig } = require('./lib/frontend-config-creator');
-const onPostInit = require('./event-handlers/handle-PostInit');
-const onPostCodegenModels = require('./event-handlers/handle-PostCodegenModels');
 
 const pluginName = 'ios';
 
@@ -60,15 +60,17 @@ async function executeAmplifyCommand(context) {
 }
 
 async function handleAmplifyEvent(context, args) {
-  switch (args.event) {
-    case 'PostInit':
-      await onPostInit.run(context, args);
-      break;
-    case 'PostCodegenModels':
-      await onPostCodegenModels.run(context, args);
-      break;
-    default:
-      break;
+  const postEvents = new Set(['PostInit', 'PostCodegenModels', 'PostPull']);
+  const { frontend } = context.amplify.getProjectConfig();
+  const isXcodeIntegrationEnabled = FeatureFlags.getBoolean('frontend-ios.enableXcodeIntegration');
+  const isFrontendiOS = frontend === 'ios';
+  if (isFrontendiOS && isXcodeIntegrationEnabled && postEvents.has(args.event)) {
+    await amplifyApp.run({
+      skipEnvCheck: true,
+      platform: frontend,
+      skipInit: true,
+      internalOnlyIosCallback: true,
+    });
   }
 }
 
