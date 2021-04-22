@@ -39,8 +39,10 @@ import { Fn, Template } from 'cloudform-types';
 import { getGqlUpdatedResource } from './graphql-transformer/utils';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
+import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/consolidate-apigw-policies';
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
+import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 
 const logger = fileLogger('push-resources');
 
@@ -56,13 +58,12 @@ const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
 
-
 const deploymentInProgressErrorMessage = (context: $TSContext) => {
   context.print.error('A deployment is in progress.');
   context.print.error('If the prior rollback was aborted, run:');
   context.print.error('"amplify push --iterative-rollback" to rollback the prior deployment');
   context.print.error('"amplify push --force" to re-deploy');
-}
+};
 
 export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
@@ -216,7 +217,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
           try {
             fs.removeSync(stateFolder.local);
           } catch (err) {
-            context.print.error(`Could not delete state directory locally: ${err}`)
+            context.print.error(`Could not delete state directory locally: ${err}`);
           }
         }
         if (stateFolder.cloud) {
@@ -604,13 +605,15 @@ async function updateCloudFormationNestedStack(
 
   JSONUtilities.writeJson(nestedStackFilepath, nestedStack);
 
+  const transformedStackPath = await preProcessCFNTemplate(nestedStackFilepath);
+
   const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated));
   const providerDirectory = path.normalize(path.join(backEndDir, providerName));
 
-  const log = logger('updateCloudFormationNestedStack', [providerDirectory, nestedStackFilepath]);
+  const log = logger('updateCloudFormationNestedStack', [providerDirectory, transformedStackPath]);
   try {
     log();
-    await cfnItem.updateResourceStack(path.normalize(path.join(backEndDir, providerName)), nestedStackFileName);
+    await cfnItem.updateResourceStack(transformedStackPath);
   } catch (error) {
     log(error);
     throw error;
@@ -687,29 +690,31 @@ function getCfnFiles(category: string, resourceName: string) {
   };
 }
 
-function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSAny, amplifyMeta: $TSMeta) {
+async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSAny, amplifyMeta: $TSMeta) {
   const promises = [];
 
   for (const { category, resourceName } of resourcesToBeUpdated) {
     const { resourceDir, cfnFiles } = getCfnFiles(category, resourceName);
 
     for (const cfnFile of cfnFiles) {
-      promises.push(uploadTemplateToS3(context, resourceDir, cfnFile, category, resourceName, amplifyMeta));
+      const transformedCFNPath = await preProcessCFNTemplate(path.join(resourceDir, cfnFile));
+      promises.push(uploadTemplateToS3(context, transformedCFNPath, category, resourceName, amplifyMeta));
     }
+  }
+
+  // Add CFN templates that are not tied to an individual resource.
+  const { APIGatewayAuthURL } = context.amplify.getProjectDetails()?.amplifyMeta?.providers?.[constants.ProviderName] ?? {};
+
+  if (APIGatewayAuthURL) {
+    const resourceDir = path.join((context.amplify.pathManager as any).getBackendDirPath(), 'api');
+    promises.push(uploadTemplateToS3(context, path.join(resourceDir, `${APIGW_AUTH_STACK_LOGICAL_ID}.json`), 'api', '', null));
   }
 
   return Promise.all(promises);
 }
 
-async function uploadTemplateToS3(
-  context: $TSContext,
-  resourceDir: string,
-  cfnFile: string,
-  category: string,
-  resourceName: string,
-  amplifyMeta: $TSMeta,
-) {
-  const filePath = path.normalize(path.join(resourceDir, cfnFile));
+async function uploadTemplateToS3(context: $TSContext, filePath: string, category: string, resourceName: string, amplifyMeta: $TSMeta) {
+  const cfnFile = path.parse(filePath).base;
   const s3 = await S3.getInstance(context);
 
   const s3Params = {
@@ -726,13 +731,15 @@ async function uploadTemplateToS3(
     throw error;
   }
 
-  const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${category}/${cfnFile}`;
-  const providerMetadata = amplifyMeta[category][resourceName].providerMetadata || {};
+  if (amplifyMeta) {
+    const templateURL = `https://s3.amazonaws.com/${projectBucket}/amplify-cfn-templates/${category}/${cfnFile}`;
+    const providerMetadata = amplifyMeta[category][resourceName].providerMetadata || {};
 
-  providerMetadata.s3TemplateURL = templateURL;
-  providerMetadata.logicalId = category + resourceName;
+    providerMetadata.s3TemplateURL = templateURL;
+    providerMetadata.logicalId = category + resourceName;
 
-  context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'providerMetadata', providerMetadata);
+    context.amplify.updateamplifyMetaAfterResourceUpdate(category, resourceName, 'providerMetadata', providerMetadata);
+  }
 }
 
 async function formNestedStack(
@@ -760,7 +767,38 @@ async function formNestedStack(
   const { amplifyMeta } = projectDetails;
   let authResourceName: string;
 
-  const { NetworkStackS3Url } = amplifyMeta.providers[constants.ProviderName];
+  const { APIGatewayAuthURL, NetworkStackS3Url } = amplifyMeta.providers[constants.ProviderName];
+
+  if (APIGatewayAuthURL) {
+    const stack = {
+      Type: 'AWS::CloudFormation::Stack',
+      Properties: {
+        TemplateURL: APIGatewayAuthURL,
+        Parameters: {
+          authRoleName: {
+            Ref: 'AuthRoleName',
+          },
+          unauthRoleName: {
+            Ref: 'UnauthRoleName',
+          },
+          env: context.exeInfo.localEnvInfo.envName,
+        },
+      },
+    };
+    const apis = amplifyMeta?.api ?? {};
+
+    Object.keys(apis).forEach(apiName => {
+      const api = apis[apiName];
+
+      if (loadApiWithPrivacyParams(context, apiName, api)) {
+        stack.Properties.Parameters[apiName] = {
+          'Fn::GetAtt': [api.providerMetadata.logicalId, 'Outputs.ApiId'],
+        };
+      }
+    });
+
+    nestedStack.Resources[APIGW_AUTH_STACK_LOGICAL_ID] = stack;
+  }
 
   if (NetworkStackS3Url) {
     nestedStack.Resources[NETWORK_STACK_LOGICAL_ID] = {

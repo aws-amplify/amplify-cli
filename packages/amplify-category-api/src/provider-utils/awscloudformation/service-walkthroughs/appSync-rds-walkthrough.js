@@ -167,26 +167,38 @@ async function selectDatabase(context, inputs, clusterArn, secretArn, AWS) {
   // Database Name Question
   const DataApi = new AWS.RDSDataService();
   const params = new DataApiParams();
+  const databaseList = [];
   params.secretArn = secretArn;
   params.resourceArn = clusterArn;
   params.sql = 'SHOW databases';
 
   spinner.start('Fetching Aurora Serverless cluster...');
-  const dataApiResult = await DataApi.executeStatement(params).promise();
 
-  // eslint-disable-next-line prefer-destructuring
-  const records = dataApiResult.records;
-  const databaseList = [];
+  try {
+    const dataApiResult = await DataApi.executeStatement(params).promise();
 
-  for (let i = 0; i < records.length; i += 1) {
-    const recordValue = records[i][0].stringValue;
-    // ignore the three meta tables that the cluster creates
-    if (!['information_schema', 'performance_schema', 'mysql'].includes(recordValue)) {
-      databaseList.push(recordValue);
+    // eslint-disable-next-line prefer-destructuring
+    const records = dataApiResult.records;
+
+    for (const record of records) {
+      const recordValue = record[0].stringValue;
+      // ignore the three meta tables that the cluster creates
+      if (!['information_schema', 'performance_schema', 'mysql'].includes(recordValue)) {
+        databaseList.push(recordValue);
+      }
+    }
+
+    spinner.succeed('Fetched Aurora Serverless cluster.');
+  } catch (err) {
+    spinner.fail(err.message);
+
+    if (err.code === 'BadRequestException' && /Access denied for user/.test(err.message)) {
+      const msg =
+        `Ensure that '${secretArn}' contains your database credentials. ` +
+        'Please note that Aurora Serverless does not support IAM database authentication.';
+      context.print.error(msg);
     }
   }
-
-  spinner.succeed('Fetched Aurora Serverless cluster.');
 
   if (databaseList.length > 0) {
     return await promptWalkthroughQuestion(inputs, 3, databaseList);

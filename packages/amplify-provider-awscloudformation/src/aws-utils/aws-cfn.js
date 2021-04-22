@@ -5,7 +5,7 @@ const BottleNeck = require('bottleneck');
 const chalk = require('chalk');
 const columnify = require('columnify');
 
-const aws = require('./aws.js');
+const aws = require('./aws');
 const { S3 } = require('./aws-s3');
 const providerName = require('../constants').ProviderName;
 const { formUserAgentParam } = require('./user-agent');
@@ -198,7 +198,7 @@ class CloudFormation {
         if (e && e.code === 'Throttling') {
           return Promise.resolve([]);
         }
-        Promise.reject(e);
+        return Promise.reject(e);
       });
   }
 
@@ -211,8 +211,8 @@ class CloudFormation {
       });
   }
 
-  updateResourceStack(dir, cfnFile) {
-    const filePath = path.normalize(path.join(dir, cfnFile));
+  updateResourceStack(filePath) {
+    const cfnFile = path.parse(filePath).base;
     const projectDetails = this.context.amplify.getProjectDetails();
     const stackName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].StackName : '';
     const deploymentBucketName = projectDetails.amplifyMeta.providers

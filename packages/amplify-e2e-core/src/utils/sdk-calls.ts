@@ -12,6 +12,7 @@ import {
   Kinesis,
   CloudFormation,
   AmplifyBackend,
+  IAM,
 } from 'aws-sdk';
 import _ from 'lodash';
 
@@ -41,6 +42,19 @@ export const bucketNotExists = async (bucket: string) => {
       return false;
     }
     throw error;
+  }
+};
+
+export const getBucketEncryption = async (bucket: string) => {
+  const s3 = new S3();
+  const params = {
+    Bucket: bucket,
+  };
+  try {
+    const result = await s3.getBucketEncryption(params).promise();
+    return result.ServerSideEncryptionConfiguration;
+  } catch (err) {
+    throw new Error(`Error fetching SSE info for bucket ${bucket}. Underlying error was [${err.message}]`);
   }
 };
 
@@ -285,4 +299,14 @@ export const getAmplifyBackendJobStatus = async (jobId: string, appId: string, e
       BackendEnvironmentName: envName,
     })
     .promise();
+};
+
+export const listRolePolicies = async (roleName: string, region: string) => {
+  const service = new IAM({ region });
+  return (await service.listRolePolicies({ RoleName: roleName }).promise()).PolicyNames;
+};
+
+export const listAttachedRolePolicies = async (roleName: string, region: string) => {
+  const service = new IAM({ region });
+  return (await service.listAttachedRolePolicies({ RoleName: roleName }).promise()).AttachedPolicies;
 };

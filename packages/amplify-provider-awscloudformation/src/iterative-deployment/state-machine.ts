@@ -84,10 +84,10 @@ export interface DeploymentRollbackSchema {
     idle: {};
     preRollback: {
       states: {
-        previousDeploymentReadyCheck: {},
-        previousTableReadyCheck: {}
-      }
-    },
+        previousDeploymentReadyCheck: {};
+        previousTableReadyCheck: {};
+      };
+    };
     rollback: {
       states: {
         enterRollback: {};
@@ -320,10 +320,10 @@ export function createRollbackDeploymentMachine(initialContext: DeployMachineCon
                 onError: {
                   target: '#failed',
                   actions: assign(collectError),
-                }
-              }
-            }
-          }
+                },
+              },
+            },
+          },
         },
         rollback: {
           id: 'rollback',

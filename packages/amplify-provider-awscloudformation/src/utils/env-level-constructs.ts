@@ -4,6 +4,8 @@ import { S3 } from '../aws-utils/aws-s3';
 import constants from '../constants';
 import { NetworkStack } from '../network/stack';
 import { getEnvironmentNetworkInfo } from '../network/environment-info';
+import { prePushCfnTemplateModifier } from '../pre-push-cfn-processor/pre-push-cfn-modifier';
+import { consolidateApiGatewayPolicies } from './consolidate-apigw-policies';
 
 const { ProviderName: providerName } = constants;
 
@@ -14,7 +16,11 @@ export async function createEnvLevelConstructs(context) {
 
   const updatedMeta = {};
 
-  Object.assign(updatedMeta, await createNetworkResources(context, stackName, hasContainers));
+  Object.assign(
+    updatedMeta,
+    await createNetworkResources(context, stackName, hasContainers),
+    consolidateApiGatewayPolicies(context, stackName),
+  );
 
   context.amplify.updateProvideramplifyMeta(providerName, updatedMeta);
 
@@ -51,6 +57,7 @@ async function createNetworkResources(context: any, stackName: string, needsVpc:
   });
 
   const cfn = stack.toCloudFormation();
+  await prePushCfnTemplateModifier(cfn);
 
   const cfnFile = 'networkingStackTemplate.json';
 

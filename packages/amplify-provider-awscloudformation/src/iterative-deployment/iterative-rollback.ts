@@ -1,11 +1,4 @@
-import {
-  $TSContext,
-  $TSMeta,
-  DeploymentState,
-  DeploymentStepStatus,
-  IDeploymentStateManager,
-  JSONUtilities,
-} from 'amplify-cli-core';
+import { $TSContext, $TSMeta, DeploymentState, DeploymentStepStatus, IDeploymentStateManager, JSONUtilities } from 'amplify-cli-core';
 import { DeploymentOp, DeploymentManager } from './deployment-manager';
 import { S3 } from '../aws-utils/aws-s3';
 import { formUserAgentParam } from '../aws-utils/user-agent';
@@ -48,7 +41,11 @@ const getParentStatePath = (files: string[]): string | null => {
   return longestFilePath.substring(0, i);
 };
 
-export async function runIterativeRollback(context: $TSContext, cloudformationMeta: $TSMeta, deploymentStateManager: IDeploymentStateManager) {
+export async function runIterativeRollback(
+  context: $TSContext,
+  cloudformationMeta: $TSMeta,
+  deploymentStateManager: IDeploymentStateManager,
+) {
   const deploymentBucket = cloudformationMeta.DeploymentBucketName;
   const deploymentStatus: DeploymentState = deploymentStateManager.getStatus();
   const deployedSteps = deploymentStatus.steps.slice(0, deploymentStatus.currentStepIndex + 1);
@@ -62,7 +59,9 @@ export async function runIterativeRollback(context: $TSContext, cloudformationMe
   const stateFiles: string[] = [];
   for (const step of deployedSteps) {
     if (!step.previousMetaKey) {
-      throw new IterativeRollbackError(`Cannot iteratively rollback as the following step does not contain a previousMetaKey: ${JSON.stringify(step)}`);
+      throw new IterativeRollbackError(
+        `Cannot iteratively rollback as the following step does not contain a previousMetaKey: ${JSON.stringify(step)}`,
+      );
     }
 
     const deploymentMeta = await loadDeploymentMeta(s3, deploymentBucket, step.previousMetaKey);

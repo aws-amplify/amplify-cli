@@ -3,12 +3,6 @@
     "Description": "API Gateway resource stack creation using Amplify CLI",
     <% if (props.dependsOn) { %>
     "Parameters": {
-        "authRoleName": {
-            "Type":  "String"
-        },
-        "unauthRoleName": {
-            "Type":  "String"
-        },
         "env": {
             "Type": "String"
         }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
@@ -18,7 +12,7 @@
             "Type": "String",
             "Default": "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>"
           }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].attributes.length - 1) { %>,<% } %>
-        
+
           <% } %>
           <% } %>
     <% } %>
@@ -34,107 +28,6 @@
         }
     },
     "Resources": {
-        <%if (props.privacy.auth) { %>
-        "PolicyAPIGW<%= props.apiName %>auth": {
-            "DependsOn": [
-              "<%= props.apiName %>"
-            ],
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyName": "PolicyAPIGW<%= props.apiName %>auth",
-              "Roles": [
-                {"Ref": "authRoleName"}
-              ],
-              "PolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                      "execute-api:Invoke"
-                    ],
-                    "Resource": [
-                    <% for(var i=0; i < props.paths.length; i++) { %>
-                    <% if (props.paths[i].privacy && props.paths[i].privacy.auth) { %>
-                    <% for(var x=0; x < props.paths[i].privacy.auth.length; x++) { %>
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                              "<%= props.paths[i].privacy.auth[x] %>",
-                            "<%= props.paths[i].policyResourceName %>/*"
-                          ]
-                        ]
-                      },
-                                            {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                              "<%= props.paths[i].privacy.auth[x] %>",
-                            "<%= props.paths[i].policyResourceName %>"
-                          ]
-                        ]
-                      }
-                    <% if (x !== props.paths[i].privacy.auth.length - 1) { %>
-                      ,
-                    <% } %>
-                    <% } %>
-                    <% if (i !== props.paths.length - 1) { %>
-                      ,
-                    <% } %>
-                    <% } %>
-                    <% } %>
-                    ]
-                  }
-                ]
-              }
-            }
-          },
-        <% } %>
         <% for(var i=0; i < props.paths.length; i++) { %>
         <%if (props.paths[i].privacy && props.paths[i].privacy.userPoolGroups) { %>
           <%  let selectedUserPoolGroupList = Object.keys(props.paths[i].privacy.userPoolGroups); %>
@@ -168,7 +61,7 @@
                       "execute-api:Invoke"
                     ],
                      "Resource": [
-                    
+
                     <% for(var x=0; x < props.paths[i].privacy.userPoolGroups[selectedUserPoolGroupList[j]].length; x++) { %>
                       {
                         "Fn::Join": [
@@ -190,10 +83,10 @@
                             {
                               "Fn::If": [
                                 "ShouldNotCreateEnvResources",
-                                "Prod", 
+                                "Prod",
                                 {
                                   "Ref": "env"
-                                } 
+                                }
                               ]
                             },
                               "<%= props.paths[i].privacy.userPoolGroups[selectedUserPoolGroupList[j]][x] %>",
@@ -245,107 +138,6 @@
           <% } %>
         <% } %>
         <% } %>
-        <%if (props.privacy.unauth) { %>
-        "PolicyAPIGW<%= props.apiName %>unauth": {
-            "DependsOn": [
-              "<%= props.apiName %>"
-            ],
-            "Type": "AWS::IAM::Policy",
-            "Properties": {
-              "PolicyName": "PolicyAPIGW<%= props.apiName %>unauth",
-              "Roles": [
-                 {"Ref": "unauthRoleName"}
-              ],
-              "PolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                  {
-                    "Effect": "Allow",
-                    "Action": [
-                      "execute-api:Invoke"
-                    ],
-                     "Resource": [
-                    <% for(var i=0; i < props.paths.length; i++) { %>
-                    <% if (props.paths[i].privacy && props.paths[i].privacy.unauth) { %>
-                    <% for(var x=0; x < props.paths[i].privacy.unauth.length; x++) { %>
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod", 
-                                {
-                                  "Ref": "env"
-                                } 
-                              ]
-                            },
-                              "<%= props.paths[i].privacy.unauth[x] %>",
-                            "<%= props.paths[i].policyResourceName %>/*"
-                          ]
-                        ]
-                      },
-                                            {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:aws:execute-api:",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            ":",
-                            {
-                              "Ref": "AWS::AccountId"
-                            },
-                            ":",
-                            {
-                              "Ref": "<%= props.apiName %>"
-                            },
-                            "/",
-                            {
-                              "Fn::If": [
-                                "ShouldNotCreateEnvResources",
-                                "Prod",
-                                {
-                                  "Ref": "env"
-                                }
-                              ]
-                            },
-                              "<%= props.paths[i].privacy.unauth[x] %>",
-                            "<%= props.paths[i].policyResourceName %>"
-                          ]
-                        ]
-                      }
-                    <% if (x !== props.paths[i].privacy.unauth.length - 1) { %>
-                      ,
-                    <% } %>
-                    <% } %>
-                    <% if (i !== props.paths.length - 1) { %>
-                      ,
-                    <% } %>
-                    <% } %>
-                    <% } %>
-                    ]
-                  }
-                ]
-              }
-            }
-          },
-        <% } %>
       "<%= props.apiName %>": {
         "Type": "AWS::ApiGateway::RestApi",
         "Properties": {
@@ -383,7 +175,7 @@
                           }
                       ]
                   ]
-                } 
+                }
               ]
             },
             "schemes": [
@@ -458,7 +250,7 @@
                       }
                     }
                   },
-                  <%if (!props.paths[i].privacy.open) { %>        
+                  <%if (!props.paths[i].privacy.open) { %>
                     "security": [
                         {
                           "sigv4": []
@@ -480,11 +272,11 @@
                               "Ref": "AWS::Region"
                             },
                             ":lambda:path/2015-03-31/functions/",
-                            <% if (props.paths[i].lambdaArn ) { %> 
-                            "<%= props.paths[i].lambdaArn %>", 
+                            <% if (props.paths[i].lambdaArn ) { %>
+                            "<%= props.paths[i].lambdaArn %>",
                             <% } else { %>
                             {
-                                
+
                                 "Ref": "function<%= props.paths[i].lambdaFunction %>Arn"
                             },
                             <% } %>
@@ -565,7 +357,7 @@
                       }
                     }
                   },
-                  <%if (!props.paths[i].privacy.open) { %>        
+                  <%if (!props.paths[i].privacy.open) { %>
                     "security": [
                         {
                           "sigv4": []
@@ -587,11 +379,11 @@
                             "Ref": "AWS::Region"
                           },
                           ":lambda:path/2015-03-31/functions/",
-                          <% if (props.paths[i].lambdaArn) { %> 
+                          <% if (props.paths[i].lambdaArn) { %>
                             "<%= props.paths[i].lambdaArn %>",
                           <% } else { %>
                           {
-                            
+
                             "Ref": "function<%= props.paths[i].lambdaFunction %>Arn"
                           },
                           <% } %>
@@ -604,7 +396,7 @@
                     "type": "aws_proxy"
                   }
                 }
-              }<% if (i !== props.paths.length - 1) { %>,<% } %>   
+              }<% if (i !== props.paths.length - 1) { %>,<% } %>
               <% } %>
             },
             "securityDefinitions": {
@@ -646,9 +438,9 @@
         }
       },
 
-      <%if (props.functionArns) { %>            
+      <%if (props.functionArns) { %>
         <% for (var i=0; i < props.functionArns.length; i++) { %>
-        
+
         "function<%= props.functionArns[i].lambdaFunction.replace(/[^0-9a-zA-Z]/gi, '') %>Permission<%= props.apiName %>": {
             "Type": "AWS::Lambda::Permission",
             "Properties": {
@@ -683,7 +475,7 @@
         },
         <% } %>
         <% } %>
-        
+
       "DeploymentAPIGW<%= props.apiName %><%= props.uuid %>": {
         "Type": "AWS::ApiGateway::Deployment",
         "Properties": {
@@ -691,10 +483,10 @@
           "StageName": {
             "Fn::If": [
               "ShouldNotCreateEnvResources",
-              "Prod", 
+              "Prod",
               {
                 "Ref": "env"
-              } 
+              }
             ]
           },
           "RestApiId": {
