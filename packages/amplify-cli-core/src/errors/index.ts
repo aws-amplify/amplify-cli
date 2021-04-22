@@ -16,6 +16,7 @@ export class AppAlreadyDeployedError extends Error {}
 export class SchemaDoesNotExistError extends Error {}
 export class AngularConfigNotFoundError extends Error {}
 export class AppIdMismatchError extends Error {}
+export class UnrecognizedFrameworkError extends Error {}
 export class NotInitializedError extends Error {
   public constructor() {
     super();

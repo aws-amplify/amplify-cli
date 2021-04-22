@@ -3,6 +3,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 const { getProjectConfiguration, getSupportedFrameworks } = require('./framework-config-mapping');
 const { Label: JAVASCRIPT } = require('./constants');
+const { UnrecognizedFrameworkError } = require('amplify-cli-core');
 
 async function init(context) {
   normalizeInputParams(context);
@@ -139,31 +140,39 @@ async function confirmFrameworkConfiguration(context) {
 }
 
 function guessFramework(context, projectPath) {
-  let frameWork = 'none';
+  let framework = 'none';
+  if (context.exeInfo.inputParams[JAVASCRIPT] && context.exeInfo.inputParams[JAVASCRIPT].framework) {
+    framework = context.exeInfo.inputParams[JAVASCRIPT].framework;
+    if (getSupportedFrameworks().includes(framework)) {
+      return framework;
+    }
+    throw Error(UnrecognizedFrameworkError(`The passed in framework: "${framework}" is not supported.`));
+  }
+
   try {
     const packageJsonFilePath = path.join(projectPath, 'package.json');
     if (fs.existsSync(packageJsonFilePath)) {
       const packageJson = context.amplify.readJsonFile(packageJsonFilePath, 'utf8');
       if (packageJson && packageJson.dependencies) {
         if (packageJson.dependencies.react) {
-          frameWork = 'react';
+          framework = 'react';
           if (packageJson.dependencies['react-native']) {
-            frameWork = 'react-native';
+            framework = 'react-native';
           }
         } else if (packageJson.dependencies['@angular/core']) {
-          frameWork = 'angular';
+          framework = 'angular';
           if (packageJson.dependencies['ionic-angular']) {
-            frameWork = 'ionic';
+            framework = 'ionic';
           }
         } else if (packageJson.dependencies.vue) {
-          frameWork = 'vue';
+          framework = 'vue';
         }
       }
     }
   } catch (e) {
-    frameWork = 'none';
+    framework = 'none';
   }
-  return frameWork;
+  return framework;
 }
 
 function displayFrontendDefaults(context, projectPath) {
