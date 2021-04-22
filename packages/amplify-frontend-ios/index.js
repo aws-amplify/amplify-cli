@@ -1,6 +1,6 @@
 const path = require('path');
-const amplifyApp = require('amplify-app');
 const { FeatureFlags } = require('amplify-cli-core');
+const { importConfig, importModels } = require('./lib/amplify-xcode');
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');
 const configManager = require('./lib/configuration-manager');
@@ -59,19 +59,27 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
-const postEvents = new Set(['PostInit', 'PostCodegenModels', 'PostPull']);
-
 async function handleAmplifyEvent(context, args) {
   const { frontend } = context.amplify.getProjectConfig();
   const isXcodeIntegrationEnabled = FeatureFlags.getBoolean('frontend-ios.enableXcodeIntegration');
   const isFrontendiOS = frontend === 'ios';
-  if (isFrontendiOS && isXcodeIntegrationEnabled && postEvents.has(args.event)) {
-    await amplifyApp.run({
-      skipEnvCheck: true,
-      platform: frontend,
-      skipInit: true,
-      internalOnlyIosCallback: true,
-    });
+  if (!isFrontendiOS || !isXcodeIntegrationEnabled) {
+    return;
+  }
+  const projectPath = process.cwd();
+  switch (args.event) {
+    case 'PostInit':
+      await importConfig({ path: projectPath });
+      break;
+    case 'PostCodegenModels':
+      await importModels({ path: projectPath });
+      break;
+    case 'PostPull':
+      await importConfig({ path: projectPath });
+      await importModels({ path: projectPath });
+      break;
+    default:
+      break;
   }
 }
 
