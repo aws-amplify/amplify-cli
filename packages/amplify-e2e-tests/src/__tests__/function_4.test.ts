@@ -257,7 +257,7 @@ describe('add function with layers for runtime nodeJS', () => {
 
 describe('add function with layers for runtime python', () => {
   let projRoot: string;
-  const helloWorldSuccessOutput = 'abcdefghijklmnopqrstuvwxyz';
+  const helloWorldSuccessOutput = 'Hello From Lambda!';
   const random = Math.floor(Math.random() * 10000);
   let functionName: string;
 
@@ -298,6 +298,6 @@ describe('add function with layers for runtime python', () => {
     await amplifyPushAuth(projRoot);
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
-    expect(JSON.parse(response.Payload.toString()).message).toEqual(helloWorldSuccessOutput);
+    expect(JSON.parse(response.Payload.toString()).body).toEqual(helloWorldSuccessOutput);
   });
 });

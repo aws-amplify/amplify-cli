@@ -1,6 +1,7 @@
-import string
+from titlecase import titlecase
 def handler(event, context):
-  print('received event:', event)
+  print('received event:')  
   return {
-    'message': string.ascii_lowercase
+      'statusCode': 200,
+      'body': titlecase('hello from lambda!'),
   }
