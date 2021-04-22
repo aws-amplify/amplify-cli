@@ -16,11 +16,13 @@ import {
   LayerRuntimes,
   removeLayer,
   updateLayer,
+  updateOptData,
   validateLayerDir,
   validateLayerMetadata,
   validatePushedVersion,
   getCurrentLayerArnFromMeta,
   getProjectConfig,
+  removeLayerVersion,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 import { addEnvironment, checkoutEnvironment, listEnvironment } from '../environment/env';
@@ -63,6 +65,35 @@ describe('amplify add lambda layer', () => {
     await validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns);
     await removeLayer(projRoot, [1, 2], [1, 2]);
     expect(validateLayerDir(projRoot, settings, settings.runtimes)).toBe(false);
+  });
+
+  it('init a project add 4 layers and delete first 3 of them and push and verify', async () => {
+    const [shortId] = uuid().split('-');
+    const layerName = `simplelayer${shortId}`;
+
+    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string; usePreviousPermissions: boolean } = {
+      runtimes: ['nodejs'],
+      layerName,
+      usePreviousPermissions: true,
+      projName,
+    };
+    const arns: string[] = [];
+    await addLayer(projRoot, settings);
+    expect(validateLayerDir(projRoot, { projName, layerName: settings.layerName }, settings.runtimes)).toBe(true);
+    await amplifyPushAuth(projRoot);
+    arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
+    for (const i in [1, 2, 3]) {
+      updateOptData(projRoot, settings, i);
+      await amplifyPushLayer(projRoot, true);
+      arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
+    }
+    const removeVersion = [1, 2, 3];
+    await removeLayerVersion(projRoot, removeVersion, [1, 2, 3, 4]);
+    updateOptData(projRoot, settings, 'end');
+    await amplifyPushLayer(projRoot);
+    arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
+    arns.splice(0, 3);
+    validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns);
   });
 
   it('init a project and add/update simple layer and push', async () => {

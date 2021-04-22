@@ -133,8 +133,9 @@ export function removeLayerVersion(cwd: string, versionsToRemove: number[], allV
 
     multiSelect(chain, versionsToRemove, allVersions);
     chain
-      .wait('Layers Deleted')
+      .wait('Are you sure you want to delete the resource? This action deletes all files related to this resource from')
       .sendConfirmYes()
+      .wait('Layers Deleted')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -173,6 +174,14 @@ export function updateLayer(cwd: string, settings?: any, testingWithLatestCodeba
       }
     });
   });
+}
+
+export function updateOptData(projRoot: string, layerProjName: LayerDirectoryType, data: string) {
+  fs.appendFileSync(
+    path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName), 'opt', 'data.txt'),
+    data,
+    'utf8',
+  );
 }
 
 export function addOptData(projRoot: string, layerProjName: LayerDirectoryType): void {
