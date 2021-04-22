@@ -59,8 +59,9 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
+const postEvents = new Set(['PostInit', 'PostCodegenModels', 'PostPull']);
+
 async function handleAmplifyEvent(context, args) {
-  const postEvents = new Set(['PostInit', 'PostCodegenModels', 'PostPull']);
   const { frontend } = context.amplify.getProjectConfig();
   const isXcodeIntegrationEnabled = FeatureFlags.getBoolean('frontend-ios.enableXcodeIntegration');
   const isFrontendiOS = frontend === 'ios';
