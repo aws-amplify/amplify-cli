@@ -2,7 +2,6 @@ import {
   amplifyPush,
   amplifyPushUpdate,
   deleteProject,
-  getPolicyVersion,
   initJSProjectWithProfile,
   listAttachedRolePolicies,
   listRolePolicies,
