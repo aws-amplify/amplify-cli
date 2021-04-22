@@ -1,5 +1,5 @@
 import { PackageRequest, PackageResult, ZipEntry } from 'amplify-function-plugin-interface';
-import { getPipenvDir } from './pyUtils';
+import { execAsStringPromise, getPipenvDir, getPythonBinaryName, majMinPyVersion } from './pyUtils';
 import path from 'path';
 import fs from 'fs-extra';
 import glob from 'glob';
@@ -10,7 +10,13 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
     const packageHash = await context.amplify.hashDir(params.srcRoot, ['dist']);
     const zipEntries: ZipEntry[] = [];
     if (params.service) {
-      const libGlob = glob.sync(await getPipenvDir(params.srcRoot));
+      const pyBinary = getPythonBinaryName();
+      const pyVersion = await execAsStringPromise(`${pyBinary} --version`);
+      const layerPythonPath = path.join(params.srcRoot, 'lib', 'python' + majMinPyVersion(pyVersion), 'site-packages');
+      const pipEnvDir = await getPipenvDir(params.srcRoot);
+      //copy from virtualenv to layer path to maintain layer required structure
+      fs.copySync(pipEnvDir, layerPythonPath, { overwrite: true });
+      const libGlob = glob.sync(path.join(params.srcRoot, '..'));
       const layerDirPath = path.join(params.srcRoot, '../../');
       const optPath = path.join(layerDirPath, 'opt');
 
