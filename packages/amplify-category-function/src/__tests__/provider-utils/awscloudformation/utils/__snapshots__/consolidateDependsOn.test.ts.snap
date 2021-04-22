@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`check when lambdaLayer present and resourceSetting removed 1`] = `
+Array [
+  Object {
+    "attributes": Array [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732692fb708",
+  },
+  Object {
+    "attributes": Array [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732f46becd3",
+  },
+]
+`;
+
+exports[`check when lambdaLayer present and resourceSetting selected 1`] = `
+Array [
+  Object {
+    "attributes": Array [
+      "mockUserPoolId",
+    ],
+    "category": "auth",
+    "resourceName": "mockauth",
+  },
+  Object {
+    "attributes": Array [
+      "mockArn",
+    ],
+    "category": "api",
+    "resourceName": "mockapi",
+  },
+  Object {
+    "attributes": Array [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732692fb708",
+  },
+  Object {
+    "attributes": Array [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732f46becd3",
+  },
+]
+`;
+
+exports[`check when lambdaLayer removed and resourceSetting present 1`] = `
+Array [
+  Object {
+    "attributes": Array [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732692fb708",
+  },
+  Object {
+    "attributes": Array [
+      "UserPoolId",
+    ],
+    "category": "auth",
+    "resourceName": "i573239366e8a",
+  },
+]
+`;
+
+exports[`check when lambdaLayer removed and resourceSetting present 2`] = `
+Array [
+  Object {
+    "attributes": Array [
+      "UserPoolId",
+    ],
+    "category": "auth",
+    "resourceName": "i573239366e8a",
+  },
+]
+`;
+
+exports[`check when lambdaLayer selected and resourceSetting present 1`] = `
+Array [
+  Object {
+    "attributes": Array [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732692fb708",
+  },
+  Object {
+    "attributes": Array [
+      "Arn",
+    ],
+    "category": "function",
+    "resourceName": "i5732f46becd3",
+  },
+  Object {
+    "attributes": Array [
+      "UserPoolId",
+    ],
+    "category": "auth",
+    "resourceName": "i573239366e8a",
+  },
+]
+`;
