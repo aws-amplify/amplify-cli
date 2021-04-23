@@ -152,7 +152,7 @@ function copyTemplateFiles(context: $TSContext, parameters: FunctionParameters |
     const layerCFNValues = convertLambdaLayerMetaToLayerCFNArray(context, parameters.lambdaLayers, context.amplify.getEnvInfo().envName);
     copyJobParams.lambdaLayersCFNArray = layerCFNValues;
   }
-  context.amplify.copyBatch(context, [cloudTemplateJob], copyJobParams, false);
+  context.amplify.copyBatch(context, [cloudTemplateJob], copyJobParams, true);
 }
 
 function ensureLayerFolders(parameters: $TSAny) {
