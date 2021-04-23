@@ -46,9 +46,9 @@ export const setEnvironmentVariable = (
   newReferences[newEnvironmentVariableKey] = { Ref: cameledKey };
   newKeyValue[cameledKey] = newEnvironmentVariableValue;
 
-  updateStoredList(resourceName, newList);
-  updateStoredReferences(resourceName, newReferences);
-  updateStoredKeyValue(context, resourceName, newKeyValue);
+  setStoredList(resourceName, newList);
+  setFunctionEnvVarReference(resourceName, newReferences);
+  setStoredKeyValue(context, resourceName, newKeyValue);
 };
 
 export const deleteEnvironmentVariable = (context: $TSContext, resourceName: string, targetedKey: string): void => {
@@ -62,9 +62,9 @@ export const deleteEnvironmentVariable = (context: $TSContext, resourceName: str
   _.unset(newReferences, targetedKey);
   _.unset(newKeyValue, cameledKey);
 
-  updateStoredList(resourceName, newList);
-  updateStoredReferences(resourceName, newReferences);
-  updateStoredKeyValue(context, resourceName, newKeyValue);
+  setStoredList(resourceName, newList);
+  setFunctionEnvVarReference(resourceName, newReferences);
+  setStoredKeyValue(context, resourceName, newKeyValue);
 };
 
 const getStoredList = (resourceName: string): { cloudFormationParameterName: string; environmentVariableName: string }[] => {
@@ -75,7 +75,7 @@ const getStoredList = (resourceName: string): { cloudFormationParameterName: str
   return _.get(functionParameters, 'environmentVariableList', []);
 };
 
-const updateStoredList = (resourceName: string, newList: object): void => {
+const setStoredList = (resourceName: string, newList: object): void => {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const functionParameterFilePath = path.join(resourcePath, functionParametersFileName);
@@ -93,7 +93,7 @@ const getStoredReferences = (resourceName: string): object => {
   return _.get(cfnContent, ['Resources', 'LambdaFunction', 'Properties', 'Environment', 'Variables'], {});
 };
 
-const updateStoredReferences = (resourceName: string, newReferences: object): void => {
+const setFunctionEnvVarReference = (resourceName: string, newReferences: object): void => {
   const projectBackendDirPath = pathManager.getBackendDirPath();
   const resourcePath = path.join(projectBackendDirPath, categoryName, resourceName);
   const cfnFileName = `${resourceName}-cloudformation-template.json`;
@@ -110,7 +110,7 @@ const getStoredKeyValue = (context: $TSContext, resourceName: string): object =>
   return _.get(teamProviderInfo, [envName, 'categories', categoryName, resourceName], {});
 };
 
-const updateStoredKeyValue = (context: $TSContext, resourceName: string, newKeyValue: object): void => {
+const setStoredKeyValue = (context: $TSContext, resourceName: string, newKeyValue: object): void => {
   const teamProviderInfoPath = pathManager.getTeamProviderInfoFilePath();
   const { envName } = context.amplify.getEnvInfo();
   const teamProviderInfo = (JSONUtilities.readJson(teamProviderInfoPath, { throwIfNotExist: false }) as object) || {};
