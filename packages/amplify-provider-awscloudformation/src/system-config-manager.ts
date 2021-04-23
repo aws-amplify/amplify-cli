@@ -1,3 +1,5 @@
+import { $TSAny, pathManager, SecretFileMode } from 'amplify-cli-core';
+
 const aws = require('aws-sdk');
 const fs = require('fs-extra');
 const path = require('path');
@@ -5,7 +7,6 @@ const ini = require('ini');
 const inquirer = require('inquirer');
 const constants = require('./constants');
 const proxyAgent = require('proxy-agent');
-const { pathManager, SecretFileMode } = require('amplify-cli-core');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('system-config-manager');
 
@@ -288,8 +289,11 @@ export function getProfileCredentials(profileName) {
   return profileCredentials;
 }
 
-function validateCredentials(credentials, profileName) {
+function validateCredentials(credentials: $TSAny, profileName: string) {
   const missingKeys = [];
+  if (credentials?.source_profile && credentials?.role_arn) {
+    return;
+  }
   if (!credentials?.accessKeyId) {
     missingKeys.push('aws_access_key_id');
   }

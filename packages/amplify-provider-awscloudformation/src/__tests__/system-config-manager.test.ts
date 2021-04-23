@@ -36,6 +36,16 @@ describe('profile tests', () => {
     expect(fs_mock.readFileSync).toHaveBeenCalledTimes(1);
   });
 
+  it('should return profile credentials when using a source_profile and role_arn', () => {
+    fs_mock.readFileSync.mockImplementationOnce(() => {
+      return '[fake]\nrole_arn=arn:aws:iam::123456789012:role/fakerole\nsource_profile=fakeuser\n';
+    });
+    const creds = getProfileCredentials('fake');
+    expect(creds).toBeDefined();
+    expect(fs_mock.existsSync).toHaveBeenCalledTimes(1);
+    expect(fs_mock.readFileSync).toHaveBeenCalledTimes(1);
+  });
+
   it('should fail to return profile credentials', () => {
     fs_mock.readFileSync.mockImplementationOnce(() => {
       return '[fake]\nmalformed_access_key_id=fakeAccessKey\naws_secret_access_key=fakeSecretKey\n';
