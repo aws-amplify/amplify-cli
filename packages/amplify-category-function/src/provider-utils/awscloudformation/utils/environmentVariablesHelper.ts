@@ -1,6 +1,6 @@
 import path from 'path';
 import _ from 'lodash';
-import { $TSContext, pathManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, stateManager, pathManager, JSONUtilities } from 'amplify-cli-core';
 import { categoryName, functionParametersFileName } from './constants';
 
 export const validKey = new RegExp(/^[a-zA-Z0-9_]+$/);
@@ -104,16 +104,16 @@ const setFunctionEnvVarReference = (resourceName: string, newReferences: object)
 };
 
 const getStoredKeyValue = (context: $TSContext, resourceName: string): object => {
-  const teamProviderInfoPath = pathManager.getTeamProviderInfoFilePath();
+  const projectPath = pathManager.findProjectRoot();
   const { envName } = context.amplify.getEnvInfo();
-  const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath, { throwIfNotExist: false }) || {};
+  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, { throwIfNotExist: false });
   return _.get(teamProviderInfo, [envName, 'categories', categoryName, resourceName], {});
 };
 
 const setStoredKeyValue = (context: $TSContext, resourceName: string, newKeyValue: object): void => {
-  const teamProviderInfoPath = pathManager.getTeamProviderInfoFilePath();
+  const projectPath = pathManager.findProjectRoot();
   const { envName } = context.amplify.getEnvInfo();
-  const teamProviderInfo = (JSONUtilities.readJson(teamProviderInfoPath, { throwIfNotExist: false }) as object) || {};
+  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, { throwIfNotExist: false });
   _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName], newKeyValue);
-  JSONUtilities.writeJson(teamProviderInfoPath, teamProviderInfo);
+  stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
 };

@@ -100,7 +100,7 @@ const addEnvironmentVariableQuestion = async (
       message: 'Enter the environment variable value:',
       type: 'input',
       validate: input => {
-        if (input.length <= 2048) {
+        if (input.length >= 2048) {
           return 'The value must be 2048 characters or less';
         }
         return true;
@@ -146,7 +146,7 @@ const updateEnvironmentVariableQuestion = async (
       message: 'Enter the environment variable value:',
       type: 'input',
       validate: input => {
-        if (input.length <= 2048) {
+        if (input.length >= 2048) {
           return 'The value must be 2048 characters or less';
         }
         return true;
