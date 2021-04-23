@@ -13,11 +13,14 @@ import {
   parametersFileName,
   resourceAccessSetting,
   ServiceName,
+  environmentVariableSetting,
 } from '../utils/constants';
 import { merge } from '../utils/funcParamsUtils';
 import { runtimeWalkthrough, templateWalkthrough } from '../utils/functionPluginLoader';
 import { convertLambdaLayerMetaToLayerCFNArray } from '../utils/layerArnConverter';
 import { loadFunctionParameters } from '../utils/loadFunctionParameters';
+import { getStoredEnvironmentVariables } from '../utils/environmentVariablesHelper';
+import { askEnvironmentVariableQuestions } from './environmentVariableWalkthrough';
 import {
   fetchPermissionCategories,
   fetchPermissionResourcesForCategory,
@@ -77,6 +80,11 @@ export async function createWalkthrough(
 
     // ask lambda layer questions and merge in results
     templateParameters = merge(templateParameters, await addLayersToFunctionWalkthrough(context, templateParameters.runtime));
+
+    // ask environment variable questions and merge in results
+    if (await context.amplify.confirmPrompt('Do you want to configure environment variables for this function?', false)) {
+      templateParameters = merge(templateParameters, await askEnvironmentVariableQuestions(context, templateParameters.functionName));
+    }
   }
 
   return templateParameters;
@@ -115,6 +123,18 @@ function provideInformation(context, lambdaToUpdate, functionRuntime, currentPar
     context.print.info('| Not configured');
     context.print.info('');
   }
+
+  // Provide environment variables
+  context.print.success('Environment variables:');
+  const storedEnvironmentVariables = getStoredEnvironmentVariables(context, lambdaToUpdate);
+  if (_.size(storedEnvironmentVariables) !== 0) {
+    _.forEach(storedEnvironmentVariables, (environmentVariableValue, environmentVariableKey) => {
+      context.print.info(`- ${environmentVariableKey}: ${environmentVariableValue}`);
+    });
+  } else {
+    context.print.info('- Not configured');
+  }
+  context.print.info('');
 
   // Provide lambda layer information
   context.print.success('Lambda layers');
@@ -218,6 +238,10 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
   // consolidate dependsOn as above logic is overwriting
   const projectMeta = stateManager.getMeta();
   functionParameters.dependsOn = consolidateDependsOnForLambda(projectMeta, functionParameters.dependsOn, lambdaToUpdate, selectedSettings);
+  merge(
+    functionParameters,
+    await askEnvironmentVariableQuestions(context, lambdaToUpdate, undefined, !selectedSettings.includes(environmentVariableSetting)),
+  );
   return functionParameters;
 }
 

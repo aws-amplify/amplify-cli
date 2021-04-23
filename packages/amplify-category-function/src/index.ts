@@ -13,7 +13,10 @@ import {
 } from './provider-utils/awscloudformation/utils/layerConfiguration';
 import { checkContentChanges } from './provider-utils/awscloudformation/utils/packageLayer';
 import { supportedServices } from './provider-utils/supported-services';
-
+import {
+  askEnvironmentVariableCarryOut,
+  ensureEnvironmentVariableValues,
+} from './provider-utils/awscloudformation/utils/environmentVariablesHelper';
 export { categoryName as category } from './constants';
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
 export { lambdasWithApiDependency } from './provider-utils/awscloudformation/utils/getDependentFunction';
@@ -167,6 +170,11 @@ export async function initEnv(context) {
   stateManager.setMeta(projectPath, amplifyMeta);
   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
 
+  if (sourceEnv && isNewEnv) {
+    const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
+    await askEnvironmentVariableCarryOut(context, sourceEnv, context.exeInfo.localEnvInfo.projectPath, yesFlagSet);
+  }
+
   await sequential(functionTasks);
 }
 
@@ -239,8 +247,15 @@ export async function executeAmplifyCommand(context) {
 }
 
 export async function handleAmplifyEvent(context, args) {
-  context.print.info(`${categoryName} handleAmplifyEvent to be implemented`);
-  context.print.info(`Received event args ${args}`);
+  if (args.event === 'PrePush') {
+    await handlePrePush(context);
+  }
+}
+
+async function handlePrePush(context) {
+  const { amplify } = context;
+  const localEnvInfo = amplify.getEnvInfo();
+  await ensureEnvironmentVariableValues(context, localEnvInfo.envName, localEnvInfo.projectPath);
 }
 
 export async function lambdaLayerPrompt(context: $TSContext, resources: Array<$TSAny>): Promise<void> {

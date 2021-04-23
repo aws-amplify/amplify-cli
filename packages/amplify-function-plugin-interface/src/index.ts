@@ -134,6 +134,7 @@ export type FunctionParameters = {
   runtimePluginId: string;
   cloudwatchRule?: string;
   lambdaLayers: LambdaLayer[];
+  environmentVariables?: Record<string, any>;
 };
 
 /**
@@ -160,6 +161,7 @@ export interface FunctionTriggerParameters {
   skipEdit: boolean;
   functionTemplate?: FunctionTemplate;
   cloudResourceTemplatePath?: string;
+  environmentVariables?: Record<string, string>;
 }
 
 export interface ProviderContext {
