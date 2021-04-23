@@ -205,7 +205,7 @@ test('Test createPost mutation', async () => {
   expect(response.data.createPost.createdAt).toBeDefined();
   expect(response.data.createPost.updatedAt).toBeDefined();
 });
-test.only('Test updateComment mutation with null and empty', async () => {
+test('Test updateComment mutation with null and empty', async () => {
   const requiredFieldValue = 'thisisrequired';
   const notRequiredFieldValue = 'thisisnotrequired';
   const response = await GRAPHQL_CLIENT.query(
