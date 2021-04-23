@@ -18,8 +18,10 @@ import {
   raw,
   comment,
   forEach,
+  list,
   and,
   RESOLVER_VERSION_ID,
+  Expression,
 } from 'graphql-mapping-template';
 import {
   ResourceConstants,
@@ -45,6 +47,10 @@ type MutationResolverInput = {
     createdAtField?: string;
     updatedAtField?: string;
   };
+};
+
+type MutationUpdateResolverInput = MutationResolverInput & {
+  optionalNonNullableFields: string[];
 };
 
 export class ResourceFactory {
@@ -475,9 +481,18 @@ export class ResourceFactory {
     );
   }
 
-  public makeUpdateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation', timestamps }: MutationResolverInput) {
+  public makeUpdateResolver({
+    type,
+    nameOverride,
+    syncConfig,
+    mutationTypeName = 'Mutation',
+    timestamps,
+    optionalNonNullableFields,
+  }: MutationUpdateResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName(`update` + toUpper(type));
     const isSyncEnabled = syncConfig ? true : false;
+    const optionalNonNullableExpression: Expression[] = optionalNonNullableFields.map(str);
+
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -485,6 +500,14 @@ export class ResourceFactory {
       TypeName: mutationTypeName,
       RequestMappingTemplate: print(
         compoundExpression([
+          set(ref('optionalNonNullableFields'), list(optionalNonNullableExpression)),
+          forEach(ref('field'), ref('optionalNonNullableFields'), [
+            iff(
+              and([ref('util.isNull($context.args.input.get($field))'), ref('context.arguments.input.keySet().contains($field)')]),
+              ref('util.error("An argument you marked as Non-Null is set to Null in the query or the body of your request.")'),
+            ),
+          ]),
+
           ifElse(
             raw(`$${ResourceConstants.SNIPPETS.AuthCondition} && $${ResourceConstants.SNIPPETS.AuthCondition}.expression != ""`),
             compoundExpression([
