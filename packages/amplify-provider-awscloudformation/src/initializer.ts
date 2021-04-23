@@ -255,7 +255,7 @@ function normalizeStackName(stackName) {
 const doInitializeInCloud = (context: $TSContext): boolean => {
   const hasCommandLineArgs = !_.isEmpty(context?.input?.options);
   const isHeadlessInit = context?.input?.command === 'init' && hasCommandLineArgs;
-  const isHeadlessEnvAdd = context?.input?.command === 'env' && context?.input?.subcommand === 'add' && hasCommandLineArgs;
+  const isHeadlessEnvAdd = context?.input?.command === 'env' && context?.input?.subCommands?.[0] === 'add' && hasCommandLineArgs;
   const isPush = context?.input?.command === 'push';
   return !context.exeInfo || (context.exeInfo.isNewEnv && isHeadlessInit) || (context.exeInfo.isNewEnv && isHeadlessEnvAdd) || isPush;
 };
