@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-auth",
-  "version": "2.30.3",
+  "version": "2.30.4-beta.0",
   "description": "amplify-cli authentication plugin",
   "repository": {
     "type": "git",
@@ -23,10 +23,10 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "amplify-cli-core": "1.20.1",
+    "amplify-cli-core": "1.21.0-beta.0",
     "amplify-headless-interface": "1.5.3",
     "amplify-util-headless-input": "1.4.3",
-    "amplify-util-import": "1.4.3",
+    "amplify-util-import": "1.4.4-beta.0",
     "aws-sdk": "^2.845.0",
     "chalk": "^3.0.0",
     "chalk-pipe": "^3.0.0",

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.19.3...amplify-frontend-ios@2.19.4-beta.0) (2021-04-23)
+
+
+### Bug Fixes
+
+* **amplify-frontend-ios:** update xcode project on pull ([#7152](https://github.com/aws-amplify/amplify-cli/issues/7152)) ([9d5cb21](https://github.com/aws-amplify/amplify-cli/commit/9d5cb21b08ebc6a09c5c005e8130f4ba7db757ea))
+
+
+
+
+
 ## [2.19.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-ios@2.19.2...amplify-frontend-ios@2.19.3) (2021-04-19)
 
 **Note:** Version bump only for package amplify-frontend-ios
