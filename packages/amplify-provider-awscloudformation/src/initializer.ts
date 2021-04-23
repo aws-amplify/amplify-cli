@@ -147,7 +147,6 @@ async function initializeRootStack(context: $TSContext) {
 
 export async function onInitSuccessful(context: $TSContext) {
   configurationManager.onInitSuccessful(context);
-  copyTagsToCurrentCloudBackend();
   if (doInitializeInCloud(context)) {
     context = await storeCurrentCloudBackend(context);
     await storeArtifactsForAmplifyService(context);
@@ -171,6 +170,13 @@ function storeCurrentCloudBackend(context) {
     cwd: pathManager.getAmplifyDirPath(),
     absolute: true,
   });
+
+  // handle tag file
+  const tagFilePath = pathManager.getTagFilePath();
+  const tagCloudFilePath = pathManager.getCurrentTagFilePath();
+  if (fs.existsSync(tagFilePath)) {
+    fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
+  }
 
   const zipFilePath = path.normalize(path.join(tempDir, zipFilename));
   let log = null;
@@ -247,15 +253,9 @@ function normalizeStackName(stackName) {
 }
 
 const doInitializeInCloud = (context: $TSContext): boolean => {
-  const isHeadlessInit = context?.input?.command === 'init' && !_.isEmpty(context?.input?.options);
+  const hasCommandLineArgs = !_.isEmpty(context?.input?.options);
+  const isHeadlessInit = context?.input?.command === 'init' && hasCommandLineArgs;
+  const isHeadlessEnvAdd = context?.input?.command === 'env' && context?.input?.subcommand === 'add' && hasCommandLineArgs;
   const isPush = context?.input?.command === 'push';
-  return !context.exeInfo || (context.exeInfo.isNewEnv && isHeadlessInit) || isPush;
-};
-
-const copyTagsToCurrentCloudBackend = () => {
-  const tagFilePath = pathManager.getTagFilePath();
-  const tagCloudFilePath = pathManager.getCurrentTagFilePath();
-  if (fs.existsSync(tagFilePath)) {
-    fs.copySync(tagFilePath, tagCloudFilePath, { overwrite: true });
-  }
+  return !context.exeInfo || (context.exeInfo.isNewEnv && isHeadlessInit) || (context.exeInfo.isNewEnv && isHeadlessEnvAdd) || isPush;
 };
