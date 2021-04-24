@@ -113,6 +113,11 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
         context.print.info(
           `It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.`,
         );
+
+        if (resourcesToBeUpdated.find(res => res.resourceName === resource.resourceName)) {
+          resource.lastPackageTimeStamp = undefined;
+          await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'lastPackageTimeStamp', undefined);
+        }
       }
 
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'hosting') {
