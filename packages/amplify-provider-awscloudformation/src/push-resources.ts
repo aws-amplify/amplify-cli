@@ -21,7 +21,7 @@ import ora from 'ora';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
-import constants, { ProviderName as providerName } from './constants';
+import constants, { ProviderName as providerName, FunctionServiceNameLambdaLayer } from './constants';
 import { uploadAppSyncFiles } from './upload-appsync-files';
 import { prePushGraphQLCodegen, postPushGraphQLCodegen } from './graphql-codegen';
 import { adminModelgen } from './admin-modelgen';
@@ -43,12 +43,10 @@ import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/c
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
-import { postPushLambdaLayerCleanUp, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
+import { postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
 
 const logger = fileLogger('push-resources');
 
-// keep in sync with ServiceName in amplify-category-function, but probably it will not change
-const FunctionServiceNameLambdaLayer = 'LambdaLayer';
 // keep in sync with ServiceName in amplify-category-api, but probably it will not change
 const ApiServiceNameElasticContainer = 'ElasticContainer';
 
@@ -328,7 +326,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     // Store current cloud backend in S3 deployment bcuket
     await storeCurrentCloudBackend(context);
-    await postPushLambdaLayerCleanUp(context, resources, projectDetails.localEnvInfo.envName);
+    await postPushLambdaLayerCleanup(context, resources, projectDetails.localEnvInfo.envName);
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
 
     //check for auth resources and remove deployment secret for push

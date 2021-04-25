@@ -1,5 +1,6 @@
 import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
 import ora from 'ora';
+import { LayerCfnLogicalNamePrefix } from './constants';
 import { isMultiEnvLayer } from './layerHelpers';
 import { LayerVersionMetadata, PermissionEnum } from './layerParams';
 
@@ -40,7 +41,7 @@ export class LayerCloudState {
           .filter(stack => stack.ResourceType === 'AWS::Lambda::LayerVersion' && stack.PhysicalResourceId === layerVersion.LayerVersionArn)
           .forEach(stack => {
             layerVersion.LogicalName = stack.LogicalResourceId;
-            layerLogicalIdSuffix = stack.LogicalResourceId.replace('LambdaLayerVersion', '');
+            layerLogicalIdSuffix = stack.LogicalResourceId.replace(LayerCfnLogicalNamePrefix.LambdaLayerVersion, '');
           });
 
         detailedLayerStack
@@ -52,7 +53,10 @@ export class LayerCloudState {
           .forEach(stack => {
             // layer version permission
             layerVersion.permissions = layerVersion.permissions || [];
-            const permissionTypeString = stack.LogicalResourceId.replace('LambdaLayerPermission', '').replace(layerLogicalIdSuffix, '');
+            const permissionTypeString = stack.LogicalResourceId.replace(
+              LayerCfnLogicalNamePrefix.LambdaLayerVersionPermission,
+              '',
+            ).replace(layerLogicalIdSuffix, '');
             const accountIds = [];
             const orgIds = [];
             if (permissionTypeString === PermissionEnum.Private) {
@@ -62,7 +66,7 @@ export class LayerCloudState {
             } else if (permissionTypeString.startsWith(PermissionEnum.AwsAccounts)) {
               accountIds.push(permissionTypeString.replace(PermissionEnum.AwsAccounts, ''));
             } else if (permissionTypeString.startsWith(PermissionEnum.AwsOrg)) {
-              const orgId = permissionTypeString.replace(PermissionEnum.AwsOrg + 'o', 'o-');
+              const orgId = permissionTypeString.replace(`${PermissionEnum.AwsOrg}o`, 'o-');
               orgIds.push(orgId);
             }
 

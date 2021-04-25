@@ -1,4 +1,5 @@
-import { $TSAny, $TSContext, $TSMeta, exitOnNextTick, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
+import crypto from 'crypto';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
 import globby from 'globby';
@@ -10,7 +11,6 @@ import { categoryName, layerParametersFileName, provider, ServiceName } from './
 import { getLayerConfiguration } from './layerConfiguration';
 import { LayerParameters, LayerPermission, PermissionEnum } from './layerParams';
 import { updateLayerArtifacts } from './storeResources';
-import crypto from 'crypto';
 
 export interface LayerInputParams {
   layerPermissions?: PermissionEnum[];

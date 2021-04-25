@@ -60,7 +60,7 @@ export const packageLayer: Packager = async (context, resource) => {
     throw new Error('LogicalId missing for new layer version.');
   }
 
-  const zipFilename = `${resource.resourceName}-${layerCloudState.latestVersionLogicalId}-build.zip`;
+  const zipFilename = createLayerZipFilename(resource.resourceName, layerCloudState.latestVersionLogicalId);
   // check zip size is less than 250MB
   if (validFilesize(context, destination)) {
     context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: 'versionHash', hashValue: currentHash });
@@ -88,10 +88,10 @@ export async function checkContentChanges(context: $TSContext, layerResources: A
       if (!_.isEqual(parameters.permissions, [defaultLayerPermission])) {
         return ` ${resourceName}
   - ${accessPermissions}: ${chalk.green('Maintain existing permissions')}
-  - ${description}: ${chalk.green('Updated layer version ') + chalk.gray(timestampString)}`;
+  - ${description}: ${chalk.green('Updated layer version ')} ${chalk.gray(timestampString)}`;
       }
       return ` ${resourceName}
-  - ${description}: ${chalk.green('Updated layer version ') + chalk.gray(timestampString)}`;
+  - ${description}: ${chalk.green('Updated layer version ')} ${chalk.gray(timestampString)}`;
     });
 
     context.print.info(prepushNotificationMessage.join(EOL));
@@ -111,4 +111,8 @@ export async function checkContentChanges(context: $TSContext, layerResources: A
       await updateLayerArtifacts(context, parameters, { amplifyMeta: false, cfnFile: false, description: true, layerParams: true });
     }
   }
+}
+
+export function createLayerZipFilename(resourceName: string, latestLayerVersionLogicalId: string) {
+  return `${resourceName}-${latestLayerVersionLogicalId}-build.zip`;
 }
