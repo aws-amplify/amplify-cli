@@ -51,7 +51,7 @@ export const run = async (context: $TSContext) => {
       const message = e.name === 'GraphQLError' ? e.toString() : e.message;
       context.print.error(`An error occurred during the push operation: ${message}`);
     }
-    context.usageData.emitError(e);
+    await context.usageData.emitError(e);
     exitOnNextTick(1);
   }
 };

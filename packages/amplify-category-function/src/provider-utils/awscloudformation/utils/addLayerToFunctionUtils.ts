@@ -4,7 +4,7 @@ import { category } from '../../..';
 import { ServiceName } from './constants';
 import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
 import enquirer from 'enquirer';
-import { loadLayerDataFromCloud } from './layerHelpers';
+import { LayerCloudState } from './layerCloudState';
 import { getLayerRuntimes } from './layerConfiguration';
 import { $TSContext, $TSMeta, pathManager } from 'amplify-cli-core';
 
@@ -64,7 +64,8 @@ export const askLayerSelection = async (
   layerSelections = layerSelections.filter(selection => selection !== provideExistingARNsPrompt);
 
   for await (let layerName of layerSelections) {
-    const layerVersions = await loadLayerDataFromCloud(context, layerName);
+    const layerCloudState = LayerCloudState.getInstance();
+    const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, layerName);
     const layerVersionArrPrompt = layerVersions.map(layerVersion => layerVersion.Version.toString());
     console.log(layerVersionArrPrompt);
     // skip asking version for a new layer

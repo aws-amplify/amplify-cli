@@ -1,11 +1,5 @@
 import { $TSAny, $TSContext, JSONUtilities, open, pathManager, stateManager } from 'amplify-cli-core';
-import {
-  FunctionParameters,
-  FunctionTemplate,
-  FunctionTriggerParameters,
-  LambdaLayer,
-  ProviderContext,
-} from 'amplify-function-plugin-interface';
+import { FunctionParameters, FunctionTemplate, FunctionTriggerParameters, LambdaLayer } from 'amplify-function-plugin-interface';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
@@ -14,8 +8,8 @@ import { category as categoryName } from '../../constants';
 import { supportedServices } from '../supported-services';
 import { ServiceConfig } from '../supportedServicesType';
 import { functionParametersFileName, provider, ServiceName } from './utils/constants';
+import { convertExternalLayersToProjectLayers, convertProjectLayersToExternalLayers } from './utils/convertLayersTypes';
 import { convertToComplete, isComplete, merge } from './utils/funcParamsUtils';
-import { getLayerConfiguration } from './utils/layerConfiguration';
 import { isMultiEnvLayer } from './utils/layerHelpers';
 import { LayerParameters } from './utils/layerParams';
 import {
@@ -25,7 +19,6 @@ import {
   saveMutableState,
   updateLayerArtifacts,
 } from './utils/storeResources';
-import { convertProjectLayersToExternalLayers, covertExternalLayersToProjectLayers } from './utils/convertLayersTypes';
 
 /**
  * Entry point for creating a new function
@@ -354,7 +347,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
       const envName = context.amplify.getEnvInfo().envName;
       const modifiedLambdaLayers: LambdaLayer[] = [];
       modifiedLambdaLayers.push(...convertProjectLayersToExternalLayers(resourceParams.lambdaLayers, envName));
-      modifiedLambdaLayers.push(...covertExternalLayersToProjectLayers(resourceParams.lambdaLayers, envName));
+      modifiedLambdaLayers.push(...convertExternalLayersToProjectLayers(resourceParams.lambdaLayers, envName));
       resourceParams.lambdaLayers = modifiedLambdaLayers;
       JSONUtilities.writeJson(functionParametersPath, resourceParams);
     }

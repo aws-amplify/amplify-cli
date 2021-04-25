@@ -1,11 +1,14 @@
 import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { FunctionServiceNameLambdaLayer } from './constants';
+
 const category = 'function';
 const lambdaLayerPrompt = 'lambdaLayerPrompt';
-const postPushCleanUpFunctionName = 'postPushCleanUp';
+const postPushCleanupFunctionName = 'postPushCleanup';
+
 export async function prePushLambdaLayerPrompt(context: $TSContext, resources: Array<$TSAny>): Promise<void> {
-  await context.amplify.invokePluginMethod(context, category, undefined, lambdaLayerPrompt, [context, resources]);
+  await context.amplify.invokePluginMethod(context, category, FunctionServiceNameLambdaLayer, lambdaLayerPrompt, [context, resources]);
 }
 
-export async function postPushLambdaLayerCleanUp(context: $TSContext, resources: Array<$TSAny>, envName: string): Promise<void> {
-  context.amplify.invokePluginMethod(context, category, undefined, postPushCleanUpFunctionName, [context, resources, envName]);
+export async function postPushLambdaLayerCleanup(context: $TSContext, resources: Array<$TSAny>, envName: string): Promise<void> {
+  context.amplify.invokePluginMethod(context, category, FunctionServiceNameLambdaLayer, postPushCleanupFunctionName, [resources, envName]);
 }
