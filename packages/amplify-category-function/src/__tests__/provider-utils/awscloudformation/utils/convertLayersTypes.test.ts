@@ -1,14 +1,22 @@
 import {
   convertProjectLayersToExternalLayers,
-  covertExternalLayersToProjectLayers,
+  convertExternalLayersToProjectLayers,
 } from '../../../../provider-utils/awscloudformation/utils/convertLayersTypes';
 import { LambdaLayer } from 'amplify-function-plugin-interface';
 import { convertProjectLayer } from '../../../../provider-utils/awscloudformation/utils/layerArnConverter';
+import { LayerCloudState } from '../../../../provider-utils/awscloudformation/utils/layerCloudState';
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerArnConverter');
+jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');
 
 const convertProjectLayer_mock = convertProjectLayer as jest.MockedFunction<typeof convertProjectLayer>;
 convertProjectLayer_mock.mockReturnValue({ 'Fn::Sub': 'mockLayerArn' });
+
+const layerCloudState_mock = LayerCloudState as jest.Mocked<typeof LayerCloudState>;
+layerCloudState_mock.getInstance.mockReturnValue(({
+  getLayerVersionsFromCloud: jest.fn(async () => []),
+  latestVersionLogicalId: 'mockLogicalId',
+} as unknown) as LayerCloudState);
 
 describe('convert ProjectLayer when checkout env if required', () => {
   const envName = 'prod';
@@ -42,6 +50,7 @@ describe('convert ProjectLayer when checkout env if required', () => {
       env: 'staging',
     },
   ];
+
   test('when add/checkout to same env', () => {
     expect(convertProjectLayersToExternalLayers(lambdaLayers, envName)).toMatchSnapshot();
   });
@@ -83,11 +92,11 @@ describe('convert ExternalLayer when checkout env if required', () => {
   ];
 
   test('when add/checkout to env', () => {
-    expect(covertExternalLayersToProjectLayers(lambdaLayers, envName)).toMatchSnapshot();
+    expect(convertExternalLayersToProjectLayers(lambdaLayers, envName)).toMatchSnapshot();
   });
 });
 
-describe('convert Both Layer', () => {
+describe('convert both layers', () => {
   const envName = 'dev';
   const lambdaLayers: LambdaLayer[] = [
     {
@@ -104,8 +113,9 @@ describe('convert Both Layer', () => {
       env: 'staging',
     },
   ];
+
   test('when add/checkout to same env', () => {
     expect(convertProjectLayersToExternalLayers(lambdaLayers, envName)).toMatchSnapshot();
-    expect(covertExternalLayersToProjectLayers(lambdaLayers, envName)).toMatchSnapshot();
+    expect(convertExternalLayersToProjectLayers(lambdaLayers, envName)).toMatchSnapshot();
   });
 });
