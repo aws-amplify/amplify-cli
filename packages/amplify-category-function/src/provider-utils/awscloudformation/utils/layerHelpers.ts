@@ -1,15 +1,14 @@
-import { $TSAny, $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSMeta, exitOnNextTick, pathManager, stateManager } from 'amplify-cli-core';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
 import globby from 'globby';
 import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
-import ora from 'ora';
 import path from 'path';
 import uuid from 'uuid';
 import { categoryName, layerParametersFileName, provider, ServiceName } from './constants';
 import { getLayerConfiguration } from './layerConfiguration';
-import { LayerParameters, LayerPermission, LayerVersionMetadata, PermissionEnum } from './layerParams';
+import { LayerParameters, LayerPermission, PermissionEnum } from './layerParams';
 import { updateLayerArtifacts } from './storeResources';
 import crypto from 'crypto';
 
@@ -36,8 +35,8 @@ export function layerNameQuestion(projectName: string): InputQuestion {
     validate: (input: string) => {
       input = input.trim();
       const meta = stateManager.getMeta();
-      if (!/^[a-zA-Z0-9-_]{1,87}$/.test(input)) {
-        return 'Lambda layer names must be 1-87 characters long. Only alphanumeric, -, and _ characters supported.';
+      if (!/^[a-zA-Z0-9]{1,87}$/.test(input)) {
+        return 'Lambda layer names must be 1-87 alphanumeric characters long.';
       } else if (meta?.function?.input || meta?.function?.[`${projectName}${input}`]) {
         return `A Lambda layer with the name ${input} already exists in this project.`;
       }
@@ -215,82 +214,6 @@ export function getLayerName(context: $TSContext, layerName: string): string {
   return isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName;
 }
 
-export async function loadLayerDataFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
-  const spinner = ora('Loading layer data from the cloud...').start();
-  let layerMetadata: LayerVersionMetadata[];
-  try {
-    const { envName }: { envName: string } = context.amplify.getEnvInfo();
-    const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
-    const Lambda = await providerPlugin.getLambdaSdk(context);
-    const layerVersionList = await Lambda.listLayerVersions(isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName);
-    const Cfn = await providerPlugin.getCloudFormationSdk(context);
-    const stackList = await Cfn.listStackResources();
-    const layerStacks = stackList?.StackResourceSummaries?.filter(stack => stack.LogicalResourceId.includes(layerName));
-    let detailedLayerStack;
-
-    if (layerStacks?.length > 0) {
-      detailedLayerStack = (await Cfn.listStackResources(layerStacks[0].PhysicalResourceId)).StackResourceSummaries; // TODO this only works for 1 layer
-    }
-    layerVersionList.forEach(layerVersion => {
-      let layerLogicalIdSuffix;
-      detailedLayerStack
-        .filter(stack => stack.ResourceType === 'AWS::Lambda::LayerVersion' && stack.PhysicalResourceId === layerVersion.LayerVersionArn)
-        .forEach(stack => {
-          layerVersion.LogicalName = stack.LogicalResourceId;
-          layerLogicalIdSuffix = stack.LogicalResourceId.replace('LambdaLayerVersion', '');
-        });
-
-      detailedLayerStack
-        .filter(
-          stack =>
-            stack.ResourceType === 'AWS::Lambda::LayerVersionPermission' &&
-            stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn,
-        )
-        .forEach(stack => {
-          // layer version permission
-          layerVersion.permissions = layerVersion.permissions || [];
-          const permissionTypeString = stack.LogicalResourceId.replace('LambdaLayerPermission', '').replace(layerLogicalIdSuffix, '');
-          const accountIds = [];
-          const orgIds = [];
-          if (permissionTypeString === PermissionEnum.Private) {
-            layerVersion.permissions.push({ type: PermissionEnum.Private });
-          } else if (permissionTypeString === PermissionEnum.Public) {
-            layerVersion.permissions.push({ type: PermissionEnum.Public });
-          } else if (permissionTypeString.startsWith(PermissionEnum.AwsAccounts)) {
-            accountIds.push(permissionTypeString.replace(PermissionEnum.AwsAccounts, ''));
-          } else if (permissionTypeString.startsWith(PermissionEnum.AwsOrg)) {
-            const orgId = permissionTypeString.replace(PermissionEnum.AwsOrg + 'o', 'o-');
-            orgIds.push(orgId);
-          }
-
-          if (accountIds.length > 0) {
-            layerVersion.permissions.push({
-              type: PermissionEnum.AwsAccounts,
-              accounts: accountIds,
-            });
-          }
-          if (orgIds.length > 0) {
-            layerVersion.permissions.push({
-              type: PermissionEnum.AwsOrg,
-              orgs: orgIds,
-            });
-          }
-        });
-      // temp logic for determining if legacy layer
-      layerVersion.LegacyLayer = !layerVersion.permissions || !layerVersion.LogicalName;
-    });
-    layerMetadata = layerVersionList;
-    layerMetadata.sort((a, b) => (a.Version > b.Version ? -1 : 1));
-  } catch (e) {
-    // TODO error handling
-    spinner.fail();
-    context.print.error(`An error occurred getting latest layer version metadata for "${layerName}": ${e}`);
-    throw e;
-  }
-  spinner.stop();
-  return layerMetadata;
-}
-
 // Check hash results for content changes, bump version if so
 export async function ensureLayerVersion(context: $TSContext, layerName: string, previousHash: string) {
   const currentHash = await hashLayerVersionContents(getLayerPath(layerName));
@@ -301,7 +224,7 @@ export async function ensureLayerVersion(context: $TSContext, layerName: string,
   }
 
   const layerParameters = loadStoredLayerParameters(context, layerName);
-  await updateLayerArtifacts(context, layerParameters, { layerParams: false });
+  await updateLayerArtifacts(context, layerParameters, { layerParams: false, cfnFile: true, description: false });
   return currentHash;
 }
 
@@ -366,10 +289,10 @@ export async function getChangedResources(resources: Array<$TSAny>): Promise<Arr
   return resources.filter((_, i) => resourceCheck[i]);
 }
 
-async function checkLambdaLayerChanges(resource: any): Promise<boolean> {
+async function checkLambdaLayerChanges(resource: $TSAny): Promise<boolean> {
   const { resourceName } = resource;
   const previousHash = loadPreviousLayerHash(resourceName);
-  if (!previousHash) return false;
+  if (!previousHash) return true;
   const currentHash = await hashLayerVersionContents(getLayerPath(resourceName));
   return currentHash !== previousHash;
 }

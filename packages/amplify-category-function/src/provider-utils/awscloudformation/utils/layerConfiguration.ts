@@ -61,17 +61,11 @@ export function saveLayerPermissions(layerDirPath: string, permissions: LayerPer
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 
-export function saveLayerDescription(layerName: string, description?: string) {
-  const layerConfig = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
-  stateManager.setResourceParametersJson(undefined, categoryName, layerName, {
-    ...layerConfig,
-    description,
-  });
-}
 function getLayerDescription(layerName: string): string {
   const { description } = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
   return description;
 }
+
 function getLayerDirPath(layerName: string): string {
   const backendDirPath = pathManager.getBackendDirPath();
   const layerConfigFilePath = path.join(backendDirPath, categoryName, layerName, layerConfigurationFileName);

@@ -3,6 +3,7 @@ import { DeletionPolicy, Fn, IntrinsicFunction, Refs } from 'cloudform-types';
 import Lambda from 'cloudform-types/types/lambda';
 import _ from 'lodash';
 import uuid from 'uuid';
+import { LayerCloudState } from './layerCloudState';
 import { getLayerVersionToBeRemovedByCfn } from './layerConfiguration';
 import { isMultiEnvLayer } from './layerHelpers';
 import { LayerParameters, LayerPermission, LayerVersionCfnMetadata, PermissionEnum } from './layerParams';
@@ -12,15 +13,20 @@ import { LayerParameters, LayerPermission, LayerVersionCfnMetadata, PermissionEn
  */
 export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerParameters, versionList: LayerVersionCfnMetadata[] = []) {
   const multiEnvLayer = isMultiEnvLayer(parameters.layerName);
+  const resourceName = parameters.layerName;
   const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
-  let logicalName;
+  let logicalName: string;
+
   if (isNewVersion) {
     const [shortId] = uuid().split('-');
     logicalName = `LambdaLayerVersion${shortId}`;
+    const layerCloudState = LayerCloudState.getInstance();
+    layerCloudState.latestVersionLogicalId = logicalName; // Store in singleton so it can be used in zipfile name
     versionList.push({ LogicalName: logicalName, LegacyLayer: false });
   } else {
     logicalName = versionList[versionList.length - 1].LogicalName;
   }
+
   const outputObj = {
     Outputs: {
       Arn: {
@@ -30,15 +36,16 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
   };
   const cfnObj = getLayerCfnObjBase();
   const { envName } = stateManager.getLocalEnvInfo();
-  const layerVersions = getLayerVersionToBeRemovedByCfn(parameters.layerName, envName);
-  const skipLayerVersionSet = new Set<number>(layerVersions);
+  const layerVersionsToBeRemoved = getLayerVersionToBeRemovedByCfn(parameters.layerName, envName);
+  const skipLayerVersionSet = new Set<number>(layerVersionsToBeRemoved);
 
   for (const layerVersion of versionList.filter(r => !r.LegacyLayer && !skipLayerVersionSet.has(r.Version))) {
-    cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion);
+    cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion, resourceName);
     const shortId = layerVersion.LogicalName.replace('LambdaLayerVersion', '');
     const permissionObjects = constructLayerVersionPermissionObjects(layerVersion, parameters, shortId);
     permissionObjects.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
   }
+
   return { ...cfnObj, ...outputObj };
 }
 
@@ -68,14 +75,19 @@ function getLayerCfnObjBase() {
   };
 }
 
-function constructLayerVersionCfnObject(layerName: string | IntrinsicFunction, layerVersion: LayerVersionCfnMetadata) {
+function constructLayerVersionCfnObject(
+  layerName: string | IntrinsicFunction,
+  layerVersion: LayerVersionCfnMetadata,
+  resourceName: string,
+) {
+  const description: string | IntrinsicFunction = layerVersion.CreatedDate ? layerVersion.Description : Fn.Ref('description');
   const newLayerVersion = new Lambda.LayerVersion({
     CompatibleRuntimes: layerVersion.CompatibleRuntimes || Fn.Ref('runtimes'),
     Content: {
       S3Bucket: Fn.Ref('deploymentBucketName'),
-      S3Key: Fn.Ref('s3Key'),
+      S3Key: layerVersion.CreatedDate ? `amplify-builds/${resourceName}-${layerVersion.LogicalName}-build.zip` : Fn.Ref('s3Key'),
     },
-    Description: layerVersion.Description || Fn.Ref('description'),
+    Description: description,
     LayerName: layerName,
   });
   newLayerVersion.deletionPolicy(DeletionPolicy.Delete);

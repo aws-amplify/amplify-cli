@@ -7,8 +7,9 @@ import { category as categoryName } from '../../../constants';
 import { functionParametersFileName, parametersFileName, provider, ServiceName } from './constants';
 import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
-import { isMultiEnvLayer, isNewVersion, loadLayerDataFromCloud, loadPreviousLayerHash } from './layerHelpers';
-import { createLayerConfiguration, saveLayerDescription, saveLayerPermissions } from './layerConfiguration';
+import { LayerCloudState } from './layerCloudState';
+import { isMultiEnvLayer, isNewVersion, loadPreviousLayerHash } from './layerHelpers';
+import { createLayerConfiguration, saveLayerPermissions } from './layerConfiguration';
 import { LayerParameters, LayerRuntime, LayerVersionMetadata } from './layerParams';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
@@ -40,8 +41,9 @@ const defaultOpts = {
   layerParams: true,
   cfnFile: true,
   amplifyMeta: true,
-  params: true,
+  description: true,
 };
+
 export const updateLayerArtifacts = async (
   context: $TSContext,
   parameters: LayerParameters,
@@ -53,8 +55,7 @@ export const updateLayerArtifacts = async (
   if (options.layerParams) {
     saveLayerPermissions(layerDirPath, parameters.permissions);
   }
-
-  if (options.params) {
+  if (options.description) {
     saveLayerDescription(parameters.layerName, parameters.description);
   }
   if (options.cfnFile) {
@@ -111,6 +112,14 @@ function writeLayerRuntimesToParametersFile(parameters: LayerParameters) {
     return runtimes;
   }, []);
   stateManager.setResourceParametersJson(undefined, categoryName, parameters.layerName, { runtimes });
+}
+
+function saveLayerDescription(layerName: string, description?: string) {
+  const layerConfig = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
+  stateManager.setResourceParametersJson(undefined, categoryName, layerName, {
+    ...layerConfig,
+    description,
+  });
 }
 
 function copyTemplateFiles(context: $TSContext, parameters: FunctionParameters | FunctionTriggerParameters) {
@@ -189,9 +198,10 @@ function createLayerCfnFile(parameters: LayerParameters, layerDirPath: string) {
 }
 
 async function updateLayerCfnFile(context: $TSContext, parameters: LayerParameters, layerDirPath: string) {
-  let layerVersionList = [];
+  let layerVersionList: LayerVersionMetadata[] = [];
   if (loadPreviousLayerHash(parameters.layerName)) {
-    layerVersionList = await loadLayerDataFromCloud(context, parameters.layerName);
+    const layerCloudState = LayerCloudState.getInstance();
+    layerVersionList = await layerCloudState.getLayerVersionsFromCloud(context, parameters.layerName);
   }
   const _isNewVersion = await isNewVersion(parameters.layerName);
   saveCFNFileWithLayerVersion(layerDirPath, parameters, _isNewVersion, layerVersionList);
@@ -290,7 +300,7 @@ function createBreadcrumbs(params: FunctionParameters | FunctionTriggerParameter
   };
 }
 
-export function saveCFNFileWithLayerVersion(
+function saveCFNFileWithLayerVersion(
   layerDirPath: string,
   parameters: LayerParameters,
   _isNewVersion: boolean,

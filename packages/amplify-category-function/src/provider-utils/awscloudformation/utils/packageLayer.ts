@@ -8,7 +8,9 @@ import { Packager } from '../types/packaging-types';
 import { LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
 import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import { ServiceName } from './constants';
+import { LayerCloudState } from './layerCloudState';
 import { loadPreviousLayerHash, ensureLayerVersion, validFilesize, loadStoredLayerParameters, getChangedResources } from './layerHelpers';
+import { LayerPermission, PermissionEnum } from './layerParams';
 import { zipPackage } from './zipResource';
 import { accessPermissions, description } from './constants';
 import { updateLayerArtifacts } from './storeResources';
@@ -51,9 +53,14 @@ export const packageLayer: Packager = async (context, resource) => {
   if (packageHash) {
     await zipPackage(packageResult.zipEntries, destination);
   }
-  const zipFilename = packageHash
-    ? `${resource.resourceName}-${packageHash}-build.zip`
-    : resource.distZipFilename ?? `${resource.category}-${resource.resourceName}-build.zip`;
+
+  const layerCloudState = LayerCloudState.getInstance();
+  if (!layerCloudState.latestVersionLogicalId) {
+    // "Should" never be reachable, but sanity check just in case
+    throw new Error('LogicalId missing for new layer version.');
+  }
+
+  const zipFilename = `${resource.resourceName}-${layerCloudState.latestVersionLogicalId}-build.zip`;
   // check zip size is less than 250MB
   if (validFilesize(context, destination)) {
     context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: 'versionHash', hashValue: currentHash });
@@ -63,35 +70,45 @@ export const packageLayer: Packager = async (context, resource) => {
   return { zipFilename, zipFilePath: destination };
 };
 
-export async function checkContentChanges(context: $TSContext, resources: Array<$TSAny>): Promise<void> {
-  const changedResources = await getChangedResources(resources);
+export async function checkContentChanges(context: $TSContext, layerResources: Array<$TSAny>): Promise<void> {
+  const changedLayerResources = await getChangedResources(layerResources);
 
-  if (changedResources.length > 0) {
+  const defaultLayerPermission: LayerPermission = { type: PermissionEnum.Private };
+
+  if (changedLayerResources.length > 0) {
     context.print.info('Content changes in Lambda layers detected.');
     context.print.info('Suggested configuration for new layer versions:');
     context.print.info('');
 
     const timestampString = new Date().toISOString();
-    const prepushNotificationMessage = changedResources.map(resource => {
-      const { resourceName } = resource;
+    const prepushNotificationMessage = changedLayerResources.map(layer => {
+      const { resourceName } = layer;
+      const parameters = loadStoredLayerParameters(context, resourceName);
+      layer.parameters = parameters;
+      if (!_.isEqual(parameters.permissions, [defaultLayerPermission])) {
+        return ` ${resourceName}
+  - ${accessPermissions}: ${chalk.green('Maintain existing permissions')}
+  - ${description}: ${chalk.green('Updated layer version ') + chalk.gray(timestampString)}`;
+      }
       return ` ${resourceName}
-      - ${accessPermissions}: ${chalk.green('Maintain existing permissions')}
-      - ${description}: ${chalk.green('Updated layer version ') + chalk.gray(timestampString)}`;
+  - ${description}: ${chalk.green('Updated layer version ') + chalk.gray(timestampString)}`;
     });
+
     context.print.info(prepushNotificationMessage.join(EOL));
     context.print.info('');
 
     const accepted =
       context.input.options?.yes || (await context.prompt.confirm('Accept the suggested layer version configurations?', true));
-    for (const resource of changedResources) {
-      let parameters = loadStoredLayerParameters(context, resource.resourceName);
+    for (const layer of changedLayerResources) {
+      let { parameters } = layer;
       if (!accepted) {
         parameters = await lambdaLayerNewVersionWalkthrough(parameters, timestampString);
       } else {
         parameters.description = `Updated layer version ${timestampString}`;
       }
 
-      await updateLayerArtifacts(context, parameters);
+      // No need to update cfn or meta files since it will be updated during the packageLayer step
+      await updateLayerArtifacts(context, parameters, { amplifyMeta: false, cfnFile: false, description: true, layerParams: true });
     }
   }
 }

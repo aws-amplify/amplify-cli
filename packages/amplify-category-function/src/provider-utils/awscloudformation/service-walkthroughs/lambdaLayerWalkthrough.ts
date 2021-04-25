@@ -3,6 +3,7 @@ import inquirer, { InputQuestion } from 'inquirer';
 import _ from 'lodash';
 import { ServiceName } from '../utils/constants';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
+import { LayerCloudState } from '../utils/layerCloudState';
 import {
   layerAccountAccessPrompt,
   LayerInputParams,
@@ -11,7 +12,6 @@ import {
   layerOrgAccessPrompt,
   layerPermissionsQuestion,
   layerVersionQuestion,
-  loadLayerDataFromCloud,
   loadPreviousLayerHash,
   loadStoredLayerParameters,
   previousPermissionsQuestion,
@@ -56,7 +56,6 @@ export async function createLayerWalkthrough(
   }
   parameters.permissions = layerInputParamsToLayerPermissionArray(layerInputParameters);
   parameters.build = true;
-  parameters.description = await descriptionQuestion(new Date().toISOString(), true);
   return parameters;
 }
 
@@ -106,7 +105,8 @@ export async function updateLayerWalkthrough(
 
     // select layer version
     if (layerHasDeployed) {
-      const layerVersions = await loadLayerDataFromCloud(context, parameters.layerName);
+      const layerCloudState = LayerCloudState.getInstance();
+      const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, parameters.layerName);
       const latestVersionText = 'The latest version';
       const layerVersionChoices = [latestVersionText, ...layerVersions.map(layerVersionMetadata => String(layerVersionMetadata.Version))];
       const selectedVersion: string = (await inquirer.prompt(layerVersionQuestion(layerVersionChoices))).layerVersion;
