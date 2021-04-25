@@ -85,7 +85,6 @@ export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase:
     chain.wait('The current AWS account will always have access to this layer.');
 
     multiSelect(chain, settings.permissions, permissionChoices);
-    chain.wait('Description').sendCarriageReturn();
     waitForLayerSuccessPrintout(chain, settings, 'created');
 
     chain.run((err: Error) => {

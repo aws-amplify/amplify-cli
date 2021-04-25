@@ -17,6 +17,11 @@ export const description = 'Description';
 export const skipVersionsField = 'layerVersionsToDelete';
 export const ephemeralField = 'ephemeral';
 
+export const enum LayerCfnLogicalNamePrefix {
+  LambdaLayerVersion = 'LambdaLayerVersion',
+  LambdaLayerVersionPermission = 'LambdaLayerPermission',
+}
+
 export const enum ServiceName {
   LambdaFunction = 'Lambda',
   LambdaLayer = 'LambdaLayer',

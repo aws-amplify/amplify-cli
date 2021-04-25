@@ -246,7 +246,7 @@ function getLambdaLayerResources(resources: Array<$TSAny>) {
   return resources.filter(r => r.service === ServiceName.LambdaLayer && r.category === category);
 }
 
-export async function postPushCleanUp(context: $TSContext, resource: Array<$TSAny>, envName: string): Promise<void> {
+export async function postPushCleanup(resource: Array<$TSAny>, envName: string): Promise<void> {
   const lambdaLayerResource = getLambdaLayerResources(resource);
   lambdaLayerResource.forEach(resource => {
     deleteLayerVersionToBeRemovedByCfn(resource.resourceName, envName);

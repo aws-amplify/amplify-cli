@@ -1,5 +1,6 @@
 import { $TSContext, promptConfirmationRemove, stateManager } from 'amplify-cli-core';
-import { getLayerName, loadLayerDataFromCloud } from '../utils/layerHelpers';
+import { LayerCloudState } from '../utils/layerCloudState';
+import { getLayerName } from '../utils/layerHelpers';
 import { LayerVersionMetadata } from '../utils/layerParams';
 import inquirer, { QuestionCollection } from 'inquirer';
 import ora from 'ora';
@@ -9,13 +10,13 @@ import { saveLayerVersionToBeRemovedByCfn } from '../utils/layerConfiguration';
 
 const removeLayerQuestion = 'Choose the Layer versions you want to remove.';
 export async function removeWalkthrough(context: $TSContext, layerName: string) {
-  const allLayerVersions = await loadLayerDataFromCloud(context, layerName);
-
+  const layerCloudState = LayerCloudState.getInstance();
+  const layerVersionList = await layerCloudState.getLayerVersionsFromCloud(context, layerName);
   // if the layer hasn't been pushed return and remove it
-  if (allLayerVersions.length === 0) {
+  if (layerVersionList.length === 0) {
     return layerName;
   }
-  const { versions } = await inquirer.prompt(question(allLayerVersions));
+  const { versions } = await inquirer.prompt(question(layerVersionList));
   const selectedLayerVersion = versions as LayerVersionMetadata[];
 
   //if nothing is selected return;
@@ -24,7 +25,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string) 
   }
 
   //if everything is selected remove the layer entirely
-  if (selectedLayerVersion.length === allLayerVersions.length) {
+  if (selectedLayerVersion.length === layerVersionList.length) {
     return layerName;
   }
 
