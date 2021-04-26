@@ -41,6 +41,14 @@ describe('remove walkthough test', () => {
       getLayerName: jest.fn().mockReturnValue(layerName),
     }));
 
+    jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState', () => ({
+      LayerCloudState: {
+        getInstance: jest.fn().mockReturnValue({
+          getLayerVersionsFromCloud: loadLayerDataFromCloudMock,
+        }),
+      },
+    }));
+
     jest.mock('inquirer', () => ({
       prompt: selectPromptMock,
     }));
