@@ -38,7 +38,7 @@ export const packageLayer: Packager = async (context, resource) => {
 
   if (previousHash === currentHash) {
     // This happens when a Lambda layer's permissions have been updated, but no new layer version needs to be pushed
-    return { continuePackaging: false, zipFilename: undefined, zipFilePath: undefined };
+    return { newPackageCreated: false, zipFilename: undefined, zipFilePath: undefined };
   }
 
   // prepare package request
@@ -73,7 +73,7 @@ export const packageLayer: Packager = async (context, resource) => {
   } else {
     throw new Error('File size greater than 250MB');
   }
-  return { continuePackaging: true, zipFilename, zipFilePath: destination };
+  return { newPackageCreated: true, zipFilename, zipFilePath: destination };
 };
 
 export async function checkContentChanges(context: $TSContext, layerResources: Array<$TSAny>): Promise<void> {

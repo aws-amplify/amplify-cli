@@ -500,7 +500,8 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
     context,
     resource,
   ]);
-  const result: { continuePackaging: boolean; zipFilename: string; zipFilePath: string } = await context.amplify.invokePluginMethod(
+
+  const result: { newPackageCreated: boolean; zipFilename: string; zipFilePath: string } = await context.amplify.invokePluginMethod(
     context,
     'function',
     undefined,
@@ -508,7 +509,7 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
     [context, resource],
   );
 
-  if (!result.continuePackaging) {
+  if (!result.newPackageCreated) {
     return;
   }
 
