@@ -6,11 +6,11 @@ import {
   askLayerOrderQuestion,
   askLayerSelection,
 } from '../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils';
-import { loadLayerDataFromCloud } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
+import { LayerCloudState } from '../../../../provider-utils/awscloudformation/utils/layerCloudState';
 import { LayerVersionMetadata } from '../../../../provider-utils/awscloudformation/utils/layerParams';
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils');
-jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers');
+jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');
 jest.mock('amplify-cli-core');
 
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
@@ -31,8 +31,6 @@ stateManager_mock.getMeta.mockReturnValue({
 const askLayerSelection_mock = askLayerSelection as jest.MockedFunction<typeof askLayerSelection>;
 const askCustomArnQuestion_mock = askCustomArnQuestion as jest.MockedFunction<typeof askCustomArnQuestion>;
 const askLayerOrderQuestion_mock = askLayerOrderQuestion as jest.MockedFunction<typeof askLayerOrderQuestion>;
-
-const loadLayerDataFromCloud_mock = loadLayerDataFromCloud as jest.MockedFunction<typeof loadLayerDataFromCloud>;
 
 const confirmPromptFalse_mock = jest.fn(() => false);
 const confirmPromptTrue_mock = jest.fn(() => true);
@@ -75,6 +73,11 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
     LegacyLayer: true,
   },
 ];
+
+const layerCloudState_mock = LayerCloudState as jest.Mocked<typeof LayerCloudState>;
+layerCloudState_mock.getInstance.mockReturnValue(({
+  getLayerVersionsFromCloud: jest.fn(async () => layerCloudReturnStub),
+} as unknown) as LayerCloudState);
 
 const layerSelectionStub: LambdaLayer[] = [
   {
@@ -128,8 +131,6 @@ askLayerSelection_mock.mockImplementation(async () => ({
 askCustomArnQuestion_mock.mockImplementation(async () => arnEntryStub);
 
 askLayerOrderQuestion_mock.mockImplementation(async layers => layers);
-
-loadLayerDataFromCloud_mock.mockImplementation(async () => layerCloudReturnStub);
 
 describe('add layer to function walkthrough', () => {
   beforeEach(() => {

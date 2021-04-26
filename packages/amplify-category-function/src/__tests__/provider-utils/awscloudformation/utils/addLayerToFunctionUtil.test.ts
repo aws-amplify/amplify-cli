@@ -11,13 +11,13 @@ import {
 } from '../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils';
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
 import { getLayerRuntimes } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
-import { loadLayerDataFromCloud } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
+import { LayerCloudState } from '../../../../provider-utils/awscloudformation/utils/layerCloudState';
 import { LayerVersionMetadata } from '../../../../provider-utils/awscloudformation/utils/layerParams';
 
 jest.mock('inquirer');
 jest.mock('enquirer', () => ({ prompt: jest.fn() }));
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers');
-
+jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration', () => ({
   getLayerRuntimes: jest.fn(),
 }));
@@ -32,8 +32,6 @@ const context_stub = ({
     getProviderPlugins: jest.fn(),
   },
 } as unknown) as $TSContext;
-
-const loadLayerDataFromCloud_mock = loadLayerDataFromCloud as jest.MockedFunction<typeof loadLayerDataFromCloud>;
 
 const runtimeValue = 'lolcode';
 
@@ -96,7 +94,11 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
   },
 ];
 
-loadLayerDataFromCloud_mock.mockImplementation(async () => layerCloudReturnStub);
+const layerCloudState_mock = LayerCloudState as jest.Mocked<typeof LayerCloudState>;
+layerCloudState_mock.getInstance.mockReturnValue(({
+  getLayerVersionsFromCloud: jest.fn(async () => layerCloudReturnStub),
+  latestVersionLogicalId: 'mockLogicalId',
+} as unknown) as LayerCloudState);
 
 describe('layer selection question', () => {
   beforeEach(() => {
