@@ -1,6 +1,7 @@
 'use strict';
 import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
+import { parse } from 'graphql';
 import { FunctionTransformer } from '..';
 
 test('it generates the expected resources', () => {
@@ -17,6 +18,7 @@ test('it generates the expected resources', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.stacks).toBeDefined();
+  parse(out.schema);
   const stack = out.stacks.FunctionDirectiveStack;
   expect(stack).toBeDefined();
   cdkExpect(stack).to(countResources('AWS::IAM::Role', 1));
@@ -122,6 +124,7 @@ test('it generates the expected resources', () => {
       },
     }),
   );
+  expect(out.pipelineFunctions).toMatchSnapshot();
 });
 
 test('two @function directives for the same lambda should produce a single datasource, single role and two resolvers', () => {
@@ -137,6 +140,7 @@ test('two @function directives for the same lambda should produce a single datas
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
+  parse(out.schema);
   expect(out.stacks).toBeDefined();
   const stack = out.stacks.FunctionDirectiveStack;
   expect(stack).toBeDefined();
@@ -159,6 +163,7 @@ test('two @function directives for the same field should be valid', () => {
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
+  parse(out.schema);
   expect(out.stacks).toBeDefined();
   const stack = out.stacks.FunctionDirectiveStack;
   expect(stack).toBeDefined();
