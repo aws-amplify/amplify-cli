@@ -11,7 +11,13 @@ jest.mock('amplify-cli-core');
 jest.mock('../../../../provider-utils/awscloudformation/utils/functionPluginLoader');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');
-jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers');
+jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers', () => ({
+  loadPreviousLayerHash: jest.fn(),
+  validFilesize: jest.fn(),
+  loadStoredLayerParameters: jest.fn(),
+  getChangedResources: jest.fn(),
+  ensureLayerVersion: jest.fn().mockReturnValue('newhash'),
+}));
 
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 
