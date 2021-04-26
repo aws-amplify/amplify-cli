@@ -500,13 +500,17 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
     context,
     resource,
   ]);
-  const result: { zipFilename: string; zipFilePath: string } = await context.amplify.invokePluginMethod(
+  const result: { continuePackaging: boolean; zipFilename: string; zipFilePath: string } = await context.amplify.invokePluginMethod(
     context,
     'function',
     undefined,
     'packageResource',
     [context, resource],
   );
+
+  if (!result.continuePackaging) {
+    return;
+  }
 
   const { envName }: { envName: string } = context.amplify.getEnvInfo();
   // Upload zip file to S3
@@ -530,8 +534,8 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
 
   // Update cfn template
   const { category, resourceName }: { category: string; resourceName: string } = resource;
-  const backEndDir = pathManager.getBackendDirPath();
-  const resourceDir = path.normalize(path.join(backEndDir, category, resourceName));
+  const backendDir = pathManager.getBackendDirPath();
+  const resourceDir = path.normalize(path.join(backendDir, category, resourceName));
 
   const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
     cwd: resourceDir,
@@ -583,16 +587,17 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
 }
 
 function storeS3BucketInfo(category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) {
-  const amplifyMeta = stateManager.getMeta();
-  const teamProviderInfo = stateManager.getTeamProviderInfo();
+  const projectPath = pathManager.findProjectRoot();
+  const amplifyMeta = stateManager.getMeta(projectPath);
+  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath);
 
   const tpiResourceParams: $TSAny = _.get(teamProviderInfo, [envName, 'categories', category, resourceName], {});
   _.assign(tpiResourceParams, { deploymentBucketName, s3Key });
   _.set(teamProviderInfo, [envName, 'categories', category, resourceName], tpiResourceParams);
 
   _.set(amplifyMeta, [category, resourceName, 's3Bucket'], { deploymentBucketName, s3Key });
-  stateManager.setMeta(undefined, amplifyMeta);
-  stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+  stateManager.setMeta(projectPath, amplifyMeta);
+  stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
 }
 
 async function updateCloudFormationNestedStack(
