@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`convert Both Layer when add/checkout to same env 1`] = `
+exports[`convert both layers when add/checkout to same env 1`] = `
 Array [
   Object {
     "env": "dev",
@@ -12,7 +12,7 @@ Array [
 ]
 `;
 
-exports[`convert Both Layer when add/checkout to same env 2`] = `
+exports[`convert both layers when add/checkout to same env 2`] = `
 Array [
   Object {
     "env": "dev",
