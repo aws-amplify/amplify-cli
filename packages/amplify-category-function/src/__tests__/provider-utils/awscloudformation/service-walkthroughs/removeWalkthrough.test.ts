@@ -3,8 +3,8 @@ describe('remove walkthough test', () => {
   const envName = 'testenv';
   const layerName = 'layerName';
   const module = __dirname + '/dummy_module';
-  const deleteLayerVersionMockFn = jest.fn();
-  const saveLayerVersionToBeRemovedByCfn = jest.fn();
+  const deleteLayerVersionsMockFn = jest.fn();
+  const saveLayerVersionsToBeRemovedByCfn = jest.fn();
   const loadLayerDataFromCloudMock = jest.fn();
   const selectPromptMock = jest.fn();
   beforeEach(() => {
@@ -28,12 +28,12 @@ describe('remove walkthough test', () => {
 
     jest.mock(module, () => ({
       getLambdaSdk: jest.fn().mockReturnValue({
-        deleteLayerVersions: deleteLayerVersionMockFn,
+        deleteLayerVersions: deleteLayerVersionsMockFn,
       }),
     }));
 
     jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration', () => ({
-      saveLayerVersionToBeRemovedByCfn: saveLayerVersionToBeRemovedByCfn,
+      saveLayerVersionsToBeRemovedByCfn: saveLayerVersionsToBeRemovedByCfn,
     }));
 
     jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers', () => ({
@@ -55,8 +55,8 @@ describe('remove walkthough test', () => {
   });
 
   afterEach(() => {
-    deleteLayerVersionMockFn.mockClear();
-    saveLayerVersionToBeRemovedByCfn.mockClear();
+    deleteLayerVersionsMockFn.mockClear();
+    saveLayerVersionsToBeRemovedByCfn.mockClear();
     loadLayerDataFromCloudMock.mockClear();
     selectPromptMock.mockClear();
   });
@@ -86,10 +86,10 @@ describe('remove walkthough test', () => {
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
     expect(returnValue).toBeUndefined();
-    expect(saveLayerVersionToBeRemovedByCfn).toBeCalled();
-    expect(saveLayerVersionToBeRemovedByCfn).toBeCalledWith(layerName, [3], envName);
-    expect(deleteLayerVersionMockFn).toBeCalled();
-    expect(deleteLayerVersionMockFn).toBeCalledWith(layerName, [2]);
+    expect(saveLayerVersionsToBeRemovedByCfn).toBeCalled();
+    expect(saveLayerVersionsToBeRemovedByCfn).toBeCalledWith(layerName, [3], envName);
+    expect(deleteLayerVersionsMockFn).toBeCalled();
+    expect(deleteLayerVersionsMockFn).toBeCalledWith(layerName, [2]);
   });
 
   it('tests with legacy', async () => {
@@ -116,11 +116,11 @@ describe('remove walkthough test', () => {
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
     expect(returnValue).toBeUndefined();
-    expect(saveLayerVersionToBeRemovedByCfn).toBeCalled();
+    expect(saveLayerVersionsToBeRemovedByCfn).toBeCalled();
 
-    expect(saveLayerVersionToBeRemovedByCfn).toBeCalledWith(layerName, [], envName);
-    expect(deleteLayerVersionMockFn).toBeCalled();
-    expect(deleteLayerVersionMockFn).toBeCalledWith(layerName, [2, 3]);
+    expect(saveLayerVersionsToBeRemovedByCfn).toBeCalledWith(layerName, [], envName);
+    expect(deleteLayerVersionsMockFn).toBeCalled();
+    expect(deleteLayerVersionsMockFn).toBeCalledWith(layerName, [2, 3]);
   });
 
   it('tests with new', async () => {
@@ -147,11 +147,11 @@ describe('remove walkthough test', () => {
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
     expect(returnValue).toBeUndefined();
-    expect(saveLayerVersionToBeRemovedByCfn).toBeCalled();
+    expect(saveLayerVersionsToBeRemovedByCfn).toBeCalled();
 
-    expect(saveLayerVersionToBeRemovedByCfn).toBeCalledWith(layerName, [2, 3], envName);
-    expect(deleteLayerVersionMockFn).toBeCalled();
-    expect(deleteLayerVersionMockFn).toBeCalledWith(layerName, []);
+    expect(saveLayerVersionsToBeRemovedByCfn).toBeCalledWith(layerName, [2, 3], envName);
+    expect(deleteLayerVersionsMockFn).toBeCalled();
+    expect(deleteLayerVersionsMockFn).toBeCalledWith(layerName, []);
   });
 
   it('all version selected', async () => {
@@ -172,9 +172,9 @@ describe('remove walkthough test', () => {
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
     expect(returnValue).toBeDefined();
-    expect(saveLayerVersionToBeRemovedByCfn).not.toBeCalled();
+    expect(saveLayerVersionsToBeRemovedByCfn).not.toBeCalled();
 
-    expect(deleteLayerVersionMockFn).not.toBeCalled();
+    expect(deleteLayerVersionsMockFn).not.toBeCalled();
   });
 
   it('no version selected', async () => {
@@ -195,8 +195,8 @@ describe('remove walkthough test', () => {
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
     expect(returnValue).toBeUndefined();
-    expect(saveLayerVersionToBeRemovedByCfn).not.toBeCalled();
+    expect(saveLayerVersionsToBeRemovedByCfn).not.toBeCalled();
 
-    expect(deleteLayerVersionMockFn).not.toBeCalled();
+    expect(deleteLayerVersionsMockFn).not.toBeCalled();
   });
 });
