@@ -315,14 +315,10 @@ function getDefaultEditor() {
 }
 
 /**
- *Checks if `amplify env add` has been executed
+ * Checks if `amplify env add` has been executed
  * @param {$TSContext} context The Amplify context object
  * @returns `boolean`
  */
 function checkEnvAddExec(context): boolean {
-  if (context.parameters.command === 'env' && context.parameters.array[0] === 'add') {
-    return true;
-  } else {
-    return false;
-  }
+  return context.parameters.command === 'env' && context.parameters.array[0] === 'add';
 }
