@@ -1,14 +1,12 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { hashElement, HashElementOptions } from 'folder-hash';
-import glob from 'glob';
-import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
-import { getHashForResourceDir } from './resource-status';
-import { JSONUtilities, pathManager, stateManager, $TSAny, $TSMeta, $TSObject, ResourceTuple } from 'amplify-cli-core';
-import { ServiceName } from 'amplify-category-function';
-import _ from 'lodash';
+import { buildTypeKeyMap, ServiceName } from 'amplify-category-function';
+import { $TSAny, $TSMeta, $TSObject, JSONUtilities, pathManager, ResourceTuple, stateManager } from 'amplify-cli-core';
 import { BuildType } from 'amplify-function-plugin-interface';
-import { buildTypeKeyMap } from 'amplify-category-function';
+import * as fs from 'fs-extra';
+import glob from 'glob';
+import _ from 'lodash';
+import * as path from 'path';
+import { getHashForResourceDir } from './resource-status';
+import { updateBackendConfigAfterResourceAdd, updateBackendConfigAfterResourceUpdate } from './update-backend-config';
 
 export function updateAwsMetaFile(
   filePath: string,

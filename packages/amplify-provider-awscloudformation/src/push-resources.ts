@@ -171,8 +171,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     await uploadAppSyncFiles(context, resources, allResources);
     await prePushAuthTransform(context, resources);
     await prePushGraphQLCodegen(context, resourcesToBeCreated, resourcesToBeUpdated);
-
-    let projectDetails = context.amplify.getProjectDetails();
+    const projectDetails = context.amplify.getProjectDetails();
     await updateS3Templates(context, resources, projectDetails.amplifyMeta);
 
     // We do not need CloudFormation update if only syncable resources are the changes.
@@ -324,9 +323,14 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     await downloadAPIModels(context, newAPIresources);
 
+    // remove emphemeral Lambda layer state
+    if (resources.concat(resourcesToBeDeleted).filter(r => r.service === FunctionServiceNameLambdaLayer).length > 0) {
+      postPushLambdaLayerCleanup(context, resources, projectDetails.localEnvInfo.envName);
+      await context.amplify.updateamplifyMetaAfterPush(resources);
+    }
+
     // Store current cloud backend in S3 deployment bcuket
     await storeCurrentCloudBackend(context);
-    await postPushLambdaLayerCleanup(context, resources, projectDetails.localEnvInfo.envName);
     await amplifyServiceManager.storeArtifactsForAmplifyService(context);
 
     //check for auth resources and remove deployment secret for push
