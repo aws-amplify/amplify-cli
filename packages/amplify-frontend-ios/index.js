@@ -63,9 +63,11 @@ async function handleAmplifyEvent(context, args) {
   const { frontend } = context.amplify.getProjectConfig();
   const isXcodeIntegrationEnabled = FeatureFlags.getBoolean('frontend-ios.enableXcodeIntegration');
   const isFrontendiOS = frontend === 'ios';
-  if (!isFrontendiOS || !isXcodeIntegrationEnabled) {
+  const isMacOs = process.platform === 'darwin';
+  if (!isFrontendiOS || !isXcodeIntegrationEnabled || !isMacOs) {
     return;
   }
+  context.print.info('Updating iOS project');
   const projectPath = process.cwd();
   switch (args.event) {
     case 'PostInit':
@@ -81,6 +83,7 @@ async function handleAmplifyEvent(context, args) {
     default:
       break;
   }
+  context.print.info('Amplify setup completed successfully.');
 }
 
 const getPackageAssetPaths = async () => ['resources'];
