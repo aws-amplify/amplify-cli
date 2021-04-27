@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.45.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.45.0-beta.0...amplify-provider-awscloudformation@4.45.0-beta.1) (2021-04-27)
+
+
+### Bug Fixes
+
+* profile validation to include source_profile and role_arn ([#7173](https://github.com/aws-amplify/amplify-cli/issues/7173)) ([70a980f](https://github.com/aws-amplify/amplify-cli/commit/70a980f757cfe6a177818bb2295ff85e06f387b1))
+
+
+
+
+
 # [4.45.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.44.0...amplify-provider-awscloudformation@4.45.0-beta.0) (2021-04-23)
 
 
