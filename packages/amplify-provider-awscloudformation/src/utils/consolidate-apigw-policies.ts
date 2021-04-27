@@ -239,6 +239,7 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
   const resourceDir = getResourceDirPath(context, 'api', resourceName);
   const cfnTemplate = path.join(resourceDir, `${resourceName}-cloudformation-template.json`);
   const paramsFile = path.join(resourceDir, 'parameters.json');
+  const apiParamsFile = path.join(resourceDir, API_PARAMS_FILE);
   const cfn: any = JSONUtilities.readJson(cfnTemplate, { throwIfNotExist: false }) ?? {};
   const parameterJson = JSONUtilities.readJson(paramsFile, { throwIfNotExist: false }) ?? {};
   const parameters = cfn?.Parameters ?? {};
@@ -271,8 +272,24 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
     }
   }
 
+  if (Array.isArray(api.params.paths)) {
+    api.params.paths.forEach(path => {
+      if (!path.policyResourceName) {
+        if (typeof path.name !== 'string') {
+          const err = new Error(`Malformed parameters file for REST API ${resourceName}`);
+          err.stack = undefined;
+          throw err;
+        }
+
+        path.policyResourceName = path.name.replace(/{[a-zA-Z0-9\-]+}/g, '*');
+        modified = true;
+      }
+    });
+  }
+
   if (modified) {
     JSONUtilities.writeJson(cfnTemplate, cfn);
     JSONUtilities.writeJson(paramsFile, parameterJson);
+    JSONUtilities.writeJson(apiParamsFile, api.params);
   }
 }
