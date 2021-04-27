@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.3...amplify-category-api@2.31.4) (2021-04-27)
+
+
+### Bug Fixes
+
+* consolidate REST API IAM policies ([#6904](https://github.com/aws-amplify/amplify-cli/issues/6904)) (ref [#2084](https://github.com/aws-amplify/amplify-cli/issues/2084)) ([5cfff17](https://github.com/aws-amplify/amplify-cli/commit/5cfff173d57ec9ab68984faf2d0f6474eccdcaae))
+* handle errors and provide better error message when adding data source ([#7117](https://github.com/aws-amplify/amplify-cli/issues/7117)) (ref [#4384](https://github.com/aws-amplify/amplify-cli/issues/4384)) ([888829b](https://github.com/aws-amplify/amplify-cli/commit/888829ba6f53209ca12d215ed510d5e201d025ee))
+
+
+
+
+
 ## [2.31.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.2...amplify-category-api@2.31.3) (2021-04-19)
 
 **Note:** Version bump only for package amplify-category-api

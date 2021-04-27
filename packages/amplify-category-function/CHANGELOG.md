@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.3...amplify-category-function@2.31.4) (2021-04-27)
+
+
+### Bug Fixes
+
+* lambdaLayers DependsOn removal ([#7021](https://github.com/aws-amplify/amplify-cli/issues/7021)) (ref [#6435](https://github.com/aws-amplify/amplify-cli/issues/6435) [#5961](https://github.com/aws-amplify/amplify-cli/issues/5961)) ([83c3c3c](https://github.com/aws-amplify/amplify-cli/commit/83c3c3ce3771fc5cb07e58c6e605dce6b547483a))
+
+
+
+
+
 ## [2.31.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.2...amplify-category-function@2.31.3) (2021-04-19)
 
 **Note:** Version bump only for package amplify-category-function

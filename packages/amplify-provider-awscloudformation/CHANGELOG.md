@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.45.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.44.0...amplify-provider-awscloudformation@4.45.0) (2021-04-27)
+
+
+
+# 4.50.0 (2021-04-23)
+
+
+### Bug Fixes
+
+* consolidate REST API IAM policies ([#6904](https://github.com/aws-amplify/amplify-cli/issues/6904)) (ref [#2084](https://github.com/aws-amplify/amplify-cli/issues/2084)) ([5cfff17](https://github.com/aws-amplify/amplify-cli/commit/5cfff173d57ec9ab68984faf2d0f6474eccdcaae))
+* profile validation to include source_profile and role_arn ([#7173](https://github.com/aws-amplify/amplify-cli/issues/7173)) ([70a980f](https://github.com/aws-amplify/amplify-cli/commit/70a980f757cfe6a177818bb2295ff85e06f387b1))
+* return rejected promise in getStackEvents() ([#7121](https://github.com/aws-amplify/amplify-cli/issues/7121)) (ref [#7004](https://github.com/aws-amplify/amplify-cli/issues/7004)) ([f259e5a](https://github.com/aws-amplify/amplify-cli/commit/f259e5a1d087103d5a77ad59714684a7621eeaef))
+* skip admin queries when consolidating REST APIs ([#7142](https://github.com/aws-amplify/amplify-cli/issues/7142)) ([c8069bd](https://github.com/aws-amplify/amplify-cli/commit/c8069bd1a69dd7bf4d31dd94743c0e4c7c140d85))
+
+
+### Features
+
+* S3 SSE by default ([#7039](https://github.com/aws-amplify/amplify-cli/issues/7039)) (ref [#5708](https://github.com/aws-amplify/amplify-cli/issues/5708)) ([c1369ed](https://github.com/aws-amplify/amplify-cli/commit/c1369ed6f9c204c89ee2d4c805314a40d6eeaf92))
+
+
+
+
+
 # [4.44.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.43.0...amplify-provider-awscloudformation@4.44.0) (2021-04-19)
 
 
