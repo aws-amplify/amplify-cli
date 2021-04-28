@@ -5,13 +5,14 @@ import _ from 'lodash';
 import uuid from 'uuid';
 import { LayerCfnLogicalNamePrefix } from './constants';
 import { LayerCloudState } from './layerCloudState';
-import { getLayerVersionToBeRemovedByCfn } from './layerConfiguration';
+import { getLayerVersionPermissionsToBeUpdatedInCfn, getLayerVersionsToBeRemovedByCfn } from './layerConfiguration';
 import { isMultiEnvLayer } from './layerHelpers';
 import { LayerParameters, LayerPermission, LayerVersionCfnMetadata, PermissionEnum } from './layerParams';
 import { createLayerZipFilename } from './packageLayer';
 
 /**
  * generates CloudFormation for Layer versions and Layer permissions
+ * @param versionList is sorted descendingly
  */
 export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerParameters, versionList: LayerVersionCfnMetadata[] = []) {
   const multiEnvLayer = isMultiEnvLayer(parameters.layerName);
@@ -24,9 +25,9 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
     logicalName = `${LayerCfnLogicalNamePrefix.LambdaLayerVersion}${shortId}`;
     const layerCloudState = LayerCloudState.getInstance();
     layerCloudState.latestVersionLogicalId = logicalName; // Store in singleton so it can be used in zipfile name
-    versionList.push({ LogicalName: logicalName, LegacyLayer: false });
+    versionList.unshift({ LogicalName: logicalName, LegacyLayer: false });
   } else {
-    logicalName = _.last(versionList).LogicalName;
+    logicalName = _.first(versionList).LogicalName;
   }
 
   const outputObj = {
@@ -38,13 +39,13 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
   };
   const cfnObj = getLayerCfnObjBase();
   const { envName } = stateManager.getLocalEnvInfo();
-  const layerVersionsToBeRemoved = getLayerVersionToBeRemovedByCfn(parameters.layerName, envName);
+  const layerVersionsToBeRemoved = getLayerVersionsToBeRemovedByCfn(resourceName, envName);
   const skipLayerVersionSet = new Set<number>(layerVersionsToBeRemoved);
 
   for (const layerVersion of versionList.filter(r => !r.LegacyLayer && !skipLayerVersionSet.has(r.Version))) {
     cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion, resourceName);
     const shortId = layerVersion.LogicalName.replace(LayerCfnLogicalNamePrefix.LambdaLayerVersion, '');
-    const permissionObjects = constructLayerVersionPermissionObjects(layerVersion, parameters, shortId);
+    const permissionObjects = constructLayerVersionPermissionObjects(layerVersion, parameters, shortId, envName);
     permissionObjects.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
   }
 
@@ -100,8 +101,18 @@ function constructLayerVersionCfnObject(
   return newLayerVersion;
 }
 
-function constructLayerVersionPermissionObjects(layerVersion: LayerVersionCfnMetadata, layerParameters: LayerParameters, shortId: string) {
-  const permissions = layerVersion.permissions || layerParameters.permissions;
+function constructLayerVersionPermissionObjects(
+  layerVersion: LayerVersionCfnMetadata,
+  layerParameters: LayerParameters,
+  shortId: string,
+  envName: string,
+) {
+  let permissions;
+  if (layerVersion.Version) {
+    permissions = getLayerVersionPermissionsToBeUpdatedInCfn(layerParameters.layerName, envName, layerVersion.Version);
+  }
+  permissions = permissions || layerVersion.permissions || layerParameters.permissions;
+
   const layerVersionPermissionBase = {
     Action: 'lambda:GetLayerVersion',
     LayerVersionArn: getLayerVersionArn(layerVersion),

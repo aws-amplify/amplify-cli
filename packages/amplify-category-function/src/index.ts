@@ -1,23 +1,26 @@
-import path from 'path';
-import { category } from './constants';
-export { category } from './constants';
-import { BuildType, FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
-import sequential from 'promise-sequential';
-import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
-import { supportedServices } from './provider-utils/supported-services';
+import { BuildType, FunctionBreadcrumbs, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import _ from 'lodash';
-export { buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
-export { buildResource } from './provider-utils/awscloudformation/utils/build';
-export { packageResource } from './provider-utils/awscloudformation/utils/package';
-export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
-import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
-export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
+import path from 'path';
+import sequential from 'promise-sequential';
+import { category } from './constants';
+import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
+import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
+import {
+  deleteLayerVersionPermissionsToBeUpdatedInCfn,
+  deleteLayerVersionsToBeRemovedByCfn,
+} from './provider-utils/awscloudformation/utils/layerConfiguration';
 import { checkContentChanges } from './provider-utils/awscloudformation/utils/packageLayer';
-import { deleteLayerVersionToBeRemovedByCfn } from './provider-utils/awscloudformation/utils/layerConfiguration';
+import { supportedServices } from './provider-utils/supported-services';
 
+export { category } from './constants';
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
+export { buildResource } from './provider-utils/awscloudformation/utils/build';
+export { buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
+export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
+export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
+export { packageResource } from './provider-utils/awscloudformation/utils/package';
 
 export async function add(context, providerName, service, parameters) {
   const options = {
@@ -249,7 +252,8 @@ function getLambdaLayerResources(resources: Array<$TSAny>) {
 export async function postPushCleanup(resource: Array<$TSAny>, envName: string): Promise<void> {
   const lambdaLayerResource = getLambdaLayerResources(resource);
   lambdaLayerResource.forEach(resource => {
-    deleteLayerVersionToBeRemovedByCfn(resource.resourceName, envName);
+    deleteLayerVersionsToBeRemovedByCfn(resource.resourceName, envName);
+    deleteLayerVersionPermissionsToBeUpdatedInCfn(resource.resourceName, envName);
   });
 }
 

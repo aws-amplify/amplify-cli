@@ -1,6 +1,6 @@
 import sequential from 'promise-sequential';
 import ora from 'ora';
-import { $TSContext, $TSObject, stateManager, exitOnNextTick } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, stateManager, exitOnNextTick } from 'amplify-cli-core';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
 
 const spinner = ora('');
@@ -22,7 +22,7 @@ async function syncCurrentCloudBackend(context: $TSContext) {
 
     const providerPlugins = getProviderPlugins(context);
 
-    const pullCurrentCloudTasks: (() => Promise<any>)[] = [];
+    const pullCurrentCloudTasks: (() => Promise<$TSAny>)[] = [];
 
     context.exeInfo.projectConfig.providers.forEach(provider => {
       const providerModule = require(providerPlugins[provider]);

@@ -86,8 +86,7 @@ export class LayerCloudState {
         // temp logic for determining if legacy layer
         layerVersion.LegacyLayer = !layerVersion.permissions || !layerVersion.LogicalName;
       });
-      layerMetadata = layerVersionList;
-      layerMetadata.sort((a, b) => (a.Version > b.Version ? -1 : 1));
+      layerMetadata = layerVersionList.sort((a: LayerVersionMetadata, b: LayerVersionMetadata) => b.Version - a.Version);
     } catch (e) {
       spinner.fail();
       const errMessage = `An error occurred fetching the latest layer version metadata for "${layerName}": ${e.message || e}`;

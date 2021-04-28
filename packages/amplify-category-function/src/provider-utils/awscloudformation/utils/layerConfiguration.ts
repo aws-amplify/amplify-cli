@@ -1,7 +1,7 @@
 import { $TSAny, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import path from 'path';
-import { categoryName, skipVersionsField, ephemeralField } from './constants';
+import { categoryName, ephemeralField, deleteVersionsField, updateVersionPermissionsField } from './constants';
 import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
 export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes' | 'description'>;
@@ -34,23 +34,48 @@ export function saveLayerRuntimes(layerDirPath: string, runtimes: LayerRuntime[]
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 
-export function getLayerVersionToBeRemovedByCfn(layerName: string, envName: string): number[] {
+export function getLayerVersionsToBeRemovedByCfn(layerName: string, envName: string): number[] {
   const layerConfigFilePath = getLayerDirPath(layerName);
   const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
-  return _.get<number[]>(layerConfig, [ephemeralField, skipVersionsField, envName], []);
+  return _.get<number[]>(layerConfig, [ephemeralField, deleteVersionsField, envName], []);
 }
 
-export function deleteLayerVersionToBeRemovedByCfn(layerName: string, envName: string) {
+export function deleteLayerVersionsToBeRemovedByCfn(layerName: string, envName: string) {
   const layerConfigFilePath = getLayerDirPath(layerName);
   const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
-  recursiveOmit(layerConfig, [ephemeralField, skipVersionsField, envName]);
+  recursiveOmit(layerConfig, [ephemeralField, deleteVersionsField, envName]);
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 
-export function saveLayerVersionToBeRemovedByCfn(layerName: string, skipVersions: number[], envName: string) {
+export function saveLayerVersionsToBeRemovedByCfn(layerName: string, skipVersions: number[], envName: string) {
   const layerConfigFilePath = getLayerDirPath(layerName);
   const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
-  _.set(layerConfig, [ephemeralField, skipVersionsField, envName], skipVersions);
+  _.set(layerConfig, [ephemeralField, deleteVersionsField, envName], skipVersions);
+  JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+}
+
+export function saveLayerVersionPermissionsToBeUpdatedInCfn(
+  layerName: string,
+  envName: string,
+  version: number,
+  permissions: LayerPermission[],
+) {
+  const layerConfigFilePath = getLayerDirPath(layerName);
+  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  _.setWith(layerConfig, [ephemeralField, updateVersionPermissionsField, envName, version.toString()], permissions, Object);
+  JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+}
+
+export function getLayerVersionPermissionsToBeUpdatedInCfn(layerName: string, envName: string, version: number): LayerPermission[] {
+  const layerConfigFilePath = getLayerDirPath(layerName);
+  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  return _.get<LayerPermission[]>(layerConfig, [ephemeralField, updateVersionPermissionsField, envName, version.toString()], undefined);
+}
+
+export function deleteLayerVersionPermissionsToBeUpdatedInCfn(layerName: string, envName: string) {
+  const layerConfigFilePath = getLayerDirPath(layerName);
+  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  recursiveOmit(layerConfig, [ephemeralField, updateVersionPermissionsField, envName]);
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 
