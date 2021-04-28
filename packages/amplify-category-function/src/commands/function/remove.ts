@@ -1,4 +1,4 @@
-import { category as categoryName } from '../../constants';
+import { categoryName } from '../../constants';
 import { ServiceName } from '../../provider-utils/awscloudformation/utils/constants';
 import { removeLayerArtifacts } from '../../provider-utils/awscloudformation/utils/storeResources';
 import { removeResource } from '../../provider-utils/awscloudformation/service-walkthroughs/removeFunctionWalkthrough';

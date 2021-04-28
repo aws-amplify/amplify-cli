@@ -1,12 +1,12 @@
 import _ from 'lodash';
 import { FunctionRuntime, FunctionDependency, LambdaLayer, ProjectLayer, ExternalLayer } from 'amplify-function-plugin-interface';
-import { category } from '../../..';
 import { ServiceName } from './constants';
 import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
 import enquirer from 'enquirer';
 import { LayerCloudState } from './layerCloudState';
 import { getLayerRuntimes } from './layerConfiguration';
 import { $TSContext, $TSMeta, pathManager } from 'amplify-cli-core';
+import { categoryName } from '../../../constants';
 
 const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
 export const provideExistingARNsPrompt = 'Provide existing Lambda layer ARNs';
@@ -33,7 +33,7 @@ export const askLayerSelection = async (
   const lambdaLayers: LambdaLayer[] = [];
   const dependsOn: FunctionDependency[] = [];
 
-  const functionMeta = _.get(amplifyMeta, [category]) || {};
+  const functionMeta = _.get(amplifyMeta, [categoryName]) || {};
   const layerOptions = _.keys(functionMeta)
     .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
     .filter(key => {
@@ -99,7 +99,7 @@ export const askLayerSelection = async (
     }
 
     dependsOn.push({
-      category,
+      category: categoryName,
       resourceName: layerName,
       attributes: ['Arn'], // the layer doesn't actually depend on the ARN but there's some nasty EJS at the top of the function template that breaks without this, so here it is. Hurray for tight coupling!
     });

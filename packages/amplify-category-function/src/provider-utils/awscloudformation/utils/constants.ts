@@ -1,7 +1,3 @@
-import { category } from '../../../constants';
-
-export const categoryName = category;
-
 export const chooseServiceMessageAdd = 'Select which capability you want to add:';
 export const chooseServiceMessageUpdate = 'Select which capability you want to update:';
 export const functionParametersFileName = 'function-parameters.json';
@@ -17,6 +13,8 @@ export const description = 'Description';
 export const deleteVersionsField = 'layerVersionsToDelete';
 export const updateVersionPermissionsField = 'layerVersionPermissionsToUpdate';
 export const ephemeralField = 'ephemeral';
+export const versionHash = 'latestPushedVersionHash';
+export const cfnTemplateSuffix = '-awscloudformation-template.json';
 
 export const enum LayerCfnLogicalNamePrefix {
   LambdaLayerVersion = 'LambdaLayerVersion',

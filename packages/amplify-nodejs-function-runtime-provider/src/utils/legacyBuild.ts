@@ -1,4 +1,5 @@
 import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
+import { getPackageManager } from 'amplify-cli-core';
 
 import execa from 'execa';
 import fs from 'fs-extra';
@@ -40,11 +41,18 @@ function installDependencies(resourceDir: string) {
 }
 
 function runPackageManager(cwd: string, scriptName?: string) {
-  const useYarn = fs.existsSync(`${cwd}/yarn.lock`);
-  const packageManager = useYarn ? 'yarn' : 'npm';
+  const packageManager = getPackageManager(cwd);
+
+  if (packageManager === null) {
+    throw new Error(
+      `Packaging lambda failed function failed. Could not find 'npm' or 'yarn' executable in the PATH or no 'package.json' file exists in the function's directory.`,
+    );
+  }
+
+  const useYarn = packageManager.packageManager === 'yarn';
   const args = toPackageManagerArgs(useYarn, scriptName);
   try {
-    execa.sync(packageManager, args, {
+    execa.sync(packageManager.executable, args, {
       cwd,
       stdio: 'pipe',
       encoding: 'utf-8',

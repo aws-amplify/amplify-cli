@@ -1,7 +1,8 @@
 import { $TSAny, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import path from 'path';
-import { categoryName, ephemeralField, deleteVersionsField, updateVersionPermissionsField } from './constants';
+import { ephemeralField, deleteVersionsField, updateVersionPermissionsField } from './constants';
+import { categoryName } from '../../../constants';
 import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
 export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes' | 'description'>;
@@ -79,11 +80,19 @@ export function deleteLayerVersionPermissionsToBeUpdatedInCfn(layerName: string,
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 
-export function saveLayerPermissions(layerDirPath: string, permissions: LayerPermission[] = [{ type: PermissionEnum.Private }]) {
+export function saveLayerPermissions(layerDirPath: string, permissions: LayerPermission[] = [{ type: PermissionEnum.Private }]): boolean {
   const layerConfigFilePath = path.join(layerDirPath, layerConfigurationFileName);
   const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
-  layerConfig.permissions = permissions;
-  JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+  let updated = false;
+
+  if (!_.isEqual(layerConfig.permissions, permissions)) {
+    layerConfig.permissions = permissions;
+    JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+
+    updated = true;
+  }
+
+  return updated;
 }
 
 function getLayerDescription(layerName: string): string {

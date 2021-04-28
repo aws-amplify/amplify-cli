@@ -3,8 +3,8 @@ import { FunctionBreadcrumbs, FunctionParameters, FunctionTriggerParameters } fr
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
-import { category as categoryName } from '../../../constants';
-import { functionParametersFileName, parametersFileName, provider, ServiceName } from './constants';
+import { categoryName } from '../../../constants';
+import { cfnTemplateSuffix, functionParametersFileName, parametersFileName, provider, ServiceName } from './constants';
 import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { LayerCloudState } from './layerCloudState';
@@ -42,28 +42,42 @@ const defaultOpts = {
   cfnFile: true,
   amplifyMeta: true,
   description: true,
+  updateFunction: false,
 };
 
 export const updateLayerArtifacts = async (
   context: $TSContext,
   parameters: LayerParameters,
   options: Partial<typeof defaultOpts> = {},
-): Promise<void> => {
+): Promise<boolean> => {
   options = _.assign(defaultOpts, options);
   const layerDirPath = ensureLayerFolders(parameters);
+  let updated = false;
 
   if (options.layerParams) {
-    saveLayerPermissions(layerDirPath, parameters.permissions);
+    updated ||= saveLayerPermissions(layerDirPath, parameters.permissions);
   }
+
   if (options.description) {
-    saveLayerDescription(parameters.layerName, parameters.description);
+    updated ||= saveLayerDescription(parameters.layerName, parameters.description);
   }
+
   if (options.cfnFile) {
-    await updateLayerCfnFile(context, parameters, layerDirPath);
+    const cfnTemplateFilePath = path.join(layerDirPath, getCfnTemplateFileName(parameters.layerName));
+    const currentCFNTemplate = JSONUtilities.readJson(cfnTemplateFilePath, {
+      throwIfNotExist: false,
+    });
+
+    const updatedCFNTemplate = await updateLayerCfnFile(context, parameters, layerDirPath);
+
+    updated ||= _.isEqual(currentCFNTemplate, updatedCFNTemplate);
   }
+
   if (options.amplifyMeta) {
     updateLayerInAmplifyMeta(parameters);
   }
+
+  return updated;
 };
 
 export function removeLayerArtifacts(context: $TSContext, layerName: string) {
@@ -114,12 +128,20 @@ function writeLayerRuntimesToParametersFile(parameters: LayerParameters) {
   stateManager.setResourceParametersJson(undefined, categoryName, parameters.layerName, { runtimes });
 }
 
-function saveLayerDescription(layerName: string, description?: string) {
+function saveLayerDescription(layerName: string, description?: string): boolean {
   const layerConfig = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
-  stateManager.setResourceParametersJson(undefined, categoryName, layerName, {
-    ...layerConfig,
-    description,
-  });
+  let updated = false;
+
+  if (layerConfig.description !== description) {
+    stateManager.setResourceParametersJson(undefined, categoryName, layerName, {
+      ...layerConfig,
+      description,
+    });
+
+    updated = true;
+  }
+
+  return updated;
 }
 
 function copyTemplateFiles(context: $TSContext, parameters: FunctionParameters | FunctionTriggerParameters) {
@@ -141,7 +163,7 @@ function copyTemplateFiles(context: $TSContext, parameters: FunctionParameters |
   // this is a hack to reuse some old code
   let templateParams: $TSAny = parameters;
   if ('trigger' in parameters) {
-    let triggerEnvs = context.amplify.loadEnvResourceParameters(context, 'function', parameters.resourceName);
+    let triggerEnvs = context.amplify.loadEnvResourceParameters(context, categoryName, parameters.resourceName);
     parameters.triggerEnvs = JSONUtilities.parse(parameters.triggerEnvs) || [];
 
     parameters.triggerEnvs.forEach(c => {
@@ -191,20 +213,22 @@ function ensureLayerRuntimeFolder(layerDirPath: string, runtime: LayerRuntime) {
 }
 
 function createLayerCfnFile(parameters: LayerParameters, layerDirPath: string) {
-  JSONUtilities.writeJson(
-    path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
-    generateLayerCfnObj(true, parameters),
-  );
+  JSONUtilities.writeJson(path.join(layerDirPath, getCfnTemplateFileName(parameters.layerName)), generateLayerCfnObj(true, parameters));
 }
 
-async function updateLayerCfnFile(context: $TSContext, parameters: LayerParameters, layerDirPath: string) {
+async function updateLayerCfnFile(context: $TSContext, parameters: LayerParameters, layerDirPath: string): Promise<$TSObject> {
   let layerVersionList: LayerVersionMetadata[] = [];
+
   if (loadPreviousLayerHash(parameters.layerName)) {
     const layerCloudState = LayerCloudState.getInstance();
+
     layerVersionList = await layerCloudState.getLayerVersionsFromCloud(context, parameters.layerName);
   }
   const _isNewVersion = await isNewVersion(parameters.layerName);
-  saveCFNFileWithLayerVersion(layerDirPath, parameters, _isNewVersion, layerVersionList);
+
+  const cfnTemplate = saveCFNFileWithLayerVersion(layerDirPath, parameters, _isNewVersion, layerVersionList);
+
+  return cfnTemplate;
 }
 
 const setParametersInAmplifyMeta = (layerName: string, parameters: LayerMetaAndBackendConfigParams) => {
@@ -247,13 +271,22 @@ interface LayerMetaAndBackendConfigParams {
   providerPlugin: string;
   service: string;
   build: boolean;
+  versionHash?: string;
 }
 
-const amplifyMetaAndBackendParams = (parameters: LayerParameters): LayerMetaAndBackendConfigParams => ({
-  providerPlugin: parameters.providerContext.provider,
-  service: parameters.providerContext.service,
-  build: parameters.build,
-});
+const amplifyMetaAndBackendParams = (parameters: LayerParameters): LayerMetaAndBackendConfigParams => {
+  const metadata: LayerMetaAndBackendConfigParams = {
+    providerPlugin: parameters.providerContext.provider,
+    service: parameters.providerContext.service,
+    build: parameters.build,
+  };
+
+  if (parameters.versionHash) {
+    metadata.versionHash = parameters.versionHash;
+  }
+
+  return metadata;
+};
 
 function createParametersFile(parameters: $TSObject, resourceName: string, parametersFileName: string) {
   const parametersFilePath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName, parametersFileName);
@@ -306,8 +339,11 @@ function saveCFNFileWithLayerVersion(
   _isNewVersion: boolean,
   layerVersionList: LayerVersionMetadata[],
 ) {
-  JSONUtilities.writeJson(
-    path.join(layerDirPath, parameters.layerName + '-awscloudformation-template.json'),
-    generateLayerCfnObj(_isNewVersion, parameters, layerVersionList),
-  );
+  const cfnTemplate = generateLayerCfnObj(_isNewVersion, parameters, layerVersionList);
+
+  JSONUtilities.writeJson(path.join(layerDirPath, getCfnTemplateFileName(parameters.layerName)), cfnTemplate);
+
+  return cfnTemplate;
 }
+
+const getCfnTemplateFileName = (layerName: string) => `${layerName}${cfnTemplateSuffix}`;

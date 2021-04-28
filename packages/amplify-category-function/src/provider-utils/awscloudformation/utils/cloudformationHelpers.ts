@@ -1,5 +1,6 @@
-import { categoryName, appsyncTableSuffix } from './constants';
+import { appsyncTableSuffix } from './constants';
 import { getAppSyncResourceName } from './appSyncHelper';
+import { categoryName } from '../../../constants';
 
 export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults) {
   const currentResources = [];

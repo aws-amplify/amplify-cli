@@ -1,13 +1,13 @@
-import { $TSAny, $TSContext, JSONUtilities, open, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, JSONUtilities, open, PathConstants, pathManager, stateManager } from 'amplify-cli-core';
 import { FunctionParameters, FunctionTemplate, FunctionTriggerParameters, LambdaLayer } from 'amplify-function-plugin-interface';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'path';
 import { IsMockableResponse } from '../..';
-import { category as categoryName } from '../../constants';
+import { categoryName } from '../../constants';
 import { supportedServices } from '../supported-services';
 import { ServiceConfig } from '../supportedServicesType';
-import { functionParametersFileName, provider, ServiceName } from './utils/constants';
+import { functionParametersFileName, provider, ServiceName, versionHash } from './utils/constants';
 import { convertExternalLayersToProjectLayers, convertProjectLayersToExternalLayers } from './utils/convertLayersTypes';
 import { convertToComplete, isComplete, merge } from './utils/funcParamsUtils';
 import { isMultiEnvLayer } from './utils/layerHelpers';
@@ -215,7 +215,7 @@ export async function updateLayerResource(
   service: ServiceName,
   serviceConfig: ServiceConfig<LayerParameters>,
   parameters?: Partial<LayerParameters>,
-): Promise<void> {
+): Promise<boolean> {
   if (!serviceConfig) {
     throw `amplify-category-function is not configured to provide service type ${service}`;
   }
@@ -231,14 +231,20 @@ export async function updateLayerResource(
   const completeParams = (await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters)) as LayerParameters;
 
   // write out updated resources
-  await updateLayerArtifacts(context, completeParams, { layerParams: completeParams.selectedVersion === undefined });
+  const updated = await updateLayerArtifacts(context, completeParams, {
+    updateFunction: true,
+    layerParams: completeParams.selectedVersion === undefined,
+  });
+
   printLayerSuccessMessages(context, completeParams, 'updated');
+
+  return updated;
 }
 
 function printLayerSuccessMessages(context: $TSContext, parameters: LayerParameters, action: string): void {
   const { print } = context;
   const { layerName } = parameters;
-  const relativeDirPath = path.join('amplify', 'backend', 'function', layerName);
+  const relativeDirPath = path.join(PathConstants.AmplifyDirName, PathConstants.BackendDirName, categoryName, layerName);
   print.info(`✅ Lambda layer folders & files ${action}:`);
   print.info(relativeDirPath);
   print.info('');
@@ -357,9 +363,9 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
     const projectPath = pathManager.findProjectRoot();
     const currentAmplifyMeta = stateManager.getCurrentMeta(projectPath);
     const amplifyMeta = stateManager.getMeta(projectPath);
-    const currentCloudVersionHash: string = _.get(currentAmplifyMeta, [categoryName, resourceName, 'versionHash'], undefined);
+    const currentCloudVersionHash: string = _.get(currentAmplifyMeta, [categoryName, resourceName, versionHash], undefined);
     if (currentCloudVersionHash) {
-      _.set(amplifyMeta, [categoryName, resourceName, 'versionHash'], currentCloudVersionHash);
+      _.set(amplifyMeta, [categoryName, resourceName, versionHash], currentCloudVersionHash);
     }
   }
 }
@@ -371,7 +377,7 @@ async function initTriggerEnvs(context, resourceParams, providerPlugin, envParam
       typeof parentResourceParams.triggers === 'string' ? JSON.parse(parentResourceParams.triggers) : parentResourceParams.triggers;
     const currentTrigger = resourceParams.resourceName.replace(parentResourceParams.resourceName, '');
     if (currentTrigger && currentTrigger !== resourceParams.resourceName) {
-      const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, 'function', resourceParams.resourceName);
+      const currentEnvVariables = context.amplify.loadEnvResourceParameters(context, categoryName, resourceParams.resourceName);
       const triggerPath = `${__dirname}/../../../../amplify-category-${resourceParams.parentStack}/provider-utils/${srvcMetaData.provider}/triggers/${currentTrigger}`;
       const isEnvCommand = context.input.command === 'env';
 
