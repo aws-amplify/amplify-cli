@@ -7,6 +7,7 @@ describe('remove walkthough test', () => {
   const saveLayerVersionsToBeRemovedByCfn = jest.fn();
   const loadLayerDataFromCloudMock = jest.fn();
   const selectPromptMock = jest.fn();
+
   beforeEach(() => {
     mockContext = {
       print: {

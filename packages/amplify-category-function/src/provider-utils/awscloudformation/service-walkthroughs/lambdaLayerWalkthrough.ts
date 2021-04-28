@@ -93,6 +93,7 @@ export async function updateLayerWalkthrough(
 
   // check if layer is still in create state
   const layerHasDeployed = loadPreviousLayerHash(parameters.layerName) !== undefined;
+  let permissionsUpdateConfirmed = false;
 
   // load parameters.json
   const storedLayerParameters = loadStoredLayerParameters(context, parameters.layerName);
@@ -100,6 +101,7 @@ export async function updateLayerWalkthrough(
   let layerInputParameters: LayerInputParams = {};
 
   if (await context.amplify.confirmPrompt('Do you want to adjust layer version permissions?', true)) {
+    permissionsUpdateConfirmed = true;
     let defaultLayerPermissions: PermissionEnum[];
     let defaultOrgs: string[] = [];
     let defaultAccounts: string[] = [];
@@ -155,10 +157,13 @@ export async function updateLayerWalkthrough(
       const { envName }: { envName: string } = context.amplify.getEnvInfo();
       saveLayerVersionPermissionsToBeUpdatedInCfn(parameters.layerName, envName, selectedVersionNumber, parameters.permissions);
     }
-  } else {
-    const defaultPermission: PrivateLayer = { type: PermissionEnum.Private };
-    parameters.permissions = storedLayerParameters.permissions || [defaultPermission];
   }
+
+  if (!permissionsUpdateConfirmed || _.isEqual(permissions, parameters.permissions)) {
+    // Nothing has been updated
+    exitOnNextTick(0);
+  }
+
   parameters.runtimes = storedLayerParameters.runtimes;
   parameters.build = true;
   return parameters;
