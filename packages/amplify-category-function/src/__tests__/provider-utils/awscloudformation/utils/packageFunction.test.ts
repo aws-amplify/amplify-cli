@@ -1,6 +1,5 @@
 import { getRuntimeManager } from '../../../../provider-utils/awscloudformation/utils/functionPluginLoader';
 import { $TSContext, pathManager } from 'amplify-cli-core';
-import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import { packageFunction } from '../../../../provider-utils/awscloudformation/utils/packageFunction';
 import { PackageRequestMeta } from '../../../../provider-utils/awscloudformation/types/packaging-types';
 
