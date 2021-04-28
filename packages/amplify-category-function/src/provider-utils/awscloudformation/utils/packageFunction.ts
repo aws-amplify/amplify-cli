@@ -32,5 +32,5 @@ export const packageFunction: Packager = async (context, resource) => {
     ? `${resource.resourceName}-${packageHash}-build.zip`
     : resource.distZipFilename ?? `${resource.category}-${resource.resourceName}-build.zip`;
   context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename);
-  return { zipFilename, zipFilePath: destination };
+  return { newPackageCreated: true, zipFilename, zipFilePath: destination };
 };
