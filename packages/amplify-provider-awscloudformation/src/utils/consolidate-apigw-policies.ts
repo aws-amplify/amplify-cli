@@ -249,6 +249,12 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
   for (const parameterName in parameters) {
     if (parameterName === AUTH_ROLE_NAME || parameterName === UNAUTH_ROLE_NAME) {
       delete parameters[parameterName];
+      modified = true;
+    }
+  }
+
+  for (const parameterName in parameterJson as any) {
+    if (parameterName === AUTH_ROLE_NAME || parameterName === UNAUTH_ROLE_NAME) {
       delete parameterJson[parameterName];
       modified = true;
     }
