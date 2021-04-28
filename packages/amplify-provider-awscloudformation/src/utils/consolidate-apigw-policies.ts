@@ -178,10 +178,6 @@ export function consolidateApiGatewayPolicies(context: $TSContext, stackName: st
   const apis = amplifyMeta?.api ?? {};
 
   Object.keys(apis).forEach(resourceName => {
-    if (resourceName === 'AdminQueries') {
-      return;
-    }
-
     const resource = apis[resourceName];
     const apiParams = loadApiWithPrivacyParams(context, resourceName, resource);
 
@@ -220,7 +216,7 @@ function createApiGatewayAuthResources(context: $TSContext, stackName: string, a
 }
 
 export function loadApiWithPrivacyParams(context: $TSContext, name: string, resource: any): object | undefined {
-  if (resource.providerPlugin !== ProviderName || resource.service !== 'API Gateway') {
+  if (resource.providerPlugin !== ProviderName || resource.service !== 'API Gateway' || name === 'AdminQueries') {
     return;
   }
 
