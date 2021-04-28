@@ -23,12 +23,6 @@ describe('amplify init: ', () => {
   const mockGetBackendDirPath = jest.spyOn(pathManager, 'getBackendDirPath');
   const mockGetGitIgnoreFilePath = jest.spyOn(pathManager, 'getGitIgnoreFilePath');
 
-  (getPackageManager as jest.Mock).mockReturnValue({
-    packageManager: 'yarn',
-    lockFile: 'yarn.lock',
-    executable: /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn',
-  });
-
   const mockGetProjectConfig = jest.fn(() => ({}));
 
   const mockPathManager = {
@@ -73,6 +67,11 @@ describe('amplify init: ', () => {
   } as unknown) as $TSContext;
   jest.mock('amplify-cli-core', () => ({
     exitOnNextTick: jest.fn(),
+    getPackageManager: jest.fn().mockReturnValue({
+      packageManager: 'yarn',
+      lockFile: 'yarn.lock',
+      executable: /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn',
+    }),
   }));
 
   const { run } = require('../../commands/init');
