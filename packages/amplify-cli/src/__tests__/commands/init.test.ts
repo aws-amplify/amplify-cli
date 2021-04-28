@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
 
-import { $TSContext, pathManager, getPackageManager } from 'amplify-cli-core';
+import { $TSContext, pathManager } from 'amplify-cli-core';
 
 import { preInitSetup } from '../../init-steps/preInitSetup';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
