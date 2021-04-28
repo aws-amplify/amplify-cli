@@ -9,4 +9,7 @@ export type PackageRequestMeta = ResourceTuple & {
   skipHashing: boolean;
 };
 
-export type Packager = (context: $TSContext, resource: PackageRequestMeta) => Promise<{ zipFilename: string; zipFilePath: string }>;
+export type Packager = (
+  context: $TSContext,
+  resource: PackageRequestMeta,
+) => Promise<{ newPackageCreated: boolean; zipFilename: string; zipFilePath: string }>;
