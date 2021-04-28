@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { ServiceName } from '../utils/constants';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
 import { LayerCloudState } from '../utils/layerCloudState';
+import { saveLayerVersionPermissionsToBeUpdatedInCfn } from '../utils/layerConfiguration';
 import {
   layerAccountAccessPrompt,
   LayerInputParams,
@@ -16,7 +17,7 @@ import {
   loadStoredLayerParameters,
   previousPermissionsQuestion,
 } from '../utils/layerHelpers';
-import { AccountsLayer, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum, PrivateLayer } from '../utils/layerParams';
+import { AccountsLayer, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum } from '../utils/layerParams';
 
 export async function createLayerWalkthrough(
   context: $TSContext,
@@ -92,6 +93,7 @@ export async function updateLayerWalkthrough(
 
   // check if layer is still in create state
   const layerHasDeployed = loadPreviousLayerHash(parameters.layerName) !== undefined;
+  let permissionsUpdateConfirmed = false;
 
   // load parameters.json
   const storedLayerParameters = loadStoredLayerParameters(context, parameters.layerName);
@@ -99,20 +101,25 @@ export async function updateLayerWalkthrough(
   let layerInputParameters: LayerInputParams = {};
 
   if (await context.amplify.confirmPrompt('Do you want to adjust layer version permissions?', true)) {
+    permissionsUpdateConfirmed = true;
     let defaultLayerPermissions: PermissionEnum[];
     let defaultOrgs: string[] = [];
     let defaultAccounts: string[] = [];
+    let selectedVersionNumber: number;
 
     // select layer version
     if (layerHasDeployed) {
       const layerCloudState = LayerCloudState.getInstance();
       const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, parameters.layerName);
       const latestVersionText = 'The latest version';
-      const layerVersionChoices = [latestVersionText, ...layerVersions.map(layerVersionMetadata => String(layerVersionMetadata.Version))];
+      const layerVersionChoices = [
+        latestVersionText,
+        ...layerVersions.map(layerVersionMetadata => `${layerVersionMetadata.Version}: ${layerVersionMetadata.Description}`),
+      ];
       const selectedVersion: string = (await inquirer.prompt(layerVersionQuestion(layerVersionChoices))).layerVersion;
       if (selectedVersion !== latestVersionText) {
-        const selectedVersionNumber = Number(selectedVersion);
-        parameters.selectedVersion = layerVersions.filter(version => version.Version === selectedVersionNumber)[0];
+        selectedVersionNumber = Number(_.first(selectedVersion.split(':')));
+        parameters.selectedVersion = _.first(layerVersions.filter(version => version.Version === selectedVersionNumber));
         permissions = parameters.selectedVersion.permissions;
       }
     }
@@ -144,10 +151,19 @@ export async function updateLayerWalkthrough(
 
     // update layer version based on inputs
     parameters.permissions = layerInputParamsToLayerPermissionArray(layerInputParameters);
-  } else {
-    const defaultPermission: PrivateLayer = { type: PermissionEnum.Private };
-    parameters.permissions = storedLayerParameters.permissions || [defaultPermission];
+
+    // update ephemeral state if deployed version is picked
+    if (selectedVersionNumber) {
+      const { envName }: { envName: string } = context.amplify.getEnvInfo();
+      saveLayerVersionPermissionsToBeUpdatedInCfn(parameters.layerName, envName, selectedVersionNumber, parameters.permissions);
+    }
   }
+
+  if (!permissionsUpdateConfirmed || _.isEqual(permissions, parameters.permissions)) {
+    // Nothing has been updated
+    exitOnNextTick(0);
+  }
+
   parameters.runtimes = storedLayerParameters.runtimes;
   parameters.build = true;
   return parameters;

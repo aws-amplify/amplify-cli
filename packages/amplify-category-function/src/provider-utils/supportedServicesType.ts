@@ -1,3 +1,4 @@
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { FunctionParameters } from 'amplify-function-plugin-interface';
 import { LayerParameters } from './awscloudformation/utils/layerParams';
 
@@ -11,12 +12,12 @@ export interface ServiceConfig<T> {
   walkthroughs: WalkthroughProvider<T>;
   cfnFilename?: string;
   provider: string;
-  providerController: any;
+  providerController: $TSAny;
 }
 
 export interface WalkthroughProvider<T> {
-  createWalkthrough: (context: any, params: Partial<T>) => Promise<Partial<T>>;
-  updateWalkthrough: (context: any, resourceToUpdate?: string, params?: Partial<T>) => Promise<Partial<T>>;
+  createWalkthrough: (context: $TSContext, params: Partial<T>) => Promise<Partial<T>>;
+  updateWalkthrough: (context: $TSContext, resourceToUpdate?: string, params?: Partial<T>) => Promise<Partial<T>>;
   migrate?: Function;
   getIAMPolicies?: Function;
   askExecRolePermissionsQuestions?: Function;

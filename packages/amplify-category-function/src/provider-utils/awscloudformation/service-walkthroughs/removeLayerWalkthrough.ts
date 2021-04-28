@@ -1,12 +1,11 @@
 import { $TSContext, promptConfirmationRemove, stateManager } from 'amplify-cli-core';
-import { LayerCloudState } from '../utils/layerCloudState';
-import { getLayerName } from '../utils/layerHelpers';
-import { LayerVersionMetadata } from '../utils/layerParams';
+import chalk from 'chalk';
 import inquirer, { QuestionCollection } from 'inquirer';
 import ora from 'ora';
-import _ from 'lodash';
-import chalk from 'chalk';
-import { saveLayerVersionToBeRemovedByCfn } from '../utils/layerConfiguration';
+import { LayerCloudState } from '../utils/layerCloudState';
+import { saveLayerVersionsToBeRemovedByCfn } from '../utils/layerConfiguration';
+import { getLayerName } from '../utils/layerHelpers';
+import { LayerVersionMetadata } from '../utils/layerParams';
 
 const removeLayerQuestion = 'Choose the Layer versions you want to remove.';
 export async function removeWalkthrough(context: $TSContext, layerName: string) {
@@ -19,19 +18,19 @@ export async function removeWalkthrough(context: $TSContext, layerName: string) 
   const { versions } = await inquirer.prompt(question(layerVersionList));
   const selectedLayerVersion = versions as LayerVersionMetadata[];
 
-  //if nothing is selected return;
+  // if nothing is selected return;
   if (selectedLayerVersion.length === 0) {
     return;
   }
 
-  //if everything is selected remove the layer entirely
+  // if everything is selected remove the layer entirely
   if (selectedLayerVersion.length === layerVersionList.length) {
     return layerName;
   }
 
   context.print.info('Layer versions marked for deletion:');
   selectedLayerVersion.forEach(version => {
-    context.print.info(`> ${version.Version}  | Created on: ${version.CreatedDate} | Description: ${version.Description || ''}`);
+    context.print.info(`> ${version.Version} | Description: ${version.Description || ''}`);
   });
   const legacyLayerSelectedVersions = selectedLayerVersion.filter(r => r.LegacyLayer);
   const newLayerSelectedVersions = selectedLayerVersion.filter(r => !r.LegacyLayer);
@@ -49,7 +48,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string) 
     legacyLayerSelectedVersions.map(r => r.Version),
   );
   const { envName } = stateManager.getLocalEnvInfo();
-  saveLayerVersionToBeRemovedByCfn(
+  saveLayerVersionsToBeRemovedByCfn(
     layerName,
     newLayerSelectedVersions.map(r => r.Version),
     envName,
@@ -100,7 +99,7 @@ const question = (layerVersionMetadata: LayerVersionMetadata[]): QuestionCollect
     choices: layerVersionMetadata
       .sort((versiona, versionb) => versiona.Version - versionb.Version)
       .map(version => ({
-        name: `${version.Version} : ${version.Description}`,
+        name: `${version.Version}: ${version.Description}`,
         short: version.Version.toString(),
         value: version,
       })),

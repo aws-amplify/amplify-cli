@@ -14,7 +14,8 @@ export const cronJobSetting = 'Scheduled recurring invocation';
 export const lambdaLayerSetting = 'Lambda layers configuration';
 export const accessPermissions = 'Access permissions';
 export const description = 'Description';
-export const skipVersionsField = 'layerVersionsToDelete';
+export const deleteVersionsField = 'layerVersionsToDelete';
+export const updateVersionPermissionsField = 'layerVersionPermissionsToUpdate';
 export const ephemeralField = 'ephemeral';
 
 export const enum LayerCfnLogicalNamePrefix {
