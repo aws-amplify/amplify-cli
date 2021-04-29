@@ -4,7 +4,14 @@ import * as TransformPackage from 'graphql-transformer-core';
 import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { CRUDOperation, envVarPrintoutPrefix, GraphQLOperation, topLevelCommentPrefix, topLevelCommentSuffix } from '../../../constants';
+import {
+  categoryName,
+  CRUDOperation,
+  envVarPrintoutPrefix,
+  GraphQLOperation,
+  topLevelCommentPrefix,
+  topLevelCommentSuffix,
+} from '../../../constants';
 import { getAppSyncResourceName } from '../utils/appSyncHelper';
 import { constructCFModelTableArnComponent, constructCFModelTableNameComponent } from '../utils/cloudformationHelpers';
 import { appsyncTableSuffix, ServiceName } from '../utils/constants';
@@ -56,6 +63,10 @@ export const askExecRolePermissionsQuestions = async (
 
   for (const selectedCategory of selectedCategories) {
     let resourcesList = selectedCategory in amplifyMeta ? Object.keys(amplifyMeta[selectedCategory]) : [];
+
+    // filter out lambda layers always, we don't support granting permissions to layers
+    resourcesList = resourcesList.filter(resourceName => amplifyMeta[selectedCategory][resourceName].service !== ServiceName.LambdaLayer);
+
     if (selectedCategory === 'storage' && 'api' in amplifyMeta) {
       if (appsyncResourceName) {
         const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
@@ -66,16 +77,17 @@ export const askExecRolePermissionsQuestions = async (
           .map(modelName => `${modelName}:${appsyncTableSuffix}`);
         resourcesList.push(...modelNames);
       }
-    } else if (selectedCategory === category) {
+    } else if (selectedCategory === category || selectedCategory === categoryName) {
       // A Lambda function cannot depend on itself
-      // Lambda layer dependencies are handled seperately
-      if (serviceName === ServiceName.LambdaFunction) {
+      // Lambda layer dependencies are handled seperately, also apply the filter if the selected resource is within the function category
+      // but serviceName argument was no passed in
+      if (serviceName === ServiceName.LambdaFunction || selectedCategory === categoryName) {
         resourcesList = resourcesList.filter(
           resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service === serviceName,
         );
       } else {
         resourcesList = resourcesList.filter(
-          resourceName => resourceName !== resourceNameToUpdate && !amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
+          resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
         );
       }
     }

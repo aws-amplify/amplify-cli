@@ -124,8 +124,10 @@ const deleteResourceFiles = async (context, category, resourceName, resourceDir,
         resourceItem.dependsOn.forEach(dependsOnItem => {
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
             context.print.error('Resource cannot be removed because it has a dependency on another resource');
-            context.print.error(`Dependency: ${resourceItem.service}:${resourceItem.resourceName}`);
-            throw new Error('Resource cannot be removed because it has a dependency on another resource');
+            context.print.error(`Dependency: ${resourceItem.service} - ${resourceItem.resourceName}`);
+            const error = new Error('Resource cannot be removed because it has a dependency on another resource');
+            error.stack = undefined;
+            throw error;
           }
         });
       }
