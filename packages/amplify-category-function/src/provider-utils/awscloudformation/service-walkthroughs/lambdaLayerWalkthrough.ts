@@ -186,10 +186,10 @@ export async function lambdaLayerNewVersionWalkthrough(params: LayerParameters, 
   };
 }
 
-async function descriptionQuestion(timestampString: string, newLayer: boolean = false): Promise<string> {
+async function descriptionQuestion(timestampString: string): Promise<string> {
   const response = await inquirer.prompt({
     name: 'description',
-    default: `${newLayer ? 'Updated layer version' : 'Created new layer'} ${timestampString}`,
+    default: `${'Updated layer version'} ${timestampString}`,
     message: 'Description:',
     validate: (desc: string) => {
       if (desc.length === 0) return 'Description cannot be empty';
