@@ -20,8 +20,11 @@ jobs:
           tag: "latest,${CIRCLE_SHA1}"
 
 workflows:
-  version: 2.1
   build_and_push_image:
     jobs:
       - build:
           context: amplify-cli-ecr
+          filters:
+            branches:
+              only:
+                - e2e-image-build
