@@ -1,34 +1,34 @@
-const featureName = 'function';
+import { categoryName } from '../constants';
 
 module.exports = {
-  name: featureName,
+  name: categoryName,
   run: async context => {
     if (/^win/.test(process.platform)) {
       try {
-        const { run } = require(`./${featureName}/${context.parameters.first}`);
+        const { run } = require(`./${categoryName}/${context.parameters.first}`);
         return run(context);
       } catch (e) {
         context.print.error('Command not found');
       }
     }
-    const header = `amplify ${featureName} <subcommands>`;
+    const header = `amplify ${categoryName} <subcommands>`;
 
     const commands = [
       {
         name: 'add',
-        description: `Takes you through a CLI flow to add a ${featureName} resource to your local backend`,
+        description: `Takes you through a CLI flow to add a ${categoryName} resource to your local backend`,
       },
       {
         name: 'update',
-        description: `Takes you through a CLI flow to update an existing ${featureName} resource`,
+        description: `Takes you through a CLI flow to update an existing ${categoryName} resource`,
       },
       {
         name: 'push',
-        description: `Provisions only ${featureName} cloud resources with the latest local developments`,
+        description: `Provisions only ${categoryName} cloud resources with the latest local developments`,
       },
       {
         name: 'remove',
-        description: `Removes ${featureName} resource from your local backend which would be removed from the cloud on the next push command`,
+        description: `Removes ${categoryName} resource from your local backend which would be removed from the cloud on the next push command`,
       },
       {
         name: 'build',

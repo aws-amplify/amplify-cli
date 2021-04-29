@@ -13,7 +13,7 @@ import { ServiceName } from './constants';
 import _ from 'lodash';
 import { LayerParameters } from './layerParams';
 import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { category } from '../../../constants';
+import { categoryName } from '../../../constants';
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
  */
@@ -209,7 +209,7 @@ export async function getRuntimeManager(
   context: $TSContext,
   resourceName: string,
 ): Promise<FunctionRuntimeLifecycleManager & { runtime: string }> {
-  const { pluginId, functionRuntime } = context.amplify.readBreadcrumbs(category, resourceName);
+  const { pluginId, functionRuntime } = context.amplify.readBreadcrumbs(categoryName, resourceName);
   return {
     ...((await context.amplify.loadRuntimePlugin(context, pluginId)) as FunctionRuntimeLifecycleManager),
     runtime: functionRuntime,

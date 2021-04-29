@@ -13,6 +13,7 @@ export type LayerParameters = {
   selectedVersion?: LayerVersionCfnMetadata;
   build: boolean;
   description?: string;
+  versionHash?: string;
 };
 
 export enum PermissionEnum {

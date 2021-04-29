@@ -7,10 +7,15 @@ import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer'
 import _ from 'lodash';
 import path from 'path';
 import uuid from 'uuid';
-import { categoryName, layerParametersFileName, provider, ServiceName } from './constants';
+import { categoryName } from '../../../constants';
+import { cfnTemplateSuffix, layerParametersFileName, parametersFileName, provider, ServiceName, versionHash } from './constants';
 import { getLayerConfiguration } from './layerConfiguration';
 import { LayerParameters, LayerPermission, PermissionEnum } from './layerParams';
 import { updateLayerArtifacts } from './storeResources';
+
+// These glob patterns covering the resource files Amplify stores in the layer resource's directory,
+// layer-parameters.json must NOT be there.
+const layerResourceGlobs = [`${parametersFileName}`, `*${cfnTemplateSuffix}`];
 
 export interface LayerInputParams {
   layerPermissions?: PermissionEnum[];
@@ -150,6 +155,7 @@ export function layerInputParamsToLayerPermissionArray(parameters: LayerInputPar
   }
 
   const permissionObj: Array<LayerPermission> = [];
+
   layerPermissions.forEach(val => {
     let obj: LayerPermission;
     if (val === PermissionEnum.Public) {
@@ -173,7 +179,9 @@ export function layerInputParamsToLayerPermissionArray(parameters: LayerInputPar
   const privateObj: LayerPermission = {
     type: PermissionEnum.Private,
   };
+
   permissionObj.push(privateObj); // layer is always accessible by the aws account of the owner
+
   return permissionObj;
 }
 
@@ -201,22 +209,26 @@ export function getLayerPath(layerName: string) {
 export async function isNewVersion(layerName: string) {
   const previousHash = loadPreviousLayerHash(layerName);
   const currentHash = await hashLayerVersionContents(getLayerPath(layerName));
+
   return previousHash !== currentHash;
 }
 
 export function isMultiEnvLayer(layerName: string) {
   const layerParametersPath = path.join(getLayerPath(layerName), layerParametersFileName);
+
   return !fs.existsSync(layerParametersPath);
 }
 
 export function getLayerName(context: $TSContext, layerName: string): string {
   const { envName }: { envName: string } = context.amplify.getEnvInfo();
+
   return isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName;
 }
 
 // Check hash results for content changes, bump version if so
 export async function ensureLayerVersion(context: $TSContext, layerName: string, previousHash: string) {
   const currentHash = await hashLayerVersionContents(getLayerPath(layerName));
+
   if (previousHash !== currentHash) {
     if (previousHash) {
       context.print.success(`Content changes in Lambda layer ${layerName} detected.`);
@@ -224,19 +236,22 @@ export async function ensureLayerVersion(context: $TSContext, layerName: string,
   }
 
   const layerParameters = loadStoredLayerParameters(context, layerName);
+
   await updateLayerArtifacts(context, layerParameters, { layerParams: false, cfnFile: true, description: false });
+
   return currentHash;
 }
 
-export function loadPreviousLayerHash(layerName: string): string {
+export function loadPreviousLayerHash(layerName: string): string | undefined {
   const meta: $TSMeta = stateManager.getMeta();
-  const previousHash = _.get(meta, [categoryName, layerName, 'versionHash'], undefined);
+  const previousHash = _.get(meta, [categoryName, layerName, versionHash], undefined);
+
   return previousHash;
 }
 
 // hashes just the content that will be zipped into the layer version.
 // for efficiency, it only hashes package.json files in the node_modules folder of nodejs layers
-export const hashLayerVersionContents = async (layerPath: string): Promise<string> => {
+const hashLayerVersionContents = async (layerPath: string): Promise<string> => {
   // TODO load paths from layer-runtimes.json
   const nodePath = path.join(layerPath, 'lib', 'nodejs');
   const nodeHashOptions = {
@@ -277,7 +292,7 @@ export function validFilesize(context: $TSContext, zipPath: string, maxSize = 25
 
 // hashes all of the layer contents as well as the files in the layer path (CFN, parameters, etc)
 export const hashLayerResource = async (layerPath: string): Promise<string> => {
-  return (await globby(['*'], { cwd: layerPath }))
+  return (await globby(layerResourceGlobs, { cwd: layerPath }))
     .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'utf8'))
     .reduce((acc, it) => acc.update(it), crypto.createHash('sha256'))
     .update(await hashLayerVersionContents(layerPath))

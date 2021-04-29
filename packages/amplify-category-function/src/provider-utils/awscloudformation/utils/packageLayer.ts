@@ -7,7 +7,7 @@ import { EOL } from 'os';
 import { Packager } from '../types/packaging-types';
 import { LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
 import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
-import { ServiceName } from './constants';
+import { ServiceName, versionHash } from './constants';
 import { LayerCloudState } from './layerCloudState';
 import { loadPreviousLayerHash, ensureLayerVersion, validFilesize, loadStoredLayerParameters, getChangedResources } from './layerHelpers';
 import { LayerPermission, PermissionEnum } from './layerParams';
@@ -69,7 +69,7 @@ export const packageLayer: Packager = async (context, resource) => {
   const zipFilename = createLayerZipFilename(resource.resourceName, layerCloudState.latestVersionLogicalId);
   // check zip size is less than 250MB
   if (validFilesize(context, destination)) {
-    context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: 'versionHash', hashValue: currentHash });
+    context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: versionHash, hashValue: currentHash });
   } else {
     throw new Error('File size greater than 250MB');
   }
