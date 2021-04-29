@@ -277,13 +277,7 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
   if (Array.isArray(api.params.paths)) {
     api.params.paths.forEach(path => {
       if (!path.policyResourceName) {
-        if (typeof path.name !== 'string') {
-          const err = new Error(`Malformed parameters file for REST API ${resourceName}`);
-          err.stack = undefined;
-          throw err;
-        }
-
-        path.policyResourceName = path.name.replace(/{[a-zA-Z0-9\-]+}/g, '*');
+        path.policyResourceName = String(path.name).replace(/{[a-zA-Z0-9\-]+}/g, '*');
         modified = true;
       }
     });
