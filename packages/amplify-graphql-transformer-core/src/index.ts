@@ -35,3 +35,5 @@ export const getAppSyncServiceExtraDirectives = (): string => {
 };
 
 export { MappingTemplate } from './cdk-compat';
+
+export { TransformerContractError } from './errors';
