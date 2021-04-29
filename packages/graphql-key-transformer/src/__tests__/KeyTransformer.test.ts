@@ -394,6 +394,99 @@ describe('check schema input', () => {
     expect(senderIdField.type.kind).toBe('NonNullType');
   });
 
+  it('@model mutation with default', () => {
+    const validSchema = /* GraphQL */ `
+      type Call @model @key(fields: ["receiverId", "senderId"]) @key(name: "bySender", fields: ["senderId", "receiverId"]) {
+        senderId: ID!
+        receiverId: ID!
+      }
+
+      input CreateCallInput {
+        receiverId: ID!
+      }
+
+      input DeleteCallInput {
+        receiverId: ID!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+      featureFlags: ff,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+
+    // checlk for delete input
+    const DeleteCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+    ) as InputObjectTypeDefinitionNode | undefined;
+    expect(DeleteCallInput).toBeDefined();
+    const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
+    expect(receiverIdField).toBeDefined();
+    expect(receiverIdField.type.kind).toBe('NonNullType');
+    const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
+    expect(senderIdField).toBeDefined();
+    expect(senderIdField.type.kind).toBe('NonNullType');
+
+    // check for create input
+    const CreateCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateCallInput',
+    ) as InputObjectTypeDefinitionNode | undefined;
+    expect(CreateCallInput).toBeDefined();
+    const receiverIdFieldCreate = CreateCallInput.fields.find(f => f.name.value === 'receiverId');
+    expect(receiverIdFieldCreate).toBeDefined();
+    expect(receiverIdFieldCreate.type.kind).toBe('NonNullType');
+    const senderIdFieldCreate = CreateCallInput.fields.find(f => f.name.value === 'senderId');
+    expect(senderIdFieldCreate).toBeUndefined();
+  });
+
+  it('@model mutation with queries', () => {
+    const validSchema = /* GraphQL */ `
+      type Call @model(queries: null) @key(fields: ["receiverId", "senderId"]) @key(name: "bySender", fields: ["senderId", "receiverId"]) {
+        senderId: ID!
+        receiverId: ID!
+      }
+      input CreateCallInput {
+        receiverId: ID!
+      }
+
+      input DeleteCallInput {
+        receiverId: ID!
+      }
+    `;
+    const transformer = new GraphQLTransform({
+      transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+      featureFlags: ff,
+    });
+    const out = transformer.transform(validSchema);
+    expect(out).toBeDefined();
+    const schema = parse(out.schema);
+
+    // checlk for delete input
+    const DeleteCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'DeleteCallInput',
+    ) as InputObjectTypeDefinitionNode | undefined;
+    expect(DeleteCallInput).toBeDefined();
+    const receiverIdField = DeleteCallInput.fields.find(f => f.name.value === 'receiverId');
+    expect(receiverIdField).toBeDefined();
+    expect(receiverIdField.type.kind).toBe('NonNullType');
+    const senderIdField = DeleteCallInput.fields.find(f => f.name.value === 'senderId');
+    expect(senderIdField).toBeDefined();
+    expect(senderIdField.type.kind).toBe('NonNullType');
+
+    // check for create input
+    const CreateCallInput: InputObjectTypeDefinitionNode = schema.definitions.find(
+      d => d.kind === 'InputObjectTypeDefinition' && d.name.value === 'CreateCallInput',
+    ) as InputObjectTypeDefinitionNode | undefined;
+    expect(CreateCallInput).toBeDefined();
+    const receiverIdFieldCreate = CreateCallInput.fields.find(f => f.name.value === 'receiverId');
+    expect(receiverIdFieldCreate).toBeDefined();
+    expect(receiverIdFieldCreate.type.kind).toBe('NonNullType');
+    const senderIdFieldCreate = CreateCallInput.fields.find(f => f.name.value === 'senderId');
+    expect(senderIdFieldCreate).toBeUndefined();
+  });
+
   it('id field should be optional in updateInputObjects when it is not a primary key', () => {
     const validSchema = /* GraphQL */ `
       type Review
@@ -425,6 +518,6 @@ describe('check schema input', () => {
     expect(UpdateReviewInput).toBeDefined();
     const idField = UpdateReviewInput.fields.find(f => f.name.value === 'id');
     expect(idField).toBeDefined();
-    expect(idField.type.kind).toBe('NonNullType');
+    expect(idField.type.kind).toBe('NamedType');
   });
 });
