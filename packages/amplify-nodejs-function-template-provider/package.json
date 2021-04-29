@@ -28,6 +28,6 @@
   },
   "devDependencies": {
     "@types/inquirer": "^6.5.0",
-    "@types/node": "^10.17.13"
+    "@types/node": "^12.12.6"
   }
 }

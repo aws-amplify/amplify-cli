@@ -5,10 +5,10 @@ machine:
   environment:
     PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
 
-node10: &node10
+node12: &node12
   working_directory: ~/repo
   docker:
-    - image: circleci/node:10
+    - image: circleci/node:12
       auth:
         username: $DOCKERHUB_USERNAME
         password: $DOCKERHUB_ACCESS_TOKEN
@@ -58,7 +58,7 @@ install_cli_from_local_registery: &install_cli_from_local_registery
 
 jobs:
   build:
-    <<: *node10
+    <<: *node12
     steps:
       - checkout
       - run: yarn run production-build
@@ -75,7 +75,7 @@ jobs:
           paths: .
 
   test:
-    <<: *node10
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
@@ -95,7 +95,7 @@ jobs:
           command: yarn coverage
 
   mock_e2e_tests:
-    <<: *node10
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
@@ -114,7 +114,7 @@ jobs:
           path: packages/amplify-util-mock/
 
   publish_to_local_registry:
-    <<: *node10
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
@@ -154,7 +154,7 @@ jobs:
             - ~/repo/.amplify-pkg-version
 
   build_pkg_binaries:
-    <<: *node10
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
@@ -227,12 +227,12 @@ jobs:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
 
   done_with_node_e2e_tests:
-    <<: *node10
+    <<: *node12
     steps:
       - run: echo 'Done with Node CLI E2E Tests'
 
   done_with_pkg_linux_e2e_tests:
-    <<: *node10
+    <<: *node12
     steps:
       - run: echo 'Done with pkg CLI E2E Tests'
 
@@ -473,7 +473,7 @@ jobs:
               echo "Skipping deploy."
             fi
   github_prerelease:
-    <<: *node10
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
@@ -497,7 +497,7 @@ jobs:
             yarn ts-node scripts/github-prerelease.ts $version
 
   github_prerelease_install_sanity_check:
-    <<: *node10
+    <<: *node12
     steps:
       - restore_cache:
           key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
@@ -512,7 +512,7 @@ jobs:
           command: |
             amplify version
   github_release:
-    <<: *node10
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
@@ -526,7 +526,7 @@ jobs:
             version=$(cat .amplify-pkg-version)
             yarn ts-node scripts/github-release.ts $version
   cleanup_resources:
-    <<: *node10
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
@@ -543,7 +543,7 @@ jobs:
     working_directory: ~/repo
 
   cleanup_resources_after_e2e_runs:
-    <<: *node10
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./

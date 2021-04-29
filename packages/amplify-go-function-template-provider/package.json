@@ -24,6 +24,6 @@
     "amplify-function-plugin-interface": "1.7.2"
   },
   "devDependencies": {
-    "@types/node": "^10.17.13"
+    "@types/node": "^12.12.6"
   }
 }
