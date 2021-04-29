@@ -6,7 +6,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/node:10.18
+      - image: circleci/node:12
     steps:
       - setup_remote_docker
       - aws-ecr/build-and-push-image:
