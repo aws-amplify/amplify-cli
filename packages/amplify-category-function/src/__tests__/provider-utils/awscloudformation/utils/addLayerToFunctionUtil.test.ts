@@ -136,11 +136,11 @@ describe('layer selection question', () => {
       layerSelections: ['aLayer'],
     }));
     (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
-      versionSelection: 2,
+      versionSelection: `${2}: layer description`,
     }));
 
     await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
-    expect((inquirer_mock.prompt.mock.calls[1][0] as ListQuestion).default).toBe('Always choose latest version');
+    expect((inquirer_mock.prompt.mock.calls[1][0] as ListQuestion).default).toBe(`${2}: layer description`);
   });
 
   it('returns the selected layers', async () => {
@@ -148,7 +148,7 @@ describe('layer selection question', () => {
       layerSelections: [provideExistingARNsPrompt, 'aLayer'],
     }));
     (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
-      versionSelection: 2,
+      versionSelection: `${2}: layer description`,
     }));
 
     const result = await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, []);
@@ -178,6 +178,7 @@ describe('custom arn question', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
   it('sets default ARNs to previous values', async () => {
     const previousSelectionsStub: LambdaLayer[] = [
       {
@@ -191,6 +192,7 @@ describe('custom arn question', () => {
     await askCustomArnQuestion(1, previousSelectionsStub);
     expect((inquirer_mock.prompt.mock.calls[0][0] as InputQuestion).default).toBe('someArn');
   });
+
   it('returns ARNs as LambdaLayer array', async () => {
     (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
       arns: ['arn1', 'arn2'],
@@ -216,6 +218,7 @@ describe('layer order question', () => {
       sortedNames: ['myLayer', 'anotherLayer', 'someArn'],
     }));
   });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });

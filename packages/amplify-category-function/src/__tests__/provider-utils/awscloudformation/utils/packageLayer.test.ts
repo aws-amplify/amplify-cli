@@ -51,7 +51,7 @@ const runtimePlugin_stub = ({
 const context_stub = ({
   amplify: {
     loadRuntimePlugin: jest.fn().mockResolvedValue(runtimePlugin_stub),
-    getEnvInfo: jest.fn().mockReturnValue('mockEnv'),
+    getEnvInfo: jest.fn().mockReturnValue({ envName: 'mockEnv' }),
     updateAmplifyMetaAfterPackage: jest.fn(),
   },
 } as unknown) as jest.Mocked<$TSContext>;

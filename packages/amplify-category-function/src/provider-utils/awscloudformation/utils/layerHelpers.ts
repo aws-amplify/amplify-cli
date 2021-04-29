@@ -10,7 +10,7 @@ import uuid from 'uuid';
 import { categoryName } from '../../../constants';
 import { cfnTemplateSuffix, layerParametersFileName, parametersFileName, provider, ServiceName, versionHash } from './constants';
 import { getLayerConfiguration } from './layerConfiguration';
-import { LayerParameters, LayerPermission, PermissionEnum } from './layerParams';
+import { LayerParameters, LayerPermission, LayerVersionMetadata, PermissionEnum } from './layerParams';
 import { updateLayerArtifacts } from './storeResources';
 
 // These glob patterns covering the resource files Amplify stores in the layer resource's directory,
@@ -23,12 +23,17 @@ export interface LayerInputParams {
   orgIds?: string[];
 }
 
-export function layerVersionQuestion(versions: string[]): ListQuestion {
+export function mapVersionNumberToChoice(layerVersion: LayerVersionMetadata): string {
+  return `${layerVersion.Version}: ${layerVersion.Description || ''}`;
+}
+
+export function layerVersionQuestion(versions: string[], message: string, defaultOption?: string): ListQuestion {
   return {
     type: 'list',
-    name: 'layerVersion',
-    message: 'Select the layer version to update:',
+    name: 'versionSelection',
+    message,
     choices: versions,
+    default: defaultOption || 0,
   };
 }
 

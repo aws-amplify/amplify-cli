@@ -116,7 +116,9 @@ export async function updateLayerWalkthrough(
         latestVersionText,
         ...layerVersions.map(layerVersionMetadata => `${layerVersionMetadata.Version}: ${layerVersionMetadata.Description}`),
       ];
-      const selectedVersion: string = (await inquirer.prompt(layerVersionQuestion(layerVersionChoices))).layerVersion;
+      const selectedVersion: string = (
+        await inquirer.prompt(layerVersionQuestion(layerVersionChoices, 'Select the layer version to update:'))
+      ).versionSelection;
       if (selectedVersion !== latestVersionText) {
         selectedVersionNumber = Number(_.first(selectedVersion.split(':')));
         parameters.selectedVersion = _.first(layerVersions.filter(version => version.Version === selectedVersionNumber));

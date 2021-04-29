@@ -1,15 +1,16 @@
-import _ from 'lodash';
-import { FunctionRuntime, FunctionDependency, LambdaLayer, ProjectLayer, ExternalLayer } from 'amplify-function-plugin-interface';
-import { ServiceName } from './constants';
-import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
+import { $TSContext, $TSMeta, pathManager } from 'amplify-cli-core';
+import { ExternalLayer, FunctionDependency, FunctionRuntime, LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
 import enquirer from 'enquirer';
+import inquirer, { CheckboxQuestion, InputQuestion } from 'inquirer';
+import _ from 'lodash';
+import { categoryName } from '../../../constants';
+import { ServiceName } from './constants';
 import { LayerCloudState } from './layerCloudState';
 import { getLayerRuntimes } from './layerConfiguration';
-import { $TSContext, $TSMeta, pathManager } from 'amplify-cli-core';
-import { categoryName } from '../../../constants';
+import { layerVersionQuestion, mapVersionNumberToChoice } from './layerHelpers';
 
-const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
 export const provideExistingARNsPrompt = 'Provide existing Lambda layer ARNs';
+const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
 const defaultLayerVersionPrompt = 'Always choose latest version';
 const versionSelectionPrompt = (layerName: string) => `Select a version for ${layerName}:`;
 const ARNEntryPrompt = (remainingLayers: number) => `Enter up to ${remainingLayers} existing Lambda layer ARNs (comma-separated):`;
@@ -63,24 +64,29 @@ export const askLayerSelection = async (
   const askArnQuestion = layerSelections.includes(provideExistingARNsPrompt);
   layerSelections = layerSelections.filter(selection => selection !== provideExistingARNsPrompt);
 
-  for await (let layerName of layerSelections) {
+  for await (const layerName of layerSelections) {
     const layerCloudState = LayerCloudState.getInstance();
     const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, layerName);
-    const layerVersionArrPrompt = layerVersions.map(layerVersion => layerVersion.Version.toString());
-    console.log(layerVersionArrPrompt);
+    const layerVersionChoices = layerVersions.map(mapVersionNumberToChoice);
+
     // skip asking version for a new layer
-    if (Array.isArray(layerVersionArrPrompt) && layerVersionArrPrompt.length) {
-      layerVersionArrPrompt.unshift(defaultLayerVersionPrompt);
-      const layerVersionPrompt: ListQuestion = {
-        type: 'list',
-        name: 'versionSelection',
-        message: versionSelectionPrompt(layerName),
-        choices: layerVersionArrPrompt,
-        default: defaultLayerVersionPrompt,
-      };
-      const versionSelection = (await inquirer.prompt(layerVersionPrompt)).versionSelection;
-      const isLatestVersionSelected = versionSelection.toString() === defaultLayerVersionPrompt ? true : false;
-      const selectedVersion = versionSelection.toString() === defaultLayerVersionPrompt ? layerVersionArrPrompt[1] : versionSelection;
+    if (layerVersionChoices.length > 0) {
+      layerVersionChoices.unshift(defaultLayerVersionPrompt);
+      const previousLayerSelection = _.first(filterProjectLayers(previousSelections).filter(prev => prev.resourceName === layerName));
+
+      let defaultLayerSelection: string;
+      if (previousLayerSelection === undefined || previousLayerSelection.isLatestVersionSelected) {
+        defaultLayerSelection = defaultLayerVersionPrompt;
+      } else {
+        defaultLayerSelection = mapVersionNumberToChoice(_.first(layerVersions.filter(v => v.Version === previousLayerSelection.version)));
+      }
+
+      const versionSelection = (
+        await inquirer.prompt(layerVersionQuestion(layerVersionChoices, versionSelectionPrompt(layerName), defaultLayerSelection))
+      ).versionSelection;
+
+      const isLatestVersionSelected = versionSelection === defaultLayerVersionPrompt ? true : false;
+      const selectedVersion = versionSelection === defaultLayerVersionPrompt ? undefined : Number(_.first(versionSelection.split(':')));
       lambdaLayers.push({
         type: 'ProjectLayer',
         resourceName: layerName,
