@@ -252,12 +252,6 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
 
     JSONUtilities.writeJson(cfnFilePath, cfnContent);
     tryUpdateTopLevelComment(resourceDirPath, _.keys(functionParameters.environmentMap));
-<<<<<<< HEAD
-=======
-  } else {
-    // Need to load previous dependsOn
-    functionParameters.dependsOn = _.get(context.amplify.getProjectMeta(), [categoryName, lambdaToUpdate, 'dependsOn'], []);
->>>>>>> feat: Change detection refactorings for Lambda layers (#7203)
   }
 
   // ask scheduling Lambda questions and merge in results
