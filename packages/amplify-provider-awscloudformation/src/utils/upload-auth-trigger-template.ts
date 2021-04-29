@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject, FeatureFlags, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, FeatureFlags, JSONUtilities, pathManager } from 'amplify-cli-core';
 import path from 'path';
 import { uploadTemplateToS3 } from '../push-resources';
 import { ProviderName } from '../constants';
