@@ -56,6 +56,13 @@ export const askExecRolePermissionsQuestions = async (
 
   for (const selectedCategory of selectedCategories) {
     let resourcesList = selectedCategory in amplifyMeta ? Object.keys(amplifyMeta[selectedCategory]) : [];
+
+    // filter out the selected resource and lambda layers always
+    resourcesList = resourcesList.filter(
+      resourceName =>
+        resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service !== ServiceName.LambdaLayer,
+    );
+
     if (selectedCategory === 'storage' && 'api' in amplifyMeta) {
       if (appsyncResourceName) {
         const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
@@ -70,13 +77,9 @@ export const askExecRolePermissionsQuestions = async (
       // A Lambda function cannot depend on itself
       // Lambda layer dependencies are handled seperately
       if (serviceName === ServiceName.LambdaFunction) {
-        resourcesList = resourcesList.filter(
-          resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service === serviceName,
-        );
+        resourcesList = resourcesList.filter(resourceName => amplifyMeta[selectedCategory][resourceName].service === serviceName);
       } else {
-        resourcesList = resourcesList.filter(
-          resourceName => resourceName !== resourceNameToUpdate && !amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
-        );
+        resourcesList = resourcesList.filter(resourceName => amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable);
       }
     }
 

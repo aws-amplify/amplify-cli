@@ -21,6 +21,8 @@ module.exports = {
       resourceName = resourceToBeDeleted;
     }
 
+    resourceName = response.resourceName;
+
     return amplify
       .removeResource(context, categoryName, resourceName)
       .then((resource: { service: string; resourceName: string }) => {
@@ -29,8 +31,10 @@ module.exports = {
         }
       })
       .catch(err => {
-        context.print.info(err.stack);
-        context.print.error('An error occurred when removing the function resource');
+        if (err.stack) {
+          context.print.info(err.stack);
+          context.print.error('An error occurred when removing the function resource');
+        }
         context.usageData.emitError(err);
         process.exitCode = 1;
       });
