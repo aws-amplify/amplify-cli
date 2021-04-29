@@ -1,6 +1,6 @@
 import { supportedServices } from '../../provider-utils/supported-services';
 import { chooseServiceMessageUpdate } from '../../provider-utils/awscloudformation/utils/constants';
-import { category as categoryName } from '../../constants';
+import { categoryName } from '../../constants';
 
 const subcommand = 'update';
 

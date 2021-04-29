@@ -29,13 +29,17 @@
     "ci-info": "^2.0.0",
     "cloudform-types": "^4.2.0",
     "dotenv": "^8.2.0",
+    "folder-hash": "^4.0.1",
     "fs-extra": "^8.1.0",
+    "globby": "^11.0.3",
     "hjson": "^3.2.1",
     "js-yaml": "^4.0.0",
     "lodash": "^4.17.19",
-    "open": "^7.3.1"
+    "open": "^7.3.1",
+    "which": "^2.0.2"
   },
   "devDependencies": {
+    "@types/folder-hash": "^4.0.0",
     "@types/fs-extra": "^8.0.1",
     "@types/hjson": "^2.4.2",
     "@types/json-schema": "^7.0.5",

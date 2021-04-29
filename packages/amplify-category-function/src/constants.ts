@@ -1,4 +1,4 @@
-export const category = 'function';
+export const categoryName = 'function';
 
 export const envVarPrintoutPrefix =
   '\nYou can access the following resource attributes as environment variables from your Lambda function\n\t';

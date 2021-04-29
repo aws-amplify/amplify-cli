@@ -2,7 +2,7 @@ import { $TSContext } from 'amplify-cli-core';
 import { FunctionDependency, LambdaLayer } from 'amplify-function-plugin-interface';
 import enquirer from 'enquirer';
 import inquirer, { CheckboxQuestion, InputQuestion, ListQuestion } from 'inquirer';
-import { category } from '../../../../constants';
+import { categoryName } from '../../../../constants';
 import {
   askCustomArnQuestion,
   askLayerOrderQuestion,
@@ -163,7 +163,7 @@ describe('layer selection question', () => {
     ];
     const expectedDependsOn: FunctionDependency[] = [
       {
-        category,
+        category: categoryName,
         resourceName: 'aLayer',
         attributes: ['Arn'],
       },

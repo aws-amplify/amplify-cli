@@ -1,9 +1,9 @@
-import { $TSAny, $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, JSONUtilities, PathConstants, pathManager } from 'amplify-cli-core';
 import { FunctionParameters, ProjectLayer } from 'amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { category } from '../../../constants';
+import { categoryName } from '../../../constants';
 import { getNewCFNEnvVariables, getNewCFNParameters } from '../utils/cloudformationHelpers';
 import {
   advancedSettingsList,
@@ -174,9 +174,9 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
   };
 
   const projectBackendDirPath = pathManager.getBackendDirPath();
-  const resourceDirPath = path.join(projectBackendDirPath, category, functionParameters.resourceName);
+  const resourceDirPath = path.join(projectBackendDirPath, categoryName, functionParameters.resourceName);
   const currentParameters = loadFunctionParameters(resourceDirPath);
-  const functionRuntime = context.amplify.readBreadcrumbs(category, functionParameters.resourceName).functionRuntime as string;
+  const functionRuntime = context.amplify.readBreadcrumbs(categoryName, functionParameters.resourceName).functionRuntime as string;
 
   const cfnParameters = JSONUtilities.readJson<$TSAny>(path.join(resourceDirPath, parametersFileName), { throwIfNotExist: false }) || {};
   const scheduleParameters = {
@@ -253,7 +253,7 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
     tryUpdateTopLevelComment(resourceDirPath, _.keys(functionParameters.environmentMap));
   } else {
     // Need to load previous dependsOn
-    functionParameters.dependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
+    functionParameters.dependsOn = _.get(context.amplify.getProjectMeta(), [categoryName, lambdaToUpdate, 'dependsOn'], []);
   }
 
   // ask scheduling Lambda questions and merge in results
@@ -277,7 +277,7 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
 }
 
 export function migrate(context: $TSContext, projectPath: string, resourceName: string) {
-  const resourceDirPath = path.join(projectPath, 'amplify', 'backend', category, resourceName);
+  const resourceDirPath = path.join(projectPath, PathConstants.AmplifyDirName, PathConstants.BackendDirName, categoryName, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
   const oldCfn = JSONUtilities.readJson<$TSAny>(cfnFilePath);
   const newCfn: $TSAny = {};
