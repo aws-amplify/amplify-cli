@@ -1,5 +1,5 @@
 const path = require('path');
-const { FeatureFlags } = require('amplify-cli-core');
+const { FeatureFlags, pathManager } = require('amplify-cli-core');
 const { importConfig, importModels } = require('./lib/amplify-xcode');
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');
@@ -68,7 +68,7 @@ async function handleAmplifyEvent(context, args) {
     return;
   }
   context.print.info('Updating iOS project');
-  const projectPath = process.cwd();
+  const projectPath = pathManager.findProjectRoot();
   switch (args.event) {
     case 'PostInit':
       await importConfig({ path: projectPath });
