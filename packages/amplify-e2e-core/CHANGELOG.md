@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.18.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.17.3...amplify-e2e-core@1.18.0) (2021-04-27)
+
+
+### Bug Fixes
+
+* consolidate REST API IAM policies ([#6904](https://github.com/aws-amplify/amplify-cli/issues/6904)) (ref [#2084](https://github.com/aws-amplify/amplify-cli/issues/2084)) ([5cfff17](https://github.com/aws-amplify/amplify-cli/commit/5cfff173d57ec9ab68984faf2d0f6474eccdcaae))
+
+
+### Features
+
+* S3 SSE by default ([#7039](https://github.com/aws-amplify/amplify-cli/issues/7039)) (ref [#5708](https://github.com/aws-amplify/amplify-cli/issues/5708)) ([c1369ed](https://github.com/aws-amplify/amplify-cli/commit/c1369ed6f9c204c89ee2d4c805314a40d6eeaf92))
+
+
+
+
+
 ## [1.17.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.17.2...amplify-e2e-core@1.17.3) (2021-04-19)
 
 
