@@ -52,7 +52,7 @@ describe('packageManager tests', () => {
   });
 
   test('detects npm fallback correctly when yarn is not in path', () => {
-    which_mock.sync.mockReturnValue(null);
+    (which_mock.sync as any).mockReturnValue(undefined);
 
     const testDirectory = path.join(baseDirectory, 'packageManager-fallback');
 
