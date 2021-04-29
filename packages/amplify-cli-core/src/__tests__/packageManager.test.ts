@@ -27,7 +27,7 @@ describe('packageManager tests', () => {
 
     expect(which_mock.sync).toBeCalledTimes(1);
     expect(packageManager).toBeDefined();
-    expect(packageManager.packageManager).toBe('yarn');
+    expect(packageManager!.packageManager).toEqual('yarn');
   });
 
   test('detects npm correctly', () => {
@@ -36,7 +36,7 @@ describe('packageManager tests', () => {
     const packageManager = getPackageManager(testDirectory);
 
     expect(packageManager).toBeDefined();
-    expect(packageManager.packageManager).toBe('npm');
+    expect(packageManager!.packageManager).toEqual('npm');
   });
 
   test('detects yarn fallback correctly when yarn in path', () => {
@@ -48,11 +48,11 @@ describe('packageManager tests', () => {
 
     expect(which_mock.sync).toBeCalledTimes(1);
     expect(packageManager).toBeDefined();
-    expect(packageManager.packageManager).toBe('yarn');
+    expect(packageManager!.packageManager).toEqual('yarn');
   });
 
   test('detects npm fallback correctly when yarn is not in path', () => {
-    which_mock.sync.mockReturnValue(undefined);
+    which_mock.sync.mockReturnValue(null);
 
     const testDirectory = path.join(baseDirectory, 'packageManager-fallback');
 
@@ -60,6 +60,6 @@ describe('packageManager tests', () => {
 
     expect(which_mock.sync).toBeCalledTimes(1);
     expect(packageManager).toBeDefined();
-    expect(packageManager.packageManager).toBe('npm');
+    expect(packageManager!.packageManager).toEqual('npm');
   });
 });
