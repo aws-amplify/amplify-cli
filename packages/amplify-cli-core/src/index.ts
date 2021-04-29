@@ -200,7 +200,7 @@ interface AmplifyToolkit {
   readJsonFile: () => $TSAny;
   removeEnvFromCloud: () => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
-  removeResource: () => $TSAny;
+  removeResource: (context: $TSContext, category: string, resource: string) => $TSAny;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
