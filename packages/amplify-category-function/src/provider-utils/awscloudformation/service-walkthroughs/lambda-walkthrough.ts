@@ -122,6 +122,8 @@ function provideInformation(context, lambdaToUpdate, functionRuntime, currentPar
     currentParameters.lambdaLayers.forEach(layer => {
       if (layer.arn) {
         context.print.info('- '.concat(layer.arn));
+      } else {
+        context.print.info(`- ${layer.resourceName}`);
       }
     });
     context.print.info('');
@@ -188,7 +190,7 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
   provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters);
 
   // Determine which settings need to be updated
-  const { selectedSettings }: any = await settingsUpdateSelection();
+  const { selectedSettings }: $TSAny = await settingsUpdateSelection();
 
   if (selectedSettings.includes(resourceAccessSetting)) {
     const additionalParameters = await askExecRolePermissionsQuestions(context, lambdaToUpdate, currentParameters.permissions);
@@ -261,7 +263,7 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
 
   // ask lambdalayer questions and merge results
   if (selectedSettings.includes(lambdaLayerSetting)) {
-    const currentFunctionParameters: any =
+    const currentFunctionParameters: $TSAny =
       JSONUtilities.readJson(path.join(resourceDirPath, functionParametersFileName), { throwIfNotExist: false }) || {};
     merge(
       functionParameters,

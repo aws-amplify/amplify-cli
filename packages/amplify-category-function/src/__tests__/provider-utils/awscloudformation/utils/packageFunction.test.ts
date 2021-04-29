@@ -9,7 +9,7 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/functionPluginLoad
 
 const context_stub = {
   amplify: {
-    getEnvInfo: jest.fn().mockReturnValue('mockEnv'),
+    getEnvInfo: jest.fn().mockReturnValue({ envName: 'mockEnv' }),
     updateAmplifyMetaAfterPackage: jest.fn(),
   },
 };

@@ -111,12 +111,14 @@ export async function updateLayerWalkthrough(
     if (layerHasDeployed) {
       const layerCloudState = LayerCloudState.getInstance();
       const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, parameters.layerName);
-      const latestVersionText = 'The latest version';
+      const latestVersionText = 'Future layer versions';
       const layerVersionChoices = [
         latestVersionText,
         ...layerVersions.map(layerVersionMetadata => `${layerVersionMetadata.Version}: ${layerVersionMetadata.Description}`),
       ];
-      const selectedVersion: string = (await inquirer.prompt(layerVersionQuestion(layerVersionChoices))).layerVersion;
+      const selectedVersion: string = (
+        await inquirer.prompt(layerVersionQuestion(layerVersionChoices, 'Select the layer version to update:'))
+      ).versionSelection;
       if (selectedVersion !== latestVersionText) {
         selectedVersionNumber = Number(_.first(selectedVersion.split(':')));
         parameters.selectedVersion = _.first(layerVersions.filter(version => version.Version === selectedVersionNumber));
@@ -184,10 +186,10 @@ export async function lambdaLayerNewVersionWalkthrough(params: LayerParameters, 
   };
 }
 
-async function descriptionQuestion(timestampString: string, newLayer: boolean = false): Promise<string> {
+async function descriptionQuestion(timestampString: string): Promise<string> {
   const response = await inquirer.prompt({
     name: 'description',
-    default: `${newLayer ? 'Updated layer version' : 'Created new layer'} ${timestampString}`,
+    default: `${'Updated layer version'} ${timestampString}`,
     message: 'Description:',
     validate: (desc: string) => {
       if (desc.length === 0) return 'Description cannot be empty';

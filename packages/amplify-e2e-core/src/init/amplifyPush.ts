@@ -124,7 +124,6 @@ export function amplifyPushLayer(
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendLine('y')
-      .wait('Content changes in Lambda layers detected.')
       .wait('Suggested configuration for new layer versions:')
       .wait('Accept the suggested layer version configurations?');
 

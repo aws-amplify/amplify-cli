@@ -513,7 +513,7 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
     [context, resource],
   );
 
-  if (!result.newPackageCreated) {
+  if (result.newPackageCreated === false) {
     return;
   }
 
@@ -575,15 +575,18 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
   } else {
     cfnMeta.Parameters.deploymentBucketName = paramType;
     cfnMeta.Parameters.s3Key = paramType;
+    const deploymentBucketNameRef = 'deploymentBucketName';
+    const s3KeyRef = 's3Key';
+
     if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
       cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
-        Bucket: Fn.Ref('deploymentBucketName'),
-        Key: Fn.Ref('s3Key'),
+        Bucket: Fn.Ref(deploymentBucketNameRef),
+        Key: Fn.Ref(s3KeyRef),
       };
     } else {
       cfnMeta.Resources.LambdaFunction.Properties.Code = {
-        S3Bucket: Fn.Ref('deploymentBucketName'),
-        S3Key: Fn.Ref('s3Key'),
+        S3Bucket: Fn.Ref(deploymentBucketNameRef),
+        S3Key: Fn.Ref(s3KeyRef),
       };
     }
     storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
