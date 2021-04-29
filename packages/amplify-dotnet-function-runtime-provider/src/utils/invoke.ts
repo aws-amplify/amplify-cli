@@ -21,8 +21,8 @@ export const invoke = async (request: InvocationRequest): Promise<string> => {
         env: request.envVars,
       },
     );
-    execPromise.stderr.pipe(process.stderr);
-    execPromise.stdout.pipe(process.stdout);
+    execPromise.stderr?.pipe(process.stderr);
+    execPromise.stdout?.pipe(process.stdout);
     result = await execPromise;
   } finally {
     // Clean up

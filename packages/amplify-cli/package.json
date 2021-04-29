@@ -30,7 +30,7 @@
     "clean": "rimraf ./lib"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   },
   "dependencies": {
     "amplify-app": "2.23.3",
@@ -106,7 +106,7 @@
     "@types/glob": "^7.1.1",
     "@types/global-prefix": "^3.0.0",
     "@types/gunzip-maybe": "^1.4.0",
-    "@types/node": "^10.17.13",
+    "@types/node": "^12.12.6",
     "@types/node-fetch": "^2.5.7",
     "@types/parse-json": "^4.0.0",
     "@types/progress": "^2.0.3",

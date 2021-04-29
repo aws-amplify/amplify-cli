@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@types/md5": "^2.1.33",
-    "@types/node": "^10.17.13"
+    "@types/node": "^12.12.6"
   },
   "jest": {
     "transform": {

@@ -30,7 +30,7 @@
     "graphql-transformer-core": "6.28.4"
   },
   "devDependencies": {
-    "@types/node": "^10.17.13",
+    "@types/node": "^12.12.6",
     "cloudform-types": "^4.2.0",
     "graphql-dynamodb-transformer": "6.22.4",
     "graphql-elasticsearch-transformer": "4.11.4",
