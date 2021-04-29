@@ -11,6 +11,7 @@ import {
   TransformerProjectConfig,
 } from '@aws-amplify/graphql-transformer-core';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
+import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 
 import { ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
@@ -46,6 +47,7 @@ function getTransformerFactory(context, resourceDir) {
   return async () => {
     const transformerList: TransformerPluginProvider[] = [
       new ModelTransformer(),
+      new FunctionTransformer(),
       // TODO: initialize transformer plugins
     ];
 

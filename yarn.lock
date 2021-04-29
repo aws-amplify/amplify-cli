@@ -342,6 +342,17 @@
   dependencies:
     "@aws-amplify/core" "^3.5.5"
 
+"@aws-cdk/assert@~1.72.0":
+  version "1.72.0"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/assert/-/assert-1.72.0.tgz#2811b89536a34d970ba43f73f9c77228a73c90ca"
+  integrity sha512-ikzkFtpTyJeJdQb9ajxa8/wVouEp6dKGU2NhaBrn1gR3r7Qekp3VFZHYytz8RRsf9vLy3P7vzqlT3k8WLeUm4g==
+  dependencies:
+    "@aws-cdk/cloud-assembly-schema" "1.72.0"
+    "@aws-cdk/cloudformation-diff" "1.72.0"
+    "@aws-cdk/core" "1.72.0"
+    "@aws-cdk/cx-api" "1.72.0"
+    constructs "^3.2.0"
+
 "@aws-cdk/assets@1.72.0", "@aws-cdk/assets@~1.72.0":
   version "1.72.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/assets/-/assets-1.72.0.tgz#7bb81ae4079a63a90effd94df4fda832a2c48483"
