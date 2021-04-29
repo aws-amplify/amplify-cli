@@ -1,12 +1,12 @@
 import { stateManager } from './state-manager';
 import _ from 'lodash';
 
-const backendConfigObjectPath = ['providers', 'awscloudformation', 'PermissionBoundaryPolicyArn'];
+const teamProviderInfoObjectPath = () => [stateManager.getLocalEnvInfo().envName, 'awscloudformation', 'PermissionBoundaryPolicyArn'];
 
 export const getPermissionBoundaryArn: () => string | undefined = () => {
   try {
-    const backendConfig = stateManager.getBackendConfig();
-    return _.get(backendConfig, backendConfigObjectPath) as string | undefined;
+    const teamProviderInfo = stateManager.getTeamProviderInfo();
+    return _.get(teamProviderInfo, teamProviderInfoObjectPath()) as string | undefined;
   } catch (err) {
     // uninitialized project
     return undefined;
@@ -14,11 +14,11 @@ export const getPermissionBoundaryArn: () => string | undefined = () => {
 };
 
 export const setPermissionBoundaryArn: (arn?: string) => void = arn => {
-  const backendConfig = stateManager.getBackendConfig();
+  const teamProviderInfo = stateManager.getTeamProviderInfo();
   if (!arn) {
-    _.unset(backendConfig, backendConfigObjectPath);
+    _.unset(teamProviderInfo, teamProviderInfoObjectPath());
   } else {
-    _.set(backendConfig, backendConfigObjectPath, arn);
+    _.set(teamProviderInfo, teamProviderInfoObjectPath(), arn);
   }
-  stateManager.setBackendConfig(undefined, backendConfig);
+  stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
 };

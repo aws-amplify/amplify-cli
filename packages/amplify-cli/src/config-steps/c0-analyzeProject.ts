@@ -47,9 +47,9 @@ export async function analyzeProject(context) {
 
   const configurationSetting = await getConfigurationSetting();
 
-  if (configurationSetting === 'advanced') {
+  if (configurationSetting === 'containers') {
     context.exeInfo.inputParams.yes = true;
-    context.exeInfo.inputParams.advanced = true;
+    context.exeInfo.inputParams.containerSetting = true;
   }
   if (configurationSetting === 'profile') {
     context.exeInfo.inputParams.yes = true;
@@ -68,11 +68,9 @@ function displayProfileSetting(context, profileName) {
 }
 
 function displayAdvancedSettings(context) {
-  context.print.info('Advanced');
+  context.print.info('Advanced: Container-based deployments');
   const containerDeploymentStatus = isContainersEnabled(context) ? 'Yes' : 'No';
   context.print.info(`| Leverage container-based deployments: ${containerDeploymentStatus}`);
-  const permissionBoundaryArnDisplay = getPermissionBoundaryArn() ?? '';
-  context.print.info(`| IAM Role Permission Boundary Policy ARN: ${permissionBoundaryArnDisplay}`);
 }
 
 async function getConfigurationSetting() {
@@ -83,13 +81,13 @@ async function getConfigurationSetting() {
     choices: [
       { name: 'Project information', value: 'project' },
       { name: 'AWS Profile setting', value: 'profile' },
-      { name: 'Advanced', value: 'advanced' },
+      { name: 'Advanced: Container-based deployments', value: 'containers' },
     ],
     default: 'project',
   };
 
   const { configurationSetting } = await inquirer.prompt(configureSettingQuestion);
-  return configurationSetting as 'project' | 'profile' | 'advanced';
+  return configurationSetting as 'project' | 'profile' | 'containers';
 }
 
 async function configureProjectName(context) {

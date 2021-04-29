@@ -26,6 +26,15 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
   });
 }
 
+export function updateEnvironment(cwd: string, settings: { permissionBoundaryArn: string }) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['env', 'update'], { cwd, stripColors: true })
+      .wait('Specify an IAM Policy ARN')
+      .sendLine(settings.permissionBoundaryArn)
+      .run((err: Error) => (!!err ? reject(err) : resolve()));
+  });
+}
+
 export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName: string; currentEnvName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })

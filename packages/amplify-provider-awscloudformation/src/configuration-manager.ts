@@ -88,9 +88,8 @@ export async function configure(context: $TSContext) {
   context.exeInfo = context.exeInfo || context.amplify.getProjectDetails();
   normalizeInputParams(context);
   context.exeInfo.awsConfigInfo = getCurrentConfig(context);
-  if (context.exeInfo.inputParams.advanced) {
+  if (context.exeInfo.inputParams.containerSetting) {
     await enableServerlessContainers(context);
-    await updatePermissionBoundaryArn(context);
   }
 
   if (context.exeInfo.inputParams.profileSetting) {
@@ -118,23 +117,6 @@ async function enableServerlessContainers(context: $TSContext) {
 
   context.exeInfo.projectConfig[frontend].config = { ...config, ServerlessContainers };
 }
-
-const updatePermissionBoundaryArn = async (context: $TSContext) => {
-  const { permissionBoundaryArn } = await prompt({
-    type: 'input',
-    name: 'permissionBoundaryArn',
-    message:
-      'Specify an IAM Policy ARN to use as a Permission Boundary for all IAM Roles in the project (leave blank to remove the Permission Boundary configuration):',
-    default: getPermissionBoundaryArn(),
-    validate: context.amplify.inputValidation({
-      operator: 'regex',
-      value: '^(|arn:aws:iam::(\\d{12}|aws):policy/.+)$',
-      onErrorMsg: 'Specify a valid IAM Policy ARN',
-      required: false,
-    }),
-  });
-  setPermissionBoundaryArn(permissionBoundaryArn);
-};
 
 function doesAwsConfigExists(context: $TSContext) {
   let configExists = false;
