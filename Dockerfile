@@ -1,4 +1,4 @@
-FROM circleci/node:10.18
+FROM circleci/node:12
 WORKDIR /tmp
 RUN sudo apt-get update && sudo apt-get install -y \
   xdg-utils
