@@ -12,6 +12,7 @@ import {
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
 import { getLayerRuntimes } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
 import { LayerCloudState } from '../../../../provider-utils/awscloudformation/utils/layerCloudState';
+import { layerVersionQuestion } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
 import { LayerVersionMetadata } from '../../../../provider-utils/awscloudformation/utils/layerParams';
 
 jest.mock('inquirer');
@@ -129,18 +130,6 @@ describe('layer selection question', () => {
 
     const result = await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, []);
     expect(result.askArnQuestion).toBe(true);
-  });
-
-  it('sets the default version for each layer to the previous selection', async () => {
-    (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
-      layerSelections: ['aLayer'],
-    }));
-    (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
-      versionSelection: `${2}: layer description`,
-    }));
-
-    await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
-    expect((inquirer_mock.prompt.mock.calls[1][0] as ListQuestion).default).toBe(`${2}: layer description`);
   });
 
   it('returns the selected layers', async () => {

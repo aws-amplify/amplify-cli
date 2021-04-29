@@ -111,7 +111,7 @@ export async function updateLayerWalkthrough(
     if (layerHasDeployed) {
       const layerCloudState = LayerCloudState.getInstance();
       const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, parameters.layerName);
-      const latestVersionText = 'The latest version';
+      const latestVersionText = 'Future layer versions';
       const layerVersionChoices = [
         latestVersionText,
         ...layerVersions.map(layerVersionMetadata => `${layerVersionMetadata.Version}: ${layerVersionMetadata.Description}`),
