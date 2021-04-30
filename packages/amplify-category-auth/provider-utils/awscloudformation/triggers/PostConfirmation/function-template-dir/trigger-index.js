@@ -4,6 +4,11 @@
  * This CloudFormation Trigger creates a Lambda function which waits for all
  * other specified Lambdas (modules) to resolve, which should be located in the
  * same directory as this file (./).
+ *
+ * IMPORTANT: This handler *must* return the `event` since it may be consumed by
+ * additional layers in a CloudFormation stack. Failing to return an acceptable
+ * event may cause errors like "Invalid JSON" and prevent properly configured
+ * projects from deploying as expected.
  */
 
 /**
@@ -26,19 +31,19 @@ const modules = moduleNames.map(name => require(`./${name}`));
  *
  * The event that triggered this Lambda.
  *
- * @param {object} context 
+ * @param {object} context
  *
  * The context for this Lambda. See:
  * https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html
-
- * @param {function} callback 
+ *
+ * @param {function} callback
  *
  * A deprecated way to send a response synchronously. See:
  * https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html#nodejs-handler-sync
  *
  * @returns
  *
- * The CloudFormation Trigger event.
+ * The CloudFormation trigger event.
  */
 exports.handler = async (event, context, callback) => {
   /**
