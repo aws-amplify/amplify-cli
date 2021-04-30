@@ -358,7 +358,7 @@ jobs:
   integration_test:
     working_directory: ~/repo
     docker:
-      - image: cypress/base:10.18.0
+      - image: cypress/base:12
         environment:
           TERM: dumb
     resource_class: large
