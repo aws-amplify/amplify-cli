@@ -9,6 +9,8 @@
  * additional layers in a CloudFormation stack. Failing to return an acceptable
  * event may cause errors like "Invalid JSON" and prevent properly configured
  * projects from deploying as expected.
+ *
+ * @see https://github.com/aws-amplify/amplify-cli/pull/7219
  */
 
 /**
