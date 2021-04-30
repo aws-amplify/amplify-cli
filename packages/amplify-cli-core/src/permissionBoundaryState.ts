@@ -1,7 +1,11 @@
 import { stateManager } from './state-manager';
 import _ from 'lodash';
 
-const teamProviderInfoObjectPath = () => [stateManager.getLocalEnvInfo().envName, 'awscloudformation', 'PermissionBoundaryPolicyArn'];
+const teamProviderInfoObjectPath = (env?: string) => [
+  env || (stateManager.getLocalEnvInfo().envName as string),
+  'awscloudformation',
+  'PermissionBoundaryPolicyArn',
+];
 
 export const getPermissionBoundaryArn: () => string | undefined = () => {
   try {
@@ -13,12 +17,12 @@ export const getPermissionBoundaryArn: () => string | undefined = () => {
   }
 };
 
-export const setPermissionBoundaryArn: (arn?: string) => void = arn => {
+export const setPermissionBoundaryArn = (arn?: string, env?: string): void => {
   const teamProviderInfo = stateManager.getTeamProviderInfo();
   if (!arn) {
-    _.unset(teamProviderInfo, teamProviderInfoObjectPath());
+    _.unset(teamProviderInfo, teamProviderInfoObjectPath(env));
   } else {
-    _.set(teamProviderInfo, teamProviderInfoObjectPath(), arn);
+    _.set(teamProviderInfo, teamProviderInfoObjectPath(env), arn);
   }
   stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
 };
