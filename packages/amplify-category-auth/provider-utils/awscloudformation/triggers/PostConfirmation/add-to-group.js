@@ -25,4 +25,6 @@ exports.handler = async event => {
    * Then, add the user to the group.
    */
   await cognitoidentityserviceprovider.adminAddUserToGroup(addUserParams).promise();
+
+  return event;
 };

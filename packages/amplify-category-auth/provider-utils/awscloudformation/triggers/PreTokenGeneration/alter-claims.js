@@ -9,5 +9,5 @@ exports.handler = async (event, context, callback) => {
     },
   };
   // Return to Amazon Cognito
-  callback(null, event);
+  return event;
 };
