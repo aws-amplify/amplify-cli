@@ -112,13 +112,31 @@ const CF_SCHEMA = new yaml.Schema([
   new yaml.Type('!GetAtt', {
     kind: 'scalar',
     construct: function (data) {
-      return { 'Fn::GetAtt': Array.isArray(data) ? data : data.split('.') };
+      if (Array.isArray(data)) {
+        return {
+          'Fn::GetAtt': data,
+        };
+      }
+      // data is a string
+      const firstPeriodIdx = data.indexOf('.');
+      return {
+        'Fn::GetAtt': [data.slice(0, firstPeriodIdx), data.slice(firstPeriodIdx + 1)],
+      };
     },
   }),
   new yaml.Type('!GetAtt', {
     kind: 'sequence',
     construct: function (data) {
-      return { 'Fn::GetAtt': Array.isArray(data) ? data : data.split('.') };
+      if (Array.isArray(data)) {
+        return {
+          'Fn::GetAtt': data,
+        };
+      }
+      // data is a string
+      const firstPeriodIdx = data.indexOf('.');
+      return {
+        'Fn::GetAtt': [data.slice(0, firstPeriodIdx), data.slice(firstPeriodIdx + 1)],
+      };
     },
   }),
   new yaml.Type('!GetAZs', {
