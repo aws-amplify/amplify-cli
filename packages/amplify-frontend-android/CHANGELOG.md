@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.15.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.15.1...amplify-frontend-android@2.15.2-beta.0) (2021-04-30)
+
+
+### Bug Fixes
+
+* render the right auth mode for admin queries in config files ([#7118](https://github.com/aws-amplify/amplify-cli/issues/7118)) ([8f8deba](https://github.com/aws-amplify/amplify-cli/commit/8f8deba9171a30433aa6820af1f32f5498db5028)), closes [#6983](https://github.com/aws-amplify/amplify-cli/issues/6983)
+
+
+
+
+
 ## [2.15.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-android@2.14.5...amplify-frontend-android@2.15.1) (2021-04-09)
 
 

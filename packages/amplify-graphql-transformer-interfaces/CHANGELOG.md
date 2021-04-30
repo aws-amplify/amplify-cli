@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.3.1...@aws-amplify/graphql-transformer-interfaces@1.4.0-beta.0) (2021-04-30)
+
+
+### Features
+
+* **graphql-function-transformer:** port [@function](https://github.com/function) to v2 ([#7055](https://github.com/aws-amplify/amplify-cli/issues/7055)) ([463e975](https://github.com/aws-amplify/amplify-cli/commit/463e97593d5486d1f9d10bcabde26d3e36dee7f2))
+
+
+
+
+
 ## [1.3.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.3.0...@aws-amplify/graphql-transformer-interfaces@1.3.1) (2021-02-11)
 
 **Note:** Version bump only for package @aws-amplify/graphql-transformer-interfaces
