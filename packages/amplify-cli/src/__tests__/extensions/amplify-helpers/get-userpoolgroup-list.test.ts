@@ -1,4 +1,4 @@
-import { getUserPoolGroupList } from '../../../../src/extensions/amplify-helpers/get-userpoolgroup-list';
+import { getUserPoolGroupList } from '../../../extensions/amplify-helpers/get-userpoolgroup-list';
 
 jest.mock('amplify-cli-core', () => ({
   pathManager: {
