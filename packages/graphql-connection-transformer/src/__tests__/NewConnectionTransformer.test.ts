@@ -352,6 +352,50 @@ test('Test ModelConnectionTransformer for One-to-One getItem case.', () => {
   expectFields(testObjType, ['otherHalf']);
   const relatedField = testObjType.fields.find(f => f.name.value === 'otherHalf');
   expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
+
+  // String-like sort key "email" in Test.otherHalf
+  expect(out.resolvers['Test.otherHalf.req.vtl']).toContain(
+    '"email": $util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.email, "___xamznone____"))',
+  );
+});
+
+test('Test ModelConnectionTransformer for One-to-One getItem case with non-string-like sort key', () => {
+  const validSchema = `
+    type Test @model {
+        id: ID!
+        version: Int!
+        otherHalf: Test1 @connection(fields: ["id", "version"])
+    }
+
+    type Test1
+        @model
+        @key(fields: ["id", "version"])
+    {
+        id: ID!
+        friendID: ID!
+        version: Int!
+    }
+    `;
+
+  const transformer = new GraphQLTransform({
+    transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+  });
+
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  console.log(out);
+  expect(out.stacks.ConnectionStack.Resources[ResolverResourceIDs.ResolverResourceID('Test', 'otherHalf')]).toBeTruthy();
+  const schemaDoc = parse(out.schema);
+
+  const testObjType = getObjectType(schemaDoc, 'Test');
+  expectFields(testObjType, ['otherHalf']);
+  const relatedField = testObjType.fields.find(f => f.name.value === 'otherHalf');
+  expect(relatedField.type.kind).toEqual(Kind.NAMED_TYPE);
+
+  // Non-string-like sort key "version" in Test.otherHalf
+  expect(out.resolvers['Test.otherHalf.req.vtl']).toContain(
+    '"version": $util.dynamodb.toDynamoDBJson($util.defaultIfNull($ctx.source.version, -2147483648))',
+  );
 });
 
 test('Test ModelConnectionTransformer for One-to-Many query case.', () => {
