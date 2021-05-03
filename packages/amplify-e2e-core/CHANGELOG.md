@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.18.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.18.0...amplify-e2e-core@1.18.2) (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+
+### Bug Fixes
+
+* ensure policy resource name when pushing REST APIs ([#7192](https://github.com/aws-amplify/amplify-cli/issues/7192)) ([fc77006](https://github.com/aws-amplify/amplify-cli/commit/fc77006d8f41301604fc4047edf794c23da6c552))
+
+
+
+
+
 ## [1.18.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.18.0...amplify-e2e-core@1.18.1) (2021-05-03)
 
 
