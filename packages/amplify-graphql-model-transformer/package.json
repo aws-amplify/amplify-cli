@@ -1,6 +1,6 @@
 {
     "name": "@aws-amplify/graphql-model-transformer",
-    "version": "0.3.5-beta.0",
+    "version": "0.3.5-beta.1",
     "description": "Amplfy graphql @model tranformer",
     "repository": {
         "type": "git",
@@ -18,7 +18,7 @@
         "amplify"
     ],
     "publishConfig": {
-      "access": "public"
+        "access": "public"
     },
     "scripts": {
         "build": "tsc",
@@ -26,8 +26,8 @@
         "clean": "rimraf ./lib"
     },
     "dependencies": {
-        "@aws-amplify/graphql-transformer-core": "0.4.0-beta.0",
-        "@aws-amplify/graphql-transformer-interfaces": "1.4.0-beta.0",
+        "@aws-amplify/graphql-transformer-core": "0.4.0-beta.1",
+        "@aws-amplify/graphql-transformer-interfaces": "1.4.0-beta.1",
         "@aws-cdk/assets": "~1.72.0",
         "@aws-cdk/aws-applicationautoscaling": "~1.72.0",
         "@aws-cdk/aws-autoscaling-common": "~1.72.0",

@@ -1,6 +1,6 @@
 {
     "name": "@aws-amplify/graphql-transformer-core",
-    "version": "0.4.0-beta.0",
+    "version": "0.4.0-beta.1",
     "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
     "repository": {
         "type": "git",
@@ -18,7 +18,7 @@
         "amplify"
     ],
     "publishConfig": {
-      "access": "public"
+        "access": "public"
     },
     "scripts": {
         "build": "tsc",
@@ -26,7 +26,7 @@
         "clean": "rimraf ./lib"
     },
     "dependencies": {
-        "@aws-amplify/graphql-transformer-interfaces": "1.4.0-beta.0",
+        "@aws-amplify/graphql-transformer-interfaces": "1.4.0-beta.1",
         "@aws-cdk/assets": "~1.72.0",
         "@aws-cdk/aws-applicationautoscaling": "~1.72.0",
         "@aws-cdk/aws-appsync": "~1.72.0",
