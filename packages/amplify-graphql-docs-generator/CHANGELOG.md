@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@2.2.1...amplify-graphql-docs-generator@2.2.2) (2021-05-03)
+
+**Note:** Version bump only for package amplify-graphql-docs-generator
+
+
+
+
+
 ## [2.2.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@2.1.16...amplify-graphql-docs-generator@2.2.1) (2020-11-22)
 
 **Note:** Version bump only for package amplify-graphql-docs-generator

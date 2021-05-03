@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.46.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.45.0...amplify-provider-awscloudformation@4.46.0) (2021-05-03)
+
+
+### Bug Fixes
+
+* ensure policy resource name when pushing REST APIs ([#7192](https://github.com/aws-amplify/amplify-cli/issues/7192)) ([fc77006](https://github.com/aws-amplify/amplify-cli/commit/fc77006d8f41301604fc4047edf794c23da6c552))
+* skip credential validation when config has credential_process ([#7194](https://github.com/aws-amplify/amplify-cli/issues/7194)) ([8f36c94](https://github.com/aws-amplify/amplify-cli/commit/8f36c9446e7128831d878daf225c4b15b67606db))
+
+
+### Features
+
+* port [@http](https://github.com/http) to GraphQL Transformer v2 ([#7139](https://github.com/aws-amplify/amplify-cli/issues/7139)) ([2803605](https://github.com/aws-amplify/amplify-cli/commit/28036059229666c70ab8d8f7ff6b4d966f6acae8))
+* **graphql-function-transformer:** port [@function](https://github.com/function) to v2 ([#7055](https://github.com/aws-amplify/amplify-cli/issues/7055)) ([463e975](https://github.com/aws-amplify/amplify-cli/commit/463e97593d5486d1f9d10bcabde26d3e36dee7f2))
+
+
+
+
+
 # [4.45.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.44.0...amplify-provider-awscloudformation@4.45.0) (2021-04-27)
 
 
