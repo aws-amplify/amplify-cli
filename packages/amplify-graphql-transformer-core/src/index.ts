@@ -26,6 +26,7 @@ export {
   TransformerProjectConfig,
 } from './config/index';
 export { collectDirectives, collectDirectivesByTypeNames, DirectiveWrapper } from './utils';
+export * from './errors';
 export { TransformerModelBase, TransformerModelEnhancerBase, TransformerPluginBase } from './transformation/transformer-plugin-base';
 /**
  * Returns the extra set of directives that are supported by AppSync service
@@ -35,5 +36,3 @@ export const getAppSyncServiceExtraDirectives = (): string => {
 };
 
 export { MappingTemplate } from './cdk-compat';
-
-export { TransformerContractError } from './errors';

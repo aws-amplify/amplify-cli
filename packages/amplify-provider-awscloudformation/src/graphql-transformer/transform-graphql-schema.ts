@@ -13,6 +13,8 @@ import {
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
+import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
+
 import { ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
 import { writeDeploymentToDisk } from './utils';
@@ -49,6 +51,7 @@ function getTransformerFactory(context, resourceDir) {
       new ModelTransformer(),
       new FunctionTransformer(),
       new HttpTransformer(),
+      new SearchableModelTransformer(),
       // TODO: initialize transformer plugins
     ];
 

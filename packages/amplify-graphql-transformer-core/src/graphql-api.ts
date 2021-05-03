@@ -1,4 +1,5 @@
 import { APIIAMResourceProvider, GraphQLAPIProvider, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ElasticSearchDataSourceOptions } from '@aws-amplify/graphql-transformer-interfaces/src/graphql-api-provider';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
@@ -27,6 +28,7 @@ import { IFunction } from '@aws-cdk/aws-lambda';
 import { CfnResource, Construct, Duration, Stack, Token } from '@aws-cdk/core';
 import { toCamelCase } from 'graphql-transformer-common';
 import { AppSyncFunctionConfiguration } from './appsync-function';
+import { ElasticsearchDataSource } from './cdk-compat/elasticsearch-datasource';
 import { TransformerSchema } from './cdk-compat/schema-asset';
 import { InlineTemplate } from './cdk-compat/template-asset';
 
@@ -213,6 +215,21 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       this.apiKeyResource.addDependsOn(this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
+  }
+
+  addElasticSearchDataSource(
+    name: string,
+    awsRegion: string,
+    endpoint: string,
+    options?: ElasticSearchDataSourceOptions,
+    stack?: Stack,
+  ): ElasticsearchDataSource {
+    if (this.dataSources.has(name)) {
+      throw new Error(`DataSource ${name} already exists in the API`);
+    }
+    const data = this.doAddElasticSearchDataSource(name, endpoint, awsRegion, options, stack);
+    this.dataSources.set(options?.name || name, data);
+    return data;
   }
 
   public addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource {
@@ -439,6 +456,31 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       name: options?.name,
       description: options?.description,
       authorizationConfig: options?.authorizationConfig,
+    });
+  }
+
+  /**
+   * add a new elasticsearch data source to this API
+   *
+   * @param id The data source's id
+   * @param endpoint The elasticsearch endpoint
+   * @param region The elasticsearch datasource region
+   * @param options The optional configuration for this data source
+   * @param stack Stack to which the elasticsearch datasource needs to be created in
+   */
+  protected doAddElasticSearchDataSource(
+    id: string,
+    endpoint: string,
+    region: string,
+    options?: ElasticSearchDataSourceOptions,
+    stack?: Stack,
+  ): ElasticsearchDataSource {
+    return new ElasticsearchDataSource(stack ?? this, id, {
+      api: this,
+      name: options?.name,
+      endpoint,
+      region,
+      serviceRole: options?.serviceRole,
     });
   }
 
