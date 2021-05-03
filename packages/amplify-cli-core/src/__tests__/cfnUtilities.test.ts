@@ -1,5 +1,4 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { CFNTemplateFormat, JSONUtilities, readCFNTemplate, writeCFNTemplate } from '../../lib';
 
 jest.mock('fs-extra');
@@ -47,6 +46,23 @@ describe('readCFNTemplate', () => {
     const result = await readCFNTemplate(testPath);
     expect(result.templateFormat).toEqual(CFNTemplateFormat.YAML);
     expect(result.cfnTemplate).toEqual(testTemplate);
+  });
+
+  it('reads yaml template with nested GetAtt refs', async () => {
+    const yamlContent = `
+      !GetAtt myResource.output.someProp
+    `;
+    ((fs_mock.readFile as unknown) as jest.MockedFunction<TwoArgReadFile>).mockResolvedValueOnce(yamlContent);
+
+    const result = await readCFNTemplate(testPath);
+    expect(result.cfnTemplate).toMatchInlineSnapshot(`
+      Object {
+        "Fn::GetAtt": Array [
+          "myResource",
+          "output.someProp",
+        ],
+      }
+    `);
   });
 });
 

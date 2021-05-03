@@ -17,6 +17,9 @@
     "aws",
     "amplify"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
