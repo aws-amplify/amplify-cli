@@ -15,4 +15,6 @@ export interface AuthRule {
   operations?: ModelOperation[];
   queries?: ModelQuery[];
   mutations?: ModelMutation[];
+  // Used only for IAM provider to decide if an IAM policy needs to be generated. IAM auth with AdminUI does not need IAM policies
+  generateIAMPolicy?: boolean;
 }
