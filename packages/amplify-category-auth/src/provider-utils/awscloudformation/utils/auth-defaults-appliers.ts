@@ -40,7 +40,7 @@ export const getUpdateAuthDefaultsApplier = (context: any, defaultValuesFilename
 ): Promise<ServiceQuestionsResult> => {
   const { functionMap, getAllDefaults } = await import(`../assets/${defaultValuesFilename}`);
   if (!result.authSelections) {
-    result.authSelections = 'identityPoolAndUserPool';
+    result.authSelections = previousResult.authSelections ?? 'identityPoolAndUserPool';
   }
 
   const defaults = functionMap[result.authSelections](previousResult.resourceName);
