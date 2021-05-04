@@ -48,17 +48,36 @@ export async function writeCFNTemplate(template: object, filePath: string, optio
 }
 
 // Register custom tags for yaml parser
+// Order and definition based on docs: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
 const CF_SCHEMA = new yaml.Schema([
-  new yaml.Type('!Ref', {
+  new yaml.Type('!Base64', {
     kind: 'scalar',
     construct: function (data) {
-      return { Ref: data };
+      return { 'Fn::Base64': data };
     },
   }),
-  new yaml.Type('!Condition', {
+  new yaml.Type('!Base64', {
+    kind: 'mapping',
+    construct: function (data) {
+      return { 'Fn::Base64': data };
+    },
+  }),
+  new yaml.Type('!Cidr', {
     kind: 'sequence',
     construct: function (data) {
-      return { Condition: data };
+      return { 'Fn::Cidr': data };
+    },
+  }),
+  new yaml.Type('!Cidr', {
+    kind: 'mapping',
+    construct: function (data) {
+      return { 'Fn::Cidr': data };
+    },
+  }),
+  new yaml.Type('!And', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::And': data };
     },
   }),
   new yaml.Type('!Equals', {
@@ -67,40 +86,28 @@ const CF_SCHEMA = new yaml.Schema([
       return { 'Fn::Equals': data };
     },
   }),
-  new yaml.Type('!Not', {
-    kind: 'sequence',
-    construct: function (data) {
-      return { 'Fn::Not': data };
-    },
-  }),
-  new yaml.Type('!Sub', {
-    kind: 'scalar',
-    construct: function (data) {
-      return { 'Fn::Sub': data };
-    },
-  }),
-  new yaml.Type('!Sub', {
-    kind: 'sequence',
-    construct: function (data) {
-      return { 'Fn::Sub': data };
-    },
-  }),
   new yaml.Type('!If', {
     kind: 'sequence',
     construct: function (data) {
       return { 'Fn::If': data };
     },
   }),
-  new yaml.Type('!Join', {
+  new yaml.Type('!Not', {
     kind: 'sequence',
     construct: function (data) {
-      return { 'Fn::Join': data };
+      return { 'Fn::Not': data };
     },
   }),
-  new yaml.Type('!Select', {
+  new yaml.Type('!Or', {
     kind: 'sequence',
     construct: function (data) {
-      return { 'Fn::Select': data };
+      return { 'Fn::Or': data };
+    },
+  }),
+  new yaml.Type('!Condition', {
+    kind: 'scalar',
+    construct: function (data) {
+      return { Condition: data };
     },
   }),
   new yaml.Type('!FindInMap', {
@@ -145,10 +152,34 @@ const CF_SCHEMA = new yaml.Schema([
       return { 'Fn::GetAZs': data };
     },
   }),
-  new yaml.Type('!Base64', {
+  new yaml.Type('!GetAZs', {
     kind: 'mapping',
     construct: function (data) {
-      return { 'Fn::Base64': data };
+      return { 'Fn::GetAZs': data };
+    },
+  }),
+  new yaml.Type('!ImportValue', {
+    kind: 'scalar',
+    construct: function (data) {
+      return { 'Fn::ImportValue': data };
+    },
+  }),
+  new yaml.Type('!ImportValue', {
+    kind: 'mapping',
+    construct: function (data) {
+      return { 'Fn::ImportValue': data };
+    },
+  }),
+  new yaml.Type('!Join', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Join': data };
+    },
+  }),
+  new yaml.Type('!Select', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Select': data };
     },
   }),
   new yaml.Type('!Split', {
@@ -157,34 +188,28 @@ const CF_SCHEMA = new yaml.Schema([
       return { 'Fn::Split': data };
     },
   }),
-  new yaml.Type('!Cidr', {
-    kind: 'sequence',
+  new yaml.Type('!Sub', {
+    kind: 'scalar',
     construct: function (data) {
-      return { 'Fn::Cidr': data };
+      return { 'Fn::Sub': data };
     },
   }),
-  new yaml.Type('!ImportValue', {
+  new yaml.Type('!Sub', {
     kind: 'sequence',
     construct: function (data) {
-      return { 'Fn::ImportValue': data };
+      return { 'Fn::Sub': data };
     },
   }),
   new yaml.Type('!Transform', {
-    kind: 'sequence',
+    kind: 'mapping',
     construct: function (data) {
       return { 'Fn::Transform': data };
     },
   }),
-  new yaml.Type('!And', {
-    kind: 'sequence',
+  new yaml.Type('!Ref', {
+    kind: 'scalar',
     construct: function (data) {
-      return { 'Fn::And': data };
-    },
-  }),
-  new yaml.Type('!Or', {
-    kind: 'sequence',
-    construct: function (data) {
-      return { 'Fn::Or': data };
+      return { Ref: data };
     },
   }),
 ]);
