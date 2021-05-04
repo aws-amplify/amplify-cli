@@ -1,5 +1,4 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import { CFNTemplateFormat, JSONUtilities, readCFNTemplate, writeCFNTemplate } from '../..';
 
 jest.mock('fs-extra');
