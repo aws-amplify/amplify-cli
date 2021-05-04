@@ -23,12 +23,15 @@ describe('profile tests', () => {
     return true;
   });
 
-  it('should use credential_process defined in config file', () => {
+  it('should use credential_process defined in config file', async () => {
     fs_mock.readFileSync.mockImplementationOnce(() => {
       return '[profile fake]\noutput = json\nregion = us-fake-1\ncredential_process = fake credential process';
     });
+    fs_mock.readFileSync.mockImplementation(() => {
+      return '{}';
+    });
     const getProfileCredentials_mock = jest.fn(getProfileCredentials);
-    const profile_config = getProfiledAwsConfig(context_stub, 'fake');
+    const profile_config = await getProfiledAwsConfig(context_stub, 'fake');
     expect(profile_config).toBeDefined();
     expect(getProfileCredentials_mock).toHaveBeenCalledTimes(0);
   });
