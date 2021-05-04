@@ -350,7 +350,7 @@ beforeAll(async () => {
     cf,
     STACK_NAME,
     out,
-    { CreateAPIKey: '1', env: 'dev' },
+    { CreateAPIKey: '1', env: 'dev', DefaultAuthenticationType: 'AMAZON_COGNITO_USER_POOLS', AdditionalAuthenticationTypes: 'AWS_IAM' },
     LOCAL_FS_BUILD_DIR,
     BUCKET_NAME,
     S3_ROOT_DIR_KEY,

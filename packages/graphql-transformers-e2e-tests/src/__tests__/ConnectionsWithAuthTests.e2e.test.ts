@@ -174,7 +174,7 @@ beforeAll(async () => {
       cf,
       STACK_NAME,
       out,
-      { AuthCognitoUserPoolId: USER_POOL_ID },
+      { AuthCognitoUserPoolId: USER_POOL_ID, DefaultAuthenticationType: 'AMAZON_COGNITO_USER_POOLS' },
       LOCAL_BUILD_ROOT,
       BUCKET_NAME,
       DEPLOYMENT_ROOT_KEY,
@@ -192,8 +192,8 @@ beforeAll(async () => {
     // Configure Amplify, create users, and sign in.
     configureAmplify(USER_POOL_ID, userPoolClientId);
 
-    const authRes: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
-    const authRes2: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
+    await signupAndAuthenticateUser(USER_POOL_ID, USERNAME1, TMP_PASSWORD, REAL_PASSWORD);
+    await signupAndAuthenticateUser(USER_POOL_ID, USERNAME2, TMP_PASSWORD, REAL_PASSWORD);
     const authRes3: any = await signupAndAuthenticateUser(USER_POOL_ID, USERNAME3, TMP_PASSWORD, REAL_PASSWORD);
 
     await createGroup(USER_POOL_ID, ADMIN_GROUP_NAME);

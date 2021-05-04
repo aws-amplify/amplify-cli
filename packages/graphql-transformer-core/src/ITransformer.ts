@@ -51,12 +51,7 @@ export interface ITransformer {
    * A transformer implements a single function per location that its directive can be applied.
    * This method handles transforming directives on object for field definitions.
    */
-  field?: (
-    parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
-    definition: FieldDefinitionNode,
-    directive: DirectiveNode,
-    acc: TransformerContext
-  ) => void;
+  field?: (parent: ObjectTypeDefinitionNode, definition: FieldDefinitionNode, directive: DirectiveNode, acc: TransformerContext) => void;
 
   /**
    * A transformer implements a single function per location that its directive can be applied.

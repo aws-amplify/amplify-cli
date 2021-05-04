@@ -70,7 +70,7 @@ beforeAll(async () => {
       cf,
       STACK_NAME,
       out,
-      { CreateAPIKey: '1' },
+      { CreateAPIKey: '1', DefaultAuthenticationType: 'API_KEY' },
       LOCAL_FS_BUILD_DIR,
       BUCKET_NAME,
       S3_ROOT_DIR_KEY,

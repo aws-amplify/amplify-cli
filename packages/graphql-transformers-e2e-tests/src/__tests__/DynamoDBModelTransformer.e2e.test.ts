@@ -104,7 +104,7 @@ beforeAll(async () => {
     cf,
     STACK_NAME,
     out,
-    { CreateAPIKey: '1', DynamoDBEnablePointInTimeRecovery: 'true' },
+    { CreateAPIKey: '1', DynamoDBEnablePointInTimeRecovery: 'true', DefaultAuthenticationType: 'API_KEY' },
     TMP_ROOT,
     BUCKET_NAME,
     ROOT_KEY,

@@ -860,6 +860,8 @@ describe(`Deployed Mutation Condition tests`, () => {
       const params = {
         CreateAPIKey: '1',
         AuthCognitoUserPoolId: USER_POOL_ID,
+        DefaultAuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+        AdditionalAuthenticationTypes: 'API_KEY',
       };
 
       const finishedStack = await deploy(

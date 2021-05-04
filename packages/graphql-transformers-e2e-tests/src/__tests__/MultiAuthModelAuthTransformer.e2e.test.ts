@@ -494,6 +494,8 @@ beforeAll(async () => {
     const params = {
       CreateAPIKey: '1',
       AuthCognitoUserPoolId: USER_POOL_ID,
+      DefaultAuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
+      AdditionalAuthenticationTypes: 'API_KEY,AWS_IAM',
     };
 
     const finishedStack = await deploy(

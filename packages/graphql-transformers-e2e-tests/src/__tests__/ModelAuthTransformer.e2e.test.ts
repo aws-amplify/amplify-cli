@@ -226,7 +226,7 @@ describe(`ModelAuthTests`, () => {
         cf,
         STACK_NAME,
         out,
-        { AuthCognitoUserPoolId: USER_POOL_ID },
+        { AuthCognitoUserPoolId: USER_POOL_ID, DefaultAuthenticationType: 'AMAZON_COGNITO_USER_POOLS' },
         LOCAL_FS_BUILD_DIR,
         BUCKET_NAME,
         S3_ROOT_DIR_KEY,

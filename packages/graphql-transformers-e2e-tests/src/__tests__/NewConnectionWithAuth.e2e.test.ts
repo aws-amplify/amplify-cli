@@ -168,7 +168,7 @@ beforeAll(async () => {
       cf,
       STACK_NAME,
       out,
-      { AuthCognitoUserPoolId: USER_POOL_ID },
+      { AuthCognitoUserPoolId: USER_POOL_ID, DefaultAuthenticationType: 'AMAZON_COGNITO_USER_POOLS' },
       LOCAL_BUILD_ROOT,
       BUCKET_NAME,
       DEPLOYMENT_ROOT_KEY,
