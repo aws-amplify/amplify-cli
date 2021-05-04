@@ -27,6 +27,7 @@
     "amplify-headless-interface": "1.5.3",
     "amplify-util-headless-input": "1.4.3",
     "amplify-util-import": "1.4.6",
+    "aws-cdk": "~1.72.0",
     "aws-sdk": "^2.845.0",
     "chalk": "^3.0.0",
     "chalk-pipe": "^3.0.0",
