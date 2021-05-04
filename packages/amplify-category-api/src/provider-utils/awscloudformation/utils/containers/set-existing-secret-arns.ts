@@ -1,9 +1,5 @@
-import { $TSAny, JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSAny } from 'amplify-cli-core';
 import _ from 'lodash';
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { category } from '../../../../category-constants';
-import { cfnFileName } from '../containers-artifacts';
 /**
  * Check if the template contains existing secret configuration and if so, add it to the secretsMap
  * The secrets configuration is stored in the template in the following format
@@ -26,15 +22,13 @@ import { cfnFileName } from '../containers-artifacts';
       }
     }
   */
-export const setExistingSecretArns = (secretsMap: Map<string, string>, resourceName: string) => {
-  const cfnPath = path.join(pathManager.getBackendDirPath(), category, resourceName, cfnFileName(resourceName));
-  if (!fs.existsSync(cfnPath)) {
+export const setExistingSecretArns = (secretsMap: Map<string, string>, cfnObj: $TSAny) => {
+  if (_.isEmpty(cfnObj)) {
     return;
   }
-  const cfn = JSONUtilities.readJson<$TSAny>(cfnPath);
-  const taskDef = Object.values(cfn?.Resources) // get all the resources
-    .find((value: $TSAny) => value?.Type === 'AWS::ECS::TaskDefinition') as any; // find the task definition
-  const containerDefs = taskDef?.Properties?.ContainerDefinitions as any[]; // pull out just the container definitions
+  const taskDef = Object.values(cfnObj?.Resources) // get all the resources
+    .find((value: $TSAny) => value?.Type === 'AWS::ECS::TaskDefinition') as $TSAny; // find the task definition
+  const containerDefs = taskDef?.Properties?.ContainerDefinitions as $TSAny[]; // pull out just the container definitions
   if (!Array.isArray(containerDefs)) {
     return;
   }
