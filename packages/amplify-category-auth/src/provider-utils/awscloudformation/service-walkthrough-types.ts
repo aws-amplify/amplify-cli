@@ -47,6 +47,10 @@ export interface SocialProviderResult {
   googleAppSecretUserPool?: string;
   loginwithamazonAppIdUserPool?: string;
   loginwithamazonAppSecretUserPool?: string;
+  signinwithappleClientIdUserPool?: string;
+  signinwithappleTeamIdUserPool?: string;
+  signinwithappleKeyIdUserPool?: string;
+  signinwithapplePrivateKeyUserPool?: string;
 }
 
 export interface IdentityPoolResult {

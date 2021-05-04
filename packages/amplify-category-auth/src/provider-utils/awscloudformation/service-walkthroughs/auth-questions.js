@@ -401,7 +401,7 @@ function identityPoolProviders(coreAnswers, projectType) {
 /*
   Format hosted UI providers data per lambda spec
   hostedUIProviderMeta is saved in parameters.json.
-  hostedUIprovierCreds is saved in deployment-secrets.
+  hostedUIproviderCreds is saved in deployment-secrets.
 */
 function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
   if (coreAnswers.useDefault === 'default') {
@@ -415,7 +415,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
   if (answers.hostedUI) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
-        const delimmiter = el === 'Facebook' ? ',' : ' ';
+        const delimmiter = el === 'Facebook' || el === 'SignInWithApple' ? ',' : ' ';
         const scopes = [];
         const maps = {};
         attributesForMapping.forEach(a => {
@@ -440,11 +440,23 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
       }),
     );
     res.hostedUIProviderCreds = JSON.stringify(
-      oAuthProviders.map(el => ({
-        ProviderName: el,
-        client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`],
-        client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`],
-      })),
+      oAuthProviders.map(el => {
+        if (el === 'SignInWithApple') {
+          return {
+            ProviderName: el,
+            client_id: coreAnswers[`${el.toLowerCase()}ClientIdUserPool`],
+            team_id: coreAnswers[`${el.toLowerCase()}TeamIdUserPool`],
+            key_id: coreAnswers[`${el.toLowerCase()}KeyIdUserPool`],
+            private_key: coreAnswers[`${el.toLowerCase()}PrivateKeyUserPool`],
+          };
+        } else {
+          return {
+            ProviderName: el,
+            client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`],
+            client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`],
+          };
+        }
+      }),
     );
   }
   return res;

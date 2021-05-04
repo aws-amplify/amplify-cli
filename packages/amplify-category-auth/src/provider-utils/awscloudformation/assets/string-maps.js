@@ -136,6 +136,7 @@ const attributeProviderMap = {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    signinwithapple: {},
   },
   birthdate: {
     facebook: {
@@ -147,6 +148,7 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    signinwithapple: {},
   },
   email: {
     facebook: {
@@ -161,6 +163,10 @@ const attributeProviderMap = {
       attr: 'email',
       scope: 'profile',
     },
+    signinwithapple: {
+      attr: 'email',
+      scope: 'email',
+    },
   },
   family_name: {
     facebook: {
@@ -172,6 +178,7 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    signinwithapple: {},
   },
   gender: {
     facebook: {
@@ -183,6 +190,7 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    signinwithapple: {},
   },
   given_name: {
     facebook: {
@@ -194,6 +202,7 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    signinwithapple: {},
   },
   locale: {
     facebook: {},
@@ -202,6 +211,7 @@ const attributeProviderMap = {
       attr: 'postal_code',
       scope: 'postal_code',
     },
+    signinwithapple: {},
   },
   middle_name: {
     facebook: {
@@ -210,6 +220,7 @@ const attributeProviderMap = {
     },
     google: {},
     loginwithamazon: {},
+    signinwithapple: {},
   },
   name: {
     facebook: {
@@ -224,11 +235,16 @@ const attributeProviderMap = {
       attr: 'name',
       scope: 'profile',
     },
+    signinwithapple: {
+      attr: 'name',
+      scope: 'name',
+    },
   },
   nickname: {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    signinwithapple: {},
   },
   phone_number: {
     facebook: {},
@@ -237,6 +253,7 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    signinwithapple: {},
   },
   picture: {
     facebook: {
@@ -248,26 +265,31 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
+    signinwithapple: {},
   },
   preferred_username: {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    signinwithapple: {},
   },
   profile: {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    signinwithapple: {},
   },
   zoneinfo: {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    signinwithapple: {},
   },
   website: {
     facebook: {},
     google: {},
     loginwithamazon: {},
+    signinwithapple: {},
   },
   username: {
     facebook: {
@@ -282,6 +304,7 @@ const attributeProviderMap = {
       attr: 'user_id',
       scope: 'profile:user_id',
     },
+    signinwithapple: {},
   },
   updated_at: {
     facebook: {
@@ -290,6 +313,7 @@ const attributeProviderMap = {
     },
     google: {},
     loginwithamazon: {},
+    signinwithapple: {},
   },
 };
 
