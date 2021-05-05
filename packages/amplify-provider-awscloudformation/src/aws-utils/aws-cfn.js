@@ -64,16 +64,20 @@ class CloudFormation {
         this.readStackEvents(cfnParentStackParams.StackName);
         logger('cfnModel.createStack', [cfnParentStackParams])(createErr);
         if (createErr) {
-          context.print.error('An error occurred when creating the CloudFormation stack');
+          context.print.error('\nAn error occurred when creating the CloudFormation stack');
           reject(createErr);
         }
-        cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, (completeErr, waitForStackdata) => {
+        cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, async (completeErr, waitForStackdata) => {
           if (self.pollForEvents) {
             clearInterval(self.pollForEvents);
           }
           if (completeErr) {
-            context.print.error('An error occurred when creating the CloudFormation stack');
-            this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
+            context.print.error('\nAn error occurred when creating the CloudFormation stack');
+            await this.collectStackErrors(cfnParentStackParams.StackName);
+            logger('cfnModel.createStack', [cfnParentStackParams])(completeErr);
+            const error = new Error('Initialization of project failed');
+            error.stack = null;
+            reject(error);
           }
           resolve(waitForStackdata);
         });
@@ -109,8 +113,12 @@ class CloudFormation {
   }
 
   generateFailedStackErrorMsgs(eventsWithFailure) {
-    const { envName = '' } = this.context.amplify.getEnvInfo();
-    const envRegExp = new RegExp(`(-|_)${envName}`);
+    let envRegExp = '';
+    try {
+      const { envName = '' } = this.context.amplify.getEnvInfo();
+      envRegExp = new RegExp(`(-|_)${envName}`);
+    } catch {}
+
     const stackTrees = eventsWithFailure
       .filter(stack => stack.ResourceType !== 'AWS::CloudFormation::Stack')
       .map(event => {

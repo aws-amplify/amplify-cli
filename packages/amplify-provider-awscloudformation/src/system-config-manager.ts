@@ -147,8 +147,9 @@ async function getRoleCredentials(context: $TSContext, profileName: string, prof
     } catch (ex) {
       log(ex);
     }
-
-    cacheRoleCredentials(profileConfig.role_arn, roleSessionName, roleCredentials);
+    if (profileConfig.role_arn && roleSessionName && roleCredentials) {
+      cacheRoleCredentials(profileConfig.role_arn, roleSessionName, roleCredentials);
+    }
   }
 
   return roleCredentials;
@@ -190,10 +191,14 @@ function getCachedRoleCredentials(roleArn: string, sessionName: string) {
   let roleCredentials;
   const cacheFilePath = getCacheFilePath();
   if (fs.existsSync(cacheFilePath)) {
-    const cacheContents = JSONUtilities.readJson(cacheFilePath);
-    if (cacheContents[roleArn]) {
-      roleCredentials = cacheContents[roleArn][sessionName];
-      roleCredentials = validateCachedCredentials(roleCredentials) ? roleCredentials : undefined;
+    try {
+      const cacheContents = JSONUtilities.readJson(cacheFilePath);
+      if (cacheContents[roleArn]) {
+        roleCredentials = cacheContents[roleArn][sessionName];
+        roleCredentials = validateCachedCredentials(roleCredentials) ? roleCredentials : undefined;
+      }
+    } catch {
+      return;
     }
   }
   return roleCredentials;

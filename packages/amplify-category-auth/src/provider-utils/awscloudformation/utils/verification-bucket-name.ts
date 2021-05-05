@@ -15,6 +15,6 @@ export const verificationBucketName = async (current: any, previous?: any) => {
     previous.verificationBucketName &&
     (!current.triggers || !current.triggers.CustomMessage || !current.triggers.CustomMessage.includes('verification-link'))
   ) {
-    delete previous.updatingAuth.verificationBucketName;
+    delete previous.verificationBucketName;
   }
 };
