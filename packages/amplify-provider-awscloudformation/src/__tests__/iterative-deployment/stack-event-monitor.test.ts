@@ -9,10 +9,9 @@ const stackProgressPrinterStub = ({
 
 const cfn = ({
   describeStackEvents: () => ({
-    promise: () =>
-      Promise.resolve({
-        NextToken: undefined,
-      }),
+    promise: () => Promise.resolve({
+      NextToken: undefined,
+    }),
   }),
 } as unknown) as CloudFormation;
 

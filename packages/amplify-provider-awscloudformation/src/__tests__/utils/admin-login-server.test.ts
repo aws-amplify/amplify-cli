@@ -29,7 +29,7 @@ describe('AdminLoginServer', () => {
     expect(postMock).toBeCalled();
     expect(listenMock).toBeCalledWith(4242, '0.0.0.0');
   });
-
+  
   test('shut down running server', async () => {
     const adminLoginServer = new AdminLoginServer('appId', 'http://example.com', context_stub.print);
     listenMock.mockReturnValue({ close: serverCloseMock });

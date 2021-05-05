@@ -1,13 +1,4 @@
-import {
-  exitOnNextTick,
-  JSONUtilities,
-  pathManager,
-  stateManager,
-  $TSAny,
-  $TSContext,
-  setPermissionBoundaryArn,
-  getPermissionBoundaryArn,
-} from 'amplify-cli-core';
+import { exitOnNextTick, JSONUtilities, pathManager, stateManager, $TSAny, $TSContext } from 'amplify-cli-core';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { prompt } from 'inquirer';

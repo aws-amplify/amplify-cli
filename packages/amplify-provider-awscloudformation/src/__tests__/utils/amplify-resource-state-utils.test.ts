@@ -3,41 +3,37 @@ import { CloudFormation } from 'aws-sdk';
 
 const cfnClientStub = ({
   describeStackResources: ({ StackName }) => ({
-    promise: () =>
-      Promise.resolve({
-        StackResources: [
-          {
-            LogicalResourceId: 'LogicalResourceIdTest1',
-            PhysicalResourceId: 'PhysicalResourceIdTest',
-          },
-        ],
-      }),
+    promise: () => Promise.resolve({
+      StackResources: [{
+        LogicalResourceId: 'LogicalResourceIdTest1',
+        PhysicalResourceId: 'PhysicalResourceIdTest',
+      }],
+    }),
   }),
   describeStacks: ({ StackName }) => ({
-    promise: () =>
-      Promise.resolve({
-        Stacks: [
+    promise: () => Promise.resolve({
+      Stacks: [{
+        Outputs: [
           {
-            Outputs: [
-              {
-                OutputKey: 'GetAttLogicalResourceIdTest1TableName',
-                OutputValue: 'TestStackOutputValue1',
-              },
-              {
-                OutputKey: 'InvalidLogicalResourceIdTableName',
-                OutputValue: 'TestStackOutputValue2',
-              },
-            ],
-            Parameters: [
-              {
-                ParameterKey: 'TestParameterKey1',
-                ParameterValue: 'TestParameterValue1',
-              },
-            ],
-            Capabilities: ['CAPABILITY_IAM'],
+            OutputKey: 'GetAttLogicalResourceIdTest1TableName',
+            OutputValue: 'TestStackOutputValue1',
+          },
+          {
+            OutputKey: 'InvalidLogicalResourceIdTableName',
+            OutputValue: 'TestStackOutputValue2',
           },
         ],
-      }),
+        Parameters: [
+          {
+            ParameterKey: 'TestParameterKey1',
+            ParameterValue: 'TestParameterValue1',
+          },
+        ],
+        Capabilities: [
+          'CAPABILITY_IAM',
+        ],
+      }],
+    }),
   }),
 } as unknown) as CloudFormation;
 
