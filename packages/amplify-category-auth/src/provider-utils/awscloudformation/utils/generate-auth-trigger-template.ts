@@ -87,7 +87,7 @@ async function createCustomResourceforAuthTrigger(context: any, authTriggerConne
 function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTriggerConnection[], userpoolId: cdk.CfnParameter) {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
   const authTriggerFn = new lambda.Function(stack, 'authTriggerFn', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     code: lambda.Code.fromInline(triggerCode),
     handler: 'index.handler',
   });
