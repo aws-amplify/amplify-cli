@@ -17,7 +17,7 @@ const permissionBoundaryArn = 'arn:aws:iam::aws:policy/AlexaForBusinessFullAcces
 describe('iam permission boundary', () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('init');
+    projRoot = await createNewProjectDir('perm-bound');
   });
 
   afterEach(async () => {

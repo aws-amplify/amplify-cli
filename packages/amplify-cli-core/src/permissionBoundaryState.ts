@@ -4,7 +4,12 @@ import { $TSObject } from '.';
 
 export const getPermissionBoundaryArn = (env?: string): string | undefined => {
   try {
-    const teamProviderInfo = (global as any).preInitTeamProviderInfo ?? stateManager.getTeamProviderInfo();
+    const preInitTpi = (global as any).preInitTeamProviderInfo;
+    const teamProviderInfo = preInitTpi ?? stateManager.getTeamProviderInfo();
+    // if the pre init team-provider-info only has one env (which should always be the case), default to that one
+    if (preInitTpi && Object.keys(preInitTpi).length === 1 && !env) {
+      env = Object.keys(preInitTpi)[0];
+    }
     return _.get(teamProviderInfo, teamProviderInfoObjectPath(env)) as string | undefined;
   } catch (err) {
     // uninitialized project
