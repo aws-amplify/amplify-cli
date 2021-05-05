@@ -83,6 +83,10 @@ function displayHelp(context) {
       description: 'Imports an already existing Amplify project environment stack to your local backend',
     },
     {
+      name: 'update [--permission-boundary <IAM Policy ARN>]',
+      description: 'Update the environment configuration',
+    },
+    {
       name: 'remove <env-name>',
       description: 'Removes an environment from the Amplify project',
     },
