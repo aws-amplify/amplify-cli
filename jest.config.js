@@ -44,6 +44,8 @@ module.exports = {
     '<rootDir>/packages/amplify-frontend-javascript',
     // '<rootDir>/packages/amplify-graphiql-explorer',
     '<rootDir>/packages/amplify-graphql-docs-generator',
+    '<rootDir>/packages/amplify-graphql-function-transformer',
+    '<rootDir>/packages/amplify-graphql-http-transformer',
     '<rootDir>/packages/amplify-graphql-types-generator',
     '<rootDir>/packages/amplify-provider-awscloudformation',
     '<rootDir>/packages/amplify-storage-simulator',

@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.30.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.30.4...amplify-category-auth@2.30.6) (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+
+### Bug Fixes
+
+* render the right auth mode for admin queries in config files ([#7118](https://github.com/aws-amplify/amplify-cli/issues/7118)) ([8f8deba](https://github.com/aws-amplify/amplify-cli/commit/8f8deba9171a30433aa6820af1f32f5498db5028)), closes [#6983](https://github.com/aws-amplify/amplify-cli/issues/6983)
+
+
+
+
+
+## [2.30.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.30.4...amplify-category-auth@2.30.5) (2021-05-03)
+
+
+### Bug Fixes
+
+* render the right auth mode for admin queries in config files ([#7118](https://github.com/aws-amplify/amplify-cli/issues/7118)) ([8f8deba](https://github.com/aws-amplify/amplify-cli/commit/8f8deba9171a30433aa6820af1f32f5498db5028)), closes [#6983](https://github.com/aws-amplify/amplify-cli/issues/6983)
+
+
+
+
+
+## [2.30.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.30.3...amplify-category-auth@2.30.4) (2021-04-27)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
 ## [2.30.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.30.2...amplify-category-auth@2.30.3) (2021-04-19)
 
 **Note:** Version bump only for package amplify-category-auth

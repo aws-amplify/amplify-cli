@@ -216,7 +216,7 @@ function createApiGatewayAuthResources(context: $TSContext, stackName: string, a
 }
 
 export function loadApiWithPrivacyParams(context: $TSContext, name: string, resource: any): object | undefined {
-  if (resource.providerPlugin !== ProviderName || resource.service !== 'API Gateway') {
+  if (resource.providerPlugin !== ProviderName || resource.service !== 'API Gateway' || name === 'AdminQueries') {
     return;
   }
 
@@ -231,10 +231,11 @@ export function loadApiWithPrivacyParams(context: $TSContext, name: string, reso
 }
 
 function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
-  const { resourceName } = api.params;
+  const resourceName = api.resourceName || api.params.resourceName;
   const resourceDir = getResourceDirPath(context, 'api', resourceName);
   const cfnTemplate = path.join(resourceDir, `${resourceName}-cloudformation-template.json`);
   const paramsFile = path.join(resourceDir, 'parameters.json');
+  const apiParamsFile = path.join(resourceDir, API_PARAMS_FILE);
   const cfn: any = JSONUtilities.readJson(cfnTemplate, { throwIfNotExist: false }) ?? {};
   const parameterJson = JSONUtilities.readJson(paramsFile, { throwIfNotExist: false }) ?? {};
   const parameters = cfn?.Parameters ?? {};
@@ -244,6 +245,12 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
   for (const parameterName in parameters) {
     if (parameterName === AUTH_ROLE_NAME || parameterName === UNAUTH_ROLE_NAME) {
       delete parameters[parameterName];
+      modified = true;
+    }
+  }
+
+  for (const parameterName in parameterJson as any) {
+    if (parameterName === AUTH_ROLE_NAME || parameterName === UNAUTH_ROLE_NAME) {
       delete parameterJson[parameterName];
       modified = true;
     }
@@ -267,8 +274,18 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
     }
   }
 
+  if (Array.isArray(api.params.paths)) {
+    api.params.paths.forEach(path => {
+      if (!path.policyResourceName) {
+        path.policyResourceName = String(path.name).replace(/{[a-zA-Z0-9\-]+}/g, '*');
+        modified = true;
+      }
+    });
+  }
+
   if (modified) {
     JSONUtilities.writeJson(cfnTemplate, cfn);
     JSONUtilities.writeJson(paramsFile, parameterJson);
+    JSONUtilities.writeJson(apiParamsFile, api.params);
   }
 }

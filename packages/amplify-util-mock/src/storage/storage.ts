@@ -5,6 +5,7 @@ import { getAmplifyMeta, getMockDataDirectory } from '../utils';
 import { ConfigOverrideManager } from '../utils/config-override';
 import { getInvoker } from 'amplify-category-function';
 import { loadLambdaConfig } from '../utils/lambda/load-lambda-config';
+import { $TSAny, $TSContext, JSONUtilities } from 'amplify-cli-core';
 
 const port = 20005; // port for S3
 
@@ -56,7 +57,7 @@ export class StorageTest {
   }
 
   // to fire s3 triggers attached on the bucket
-  async trigger(context) {
+  async trigger(context: $TSContext) {
     let region = this.storageRegion;
     this.storageSimulator.getServer.on('event', async (eventObj: any) => {
       const meta = context.amplify.getProjectDetails().amplifyMeta;
@@ -64,7 +65,7 @@ export class StorageTest {
       let backendPath = context.amplify.pathManager.getBackendDirPath();
       const resourceName = Object.keys(existingStorage)[0];
       const CFNFilePath = path.join(backendPath, 'storage', resourceName, 's3-cloudformation-template.json');
-      const storageParams = context.amplify.readJsonFile(CFNFilePath);
+      const storageParams = JSONUtilities.readJson<$TSAny>(CFNFilePath);
       const lambdaConfig =
         storageParams.Resources.S3Bucket.Properties.NotificationConfiguration &&
         storageParams.Resources.S3Bucket.Properties.NotificationConfiguration.LambdaConfigurations;
@@ -108,9 +109,14 @@ export class StorageTest {
         }
       }
 
-      const config = await loadLambdaConfig(triggerName, context.print);
+      const config = await loadLambdaConfig(context, triggerName);
       const invoker = await getInvoker(context, { handler: config.handler, resourceName: triggerName, envVars: config.environment });
-      await invoker({ event: eventObj });
+      try {
+        await invoker({ event: eventObj });
+      } catch (err) {
+        context.print.error('Error executing lambda trigger');
+        context.print.error(err);
+      }
     });
   }
 

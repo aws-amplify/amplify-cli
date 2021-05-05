@@ -29,7 +29,8 @@ import {
   fetchPermissionResourcesForCategory,
   fetchPermissionsForResourceInCategory,
 } from '../utils/permissionMapUtils';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities, stateManager } from 'amplify-cli-core';
+import { consolidateDependsOnForLambda } from '../utils/consolidateDependsOn';
 
 /**
  * Starting point for CLI walkthrough that generates a lambda function
@@ -252,9 +253,6 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
 
     context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
     tryUpdateTopLevelComment(resourceDirPath, _.keys(functionParameters.environmentMap));
-  } else {
-    // Need to load previous dependsOn
-    functionParameters.dependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
   }
 
   // ask scheduling Lambda questions and merge in results
@@ -295,7 +293,9 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     );
     context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
   }
-
+  // consolidate dependsOn as above logic is overwriting
+  const projectMeta = stateManager.getMeta();
+  functionParameters.dependsOn = consolidateDependsOnForLambda(projectMeta, functionParameters.dependsOn, lambdaToUpdate, selectedSettings);
   return functionParameters;
 }
 

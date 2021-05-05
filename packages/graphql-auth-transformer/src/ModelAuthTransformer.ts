@@ -275,23 +275,26 @@ export class ModelAuthTransformer extends Transformer {
     if (this.generateIAMPolicyforAuthRole === true) {
       // Sanity check to make sure we're not generating invalid policies, where no resources are defined.
       if (this.authPolicyResources.size === 0) {
-        throw new Error('AuthRole policies should be generated, but no resources were added');
-      }
-
-      ctx.mergeParameters({
-        [ResourceConstants.PARAMETERS.AuthRoleName]: new StringParameter({
-          Description: 'Reference to the name of the Auth Role created for the project.',
-        }),
-      });
-
-      const authPolicies = this.resources.makeIAMPolicyForRole(true, this.authPolicyResources);
-
-      for (let i = 0; i < authPolicies.length; i++) {
-        const paddedIndex = `${i + 1}`.padStart(2, '0');
-        const resourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
-        ctx.mergeResources({
-          [resourceName]: authPolicies[i],
+        // When AdminUI is enabled, IAM auth is added but it does not need any policies to be generated
+        if (!this.isAdminUIEnabled()) {
+          throw new Error('AuthRole policies should be generated, but no resources were added');
+        }
+      } else {
+        ctx.mergeParameters({
+          [ResourceConstants.PARAMETERS.AuthRoleName]: new StringParameter({
+            Description: 'Reference to the name of the Auth Role created for the project.',
+          }),
         });
+
+        const authPolicies = this.resources.makeIAMPolicyForRole(true, this.authPolicyResources);
+
+        for (let i = 0; i < authPolicies.length; i++) {
+          const paddedIndex = `${i + 1}`.padStart(2, '0');
+          const resourceName = `${ResourceConstants.RESOURCES.AuthRolePolicy}${paddedIndex}`;
+          ctx.mergeResources({
+            [resourceName]: authPolicies[i],
+          });
+        }
       }
     }
 
@@ -347,7 +350,8 @@ export class ModelAuthTransformer extends Transformer {
     const searchableDirective = def.directives.find(dir => dir.name.value === 'searchable');
 
     // Get and validate the auth rules.
-    const rules = this.getAuthRulesFromDirective(directive);
+    const rules = this.extendAuthRulesForAdminUI(this.getAuthRulesFromDirective(directive));
+
     // Assign default providers to rules where no provider was explicitly defined
     this.ensureDefaultAuthProviderAssigned(rules);
     this.validateRules(rules);
@@ -363,12 +367,11 @@ export class ModelAuthTransformer extends Transformer {
     // type will be emitted as well in case of IAM.
     this.propagateAuthDirectivesToNestedTypes(def, rules, ctx);
 
-    const { operationRules, queryRules } = this.splitRules(rules);
-
     // Retrieve the configuration options for the related @model directive
     const modelConfiguration = new ModelDirectiveConfiguration(modelDirective, def);
+
     // Get the directives we need to add to the GraphQL nodes
-    const directives = this.getDirectivesForRules(rules, false);
+    const directives = this.getDirectivesForRules(rules, rules.length === 0 ? this.shouldAddDefaultAuthDirective() : false);
 
     // Add the directives to the Type node itself
     if (directives.length > 0) {
@@ -376,6 +379,8 @@ export class ModelAuthTransformer extends Transformer {
     }
 
     this.addTypeToResourceReferences(def.name.value, rules);
+
+    const { operationRules, queryRules } = this.splitRules(rules);
 
     // For each operation evaluate the rules and apply the changes to the relevant resolver.
     this.protectCreateMutation(
@@ -399,13 +404,22 @@ export class ModelAuthTransformer extends Transformer {
       def,
       modelConfiguration,
     );
-    this.protectGetQuery(ctx, ResolverResourceIDs.DynamoDBGetResolverResourceID(def.name.value), queryRules.get, def, modelConfiguration);
+    this.protectGetQuery(
+      ctx,
+      ResolverResourceIDs.DynamoDBGetResolverResourceID(def.name.value),
+      queryRules.get,
+      def,
+      modelConfiguration,
+      true,
+    );
     this.protectListQuery(
       ctx,
       ResolverResourceIDs.DynamoDBListResolverResourceID(def.name.value),
       queryRules.list,
       def,
       modelConfiguration,
+      undefined,
+      true,
     );
     this.protectConnections(ctx, def, operationRules.read, modelConfiguration);
     this.protectQueries(ctx, def, operationRules.read, modelConfiguration);
@@ -650,7 +664,7 @@ Static group authorization should perform as expected.`,
             // If the parent type has any rules for this operation AND
             // the default provider we've to get directives including the default
             // as well.
-            const includeDefault = this.isTypeHasRulesForOperation(parent, operationType);
+            const includeDefault = this.doesTypeHaveRulesForOperation(parent, operationType);
             const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
             this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
@@ -756,7 +770,7 @@ Either make the field optional, set auth on the object and not the field, or dis
           // If the parent type has any rules for this operation AND
           // the default provider we've to get directives including the default
           // as well.
-          const includeDefault = this.isTypeHasRulesForOperation(parent, 'create');
+          const includeDefault = this.doesTypeHaveRulesForOperation(parent, 'create');
           const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
           operationName = modelConfiguration.getName('create');
@@ -1050,6 +1064,10 @@ operations will be generated by the CLI.`,
    * @param ctx The transformer context.
    * @param resolverResourceId The logical id of the get resolver.
    * @param rules The auth rules to apply.
+   * @param parent ObjectDefinition of the type
+   * @param modelConfiguration auth configuration for the model
+   * @param updateSchema flag to indicate if protection needs to update the schema or just the resolver. When a connection is being protected
+   * the schema should not be updated
    */
   private protectGetQuery(
     ctx: TransformerContext,
@@ -1057,6 +1075,7 @@ operations will be generated by the CLI.`,
     rules: AuthRule[],
     parent: ObjectTypeDefinitionNode | null,
     modelConfiguration: ModelDirectiveConfiguration,
+    updateSchema: boolean,
   ) {
     const resolver = ctx.getResource(resolverResourceId);
     if (!rules || rules.length === 0 || !resolver) {
@@ -1064,12 +1083,12 @@ operations will be generated by the CLI.`,
     } else {
       let operationName: string = undefined;
 
-      if (modelConfiguration.shouldHave('get')) {
+      if (modelConfiguration.shouldHave('get') && updateSchema) {
         operationName = modelConfiguration.getName('get');
         // If the parent type has any rules for this operation AND
         // the default provider we've to get directives including the default
         // as well.
-        const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, 'get') : false;
+        const includeDefault = parent !== null ? this.doesTypeHaveRulesForOperation(parent, 'get') : this.shouldAddDefaultAuthDirective();
         const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
         if (operationDirectives.length > 0) {
@@ -1168,6 +1187,10 @@ operations will be generated by the CLI.`,
    * @param ctx The transformer context.
    * @param resolverResourceId The logical id of the resolver to be updated in the CF template.
    * @param rules The set of rules that apply to the operation.
+   * @argument parent The parent Object of the query
+   * @argument modelConfiguration model directive configuration of the parent
+   * @argument explicitOperationName name of the listQuery to be generated
+   * @argument updateSchema flag indicating if the schema needs to be updated with appsync auth directives
    */
   private protectListQuery(
     ctx: TransformerContext,
@@ -1176,6 +1199,7 @@ operations will be generated by the CLI.`,
     parent: ObjectTypeDefinitionNode | null,
     modelConfiguration: ModelDirectiveConfiguration,
     explicitOperationName: string = undefined,
+    updateSchema: boolean = true,
   ) {
     const resolver = ctx.getResource(resolverResourceId);
     if (!rules || rules.length === 0 || !resolver) {
@@ -1187,10 +1211,10 @@ operations will be generated by the CLI.`,
       // If the parent type has any rules for this operation AND
       // the default provider we've to get directives including the default
       // as well.
-      const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, 'list') : false;
+      const includeDefault = parent !== null ? this.doesTypeHaveRulesForOperation(parent, 'list') : this.shouldAddDefaultAuthDirective();
       const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
-      if (operationDirectives.length > 0) {
+      if (operationDirectives.length > 0 && updateSchema) {
         this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
       }
 
@@ -1334,7 +1358,7 @@ operations will be generated by the CLI.`,
         // If the parent type has any rules for this operation AND
         // the default provider we've to get directives including the default
         // as well.
-        const includeDefault = this.isTypeHasRulesForOperation(parent, 'create');
+        const includeDefault = this.doesTypeHaveRulesForOperation(parent, 'create');
         const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
         if (operationDirectives.length > 0) {
@@ -1461,7 +1485,7 @@ operations will be generated by the CLI.`,
         // If the parent type has any rules for this operation AND
         // the default provider we've to get directives including the default
         // as well.
-        const includeDefault = Boolean(!field && this.isTypeHasRulesForOperation(parent, isUpdate ? 'update' : 'delete'));
+        const includeDefault = Boolean(!field && this.doesTypeHaveRulesForOperation(parent, isUpdate ? 'update' : 'delete'));
         const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
 
         if (operationDirectives.length > 0) {
@@ -1682,9 +1706,9 @@ operations will be generated by the CLI.`,
             }
 
             if (isListType(field.type)) {
-              this.protectListQuery(ctx, resolverResourceId, rules, null, modelConfiguration);
+              this.protectListQuery(ctx, resolverResourceId, rules, null, modelConfiguration, undefined, false);
             } else {
-              this.protectGetQuery(ctx, resolverResourceId, rules, null, modelConfiguration);
+              this.protectGetQuery(ctx, resolverResourceId, rules, null, modelConfiguration, false);
             }
           }
         }
@@ -1713,7 +1737,7 @@ operations will be generated by the CLI.`,
     for (const keyWithQuery of secondaryKeyDirectivesWithQueries) {
       const args = getDirectiveArguments(keyWithQuery);
       const resolverResourceId = ResolverResourceIDs.ResolverResourceID(ctx.getQueryTypeName(), args.queryField);
-      this.protectListQuery(ctx, resolverResourceId, rules, null, modelConfiguration, args.queryField);
+      this.protectListQuery(ctx, resolverResourceId, rules, null, modelConfiguration, args.queryField, true);
     }
   }
 
@@ -1723,7 +1747,7 @@ operations will be generated by the CLI.`,
       return;
     } else {
       const operationName = resolver.Properties.FieldName;
-      const includeDefault = def !== null ? this.isTypeHasRulesForOperation(def, 'list') : false;
+      const includeDefault = def !== null ? this.doesTypeHaveRulesForOperation(def, 'list') : this.shouldAddDefaultAuthDirective();
       const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
       if (operationDirectives.length > 0) {
         this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
@@ -1749,7 +1773,7 @@ operations will be generated by the CLI.`,
       return;
     }
     const operationName = resolver.Properties.FieldName;
-    const includeDefault = def !== null ? this.isTypeHasRulesForOperation(def, 'list') : false;
+    const includeDefault = def !== null ? this.doesTypeHaveRulesForOperation(def, 'list') : this.shouldAddDefaultAuthDirective();
     const operationDirectives = this.getDirectivesForRules(rules, includeDefault);
     if (operationDirectives.length > 0) {
       this.addDirectivesToOperation(ctx, ctx.getQueryTypeName(), operationName, operationDirectives);
@@ -1833,7 +1857,7 @@ operations will be generated by the CLI.`,
       ctx.setResource(resolverResourceId, resolver);
     } else {
       // Get the directives we need to add to the GraphQL nodes
-      const includeDefault = parent !== null ? this.isTypeHasRulesForOperation(parent, 'get') : false;
+      const includeDefault = parent !== null ? this.doesTypeHaveRulesForOperation(parent, 'get') : this.shouldAddDefaultAuthDirective();
       const directives = this.getDirectivesForRules(rules, includeDefault);
 
       if (directives.length > 0) {
@@ -2038,14 +2062,17 @@ operations will be generated by the CLI.`,
     }
   }
 
-  private getDirectivesForRules(rules: AuthRule[], addDefaultIfNeeded: boolean = true): DirectiveNode[] {
+  private extendAuthRulesForAdminUI(rules: Readonly<AuthRule[]>): AuthRule[] {
+    // Check for Amplify Admin
+    if (this.isAdminUIEnabled()) {
+      return [...rules, { allow: 'private', provider: 'iam', generateIAMPolicy: false }];
+    }
+    return [...rules];
+  }
+
+  private getDirectivesForRules(rules: Readonly<AuthRule[]>, addDefaultIfNeeded: boolean = true): DirectiveNode[] {
     if (!rules || rules.length === 0) {
       return [];
-    }
-
-    // Check for Amplify Admin
-    if (this.configuredAuthProviders.hasIAM && this.config.addAwsIamAuthInOutputSchema) {
-      rules.push({ allow: 'private', provider: 'iam' });
     }
 
     const directives: DirectiveNode[] = new Array();
@@ -2265,7 +2292,10 @@ found '${rule.provider}' assigned.`,
     };
 
     // Get and validate the auth rules.
-    return getArg('rules', []) as AuthRule[];
+    const authRules = getArg('rules', []) as AuthRule[];
+
+    // All the IAM auth rules that are added using @auth directive need IAM policy to be generated. AuthRules added for AdminUI don't
+    return authRules.map(rule => (rule.provider === 'iam' ? { ...rule, generateIAMPolicy: true } : rule));
   }
 
   private isTypeNeedsDefaultProviderAccess(def: ObjectTypeDefinitionNode): boolean {
@@ -2282,10 +2312,10 @@ found '${rule.provider}' assigned.`,
     return Boolean(rules.find(r => r.provider === this.configuredAuthProviders.default));
   }
 
-  private isTypeHasRulesForOperation(def: ObjectTypeDefinitionNode, operation: ModelDirectiveOperationType): boolean {
+  private doesTypeHaveRulesForOperation(def: ObjectTypeDefinitionNode, operation: ModelDirectiveOperationType): boolean {
     const authDirective = def.directives.find(dir => dir.name.value === 'auth');
     if (!authDirective) {
-      return false;
+      return this.shouldAddDefaultAuthDirective();
     }
 
     // Get and validate the auth rules.
@@ -2301,23 +2331,37 @@ found '${rule.provider}' assigned.`,
 
     switch (operation) {
       case 'create':
-        return hasRulesForDefaultProvider(operationRules.create);
+        return (
+          hasRulesForDefaultProvider(operationRules.create) || (operationRules.create.length === 0 && this.shouldAddDefaultAuthDirective())
+        );
       case 'update':
-        return hasRulesForDefaultProvider(operationRules.update);
+        return (
+          hasRulesForDefaultProvider(operationRules.update) || (operationRules.update.length === 0 && this.shouldAddDefaultAuthDirective())
+        );
       case 'delete':
-        return hasRulesForDefaultProvider(operationRules.delete);
+        return (
+          hasRulesForDefaultProvider(operationRules.delete) || (operationRules.delete.length === 0 && this.shouldAddDefaultAuthDirective())
+        );
       case 'get':
-        return hasRulesForDefaultProvider(operationRules.read) || hasRulesForDefaultProvider(queryRules.get);
+        return (
+          hasRulesForDefaultProvider(operationRules.read) ||
+          hasRulesForDefaultProvider(queryRules.get) ||
+          (operationRules.read.length === 0 && queryRules.list.length === 0 && this.shouldAddDefaultAuthDirective())
+        );
       case 'list':
-        return hasRulesForDefaultProvider(operationRules.read) || hasRulesForDefaultProvider(queryRules.list);
+        return (
+          hasRulesForDefaultProvider(operationRules.read) ||
+          hasRulesForDefaultProvider(queryRules.list) ||
+          (operationRules.read.length === 0 && queryRules.list.length === 0 && this.shouldAddDefaultAuthDirective())
+        );
     }
 
     return false;
   }
 
   private addTypeToResourceReferences(typeName: string, rules: AuthRule[]): void {
-    const iamPublicRules = rules.filter(r => r.allow === 'public' && r.provider === 'iam');
-    const iamPrivateRules = rules.filter(r => r.allow === 'private' && r.provider === 'iam');
+    const iamPublicRules = rules.filter(r => r.allow === 'public' && r.provider === 'iam' && r.generateIAMPolicy);
+    const iamPrivateRules = rules.filter(r => r.allow === 'private' && r.provider === 'iam' && r.generateIAMPolicy);
 
     if (iamPublicRules.length > 0) {
       this.unauthPolicyResources.add(`${typeName}/null`);
@@ -2329,8 +2373,8 @@ found '${rule.provider}' assigned.`,
   }
 
   private addFieldToResourceReferences(typeName: string, fieldName: string, rules: AuthRule[]): void {
-    const iamPublicRules = rules.filter(r => r.allow === 'public' && r.provider === 'iam');
-    const iamPrivateRules = rules.filter(r => r.allow === 'private' && r.provider === 'iam');
+    const iamPublicRules = rules.filter(r => r.allow === 'public' && r.provider === 'iam' && r.generateIAMPolicy);
+    const iamPrivateRules = rules.filter(r => r.allow === 'private' && r.provider === 'iam' && r.generateIAMPolicy);
 
     if (iamPublicRules.length > 0) {
       this.unauthPolicyResources.add(`${typeName}/${fieldName}`);
@@ -2394,6 +2438,21 @@ found '${rule.provider}' assigned.`,
         ctx.putType(updatedInput);
       }
     }
+  }
+
+  private isAdminUIEnabled(): boolean {
+    return this.configuredAuthProviders.hasIAM && this.config.addAwsIamAuthInOutputSchema;
+  }
+
+  /**
+   * When AdminUI is enabled, all the types and operations get IAM auth. If the default auth mode is
+   * not IAM all the fields will need to have the default auth mode directive to ensure both IAM and deault
+   * auth modes are allowed to access
+   *  default auth provider needs to be added if AdminUI is enabled and default auth type is not IAM
+   * @returns boolean
+   */
+  private shouldAddDefaultAuthDirective(): boolean {
+    return this.isAdminUIEnabled() && this.config.authConfig.defaultAuthentication.authenticationType !== 'AWS_IAM';
   }
 
   private typeExist(type: string, ctx: TransformerContext): boolean {

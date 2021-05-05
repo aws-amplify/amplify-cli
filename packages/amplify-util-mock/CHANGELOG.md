@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.30.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.30.4...amplify-util-mock@3.30.6) (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.30.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.30.4...amplify-util-mock@3.30.5) (2021-05-03)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.30.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.30.3...amplify-util-mock@3.30.4) (2021-04-27)
+
+
+### Bug Fixes
+
+* mock storage trigger invocation ([#7151](https://github.com/aws-amplify/amplify-cli/issues/7151)) (ref [#7052](https://github.com/aws-amplify/amplify-cli/issues/7052)) ([ad2499b](https://github.com/aws-amplify/amplify-cli/commit/ad2499b983c87de9a71165bffb85d2ee561df70d))
+
+
+
+
+
 ## [3.30.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.30.2...amplify-util-mock@3.30.3) (2021-04-19)
 
 **Note:** Version bump only for package amplify-util-mock

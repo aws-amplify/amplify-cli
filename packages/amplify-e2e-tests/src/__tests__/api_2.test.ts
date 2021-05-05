@@ -2,10 +2,10 @@ import {
   amplifyPush,
   amplifyPushUpdate,
   deleteProject,
-  getPolicyVersion,
   initJSProjectWithProfile,
   listAttachedRolePolicies,
   listRolePolicies,
+  updateAuthAddAdminQueries,
 } from 'amplify-e2e-core';
 import * as path from 'path';
 import { existsSync } from 'fs';
@@ -403,6 +403,7 @@ describe('amplify add api (REST)', () => {
       allowGuestUsers: false,
     });
     await addRestApi(projRoot, { existingLambda: true });
+    await updateAuthAddAdminQueries(projRoot);
     await amplifyPushUpdate(projRoot);
 
     const amplifyMeta = getProjectMeta(projRoot);

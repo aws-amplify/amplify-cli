@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.21.4...amplify-frontend-javascript@2.21.6) (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [2.21.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.21.4...amplify-frontend-javascript@2.21.5) (2021-05-03)
+
+**Note:** Version bump only for package amplify-frontend-javascript
+
+
+
+
+
+## [2.21.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.21.3...amplify-frontend-javascript@2.21.4) (2021-04-27)
+
+
+### Bug Fixes
+
+* frontend flag not honoring passed in framework ([#7126](https://github.com/aws-amplify/amplify-cli/issues/7126)) (ref [#7046](https://github.com/aws-amplify/amplify-cli/issues/7046)) ([1e67fc9](https://github.com/aws-amplify/amplify-cli/commit/1e67fc9a2fab262334181bbb50cba91999e24c33))
+
+
+
+
+
 ## [2.21.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.21.2...amplify-frontend-javascript@2.21.3) (2021-04-19)
 
 **Note:** Version bump only for package amplify-frontend-javascript

@@ -48,17 +48,36 @@ export async function writeCFNTemplate(template: object, filePath: string, optio
 }
 
 // Register custom tags for yaml parser
+// Order and definition based on docs: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
 const CF_SCHEMA = new yaml.Schema([
-  new yaml.Type('!Ref', {
+  new yaml.Type('!Base64', {
     kind: 'scalar',
     construct: function (data) {
-      return { Ref: data };
+      return { 'Fn::Base64': data };
     },
   }),
-  new yaml.Type('!Condition', {
+  new yaml.Type('!Base64', {
+    kind: 'mapping',
+    construct: function (data) {
+      return { 'Fn::Base64': data };
+    },
+  }),
+  new yaml.Type('!Cidr', {
     kind: 'sequence',
     construct: function (data) {
-      return { Condition: data };
+      return { 'Fn::Cidr': data };
+    },
+  }),
+  new yaml.Type('!Cidr', {
+    kind: 'mapping',
+    construct: function (data) {
+      return { 'Fn::Cidr': data };
+    },
+  }),
+  new yaml.Type('!And', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::And': data };
     },
   }),
   new yaml.Type('!Equals', {
@@ -67,28 +86,88 @@ const CF_SCHEMA = new yaml.Schema([
       return { 'Fn::Equals': data };
     },
   }),
+  new yaml.Type('!If', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::If': data };
+    },
+  }),
   new yaml.Type('!Not', {
     kind: 'sequence',
     construct: function (data) {
       return { 'Fn::Not': data };
     },
   }),
-  new yaml.Type('!Sub', {
+  new yaml.Type('!Or', {
+    kind: 'sequence',
+    construct: function (data) {
+      return { 'Fn::Or': data };
+    },
+  }),
+  new yaml.Type('!Condition', {
     kind: 'scalar',
     construct: function (data) {
-      return { 'Fn::Sub': data };
+      return { Condition: data };
     },
   }),
-  new yaml.Type('!Sub', {
+  new yaml.Type('!FindInMap', {
     kind: 'sequence',
     construct: function (data) {
-      return { 'Fn::Sub': data };
+      return { 'Fn::FindInMap': data };
     },
   }),
-  new yaml.Type('!If', {
+  new yaml.Type('!GetAtt', {
+    kind: 'scalar',
+    construct: function (data) {
+      if (Array.isArray(data)) {
+        return {
+          'Fn::GetAtt': data,
+        };
+      }
+      // data is a string
+      const firstPeriodIdx = data.indexOf('.');
+      return {
+        'Fn::GetAtt': [data.slice(0, firstPeriodIdx), data.slice(firstPeriodIdx + 1)],
+      };
+    },
+  }),
+  new yaml.Type('!GetAtt', {
     kind: 'sequence',
     construct: function (data) {
-      return { 'Fn::If': data };
+      if (Array.isArray(data)) {
+        return {
+          'Fn::GetAtt': data,
+        };
+      }
+      // data is a string
+      const firstPeriodIdx = data.indexOf('.');
+      return {
+        'Fn::GetAtt': [data.slice(0, firstPeriodIdx), data.slice(firstPeriodIdx + 1)],
+      };
+    },
+  }),
+  new yaml.Type('!GetAZs', {
+    kind: 'scalar',
+    construct: function (data) {
+      return { 'Fn::GetAZs': data };
+    },
+  }),
+  new yaml.Type('!GetAZs', {
+    kind: 'mapping',
+    construct: function (data) {
+      return { 'Fn::GetAZs': data };
+    },
+  }),
+  new yaml.Type('!ImportValue', {
+    kind: 'scalar',
+    construct: function (data) {
+      return { 'Fn::ImportValue': data };
+    },
+  }),
+  new yaml.Type('!ImportValue', {
+    kind: 'mapping',
+    construct: function (data) {
+      return { 'Fn::ImportValue': data };
     },
   }),
   new yaml.Type('!Join', {
@@ -103,70 +182,34 @@ const CF_SCHEMA = new yaml.Schema([
       return { 'Fn::Select': data };
     },
   }),
-  new yaml.Type('!FindInMap', {
-    kind: 'sequence',
-    construct: function (data) {
-      return { 'Fn::FindInMap': data };
-    },
-  }),
-  new yaml.Type('!GetAtt', {
-    kind: 'scalar',
-    construct: function (data) {
-      return { 'Fn::GetAtt': Array.isArray(data) ? data : data.split('.') };
-    },
-  }),
-  new yaml.Type('!GetAtt', {
-    kind: 'sequence',
-    construct: function (data) {
-      return { 'Fn::GetAtt': Array.isArray(data) ? data : data.split('.') };
-    },
-  }),
-  new yaml.Type('!GetAZs', {
-    kind: 'scalar',
-    construct: function (data) {
-      return { 'Fn::GetAZs': data };
-    },
-  }),
-  new yaml.Type('!Base64', {
-    kind: 'mapping',
-    construct: function (data) {
-      return { 'Fn::Base64': data };
-    },
-  }),
   new yaml.Type('!Split', {
     kind: 'sequence',
     construct: function (data) {
       return { 'Fn::Split': data };
     },
   }),
-  new yaml.Type('!Cidr', {
-    kind: 'sequence',
+  new yaml.Type('!Sub', {
+    kind: 'scalar',
     construct: function (data) {
-      return { 'Fn::Cidr': data };
+      return { 'Fn::Sub': data };
     },
   }),
-  new yaml.Type('!ImportValue', {
+  new yaml.Type('!Sub', {
     kind: 'sequence',
     construct: function (data) {
-      return { 'Fn::ImportValue': data };
+      return { 'Fn::Sub': data };
     },
   }),
   new yaml.Type('!Transform', {
-    kind: 'sequence',
+    kind: 'mapping',
     construct: function (data) {
       return { 'Fn::Transform': data };
     },
   }),
-  new yaml.Type('!And', {
-    kind: 'sequence',
+  new yaml.Type('!Ref', {
+    kind: 'scalar',
     construct: function (data) {
-      return { 'Fn::And': data };
-    },
-  }),
-  new yaml.Type('!Or', {
-    kind: 'sequence',
-    construct: function (data) {
-      return { 'Fn::Or': data };
+      return { Ref: data };
     },
   }),
 ]);

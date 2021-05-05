@@ -109,24 +109,28 @@ async function run(context) {
 
 function processStackCreationData(context, amplifyAppId, stackDescriptiondata) {
   const metadata = {};
-  const { Outputs } = stackDescriptiondata.Stacks[0];
-  Outputs.forEach(element => {
-    metadata[element.OutputKey] = element.OutputValue;
-  });
-  if (amplifyAppId) {
-    metadata[constants.AmplifyAppIdLabel] = amplifyAppId;
-  }
+  if (stackDescriptiondata.Stacks && stackDescriptiondata.Stacks.length) {
+    const { Outputs } = stackDescriptiondata.Stacks[0];
+    Outputs.forEach(element => {
+      metadata[element.OutputKey] = element.OutputValue;
+    });
+    if (amplifyAppId) {
+      metadata[constants.AmplifyAppIdLabel] = amplifyAppId;
+    }
 
-  context.exeInfo.amplifyMeta = {};
-  if (!context.exeInfo.amplifyMeta.providers) {
-    context.exeInfo.amplifyMeta.providers = {};
-  }
-  context.exeInfo.amplifyMeta.providers[constants.ProviderName] = metadata;
+    context.exeInfo.amplifyMeta = {};
+    if (!context.exeInfo.amplifyMeta.providers) {
+      context.exeInfo.amplifyMeta.providers = {};
+    }
+    context.exeInfo.amplifyMeta.providers[constants.ProviderName] = metadata;
 
-  if (context.exeInfo.isNewEnv) {
-    const { envName } = context.exeInfo.localEnvInfo;
-    const existingProviderTPI = _.get(context.exeInfo.teamProviderInfo, [envName, constants.ProviderName]);
-    _.set(context.exeInfo.teamProviderInfo, [envName, constants.ProviderName], { ...existingProviderTPI, ...metadata });
+    if (context.exeInfo.isNewEnv) {
+      const { envName } = context.exeInfo.localEnvInfo;
+      const existingProviderTPI = _.get(context.exeInfo.teamProviderInfo, [envName, constants.ProviderName]);
+      _.set(context.exeInfo.teamProviderInfo, [envName, constants.ProviderName], { ...existingProviderTPI, ...metadata });
+    }
+  } else {
+    throw new Error('No stack data present');
   }
 }
 
