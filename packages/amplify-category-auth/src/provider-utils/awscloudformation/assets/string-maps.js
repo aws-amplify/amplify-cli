@@ -178,7 +178,10 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
-    signinwithapple: {},
+    signinwithapple: {
+      attr: 'lastName',
+      scope: 'name',
+    },
   },
   gender: {
     facebook: {
@@ -202,7 +205,10 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
-    signinwithapple: {},
+    signinwithapple: {
+      attr: 'firstName',
+      scope: 'name',
+    },
   },
   locale: {
     facebook: {},
@@ -235,10 +241,7 @@ const attributeProviderMap = {
       attr: 'name',
       scope: 'profile',
     },
-    signinwithapple: {
-      attr: 'name',
-      scope: 'name',
-    },
+    signinwithapple: {},
   },
   nickname: {
     facebook: {},
