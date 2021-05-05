@@ -1,11 +1,12 @@
-import { ServiceQuestionsResult } from '../service-walkthrough-types';
+import { AuthTriggerConfig, AuthTriggerConnection, ServiceQuestionsResult } from '../service-walkthrough-types';
 import * as path from 'path';
 import { existsSync, copySync, outputFileSync } from 'fs-extra';
 import uuid from 'uuid';
 import { cfnTemplateRoot, privateKeys, adminAuthAssetRoot, triggerRoot, ENV_SPECIFIC_PARAMS } from '../constants';
-import { pathManager, JSONUtilities } from 'amplify-cli-core';
+import { pathManager, JSONUtilities, FeatureFlags } from 'amplify-cli-core';
 import { get } from 'lodash';
 import { authProviders } from '../assets/string-maps';
+import { generateNestedAuthTriggerTemplate } from './generate-auth-trigger-template';
 
 const category = 'auth';
 
@@ -26,6 +27,7 @@ export const getResourceSynthesizer = (context: any, cfnFilename: string, provid
   await createUserPoolGroups(context, request.resourceName!, request.userPoolGroupList);
   await addAdminAuth(context, request.resourceName!, 'add', request.adminQueryGroup);
   await copyCfnTemplate(context, category, request, cfnFilename);
+  await generateNestedAuthTriggerTemplate(context, category, request);
   saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
   await copyS3Assets(request);
   return request;
@@ -87,6 +89,7 @@ export const getResourceUpdater = (context: any, cfnFilename: string, provider: 
 
   if (request.updateFlow !== 'updateUserPoolGroups' && request.updateFlow !== 'updateAdminQueries') {
     await copyCfnTemplate(context, category, request, cfnFilename);
+    await generateNestedAuthTriggerTemplate(context, category, request);
     saveResourceParameters(context, provider, category, request.resourceName!, request, ENV_SPECIFIC_PARAMS);
   }
   await copyS3Assets(request);
@@ -98,6 +101,7 @@ export const getResourceUpdater = (context: any, cfnFilename: string, provider: 
  */
 export const copyCfnTemplate = async (context: any, category: string, options: any, cfnFilename: string) => {
   const targetDir = path.join(pathManager.getBackendDirPath(), category, options.resourceName);
+  // enable feature flag to remove trigger dependency from auth template
 
   const copyJobs = [
     {
@@ -161,11 +165,21 @@ export const removeDeprecatedProps = (props: any) => {
 const lambdaTriggers = async (coreAnswers: any, context: any, previouslySaved: any) => {
   const { handleTriggers } = require('./trigger-flow-auth-helper');
   let triggerKeyValues = {};
-
+  let authTriggerConnections: AuthTriggerConnection[];
   if (coreAnswers.triggers) {
-    triggerKeyValues = await handleTriggers(context, coreAnswers, previouslySaved);
+    const triggerConfig: AuthTriggerConfig = await handleTriggers(context, coreAnswers, previouslySaved);
+    triggerKeyValues = triggerConfig.triggers;
+    authTriggerConnections = triggerConfig.authTriggerConnections;
     coreAnswers.triggers = triggerKeyValues ? JSONUtilities.stringify(triggerKeyValues) : '{}';
 
+    if (FeatureFlags.getBoolean('auth.breakCircularDependency')) {
+      if (Array.isArray(authTriggerConnections) && authTriggerConnections.length > 0) {
+        coreAnswers.authTriggerConnections = JSONUtilities.stringify(authTriggerConnections);
+      } else {
+        delete coreAnswers.authTriggerConnections;
+      }
+    }
+    coreAnswers.breakCircularDependency = FeatureFlags.getBoolean('auth.breakCircularDependency');
     if (triggerKeyValues) {
       coreAnswers.parentStack = { Ref: 'AWS::StackId' };
     }
@@ -405,6 +419,7 @@ const createAdminAuthAPI = async (context: any, authResourceName: string, functi
     const backendConfigs = {
       service: 'API Gateway',
       providerPlugin: 'awscloudformation',
+      authorizationType: 'AMAZON_COGNITO_USER_POOLS',
       dependsOn,
     };
 

@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.21.0...amplify-cli-core@1.21.2) (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+
+### Bug Fixes
+
+* parse nested yaml GetAtt refs correctly ([#7220](https://github.com/aws-amplify/amplify-cli/issues/7220)) ([0b20951](https://github.com/aws-amplify/amplify-cli/commit/0b209510c32d5ded9f57805a72858900ec8e21f2))
+
+
+
+
+
+## [1.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.21.0...amplify-cli-core@1.21.1) (2021-05-03)
+
+
+### Bug Fixes
+
+* parse nested yaml GetAtt refs correctly ([#7220](https://github.com/aws-amplify/amplify-cli/issues/7220)) ([0b20951](https://github.com/aws-amplify/amplify-cli/commit/0b209510c32d5ded9f57805a72858900ec8e21f2))
+
+
+
+
+
 # [1.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.20.1...amplify-cli-core@1.21.0) (2021-04-27)
 
 

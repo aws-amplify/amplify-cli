@@ -17,6 +17,7 @@ type State = {
   userName?: string;
   userGroups: string[];
   email?: string;
+  additionalFields?: string;
   issuer?: string;
   apiKey?: string;
   possibleGroups: string[];
@@ -61,9 +62,28 @@ export class AuthModal extends Component<Props, State> {
       email: decodedToken['email'],
       possibleGroups: decodedToken['cognito:groups'] || [],
     };
+
+    const jwtFieldsToFilter = [
+      'cognito:username',
+      'cognito:groups',
+      'iss',
+      'email',
+      'sub',
+      'aud',
+      'exp',
+      'event_id',
+      'iat',
+      'algorithm',
+      'auth_time',
+    ];
+    const additionalFields = Object.keys(decodedToken)
+      .filter(k => !jwtFieldsToFilter.includes(k))
+      .reduce((acc, k) => ({ ...acc, [k]: decodedToken[k] }), {});
+
     this.state = {
       ...this.state,
       ...state,
+      additionalFields: JSON.stringify(additionalFields, null, 4),
       currentCognitoToken: this.props.currentCognitoToken || '',
       currentOIDCToken: this.props.currentOIDCToken || '',
       currentOIDCTokenDecoded: JSON.stringify(this.parseJWTToken(this.props.currentOIDCToken), null, 4) || '',
@@ -131,6 +151,13 @@ export class AuthModal extends Component<Props, State> {
       email: data.value,
     });
   }
+
+  onAdditionalFieldChange = (ev, data) => {
+    this.setState({
+      additionalFields: data.value,
+    });
+  };
+
   changeAPIKey(ev, data) {
     this.setState({
       apiKey: data.value,
@@ -179,6 +206,17 @@ export class AuthModal extends Component<Props, State> {
           <Form.Field>
             <label>Email</label>
             <Input placeholder='Email' value={this.state.email} onChange={this.changeEmail} />
+          </Form.Field>
+
+          <Form.Field>
+            <label>Additional Fields</label>
+            <TextArea
+              onChange={this.onAdditionalFieldChange}
+              rows={10}
+              placeholder='Decoded OIDC Token'
+              spellCheck='false'
+              value={this.state.additionalFields}
+            />
           </Form.Field>
         </>
       );
@@ -261,6 +299,12 @@ export class AuthModal extends Component<Props, State> {
   }
 
   generateCognitoJWTToken() {
+    let additionalFields;
+    try {
+      additionalFields = JSON.parse(this.state.additionalFields?.trim() || '{}');
+    } catch (e) {
+      additionalFields = {};
+    }
     const tokenPayload: any = {
       sub: '7d8ca528-4931-4254-9273-ea5ee853f271',
       'cognito:groups': [],
@@ -276,6 +320,7 @@ export class AuthModal extends Component<Props, State> {
       phone_number: '+12062062016',
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 12,
       email: this.state.email,
+      ...additionalFields,
     };
     tokenPayload['cognito:username'] = this.state.userName;
     tokenPayload['cognito:groups'] = this.state.userGroups;

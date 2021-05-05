@@ -1,4 +1,4 @@
-import { $TSAny, pathManager, SecretFileMode } from 'amplify-cli-core';
+import { $TSAny, $TSContext, JSONUtilities, pathManager, SecretFileMode } from 'amplify-cli-core';
 
 const aws = require('aws-sdk');
 const fs = require('fs-extra');
@@ -13,7 +13,7 @@ const logger = fileLogger('system-config-manager');
 const credentialsFilePath = pathManager.getAWSCredentialsFilePath();
 const configFilePath = pathManager.getAWSConfigFilePath();
 
-export function setProfile(awsConfig, profileName) {
+export function setProfile(awsConfig: $TSAny, profileName: string) {
   fs.ensureDirSync(pathManager.getDotAWSDirPath());
 
   let credentials = {};
@@ -65,13 +65,13 @@ export function setProfile(awsConfig, profileName) {
   fs.writeFileSync(configFilePath, ini.stringify(config), { mode: SecretFileMode });
 }
 
-export async function getProfiledAwsConfig(context, profileName, isRoleSourceProfile?) {
+export async function getProfiledAwsConfig(context: $TSContext, profileName: string, isRoleSourceProfile?: boolean) {
   let awsConfig;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
   const profileConfig = getProfileConfig(profileName);
   if (profileConfig) {
     logger('getProfiledAwsConfig.profileConfig', [profileConfig])();
-    if (!isRoleSourceProfile && profileConfig.role_arn) {
+    if (!isRoleSourceProfile && (profileConfig.role_arn || profileConfig.credential_process)) {
       const roleCredentials = await getRoleCredentials(context, profileName, profileConfig);
       delete profileConfig.role_arn;
       delete profileConfig.source_profile;
@@ -103,14 +103,14 @@ export async function getProfiledAwsConfig(context, profileName, isRoleSourcePro
   return awsConfig;
 }
 
-function makeFileOwnerReadWrite(filePath) {
+function makeFileOwnerReadWrite(filePath: string) {
   logger('makeFileOwnerReadWrite', [filePath])();
   fs.chmodSync(filePath, '600');
 }
 
-async function getRoleCredentials(context, profileName, profileConfig) {
+async function getRoleCredentials(context: $TSContext, profileName: string, profileConfig: $TSAny) {
   const roleSessionName = profileConfig.role_session_name || 'amplify';
-  let roleCredentials = getCachedRoleCredentials(context, profileConfig.role_arn, roleSessionName);
+  let roleCredentials = getCachedRoleCredentials(profileConfig.role_arn, roleSessionName);
 
   if (!roleCredentials) {
     const sourceProfileAwsConfig = profileConfig.source_profile
@@ -147,8 +147,9 @@ async function getRoleCredentials(context, profileName, profileConfig) {
     } catch (ex) {
       log(ex);
     }
-
-    cacheRoleCredentials(context, profileConfig.role_arn, roleSessionName, roleCredentials);
+    if (profileConfig.role_arn && roleSessionName && roleCredentials) {
+      cacheRoleCredentials(profileConfig.role_arn, roleSessionName, roleCredentials);
+    }
   }
 
   return roleCredentials;
@@ -175,32 +176,35 @@ async function getMfaTokenCode() {
   return answer.tokenCode;
 }
 
-function cacheRoleCredentials(context, roleArn, sessionName, credentials) {
+function cacheRoleCredentials(roleArn: string, sessionName: string, credentials: $TSAny) {
   let cacheContents = {};
-  const cacheFilePath = getCacheFilePath(context);
+  const cacheFilePath = getCacheFilePath();
   if (fs.existsSync(cacheFilePath)) {
-    cacheContents = context.amplify.readJsonFile(cacheFilePath, 'utf-8');
+    cacheContents = JSONUtilities.readJson(cacheFilePath);
   }
   cacheContents[roleArn] = cacheContents[roleArn] || {};
   cacheContents[roleArn][sessionName] = credentials;
-  const jsonString = JSON.stringify(cacheContents, null, 4);
-  fs.writeFileSync(cacheFilePath, jsonString, 'utf8');
+  JSONUtilities.writeJson(cacheFilePath, cacheContents);
 }
 
-function getCachedRoleCredentials(context, roleArn, sessionName) {
+function getCachedRoleCredentials(roleArn: string, sessionName: string) {
   let roleCredentials;
-  const cacheFilePath = getCacheFilePath(context);
+  const cacheFilePath = getCacheFilePath();
   if (fs.existsSync(cacheFilePath)) {
-    const cacheContents = context.amplify.readJsonFile(cacheFilePath, 'utf-8');
-    if (cacheContents[roleArn]) {
-      roleCredentials = cacheContents[roleArn][sessionName];
-      roleCredentials = validateCachedCredentials(roleCredentials) ? roleCredentials : undefined;
+    try {
+      const cacheContents = JSONUtilities.readJson(cacheFilePath);
+      if (cacheContents[roleArn]) {
+        roleCredentials = cacheContents[roleArn][sessionName];
+        roleCredentials = validateCachedCredentials(roleCredentials) ? roleCredentials : undefined;
+      }
+    } catch {
+      return;
     }
   }
   return roleCredentials;
 }
 
-function validateCachedCredentials(roleCredentials) {
+function validateCachedCredentials(roleCredentials: $TSAny) {
   let isValid = false;
 
   if (roleCredentials) {
@@ -214,7 +218,7 @@ function validateCachedCredentials(roleCredentials) {
   return isValid;
 }
 
-function isCredentialsExpired(roleCredentials) {
+function isCredentialsExpired(roleCredentials: $TSAny) {
   let isExpired = true;
 
   if (roleCredentials && roleCredentials.expiration) {
@@ -226,12 +230,12 @@ function isCredentialsExpired(roleCredentials) {
   return isExpired;
 }
 
-export async function resetCache(context, profileName) {
+export async function resetCache(context: $TSContext, profileName: string) {
   let awsConfig;
   const profileConfig = getProfileConfig(profileName);
-  const cacheFilePath = getCacheFilePath(context);
+  const cacheFilePath = getCacheFilePath();
   if (profileConfig && profileConfig.role_arn && fs.existsSync(cacheFilePath)) {
-    const cacheContents = context.amplify.readJsonFile(cacheFilePath, 'utf-8');
+    const cacheContents = JSONUtilities.readJson(cacheFilePath);
     if (cacheContents[profileConfig.role_arn]) {
       delete cacheContents[profileConfig.role_arn];
       const jsonString = JSON.stringify(cacheContents, null, 4);
@@ -249,14 +253,14 @@ export async function resetCache(context, profileName) {
   return awsConfig;
 }
 
-function getCacheFilePath(context) {
-  const sharedConfigDirPath = path.join(context.amplify.pathManager.getHomeDotAmplifyDirPath(), constants.Label);
+function getCacheFilePath() {
+  const sharedConfigDirPath = path.join(pathManager.getHomeDotAmplifyDirPath(), constants.Label);
   logger('getCacheFilePath', [sharedConfigDirPath])();
   fs.ensureDirSync(sharedConfigDirPath);
   return path.join(sharedConfigDirPath, constants.CacheFileName);
 }
 
-function getProfileConfig(profileName) {
+function getProfileConfig(profileName: string) {
   let profileConfig;
   logger('getProfileConfig', [profileName])();
   if (fs.existsSync(configFilePath)) {
@@ -271,7 +275,7 @@ function getProfileConfig(profileName) {
   return normalizeKeys(profileConfig);
 }
 
-export function getProfileCredentials(profileName) {
+export function getProfileCredentials(profileName: string) {
   let profileCredentials;
   logger('getProfileCredentials', [profileName])();
   if (fs.existsSync(credentialsFilePath)) {
@@ -308,7 +312,7 @@ function validateCredentials(credentials: $TSAny, profileName: string) {
   }
 }
 
-function normalizeKeys(config) {
+function normalizeKeys(config: $TSAny) {
   if (config) {
     config.accessKeyId = config.accessKeyId || config.aws_access_key_id;
     config.secretAccessKey = config.secretAccessKey || config.aws_secret_access_key;
@@ -320,7 +324,7 @@ function normalizeKeys(config) {
   return config;
 }
 
-export function getProfileRegion(profileName) {
+export function getProfileRegion(profileName: string) {
   let profileRegion;
   logger('getProfileRegion', [profileName])();
   const profileConfig = getProfileConfig(profileName);

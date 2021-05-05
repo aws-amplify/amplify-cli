@@ -1275,3 +1275,30 @@ export function addAuthUserPoolOnlyNoOAuth(cwd: string, settings: AddAuthUserPoo
       });
   });
 }
+
+export function updateAuthAddAdminQueries(projectDir: string, groupName: string = 'adminQueriesGroup'): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['update', 'auth'], { cwd: projectDir, stripColors: true })
+      .wait('What do you want to do?')
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn() // Create or update Admin queries API
+      .wait('Do you want to restrict access to the admin queries API to a specific Group')
+      .sendConfirmYes()
+      .wait('Select the group to restrict access with')
+      .sendCarriageReturn() // Enter a custom group
+      .wait('Provide a group name')
+      .send(groupName)
+      .sendCarriageReturn()
+      .sendEof()
+      .run((err: Error) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+  });
+}

@@ -66,6 +66,7 @@ import {
 } from 'graphql';
 import { AppSync, Fn, Refs } from 'cloudform-types';
 import { Projection, GlobalSecondaryIndex, LocalSecondaryIndex } from 'cloudform-types/types/dynamoDb/table';
+import _ from 'lodash';
 
 interface KeyArguments {
   name?: string;
@@ -463,10 +464,13 @@ export class KeyTransformer extends Transformer {
       if (ctx.featureFlags.getBoolean('skipOverrideMutationInputTypes', false)) {
         const modelDirective = definition.directives.find(dir => dir.name.value === 'model');
         const modelDirectiveArgs = getDirectiveArguments(modelDirective);
-        // Figure out which mutations to make and if they have name overrides
-        shouldMakeCreate = !!modelDirectiveArgs?.mutations?.create;
-        shouldMakeUpdate = !!modelDirectiveArgs?.mutations?.update;
-        shouldMakeDelete = !!modelDirectiveArgs?.mutations?.delete;
+
+        if (!_.isEmpty(modelDirectiveArgs) && Object.keys(modelDirectiveArgs).includes('mutations')) {
+          // Figure out which mutations to make and if they have name overrides
+          shouldMakeCreate = !!modelDirectiveArgs?.mutations?.create;
+          shouldMakeUpdate = !!modelDirectiveArgs?.mutations?.update;
+          shouldMakeDelete = !!modelDirectiveArgs?.mutations?.delete;
+        }
       }
       const hasIdField = definition.fields.find(f => f.name.value === 'id');
       if (!hasIdField) {

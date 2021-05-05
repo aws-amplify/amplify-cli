@@ -1,0 +1,141 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generates expected VTL 1`] = `
+Object {
+  "Comment.complexPut.req.vtl": "## [Start] Create request. **
+## START: Manually checking that all non-null arguments are provided either in the query or the body **
+#if( (!$ctx.args.body.userId && !$ctx.args.query.userId) )
+$util.error(\\"An argument you marked as Non-Null is not present in the query nor the body of your request.\\"))
+#end
+## END: Manually checking that all non-null arguments are provided either in the query or the body **
+#set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
+$util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
+$util.qr($headers.put(\\"Content-Type\\", \\"application/json\\"))
+$util.qr($headers.put(\\"X-Header\\", \\"X-Header-ValuePut\\"))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"PUT\\",
+  \\"resourcePath\\": \\"/posts/\${ctx.args.params.title}/\${ctx.args.params.id}/\${ctx.source.id}\\",
+  \\"params\\": {
+      \\"headers\\": $util.toJson($headers),
+      \\"query\\": $util.toJson($ctx.args.query),
+      \\"body\\": $util.toJson($ctx.args.body)
+  }
+}
+## [End] Create request. **",
+  "Comment.complexPut.res.vtl": "## [Start] Process response. **
+#if( $ctx.result.statusCode == 200 || $ctx.result.statusCode == 201 )
+  #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
+$utils.xml.toJsonString($ctx.result.body)
+  #else
+$ctx.result.body
+  #end
+#else
+$util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
+#end
+## [End] Process response. **",
+  "Comment.content.req.vtl": "## [Start] Create request. **
+#set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
+$util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
+$util.qr($headers.put(\\"X-Header\\", \\"X-Header-Value\\"))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"GET\\",
+  \\"resourcePath\\": \\"/ping\\",
+  \\"params\\": {
+      \\"headers\\": $util.toJson($headers),
+      \\"query\\": $util.toJson($ctx.args.query)
+  }
+}
+## [End] Create request. **",
+  "Comment.content.res.vtl": "## [Start] Process response. **
+#if( $ctx.result.statusCode == 200 )
+  #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
+$utils.xml.toJsonString($ctx.result.body)
+  #else
+$ctx.result.body
+  #end
+#else
+$util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
+#end
+## [End] Process response. **",
+  "Comment.contentDelete.req.vtl": "## [Start] Create request. **
+#set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
+$util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
+$util.qr($headers.put(\\"X-Header\\", \\"X-Header-ValueDelete\\"))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"DELETE\\",
+  \\"resourcePath\\": \\"/ping\\",
+  \\"params\\": {
+      \\"headers\\": $util.toJson($headers)
+  }
+}
+## [End] Create request. **",
+  "Comment.contentDelete.res.vtl": "## [Start] Process response. **
+#if( $ctx.result.statusCode == 200 )
+  #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
+$utils.xml.toJsonString($ctx.result.body)
+  #else
+$ctx.result.body
+  #end
+#else
+$util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
+#end
+## [End] Process response. **",
+  "Comment.contentPatch.req.vtl": "## [Start] Create request. **
+#set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
+$util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
+$util.qr($headers.put(\\"Content-Type\\", \\"application/json\\"))
+$util.qr($headers.put(\\"X-Header\\", \\"X-Header-ValuePatch\\"))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"PATCH\\",
+  \\"resourcePath\\": \\"/ping\\",
+  \\"params\\": {
+      \\"headers\\": $util.toJson($headers),
+      \\"query\\": $util.toJson($ctx.args.query),
+      \\"body\\": $util.toJson($ctx.args.body)
+  }
+}
+## [End] Create request. **",
+  "Comment.contentPatch.res.vtl": "## [Start] Process response. **
+#if( $ctx.result.statusCode == 200 || $ctx.result.statusCode == 201 )
+  #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
+$utils.xml.toJsonString($ctx.result.body)
+  #else
+$ctx.result.body
+  #end
+#else
+$util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
+#end
+## [End] Process response. **",
+  "Comment.contentPost.req.vtl": "## [Start] Create request. **
+#set( $headers = $utils.http.copyHeaders($ctx.request.headers) )
+$util.qr($headers.put(\\"accept-encoding\\", \\"application/json\\"))
+$util.qr($headers.put(\\"Content-Type\\", \\"application/json\\"))
+$util.qr($headers.put(\\"X-Header\\", \\"X-Header-ValuePost\\"))
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"method\\": \\"POST\\",
+  \\"resourcePath\\": \\"/ping\\",
+  \\"params\\": {
+      \\"headers\\": $util.toJson($headers),
+      \\"query\\": $util.toJson($ctx.args.query),
+      \\"body\\": $util.toJson($ctx.args.body)
+  }
+}
+## [End] Create request. **",
+  "Comment.contentPost.res.vtl": "## [Start] Process response. **
+#if( $ctx.result.statusCode == 200 || $ctx.result.statusCode == 201 )
+  #if( $ctx.result.headers.get(\\"Content-Type\\").toLowerCase().contains(\\"xml\\") )
+$utils.xml.toJsonString($ctx.result.body)
+  #else
+$ctx.result.body
+  #end
+#else
+$util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))
+#end
+## [End] Process response. **",
+}
+`;

@@ -5,10 +5,10 @@ orbs:
 machine:
   environment:
     PATH: ${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin
-node10:
+node12:
   working_directory: ~/repo
   docker: &ref_0
-    - image: circleci/node:10
+    - image: circleci/node:12
       auth:
         username: $DOCKERHUB_USERNAME
         password: $DOCKERHUB_ACCESS_TOKEN
@@ -81,7 +81,7 @@ jobs:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Install Java
-          command: sudo apt-get install default-jdk
+          command: sudo apt-get update && sudo apt-get install default-jdk
       - run:
           name: Lint
           command: yarn lint
@@ -102,7 +102,7 @@ jobs:
           key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Install Java
-          command: sudo apt-get install default-jdk
+          command: sudo apt-get update && sudo apt-get install default-jdk
       - run:
           name: Run Transformer end-to-end tests with mock server
           command: cd packages/amplify-util-mock/ && yarn e2e
@@ -367,7 +367,7 @@ jobs:
   integration_test:
     working_directory: ~/repo
     docker:
-      - image: cypress/base:10.18.0
+      - image: cypress/base:12
         environment:
           TERM: dumb
     resource_class: large
