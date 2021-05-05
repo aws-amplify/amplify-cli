@@ -14,7 +14,11 @@ export async function uploadAuthTriggerTemplate(context: $TSContext) {
   const category = 'auth';
   let { amplifyMeta } = context.amplify.getProjectDetails();
   const authResource = amplifyMeta?.auth ?? {};
-  const resourceDir = path.join(pathManager.getBackendDirPath(), category, Object.keys(authResource)[0]);
+  const authResourceParams = Object.keys(authResource);
+  if (authResourceParams.length === 0) {
+    return {};
+  }
+  const resourceDir = path.join(pathManager.getBackendDirPath(), category, authResourceParams[0]);
   const authTriggerCfnFilePath = path.join(resourceDir, AUTH_TRIGGER_TEMPLATE);
   const { DeploymentBucketName } = context.amplify.getProjectMeta()?.providers?.[ProviderName] ?? {};
   try {
