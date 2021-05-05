@@ -30,11 +30,10 @@ export async function ensureValidFunctionModelDependencies(
       context.print.warning(`Functions ${dependentFunctionsNames} have access to removed GraphQL API model(s) ${modelsDeleted}`);
 
       const continueToPush = !!context?.exeInfo?.inputParams?.yes;
+      const forcePush = !!context?.exeInfo?.forcePush;
+      const continueForcePush = continueToPush && forcePush;
 
-      if (
-        !continueToPush &&
-        (await context.amplify.confirmPrompt('Do you want to remove the GraphQL model access on these affected functions?', false))
-      ) {
+      if (continueForcePush) {
         await context.amplify.invokePluginMethod(context, 'function', undefined, 'updateDependentFunctionsCfn', [
           context,
           dependentFunctionResource,
@@ -43,12 +42,25 @@ export async function ensureValidFunctionModelDependencies(
           apiResource[0].resourceName,
         ]);
       } else {
-        throw new Error(
-          `In order to successfully deploy. Run “amplify update function” on the affected functions${dependentFunctionsNames} and remove the access permission to ${modelsDeleted}.`,
-        );
+        if (
+          !continueToPush &&
+          (await context.amplify.confirmPrompt('Do you want to remove the GraphQL model access on these affected functions?', false))
+        ) {
+          await context.amplify.invokePluginMethod(context, 'function', undefined, 'updateDependentFunctionsCfn', [
+            context,
+            dependentFunctionResource,
+            backendDir,
+            modelsDeleted,
+            apiResource[0].resourceName,
+          ]);
+        } else {
+          throw new Error(
+            `In order to successfully deploy. Run “amplify update function” on the affected functions${dependentFunctionsNames} and remove the access permission to ${modelsDeleted}.`,
+          );
+        }
       }
+      return dependentFunctionResource;
     }
-    return dependentFunctionResource;
   }
 }
 
