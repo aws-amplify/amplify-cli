@@ -21,7 +21,7 @@
     "test-watch": "jest --watch"
   },
   "dependencies": {
-    "amplify-cli-core": "1.21.0",
+    "amplify-cli-core": "1.21.2",
     "execa": "^4.1.0",
     "fs-extra": "^8.1.0",
     "graphql-config": "^2.2.1",
