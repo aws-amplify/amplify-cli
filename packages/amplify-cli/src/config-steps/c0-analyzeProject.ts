@@ -6,7 +6,7 @@ import { getEnvInfo } from '../extensions/amplify-helpers/get-env-info';
 import { displayConfigurationDefaults } from '../init-steps/s0-analyzeProject';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
 import { isContainersEnabled } from '../execution-manager';
-import { getPermissionBoundaryArn, stateManager } from 'amplify-cli-core';
+import { stateManager } from 'amplify-cli-core';
 
 export async function analyzeProject(context) {
   context.exeInfo.projectConfig = stateManager.getProjectConfig(undefined, {
@@ -42,7 +42,7 @@ export async function analyzeProject(context) {
     }
   }
 
-  await displayAdvancedSettings(context);
+  await displayContainersInfo(context);
   context.print.info('');
 
   const configurationSetting = await getConfigurationSetting();
@@ -67,7 +67,7 @@ function displayProfileSetting(context, profileName) {
   context.print.info(`| Selected profile: ${profileName}`);
 }
 
-function displayAdvancedSettings(context) {
+function displayContainersInfo(context) {
   context.print.info('Advanced: Container-based deployments');
   const containerDeploymentStatus = isContainersEnabled(context) ? 'Yes' : 'No';
   context.print.info(`| Leverage container-based deployments: ${containerDeploymentStatus}`);
@@ -87,7 +87,7 @@ async function getConfigurationSetting() {
   };
 
   const { configurationSetting } = await inquirer.prompt(configureSettingQuestion);
-  return configurationSetting as 'project' | 'profile' | 'containers';
+  return configurationSetting;
 }
 
 async function configureProjectName(context) {

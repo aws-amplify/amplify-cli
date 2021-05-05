@@ -2,12 +2,6 @@ import { stateManager } from './state-manager';
 import _ from 'lodash';
 import { $TSObject } from '.';
 
-const teamProviderInfoObjectPath = (env?: string) => [
-  env || (stateManager.getLocalEnvInfo().envName as string),
-  'awscloudformation',
-  'PermissionBoundaryPolicyArn',
-];
-
 export const getPermissionBoundaryArn = (env?: string): string | undefined => {
   try {
     const teamProviderInfo = (global as any).preInitTeamProviderInfo ?? stateManager.getTeamProviderInfo();
@@ -48,3 +42,9 @@ export const setPermissionBoundaryArn = (arn?: string, env?: string, teamProvide
   }
   tpiSetter(tpi);
 };
+
+const teamProviderInfoObjectPath = (env?: string) => [
+  env || (stateManager.getLocalEnvInfo().envName as string),
+  'awscloudformation',
+  'PermissionBoundaryPolicyArn',
+];

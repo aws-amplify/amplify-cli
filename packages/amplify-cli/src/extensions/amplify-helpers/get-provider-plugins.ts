@@ -19,9 +19,9 @@ export const getConfiguredProviders = (context: $TSContext) => {
   return _.pick(getProviderPlugins(context), configuredProviders) as Record<string, string>;
 };
 
-export const executeProviderCommand = async (context: $TSContext, command: string, args: any[] = []) => {
+export const executeProviderCommand = async (context: $TSContext, command: string, args: unknown[] = []) => {
   const providers = await Promise.all(Object.values(getConfiguredProviders(context)).map(providerPath => import(providerPath)));
-  return Promise.all(
+  await Promise.all(
     providers.filter(provider => typeof provider?.[command] === 'function').map(provider => provider[command](context, ...args)),
   );
 };

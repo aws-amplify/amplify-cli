@@ -1,6 +1,6 @@
 import { $TSContext, stateManager, getPermissionBoundaryArn, setPermissionBoundaryArn } from 'amplify-cli-core';
 import { prompt } from 'inquirer';
-import { getInstance as getIAMClient } from '../aws-utils/aws-iam';
+import { getIAMClient } from '../aws-utils/aws-iam';
 import { loadConfiguration } from '../configuration-manager';
 
 export const configurePermissionBoundaryForExistingEnv = async (context: $TSContext) => {
@@ -51,7 +51,6 @@ const permissionBoundarySupplier = async (
 
   if (typeof headlessPermissionBoundary === 'string') {
     if (validate(headlessPermissionBoundary)) {
-      console.log(`${headlessPermissionBoundary} passed validation`);
       return headlessPermissionBoundary;
     } else {
       context.print.error('The Permission Boundary ARN specified is not a valid IAM Policy ARN');

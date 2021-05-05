@@ -5,7 +5,7 @@ import { AwsSdkConfig } from '../utils/auth-types.js';
 
 let instance: IAM;
 
-export const getInstance = async (sdkConfigProvider: () => Promise<AwsSdkConfig>) => {
+export const getIAMClient = async (sdkConfigProvider: () => Promise<AwsSdkConfig>) => {
   if (instance) {
     return instance;
   }
