@@ -9,8 +9,12 @@ import Container from '../docker-compose/ecs-objects/container';
 import { EcsStack } from '../ecs-apigw-stack';
 import { API_TYPE, ResourceDependency } from '../../../provider-utils/awscloudformation/service-walkthroughs/containers-walkthrough';
 import { getGitHubOwnerRepoFromPath } from '../../../provider-utils/awscloudformation/utils/github';
-import { JSONUtilities } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, readCFNTemplate } from 'amplify-cli-core';
 import { DEPLOYMENT_MECHANISM } from '../base-api-stack';
+import { setExistingSecretArns } from './containers/set-existing-secret-arns';
+import { category } from '../../../category-constants';
+
+export const cfnFileName = (resourceName: string) => `${resourceName}-cloudformation-template.json`;
 
 export type ApiResource = {
   category: string;
@@ -106,8 +110,7 @@ export async function generateContainersArtifacts(
 
   const cfn = stack.toCloudFormation();
 
-  const cfnFileName = `${resourceName}-cloudformation-template.json`;
-  JSONUtilities.writeJson(path.normalize(path.join(resourceDir, cfnFileName)), cfn);
+  JSONUtilities.writeJson(path.normalize(path.join(resourceDir, cfnFileName(resourceName))), cfn);
 
   return {
     exposedContainer,
@@ -286,6 +289,11 @@ export async function processDockerConfig(context: any, resource: ApiResource, s
 
       secretsArns.set(secretName, secretArn);
     }
+  } else {
+    const { cfnTemplate } = await readCFNTemplate(
+      path.join(pathManager.getBackendDirPath(), category, resourceName, cfnFileName(resourceName)),
+    );
+    setExistingSecretArns(secretsArns, cfnTemplate);
   }
 
   const desiredCount = service?.replicas ?? 1; // TODO: 1 should be from meta (HA setting)
