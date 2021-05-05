@@ -7,6 +7,7 @@ import {
   getPermissionBoundary,
   getProjectMeta,
   initJSProjectWithProfile,
+  initWithPermissionBoundary,
 } from 'amplify-e2e-core';
 import { updateEnvironment } from '../environment/env';
 
@@ -29,6 +30,16 @@ describe('iam permission boundary', () => {
     // adding a function isn't strictly part of the test, it just causes the project to have changes to push
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await amplifyPushAuth(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const authRoleName = meta?.providers?.awscloudformation?.AuthRoleName;
+    const region = meta?.providers?.awscloudformation?.Region;
+
+    const actualPermBoundary = await getPermissionBoundary(authRoleName, region);
+    expect(actualPermBoundary).toEqual(permissionBoundaryArn);
+  });
+
+  test('permission boundary is applied during headless init', async () => {
+    await initWithPermissionBoundary(projRoot, permissionBoundaryArn);
     const meta = getProjectMeta(projRoot);
     const authRoleName = meta?.providers?.awscloudformation?.AuthRoleName;
     const region = meta?.providers?.awscloudformation?.Region;

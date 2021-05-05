@@ -38,7 +38,7 @@ const permissionBoundarySupplierDefaultOptions = {
 const permissionBoundarySupplier = async (
   context: $TSContext,
   options?: Partial<typeof permissionBoundarySupplierDefaultOptions>,
-): Promise<string> => {
+): Promise<string | undefined> => {
   const { required, doPrompt, envNameSupplier } = { ...permissionBoundarySupplierDefaultOptions, ...options };
   const headlessPermissionBoundary = context?.input?.options?.['permission-boundary'];
 
@@ -61,6 +61,10 @@ const permissionBoundarySupplier = async (
   if (required && (isYes || !doPrompt)) {
     throw new Error('A Permission Boundary ARN must be specified using --permission-boundary');
   }
+  if (!doPrompt) {
+    // if we got here, the permission boundary is not required and we can't prompt so return undefined
+    return;
+  }
   const envName = envNameSupplier();
   const { permissionBoundaryArn } = await prompt<{ permissionBoundaryArn: string }>({
     type: 'input',
@@ -79,10 +83,19 @@ const permissionBoundarySupplier = async (
  */
 const rolloverPermissionBoundaryToNewEnvironment = async (context: $TSContext) => {
   const newEnv = context.exeInfo.localEnvInfo.envName;
-  const currBoundary = getPermissionBoundaryArn();
-  if (!currBoundary) {
-    return; // if current env doesn't have a permission boundary, don't do anything
+  const headlessPermissionBoundary = await permissionBoundarySupplier(context, { doPrompt: false, envNameSupplier: () => newEnv });
+  // if headless policy specified, apply that and return
+  if (typeof headlessPermissionBoundary === 'string') {
+    setPermissionBoundaryArn(headlessPermissionBoundary, newEnv, context.exeInfo.teamProviderInfo);
+    return;
   }
+
+  const currBoundary = getPermissionBoundaryArn();
+  // if current env doesn't have a permission boundary, do nothing
+  if (!currBoundary) {
+    return;
+  }
+  // if existing policy is accessible in new env, apply that one
   if (await isPolicyAccessible(context, currBoundary)) {
     setPermissionBoundaryArn(currBoundary, newEnv, context.exeInfo.teamProviderInfo);
     context.print.info(
@@ -90,7 +103,7 @@ const rolloverPermissionBoundaryToNewEnvironment = async (context: $TSContext) =
     );
     return;
   }
-  // previous policy is not accessible in the new environment
+  // if existing policy policy is not accessible in the new environment, prompt for a new one
   context.print.warning(`Permission Boundary ${currBoundary} cannot be applied to resources in this environment.`);
   setPermissionBoundaryArn(
     await permissionBoundarySupplier(context, { required: true, envNameSupplier: () => newEnv }),
