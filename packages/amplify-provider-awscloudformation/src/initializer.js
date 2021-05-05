@@ -15,6 +15,8 @@ const amplifyServiceMigrate = require('./amplify-service-migrate');
 const { fileLogger } = require('./utils/aws-logger');
 const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
 const logger = fileLogger('attach-backend');
+const { configurePermissionBoundaryForInit } = require('./permission-boundary/permission-boundary');
+const _ = require('lodash');
 
 async function run(context) {
   await configurationManager.init(context);
@@ -26,6 +28,8 @@ async function run(context) {
     const { envName = '' } = context.exeInfo.localEnvInfo;
     let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
     const awsConfig = await configurationManager.getAwsConfig(context);
+
+    await configurePermissionBoundaryForInit(context);
 
     const amplifyServiceParams = {
       context,
@@ -121,8 +125,8 @@ function processStackCreationData(context, amplifyAppId, stackDescriptiondata) {
 
   if (context.exeInfo.isNewEnv) {
     const { envName } = context.exeInfo.localEnvInfo;
-    context.exeInfo.teamProviderInfo[envName] = {};
-    context.exeInfo.teamProviderInfo[envName][constants.ProviderName] = metadata;
+    const existingProviderTPI = _.get(context.exeInfo.teamProviderInfo, [envName, constants.ProviderName]);
+    _.set(context.exeInfo.teamProviderInfo, [envName, constants.ProviderName], { ...existingProviderTPI, ...metadata });
   }
 }
 

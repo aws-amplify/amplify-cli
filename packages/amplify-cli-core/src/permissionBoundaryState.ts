@@ -1,5 +1,6 @@
 import { stateManager } from './state-manager';
 import _ from 'lodash';
+import { $TSObject } from '.';
 
 const teamProviderInfoObjectPath = (env?: string) => [
   env || (stateManager.getLocalEnvInfo().envName as string),
@@ -7,22 +8,43 @@ const teamProviderInfoObjectPath = (env?: string) => [
   'PermissionBoundaryPolicyArn',
 ];
 
-export const getPermissionBoundaryArn: () => string | undefined = () => {
+export const getPermissionBoundaryArn = (env?: string): string | undefined => {
   try {
-    const teamProviderInfo = stateManager.getTeamProviderInfo();
-    return _.get(teamProviderInfo, teamProviderInfoObjectPath()) as string | undefined;
+    const teamProviderInfo = (global as any).preInitTeamProviderInfo ?? stateManager.getTeamProviderInfo();
+    return _.get(teamProviderInfo, teamProviderInfoObjectPath(env)) as string | undefined;
   } catch (err) {
     // uninitialized project
     return undefined;
   }
 };
 
-export const setPermissionBoundaryArn = (arn?: string, env?: string): void => {
-  const teamProviderInfo = stateManager.getTeamProviderInfo();
-  if (!arn) {
-    _.unset(teamProviderInfo, teamProviderInfoObjectPath(env));
-  } else {
-    _.set(teamProviderInfo, teamProviderInfoObjectPath(env), arn);
+/**
+ * Stores the permission boundary ARN in team-provider-info
+ * If teamProviderInfo is not specified, the file is read, updated and written back to disk
+ * If teamProviderInfo is specified, then this function assumes that the env is not initialized
+ *    In this case, the teamProviderInfo object is updated but not written to disk. Instead "preInitTeamProviderInfo" is set
+ *    so that subsequent calls to getPermissionBoundaryArn will return the permission boundary arn of the pre-initialized env
+ * @param arn The permission boundary arn. If undefined or empty, the permission boundary is removed
+ * @param env The Amplify env to update. If not specified, defaults to the current checked out environment
+ * @param teamProviderInfo The team-provider-info object to update
+ */
+export const setPermissionBoundaryArn = (arn?: string, env?: string, teamProviderInfo?: $TSObject): void => {
+  let tpiGetter = () => stateManager.getTeamProviderInfo();
+  let tpiSetter = (tpi: $TSObject) => {
+    stateManager.setTeamProviderInfo(undefined, tpi);
+    delete (global as any).preInitTeamProviderInfo; // avoids a potential edge case where set permissions is called again w/o tpi
+  };
+  if (teamProviderInfo) {
+    tpiGetter = () => teamProviderInfo;
+    tpiSetter = (tpi: $TSObject) => {
+      (global as any).preInitTeamProviderInfo = tpi;
+    };
   }
-  stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
+  const tpi = tpiGetter();
+  if (!arn) {
+    _.unset(tpi, teamProviderInfoObjectPath(env));
+  } else {
+    _.set(tpi, teamProviderInfoObjectPath(env), arn);
+  }
+  tpiSetter(tpi);
 };
