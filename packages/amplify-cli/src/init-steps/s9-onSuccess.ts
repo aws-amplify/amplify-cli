@@ -111,7 +111,7 @@ function generateLocalTagsFile(context: $TSContext) {
 export function generateAmplifyMetaFile(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
 
-  const isNewEnv = context.exeInfo.isNewEnv;
+  const { isNewEnv } = context.exeInfo;
 
   // store amplifyMeta
   const meta = isNewEnv ? {} : stateManager.getMeta(projectPath, { throwIfNotExist: false }) || {};

@@ -1,10 +1,9 @@
-import { $TSContext } from 'amplify-cli-core';
+import { $TSContext, pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
 import * as configurationManager from './configuration-manager';
 
 const moment = require('moment');
 const path = require('path');
-const { pathManager, PathConstants, stateManager, JSONUtilities } = require('amplify-cli-core');
 const glob = require('glob');
 const archiver = require('./utils/archiver');
 const fs = require('fs-extra');
