@@ -44,6 +44,7 @@ import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 import { ensureRootStack } from './ensure-root-stack';
+import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 
 const logger = fileLogger('push-resources');
 
@@ -115,6 +116,11 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
         context.print.info(
           `It may take a few moments for this to appear. If you have trouble with first time deployments, please try refreshing this page after a few moments and watch the CodeBuild Details for debugging information.`,
         );
+
+        if (resourcesToBeUpdated.find(res => res.resourceName === resource.resourceName)) {
+          resource.lastPackageTimeStamp = undefined;
+          await context.amplify.updateamplifyMetaAfterResourceUpdate('api', resource.resourceName, 'lastPackageTimeStamp', undefined);
+        }
       }
 
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'hosting') {
@@ -683,7 +689,7 @@ function getCfnFiles(category: string, resourceName: string) {
 
   const cfnFiles = glob.sync(cfnTemplateGlobPattern, {
     cwd: resourceDir,
-    ignore: [parametersJson],
+    ignore: [parametersJson, AUTH_TRIGGER_TEMPLATE],
   });
 
   return {
@@ -715,7 +721,13 @@ async function updateS3Templates(context: $TSContext, resourcesToBeUpdated: $TSA
   return Promise.all(promises);
 }
 
-async function uploadTemplateToS3(context: $TSContext, filePath: string, category: string, resourceName: string, amplifyMeta: $TSMeta) {
+export async function uploadTemplateToS3(
+  context: $TSContext,
+  filePath: string,
+  category: string,
+  resourceName: string,
+  amplifyMeta: $TSMeta,
+) {
   const cfnFile = path.parse(filePath).base;
   const s3 = await S3.getInstance(context);
 
@@ -769,7 +781,7 @@ async function formNestedStack(
   const { amplifyMeta } = projectDetails;
   let authResourceName: string;
 
-  const { APIGatewayAuthURL, NetworkStackS3Url } = amplifyMeta.providers[constants.ProviderName];
+  const { APIGatewayAuthURL, NetworkStackS3Url, AuthTriggerTemplateURL } = amplifyMeta.providers[constants.ProviderName];
 
   if (APIGatewayAuthURL) {
     const stack = {
@@ -800,6 +812,42 @@ async function formNestedStack(
     });
 
     nestedStack.Resources[APIGW_AUTH_STACK_LOGICAL_ID] = stack;
+  }
+
+  if (AuthTriggerTemplateURL) {
+    const stack = {
+      Type: 'AWS::CloudFormation::Stack',
+      Properties: {
+        TemplateURL: AuthTriggerTemplateURL,
+        Parameters: {
+          env: context.exeInfo.localEnvInfo.envName,
+        },
+      },
+      DependsOn: [],
+    };
+    const authResource = amplifyMeta?.auth ?? {};
+    const authRootStackResourceName = `auth${Object.keys(authResource)[0]}`;
+    stack.Properties.Parameters['userpoolId'] = {
+      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolId'],
+    };
+    stack.Properties.Parameters['userpoolArn'] = {
+      'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolArn'],
+    };
+    stack.DependsOn.push(authRootStackResourceName);
+
+    const { dependsOn } = authResource[Object.keys(authResource)[0]];
+
+    dependsOn.forEach(resource => {
+      const dependsOnStackName = resource.category + resource.resourceName;
+      stack.DependsOn.push(dependsOnStackName);
+      const dependsOnAttributes = resource?.attributes;
+      dependsOnAttributes.forEach(attribute => {
+        const parameterKey = `${resource.category}${resource.resourceName}${attribute}`;
+        const parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${attribute}`] };
+        stack.Properties.Parameters[parameterKey] = parameterValue;
+      });
+    });
+    nestedStack.Resources[AUTH_TRIGGER_STACK] = stack;
   }
 
   if (NetworkStackS3Url) {
@@ -877,12 +925,17 @@ async function formNestedStack(
               } else {
                 const dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
 
-                parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
+                const parameterOutputValue = _.get(dependentResource, ['output', dependsOn[i].attributes[j]], undefined);
+                parameterValue =
+                  parameterOutputValue === undefined
+                    ? { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] }
+                    : parameterOutputValue;
               }
 
               const parameterKey = `${dependsOn[i].category}${dependsOn[i].resourceName}${dependsOn[i].attributes[j]}`;
-
-              parameters[parameterKey] = parameterValue;
+              if (!isAuthTrigger(dependsOn[i])) {
+                parameters[parameterKey] = parameterValue;
+              }
             }
 
             if (dependsOn[i].exports) {
@@ -1004,4 +1057,12 @@ export async function generateAndUploadRootStack(context: $TSContext, destinatio
   };
 
   await s3Client.uploadFile(s3Params, false);
+}
+
+function isAuthTrigger(dependsOnResource: $TSObject) {
+  return (
+    FeatureFlags.getBoolean('auth.breakCircularDependency') &&
+    dependsOnResource.category === 'function' &&
+    dependsOnResource.triggerProvider === 'Cognito'
+  );
 }

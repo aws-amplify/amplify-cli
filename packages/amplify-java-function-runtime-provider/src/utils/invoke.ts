@@ -22,8 +22,8 @@ export const invokeResource = async (request: InvocationRequest, context: any) =
       extendEnv: false,
     },
   );
-  childProcess.stderr.pipe(process.stderr);
-  childProcess.stdout.pipe(process.stdout);
+  childProcess.stderr?.pipe(process.stderr);
+  childProcess.stdout?.pipe(process.stdout);
 
   const { stdout, exitCode } = await childProcess;
   if (exitCode !== 0) {

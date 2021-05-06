@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.21.0...amplify-cli-core@1.21.2) (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+
+### Bug Fixes
+
+* parse nested yaml GetAtt refs correctly ([#7220](https://github.com/aws-amplify/amplify-cli/issues/7220)) ([0b20951](https://github.com/aws-amplify/amplify-cli/commit/0b209510c32d5ded9f57805a72858900ec8e21f2))
+
+
+
+
+
+## [1.21.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.21.0...amplify-cli-core@1.21.1) (2021-05-03)
+
+
+### Bug Fixes
+
+* parse nested yaml GetAtt refs correctly ([#7220](https://github.com/aws-amplify/amplify-cli/issues/7220)) ([0b20951](https://github.com/aws-amplify/amplify-cli/commit/0b209510c32d5ded9f57805a72858900ec8e21f2))
+
+
+
+
+
+# [1.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.20.1...amplify-cli-core@1.21.0) (2021-04-27)
+
+
+### Bug Fixes
+
+* frontend flag not honoring passed in framework ([#7126](https://github.com/aws-amplify/amplify-cli/issues/7126)) (ref [#7046](https://github.com/aws-amplify/amplify-cli/issues/7046)) ([1e67fc9](https://github.com/aws-amplify/amplify-cli/commit/1e67fc9a2fab262334181bbb50cba91999e24c33))
+
+
+### Features
+
+* S3 SSE by default ([#7039](https://github.com/aws-amplify/amplify-cli/issues/7039)) (ref [#5708](https://github.com/aws-amplify/amplify-cli/issues/5708)) ([c1369ed](https://github.com/aws-amplify/amplify-cli/commit/c1369ed6f9c204c89ee2d4c805314a40d6eeaf92))
+
+
+
+
+
 ## [1.20.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.20.0...amplify-cli-core@1.20.1) (2021-04-19)
 
 **Note:** Version bump only for package amplify-cli-core

@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphql-types-generator",
-  "version": "2.8.1",
+  "version": "2.8.3",
   "description": "Generate API code or type annotations based on a GraphQL schema and statements",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
     "aws"
   ],
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   },
   "bin": "./lib/cli.js",
   "scripts": {
@@ -56,7 +56,7 @@
     "@types/common-tags": "^1.8.0",
     "@types/glob": "^7.1.1",
     "@types/inflected": "^1.1.29",
-    "@types/node": "^10.17.13",
+    "@types/node": "^12.12.6",
     "@types/yargs": "^15.0.1"
   },
   "jest": {

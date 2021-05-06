@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`it generates the expected resources 1`] = `
+Object {
+  "InvokeEchofunctionLambdaDataSource.req.vtl": "## [Start] Invoke AWS Lambda data source: EchofunctionLambdaDataSource. **
+{
+  \\"version\\": \\"2018-05-29\\",
+  \\"operation\\": \\"Invoke\\",
+  \\"payload\\": {
+      \\"typeName\\": $ctx.stash.get(\\"typeName\\"),
+      \\"fieldName\\": $ctx.stash.get(\\"fieldName\\"),
+      \\"arguments\\": $util.toJson($ctx.arguments),
+      \\"identity\\": $util.toJson($ctx.identity),
+      \\"source\\": $util.toJson($ctx.source),
+      \\"request\\": $util.toJson($ctx.request),
+      \\"prev\\": $util.toJson($ctx.prev)
+  }
+}
+## [End] Invoke AWS Lambda data source: EchofunctionLambdaDataSource. **",
+  "InvokeEchofunctionLambdaDataSource.res.vtl": "## [Start] Handle error or return result. **
+#if( $ctx.error )
+  $util.error($ctx.error.message, $ctx.error.type)
+#end
+$util.toJson($ctx.result)
+## [End] Handle error or return result. **",
+  "Query.echo.req.vtl": "## [Start] Stash resolver specific context.. **
+$util.qr($ctx.stash.put(\\"typeName\\", \\"Query\\"))
+$util.qr($ctx.stash.put(\\"fieldName\\", \\"echo\\"))
+{}
+## [End] Stash resolver specific context.. **",
+  "Query.echo.res.vtl": "$util.toJson($ctx.prev.result)",
+}
+`;

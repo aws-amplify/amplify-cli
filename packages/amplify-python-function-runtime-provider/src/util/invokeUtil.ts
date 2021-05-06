@@ -27,8 +27,8 @@ export async function pythonInvoke(context: any, request: InvocationRequest): Pr
     input: JSON.stringify({ event: request.event, context: {} }) + '\n',
   });
 
-  childProcess.stderr.pipe(process.stderr);
-  childProcess.stdout.pipe(process.stdout);
+  childProcess.stderr?.pipe(process.stderr);
+  childProcess.stdout?.pipe(process.stdout);
 
   const { stdout } = await childProcess;
   const lines = stdout.split('\n');

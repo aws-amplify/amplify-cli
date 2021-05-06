@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.50.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.50.0...@aws-amplify/cli@4.50.2) (2021-05-03)
+
+
+
+## 4.50.1 (2021-05-03)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.50.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.50.0...@aws-amplify/cli@4.50.1) (2021-05-03)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+# [4.50.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.49.0...@aws-amplify/cli@4.50.0) (2021-04-27)
+
+
+### Features
+
+* S3 SSE by default ([#7039](https://github.com/aws-amplify/amplify-cli/issues/7039)) (ref [#5708](https://github.com/aws-amplify/amplify-cli/issues/5708)) ([c1369ed](https://github.com/aws-amplify/amplify-cli/commit/c1369ed6f9c204c89ee2d4c805314a40d6eeaf92))
+
+
+
+
+
 # [4.49.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.48.0...@aws-amplify/cli@4.49.0) (2021-04-19)
 
 

@@ -43,15 +43,18 @@ export async function run(context) {
 
 function processStackCreationData(context, amplifyAppId, stackDescriptiondata) {
   const metadata = {};
-  const { Outputs } = stackDescriptiondata.Stacks[0];
-  Outputs.forEach(element => {
-    metadata[element.OutputKey] = element.OutputValue;
-  });
-  if (amplifyAppId) {
-    metadata[constants.AmplifyAppIdLabel] = amplifyAppId;
+  if (stackDescriptiondata.Stacks && stackDescriptiondata.Stacks.length) {
+    const { Outputs } = stackDescriptiondata.Stacks[0];
+    Outputs.forEach(element => {
+      metadata[element.OutputKey] = element.OutputValue;
+    });
+    if (amplifyAppId) {
+      metadata[constants.AmplifyAppIdLabel] = amplifyAppId;
+    }
+    setCloudFormationOutputInContext(context, metadata);
+  } else {
+    throw new Error('No stack data present');
   }
-
-  setCloudFormationOutputInContext(context, metadata);
 }
 
 function cloneCLIJSONForNewEnvironment(context) {

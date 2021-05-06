@@ -127,7 +127,7 @@ Resources:
           Mutable: true
         <% } %>
       <% } %>
-      <%if (props.triggers && props.triggers !== '{}' && props.dependsOn) { %>
+      <%if (!props.breakCircularDependency && props.triggers !== '{}' && props.dependsOn) { %>
       LambdaConfig:
         <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { %>
           CreateAuthChallenge: !Ref function<%=props.resourceName%>CreateAuthChallengeArn
@@ -183,7 +183,7 @@ Resources:
     <%if (props.mfaConfiguration != 'OFF') { %>
     DependsOn: SNSRole
     <% } %>
-  <%if (props.triggers && props.dependsOn) { %>
+  <%if (!props.breakCircularDependency && props.triggers && props.dependsOn) { %>
   <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { %>
   UserPoolCreateAuthChallengeLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
@@ -1155,6 +1155,9 @@ Outputs :
   UserPoolId:
     Value: !Ref 'UserPool'
     Description:  Id for the user pool
+  UserPoolArn:
+    Value: !GetAtt UserPool.Arn
+    Description:  Arn for the user pool
   UserPoolName:
     Value: !Ref userPoolName
   AppClientIDWeb:
