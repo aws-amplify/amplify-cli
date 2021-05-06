@@ -14,7 +14,7 @@ describe('loading', () => {
     expect(graphqlSchema.constructor.name).toBe('GraphQLSchema');
   });
 
-  it('JSON schema file is not exits', () => {
+  it('JSON schema file does not exit', () => {
     expect(() => loadSchema('notExists.json')).toThrow('Cannot find GraphQL schema file: notExists.json');
   });
 
