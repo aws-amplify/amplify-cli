@@ -1,4 +1,4 @@
-import { $TSContext, pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, $TSAny, pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
 import * as configurationManager from './configuration-manager';
 
@@ -101,7 +101,7 @@ async function initializeRootStack(context: $TSContext) {
   const authRoleName = `${stackName}-authRole`;
   const unauthRoleName = `${stackName}-unauthRole`;
 
-  const rootStack = JSONUtilities.readJson(initTemplateFilePath);
+  const rootStack = JSONUtilities.readJson<$TSAny>(initTemplateFilePath);
   await prePushCfnTemplateModifier(rootStack);
   // Track Amplify Console generated stacks
   if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
