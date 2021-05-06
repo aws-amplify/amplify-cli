@@ -12,7 +12,7 @@ export async function initFrontend(context: $TSContext) {
   }
 
   const frontendPlugins = getFrontendPlugins(context);
-  const suitableFrontend = getSuitableFrontend(frontendPlugins, context.exeInfo.localEnvInfo.projectPath);
+  const suitableFrontend = getSuitableFrontend(context, frontendPlugins, context.exeInfo.localEnvInfo.projectPath);
   const frontend = await getFrontendHandler(context, frontendPlugins, suitableFrontend);
 
   context.exeInfo.projectConfig.frontend = frontend;
@@ -22,7 +22,13 @@ export async function initFrontend(context: $TSContext) {
   return context;
 }
 
-export function getSuitableFrontend(frontendPlugins: $TSAny, projectPath: string) {
+export function getSuitableFrontend(context: $TSContext, frontendPlugins: $TSAny, projectPath: string) {
+  let headlessFrontend = context?.exeInfo?.inputParams?.amplify?.frontend;
+
+  if (headlessFrontend && headlessFrontend in frontendPlugins) {
+    return headlessFrontend;
+  }
+
   let suitableFrontend;
   let fitToHandleScore = -1;
 
