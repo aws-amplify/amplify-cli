@@ -8,6 +8,8 @@ import {
   pathManager,
   stateManager,
   TeamProviderInfoMigrateError,
+  BannerMessage,
+  JSONUtilities,
 } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
@@ -38,7 +40,7 @@ Error.stackTraceLimit = Number.MAX_SAFE_INTEGER;
 
 let errorHandler = (e: Error) => {};
 
-process.on('uncaughtException', function (error) {
+process.on('uncaughtException', function(error) {
   // Invoke the configured error handler if it is already configured
   if (errorHandler) {
     errorHandler(error);
@@ -57,7 +59,7 @@ process.on('uncaughtException', function (error) {
 });
 
 // In this handler we have to rethrow the error otherwise the process stucks there.
-process.on('unhandledRejection', function (error) {
+process.on('unhandledRejection', function(error) {
   throw error;
 });
 
@@ -65,6 +67,7 @@ process.on('unhandledRejection', function (error) {
 export async function run() {
   try {
     deleteOldVersion();
+
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
     // with non-help command supplied, give notification before execution
@@ -72,6 +75,10 @@ export async function run() {
       // Checks for available update, defaults to a 1 day interval for notification
       notify({ defer: false, isGlobal: true });
     }
+
+    // Initialize Banner messages. These messages are set on the server side
+    const pkg = JSONUtilities.readJson<$TSAny>(path.join(__dirname, '..', 'package.json'));
+    BannerMessage.initialize(pkg.version);
 
     ensureFilePermissions(pathManager.getAWSCredentialsFilePath());
     ensureFilePermissions(pathManager.getAWSConfigFilePath());
