@@ -1,14 +1,16 @@
 import { loadSchema } from '../../../src/generator/utils/loading';
 import { join } from 'path';
 
+const FIXTURE_PATH = join(__dirname, '/../../../fixtures');
+
 describe('loading', () => {
   it('JSON schema', () => {
-    const graphqlSchema = loadSchema(join(__dirname, '/../../../fixtures/schema.json'));
+    const graphqlSchema = loadSchema(join(FIXTURE_PATH, 'schema.json'));
     expect(graphqlSchema.constructor.name).toBe('GraphQLSchema');
   });
 
   it('JSON schema without data property', () => {
-    const graphqlSchema = loadSchema(join(__dirname, '/../../../fixtures/schemaWithoutDataProperty.json'));
+    const graphqlSchema = loadSchema(join(FIXTURE_PATH, 'schemaWithoutDataProperty.json'));
     expect(graphqlSchema.constructor.name).toBe('GraphQLSchema');
   });
   it('JSON schema file is not exits', () => {
@@ -16,12 +18,12 @@ describe('loading', () => {
   });
 
   it('JSON schema file is invalid', () => {
-    expect(() => loadSchema(join(__dirname, '/../../../fixtures/invalidSchema.json'))).toThrow(
+    expect(() => loadSchema(join(FIXTURE_PATH, 'invalidSchema.json'))).toThrow(
       'GraphQL schema file should contain a valid GraphQL introspection query result',
     );
   });
   it('empty GraphQL schema', () => {
-    const graphqlSchema = loadSchema(join(__dirname, '/../../../fixtures/empty.graphql'));
+    const graphqlSchema = loadSchema(join(FIXTURE_PATH, 'empty.graphql'));
     expect(graphqlSchema.constructor.name).toBe('GraphQLSchema');
   });
 });
