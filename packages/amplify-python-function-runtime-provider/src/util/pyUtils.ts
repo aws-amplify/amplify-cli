@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import { ExecOptions } from 'child_process';
 import execa from 'execa';
 import * as which from 'which';
+import { parse } from 'ini';
 
 // Gets the pipenv dir where this function's dependencies are located
 export async function getPipenvDir(srcRoot: string): Promise<string> {
@@ -13,8 +14,7 @@ export async function getPipenvDir(srcRoot: string): Promise<string> {
     throw new Error(`Could not find 'python3' or 'python' executable in the PATH.`);
   }
 
-  const pyVersion = await execAsStringPromise(`${pyBinary} --version`);
-  let pipEnvPath = path.join(pipEnvDir, 'lib', 'python' + majMinPyVersion(pyVersion), 'site-packages');
+  let pipEnvPath = path.join(pipEnvDir, 'lib', `python${getPipfilePyVersion(path.join(srcRoot, 'Pipfile'))}`, 'site-packages');
   if (process.platform.startsWith('win')) {
     pipEnvPath = path.join(pipEnvDir, 'Lib', 'site-packages');
   }
@@ -29,10 +29,7 @@ export function majMinPyVersion(pyVersion: string): string {
     throw new Error(`Cannot interpret Python version "${pyVersion}"`);
   }
   const versionNum = pyVersion.split(' ')[1];
-  return versionNum
-    .split('.')
-    .slice(0, 2)
-    .join('.');
+  return versionNum.split('.').slice(0, 2).join('.');
 }
 
 // wrapper for executing a shell command and returning the result as a string promise
@@ -64,4 +61,13 @@ export const getPythonBinaryName = (): string | undefined => {
       return executable;
     }
   }
+};
+
+const getPipfilePyVersion = (pipfilePath: string) => {
+  const pipfile = parse(fs.readFileSync(pipfilePath, 'utf-8'));
+  const version = pipfile?.requires?.python_version;
+  if (!version) {
+    throw new Error(`Did not find Python version specified in ${pipfilePath}`);
+  }
+  return version as string;
 };

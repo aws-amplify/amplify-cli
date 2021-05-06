@@ -72,7 +72,7 @@ async function displayAndSetDefaults(context: $TSContext, projectPath: string, p
   await displayConfigurationDefaults(context, defaultProjectName, defaultEnv, defaultEditorName);
 
   const frontendPlugins = getFrontendPlugins(context);
-  const defaultFrontend = getSuitableFrontend(frontendPlugins, projectPath);
+  const defaultFrontend = getSuitableFrontend(context, frontendPlugins, projectPath);
   const frontendModule = require(frontendPlugins[defaultFrontend]);
 
   await frontendModule.displayFrontendDefaults(context, projectPath);
