@@ -55,7 +55,7 @@ export async function ensureValidFunctionModelDependencies(
           ]);
         } else {
           throw new Error(
-            `In order to successfully deploy. Run “amplify update function” on the affected functions${dependentFunctionsNames} and remove the access permission to ${modelsDeleted}.`,
+            `In order to successfully deploy. Run “amplify update function” on the affected functions ${dependentFunctionsNames} and remove the access permission to ${modelsDeleted}.`,
           );
         }
       }

@@ -22,6 +22,7 @@ export async function updateDependentFunctionsCfn(
     */
   // if the function is deleted -> not possible as have to remove api
   // initialize function parameters for update
+
   for (const lambda of dependentFunctionResource) {
     const resourceDirPath = path.join(backendDir, category, lambda.resourceName);
     const currentParameters = loadFunctionParameters(context, resourceDirPath);
@@ -29,7 +30,6 @@ export async function updateDependentFunctionsCfn(
     let categoryPolicies = [];
     let permissions = {};
     let resources = [];
-    let resourcePolicy = {};
     const functionParameters: Partial<FunctionParameters> = {
       resourceName: lambda.resourceName,
       environmentMap: {
@@ -48,7 +48,7 @@ export async function updateDependentFunctionsCfn(
       const selectedResources = selectedCategories[selectedCategory];
       for (const resourceName of Object.keys(selectedResources)) {
         if (!modelsDeleted.includes(resourceName)) {
-          resourcePolicy = selectedResources[resourceName];
+          const resourcePolicy = selectedResources[resourceName];
           const { permissionPolicies, cfnResources } = await getResourcesForCfn(
             context,
             resourceName,
