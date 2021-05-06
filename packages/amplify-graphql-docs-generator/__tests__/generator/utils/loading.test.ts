@@ -13,6 +13,7 @@ describe('loading', () => {
     const graphqlSchema = loadSchema(join(FIXTURE_PATH, 'schemaWithoutDataProperty.json'));
     expect(graphqlSchema.constructor.name).toBe('GraphQLSchema');
   });
+
   it('JSON schema file is not exits', () => {
     expect(() => loadSchema('notExists.json')).toThrow('Cannot find GraphQL schema file: notExists.json');
   });
@@ -22,6 +23,7 @@ describe('loading', () => {
       'GraphQL schema file should contain a valid GraphQL introspection query result',
     );
   });
+
   it('empty GraphQL schema', () => {
     const graphqlSchema = loadSchema(join(FIXTURE_PATH, 'empty.graphql'));
     expect(graphqlSchema.constructor.name).toBe('GraphQLSchema');
