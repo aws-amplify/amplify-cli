@@ -39,7 +39,7 @@ describe('git-manager', () => {
     fsMock.writeFileSync.mockClear();
   });
   const gitIgnoreFilePath = 'testPath';
-  test('append files should be excluded to .gitignore', () => {
+  test('appends files to an existing .gitignore', () => {
     fsMock.existsSync.mockImplementation(() => true);
     insertAmplifyIgnore(gitIgnoreFilePath);
     expect(fsMock.appendFileSync.mock.calls[0][0]).toEqual('testPath');
