@@ -31,7 +31,7 @@ export const askExecRolePermissionsQuestions = async (
 
   const amplifyMeta = stateManager.getMeta();
 
-  const categories = Object.keys(amplifyMeta).filter(category => category !== 'providers');
+  const categories = Object.keys(amplifyMeta).filter(category => category !== 'providers' && category !== 'predictions');
 
   // retrieve api's AppSync resource name for conditional logic
   // in blending appsync @model-backed dynamoDB tables into storage category flow
@@ -139,8 +139,16 @@ export const askExecRolePermissionsQuestions = async (
         }
       }
     } catch (e) {
-      context.print.warning(`Policies cannot be added for ${selectedCategory}`);
-      context.print.info(e.stack);
+      if (e.name === 'MethodNotFound') {
+        context.print.warning(`${selectedCategory} category does not support resource policies yet.`);
+      } else {
+        context.print.warning(`Policies cannot be added for ${selectedCategory}`);
+      }
+
+      if (e.stack) {
+        context.print.info(e.stack);
+      }
+
       context.usageData.emitError(e);
       process.exitCode = 1;
     }
