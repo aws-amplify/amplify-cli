@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const { FeatureFlags, pathManager } = require('amplify-cli-core');
 const { importConfig, importModels } = require('./lib/amplify-xcode');
 const initializer = require('./lib/initializer');
@@ -59,18 +60,43 @@ async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
+const postInitQuickStart = projectPath => {
+  const awsConfigFilePath = path.join(projectPath, 'awsconfiguration.json');
+  const amplifyConfigFilePath = path.join(projectPath, 'amplifyconfiguration.json');
+  const configJsonObj = {};
+  const configJsonStr = JSON.stringify(configJsonObj);
+  if (!fs.existsSync(awsConfigFilePath)) {
+    fs.writeFileSync(awsConfigFilePath, configJsonStr);
+  }
+
+  if (!fs.existsSync(amplifyConfigFilePath)) {
+    fs.writeFileSync(amplifyConfigFilePath, configJsonStr);
+  }
+};
+
 async function handleAmplifyEvent(context, args) {
   const { frontend } = context.amplify.getProjectConfig();
+  const { options } = context.input;
   const isXcodeIntegrationEnabled = FeatureFlags.getBoolean('frontend-ios.enableXcodeIntegration');
   const isFrontendiOS = frontend === 'ios';
   const isMacOs = process.platform === 'darwin';
-  if (!isFrontendiOS || !isXcodeIntegrationEnabled || !isMacOs) {
+  const successMessage = 'Amplify setup completed successfully.';
+  if (!isFrontendiOS || !isXcodeIntegrationEnabled) {
     return;
   }
-  context.print.info('Updating iOS project');
+  // Xcode integration is a MacOS-only binary, skip on other platforms
+  if (!isMacOs && isFrontendiOS) {
+    context.print.info('Skipping Xcode project setup.');
+    context.print.info(successMessage);
+    return;
+  }
+  context.print.info('Updating Xcode project:');
   const projectPath = pathManager.findProjectRoot();
   switch (args.event) {
     case 'PostInit':
+      if (options.quickstart) {
+        postInitQuickStart(projectPath);
+      }
       await importConfig({ path: projectPath });
       break;
     case 'PostCodegenModels':
@@ -83,7 +109,7 @@ async function handleAmplifyEvent(context, args) {
     default:
       break;
   }
-  context.print.info('Amplify setup completed successfully.');
+  context.print.info(successMessage);
 }
 
 const getPackageAssetPaths = async () => ['resources'];
