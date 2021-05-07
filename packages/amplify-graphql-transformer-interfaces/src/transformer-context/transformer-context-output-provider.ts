@@ -58,6 +58,8 @@ export interface TransformerContextOutputProvider {
 
   getType(name: string): TypeSystemDefinitionNode | undefined;
 
+  hasType(name: string): boolean;
+
   /**
    * Add an object type definition node to the context. If the type already
    * exists an error will be thrown.

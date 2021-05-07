@@ -23,14 +23,14 @@ import {
   UserPoolDefaultAction,
 } from '@aws-cdk/aws-appsync';
 import { ITable } from '@aws-cdk/aws-dynamodb';
-import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { IFunction } from '@aws-cdk/aws-lambda';
+import { Grant, IGrantable, IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
 import { CfnResource, Construct, Duration, Stack, Token } from '@aws-cdk/core';
 import { toCamelCase } from 'graphql-transformer-common';
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { ElasticsearchDataSource } from './cdk-compat/elasticsearch-datasource';
 import { TransformerSchema } from './cdk-compat/schema-asset';
-import { InlineTemplate } from './cdk-compat/template-asset';
+import { InlineTemplate, S3MappingFunctionCode, S3MappingTemplate } from './cdk-compat/template-asset';
 
 export interface GraphqlApiProps {
   /**
@@ -285,6 +285,35 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       requestMappingTemplate,
       responseMappingTemplate,
     });
+    return fn;
+  }
+
+  addLambdaFunction(
+    functionName: string,
+    functionKey: string,
+    handlerName: string,
+    filePath: string,
+    runtime: Runtime,
+    layers?: ILayerVersion[],
+    role?: IRole,
+    environment?: { [key: string]: string },
+    stack?: Stack,
+  ): IFunction {
+    const dummycode = `if __name__ == "__main__":`; // assing dummy code so as to be overriden later
+    const fn = new Function(stack || this, functionName, {
+      code: Code.fromInline(dummycode),
+      handler: handlerName,
+      runtime,
+      role,
+      layers,
+      environment,
+    });
+    fn.addLayers();
+    const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn);
+    (fn.node.defaultChild as CfnFunction).code = {
+      s3Key: functionCode.s3ObjectKey,
+      s3Bucket: functionCode.s3BucketName,
+    };
     return fn;
   }
 

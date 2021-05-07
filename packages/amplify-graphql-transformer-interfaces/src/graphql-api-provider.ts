@@ -1,7 +1,7 @@
 import { NoneDataSource, HttpDataSource, DynamoDbDataSource, LambdaDataSource, BaseDataSource, CfnResolver } from '@aws-cdk/aws-appsync';
-import { IFunction } from '@aws-cdk/aws-lambda';
+import { IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
 import { ITable } from '@aws-cdk/aws-dynamodb';
-import { CfnResource, Construct, IConstruct, Stack } from '@aws-cdk/core';
+import { CfnResource, Construct, IAsset, IConstruct, Stack } from '@aws-cdk/core';
 import { Grant, IGrantable, IRole } from '@aws-cdk/aws-iam';
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
@@ -43,6 +43,11 @@ export interface S3MappingTemplateProvider {
   bind(scope: Construct): string;
 }
 
+export interface S3MappingFunctionCodeProvider {
+  type: TemplateType.S3_LOCATION;
+  bind(scope: Construct): IAsset;
+}
+
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
 
 export interface GraphQLAPIProvider {
@@ -75,6 +80,18 @@ export interface GraphQLAPIProvider {
     pipelineConfig?: string[],
     stack?: Stack,
   ) => CfnResolver;
+
+  addLambdaFunction: (
+    functionName: string,
+    functionKey: string,
+    handlerName: string,
+    filePath: string,
+    runtime: Runtime,
+    layers?: ILayerVersion[],
+    role?: IRole,
+    environment?: { [key: string]: string },
+    stack?: Stack,
+  ) => IFunction;
 
   getDataSource: (name: string) => BaseDataSource | void;
   hasDataSource: (name: string) => boolean;

@@ -18,7 +18,7 @@
         "amplify"
     ],
     "scripts": {
-        "build": "tsc",
+        "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
         "watch": "tsc -w",
         "clean": "rimraf ./lib"
     },

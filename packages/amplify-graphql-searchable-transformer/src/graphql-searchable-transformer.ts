@@ -1,23 +1,48 @@
-import { TransformerPluginBase, InvalidDirectiveError } from '@aws-amplify/graphql-transformer-core';
+import { TransformerPluginBase, InvalidDirectiveError, MappingTemplate, DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
+import { DataSourceProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
+import { Table } from '@aws-cdk/aws-dynamodb';
+import { CfnCondition, CfnParameter, Fn } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
+import { DirectiveNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
+import { Expression, str } from 'graphql-mapping-template';
 import {
-  TransformerContextProvider,
-  TransformerModelProvider,
-  TransformerPluginProvider,
-} from '@aws-amplify/graphql-transformer-interfaces';
-import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
-import { CfnDomain, Domain, ElasticsearchVersion } from '@aws-cdk/aws-elasticsearch';
-import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Code, EventSourceMapping, Function, Runtime, StartingPosition } from '@aws-cdk/aws-lambda';
-import { Bucket } from '@aws-cdk/aws-s3';
-import { Asset } from '@aws-cdk/aws-s3-assets';
-import { CfnCondition, CfnParameter, FileAssetPackaging, Fn, Stack } from '@aws-cdk/core';
-import { DirectiveNode, ObjectTypeDefinitionNode } from 'graphql';
-import { ModelResourceIDs, ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
-import { createParametersStack as createParametersInStack } from './create-parameters';
+  ResourceConstants,
+  getBaseType,
+  ModelResourceIDs,
+  STANDARD_SCALARS,
+  blankObject,
+  blankObjectExtension,
+  extensionWithFields,
+  makeField,
+  makeListType,
+  makeNamedType,
+  makeInputValueDefinition,
+  graphqlName,
+  plurality,
+  SearchableResourceIDs,
+  toUpper,
+} from 'graphql-transformer-common';
+import { createParametersStack as createParametersInStack } from './cdk/create-parameters';
+import { requestTemplate, responseTemplate } from './generate-resolver-vtl';
+import {
+  makeSearchableScalarInputObject,
+  makeSearchableSortDirectionEnumObject,
+  makeSearchableXFilterInputObject,
+  makeSearchableXSortableFieldsEnumObject,
+  makeSearchableXSortInputObject,
+} from './definitions';
+import assert from 'assert';
+import { setMappings } from './cdk/create-layer-cfnMapping';
+import { createEsDomain, createEsDomainRole } from './cdk/create-es-domain';
+import { createEsDataSource } from './cdk/create-es-datasource';
+import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
+import { createStackOutputs } from './cdk/create-cfnOutput';
 
+const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
 const STACK_NAME = 'SearchableStack';
 export class SearchableModelTransformer extends TransformerPluginBase {
-  searchableObjectTypeDefinitions: ObjectTypeDefinitionNode[];
+  searchableObjectTypeDefinitions: { node: ObjectTypeDefinitionNode; fieldName: string }[];
   constructor() {
     super(
       'amplify-searchable-transformer',
@@ -32,114 +57,201 @@ export class SearchableModelTransformer extends TransformerPluginBase {
   }
 
   generateResolvers = (context: TransformerContextProvider): void => {
-    const {
-      ElasticsearchDomainLogicalID,
-      ElasticsearchAccessIAMRoleLogicalID,
-      ElasticsearchDataSourceLogicalID,
-      ElasticsearchStreamingLambdaFunctionLogicalID,
-    } = ResourceConstants.RESOURCES;
-    const {
-      ElasticsearchInstanceCount,
-      ElasticsearchInstanceType,
-      ElasticsearchEBSVolumeGB,
-      ElasticsearchStreamingFunctionName,
-      S3DeploymentBucket,
-      S3DeploymentRootKey,
+    const { Env } = ResourceConstants.PARAMETERS;
 
-      Env,
-    } = ResourceConstants.PARAMETERS;
     const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
-    console.log('resolvers');
 
     const stack = context.stackManager.createStack(STACK_NAME);
 
+    setMappings(stack);
+
     const envParam = context.stackManager.getParameter(Env) as CfnParameter;
-    const deploymentKeyBucket = context.stackManager.getParameter(S3DeploymentBucket) as CfnParameter;
-    const bucketrootkey = context.stackManager.getParameter(S3DeploymentRootKey) as CfnParameter;
-    console.log(deploymentKeyBucket);
-    const condition = new CfnCondition(stack, HasEnvironmentParameter, {
+
+    new CfnCondition(stack, HasEnvironmentParameter, {
       expression: Fn.conditionNot(Fn.conditionEquals(envParam, 'NONE')),
     });
 
-    stack.templateOptions.description = 'An auto-generated nested stack.';
+    const isProjectUsingDataStore = false;
+
+    stack.templateOptions.description = 'An auto-generated nested stack for searchable.';
     stack.templateOptions.templateFormatVersion = '2010-09-09';
+
     const parameterMap = createParametersInStack(stack);
-    const domain = new Domain(stack, ElasticsearchDomainLogicalID, {
-      version: ElasticsearchVersion.V6_2,
-      ebs: {
-        enabled: true,
-        volumeType: EbsDeviceVolumeType.GP2,
-        volumeSize: parameterMap.get(ElasticsearchEBSVolumeGB)?.valueAsNumber,
-      },
-      zoneAwareness: {
-        enabled: false,
-      },
-      domainName: Fn.conditionIf(HasEnvironmentParameter, Fn.ref('AWS::NoValue'), Fn.join('-', ['d', context.api.apiId])).toString(),
-    });
 
-    (domain.node.defaultChild as CfnDomain).elasticsearchClusterConfig = {
-      instanceCount: parameterMap.get(ElasticsearchInstanceCount)?.valueAsNumber,
-      instanceType: parameterMap.get(ElasticsearchInstanceType)?.valueAsString,
-    };
-    const role = new Role(stack, ElasticsearchAccessIAMRoleLogicalID, {
-      assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
-      roleName: ElasticsearchAccessIAMRoleLogicalID,
-    });
-    domain.grantRead(role);
-    domain.grantWrite(role);
+    const domain = createEsDomain(stack, parameterMap, context.api.apiId);
 
-    context.api.addElasticSearchDataSource(
-      ElasticsearchDataSourceLogicalID,
-      stack.parseArn(domain.domainArn).region || stack.region,
-      domain.domainEndpoint,
-      {
-        serviceRole: role,
-        name: ElasticsearchDataSourceLogicalID,
-      },
+    const elasticsearchRole = createEsDomainRole(stack, parameterMap, context.api.apiId, envParam);
+
+    domain.grantReadWrite(elasticsearchRole);
+
+    const datasource = createEsDataSource(
       stack,
+      context.api,
+      domain.domainEndpoint,
+      elasticsearchRole,
+      stack.parseArn(domain.domainArn).region,
     );
-    // const deploymentBucket = Bucket.fromBucketArn(stack, "DeploymentBucket", deploymentKeyBucket.valueAsString);
-    // for (const definition of this.searchableObjectTypeDefinitions) {
 
-    //   const streamingFunction = new Function(stack, ElasticsearchStreamingLambdaFunctionLogicalID,
-    //     {
-    //       code: Code.fromBucket(deploymentBucket, Fn.join('/', [
-    //         bucketrootkey.valueAsString,
-    //         Fn.join('.', [
-    //           parameterMap.get(ElasticsearchStreamingFunctionName)?.valueAsString || '',
-    //           'zip'
-    //         ])
-    //       ])),
-    //       runtime: Runtime.PYTHON_3_6,
-    //       handler: "",
-    //     }
+    // streaming lambda role
+    const lambdaRole = createLambdaRole(stack, parameterMap);
 
-    //   );
+    // creates streaming lambda
+    const lambda = createLambda(
+      stack,
+      context.api,
+      parameterMap,
+      lambdaRole,
+      domain.domainEndpoint,
+      isProjectUsingDataStore,
+      stack.parseArn(domain.domainArn).region,
+    );
 
-    //        const eventSourceMapping = new EventSourceMapping(
-    //          stack,
-    //          SearchableResourceIDs.SearchableEventSourceMappingID(definition.name.value),
-    //          {
-    //            batchSize: 1,
-    //            enabled: true,
-    //            startingPosition: StartingPosition.LATEST,
-    //            eventSourceArn: '',
-    //            target: streamingFunction,
-    //          },
+    for (const def of this.searchableObjectTypeDefinitions) {
+      const type = def.node.name.value;
+      const typeName = context.output.getQueryTypeName();
+      const table = getTable(context, def.node);
+      const ddbTable = table as Table;
+      ddbTable.grantStreamRead(lambdaRole);
+      assert(ddbTable);
 
-    //        );
-    //      }
+      // creates event source mapping from ddb to lambda
+      createEventSourceMapping(stack, type, lambda, ddbTable.tableStreamArn);
+
+      const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
+      const resolver = context.resolvers.generateQueryResolver(
+        type,
+        def.fieldName,
+        datasource as DataSourceProvider,
+        MappingTemplate.s3MappingTemplateFromString(
+          requestTemplate(attributeName, getNonKeywordFields(def.node), false, type),
+          `${typeName}.${def.fieldName}.res.vtl`,
+        ),
+        MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.req.vtl`),
+      );
+      resolver.mapToStack(stack);
+      context.resolvers.addResolver(type, def.fieldName, resolver);
+    }
+
+    createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
   };
 
-  after = (context: TransformerContextProvider): void => {};
+  after = (_: TransformerContextProvider): void => {};
 
-  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode): void => {
+  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContextProvider): void => {
     const modelDirective = definition?.directives?.find(dir => dir.name.value === 'model');
     if (!modelDirective) {
       throw new InvalidDirectiveError('Types annotated with @searchable must also be annotated with @model.');
     }
-    this.searchableObjectTypeDefinitions.push(definition);
+
+    const directiveWrapped = new DirectiveWrapper(directive);
+    const directiveArguments = directiveWrapped.getArguments<SearchableDirectiveArgs>({
+      queries: {
+        search: undefined,
+      },
+    });
+    let shouldMakeSearch = true;
+    let searchFieldNameOverride = undefined;
+
+    if (directiveArguments.queries) {
+      if (!directiveArguments.queries.search) {
+        shouldMakeSearch = false;
+      } else {
+        searchFieldNameOverride = directiveArguments.queries.search;
+      }
+    }
+    const fieldName = searchFieldNameOverride ? searchFieldNameOverride : graphqlName(`search${plurality(toUpper(definition.name.value))}`);
+    this.searchableObjectTypeDefinitions.push({
+      node: definition,
+      fieldName,
+    });
+
+    if (shouldMakeSearch) {
+      this.generateSearchableInputs(ctx, definition);
+      this.generateSearchableXConnectionType(ctx, definition);
+      const queryField = makeField(
+        fieldName,
+        [
+          makeInputValueDefinition('filter', makeNamedType(`Searchable${definition.name.value}FilterInput`)),
+          makeInputValueDefinition('sort', makeNamedType(`Searchable${definition.name.value}SortInput`)),
+          makeInputValueDefinition('limit', makeNamedType('Int')),
+          makeInputValueDefinition('nextToken', makeNamedType('String')),
+          makeInputValueDefinition('from', makeNamedType('Int')),
+        ],
+        makeNamedType(`Searchable${definition.name.value}Connection`),
+      );
+
+      ctx.output.addQueryFields([queryField]);
+    }
   };
+
+  private generateSearchableXConnectionType(ctx: TransformerContextProvider, definition: ObjectTypeDefinitionNode): void {
+    const searchableXConnectionName = `Searchable${definition.name.value}Connection`;
+    if (ctx.output.hasType(searchableXConnectionName)) {
+      return;
+    }
+
+    // Create the TableXConnection
+    const connectionType = blankObject(searchableXConnectionName);
+    ctx.output.addObject(connectionType);
+
+    // Create TableXConnection type with items and nextToken
+    let connectionTypeExtension = blankObjectExtension(searchableXConnectionName);
+    connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
+      makeField('items', [], makeListType(makeNamedType(definition.name.value))),
+    ]);
+    connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
+      makeField('nextToken', [], makeNamedType('String')),
+      makeField('total', [], makeNamedType('Int')),
+    ]);
+    ctx.output.addObjectExtension(connectionTypeExtension);
+  }
+
+  private generateSearchableInputs(ctx: TransformerContextProvider, definition: ObjectTypeDefinitionNode): void {
+    const inputs: string[] = Object.keys(STANDARD_SCALARS);
+    inputs
+      .filter(input => !ctx.output.hasType(`Searchable${input}FilterInput`))
+      .map(makeSearchableScalarInputObject)
+      .forEach((node: InputObjectTypeDefinitionNode) => ctx.output.addInput(node));
+
+    const searchableXQueryFilterInput = makeSearchableXFilterInputObject(definition);
+    if (!ctx.output.hasType(searchableXQueryFilterInput.name.value)) {
+      ctx.output.addInput(searchableXQueryFilterInput);
+    }
+
+    if (!ctx.output.hasType('SearchableSortDirection')) {
+      const searchableSortDirection = makeSearchableSortDirectionEnumObject();
+      ctx.output.addEnum(searchableSortDirection);
+    }
+
+    if (!ctx.output.hasType(`Searchable${definition.name.value}SortableFields`)) {
+      const searchableXSortableFieldsDirection = makeSearchableXSortableFieldsEnumObject(definition);
+      ctx.output.addEnum(searchableXSortableFieldsDirection);
+    }
+
+    if (!ctx.output.hasType(`Searchable${definition.name.value}SortInput`)) {
+      const searchableXSortableInputDirection = makeSearchableXSortInputObject(definition);
+      ctx.output.addInput(searchableXSortableInputDirection);
+    }
+  }
 }
 
-function getConditionParameters() {}
+function getTable(context: TransformerContextProvider, definition: ObjectTypeDefinitionNode): IConstruct {
+  const ddbDataSource = context.dataSources.get(definition) as DynamoDbDataSource;
+  const tableName = ModelResourceIDs.ModelTableResourceID(definition.name.value);
+  const table = ddbDataSource.ds.stack.node.findChild(tableName);
+  return table;
+}
+
+function getNonKeywordFields(def: ObjectTypeDefinitionNode): Expression[] {
+  const nonKeywordTypeSet = new Set(nonKeywordTypes);
+
+  return def.fields?.filter(field => nonKeywordTypeSet.has(getBaseType(field.type))).map(field => str(field.name.value)) || [];
+}
+
+interface SearchableQueryMap {
+  search?: string;
+}
+
+interface SearchableDirectiveArgs {
+  queries?: SearchableQueryMap;
+}
