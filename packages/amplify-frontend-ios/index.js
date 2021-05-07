@@ -91,7 +91,7 @@ async function handleAmplifyEvent(context, args) {
   const projectPath = pathManager.findProjectRoot();
   switch (args.event) {
     case 'PostInit':
-      if (context.input?.options?.quickstart) {
+      if (context.input && context.input.options && context.input.options.quickstart) {
         postInitQuickStart(projectPath);
       }
       await importConfig({ path: projectPath });
