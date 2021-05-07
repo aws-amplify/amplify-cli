@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-const { FeatureFlags, pathManager } = require('amplify-cli-core');
+const { FeatureFlags, pathManager, JSONUtilities } = require('amplify-cli-core');
 const { importConfig, importModels } = require('./lib/amplify-xcode');
 const initializer = require('./lib/initializer');
 const projectScanner = require('./lib/project-scanner');
@@ -63,20 +63,17 @@ async function executeAmplifyCommand(context) {
 const postInitQuickStart = projectPath => {
   const awsConfigFilePath = path.join(projectPath, 'awsconfiguration.json');
   const amplifyConfigFilePath = path.join(projectPath, 'amplifyconfiguration.json');
-  const configJsonObj = {};
-  const configJsonStr = JSON.stringify(configJsonObj);
   if (!fs.existsSync(awsConfigFilePath)) {
-    fs.writeFileSync(awsConfigFilePath, configJsonStr);
+    JSONUtilities.writeJson(awsConfigFilePath, {});
   }
 
   if (!fs.existsSync(amplifyConfigFilePath)) {
-    fs.writeFileSync(amplifyConfigFilePath, configJsonStr);
+    JSONUtilities.writeJson(amplifyConfigFilePath, {});
   }
 };
 
 async function handleAmplifyEvent(context, args) {
   const { frontend } = context.amplify.getProjectConfig();
-  const { options } = context.input;
   const isXcodeIntegrationEnabled = FeatureFlags.getBoolean('frontend-ios.enableXcodeIntegration');
   const isFrontendiOS = frontend === 'ios';
   const isMacOs = process.platform === 'darwin';
@@ -85,7 +82,7 @@ async function handleAmplifyEvent(context, args) {
     return;
   }
   // Xcode integration is a MacOS-only binary, skip on other platforms
-  if (!isMacOs && isFrontendiOS) {
+  if (!isMacOs) {
     context.print.info('Skipping Xcode project setup.');
     context.print.info(successMessage);
     return;
@@ -94,7 +91,7 @@ async function handleAmplifyEvent(context, args) {
   const projectPath = pathManager.findProjectRoot();
   switch (args.event) {
     case 'PostInit':
-      if (options.quickstart) {
+      if (context.input?.options?.quickstart) {
         postInitQuickStart(projectPath);
       }
       await importConfig({ path: projectPath });
