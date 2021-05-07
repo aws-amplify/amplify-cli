@@ -29,7 +29,7 @@ import {
   fetchPermissionResourcesForCategory,
   fetchPermissionsForResourceInCategory,
 } from '../utils/permissionMapUtils';
-import { JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSObject, JSONUtilities, stateManager } from 'amplify-cli-core';
 import { consolidateDependsOnForLambda } from '../utils/consolidateDependsOn';
 
 /**
@@ -196,63 +196,10 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     additionalParameters.dependsOn = additionalParameters.dependsOn || [];
     merge(functionParameters, additionalParameters);
 
-    const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
-    const cfnFilePath = path.join(resourceDirPath, cfnFileName);
-    const cfnContent: any = JSONUtilities.readJson(cfnFilePath);
-    const dependsOnParams = { env: { Type: 'String' } };
-
-    Object.keys(functionParameters.environmentMap)
-      .filter(key => key !== 'ENV')
-      .filter(key => key !== 'REGION')
-      .filter(resourceProperty => 'Ref' in functionParameters.environmentMap[resourceProperty])
-      .forEach(resourceProperty => {
-        dependsOnParams[functionParameters.environmentMap[resourceProperty].Ref] = {
-          Type: 'String',
-          Default: functionParameters.environmentMap[resourceProperty].Ref,
-        };
-      });
-
-    cfnContent.Parameters = getNewCFNParameters(
-      cfnContent.Parameters,
-      currentParameters,
-      dependsOnParams,
-      functionParameters.mutableParametersState,
-    );
-
-    if (!cfnContent.Resources.AmplifyResourcesPolicy) {
-      cfnContent.Resources.AmplifyResourcesPolicy = {
-        DependsOn: ['LambdaExecutionRole'],
-        Type: 'AWS::IAM::Policy',
-        Properties: {
-          PolicyName: 'amplify-lambda-execution-policy',
-          Roles: [
-            {
-              Ref: 'LambdaExecutionRole',
-            },
-          ],
-          PolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [],
-          },
-        },
-      };
-    }
-
-    if (functionParameters.categoryPolicies.length === 0) {
-      delete cfnContent.Resources.AmplifyResourcesPolicy;
-    } else {
-      cfnContent.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement = functionParameters.categoryPolicies;
-    }
-
-    cfnContent.Resources.LambdaFunction.Properties.Environment.Variables = getNewCFNEnvVariables(
-      cfnContent.Resources.LambdaFunction.Properties.Environment.Variables,
-      currentParameters,
-      functionParameters.environmentMap,
-      functionParameters.mutableParametersState,
-    );
-
-    context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
-    tryUpdateTopLevelComment(resourceDirPath, _.keys(functionParameters.environmentMap));
+    updateCFNFileForResourcePermissions(resourceDirPath, functionParameters, currentParameters);
+  } else {
+    // Need to load previous dependsOn
+    functionParameters.dependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
   }
 
   // ask scheduling Lambda questions and merge in results
@@ -374,4 +321,67 @@ export function migrate(context, projectPath, resourceName) {
 
   const jsonString = JSON.stringify(newCfn, null, '\t');
   fs.writeFileSync(cfnFilePath, jsonString, 'utf8');
+}
+
+export function updateCFNFileForResourcePermissions(
+  resourceDirPath: string,
+  functionParameters: Partial<FunctionParameters>,
+  currentParameters: $TSObject,
+  apiResourceName?: string,
+) {
+  const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
+  const cfnFilePath = path.join(resourceDirPath, cfnFileName);
+  const cfnContent: any = JSONUtilities.readJson(cfnFilePath);
+  const dependsOnParams = { env: { Type: 'String' } };
+
+  Object.keys(functionParameters.environmentMap)
+    .filter(key => key !== 'ENV')
+    .filter(key => key !== 'REGION')
+    .filter(resourceProperty => 'Ref' in functionParameters.environmentMap[resourceProperty])
+    .forEach(resourceProperty => {
+      dependsOnParams[functionParameters.environmentMap[resourceProperty].Ref] = {
+        Type: 'String',
+        Default: functionParameters.environmentMap[resourceProperty].Ref,
+      };
+    });
+
+  cfnContent.Parameters = getNewCFNParameters(
+    cfnContent.Parameters,
+    currentParameters,
+    dependsOnParams,
+    functionParameters.mutableParametersState,
+    apiResourceName,
+  );
+
+  if (cfnContent.Resources.AmplifyResourcesPolicy > 0) {
+    cfnContent.Resources.AmplifyResourcesPolicy = {
+      DependsOn: ['LambdaExecutionRole'],
+      Type: 'AWS::IAM::Policy',
+      Properties: {
+        PolicyName: 'amplify-lambda-execution-policy',
+        Roles: [
+          {
+            Ref: 'LambdaExecutionRole',
+          },
+        ],
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: functionParameters.categoryPolicies,
+        },
+      },
+    };
+  } else {
+    delete cfnContent.Resources.AmplifyResourcesPolicy;
+  }
+
+  cfnContent.Resources.LambdaFunction.Properties.Environment.Variables = getNewCFNEnvVariables(
+    cfnContent.Resources.LambdaFunction.Properties.Environment.Variables,
+    currentParameters,
+    functionParameters.environmentMap,
+    functionParameters.mutableParametersState,
+    apiResourceName,
+  );
+
+  JSONUtilities.writeJson(cfnFilePath, cfnContent);
+  tryUpdateTopLevelComment(resourceDirPath, _.keys(functionParameters.environmentMap));
 }

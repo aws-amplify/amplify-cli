@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`update dependent functions 1`] = `
+Object {
+  "categoryPolicies": Array [
+    "randomPermissionsforapiandstorage",
+    "randomPermissionsforapiandstorage",
+  ],
+  "dependsOn": Array [
+    Object {
+      "attributes": Array [
+        "GraphQLAPIIdOutput",
+      ],
+      "category": "api",
+      "resourceName": "mock_api",
+    },
+  ],
+  "environmentMap": Object {
+    "API_MOCK_API_GRAPHQLAPIIDOUTPUT": Object {
+      "Ref": "apimock_apiGraphQLAPIIdOutput",
+    },
+  },
+  "lambdaLayers": undefined,
+  "mutableParametersState": Object {
+    "permissions": Object {
+      "storage": Object {
+        "model1": Array [
+          "create",
+        ],
+        "model2": Array [
+          "create",
+        ],
+      },
+    },
+  },
+  "resourceName": "fn2",
+}
+`;
+
+exports[`update dependent functions 2`] = `
+Object {
+  "categoryPolicies": Array [
+    "randomPermissionsforapiandstorage",
+  ],
+  "dependsOn": Array [
+    Object {
+      "attributes": Array [
+        "GraphQLAPIIdOutput",
+      ],
+      "category": "api",
+      "resourceName": "mock_api",
+    },
+  ],
+  "environmentMap": Object {
+    "API_MOCK_API_GRAPHQLAPIIDOUTPUT": Object {
+      "Ref": "apimock_apiGraphQLAPIIdOutput",
+    },
+  },
+  "lambdaLayers": Array [
+    Object {
+      "resourceName": "mocklayer",
+      "type": "ProjectLayer",
+      "version": 1,
+    },
+  ],
+  "mutableParametersState": Object {
+    "permissions": Object {
+      "storage": Object {
+        "model3": Array [
+          "create",
+        ],
+      },
+    },
+  },
+  "resourceName": "fn2",
+}
+`;

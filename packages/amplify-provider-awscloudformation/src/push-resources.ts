@@ -44,6 +44,7 @@ import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
+import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 
 const logger = fileLogger('push-resources');
 
@@ -84,7 +85,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       parameters: { options },
     } = context;
 
-    const resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
+    let resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
       if (context.exeInfo?.forcePush || context.exeInfo?.iterativeRollback) {
@@ -97,6 +98,19 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     await createEnvLevelConstructs(context);
 
+    // removing dependent functions if @model{Table} is deleted
+    const apiResourceTobeUpdated = resourcesToBeUpdated.filter(resource => resource.service === 'AppSync');
+    if (apiResourceTobeUpdated.length) {
+      const functionResourceToBeUpdated = await ensureValidFunctionModelDependencies(
+        context,
+        apiResourceTobeUpdated,
+        allResources as $TSObject[],
+      );
+      // filter updated function to replace with existing updated ones(in case of duplicates)
+      if (functionResourceToBeUpdated !== undefined && functionResourceToBeUpdated.length > 0) {
+        resources = _.uniqBy(resources.concat(functionResourceToBeUpdated), `resourceName`);
+      }
+    }
     validateCfnTemplates(context, resources);
 
     for await (const resource of resources) {
