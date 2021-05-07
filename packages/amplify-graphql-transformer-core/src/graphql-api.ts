@@ -30,7 +30,7 @@ import { toCamelCase } from 'graphql-transformer-common';
 import { AppSyncFunctionConfiguration } from './appsync-function';
 import { ElasticsearchDataSource } from './cdk-compat/elasticsearch-datasource';
 import { TransformerSchema } from './cdk-compat/schema-asset';
-import { InlineTemplate, S3MappingFunctionCode, S3MappingTemplate } from './cdk-compat/template-asset';
+import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
 
 export interface GraphqlApiProps {
   /**

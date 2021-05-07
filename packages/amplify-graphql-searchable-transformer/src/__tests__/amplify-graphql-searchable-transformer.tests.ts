@@ -1,8 +1,8 @@
-import { GraphQLTransform, ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { SearchableModelTransformer } from '../';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
-import Template from '@aws-amplify/graphql-transformer-core/lib/transformation/types';
+
 test('Test SearchableModelTransformer validation happy case', () => {
   const validSchema = `
     type Post @model @searchable {
@@ -272,36 +272,4 @@ test('it generates expected resources', () => {
       },
     }),
   );
-});
-
-test('SearchableModelTransformer with external versioning', () => {
-  //   const expectedSearchResolverBase = 'Query.searchPosts.';
-  //   const expectedSearchRequestResolver = expectedSearchResolverBase + 'req.vtl';
-  //   const expectedSearchResponseResolver = expectedSearchResolverBase + 'res.vtl';
-  //   const validSchema = `
-  //         type Post @model @searchable {
-  //           id: ID!
-  //           title: String!
-  //         }
-  //       `;
-  //   const transformer = new GraphQLTransform({
-  //     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-  //     transformConfig: {
-  //       Version: TRANSFORM_CURRENT_VERSION,
-  //       ResolverConfig: {
-  //         project: {
-  //           ConflictDetection: 'VERSION',
-  //           ConflictHandler: ConflictHandlerType.AUTOMERGE,
-  //         },
-  //         models: undefined,
-  //       },
-  //     },
-  //   });
-  //   const out = transformer.transform(validSchema);
-  //   expect(out).toBeDefined();
-  //   expect(out.resolvers).toBeDefined();
-  //   expect(out.resolvers[expectedSearchRequestResolver]).toBeDefined();
-  //   expect(out.resolvers[expectedSearchRequestResolver]).toMatchSnapshot();
-  //   expect(out.resolvers[expectedSearchResponseResolver]).toBeDefined();
-  //   expect(out.resolvers[expectedSearchResponseResolver]).toMatchSnapshot();
 });

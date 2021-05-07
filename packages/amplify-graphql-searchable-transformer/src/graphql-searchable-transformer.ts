@@ -6,8 +6,7 @@ import {
 } from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
-import { CfnCondition, CfnParameter, Fn } from '@aws-cdk/core';
-import { IConstruct } from 'constructs';
+import { CfnCondition, CfnParameter, Fn, IConstruct } from '@aws-cdk/core';
 import { DirectiveNode, InputObjectTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import { Expression, str } from 'graphql-mapping-template';
 import {
@@ -24,7 +23,6 @@ import {
   makeInputValueDefinition,
   graphqlName,
   plurality,
-  SearchableResourceIDs,
   toUpper,
 } from 'graphql-transformer-common';
 import { createParametersStack as createParametersInStack } from './cdk/create-parameters';
