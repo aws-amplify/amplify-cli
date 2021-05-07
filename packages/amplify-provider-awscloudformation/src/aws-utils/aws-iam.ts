@@ -2,19 +2,28 @@ import aws from './aws.js';
 import awstype from 'aws-sdk';
 import { IAM } from 'aws-sdk';
 import { AwsSdkConfig } from '../utils/auth-types.js';
+import { loadConfiguration } from '../configuration-manager';
+import { $TSContext } from 'amplify-cli-core';
 
-let instance: IAM;
+export class IAMClient {
+  private static instance: IAMClient;
+  public readonly client: IAM;
 
-export const getIAMClient = async (sdkConfigProvider: () => Promise<AwsSdkConfig>) => {
-  if (instance) {
-    return instance;
+  static async getInstance(context: $TSContext, options: IAM.ClientConfiguration = {}): Promise<IAMClient> {
+    if (!IAMClient.instance) {
+      let cred: AwsSdkConfig;
+      try {
+        cred = await loadConfiguration(context);
+      } catch (e) {
+        // ignore missing config
+      }
+
+      IAMClient.instance = new IAMClient(cred, options);
+    }
+    return IAMClient.instance;
   }
-  let cred = {};
-  try {
-    cred = await sdkConfigProvider();
-  } catch (err) {
-    // ignore error
+
+  private constructor(creds: AwsSdkConfig, options: IAM.ClientConfiguration = {}) {
+    this.client = new (aws as typeof awstype).IAM({ ...creds, ...options });
   }
-  instance = new (aws as typeof awstype).IAM({ ...cred });
-  return instance;
-};
+}

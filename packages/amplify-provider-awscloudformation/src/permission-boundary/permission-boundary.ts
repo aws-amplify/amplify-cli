@@ -1,6 +1,6 @@
 import { $TSContext, stateManager, getPermissionBoundaryArn, setPermissionBoundaryArn } from 'amplify-cli-core';
 import { prompt } from 'inquirer';
-import { getIAMClient } from '../aws-utils/aws-iam';
+import { IAMClient } from '../aws-utils/aws-iam';
 import { loadConfiguration } from '../configuration-manager';
 
 export const configurePermissionBoundaryForExistingEnv = async (context: $TSContext) => {
@@ -18,7 +18,7 @@ export const configurePermissionBoundaryForInit = async (context: $TSContext) =>
       context.exeInfo.teamProviderInfo,
     );
   } else {
-    // amplfiy env add
+    // amplify env add
     await rolloverPermissionBoundaryToNewEnvironment(context);
   }
 };
@@ -113,9 +113,9 @@ const rolloverPermissionBoundaryToNewEnvironment = async (context: $TSContext) =
 };
 
 const isPolicyAccessible = async (context: $TSContext, policyArn: string) => {
-  const iamClient = await getIAMClient(() => loadConfiguration(context));
+  const iamClient = await IAMClient.getInstance(context);
   try {
-    await iamClient.getPolicy({ PolicyArn: policyArn }).promise();
+    await iamClient.client.getPolicy({ PolicyArn: policyArn }).promise();
   } catch (err) {
     // if there's an error, then the policy wasn't accessible
     return false;
