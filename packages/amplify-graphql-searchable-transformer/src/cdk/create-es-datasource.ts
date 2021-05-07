@@ -8,16 +8,17 @@ import { Stack } from '@aws-cdk/core';
 export const createEsDataSource = (
   stack: Stack,
   graphqlApiProvider: GraphQLAPIProvider,
-  endpoint: string,
+  domainEndpoint: string,
   role: IRole,
   region?: string,
 ): BaseDataSource => {
   const { ElasticsearchDataSourceLogicalID } = ResourceConstants.RESOURCES;
   assert(region);
+  const dsEndpoint = 'https://' + domainEndpoint;
   return graphqlApiProvider.addElasticSearchDataSource(
     ElasticsearchDataSourceLogicalID,
     region,
-    endpoint,
+    dsEndpoint,
     {
       serviceRole: role,
       name: ElasticsearchDataSourceLogicalID,

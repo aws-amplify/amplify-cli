@@ -1,4 +1,4 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct, Fn } from '@aws-cdk/core';
 import { CfnOutput } from '@aws-cdk/core';
 import { ResourceConstants } from 'graphql-transformer-common';
 
@@ -7,11 +7,11 @@ export const createStackOutputs = (stack: Construct, endpoint: string, apiId: st
   new CfnOutput(stack, ElasticsearchDomainArn, {
     value: arn,
     description: 'Elasticsearch instance Domain ARN.',
-    exportName: apiId + ':' + endpoint,
+    exportName: Fn.join(':', [apiId, 'GetAtt', 'Elasticsearch', 'DomainArn']).toString(),
   });
   new CfnOutput(stack, ElasticsearchDomainEndpoint, {
     value: 'https://' + endpoint,
     description: 'Elasticsearch instance Domain Endpoint.',
-    exportName: apiId + ':' + endpoint,
+    exportName: Fn.join(':', [apiId, 'GetAtt', 'Elasticsearch', 'DomainEndpoint']).toString(),
   });
 };

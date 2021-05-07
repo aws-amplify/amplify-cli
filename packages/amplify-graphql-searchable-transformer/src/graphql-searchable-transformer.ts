@@ -1,5 +1,9 @@
 import { TransformerPluginBase, InvalidDirectiveError, MappingTemplate, DirectiveWrapper } from '@aws-amplify/graphql-transformer-core';
-import { DataSourceProvider, TransformerContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import {
+  DataSourceProvider,
+  TransformerContextProvider,
+  TransformerSchemaVisitStepContextProvider,
+} from '@aws-amplify/graphql-transformer-interfaces';
 import { DynamoDbDataSource } from '@aws-cdk/aws-appsync';
 import { Table } from '@aws-cdk/aws-dynamodb';
 import { CfnCondition, CfnParameter, Fn } from '@aws-cdk/core';
@@ -94,6 +98,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
     // streaming lambda role
     const lambdaRole = createLambdaRole(stack, parameterMap);
+    domain.grantWrite(lambdaRole);
 
     // creates streaming lambda
     const lambda = createLambda(
@@ -118,8 +123,9 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       createEventSourceMapping(stack, type, lambda, ddbTable.tableStreamArn);
 
       const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
+      assert(typeName);
       const resolver = context.resolvers.generateQueryResolver(
-        type,
+        typeName,
         def.fieldName,
         datasource as DataSourceProvider,
         MappingTemplate.s3MappingTemplateFromString(
@@ -137,18 +143,14 @@ export class SearchableModelTransformer extends TransformerPluginBase {
 
   after = (_: TransformerContextProvider): void => {};
 
-  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerContextProvider): void => {
+  object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
     const modelDirective = definition?.directives?.find(dir => dir.name.value === 'model');
     if (!modelDirective) {
       throw new InvalidDirectiveError('Types annotated with @searchable must also be annotated with @model.');
     }
 
     const directiveWrapped = new DirectiveWrapper(directive);
-    const directiveArguments = directiveWrapped.getArguments<SearchableDirectiveArgs>({
-      queries: {
-        search: undefined,
-      },
-    });
+    const directiveArguments = directiveWrapped.getArguments({}) as any;
     let shouldMakeSearch = true;
     let searchFieldNameOverride = undefined;
 
@@ -184,7 +186,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     }
   };
 
-  private generateSearchableXConnectionType(ctx: TransformerContextProvider, definition: ObjectTypeDefinitionNode): void {
+  private generateSearchableXConnectionType(ctx: TransformerSchemaVisitStepContextProvider, definition: ObjectTypeDefinitionNode): void {
     const searchableXConnectionName = `Searchable${definition.name.value}Connection`;
     if (ctx.output.hasType(searchableXConnectionName)) {
       return;
@@ -206,7 +208,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     ctx.output.addObjectExtension(connectionTypeExtension);
   }
 
-  private generateSearchableInputs(ctx: TransformerContextProvider, definition: ObjectTypeDefinitionNode): void {
+  private generateSearchableInputs(ctx: TransformerSchemaVisitStepContextProvider, definition: ObjectTypeDefinitionNode): void {
     const inputs: string[] = Object.keys(STANDARD_SCALARS);
     inputs
       .filter(input => !ctx.output.hasType(`Searchable${input}FilterInput`))
