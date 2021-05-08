@@ -197,9 +197,6 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     merge(functionParameters, additionalParameters);
 
     updateCFNFileForResourcePermissions(resourceDirPath, functionParameters, currentParameters);
-  } else {
-    // Need to load previous dependsOn
-    functionParameters.dependsOn = _.get(context.amplify.getProjectMeta(), ['function', lambdaToUpdate, 'dependsOn'], []);
   }
 
   // ask scheduling Lambda questions and merge in results
@@ -353,7 +350,7 @@ export function updateCFNFileForResourcePermissions(
     apiResourceName,
   );
 
-  if (cfnContent.Resources.AmplifyResourcesPolicy > 0) {
+  if (!cfnContent.Resources.AmplifyResourcesPolicy) {
     cfnContent.Resources.AmplifyResourcesPolicy = {
       DependsOn: ['LambdaExecutionRole'],
       Type: 'AWS::IAM::Policy',
@@ -366,12 +363,15 @@ export function updateCFNFileForResourcePermissions(
         ],
         PolicyDocument: {
           Version: '2012-10-17',
-          Statement: functionParameters.categoryPolicies,
+          Statement: [],
         },
       },
     };
-  } else {
+  }
+  if (functionParameters.categoryPolicies.length === 0) {
     delete cfnContent.Resources.AmplifyResourcesPolicy;
+  } else {
+    cfnContent.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement = functionParameters.categoryPolicies;
   }
 
   cfnContent.Resources.LambdaFunction.Properties.Environment.Variables = getNewCFNEnvVariables(
