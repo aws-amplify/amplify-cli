@@ -530,8 +530,15 @@ function parseOAuthCreds(providers, metadata, envCreds) {
       try {
         const provider = parsedMetaData.find(i => i.ProviderName === el);
         const creds = parsedCreds.find(i => i.ProviderName === el);
-        providerKeys[`${el.toLowerCase()}AppIdUserPool`] = creds.client_id;
-        providerKeys[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
+        if (el === 'SignInWithApple') {
+          providerKeys[`${el.toLowerCase()}ClientIdUserPool`] = creds.client_id;
+          providerKeys[`${el.toLowerCase()}TeamIdUserPool`] = creds.team_id;
+          providerKeys[`${el.toLowerCase()}KeyIdUserPool`] = creds.key_id;
+          providerKeys[`${el.toLowerCase()}PrivateKeyUserPool`] = creds.private_key;
+        } else {
+          providerKeys[`${el.toLowerCase()}AppIdUserPool`] = creds.client_id;
+          providerKeys[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
+        }
         providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(',');
       } catch (e) {
         return null;

@@ -419,6 +419,11 @@ const authProviders = [
     value: 'www.amazon.com',
     answerHashKey: 'amazonAppId',
   },
+  {
+    name: 'Apple',
+    value: 'appleid.apple.com',
+    answerHashKey: 'appleAppId',
+  },
 ];
 
 const hostedUIProviders = [
@@ -433,6 +438,10 @@ const hostedUIProviders = [
   {
     name: 'Login With Amazon',
     value: 'LoginWithAmazon',
+  },
+  {
+    name: 'Sign in with Apple',
+    value: 'SignInWithApple',
   },
 ];
 

@@ -1123,6 +1123,9 @@ Resources:
         <%if (props.authProviders.indexOf('www.amazon.com') !== -1) { %>
         www.amazon.com: !Ref amazonAppId
         <% } %>
+        <%if (props.authProviders.indexOf('appleid.apple.com') !== -1) { %>
+        appleid.apple.com: !Ref appleAppId
+        <% } %>
       <% } %>
       AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
       <%if (props.audiences && props.audiences.length > 0) { %>
@@ -1204,5 +1207,9 @@ Outputs :
   <%if (props.amazonAppId) { %>
   AmazonWebClient:
     Value: !Ref amazonAppId
+  <% } %>
+  <%if (props.appleAppId) { %>
+  AppleWebClient:
+    Value: !Ref appleAppId
   <% } %>
   <% } %>

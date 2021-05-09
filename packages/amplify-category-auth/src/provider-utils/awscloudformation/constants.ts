@@ -19,6 +19,10 @@ export const ENV_SPECIFIC_PARAMS = [
   'amazonAppId',
   'loginwithamazonAppIdUserPool',
   'loginwithamazonAppSecretUserPool',
+  'signinwithappleClientIdUserPool',
+  'signinwithappleTeamIdUserPool',
+  'signinwithappleKeyIdUserPool',
+  'signinwithapplePrivateKeyUserPool',
   'hostedUIProviderCreds',
 ];
 

@@ -243,6 +243,20 @@ export const supportedServices = {
         ],
       },
       {
+        key: 'appleAppId',
+        prefix:
+          " \n You've opted to allow users to authenticate via Apple.  If you haven't already, you'll need to go to https://developer.apple.com/programs/enroll/ and create an App ID. \n",
+        question: 'Enter your Apple App ID for your identity pool: ',
+        required: true,
+        andConditions: [
+          {
+            key: 'authProviders',
+            value: 'appleid.apple.com',
+            operator: 'includes',
+          },
+        ],
+      },
+      {
         key: 'userPoolName',
         question: 'Please provide a name for your user pool:',
         required: true,
@@ -308,7 +322,8 @@ export const supportedServices = {
       {
         key: 'adminQueries',
         question: 'Do you want to add an admin queries API?',
-        learnMore: 'Admin Queries API let you perform user admin functions from your frontend. See https://docs.amplify.aws/cli/auth/admin#admin-queries-api for more.',
+        learnMore:
+          'Admin Queries API let you perform user admin functions from your frontend. See https://docs.amplify.aws/cli/auth/admin#admin-queries-api for more.',
         required: true,
         type: 'list',
         map: 'booleanOptions',
@@ -733,7 +748,7 @@ export const supportedServices = {
         key: 'hostedUI',
         question: 'Do you want to use an OAuth flow?',
         learnMore:
-        'When you create a user pool in Amazon Cognito and configure a domain for it, Amazon Cognito automatically provisions a hosted web UI to let you add sign-up and sign-in pages to your app. Selecting "No" will remove any existing OAuth configuration.',
+          'When you create a user pool in Amazon Cognito and configure a domain for it, Amazon Cognito automatically provisions a hosted web UI to let you add sign-up and sign-in pages to your app. Selecting "No" will remove any existing OAuth configuration.',
         required: true,
         type: 'list',
         map: 'booleanOptions',
@@ -1160,6 +1175,56 @@ export const supportedServices = {
           {
             key: 'authProvidersUserPool',
             value: 'LoginWithAmazon',
+            operator: 'includes',
+          },
+        ],
+      },
+      {
+        key: 'signinwithappleClientIdUserPool',
+        prefix:
+          " \n You've opted to allow users to authenticate via Apple.  If you haven't already, you'll need to create an Amazon App ID. Head to https://developer.apple.com/programs/enroll to learn more. \n",
+        question: 'Enter your Sign in with Apple Client ID for your OAuth flow: ',
+        required: true,
+        andConditions: [
+          {
+            key: 'authProvidersUserPool',
+            value: 'SignInWithApple',
+            operator: 'includes',
+          },
+        ],
+      },
+      {
+        key: 'signinwithappleTeamIdUserPool',
+        question: 'Enter your Sign in with Apple Team ID for your OAuth flow: ',
+        required: true,
+        andConditions: [
+          {
+            key: 'authProvidersUserPool',
+            value: 'SignInWithApple',
+            operator: 'includes',
+          },
+        ],
+      },
+      {
+        key: 'signinwithappleKeyIdUserPool',
+        question: 'Enter your Sign in with Apple Key ID for your OAuth flow: ',
+        required: true,
+        andConditions: [
+          {
+            key: 'authProvidersUserPool',
+            value: 'SignInWithApple',
+            operator: 'includes',
+          },
+        ],
+      },
+      {
+        key: 'signinwithapplePrivateKeyUserPool',
+        question: 'Enter your Sign in with Apple Private Key for your OAuth flow: ',
+        required: true,
+        andConditions: [
+          {
+            key: 'authProvidersUserPool',
+            value: 'SignInWithApple',
             operator: 'includes',
           },
         ],
