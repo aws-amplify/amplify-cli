@@ -8,24 +8,32 @@ const { downloadZip, extractZip } = require('./zip-util');
 const { S3BackendZipFileName } = require('./constants');
 const { fileLogger } = require('./utils/aws-logger');
 const logger = fileLogger('initialize-env');
-import { JSONUtilities, PathConstants, stateManager, $TSMeta, $TSContext } from 'amplify-cli-core';
+import { JSONUtilities, PathConstants, stateManager, $TSMeta, $TSContext, pathManager } from 'amplify-cli-core';
+import { ProviderName as providerName } from './constants';
+import { rootStackExists } from './ensure-root-stack';
 
 export async function run(context: $TSContext, providerMetadata: $TSMeta) {
   if (context.exeInfo && context.exeInfo.isNewEnv) {
     return context;
   }
 
-  const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
+  // empty #current-cloud-backend dir and reset default meta file
+  resetCurrentCloudBackend();
+
+  // if this environment is not pushed yet, early return
+  if (!rootStackExists()) {
+    return context;
+  }
+
+  const amplifyDir = pathManager.getAmplifyDirPath();
   const tempDir = path.join(amplifyDir, '.temp');
-  const currentCloudBackendDir = context.amplify.pathManager.getCurrentCloudBackendDirPath();
-  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
+  const backendDir = pathManager.getBackendDirPath();
 
   const s3 = await S3.getInstance(context);
   const cfnItem = await new Cloudformation(context);
   const file = await downloadZip(s3, tempDir, S3BackendZipFileName);
   const unzippeddir = await extractZip(tempDir, file);
-
-  fs.removeSync(currentCloudBackendDir);
 
   // Move out cli.*json if exists in the temp directory into the amplify directory before copying backand and
   // current cloud backend directories.
@@ -108,4 +116,16 @@ export async function run(context: $TSContext, providerMetadata: $TSMeta) {
   if (hasMigratedResources) {
     stateManager.setCurrentMeta(undefined, amplifyMeta);
   }
+  return context;
 }
+
+const resetCurrentCloudBackend = () => {
+  const currentCloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
+  fs.removeSync(currentCloudBackendDir);
+  fs.ensureDirSync(currentCloudBackendDir);
+  stateManager.setCurrentMeta(undefined, {
+    providers: {
+      [providerName]: {},
+    },
+  });
+};

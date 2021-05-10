@@ -2,6 +2,9 @@ import { nspawn as spawn, retry, getCLIPath, describeCloudFormationStack, getPro
 
 export const deleteProject = async (cwd: string, profileConfig?: any): Promise<void> => {
   const { StackName: stackName, Region: region } = getProjectMeta(cwd).providers.awscloudformation;
+  if (!stackName || !region) {
+    return;
+  }
   await retry(
     () => describeCloudFormationStack(stackName, region, profileConfig),
     stack => stack.StackStatus.endsWith('_COMPLETE'),
