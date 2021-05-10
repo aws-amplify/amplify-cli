@@ -137,7 +137,6 @@ def compute_doc_index(keys_raw, deserializer, formatIndex=False):
 def _lambda_handler(event, context):
     logger.debug('Event: %s', event)
     records = event['Records']
-    now = datetime.datetime.utcnow()
 
     ddb_deserializer = StreamTypeDeserializer()
     es_actions = []  # Items to be added/updated/removed from ES - for bulk API
