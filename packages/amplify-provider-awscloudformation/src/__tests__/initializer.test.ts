@@ -33,6 +33,10 @@ describe('run', () => {
       amplify: {
         getTags: jest.fn(),
       },
+      input: {
+        options: '--yes',
+        command: 'init',
+      },
     };
     CloudFormation_mock.mockImplementation(
       () =>

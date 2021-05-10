@@ -6,6 +6,7 @@ import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-p
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';
+import _ from 'lodash';
 
 export async function onHeadlessSuccess(context: $TSContext) {
   const frontendPlugins = getFrontendPlugins(context);
@@ -108,12 +109,19 @@ function generateLocalTagsFile(context: $TSContext) {
 }
 
 export function generateAmplifyMetaFile(context: $TSContext) {
-  if (context.exeInfo.isNewEnv) {
-    const { projectPath } = context.exeInfo.localEnvInfo;
+  const { projectPath } = context.exeInfo.localEnvInfo;
 
-    stateManager.setCurrentMeta(projectPath, context.exeInfo.amplifyMeta);
-    stateManager.setMeta(projectPath, context.exeInfo.amplifyMeta);
-  }
+  const { isNewEnv } = context.exeInfo;
+
+  // store amplifyMeta
+  const meta = isNewEnv ? {} : stateManager.getMeta(projectPath, { throwIfNotExist: false }) || {};
+  _.merge(meta, context.exeInfo.amplifyMeta);
+  stateManager.setMeta(projectPath, meta);
+
+  // store current cloud meta
+  const currMeta = isNewEnv ? {} : stateManager.getCurrentMeta(projectPath, { throwIfNotExist: false }) || {};
+  _.merge(currMeta, context.exeInfo.amplifyMeta);
+  stateManager.setCurrentMeta(projectPath, currMeta);
 }
 
 function generateNonRuntimeFiles(context: $TSContext) {

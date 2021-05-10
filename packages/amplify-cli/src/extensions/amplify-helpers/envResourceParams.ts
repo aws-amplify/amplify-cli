@@ -75,7 +75,12 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
     // write hostedUIProviderCreds to deploymentSecrets
     const deploymentSecrets = stateManager.getDeploymentSecrets();
-    const rootStackId = getRootStackId();
+    let rootStackId;
+    try {
+      rootStackId = getRootStackId();
+    } catch (err) {
+      return;
+    }
     if (hostedUIProviderCreds) {
       stateManager.setDeploymentSecrets(
         mergeDeploymentSecrets({
