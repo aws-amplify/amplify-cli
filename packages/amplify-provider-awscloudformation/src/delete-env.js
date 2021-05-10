@@ -6,19 +6,23 @@ const { S3 } = require('./aws-utils/aws-s3');
 const { deleteEnv } = require('./amplify-service-manager');
 const { S3BackendZipFileName, ProviderName } = require('./constants');
 const { downloadZip, extractZip } = require('./zip-util');
+const { stateManager } = require('amplify-cli-core');
 
 async function run(context, envName, deleteS3) {
   const credentials = await loadConfigurationForEnv(context, envName);
   const cfn = await new Cloudformation(context, null, credentials);
   const s3 = await S3.getInstance(context, credentials);
   let removeBucket = false;
-  let deploymentBucketName;
+  const deploymentBucketName = stateManager.getTeamProviderInfo()?.[envName]?.[ProviderName]?.DeploymentBucketName;
   let storageCategoryBucketName;
 
+  // if this env has not been initialized in the cloud, early return
+  if (!deploymentBucketName) {
+    return;
+  }
+
   if (deleteS3) {
-    const projectDetails = context.amplify.getProjectDetails();
-    deploymentBucketName = projectDetails.teamProviderInfo[envName][ProviderName].DeploymentBucketName;
-    if (await s3.ifBucketExists(deploymentBucketName)) {
+    if (!!deploymentBucketName && (await s3.ifBucketExists(deploymentBucketName))) {
       const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
       const tempDir = path.join(amplifyDir, envName, '.temp');
       storageCategoryBucketName = await getStorageCategoryBucketNameFromCloud(context, envName, s3, tempDir);

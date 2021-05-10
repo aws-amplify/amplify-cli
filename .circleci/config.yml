@@ -1135,6 +1135,14 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/function_5.test.ts
       CLI_REGION: ap-northeast-1
+  defer-init-push-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps: *ref_4
+    environment:
+      TEST_SUITE: src/__tests__/defer-init-push.test.ts
+      CLI_REGION: ap-southeast-1
   configure-project-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1142,7 +1150,7 @@ jobs:
     steps: *ref_4
     environment:
       TEST_SUITE: src/__tests__/configure-project.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: ap-southeast-2
   api_4-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1150,7 +1158,7 @@ jobs:
     steps: *ref_4
     environment:
       TEST_SUITE: src/__tests__/api_4.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   schema-iterative-update-4-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
     docker: *ref_1
@@ -1831,6 +1839,16 @@ jobs:
       TEST_SUITE: src/__tests__/function_5.test.ts
       CLI_REGION: ap-northeast-1
     steps: *ref_5
+  defer-init-push-amplify_e2e_tests_pkg_linux:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+      TEST_SUITE: src/__tests__/defer-init-push.test.ts
+      CLI_REGION: ap-southeast-1
+    steps: *ref_5
   configure-project-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
     docker: *ref_1
@@ -1839,7 +1857,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/configure-project.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: ap-southeast-2
     steps: *ref_5
   api_4-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -1849,7 +1867,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/api_4.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
     steps: *ref_5
 workflows:
   version: 2
@@ -1886,7 +1904,9 @@ workflows:
     jobs:
       - build
       - cleanup_resources:
-          context: cleanup-resources
+          context:
+            - cleanup-resources
+            - e2e-test-context
           requires:
             - build
   build_test_deploy:
@@ -1947,10 +1967,10 @@ workflows:
                 - master
       - done_with_node_e2e_tests:
           requires:
-            - schema-key-amplify_e2e_tests
             - analytics-amplify_e2e_tests
             - notifications-amplify_e2e_tests
             - schema-iterative-update-locking-amplify_e2e_tests
+            - api_4-amplify_e2e_tests
             - schema-auth-10-amplify_e2e_tests
             - hosting-amplify_e2e_tests
             - tags-amplify_e2e_tests
@@ -1970,17 +1990,17 @@ workflows:
             - schema-iterative-update-2-amplify_e2e_tests
             - schema-data-access-patterns-amplify_e2e_tests
             - init-special-case-amplify_e2e_tests
-            - configure-project-amplify_e2e_tests
+            - defer-init-push-amplify_e2e_tests
             - feature-flags-amplify_e2e_tests
             - schema-versioned-amplify_e2e_tests
             - plugin-amplify_e2e_tests
-            - api_4-amplify_e2e_tests
+            - configure-project-amplify_e2e_tests
       - done_with_pkg_linux_e2e_tests:
           requires:
-            - schema-key-amplify_e2e_tests_pkg_linux
             - analytics-amplify_e2e_tests_pkg_linux
             - notifications-amplify_e2e_tests_pkg_linux
             - schema-iterative-update-locking-amplify_e2e_tests_pkg_linux
+            - api_4-amplify_e2e_tests_pkg_linux
             - schema-auth-10-amplify_e2e_tests_pkg_linux
             - hosting-amplify_e2e_tests_pkg_linux
             - tags-amplify_e2e_tests_pkg_linux
@@ -2000,11 +2020,11 @@ workflows:
             - schema-iterative-update-2-amplify_e2e_tests_pkg_linux
             - schema-data-access-patterns-amplify_e2e_tests_pkg_linux
             - init-special-case-amplify_e2e_tests_pkg_linux
-            - configure-project-amplify_e2e_tests_pkg_linux
+            - defer-init-push-amplify_e2e_tests_pkg_linux
             - feature-flags-amplify_e2e_tests_pkg_linux
             - schema-versioned-amplify_e2e_tests_pkg_linux
             - plugin-amplify_e2e_tests_pkg_linux
-            - api_4-amplify_e2e_tests_pkg_linux
+            - configure-project-amplify_e2e_tests_pkg_linux
       - amplify_migration_tests_latest:
           context:
             - amplify-ecr-image-pull
@@ -2076,7 +2096,9 @@ workflows:
               only:
                 - release
       - cleanup_resources_after_e2e_runs:
-          context: cleanup-resources
+          context:
+            - cleanup-resources
+            - e2e-test-context
           requires:
             - done_with_pkg_linux_e2e_tests
             - amplify_migration_tests_latest
@@ -2183,6 +2205,12 @@ workflows:
           filters: *ref_9
           requires:
             - function_2-amplify_e2e_tests
+      - api_4-amplify_e2e_tests:
+          context: *ref_7
+          post-steps: *ref_8
+          filters: *ref_9
+          requires:
+            - schema-key-amplify_e2e_tests
       - api_2-amplify_e2e_tests:
           context: *ref_7
           post-steps: *ref_8
@@ -2477,7 +2505,7 @@ workflows:
           filters: *ref_9
           requires:
             - layer-amplify_e2e_tests
-      - configure-project-amplify_e2e_tests:
+      - defer-init-push-amplify_e2e_tests:
           context: *ref_7
           post-steps: *ref_8
           filters: *ref_9
@@ -2537,7 +2565,7 @@ workflows:
           filters: *ref_9
           requires:
             - auth_3-amplify_e2e_tests
-      - api_4-amplify_e2e_tests:
+      - configure-project-amplify_e2e_tests:
           context: *ref_7
           post-steps: *ref_8
           filters: *ref_9
@@ -2615,6 +2643,12 @@ workflows:
           filters: *ref_12
           requires:
             - function_2-amplify_e2e_tests_pkg_linux
+      - api_4-amplify_e2e_tests_pkg_linux:
+          context: *ref_10
+          post-steps: *ref_11
+          filters: *ref_12
+          requires:
+            - schema-key-amplify_e2e_tests_pkg_linux
       - api_2-amplify_e2e_tests_pkg_linux:
           context: *ref_10
           post-steps: *ref_11
@@ -2929,7 +2963,7 @@ workflows:
           filters: *ref_12
           requires:
             - layer-amplify_e2e_tests_pkg_linux
-      - configure-project-amplify_e2e_tests_pkg_linux:
+      - defer-init-push-amplify_e2e_tests_pkg_linux:
           context: *ref_10
           post-steps: *ref_11
           filters: *ref_12
@@ -2993,7 +3027,7 @@ workflows:
           filters: *ref_12
           requires:
             - auth_3-amplify_e2e_tests_pkg_linux
-      - api_4-amplify_e2e_tests_pkg_linux:
+      - configure-project-amplify_e2e_tests_pkg_linux:
           context: *ref_10
           post-steps: *ref_11
           filters: *ref_12

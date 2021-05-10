@@ -377,6 +377,18 @@ export async function initWithPermissionBoundary(cwd: string, permissionBoundary
   });
 }
 
+export function amplifyInitYes(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['init', '--yes'], {
+      cwd,
+      stripColors: true,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
+    }).run((err: Error) => (err ? reject(err) : resolve()));
+  });
+}
+
 export function amplifyVersion(cwd: string, expectedVersion: string, testingWithLatestCodebase = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['--version'], { cwd, stripColors: true })

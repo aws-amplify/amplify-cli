@@ -1,4 +1,5 @@
 import { StackEvent } from 'aws-sdk/clients/cloudformation';
+import { fileLogger, Logger } from '../utils/aws-logger';
 import * as aws from 'aws-sdk';
 export interface StackEventMonitorOptions {
   pollDelay: number;
@@ -19,6 +20,7 @@ export class StackEventMonitor {
   private completedStacks: Set<string> = new Set();
   private stacksBeingMonitored: string[] = [this.stackName];
   private lastPolledStackIndex: number = 0;
+  private logger: Logger;
 
   constructor(
     private cfn: aws.CloudFormation,
@@ -27,6 +29,7 @@ export class StackEventMonitor {
     options?: StackEventMonitor,
   ) {
     this.options = { pollDelay: 5_000, ...options };
+    this.logger = fileLogger('stack-event-monitor');
   }
 
   public start() {
@@ -74,6 +77,7 @@ export class StackEventMonitor {
 
       this.printer.print();
     } catch (e) {
+      this.logger('scheduleNextTick', [])(e);
       if (e && e.code !== 'Throttling') e.message = 'Error occurred while monitoring stack:' + e.message;
       throw e;
     }
@@ -136,6 +140,7 @@ export class StackEventMonitor {
         }
       }
     } catch (e) {
+      this.logger('readNewEvents', [])(e);
       if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
         return;
       }

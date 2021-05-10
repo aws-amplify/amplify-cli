@@ -35,6 +35,18 @@ export function updateEnvironment(cwd: string, settings: { permissionBoundaryArn
   });
 }
 
+export function addEnvironmentYes(cwd: string, settings: { envName: string }): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['env', 'add', '--yes', '--envName', settings.envName], {
+      cwd,
+      stripColors: true,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
+    }).run((err: Error) => (err ? reject(err) : resolve()));
+  });
+}
+
 export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName: string; currentEnvName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
