@@ -2,6 +2,7 @@ import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { SearchableModelTransformer } from '../';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
+import { parse } from 'graphql';
 
 test('Test SearchableModelTransformer validation happy case', () => {
   const validSchema = `
@@ -17,8 +18,26 @@ test('Test SearchableModelTransformer validation happy case', () => {
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
-  expect(out.schema).toBeDefined();
+  parse(out.schema);
   expect(out.schema).toMatchSnapshot();
+});
+
+test('Test SearchableModelTransformer vtl', () => {
+  const validSchema = `
+    type Post @model @searchable {
+        id: ID!
+        title: String!
+        createdAt: String
+        updatedAt: String
+    }
+    `;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+  });
+
+  const out = transformer.transform(validSchema);
+  expect(parse(out.schema)).toBeDefined();
+  expect(out.pipelineFunctions).toMatchSnapshot();
 });
 
 test('Test SearchableModelTransformer with query overrides', () => {
@@ -34,7 +53,7 @@ test('Test SearchableModelTransformer with query overrides', () => {
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
-  expect(out.schema).toBeDefined();
+  expect(parse(out.schema)).toBeDefined();
   expect(out.schema).toMatchSnapshot();
 });
 

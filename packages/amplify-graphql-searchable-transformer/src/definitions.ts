@@ -63,7 +63,7 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(obj.name.value);
   assert(obj.fields);
   const fields: InputValueDefinitionNode[] = obj.fields
-    .filter((field: FieldDefinitionNode) => isScalar(field.type) === true)
+    .filter((field: FieldDefinitionNode) => isScalar(field.type))
     .map(
       (field: FieldDefinitionNode) =>
         ({
@@ -150,7 +150,7 @@ export function makeSearchableXSortableFieldsEnumObject(obj: ObjectTypeDefinitio
   const name = graphqlName(`Searchable${obj.name.value}SortableFields`);
   assert(obj.fields);
   const values: EnumValueDefinitionNode[] = obj.fields
-    .filter((field: FieldDefinitionNode) => isScalar(field.type) === true)
+    .filter((field: FieldDefinitionNode) => isScalar(field.type))
     .map((field: FieldDefinitionNode) => ({
       kind: Kind.ENUM_VALUE_DEFINITION,
       name: field.name,

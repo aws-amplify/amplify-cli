@@ -46,18 +46,17 @@ function warnOnAuth(context, map) {
 }
 
 function getTransformerFactory(context, resourceDir) {
-  return async () => {
+  return async options => {
     const transformerList: TransformerPluginProvider[] = [
       new ModelTransformer(),
       new FunctionTransformer(),
       new HttpTransformer(),
-      new SearchableModelTransformer(),
       // TODO: initialize transformer plugins
     ];
 
-    // if (addSearchableTransformer) {
-    //   transformerList.push(new SearchableModelTransformer());
-    // }
+    if (options.searchableTransformerFlag) {
+      transformerList.push(new SearchableModelTransformer());
+    }
 
     const customTransformersConfig = await readTransformerConfiguration(resourceDir);
     const customTransformers = (customTransformersConfig && customTransformersConfig.transformers
@@ -274,7 +273,7 @@ export async function transformGraphQLSchema(context, options) {
     buildParameters,
     projectDirectory: resourceDir,
     transformersFactory: transformerListFactory,
-    transformersFactoryArgs: [searchableTransformerFlag, storageConfig],
+    transformersFactoryArgs: { searchableTransformerFlag, storageConfig },
     rootStackFileName: 'cloudformation-template.json',
     currentCloudBackendDirectory: previouslyDeployedBackendDir,
     minify: options.minify,
@@ -317,7 +316,7 @@ async function getPreviousDeploymentRootKey(previouslyDeployedBackendDir) {
 }
 
 export async function getDirectiveDefinitions(context, resourceDir) {
-  const transformList = await getTransformerFactory(context, resourceDir)();
+  const transformList = await getTransformerFactory(context, resourceDir)(true);
   const appSynDirectives = getAppSyncServiceExtraDirectives();
   const transformDirectives = transformList
     .map(transformPluginInst => [transformPluginInst.directive, ...transformPluginInst.typeDefinitions].map(node => print(node)).join('\n'))

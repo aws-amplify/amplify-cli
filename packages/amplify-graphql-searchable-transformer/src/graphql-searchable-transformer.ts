@@ -25,7 +25,7 @@ import {
   plurality,
   toUpper,
 } from 'graphql-transformer-common';
-import { createParametersStack as createParametersInStack } from './cdk/create-parameters';
+import { createParametersStack as createParametersInStack } from './cdk/create-cfnParameters';
 import { requestTemplate, responseTemplate } from './generate-resolver-vtl';
 import {
   makeSearchableScalarInputObject,
@@ -70,7 +70,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     const envParam = context.stackManager.getParameter(Env) as CfnParameter;
 
     new CfnCondition(stack, HasEnvironmentParameter, {
-      expression: Fn.conditionNot(Fn.conditionEquals(envParam, 'NONE')),
+      expression: Fn.conditionNot(Fn.conditionEquals(envParam, ResourceConstants.NONE)),
     });
 
     const isProjectUsingDataStore = false;
@@ -114,8 +114,9 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       const typeName = context.output.getQueryTypeName();
       const table = getTable(context, def.node);
       const ddbTable = table as Table;
-      ddbTable.grantStreamRead(lambdaRole);
       assert(ddbTable);
+
+      ddbTable.grantStreamRead(lambdaRole);
 
       // creates event source mapping from ddb to lambda
       createEventSourceMapping(stack, type, lambda, ddbTable.tableStreamArn);
@@ -128,9 +129,9 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         datasource as DataSourceProvider,
         MappingTemplate.s3MappingTemplateFromString(
           requestTemplate(attributeName, getNonKeywordFields(def.node), false, type),
-          `${typeName}.${def.fieldName}.res.vtl`,
+          `${typeName}.${def.fieldName}.req.vtl`,
         ),
-        MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.req.vtl`),
+        MappingTemplate.s3MappingTemplateFromString(responseTemplate(false), `${typeName}.${def.fieldName}.res.vtl`),
       );
       resolver.mapToStack(stack);
       context.resolvers.addResolver(type, def.fieldName, resolver);

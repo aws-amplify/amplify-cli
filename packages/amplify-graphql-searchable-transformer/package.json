@@ -1,11 +1,11 @@
 {
     "name": "@aws-amplify/graphql-searchable-transformer",
     "version": "0.1.0",
-    "description": "Amplfy graphql @searchable transformer",
+    "description": "Amplfy GraphQL @searchable transformer",
     "repository": {
         "type": "git",
         "url": "https://github.com/aws-amplify/amplify-cli.git",
-        "directory": "packages/amplify-graphql-model-transformer"
+        "directory": "packages/amplify-graphql-searchable-transformer"
     },
     "author": "Amazon Web Services",
     "license": "Apache-2.0",
@@ -23,7 +23,8 @@
     "scripts": {
         "build": "tsc && cd streaming-lambda && bestzip --force node ../lib/streaming-lambda.zip python_streaming_function.py",
         "watch": "tsc -w",
-        "clean": "rimraf ./lib"
+        "clean": "rimraf ./lib",
+        "test": "jest"
     },
     "dependencies": {
         "@aws-amplify/graphql-transformer-core": "0.5.0",
@@ -41,7 +42,8 @@
     },
     "devDependencies": {
         "@types/fs-extra": "^8.0.1",
-        "@types/node": "^10.17.13"
+        "@types/node": "^10.17.13",
+        "@aws-cdk/assert": "~1.72.0"
     },
     "jest": {
         "transform": {

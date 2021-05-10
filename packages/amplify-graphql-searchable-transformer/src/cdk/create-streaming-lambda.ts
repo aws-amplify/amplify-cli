@@ -29,7 +29,7 @@ export const createLambda = (
     ElasticsearchStreamingLambdaFunctionLogicalID,
     'functions/' + ElasticsearchStreamingLambdaFunctionLogicalID + '.zip',
     parameterMap.get(ElasticsearchStreamingLambdaHandlerName)!.valueAsString,
-    path.resolve(`${__dirname}/../../lib/streaming-lambda.zip`),
+    path.resolve(__dirname, '..', '..', 'lib', 'streaming-lambda.zip'),
     Runtime.PYTHON_3_6,
     [
       LayerVersion.fromLayerVersionArn(
