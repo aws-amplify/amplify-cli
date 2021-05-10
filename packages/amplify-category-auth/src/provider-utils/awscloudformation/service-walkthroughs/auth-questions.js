@@ -415,7 +415,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
   if (answers.hostedUI) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
-        const delimmiter = el === 'Facebook' || el === 'SignInWithApple' ? ',' : ' ';
+        const delimmiter = ['Facebook', 'SignInWithApple'].includes(el) ? ',' : ' ';
         const scopes = [];
         const maps = {};
         attributesForMapping.forEach(a => {
