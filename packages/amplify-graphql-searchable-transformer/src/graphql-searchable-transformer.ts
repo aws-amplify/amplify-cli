@@ -140,8 +140,6 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     createStackOutputs(stack, domain.domainEndpoint, context.api.apiId, domain.domainArn);
   };
 
-  after = (_: TransformerContextProvider): void => {};
-
   object = (definition: ObjectTypeDefinitionNode, directive: DirectiveNode, ctx: TransformerSchemaVisitStepContextProvider): void => {
     const modelDirective = definition?.directives?.find(dir => dir.name.value === 'model');
     if (!modelDirective) {
