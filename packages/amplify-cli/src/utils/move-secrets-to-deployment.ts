@@ -1,5 +1,5 @@
 import { stateManager, mergeDeploymentSecrets } from 'amplify-cli-core';
-import { getRootStackId } from '../extensions/amplify-helpers/get-root-stack-id';
+import { getDeploymentSecretsKey } from '../extensions/amplify-helpers/get-deployment-secrets-key';
 const hostedUIProviderCredsField = 'hostedUIProviderCreds';
 
 export const moveSecretsFromTeamProviderToDeployment = (projectPath?: string): void => {
@@ -15,11 +15,11 @@ export const moveSecretsFromTeamProviderToDeployment = (projectPath?: string): v
           const teamProviderSecrets = envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField];
 
           delete envTeamProvider.categories.auth[resourceName][hostedUIProviderCredsField];
-          const rootStackId = getRootStackId();
+          const deploymentSecretsKey = getDeploymentSecretsKey();
           secrets = mergeDeploymentSecrets({
             currentDeploymentSecrets: secrets,
             category: 'auth',
-            rootStackId,
+            rootStackId: deploymentSecretsKey,
             envName,
             resource: resourceName,
             keyName: hostedUIProviderCredsField,

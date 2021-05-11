@@ -118,9 +118,13 @@ export function generateAmplifyMetaFile(context: $TSContext) {
   _.merge(meta, context.exeInfo.amplifyMeta);
   stateManager.setMeta(projectPath, meta);
 
-  // store current cloud meta
+  // store providers part of current cloud meta
   const currMeta = isNewEnv ? {} : stateManager.getCurrentMeta(projectPath, { throwIfNotExist: false }) || {};
-  _.merge(currMeta, context.exeInfo.amplifyMeta);
+  if (currMeta?.providers) {
+    _.merge(currMeta?.providers, context.exeInfo.amplifyMeta?.providers);
+  } else {
+    _.set(currMeta, ['providers'], context.exeInfo.amplifyMeta?.providers);
+  }
   stateManager.setCurrentMeta(projectPath, currMeta);
 }
 
@@ -152,7 +156,7 @@ function generateTeamProviderInfoFile(context: $TSContext) {
       default: {},
     });
 
-    Object.assign(teamProviderInfo, context.exeInfo.teamProviderInfo);
+    _.merge(teamProviderInfo, context.exeInfo.teamProviderInfo);
   } else {
     ({ teamProviderInfo } = context.exeInfo);
   }

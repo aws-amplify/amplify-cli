@@ -367,14 +367,20 @@ export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
   });
 }
 
-export function amplifyInitYes(cwd: string): Promise<void> {
+export function amplifyInitYes(cwd: string, settings = {}): Promise<void> {
+  const s = { ...defaultSettings, ...settings };
+  let env;
+
+  if (s.disableAmplifyAppCreation === true) {
+    env = {
+      CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+    };
+  }
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['init', '--yes'], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env,
     }).run((err: Error) => (err ? reject(err) : resolve()));
   });
 }

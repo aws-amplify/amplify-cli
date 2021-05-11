@@ -96,6 +96,7 @@
     "semver": "^7.1.1",
     "tar-fs": "^2.1.1",
     "update-notifier": "^4.1.0",
+    "uuid": "^3.4.0",
     "which": "^2.0.2",
     "winston": "^3.3.3"
   },

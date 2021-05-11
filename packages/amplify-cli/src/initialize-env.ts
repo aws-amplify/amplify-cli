@@ -79,13 +79,14 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
     context.exeInfo = context.exeInfo || {};
     Object.assign(context.exeInfo, projectDetails);
 
-    await sequential(categoryInitializationTasks);
-
     // this function can now be called on the push codepath in the case of a deffered root stack push
     // in that case, we don't need to push here as that will happen automatically down the road
+    // we also don't need to do the category initialization step because the env is already initialized in the case of a deferred root stack push
     if (context?.input?.command === 'push') {
       return;
     }
+
+    await sequential(categoryInitializationTasks);
 
     if (context.exeInfo.forcePush === undefined) {
       context.exeInfo.forcePush = await context.amplify.confirmPrompt(

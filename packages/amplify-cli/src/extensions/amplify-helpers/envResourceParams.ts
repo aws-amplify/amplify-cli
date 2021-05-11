@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { getEnvInfo } from './get-env-info';
 import { $TSContext, $TSObject, stateManager, mergeDeploymentSecrets, removeFromDeploymentSecrets } from 'amplify-cli-core';
-import { getRootStackId } from './get-root-stack-id';
+import { getDeploymentSecretsKey } from './get-deployment-secrets-key';
 
 const CATEGORIES = 'categories';
 const hostedUIProviderCredsField = 'hostedUIProviderCreds';
@@ -75,17 +75,12 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
     stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
     // write hostedUIProviderCreds to deploymentSecrets
     const deploymentSecrets = stateManager.getDeploymentSecrets();
-    let rootStackId;
-    try {
-      rootStackId = getRootStackId();
-    } catch (err) {
-      return;
-    }
+    const deploymentSecretsKey = getDeploymentSecretsKey();
     if (hostedUIProviderCreds) {
       stateManager.setDeploymentSecrets(
         mergeDeploymentSecrets({
           currentDeploymentSecrets: deploymentSecrets,
-          rootStackId,
+          rootStackId: deploymentSecretsKey,
           category,
           envName: currentEnv,
           keyName: hostedUIProviderCredsField,
@@ -97,7 +92,7 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
       stateManager.setDeploymentSecrets(
         removeFromDeploymentSecrets({
           currentDeploymentSecrets: deploymentSecrets,
-          rootStackId,
+          rootStackId: deploymentSecretsKey,
           category,
           resource,
           envName: currentEnv,
@@ -120,8 +115,8 @@ function loadEnvResourceParametersFromDeploymentSecrets(context: $TSContext, cat
   try {
     const currentEnv = getCurrentEnvName(context);
     const deploymentSecrets = stateManager.getDeploymentSecrets();
-    const rootStackId = getRootStackId();
-    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === rootStackId);
+    const deploymentSecretsKey = getDeploymentSecretsKey();
+    const deploymentSecretByAppId = _.find(deploymentSecrets.appSecrets, appSecret => appSecret.rootStackId === deploymentSecretsKey);
     if (deploymentSecretByAppId) {
       return _.get(deploymentSecretByAppId.environments, [currentEnv, category, resource]);
     } else {
@@ -160,13 +155,13 @@ export function removeResourceParameters(context: $TSContext, category: string, 
 export function removeDeploymentSecrets(context: $TSContext, category: string, resource: string) {
   const currentEnv = getCurrentEnvName(context);
   const deploymentSecrets = stateManager.getDeploymentSecrets();
-  const rootStackId = getRootStackId();
+  const deploymentSecretsKey = getDeploymentSecretsKey();
 
   if (!isMigrationContext(context)) {
     stateManager.setDeploymentSecrets(
       removeFromDeploymentSecrets({
         currentDeploymentSecrets: deploymentSecrets,
-        rootStackId,
+        rootStackId: deploymentSecretsKey,
         envName: currentEnv,
         category: category,
         resource: resource,

@@ -1,5 +1,6 @@
 import {
   addAuthWithDefault,
+  amplifyInitYes,
   amplifyPull,
   amplifyPushUpdate,
   checkIfBucketExists,
@@ -47,11 +48,11 @@ describe('environment commands', () => {
   });
 
   it('init a project, add environments, list them, then remove them', async () => {
-    await initJSProjectWithProfile(projRoot, { envName: 'enva' });
+    await amplifyInitYes(projRoot);
     await listEnvironment(projRoot, {});
     await addEnvironment(projRoot, { envName: 'envb' });
     await listEnvironment(projRoot, { numEnv: 2 });
-    await checkoutEnvironment(projRoot, { envName: 'enva' });
+    await checkoutEnvironment(projRoot, { envName: 'dev' });
     await removeEnvironment(projRoot, { envName: 'envb' });
     await listEnvironment(projRoot, {});
 
@@ -60,7 +61,7 @@ describe('environment commands', () => {
   });
 
   it('init a project, pull, add auth, pull to override auth change', async () => {
-    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
+    await amplifyInitYes(projRoot, { disableAmplifyAppCreation: false });
     await amplifyPull(projRoot, { override: false });
     await addAuthWithDefault(projRoot, {});
     await amplifyPull(projRoot, { override: true });
