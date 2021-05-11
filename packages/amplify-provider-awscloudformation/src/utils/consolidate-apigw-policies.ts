@@ -85,7 +85,7 @@ class ApiGatewayAuthStack extends cdk.Stack {
         state.path = path;
 
         if (apiGateway.params.privacy.auth) {
-          state.methods = path?.privacy?.auth ?? [];
+          state.methods = Array.isArray(path?.privacy?.auth) ? path.privacy.auth : [];
           state.roleCount = authRoleCount;
           state.roleName = authRoleName;
           state.policyDocSize = authPolicyDocSize;
@@ -96,7 +96,7 @@ class ApiGatewayAuthStack extends cdk.Stack {
         }
 
         if (apiGateway.params.privacy.unauth) {
-          state.methods = path?.privacy?.unauth ?? [];
+          state.methods = Array.isArray(path?.privacy?.unauth) ? path.privacy.unauth : [];
           state.roleCount = unauthRoleCount;
           state.roleName = unauthRoleName;
           state.policyDocSize = unauthPolicyDocSize;
@@ -280,6 +280,16 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
         path.policyResourceName = String(path.name).replace(/{[a-zA-Z0-9\-]+}/g, '*');
         modified = true;
       }
+
+      if (typeof path?.privacy?.auth === 'string') {
+        path.privacy.auth = convertPermissionStringToCrud(path.privacy.auth);
+        modified = true;
+      }
+
+      if (typeof path?.privacy?.unauth === 'string') {
+        path.privacy.unauth = convertPermissionStringToCrud(path.privacy.unauth);
+        modified = true;
+      }
     });
   }
 
@@ -288,4 +298,14 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
     JSONUtilities.writeJson(paramsFile, parameterJson);
     JSONUtilities.writeJson(apiParamsFile, api.params);
   }
+}
+
+function convertPermissionStringToCrud(permissions: string): string[] {
+  if (permissions === 'r') {
+    return ['/GET'];
+  } else if (permissions === 'rw') {
+    return ['/POST', '/GET', '/PUT', '/PATCH', '/DELETE'];
+  }
+
+  return [];
 }
