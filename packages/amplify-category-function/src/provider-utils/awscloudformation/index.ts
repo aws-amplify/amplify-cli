@@ -18,7 +18,7 @@ import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
 import fs from 'fs-extra';
 import path from 'path';
 import { IsMockableResponse } from '../..';
-import { JSONUtilities, open } from 'amplify-cli-core';
+import { exitOnNextTick, JSONUtilities, open } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function
@@ -217,12 +217,16 @@ export async function updateFunctionResource(context, category, service, paramet
     saveMutableState(parameters);
     saveCFNParameters(parameters);
   } else {
-    parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
-    if (parameters.dependsOn) {
-      context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
+    try {
+      parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
+      if (parameters.dependsOn) {
+        context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
+      }
+      saveMutableState(parameters);
+      saveCFNParameters(parameters);
+    } catch (e) {
+      throw e;
     }
-    saveMutableState(parameters);
-    saveCFNParameters(parameters);
   }
 
   if (!parameters || (parameters && !parameters.skipEdit)) {

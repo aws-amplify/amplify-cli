@@ -143,16 +143,18 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   if (lambdaFuncResourceNames.length === 0) {
     const errMessage = 'No Lambda function resource to update. Use "amplify add function" to create a new function.';
     context.print.error(errMessage);
-    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-    exitOnNextTick(0);
+    const error = new ResourceDoesNotExistError(errMessage);
+    error.stack = undefined;
+    throw error;
   }
 
   if (lambdaToUpdate) {
     if (!lambdaFuncResourceNames.includes(lambdaToUpdate)) {
       const errMessage = `No Lambda function named ${lambdaToUpdate} exists in the project.`;
       context.print.error(errMessage);
-      await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
-      exitOnNextTick(0);
+      const error = new ResourceDoesNotExistError(errMessage);
+      error.stack = undefined;
+      throw error;
     }
   } else {
     const resourceQuestion = [
