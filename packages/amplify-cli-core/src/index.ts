@@ -180,7 +180,6 @@ interface AmplifyToolkit {
   getProjectMeta: () => $TSMeta;
   getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => $TSAny;
   getResourceOutputs: () => $TSAny;
-  getTags: (context: $TSContext) => $TSAny;
   getWhen: () => $TSAny;
   inputValidation: (input: $TSAny) => $TSAny;
   listCategories: () => $TSAny;
@@ -196,7 +195,7 @@ interface AmplifyToolkit {
     filteredResources?: { category: string; resourceName: string }[],
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
-  readJsonFile: (file: string) => $TSAny;
+  readJsonFile: () => $TSAny;
   removeEnvFromCloud: () => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
   removeResource: () => $TSAny;
