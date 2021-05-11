@@ -246,7 +246,7 @@ export const supportedServices = {
         key: 'appleAppId',
         prefix:
           " \n You've opted to allow users to authenticate via Sign in with Apple. If you haven't already, you'll need to go to https://developer.apple.com/account/#/welcome and configure Sign in with Apple. \n",
-        question: 'Enter your Services ID for your identity pool: ',
+        question: 'Enter your Bundle Identifier for your identity pool: ',
         required: true,
         andConditions: [
           {
