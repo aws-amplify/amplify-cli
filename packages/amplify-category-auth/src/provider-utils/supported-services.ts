@@ -245,8 +245,8 @@ export const supportedServices = {
       {
         key: 'appleAppId',
         prefix:
-          " \n You've opted to allow users to authenticate via Apple.  If you haven't already, you'll need to go to https://developer.apple.com/programs/enroll/ and create an App ID. \n",
-        question: 'Enter your Apple App ID for your identity pool: ',
+          " \n You've opted to allow users to authenticate via Sign in with Apple. If you haven't already, you'll need to go to https://developer.apple.com/account/#/welcome and configure Sign in with Apple. \n",
+        question: 'Enter your Services ID for your identity pool: ',
         required: true,
         andConditions: [
           {
@@ -1182,8 +1182,8 @@ export const supportedServices = {
       {
         key: 'signinwithappleClientIdUserPool',
         prefix:
-          " \n You've opted to allow users to authenticate via Apple.  If you haven't already, you'll need to create an Amazon App ID. Head to https://developer.apple.com/programs/enroll to learn more. \n",
-        question: 'Enter your Sign in with Apple Client ID for your OAuth flow: ',
+          " \n You've opted to allow users to authenticate via Sign in with Apple. If you haven't already, you'll need to go to https://developer.apple.com/account/#/welcome and configure Sign in with Apple. \n",
+        question: 'Enter your Services ID for your OAuth flow: ',
         required: true,
         andConditions: [
           {
@@ -1195,7 +1195,7 @@ export const supportedServices = {
       },
       {
         key: 'signinwithappleTeamIdUserPool',
-        question: 'Enter your Sign in with Apple Team ID for your OAuth flow: ',
+        question: 'Enter your Team ID for your OAuth flow: ',
         required: true,
         andConditions: [
           {
@@ -1207,7 +1207,7 @@ export const supportedServices = {
       },
       {
         key: 'signinwithappleKeyIdUserPool',
-        question: 'Enter your Sign in with Apple Key ID for your OAuth flow: ',
+        question: 'Enter your Key ID for your OAuth flow: ',
         required: true,
         andConditions: [
           {
@@ -1219,7 +1219,7 @@ export const supportedServices = {
       },
       {
         key: 'signinwithapplePrivateKeyUserPool',
-        question: 'Enter your Sign in with Apple Private Key for your OAuth flow: ',
+        question: 'Enter your Private Key for your OAuth flow: ',
         required: true,
         andConditions: [
           {
