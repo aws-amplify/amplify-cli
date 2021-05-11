@@ -66,10 +66,11 @@ export class BannerMessage {
       await this.fetchMessages(process.env.AWS_AMPLIFY_BANNER_MESSAGE_URL ?? AWS_AMPLIFY_DEFAULT_BANNER_URL);
     }
 
-    const matchingMessageItems = this.messages.filter(m =>
-      m.id === messageId && m.conditions?.enabled !== false && m.conditions?.cliVersions
-        ? semver.satisfies(this.cliVersion, m.conditions?.cliVersions)
-        : true,
+    const matchingMessageItems = this.messages.filter(
+      m =>
+        m.id === messageId &&
+        m.conditions?.enabled !== false &&
+        (m.conditions?.cliVersions ? semver.satisfies(this.cliVersion, m.conditions.cliVersions) : true),
     );
 
     const messageItem = matchingMessageItems.find(m => {
