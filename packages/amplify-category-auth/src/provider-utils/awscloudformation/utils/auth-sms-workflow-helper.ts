@@ -1,6 +1,4 @@
 import { $TSContext } from 'amplify-cli-core';
-import { CognitoIdentityProvider, IdentityPool } from 'aws-sdk/clients/cognitoidentity';
-import { ICognitoUserPoolService, IIdentityPoolService } from 'amplify-util-import';
 import { ProviderUtils } from '../import/types';
 
 import { ServiceQuestionsResult } from '../service-walkthrough-types';
