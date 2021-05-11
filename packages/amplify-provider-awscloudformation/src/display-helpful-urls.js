@@ -1,6 +1,9 @@
 // @ts-check
 const chalk = require('chalk');
 const { BannerMessage } = require('amplify-cli-core');
+const { fileLogger } = require('./utils/aws-logger');
+
+const logger = fileLogger('display-helpful-urls');
 
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
@@ -168,7 +171,7 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
 }
 
 async function showCognitoSandBoxMessage(context, resources) {
-  const smsSandBoxMessage = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_WARNING');
+  const smsSandBoxMessage = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
   if (!smsSandBoxMessage) {
     return;
   }
@@ -176,16 +179,22 @@ async function showCognitoSandBoxMessage(context, resources) {
   const cognitoResource = resources.filter(resource => resource.service === 'Cognito');
 
   if (cognitoResource.length > 0) {
+    const log = logger('showCognitoSandBoxMessage', [cognitoResource[0].resourceName]);
     try {
-      const authPluginName = await context.amplify.getCategoryPluginInfo(context, 'auth', 'cognito');
-      const cognitoProviderPlugin = require(authPluginName.packageName);
-      if (cognitoProviderPlugin.isSMSWorkflowEnabled) {
-        if (await cognitoProviderPlugin.isSMSWorkflowEnabled(context, cognitoResource[0].resourceName)) {
-          context.print.warning(smsSandBoxMessage);
-          return;
-        }
+      log();
+      const smsWorkflowEnabled = await await context.amplify.invokePluginMethod(context, 'auth', 'cognito', 'isSMSWorkflowEnabled', [
+        context,
+        cognitoResource[0].resourceName,
+      ]);
+      if (smsWorkflowEnabled) {
+        context.print.warning(smsSandBoxMessage);
+        return;
       }
-    } catch (e) {}
+    } catch (e) {
+      if (e.name !== 'MethodNotFound') {
+        log(e);
+      }
+    }
   }
 }
 

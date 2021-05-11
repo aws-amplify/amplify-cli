@@ -1,6 +1,6 @@
 import nock from 'nock';
 import url from 'url';
-import { BannerMessage, DEFAULT_BANNER_URL, Message } from '../../banner-message';
+import { BannerMessage, AWS_AMPLIFY_DEFAULT_BANNER_URL, Message } from '../../banner-message';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 let mockServer: nock.Interceptor;
@@ -15,7 +15,7 @@ describe('BannerMessage', () => {
           id: 'first',
           conditions: {
             enabled: true,
-            cliVersions: '4.41',
+            cliVersions: '4.41.0',
             startTime: new Date(Date.now() - ONE_DAY).toISOString(),
             endTime: new Date(Date.now() + ONE_DAY).toISOString(),
           },
@@ -23,7 +23,7 @@ describe('BannerMessage', () => {
       ],
     };
 
-    const urlInfo = url.parse(DEFAULT_BANNER_URL);
+    const urlInfo = url.parse(AWS_AMPLIFY_DEFAULT_BANNER_URL);
     mockServer = nock(`${urlInfo.protocol}//${urlInfo.host}`).get(urlInfo.pathname!);
 
     await BannerMessage.initialize('4.41.0');
@@ -114,6 +114,4 @@ describe('BannerMessage', () => {
     BannerMessage.releaseInstance();
     await expect(() => BannerMessage.getMessage('first')).rejects.toThrowError('BannerMessage is not initialized');
   });
-  
-
 });

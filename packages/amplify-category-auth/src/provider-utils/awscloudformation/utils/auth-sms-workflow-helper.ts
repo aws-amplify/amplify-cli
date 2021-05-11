@@ -38,11 +38,11 @@ export const loadResourceParameters = (context: $TSContext, resourceName: string
 export const loadImportedAuthParameters = async (context: $TSContext, userPoolName: string): Promise<UserPoolMessageConfiguration> => {
   const providerPlugin = getProviderPlugin(context);
   const cognitoUserPoolService = await providerPlugin.createCognitoUserPoolService(context);
-  const cupDetails = await cognitoUserPoolService.getUserPoolDetails(userPoolName);
+  const userPoolDetails = await cognitoUserPoolService.getUserPoolDetails(userPoolName);
   const mfaConfig = await cognitoUserPoolService.getUserPoolMfaConfig(userPoolName);
   return {
     mfaConfiguration: mfaConfig.MfaConfiguration,
-    usernameAttributes: cupDetails.UsernameAttributes,
-    mfaTypes: mfaConfig.SmsMfaConfiguration ? ['SMS TextMessage'] : [],
+    usernameAttributes: userPoolDetails.UsernameAttributes,
+    mfaTypes: mfaConfig.SmsMfaConfiguration ? ['SMS Text Message'] : [],
   };
 };

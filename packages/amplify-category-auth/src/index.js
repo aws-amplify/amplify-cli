@@ -435,7 +435,6 @@ async function isSMSWorkflowEnabled(context, resourceName) {
   let userNameAndMfaConfig;
   if (imported) {
     userNameAndMfaConfig = await loadImportedAuthParameters(context, userPoolId);
-    context.print.info(userNameAndMfaConfig);
   } else {
     userNameAndMfaConfig = loadResourceParameters(context, resourceName);
   }
