@@ -18,7 +18,7 @@ import { merge, convertToComplete, isComplete } from './utils/funcParamsUtils';
 import fs from 'fs-extra';
 import path from 'path';
 import { IsMockableResponse } from '../..';
-import { JSONUtilities, open } from 'amplify-cli-core';
+import { exitOnNextTick, JSONUtilities, open } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new function
@@ -225,7 +225,18 @@ export async function updateFunctionResource(context, category, service, paramet
       saveMutableState(parameters);
       saveCFNParameters(parameters);
     } catch (e) {
-      throw e;
+      if (e.name === 'FunctionResourceNotFound' || e.name === 'SelectedLambdaFunctionNotFound') {
+        // exit here as for these errors function parameters wont be defined
+        context.print.warning(e.message);
+        context.usageData.emitError(e);
+        exitOnNextTick(1);
+      }
+      if (e.stack) {
+        context.print.info(e.stack);
+      }
+
+      context.usageData.emitError(e);
+      process.exitCode = 1;
     }
   }
 
