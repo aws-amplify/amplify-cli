@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { $TSAny, $TSContext, $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
@@ -175,12 +175,11 @@ function computePolicySizeIncrease(methodLength: number, pathLength: number, nam
 
 export function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): $TSObject {
   const apiGateways = [];
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
+  const { amplifyMeta } = context.amplify.getProjectDetails();
   const apis = amplifyMeta?.api ?? {};
 
   try {
-    const cfnPath = path.join((amplify.pathManager as any).getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
+    const cfnPath = path.join(pathManager.getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
     fs.unlinkSync(cfnPath);
   } catch {}
 
@@ -213,7 +212,7 @@ function createApiGatewayAuthResources(context: $TSContext, stackName: string, a
   const cfn = stack.toCloudFormation();
   const { amplify } = context;
   const { DeploymentBucketName } = amplify.getProjectMeta()?.providers?.[ProviderName] ?? {};
-  const cfnPath = path.join((amplify.pathManager as any).getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
+  const cfnPath = path.join(pathManager.getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
 
   if (!cfn.Resources || Object.keys(cfn.Resources).length === 0) {
     return;
