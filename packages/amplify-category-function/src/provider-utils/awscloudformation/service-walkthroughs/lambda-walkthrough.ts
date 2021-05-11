@@ -29,7 +29,7 @@ import {
   fetchPermissionResourcesForCategory,
   fetchPermissionsForResourceInCategory,
 } from '../utils/permissionMapUtils';
-import { $TSObject, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSObject, exitOnNextTick, JSONUtilities, ResourceDoesNotExistError, stateManager } from 'amplify-cli-core';
 import { consolidateDependsOnForLambda } from '../utils/consolidateDependsOn';
 
 /**
@@ -141,14 +141,18 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     .map(resource => resource.resourceName);
 
   if (lambdaFuncResourceNames.length === 0) {
-    context.print.error('No Lambda function resource to update. Use "amplify add function" to create a new function.');
-    return;
+    const errMessage = 'No Lambda function resource to update. Use "amplify add function" to create a new function.';
+    context.print.error(errMessage);
+    await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+    exitOnNextTick(0);
   }
 
   if (lambdaToUpdate) {
     if (!lambdaFuncResourceNames.includes(lambdaToUpdate)) {
-      context.print.error(`No Lambda function named ${lambdaToUpdate} exists in the project.`);
-      return;
+      const errMessage = `No Lambda function named ${lambdaToUpdate} exists in the project.`;
+      context.print.error(errMessage);
+      await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
+      exitOnNextTick(0);
     }
   } else {
     const resourceQuestion = [
