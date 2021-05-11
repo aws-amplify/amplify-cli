@@ -2,7 +2,6 @@ import sequential from 'promise-sequential';
 import ora from 'ora';
 import { $TSContext, $TSObject, stateManager, exitOnNextTick } from 'amplify-cli-core';
 import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-plugins';
-import { onSuccess } from '../init-steps/s9-onSuccess';
 
 const spinner = ora('');
 
@@ -45,7 +44,6 @@ export const run = async (context: $TSContext) => {
     if (context.parameters.options.force) {
       context.exeInfo.forcePush = true;
     }
-    context.exeInfo.deferredInitCallback = onSuccess;
     await syncCurrentCloudBackend(context);
     return await context.amplify.pushResources(context);
   } catch (e) {
