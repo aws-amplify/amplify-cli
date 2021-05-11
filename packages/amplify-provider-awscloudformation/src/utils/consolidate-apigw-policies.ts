@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { $TSAny, $TSContext, $TSObject, JSONUtilities } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
@@ -174,8 +175,14 @@ function computePolicySizeIncrease(methodLength: number, pathLength: number, nam
 
 export function consolidateApiGatewayPolicies(context: $TSContext, stackName: string): $TSObject {
   const apiGateways = [];
-  const { amplifyMeta } = context.amplify.getProjectDetails();
+  const { amplify } = context;
+  const { amplifyMeta } = amplify.getProjectDetails();
   const apis = amplifyMeta?.api ?? {};
+
+  try {
+    const cfnPath = path.join((amplify.pathManager as any).getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
+    fs.unlinkSync(cfnPath);
+  } catch {}
 
   Object.keys(apis).forEach(resourceName => {
     const resource = apis[resourceName];
@@ -191,13 +198,13 @@ export function consolidateApiGatewayPolicies(context: $TSContext, stackName: st
   });
 
   if (apiGateways.length === 0) {
-    return {};
+    return { APIGatewayAuthURL: undefined };
   }
 
-  return createApiGatewayAuthResources(context, stackName, apiGateways);
+  return { APIGatewayAuthURL: createApiGatewayAuthResources(context, stackName, apiGateways) };
 }
 
-function createApiGatewayAuthResources(context: $TSContext, stackName: string, apiGateways: $TSAny): $TSObject {
+function createApiGatewayAuthResources(context: $TSContext, stackName: string, apiGateways: $TSAny): string | undefined {
   const stack = new ApiGatewayAuthStack(undefined, 'Amplify', {
     description: 'API Gateway policy stack created using Amplify CLI',
     stackName,
@@ -208,11 +215,13 @@ function createApiGatewayAuthResources(context: $TSContext, stackName: string, a
   const { DeploymentBucketName } = amplify.getProjectMeta()?.providers?.[ProviderName] ?? {};
   const cfnPath = path.join((amplify.pathManager as any).getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
 
+  if (!cfn.Resources || Object.keys(cfn.Resources).length === 0) {
+    return;
+  }
+
   JSONUtilities.writeJson(cfnPath, cfn);
 
-  return {
-    APIGatewayAuthURL: `https://s3.amazonaws.com/${DeploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`,
-  };
+  return `https://s3.amazonaws.com/${DeploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`;
 }
 
 export function loadApiWithPrivacyParams(context: $TSContext, name: string, resource: any): object | undefined {
