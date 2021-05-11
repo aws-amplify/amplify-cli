@@ -175,7 +175,7 @@ interface AmplifyToolkit {
   getEnvDetails: () => $TSAny;
   getEnvInfo: () => $TSAny;
   getProviderPlugins: (context: $TSContext) => $TSAny;
-  getPluginInstance: () => $TSAny;
+  getPluginInstance: (context: $TSContext, pluginName: string) => $TSAny;
   getProjectConfig: () => $TSAny;
   getProjectDetails: () => $TSAny;
   getProjectMeta: () => $TSMeta;

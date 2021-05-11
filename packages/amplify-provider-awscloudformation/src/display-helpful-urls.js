@@ -1,4 +1,6 @@
+// @ts-check
 const chalk = require('chalk');
+const { BannerMessage } = require('amplify-cli-core');
 
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
@@ -9,6 +11,7 @@ async function displayHelpfulURLs(context, resourcesToBeCreated) {
   showContainerHostingInfo(context, resourcesToBeCreated);
   showHostedUIURLs(context, resourcesToBeCreated);
   await showRekognitionURLS(context, resourcesToBeCreated);
+  await showCognitoSandBoxMessage(context, resourcesToBeCreated);
   context.print.info('');
 }
 
@@ -91,15 +94,17 @@ function showRestAPIURL(context, resourcesToBeCreated) {
 }
 
 function showContainerHostingInfo(context, resourcesToBeCreated) {
-  const resource = resourcesToBeCreated.find(resource => resource.category === 'hosting' && resource.service === 'ElasticContainer' && !resource.hostedZoneId);
+  const resource = resourcesToBeCreated.find(
+    resource => resource.category === 'hosting' && resource.service === 'ElasticContainer' && !resource.hostedZoneId,
+  );
   if (resource && resource.output) {
     const {
       output: {
         LoadBalancerCnameDomainName,
         LoadBalancerAliasDomainName,
         CloudfrontDistributionAliasDomainName,
-        CloudfrontDistributionCnameDomainName
-      }
+        CloudfrontDistributionCnameDomainName,
+      },
     } = resource;
 
     context.print.info(`Make sure to add the following CNAMEs to your domain’s DNS records:\n`);
@@ -159,6 +164,28 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
         context.print.info(chalk`Test Your Hosted UI Endpoint: {blue.underline ${testHostedUIEndpoint}}`);
       }
     }
+  }
+}
+
+async function showCognitoSandBoxMessage(context, resources) {
+  const smsSandBoxMessage = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_WARNING');
+  if (!smsSandBoxMessage) {
+    return;
+  }
+
+  const cognitoResource = resources.filter(resource => resource.service === 'Cognito');
+
+  if (cognitoResource.length > 0) {
+    try {
+      const authPluginName = await context.amplify.getCategoryPluginInfo(context, 'auth', 'cognito');
+      const cognitoProviderPlugin = require(authPluginName.packageName);
+      if (cognitoProviderPlugin.isSMSWorkflowEnabled) {
+        if (await cognitoProviderPlugin.isSMSWorkflowEnabled(context, cognitoResource[0].resourceName)) {
+          context.print.warning(smsSandBoxMessage);
+          return;
+        }
+      }
+    } catch (e) {}
   }
 }
 
