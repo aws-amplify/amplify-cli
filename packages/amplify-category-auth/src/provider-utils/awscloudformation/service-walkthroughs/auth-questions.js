@@ -162,6 +162,7 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     delete context.updatingAuth.googleIos;
     delete context.updatingAuth.googleAndroid;
     delete context.updatingAuth.amazonAppId;
+    delete context.updatingAuth.appleAppId;
   }
 
   // formatting data for identity pool providers
