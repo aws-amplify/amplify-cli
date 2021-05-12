@@ -28,15 +28,22 @@ export class SNS {
 
   public async isInSandboxMode(): Promise<boolean> {
     try {
-      const result = await this.sns.getSMSSandboxAccountStatus().promise();
+      // till the SDK is not released cast the type to any and catch it and do nothing
+      const snsClient = (this.sns as unknown) as any;
+      const result = await snsClient.getSMSSandboxAccountStatus().promise();
       return result.IsInSandbox;
-    } catch (exception) {
-      // There mainly be 2 types of errors
-      // 1. Network
-      // 2. Credentials not having the policy to query the SMS Sandbox status
-      // Todo: need to verify what is the possible error code when the permission is lacking
-      // and throw the exception accordingly to either show an error stating the permission is missing
-      // or network error and could not get the SMS sandbox status
+    } catch (e) {
+      if (e instanceof TypeError) {
+        // AWS SDK is not updated yet.
+      } else if (e.code === 'ResourceNotFound') {
+        // API is not public yet
+      } else if (e.code === 'AuthorizationError') {
+        // Creds dont have permission to query sandbox status
+      } else if (e.code === 'UnknownEndpoint') {
+        // Network error
+      } else {
+        throw e;
+      }
     }
   }
 }
