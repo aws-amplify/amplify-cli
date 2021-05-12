@@ -664,7 +664,7 @@ export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
       .wait('Enter your Team ID for your OAuth flow')
       .send(APPLE_TEAM_ID)
       .sendCarriageReturn()
-      .wait('Enter your Key ID for your OAuth flo')
+      .wait('Enter your Key ID for your OAuth flow')
       .send(APPLE_KEY_ID)
       .sendCarriageReturn()
       .wait('Enter your Private Key for your OAuth flow')
