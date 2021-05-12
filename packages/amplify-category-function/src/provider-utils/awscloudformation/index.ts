@@ -43,9 +43,9 @@ export async function addResource(
   }
   switch (service) {
     case ServiceName.LambdaFunction:
-      return addFunctionResource(context, category, service, serviceConfig, parameters);
+      return addFunctionResource(context, category, service, serviceConfig as ServiceConfig<FunctionParameters>, parameters);
     case ServiceName.LambdaLayer:
-      return addLayerResource(context, service, serviceConfig, parameters as LayerParameters);
+      return addLayerResource(context, service, serviceConfig as ServiceConfig<LayerParameters>, parameters as LayerParameters);
     default:
       throw BAD_SERVICE_ERR;
   }
