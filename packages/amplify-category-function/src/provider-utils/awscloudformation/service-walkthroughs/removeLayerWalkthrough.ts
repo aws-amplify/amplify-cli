@@ -8,7 +8,8 @@ import { getLayerName } from '../utils/layerHelpers';
 import { LayerVersionMetadata } from '../utils/layerParams';
 
 const removeLayerQuestion = 'Choose the Layer versions you want to remove.';
-export async function removeWalkthrough(context: $TSContext, layerName: string) {
+
+export async function removeWalkthrough(context: $TSContext, layerName: string): Promise<string | undefined> {
   const layerCloudState = LayerCloudState.getInstance();
   const layerVersionList = await layerCloudState.getLayerVersionsFromCloud(context, layerName);
 
@@ -22,14 +23,14 @@ export async function removeWalkthrough(context: $TSContext, layerName: string) 
 
   // if nothing is selected return;
   if (selectedLayerVersion.length === 0) {
-    return;
+    return undefined;
   }
 
   const legacyLayerSelectedVersions = selectedLayerVersion.filter(r => r.LegacyLayer);
   const newLayerSelectedVersions = selectedLayerVersion.filter(r => !r.LegacyLayer);
 
   // if everything is selected remove the layer entirely
-  if (selectedLayerVersion.length === newLayerSelectedVersions.length && legacyLayerSelectedVersions.length === 0) {
+  if (layerVersionList.length === newLayerSelectedVersions.length && legacyLayerSelectedVersions.length === 0) {
     return layerName;
   }
 
@@ -39,6 +40,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string) 
   });
 
   warnLegacyRemoval(context, legacyLayerSelectedVersions, newLayerSelectedVersions);
+  const totalSelectedVersionsToRemove = newLayerSelectedVersions.length + legacyLayerSelectedVersions.length;
 
   if (legacyLayerSelectedVersions.length > 0) {
     await deleteLayer(
@@ -49,17 +51,16 @@ export async function removeWalkthrough(context: $TSContext, layerName: string) 
   }
 
   // Save Layer versions to be removed by CFN only if layer versions remain
-  if (
-    newLayerSelectedVersions.length > 0 &&
-    layerVersionList.length > newLayerSelectedVersions.length + legacyLayerSelectedVersions.length
-  ) {
-    const { envName } = stateManager.getLocalEnvInfo();
-    saveLayerVersionsToBeRemovedByCfn(
-      layerName,
-      newLayerSelectedVersions.map(r => r.Version),
-      envName,
-    );
-    return;
+  if (layerVersionList.length > totalSelectedVersionsToRemove) {
+    if (newLayerSelectedVersions.length > 0) {
+      const { envName } = stateManager.getLocalEnvInfo();
+      saveLayerVersionsToBeRemovedByCfn(
+        layerName,
+        newLayerSelectedVersions.map(r => r.Version),
+        envName,
+      );
+    }
+    return undefined;
   }
 
   return layerName;
