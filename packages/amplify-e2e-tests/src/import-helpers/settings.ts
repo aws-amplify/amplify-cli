@@ -49,6 +49,7 @@ export const createIDPAndUserPoolWithOAuthSettings = (
     idpFacebookAppId: 'idpFacebookAppId',
     idpGoogleAppId: 'idpGoogleAppId',
     idpAmazonAppId: 'idpAmazonAppId',
+    idpAppleAppId: 'idpAppleId',
   } as AddAuthIdentityPoolAndUserPoolWithOAuthSettings;
 };
 

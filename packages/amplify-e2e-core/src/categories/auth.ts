@@ -30,6 +30,7 @@ export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnl
   idpFacebookAppId: string;
   idpGoogleAppId: string;
   idpAmazonAppId: string;
+  idpAppleAppId: string;
 };
 
 export function addAuthWithDefault(cwd: string, settings: any = {}): Promise<void> {
@@ -1219,6 +1220,8 @@ export function addAuthIdentityPoolAndUserPoolWithOAuth(
       .sendLine(settings.idpGoogleAppId)
       .wait('Enter your Amazon App ID for your identity pool')
       .sendLine(settings.idpAmazonAppId)
+      .wait('Enter your Bundle Identifier for your identity pool')
+      .sendLine(settings.idpAppleAppId)
       .wait('Please provide a name for your user pool')
       .sendLine(settings.userPoolName)
       .wait('How do you want users to be able to sign in')
