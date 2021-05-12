@@ -458,6 +458,62 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any): Promise
   });
 }
 
+export function addAuthWithDefaultSocial_v30(cwd: string, settings: any): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders(
+      true,
+    );
+
+    spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
+      .wait('Do you want to use the default authentication and security configuration?')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('How do you want users to be able to sign in?')
+      .sendCarriageReturn()
+      .wait('Do you want to configure advanced settings?')
+      .sendCarriageReturn()
+      .wait('What domain name prefix do you want to use?')
+      .sendCarriageReturn()
+      .wait('Enter your redirect signin URI:')
+      .sendLine('https://www.google.com/')
+      .wait('Do you want to add another redirect signin URI')
+      .sendLine('n')
+      .wait('Enter your redirect signout URI:')
+      .sendLine('https://www.nytimes.com/')
+      .wait('Do you want to add another redirect signout URI')
+      .sendLine('n')
+      .wait('Select the social providers you want to configure for your user pool:')
+      .send('a')
+      .sendCarriageReturn()
+      .wait('Enter your Facebook App ID for your OAuth flow:')
+      .send(FACEBOOK_APP_ID)
+      .sendCarriageReturn()
+      .wait('Enter your Facebook App Secret for your OAuth flow:')
+      .send(FACEBOOK_APP_SECRET)
+      .sendCarriageReturn()
+      .wait('Enter your Google Web Client ID for your OAuth flow:')
+      .send(GOOGLE_APP_ID)
+      .sendCarriageReturn()
+      .wait('Enter your Google Web Client Secret for your OAuth flow:')
+      .send(GOOGLE_APP_SECRET)
+      .sendCarriageReturn()
+      .wait('Enter your Amazon App ID for your OAuth flow:')
+      .send(AMAZON_APP_ID)
+      .sendCarriageReturn()
+      .wait('Enter your Amazon App Secret for your OAuth flow:')
+      .send(AMAZON_APP_SECRET)
+      .sendCarriageReturn()
+      .sendEof()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const {
