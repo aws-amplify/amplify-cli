@@ -3,8 +3,6 @@ import { nspawn as spawn, getCLIPath, getSocialProviders } from 'amplify-e2e-cor
 export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
-      .wait('Do you want to use an existing environment?')
-      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Select the authentication method you want to use:')
@@ -29,8 +27,6 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
 export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName: string; currentEnvName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
-      .wait('Do you want to use an existing environment?')
-      .sendConfirmNo()
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Select the authentication method you want to use:')
@@ -150,8 +146,6 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
   } = getSocialProviders();
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
-      .wait('Do you want to use an existing environment?')
-      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Select the authentication method you want to use:')
