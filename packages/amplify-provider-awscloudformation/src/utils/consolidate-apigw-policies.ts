@@ -1,5 +1,6 @@
+import * as fs from 'fs';
 import * as path from 'path';
-import { $TSAny, $TSContext, $TSObject, JSONUtilities } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
@@ -85,7 +86,7 @@ class ApiGatewayAuthStack extends cdk.Stack {
         state.path = path;
 
         if (apiGateway.params.privacy.auth) {
-          state.methods = path?.privacy?.auth ?? [];
+          state.methods = Array.isArray(path?.privacy?.auth) ? path.privacy.auth : [];
           state.roleCount = authRoleCount;
           state.roleName = authRoleName;
           state.policyDocSize = authPolicyDocSize;
@@ -96,7 +97,7 @@ class ApiGatewayAuthStack extends cdk.Stack {
         }
 
         if (apiGateway.params.privacy.unauth) {
-          state.methods = path?.privacy?.unauth ?? [];
+          state.methods = Array.isArray(path?.privacy?.unauth) ? path.privacy.unauth : [];
           state.roleCount = unauthRoleCount;
           state.roleName = unauthRoleName;
           state.policyDocSize = unauthPolicyDocSize;
@@ -177,6 +178,11 @@ export function consolidateApiGatewayPolicies(context: $TSContext, stackName: st
   const { amplifyMeta } = context.amplify.getProjectDetails();
   const apis = amplifyMeta?.api ?? {};
 
+  try {
+    const cfnPath = path.join(pathManager.getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
+    fs.unlinkSync(cfnPath);
+  } catch {}
+
   Object.keys(apis).forEach(resourceName => {
     const resource = apis[resourceName];
     const apiParams = loadApiWithPrivacyParams(context, resourceName, resource);
@@ -191,13 +197,13 @@ export function consolidateApiGatewayPolicies(context: $TSContext, stackName: st
   });
 
   if (apiGateways.length === 0) {
-    return {};
+    return { APIGatewayAuthURL: undefined };
   }
 
-  return createApiGatewayAuthResources(context, stackName, apiGateways);
+  return { APIGatewayAuthURL: createApiGatewayAuthResources(context, stackName, apiGateways) };
 }
 
-function createApiGatewayAuthResources(context: $TSContext, stackName: string, apiGateways: $TSAny): $TSObject {
+function createApiGatewayAuthResources(context: $TSContext, stackName: string, apiGateways: $TSAny): string | undefined {
   const stack = new ApiGatewayAuthStack(undefined, 'Amplify', {
     description: 'API Gateway policy stack created using Amplify CLI',
     stackName,
@@ -206,13 +212,15 @@ function createApiGatewayAuthResources(context: $TSContext, stackName: string, a
   const cfn = stack.toCloudFormation();
   const { amplify } = context;
   const { DeploymentBucketName } = amplify.getProjectMeta()?.providers?.[ProviderName] ?? {};
-  const cfnPath = path.join((amplify.pathManager as any).getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
+  const cfnPath = path.join(pathManager.getBackendDirPath(), 'api', `${APIGW_AUTH_STACK_LOGICAL_ID}.json`);
+
+  if (!cfn.Resources || Object.keys(cfn.Resources).length === 0) {
+    return;
+  }
 
   JSONUtilities.writeJson(cfnPath, cfn);
 
-  return {
-    APIGatewayAuthURL: `https://s3.amazonaws.com/${DeploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`,
-  };
+  return `https://s3.amazonaws.com/${DeploymentBucketName}/amplify-cfn-templates/${S3_UPLOAD_PATH}`;
 }
 
 export function loadApiWithPrivacyParams(context: $TSContext, name: string, resource: any): object | undefined {
@@ -280,6 +288,16 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
         path.policyResourceName = String(path.name).replace(/{[a-zA-Z0-9\-]+}/g, '*');
         modified = true;
       }
+
+      if (typeof path?.privacy?.auth === 'string') {
+        path.privacy.auth = convertPermissionStringToCrud(path.privacy.auth);
+        modified = true;
+      }
+
+      if (typeof path?.privacy?.unauth === 'string') {
+        path.privacy.unauth = convertPermissionStringToCrud(path.privacy.unauth);
+        modified = true;
+      }
     });
   }
 
@@ -288,4 +306,14 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
     JSONUtilities.writeJson(paramsFile, parameterJson);
     JSONUtilities.writeJson(apiParamsFile, api.params);
   }
+}
+
+function convertPermissionStringToCrud(permissions: string): string[] {
+  if (permissions === 'r') {
+    return ['/GET'];
+  } else if (permissions === 'rw') {
+    return ['/POST', '/GET', '/PUT', '/PATCH', '/DELETE'];
+  }
+
+  return [];
 }
