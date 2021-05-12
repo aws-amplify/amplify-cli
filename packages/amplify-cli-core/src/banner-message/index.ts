@@ -63,7 +63,7 @@ export class BannerMessage {
 
   getMessages = async (messageId: string): Promise<string | undefined> => {
     if (!this.messages.length) {
-      await this.fetchMessages(process.env.AWS_AMPLIFY_BANNER_MESSAGE_URL ?? AWS_AMPLIFY_DEFAULT_BANNER_URL);
+      await this.fetchMessages(process.env.AMPLIFY_CLI_BANNER_MESSAGE_URL ?? AWS_AMPLIFY_DEFAULT_BANNER_URL);
     }
 
     const matchingMessageItems = this.messages.filter(
