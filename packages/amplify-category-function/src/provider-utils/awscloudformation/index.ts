@@ -156,7 +156,7 @@ export async function updateResource(
     case ServiceName.LambdaFunction:
       return updateFunctionResource(context, category, service, parameters, resourceToUpdate);
     case ServiceName.LambdaLayer:
-      return updateLayerResource(context, service, serviceConfig, parameters as LayerParameters);
+      return updateLayerResource(context, service, serviceConfig as ServiceConfig<LayerParameters>, parameters as LayerParameters);
     default:
       throw BAD_SERVICE_ERR;
   }
@@ -169,7 +169,7 @@ export async function updateFunctionResource(
   parameters: $TSAny,
   resourceToUpdate: $TSAny,
 ) {
-  const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service];
+  const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service] as ServiceConfig<FunctionParameters>;
   if (!serviceConfig) {
     throw `amplify-category-function is not configured to provide service type ${service}`;
   }
@@ -228,15 +228,23 @@ export async function updateLayerResource(
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     };
   }
-  const completeParams = (await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters)) as LayerParameters;
+  const updateWalkthroughResult = (await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters)) as {
+    parameters: LayerParameters;
+    resourceUpdated: boolean;
+  };
+
+  if (updateWalkthroughResult.resourceUpdated === false) {
+    return false;
+  }
 
   // write out updated resources
-  const updated = await updateLayerArtifacts(context, completeParams, {
+  const updated = await updateLayerArtifacts(context, updateWalkthroughResult.parameters, {
     updateFunction: true,
-    layerParams: completeParams.selectedVersion === undefined,
+    layerParams: parameters.selectedVersion === undefined,
+    cfnFile: true,
   });
 
-  printLayerSuccessMessages(context, completeParams, 'updated');
+  printLayerSuccessMessages(context, updateWalkthroughResult.parameters, 'updated');
 
   return updated;
 }
@@ -295,6 +303,10 @@ async function openEditor(
 }
 
 export function migrateResource(context: $TSContext, projectPath: string, service: ServiceName, resourceName: string) {
+  if (service !== ServiceName.LambdaFunction) {
+    throw new Error(`Could not get permission policies for unsupported service: ${service}`);
+  }
+
   const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service];
 
   if (!serviceConfig.walkthroughs.migrate) {
@@ -306,6 +318,10 @@ export function migrateResource(context: $TSContext, projectPath: string, servic
 }
 
 export function getPermissionPolicies(context: $TSContext, service: ServiceName, resourceName: string, crudOptions: $TSAny) {
+  if (service !== ServiceName.LambdaFunction) {
+    throw new Error(`Could not get permission policies for unsupported service: ${service}`);
+  }
+
   const serviceConfig: ServiceConfig<FunctionParameters> = supportedServices[service];
 
   if (!serviceConfig.walkthroughs.getIAMPolicies) {

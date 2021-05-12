@@ -11,10 +11,12 @@ const removeLayerQuestion = 'Choose the Layer versions you want to remove.';
 export async function removeWalkthrough(context: $TSContext, layerName: string) {
   const layerCloudState = LayerCloudState.getInstance();
   const layerVersionList = await layerCloudState.getLayerVersionsFromCloud(context, layerName);
+
   // if the layer hasn't been pushed return and remove it
   if (layerVersionList.length === 0) {
     return layerName;
   }
+
   const { versions } = await inquirer.prompt(question(layerVersionList));
   const selectedLayerVersion = versions as LayerVersionMetadata[];
 
@@ -23,8 +25,11 @@ export async function removeWalkthrough(context: $TSContext, layerName: string) 
     return;
   }
 
+  const legacyLayerSelectedVersions = selectedLayerVersion.filter(r => r.LegacyLayer);
+  const newLayerSelectedVersions = selectedLayerVersion.filter(r => !r.LegacyLayer);
+
   // if everything is selected remove the layer entirely
-  if (selectedLayerVersion.length === layerVersionList.length) {
+  if (selectedLayerVersion.length === newLayerSelectedVersions.length && legacyLayerSelectedVersions.length === 0) {
     return layerName;
   }
 
@@ -32,28 +37,32 @@ export async function removeWalkthrough(context: $TSContext, layerName: string) 
   selectedLayerVersion.forEach(version => {
     context.print.info(`> ${version.Version} | Description: ${version.Description || ''}`);
   });
-  const legacyLayerSelectedVersions = selectedLayerVersion.filter(r => r.LegacyLayer);
-  const newLayerSelectedVersions = selectedLayerVersion.filter(r => !r.LegacyLayer);
 
   warnLegacyRemoval(context, legacyLayerSelectedVersions, newLayerSelectedVersions);
 
-  const confirm = await promptConfirmationRemove(context);
-  if (!confirm) {
+  if (legacyLayerSelectedVersions.length > 0) {
+    await deleteLayer(
+      context,
+      getLayerName(context, layerName),
+      legacyLayerSelectedVersions.map(r => r.Version),
+    );
+  }
+
+  // Save Layer versions to be removed by CFN only if layer versions remain
+  if (
+    newLayerSelectedVersions.length > 0 &&
+    layerVersionList.length > newLayerSelectedVersions.length + legacyLayerSelectedVersions.length
+  ) {
+    const { envName } = stateManager.getLocalEnvInfo();
+    saveLayerVersionsToBeRemovedByCfn(
+      layerName,
+      newLayerSelectedVersions.map(r => r.Version),
+      envName,
+    );
     return;
   }
 
-  await deleteLayer(
-    context,
-    getLayerName(context, layerName),
-    legacyLayerSelectedVersions.map(r => r.Version),
-  );
-  const { envName } = stateManager.getLocalEnvInfo();
-  saveLayerVersionsToBeRemovedByCfn(
-    layerName,
-    newLayerSelectedVersions.map(r => r.Version),
-    envName,
-  );
-  return;
+  return layerName;
 }
 
 function warnLegacyRemoval(context: $TSContext, legacyLayerVersions: LayerVersionMetadata[], newLayerVersions: LayerVersionMetadata[]) {

@@ -1,8 +1,8 @@
 import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { FunctionBreadcrumbs, FunctionParameters, FunctionTriggerParameters } from 'amplify-function-plugin-interface';
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import _ from 'lodash';
-import path from 'path';
+import * as path from 'path';
 import { categoryName } from '../../../constants';
 import { cfnTemplateSuffix, functionParametersFileName, parametersFileName, provider, ServiceName } from './constants';
 import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
@@ -11,6 +11,7 @@ import { LayerCloudState } from './layerCloudState';
 import { isMultiEnvLayer, isNewVersion, loadPreviousLayerHash } from './layerHelpers';
 import { createLayerConfiguration, saveLayerPermissions } from './layerConfiguration';
 import { LayerParameters, LayerRuntime, LayerVersionMetadata } from './layerParams';
+import { removeLayerFromTeamProviderInfo } from './layerMigrationUtils';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
@@ -82,7 +83,7 @@ export const updateLayerArtifacts = async (
 
 export function removeLayerArtifacts(context: $TSContext, layerName: string) {
   if (isMultiEnvLayer(layerName)) {
-    removeLayerFromTeamProviderInfo(context, layerName);
+    removeLayerFromTeamProviderInfo(context.amplify.getEnvInfo().envName, layerName);
   }
 }
 
@@ -252,19 +253,6 @@ const addLayerToAmplifyMeta = (context: $TSContext, parameters: LayerParameters)
 
 const updateLayerInAmplifyMeta = (parameters: LayerParameters) => {
   assignParametersInAmplifyMeta(parameters.layerName, amplifyMetaAndBackendParams(parameters));
-};
-
-const removeLayerFromTeamProviderInfo = (context: $TSContext, layerName: string) => {
-  const { envName } = context.amplify.getEnvInfo();
-  const teamProviderInfo = stateManager.getTeamProviderInfo();
-  _.unset(teamProviderInfo, [envName, 'nonCFNdata', categoryName, layerName]);
-  if (_.isEmpty(_.get(teamProviderInfo, [envName, 'nonCFNdata', categoryName]))) {
-    _.unset(teamProviderInfo, [envName, 'nonCFNdata', categoryName]);
-    if (_.isEmpty(_.get(teamProviderInfo, [envName, 'nonCFNdata']))) {
-      _.unset(teamProviderInfo, [envName, 'nonCFNdata']);
-    }
-  }
-  stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
 };
 
 interface LayerMetaAndBackendConfigParams {

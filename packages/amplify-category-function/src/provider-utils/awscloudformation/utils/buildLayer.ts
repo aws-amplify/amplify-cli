@@ -7,7 +7,7 @@ import { ServiceName } from './constants';
 import { LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
 
 export const buildLayer = async (context: $TSContext, { resourceName, lastBuildTimestamp }: BuildRequestMeta) => {
-  const layerConfig: LayerConfiguration = loadLayerConfigurationFile(pathManager.getBackendDirPath(), resourceName);
+  const layerConfig: LayerConfiguration = loadLayerConfigurationFile(resourceName);
   const resourcePath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
 
   const layerCodePath = path.join(resourcePath, 'lib', layerConfig.runtimes[0].layerExecutablePath);

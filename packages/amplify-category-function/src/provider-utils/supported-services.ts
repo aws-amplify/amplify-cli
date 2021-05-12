@@ -1,3 +1,4 @@
+import { $TSAny } from 'amplify-cli-core';
 import { migrate, createWalkthrough, updateWalkthrough } from './awscloudformation/service-walkthroughs/lambda-walkthrough';
 import { createLayerWalkthrough, updateLayerWalkthrough } from './awscloudformation/service-walkthroughs/lambdaLayerWalkthrough';
 import * as lambdaController from './awscloudformation';
@@ -23,7 +24,7 @@ export const supportedServices: SupportedServices = {
     alias: 'Lambda layer (shared code & resource used across functions)',
     walkthroughs: {
       createWalkthrough: createLayerWalkthrough,
-      updateWalkthrough: updateLayerWalkthrough,
+      updateWalkthrough: updateLayerWalkthrough as $TSAny,
     },
     provider: 'awscloudformation',
     providerController: lambdaController,

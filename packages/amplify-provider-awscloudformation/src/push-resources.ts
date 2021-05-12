@@ -43,7 +43,7 @@ import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/c
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
-import { postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
+import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
 
 const logger = fileLogger('push-resources');
 
@@ -117,6 +117,10 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'hosting') {
         await context.amplify.invokePluginMethod(context, 'hosting', 'ElasticContainer', 'generateHostingResources', [context, resource]);
       }
+    }
+
+    for await (const resource of resources.filter(r => r.category === 'function' && r.service === FunctionServiceNameLambdaLayer)) {
+      await legacyLayerMigration(context, resource.resourceName);
     }
 
     await prePushLambdaLayerPrompt(context, resources);
@@ -560,12 +564,9 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
 
   const cfnFile = cfnFiles[0];
   const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
-  const cfnMeta = JSONUtilities.readJson<$TSAny>(cfnFilePath);
   const paramType = { Type: 'String' };
 
   if (resource.service === FunctionServiceNameLambdaLayer) {
-    cfnMeta.Parameters.deploymentBucketName = paramType;
-    cfnMeta.Parameters.s3Key = paramType;
     storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
   } else if (resource.service === ApiServiceNameElasticContainer) {
     const cfnParams = { ParamZipPath: s3Key };
@@ -573,6 +574,7 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
     const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
     JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
   } else {
+    const cfnMeta = JSONUtilities.readJson<$TSAny>(cfnFilePath);
     cfnMeta.Parameters.deploymentBucketName = paramType;
     cfnMeta.Parameters.s3Key = paramType;
     const deploymentBucketNameRef = 'deploymentBucketName';
@@ -590,8 +592,8 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
       };
     }
     storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
+    JSONUtilities.writeJson(cfnFilePath, cfnMeta);
   }
-  JSONUtilities.writeJson(cfnFilePath, cfnMeta);
 }
 
 function storeS3BucketInfo(category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) {

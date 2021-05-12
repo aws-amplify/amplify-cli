@@ -1,12 +1,12 @@
-import { $TSAny, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, recursiveOmit, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import path from 'path';
-import { ephemeralField, deleteVersionsField, updateVersionPermissionsField } from './constants';
+import { ephemeralField, deleteVersionsField, layerConfigurationFileName, updateVersionPermissionsField } from './constants';
 import { categoryName } from '../../../constants';
+import { getLayerDirPath } from './layerHelpers';
 import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
 export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes' | 'description'>;
-const layerConfigurationFileName = 'layer-configuration.json';
 
 export function createLayerConfiguration(layerDirPath: string, parameters: LayerConfiguration) {
   const layerConfigFilePath = path.join(layerDirPath, layerConfigurationFileName);
@@ -14,8 +14,8 @@ export function createLayerConfiguration(layerDirPath: string, parameters: Layer
   JSONUtilities.writeJson(layerConfigFilePath, parameters);
 }
 
-export function getLayerConfiguration(backendDirPath: string, layerName: string) {
-  const layerConfig: LayerConfiguration = loadLayerConfigurationFile(backendDirPath, layerName);
+export function getLayerConfiguration(layerName: string) {
+  const layerConfig: LayerConfiguration = loadLayerConfigurationFile(layerName);
   const cloudTemplateValues = loadLayerCloudTemplateRuntimes(layerName);
   layerConfig.runtimes.forEach(runtimeMeta => {
     runtimeMeta.cloudTemplateValues = cloudTemplateValues.filter((ctv: string) => ctv.startsWith(runtimeMeta.value));
@@ -24,8 +24,8 @@ export function getLayerConfiguration(backendDirPath: string, layerName: string)
   return layerConfig;
 }
 
-export function getLayerRuntimes(backendDirPath: string, layerName: string) {
-  return getLayerConfiguration(backendDirPath, layerName).runtimes;
+export function getLayerRuntimes(layerName: string) {
+  return getLayerConfiguration(layerName).runtimes;
 }
 
 export function saveLayerRuntimes(layerDirPath: string, runtimes: LayerRuntime[] = []) {
@@ -36,23 +36,20 @@ export function saveLayerRuntimes(layerDirPath: string, runtimes: LayerRuntime[]
 }
 
 export function getLayerVersionsToBeRemovedByCfn(layerName: string, envName: string): number[] {
-  const layerConfigFilePath = getLayerDirPath(layerName);
-  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  const layerConfig = loadLayerConfigurationFile(layerName);
   return _.get<number[]>(layerConfig, [ephemeralField, deleteVersionsField, envName], []);
 }
 
 export function deleteLayerVersionsToBeRemovedByCfn(layerName: string, envName: string) {
-  const layerConfigFilePath = getLayerDirPath(layerName);
-  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  const layerConfig = loadLayerConfigurationFile(layerName);
   recursiveOmit(layerConfig, [ephemeralField, deleteVersionsField, envName]);
-  JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+  writeLayerConfigurationFile(layerName, layerConfig);
 }
 
 export function saveLayerVersionsToBeRemovedByCfn(layerName: string, skipVersions: number[], envName: string) {
-  const layerConfigFilePath = getLayerDirPath(layerName);
-  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  const layerConfig = loadLayerConfigurationFile(layerName);
   _.set(layerConfig, [ephemeralField, deleteVersionsField, envName], skipVersions);
-  JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+  writeLayerConfigurationFile(layerName, layerConfig);
 }
 
 export function saveLayerVersionPermissionsToBeUpdatedInCfn(
@@ -61,23 +58,20 @@ export function saveLayerVersionPermissionsToBeUpdatedInCfn(
   version: number,
   permissions: LayerPermission[],
 ) {
-  const layerConfigFilePath = getLayerDirPath(layerName);
-  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  const layerConfig = loadLayerConfigurationFile(layerName);
   _.setWith(layerConfig, [ephemeralField, updateVersionPermissionsField, envName, version.toString()], permissions, Object);
-  JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+  writeLayerConfigurationFile(layerName, layerConfig);
 }
 
 export function getLayerVersionPermissionsToBeUpdatedInCfn(layerName: string, envName: string, version: number): LayerPermission[] {
-  const layerConfigFilePath = getLayerDirPath(layerName);
-  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  const layerConfig = loadLayerConfigurationFile(layerName);
   return _.get<LayerPermission[]>(layerConfig, [ephemeralField, updateVersionPermissionsField, envName, version.toString()], undefined);
 }
 
 export function deleteLayerVersionPermissionsToBeUpdatedInCfn(layerName: string, envName: string) {
-  const layerConfigFilePath = getLayerDirPath(layerName);
-  const layerConfig = JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+  const layerConfig = loadLayerConfigurationFile(layerName);
   recursiveOmit(layerConfig, [ephemeralField, updateVersionPermissionsField, envName]);
-  JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
+  writeLayerConfigurationFile(layerName, layerConfig);
 }
 
 export function saveLayerPermissions(layerDirPath: string, permissions: LayerPermission[] = [{ type: PermissionEnum.Private }]): boolean {
@@ -100,15 +94,14 @@ function getLayerDescription(layerName: string): string {
   return description;
 }
 
-function getLayerDirPath(layerName: string): string {
-  const backendDirPath = pathManager.getBackendDirPath();
-  const layerConfigFilePath = path.join(backendDirPath, categoryName, layerName, layerConfigurationFileName);
-  return layerConfigFilePath;
+export function loadLayerConfigurationFile(layerName: string, throwIfNotExist = true) {
+  const layerConfigFilePath = path.join(getLayerDirPath(layerName), layerConfigurationFileName);
+  return JSONUtilities.readJson<$TSAny>(layerConfigFilePath, { throwIfNotExist });
 }
 
-export function loadLayerConfigurationFile(backendDirPath: string, layerName: string) {
-  const layerConfigFilePath = path.join(backendDirPath, categoryName, layerName, layerConfigurationFileName);
-  return JSONUtilities.readJson<$TSAny>(layerConfigFilePath);
+export function writeLayerConfigurationFile(layerName: string, layerConfig: $TSAny) {
+  const layerConfigFilePath = path.join(getLayerDirPath(layerName), layerConfigurationFileName);
+  JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 
 function loadLayerCloudTemplateRuntimes(layerName: string): string[] {

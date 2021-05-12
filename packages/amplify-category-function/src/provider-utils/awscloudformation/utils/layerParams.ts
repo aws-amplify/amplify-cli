@@ -39,6 +39,8 @@ export interface OrgsLayer {
   orgs: string[];
 }
 
+export const defaultLayerPermission: LayerPermission = { type: PermissionEnum.Private };
+
 export interface LayerVersionMetadata {
   LayerVersionArn: string;
   Version: number;
