@@ -17,6 +17,10 @@ export type AddAuthUserPoolOnlyWithOAuthSettings = AddAuthUserPoolOnlyNoOAuthSet
   googleAppSecret: string;
   amazonAppId: string;
   amazonAppSecret: string;
+  appleAppClientId: string;
+  appleAppTeamId: string;
+  appleAppKeyID: string;
+  appleAppPrivateKey: string;
 };
 
 export type AddAuthIdentityPoolAndUserPoolWithOAuthSettings = AddAuthUserPoolOnlyWithOAuthSettings & {
@@ -462,7 +466,11 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<vo
       GOOGLE_APP_SECRET,
       AMAZON_APP_ID,
       AMAZON_APP_SECRET,
-    }: any = getSocialProviders(true);
+      APPLE_APP_ID,
+      APPLE_TEAM_ID,
+      APPLE_KEY_ID,
+      APPLE_PRIVATE_KEY,
+    } = getSocialProviders(true);
 
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -503,6 +511,18 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<vo
       .wait('Enter your Amazon App Secret for your OAuth flow:')
       .send(AMAZON_APP_SECRET)
       .sendCarriageReturn()
+      .wait('Enter your Sign in with Apple Client ID for your OAuth flow:')
+      .send(APPLE_APP_ID)
+      .sendCarriageReturn()
+      .wait('Enter your Sign in with Apple Team ID for your OAuth flow:')
+      .send(APPLE_TEAM_ID)
+      .sendCarriageReturn()
+      .wait('Enter your Sign in with Apple Key ID for your OAuth flow:')
+      .send(APPLE_KEY_ID)
+      .sendCarriageReturn()
+      .wait('Enter your Sign in with Apple Private Key for your OAuth flow:')
+      .send(APPLE_PRIVATE_KEY)
+      .sendCarriageReturn()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -516,6 +536,19 @@ export function addAuthWithDefaultSocial(cwd: string, settings: any): Promise<vo
 
 export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
+    const {
+      FACEBOOK_APP_ID,
+      FACEBOOK_APP_SECRET,
+      GOOGLE_APP_ID,
+      GOOGLE_APP_SECRET,
+      AMAZON_APP_ID,
+      AMAZON_APP_SECRET,
+      APPLE_APP_ID,
+      APPLE_TEAM_ID,
+      APPLE_KEY_ID,
+      APPLE_PRIVATE_KEY,
+    } = getSocialProviders(true);
+
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
       .send(KEY_DOWN_ARROW)
@@ -608,22 +641,34 @@ export function addAuthUserPoolOnly(cwd: string, settings: any): Promise<void> {
       .send('a')
       .sendCarriageReturn()
       .wait('Enter your Facebook App ID for your OAuth flow')
-      .send('fbOAUTHid')
+      .send(FACEBOOK_APP_ID)
       .sendCarriageReturn()
       .wait('Enter your Facebook App Secret for your OAuth flow')
-      .send('fbOAUTHsecret')
+      .send(FACEBOOK_APP_SECRET)
       .sendCarriageReturn()
       .wait('Enter your Google Web Client ID for your OAuth flow')
-      .send('googOAUTHid')
+      .send(GOOGLE_APP_ID)
       .sendCarriageReturn()
       .wait('Enter your Google Web Client Secret for your OAuth flow')
-      .send('googOAUTHsecret')
+      .send(GOOGLE_APP_SECRET)
       .sendCarriageReturn()
       .wait('Enter your Amazon App ID for your OAuth flow')
-      .send('amzOAUTHid')
+      .send(AMAZON_APP_ID)
       .sendCarriageReturn()
       .wait('Enter your Amazon App Secret for your OAuth flow')
-      .send('amzOAUTHsecret')
+      .send(AMAZON_APP_SECRET)
+      .sendCarriageReturn()
+      .wait('Enter your Sign in with Apple Client ID for your OAuth flow')
+      .send(APPLE_APP_ID)
+      .sendCarriageReturn()
+      .wait('Enter your Sign in with Apple Team ID for your OAuth flow')
+      .send(APPLE_TEAM_ID)
+      .sendCarriageReturn()
+      .wait('Enter your Sign in with Apple Key ID for your OAuth flow')
+      .send(APPLE_KEY_ID)
+      .sendCarriageReturn()
+      .wait('Enter your Sign in with Apple Private Key for your OAuth flow')
+      .send(APPLE_PRIVATE_KEY)
       .sendCarriageReturn()
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .send('y')
@@ -764,6 +809,19 @@ export function addAuthWithGroupsAndAdminAPI(cwd: string, settings: any): Promis
 }
 
 export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void> {
+  const {
+    FACEBOOK_APP_ID,
+    FACEBOOK_APP_SECRET,
+    GOOGLE_APP_ID,
+    GOOGLE_APP_SECRET,
+    AMAZON_APP_ID,
+    AMAZON_APP_SECRET,
+    APPLE_APP_ID,
+    APPLE_TEAM_ID,
+    APPLE_KEY_ID,
+    APPLE_PRIVATE_KEY,
+  } = getSocialProviders(true);
+
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
       .wait('Do you want to use the default authentication and security configuration?')
@@ -791,6 +849,9 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .sendCarriageReturn()
       .wait('Enter your Amazon App ID for your identity pool')
       .send('amazonIDPOOL')
+      .sendCarriageReturn()
+      .wait('Enter your Apple App ID for your identity pool')
+      .send('appleIDPOOL')
       .sendCarriageReturn()
       .wait('Please provide a name for your user pool')
       .sendCarriageReturn()
@@ -870,17 +931,25 @@ export function addAuthWithMaxOptions(cwd: string, settings: any): Promise<void>
       .send('a')
       .sendCarriageReturn()
       .wait('Enter your Facebook App ID for your OAuth flow')
-      .sendLine('fbOAUTHid')
+      .sendLine(FACEBOOK_APP_ID)
       .wait('Enter your Facebook App Secret for your OAuth flow')
-      .sendLine('fbOAUTHsecret')
+      .sendLine(FACEBOOK_APP_SECRET)
       .wait('Enter your Google Web Client ID for your OAuth flow')
-      .sendLine('googOAUTHid')
+      .sendLine(GOOGLE_APP_ID)
       .wait('Enter your Google Web Client Secret for your OAuth flow')
-      .sendLine('googOAUTHsecret')
+      .sendLine(GOOGLE_APP_SECRET)
       .wait('Enter your Amazon App ID for your OAuth flow')
-      .sendLine('amzOAUTHid')
+      .sendLine(AMAZON_APP_ID)
       .wait('Enter your Amazon App Secret for your OAuth flow')
-      .sendLine('amzOAUTHsecret')
+      .sendLine(AMAZON_APP_SECRET)
+      .wait('Enter your Sign in with Apple Client ID for your OAuth flow')
+      .sendLine(APPLE_APP_ID)
+      .wait('Enter your Sign in with Apple Team ID for your OAuth flow')
+      .sendLine(APPLE_TEAM_ID)
+      .wait('Enter your Sign in with Apple Key ID for your OAuth flow')
+      .sendLine(APPLE_KEY_ID)
+      .wait('Enter your Sign in with Apple Private Key for your OAuth flow')
+      .sendLine(APPLE_PRIVATE_KEY)
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .sendLine('y')
       .wait('Which triggers do you want to enable for Cognito')
@@ -1094,6 +1163,14 @@ export function addAuthUserPoolOnlyWithOAuth(cwd: string, settings: AddAuthUserP
       .sendLine(settings.amazonAppId)
       .wait('Enter your Amazon App Secret for your OAuth flow')
       .sendLine(settings.amazonAppSecret)
+      .wait('Enter your Sign in with Apple Client ID for your OAuth flow:')
+      .sendLine(settings.appleAppClientId)
+      .wait('Enter your Sign in with Apple Team ID for your OAuth flow:')
+      .sendLine(settings.appleAppTeamId)
+      .wait('Enter your Sign in with Apple Key ID for your OAuth flow:')
+      .sendLine(settings.appleAppKeyID)
+      .wait('Enter your Sign in with Apple Private Key for your OAuth flow:')
+      .sendLine(settings.appleAppPrivateKey)
       .wait('Do you want to configure Lambda Triggers for Cognito')
       .sendConfirmNo()
       .sendEof()
