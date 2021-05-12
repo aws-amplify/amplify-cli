@@ -116,6 +116,7 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     ? Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, immutables, requirements)
     : Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), requirements, {
         resourceName: `cognito${sharedId}`,
+        sharedId: defaults.sharedId,
       }); //eslint-disable-line
   /* eslint-enable */
   const { roles } = defaults;
