@@ -1,4 +1,4 @@
-import { $TSContext, promptConfirmationRemove, stateManager } from 'amplify-cli-core';
+import { $TSContext, stateManager } from 'amplify-cli-core';
 import chalk from 'chalk';
 import inquirer, { QuestionCollection } from 'inquirer';
 import ora from 'ora';

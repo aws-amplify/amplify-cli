@@ -1,4 +1,4 @@
-import { $TSContext, $TSMeta, pathManager } from 'amplify-cli-core';
+import { $TSContext, $TSMeta } from 'amplify-cli-core';
 import { ExternalLayer, FunctionDependency, FunctionRuntime, LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
 import enquirer from 'enquirer';
 import inquirer, { CheckboxQuestion, InputQuestion } from 'inquirer';

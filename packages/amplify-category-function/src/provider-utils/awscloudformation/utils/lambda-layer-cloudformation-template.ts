@@ -3,7 +3,7 @@ import { DeletionPolicy, Fn, IntrinsicFunction, Refs } from 'cloudform-types';
 import Lambda from 'cloudform-types/types/lambda';
 import _ from 'lodash';
 import uuid from 'uuid';
-import { LayerCfnLogicalNamePrefix, versionHash } from './constants';
+import { LayerCfnLogicalNamePrefix } from './constants';
 import { LayerCloudState } from './layerCloudState';
 import { getLayerVersionPermissionsToBeUpdatedInCfn, getLayerVersionsToBeRemovedByCfn } from './layerConfiguration';
 import { isMultiEnvLayer } from './layerHelpers';

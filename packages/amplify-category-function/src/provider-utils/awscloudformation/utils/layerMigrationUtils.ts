@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
