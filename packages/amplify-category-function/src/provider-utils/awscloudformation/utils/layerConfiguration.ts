@@ -1,6 +1,6 @@
 import { $TSAny, JSONUtilities, recursiveOmit, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
-import path from 'path';
+import * as path from 'path';
 import { ephemeralField, deleteVersionsField, layerConfigurationFileName, updateVersionPermissionsField } from './constants';
 import { categoryName } from '../../../constants';
 import { getLayerDirPath } from './layerHelpers';
