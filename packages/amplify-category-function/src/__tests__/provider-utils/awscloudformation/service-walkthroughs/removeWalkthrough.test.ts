@@ -116,10 +116,9 @@ describe('remove walkthough test', () => {
     const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
-    expect(returnValue).toBeUndefined();
-    expect(saveLayerVersionsToBeRemovedByCfn).toBeCalled();
 
-    expect(saveLayerVersionsToBeRemovedByCfn).toBeCalledWith(layerName, [], envName);
+    expect(returnValue).toBeUndefined();
+    expect(saveLayerVersionsToBeRemovedByCfn).not.toBeCalled();
     expect(deleteLayerVersionsMockFn).toBeCalled();
     expect(deleteLayerVersionsMockFn).toBeCalledWith(layerName, [2, 3]);
   });
@@ -151,8 +150,7 @@ describe('remove walkthough test', () => {
     expect(saveLayerVersionsToBeRemovedByCfn).toBeCalled();
 
     expect(saveLayerVersionsToBeRemovedByCfn).toBeCalledWith(layerName, [2, 3], envName);
-    expect(deleteLayerVersionsMockFn).toBeCalled();
-    expect(deleteLayerVersionsMockFn).toBeCalledWith(layerName, []);
+    expect(deleteLayerVersionsMockFn).not.toBeCalled();
   });
 
   it('all version selected', async () => {
