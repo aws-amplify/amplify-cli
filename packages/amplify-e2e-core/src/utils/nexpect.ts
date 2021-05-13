@@ -594,8 +594,9 @@ export function nspawn(command: string | string[], params: string[] = [], option
     command = params.shift();
   } else if (typeof command === 'string') {
     const parsedPath = parse(command);
-    command = join(parsedPath.dir, parsedPath.base.split(' ')[0]);
-    params = params || parsedPath.base.split(' ').splice(1);
+    const parsedArgs = parsedPath.base.split(' ');
+    command = join(parsedPath.dir, parsedArgs[0]);
+    params = params || parsedArgs.slice(1);
   }
 
   let childEnv = undefined;
