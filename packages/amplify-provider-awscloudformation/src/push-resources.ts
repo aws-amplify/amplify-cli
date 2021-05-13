@@ -67,6 +67,7 @@ const deploymentInProgressErrorMessage = (context: $TSContext) => {
 export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
   let iterativeDeploymentWasInvoked = false;
+  let layerResources = [];
 
   try {
     const {
@@ -83,6 +84,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     } = context;
 
     const resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
+    layerResources = resources.filter(r => r.service === FunctionServiceNameLambdaLayer);
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
       if (context.exeInfo?.forcePush || context.exeInfo?.iterativeRollback) {
@@ -352,6 +354,8 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       await deploymentStateManager.failDeployment();
     }
     spinner.fail('An error occurred when pushing the resources to the cloud');
+
+    rollbackLambdaLayers(layerResources);
 
     logger('run', [resourceDefinition])(error);
 
@@ -1018,4 +1022,20 @@ export async function generateAndUploadRootStack(context: $TSContext, destinatio
   };
 
   await s3Client.uploadFile(s3Params, false);
+}
+
+function rollbackLambdaLayers(layerResources: $TSAny[]) {
+  if (layerResources.length > 0) {
+    const projectRoot = pathManager.findProjectRoot();
+    const ccbMeta = stateManager.getCurrentMeta(projectRoot);
+    const meta = stateManager.getMeta(projectRoot);
+
+    layerResources.forEach(r => {
+      const layerMetaPath = ['function', r.resourceName, 'latestPushedVersionHash'];
+      const previousHash = _.get<string | undefined>(ccbMeta, layerMetaPath, undefined);
+      _.set(meta, layerMetaPath, previousHash);
+    });
+
+    stateManager.setMeta(projectRoot, meta);
+  }
 }
