@@ -1,4 +1,9 @@
+// @ts-check
 const chalk = require('chalk');
+const { BannerMessage } = require('amplify-cli-core');
+const { fileLogger } = require('./utils/aws-logger');
+
+const logger = fileLogger('display-helpful-urls');
 
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
@@ -9,6 +14,7 @@ async function displayHelpfulURLs(context, resourcesToBeCreated) {
   showContainerHostingInfo(context, resourcesToBeCreated);
   showHostedUIURLs(context, resourcesToBeCreated);
   await showRekognitionURLS(context, resourcesToBeCreated);
+  await showCognitoSandBoxMessage(context, resourcesToBeCreated);
   context.print.info('');
 }
 
@@ -91,15 +97,17 @@ function showRestAPIURL(context, resourcesToBeCreated) {
 }
 
 function showContainerHostingInfo(context, resourcesToBeCreated) {
-  const resource = resourcesToBeCreated.find(resource => resource.category === 'hosting' && resource.service === 'ElasticContainer' && !resource.hostedZoneId);
+  const resource = resourcesToBeCreated.find(
+    resource => resource.category === 'hosting' && resource.service === 'ElasticContainer' && !resource.hostedZoneId,
+  );
   if (resource && resource.output) {
     const {
       output: {
         LoadBalancerCnameDomainName,
         LoadBalancerAliasDomainName,
         CloudfrontDistributionAliasDomainName,
-        CloudfrontDistributionCnameDomainName
-      }
+        CloudfrontDistributionCnameDomainName,
+      },
     } = resource;
 
     context.print.info(`Make sure to add the following CNAMEs to your domain’s DNS records:\n`);
@@ -157,6 +165,34 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
           responseType === 'implicit' ? 'token' : 'code'
         }&client_id=${AppClientIDWeb}&redirect_uri=${redirectURIs[0]}\n`;
         context.print.info(chalk`Test Your Hosted UI Endpoint: {blue.underline ${testHostedUIEndpoint}}`);
+      }
+    }
+  }
+}
+
+async function showCognitoSandBoxMessage(context, resources) {
+  const smsSandBoxMessage = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
+  if (!smsSandBoxMessage) {
+    return;
+  }
+
+  const cognitoResource = resources.filter(resource => resource.service === 'Cognito');
+
+  if (cognitoResource.length > 0) {
+    const log = logger('showCognitoSandBoxMessage', [cognitoResource[0].resourceName]);
+    try {
+      log();
+      const smsWorkflowEnabled = await await context.amplify.invokePluginMethod(context, 'auth', 'cognito', 'isSMSWorkflowEnabled', [
+        context,
+        cognitoResource[0].resourceName,
+      ]);
+      if (smsWorkflowEnabled) {
+        context.print.warning(smsSandBoxMessage);
+        return;
+      }
+    } catch (e) {
+      if (e.name !== 'MethodNotFound') {
+        log(e);
       }
     }
   }

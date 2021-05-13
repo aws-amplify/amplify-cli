@@ -17,6 +17,7 @@ export * from './cliConstants';
 export * from './deploymentSecretsHelper';
 export * from './deploymentState';
 export * from './utils';
+export * from './banner-message';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -174,7 +175,7 @@ interface AmplifyToolkit {
   getEnvDetails: () => $TSAny;
   getEnvInfo: () => $TSAny;
   getProviderPlugins: (context: $TSContext) => $TSAny;
-  getPluginInstance: () => $TSAny;
+  getPluginInstance: (context: $TSContext, pluginName: string) => $TSAny;
   getProjectConfig: () => $TSAny;
   getProjectDetails: () => $TSAny;
   getProjectMeta: () => $TSMeta;

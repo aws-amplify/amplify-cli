@@ -93,7 +93,7 @@
     "parse-json": "^5.0.0",
     "progress": "^2.0.3",
     "promise-sequential": "^1.1.1",
-    "semver": "^7.1.1",
+    "semver": "^7.3.5",
     "tar-fs": "^2.1.1",
     "update-notifier": "^4.1.0",
     "which": "^2.0.2",
