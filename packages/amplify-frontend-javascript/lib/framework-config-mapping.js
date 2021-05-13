@@ -80,22 +80,34 @@ function getAngularConfig(context, projectPath) {
 }
 
 function getProjectConfiguration(context, framework, projectPath) {
+  let config;
+
   switch (framework) {
     case 'angular':
-      return getAngularConfig(context, projectPath);
+      config = getAngularConfig(context, projectPath);
+      break;
     case 'ember':
-      return emberConfig;
+      config = emberConfig;
+      break;
     case 'ionic':
-      return ionicConfig;
+      config = ionicConfig;
+      break;
     case 'react':
-      return reactConfig;
+      config = reactConfig;
+      break;
     case 'react-native':
-      return reactNativeConfig;
+      config = reactNativeConfig;
+      break;
     case 'vue':
-      return vueConfig;
+      config = vueConfig;
+      break;
     default:
-      return defaultConfig;
+      config = defaultConfig;
   }
+
+  const headlessConfig = _.get(context, 'exeInfo.inputParams.javascript.config', {});
+  config = Object.assign({}, config, headlessConfig);
+  return config;
 }
 
 function getSupportedFrameworks() {
