@@ -172,6 +172,11 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
 }
 
 async function showCognitoSandBoxMessage(context, resources) {
+  const smsSandBoxMessage = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
+  if (!smsSandBoxMessage) {
+    return;
+  }
+
   const cognitoResource = resources.filter(resource => resource.service === 'Cognito');
 
   if (cognitoResource.length > 0) {
