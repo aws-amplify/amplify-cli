@@ -19,6 +19,7 @@ import { AssertionError } from 'assert';
 import strip = require('strip-ansi');
 import { EOL } from 'os';
 import retimer = require('retimer');
+import { join, parse } from 'path';
 
 const DEFAULT_NO_OUTPUT_TIMEOUT = 5 * 60 * 1000; // 5 Minutes
 const EXIT_CODE_TIMEOUT = 2;
@@ -592,9 +593,9 @@ export function nspawn(command: string | string[], params: string[] = [], option
     params = command;
     command = params.shift();
   } else if (typeof command === 'string') {
-    command = command.split(' ');
-    params = params || command.slice(1);
-    command = command[0];
+    const parsedPath = parse(command);
+    command = join(parsedPath.dir, parsedPath.base.split(' ')[0]);
+    params = params || parsedPath.base.split(' ').splice(1);
   }
 
   let childEnv = undefined;
