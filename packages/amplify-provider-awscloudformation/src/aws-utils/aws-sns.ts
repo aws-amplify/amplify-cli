@@ -5,7 +5,6 @@ import aws from './aws.js';
 export class SNS {
   private static instance: SNS;
   private readonly sns: AWS.SNS;
-  private readonly context: $TSContext;
 
   static async getInstance(context: $TSContext, options = {}): Promise<SNS> {
     if (!SNS.instance) {
@@ -22,28 +21,14 @@ export class SNS {
   }
 
   private constructor(context: $TSContext, cred: $TSAny, options = {}) {
-    this.context = context;
-    this.sns = new aws.SNS({ ...cred, ...options });
+    this.sns = new aws.SNS({ ...test, ...cred, ...options });
   }
 
   public async isInSandboxMode(): Promise<boolean> {
-    try {
-      // till the SDK is not released cast the type to any and catch it and do nothing
-      const snsClient = (this.sns as unknown) as any;
-      const result = await snsClient.getSMSSandboxAccountStatus().promise();
-      return result.IsInSandbox;
-    } catch (e) {
-      if (e instanceof TypeError) {
-        // AWS SDK is not updated yet.
-      } else if (e.code === 'ResourceNotFound') {
-        // API is not public yet
-      } else if (e.code === 'AuthorizationError') {
-        // Creds dont have permission to query sandbox status
-      } else if (e.code === 'UnknownEndpoint') {
-        // Network error
-      } else {
-        throw e;
-      }
-    }
+    // AWS SDK still does not have getSMSSandboxAccountStatus. Casting sns to any to avoid compile error
+    // Todo: remove any casting once aws-sdk is updated
+    const snsClient = (this.sns as unknown) as any;
+    const result = await snsClient.getSMSSandboxAccountStatus().promise();
+    return result.IsInSandbox;
   }
 }

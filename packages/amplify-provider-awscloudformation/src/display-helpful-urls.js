@@ -2,6 +2,7 @@
 const chalk = require('chalk');
 const { BannerMessage } = require('amplify-cli-core');
 const { fileLogger } = require('./utils/aws-logger');
+const { SNS } = require('./aws-utils/aws-sns');
 
 const logger = fileLogger('display-helpful-urls');
 
@@ -171,11 +172,6 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
 }
 
 async function showCognitoSandBoxMessage(context, resources) {
-  const smsSandBoxMessage = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
-  if (!smsSandBoxMessage) {
-    return;
-  }
-
   const cognitoResource = resources.filter(resource => resource.service === 'Cognito');
 
   if (cognitoResource.length > 0) {
@@ -187,13 +183,11 @@ async function showCognitoSandBoxMessage(context, resources) {
         cognitoResource[0].resourceName,
       ]);
       if (smsWorkflowEnabled) {
-        context.print.warning(smsSandBoxMessage);
-        return;
+        await showSMSSandBoxWarning(context);
       }
     } catch (e) {
-      if (e.name !== 'MethodNotFound') {
-        log(e);
-      }
+      log(e);
+      throw e;
     }
   }
 }
@@ -218,6 +212,44 @@ async function showRekognitionURLS(context, resourcesToBeCreated) {
       amplifyMeta,
       true,
     ]);
+  }
+}
+
+async function showSMSSandBoxWarning(context) {
+  const log = logger('showSMSSandBoxWarning', []);
+
+  // This message will be set only after SNS Sandbox  Sandbox API is available and AWS SDK gets updated
+  const cliUpdateWarning = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
+  const smsSandBoxMissingPermissionWaring = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_MISSING_PERMISSION');
+  const sandboxModeWarning = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_SANDBOXED_MODE_WARNING');
+  const productionModeInfo = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_PRODUCTION_MODE_INFO');
+  if (!cliUpdateWarning) {
+    return;
+  }
+
+  try {
+    const snsClient = await SNS.getInstance(context);
+    const sandboxStatus = await snsClient.isInSandboxMode();
+
+    if (sandboxStatus) {
+      sandboxModeWarning && context.print.warning(sandboxModeWarning);
+    } else {
+      productionModeInfo && context.print.warning(productionModeInfo);
+    }
+  } catch (e) {
+    if (e.code === 'AuthorizationError') {
+      smsSandBoxMissingPermissionWaring && context.print.warning(smsSandBoxMissingPermissionWaring);
+    } else if (e instanceof TypeError) {
+      context.print.warning(cliUpdateWarning);
+    } else if (e.code === 'ResourceNotFound') {
+      // API is not public yet. Ignore it for now. This error should not occur as `COGNITO_SMS_SANDBOX_UPDATE_WARNING` will not be set
+    } else if (e.code === 'UnknownEndpoint') {
+      // Network error. Sandbox status is for informational purpose and should not stop deployment
+      log(e);
+    } else {
+      log(e);
+      throw e;
+    }
   }
 }
 
