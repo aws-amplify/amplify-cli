@@ -33,7 +33,7 @@ const modules = moduleNames.map(name => require(`./${name}`));
  *
  * @param {function} callback
  *
- * A deprecated way to send a response synchronously. See:
+ * A deprecated way to send a response non-asynchronously. See:
  * https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html#nodejs-handler-sync
  *
  * @returns
