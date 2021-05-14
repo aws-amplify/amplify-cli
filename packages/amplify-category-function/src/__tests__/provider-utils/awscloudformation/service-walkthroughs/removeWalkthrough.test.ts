@@ -66,11 +66,11 @@ describe('remove walkthough test', () => {
     const selectedlayerVersions = [
       {
         Version: 2,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
       {
         Version: 3,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
     ];
 
@@ -78,7 +78,7 @@ describe('remove walkthough test', () => {
       ...selectedlayerVersions,
       {
         Version: 1,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
     ]);
     selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
@@ -97,11 +97,11 @@ describe('remove walkthough test', () => {
     const selectedlayerVersions = [
       {
         Version: 2,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
       {
         Version: 3,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
     ];
 
@@ -109,7 +109,7 @@ describe('remove walkthough test', () => {
       ...selectedlayerVersions,
       {
         Version: 1,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
     ]);
     selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
@@ -127,11 +127,11 @@ describe('remove walkthough test', () => {
     const selectedlayerVersions = [
       {
         Version: 2,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
       {
         Version: 3,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
     ];
 
@@ -139,7 +139,7 @@ describe('remove walkthough test', () => {
       ...selectedlayerVersions,
       {
         Version: 1,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
     ]);
     selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
@@ -157,11 +157,11 @@ describe('remove walkthough test', () => {
     const selectedlayerVersions = [
       {
         Version: 2,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
       {
         Version: 3,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
     ];
 
@@ -180,11 +180,11 @@ describe('remove walkthough test', () => {
     const selectedlayerVersions = [
       {
         Version: 2,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
       {
         Version: 3,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
     ];
 
