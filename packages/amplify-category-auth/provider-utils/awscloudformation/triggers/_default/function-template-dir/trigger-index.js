@@ -4,13 +4,6 @@
  * This CloudFormation Trigger creates a Lambda function which waits for all
  * other specified Lambdas (modules) to resolve, which should be located in the
  * same directory as this file (./).
- *
- * IMPORTANT: This handler *must* return the `event` since it may be consumed by
- * additional layers in a CloudFormation stack. Failing to return an acceptable
- * event may cause errors like "Invalid JSON" and prevent properly configured
- * projects from deploying as expected.
- *
- * @see https://github.com/aws-amplify/amplify-cli/pull/7219
  */
 
 /**
