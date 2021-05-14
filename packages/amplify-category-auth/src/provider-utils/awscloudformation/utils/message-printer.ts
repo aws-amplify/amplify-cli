@@ -1,5 +1,5 @@
 import { ServiceQuestionsResult } from '../service-walkthrough-types';
-
+import { BannerMessage } from 'amplify-cli-core';
 /**
  * A factory function that returns a function that prints the "success message" after adding auth
  * @param print The amplify print object
@@ -28,9 +28,9 @@ const printCommonText = (print: any) => {
   print.info('');
 };
 
-const printSMSSandboxWarning = (print: any) => {
-  print.info('');
-  print.info('TODO: Add message about SMS Sandbox and graduation');
+export const printSMSSandboxWarning = async (print: any) => {
+  const postAddUpdateSMSSandboxInfo = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_CATEGORY_AUTH_ADD_OR_UPDATE_INFO');
+  postAddUpdateSMSSandboxInfo && print.info(`${postAddUpdateSMSSandboxInfo}\n`);
 };
 
 export const doesConfigurationIncludeSMS = (request: ServiceQuestionsResult): boolean => {

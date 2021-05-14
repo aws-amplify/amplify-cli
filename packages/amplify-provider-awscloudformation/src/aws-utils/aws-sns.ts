@@ -21,7 +21,7 @@ export class SNS {
   }
 
   private constructor(context: $TSContext, cred: $TSAny, options = {}) {
-    this.sns = new aws.SNS({ ...test, ...cred, ...options });
+    this.sns = new aws.SNS({ ...cred, ...options });
   }
 
   public async isInSandboxMode(): Promise<boolean> {
