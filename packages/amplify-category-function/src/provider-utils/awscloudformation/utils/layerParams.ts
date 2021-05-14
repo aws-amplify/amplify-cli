@@ -50,7 +50,7 @@ export interface LayerVersionMetadata {
   LicenseInfo: string;
   LogicalName: string;
   permissions: LayerPermission[];
-  LegacyLayer: boolean;
+  legacyLayer: boolean;
 }
 
 export interface LayerVersionCfnMetadata {
@@ -65,5 +65,5 @@ export interface LayerVersionCfnMetadata {
     S3Bucket: string;
   };
   permissions?: LayerPermission[];
-  LegacyLayer: boolean;
+  legacyLayer: boolean;
 }

@@ -26,8 +26,8 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
     return undefined;
   }
 
-  const legacyLayerSelectedVersions = selectedLayerVersion.filter(r => r.LegacyLayer);
-  const newLayerSelectedVersions = selectedLayerVersion.filter(r => !r.LegacyLayer);
+  const legacyLayerSelectedVersions = selectedLayerVersion.filter(r => r.legacyLayer);
+  const newLayerSelectedVersions = selectedLayerVersion.filter(r => !r.legacyLayer);
 
   // if everything is selected remove the layer entirely
   if (layerVersionList.length === newLayerSelectedVersions.length && legacyLayerSelectedVersions.length === 0) {
@@ -60,6 +60,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
         envName,
       );
     }
+
     return undefined;
   }
 

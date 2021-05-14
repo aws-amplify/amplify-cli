@@ -1027,12 +1027,12 @@ export async function generateAndUploadRootStack(context: $TSContext, destinatio
 function rollbackLambdaLayers(layerResources: $TSAny[]) {
   if (layerResources.length > 0) {
     const projectRoot = pathManager.findProjectRoot();
-    const ccbMeta = stateManager.getCurrentMeta(projectRoot);
+    const currentMeta = stateManager.getCurrentMeta(projectRoot);
     const meta = stateManager.getMeta(projectRoot);
 
     layerResources.forEach(r => {
       const layerMetaPath = ['function', r.resourceName, 'latestPushedVersionHash'];
-      const previousHash = _.get<string | undefined>(ccbMeta, layerMetaPath, undefined);
+      const previousHash = _.get<string | undefined>(currentMeta, layerMetaPath, undefined);
       _.set(meta, layerMetaPath, previousHash);
     });
 

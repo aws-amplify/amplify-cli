@@ -49,8 +49,8 @@ export async function migrateLegacyLayer(context: $TSContext, layerName: string)
     return false;
   }
 
-  const runtimecloudTemplateValues: string[] = [];
-  let layerConfiguration: { permissions: LayerPermission[]; runtimes: LayerRuntime[]; nonMultiEnv?: boolean } = {
+  const runtimeCloudTemplateValues: string[] = [];
+  const layerConfiguration: { permissions: LayerPermission[]; runtimes: LayerRuntime[]; nonMultiEnv?: boolean } = {
     permissions: undefined,
     runtimes: undefined,
   };
@@ -71,10 +71,10 @@ export async function migrateLegacyLayer(context: $TSContext, layerName: string)
   legacyRuntimeArray
     .map(legacyRuntime => legacyRuntime.cloudTemplateValue)
     .forEach((cloudTemplateValue: string) => {
-      runtimecloudTemplateValues.push(cloudTemplateValue);
+      runtimeCloudTemplateValues.push(cloudTemplateValue);
     });
 
-  legacyRuntimeArray.map((runtime: LegacyRuntime) => delete runtime.cloudTemplateValue);
+  legacyRuntimeArray.forEach((runtime: LegacyRuntime) => delete runtime.cloudTemplateValue);
   layerConfiguration.runtimes = legacyRuntimeArray;
 
   await Promise.all(
@@ -122,7 +122,7 @@ export async function migrateLegacyLayer(context: $TSContext, layerName: string)
   }
 
   stateManager.setResourceParametersJson(undefined, categoryName, layerName, {
-    runtimes: runtimecloudTemplateValues,
+    runtimes: runtimeCloudTemplateValues,
     description: '',
   });
 
@@ -157,7 +157,7 @@ function migrateAmplifyProjectFiles(layerName: string, latestLegacyHash: string,
   const meta = stateManager.getMeta(projectRoot);
 
   if (_.get(meta, [categoryName, layerName, layerVersionMapKey], undefined)) {
-    _.set(meta, [categoryName, layerName, layerVersionMapKey], undefined);
+    delete meta[categoryName][layerName][layerVersionMapKey];
   }
 
   _.set(meta, [categoryName, layerName, versionHash], latestLegacyHash);
