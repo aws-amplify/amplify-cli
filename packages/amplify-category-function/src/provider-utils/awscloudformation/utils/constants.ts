@@ -1,7 +1,7 @@
 export const chooseServiceMessageAdd = 'Select which capability you want to add:';
 export const chooseServiceMessageUpdate = 'Select which capability you want to update:';
 export const functionParametersFileName = 'function-parameters.json';
-export const layerParametersFileName = 'layer-parameters.json';
+export const layerConfigurationFileName = 'layer-configuration.json';
 export const parametersFileName = 'parameters.json';
 export const provider = 'awscloudformation';
 export const appsyncTableSuffix = '@model(appsync)';
@@ -34,6 +34,11 @@ export const enum CronExpressionsMode {
   Monthly = 'Monthly',
   Yearly = 'Yearly',
   Custom = 'Custom AWS cron expression',
+}
+
+export const enum LegacyFilename {
+  layerParameters = 'layer-parameters.json',
+  layerRuntimes = 'layer-runtimes.json',
 }
 
 export const advancedSettingsList = [resourceAccessSetting, cronJobSetting, lambdaLayerSetting];

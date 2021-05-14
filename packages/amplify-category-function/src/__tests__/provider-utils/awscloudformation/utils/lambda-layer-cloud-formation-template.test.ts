@@ -5,12 +5,14 @@ import {
   LayerVersionCfnMetadata,
   PermissionEnum,
 } from '../../../../provider-utils/awscloudformation/utils/layerParams';
-import { isMultiEnvLayer } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
+import { getLayerDirPath, isMultiEnvLayer } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers');
 const isMultiEnvLayer_mock = isMultiEnvLayer as jest.MockedFunction<typeof isMultiEnvLayer>;
+const getLayerDirPath_mock = getLayerDirPath as jest.MockedFunction<typeof getLayerDirPath>;
 
 isMultiEnvLayer_mock.mockImplementation(jest.fn(() => true));
+getLayerDirPath_mock.mockImplementation(jest.fn(() => 'fakeProject/amplify/backend/myLayer/'));
 
 const parameters_stub: LayerParameters = {
   build: true,
@@ -85,7 +87,7 @@ describe('test layer CFN generation functions', () => {
       S3Key: 's3key',
       S3Bucket: 's3bucket',
     },
-    LegacyLayer: false,
+    legacyLayer: false,
     permissions: [{ type: PermissionEnum.Private }],
   };
 

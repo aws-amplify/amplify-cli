@@ -2,6 +2,7 @@ import { $TSContext, exitOnNextTick } from 'amplify-cli-core';
 import ora from 'ora';
 import { LayerCfnLogicalNamePrefix } from './constants';
 import { isMultiEnvLayer } from './layerHelpers';
+import { LegacyPermissionEnum } from './layerMigrationUtils';
 import { LayerVersionMetadata, PermissionEnum } from './layerParams';
 
 export class LayerCloudState {
@@ -35,6 +36,7 @@ export class LayerCloudState {
         spinner.stop();
         return [];
       }
+
       layerVersionList.forEach((layerVersion: LayerVersionMetadata) => {
         let layerLogicalIdSuffix: string;
         detailedLayerStack
@@ -51,22 +53,29 @@ export class LayerCloudState {
               stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn,
           )
           .forEach(stack => {
-            // layer version permission
             layerVersion.permissions = layerVersion.permissions || [];
+
             const permissionTypeString = stack.LogicalResourceId.replace(
               LayerCfnLogicalNamePrefix.LambdaLayerVersionPermission,
               '',
             ).replace(layerLogicalIdSuffix, '');
+
             const accountIds = [];
             const orgIds = [];
-            if (permissionTypeString === PermissionEnum.Private) {
+            if (permissionTypeString === PermissionEnum.Private || permissionTypeString.startsWith(LegacyPermissionEnum.Private)) {
               layerVersion.permissions.push({ type: PermissionEnum.Private });
-            } else if (permissionTypeString === PermissionEnum.Public) {
+            } else if (permissionTypeString === PermissionEnum.Public || permissionTypeString.startsWith(LegacyPermissionEnum.Public)) {
               layerVersion.permissions.push({ type: PermissionEnum.Public });
             } else if (permissionTypeString.startsWith(PermissionEnum.AwsAccounts)) {
               accountIds.push(permissionTypeString.replace(PermissionEnum.AwsAccounts, ''));
+            } else if (permissionTypeString.startsWith(LegacyPermissionEnum.AwsAccounts)) {
+              accountIds.push(permissionTypeString.replace(LegacyPermissionEnum.AwsAccounts, '').substring(0, 12));
             } else if (permissionTypeString.startsWith(PermissionEnum.AwsOrg)) {
               const orgId = permissionTypeString.replace(`${PermissionEnum.AwsOrg}o`, 'o-');
+              orgIds.push(orgId);
+            } else if (permissionTypeString.startsWith(LegacyPermissionEnum.AwsOrg)) {
+              const suffix = `${layerVersion.Version}`;
+              const orgId = permissionTypeString.replace(`${LegacyPermissionEnum.AwsOrg}o`, 'o-').slice(0, -1 * suffix.length);
               orgIds.push(orgId);
             }
 
@@ -83,8 +92,8 @@ export class LayerCloudState {
               });
             }
           });
-        // temp logic for determining if legacy layer
-        layerVersion.LegacyLayer = !layerVersion.permissions || !layerVersion.LogicalName;
+
+        layerVersion.legacyLayer = layerVersion.LogicalName === undefined || layerVersion.LogicalName === 'LambdaLayer';
       });
       layerMetadata = layerVersionList.sort((a: LayerVersionMetadata, b: LayerVersionMetadata) => b.Version - a.Version);
     } catch (e) {

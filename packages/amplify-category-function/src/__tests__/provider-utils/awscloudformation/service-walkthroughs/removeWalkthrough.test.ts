@@ -66,11 +66,11 @@ describe('remove walkthough test', () => {
     const selectedlayerVersions = [
       {
         Version: 2,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
       {
         Version: 3,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
     ];
 
@@ -78,7 +78,7 @@ describe('remove walkthough test', () => {
       ...selectedlayerVersions,
       {
         Version: 1,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
     ]);
     selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
@@ -97,11 +97,11 @@ describe('remove walkthough test', () => {
     const selectedlayerVersions = [
       {
         Version: 2,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
       {
         Version: 3,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
     ];
 
@@ -109,17 +109,16 @@ describe('remove walkthough test', () => {
       ...selectedlayerVersions,
       {
         Version: 1,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
     ]);
     selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
     const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
-    expect(returnValue).toBeUndefined();
-    expect(saveLayerVersionsToBeRemovedByCfn).toBeCalled();
 
-    expect(saveLayerVersionsToBeRemovedByCfn).toBeCalledWith(layerName, [], envName);
+    expect(returnValue).toBeUndefined();
+    expect(saveLayerVersionsToBeRemovedByCfn).not.toBeCalled();
     expect(deleteLayerVersionsMockFn).toBeCalled();
     expect(deleteLayerVersionsMockFn).toBeCalledWith(layerName, [2, 3]);
   });
@@ -128,11 +127,11 @@ describe('remove walkthough test', () => {
     const selectedlayerVersions = [
       {
         Version: 2,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
       {
         Version: 3,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
     ];
 
@@ -140,7 +139,7 @@ describe('remove walkthough test', () => {
       ...selectedlayerVersions,
       {
         Version: 1,
-        LegacyLayer: true,
+        legacyLayer: true,
       },
     ]);
     selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
@@ -151,19 +150,18 @@ describe('remove walkthough test', () => {
     expect(saveLayerVersionsToBeRemovedByCfn).toBeCalled();
 
     expect(saveLayerVersionsToBeRemovedByCfn).toBeCalledWith(layerName, [2, 3], envName);
-    expect(deleteLayerVersionsMockFn).toBeCalled();
-    expect(deleteLayerVersionsMockFn).toBeCalledWith(layerName, []);
+    expect(deleteLayerVersionsMockFn).not.toBeCalled();
   });
 
   it('all version selected', async () => {
     const selectedlayerVersions = [
       {
         Version: 2,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
       {
         Version: 3,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
     ];
 
@@ -182,11 +180,11 @@ describe('remove walkthough test', () => {
     const selectedlayerVersions = [
       {
         Version: 2,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
       {
         Version: 3,
-        LegacyLayer: false,
+        legacyLayer: false,
       },
     ];
 

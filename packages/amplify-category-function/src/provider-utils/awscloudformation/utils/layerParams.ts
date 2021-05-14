@@ -39,6 +39,8 @@ export interface OrgsLayer {
   orgs: string[];
 }
 
+export const defaultLayerPermission: LayerPermission = { type: PermissionEnum.Private };
+
 export interface LayerVersionMetadata {
   LayerVersionArn: string;
   Version: number;
@@ -48,7 +50,7 @@ export interface LayerVersionMetadata {
   LicenseInfo: string;
   LogicalName: string;
   permissions: LayerPermission[];
-  LegacyLayer: boolean;
+  legacyLayer: boolean;
 }
 
 export interface LayerVersionCfnMetadata {
@@ -63,5 +65,5 @@ export interface LayerVersionCfnMetadata {
     S3Bucket: string;
   };
   permissions?: LayerPermission[];
-  LegacyLayer: boolean;
+  legacyLayer: boolean;
 }

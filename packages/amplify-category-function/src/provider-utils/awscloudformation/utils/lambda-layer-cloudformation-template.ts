@@ -7,6 +7,7 @@ import { LayerCfnLogicalNamePrefix } from './constants';
 import { LayerCloudState } from './layerCloudState';
 import { getLayerVersionPermissionsToBeUpdatedInCfn, getLayerVersionsToBeRemovedByCfn } from './layerConfiguration';
 import { isMultiEnvLayer } from './layerHelpers';
+import { LegacyPermissionEnum } from './layerMigrationUtils';
 import { LayerParameters, LayerPermission, LayerVersionCfnMetadata, PermissionEnum } from './layerParams';
 import { createLayerZipFilename } from './packageLayer';
 
@@ -25,7 +26,7 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
     logicalName = `${LayerCfnLogicalNamePrefix.LambdaLayerVersion}${shortId}`;
     const layerCloudState = LayerCloudState.getInstance();
     layerCloudState.latestVersionLogicalId = logicalName; // Store in singleton so it can be used in zipfile name
-    versionList.unshift({ LogicalName: logicalName, LegacyLayer: false });
+    versionList.unshift({ LogicalName: logicalName, legacyLayer: false });
   } else {
     logicalName = _.first(versionList).LogicalName;
   }
@@ -42,9 +43,12 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
   const layerVersionsToBeRemoved = getLayerVersionsToBeRemovedByCfn(resourceName, envName);
   const skipLayerVersionSet = new Set<number>(layerVersionsToBeRemoved);
 
-  for (const layerVersion of versionList.filter(r => !r.LegacyLayer && !skipLayerVersionSet.has(r.Version))) {
-    cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion, resourceName);
-    const shortId = layerVersion.LogicalName.replace(LayerCfnLogicalNamePrefix.LambdaLayerVersion, '');
+  for (const layerVersion of versionList.filter(r => !skipLayerVersionSet.has(r.Version))) {
+    let shortId: string;
+    if (!layerVersion.legacyLayer) {
+      cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion, resourceName);
+      shortId = layerVersion.LogicalName.replace(LayerCfnLogicalNamePrefix.LambdaLayerVersion, '');
+    }
     const permissionObjects = constructLayerVersionPermissionObjects(layerVersion, parameters, shortId, envName);
     permissionObjects.forEach(permission => (cfnObj.Resources[permission.name] = permission.policy));
   }
@@ -107,11 +111,13 @@ function constructLayerVersionPermissionObjects(
   shortId: string,
   envName: string,
 ) {
-  let permissions;
+  let permissions: LayerPermission[];
   if (layerVersion.Version) {
     permissions = getLayerVersionPermissionsToBeUpdatedInCfn(layerParameters.layerName, envName, layerVersion.Version);
   }
-  permissions = permissions || layerVersion.permissions || layerParameters.permissions;
+
+  permissions ||=
+    Array.isArray(layerVersion.permissions) && layerVersion.permissions.length > 0 ? layerVersion.permissions : layerParameters.permissions;
 
   const layerVersionPermissionBase = {
     Action: 'lambda:GetLayerVersion',
@@ -122,7 +128,7 @@ function constructLayerVersionPermissionObjects(
   if (permissions.filter(p => p.type === PermissionEnum.Public).length > 0) {
     return [
       {
-        name: `${LayerCfnLogicalNamePrefix.LambdaLayerVersionPermission}${PermissionEnum.Public}${shortId}`,
+        name: getPublicLayerVersionPermissionName(layerVersion, shortId),
         policy: new Lambda.LayerVersionPermission({
           ...layerVersionPermissionBase,
           Principal: '*',
@@ -133,11 +139,11 @@ function constructLayerVersionPermissionObjects(
 
   const layerVersionPermissions: { name: string; policy: object }[] = [];
 
-  permissions.forEach((permission: LayerPermission) => {
+  permissions.forEach((permission: LayerPermission | { type: LegacyPermissionEnum; accounts?: string[]; orgs?: string[] }) => {
     switch (permission.type) {
       case PermissionEnum.Private:
         layerVersionPermissions.push({
-          name: `${LayerCfnLogicalNamePrefix.LambdaLayerVersionPermission}${PermissionEnum.Private}${shortId}`,
+          name: getPrivateLayerVersionPermissionName(layerVersion, shortId),
           policy: new Lambda.LayerVersionPermission({
             ...layerVersionPermissionBase,
             Principal: Refs.AccountId,
@@ -145,12 +151,12 @@ function constructLayerVersionPermissionObjects(
         });
         break;
       case PermissionEnum.AwsAccounts:
-        permission.accounts.forEach(acctId =>
+        permission.accounts.forEach(accountId =>
           layerVersionPermissions.push({
-            name: `${LayerCfnLogicalNamePrefix.LambdaLayerVersionPermission}${PermissionEnum.AwsAccounts}${acctId}${shortId}`,
+            name: getAccountLayerVersionPermissionName(layerVersion, shortId, accountId),
             policy: new Lambda.LayerVersionPermission({
               ...layerVersionPermissionBase,
-              Principal: acctId,
+              Principal: accountId,
             }),
           }),
         );
@@ -158,7 +164,7 @@ function constructLayerVersionPermissionObjects(
       case PermissionEnum.AwsOrg:
         permission.orgs.forEach(orgId =>
           layerVersionPermissions.push({
-            name: `${LayerCfnLogicalNamePrefix.LambdaLayerVersionPermission}${PermissionEnum.AwsOrg}${orgId.replace('-', '')}${shortId}`,
+            name: getOrgLayerVersionPermissionName(layerVersion, shortId, orgId),
             policy: new Lambda.LayerVersionPermission({
               ...layerVersionPermissionBase,
               OrganizationId: orgId,
@@ -172,6 +178,30 @@ function constructLayerVersionPermissionObjects(
     }
   });
   return layerVersionPermissions;
+}
+
+function getPublicLayerVersionPermissionName(layerVersion: LayerVersionCfnMetadata, shortId: string) {
+  return `${LayerCfnLogicalNamePrefix.LambdaLayerVersionPermission}${PermissionEnum.Public}${
+    layerVersion.legacyLayer ? `Legacy${layerVersion.Version}` : shortId
+  }`;
+}
+
+function getPrivateLayerVersionPermissionName(layerVersion: LayerVersionCfnMetadata, shortId: string) {
+  return `${LayerCfnLogicalNamePrefix.LambdaLayerVersionPermission}${PermissionEnum.Private}${
+    layerVersion.legacyLayer ? `Legacy${layerVersion.Version}` : shortId
+  }`;
+}
+
+function getAccountLayerVersionPermissionName(layerVersion: LayerVersionCfnMetadata, shortId: string, accountId: string) {
+  return `${LayerCfnLogicalNamePrefix.LambdaLayerVersionPermission}${PermissionEnum.AwsAccounts}${accountId}${
+    layerVersion.legacyLayer ? `Legacy${layerVersion.Version}` : shortId
+  }`;
+}
+
+function getOrgLayerVersionPermissionName(layerVersion: LayerVersionCfnMetadata, shortId: string, orgId: string) {
+  return `${LayerCfnLogicalNamePrefix.LambdaLayerVersionPermission}${PermissionEnum.AwsOrg}${orgId.replace('-', '')}${
+    layerVersion.legacyLayer ? `Legacy${layerVersion.Version}` : shortId
+  }`;
 }
 
 // e.g. arn:aws:lambda:us-west-2:136981144547:layer:layers089e3f8b-dev:1

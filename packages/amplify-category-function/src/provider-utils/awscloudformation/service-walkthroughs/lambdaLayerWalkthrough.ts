@@ -17,7 +17,8 @@ import {
   loadStoredLayerParameters,
   previousPermissionsQuestion,
 } from '../utils/layerHelpers';
-import { AccountsLayer, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum } from '../utils/layerParams';
+import { migrateLegacyLayer } from '../utils/layerMigrationUtils';
+import { AccountsLayer, defaultLayerPermission, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum } from '../utils/layerParams';
 
 export async function createLayerWalkthrough(
   context: $TSContext,
@@ -64,7 +65,7 @@ export async function updateLayerWalkthrough(
   context: $TSContext,
   lambdaToUpdate?: string,
   parameters?: Partial<LayerParameters>,
-): Promise<Partial<LayerParameters>> {
+): Promise<{ parameters: Partial<LayerParameters>; resourceUpdated: boolean }> {
   const { allResources } = await context.amplify.getResourceStatus();
   const resources = allResources.filter(resource => resource.service === ServiceName.LambdaLayer).map(resource => resource.resourceName);
 
@@ -90,6 +91,9 @@ export async function updateLayerWalkthrough(
     const resourceAnswer = await inquirer.prompt(resourceQuestion);
     parameters.layerName = resourceAnswer.resourceName;
   }
+
+  // if legacy layer, perform migration
+  const hasMigrated = await migrateLegacyLayer(context, parameters.layerName);
 
   // check if layer is still in create state
   const layerHasDeployed = loadPreviousLayerHash(parameters.layerName) !== undefined;
@@ -161,21 +165,23 @@ export async function updateLayerWalkthrough(
     }
   }
 
-  if (!permissionsUpdateConfirmed || _.isEqual(permissions, parameters.permissions)) {
-    // Nothing has been updated
-    exitOnNextTick(0);
+  const resourceUpdated = permissionsUpdateConfirmed && !_.isEqual(permissions, parameters.permissions);
+
+  // In case answer to updating permissions is 'no', but migration occurred
+  if (hasMigrated && parameters.permissions === undefined) {
+    parameters.permissions = permissions;
   }
 
   parameters.runtimes = storedLayerParameters.runtimes;
   parameters.build = true;
-  return parameters;
+  return { parameters, resourceUpdated };
 }
 
 export async function lambdaLayerNewVersionWalkthrough(params: LayerParameters, timestampString: string): Promise<LayerParameters> {
   const changeLayerPermissions = await inquirer.prompt(previousPermissionsQuestion());
   let permissions = params.permissions;
   if (!changeLayerPermissions.usePreviousPermissions) {
-    permissions = [{ type: PermissionEnum.Private }];
+    permissions = [defaultLayerPermission];
   }
   const description = await descriptionQuestion(timestampString);
 

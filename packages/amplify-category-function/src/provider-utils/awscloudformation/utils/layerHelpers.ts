@@ -5,17 +5,17 @@ import * as fs from 'fs-extra';
 import globby from 'globby';
 import { CheckboxQuestion, InputQuestion, ListQuestion, prompt } from 'inquirer';
 import _ from 'lodash';
-import path from 'path';
+import * as path from 'path';
 import uuid from 'uuid';
 import { categoryName } from '../../../constants';
-import { cfnTemplateSuffix, layerParametersFileName, parametersFileName, provider, ServiceName, versionHash } from './constants';
-import { getLayerConfiguration } from './layerConfiguration';
+import { cfnTemplateSuffix, LegacyFilename, parametersFileName, provider, ServiceName, versionHash } from './constants';
+import { getLayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
 import { LayerParameters, LayerPermission, LayerVersionMetadata, PermissionEnum } from './layerParams';
 import { updateLayerArtifacts } from './storeResources';
 
-// These glob patterns covering the resource files Amplify stores in the layer resource's directory,
+// These glob patterns cover the resource files Amplify stores in the layer resource's directory,
 // layer-parameters.json must NOT be there.
-const layerResourceGlobs = [`${parametersFileName}`, `*${cfnTemplateSuffix}`];
+const layerResourceGlobs = [parametersFileName, `*${cfnTemplateSuffix}`];
 
 export interface LayerInputParams {
   layerPermissions?: PermissionEnum[];
@@ -191,8 +191,7 @@ export function layerInputParamsToLayerPermissionArray(parameters: LayerInputPar
 }
 
 export function loadStoredLayerParameters(context: $TSContext, layerName: string): LayerParameters {
-  const backendDirPath = pathManager.getBackendDirPath();
-  const { permissions, runtimes, description } = getLayerConfiguration(backendDirPath, layerName);
+  const { permissions, runtimes, description } = getLayerConfiguration(layerName);
   return {
     layerName,
     runtimes,
@@ -207,21 +206,29 @@ export function loadStoredLayerParameters(context: $TSContext, layerName: string
   };
 }
 
-export function getLayerPath(layerName: string) {
+export function getLayerDirPath(layerName: string) {
   return path.join(pathManager.getBackendDirPath(), categoryName, layerName);
 }
 
 export async function isNewVersion(layerName: string) {
   const previousHash = loadPreviousLayerHash(layerName);
-  const currentHash = await hashLayerVersionContents(getLayerPath(layerName));
+  const currentHash = await hashLayerVersionContents(getLayerDirPath(layerName));
 
   return previousHash !== currentHash;
 }
 
 export function isMultiEnvLayer(layerName: string) {
-  const layerParametersPath = path.join(getLayerPath(layerName), layerParametersFileName);
+  const layerParametersPath = path.join(getLayerDirPath(layerName), LegacyFilename.layerParameters);
+  if (fs.existsSync(layerParametersPath)) {
+    return false;
+  }
 
-  return !fs.existsSync(layerParametersPath);
+  const layerConfiguration = loadLayerConfigurationFile(layerName, false);
+  if (layerConfiguration?.nonMultiEnv) {
+    return false;
+  }
+
+  return true;
 }
 
 export function getLayerName(context: $TSContext, layerName: string): string {
@@ -232,7 +239,7 @@ export function getLayerName(context: $TSContext, layerName: string): string {
 
 // Check hash results for content changes, bump version if so
 export async function ensureLayerVersion(context: $TSContext, layerName: string, previousHash: string) {
-  const currentHash = await hashLayerVersionContents(getLayerPath(layerName));
+  const currentHash = await hashLayerVersionContents(getLayerDirPath(layerName));
 
   if (previousHash !== currentHash) {
     if (previousHash) {
@@ -242,7 +249,7 @@ export async function ensureLayerVersion(context: $TSContext, layerName: string,
 
   const layerParameters = loadStoredLayerParameters(context, layerName);
 
-  await updateLayerArtifacts(context, layerParameters, { layerParams: false, cfnFile: true, description: false });
+  await updateLayerArtifacts(context, layerParameters, { updateLayerParams: false, generateCfnFile: true, updateDescription: false });
 
   return currentHash;
 }
@@ -256,8 +263,8 @@ export function loadPreviousLayerHash(layerName: string): string | undefined {
 
 // hashes just the content that will be zipped into the layer version.
 // for efficiency, it only hashes package.json files in the node_modules folder of nodejs layers
-const hashLayerVersionContents = async (layerPath: string): Promise<string> => {
-  // TODO load paths from layer-runtimes.json
+export const hashLayerVersionContents = async (layerPath: string): Promise<string> => {
+  // TODO don't use hardcoded paths
   const nodePath = path.join(layerPath, 'lib', 'nodejs');
   const nodeHashOptions = {
     files: {
@@ -313,6 +320,6 @@ async function checkLambdaLayerChanges(resource: $TSAny): Promise<boolean> {
   const { resourceName } = resource;
   const previousHash = loadPreviousLayerHash(resourceName);
   if (!previousHash) return true;
-  const currentHash = await hashLayerVersionContents(getLayerPath(resourceName));
+  const currentHash = await hashLayerVersionContents(getLayerDirPath(resourceName));
   return currentHash !== previousHash;
 }

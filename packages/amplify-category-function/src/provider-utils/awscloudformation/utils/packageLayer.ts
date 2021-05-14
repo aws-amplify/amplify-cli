@@ -23,7 +23,7 @@ export const packageLayer: Packager = async (context, resource) => {
   const resourcePath = path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName);
 
   // call runtime module packaging
-  const layerConfig: LayerConfiguration = loadLayerConfigurationFile(pathManager.getBackendDirPath(), resource.resourceName);
+  const layerConfig: LayerConfiguration = loadLayerConfigurationFile(resource.resourceName);
   const layerCodePath = path.join(resourcePath, 'lib', layerConfig.runtimes[0].layerExecutablePath);
   const distDir = path.join(resourcePath, 'dist');
   fs.ensureDirSync(distDir);
@@ -117,7 +117,12 @@ export async function checkContentChanges(context: $TSContext, layerResources: A
       }
 
       // No need to update cfn or meta files since it will be updated during the packageLayer step
-      await updateLayerArtifacts(context, parameters, { amplifyMeta: false, cfnFile: false, description: true, layerParams: true });
+      await updateLayerArtifacts(context, parameters, {
+        updateMeta: false,
+        generateCfnFile: false,
+        updateDescription: true,
+        updateLayerParams: true,
+      });
     }
   }
 }

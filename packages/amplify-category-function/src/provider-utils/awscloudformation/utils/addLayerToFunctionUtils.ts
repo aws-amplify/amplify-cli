@@ -1,4 +1,4 @@
-import { $TSContext, $TSMeta, pathManager } from 'amplify-cli-core';
+import { $TSContext, $TSMeta } from 'amplify-cli-core';
 import { ExternalLayer, FunctionDependency, FunctionRuntime, LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
 import enquirer from 'enquirer';
 import inquirer, { CheckboxQuestion, InputQuestion } from 'inquirer';
@@ -39,7 +39,7 @@ export const askLayerSelection = async (
     .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
     .filter(key => {
       // filter by compatible runtimes
-      return isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes || getLayerRuntimes(pathManager.getBackendDirPath(), key));
+      return isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes || getLayerRuntimes(key));
     });
 
   if (layerOptions.length === 0) {

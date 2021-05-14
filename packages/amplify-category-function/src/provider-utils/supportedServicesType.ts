@@ -7,18 +7,30 @@ export interface SupportedServices {
   LambdaLayer: ServiceConfig<LayerParameters>;
 }
 
-export interface ServiceConfig<T> {
+export interface ServiceConfig<Parameters> {
   alias: string;
-  walkthroughs: WalkthroughProvider<T>;
+  walkthroughs: Parameters extends FunctionParameters ? FunctionWalkthroughProvider : LayerWalkthroughProvider;
   cfnFilename?: string;
   provider: string;
   providerController: $TSAny;
 }
-
-export interface WalkthroughProvider<T> {
-  createWalkthrough: (context: $TSContext, params: Partial<T>) => Promise<Partial<T>>;
-  updateWalkthrough: (context: $TSContext, resourceToUpdate?: string, params?: Partial<T>) => Promise<Partial<T>>;
+export interface FunctionWalkthroughProvider {
+  createWalkthrough: (context: $TSContext, params: Partial<FunctionParameters>) => Promise<Partial<FunctionParameters>>;
+  updateWalkthrough: (
+    context: $TSContext,
+    resourceToUpdate?: string,
+    params?: Partial<FunctionParameters>,
+  ) => Promise<Partial<FunctionParameters>>;
   migrate?: Function;
   getIAMPolicies?: Function;
   askExecRolePermissionsQuestions?: Function;
+}
+
+export interface LayerWalkthroughProvider {
+  createWalkthrough: (context: $TSContext, params: Partial<LayerParameters>) => Promise<Partial<LayerParameters>>;
+  updateWalkthrough: (
+    context: $TSContext,
+    resourceToUpdate?: string,
+    params?: Partial<LayerParameters>,
+  ) => Promise<{ parameters: Partial<LayerParameters>; resourceUpdated: boolean }>;
 }

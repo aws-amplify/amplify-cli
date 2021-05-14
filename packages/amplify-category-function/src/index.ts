@@ -20,6 +20,7 @@ export { buildResource } from './provider-utils/awscloudformation/utils/build';
 export { buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
+export { migrateLegacyLayer } from './provider-utils/awscloudformation/utils/layerMigrationUtils';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
 
 export async function add(context, providerName, service, parameters) {

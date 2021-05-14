@@ -21,7 +21,7 @@ import ora from 'ora';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
-import constants, { ProviderName as providerName, FunctionServiceNameLambdaLayer } from './constants';
+import constants, { ProviderName as providerName, FunctionCategoryName, FunctionServiceNameLambdaLayer } from './constants';
 import { uploadAppSyncFiles } from './upload-appsync-files';
 import { prePushGraphQLCodegen, postPushGraphQLCodegen } from './graphql-codegen';
 import { adminModelgen } from './admin-modelgen';
@@ -43,7 +43,7 @@ import { APIGW_AUTH_STACK_LOGICAL_ID, loadApiWithPrivacyParams } from './utils/c
 import { createEnvLevelConstructs } from './utils/env-level-constructs';
 import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
-import { postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
+import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
 
 const logger = fileLogger('push-resources');
 
@@ -67,6 +67,7 @@ const deploymentInProgressErrorMessage = (context: $TSContext) => {
 export async function run(context: $TSContext, resourceDefinition: $TSObject) {
   const deploymentStateManager = await DeploymentStateManager.createDeploymentStateManager(context);
   let iterativeDeploymentWasInvoked = false;
+  let layerResources = [];
 
   try {
     const {
@@ -83,6 +84,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     } = context;
 
     const resources = !!context?.exeInfo?.forcePush ? allResources : resourcesToBeCreated.concat(resourcesToBeUpdated);
+    layerResources = resources.filter(r => r.service === FunctionServiceNameLambdaLayer);
 
     if (deploymentStateManager.isDeploymentInProgress() && !deploymentStateManager.isDeploymentFinished()) {
       if (context.exeInfo?.forcePush || context.exeInfo?.iterativeRollback) {
@@ -117,6 +119,12 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       if (resource.service === ApiServiceNameElasticContainer && resource.category === 'hosting') {
         await context.amplify.invokePluginMethod(context, 'hosting', 'ElasticContainer', 'generateHostingResources', [context, resource]);
       }
+    }
+
+    for await (const resource of resources.filter(
+      r => r.category === FunctionCategoryName && r.service === FunctionServiceNameLambdaLayer,
+    )) {
+      await legacyLayerMigration(context, resource.resourceName);
     }
 
     await prePushLambdaLayerPrompt(context, resources);
@@ -349,6 +357,8 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     }
     spinner.fail('An error occurred when pushing the resources to the cloud');
 
+    rollbackLambdaLayers(layerResources);
+
     logger('run', [resourceDefinition])(error);
 
     throw error;
@@ -500,14 +510,14 @@ async function prepareBuildableResources(context: $TSContext, resources: $TSAny[
 }
 
 async function prepareResource(context: $TSContext, resource: $TSAny) {
-  resource.lastBuildTimeStamp = await context.amplify.invokePluginMethod(context, 'function', undefined, 'buildResource', [
+  resource.lastBuildTimeStamp = await context.amplify.invokePluginMethod(context, FunctionCategoryName, undefined, 'buildResource', [
     context,
     resource,
   ]);
 
   const result: { newPackageCreated: boolean; zipFilename: string; zipFilePath: string } = await context.amplify.invokePluginMethod(
     context,
-    'function',
+    FunctionCategoryName,
     undefined,
     'packageResource',
     [context, resource],
@@ -560,12 +570,9 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
 
   const cfnFile = cfnFiles[0];
   const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
-  const cfnMeta = JSONUtilities.readJson<$TSAny>(cfnFilePath);
   const paramType = { Type: 'String' };
 
   if (resource.service === FunctionServiceNameLambdaLayer) {
-    cfnMeta.Parameters.deploymentBucketName = paramType;
-    cfnMeta.Parameters.s3Key = paramType;
     storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
   } else if (resource.service === ApiServiceNameElasticContainer) {
     const cfnParams = { ParamZipPath: s3Key };
@@ -573,6 +580,7 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
     const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
     JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
   } else {
+    const cfnMeta = JSONUtilities.readJson<$TSAny>(cfnFilePath);
     cfnMeta.Parameters.deploymentBucketName = paramType;
     cfnMeta.Parameters.s3Key = paramType;
     const deploymentBucketNameRef = 'deploymentBucketName';
@@ -590,8 +598,8 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
       };
     }
     storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
+    JSONUtilities.writeJson(cfnFilePath, cfnMeta);
   }
-  JSONUtilities.writeJson(cfnFilePath, cfnMeta);
 }
 
 function storeS3BucketInfo(category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) {
@@ -1016,4 +1024,20 @@ export async function generateAndUploadRootStack(context: $TSContext, destinatio
   };
 
   await s3Client.uploadFile(s3Params, false);
+}
+
+function rollbackLambdaLayers(layerResources: $TSAny[]) {
+  if (layerResources.length > 0) {
+    const projectRoot = pathManager.findProjectRoot();
+    const currentMeta = stateManager.getCurrentMeta(projectRoot);
+    const meta = stateManager.getMeta(projectRoot);
+
+    layerResources.forEach(r => {
+      const layerMetaPath = [FunctionCategoryName, r.resourceName, 'latestPushedVersionHash'];
+      const previousHash = _.get<string | undefined>(currentMeta, layerMetaPath, undefined);
+      _.set(meta, layerMetaPath, previousHash);
+    });
+
+    stateManager.setMeta(projectRoot, meta);
+  }
 }
