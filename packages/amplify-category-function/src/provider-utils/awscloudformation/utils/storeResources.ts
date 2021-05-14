@@ -39,11 +39,10 @@ export const createLayerArtifacts = (context: $TSContext, parameters: LayerParam
 
 // updates the layer resources and returns the resource directory
 const defaultOpts = {
-  layerParams: true,
-  cfnFile: true,
-  amplifyMeta: true,
-  description: true,
-  updateFunction: false,
+  updateLayerParams: true,
+  generateCfnFile: true,
+  updateMeta: true,
+  updateDescription: true,
 };
 
 export const updateLayerArtifacts = async (
@@ -55,15 +54,15 @@ export const updateLayerArtifacts = async (
   const layerDirPath = ensureLayerFolders(parameters);
   let updated = false;
 
-  if (options.layerParams) {
+  if (options.updateLayerParams) {
     updated ||= saveLayerPermissions(layerDirPath, parameters.permissions);
   }
 
-  if (options.description) {
+  if (options.updateDescription) {
     updated ||= saveLayerDescription(parameters.layerName, parameters.description);
   }
 
-  if (options.cfnFile) {
+  if (options.generateCfnFile) {
     const cfnTemplateFilePath = path.join(layerDirPath, getCfnTemplateFileName(parameters.layerName));
     const currentCFNTemplate = JSONUtilities.readJson(cfnTemplateFilePath, {
       throwIfNotExist: false,
@@ -74,7 +73,7 @@ export const updateLayerArtifacts = async (
     updated ||= _.isEqual(currentCFNTemplate, updatedCFNTemplate);
   }
 
-  if (options.amplifyMeta) {
+  if (options.updateMeta) {
     updateLayerInAmplifyMeta(parameters);
   }
 

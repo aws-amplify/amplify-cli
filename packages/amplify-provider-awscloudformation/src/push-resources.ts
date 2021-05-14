@@ -21,7 +21,7 @@ import ora from 'ora';
 import { S3 } from './aws-utils/aws-s3';
 import Cloudformation from './aws-utils/aws-cfn';
 import { formUserAgentParam } from './aws-utils/user-agent';
-import constants, { ProviderName as providerName, FunctionServiceNameLambdaLayer } from './constants';
+import constants, { ProviderName as providerName, FunctionCategoryName, FunctionServiceNameLambdaLayer } from './constants';
 import { uploadAppSyncFiles } from './upload-appsync-files';
 import { prePushGraphQLCodegen, postPushGraphQLCodegen } from './graphql-codegen';
 import { adminModelgen } from './admin-modelgen';
@@ -121,7 +121,9 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       }
     }
 
-    for await (const resource of resources.filter(r => r.category === 'function' && r.service === FunctionServiceNameLambdaLayer)) {
+    for await (const resource of resources.filter(
+      r => r.category === FunctionCategoryName && r.service === FunctionServiceNameLambdaLayer,
+    )) {
       await legacyLayerMigration(context, resource.resourceName);
     }
 
@@ -508,14 +510,14 @@ async function prepareBuildableResources(context: $TSContext, resources: $TSAny[
 }
 
 async function prepareResource(context: $TSContext, resource: $TSAny) {
-  resource.lastBuildTimeStamp = await context.amplify.invokePluginMethod(context, 'function', undefined, 'buildResource', [
+  resource.lastBuildTimeStamp = await context.amplify.invokePluginMethod(context, FunctionCategoryName, undefined, 'buildResource', [
     context,
     resource,
   ]);
 
   const result: { newPackageCreated: boolean; zipFilename: string; zipFilePath: string } = await context.amplify.invokePluginMethod(
     context,
-    'function',
+    FunctionCategoryName,
     undefined,
     'packageResource',
     [context, resource],
@@ -1031,7 +1033,7 @@ function rollbackLambdaLayers(layerResources: $TSAny[]) {
     const meta = stateManager.getMeta(projectRoot);
 
     layerResources.forEach(r => {
-      const layerMetaPath = ['function', r.resourceName, 'latestPushedVersionHash'];
+      const layerMetaPath = [FunctionCategoryName, r.resourceName, 'latestPushedVersionHash'];
       const previousHash = _.get<string | undefined>(currentMeta, layerMetaPath, undefined);
       _.set(meta, layerMetaPath, previousHash);
     });

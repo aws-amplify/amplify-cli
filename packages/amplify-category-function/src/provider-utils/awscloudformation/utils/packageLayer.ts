@@ -117,7 +117,12 @@ export async function checkContentChanges(context: $TSContext, layerResources: A
       }
 
       // No need to update cfn or meta files since it will be updated during the packageLayer step
-      await updateLayerArtifacts(context, parameters, { amplifyMeta: false, cfnFile: false, description: true, layerParams: true });
+      await updateLayerArtifacts(context, parameters, {
+        updateMeta: false,
+        generateCfnFile: false,
+        updateDescription: true,
+        updateLayerParams: true,
+      });
     }
   }
 }

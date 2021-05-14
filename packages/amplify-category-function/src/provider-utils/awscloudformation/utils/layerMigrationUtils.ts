@@ -1,4 +1,4 @@
-import { $TSContext, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, exitOnNextTick, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -47,6 +47,19 @@ export async function migrateLegacyLayer(context: $TSContext, layerName: string)
 
   if (legacyState === LegacyState.NOT_LEGACY) {
     return false;
+  }
+
+  // TODO add docs link when it's available
+  context.print.warning(
+    '\n⚠️  Amplify updated the way Lambda layers work to better support team workflows and additional features.\n\
+This change requires a migration. Amplify will create a new Lambda layer version even if no layer content changes are made.\n',
+  );
+
+  if (context?.exeInfo?.inputParams?.yes !== true) {
+    const shouldProceedWithMigration = await context.amplify.confirmPrompt('Continue?');
+    if (!shouldProceedWithMigration) {
+      exitOnNextTick(0);
+    }
   }
 
   const runtimeCloudTemplateValues: string[] = [];

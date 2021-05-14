@@ -249,7 +249,7 @@ export async function ensureLayerVersion(context: $TSContext, layerName: string,
 
   const layerParameters = loadStoredLayerParameters(context, layerName);
 
-  await updateLayerArtifacts(context, layerParameters, { layerParams: false, cfnFile: true, description: false });
+  await updateLayerArtifacts(context, layerParameters, { updateLayerParams: false, generateCfnFile: true, updateDescription: false });
 
   return currentHash;
 }

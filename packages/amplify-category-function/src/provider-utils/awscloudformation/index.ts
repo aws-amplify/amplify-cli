@@ -239,9 +239,8 @@ export async function updateLayerResource(
 
   // write out updated resources
   const updated = await updateLayerArtifacts(context, updateWalkthroughResult.parameters, {
-    updateFunction: true,
-    layerParams: parameters.selectedVersion === undefined,
-    cfnFile: true,
+    updateLayerParams: parameters.selectedVersion === undefined,
+    generateCfnFile: true,
   });
 
   printLayerSuccessMessages(context, updateWalkthroughResult.parameters, 'updated');
