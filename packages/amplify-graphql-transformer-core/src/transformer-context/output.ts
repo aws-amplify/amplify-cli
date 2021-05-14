@@ -204,6 +204,10 @@ export class TransformerOutput implements TransformerContextOutputProvider {
     return this.nodeMap[name];
   }
 
+  public hasType(name: string): boolean {
+    return name in this.nodeMap;
+  }
+
   /**
    * Add an object type definition node to the context. If the type already
    * exists an error will be thrown.
