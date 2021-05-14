@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.7.6...amplify-python-function-runtime-provider@1.8.0-beta.0) (2021-05-14)
+
+
+### Bug Fixes
+
+* get pipenv py version from Pipfile ([#7254](https://github.com/aws-amplify/amplify-cli/issues/7254)) ([866f261](https://github.com/aws-amplify/amplify-cli/commit/866f2614a2eb2476961526566f78081e4e58f41f))
+
+
+### Features
+
+* prep work for SMS Sandbox support ([#7302](https://github.com/aws-amplify/amplify-cli/issues/7302)) ([d1f85d2](https://github.com/aws-amplify/amplify-cli/commit/d1f85d2e0a9c367b71defefe6d9e00737f681ca4))
+
+
+
+
+
 ## [1.7.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-python-function-runtime-provider@1.7.4...amplify-python-function-runtime-provider@1.7.6) (2021-05-03)
 
 

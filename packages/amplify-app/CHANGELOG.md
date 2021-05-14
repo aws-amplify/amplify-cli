@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.24.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.23.5...amplify-app@2.24.0-beta.0) (2021-05-14)
+
+
+### Features
+
+* prep work for SMS Sandbox support ([#7302](https://github.com/aws-amplify/amplify-cli/issues/7302)) ([d1f85d2](https://github.com/aws-amplify/amplify-cli/commit/d1f85d2e0a9c367b71defefe6d9e00737f681ca4))
+
+
+
+
+
 ## [2.23.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.23.3...amplify-app@2.23.5) (2021-05-03)
 
 

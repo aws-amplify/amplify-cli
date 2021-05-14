@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.31.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.30.6...amplify-category-auth@2.31.0-beta.0) (2021-05-14)
+
+
+### Bug Fixes
+
+* [#4657](https://github.com/aws-amplify/amplify-cli/issues/4657) preserve previous authSelections in update flow ([#7255](https://github.com/aws-amplify/amplify-cli/issues/7255)) ([afbaa08](https://github.com/aws-amplify/amplify-cli/commit/afbaa08ac54bb001b640c808cf136c124089e5fc))
+* e2e failed tests for auth Triggers PR ([#7262](https://github.com/aws-amplify/amplify-cli/issues/7262)) ([fedb6c4](https://github.com/aws-amplify/amplify-cli/commit/fedb6c49cf0695e21f59929e7d0554b59290f2f1))
+* ejs template fix when no triggers added ([#7267](https://github.com/aws-amplify/amplify-cli/issues/7267)) ([81786a8](https://github.com/aws-amplify/amplify-cli/commit/81786a8d654f3ba2550e59986d85a654e5ed44dd))
+
+
+### Features
+
+* prep work for SMS Sandbox support ([#7302](https://github.com/aws-amplify/amplify-cli/issues/7302)) ([d1f85d2](https://github.com/aws-amplify/amplify-cli/commit/d1f85d2e0a9c367b71defefe6d9e00737f681ca4))
+* Support for Apple Sign In ([#7265](https://github.com/aws-amplify/amplify-cli/issues/7265)) ([9f5e659](https://github.com/aws-amplify/amplify-cli/commit/9f5e659d63362c7f47eaa147c68d40d5bcc36fcc))
+
+
+
+
+
 ## [2.30.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.30.4...amplify-category-auth@2.30.6) (2021-05-03)
 
 

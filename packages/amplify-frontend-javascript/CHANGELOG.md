@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.22.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.21.6...amplify-frontend-javascript@2.22.0-beta.0) (2021-05-14)
+
+
+### Features
+
+* Support for Apple Sign In ([#7265](https://github.com/aws-amplify/amplify-cli/issues/7265)) ([9f5e659](https://github.com/aws-amplify/amplify-cli/commit/9f5e659d63362c7f47eaa147c68d40d5bcc36fcc))
+
+
+
+
+
 ## [2.21.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.21.4...amplify-frontend-javascript@2.21.6) (2021-05-03)
 
 
