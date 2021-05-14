@@ -5,7 +5,7 @@ import glob from 'glob';
 
 export async function packageResource(request: PackageRequest, context: any): Promise<PackageResult> {
   if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp || request.currentHash) {
-    const resourcePath = request.service ? request.srcRoot : path.join(request.srcRoot, 'src');
+    const resourcePath = request.service ? path.join(request.srcRoot, '..') : path.join(request.srcRoot, 'src');
     const packageHash = !request.skipHashing ? ((await context.amplify.hashDir(resourcePath, ['node_modules'])) as string) : undefined;
     const zipEntries: ZipEntry[] = [];
     if (request.service) {
