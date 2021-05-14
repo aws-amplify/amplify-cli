@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.48.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.47.0...amplify-provider-awscloudformation@4.48.0) (2021-05-14)
+
+
+
+# 4.51.0 (2021-05-13)
+
+
+### Bug Fixes
+
+* handle legacy string permissions ([#7305](https://github.com/aws-amplify/amplify-cli/issues/7305)) ([a6b6ad7](https://github.com/aws-amplify/amplify-cli/commit/a6b6ad74fa7118ca1aae4f61e2e604688c0354e3))
+* **amplify-provider-awscloudformation:** add logger to iterative deploys ([#7278](https://github.com/aws-amplify/amplify-cli/issues/7278)) ([4671717](https://github.com/aws-amplify/amplify-cli/commit/4671717ccd79031592bde12c550428b0aa11d750))
+* conditionally rebuild container apis on push ([#7175](https://github.com/aws-amplify/amplify-cli/issues/7175)) ([a27a033](https://github.com/aws-amplify/amplify-cli/commit/a27a033af0fe6a9db8becd15b713113c64e70eb3))
+* e2e failed tests for auth Triggers PR ([#7262](https://github.com/aws-amplify/amplify-cli/issues/7262)) ([fedb6c4](https://github.com/aws-amplify/amplify-cli/commit/fedb6c49cf0695e21f59929e7d0554b59290f2f1))
+* show error message when project initalization fail ([98682ac](https://github.com/aws-amplify/amplify-cli/commit/98682ac4c6fcce4b7ac4d8c69e646d3b8712d325))
+
+
+### Features
+
+* defer root stack creation to first `amplify push` ([#7174](https://github.com/aws-amplify/amplify-cli/issues/7174)) ([d28dd1c](https://github.com/aws-amplify/amplify-cli/commit/d28dd1caca86b19a858dab0e7aa907d1cc74c86a))
+* prep work for SMS Sandbox support ([#7302](https://github.com/aws-amplify/amplify-cli/issues/7302)) ([d1f85d2](https://github.com/aws-amplify/amplify-cli/commit/d1f85d2e0a9c367b71defefe6d9e00737f681ca4))
+
+
+### Reverts
+
+* Revert "feat: defer root stack creation to first `amplify push` (#7174)" (#7306) ([78854eb](https://github.com/aws-amplify/amplify-cli/commit/78854ebd4a3d41d34d68736d6556045302101265)), closes [#7174](https://github.com/aws-amplify/amplify-cli/issues/7174) [#7306](https://github.com/aws-amplify/amplify-cli/issues/7306)
+
+
+
+
+
 # [4.47.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.45.0...amplify-provider-awscloudformation@4.47.0) (2021-05-03)
 
 

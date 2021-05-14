@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.21.2...amplify-cli-core@1.22.0) (2021-05-14)
+
+
+
+# 4.51.0 (2021-05-13)
+
+
+### Bug Fixes
+
+* [#7243](https://github.com/aws-amplify/amplify-cli/issues/7243) yaml parsing should support all cfn functions ([#7245](https://github.com/aws-amplify/amplify-cli/issues/7245)) ([4130f2f](https://github.com/aws-amplify/amplify-cli/commit/4130f2fc460f2d038365c4314c6293c203a6520e))
+
+
+### Features
+
+* defer root stack creation to first `amplify push` ([#7174](https://github.com/aws-amplify/amplify-cli/issues/7174)) ([d28dd1c](https://github.com/aws-amplify/amplify-cli/commit/d28dd1caca86b19a858dab0e7aa907d1cc74c86a))
+* prep work for SMS Sandbox support ([#7302](https://github.com/aws-amplify/amplify-cli/issues/7302)) ([d1f85d2](https://github.com/aws-amplify/amplify-cli/commit/d1f85d2e0a9c367b71defefe6d9e00737f681ca4))
+
+
+### Reverts
+
+* Revert "feat: defer root stack creation to first `amplify push` (#7174)" (#7306) ([78854eb](https://github.com/aws-amplify/amplify-cli/commit/78854ebd4a3d41d34d68736d6556045302101265)), closes [#7174](https://github.com/aws-amplify/amplify-cli/issues/7174) [#7306](https://github.com/aws-amplify/amplify-cli/issues/7306)
+
+
+
+
+
 ## [1.21.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.21.0...amplify-cli-core@1.21.2) (2021-05-03)
 
 

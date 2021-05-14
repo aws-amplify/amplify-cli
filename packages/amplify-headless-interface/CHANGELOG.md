@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.5.3...amplify-headless-interface@1.6.0) (2021-05-14)
+
+
+### Features
+
+* Support for Apple Sign In ([#7265](https://github.com/aws-amplify/amplify-cli/issues/7265)) ([9f5e659](https://github.com/aws-amplify/amplify-cli/commit/9f5e659d63362c7f47eaa147c68d40d5bcc36fcc))
+
+
+
+
+
 ## [1.5.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.5.2...amplify-headless-interface@1.5.3) (2021-01-08)
 
 **Note:** Version bump only for package amplify-headless-interface

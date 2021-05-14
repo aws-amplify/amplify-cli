@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.6...amplify-category-api@2.31.7) (2021-05-14)
+
+
+### Bug Fixes
+
+* carry existing container secret config over ([#7224](https://github.com/aws-amplify/amplify-cli/issues/7224)) ([b2f3bf7](https://github.com/aws-amplify/amplify-cli/commit/b2f3bf7059ce3ca1e72cf6c451edd3e61699828a))
+* conditionally rebuild container apis on push ([#7175](https://github.com/aws-amplify/amplify-cli/issues/7175)) ([a27a033](https://github.com/aws-amplify/amplify-cli/commit/a27a033af0fe6a9db8becd15b713113c64e70eb3))
+* update overlapping REST path warning ([#7276](https://github.com/aws-amplify/amplify-cli/issues/7276)) ([3fc7534](https://github.com/aws-amplify/amplify-cli/commit/3fc75343ba228307080f3ef6a6cae4cf3387a007))
+
+
+
+
+
 ## [2.31.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.4...amplify-category-api@2.31.6) (2021-05-03)
 
 
