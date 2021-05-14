@@ -8,8 +8,10 @@ exports.handler = async (event) => {
     {},
   );
   /**
-   * If the CAPTCHA challenge succeeded, set the `answerCorrect` field to
-   * `true`; otherwise, set it to `false` and throw an error.
+   * Verify that the CAPTCHA challenge succeeded, and if it did, indicate so in
+   * the event response.
+   *
+   * If the challenge fails, throw an error.
    */
   const challengeSucceeded = response && response.data && response.data.success;
   if (challengeSucceeded) {
