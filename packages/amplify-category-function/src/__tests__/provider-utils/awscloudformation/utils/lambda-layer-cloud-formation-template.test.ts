@@ -87,7 +87,7 @@ describe('test layer CFN generation functions', () => {
       S3Key: 's3key',
       S3Bucket: 's3bucket',
     },
-    LegacyLayer: false,
+    legacyLayer: false,
     permissions: [{ type: PermissionEnum.Private }],
   };
 
