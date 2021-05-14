@@ -266,7 +266,7 @@ export function makeDeleteInputObject(obj: ObjectTypeDefinitionNode, isSync: boo
     {
       kind: Kind.INPUT_VALUE_DEFINITION,
       name: { kind: 'Name', value: 'id' },
-      type: makeNamedType('ID'),
+      type: wrapNonNull(makeNamedType('ID')),
       // TODO: Service does not support new style descriptions so wait.
       // description: {
       //     kind: 'StringValue',
