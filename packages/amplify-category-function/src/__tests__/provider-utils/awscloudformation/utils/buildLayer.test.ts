@@ -1,5 +1,5 @@
 import { $TSContext, pathManager } from 'amplify-cli-core';
-import { BuildType, FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import { buildLayer } from '../../../../provider-utils/awscloudformation/utils/buildLayer';
 import { loadLayerConfigurationFile } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
 

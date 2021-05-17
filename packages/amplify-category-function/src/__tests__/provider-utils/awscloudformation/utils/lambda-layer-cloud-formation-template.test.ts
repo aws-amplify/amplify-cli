@@ -1,3 +1,4 @@
+import { pathManager, stateManager } from 'amplify-cli-core';
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
 import {
   LayerParameters,
@@ -5,14 +6,17 @@ import {
   LayerVersionCfnMetadata,
   PermissionEnum,
 } from '../../../../provider-utils/awscloudformation/utils/layerParams';
-import { getLayerDirPath, isMultiEnvLayer } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
+import { isMultiEnvLayer } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
+
+jest.mock('amplify-cli-core');
+const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
+const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+pathManager_mock.getResourceDirectoryPath.mockReturnValue('fakeProject/amplify/backend/myLayer/');
+stateManager_mock.getLocalEnvInfo.mockReturnValue({ envName: 'mock' });
 
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers');
 const isMultiEnvLayer_mock = isMultiEnvLayer as jest.MockedFunction<typeof isMultiEnvLayer>;
-const getLayerDirPath_mock = getLayerDirPath as jest.MockedFunction<typeof getLayerDirPath>;
-
 isMultiEnvLayer_mock.mockImplementation(jest.fn(() => true));
-getLayerDirPath_mock.mockImplementation(jest.fn(() => 'fakeProject/amplify/backend/myLayer/'));
 
 const parameters_stub: LayerParameters = {
   build: true,

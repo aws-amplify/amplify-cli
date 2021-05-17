@@ -4,9 +4,11 @@ describe('remove walkthough test', () => {
   const layerName = 'layerName';
   const module = __dirname + '/dummy_module';
   const deleteLayerVersionsMockFn = jest.fn();
-  const saveLayerVersionsToBeRemovedByCfn = jest.fn();
   const loadLayerDataFromCloudMock = jest.fn();
+  const loadStoredLayerParameters = jest.fn();
+  const saveLayerVersionsToBeRemovedByCfn = jest.fn();
   const selectPromptMock = jest.fn();
+  const updateLayerArtifacts = jest.fn();
 
   beforeEach(() => {
     mockContext = {
@@ -38,8 +40,9 @@ describe('remove walkthough test', () => {
     }));
 
     jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers', () => ({
-      loadLayerDataFromCloud: loadLayerDataFromCloudMock,
       getLayerName: jest.fn().mockReturnValue(layerName),
+      loadLayerDataFromCloud: loadLayerDataFromCloudMock,
+      loadStoredLayerParameters: loadStoredLayerParameters,
     }));
 
     jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState', () => ({
@@ -48,6 +51,10 @@ describe('remove walkthough test', () => {
           getLayerVersionsFromCloud: loadLayerDataFromCloudMock,
         }),
       },
+    }));
+
+    jest.mock('../../../../provider-utils/awscloudformation/utils/storeResources', () => ({
+      updateLayerArtifacts: updateLayerArtifacts,
     }));
 
     jest.mock('inquirer', () => ({

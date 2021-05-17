@@ -59,7 +59,7 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
     permissions: [],
     LogicalName: 'myLayer',
     Version: 10,
-    LegacyLayer: true,
+    legacyLayer: true,
   },
   {
     LogicalName: 'anotherLayer',
@@ -70,7 +70,7 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
     CompatibleRuntimes: ['nodejs14.x'],
     LicenseInfo: '',
     permissions: [],
-    LegacyLayer: true,
+    legacyLayer: true,
   },
 ];
 

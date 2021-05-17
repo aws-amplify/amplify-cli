@@ -1,7 +1,7 @@
 import { $TSContext } from 'amplify-cli-core';
 import { FunctionDependency, LambdaLayer } from 'amplify-function-plugin-interface';
 import enquirer from 'enquirer';
-import inquirer, { CheckboxQuestion, InputQuestion, ListQuestion } from 'inquirer';
+import inquirer, { CheckboxQuestion, InputQuestion } from 'inquirer';
 import { categoryName } from '../../../../constants';
 import {
   askCustomArnQuestion,
@@ -12,7 +12,6 @@ import {
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
 import { getLayerRuntimes } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
 import { LayerCloudState } from '../../../../provider-utils/awscloudformation/utils/layerCloudState';
-import { layerVersionQuestion } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
 import { LayerVersionMetadata } from '../../../../provider-utils/awscloudformation/utils/layerParams';
 
 jest.mock('inquirer');
@@ -80,7 +79,7 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
     permissions: [],
     LogicalName: 'myLayer',
     Version: 1,
-    LegacyLayer: false,
+    legacyLayer: false,
   },
   {
     LogicalName: 'aLayer',
@@ -91,7 +90,7 @@ const layerCloudReturnStub: LayerVersionMetadata[] = [
     CompatibleRuntimes: ['nodejs14.x'],
     LicenseInfo: '',
     permissions: [],
-    LegacyLayer: false,
+    legacyLayer: false,
   },
 ];
 
