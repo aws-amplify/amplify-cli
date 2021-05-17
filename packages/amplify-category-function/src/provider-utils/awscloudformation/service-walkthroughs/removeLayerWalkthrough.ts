@@ -4,8 +4,9 @@ import inquirer, { QuestionCollection } from 'inquirer';
 import ora from 'ora';
 import { LayerCloudState } from '../utils/layerCloudState';
 import { saveLayerVersionsToBeRemovedByCfn } from '../utils/layerConfiguration';
-import { getLayerName } from '../utils/layerHelpers';
+import { loadStoredLayerParameters, getLayerName } from '../utils/layerHelpers';
 import { LayerVersionMetadata } from '../utils/layerParams';
+import { updateLayerArtifacts } from '../utils/storeResources';
 
 const removeLayerQuestion = 'Choose the Layer versions you want to remove.';
 
@@ -60,6 +61,15 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
         envName,
       );
     }
+
+    // Load configuration for layer and regenerate cfn template
+    const layerParameters = loadStoredLayerParameters(context, layerName);
+    updateLayerArtifacts(context, layerParameters, {
+      generateCfnFile: true,
+      updateDescription: false,
+      updateLayerParams: false,
+      updateMeta: false,
+    });
 
     return undefined;
   }
