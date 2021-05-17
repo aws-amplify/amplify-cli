@@ -115,14 +115,19 @@ function populateAmplifyMeta(projectPath: string, amplifyMeta: $TSMeta) {
   stateManager.setMeta(projectPath, amplifyMeta);
 }
 
-function populateCategoriesMeta(projectPath: string, amplifyMeta: $TSMeta, teamProviderInfo: $TSTeamProviderInfo,
-                                metaCategory: string, teamProviderCategory: string, serviceName: string) {
-  if (amplifyMeta[metaCategory] &&
-      amplifyMeta[metaCategory][serviceName] &&
-      teamProviderInfo[CATEGORIES] &&
-      teamProviderInfo[CATEGORIES][teamProviderCategory] &&
-      teamProviderInfo[CATEGORIES][teamProviderCategory][serviceName]) {
-    Object.assign(amplifyMeta[metaCategory][serviceName], teamProviderInfo[CATEGORIES][teamProviderCategory][serviceName]);
+function populateCategoriesMeta(
+  projectPath: string,
+  amplifyMeta: $TSMeta,
+  teamProviderInfo: $TSTeamProviderInfo,
+  categoryName: string,
+  serviceName: string,
+) {
+
+  if (
+    amplifyMeta[categoryName]?.[serviceName] &&
+    teamProviderInfo[CATEGORIES]?.[teamProviderCategory]?.[serviceName]
+  ) {
+    Object.assign(amplifyMeta[categoryName][serviceName], teamProviderInfo[CATEGORIES][categoryName][serviceName]);
     stateManager.setMeta(projectPath, amplifyMeta);
   }
-}
+} 
