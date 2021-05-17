@@ -206,19 +206,19 @@ export function loadStoredLayerParameters(context: $TSContext, layerName: string
   };
 }
 
-export function getLayerDirPath(layerName: string) {
-  return path.join(pathManager.getBackendDirPath(), categoryName, layerName);
-}
-
 export async function isNewVersion(layerName: string) {
   const previousHash = loadPreviousLayerHash(layerName);
-  const currentHash = await hashLayerVersionContents(getLayerDirPath(layerName));
+  const currentHash = await hashLayerVersionContents(pathManager.getResourceDirectoryPath(undefined, categoryName, layerName));
 
   return previousHash !== currentHash;
 }
 
 export function isMultiEnvLayer(layerName: string) {
-  const layerParametersPath = path.join(getLayerDirPath(layerName), LegacyFilename.layerParameters);
+  const layerParametersPath = path.join(
+    pathManager.getResourceDirectoryPath(undefined, categoryName, layerName),
+    LegacyFilename.layerParameters,
+  );
+
   if (fs.existsSync(layerParametersPath)) {
     return false;
   }
@@ -239,7 +239,7 @@ export function getLayerName(context: $TSContext, layerName: string): string {
 
 // Check hash results for content changes, bump version if so
 export async function ensureLayerVersion(context: $TSContext, layerName: string, previousHash: string) {
-  const currentHash = await hashLayerVersionContents(getLayerDirPath(layerName));
+  const currentHash = await hashLayerVersionContents(pathManager.getResourceDirectoryPath(undefined, categoryName, layerName));
 
   if (previousHash !== currentHash) {
     if (previousHash) {
@@ -320,6 +320,6 @@ async function checkLambdaLayerChanges(resource: $TSAny): Promise<boolean> {
   const { resourceName } = resource;
   const previousHash = loadPreviousLayerHash(resourceName);
   if (!previousHash) return true;
-  const currentHash = await hashLayerVersionContents(getLayerDirPath(resourceName));
+  const currentHash = await hashLayerVersionContents(pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName));
   return currentHash !== previousHash;
 }

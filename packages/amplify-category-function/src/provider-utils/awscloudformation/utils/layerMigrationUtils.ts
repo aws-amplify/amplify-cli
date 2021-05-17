@@ -7,7 +7,6 @@ import { categoryName } from '../../../constants';
 import { layerConfigurationFileName, LegacyFilename, versionHash } from './constants';
 import { loadPluginFromFactory } from './functionPluginLoader';
 import { writeLayerConfigurationFile } from './layerConfiguration';
-import { getLayerDirPath } from './layerHelpers';
 import { defaultLayerPermission, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
 export const enum LegacyPermissionEnum {
@@ -42,7 +41,7 @@ const enum LegacyState {
 const layerVersionMapKey = 'layerVersionMap';
 
 export async function migrateLegacyLayer(context: $TSContext, layerName: string): Promise<boolean> {
-  const layerDirPath = getLayerDirPath(layerName);
+  const layerDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, layerName);
   const legacyState = isLegacyLayer(layerName, layerDirPath);
 
   if (legacyState === LegacyState.NOT_LEGACY) {
@@ -63,7 +62,7 @@ This change requires a migration. Amplify will create a new Lambda layer version
   }
 
   const runtimeCloudTemplateValues: string[] = [];
-  const layerConfiguration: { permissions: LayerPermission[]; runtimes: LayerRuntime[]; nonMultiEnv?: boolean } = {
+  const layerConfiguration: { permissions: LayerPermission[]; runtimes: Partial<LayerRuntime>[]; nonMultiEnv?: boolean } = {
     permissions: undefined,
     runtimes: undefined,
   };

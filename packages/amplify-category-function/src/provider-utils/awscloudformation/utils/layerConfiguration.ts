@@ -1,9 +1,8 @@
-import { $TSAny, JSONUtilities, recursiveOmit, stateManager } from 'amplify-cli-core';
+import { $TSAny, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
 import { ephemeralField, deleteVersionsField, layerConfigurationFileName, updateVersionPermissionsField } from './constants';
 import { categoryName } from '../../../constants';
-import { getLayerDirPath } from './layerHelpers';
 import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
 export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes' | 'description'>;
@@ -95,12 +94,20 @@ function getLayerDescription(layerName: string): string {
 }
 
 export function loadLayerConfigurationFile(layerName: string, throwIfNotExist = true) {
-  const layerConfigFilePath = path.join(getLayerDirPath(layerName), layerConfigurationFileName);
+  const layerConfigFilePath = path.join(
+    pathManager.getResourceDirectoryPath(undefined, categoryName, layerName),
+    layerConfigurationFileName,
+  );
+
   return JSONUtilities.readJson<$TSAny>(layerConfigFilePath, { throwIfNotExist });
 }
 
 export function writeLayerConfigurationFile(layerName: string, layerConfig: $TSAny) {
-  const layerConfigFilePath = path.join(getLayerDirPath(layerName), layerConfigurationFileName);
+  const layerConfigFilePath = path.join(
+    pathManager.getResourceDirectoryPath(undefined, categoryName, layerName),
+    layerConfigurationFileName,
+  );
+
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
 }
 
