@@ -109,7 +109,7 @@ export class PathManager {
   getResourceDirectoryPath = (projectPath: string | undefined, category: string, resourceName: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, category, resourceName]);
 
-  getResourceParamatersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
+  getResourceParametersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
     path.join(this.getResourceDirectoryPath(projectPath, category, resourceName), PathConstants.ParametersJsonFileName);
 
   getReadMeFilePath = (projectPath?: string): string =>
