@@ -220,7 +220,7 @@ async function showSMSSandboxWarning(context) {
 
   // This message will be set only after SNS Sandbox  Sandbox API is available and AWS SDK gets updated
   const cliUpdateWarning = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
-  const smsSandBoxMissingPermissionWaring = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_MISSING_PERMISSION');
+  const smsSandBoxMissingPermissionWarning = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_MISSING_PERMISSION');
   const sandboxModeWarning = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_SANDBOXED_MODE_WARNING');
   const productionModeInfo = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_PRODUCTION_MODE_INFO');
   if (!cliUpdateWarning) {
@@ -238,7 +238,7 @@ async function showSMSSandboxWarning(context) {
     }
   } catch (e) {
     if (e.code === 'AuthorizationError') {
-      smsSandBoxMissingPermissionWaring && context.print.warning(smsSandBoxMissingPermissionWaring);
+      smsSandBoxMissingPermissionWarning && context.print.warning(smsSandBoxMissingPermissionWarning);
     } else if (e instanceof TypeError) {
       context.print.warning(cliUpdateWarning);
     } else if (e.code === 'ResourceNotFound') {

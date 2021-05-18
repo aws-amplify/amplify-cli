@@ -79,7 +79,7 @@ describe('showSMSSandBoxWarning', () => {
     });
   });
 
-  describe('it should not show any warning  message when the SNS API is not deployed', () => {
+  describe('it should not show any warning message when the SNS API is not deployed', () => {
     beforeEach(() => {
       const resourceNotFoundError = new Error() as AWSError;
       resourceNotFoundError.code = 'ResourceNotFound';
@@ -96,7 +96,7 @@ describe('showSMSSandBoxWarning', () => {
     });
   });
 
-  describe('it should not show any when there is a network error', () => {
+  describe('it should not show any warning message when there is a network error', () => {
     beforeEach(() => {
       const networkError = new Error() as AWSError;
       networkError.code = 'UnknownEndpoint';
