@@ -589,27 +589,16 @@ Resources:
             - '   let providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);'
             - '   let providerCreds = hostedUIProviderCreds[providerCredsIndex];'
             - '   let requestParams = {'
-            - '    ProviderName: providerMeta.ProviderName,'
-            - '    UserPoolId: userPoolId,'
-            - '    AttributeMapping: providerMeta.AttributeMapping,'
-            - '   };'
-            - '   let providerDetails;'
-            - '   if (providerMeta.ProviderName === ''SignInWithApple'') {'
-            - '    providerDetails = {'
-            - '     ''client_id'': providerCreds.client_id,'
-            - '     ''team_id'': providerCreds.team_id,'
-            - '     ''key_id'': providerCreds.key_id,'
-            - '     ''private_key'': providerCreds.private_key,'
-            - '     ''authorize_scopes'': providerMeta.authorize_scopes,'
-            - '    };'
-            - '   } else {'
-            - '    providerDetails = {'
+            - '    ProviderDetails: {'
             - '     ''client_id'': providerCreds.client_id,'
             - '     ''client_secret'': providerCreds.client_secret,'
-            - '     ''authorize_scopes'': providerMeta.authorize_scopes,'
-            - '    };'
-            - '   }'
-            - '   return { ProviderDetails: providerDetails, ...requestParams };'
+            - '     ''authorize_scopes'': providerMeta.authorize_scopes'
+            - '    },'
+            - '    ProviderName: providerMeta.ProviderName,'
+            - '    UserPoolId: userPoolId,'
+            - '    AttributeMapping: providerMeta.AttributeMapping'
+            - '   };'
+            - '   return requestParams;'
             - '  };'
             - '  let createIdentityProvider = (providerName) => {'
             - '   let requestParams = getRequestParams(providerName);'
@@ -1123,9 +1112,6 @@ Resources:
         <%if (props.authProviders.indexOf('www.amazon.com') !== -1) { %>
         www.amazon.com: !Ref amazonAppId
         <% } %>
-        <%if (props.authProviders.indexOf('appleid.apple.com') !== -1) { %>
-        appleid.apple.com: !Ref appleAppId
-        <% } %>
       <% } %>
       AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
       <%if (props.audiences && props.audiences.length > 0) { %>
@@ -1207,9 +1193,5 @@ Outputs :
   <%if (props.amazonAppId) { %>
   AmazonWebClient:
     Value: !Ref amazonAppId
-  <% } %>
-  <%if (props.appleAppId) { %>
-  AppleWebClient:
-    Value: !Ref appleAppId
   <% } %>
   <% } %>
