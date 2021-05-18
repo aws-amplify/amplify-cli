@@ -169,7 +169,10 @@ export interface CognitoOAuthConfiguration {
   socialProviderConfigurations?: CognitoSocialProviderConfiguration[];
 }
 
-interface SocialProviderConfig {
+/**
+ * Defines a Cognito oAuth social provider
+ */
+export interface CognitoSocialProviderConfiguration {
   /**
    * Social providers supported by Amplify and Cognito
    */
@@ -183,27 +186,6 @@ interface SocialProviderConfig {
    */
   clientSecret: string;
 }
-
-interface SignInWithAppleSocialProviderConfig {
-  provider: 'SIGN_IN_WITH_APPLE';
-  /**
-   * The client ID (sometimes called apple services ID) configured with the provider.
-   */
-  clientId: string;
-
-  teamId: string;
-  /**
-   * The key ID (sometimes called apple private key ID) configured with the provider.
-   */
-  keyId: string;
-
-  privateKey: string;
-}
-
-/**
- * Defines a Cognito oAuth social provider
- */
-export type CognitoSocialProviderConfiguration = SocialProviderConfig | SignInWithAppleSocialProviderConfig;
 
 export interface CognitoPasswordPolicy {
   minimumLength?: number;

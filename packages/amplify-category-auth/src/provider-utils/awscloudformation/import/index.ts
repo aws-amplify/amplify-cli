@@ -27,7 +27,7 @@ import { importMessages } from './messages';
 import uuid from 'uuid';
 
 // Currently the CLI only supports the output generation of these providers
-const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'];
+const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon'];
 
 export const importResource = async (
   context: $TSContext,
@@ -752,9 +752,6 @@ const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): Meta
           case 'accounts.google.com':
             output.GoogleWebClient = answers.identityPool!.SupportedLoginProviders![key];
             break;
-          case 'appleid.apple.com':
-            output.AppleWebClient = answers.identityPool!.SupportedLoginProviders![key];
-            break;
           default:
             // We don't do anything with the providers that the CLI currently does not support.
             break;
@@ -818,9 +815,6 @@ const createEnvSpecificResourceParameters = (
         case 'graph.facebook.com':
           envSpecificResourceParameters.facebookAppId = answers.identityPool!.SupportedLoginProviders![key];
           break;
-        case 'appleid.apple.com':
-          envSpecificResourceParameters.appleAppId = answers.identityPool!.SupportedLoginProviders![key];
-          break;
         case 'accounts.google.com': {
           switch (projectType) {
             case 'javascript':
@@ -846,23 +840,11 @@ const createEnvSpecificResourceParameters = (
 };
 
 const createOAuthCredentials = (identityProviders: IdentityProviderType[]): string => {
-  const credentials = identityProviders.map(idp => {
-    if (idp.ProviderName === 'SignInWithApple') {
-      return {
-        ProviderName: idp.ProviderName!,
-        client_id: idp.ProviderDetails!.client_id,
-        team_id: idp.ProviderDetails!.team_id,
-        key_id: idp.ProviderDetails!.key_id,
-        private_key: idp.ProviderDetails!.private_key,
-      };
-    } else {
-      return {
-        ProviderName: idp.ProviderName!,
-        client_id: idp.ProviderDetails!.client_id,
-        client_secret: idp.ProviderDetails!.client_secret,
-      };
-    }
-  });
+  const credentials = identityProviders.map(idp => ({
+    ProviderName: idp.ProviderName!,
+    client_id: idp.ProviderDetails!.client_id,
+    client_secret: idp.ProviderDetails!.client_secret,
+  }));
 
   return JSON.stringify(credentials);
 };

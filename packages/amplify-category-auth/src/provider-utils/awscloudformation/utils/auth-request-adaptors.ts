@@ -146,12 +146,6 @@ const socialProviderMap = (
         acc.loginwithamazonAppIdUserPool = it.clientId;
         acc.loginwithamazonAppSecretUserPool = it.clientSecret;
         break;
-      case 'SIGN_IN_WITH_APPLE':
-        acc.signinwithappleClientIdUserPool = it.clientId;
-        acc.signinwithappleTeamIdUserPool = it.teamId;
-        acc.signinwithappleKeyIdUserPool = it.keyId;
-        acc.signinwithapplePrivateKeyUserPool = it.privateKey;
-        break;
     }
     return acc;
   }, {} as any) as SocialProviderResult;

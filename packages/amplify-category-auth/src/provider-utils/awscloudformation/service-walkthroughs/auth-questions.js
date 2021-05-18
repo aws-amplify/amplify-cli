@@ -162,7 +162,6 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     delete context.updatingAuth.googleIos;
     delete context.updatingAuth.googleAndroid;
     delete context.updatingAuth.amazonAppId;
-    delete context.updatingAuth.appleAppId;
   }
 
   // formatting data for identity pool providers
@@ -402,7 +401,7 @@ function identityPoolProviders(coreAnswers, projectType) {
 /*
   Format hosted UI providers data per lambda spec
   hostedUIProviderMeta is saved in parameters.json.
-  hostedUIproviderCreds is saved in deployment-secrets.
+  hostedUIprovierCreds is saved in deployment-secrets.
 */
 function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
   if (coreAnswers.useDefault === 'default') {
@@ -416,7 +415,7 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
   if (answers.hostedUI) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
-        const delimmiter = ['Facebook', 'SignInWithApple'].includes(el) ? ',' : ' ';
+        const delimmiter = el === 'Facebook' ? ',' : ' ';
         const scopes = [];
         const maps = {};
         attributesForMapping.forEach(a => {
@@ -441,23 +440,11 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
       }),
     );
     res.hostedUIProviderCreds = JSON.stringify(
-      oAuthProviders.map(el => {
-        if (el === 'SignInWithApple') {
-          return {
-            ProviderName: el,
-            client_id: coreAnswers[`${el.toLowerCase()}ClientIdUserPool`],
-            team_id: coreAnswers[`${el.toLowerCase()}TeamIdUserPool`],
-            key_id: coreAnswers[`${el.toLowerCase()}KeyIdUserPool`],
-            private_key: coreAnswers[`${el.toLowerCase()}PrivateKeyUserPool`],
-          };
-        } else {
-          return {
-            ProviderName: el,
-            client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`],
-            client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`],
-          };
-        }
-      }),
+      oAuthProviders.map(el => ({
+        ProviderName: el,
+        client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`],
+        client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`],
+      })),
     );
   }
   return res;
@@ -531,15 +518,8 @@ function parseOAuthCreds(providers, metadata, envCreds) {
       try {
         const provider = parsedMetaData.find(i => i.ProviderName === el);
         const creds = parsedCreds.find(i => i.ProviderName === el);
-        if (el === 'SignInWithApple') {
-          providerKeys[`${el.toLowerCase()}ClientIdUserPool`] = creds.client_id;
-          providerKeys[`${el.toLowerCase()}TeamIdUserPool`] = creds.team_id;
-          providerKeys[`${el.toLowerCase()}KeyIdUserPool`] = creds.key_id;
-          providerKeys[`${el.toLowerCase()}PrivateKeyUserPool`] = creds.private_key;
-        } else {
-          providerKeys[`${el.toLowerCase()}AppIdUserPool`] = creds.client_id;
-          providerKeys[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
-        }
+        providerKeys[`${el.toLowerCase()}AppIdUserPool`] = creds.client_id;
+        providerKeys[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
         providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(',');
       } catch (e) {
         return null;

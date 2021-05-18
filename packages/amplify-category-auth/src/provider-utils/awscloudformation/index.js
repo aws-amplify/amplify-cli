@@ -217,15 +217,8 @@ function getOAuthProviderKeys(currentEnvSpecificValues, resourceParams) {
   const configuredProviders = JSON.parse(hostedUIProviderCreds).map(h => h.ProviderName);
   const deltaProviders = _.intersection(oAuthProviders, configuredProviders);
   deltaProviders.forEach(d => {
-    if (d === 'SignInWithApple') {
-      currentEnvSpecificValues[`${d.toLowerCase()}ClientIdUserPool`] = configuredProviders[`${d.toLowerCase()}ClientIdUserPool`];
-      currentEnvSpecificValues[`${d.toLowerCase()}TeamIdUserPool`] = configuredProviders[`${d.toLowerCase()}TeamIdUserPool`];
-      currentEnvSpecificValues[`${d.toLowerCase()}KeyIdUserPool`] = configuredProviders[`${d.toLowerCase()}KeyIdUserPool`];
-      currentEnvSpecificValues[`${d.toLowerCase()}PrivateKeyUserPool`] = configuredProviders[`${d.toLowerCase()}PrivateKeyUserPool`];
-    } else {
-      currentEnvSpecificValues[`${d.toLowerCase()}AppIdUserPool`] = configuredProviders[`${d.toLowerCase()}AppIdUserPool`];
-      currentEnvSpecificValues[`${d.toLowerCase()}AppSecretUserPool`] = configuredProviders[`${d.toLowerCase()}AppSecretUserPool`];
-    }
+    currentEnvSpecificValues[`${d.toLowerCase()}AppIdUserPool`] = configuredProviders[`${d.toLowerCase()}AppIdUserPool`];
+    currentEnvSpecificValues[`${d.toLowerCase()}AppSecretUserPool`] = configuredProviders[`${d.toLowerCase()}AppSecretUserPool`];
   });
   return currentEnvSpecificValues;
 }
@@ -256,34 +249,15 @@ function formatCredsforEnvParams(currentEnvSpecificValues, result, resourceParam
 function parseCredsForHeadless(mergedValues, envParams) {
   const oAuthProviders = JSON.parse(mergedValues.hostedUIProviderMeta).map(h => h.ProviderName);
   envParams.hostedUIProviderCreds = JSON.stringify(
-    oAuthProviders.map(el => {
-      if (el === 'SignInWithApple') {
-        return {
-          ProviderName: el,
-          client_id: mergedValues[`${el.toLowerCase()}ClientIdUserPool`],
-          team_id: mergedValues[`${el.toLowerCase()}TeamIdUserPool`],
-          key_id: mergedValues[`${el.toLowerCase()}KeyIdUserPool`],
-          private_key: mergedValues[`${el.toLowerCase()}PrivateKeyUserPool`],
-        };
-      } else {
-        return {
-          ProviderName: el,
-          client_id: mergedValues[`${el.toLowerCase()}AppIdUserPool`],
-          client_secret: mergedValues[`${el.toLowerCase()}AppSecretUserPool`],
-        };
-      }
-    }),
+    oAuthProviders.map(el => ({
+      ProviderName: el,
+      client_id: mergedValues[`${el.toLowerCase()}AppIdUserPool`],
+      client_secret: mergedValues[`${el.toLowerCase()}AppSecretUserPool`],
+    })),
   );
   oAuthProviders.forEach(i => {
-    if (i === 'SignInWithApple') {
-      delete envParams[`${i.toLowerCase()}ClientIdUserPool`];
-      delete envParams[`${i.toLowerCase()}TeamIdUserPool`];
-      delete envParams[`${i.toLowerCase()}KeyIdUserPool`];
-      delete envParams[`${i.toLowerCase()}PrivateKeyUserPool`];
-    } else {
-      delete envParams[`${i.toLowerCase()}AppIdUserPool`];
-      delete envParams[`${i.toLowerCase()}AppSecretUserPool`];
-    }
+    delete envParams[`${i.toLowerCase()}AppIdUserPool`];
+    delete envParams[`${i.toLowerCase()}AppSecretUserPool`];
   });
 }
 
@@ -306,24 +280,14 @@ function getRequiredParamsForHeadlessInit(projectType, previousValues) {
     if (previousValues.authProviders.includes('www.amazon.com')) {
       requiredParams.push('amazonAppId');
     }
-    if (previousValues.authProviders.includes('appleid.apple.com')) {
-      requiredParams.push('appleAppId');
-    }
   }
 
   if (previousValues.hostedUIProviderMeta) {
     const oAuthProviders = JSON.parse(previousValues.hostedUIProviderMeta).map(h => h.ProviderName);
     if (oAuthProviders && oAuthProviders.length > 0) {
       oAuthProviders.forEach(o => {
-        if (o === 'SignInWithApple') {
-          requiredParams.push(`${o.toLowerCase()}ClientIdUserPool`);
-          requiredParams.push(`${o.toLowerCase()}TeamIdUserPool`);
-          requiredParams.push(`${o.toLowerCase()}KeyIdUserPool`);
-          requiredParams.push(`${o.toLowerCase()}PrivateKeyUserPool`);
-        } else {
-          requiredParams.push(`${o.toLowerCase()}AppIdUserPool`);
-          requiredParams.push(`${o.toLowerCase()}AppSecretUserPool`);
-        }
+        requiredParams.push(`${o.toLowerCase()}AppIdUserPool`);
+        requiredParams.push(`${o.toLowerCase()}AppSecretUserPool`);
       });
     }
   }

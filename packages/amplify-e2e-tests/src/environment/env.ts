@@ -136,18 +136,7 @@ export function pullEnvironment(cwd: string): Promise<void> {
 }
 
 export function addEnvironmentHostedUI(cwd: string, settings: { envName: string }): Promise<void> {
-  const {
-    FACEBOOK_APP_ID,
-    FACEBOOK_APP_SECRET,
-    GOOGLE_APP_ID,
-    GOOGLE_APP_SECRET,
-    AMAZON_APP_ID,
-    AMAZON_APP_SECRET,
-    APPLE_APP_ID,
-    APPLE_TEAM_ID,
-    APPLE_KEY_ID,
-    APPLE_PRIVATE_KEY,
-  } = getSocialProviders();
+  const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders();
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
@@ -170,14 +159,6 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
       .sendLine(AMAZON_APP_ID)
       .wait('Enter your Amazon App Secret for your OAuth flow:')
       .sendLine(AMAZON_APP_SECRET)
-      .wait('Enter your Sign in with Apple Client ID for your OAuth flow:')
-      .sendLine(APPLE_APP_ID)
-      .wait('Enter your Sign in with Apple Team ID for your OAuth flow:')
-      .sendLine(APPLE_TEAM_ID)
-      .wait('Enter your Sign in with Apple Key ID for your OAuth flow:')
-      .sendLine(APPLE_KEY_ID)
-      .wait('Enter your Sign in with Apple Private Key for your OAuth flow:')
-      .sendLine(APPLE_PRIVATE_KEY)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {

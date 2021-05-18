@@ -199,10 +199,6 @@ describe('amplify app console tests', () => {
       GOOGLE_APP_SECRET,
       AMAZON_APP_ID,
       AMAZON_APP_SECRET,
-      APPLE_APP_ID,
-      APPLE_TEAM_ID,
-      APPLE_KEY_ID,
-      APPLE_PRIVATE_KEY,
     } = getSocialProviders();
     await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false, name: 'authConsoleTest', envName });
     await addAuthWithDefaultSocial(projRoot, {});
@@ -230,10 +226,6 @@ describe('amplify app console tests', () => {
         googleAppSecretUserPool: GOOGLE_APP_SECRET,
         loginwithamazonAppIdUserPool: AMAZON_APP_ID,
         loginwithamazonAppSecretUserPool: AMAZON_APP_SECRET,
-        signinwithappleClientIdUserPool: APPLE_APP_ID,
-        signinwithappleTeamIdUserPool: APPLE_TEAM_ID,
-        signinwithappleKeyIdUserPool: APPLE_KEY_ID,
-        signinwithapplePrivateKeyUserPool: APPLE_PRIVATE_KEY,
       },
     });
 
@@ -259,10 +251,6 @@ describe('amplify app console tests', () => {
           googleAppSecretUserPool: GOOGLE_APP_SECRET,
           loginwithamazonAppIdUserPool: AMAZON_APP_ID,
           loginwithamazonAppSecretUserPool: AMAZON_APP_SECRET,
-          signinwithappleClientIdUserPool: APPLE_APP_ID,
-          signinwithappleTeamIdUserPool: APPLE_TEAM_ID,
-          signinwithappleKeyIdUserPool: APPLE_KEY_ID,
-          signinwithapplePrivateKeyUserPool: APPLE_PRIVATE_KEY,
         },
       },
       {
