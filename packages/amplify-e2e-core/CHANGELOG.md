@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.19.0...amplify-e2e-core@1.19.1) (2021-05-18)
+
+
+
+## 4.51.1 (2021-05-18)
+
+
+### Bug Fixes
+
+* nexpect pathname parsing ([#7324](https://github.com/aws-amplify/amplify-cli/issues/7324)) ([#7325](https://github.com/aws-amplify/amplify-cli/issues/7325)) ([ed8dc22](https://github.com/aws-amplify/amplify-cli/commit/ed8dc221d92585a74e7e8214dcd721f5d27d5d11))
+
+
+
+
+
 # [1.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.18.2...amplify-e2e-core@1.19.0) (2021-05-14)
 
 

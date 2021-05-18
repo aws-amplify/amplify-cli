@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.7...amplify-category-api@2.31.8) (2021-05-18)
+
+
+### Bug Fixes
+
+* make ECR repository name validation more strict ([#7337](https://github.com/aws-amplify/amplify-cli/issues/7337)) ([188efdd](https://github.com/aws-amplify/amplify-cli/commit/188efdde6ded25a06c6fb52e0b2abe04981b0993))
+
+
+
+
+
 ## [2.31.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.6...amplify-category-api@2.31.7) (2021-05-14)
 
 
