@@ -4,7 +4,7 @@ import { getResourceSynthesizer, getResourceUpdater } from '../utils/synthesize-
 import { getPostAddAuthMetaUpdater, getPostUpdateAuthMetaUpdater } from '../utils/amplify-meta-updaters';
 import { getPostAddAuthMessagePrinter, getPostUpdateAuthMessagePrinter, printSMSSandboxWarning } from '../utils/message-printer';
 import { supportedServices } from '../../supported-services';
-import { doesConfigurationIncludeSMS, loadResourceParameters } from '../utils/auth-sms-workflow-helper';
+import { doesConfigurationIncludeSMS } from '../utils/auth-sms-workflow-helper';
 
 /**
  * Factory function that returns a ServiceQuestionsResult consumer that handles all of the resource generation logic.
