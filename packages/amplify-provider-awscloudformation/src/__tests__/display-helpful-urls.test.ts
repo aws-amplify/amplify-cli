@@ -78,4 +78,39 @@ describe('showSMSSandBoxWarning', () => {
       expect(context.print.warning).toHaveBeenCalledWith(message);
     });
   });
+
+  describe('it should not show any warning  message when the SNS API is not deployed', () => {
+    beforeEach(() => {
+      const resourceNotFoundError = new Error() as AWSError;
+      resourceNotFoundError.code = 'ResourceNotFound';
+      mockedSNSClientInstance.isInSandboxMode.mockRejectedValue(resourceNotFoundError);
+    });
+    it('should not print error', async () => {
+      const message = 'UPGRADE YOUR CLI!!!!';
+      mockedGetMessage.mockImplementation(async messageId => (messageId === 'COGNITO_SMS_SANDBOX_UPDATE_WARNING' ? message : undefined));
+
+      await showSMSSandboxWarning(context);
+
+      expect(mockedGetMessage).toHaveBeenCalledWith('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
+      expect(context.print.warning).not.toHaveBeenCalledWith(message);
+    });
+  });
+
+  describe('it should not show any when there is a network error', () => {
+    beforeEach(() => {
+      const networkError = new Error() as AWSError;
+      networkError.code = 'UnknownEndpoint';
+      mockedSNSClientInstance.isInSandboxMode.mockRejectedValue(networkError);
+    });
+
+    it('should not print error', async () => {
+      const message = 'UPGRADE YOUR CLI!!!!';
+      mockedGetMessage.mockImplementation(async messageId => (messageId === 'COGNITO_SMS_SANDBOX_UPDATE_WARNING' ? message : undefined));
+
+      await showSMSSandboxWarning(context);
+
+      expect(mockedGetMessage).toHaveBeenCalledWith('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
+      expect(context.print.warning).not.toHaveBeenCalledWith(message);
+    });
+  });
 });
