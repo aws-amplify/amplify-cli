@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.22.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.22.0...amplify-frontend-javascript@2.22.1-beta.0) (2021-05-18)
+
+
+### Bug Fixes
+
+* respect headless frontend JS config input ([#7328](https://github.com/aws-amplify/amplify-cli/issues/7328)) ([4cc2b2c](https://github.com/aws-amplify/amplify-cli/commit/4cc2b2c9bb7fa04d5722f758cdad7e7b8c3cafc7))
+
+
+
+
+
 # [2.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-frontend-javascript@2.21.6...amplify-frontend-javascript@2.22.0) (2021-05-14)
 
 
