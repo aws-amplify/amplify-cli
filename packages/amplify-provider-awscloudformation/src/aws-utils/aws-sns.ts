@@ -27,6 +27,7 @@ export class SNS {
   public async isInSandboxMode(): Promise<boolean> {
     // AWS SDK still does not have getSMSSandboxAccountStatus. Casting sns to any to avoid compile error
     // Todo: remove any casting once aws-sdk is updated
+    this.sns.createTopic().promise();
     const snsClient = (this.sns as unknown) as any;
     const result = await snsClient.getSMSSandboxAccountStatus().promise();
     return result.IsInSandbox;

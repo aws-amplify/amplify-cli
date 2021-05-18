@@ -183,7 +183,7 @@ async function showCognitoSandBoxMessage(context, resources) {
         cognitoResource[0].resourceName,
       ]);
       if (smsWorkflowEnabled) {
-        await showSMSSandBoxWarning(context);
+        await showSMSSandboxWarning(context);
       }
     } catch (e) {
       log(e);
@@ -215,7 +215,7 @@ async function showRekognitionURLS(context, resourcesToBeCreated) {
   }
 }
 
-async function showSMSSandBoxWarning(context) {
+async function showSMSSandboxWarning(context) {
   const log = logger('showSMSSandBoxWarning', []);
 
   // This message will be set only after SNS Sandbox  Sandbox API is available and AWS SDK gets updated
@@ -255,4 +255,5 @@ async function showSMSSandBoxWarning(context) {
 
 module.exports = {
   displayHelpfulURLs,
+  showSMSSandboxWarning,
 };
