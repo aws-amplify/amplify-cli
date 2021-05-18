@@ -127,7 +127,7 @@ Resources:
           Mutable: true
         <% } %>
       <% } %>
-      <%if (!props.breakCircularDependency && props.triggers && props.dependsOn) { %>
+      <%if (!props.breakCircularDependency && props.triggers && props.triggers !== '{}' && props.dependsOn) { %>
       LambdaConfig:
         <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { %>
           CreateAuthChallenge: !Ref function<%=props.resourceName%>CreateAuthChallengeArn
