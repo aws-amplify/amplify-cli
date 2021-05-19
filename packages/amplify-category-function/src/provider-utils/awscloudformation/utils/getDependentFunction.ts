@@ -16,6 +16,7 @@ export async function lambdasWithApiDependency(
     resource =>
       resource.service === ServiceName.LambdaFunction &&
       resource.mobileHubMigrated !== true &&
+      resource.dependsOn !== undefined &&
       resource.dependsOn.find(val => val.category === 'api'),
   );
 

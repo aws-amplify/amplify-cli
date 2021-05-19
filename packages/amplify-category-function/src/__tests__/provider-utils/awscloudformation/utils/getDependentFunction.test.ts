@@ -27,6 +27,12 @@ const allResources = [
     build: true,
     providerPlugin: 'awscloudformation',
     service: 'Lambda',
+    resourceName: 'fn1',
+  },
+  {
+    build: true,
+    providerPlugin: 'awscloudformation',
+    service: 'Lambda',
     dependsOn: [],
     resourceName: 'fn1',
   },
