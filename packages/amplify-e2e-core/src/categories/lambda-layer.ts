@@ -1,3 +1,4 @@
+//lambda-layer.ts
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
@@ -132,10 +133,9 @@ export function removeLayerVersion(cwd: string, versionsToRemove: number[], allV
       .wait('Choose the Layer versions you want to remove.');
 
     multiSelect(chain, versionsToRemove, allVersions);
+
     chain
-      .wait('Are you sure you want to delete the resource? This action deletes all files related to this resource from')
-      .sendConfirmYes()
-      .wait('Layers Deleted')
+      .wait('All new layer versions created with the Amplify CLI will only be deleted on')
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -151,16 +151,18 @@ export function updateLayer(cwd: string, settings?: any, testingWithLatestCodeba
   return new Promise((resolve, reject) => {
     const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn(); // Layer
     if (settings.numLayers > 1) {
       chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
     }
 
-    chain.wait('Do you want to adjust layer version permissions?').sendLine('y');
+    chain.wait('Do you want to adjust layer version permissions?').sendConfirmYes();
+
     if (settings.versions > 0) {
       chain.wait('Select the layer version to update').sendCarriageReturn(); // assumes updating the latest version
     }
+
     chain.wait('The current AWS account will always have access to this layer.');
 
     multiSelect(chain, settings.permissions, permissionChoices);
