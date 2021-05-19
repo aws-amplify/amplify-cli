@@ -1,6 +1,13 @@
+import * as path from 'path';
 import { execSync } from 'child_process';
-import { getPackageManager, normalizePackageManagerForOS, getPackageManagerCommand } from '../packageManagerHelpers';
-import { exitOnNextTick } from 'amplify-cli-core';
+import { exitOnNextTick, getPackageManager, JSONUtilities } from 'amplify-cli-core';
+import _ from 'lodash';
+
+const packageJson = 'package.json';
+const initializationScripts = ['start', 'serve'];
+const MISSING_SCRIPTS_ERROR = new Error(
+  'Did not find a "start" or "serve" initialization script. Add a package.json file in the root of the project with one of these scripts.',
+);
 
 export async function postInitSetup(context) {
   if (context.parameters.options.app) {
@@ -27,10 +34,29 @@ export async function postInitSetup(context) {
  * @param packageManager either npm or yarn
  */
 async function runPackage() {
-  const packageManager = await getPackageManager();
-  const normalizedPackageManager = await normalizePackageManagerForOS(packageManager);
-  const packageCommand = await getPackageManagerCommand();
-  if (normalizedPackageManager) {
-    execSync(`${normalizedPackageManager} ${packageCommand}`, { stdio: 'inherit' });
+  const packageManager = getPackageManager();
+
+  if (packageManager !== null) {
+    const packageScript = getPackageScript();
+
+    execSync(`${packageManager.executable} ${packageScript}`, { stdio: 'inherit' });
   }
+}
+
+/**
+ * Determine the starting command of the current project
+ *
+ * @return {string} 'serve' or 'start'
+ */
+function getPackageScript() {
+  const packageJsonDir = path.join(process.cwd(), packageJson);
+  const packageJsonContent = JSONUtilities.readJson(packageJsonDir, { throwIfNotExist: false }) || {};
+  const scripts = _.get(packageJsonContent, 'scripts', {});
+
+  return (
+    _.keys(scripts).find(scriptName => initializationScripts.includes(scriptName)) ||
+    (() => {
+      throw MISSING_SCRIPTS_ERROR;
+    })()
+  );
 }

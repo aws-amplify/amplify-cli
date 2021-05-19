@@ -1,5 +1,6 @@
-import { categoryName, appsyncTableSuffix } from './constants';
+import { appsyncTableSuffix } from './constants';
 import { getAppSyncResourceName } from './appSyncHelper';
+import { categoryName } from '../../../constants';
 
 export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults, apiResourceName?) {
   const currentResources = [];
@@ -23,6 +24,7 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
       });
     });
   }
+
   if (apiResourceName) {
     apiResourceAddCheck(currentResources, newResources, apiResourceName, categorySet, true);
   }

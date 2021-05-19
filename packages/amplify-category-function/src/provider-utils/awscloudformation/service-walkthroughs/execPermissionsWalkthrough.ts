@@ -1,25 +1,31 @@
-import { constructCFModelTableNameComponent, constructCFModelTableArnComponent } from '../utils/cloudformationHelpers';
-import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
-import path from 'path';
+import { $TSContext, FeatureFlags, pathManager, stateManager } from 'amplify-cli-core';
+import { FunctionDependency, FunctionParameters } from 'amplify-function-plugin-interface';
 import * as TransformPackage from 'graphql-transformer-core';
+import inquirer, { CheckboxQuestion, DistinctChoice } from 'inquirer';
 import _ from 'lodash';
-import { topLevelCommentPrefix, topLevelCommentSuffix, envVarPrintoutPrefix, CRUDOperation, GraphQLOperation } from '../../../constants';
-import { ServiceName } from '../utils/constants';
+import path from 'path';
+import {
+  categoryName,
+  CRUDOperation,
+  envVarPrintoutPrefix,
+  GraphQLOperation,
+  topLevelCommentPrefix,
+  topLevelCommentSuffix,
+} from '../../../constants';
+import { getAppSyncResourceName } from '../utils/appSyncHelper';
+import { constructCFModelTableArnComponent, constructCFModelTableNameComponent } from '../utils/cloudformationHelpers';
+import { appsyncTableSuffix, ServiceName } from '../utils/constants';
 import {
   fetchPermissionCategories,
   fetchPermissionResourcesForCategory,
   fetchPermissionsForResourceInCategory,
 } from '../utils/permissionMapUtils';
-import { FunctionParameters, FunctionDependency } from 'amplify-function-plugin-interface';
-import { appsyncTableSuffix } from '../utils/constants';
-import { getAppSyncResourceName } from '../utils/appSyncHelper';
-import { stateManager, FeatureFlags } from 'amplify-cli-core';
 
 /**
  * This whole file desperately needs to be refactored
  */
 export const askExecRolePermissionsQuestions = async (
-  context,
+  context: $TSContext,
   resourceNameToUpdate: string,
   currentPermissionMap?,
   currentEnvMap?,
@@ -52,10 +58,14 @@ export const askExecRolePermissionsQuestions = async (
   const categoryPolicies = [];
   const permissions = {};
   const resources = [];
-  const backendDir = context.amplify.pathManager.getBackendDirPath();
+  const backendDir = pathManager.getBackendDirPath();
 
   for (const selectedCategory of selectedCategories) {
     let resourcesList = selectedCategory in amplifyMeta ? Object.keys(amplifyMeta[selectedCategory]) : [];
+
+    // filter out lambda layers always, we don't support granting permissions to layers
+    resourcesList = resourcesList.filter(resourceName => amplifyMeta[selectedCategory][resourceName].service !== ServiceName.LambdaLayer);
+
     if (selectedCategory === 'storage' && 'api' in amplifyMeta) {
       if (appsyncResourceName) {
         const resourceDirPath = path.join(backendDir, 'api', appsyncResourceName);
@@ -66,16 +76,17 @@ export const askExecRolePermissionsQuestions = async (
           .map(modelName => `${modelName}:${appsyncTableSuffix}`);
         resourcesList.push(...modelNames);
       }
-    } else if (selectedCategory === category) {
+    } else if (selectedCategory === category || selectedCategory === categoryName) {
       // A Lambda function cannot depend on itself
-      // Lambda layer dependencies are handled seperately
-      if (serviceName === ServiceName.LambdaFunction) {
+      // Lambda layer dependencies are handled seperately, also apply the filter if the selected resource is within the function category
+      // but serviceName argument was no passed in
+      if (serviceName === ServiceName.LambdaFunction || selectedCategory === categoryName) {
         resourcesList = resourcesList.filter(
           resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service === serviceName,
         );
       } else {
         resourcesList = resourcesList.filter(
-          resourceName => resourceName !== resourceNameToUpdate && !amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
+          resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
         );
       }
     }

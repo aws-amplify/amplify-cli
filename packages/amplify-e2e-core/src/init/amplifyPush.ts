@@ -1,4 +1,4 @@
-import { getCLIPath, KEY_DOWN_ARROW, CONTROL_C, nspawn as spawn } from '..';
+import { getCLIPath, nspawn as spawn } from '..';
 
 const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
@@ -143,14 +143,13 @@ export function amplifyPushLayer(
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
       .sendLine('y')
-      .wait('Content changes in Lambda layer')
-      .wait('Note: You need to run "amplify update function" to configure your functions with the latest layer version.')
-      .wait('What permissions do you want to grant to this new layer version?');
+      .wait('Suggested configuration for new layer versions:')
+      .wait('Accept the suggested layer version configurations?');
 
     if (usePreviousPermissions) {
-      chain.sendCarriageReturn();
+      chain.sendConfirmYes();
     } else {
-      chain.send(KEY_DOWN_ARROW).sendCarriageReturn();
+      chain.sendConfirmNo();
     }
 
     chain.run((err: Error) => {
