@@ -3,9 +3,9 @@ import { FunctionParameters } from 'amplify-function-plugin-interface';
 import { getResourcesForCfn, generateEnvVariablesForCfn } from '../service-walkthroughs/execPermissionsWalkthrough';
 import { updateCFNFileForResourcePermissions } from '../service-walkthroughs/lambda-walkthrough';
 import { loadFunctionParameters } from './loadFunctionParameters';
-import path from 'path';
+import * as path from 'path';
 import { functionParametersFileName } from './constants';
-import { category } from '../../../constants';
+import { categoryName } from '../../../constants';
 
 export async function updateDependentFunctionsCfn(
   context: $TSContext,
@@ -24,8 +24,8 @@ export async function updateDependentFunctionsCfn(
   // initialize function parameters for update
 
   for (const lambda of dependentFunctionResource) {
-    const resourceDirPath = path.join(backendDir, category, lambda.resourceName);
-    const currentParameters = loadFunctionParameters(context, resourceDirPath);
+    const resourceDirPath = path.join(backendDir, categoryName, lambda.resourceName);
+    const currentParameters = loadFunctionParameters(resourceDirPath);
     const selectedCategories = currentParameters.permissions;
     let categoryPolicies = [];
     let permissions = {};
@@ -80,6 +80,6 @@ export async function updateDependentFunctionsCfn(
     // update dependsOn for lambda
     lambda.dependsOn = functionParameters.dependsOn;
     // update amplify-meta.json
-    context.amplify.updateamplifyMetaAfterResourceUpdate(category, lambda.resourceName, 'dependsOn', lambda.dependsOn);
+    context.amplify.updateamplifyMetaAfterResourceUpdate(categoryName, lambda.resourceName, 'dependsOn', lambda.dependsOn);
   }
 }

@@ -7,6 +7,7 @@ import {
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
+  getCurrentLayerArnFromMeta,
   getProjectMeta,
   invokeFunction,
   overrideFunctionSrc,
@@ -124,8 +125,10 @@ describe('amplify function migration', () => {
       'nodejs',
     );
     await amplifyPushAuth(projRoot, true);
+    const arns: string[] = [getCurrentLayerArnFromMeta(projRoot, { layerName: layerName, projName: projRoot })];
+
     const meta = getProjectMeta(projRoot);
-    await validateLayerMetadata(projRoot, layerName, meta, 'integtest');
+    await validateLayerMetadata(projRoot, { layerName: layerName, projName: projRoot }, meta, 'integtest', arns);
   });
 
   it('Add a layer, upgrade cli, update and push', async () => {
@@ -139,9 +142,11 @@ describe('amplify function migration', () => {
     };
     await addLayer(projRoot, layerSettings);
     await amplifyPushAuth(projRoot);
+    const arns: string[] = [getCurrentLayerArnFromMeta(projRoot, { layerName: layerName, projName: projRoot })];
     await updateLayer(projRoot, { ...layerSettings, runtimes: ['python'], numLayers: 1, permissions: [] }, true);
     await amplifyPushAuth(projRoot, true);
+    arns.push(getCurrentLayerArnFromMeta(projRoot, { layerName: layerName, projName: projRoot }));
     const meta = getProjectMeta(projRoot);
-    await validateLayerMetadata(projRoot, layerName, meta, 'integtest');
+    await validateLayerMetadata(projRoot, { layerName: layerName, projName: projRoot }, meta, 'integtest', arns);
   });
 });

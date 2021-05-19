@@ -1,191 +1,132 @@
-import archiver from 'archiver';
-import fs from 'fs-extra';
-import glob from 'glob';
-import { prompt } from 'inquirer';
-import path from 'path';
+import { $TSAny, $TSContext, pathManager } from 'amplify-cli-core';
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import _ from 'lodash';
-import { hashElement } from 'folder-hash';
-import { $TSContext, pathManager } from 'amplify-cli-core';
-import { ServiceName, provider } from './constants';
-import { previousPermissionsQuestion } from './layerHelpers';
-import {
-  getLayerMetadataFactory,
-  isMultiEnvLayer,
-  Permission,
-  PrivateLayer,
-  LayerParameters,
-  LayerMetadata,
-  LayerRuntime,
-} from './layerParams';
-import { getLayerRuntimes } from './layerRuntimes';
-import crypto from 'crypto';
+import chalk from 'chalk';
+import { EOL } from 'os';
+import { Packager } from '../types/packaging-types';
+import { LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
+import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
+import { ServiceName, versionHash } from './constants';
+import { LayerCloudState } from './layerCloudState';
+import { loadPreviousLayerHash, ensureLayerVersion, validFilesize, loadStoredLayerParameters, getChangedResources } from './layerHelpers';
+import { LayerPermission, PermissionEnum } from './layerParams';
+import { zipPackage } from './zipResource';
+import { accessPermissions, description } from './constants';
 import { updateLayerArtifacts } from './storeResources';
-import globby from 'globby';
-import { Packager, PackageRequestMeta } from '../types/packaging-types';
+import { lambdaLayerNewVersionWalkthrough } from '../service-walkthroughs/lambdaLayerWalkthrough';
 
+/**
+ * Packages lambda  layer  code and artifacts into a lambda-compatible .zip file
+ */
 export const packageLayer: Packager = async (context, resource) => {
-  await ensureLayerVersion(context, resource.resourceName);
-  return zipLayer(context, resource);
-};
+  const resourcePath = path.join(pathManager.getBackendDirPath(), resource.category, resource.resourceName);
 
-async function zipLayer(context: $TSContext, resource: PackageRequestMeta) {
-  const zipFilename = 'latest-build.zip';
-  const layerName = resource.resourceName;
-  const layerDirPath = path.join(pathManager.getBackendDirPath(), resource.category, layerName);
-  const distDir = path.join(layerDirPath, 'dist');
+  // call runtime module packaging
+  const layerConfig: LayerConfiguration = loadLayerConfigurationFile(resource.resourceName);
+  const layerCodePath = path.join(resourcePath, 'lib', layerConfig.runtimes[0].layerExecutablePath);
+  const distDir = path.join(resourcePath, 'dist');
   fs.ensureDirSync(distDir);
-  const destination = path.join(distDir, zipFilename);
-  const zip = archiver.create('zip');
-  const output = fs.createWriteStream(destination);
 
-  return new Promise<{ zipFilePath: string; zipFilename: string }>((resolve, reject) => {
-    output.on('close', () => {
-      // check zip size is less than 250MB
-      if (validFilesize(destination)) {
-        const zipName = `${layerName}-build.zip`;
-        context.amplify.updateAmplifyMetaAfterPackage(resource, zipName);
-        resolve({ zipFilePath: destination, zipFilename: zipName });
-      } else {
-        reject(new Error('File size greater than 250MB'));
-      }
-    });
-    output.on('error', () => {
-      reject(new Error('Failed to zip code.'));
-    });
+  const runtimePlugin: FunctionRuntimeLifecycleManager = (await context.amplify.loadRuntimePlugin(
+    context,
+    layerConfig.runtimes[0].runtimePluginId,
+  )) as FunctionRuntimeLifecycleManager;
 
-    const libGlob = glob.sync(path.join(layerDirPath, 'lib', '*'));
-    const optPath = path.join(layerDirPath, 'opt');
+  const previousHash = loadPreviousLayerHash(resource.resourceName);
+  const currentHash = await ensureLayerVersion(context, resource.resourceName, previousHash);
 
-    let conflicts: string[] = [];
-    libGlob.forEach(lib => {
-      const basename = path.basename(lib);
-      if (fs.pathExistsSync(path.join(optPath, basename))) {
-        conflicts.push(basename);
-      }
-    });
-    if (conflicts.length > 0) {
-      const libs = conflicts.map(lib => `"/${lib}"`).join(', ');
-      const plural = conflicts.length > 1 ? 'ies' : 'y';
-      context.print.warning(
-        `${libs} sub director${plural} found in both "/lib" and "/opt". These folders will be merged and the files in "/opt" will take precedence if a conflict exists.`,
-      );
+  if (previousHash === currentHash) {
+    // This happens when a Lambda layer's permissions have been updated, but no new layer version needs to be pushed
+    return { newPackageCreated: false, zipFilename: undefined, zipFilePath: undefined };
+  }
+
+  // prepare package request
+  const destination = path.join(distDir, 'latest-build.zip');
+  const packageRequest = {
+    env: context.amplify.getEnvInfo().envName,
+    srcRoot: layerCodePath,
+    dstFilename: destination,
+    runtime: layerConfig.runtimes[0].value,
+    lastPackageTimeStamp: resource.lastPackageTimeStamp ? new Date(resource.lastPackageTimeStamp) : undefined,
+    lastBuildTimeStamp: resource.lastBuildTimeStamp ? new Date(resource.lastBuildTimeStamp) : undefined,
+    skipHashing: resource.skipHashing,
+    service: ServiceName.LambdaLayer,
+    currentHash: previousHash !== currentHash,
+  };
+  const packageResult = await runtimePlugin.package(packageRequest);
+  const packageHash = packageResult.packageHash;
+  if (packageHash) {
+    await zipPackage(packageResult.zipEntries, destination);
+  }
+
+  const layerCloudState = LayerCloudState.getInstance();
+  if (!layerCloudState.latestVersionLogicalId) {
+    // "Should" never be reachable, but sanity check just in case
+    throw new Error('LogicalId missing for new layer version.');
+  }
+
+  const zipFilename = createLayerZipFilename(resource.resourceName, layerCloudState.latestVersionLogicalId);
+  // check zip size is less than 250MB
+  if (validFilesize(context, destination)) {
+    context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: versionHash, hashValue: currentHash });
+  } else {
+    throw new Error('File size greater than 250MB');
+  }
+  return { newPackageCreated: true, zipFilename, zipFilePath: destination };
+};
+
+export async function checkContentChanges(context: $TSContext, layerResources: Array<$TSAny>): Promise<void> {
+  const changedLayerResources = await getChangedResources(layerResources);
+
+  const defaultLayerPermission: LayerPermission = { type: PermissionEnum.Private };
+
+  if (changedLayerResources.length > 0) {
+    context.print.info('');
+    if (layerResources.filter(layer => loadPreviousLayerHash(layer.resourceName) !== undefined).length > 0) {
+      context.print.info('Content changes in Lambda layers detected.');
     }
+    context.print.info('Suggested configuration for new layer versions:');
+    context.print.info('');
 
-    zip.pipe(output);
-    [optPath, ...libGlob]
-      .filter(folder => fs.lstatSync(folder).isDirectory())
-      .forEach(folder =>
-        zip.directory(
-          folder,
-          // opt files need to be in the root of the zipped dir
-          path.basename(folder) === 'opt' ? false : path.basename(folder),
-        ),
-      );
-    zip.finalize();
-  });
-}
+    const timestampString = new Date().toISOString();
+    const prepushNotificationMessage = changedLayerResources.map(layer => {
+      const { resourceName } = layer;
+      const parameters = loadStoredLayerParameters(context, resourceName);
+      layer.parameters = parameters;
+      if (!_.isEqual(parameters.permissions, [defaultLayerPermission])) {
+        return ` ${resourceName}
+  - ${accessPermissions}: ${chalk.green('Maintain existing permissions')}
+  - ${description}: ${chalk.green('Updated layer version ')} ${chalk.gray(timestampString)}`;
+      }
+      return ` ${resourceName}
+  - ${description}: ${chalk.green('Updated layer version ')} ${chalk.gray(timestampString)}`;
+    });
 
-// Check hash results for content changes, bump version if so
-async function ensureLayerVersion(context: $TSContext, layerName: string) {
-  const layerState = getLayerMetadataFactory(context)(layerName);
-  const isNewVersion = await layerState.syncVersions();
-  const latestVersion = layerState.getLatestVersion();
-  if (isNewVersion) {
-    context.print.success(`Content changes in Lambda layer ${layerName} detected. Layer version increased to ${latestVersion}`);
-    context.print.warning('Note: You need to run "amplify update function" to configure your functions with the latest layer version.');
-    await setNewVersionPermissions(context, layerName, layerState);
-  }
-  await layerState.setNewVersionHash(); // "finialize" the latest layer version
-  const storedParams = layerState.toStoredLayerParameters();
-  const additionalLayerParams: {
-    layerName: string;
-    build: boolean;
-    providerContext: {
-      provider: string;
-      service: string;
-      projectName: string;
-    };
-    runtimes?: LayerRuntime[];
-  } = {
-    layerName,
-    build: true,
-    providerContext: {
-      provider,
-      service: ServiceName.LambdaLayer,
-      projectName: context.amplify.getProjectDetails().projectConfig.projectName,
-    },
-  };
+    context.print.info(prepushNotificationMessage.join(EOL));
+    context.print.info('');
 
-  if (isMultiEnvLayer(context, layerName)) {
-    additionalLayerParams.runtimes = getLayerRuntimes(pathManager.getBackendDirPath(), layerName);
-  }
+    const accepted =
+      context.input.options?.yes || (await context.prompt.confirm('Accept the suggested layer version configurations?', true));
+    for (const layer of changedLayerResources) {
+      let { parameters } = layer;
+      if (!accepted) {
+        parameters = await lambdaLayerNewVersionWalkthrough(parameters, timestampString);
+      } else {
+        parameters.description = `Updated layer version ${timestampString}`;
+      }
 
-  const layerParameters = { ...storedParams, ...additionalLayerParams } as LayerParameters;
-  updateLayerArtifacts(context, layerParameters, latestVersion, { cfnFile: isNewVersion });
-}
-
-async function setNewVersionPermissions(context: any, layerName: string, layerState: LayerMetadata) {
-  const defaultPermissions: PrivateLayer[] = [{ type: Permission.private }];
-  let usePrevPermissions = true;
-  const latestVersion = layerState.getLatestVersion();
-  const latestVersionState = layerState.getVersion(latestVersion);
-  const hasNonDefaultPerms =
-    latestVersionState.isPublic() || latestVersionState.listAccountAccess().length > 0 || latestVersionState.listOrgAccess().length > 0;
-  const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
-  if (yesFlagSet) {
-    context.print.warning(`Permissions from previous layer version carried forward to new version by default`);
-  } else if (hasNonDefaultPerms) {
-    usePrevPermissions = (await prompt(previousPermissionsQuestion(layerName))).usePreviousPermissions;
-  }
-  if (!usePrevPermissions) {
-    layerState.setPermissionsForVersion(latestVersion, defaultPermissions);
+      // No need to update cfn or meta files since it will be updated during the packageLayer step
+      await updateLayerArtifacts(context, parameters, {
+        updateMeta: false,
+        generateCfnFile: false,
+        updateDescription: true,
+        updateLayerParams: true,
+      });
+    }
   }
 }
 
-// hashes all of the layer contents as well as the files in the layer path (CFN, parameters, etc)
-export const hashLayerResource = async (layerPath: string): Promise<string> => {
-  return (await globby(['*'], { cwd: layerPath }))
-    .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'utf8'))
-    .reduce((acc, it) => acc.update(it), crypto.createHash('sha256'))
-    .update(await hashLayerVersionContents(layerPath))
-    .digest('base64');
-};
-
-// hashes just the content that will be zipped into the layer version.
-// for efficiency, it only hashes package.json files in the node_modules folder of nodejs layers
-export const hashLayerVersionContents = async (layerPath: string): Promise<string> => {
-  const nodePath = path.join(layerPath, 'lib', 'nodejs');
-  const nodeHashOptions = {
-    files: {
-      include: ['package.json'],
-    },
-  };
-  const pyPath = path.join(layerPath, 'lib', 'python');
-  const optPath = path.join(layerPath, 'opt');
-
-  const joinedHashes = (await Promise.all([safeHash(nodePath, nodeHashOptions), safeHash(pyPath), safeHash(optPath)])).join();
-
-  return crypto.createHash('sha256').update(joinedHashes).digest('base64');
-};
-
-// wrapper around hashElement that will return an empty string if the path does not exist
-const safeHash = async (path: string, opts?: any): Promise<string> => {
-  if (fs.pathExistsSync(path)) {
-    return (
-      await hashElement(path, opts).catch(() => {
-        throw new Error(`An error occurred hashing directory ${path}`);
-      })
-    ).hash;
-  }
-  return '';
-};
-
-function validFilesize(path, maxSize = 250) {
-  try {
-    const { size } = fs.statSync(path);
-    const fileSize = Math.round(size / 1024 ** 2);
-    return fileSize < maxSize;
-  } catch (error) {
-    return new Error(`Calculating file size failed: ${path}`);
-  }
+export function createLayerZipFilename(resourceName: string, latestLayerVersionLogicalId: string) {
+  return `${resourceName}-${latestLayerVersionLogicalId}-build.zip`;
 }

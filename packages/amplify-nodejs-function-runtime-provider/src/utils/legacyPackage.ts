@@ -1,27 +1,46 @@
-import archiver from 'archiver';
-import fs from 'fs-extra';
-import path from 'path';
-import { PackageRequest, PackageResult } from 'amplify-function-plugin-interface';
+import { $TSContext } from 'amplify-cli-core';
+import { PackageRequest, PackageResult, ZipEntry } from 'amplify-function-plugin-interface';
+import * as fs from 'fs-extra';
+import glob from 'glob';
+import * as path from 'path';
 
-export async function packageResource(request: PackageRequest, context: any): Promise<PackageResult> {
-  if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp!) {
-    const packageHash = !request.skipHashing
-      ? ((await context.amplify.hashDir(path.join(request.srcRoot, 'src'), ['node_modules'])) as string)
-      : undefined;
-    const output = fs.createWriteStream(request.dstFilename);
+export async function packageResource(request: PackageRequest, context: $TSContext): Promise<PackageResult> {
+  if (!request.lastPackageTimeStamp || request.lastBuildTimeStamp > request.lastPackageTimeStamp || request.currentHash) {
+    const resourcePath = request.service ? path.join(request.srcRoot, '..') : path.join(request.srcRoot, 'src');
+    const packageHash = !request.skipHashing ? await context.amplify.hashDir(resourcePath, ['node_modules']) : undefined;
+    const zipEntries: ZipEntry[] = [];
+    if (request.service) {
+      const libGlob = glob.sync(resourcePath);
+      const layerDirPath = path.join(request.srcRoot, '..', '..');
+      const optPath = path.join(layerDirPath, 'opt');
 
-    return new Promise((resolve, reject) => {
-      output.on('close', () => {
-        resolve({ packageHash });
+      const conflicts: string[] = [];
+      libGlob.forEach(lib => {
+        const basename = path.basename(lib);
+        if (fs.pathExistsSync(path.join(optPath, basename))) {
+          conflicts.push(basename);
+        }
       });
-      output.on('error', err => {
-        reject(new Error(`Failed to zip with error: [${err}]`));
+      if (conflicts.length > 0) {
+        const libs = conflicts.map(lib => `"/${lib}"`).join(', ');
+        const plural = conflicts.length > 1 ? 'ies' : 'y';
+        context.print.warning(
+          `${libs} sub director${plural} found in both "/lib" and "/opt". These folders will be merged and the files in "/opt" will take precedence if a conflict exists.`,
+        );
+      }
+      [optPath, ...libGlob]
+        .filter(folder => fs.lstatSync(folder).isDirectory())
+        .forEach(folder => {
+          zipEntries.push({
+            packageFolder: folder,
+          });
+        });
+    } else {
+      zipEntries.push({
+        sourceFolder: resourcePath,
       });
-      const zip = archiver.create('zip', {});
-      zip.pipe(output);
-      zip.directory(path.join(request.srcRoot, 'src'), false);
-      zip.finalize();
-    });
+    }
+    return Promise.resolve({ packageHash, zipEntries });
   }
   return Promise.resolve({});
 }

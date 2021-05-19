@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import { ServiceName } from '../..';
-import { category } from '../../constants';
+import { categoryName } from '../../constants';
 import { PackageRequestMeta } from '../../provider-utils/awscloudformation/types/packaging-types';
 import { buildFunction } from '../../provider-utils/awscloudformation/utils/buildFunction';
 import { packageResource } from '../../provider-utils/awscloudformation/utils/package';
@@ -36,5 +36,5 @@ export const run = async (context: $TSContext) => {
 };
 
 const getSelectedResources = async (context: $TSContext, resourceName?: string) => {
-  return (await context.amplify.getResourceStatus(category, resourceName)).allResources as PackageRequestMeta[];
+  return (await context.amplify.getResourceStatus(categoryName, resourceName)).allResources as PackageRequestMeta[];
 };

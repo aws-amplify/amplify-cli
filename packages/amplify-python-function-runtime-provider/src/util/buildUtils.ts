@@ -5,7 +5,7 @@ import execa from 'execa';
 
 export async function pythonBuild(params: BuildRequest): Promise<BuildResult> {
   if (!params.lastBuildTimeStamp || isBuildStale(params.srcRoot, params.lastBuildTimeStamp)) {
-    await execa.command('pipenv install', { cwd: params.srcRoot, stdio: 'inherit' });
+    await execa.command('pipenv install', { cwd: params.srcRoot, stdio: 'inherit' }); // making virtual env in project folder
     return { rebuilt: true };
   }
   return { rebuilt: false };
