@@ -114,7 +114,7 @@ export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean 
   });
 }
 
-export function amplifyPushUpdateforDependentModel(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+export function amplifyPushUpdateForDependentModel(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
