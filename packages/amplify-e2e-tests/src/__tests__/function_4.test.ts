@@ -1,4 +1,4 @@
-import { initJSProjectWithProfile, deleteProject, amplifyPushAuth } from 'amplify-e2e-core';
+import { initJSProjectWithProfile, deleteProject, amplifyPushAuth, getProjectConfig } from 'amplify-e2e-core';
 import { addFunction, updateFunction, functionBuild, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
 import { addLayer, addOptData, LayerOptions } from 'amplify-e2e-core';
 import {
@@ -180,12 +180,15 @@ describe('amplify add/update/remove function based on schedule rule', () => {
 
 describe('add function with layers for runtime nodeJS', () => {
   let projRoot: string;
+  let projName: string;
   const helloWorldSuccessOutput = 'Hello from Lambda! data';
   const random = Math.floor(Math.random() * 10000);
   let functionName: string;
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('functions');
+    const { projectName } = getProjectConfig(projRoot);
+    projName = projectName;
     await initJSProjectWithProfile(projRoot, {});
     const settings = {
       layerName: `nodetestlayer${random}`,
@@ -193,7 +196,10 @@ describe('add function with layers for runtime nodeJS', () => {
       runtimes: ['nodejs'],
     };
     await addLayer(projRoot, settings);
-    addOptData(projRoot, settings.layerName);
+    addOptData(projRoot, {
+      layerName: settings.layerName,
+      projName,
+    });
     // create index.js
     overrideLayerCode(
       projRoot,
@@ -208,7 +214,7 @@ describe('add function with layers for runtime nodeJS', () => {
         },
         "devDependencies": {}
       }
-      
+
     `,
       `package.json`,
     );

@@ -98,7 +98,23 @@ export function amplifyPushUpdate(cwd: string, waitForText?: RegExp, testingWith
   });
 }
 
-export function amplifyPushUpdateforDependentModel(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
+      .wait('Are you sure you want to continue?')
+      .sendLine('y')
+      .wait(/.*/)
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
+export function amplifyPushUpdateForDependentModel(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
@@ -117,39 +133,26 @@ export function amplifyPushUpdateforDependentModel(cwd: string, testingWithLates
   });
 }
 
-export function amplifyPushAuth(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
-      .wait('Are you sure you want to continue?')
-      .sendLine('y')
-      .wait(/.*/)
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
-  });
-}
-
 // this function expects a single layer's content to be modified
 export function amplifyPushLayer(
   cwd: string,
-  usePreviousPermissions: boolean = true,
+  acceptSuggestedLayerVersionConfigurations: boolean = true,
   testingWithLatestCodebase: boolean = false,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
-      .sendLine('y')
+      .sendConfirmYes()
       .wait('Suggested configuration for new layer versions:')
       .wait('Accept the suggested layer version configurations?');
 
-    if (usePreviousPermissions) {
+    if (acceptSuggestedLayerVersionConfigurations) {
       chain.sendConfirmYes();
     } else {
       chain.sendConfirmNo();
+
+      // TODO add permission change test prompt and description prompt
+      // for future tests
     }
 
     chain.run((err: Error) => {
