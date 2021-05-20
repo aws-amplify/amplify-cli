@@ -30,9 +30,14 @@ describe('get permission boundary arn', () => {
   });
 
   it('gets arn from preInitTeamProviderInfo', () => {
-    (global as any).preInitTeamProviderInfo = tpi_stub;
+    // setup
+    setPermissionBoundaryArn(testArn, testEnv, tpi_stub);
+
+    // test
     expect(getPermissionBoundaryArn()).toEqual(testArn);
-    delete (global as any).preInitTeamProviderInfo;
+
+    // reset
+    setPermissionBoundaryArn(testArn, testEnv);
   });
 
   it('returns undefined if no value found', () => {
@@ -65,7 +70,7 @@ describe('set permission boundary arn', () => {
     const tpi: Record<string, any> = {};
     setPermissionBoundaryArn(testArn, undefined, tpi);
     expect(tpi[testEnv].awscloudformation[objKey]).toEqual(testArn);
-    expect((global as any).preInitTeamProviderInfo).toEqual(tpi);
+    expect(getPermissionBoundaryArn()).toEqual(testArn);
     delete (global as any).preInitTeamProviderInfo;
   });
 });

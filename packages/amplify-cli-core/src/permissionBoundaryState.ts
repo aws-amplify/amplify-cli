@@ -2,16 +2,17 @@ import { stateManager } from './state-manager';
 import _ from 'lodash';
 import { $TSObject } from '.';
 
+let preInitTeamProviderInfo: any;
+
 export const getPermissionBoundaryArn = (env?: string): string | undefined => {
   try {
-    const preInitTpi = (global as any).preInitTeamProviderInfo;
-    const teamProviderInfo = preInitTpi ?? stateManager.getTeamProviderInfo();
+    const tpi = preInitTeamProviderInfo ?? stateManager.getTeamProviderInfo();
     // if the pre init team-provider-info only has one env (which should always be the case), default to that one
-    if (preInitTpi && Object.keys(preInitTpi).length === 1 && !env) {
-      env = Object.keys(preInitTpi)[0];
+    if (preInitTeamProviderInfo && Object.keys(preInitTeamProviderInfo).length === 1 && !env) {
+      env = Object.keys(preInitTeamProviderInfo)[0];
     }
-    return _.get(teamProviderInfo, teamProviderInfoObjectPath(env)) as string | undefined;
-  } catch (err) {
+    return _.get(tpi, teamProviderInfoObjectPath(env)) as string | undefined;
+  } catch {
     // uninitialized project
     return undefined;
   }
@@ -31,12 +32,12 @@ export const setPermissionBoundaryArn = (arn?: string, env?: string, teamProvide
   let tpiGetter = () => stateManager.getTeamProviderInfo();
   let tpiSetter = (tpi: $TSObject) => {
     stateManager.setTeamProviderInfo(undefined, tpi);
-    delete (global as any).preInitTeamProviderInfo; // avoids a potential edge case where set permissions is called again w/o tpi
+    preInitTeamProviderInfo = undefined;
   };
   if (teamProviderInfo) {
     tpiGetter = () => teamProviderInfo;
     tpiSetter = (tpi: $TSObject) => {
-      (global as any).preInitTeamProviderInfo = tpi;
+      preInitTeamProviderInfo = tpi;
     };
   }
   const tpi = tpiGetter();
