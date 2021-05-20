@@ -1,7 +1,7 @@
+import { $TSContext, exitOnNextTick, getPackageManager, NonEmptyDirectoryError } from 'amplify-cli-core';
+import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
-import { execSync } from 'child_process';
-import { $TSContext, NonEmptyDirectoryError, exitOnNextTick, getPackageManager } from 'amplify-cli-core';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';
 
 export async function preInitSetup(context: $TSContext) {
