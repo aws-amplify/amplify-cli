@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.22.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.7...graphql-dynamodb-transformer@6.22.8) (2021-05-18)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** make primary key non null on del ([#6337](https://github.com/aws-amplify/amplify-cli/issues/6337)) ([4a5c679](https://github.com/aws-amplify/amplify-cli/commit/4a5c6795680b6b88efb19b923ee234253ca30c35)), closes [#2564](https://github.com/aws-amplify/amplify-cli/issues/2564)
+
+
+
+
+
+## [6.22.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.6...graphql-dynamodb-transformer@6.22.7) (2021-05-14)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
 ## [6.22.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.4...graphql-dynamodb-transformer@6.22.6) (2021-05-03)
 
 

@@ -24,6 +24,12 @@ const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/pro
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 const { stateManager } = require('amplify-cli-core');
 
+const {
+  doesConfigurationIncludeSMS,
+  loadResourceParameters,
+  loadImportedAuthParameters,
+} = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
+
 // this function is being kept for temporary compatability.
 async function add(context) {
   const { amplify } = context;
@@ -424,6 +430,18 @@ async function importAuth(context) {
   return providerController.importResource(context, serviceSelection, undefined, undefined, false);
 }
 
+async function isSMSWorkflowEnabled(context, resourceName) {
+  const { imported, userPoolId } = context.amplify.getImportedAuthProperties(context);
+  let userNameAndMfaConfig;
+  if (imported) {
+    userNameAndMfaConfig = await loadImportedAuthParameters(context, userPoolId);
+  } else {
+    userNameAndMfaConfig = loadResourceParameters(context, resourceName);
+  }
+  const result = doesConfigurationIncludeSMS(userNameAndMfaConfig);
+  return result;
+}
+
 module.exports = {
   externalAuthEnable,
   checkRequirements,
@@ -439,4 +457,5 @@ module.exports = {
   uploadFiles,
   category,
   importAuth,
+  isSMSWorkflowEnabled,
 };

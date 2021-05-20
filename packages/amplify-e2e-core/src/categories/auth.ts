@@ -1302,3 +1302,49 @@ export function updateAuthAddAdminQueries(projectDir: string, groupName: string 
       });
   });
 }
+
+export function updateAuthWithoutTrigger(cwd: string, settings: any): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['update', 'auth'], { cwd, stripColors: true })
+      .wait('What do you want to do?')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Select the authentication/authorization services that you want to use:')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Do you want to add User Pool Groups?')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Do you want to add an admin queries API?')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Multifactor authentication (MFA) user login options:')
+      .sendCarriageReturn()
+      .wait('Email based user registration/forgot password:')
+      .sendCarriageReturn()
+      .wait('Please specify an email verification subject:')
+      .sendCarriageReturn()
+      .wait('Please specify an email verification message:')
+      .sendCarriageReturn()
+      .wait('Do you want to override the default password policy for this User Pool?')
+      .sendCarriageReturn()
+      .wait("Specify the app's refresh token expiration period (in days):")
+      .sendCarriageReturn()
+      .wait('Do you want to specify the user attributes this app can read and write?')
+      .sendCarriageReturn()
+      .wait('Do you want to enable any of the following capabilities?')
+      .sendCarriageReturn()
+      .wait('Do you want to use an OAuth flow?')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Do you want to configure Lambda Triggers for Cognito?')
+      .sendLine('n')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}

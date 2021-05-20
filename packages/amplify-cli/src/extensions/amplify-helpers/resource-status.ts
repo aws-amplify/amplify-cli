@@ -486,16 +486,12 @@ export async function showResourceTable(category, resourceName, filteredResource
 
   table(tableOptions, { format: 'markdown' });
 
-  // in the case of a deferred init, need to also check there are resources in the project
-  // checking for length > 1 because for some reason the aws cfn provider is in the resources list but it's not a resource
-  const updateTags = tagsUpdated && allResources.length > 1;
-
-  if (updateTags) {
+  if (tagsUpdated) {
     print.info('\nTag Changes Detected');
   }
 
   const resourceChanged =
-    resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 || updateTags;
+    resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 || tagsUpdated;
 
   return resourceChanged;
 }

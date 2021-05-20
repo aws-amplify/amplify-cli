@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.7...amplify-category-function@2.31.8) (2021-05-18)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
+## [2.31.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.6...amplify-category-function@2.31.7) (2021-05-14)
+
+
+### Bug Fixes
+
+* cross resource permission handling ([#7289](https://github.com/aws-amplify/amplify-cli/issues/7289)) ([4a9fb78](https://github.com/aws-amplify/amplify-cli/commit/4a9fb78d4e1fecdf79634c1782bdefa17d803632))
+* function e2e tests ([#7295](https://github.com/aws-amplify/amplify-cli/issues/7295)) ([5c918be](https://github.com/aws-amplify/amplify-cli/commit/5c918be56f36fb9182d07af4f87a6a8f9f05b6ed))
+
+
+
+
+
 ## [2.31.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.4...amplify-category-function@2.31.6) (2021-05-03)
 
 

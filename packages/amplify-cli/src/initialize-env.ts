@@ -81,12 +81,6 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
 
     await sequential(categoryInitializationTasks);
 
-    // this function can now be called on the push codepath in the case of a deffered root stack push
-    // in that case, we don't need to push here as that will happen automatically down the road
-    if (context?.input?.command === 'push') {
-      return;
-    }
-
     if (context.exeInfo.forcePush === undefined) {
       context.exeInfo.forcePush = await context.amplify.confirmPrompt(
         'Do you want to push your resources to the cloud for your environment?',

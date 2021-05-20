@@ -12,7 +12,7 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerResolverProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AttributeType, ITable, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
+import { AttributeType, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
 import { RemovalPolicy } from '@aws-cdk/core';
 import { DirectiveNode, InputObjectTypeDefinitionNode, InputValueDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
@@ -257,6 +257,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
           name: 'id',
           type: AttributeType.STRING,
         },
+        stream: StreamViewType.NEW_AND_OLD_IMAGES,
         encryption: TableEncryption.DEFAULT,
         removalPolicy: RemovalPolicy.DESTROY,
       });

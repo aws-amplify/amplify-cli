@@ -18,6 +18,7 @@ export * from './cliConstants';
 export * from './deploymentSecretsHelper';
 export * from './deploymentState';
 export * from './utils';
+export * from './banner-message';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -175,13 +176,12 @@ interface AmplifyToolkit {
   getEnvDetails: () => $TSAny;
   getEnvInfo: () => $TSAny;
   getProviderPlugins: (context: $TSContext) => $TSAny;
-  getPluginInstance: () => $TSAny;
+  getPluginInstance: (context: $TSContext, pluginName: string) => $TSAny;
   getProjectConfig: () => $TSAny;
   getProjectDetails: () => $TSAny;
   getProjectMeta: () => $TSMeta;
   getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => $TSAny;
   getResourceOutputs: () => $TSAny;
-  getTags: (context: $TSContext) => $TSAny;
   getWhen: () => $TSAny;
   inputValidation: (input: $TSAny) => (value: $TSAny) => boolean | string;
   listCategories: () => $TSAny;
@@ -197,7 +197,7 @@ interface AmplifyToolkit {
     filteredResources?: { category: string; resourceName: string }[],
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
-  readJsonFile: (file: string) => $TSAny;
+  readJsonFile: () => $TSAny;
   removeEnvFromCloud: () => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
   removeResource: () => $TSAny;

@@ -1,15 +1,8 @@
-import {
-  NoneDataSource,
-  HttpDataSource,
-  DynamoDbDataSource,
-  LambdaDataSource,
-  BaseDataSource,
-  CfnResolver,
-} from '@aws-cdk/aws-appsync';
-import { IFunction } from '@aws-cdk/aws-lambda';
+import { NoneDataSource, HttpDataSource, DynamoDbDataSource, LambdaDataSource, BaseDataSource, CfnResolver } from '@aws-cdk/aws-appsync';
+import { IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
 import { ITable } from '@aws-cdk/aws-dynamodb';
-import { CfnResource, Construct, IConstruct, Stack } from '@aws-cdk/core';
-import { Grant, IGrantable } from '@aws-cdk/aws-iam';
+import { CfnResource, Construct, IAsset, IConstruct, Stack } from '@aws-cdk/core';
+import { Grant, IGrantable, IRole } from '@aws-cdk/aws-iam';
 
 export interface AppSyncFunctionConfigurationProvider extends IConstruct {
   readonly arn: string;
@@ -30,19 +23,29 @@ export interface DataSourceOptions {
   readonly description?: string;
 }
 
-export enum TemplateType  {
+export interface ElasticSearchDataSourceOptions extends DataSourceOptions {
+  /**
+   * ServiceRole for the Amazon Elasticsearch
+   */
+  readonly serviceRole: IRole;
+}
+
+export enum TemplateType {
   INLINE = 'INLINE',
-  S3_LOCATION = 'S3_LOCATION'
+  S3_LOCATION = 'S3_LOCATION',
 }
 export interface InlineMappingTemplateProvider {
-  type: TemplateType.INLINE
+  type: TemplateType.INLINE;
   bind(scope: Construct): string;
 }
 export interface S3MappingTemplateProvider {
-  type: TemplateType.S3_LOCATION
-  bind(
-    scope: Construct,
-  ): string;
+  type: TemplateType.S3_LOCATION;
+  bind(scope: Construct): string;
+}
+
+export interface S3MappingFunctionCodeProvider {
+  type: TemplateType.S3_LOCATION;
+  bind(scope: Construct): IAsset;
 }
 
 export type MappingTemplateProvider = InlineMappingTemplateProvider | S3MappingTemplateProvider;
@@ -53,7 +56,13 @@ export interface GraphQLAPIProvider {
   addDynamoDbDataSource(name: string, table: ITable, options?: DataSourceOptions, stack?: Stack): DynamoDbDataSource;
   addNoneDataSource(name: string, options?: DataSourceOptions, stack?: Stack): NoneDataSource;
   addLambdaDataSource(name: string, lambdaFunction: IFunction, options?: DataSourceOptions, stack?: Stack): LambdaDataSource;
-
+  addElasticSearchDataSource(
+    name: string,
+    endpoint: string,
+    region: string,
+    options?: ElasticSearchDataSourceOptions,
+    stack?: Stack,
+  ): BaseDataSource;
   addAppSyncFunction: (
     name: string,
     requestMappingTemplate: MappingTemplateProvider,
@@ -71,6 +80,18 @@ export interface GraphQLAPIProvider {
     pipelineConfig?: string[],
     stack?: Stack,
   ) => CfnResolver;
+
+  addLambdaFunction: (
+    functionName: string,
+    functionKey: string,
+    handlerName: string,
+    filePath: string,
+    runtime: Runtime,
+    layers?: ILayerVersion[],
+    role?: IRole,
+    environment?: { [key: string]: string },
+    stack?: Stack,
+  ) => IFunction;
 
   getDataSource: (name: string) => BaseDataSource | void;
   hasDataSource: (name: string) => boolean;

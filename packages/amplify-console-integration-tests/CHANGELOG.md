@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.6.0...amplify-console-integration-tests@1.6.1) (2021-05-18)
+
+
+
+## 4.51.1 (2021-05-18)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
+# [1.6.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.5.6...amplify-console-integration-tests@1.6.0) (2021-05-14)
+
+
+### Features
+
+* Support for Apple Sign In ([#7265](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7265)) ([9f5e659](https://github.com/aws-amplify/amplify-console-integration-tests/commit/9f5e659d63362c7f47eaa147c68d40d5bcc36fcc))
+
+
+
+
+
 ## [1.5.6](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.5.4...amplify-console-integration-tests@1.5.6) (2021-05-03)
 
 

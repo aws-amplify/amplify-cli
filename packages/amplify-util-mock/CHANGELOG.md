@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.31.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.31.0...amplify-util-mock@3.31.1) (2021-05-18)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [3.31.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.30.6...amplify-util-mock@3.31.0) (2021-05-14)
+
+
+
+# 4.51.0 (2021-05-13)
+
+
+### Features
+
+* prep work for SMS Sandbox support ([#7302](https://github.com/aws-amplify/amplify-cli/issues/7302)) ([d1f85d2](https://github.com/aws-amplify/amplify-cli/commit/d1f85d2e0a9c367b71defefe6d9e00737f681ca4))
+
+
+
+
+
 ## [3.30.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.30.4...amplify-util-mock@3.30.6) (2021-05-03)
 
 

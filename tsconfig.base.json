@@ -57,7 +57,8 @@
     "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,
     "resolveJsonModule": true,
     "preserveConstEnums": true,
-    "pretty": true
+    "pretty": true,
+    "stripInternal": true
   },
   "exclude": ["**/__mocks__/**/*", "**/__tests__/**/*", "**/lib/**/*"]
 }
