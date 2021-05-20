@@ -4,7 +4,7 @@ import { $TSObject } from '.';
 
 let preInitTeamProviderInfo: any;
 
-export const getPermissionBoundaryArn = (env?: string): string | undefined => {
+export const getPermissionsBoundaryArn = (env?: string): string | undefined => {
   try {
     const tpi = preInitTeamProviderInfo ?? stateManager.getTeamProviderInfo();
     // if the pre init team-provider-info only has one env (which should always be the case), default to that one
@@ -19,16 +19,16 @@ export const getPermissionBoundaryArn = (env?: string): string | undefined => {
 };
 
 /**
- * Stores the permission boundary ARN in team-provider-info
+ * Stores the permissions boundary ARN in team-provider-info
  * If teamProviderInfo is not specified, the file is read, updated and written back to disk
  * If teamProviderInfo is specified, then this function assumes that the env is not initialized
  *    In this case, the teamProviderInfo object is updated but not written to disk. Instead "preInitTeamProviderInfo" is set
- *    so that subsequent calls to getPermissionBoundaryArn will return the permission boundary arn of the pre-initialized env
- * @param arn The permission boundary arn. If undefined or empty, the permission boundary is removed
+ *    so that subsequent calls to getPermissionsBoundaryArn will return the permissions boundary arn of the pre-initialized env
+ * @param arn The permissions boundary arn. If undefined or empty, the permissions boundary is removed
  * @param env The Amplify env to update. If not specified, defaults to the current checked out environment
  * @param teamProviderInfo The team-provider-info object to update
  */
-export const setPermissionBoundaryArn = (arn?: string, env?: string, teamProviderInfo?: $TSObject): void => {
+export const setPermissionsBoundaryArn = (arn?: string, env?: string, teamProviderInfo?: $TSObject): void => {
   let tpiGetter = () => stateManager.getTeamProviderInfo();
   let tpiSetter = (tpi: $TSObject) => {
     stateManager.setTeamProviderInfo(undefined, tpi);
@@ -52,5 +52,5 @@ export const setPermissionBoundaryArn = (arn?: string, env?: string, teamProvide
 const teamProviderInfoObjectPath = (env?: string) => [
   env || (stateManager.getLocalEnvInfo().envName as string),
   'awscloudformation',
-  'PermissionBoundaryPolicyArn',
+  'PermissionsBoundaryPolicyArn',
 ];

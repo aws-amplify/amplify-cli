@@ -15,7 +15,7 @@ const amplifyServiceMigrate = require('./amplify-service-migrate');
 const { fileLogger } = require('./utils/aws-logger');
 const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
 const logger = fileLogger('attach-backend');
-const { configurePermissionBoundaryForInit } = require('./permission-boundary/permission-boundary');
+const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
 
 async function run(context) {
   await configurationManager.init(context);
@@ -28,7 +28,7 @@ async function run(context) {
     let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
     const awsConfig = await configurationManager.getAwsConfig(context);
 
-    await configurePermissionBoundaryForInit(context);
+    await configurePermissionsBoundaryForInit(context);
 
     const amplifyServiceParams = {
       context,

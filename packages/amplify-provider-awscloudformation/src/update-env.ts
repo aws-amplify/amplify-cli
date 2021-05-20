@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
-import { configurePermissionBoundaryForExistingEnv } from './permission-boundary/permission-boundary';
+import { configurePermissionsBoundaryForExistingEnv } from './permissions-boundary/permissions-boundary';
 
 export const updateEnv = async (context: $TSContext) => {
-  await configurePermissionBoundaryForExistingEnv(context);
+  await configurePermissionsBoundaryForExistingEnv(context);
 };

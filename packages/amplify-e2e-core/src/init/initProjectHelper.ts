@@ -367,9 +367,9 @@ export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
   });
 }
 
-export async function initWithPermissionBoundary(cwd: string, permissionBoundaryArn: string): Promise<void> {
+export async function initWithPermissionsBoundary(cwd: string, permissionsBoundaryArn: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init', '--yes', '--permission-boundary', permissionBoundaryArn], {
+    spawn(getCLIPath(), ['init', '--yes', '--permissions-boundary', permissionsBoundaryArn], {
       cwd,
       stripColors: true,
       env: { CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1' },

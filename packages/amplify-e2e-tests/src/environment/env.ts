@@ -26,11 +26,11 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
   });
 }
 
-export function updateEnvironment(cwd: string, settings: { permissionBoundaryArn: string }) {
+export function updateEnvironment(cwd: string, settings: { permissionsBoundaryArn: string }) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'update'], { cwd, stripColors: true })
-      .wait('Specify an IAM Policy ARN to use as a Permission Boundary for all IAM Roles')
-      .sendLine(settings.permissionBoundaryArn)
+      .wait('Specify an IAM Policy ARN to use as a permissions boundary for all IAM Roles')
+      .sendLine(settings.permissionsBoundaryArn)
       .run((err: Error) => (!!err ? reject(err) : resolve()));
   });
 }

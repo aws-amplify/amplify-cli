@@ -1119,13 +1119,13 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/migration/node.function.test.ts
       CLI_REGION: eu-west-2
-  iam-permission-boundary-amplify_e2e_tests:
+  iam-permissions-boundary-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
     resource_class: large
     steps: *ref_4
     environment:
-      TEST_SUITE: src/__tests__/iam-permission-boundary.test.ts
+      TEST_SUITE: src/__tests__/iam-permissions-boundary.test.ts
       CLI_REGION: eu-central-1
   function_5-amplify_e2e_tests:
     working_directory: ~/repo
@@ -1811,14 +1811,14 @@ jobs:
       TEST_SUITE: src/__tests__/migration/node.function.test.ts
       CLI_REGION: eu-west-2
     steps: *ref_5
-  iam-permission-boundary-amplify_e2e_tests_pkg_linux:
+  iam-permissions-boundary-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
     docker: *ref_1
     resource_class: large
     environment:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
-      TEST_SUITE: src/__tests__/iam-permission-boundary.test.ts
+      TEST_SUITE: src/__tests__/iam-permissions-boundary.test.ts
       CLI_REGION: eu-central-1
     steps: *ref_5
   function_5-amplify_e2e_tests_pkg_linux:
@@ -1964,7 +1964,7 @@ workflows:
             - predictions-amplify_e2e_tests
             - schema-predictions-amplify_e2e_tests
             - amplify-configure-amplify_e2e_tests
-            - iam-permission-boundary-amplify_e2e_tests
+            - iam-permissions-boundary-amplify_e2e_tests
             - containers-api-amplify_e2e_tests
             - interactions-amplify_e2e_tests
             - datastore-modelgen-amplify_e2e_tests
@@ -1994,7 +1994,7 @@ workflows:
             - predictions-amplify_e2e_tests_pkg_linux
             - schema-predictions-amplify_e2e_tests_pkg_linux
             - amplify-configure-amplify_e2e_tests_pkg_linux
-            - iam-permission-boundary-amplify_e2e_tests_pkg_linux
+            - iam-permissions-boundary-amplify_e2e_tests_pkg_linux
             - containers-api-amplify_e2e_tests_pkg_linux
             - interactions-amplify_e2e_tests_pkg_linux
             - datastore-modelgen-amplify_e2e_tests_pkg_linux
@@ -2361,7 +2361,7 @@ workflows:
           filters: *ref_9
           requires:
             - auth_4-amplify_e2e_tests
-      - iam-permission-boundary-amplify_e2e_tests:
+      - iam-permissions-boundary-amplify_e2e_tests:
           context: *ref_7
           post-steps: *ref_8
           filters: *ref_9
@@ -2805,7 +2805,7 @@ workflows:
           filters: *ref_12
           requires:
             - auth_4-amplify_e2e_tests_pkg_linux
-      - iam-permission-boundary-amplify_e2e_tests_pkg_linux:
+      - iam-permissions-boundary-amplify_e2e_tests_pkg_linux:
           context: *ref_10
           post-steps: *ref_11
           filters: *ref_12
