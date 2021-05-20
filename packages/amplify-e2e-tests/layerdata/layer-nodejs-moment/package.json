@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "description": "E2E Test Layer",
+  "main": "index.js",
+  "dependencies": {
+    "moment": "2.29.1"
+  },
+  "devDependencies": {}
+}

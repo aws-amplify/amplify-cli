@@ -48,19 +48,22 @@ describe('amplify add lambda layer', () => {
     const [shortId] = uuid().split('-');
     const layerName = `simplelayer${shortId}`;
 
-    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string; usePreviousPermissions: boolean } = {
+    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string } = {
       runtimes: ['nodejs'],
       layerName,
-      usePreviousPermissions: true,
       projName,
     };
     const arns: string[] = [];
     await addLayer(projRoot, settings);
     expect(validateLayerDir(projRoot, { projName, layerName: settings.layerName }, settings.runtimes)).toBe(true);
-    await amplifyPushLayer(projRoot, true);
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+    });
     arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     addOptData(projRoot, settings);
-    await amplifyPushLayer(projRoot, true);
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+    });
     arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     await validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns);
     await removeLayer(projRoot, [1, 2], [1, 2]);
@@ -71,26 +74,31 @@ describe('amplify add lambda layer', () => {
     const [shortId] = uuid().split('-');
     const layerName = `simplelayer${shortId}`;
 
-    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string; usePreviousPermissions: boolean } = {
+    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string } = {
       runtimes: ['nodejs'],
       layerName,
-      usePreviousPermissions: true,
       projName,
     };
     const arns: string[] = [];
     await addLayer(projRoot, settings);
     expect(validateLayerDir(projRoot, { projName, layerName: settings.layerName }, settings.runtimes)).toBe(true);
-    await amplifyPushLayer(projRoot, true);
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+    });
     arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     for (const i in [1, 2, 3]) {
       updateOptData(projRoot, settings, i);
-      await amplifyPushLayer(projRoot, true);
+      await amplifyPushLayer(projRoot, {
+        acceptSuggestedLayerVersionConfigurations: true,
+      });
       arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     }
     const removeVersion = [1, 2, 3];
     await removeLayerVersion(projRoot, removeVersion, [1, 2, 3, 4]);
     updateOptData(projRoot, settings, 'end');
-    await amplifyPushLayer(projRoot, true);
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+    });
     arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     arns.splice(0, 3);
     validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns);
@@ -115,7 +123,9 @@ describe('amplify add lambda layer', () => {
     };
     await addLayer(projRoot, settingsAdd);
     await updateLayer(projRoot, settingsUpdate);
-    await amplifyPushLayer(projRoot, true);
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+    });
     const arns: string[] = [getCurrentLayerArnFromMeta(projRoot, settingsAdd)];
     await validateLayerMetadata(projRoot, settingsUpdate, getProjectMeta(projRoot), envName, arns);
   });
@@ -141,7 +151,9 @@ describe('amplify add lambda layer', () => {
     };
     const arns: string[] = [];
     await addLayer(projRoot, settingsAdd);
-    await amplifyPushLayer(projRoot, true);
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+    });
     arns.push(getCurrentLayerArnFromMeta(projRoot, settingsAdd));
 
     await updateLayer(projRoot, settingsUpdate);
@@ -161,7 +173,9 @@ describe('amplify add lambda layer', () => {
     };
     const arns: string[] = [];
     await addLayer(projRoot, settings);
-    await amplifyPushLayer(projRoot, true);
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+    });
     settings.permissions = ['Public (Anyone on AWS can use this layer)'];
     await updateLayer(projRoot, settings);
     await amplifyPushAuth(projRoot);
@@ -182,11 +196,15 @@ describe('amplify add lambda layer', () => {
     const integtestArns: string[] = [];
     const expectedPerms: LayerPermission[] = [{ type: LayerPermissionName.public }];
     await addLayer(projRoot, settings);
-    await amplifyPushLayer(projRoot, true);
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+    });
     integtestArns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     validatePushedVersion(projRoot, settings, expectedPerms);
     addOptData(projRoot, settings);
-    await amplifyPushLayer(projRoot, true);
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+    });
     integtestArns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     validatePushedVersion(projRoot, settings, expectedPerms);
     await validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, integtestArns);
@@ -195,7 +213,9 @@ describe('amplify add lambda layer', () => {
     const newEnvName = 'layertest';
     await addEnvironment(projRoot, { envName: newEnvName, numLayers: 1 });
     await listEnvironment(projRoot, { numEnv: 2 });
-    await amplifyPushLayer(projRoot, true);
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+    });
     layerTestArns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     validatePushedVersion(projRoot, settings, expectedPerms);
     await validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), newEnvName, layerTestArns);
@@ -235,7 +255,9 @@ describe('amplify add lambda layer - with amplify console app', () => {
     const expectedPerms: LayerPermission[] = [{ type: LayerPermissionName.private }];
 
     await addLayer(projRoot, settings);
-    await amplifyPushLayer(projRoot, true);
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+    });
 
     validatePushedVersion(projRoot, settings, expectedPerms);
 
@@ -245,7 +267,7 @@ describe('amplify add lambda layer - with amplify console app', () => {
     let projRoot2;
 
     try {
-      projRoot2 = await createNewProjectDir('import-env-test2');
+      projRoot2 = await createNewProjectDir('layer-pull-test');
       await amplifyPull(projRoot2, { override: false, emptyDir: true, appId });
 
       validatePushedVersion(projRoot2, settings, expectedPerms);
@@ -257,7 +279,9 @@ describe('amplify add lambda layer - with amplify console app', () => {
       // Push a new layer version
       addOptData(projRoot2, settings);
 
-      await amplifyPushLayer(projRoot2, true);
+      await amplifyPushLayer(projRoot2, {
+        acceptSuggestedLayerVersionConfigurations: true,
+      });
 
       validatePushedVersion(projRoot2, settings, expectedPerms);
     } finally {
