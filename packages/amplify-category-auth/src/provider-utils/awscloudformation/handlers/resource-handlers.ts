@@ -20,9 +20,9 @@ export const getAddAuthHandler = (context: any) => async (request: ServiceQuesti
   projectName = projectName.replace(disallowedChars, '');
 
   const requestWithDefaults = await getAddAuthDefaultsApplier(context, defaultValuesFilename, projectName)(request);
-  await getResourceSynthesizer(context, cfnFilename, provider)(requestWithDefaults);
 
   try {
+    await getResourceSynthesizer(context, cfnFilename, provider)(requestWithDefaults);
     await getPostAddAuthMetaUpdater(context, { service: requestWithDefaults.serviceName, providerName: provider })(
       requestWithDefaults.resourceName!,
     );
