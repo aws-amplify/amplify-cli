@@ -1,7 +1,7 @@
-import * as path from 'path';
+import { $TSContext, exitOnNextTick, getPackageManager, JSONUtilities } from 'amplify-cli-core';
 import { execSync } from 'child_process';
-import { exitOnNextTick, getPackageManager, JSONUtilities } from 'amplify-cli-core';
 import _ from 'lodash';
+import * as path from 'path';
 
 const packageJson = 'package.json';
 const initializationScripts = ['start', 'serve'];
@@ -9,7 +9,7 @@ const MISSING_SCRIPTS_ERROR = new Error(
   'Did not find a "start" or "serve" initialization script. Add a package.json file in the root of the project with one of these scripts.',
 );
 
-export async function postInitSetup(context) {
+export async function postInitSetup(context: $TSContext) {
   if (context.parameters.options.app) {
     // Pushing a sample app
     try {

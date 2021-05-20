@@ -1,6 +1,7 @@
-import { $TSContext, getPackageManager, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, getPackageManager, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { execSync } from 'child_process';
 import { ensureDir, existsSync, readFileSync, readJSON, readdirSync } from 'fs-extra';
+import { sync } from 'which';
 import { preInitSetup } from '../../init-steps/preInitSetup';
 import { analyzeProject } from '../../init-steps/s0-analyzeProject';
 import { initFrontend } from '../../init-steps/s1-initFrontend';
@@ -9,12 +10,19 @@ import { scaffoldProjectHeadless } from '../../init-steps/s8-scaffoldHeadless';
 jest.mock('amplify-cli-core');
 jest.mock('child_process');
 jest.mock('fs-extra');
+jest.mock('which');
 
 (readJSON as jest.Mock).mockReturnValue({});
 (ensureDir as jest.Mock).mockReturnValue(Promise.resolve());
 (readFileSync as jest.Mock).mockReturnValue('{}');
 (existsSync as jest.Mock).mockReturnValue(true);
 (readdirSync as jest.Mock).mockReturnValue([]);
+(sync as jest.MockedFunction<typeof sync>).mockReturnValue('mock/path');
+(getPackageManager as jest.MockedFunction<typeof getPackageManager>).mockReturnValue({
+  executable: 'yarn',
+  lockFile: 'mock.lock',
+  packageManager: 'yarn',
+});
 
 describe('amplify init: ', () => {
   const mockGetProjectConfigFilePath = jest.spyOn(pathManager, 'getProjectConfigFilePath');
@@ -23,10 +31,11 @@ describe('amplify init: ', () => {
   const mockGetBackendDirPath = jest.spyOn(pathManager, 'getBackendDirPath');
   const mockGetGitIgnoreFilePath = jest.spyOn(pathManager, 'getGitIgnoreFilePath');
 
-  (getPackageManager as jest.Mock).mockReturnValue('yarn');
-  // (normalizePackageManagerForOS as jest.Mock).mockReturnValue('yarn');
+  const mockGetProjectConfig = jest.spyOn(stateManager, 'getProjectConfig').mockReturnValue({ projectName: 'mockProject' });
+  const mockGetLocalEnvInfo = jest.spyOn(stateManager, 'getLocalEnvInfo').mockReturnValue({ defaultEditor: 'gedit' });
+  const mockGetTeamProviderInfo = jest.spyOn(stateManager, 'getTeamProviderInfo').mockReturnValue({});
 
-  const mockGetProjectConfig = jest.fn(() => ({}));
+  const mockReadJson = jest.spyOn(JSONUtilities, 'readJson').mockReturnValue({});
 
   const mockPathManager = {
     getProjectConfigFilePath: mockGetProjectConfigFilePath,
@@ -36,11 +45,18 @@ describe('amplify init: ', () => {
     getGitIgnoreFilePath: mockGetGitIgnoreFilePath,
   };
 
+  const mockStateManager = {
+    getProjectConfig: mockGetProjectConfig,
+    getLocalEnvInfo: mockGetLocalEnvInfo,
+    getTeamProviderInfo: mockGetTeamProviderInfo,
+  };
+
   const mockContext = ({
     amplify: {
       AmplifyToolkit: jest.fn(),
       pathManager: mockPathManager,
       getProjectConfig: mockGetProjectConfig,
+      getAllEnvs: jest.fn().mockReturnValue([]),
     },
     parameters: {
       options: {},
@@ -71,9 +87,10 @@ describe('amplify init: ', () => {
 
   jest.mock('amplify-cli-core', () => ({
     exitOnNextTick: jest.fn(),
-    stateManager: {
-      getProjectConfig: jest.fn().mockReturnValue({ projectName: 'mockProject' }),
+    JSONUtilities: {
+      readJSON: mockReadJson,
     },
+    stateManager: mockStateManager,
   }));
 
   const { run } = require('../../commands/init');
