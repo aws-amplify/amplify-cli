@@ -1,4 +1,3 @@
-//lambda-layer.ts
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import _ from 'lodash';
@@ -39,6 +38,47 @@ export function validatePushedVersion(projRoot: string, layerProjName: LayerDire
   permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
 }
 
+export function expectEphemeralPermissions(
+  projRoot: string,
+  layerProjName: LayerDirectoryType,
+  envName: string,
+  version: number,
+  permissions: LayerPermission[],
+) {
+  const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
+  const storedPermissions: LayerPermission[] = _.get(layerData, ['ephemeral', 'layerVersionPermissionsToUpdate', envName, version]);
+  permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
+}
+
+export function expectEphemeralDataIsUndefined(projRoot: string, layerProjName: LayerDirectoryType) {
+  const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
+  const ephemeralData = _.get(layerData, ['ephemeral']);
+
+  expect(ephemeralData).toBeUndefined();
+}
+
+export async function expectDeployedLayerDescription(
+  projRoot: string,
+  layerProjName: LayerDirectoryType,
+  meta: any,
+  envName: string,
+  layerDescription: string,
+) {
+  const arn = getCurrentLayerArnFromMeta(projRoot, layerProjName);
+  const region = meta.providers.awscloudformation.Region;
+  const { description } = getLayerRuntimes(projRoot, getLayerDirectoryName(layerProjName));
+
+  expect(arn).toBeDefined();
+  expect(description).toEqual(layerDescription);
+
+  const cloudData = await getLayerVersion(arn, region);
+  const { LayerVersions: Versions } = await listVersions(`${getLayerDirectoryName(layerProjName)}-${envName}`, region);
+
+  expect(Versions).toBeDefined();
+  expect(Versions).toHaveLength(1);
+  expect(Versions[0].Description).toEqual(layerDescription);
+}
+
 export async function validateLayerMetadata(
   projRoot: string,
   layerProjName: LayerDirectoryType,
@@ -59,6 +99,7 @@ export async function validateLayerMetadata(
   expect(cloudData.LayerVersionArn).toEqual(arn);
   expect(cloudData.CompatibleRuntimes).toEqual(runtimeValues);
 }
+
 export function getCurrentLayerArnFromMeta(projroot: string, layerProjName: LayerDirectoryType): string {
   const meta = getBackendAmplifyMeta(projroot);
   const layername = getLayerDirectoryName(layerProjName);
@@ -73,7 +114,7 @@ export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase:
   return new Promise((resolve, reject) => {
     const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['add', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to add:')
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown()
       .sendCarriageReturn() // Layer
       .wait('Provide a name for your Lambda layer:')
       .sendLine(settings.layerName);
@@ -147,7 +188,19 @@ export function removeLayerVersion(cwd: string, versionsToRemove: number[], allV
   });
 }
 
-export function updateLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false): Promise<void> {
+export function updateLayer(
+  cwd: string,
+  settings?: {
+    runtimes?: string[];
+    numLayers?: number;
+    versions?: number;
+    permissions?: string[];
+    dontChangePermissions?: boolean;
+    changePermissionOnFutureVersion?: boolean;
+    changePermissionOnLatestVersion?: boolean;
+  },
+  testingWithLatestCodebase: boolean = false,
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true })
       .wait('Select which capability you want to update:')
@@ -157,10 +210,28 @@ export function updateLayer(cwd: string, settings?: any, testingWithLatestCodeba
       chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
     }
 
-    chain.wait('Do you want to adjust layer version permissions?').sendConfirmYes();
+    chain.wait('Do you want to adjust layer version permissions?');
 
+    if (settings.dontChangePermissions === true) {
+      chain.sendConfirmYes();
+    } else {
+      // Default behavior to preserve existing e2e behavior
+      chain.sendConfirmNo();
+    }
+
+    // Compatibility with existing e2e tests
     if (settings.versions > 0) {
-      chain.wait('Select the layer version to update').sendCarriageReturn(); // assumes updating the latest version
+      chain
+        .wait('Select the layer version to update')
+        .sendKeyDown() // Move down from "future layer" option
+        .sendCarriageReturn(); // assumes updating the future layer version
+    } else if (settings.changePermissionOnFutureVersion === true) {
+      chain.wait('Select the layer version to update').sendCarriageReturn(); // future layer version
+    } else if (settings.changePermissionOnLatestVersion === true) {
+      chain
+        .wait('Select the layer version to update')
+        .sendKeyDown() // Move down from "future layer" option
+        .sendCarriageReturn(); // assumes updating the future layer version
     }
 
     chain.wait('The current AWS account will always have access to this layer.');
@@ -186,10 +257,10 @@ export function updateOptData(projRoot: string, layerProjName: LayerDirectoryTyp
   );
 }
 
-export function addOptData(projRoot: string, layerProjName: LayerDirectoryType): void {
+export function addOptData(projRoot: string, layerProjName: LayerDirectoryType, data?: string): void {
   fs.writeFileSync(
     path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName), 'opt', 'data.txt'),
-    'data',
+    data ?? 'data',
     'utf8',
   );
 }
