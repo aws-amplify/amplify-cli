@@ -1843,7 +1843,6 @@ workflows:
             branches:
               only:
                 - master
-                - layers-rework
     jobs:
       - build
       - publish_to_local_registry:
@@ -1866,7 +1865,6 @@ workflows:
             branches:
               only:
                 - master
-                - layers-rework
     jobs:
       - build
       - cleanup_resources:
