@@ -651,6 +651,7 @@ workflows:
                 - backendManager
                 - iterative-update
                 - release
+                - authHeadlessImport
                 - compute-functions
           requires:
             - build
@@ -803,6 +804,7 @@ workflows:
             branches:
               only:
                 - release
+                - authHeadlessImport
                 - master
                 - beta
       - github_release:
