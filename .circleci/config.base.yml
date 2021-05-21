@@ -569,6 +569,7 @@ workflows:
             branches:
               only:
                 - master
+                - layers-rework
     jobs:
       - build
       - publish_to_local_registry:
@@ -591,6 +592,7 @@ workflows:
             branches:
               only:
                 - master
+                - layers-rework
     jobs:
       - build
       - cleanup_resources:
@@ -618,6 +620,7 @@ workflows:
               only:
                 - master
                 - iterative-update
+                - layers-rework
           requires:
             - build
             - mock_e2e_tests
@@ -630,6 +633,7 @@ workflows:
               only:
                 - master
                 - beta
+                - layers-rework
           requires:
             - build
             - mock_e2e_tests
@@ -643,6 +647,7 @@ workflows:
                 - iterative-update
                 - release
                 - compute-functions
+                - layers-rework
           requires:
             - build
       - build_pkg_binaries:
@@ -670,6 +675,7 @@ workflows:
                 - master
                 - compute-functions
                 - iterative-update
+                - layers-rework
           requires:
             - publish_to_local_registry
       - done_with_node_e2e_tests:
@@ -796,6 +802,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - layers-rework
       - github_release:
           context: github-publish
           requires:
