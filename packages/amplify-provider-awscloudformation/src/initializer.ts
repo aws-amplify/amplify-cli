@@ -1,3 +1,6 @@
+import { $TSContext } from 'amplify-cli-core';
+import _ from 'lodash';
+
 const moment = require('moment');
 const path = require('path');
 const { pathManager, PathConstants, stateManager, JSONUtilities } = require('amplify-cli-core');
@@ -103,6 +106,8 @@ async function run(context) {
     context.exeInfo.inputParams.amplify.appId
   ) {
     await amplifyServiceMigrate.run(context);
+  } else {
+    setCloudFormationOutputInContext(context, {});
   }
 }
 
@@ -117,19 +122,17 @@ function processStackCreationData(context, amplifyAppId, stackDescriptiondata) {
       metadata[constants.AmplifyAppIdLabel] = amplifyAppId;
     }
 
-    context.exeInfo.amplifyMeta = {};
-    if (!context.exeInfo.amplifyMeta.providers) {
-      context.exeInfo.amplifyMeta.providers = {};
-    }
-    context.exeInfo.amplifyMeta.providers[constants.ProviderName] = metadata;
-
-    if (context.exeInfo.isNewEnv) {
-      const { envName } = context.exeInfo.localEnvInfo;
-      context.exeInfo.teamProviderInfo[envName] = {};
-      context.exeInfo.teamProviderInfo[envName][constants.ProviderName] = metadata;
-    }
+    setCloudFormationOutputInContext(context, metadata);
   } else {
     throw new Error('No stack data present');
+  }
+}
+
+function setCloudFormationOutputInContext(context: $TSContext, cfnOutput: object) {
+  _.set(context, ['exeInfo', 'amplifyMeta', 'providers', constants.ProviderName], cfnOutput);
+  const { envName } = context.exeInfo.localEnvInfo;
+  if (envName) {
+    _.merge(_.get(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName]), cfnOutput);
   }
 }
 

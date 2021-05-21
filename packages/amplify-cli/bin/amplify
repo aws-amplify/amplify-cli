@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 if (process.pkg) {
   require('../lib/utils/copy-override').copyOverride();
 } else {
