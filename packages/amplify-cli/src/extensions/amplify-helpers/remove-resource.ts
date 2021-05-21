@@ -36,7 +36,7 @@ export async function removeResource(
   context: $TSContext,
   category,
   resourceName,
-  questionOptions: { serviceSuffix?; serviceDeletionInfo?: [] } = {},
+  questionOptions: { serviceSuffix?; serviceDeletionInfo?: {} } = {},
 ) {
   const amplifyMeta = stateManager.getMeta();
 
