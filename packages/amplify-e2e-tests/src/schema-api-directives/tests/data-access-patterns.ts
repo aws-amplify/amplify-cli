@@ -368,7 +368,7 @@ export const expected_result_query6 = {
 
 export const query7 = `
 ## 7. See all employees hired recently:
-#Having '@key(name: "newHire", fields: ["newHire", "id"])' on the 'Employee' model allows one to query by whether an employee has been hired recently. 
+#Having '@key(name: "newHire", fields: ["newHire", "id"])' on the 'Employee' model allows one to query by whether an employee has been hired recently.
 
 query employeesNewHire {
   employeesNewHire(newHire: "true") {
@@ -685,8 +685,8 @@ export const query16 = `
 ## 16. Get total product inventory:
 #How this would be done depends on the use case. If one just wants a list of all inventories in all warehouses, one could just run a list inventories on the Inventory model:
 
-query listInventorys {
-  listInventorys {
+query listInventories {
+  listInventories {
     items {
       productID
       warehouseID
@@ -696,7 +696,7 @@ query listInventorys {
 }`;
 export const expected_result_query16 = {
   data: {
-    listInventorys: {
+    listInventories: {
       items: [
         {
           productID: 'yeezyboost',
