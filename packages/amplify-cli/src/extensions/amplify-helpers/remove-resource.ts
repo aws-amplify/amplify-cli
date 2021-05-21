@@ -108,7 +108,7 @@ export async function removeResource(
   }
 
   try {
-    return deleteResourceFiles(context, category, resourceName, resourceDir);
+    return await deleteResourceFiles(context, category, resourceName, resourceDir);
   } catch (err) {
     context.print.info(err.stack);
     context.print.error('An error occurred when removing the resources from the local directory');
