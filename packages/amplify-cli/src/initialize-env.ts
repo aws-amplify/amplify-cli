@@ -27,7 +27,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
 
     if (!context.exeInfo.restoreBackend) {
       populateAmplifyMeta(projectPath, amplifyMeta);
-      populateCategoriesMeta(projectPath, amplifyMeta, teamProviderInfo[currentEnv], 'hosting', 'hostingConfig', 'ElasticContainer');
+      populateCategoriesMeta(projectPath, amplifyMeta, teamProviderInfo[currentEnv], 'hosting', 'ElasticContainer');
     }
 
     const categoryInitializationTasks: (() => Promise<$TSAny>)[] = [];
@@ -119,13 +119,12 @@ function populateCategoriesMeta(
   projectPath: string,
   amplifyMeta: $TSMeta,
   teamProviderInfo: $TSTeamProviderInfo,
-  metaCategory: string,
-  teamProviderCategory: string,
+  category: string,
   serviceName: string
 ) {
-  if (amplifyMeta[metaCategory]?.[serviceName] &&
-      teamProviderInfo[CATEGORIES]?.[teamProviderCategory]?.[serviceName]) {
-    Object.assign(amplifyMeta[metaCategory][serviceName], teamProviderInfo[CATEGORIES][teamProviderCategory][serviceName]);
+  if (amplifyMeta[category]?.[serviceName] &&
+      teamProviderInfo[CATEGORIES]?.[category]?.[serviceName]) {
+    Object.assign(amplifyMeta[category][serviceName], teamProviderInfo[CATEGORIES][category][serviceName]);
     stateManager.setMeta(projectPath, amplifyMeta);
   }
 }

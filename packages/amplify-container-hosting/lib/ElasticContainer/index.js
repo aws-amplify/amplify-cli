@@ -305,7 +305,7 @@ export async function generateHostingResources(
   let jsonString = JSON.stringify(context.exeInfo.template, null, 4);
   fs.writeFileSync(templateFilePath, jsonString, 'utf8');
 
-  await context.amplify.saveEnvResourceParameters(context, 'hostingConfig', 'ElasticContainer', domainConfig);
+  await context.amplify.saveEnvResourceParameters(context, 'hosting', 'ElasticContainer', domainConfig);
 
   if (addResource) {
     return context.amplify.updateamplifyMetaAfterResourceAdd(constants.CategoryName, serviceName, resource);
