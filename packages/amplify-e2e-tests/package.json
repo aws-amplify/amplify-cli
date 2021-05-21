@@ -1,6 +1,6 @@
 {
   "name": "amplify-e2e-tests",
-  "version": "2.40.1",
+  "version": "2.40.2-authHeadlessImport.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "amplify-cli-core": "1.22.1",
-    "amplify-e2e-core": "1.19.1",
+    "amplify-e2e-core": "1.19.2-authHeadlessImport.0",
     "aws-amplify": "^3.0.8",
     "aws-appsync": "^4.0.3",
     "aws-sdk": "^2.845.0",

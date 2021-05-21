@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-function",
-  "version": "2.31.8",
+  "version": "2.31.9-authHeadlessImport.0",
   "description": "amplify-cli function plugin",
   "repository": {
     "type": "git",

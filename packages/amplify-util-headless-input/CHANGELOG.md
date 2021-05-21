@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.6-authHeadlessImport.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.4.5...amplify-util-headless-input@1.4.6-authHeadlessImport.0) (2021-05-21)
+
+
+### Features
+
+* **import-auth:** add headless support ([481bdd3](https://github.com/aws-amplify/amplify-cli/commit/481bdd38413ce040ef73ac9fe34cca459703a364))
+
+
+
+
+
 ## [1.4.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.4.4...amplify-util-headless-input@1.4.5) (2021-05-18)
 
 **Note:** Version bump only for package amplify-util-headless-input

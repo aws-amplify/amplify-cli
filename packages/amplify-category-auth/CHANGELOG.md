@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.2-authHeadlessImport.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.31.1...amplify-category-auth@2.31.2-authHeadlessImport.0) (2021-05-21)
+
+
+### Bug Fixes
+
+* updated ejs template for empty object triggers ([#7351](https://github.com/aws-amplify/amplify-cli/issues/7351)) ([572ddbd](https://github.com/aws-amplify/amplify-cli/commit/572ddbda4f339d364a8a20bab0053140cf798f34))
+
+
+### Features
+
+* **import-auth:** add headless support ([481bdd3](https://github.com/aws-amplify/amplify-cli/commit/481bdd38413ce040ef73ac9fe34cca459703a364))
+* prep work for Cognito SMS Sandbox [#2](https://github.com/aws-amplify/amplify-cli/issues/2) ([#7338](https://github.com/aws-amplify/amplify-cli/issues/7338)) ([3dbb3bf](https://github.com/aws-amplify/amplify-cli/commit/3dbb3bfc199fdd7faac68cdee236d2625d6fb1ea))
+
+
+
+
+
 ## [2.31.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.31.0...amplify-category-auth@2.31.1) (2021-05-18)
 
 

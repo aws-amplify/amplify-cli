@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.2-authHeadlessImport.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.6.1...amplify-headless-interface@1.6.2-authHeadlessImport.0) (2021-05-21)
+
+
+### Features
+
+* **import-auth:** add headless support ([481bdd3](https://github.com/aws-amplify/amplify-cli/commit/481bdd38413ce040ef73ac9fe34cca459703a364))
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.6.0...amplify-headless-interface@1.6.1) (2021-05-18)
 
 

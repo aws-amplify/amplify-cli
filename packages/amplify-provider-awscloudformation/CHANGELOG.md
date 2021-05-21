@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.49.1-authHeadlessImport.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.49.0...amplify-provider-awscloudformation@4.49.1-authHeadlessImport.0) (2021-05-21)
+
+
+### Features
+
+* prep work for Cognito SMS Sandbox [#2](https://github.com/aws-amplify/amplify-cli/issues/2) ([#7338](https://github.com/aws-amplify/amplify-cli/issues/7338)) ([3dbb3bf](https://github.com/aws-amplify/amplify-cli/commit/3dbb3bfc199fdd7faac68cdee236d2625d6fb1ea))
+* prep work for SMS Sandbox support ([#7302](https://github.com/aws-amplify/amplify-cli/issues/7302)) ([bfe4f5e](https://github.com/aws-amplify/amplify-cli/commit/bfe4f5e4ea54b8bde7f918f22b5048b3d4517845))
+
+
+
+
+
 # [4.49.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.48.0...amplify-provider-awscloudformation@4.49.0) (2021-05-18)
 
 
