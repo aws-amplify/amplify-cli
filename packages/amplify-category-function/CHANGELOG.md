@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.8...amplify-category-function@2.31.9) (2021-05-22)
+
+
+### Bug Fixes
+
+* added check for undefined dependsOn ([#7363](https://github.com/aws-amplify/amplify-cli/issues/7363)) ([9caad85](https://github.com/aws-amplify/amplify-cli/commit/9caad85a4c73ac775d5e8cfdb21b179f66a84b96))
+
+
+
+
+
 ## [2.31.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.7...amplify-category-function@2.31.8) (2021-05-18)
 
 **Note:** Version bump only for package amplify-category-function
