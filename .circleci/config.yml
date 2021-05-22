@@ -2078,7 +2078,6 @@ workflows:
             - mock_e2e_tests
             - integration_test
             - amplify_sudo_install_test
-            - github_prerelease_install_sanity_check
           filters:
             branches:
               only:
