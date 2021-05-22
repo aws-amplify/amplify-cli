@@ -65,11 +65,16 @@ const permissionsBoundarySupplier = async (
     return;
   }
   const envName = envNameSupplier();
+
+  const defaultValue = getPermissionsBoundaryArn(envName);
+  const hasDefault = typeof defaultValue === 'string' && defaultValue.length > 0;
+  const promptSuffix = hasDefault ? ' (leave blank to remove the permissions boundary configuration)' : '';
+
   const { permissionsBoundaryArn } = await prompt<{ permissionsBoundaryArn: string }>({
     type: 'input',
     name: 'permissionsBoundaryArn',
-    message: `Specify an IAM Policy ARN to use as a permissions boundary for all IAM Roles in the ${envName} environment (leave blank to remove the permissions boundary configuration):`,
-    default: getPermissionsBoundaryArn(envName),
+    message: `Specify an IAM Policy ARN to use as a permissions boundary for all Amplify-generated IAM Roles in the ${envName} environment${promptSuffix}:`,
+    default: defaultValue,
     validate,
   });
   return permissionsBoundaryArn;
@@ -94,16 +99,21 @@ const rolloverPermissionsBoundaryToNewEnvironment = async (context: $TSContext) 
   if (!currBoundary) {
     return;
   }
+
+  const { envName: currEnv } = stateManager.getLocalEnvInfo();
+
   // if existing policy is accessible in new env, apply that one
   if (await isPolicyAccessible(context, currBoundary)) {
     setPermissionsBoundaryArn(currBoundary, newEnv, context.exeInfo.teamProviderInfo);
     context.print.info(
-      `permissions boundary ${currBoundary} has automatically been applied to this environment. To modify this, run \`amplify env update\`.`,
+      `Permissions boundary ${currBoundary} from the ${currEnv} environment has automatically been applied to the ${newEnv} environment.\nTo modify this, run \`amplify env update\`.\n`,
     );
     return;
   }
   // if existing policy policy is not accessible in the new environment, prompt for a new one
-  context.print.warning(`permissions boundary ${currBoundary} cannot be applied to resources in this environment.`);
+  context.print.warning(
+    `Permissions boundary ${currBoundary} from the ${currEnv} environment cannot be applied to resources the ${newEnv} environment.`,
+  );
   setPermissionsBoundaryArn(
     await permissionsBoundarySupplier(context, { required: true, envNameSupplier: () => newEnv }),
     newEnv,
@@ -116,8 +126,13 @@ const isPolicyAccessible = async (context: $TSContext, policyArn: string) => {
   try {
     await iamClient.client.getPolicy({ PolicyArn: policyArn }).promise();
   } catch (err) {
-    // if there's an error, then the policy wasn't accessible
-    return false;
+    // NoSuchEntity error
+    if (err?.statusCode === 404) {
+      return false;
+    }
+    // if it's some other error (such as client credentials don't have getPolicy permissions, or network error)
+    // give customer's the benefit of the doubt that the ARN is correct
+    return true;
   }
   return true;
 };

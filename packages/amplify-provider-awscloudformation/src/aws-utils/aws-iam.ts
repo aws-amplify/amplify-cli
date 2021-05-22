@@ -2,7 +2,7 @@ import aws from './aws.js';
 import awstype from 'aws-sdk';
 import { IAM } from 'aws-sdk';
 import { AwsSdkConfig } from '../utils/auth-types.js';
-import { loadConfiguration } from '../configuration-manager';
+import { getAwsConfig } from '../configuration-manager';
 import { $TSContext } from 'amplify-cli-core';
 
 export class IAMClient {
@@ -13,7 +13,7 @@ export class IAMClient {
     if (!IAMClient.instance) {
       let cred: AwsSdkConfig;
       try {
-        cred = await loadConfiguration(context);
+        cred = await getAwsConfig(context);
       } catch (e) {
         // ignore missing config
       }
