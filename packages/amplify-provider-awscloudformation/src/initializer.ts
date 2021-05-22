@@ -20,7 +20,7 @@ const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-pus
 const logger = fileLogger('attach-backend');
 const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
 
-async function run(context) {
+export async function run(context) {
   await configurationManager.init(context);
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
     context.exeInfo = context.exeInfo || {};
@@ -161,7 +161,7 @@ function cloneCLIJSONForNewEnvironment(context) {
   }
 }
 
-async function onInitSuccessful(context) {
+export async function onInitSuccessful(context) {
   configurationManager.onInitSuccessful(context);
   if (context.exeInfo.isNewEnv) {
     context = await storeCurrentCloudBackend(context);
@@ -258,8 +258,3 @@ function normalizeStackName(stackName) {
   }
   return result;
 }
-
-module.exports = {
-  run,
-  onInitSuccessful,
-};

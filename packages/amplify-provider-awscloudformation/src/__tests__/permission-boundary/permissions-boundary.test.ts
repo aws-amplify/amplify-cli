@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import { configurePermissionsBoundaryForInit } from '../../permissions-boundary/permissions-boundary';
-import { setPermissionsBoundaryArn, getPermissionsBoundaryArn } from 'amplify-cli-core';
+import { setPermissionsBoundaryArn, getPermissionsBoundaryArn, stateManager } from 'amplify-cli-core';
 import { prompt } from 'inquirer';
 import { IAMClient } from '../../aws-utils/aws-iam';
 import { IAM } from 'aws-sdk';
@@ -17,6 +17,9 @@ const setPermissionsBoundaryArn_mock = setPermissionsBoundaryArn as jest.MockedF
 const getPermissionsBoundaryArn_mock = getPermissionsBoundaryArn as jest.MockedFunction<typeof getPermissionsBoundaryArn>;
 const prompt_mock = prompt as jest.MockedFunction<typeof prompt>;
 const IAMClient_mock = IAMClient as jest.Mocked<typeof IAMClient>;
+const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+
+stateManager_mock.getLocalEnvInfo.mockReturnValue({ envName: 'testenv' });
 
 describe('configure permissions boundary on init', () => {
   let context_stub: $TSContext;
@@ -114,7 +117,7 @@ describe('configure permissions boundary on env add', () => {
     IAMClient_mock.getInstance.mockResolvedValueOnce({
       client: ({
         getPolicy: jest.fn().mockReturnValueOnce({
-          promise: jest.fn().mockRejectedValueOnce('test error'),
+          promise: jest.fn().mockRejectedValueOnce({ statusCode: 404, message: 'test error' }),
         }),
       } as unknown) as IAM,
     });
@@ -132,7 +135,7 @@ describe('configure permissions boundary on env add', () => {
     IAMClient_mock.getInstance.mockResolvedValueOnce({
       client: ({
         getPolicy: jest.fn().mockReturnValueOnce({
-          promise: jest.fn().mockRejectedValueOnce('test error'),
+          promise: jest.fn().mockRejectedValueOnce({ statusCode: 404, message: 'test error' }),
         }),
       } as unknown) as IAM,
     });

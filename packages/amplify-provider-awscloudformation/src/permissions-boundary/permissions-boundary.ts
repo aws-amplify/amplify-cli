@@ -100,7 +100,7 @@ const rolloverPermissionsBoundaryToNewEnvironment = async (context: $TSContext) 
     return;
   }
 
-  const { envName: currEnv } = stateManager.getLocalEnvInfo();
+  const currEnv = stateManager.getLocalEnvInfo()?.envName ?? 'current';
 
   // if existing policy is accessible in new env, apply that one
   if (await isPolicyAccessible(context, currBoundary)) {
