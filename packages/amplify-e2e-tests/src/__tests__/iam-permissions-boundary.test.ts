@@ -6,9 +6,11 @@ import {
   deleteProjectDir,
   getPermissionsBoundary,
   getProjectMeta,
+  getTeamProviderInfo,
   initJSProjectWithProfile,
   initWithPermissionsBoundary,
 } from 'amplify-e2e-core';
+import _ from 'lodash';
 import { updateEnvironment } from '../environment/env';
 
 // Using a random AWS managed policy as a permissions boundary
@@ -36,6 +38,10 @@ describe('iam permissions boundary', () => {
 
     const actualPermBoundary = await getPermissionsBoundary(authRoleName, region);
     expect(actualPermBoundary).toEqual(permissionsBoundaryArn);
+
+    const tpi = getTeamProviderInfo(projRoot);
+    const storedArn = _.get(tpi, ['integtest', 'awscloudformation', 'PermissionsBoundaryPolicyArn']);
+    expect(storedArn).toEqual(permissionsBoundaryArn);
   });
 
   test('permissions boundary is applied during headless init', async () => {
@@ -46,5 +52,9 @@ describe('iam permissions boundary', () => {
 
     const actualPermBoundary = await getPermissionsBoundary(authRoleName, region);
     expect(actualPermBoundary).toEqual(permissionsBoundaryArn);
+
+    const tpi = getTeamProviderInfo(projRoot);
+    const storedArn = _.get(tpi, ['dev', 'awscloudformation', 'PermissionsBoundaryPolicyArn']);
+    expect(storedArn).toEqual(permissionsBoundaryArn);
   });
 });

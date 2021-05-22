@@ -132,7 +132,12 @@ function setCloudFormationOutputInContext(context: $TSContext, cfnOutput: object
   _.set(context, ['exeInfo', 'amplifyMeta', 'providers', constants.ProviderName], cfnOutput);
   const { envName } = context.exeInfo.localEnvInfo;
   if (envName) {
-    _.merge(_.get(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName]), cfnOutput);
+    const providerInfo = _.get(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName]);
+    if (providerInfo) {
+      _.merge(providerInfo, cfnOutput);
+    } else {
+      _.set(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName], cfnOutput);
+    }
   }
 }
 

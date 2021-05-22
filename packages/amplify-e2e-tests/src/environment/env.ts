@@ -29,7 +29,7 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
 export function updateEnvironment(cwd: string, settings: { permissionsBoundaryArn: string }) {
   return new Promise<void>((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'update'], { cwd, stripColors: true })
-      .wait('Specify an IAM Policy ARN to use as a permissions boundary for all IAM Roles')
+      .wait('Specify an IAM Policy ARN to use as a permissions boundary for all Amplify-generated IAM Roles')
       .sendLine(settings.permissionsBoundaryArn)
       .run((err: Error) => (!!err ? reject(err) : resolve()));
   });
