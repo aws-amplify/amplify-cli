@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.50.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.49.0...amplify-provider-awscloudformation@4.50.0-alpha.0) (2021-05-22)
+
+
+### Features
+
+* lambda layers rework ([70b2f46](https://github.com/aws-amplify/amplify-cli/commit/70b2f46ee5cd645208c02c5919bc777e54411010))
+
+
+
+
+
 # [4.49.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.48.0...amplify-provider-awscloudformation@4.49.0) (2021-05-18)
 
 

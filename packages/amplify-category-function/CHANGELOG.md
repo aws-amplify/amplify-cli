@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.32.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.8...amplify-category-function@2.32.0-alpha.0) (2021-05-22)
+
+
+### Features
+
+* lambda layers rework ([70b2f46](https://github.com/aws-amplify/amplify-cli/commit/70b2f46ee5cd645208c02c5919bc777e54411010))
+
+
+
+
+
 ## [2.31.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.7...amplify-category-function@2.31.8) (2021-05-18)
 
 **Note:** Version bump only for package amplify-category-function

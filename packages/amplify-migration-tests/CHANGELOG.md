@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.22.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.21.8...amplify-migration-tests@2.22.0-alpha.0) (2021-05-22)
+
+
+### Bug Fixes
+
+* updated ejs template for empty object triggers ([#7351](https://github.com/aws-amplify/amplify-cli/issues/7351)) ([572ddbd](https://github.com/aws-amplify/amplify-cli/commit/572ddbda4f339d364a8a20bab0053140cf798f34))
+
+
+### Features
+
+* lambda layers rework ([70b2f46](https://github.com/aws-amplify/amplify-cli/commit/70b2f46ee5cd645208c02c5919bc777e54411010))
+
+
+
+
+
 ## [2.21.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@2.21.7...amplify-migration-tests@2.21.8) (2021-05-18)
 
 

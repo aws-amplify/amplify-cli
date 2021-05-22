@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.5.5...amplify-nodejs-function-runtime-provider@1.6.0-alpha.0) (2021-05-22)
+
+
+### Features
+
+* lambda layers rework ([70b2f46](https://github.com/aws-amplify/amplify-cli/commit/70b2f46ee5cd645208c02c5919bc777e54411010))
+
+
+
+
+
 ## [1.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-runtime-provider@1.5.3...amplify-nodejs-function-runtime-provider@1.5.5) (2021-05-03)
 
 

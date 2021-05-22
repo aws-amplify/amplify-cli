@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.41.0-alpha.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.40.1...amplify-e2e-tests@2.41.0-alpha.0) (2021-05-22)
+
+
+### Features
+
+* lambda layers rework ([70b2f46](https://github.com/aws-amplify/amplify-cli/commit/70b2f46ee5cd645208c02c5919bc777e54411010))
+
+
+
+
+
 ## [2.40.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.40.0...amplify-e2e-tests@2.40.1) (2021-05-18)
 
 
