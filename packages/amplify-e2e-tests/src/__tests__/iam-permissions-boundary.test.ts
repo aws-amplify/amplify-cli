@@ -8,7 +8,6 @@ import {
   getProjectMeta,
   getTeamProviderInfo,
   initJSProjectWithProfile,
-  initWithPermissionsBoundary,
 } from 'amplify-e2e-core';
 import _ from 'lodash';
 import { updateEnvironment } from '../environment/env';
@@ -45,7 +44,7 @@ describe('iam permissions boundary', () => {
   });
 
   test('permissions boundary is applied during headless init', async () => {
-    await initWithPermissionsBoundary(projRoot, permissionsBoundaryArn);
+    await initJSProjectWithProfile(projRoot, { permissionsBoundaryArn });
     const meta = getProjectMeta(projRoot);
     const authRoleName = meta?.providers?.awscloudformation?.AuthRoleName;
     const region = meta?.providers?.awscloudformation?.Region;
@@ -54,7 +53,7 @@ describe('iam permissions boundary', () => {
     expect(actualPermBoundary).toEqual(permissionsBoundaryArn);
 
     const tpi = getTeamProviderInfo(projRoot);
-    const storedArn = _.get(tpi, ['dev', 'awscloudformation', 'PermissionsBoundaryPolicyArn']);
+    const storedArn = _.get(tpi, ['integtest', 'awscloudformation', 'PermissionsBoundaryPolicyArn']);
     expect(storedArn).toEqual(permissionsBoundaryArn);
   });
 });

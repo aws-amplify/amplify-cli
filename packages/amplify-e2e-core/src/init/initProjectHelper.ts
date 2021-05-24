@@ -19,6 +19,7 @@ const defaultSettings = {
   disableAmplifyAppCreation: true,
   disableCIDetection: false,
   providerConfig: undefined,
+  permissionsBoundaryArn: undefined,
 };
 
 export function initJSProjectWithProfile(cwd: string, settings: Object): Promise<void> {
@@ -37,6 +38,10 @@ export function initJSProjectWithProfile(cwd: string, settings: Object): Promise
   const providerConfigSpecified = !!s.providerConfig && typeof s.providerConfig === 'object';
   if (providerConfigSpecified) {
     cliArgs.push('--providers', JSON.stringify(s.providerConfig));
+  }
+
+  if (s.permissionsBoundaryArn) {
+    cliArgs.push('--permissions-boundary', s.permissionsBoundaryArn);
   }
 
   return new Promise((resolve, reject) => {
@@ -364,16 +369,6 @@ export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
           reject(err);
         }
       });
-  });
-}
-
-export async function initWithPermissionsBoundary(cwd: string, permissionsBoundaryArn: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['init', '--yes', '--permissions-boundary', permissionsBoundaryArn], {
-      cwd,
-      stripColors: true,
-      env: { CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1' },
-    }).run((err: Error) => (err ? reject(err) : resolve()));
   });
 }
 
