@@ -56,7 +56,7 @@
         "graphql": "^14.5.8",
         "graphql-mapping-template": "4.18.1",
         "graphql-transformer-common": "4.19.3",
-        "lodash": "^4.17.19"
+        "lodash": "^4.17.21"
     },
     "devDependencies": {
         "@types/fs-extra": "^8.0.1",

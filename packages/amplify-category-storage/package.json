@@ -26,7 +26,7 @@
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "promise-sequential": "^1.1.1",
     "uuid": "^3.4.0"
   },
