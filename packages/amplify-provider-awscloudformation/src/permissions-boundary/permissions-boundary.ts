@@ -4,6 +4,9 @@ import { IAMClient } from '../aws-utils/aws-iam';
 
 export const configurePermissionsBoundaryForExistingEnv = async (context: $TSContext) => {
   setPermissionsBoundaryArn(await permissionsBoundarySupplier(context));
+  context.print.info(
+    'Run `amplify push --force` to update IAM permissions boundary if you have no other resource changes.\nRun `amplify push` to deploy IAM permissions boundary alongside other cloud resource changes.',
+  );
 };
 
 export const configurePermissionsBoundaryForInit = async (context: $TSContext) => {
