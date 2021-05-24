@@ -935,13 +935,9 @@ async function formNestedStack(
 
                 parameterValue = outputAttributeValue;
               } else {
+                // Fn::GetAtt adds dependency in root stack and dependsOn stack
                 const dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
-
-                const parameterOutputValue = _.get(dependentResource, ['output', dependsOn[i].attributes[j]], undefined);
-                parameterValue =
-                  parameterOutputValue === undefined
-                    ? { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] }
-                    : parameterOutputValue;
+                parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
               }
 
               const parameterKey = `${dependsOn[i].category}${dependsOn[i].resourceName}${dependsOn[i].attributes[j]}`;
