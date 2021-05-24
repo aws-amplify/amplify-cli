@@ -92,7 +92,7 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "codecov": "^3.7.0",
-    "commitizen": "^3.1.2",
+    "commitizen": "^4.2.4",
     "copyfiles": "^2.2.0",
     "cz-conventional-changelog": "^3.0.2",
     "eslint": "^7.19.0",
