@@ -70,7 +70,7 @@ describe('test initEnv() behavior in function', () => {
   });
 });
 
-describe.only('test dependency in root stack', () => {
+describe('test dependency in root stack', () => {
   let projRoot: string;
 
   beforeEach(async () => {
@@ -78,11 +78,11 @@ describe.only('test dependency in root stack', () => {
   });
 
   afterEach(async () => {
-    // await deleteProject(projRoot);
-    // deleteProjectDir(projRoot);
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
   });
 
-  it.only('init a project with api and function and update the @model and add function access to @model ', async () => {
+  it('init a project with api and function and update the @model and add function access to @model ', async () => {
     await initJSProjectWithProfile(projRoot, {});
     const projectName = 'mytestapi';
     await addApiWithSchema(projRoot, 'simple_model.graphql', { apiName: projectName });
