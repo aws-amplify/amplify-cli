@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.32.1-authHeadlessImportTest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.32.0...amplify-category-auth@2.32.1-authHeadlessImportTest.0) (2021-05-25)
+
+
+### Bug Fixes
+
+* add `sharedId` in `externalAuthEnable()` ([#7315](https://github.com/aws-amplify/amplify-cli/issues/7315)) ([fd552b4](https://github.com/aws-amplify/amplify-cli/commit/fd552b4c8d34d67c05330ae79804b00daa976f1d))
+* scope down usage of PassRole ([#7317](https://github.com/aws-amplify/amplify-cli/issues/7317)) ([d4d9394](https://github.com/aws-amplify/amplify-cli/commit/d4d9394f33995a6852d5b00e09d38802798ca6d7))
+
+
+### Features
+
+* **import-auth:** add headless support ([d27538b](https://github.com/aws-amplify/amplify-cli/commit/d27538b5153ff3abf86af6ffde7a3322d729f263))
+
+
+
+
+
 # [2.32.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.31.1...amplify-category-auth@2.32.0) (2021-05-22)
 
 
