@@ -1,4 +1,3 @@
-const fs = require('fs');
 // case-layer-v1 and v2 is deployed in the layer as casing.js
 const { convertString } = require('/opt/casing');
 

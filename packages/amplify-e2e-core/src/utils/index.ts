@@ -39,7 +39,7 @@ export function loadFunctionTestFile(fileName: string) {
   return fs.readFileSync(functionPath, 'utf-8').toString();
 }
 
-export function addNodeJSDependencies(root: string, functionName: string, dependencies: string[]) {
+export function addNodeDependencies(root: string, functionName: string, dependencies: string[]) {
   let indexPath = path.join(getPathToFunction(root, functionName), 'src');
   execa.commandSync(`yarn add ${dependencies.join(' ')}`, { cwd: indexPath });
 }

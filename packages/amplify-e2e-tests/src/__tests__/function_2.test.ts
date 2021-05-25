@@ -19,7 +19,7 @@ import {
   initJSProjectWithProfile,
   invokeFunction,
   overrideFunctionSrcNode,
-  addNodeJSDependencies,
+  addNodeDependencies,
   readJsonFile,
   updateFunction,
   overrideFunctionCodeNode,
@@ -437,7 +437,7 @@ describe('nodejs', () => {
         },
         'nodejs',
       );
-      addNodeJSDependencies(projRoot, fnName, ['aws-appsync', 'isomorphic-fetch', 'graphql-tag']);
+      addNodeDependencies(projRoot, fnName, ['aws-appsync', 'isomorphic-fetch', 'graphql-tag']);
       overrideFunctionCodeNode(projRoot, fnName, 'mutation-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
