@@ -30,24 +30,5 @@ const printCommonText = (print: any) => {
 
 export const printSMSSandboxWarning = async (print: any) => {
   const postAddUpdateSMSSandboxInfo = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_CATEGORY_AUTH_ADD_OR_UPDATE_INFO');
-  postAddUpdateSMSSandboxInfo && print.info(`${postAddUpdateSMSSandboxInfo}\n`);
-};
-
-export const doesConfigurationIncludeSMS = (request: ServiceQuestionsResult): boolean => {
-  if ((request.mfaConfiguration === 'OPTIONAL' || request.mfaConfiguration === 'ON') && request.mfaTypes?.includes('SMS Text Message')) {
-    return true;
-  }
-
-  if (
-    request.usernameAttributes?.some(str =>
-      str
-        ?.split(',')
-        .map(str => str.trim())
-        .includes('phone_number'),
-    )
-  ) {
-    return true;
-  }
-
-  return false;
+  postAddUpdateSMSSandboxInfo && print.warning(`${postAddUpdateSMSSandboxInfo}\n`);
 };
