@@ -14,19 +14,20 @@ import {
   deleteProject,
   deleteProjectDir,
   getBackendAmplifyMeta,
-  getFunctionSrc,
+  getFunctionSrcNode,
   getProjectMeta,
   initJSProjectWithProfile,
   invokeFunction,
-  overrideFunctionSrc,
+  overrideFunctionSrcNode,
   addNodeJSDependencies,
   readJsonFile,
   updateFunction,
-  overrideFunctionCode,
+  overrideFunctionCodeNode,
   getBackendConfig,
   addFeatureFlag,
   addAuthWithGroupsAndAdminAPI,
   getFunction,
+  loadFunctionTestFile,
 } from 'amplify-e2e-core';
 import fs from 'fs-extra';
 import path from 'path';
@@ -99,23 +100,13 @@ describe('nodejs', () => {
         'nodejs',
       );
 
-      overrideFunctionSrc(
-        projRoot,
-        fnName,
-        `
-      const AWS = require('aws-sdk');
-      const awsS3Client = new AWS.S3();
+      let functionCode = loadFunctionTestFile('s3-list-objects.js');
 
-      exports.handler = function(event, context) {
-          let listObjects = await awsS3Client
-          .listObjectsV2({
-            Bucket: process.env.STORAGE_INTEGTESTFN${random}_BUCKETNAME,
-          })
-          .promise();
-          return listObjects
-      }
-    `,
-      );
+      // Update the env var name in function code
+      functionCode.replace('{{bucketEnvVar}}', `STORAGE_INTEGTESTFN${random}_BUCKETNAME`);
+
+      overrideFunctionSrcNode(projRoot, fnName, functionCode);
+
       await amplifyPushForce(projRoot);
       const meta = getProjectMeta(projRoot);
       const { BucketName: bucketName, Region: region } = Object.keys(meta.storage).map(key => meta.storage[key])[0].output;
@@ -155,18 +146,9 @@ describe('nodejs', () => {
         'nodejs',
       );
 
-      overrideFunctionSrc(
-        projRoot,
-        fnName,
-        `
-        const AWS = require('aws-sdk');
-        const DDB = new AWS.DynamoDB();
+      const functionCode = loadFunctionTestFile('dynamodb-scan.js');
 
-        exports.handler = function(event, context) {
-          return DDB.scan({ TableName: event.tableName }).promise()
-        }
-      `,
-      );
+      overrideFunctionSrcNode(projRoot, fnName, functionCode);
 
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
@@ -216,18 +198,9 @@ describe('nodejs', () => {
         'nodejs',
       );
 
-      overrideFunctionSrc(
-        projRoot,
-        fnName,
-        `
-        const AWS = require('aws-sdk');
-        const DDB = new AWS.DynamoDB();
+      const functionCode = loadFunctionTestFile('dynamodb-scan.js');
 
-        exports.handler = function(event, context) {
-          return DDB.scan({ TableName: event.tableName }).promise()
-        }
-      `,
-      );
+      overrideFunctionSrcNode(projRoot, fnName, functionCode);
 
       await amplifyPushAuth(projRoot);
       let meta = getProjectMeta(projRoot);
@@ -290,7 +263,7 @@ describe('nodejs', () => {
         'nodejs',
       );
 
-      let lambdaSource = getFunctionSrc(projRoot, fnName).toString();
+      const lambdaSource = getFunctionSrcNode(projRoot, fnName);
       expect(lambdaSource.includes('TODOTABLE_NAME')).toBeTruthy();
       expect(lambdaSource.includes('TODOTABLE_ARN')).toBeTruthy();
       expect(lambdaSource.includes('GRAPHQLAPIIDOUTPUT')).toBeTruthy();
@@ -465,7 +438,7 @@ describe('nodejs', () => {
         'nodejs',
       );
       addNodeJSDependencies(projRoot, fnName, ['aws-appsync', 'isomorphic-fetch', 'graphql-tag']);
-      overrideFunctionCode(projRoot, fnName, 'mutation-appsync.js');
+      overrideFunctionCodeNode(projRoot, fnName, 'mutation-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
       const { Region: region, Name: functionName } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
@@ -511,7 +484,7 @@ describe('nodejs', () => {
         },
         'nodejs',
       );
-      overrideFunctionCode(projRoot, fnName, 'get-api-appsync.js');
+      overrideFunctionCodeNode(projRoot, fnName, 'get-api-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
       const { Region: region, Name: functionName } = Object.keys(meta.function).map(key => meta.function[key])[0].output;

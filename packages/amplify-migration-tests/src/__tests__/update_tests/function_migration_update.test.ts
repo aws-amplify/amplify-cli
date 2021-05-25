@@ -10,7 +10,8 @@ import {
   getCurrentLayerArnFromMeta,
   getProjectMeta,
   invokeFunction,
-  overrideFunctionSrc,
+  loadFunctionTestFile,
+  overrideFunctionSrcNode,
   updateFunction,
   updateLayer,
   validateLayerMetadata,
@@ -43,18 +44,9 @@ describe('amplify function migration', () => {
       'nodejs',
     );
 
-    overrideFunctionSrc(
-      projRoot,
-      fnName,
-      `
-      const AWS = require('aws-sdk');
-      const DDB = new AWS.DynamoDB();
+    const functionCode = loadFunctionTestFile('dynamodb-scan.js');
 
-      exports.handler = function(event, context) {
-        return DDB.scan({ TableName: event.tableName }).promise()
-      }
-    `,
-    );
+    overrideFunctionSrcNode(projRoot, fnName, functionCode);
 
     await amplifyPushAuth(projRoot);
     let meta = getProjectMeta(projRoot);

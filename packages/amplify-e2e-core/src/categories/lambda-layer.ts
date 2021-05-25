@@ -11,10 +11,12 @@ const PARAMETERS_FILE_NAME = 'parameters.json';
 
 const layerRuntimeChoices = ['NodeJS', 'Python'];
 const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (Anyone on AWS can use this layer)'];
-type LayerDirectoryType = {
+
+export type LayerDirectoryType = {
   layerName: string;
   projName: string;
 };
+
 export function validateLayerDir(projRoot: string, layerProjName: LayerDirectoryType, runtimes: LayerRuntimes[]): boolean {
   let layerDir = path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName));
   let validDir = fs.pathExistsSync(path.join(layerDir, 'opt'));

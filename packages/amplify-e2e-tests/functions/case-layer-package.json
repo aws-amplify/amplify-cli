@@ -1,9 +1,10 @@
 {
   "version": "1.0.0",
-  "description": "E2E Test Layer",
+  "description": "",
   "main": "index.js",
   "dependencies": {
-    "moment": "2.29.1"
+    "title-case": "^3.0.3",
+    "upper-case": "^2.0.2"
   },
   "devDependencies": {}
 }
