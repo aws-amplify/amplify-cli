@@ -38,7 +38,14 @@ export const doesConfigurationIncludeSMS = (request: ServiceQuestionsResult): bo
     return true;
   }
 
-  if (request.usernameAttributes?.includes('phone_number')) {
+  if (
+    request.usernameAttributes?.some(str =>
+      str
+        ?.split(',')
+        .map(str => str.trim())
+        .includes('phone_number'),
+    )
+  ) {
     return true;
   }
 
