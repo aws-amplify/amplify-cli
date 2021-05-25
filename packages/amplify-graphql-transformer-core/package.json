@@ -59,7 +59,7 @@
         "glob": "^7.1.6",
         "graphql": "^14.5.8",
         "graphql-transformer-common": "4.19.3",
-        "lodash": "^4.17.19",
+        "lodash": "^4.17.21",
         "ts-dedent": "^2.0.0"
     },
     "devDependencies": {

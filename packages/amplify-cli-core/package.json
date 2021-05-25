@@ -32,7 +32,7 @@
     "fs-extra": "^8.1.0",
     "hjson": "^3.2.1",
     "js-yaml": "^4.0.0",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "node-fetch": "^2.6.1",
     "open": "^7.3.1",
     "proxy-agent": "^4.0.1",
