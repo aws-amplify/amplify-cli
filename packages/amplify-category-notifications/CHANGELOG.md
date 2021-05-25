@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.19.2-authHeadlessImportTest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.19.1...amplify-category-notifications@2.19.2-authHeadlessImportTest.0) (2021-05-25)
+
+**Note:** Version bump only for package amplify-category-notifications
+
+
+
+
+
 ## [2.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-notifications@2.18.1...amplify-category-notifications@2.19.1) (2021-04-09)
 
 **Note:** Version bump only for package amplify-category-notifications

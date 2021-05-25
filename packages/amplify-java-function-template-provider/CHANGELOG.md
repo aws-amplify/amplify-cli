@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.6-authHeadlessImportTest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.5...amplify-java-function-template-provider@1.5.6-authHeadlessImportTest.0) (2021-05-25)
+
+**Note:** Version bump only for package amplify-java-function-template-provider
+
+
+
+
+
 ## [1.5.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-template-provider@1.5.3...amplify-java-function-template-provider@1.5.5) (2021-02-26)
 
 

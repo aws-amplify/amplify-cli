@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.32.1-authHeadlessImportTest.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.32.1-authHeadlessImportTest.0...amplify-category-auth@2.32.1-authHeadlessImportTest.1) (2021-05-25)
+
+
+### Bug Fixes
+
+* update auth sms workflow check ([#7396](https://github.com/aws-amplify/amplify-cli/issues/7396)) ([07a6fe4](https://github.com/aws-amplify/amplify-cli/commit/07a6fe47d1c39d952eef242400cdbb7e8a6a11eb))
+
+
+
+
+
 ## [2.32.1-authHeadlessImportTest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.32.0...amplify-category-auth@2.32.1-authHeadlessImportTest.0) (2021-05-25)
 
 
