@@ -431,7 +431,7 @@
                 },
                 "privateKey": {
                     "description": "The private key cert",
-                    "type": "string"
+                    "type": ["string", "null"]
                 }
             },
             "required": [
