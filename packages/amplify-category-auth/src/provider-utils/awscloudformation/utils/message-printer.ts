@@ -1,5 +1,6 @@
-import { ServiceQuestionsResult } from '../service-walkthrough-types';
+import { EOL } from 'os';
 import { BannerMessage } from 'amplify-cli-core';
+
 /**
  * A factory function that returns a function that prints the "success message" after adding auth
  * @param print The amplify print object
@@ -30,5 +31,7 @@ const printCommonText = (print: any) => {
 
 export const printSMSSandboxWarning = async (print: any) => {
   const postAddUpdateSMSSandboxInfo = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_CATEGORY_AUTH_ADD_OR_UPDATE_INFO');
-  postAddUpdateSMSSandboxInfo && print.warning(`${postAddUpdateSMSSandboxInfo}\n`);
+  if (postAddUpdateSMSSandboxInfo) {
+    print.warning(`${postAddUpdateSMSSandboxInfo}${EOL}`);
+  }
 };

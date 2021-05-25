@@ -15,18 +15,14 @@ export const doesConfigurationIncludeSMS = (request: ServiceQuestionsResult): bo
     return true;
   }
 
-  if (
+  return (
     request.usernameAttributes?.some(str =>
       str
         ?.split(',')
         .map(str => str.trim())
         .includes('phone_number'),
-    )
-  ) {
-    return true;
-  }
-
-  return false;
+    ) || false
+  );
 };
 
 const getProviderPlugin = (context: $TSContext): ProviderUtils => {
