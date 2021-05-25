@@ -1917,12 +1917,17 @@ workflows:
                 - backendManager
                 - iterative-update
                 - release
+                - authHeadlessImportTest
                 - compute-functions
           requires:
             - build
       - build_pkg_binaries:
           requires:
             - publish_to_local_registry
+          filters:
+            branches:
+              ignore:
+                - authHeadlessImportTest
       - amplify_sudo_install_test:
           context: amplify-ecr-image-pull
           requires:
@@ -2092,6 +2097,7 @@ workflows:
               only:
                 - release
                 - master
+                - authHeadlessImportTest
                 - beta
       - github_release:
           context: github-publish
