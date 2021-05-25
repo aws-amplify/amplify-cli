@@ -33,7 +33,7 @@
     "publish:master": "lerna publish --canary --force-publish --preid=alpha --exact --include-merged-tags --conventional-prerelease --no-verify-access --yes",
     "publish:beta": "lerna publish --exact --dist-tag=beta --preid=beta --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
     "publish:release": "lerna publish --conventional-commits --exact --yes --message 'chore(release): Publish [ci skip]' --no-verify-access",
-    "publish:authHeadlessImportTest": "lerna publish --exact --dist-tag=authHeadlessImportTest --preid=alpha --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
+    "publish:authHeadlessImportTest": "lerna publish --exact --dist-tag=authHeadlessImportTest --preid=authHeadlessImportTest --conventional-commits --conventional-prerelease --message 'chore(release): Publish [ci skip]' --no-verify-access --yes",
     "postpublish:release": "git fetch . release:master && git push origin master",
     "yarn-use-bash": "yarn config set script-shell /bin/bash",
     "verdaccio-start": "source .circleci/local_publish_helpers.sh && startLocalRegistry \"$(pwd)/.circleci/verdaccio.yaml\"",
