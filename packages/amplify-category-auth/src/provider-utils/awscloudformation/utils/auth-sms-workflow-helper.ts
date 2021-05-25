@@ -10,16 +10,19 @@ export type UserPoolMessageConfiguration = {
   usernameAttributes?: string[];
 };
 
-export const doesConfigurationIncludeSMS = (request: UserPoolMessageConfiguration): boolean => {
+export const doesConfigurationIncludeSMS = (request: ServiceQuestionsResult): boolean => {
   if ((request.mfaConfiguration === 'OPTIONAL' || request.mfaConfiguration === 'ON') && request.mfaTypes?.includes('SMS Text Message')) {
     return true;
   }
 
-  if (request.usernameAttributes?.includes('phone_number')) {
-    return true;
-  }
-
-  return false;
+  return (
+    request.usernameAttributes?.some(str =>
+      str
+        ?.split(',')
+        .map(str => str.trim())
+        .includes('phone_number'),
+    ) || false
+  );
 };
 
 const getProviderPlugin = (context: $TSContext): ProviderUtils => {
