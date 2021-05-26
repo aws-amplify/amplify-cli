@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.5-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.4...amplify-velocity-template@1.4.5-beta.0) (2021-05-26)
+
+**Note:** Version bump only for package amplify-velocity-template
+
+
+
+
+
 ## [1.4.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-velocity-template@1.4.3...amplify-velocity-template@1.4.4) (2021-03-05)
 
 
