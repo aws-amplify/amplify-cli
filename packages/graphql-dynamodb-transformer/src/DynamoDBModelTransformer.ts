@@ -706,7 +706,7 @@ export class DynamoDBModelTransformer extends Transformer {
   }
 
   // Due to the current architecture of Transformers we've to handle the 'id' field removal
-  // here, because KeyTranformer will not be invoked if there are no @key directives declared
+  // here, because KeyTransformer will not be invoked if there are no @key directives declared
   // on the type.
   private updateMutationConditionInput(ctx: TransformerContext, type: ObjectTypeDefinitionNode): void {
     if (this.supportsConditions(ctx)) {

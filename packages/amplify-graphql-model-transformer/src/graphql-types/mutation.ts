@@ -1,4 +1,4 @@
-import { TranformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { ObjectTypeDefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
 import { toPascalCase } from 'graphql-transformer-common';
 import { ModelDirectiveConfiguration } from '../graphql-model-transformer';
@@ -128,14 +128,14 @@ export const makeCreateInputField = (
 };
 
 export const makeMutationConditionInput = (
-  ctx: TranformerTransformSchemaStepContextProvider,
+  ctx: TransformerTransformSchemaStepContextProvider,
   name: string,
   object: ObjectTypeDefinitionNode,
 ): InputObjectTypeDefinitionNode => {
   const input = makeConditionFilterInput(ctx, name, object);
-  const idField = input.fields.find(f => f.name === 'id' && f.getTypeName() === 'ID')
-  if(idField) {
-    input.removeField(idField)
+  const idField = input.fields.find(f => f.name === 'id' && f.getTypeName() === 'ID');
+  if (idField) {
+    input.removeField(idField);
   }
   return input.serialize();
 };
