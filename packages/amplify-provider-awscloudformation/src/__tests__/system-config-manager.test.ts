@@ -44,10 +44,11 @@ describe('profile tests', () => {
     });
     const getProfileCredentials_mock = jest.fn(getProfileCredentials);
     try {
-      const profile_config = await getProfiledAwsConfig(context_stub, 'fake');
+      const profile_config =  getProfiledAwsConfig(context_stub, 'fake');
     } catch (e) {
       expect(e.message).toEqual("Profile configuration for 'fake' is invalid: missing aws_access_key_id, aws_secret_access_key");
     }
+    // await expect(() => getProfiledAwsConfig(context_stub, 'fake')).toThrow("Profile configuration for 'fake' is invalid: missing aws_access_key_id, aws_secret_access_key");
     expect(getProfileCredentials_mock).toHaveBeenCalledTimes(0);
   });
 
