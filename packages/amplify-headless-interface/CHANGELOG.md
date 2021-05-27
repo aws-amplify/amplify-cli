@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-siwaNonProd.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.6.1...amplify-headless-interface@1.7.0-siwaNonProd.0) (2021-05-27)
+
+
+### Features
+
+* **amplify-category-auth:** sign in with apple ([622b16e](https://github.com/aws-amplify/amplify-cli/commit/622b16e68fa07923bcf93f5aa8ec322201e8a15a))
+* **amplify-category-auth:** update private_key to nullable ([51d94e0](https://github.com/aws-amplify/amplify-cli/commit/51d94e0e02a48c606fc33240994bed49f7be1405))
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.6.0...amplify-headless-interface@1.6.1) (2021-05-18)
 
 

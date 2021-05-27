@@ -1,6 +1,6 @@
 {
   "name": "amplify-util-mock",
-  "version": "3.31.3",
+  "version": "3.31.4-siwaNonProd.0",
   "description": "amplify cli plugin providing local testing",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@hapi/topo": "^5.0.0",
-    "amplify-appsync-simulator": "1.26.6",
+    "amplify-appsync-simulator": "1.26.7-siwaNonProd.0",
     "amplify-category-function": "2.31.10",
     "amplify-cli-core": "1.22.2",
     "amplify-codegen": "^2.23.1",

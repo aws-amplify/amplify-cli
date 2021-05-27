@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.41.0-siwaNonProd.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.40.3...amplify-e2e-tests@2.41.0-siwaNonProd.0) (2021-05-27)
+
+
+### Features
+
+* **amplify-category-auth:** sign in with apple ([622b16e](https://github.com/aws-amplify/amplify-cli/commit/622b16e68fa07923bcf93f5aa8ec322201e8a15a))
+
+
+
+
+
 ## [2.40.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.40.2...amplify-e2e-tests@2.40.3) (2021-05-26)
 
 **Note:** Version bump only for package amplify-e2e-tests

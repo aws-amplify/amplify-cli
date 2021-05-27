@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.33.0-siwaNonProd.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.32.1...amplify-category-auth@2.33.0-siwaNonProd.0) (2021-05-27)
+
+
+### Features
+
+* **amplify-category-auth:** sign in with apple ([622b16e](https://github.com/aws-amplify/amplify-cli/commit/622b16e68fa07923bcf93f5aa8ec322201e8a15a))
+* **amplify-category-auth:** siwa extract private key ([92e0f09](https://github.com/aws-amplify/amplify-cli/commit/92e0f092eb24f35bcde98c91b6cb9674473d684a))
+
+
+
+
+
 ## [2.32.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.32.0...amplify-category-auth@2.32.1) (2021-05-26)
 
 

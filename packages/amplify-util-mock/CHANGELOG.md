@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.31.4-siwaNonProd.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.31.3...amplify-util-mock@3.31.4-siwaNonProd.0) (2021-05-27)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 ## [3.31.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.31.2...amplify-util-mock@3.31.3) (2021-05-26)
 
 **Note:** Version bump only for package amplify-util-mock
