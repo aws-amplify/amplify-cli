@@ -5,6 +5,7 @@ const { uniq, pullAll } = require('lodash');
 const path = require('path');
 const { Sort } = require('enquirer');
 // const { parseTriggerSelections } = require('../utils/trigger-flow-auth-helper');
+const { extractApplePrivateKey } = require('../utils/extract-apple-private-key');
 const { authProviders, attributeProviderMap, capabilities } = require('../assets/string-maps');
 
 const category = 'auth';
@@ -32,6 +33,9 @@ async function serviceWalkthrough(context, defaultValuesFilename, stringMapsFile
     // ASK QUESTION
     const answer = await inquirer.prompt(q);
 
+    if ('signinwithapplePrivateKeyUserPool' in answer) {
+      answer.signinwithapplePrivateKeyUserPool = extractApplePrivateKey(answer.signinwithapplePrivateKeyUserPool);
+    }
     if (answer.userPoolGroups === true) {
       userPoolGroupList = await updateUserPoolGroups(context);
     }
