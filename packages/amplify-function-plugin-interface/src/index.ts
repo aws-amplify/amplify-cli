@@ -124,6 +124,7 @@ export type FunctionParameters = {
   runtimePluginId: string;
   cloudwatchRule?: string;
   lambdaLayers: LambdaLayer[];
+  secretDeltas?: SecretDeltas;
 };
 
 /**
@@ -233,3 +234,28 @@ export interface FunctionScript {
   type: 'file' | 'inline';
   value: string;
 }
+
+export type SecretDeltas = Record<string, SecretDelta>;
+
+export type SecretDelta = RetainSecret | RemoveSecret | SetSecretValue;
+
+export type RetainSecret = {
+  operation: 'retain';
+};
+
+export const retainSecret: RetainSecret = {
+  operation: 'retain',
+};
+
+export type RemoveSecret = {
+  operation: 'remove';
+};
+
+export const removeSecret: RemoveSecret = {
+  operation: 'remove',
+};
+
+export type SetSecretValue = {
+  operation: 'setValue';
+  value: string;
+};
