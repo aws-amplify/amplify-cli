@@ -370,7 +370,10 @@
                     "description": "If defined, users will be able to login with the specified social providers.",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/CognitoSocialProviderConfiguration"
+                        "anyOf": [
+                            { "$ref": "#/definitions/CognitoSocialProviderConfiguration" },
+                            { "$ref": "#/definitions/CognitoSignInWithAppleProviderConfiguration" }
+                        ]
                     }
                 }
             }
@@ -400,6 +403,42 @@
             "required": [
                 "clientId",
                 "clientSecret",
+                "provider"
+            ]
+        },
+        "CognitoSignInWithAppleProviderConfiguration": {
+            "description": "Defines the Cognito Sign in with Apple oAuth social provider",
+            "type": "object",
+            "properties": {
+                "provider": {
+                    "description": "Sign in with Apple provider name",
+                    "enum": [
+                        "SIGN_IN_WITH_APPLE"
+                    ],
+                    "type": "string"
+                },
+                "clientId": {
+                    "description": "The App client ID (sometimes called app ID or service ID). Usually takes the form com.yourapp.auth",
+                    "type": "string"
+                },
+                "teamId": {
+                    "description": "The Team ID",
+                    "type": "string"
+                },
+                "keyId": {
+                    "description": "The key id",
+                    "type": "string"
+                },
+                "privateKey": {
+                    "description": "The private key cert",
+                    "type": ["string", "null"]
+                }
+            },
+            "required": [
+                "clientId",
+                "teamId",
+                "keyId",
+                "privateKey",
                 "provider"
             ]
         },
