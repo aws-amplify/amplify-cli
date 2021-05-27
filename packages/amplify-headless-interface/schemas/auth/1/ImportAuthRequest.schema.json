@@ -1,0 +1,35 @@
+{
+    "description": "Defines acceptable payloads to amplify import auth --headless.",
+    "type": "object",
+    "properties": {
+        "version": {
+            "description": "The schema version.",
+            "type": "number",
+            "enum": [
+                1
+            ]
+        },
+        "userPoolId": {
+            "description": "The id of the Cognito User Pool",
+            "type": "string"
+        },
+        "webClientId": {
+            "description": "The id of the Cognito Web Client",
+            "type": "string"
+        },
+        "nativeClientId": {
+            "description": "The id of the Cognito Native Client",
+            "type": "string"
+        },
+        "identityPoolId": {
+            "description": "The id of the Cognito Identity Pool",
+            "type": "string"
+        }
+    },
+    "required": [
+        "version",
+        "userPoolId",
+        "webClientId",
+        "nativeClientId"
+    ]
+}
