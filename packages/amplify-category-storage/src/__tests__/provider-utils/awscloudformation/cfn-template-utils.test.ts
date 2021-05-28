@@ -46,7 +46,7 @@ describe('get existing table column names', () => {
     expect(result).toEqual([]);
   });
 
-  it('returns atribute names when present', async () => {
+  it('returns attribute names when present', async () => {
     readCFNTemplate_mock.mockResolvedValueOnce({
       cfnTemplate: {
         Resources: {

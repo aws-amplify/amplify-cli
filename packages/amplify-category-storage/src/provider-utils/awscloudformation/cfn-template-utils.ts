@@ -18,7 +18,7 @@ export const getExistingStorageAttributeDefinitions = async (resourceName: strin
 };
 
 export const getExistingTableColumnNames = async (resourceName: string): Promise<string[]> => {
-  return (await getExistingStorageAttributeDefinitions(resourceName)).map(att => att.AttributeName).map(name => name.toString());
+  return (await getExistingStorageAttributeDefinitions(resourceName)).map(att => att.AttributeName.toString());
 };
 
 const loadTable = async (resourceName?: string): Promise<Table | undefined> => {
@@ -33,7 +33,7 @@ const loadCfnTemplateSafe = async (resourceName?: string): Promise<Template | un
   try {
     const { cfnTemplate } = await readCFNTemplate(getCloudFormationTemplatePath(resourceName));
     return cfnTemplate;
-  } catch (err) {
+  } catch {
     return undefined;
   }
 };
