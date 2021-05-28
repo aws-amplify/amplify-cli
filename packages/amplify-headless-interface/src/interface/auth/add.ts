@@ -78,7 +78,7 @@ export interface CognitoIdentityPoolConfiguration {
  * Defines a social federation provider.
  */
 export interface CognitoIdentitySocialFederation {
-  provider: 'FACEBOOK' | 'GOOGLE' | 'AMAZON';
+  provider: 'FACEBOOK' | 'GOOGLE' | 'AMAZON' | 'APPLE';
   /**
    * ClientId unique to your client and the provider.
    */
