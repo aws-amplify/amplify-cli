@@ -123,7 +123,8 @@ export function processTransformerStacks(transformResult, params = {}): AmplifyA
 
   const cfnTemplateFetcher: CloudFormationTemplateFetcher = {
     getCloudFormationStackTemplate: (templateName: string): CloudFormationTemplate => {
-      const template = templateName.replace('https://s3.amazonaws.com/${S3DeploymentBucket}/${S3DeploymentRootKey}/stacks/', '');
+      const templateRegex = new RegExp('^https://s3.(.+\\.)?amazonaws.com/\\${S3DeploymentBucket}/\\${S3DeploymentRootKey}/stacks/');
+      const template = templateName.replace(templateRegex, '');
       const stackTemplate = Object.keys(transformResult.stacks).includes(template)
         ? transformResult.stacks[template]
         : transformResult.stacks[template.replace('.json', '')];
