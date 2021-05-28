@@ -9,6 +9,7 @@ const CFN_DEFAULT_PARAMS = {
   'AWS::AccountId': '12345678910',
   'AWS::StackId': 'fake-stackId',
   'AWS::StackName': 'local-testing',
+  'AWS::URLSuffix': 'amazonaws.com',
 };
 
 const RESOLVER_TEMPLATE_LOCATION_PREFIX = 's3://${S3DeploymentBucket}/${S3DeploymentRootKey}/';

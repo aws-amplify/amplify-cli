@@ -19,6 +19,7 @@ export const CFN_PSEUDO_PARAMS = {
   'AWS::AccountId': '12345678910',
   'AWS::StackId': 'fake-stackId',
   'AWS::StackName': 'local-testing',
+  'AWS::URLSuffix': 'amazonaws.com',
 };
 
 export function nestedStackHandler(
