@@ -140,7 +140,11 @@ $util.error($ctx.error.message, $ctx.error.type)
 #else
 $util.toJson($ctx.result)
 #end",
-  "Mutation.updateItem.req.vtl": "
+  "Mutation.updateItem.req.vtl": "## [Start] Set default values. **
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+## [End] Set default values. **
+
 
 
 
@@ -194,8 +198,6 @@ $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}
 } )
   #end
 #end
-## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
 ## Update condition if type is @versioned **
 #if( $versionedCondition )
@@ -748,7 +750,11 @@ $util.error($ctx.error.message, $ctx.error.type, $ctx.result)
 #else
 $util.toJson($ctx.result)
 #end",
-  "Mutation.updateItem.req.vtl": "
+  "Mutation.updateItem.req.vtl": "## [Start] Set default values. **
+## Automatically set the updatedAt timestamp. **
+$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
+## [End] Set default values. **
+
 
 
 
@@ -802,8 +808,6 @@ $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}
 } )
   #end
 #end
-## Automatically set the updatedAt timestamp. **
-$util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.input.updatedAt, $util.time.nowISO8601())))
 $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
 ## Update condition if type is @versioned **
 #if( $versionedCondition )

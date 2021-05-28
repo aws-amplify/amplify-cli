@@ -371,6 +371,13 @@ export class DynamoDBModelTransformer extends Transformer {
         timestamps: timestampFields,
       });
       const resourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
+      this.addInitalizationMetadata(ctx, resourceId, () => {
+        const inputObj = ctx.getType(updateInput.name.value) as InputObjectTypeDefinitionNode;
+        if (inputObj) {
+          return this.resources.initalizeDefaultInputForUpdateMutation(inputObj, timestampFields);
+        }
+      });
+
       ctx.setResource(resourceId, updateResolver);
       ctx.mapResourceToStack(typeName, resourceId);
       const args = [makeInputValueDefinition('input', makeNonNullType(makeNamedType(updateInput.name.value)))];
