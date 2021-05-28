@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.33.0-authHeadlessTest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.32.1...amplify-category-auth@2.33.0-authHeadlessTest.0) (2021-05-28)
+
+
+### Features
+
+* **import-auth:** add headless support ([d27538b](https://github.com/aws-amplify/amplify-cli/commit/d27538b5153ff3abf86af6ffde7a3322d729f263))
+
+
+
+
+
 ## [2.32.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.32.0...amplify-category-auth@2.32.1) (2021-05-26)
 
 
