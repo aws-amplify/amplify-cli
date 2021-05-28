@@ -55,7 +55,7 @@ export const generateListRequestTemplate = (): string => {
       compoundExpression([
         set(
           ref(`filterExpression`),
-          methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('$ctx.args.filter'))),
+          methodCall(ref('util.parseJson'), methodCall(ref('util.transform.toDynamoDBFilterExpression'), ref('ctx.args.filter'))),
         ),
         iff(
           not(methodCall(ref('util.isNullOrBlank'), ref('filterExpression.expression'))),
@@ -70,7 +70,7 @@ export const generateListRequestTemplate = (): string => {
       ]),
     ),
     ifElse(
-      not(methodCall(ref('$util.isNull'), ref(modelQueryObj))),
+      not(methodCall(ref('util.isNull'), ref(modelQueryObj))),
       compoundExpression([
         set(
           ref('Query'),
