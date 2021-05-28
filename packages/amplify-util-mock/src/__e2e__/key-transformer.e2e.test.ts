@@ -356,7 +356,7 @@ test('Test Customer Create with list member and secondary key', async () => {
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing1', 'thing2']);
 });
 
-test('Test can overwrite customer record with custom primary key', async () => {
+test('Test cannot overwrite customer record with custom primary key', async () => {
   await createCustomer('customer42@email.com', ['thing1', 'thing2'], 'customerusr42');
   const response = await createCustomer('customer42@email.com', ['thing2'], 'customerusr43');
   expect(response.errors).toBeDefined();

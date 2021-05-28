@@ -804,7 +804,7 @@ export class ResourceFactory {
    */
 
   private addDefaultConditionExpression = (operation: string): Expression => {
-    let attributeCheck = operation === 'create' ? 'attribute_not_exists' : 'attribute_exists';
+    const attributeCheck = operation === 'create' ? 'attribute_not_exists' : 'attribute_exists';
     return ifElse(
       ref(ResourceConstants.SNIPPETS.ModelObjectKey),
       compoundExpression([
