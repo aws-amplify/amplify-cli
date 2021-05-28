@@ -618,7 +618,7 @@ test('DynamoDB transformer should add default primary key when not defined', () 
   expect(getBaseType(defaultIdField.type)).toEqual('ID');
 });
 
-test('DynamoDB transformer should add not default primary key when ID is defined', () => {
+test('DynamoDB transformer should not add default primary key when ID is defined', () => {
   const validSchema = `
   type Post @model{
     id: Int
