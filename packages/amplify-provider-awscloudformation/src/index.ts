@@ -25,9 +25,7 @@ import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 import { resolveAppId } from './utils/resolve-appId';
 import { loadConfigurationForEnv } from './configuration-manager';
-
-export { resolveAppId } from './utils/resolve-appId';
-export { loadConfigurationForEnv } from './configuration-manager';
+import { SSM } from './aws-utils/aws-ssm';
 
 function init(context) {
   return initializer.run(context);
@@ -98,6 +96,10 @@ function openConsole(context) {
   return consoleCommand.run(context);
 }
 
+async function getConfiguredSSMClient(context) {
+  return await SSM.getInstance(context);
+}
+
 module.exports = {
   adminBackendMap,
   adminLoginFlow,
@@ -135,4 +137,5 @@ module.exports = {
   createDynamoDBService,
   resolveAppId,
   loadConfigurationForEnv,
+  getConfiguredSSMClient
 };
