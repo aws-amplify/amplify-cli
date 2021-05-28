@@ -67,11 +67,11 @@ export class LayerCloudState {
             } else if (permissionTypeString === PermissionEnum.Public || permissionTypeString.startsWith(LegacyPermissionEnum.Public)) {
               layerVersion.permissions.push({ type: PermissionEnum.Public });
             } else if (permissionTypeString.startsWith(PermissionEnum.AwsAccounts)) {
-              accountIds.push(permissionTypeString.replace(PermissionEnum.AwsAccounts, ''));
+              accountIds.push(permissionTypeString.replace(PermissionEnum.AwsAccounts, '').replace(`Legacy${layerVersion.Version}`, ''));
             } else if (permissionTypeString.startsWith(LegacyPermissionEnum.AwsAccounts)) {
               accountIds.push(permissionTypeString.replace(LegacyPermissionEnum.AwsAccounts, '').substring(0, 12));
             } else if (permissionTypeString.startsWith(PermissionEnum.AwsOrg)) {
-              const orgId = permissionTypeString.replace(`${PermissionEnum.AwsOrg}o`, 'o-');
+              const orgId = permissionTypeString.replace(`${PermissionEnum.AwsOrg}o`, 'o-').replace(`Legacy${layerVersion.Version}`, '');
               orgIds.push(orgId);
             } else if (permissionTypeString.startsWith(LegacyPermissionEnum.AwsOrg)) {
               const suffix = `${layerVersion.Version}`;
