@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.31.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.31.3...amplify-util-mock@3.31.4-beta.0) (2021-05-29)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** use modelobject key for mutation resolver creation ([#7419](https://github.com/aws-amplify/amplify-cli/issues/7419)) ([37bc551](https://github.com/aws-amplify/amplify-cli/commit/37bc551030d47de993f8227ee3af0ba6cd738ab2)), closes [#i7417](https://github.com/aws-amplify/amplify-cli/issues/i7417)
+
+
+
+
+
 ## [3.31.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.31.2...amplify-util-mock@3.31.3) (2021-05-26)
 
 **Note:** Version bump only for package amplify-util-mock
