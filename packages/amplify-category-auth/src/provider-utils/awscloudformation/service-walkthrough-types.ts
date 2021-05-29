@@ -66,6 +66,7 @@ export interface IdentityPoolResult {
   googleAndroid?: string;
   facebookAppId?: string;
   amazonAppId?: string;
+  appleAppId?: string;
   selectedParties?: string; // serialized json
   audiences?: string[];
 }

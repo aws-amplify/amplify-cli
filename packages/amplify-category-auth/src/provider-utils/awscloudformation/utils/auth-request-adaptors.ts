@@ -173,7 +173,7 @@ const mutableIdentityPoolMap = (
       thirdPartyAuth: false,
       authProviders: [],
     };
-  type AppIds = Pick<IdentityPoolResult, 'facebookAppId' | 'googleClientId' | 'googleIos' | 'googleAndroid' | 'amazonAppId'>;
+  type AppIds = Pick<IdentityPoolResult, 'facebookAppId' | 'googleClientId' | 'googleIos' | 'googleAndroid' | 'amazonAppId' | 'appleAppId'>;
   const result = {
     allowUnauthenticatedIdentities: idPoolConfig.unauthenticatedLogin,
     thirdPartyAuth: !!idPoolConfig.identitySocialFederation,
@@ -268,7 +268,7 @@ const signinAttributeMap: Record<CognitoUserPoolSigninMethod, UsernameAttributes
   [CognitoUserPoolSigninMethod.EMAIL_AND_PHONE_NUMBER]: ['email', 'phone_number'],
 };
 
-const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE', projectType: string): string => {
+const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE' | 'APPLE', projectType: string): string => {
   switch (provider) {
     case 'FACEBOOK':
       return 'facebookAppId';
@@ -285,6 +285,8 @@ const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE', proj
         default:
           throw new Error(`Unknown project type [${projectType}] when mapping federation type`);
       }
+    case 'APPLE':
+      return 'appleAppId';
     default:
       throw new Error(`Unknown social federation provider [${provider}]`);
   }
