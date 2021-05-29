@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-siwaNonProd.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.7.0-siwaNonProd.0...amplify-headless-interface@1.7.0-siwaNonProd.1) (2021-05-29)
+
+
+### Features
+
+* **amplify-category-auth:** adding apple as identity provider ([#7420](https://github.com/aws-amplify/amplify-cli/issues/7420)) ([ca95ef3](https://github.com/aws-amplify/amplify-cli/commit/ca95ef353d83ea5ec49126e3a6bcb80b85b87523))
+
+
+
+
+
 # [1.7.0-siwaNonProd.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-headless-interface@1.6.1...amplify-headless-interface@1.7.0-siwaNonProd.0) (2021-05-27)
 
 

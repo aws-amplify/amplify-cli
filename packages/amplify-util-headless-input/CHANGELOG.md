@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.4.6-siwaNonProd.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.4.6-siwaNonProd.0...amplify-util-headless-input@1.4.6-siwaNonProd.1) (2021-05-29)
+
+**Note:** Version bump only for package amplify-util-headless-input
+
+
+
+
+
 ## [1.4.6-siwaNonProd.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-headless-input@1.4.5...amplify-util-headless-input@1.4.6-siwaNonProd.0) (2021-05-27)
 
 **Note:** Version bump only for package amplify-util-headless-input
