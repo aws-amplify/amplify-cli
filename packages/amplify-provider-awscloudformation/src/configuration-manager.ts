@@ -36,7 +36,7 @@ interface ProjectConfig {
   config?: AwsConfig;
 }
 
-interface AwsSecrets {
+export interface AwsSecrets {
   accessKeyId?: string;
   secretAccessKey?: string;
   region?: string;
@@ -581,7 +581,7 @@ function removeProjectConfig(envName: string) {
   }
 }
 
-export async function loadConfiguration(context: $TSContext) {
+export async function loadConfiguration(context: $TSContext): Promise<AwsSecrets> {
   const { envName } = context.amplify.getEnvInfo();
   const config = await loadConfigurationForEnv(context, envName);
   return config;
