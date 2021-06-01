@@ -7,7 +7,7 @@
     },
     {
       "id": "COGNITO_SMS_SANDBOX_MISSING_PERMISSION",
-      "message": "Add permission SNS:GetAccountSandboxStatus permission to see your account sandbox"
+      "message": "Add permission SNS:GetAccountSandboxStatus permission to see your SNS account mode."
     },
     {
       "id": "COGNITO_SMS_SANDBOX_SANDBOXED_MODE_WARNING",
