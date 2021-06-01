@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-beta.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.6.3...amplify-console-integration-tests@1.7.0-beta.0) (2021-06-01)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-console-integration-tests/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+
+
+
+
+
 ## [1.6.3](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.6.2...amplify-console-integration-tests@1.6.3) (2021-05-26)
 
 **Note:** Version bump only for package amplify-console-integration-tests
