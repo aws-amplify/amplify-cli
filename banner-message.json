@@ -11,11 +11,11 @@
     },
     {
       "id": "COGNITO_SMS_SANDBOX_SANDBOXED_MODE_WARNING",
-      "message": "Your SNS account is in Sandbox mode. Your app can only send SMS messages to verified recipient phone numbers.\r\nTo add verified test phone numbers or request to move to production, go to the SNS console: https://console.aws.amazon.com/sns/v3/home"
+      "message": "Your SNS account is in Sandbox mode. Your app can only send SMS messages to verified recipient phone numbers.\r\nTo add verified test phone numbers or request to move to production, go to the SNS console: https://console.aws.amazon.com/sns/v3/home#/mobile/text-messaging"
     },
     {
       "id": "COGNITO_SMS_SANDBOX_CATEGORY_AUTH_ADD_OR_UPDATE_INFO",
-      "message": "You have enabled SMS based auth workflow. Verify your SNS account mode in the SNS console: https://console.aws.amazon.com/sns/v3/home\r\nIf your account is in \"Sandbox\" mode, you can only send SMS messages to verified recipient phone numbers."
+      "message": "You have enabled SMS based auth workflow. Verify your SNS account mode in the SNS console: https://console.aws.amazon.com/sns/v3/home#/mobile/text-messaging\r\nIf your account is in \"Sandbox\" mode, you can only send SMS messages to verified recipient phone numbers."
     }
   ]
 }
