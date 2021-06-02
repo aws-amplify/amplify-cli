@@ -12,8 +12,9 @@ import {
   getAppId,
   getProjectMeta,
   LayerPermission,
+  LayerPermissionChoice,
   LayerPermissionName,
-  LayerRuntimes,
+  LayerRuntime,
   removeLayer,
   updateLayer,
   updateOptData,
@@ -47,9 +48,10 @@ describe('amplify add lambda layer', () => {
   it('init a project and add simple layer', async () => {
     const [shortId] = uuid().split('-');
     const layerName = `simplelayer${shortId}`;
+    const runtime: LayerRuntime = 'nodejs';
 
-    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string } = {
-      runtimes: ['nodejs'],
+    const settings = {
+      runtimes: [runtime],
       layerName,
       projName,
     };
@@ -73,9 +75,10 @@ describe('amplify add lambda layer', () => {
   it('init a project add 4 layers and delete first 3 of them and push and verify', async () => {
     const [shortId] = uuid().split('-');
     const layerName = `simplelayer${shortId}`;
+    const runtime: LayerRuntime = 'nodejs';
 
-    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string } = {
-      runtimes: ['nodejs'],
+    const settings = {
+      runtimes: [runtime],
       layerName,
       projName,
     };
@@ -107,18 +110,20 @@ describe('amplify add lambda layer', () => {
   it('init a project and add/update simple layer and push', async () => {
     const [shortId] = uuid().split('-');
     const layerName = `testlayer${shortId}`;
+    const runtime: LayerRuntime = 'nodejs';
+
     const settingsAdd = {
-      runtimes: ['nodejs'],
-      layerName: layerName,
+      runtimes: [runtime],
+      layerName,
       projName,
     };
+
     const settingsUpdate = {
-      runtimes: ['nodejs'],
-      layerName: layerName,
-      versionChanged: true,
+      runtimes: [runtime],
+      layerName,
       versions: 0, // no versions since it it's not pushed
       permissions: ['Public (Anyone on AWS can use this layer)'],
-      numLayers: 0,
+      numLayers: 1,
       projName,
     };
     await addLayer(projRoot, settingsAdd);
@@ -133,16 +138,17 @@ describe('amplify add lambda layer', () => {
   it('init a project and add/push and update/push updating version', async () => {
     const [shortId] = uuid().split('-');
     const layerName = `testlayer${shortId}`;
+    const runtime: LayerRuntime = 'nodejs';
 
     const settingsAdd = {
-      runtimes: ['nodejs'],
-      layerName: layerName,
+      runtimes: [runtime],
+      layerName,
       projName,
     };
 
     const settingsUpdate = {
-      runtimes: ['nodejs'],
-      layerName: layerName,
+      runtimes: [runtime],
+      layerName,
       versionChanged: true,
       permissions: ['Public (Anyone on AWS can use this layer)'],
       numLayers: 1,
@@ -164,31 +170,46 @@ describe('amplify add lambda layer', () => {
 
   it('init a project and add/push and update/push without updating version', async () => {
     const [shortId] = uuid().split('-');
-    const settings: any = {
-      runtimes: ['nodejs'],
-      layerName: `testlayer${shortId}`,
+    const layerName = `testlayer${shortId}`;
+    const runtime: LayerRuntime = 'nodejs';
+
+    const settingsAdd = {
+      runtimes: [runtime],
+      layerName,
+      projName,
+    };
+
+    const settingsUpdate = {
+      runtimes: [runtime],
+      layerName,
       numLayers: 1,
+      permissions: undefined,
       versions: 1,
       projName,
     };
     const arns: string[] = [];
-    await addLayer(projRoot, settings);
+    await addLayer(projRoot, settingsAdd);
     await amplifyPushLayer(projRoot, {
       acceptSuggestedLayerVersionConfigurations: true,
     });
-    settings.permissions = ['Public (Anyone on AWS can use this layer)'];
-    await updateLayer(projRoot, settings);
+    settingsUpdate.permissions = ['Public (Anyone on AWS can use this layer)'];
+    await updateLayer(projRoot, settingsUpdate);
     await amplifyPushAuth(projRoot);
-    arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
-    await validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, arns);
+    arns.push(getCurrentLayerArnFromMeta(projRoot, { layerName, projName }));
+    await validateLayerMetadata(projRoot, { layerName, projName }, getProjectMeta(projRoot), envName, arns);
   });
 
   it('init a project, add/push layer, change layer content, push layer using previous permissions, test env add and env checkout', async () => {
     const [shortId] = uuid().split('-');
+    const layerName = `testlayer${shortId}`;
+    const runtime: LayerRuntime = 'nodejs';
+
+    const permissions: LayerPermissionChoice[] = ['Public (Anyone on AWS can use this layer)'];
+
     const settings = {
-      runtimes: ['nodejs'],
-      layerName: `testlayer${shortId}`,
-      permissions: ['Public (Anyone on AWS can use this layer)'],
+      runtimes: [runtime],
+      layerName,
+      permissions,
       versionChanged: false,
       numLayers: 1,
       projName,
@@ -245,11 +266,11 @@ describe('amplify add lambda layer - with amplify console app', () => {
 
   it('tests amplify pull on project with layer', async () => {
     const [shortId] = uuid().split('-');
+    const layerName = `testlayer${shortId}`;
+    const runtime: LayerRuntime = 'nodejs';
     const settings = {
-      runtimes: ['nodejs'],
-      layerName: `testlayer${shortId}`,
-      versionChanged: false,
-      numLayers: 1,
+      runtimes: [runtime],
+      layerName,
       projName,
     };
     const expectedPerms: LayerPermission[] = [{ type: LayerPermissionName.private }];
@@ -259,7 +280,7 @@ describe('amplify add lambda layer - with amplify console app', () => {
       acceptSuggestedLayerVersionConfigurations: true,
     });
 
-    validatePushedVersion(projRoot, settings, expectedPerms);
+    validatePushedVersion(projRoot, { layerName, projName }, expectedPerms);
 
     const appId = getAppId(projRoot);
     expect(appId).toBeDefined();
@@ -270,10 +291,10 @@ describe('amplify add lambda layer - with amplify console app', () => {
       projRoot2 = await createNewProjectDir('layer-pull-test');
       await amplifyPull(projRoot2, { override: false, emptyDir: true, appId });
 
-      validatePushedVersion(projRoot2, settings, expectedPerms);
+      validatePushedVersion(projRoot2, { layerName, projName }, expectedPerms);
 
       // Push new resource with no change to the layer
-      await addFunction(projRoot2, { functionTemplate: 'Hello World' }, 'nodejs');
+      await addFunction(projRoot2, { functionTemplate: 'Hello World' }, runtime);
       await amplifyPushAuth(projRoot2);
 
       // Push a new layer version
