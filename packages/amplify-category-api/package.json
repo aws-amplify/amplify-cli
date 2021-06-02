@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-api",
-  "version": "2.31.9",
+  "version": "2.31.10",
   "description": "amplify-cli api plugin",
   "repository": {
     "type": "git",
@@ -68,7 +68,7 @@
     "constructs": "^3.2.0",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
-    "graphql-relational-schema-transformer": "2.17.3",
+    "graphql-relational-schema-transformer": "2.18.0",
     "graphql-transformer-core": "6.28.9",
     "inquirer": "^7.3.3",
     "js-yaml": "^4.0.0",
