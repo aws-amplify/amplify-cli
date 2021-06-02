@@ -74,7 +74,7 @@ export async function updateDependentFunctionsCfn(
     updateCFNFileForResourcePermissions(resourceDirPath, functionParameters, currentParameters, apiResource);
     // assign new permissions to current permissions to update function-parameters file
     currentParameters.permissions = permissions;
-    //update function-parameters file
+    // update function-parameters file
     const parametersFilePath = path.join(resourceDirPath, functionParametersFileName);
     JSONUtilities.writeJson(parametersFilePath, currentParameters);
     // update dependsOn for lambda

@@ -228,6 +228,7 @@ export async function updateLayerResource(
       projectName: context.amplify.getProjectDetails().projectConfig.projectName,
     };
   }
+
   const updateWalkthroughResult = (await serviceConfig.walkthroughs.updateWalkthrough(context, undefined, parameters)) as {
     parameters: LayerParameters;
     resourceUpdated: boolean;
@@ -240,7 +241,7 @@ export async function updateLayerResource(
   // write out updated resources
   const updated = await updateLayerArtifacts(context, updateWalkthroughResult.parameters, {
     updateLayerParams: parameters.selectedVersion === undefined,
-    generateCfnFile: true,
+    generateCfnFile: parameters.selectedVersion !== undefined,
   });
 
   printLayerSuccessMessages(context, updateWalkthroughResult.parameters, 'updated');

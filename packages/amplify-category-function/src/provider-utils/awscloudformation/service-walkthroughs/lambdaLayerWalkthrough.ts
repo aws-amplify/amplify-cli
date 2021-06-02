@@ -75,6 +75,7 @@ export async function updateLayerWalkthrough(
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
+
   if (resources.length === 1) {
     parameters.layerName = resources[0];
   } else if (lambdaToUpdate && resources.includes(lambdaToUpdate)) {
@@ -102,7 +103,6 @@ export async function updateLayerWalkthrough(
   // load parameters.json
   const storedLayerParameters = loadStoredLayerParameters(context, parameters.layerName);
   let { permissions } = storedLayerParameters;
-  let layerInputParameters: LayerInputParams = {};
 
   if (await context.amplify.confirmPrompt('Do you want to adjust layer version permissions?', true)) {
     permissionsUpdateConfirmed = true;
@@ -123,6 +123,7 @@ export async function updateLayerWalkthrough(
       const selectedVersion: string = (
         await inquirer.prompt(layerVersionQuestion(layerVersionChoices, 'Select the layer version to update:'))
       ).versionSelection;
+
       if (selectedVersion !== latestVersionText) {
         selectedVersionNumber = Number(_.first(selectedVersion.split(':')));
         parameters.selectedVersion = _.first(layerVersions.filter(version => version.Version === selectedVersionNumber));
@@ -141,8 +142,7 @@ export async function updateLayerWalkthrough(
       .reduce((accounts: string[], permission: AccountsLayer) => (accounts = [...accounts, ...permission.accounts]), []);
 
     // select permission strategy
-    _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion(defaultLayerPermissions)));
-
+    const layerInputParameters: LayerInputParams = await inquirer.prompt(layerPermissionsQuestion(defaultLayerPermissions));
     // get the account and/or org IDs based on the permissions selected and pass defaults in the questions workflow
     for (const permission of layerInputParameters.layerPermissions) {
       switch (permission) {

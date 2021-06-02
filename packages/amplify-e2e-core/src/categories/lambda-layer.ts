@@ -1,23 +1,31 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import _ from 'lodash';
 import { $TSAny, JSONUtilities } from 'amplify-cli-core';
-import { nspawn as spawn, ExecutionContext, getCLIPath, KEY_DOWN_ARROW } from '..';
+import * as fs from 'fs-extra';
+import _ from 'lodash';
+import * as path from 'path';
+import { ExecutionContext, getCLIPath, nspawn as spawn } from '..';
+import { getBackendAmplifyMeta } from '../utils';
 import { getLayerVersion, listVersions } from '../utils/sdk-calls';
 import { multiSelect } from '../utils/selectors';
-import { getBackendAmplifyMeta } from '../utils';
-export type LayerRuntimes = 'nodejs' | 'python';
-const PARAMETERS_FILE_NAME = 'parameters.json';
 
-const layerRuntimeChoices = ['NodeJS', 'Python'];
-const permissionChoices = ['Specific AWS accounts', 'Specific AWS organization', 'Public (Anyone on AWS can use this layer)'];
+export type LayerRuntime = 'nodejs' | 'python';
+type LayerRuntimeDisplayName = 'NodeJS' | 'Python';
+export type LayerPermissionChoice = 'Specific AWS accounts' | 'Specific AWS organization' | 'Public (Anyone on AWS can use this layer)';
+
+const layerRuntimeChoices: LayerRuntimeDisplayName[] = ['NodeJS', 'Python'];
+const permissionChoices: LayerPermissionChoice[] = [
+  'Specific AWS accounts',
+  'Specific AWS organization',
+  'Public (Anyone on AWS can use this layer)',
+];
+
+const PARAMETERS_FILE_NAME = 'parameters.json';
 
 export type LayerDirectoryType = {
   layerName: string;
   projName: string;
 };
 
-export function validateLayerDir(projRoot: string, layerProjName: LayerDirectoryType, runtimes: LayerRuntimes[]): boolean {
+export function validateLayerDir(projRoot: string, layerProjName: LayerDirectoryType, runtimes: LayerRuntime[]): boolean {
   let layerDir = path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName));
   let validDir = fs.pathExistsSync(path.join(layerDir, 'opt'));
   if (runtimes && runtimes.length) {
@@ -104,11 +112,20 @@ export async function validateLayerMetadata(
 
 export function getCurrentLayerArnFromMeta(projroot: string, layerProjName: LayerDirectoryType): string {
   const meta = getBackendAmplifyMeta(projroot);
-  const layername = getLayerDirectoryName(layerProjName);
-  return meta.function[layername].output.Arn;
+  const layerName = getLayerDirectoryName(layerProjName);
+  return meta.function[layerName].output.Arn;
 }
 
-export function addLayer(cwd: string, settings?: any, testingWithLatestCodebase: boolean = false): Promise<void> {
+export function addLayer(
+  cwd: string,
+  settings: {
+    layerName: string;
+    permissions?: LayerPermissionChoice[];
+    projName: string;
+    runtimes: LayerRuntime[];
+  },
+  testingWithLatestCodebase: boolean = false,
+): Promise<void> {
   const defaultSettings = {
     permissions: [],
   };
@@ -215,32 +232,32 @@ export function updateLayer(
     chain.wait('Do you want to adjust layer version permissions?');
 
     if (settings.dontChangePermissions === true) {
-      chain.sendConfirmYes();
-    } else {
-      // Default behavior to preserve existing e2e behavior
       chain.sendConfirmNo();
+    } else {
+      chain.sendConfirmYes();
+
+      // Compatibility with existing e2e tests
+      if (settings.versions > 0) {
+        chain
+          .wait('Select the layer version to update')
+          .sendKeyDown() // Move down from "future layer" option
+          .sendCarriageReturn(); // assumes updating the latest layer version
+      } else if (settings.changePermissionOnFutureVersion === true) {
+        chain.wait('Select the layer version to update').sendCarriageReturn(); // future layer version
+      } else if (settings.changePermissionOnLatestVersion === true) {
+        chain
+          .wait('Select the layer version to update')
+          .sendKeyDown() // Move down from "future layer" option
+          .sendCarriageReturn(); // latest layer version
+      }
+
+      chain.wait('The current AWS account will always have access to this layer.');
+
+      multiSelect(chain, settings.permissions, permissionChoices);
+
+      waitForLayerSuccessPrintout(chain, settings, 'updated');
     }
 
-    // Compatibility with existing e2e tests
-    if (settings.versions > 0) {
-      chain
-        .wait('Select the layer version to update')
-        .sendKeyDown() // Move down from "future layer" option
-        .sendCarriageReturn(); // assumes updating the future layer version
-    } else if (settings.changePermissionOnFutureVersion === true) {
-      chain.wait('Select the layer version to update').sendCarriageReturn(); // future layer version
-    } else if (settings.changePermissionOnLatestVersion === true) {
-      chain
-        .wait('Select the layer version to update')
-        .sendKeyDown() // Move down from "future layer" option
-        .sendCarriageReturn(); // assumes updating the future layer version
-    }
-
-    chain.wait('The current AWS account will always have access to this layer.');
-
-    multiSelect(chain, settings.permissions, permissionChoices);
-
-    waitForLayerSuccessPrintout(chain, settings, 'updated');
     chain.run((err: Error) => {
       if (!err) {
         resolve();
@@ -299,22 +316,16 @@ function getLayerConfig(projroot: string, layerName: string): $TSAny {
   return layerConfig;
 }
 
-function getLayerDataFromTeamProviderInfo(projRoot: string, layerName: string, envName: string) {
-  const teamProviderInfoPath = path.join(projRoot, 'amplify', 'team-provider-info.json');
-  const teamProviderInfo = JSONUtilities.readJson(teamProviderInfoPath);
-  return _.get(teamProviderInfo, [envName, 'nonCFNdata', 'function', layerName]);
-}
-
 function getLayerRuntimes(projRoot: string, layerName: string): $TSAny {
   const runtimesFilePath = path.join(projRoot, 'amplify', 'backend', 'function', layerName, PARAMETERS_FILE_NAME);
   return JSONUtilities.readJson(runtimesFilePath);
 }
 
-function getRuntimeDisplayNames(runtimes: LayerRuntimes[]) {
+function getRuntimeDisplayNames(runtimes: LayerRuntime[]) {
   return runtimes.map(runtime => getLayerRuntimeInfo(runtime).displayName);
 }
 
-function getLayerRuntimeInfo(runtime: LayerRuntimes) {
+function getLayerRuntimeInfo(runtime: LayerRuntime) {
   switch (runtime) {
     case 'nodejs':
       return { displayName: 'NodeJS', path: path.join('lib', runtime) };
@@ -325,14 +336,19 @@ function getLayerRuntimeInfo(runtime: LayerRuntimes) {
   }
 }
 
-function waitForLayerSuccessPrintout(chain: ExecutionContext, settings: any, action: string) {
+function waitForLayerSuccessPrintout(
+  chain: ExecutionContext,
+  settings: { layerName?: string; projName?: string; runtimes?: LayerRuntime[] } | $TSAny,
+  action: string,
+) {
   chain
     .wait(`✅ Lambda layer folders & files ${action}:`)
     .wait(path.join('amplify', 'backend', 'function', settings.projName + settings.layerName))
     .wait('Next steps:')
     .wait('Move your libraries to the following folder:');
 
-  for (let runtime of settings.runtimes) {
+  const runtimes = settings.runtimes && settings.layerName && settings.projName ? settings.runtimes : [];
+  for (const runtime of runtimes) {
     const { displayName, path } = getLayerRuntimeInfo(runtime);
     const layerRuntimeDir = `[${displayName}]: amplify/backend/function/${settings.projName + settings.layerName}/${path}`;
     chain.wait(layerRuntimeDir);

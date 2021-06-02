@@ -20,7 +20,7 @@ import {
   LayerOptions,
   LayerPermission,
   LayerPermissionName,
-  LayerRuntimes,
+  LayerRuntime,
   loadFunctionTestFile,
   overrideFunctionSrcNode,
   overrideLayerCodeNode,
@@ -51,15 +51,15 @@ describe('amplify add lambda layer with changes', () => {
   it('simple layer, change future permission, no changes', async () => {
     const [shortId] = uuid().split('-');
     const layerName = `simplelayer${shortId}`;
+    const layerRuntime: LayerRuntime = 'nodejs';
 
-    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string; usePreviousPermissions: boolean } = {
-      runtimes: ['nodejs'],
+    const settings = {
+      runtimes: [layerRuntime],
       layerName,
-      usePreviousPermissions: true,
       projName,
     };
     const settingsUpdate = {
-      runtimes: ['nodejs'],
+      runtimes: [layerRuntime],
       layerName: layerName,
       changePermissionOnFutureVersion: true,
       permissions: ['Public (Anyone on AWS can use this layer)'],
@@ -70,12 +70,13 @@ describe('amplify add lambda layer with changes', () => {
     await addLayer(projRoot, settings);
     await amplifyPushLayer(projRoot, {
       acceptSuggestedLayerVersionConfigurations: true,
+      usePreviousPermissions: true,
     });
 
     await updateLayer(projRoot, settingsUpdate);
 
     const expectedPerms: LayerPermission[] = [{ type: LayerPermissionName.public }];
-    validatePushedVersion(projRoot, settingsUpdate, expectedPerms);
+    validatePushedVersion(projRoot, { layerName, projName }, expectedPerms);
 
     await amplifyStatus(projRoot, 'No Change');
   });
@@ -83,15 +84,15 @@ describe('amplify add lambda layer with changes', () => {
   it('simple layer, change latest permission, update status, no new layer version', async () => {
     const [shortId] = uuid().split('-');
     const layerName = `simplelayer${shortId}`;
+    const layerRuntime: LayerRuntime = 'nodejs';
 
-    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string; usePreviousPermissions: boolean } = {
-      runtimes: ['nodejs'],
+    const settings = {
+      runtimes: [layerRuntime],
       layerName,
-      usePreviousPermissions: true,
       projName,
     };
     const settingsUpdate = {
-      runtimes: ['nodejs'],
+      runtimes: [layerRuntime],
       layerName: layerName,
       changePermissionOnLatestVersion: true,
       permissions: ['Public (Anyone on AWS can use this layer)'],
@@ -102,6 +103,7 @@ describe('amplify add lambda layer with changes', () => {
     await addLayer(projRoot, settings);
     await amplifyPushLayer(projRoot, {
       acceptSuggestedLayerVersionConfigurations: true,
+      usePreviousPermissions: true,
     });
 
     const firstArn = getCurrentLayerArnFromMeta(projRoot, settingsUpdate);
@@ -126,14 +128,15 @@ describe('amplify add lambda layer with changes', () => {
   it('simple layer, change update layer, select NO to permissions, no changes', async () => {
     const [shortId] = uuid().split('-');
     const layerName = `simplelayer${shortId}`;
+    const layerRuntime: LayerRuntime = 'nodejs';
 
-    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string } = {
-      runtimes: ['nodejs'],
+    const settings = {
+      runtimes: [layerRuntime],
       layerName,
       projName,
     };
     const settingsUpdate = {
-      runtimes: ['nodejs'],
+      runtimes: [layerRuntime],
       layerName: layerName,
       dontChangePermissions: true,
       numLayers: 1,
@@ -153,9 +156,10 @@ describe('amplify add lambda layer with changes', () => {
   it('simple layer, update description during push', async () => {
     const [shortId] = uuid().split('-');
     const layerName = `simplelayer${shortId}`;
+    const layerRuntime: LayerRuntime = 'nodejs';
 
-    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string } = {
-      runtimes: ['nodejs'],
+    const settings = {
+      runtimes: [layerRuntime],
       layerName,
       projName,
     };
@@ -178,6 +182,7 @@ describe('amplify add lambda layer with changes', () => {
     const helloWorldTitleCaseOutput = 'Hello From Lambda!';
     const [shortId] = uuid().split('-');
     const layerName = `reflayer${shortId}`;
+    const layerRuntime: LayerRuntime = 'nodejs';
 
     // 1. Step
     // - Create a layer
@@ -187,8 +192,8 @@ describe('amplify add lambda layer with changes', () => {
     // - Push
     // - Invoke function, check result (upper cased)
 
-    const settings: { layerName: string; runtimes: LayerRuntimes[]; projName: string } = {
-      runtimes: ['nodejs'],
+    const settings = {
+      runtimes: [layerRuntime],
       layerName,
       projName,
     };
@@ -214,7 +219,7 @@ describe('amplify add lambda layer with changes', () => {
       expectedListOptions: [`${settings.projName}${settings.layerName}`],
     };
 
-    await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, 'nodejs');
+    await addFunction(projRoot, { functionTemplate: 'Hello World', layerOptions, name: functionName }, layerRuntime);
 
     overrideFunctionSrcNode(projRoot, functionName, functionCode);
 
@@ -237,7 +242,7 @@ describe('amplify add lambda layer with changes', () => {
     const fullLayerName = `${settings.projName}${settings.layerName}`;
 
     const settingsUpdate = {
-      runtimes: ['nodejs'],
+      runtimes: [layerRuntime],
       layerName,
       projName,
       layerOptions: {
@@ -248,7 +253,7 @@ describe('amplify add lambda layer with changes', () => {
       },
     };
 
-    await updateFunction(projRoot, settingsUpdate, 'nodejs');
+    await updateFunction(projRoot, settingsUpdate, layerRuntime);
 
     await amplifyPushLayer(projRoot, {
       acceptSuggestedLayerVersionConfigurations: true,
@@ -264,7 +269,7 @@ describe('amplify add lambda layer with changes', () => {
     // - Invoke function, result must be the different (title cased)
 
     const settingsUpdateToLatestVersion = {
-      runtimes: ['nodejs'],
+      runtimes: [layerRuntime],
       layerName,
       projName,
       layerOptions: {
@@ -279,7 +284,7 @@ describe('amplify add lambda layer with changes', () => {
       },
     };
 
-    await updateFunction(projRoot, settingsUpdateToLatestVersion, 'nodejs');
+    await updateFunction(projRoot, settingsUpdateToLatestVersion, layerRuntime);
 
     await amplifyPushAuth(projRoot);
 

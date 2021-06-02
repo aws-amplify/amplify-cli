@@ -1,23 +1,28 @@
 import {
-  initJSProjectWithProfile,
-  deleteProject,
+  addFunction,
+  addLayer,
+  addOptData,
   amplifyPushAuth,
-  getProjectConfig,
-  loadFunctionTestFile,
   amplifyPushLayer,
-} from 'amplify-e2e-core';
-import { addFunction, updateFunction, functionBuild, functionMockAssert, functionCloudInvoke } from 'amplify-e2e-core';
-import { addLayer, addOptData, LayerOptions } from 'amplify-e2e-core';
-import {
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
+  functionBuild,
+  functionCloudInvoke,
+  functionMockAssert,
   getCloudWatchEventRule,
-  getProjectMeta,
   getFunction,
+  getProjectConfig,
+  getProjectMeta,
+  initJSProjectWithProfile,
+  LayerOptions,
+  LayerRuntime,
+  loadFunctionTestFile,
   overrideFunctionSrcNode,
-  overrideLayerCodeNode,
   overrideFunctionSrcPython,
+  overrideLayerCodeNode,
   overrideLayerCodePython,
+  updateFunction,
 } from 'amplify-e2e-core';
 
 describe('java function tests', () => {
@@ -199,11 +204,12 @@ describe('add function with layers for runtime nodeJS', () => {
 
     const { projectName } = getProjectConfig(projRoot);
     projName = projectName;
+    const runtimes: LayerRuntime[] = ['nodejs'];
 
     const settings = {
-      runtimes: ['nodejs'],
       layerName: `nodetestlayer${random}`,
       projName,
+      runtimes,
     };
 
     await addLayer(projRoot, settings);
@@ -262,11 +268,12 @@ describe('add function with layers for runtime python', () => {
 
     const { projectName } = getProjectConfig(projRoot);
     projName = projectName;
+    const runtimes: LayerRuntime[] = ['python'];
 
     const settings = {
-      runtimes: ['python'],
       layerName: `pytestlayer${random}`,
       projName,
+      runtimes,
     };
 
     await addLayer(projRoot, settings);
