@@ -1,8 +1,10 @@
-import { $TSContext, stateManager } from "amplify-cli-core";
+import { $TSContext } from "amplify-cli-core";
 import { SecretDeltas } from "amplify-function-plugin-interface";
-import { access } from "fs-extra";
-import { posix as path } from 'path';
+import { getFunctionCloudFormationTemplate, setFunctionCloudFormationTemplate } from "../utils/cloudformationHelpers";
+import { getFullyQualifiedSecretName, getFunctionSecretPrefix } from "./secretName";
+import { updateSecretsInCfnTemplate } from "./secretsCfnModifier";
 import { SSMClientWrapper } from "./ssmClientWrapper";
+import * as path from 'path';
 
 /**
  * Manages the state of function secrets in both Parameter store and the local CloudFormation template
@@ -10,55 +12,48 @@ import { SSMClientWrapper } from "./ssmClientWrapper";
 export class FunctionSecretsStateManager {
   private static instance: FunctionSecretsStateManager;
 
-  static getInstance = async (context: $TSContext, functionName: string) => {
+  static getInstance = async (context: $TSContext) => {
     if (!FunctionSecretsStateManager.instance) {
-      FunctionSecretsStateManager.instance = new FunctionSecretsStateManager(await SSMClientWrapper.getInstance(context), functionName);
+      FunctionSecretsStateManager.instance = new FunctionSecretsStateManager(await SSMClientWrapper.getInstance(context));
     }
     return FunctionSecretsStateManager.instance;
   };
 
-  private constructor(private readonly ssmClientWrapper: SSMClientWrapper, private readonly functionName: string) { };
+  private constructor(private readonly ssmClientWrapper: SSMClientWrapper) { };
 
-  /**
-   *
-   * @param secretDeltas
-   */
-  syncSecretDeltas = async (secretDeltas: SecretDeltas) => {
+  syncSecretDeltas = async (secretDeltas: SecretDeltas, functionName: string) => {
     // update values in Parameter Store
     Object.entries(secretDeltas).forEach(([secretName, secretDelta]) => {
+      const fullyQualifiedSecretName = getFullyQualifiedSecretName(secretName, functionName);
       switch (secretDelta.operation) {
         case 'remove':
-          this.ssmClientWrapper.deleteSecret(this.getFullyQualifiedSecretName(secretName));
+          this.ssmClientWrapper.deleteSecret(fullyQualifiedSecretName);
           break;
         case 'setValue':
-          this.ssmClientWrapper.setSecret(this.getFullyQualifiedSecretName(secretName), secretDelta.value);
+          this.ssmClientWrapper.setSecret(fullyQualifiedSecretName, secretDelta.value);
       }
     });
 
-    // update local CFN file
-    const existingSecrets = Object.entries(secretDeltas)
-      .filter(([_, secretDelta]) => secretDelta.operation !== 'remove')
-      .reduce((acc, [secretName, secretDelta]) => ({ ...acc, [secretName]: secretDelta }), {} as SecretDeltas);
-
-    //
+    const origTemplate = await getFunctionCloudFormationTemplate(functionName);
+    const newTemplate = await updateSecretsInCfnTemplate(origTemplate, secretDeltas, functionName);
+    await setFunctionCloudFormationTemplate(functionName, newTemplate);
   }
 
-  private getFullyQualifiedSecretName = (secretName: string) => {
-    return path.join(this.getSecretPrefix(), secretName);
+  getExistingFunctionSecretNames = async (functionName: string) => {
+    const prefix = getFunctionSecretPrefix(functionName);
+    const parts = path.parse(prefix);
+    const unfilteredSecrets = await this.ssmClientWrapper.getExistingSecretNamesByPath(parts.dir);
+    return unfilteredSecrets.filter(secretName => path.parse(secretName).base.startsWith(parts.base));
   }
 
-  // WARNING: be extreemly careful changing the secret prefix! (AKA you should probably never change this).
-  // This format is expected by customer functions when they fetch SSM params
-  private getSecretPrefix = () => {
-    const projectName = stateManager.getProjectConfig()?.projectName;
-    if (!projectName) {
-      throw new Error('Could not determine the Amplify project name. Try running `amplfiy configure project` and specify a project name.');
-    }
-    const envName = stateManager.getLocalEnvInfo()?.envName;
-    if (!envName) {
-      throw new Error('Could not determine the current Amplify environment name. Try running `amplify env checkout`.');
-    }
-    return path.join(projectName, `${this.functionName}-${envName}`);
+  /**
+   * Clones secrets for all functions from one amplify env to another
+   * @param sourceEnv The source env to read secrets from
+   * @param destinationEnv The destination env to write secrets to
+   * @param overrides Specifies any modifications that should be made to the values in source before writing to destination
+   */
+  cloneSecrets = async (sourceEnv: string, destinationEnv: string, overrides: Record<string, SecretDeltas>) => {
+
   }
 }
 

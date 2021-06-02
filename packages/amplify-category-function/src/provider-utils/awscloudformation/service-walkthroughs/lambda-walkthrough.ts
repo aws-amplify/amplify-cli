@@ -32,7 +32,7 @@ import {
 import { $TSObject, JSONUtilities, stateManager } from 'amplify-cli-core';
 import { consolidateDependsOnForLambda } from '../utils/consolidateDependsOn';
 import { secretValuesWalkthrough } from './secretValuesWalkthrough';
-import { getExistingSecretNames } from '../secrets/ssmClientWrapper';
+import { FunctionSecretsStateManager } from '../secrets/functionSecretsStateManager';
 
 /**
  * Starting point for CLI walkthrough that generates a lambda function
@@ -81,7 +81,9 @@ export async function createWalkthrough(
     // ask lambda layer questions and merge in results
     templateParameters = merge(templateParameters, await addLayersToFunctionWalkthrough(context, templateParameters.runtime));
 
-    templateParameters = merge(templateParameters, await secretValuesWalkthrough(await getExistingSecretNames()));
+    const functionSecretsStateManger = await FunctionSecretsStateManager.getInstance(context);
+
+    templateParameters = merge(templateParameters, await secretValuesWalkthrough(await functionSecretsStateManger.getExistingFunctionSecretNames(templateParameters.functionName)));
   }
 
   return templateParameters;

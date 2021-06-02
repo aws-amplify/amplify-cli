@@ -235,7 +235,9 @@ export interface FunctionScript {
   value: string;
 }
 
-export type SecretDeltas = Record<string, SecretDelta>;
+export type SecretDeltas = Record<SecretName, SecretDelta>;
+
+export type SecretName = string;
 
 export type SecretDelta = RetainSecret | RemoveSecret | SetSecretValue;
 

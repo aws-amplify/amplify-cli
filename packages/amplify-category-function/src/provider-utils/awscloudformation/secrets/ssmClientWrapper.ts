@@ -13,9 +13,9 @@ export class SSMClientWrapper {
 
   private constructor(private readonly ssmClient: aws.SSM) { }
 
-  getExistingSecretNamesByPath = async (secretNamePath: string) => {
+  getExistingSecretNamesByPath = async (secretPath: string) => {
     const result = await this.ssmClient.getParametersByPath({
-      Path: secretNamePath,
+      Path: secretPath,
       MaxResults: 100,
       ParameterFilters: [
         {
