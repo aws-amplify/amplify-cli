@@ -28,7 +28,6 @@ import { loadConfigurationForEnv } from './configuration-manager';
 
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
-import { updateEnv } from './update-env';
 
 function init(context) {
   return initializer.run(context);
@@ -136,5 +135,4 @@ module.exports = {
   createDynamoDBService,
   resolveAppId,
   loadConfigurationForEnv,
-  updateEnv,
 };

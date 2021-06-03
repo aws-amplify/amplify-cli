@@ -741,7 +741,7 @@ function getConfigLevel(context: $TSContext): ProjectType {
   return configLevel;
 }
 
-export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
+export async function getAwsConfig(context: $TSContext): Promise<AwsConfig> {
   const { awsConfigInfo } = context.exeInfo;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 

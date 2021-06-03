@@ -6,7 +6,6 @@ import { getProviderPlugins } from '../extensions/amplify-helpers/get-provider-p
 import { insertAmplifyIgnore } from '../extensions/amplify-helpers/git-manager';
 import { writeReadMeFile } from '../extensions/amplify-helpers/docs-manager';
 import { initializeEnv } from '../initialize-env';
-import _ from 'lodash';
 
 export async function onHeadlessSuccess(context: $TSContext) {
   const frontendPlugins = getFrontendPlugins(context);
@@ -145,7 +144,7 @@ function generateTeamProviderInfoFile(context: $TSContext) {
       default: {},
     });
 
-    _.merge(teamProviderInfo, context.exeInfo.teamProviderInfo);
+    Object.assign(teamProviderInfo, context.exeInfo.teamProviderInfo);
   } else {
     ({ teamProviderInfo } = context.exeInfo);
   }
