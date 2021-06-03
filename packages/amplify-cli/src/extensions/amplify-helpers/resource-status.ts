@@ -8,7 +8,7 @@ import { getEnvInfo } from './get-env-info';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
 import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-policy';
-import { pathManager, stateManager, $TSMeta, $TSAny, Tag, NotInitializedError } from 'amplify-cli-core';
+import { pathManager, stateManager, $TSMeta, $TSAny, NotInitializedError } from 'amplify-cli-core';
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, hashFunction) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
@@ -23,8 +23,8 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
     return false;
   }
 
-  const localDirHash = await hashFunction(localBackendDir);
-  const cloudDirHash = await hashFunction(cloudBackendDir);
+  const localDirHash = await hashFunction(localBackendDir, resourceName);
+  const cloudDirHash = await hashFunction(cloudBackendDir, resourceName);
 
   return localDirHash !== cloudDirHash;
 }

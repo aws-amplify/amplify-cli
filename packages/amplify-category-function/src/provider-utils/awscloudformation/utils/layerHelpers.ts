@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSMeta, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSMeta, getPackageManager, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import crypto from 'crypto';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
@@ -9,13 +9,21 @@ import * as path from 'path';
 import uuid from 'uuid';
 import { categoryName } from '../../../constants';
 import { cfnTemplateSuffix, LegacyFilename, parametersFileName, provider, ServiceName, versionHash } from './constants';
-import { getLayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
+import { getLayerConfiguration, LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
 import { LayerParameters, LayerPermission, LayerVersionMetadata, PermissionEnum } from './layerParams';
 import { updateLayerArtifacts } from './storeResources';
 
 // These glob patterns cover the resource files Amplify stores in the layer resource's directory,
 // layer-parameters.json must NOT be there.
 const layerResourceGlobs = [parametersFileName, `*${cfnTemplateSuffix}`];
+
+// File path literals
+const libPathName = 'lib';
+const optPathName = 'opt';
+const packageJson = 'package.json';
+const nodeModules = 'node_modules';
+const yarnLock = 'yarn.lock';
+const packageLockJson = 'package-lock.json';
 
 export interface LayerInputParams {
   layerPermissions?: PermissionEnum[];
@@ -208,7 +216,7 @@ export function loadStoredLayerParameters(context: $TSContext, layerName: string
 
 export async function isNewVersion(layerName: string) {
   const previousHash = loadPreviousLayerHash(layerName);
-  const currentHash = await hashLayerVersionContents(pathManager.getResourceDirectoryPath(undefined, categoryName, layerName));
+  const currentHash = await hashLayerVersion(pathManager.getResourceDirectoryPath(undefined, categoryName, layerName), layerName);
 
   return previousHash !== currentHash;
 }
@@ -239,7 +247,7 @@ export function getLayerName(context: $TSContext, layerName: string): string {
 
 // Check hash results for content changes, bump version if so
 export async function ensureLayerVersion(context: $TSContext, layerName: string, previousHash: string) {
-  const currentHash = await hashLayerVersionContents(pathManager.getResourceDirectoryPath(undefined, categoryName, layerName));
+  const currentHash = await hashLayerVersion(pathManager.getResourceDirectoryPath(undefined, categoryName, layerName), layerName);
 
   if (previousHash !== currentHash) {
     if (previousHash) {
@@ -261,10 +269,140 @@ export function loadPreviousLayerHash(layerName: string): string | undefined {
   return previousHash;
 }
 
+export function validFilesize(context: $TSContext, zipPath: string, maxSize = 250) {
+  try {
+    const { size } = fs.statSync(zipPath);
+    const fileSize = Math.round(size / 1024 ** 2);
+    return fileSize < maxSize;
+  } catch (error) {
+    context.print.error(error);
+    return new Error(`Calculating file size failed: ${zipPath}`);
+  }
+}
+
+// hashes all of the layer contents as well as the files in the layer path (CFN, parameters, etc)
+export const hashLayerResource = async (layerPath: string, resourceName: string): Promise<string> => {
+  return await hashLayerVersion(layerPath, resourceName, true);
+};
+
+export async function getChangedResources(resources: Array<$TSAny>): Promise<Array<$TSAny>> {
+  const checkLambdaLayerChanges = async (resource: $TSAny): Promise<boolean> => {
+    const { resourceName } = resource;
+    const previousHash = loadPreviousLayerHash(resourceName);
+
+    if (!previousHash) {
+      return true;
+    }
+
+    const currentHash = await hashLayerVersion(pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName), resourceName);
+
+    return currentHash !== previousHash;
+  };
+
+  const resourceCheck = await Promise.all(resources.map(checkLambdaLayerChanges));
+
+  return resources.filter((_, i) => resourceCheck[i]);
+}
+
+const getLayerGlobs = async (
+  resourcePath: string,
+  resourceName: string,
+  runtimeId: string,
+  layerExecutablePath: string,
+  includeResourceFiles: boolean,
+): Promise<string[]> => {
+  const result: string[] = [];
+
+  if (includeResourceFiles) {
+    result.push(...layerResourceGlobs);
+  }
+
+  const layerCodePath = path.join(resourcePath, libPathName, layerExecutablePath);
+
+  // Add to hashable files/folders
+  result.push(optPathName);
+
+  //TODO let function runtimes export globs later instead of hardcoding in here
+  if (runtimeId === 'nodejs') {
+    const packageManager = getPackageManager(layerCodePath);
+
+    // If no packagemanager was detected it means no package.json present at the resource path,
+    // so no files to hash related to packages.
+    if (packageManager !== null) {
+      // Add to hashable files/folders
+      result.push(path.join(libPathName, layerExecutablePath, packageJson));
+
+      // If lock file is present, add to hashable files/folders
+      const lockFilePath = path.join(layerCodePath, packageManager.lockFile);
+
+      if (fs.existsSync(lockFilePath)) {
+        result.push(path.join(libPathName, layerExecutablePath, packageManager.lockFile));
+      }
+    }
+
+    // Add layer direct content from lib/nodejs and exclude well known files from list.
+    // files must be relative to resource folder as that will be used as a base path for hashing.
+    const contentFilePaths = await globby([path.join(libPathName, layerExecutablePath, '**', '*')], {
+      cwd: resourcePath,
+      ignore: [
+        path.join(libPathName, layerExecutablePath, 'node_modules'),
+        path.join(libPathName, layerExecutablePath, packageJson),
+        path.join(libPathName, layerExecutablePath, 'yarn.lock'),
+        path.join(libPathName, layerExecutablePath, 'package-lock.json'),
+      ],
+    });
+
+    result.push(...contentFilePaths);
+  } else if (runtimeId === 'python') {
+    // No special treatment needed for python yet.
+  } else {
+    const error = new Error(`Unsupported layer runtime: ${runtimeId} for resource: ${resourceName}`);
+    error.stack = undefined;
+
+    throw error;
+  }
+
+  return result;
+};
+
 // hashes just the content that will be zipped into the layer version.
 // for efficiency, it only hashes package.json files in the node_modules folder of nodejs layers
-export const hashLayerVersionContents = async (layerPath: string): Promise<string> => {
-  // TODO don't use hardcoded paths
+const hashLayerVersion = async (layerPath: string, layerName: string, includeResourceFiles: boolean = false): Promise<string> => {
+  const layerConfig: LayerConfiguration = loadLayerConfigurationFile(layerName, false);
+
+  if (layerConfig) {
+    const { value: runtimeId, layerExecutablePath } = layerConfig.runtimes[0];
+
+    const layerFilePaths = await getLayerGlobs(layerPath, layerName, runtimeId, layerExecutablePath, includeResourceFiles);
+
+    const filePaths = await globby(layerFilePaths, { cwd: layerPath });
+
+    return filePaths
+      .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'binary'))
+      .reduce((acc, it) => acc.update(it), crypto.createHash('sha256'))
+      .digest('hex');
+  } else {
+    // Do legacy hashing
+    return includeResourceFiles ? await legacyResourceHashing(layerPath) : await legacyContentHashing(layerPath);
+  }
+};
+
+// hashes just the content that will be zipped into the layer version.
+// for efficiency, it only hashes package.json files in the node_modules folder of nodejs layers
+const legacyContentHashing = async (layerPath: string): Promise<string> => {
+  // wrapper around hashElement that will return an empty string if the path does not exist
+  const safeHash = async (path: string, opts?: HashElementOptions): Promise<string> => {
+    if (fs.pathExistsSync(path)) {
+      return (
+        await hashElement(path, opts).catch(() => {
+          throw new Error(`An error occurred hashing directory ${path}`);
+        })
+      ).hash;
+    }
+
+    return '';
+  };
+
   const nodePath = path.join(layerPath, 'lib', 'nodejs');
   const nodeHashOptions = {
     files: {
@@ -279,47 +417,14 @@ export const hashLayerVersionContents = async (layerPath: string): Promise<strin
   return crypto.createHash('sha256').update(joinedHashes).digest('base64');
 };
 
-// wrapper around hashElement that will return an empty string if the path does not exist
-const safeHash = async (path: string, opts?: HashElementOptions): Promise<string> => {
-  if (fs.pathExistsSync(path)) {
-    return (
-      await hashElement(path, opts).catch(() => {
-        throw new Error(`An error occurred hashing directory ${path}`);
-      })
-    ).hash;
-  }
-  return '';
-};
+const legacyResourceHashing = async (layerPath: string): Promise<string> => {
+  const files = await globby(layerResourceGlobs, { cwd: layerPath });
 
-export function validFilesize(context: $TSContext, zipPath: string, maxSize = 250) {
-  try {
-    const { size } = fs.statSync(zipPath);
-    const fileSize = Math.round(size / 1024 ** 2);
-    return fileSize < maxSize;
-  } catch (error) {
-    context.print.error(error);
-    return new Error(`Calculating file size failed: ${zipPath}`);
-  }
-}
-
-// hashes all of the layer contents as well as the files in the layer path (CFN, parameters, etc)
-export const hashLayerResource = async (layerPath: string): Promise<string> => {
-  return (await globby(layerResourceGlobs, { cwd: layerPath }))
+  const hash = files
     .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'utf8'))
     .reduce((acc, it) => acc.update(it), crypto.createHash('sha256'))
-    .update(await hashLayerVersionContents(layerPath))
+    .update(await legacyContentHashing(layerPath))
     .digest('base64');
+
+  return hash;
 };
-
-export async function getChangedResources(resources: Array<$TSAny>): Promise<Array<$TSAny>> {
-  const resourceCheck = await Promise.all(resources.map(checkLambdaLayerChanges));
-  return resources.filter((_, i) => resourceCheck[i]);
-}
-
-async function checkLambdaLayerChanges(resource: $TSAny): Promise<boolean> {
-  const { resourceName } = resource;
-  const previousHash = loadPreviousLayerHash(resourceName);
-  if (!previousHash) return true;
-  const currentHash = await hashLayerVersionContents(pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName));
-  return currentHash !== previousHash;
-}

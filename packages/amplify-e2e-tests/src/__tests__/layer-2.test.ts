@@ -1,6 +1,10 @@
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import * as rimraf from 'rimraf';
 import {
   addFunction,
   addLayer,
+  addOptData,
   addOptFile,
   amplifyPushAuth,
   amplifyPushLayer,
@@ -14,6 +18,7 @@ import {
   expectEphemeralPermissions,
   functionCloudInvoke,
   getCurrentLayerArnFromMeta,
+  getLayerDirectoryName,
   getProjectConfig,
   getProjectMeta,
   initJSProjectWithProfile,
@@ -291,5 +296,83 @@ describe('amplify add lambda layer with changes', () => {
     response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
 
     expect(JSON.parse(JSON.parse(response.Payload.toString()).body)).toEqual(helloWorldTitleCaseOutput);
+  });
+
+  /*
+add node layer
+add files in opt
+push
+remove node_modules (simulate gitignore),
+amplify status -> no change
+delete yarn.lock
+amplify status -> update
+push
+-> should not create layer version
+, (it should force a npm/yarn), node_module should exists with content, push should succeed
+
+  */
+
+  it('add node layer, remove lock file, node_modules, verify status, push', async () => {
+    const [shortId] = uuid().split('-');
+    const layerName = `simplelayer${shortId}`;
+    const layerRuntime: LayerRuntime = 'nodejs';
+
+    const settings = {
+      runtimes: [layerRuntime],
+      layerName,
+      projName,
+    };
+    const settingsUpdate = {
+      runtimes: [layerRuntime],
+      layerName: layerName,
+      changePermissionOnFutureVersion: true,
+      permissions: ['Public (Anyone on AWS can use this layer)'],
+      numLayers: 1,
+      projName,
+    };
+
+    await addLayer(projRoot, settings);
+
+    const packageJsonContent = loadFunctionTestFile('case-layer-package.json');
+    overrideLayerCodeNode(projRoot, settings.projName, settings.layerName, packageJsonContent, 'package.json');
+
+    addOptData(projRoot, settings);
+
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+      usePreviousPermissions: true,
+    });
+
+    const firstArn = getCurrentLayerArnFromMeta(projRoot, settingsUpdate);
+
+    // 1. Remove node_modules
+    // 2. Check status: No Change
+    const layerPath = path.join(
+      projRoot,
+      'amplify',
+      'backend',
+      'function',
+      getLayerDirectoryName({ projName: settings.projName, layerName: settings.layerName }),
+    );
+
+    rimraf.sync(path.join(layerPath, 'lib', 'nodejs', 'node_modules'));
+
+    await amplifyStatus(projRoot, 'No Change');
+
+    // 3. Remove yarn.lock
+    // 4. Check status: Update
+    fs.removeSync(path.join(layerPath, 'lib', 'nodejs', 'yarn.lock'));
+
+    await amplifyStatus(projRoot, 'Update');
+
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+      usePreviousPermissions: true,
+    });
+
+    const secondArn = getCurrentLayerArnFromMeta(projRoot, settings);
+
+    // Layer ARNs must match as no new version should have been deployed, as
+    expect(firstArn).toEqual(secondArn);
   });
 });

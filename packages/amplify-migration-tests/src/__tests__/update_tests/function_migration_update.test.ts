@@ -8,8 +8,10 @@ import {
   deleteProject,
   deleteProjectDir,
   getCurrentLayerArnFromMeta,
+  getProjectConfig,
   getProjectMeta,
   invokeFunction,
+  LayerRuntime,
   loadFunctionTestFile,
   overrideFunctionSrcNode,
   updateFunction,
@@ -21,8 +23,13 @@ import { initJSProjectWithProfile } from '../../migration-helpers';
 
 describe('amplify function migration', () => {
   let projRoot: string;
+  let projName: string;
+
   beforeEach(async () => {
     projRoot = await createNewProjectDir('functions');
+
+    const { projectName } = getProjectConfig(projRoot);
+    projName = projectName;
   });
 
   afterEach(async () => {
@@ -98,9 +105,9 @@ describe('amplify function migration', () => {
 
     const layerName = `test${shortId}`;
     const layerSettings = {
+      runtimes: ['nodejs' as LayerRuntime],
       layerName,
-      versionChanged: true,
-      runtimes: ['nodejs'],
+      projName,
     };
     await addLayer(projRoot, layerSettings, true);
     await updateFunction(
@@ -117,7 +124,7 @@ describe('amplify function migration', () => {
       'nodejs',
     );
     await amplifyPushAuth(projRoot, true);
-    const arns: string[] = [getCurrentLayerArnFromMeta(projRoot, { layerName: layerName, projName: projRoot })];
+    const arns: string[] = [getCurrentLayerArnFromMeta(projRoot, { layerName: layerName, projName: projRoot }), layerName];
 
     const meta = getProjectMeta(projRoot);
     await validateLayerMetadata(projRoot, { layerName: layerName, projName: projRoot }, meta, 'integtest', arns);
@@ -128,9 +135,9 @@ describe('amplify function migration', () => {
     await initJSProjectWithProfile(projRoot, {});
     const layerName = `test${shortId}`;
     const layerSettings = {
+      runtimes: ['nodejs' as LayerRuntime],
       layerName,
-      versionChanged: true,
-      runtimes: ['nodejs'],
+      projName,
     };
     await addLayer(projRoot, layerSettings);
     await amplifyPushAuth(projRoot);
