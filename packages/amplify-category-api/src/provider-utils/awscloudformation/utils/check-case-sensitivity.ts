@@ -4,25 +4,17 @@ import path from 'path';
 export const checkCaseSensitivityIssue = async (context: any, category: string, resourceName: string) => {
   const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
 
-  const fsIsCaseSensitive = async () => {
-    const tempFileName = '/tmp/AMPLIFY-TEMP';
-    await fs.writeFile(tempFileName, 'deleteme');
-    const lowercaseVersionExists = fs.existsSync(tempFileName.toLowerCase());
-    await fs.unlink(tempFileName);
-    return !lowercaseVersionExists;
-  };
-
-  const caseSensitiveMatchExists = async () => {
+  const caseSensitivityConflict = async () => {
     const basePath = path.join(projectBackendDirPath, category);
     const filenames = await fs.readdir(basePath);
-    const matchExistsWhenAllLowercase = filenames.map(name => name.toLowerCase()).includes(resourceName.toLowerCase());
-    const matchExistsDirectly = filenames.includes(resourceName);
-    return !matchExistsDirectly && matchExistsWhenAllLowercase;
+    const lowerCaseMatch = filenames.find(name => name.toLowerCase() === resourceName.toLowerCase());
+    return lowerCaseMatch === resourceName ? false : lowerCaseMatch;
   };
 
-  if (!(await fsIsCaseSensitive()) && (await caseSensitiveMatchExists())) {
+  const conflict = await caseSensitivityConflict();
+  if (conflict) {
     context.print.error(
-      `Unable to create resource with name ${resourceName} since your filesystem is case-insensitive and a case-sensitive match already exists.`,
+      `Unable to create resource with name ${resourceName} since a resource named ${conflict} already exists. Amplify resource names are case-insensitive.`,
     );
     process.exit(1);
   }
