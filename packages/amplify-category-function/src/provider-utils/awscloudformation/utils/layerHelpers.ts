@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSMeta, getPackageManager, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSMeta, getPackageManager, pathManager, stateManager } from 'amplify-cli-core';
 import crypto from 'crypto';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
@@ -21,9 +21,6 @@ const layerResourceGlobs = [parametersFileName, `*${cfnTemplateSuffix}`];
 const libPathName = 'lib';
 const optPathName = 'opt';
 const packageJson = 'package.json';
-const nodeModules = 'node_modules';
-const yarnLock = 'yarn.lock';
-const packageLockJson = 'package-lock.json';
 
 export interface LayerInputParams {
   layerPermissions?: PermissionEnum[];
@@ -403,14 +400,14 @@ const legacyContentHashing = async (layerPath: string): Promise<string> => {
     return '';
   };
 
-  const nodePath = path.join(layerPath, 'lib', 'nodejs');
+  const nodePath = path.join(layerPath, libPathName, 'nodejs');
   const nodeHashOptions = {
     files: {
-      include: ['package.json'],
+      include: [packageJson],
     },
   };
-  const pyPath = path.join(layerPath, 'lib', 'python');
-  const optPath = path.join(layerPath, 'opt');
+  const pyPath = path.join(layerPath, libPathName, 'python');
+  const optPath = path.join(layerPath, optPathName);
 
   const joinedHashes = (await Promise.all([safeHash(nodePath, nodeHashOptions), safeHash(pyPath), safeHash(optPath)])).join();
 
