@@ -1,4 +1,10 @@
-import { AddAuthRequest, CognitoUserPoolSigninMethod, CognitoUserProperty, UpdateAuthRequest } from 'amplify-headless-interface';
+import {
+  AddAuthRequest,
+  CognitoUserAliasAttributes,
+  CognitoUserPoolSigninMethod,
+  CognitoUserProperty,
+  UpdateAuthRequest,
+} from 'amplify-headless-interface';
 import {
   getAddAuthRequestAdaptor,
   getUpdateAuthRequestAdaptor,
@@ -22,6 +28,27 @@ describe('get add auth request adaptor', () => {
 
       expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
     });
+  });
+  it('translates request with aliasAttributes', () => {
+    const addAuthRequest: AddAuthRequest = {
+      version: 1,
+      resourceName: 'myTestAuth',
+      serviceConfiguration: {
+        serviceName: 'Cognito',
+        userPoolConfiguration: {
+          signinMethod: CognitoUserPoolSigninMethod.EMAIL,
+          requiredSignupAttributes: [CognitoUserProperty.EMAIL],
+          aliasAttributes: [
+            CognitoUserAliasAttributes.EMAIL,
+            CognitoUserAliasAttributes.PHONE_NUMBER,
+            CognitoUserAliasAttributes.PREFERRED_USERNAME,
+          ],
+        },
+        includeIdentityPool: false,
+      },
+    };
+
+    expect(getAddAuthRequestAdaptor('javascript')(addAuthRequest)).toMatchSnapshot();
   });
 });
 

@@ -291,6 +291,28 @@ export const supportedServices = {
         ],
       },
       {
+        key: 'aliasAttributes',
+        question: 'Would you like to enable alternative options to sign up and sign in?',
+        required: true,
+        type: 'multiselect',
+        map: 'aliasAttributes',
+        andConditions: [
+          {
+            key: 'usernameAttributes',
+            value: 'username',
+            operator: '=',
+          },
+          {
+            key: 'authSelections',
+            value: 'identityPoolOnly',
+            operator: '!=',
+          },
+          {
+            preventEdit: 'always',
+          },
+        ],
+      },
+      {
         key: 'userPoolGroups',
         question: 'Do you want to add User Pool Groups?',
         learnMore: 'This flow will help you add multiple user pool groups to your user-pool',
@@ -308,7 +330,8 @@ export const supportedServices = {
       {
         key: 'adminQueries',
         question: 'Do you want to add an admin queries API?',
-        learnMore: 'Admin Queries API let you perform user admin functions from your frontend. See https://docs.amplify.aws/cli/auth/admin#admin-queries-api for more.',
+        learnMore:
+          'Admin Queries API let you perform user admin functions from your frontend. See https://docs.amplify.aws/cli/auth/admin#admin-queries-api for more.',
         required: true,
         type: 'list',
         map: 'booleanOptions',
@@ -733,7 +756,7 @@ export const supportedServices = {
         key: 'hostedUI',
         question: 'Do you want to use an OAuth flow?',
         learnMore:
-        'When you create a user pool in Amazon Cognito and configure a domain for it, Amazon Cognito automatically provisions a hosted web UI to let you add sign-up and sign-in pages to your app. Selecting "No" will remove any existing OAuth configuration.',
+          'When you create a user pool in Amazon Cognito and configure a domain for it, Amazon Cognito automatically provisions a hosted web UI to let you add sign-up and sign-in pages to your app. Selecting "No" will remove any existing OAuth configuration.',
         required: true,
         type: 'list',
         map: 'booleanOptions',
