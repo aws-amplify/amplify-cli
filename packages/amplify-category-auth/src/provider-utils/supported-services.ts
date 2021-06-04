@@ -305,6 +305,28 @@ export const supportedServices = {
         ],
       },
       {
+        key: 'aliasAttributes',
+        question: 'Would you like to enable alternative options to sign up and sign in?',
+        required: true,
+        type: 'multiselect',
+        map: 'aliasAttributes',
+        andConditions: [
+          {
+            key: 'usernameAttributes',
+            value: 'username',
+            operator: '=',
+          },
+          {
+            key: 'authSelections',
+            value: 'identityPoolOnly',
+            operator: '!=',
+          },
+          {
+            preventEdit: 'always',
+          },
+        ],
+      },
+      {
         key: 'userPoolGroups',
         question: 'Do you want to add User Pool Groups?',
         learnMore: 'This flow will help you add multiple user pool groups to your user-pool',

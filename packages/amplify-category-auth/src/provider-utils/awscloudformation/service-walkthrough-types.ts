@@ -98,6 +98,7 @@ export type PasswordPolicy = 'Requires Lowercase' | 'Requires Numbers' | 'Requir
 
 export type UsernameAttributes = 'email' | 'phone_number';
 
+export type AliasAttributes = 'email' | 'phone_number' | 'preferred_username';
 export interface Triggers {
   triggers?: any; // TODO create a type for this
 }

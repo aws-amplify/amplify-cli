@@ -1,5 +1,6 @@
 import {
   AddAuthRequest,
+  CognitoUserAliasAttributes,
   CognitoUserPoolSigninMethod,
   CognitoAdminQueries,
   CognitoMFAConfiguration,
@@ -28,6 +29,7 @@ import {
   PasswordPolicy,
   PasswordRecoveryResult,
   UsernameAttributes,
+  AliasAttributes,
 } from '../service-walkthrough-types';
 import { pascalCase } from 'change-case';
 
@@ -75,6 +77,7 @@ const immutableAttributeAdaptor = (userPoolConfig: CognitoUserPoolConfiguration,
   return {
     userPoolName: userPoolConfig.userPoolName,
     usernameAttributes: signinAttributeMap[userPoolConfig.signinMethod],
+    aliasAttributes: userPoolConfig.aliasAttributes?.map(attr => aliasAttributeMap[attr]) ?? [],
     ...immutableIdentityPoolMap(identityPoolConfig),
   };
 };
@@ -266,6 +269,12 @@ const signinAttributeMap: Record<CognitoUserPoolSigninMethod, UsernameAttributes
   [CognitoUserPoolSigninMethod.EMAIL]: ['email'],
   [CognitoUserPoolSigninMethod.PHONE_NUMBER]: ['phone_number'],
   [CognitoUserPoolSigninMethod.EMAIL_AND_PHONE_NUMBER]: ['email', 'phone_number'],
+};
+
+const aliasAttributeMap: Record<CognitoUserAliasAttributes, AliasAttributes> = {
+  [CognitoUserAliasAttributes.PREFERRED_USERNAME]: 'preferred_username',
+  [CognitoUserAliasAttributes.EMAIL]: 'email',
+  [CognitoUserAliasAttributes.PHONE_NUMBER]: 'phone_number',
 };
 
 const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE' | 'APPLE', projectType: string): string => {
