@@ -61,7 +61,6 @@ This change requires a migration. Amplify will create a new Lambda layer version
     }
   }
 
-  const runtimeCloudTemplateValues: string[] = [];
   const layerConfiguration: { permissions: LayerPermission[]; runtimes: Partial<LayerRuntime>[]; nonMultiEnv?: boolean } = {
     permissions: undefined,
     runtimes: undefined,
@@ -80,13 +79,7 @@ This change requires a migration. Amplify will create a new Lambda layer version
     layerConfiguration.nonMultiEnv = true;
   }
 
-  legacyRuntimeArray
-    .map(legacyRuntime => legacyRuntime.cloudTemplateValue)
-    .forEach((cloudTemplateValue: string) => {
-      runtimeCloudTemplateValues.push(cloudTemplateValue);
-    });
-
-  legacyRuntimeArray.forEach((runtime: LegacyRuntime) => delete runtime.cloudTemplateValue);
+  legacyRuntimeArray.forEach((runtime: LegacyRuntime) => (runtime.cloudTemplateValue = undefined));
   layerConfiguration.runtimes = legacyRuntimeArray;
 
   await Promise.all(
@@ -134,7 +127,7 @@ This change requires a migration. Amplify will create a new Lambda layer version
   }
 
   stateManager.setResourceParametersJson(undefined, categoryName, layerName, {
-    runtimes: runtimeCloudTemplateValues,
+    runtimes: legacyRuntimeArray.map(legacyRuntime => legacyRuntime.cloudTemplateValue),
     description: '',
   });
 

@@ -246,10 +246,8 @@ export function getLayerName(context: $TSContext, layerName: string): string {
 export async function ensureLayerVersion(context: $TSContext, layerName: string, previousHash: string) {
   const currentHash = await hashLayerVersion(pathManager.getResourceDirectoryPath(undefined, categoryName, layerName), layerName);
 
-  if (previousHash !== currentHash) {
-    if (previousHash) {
-      context.print.success(`Content changes in Lambda layer ${layerName} detected.`);
-    }
+  if (previousHash && previousHash !== currentHash) {
+    context.print.success(`Content changes in Lambda layer ${layerName} detected.`);
   }
 
   const layerParameters = loadStoredLayerParameters(context, layerName);

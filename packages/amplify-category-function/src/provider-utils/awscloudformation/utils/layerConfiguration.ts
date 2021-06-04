@@ -81,7 +81,6 @@ export function saveLayerPermissions(layerDirPath: string, permissions: LayerPer
   if (!_.isEqual(layerConfig.permissions, permissions)) {
     layerConfig.permissions = permissions;
     JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
-
     updated = true;
   }
 

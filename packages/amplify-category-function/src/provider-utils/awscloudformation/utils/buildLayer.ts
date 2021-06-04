@@ -21,7 +21,7 @@ export const buildLayer = async (context: $TSContext, { resourceName, lastBuildT
   if (!depCheck.hasRequiredDependencies) {
     context.print.error(depCheck.errorMessage || `Required dependencies to build ${resourceName} are missing`);
     const err = new Error(`Required dependencies to build ${resourceName} are missing`);
-    delete err.stack;
+    err.stack = undefined;
     throw err;
   }
 

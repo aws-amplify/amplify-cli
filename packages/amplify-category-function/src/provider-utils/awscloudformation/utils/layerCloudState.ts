@@ -39,20 +39,18 @@ export class LayerCloudState {
 
       layerVersionList.forEach((layerVersion: LayerVersionMetadata) => {
         let layerLogicalIdSuffix: string;
-        detailedLayerStack
-          .filter(stack => stack.ResourceType === 'AWS::Lambda::LayerVersion' && stack.PhysicalResourceId === layerVersion.LayerVersionArn)
-          .forEach(stack => {
+        detailedLayerStack.forEach(stack => {
+          if (stack.ResourceType === 'AWS::Lambda::LayerVersion' && stack.PhysicalResourceId === layerVersion.LayerVersionArn) {
             layerVersion.LogicalName = stack.LogicalResourceId;
             layerLogicalIdSuffix = stack.LogicalResourceId.replace(LayerCfnLogicalNamePrefix.LambdaLayerVersion, '');
-          });
+          }
+        });
 
-        detailedLayerStack
-          .filter(
-            stack =>
-              stack.ResourceType === 'AWS::Lambda::LayerVersionPermission' &&
-              stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn,
-          )
-          .forEach(stack => {
+        detailedLayerStack.forEach(stack => {
+          if (
+            stack.ResourceType === 'AWS::Lambda::LayerVersionPermission' &&
+            stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn
+          ) {
             layerVersion.permissions = layerVersion.permissions || [];
 
             const permissionTypeString = stack.LogicalResourceId.replace(
@@ -91,7 +89,8 @@ export class LayerCloudState {
                 orgs: orgIds,
               });
             }
-          });
+          }
+        });
 
         layerVersion.legacyLayer = layerVersion.LogicalName === undefined || layerVersion.LogicalName === 'LambdaLayer';
       });
@@ -108,9 +107,6 @@ export class LayerCloudState {
   }
 
   public async getLayerVersionsFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
-    if (this.layerVersionsMetadata) {
-      return this.layerVersionsMetadata;
-    }
-    return this.loadLayerDataFromCloud(context, layerName);
+    return this.layerVersionsMetadata || this.loadLayerDataFromCloud(context, layerName);
   }
 }

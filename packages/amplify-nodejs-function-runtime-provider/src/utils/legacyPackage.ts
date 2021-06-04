@@ -21,20 +21,22 @@ export async function packageResource(request: PackageRequest, context: $TSConte
           conflicts.push(basename);
         }
       });
+
       if (conflicts.length > 0) {
         const libs = conflicts.map(lib => `"/${lib}"`).join(', ');
         const plural = conflicts.length > 1 ? 'ies' : 'y';
         context.print.warning(
-          `${libs} sub director${plural} found in both "/lib" and "/opt". These folders will be merged and the files in "/opt" will take precedence if a conflict exists.`,
+          `${libs} subdirector${plural} found in both "/lib" and "/opt". These folders will be merged and the files in "/opt" will take precedence if a conflict exists.`,
         );
       }
-      [optPath, ...libGlob]
-        .filter(folder => fs.lstatSync(folder).isDirectory())
-        .forEach(folder => {
+
+      [optPath, ...libGlob].forEach(folder => {
+        if (fs.lstatSync(folder).isDirectory()) {
           zipEntries.push({
             packageFolder: folder,
           });
-        });
+        }
+      });
     } else {
       zipEntries.push({
         sourceFolder: resourcePath,

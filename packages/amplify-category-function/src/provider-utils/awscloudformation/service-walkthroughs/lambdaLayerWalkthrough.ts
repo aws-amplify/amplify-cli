@@ -199,7 +199,7 @@ async function descriptionQuestion(timestampString: string): Promise<string> {
     message: 'Description:',
     validate: (desc: string) => {
       if (desc.length === 0) return 'Description cannot be empty';
-      if (desc.length > 255) return 'Description cannot be more than 256 characters';
+      if (desc.length > 256) return 'Description cannot be more than 256 characters';
       return true;
     },
   });

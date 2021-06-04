@@ -12,18 +12,18 @@ export type PackageManager = {
   executable: string;
 };
 
-const isWindows = (): boolean => /^win/.test(process.platform);
+const isWindows = process.platform === 'win32';
 
 const packageManagers: Record<string, PackageManager> = {
   npm: {
     packageManager: 'npm',
     lockFile: 'package-lock.json',
-    executable: isWindows() ? 'npm.cmd' : 'npm',
+    executable: isWindows ? 'npm.cmd' : 'npm',
   },
   yarn: {
     packageManager: 'yarn',
     lockFile: 'yarn.lock',
-    executable: isWindows() ? 'yarn.cmd' : 'yarn',
+    executable: isWindows ? 'yarn.cmd' : 'yarn',
   },
 };
 

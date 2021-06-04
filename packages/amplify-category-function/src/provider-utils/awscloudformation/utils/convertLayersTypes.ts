@@ -41,10 +41,10 @@ export const convertExternalLayersToProjectLayers = (lambdaLayers: LambdaLayer[]
   lambdaLayers.forEach(layer => {
     if (layer.type === externalLayer && layer.arn.hasOwnProperty(LAYER_ARN_KEY)) {
       const layerArn = layer.arn[LAYER_ARN_KEY];
-      const layerNameWithEnv = layerArn.split(':')[layerArn.split(':').length - 2];
-      const layerVersion = parseInt(layerArn.split(':')[layerArn.split(':').length - 1], 10);
-      const layerName = layerNameWithEnv.split('-')[0];
-      const layerEnv = layerNameWithEnv.split('-')[1];
+      const layerArnSplit = layerArn.split(':');
+      const layerNameWithEnv = layerArnSplit[layerArnSplit.length - 2];
+      const layerVersion = parseInt(layerArnSplit[layerArnSplit.length - 1], 10);
+      const [layerName, layerEnv] = layerNameWithEnv.split('-');
       if (envName !== layerEnv) {
         modifiedLambdaLayers.push(layer);
       } else {

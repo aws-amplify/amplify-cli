@@ -89,10 +89,10 @@ describe('remove walkthough test', () => {
       },
     ]);
     selectPromptMock.mockReturnValue({ versions: selectedlayerVersions });
-
     const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
+
     expect(returnValue).toBeUndefined();
     expect(saveLayerVersionsToBeRemovedByCfn).toBeCalled();
     expect(saveLayerVersionsToBeRemovedByCfn).toBeCalledWith(layerName, [3], envName);
@@ -153,9 +153,9 @@ describe('remove walkthough test', () => {
     const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
+
     expect(returnValue).toBeUndefined();
     expect(saveLayerVersionsToBeRemovedByCfn).toBeCalled();
-
     expect(saveLayerVersionsToBeRemovedByCfn).toBeCalledWith(layerName, [2, 3], envName);
     expect(deleteLayerVersionsMockFn).not.toBeCalled();
   });
@@ -177,9 +177,9 @@ describe('remove walkthough test', () => {
     const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
+
     expect(returnValue).toBeDefined();
     expect(saveLayerVersionsToBeRemovedByCfn).not.toBeCalled();
-
     expect(deleteLayerVersionsMockFn).not.toBeCalled();
   });
 
@@ -200,9 +200,9 @@ describe('remove walkthough test', () => {
     const removeWalkthrough = require('../../../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough')
       .removeWalkthrough;
     const returnValue = await removeWalkthrough(mockContext, layerName);
+
     expect(returnValue).toBeUndefined();
     expect(saveLayerVersionsToBeRemovedByCfn).not.toBeCalled();
-
     expect(deleteLayerVersionsMockFn).not.toBeCalled();
   });
 });
