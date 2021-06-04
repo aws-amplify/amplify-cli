@@ -43,9 +43,9 @@ function runPackageManager(cwd: string, scriptName?: string) {
   const packageManager = getPackageManager(cwd);
 
   if (packageManager === null) {
-    throw new Error(
-      `Packaging lambda failed function failed. Could not find 'npm' or 'yarn' executable in the PATH or no 'package.json' file exists in the function's directory.`,
-    );
+    // If no package manager was detected, it means that this functions or layer has no package.json, so no package operations
+    // should be done.
+    return;
   }
 
   const useYarn = packageManager.packageManager === 'yarn';

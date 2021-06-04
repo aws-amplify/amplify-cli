@@ -39,7 +39,7 @@ export function validateLayerDir(projRoot: string, layerProjName: LayerDirectory
 }
 
 export function getLayerDirectoryName({ layerName, projName }: { layerName: string; projName: string }): string {
-  return projName + layerName;
+  return `${projName}${layerName}`;
 }
 
 export function validatePushedVersion(projRoot: string, layerProjName: LayerDirectoryType, permissions: LayerPermission[]) {
