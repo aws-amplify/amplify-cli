@@ -571,7 +571,7 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
 
   const cfnFile = cfnFiles[0];
   const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
-  const { templateFormat, cfnTemplate } = await readCFNTemplate(cfnFilePath);
+  const { cfnTemplate } = await readCFNTemplate(cfnFilePath);
   const paramType = { Type: 'String' };
 
   if (resource.service === FunctionServiceNameLambdaLayer) {
