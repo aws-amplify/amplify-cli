@@ -45,6 +45,7 @@ import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
+import { readCFNTemplate } from 'amplify-cli-core';
 
 const logger = fileLogger('push-resources');
 
@@ -570,12 +571,12 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
 
   const cfnFile = cfnFiles[0];
   const cfnFilePath = path.normalize(path.join(resourceDir, cfnFile));
-  const cfnMeta = JSONUtilities.readJson<$TSAny>(cfnFilePath);
+  const { templateFormat, cfnTemplate } = await readCFNTemplate(cfnFilePath);
   const paramType = { Type: 'String' };
 
   if (resource.service === FunctionServiceNameLambdaLayer) {
-    cfnMeta.Parameters.deploymentBucketName = paramType;
-    cfnMeta.Parameters.s3Key = paramType;
+    cfnTemplate.Parameters.deploymentBucketName = paramType;
+    cfnTemplate.Parameters.s3Key = paramType;
     storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
   } else if (resource.service === ApiServiceNameElasticContainer) {
     const cfnParams = { ParamZipPath: s3Key };
@@ -583,22 +584,22 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
     const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
     JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
   } else {
-    cfnMeta.Parameters.deploymentBucketName = paramType;
-    cfnMeta.Parameters.s3Key = paramType;
-    if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-      cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
+    cfnTemplate.Parameters.deploymentBucketName = paramType;
+    cfnTemplate.Parameters.s3Key = paramType;
+    if (cfnTemplate.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
+      cfnTemplate.Resources.LambdaFunction.Properties.CodeUri = {
         Bucket: Fn.Ref('deploymentBucketName'),
         Key: Fn.Ref('s3Key'),
       };
     } else {
-      cfnMeta.Resources.LambdaFunction.Properties.Code = {
+      cfnTemplate.Resources.LambdaFunction.Properties.Code = {
         S3Bucket: Fn.Ref('deploymentBucketName'),
         S3Key: Fn.Ref('s3Key'),
       };
     }
     storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
   }
-  JSONUtilities.writeJson(cfnFilePath, cfnMeta);
+  JSONUtilities.writeJson(cfnFilePath, cfnTemplate);
 }
 
 function storeS3BucketInfo(category: string, deploymentBucketName: string, envName: string, resourceName: string, s3Key: string) {
