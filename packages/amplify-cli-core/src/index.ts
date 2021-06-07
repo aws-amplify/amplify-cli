@@ -197,7 +197,6 @@ interface AmplifyToolkit {
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
   readJsonFile: () => $TSAny;
-  removeEnvFromCloud: () => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
   removeResource: () => $TSAny;
   sharedQuestions: () => $TSAny;

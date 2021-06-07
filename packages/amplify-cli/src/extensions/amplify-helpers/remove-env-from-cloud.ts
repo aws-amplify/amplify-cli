@@ -24,6 +24,7 @@ export async function removeEnvFromCloud(context, envName, deleteS3) {
 
   try {
     await Promise.all(providerPromises);
+    // TODO raise internal post env remove event
   } catch (e) {
     context.print.info('');
     context.print.error(`Error in deleting env:${envName}`);

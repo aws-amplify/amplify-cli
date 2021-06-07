@@ -9,10 +9,11 @@ import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { isMultiEnvLayer, LayerParameters, StoredLayerParameters } from './layerParams';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { saveLayerRuntimes } from './layerRuntimes';
+import { FunctionSecretsStateManager } from '../secrets/functionSecretsStateManager';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
-export function createFunctionResources(context: $TSContext, parameters: FunctionParameters | FunctionTriggerParameters) {
+export async function createFunctionResources(context: $TSContext, parameters: FunctionParameters | FunctionTriggerParameters) {
   context.amplify.updateamplifyMetaAfterResourceAdd(
     categoryName,
     parameters.resourceName || parameters.functionName,
@@ -21,7 +22,7 @@ export function createFunctionResources(context: $TSContext, parameters: Functio
 
   // copy template, CFN and parameter files
   copyTemplateFiles(context, parameters);
-  saveMutableState(parameters);
+  await saveMutableState(context, parameters);
   saveCFNParameters(parameters);
   context.amplify.leaveBreadcrumbs(categoryName, parameters.resourceName, createBreadcrumbs(parameters));
 }
@@ -71,12 +72,14 @@ export function removeLayerArtifacts(context: $TSContext, layerName: string) {
 }
 
 // ideally function update should be refactored so this function does not need to be exported
-export function saveMutableState(
+export async function saveMutableState(
+  context: $TSContext,
   parameters:
-    | Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers' | 'functionName'>>
+    | Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers' | 'functionName' | 'secretDeltas'>>
     | FunctionTriggerParameters,
 ) {
   createParametersFile(buildParametersFileObj(parameters), parameters.resourceName || parameters.functionName, functionParametersFileName);
+  await syncSecrets(context, parameters);
 }
 
 // ideally function update should be refactored so this function does not need to be exported
@@ -95,6 +98,13 @@ export function saveCFNParameters(
       CloudWatchRule: parameters.cloudwatchRule,
     };
     createParametersFile(params, parameters.resourceName, parametersFileName);
+  }
+}
+
+async function syncSecrets(context: $TSContext, parameters: Partial<FunctionParameters> | Partial<FunctionTriggerParameters>) {
+  if ('secretDeltas' in parameters) {
+    const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(context);
+    await functionSecretsStateManager.syncSecretDeltas((parameters as FunctionParameters)?.secretDeltas, parameters.functionName);
   }
 }
 

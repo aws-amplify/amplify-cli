@@ -27,6 +27,9 @@ import { resolveAppId } from './utils/resolve-appId';
 import { loadConfigurationForEnv } from './configuration-manager';
 import { SSM } from './aws-utils/aws-ssm';
 
+export { resolveAppId } from './utils/resolve-appId';
+export { loadConfigurationForEnv } from './configuration-manager';
+
 function init(context) {
   return initializer.run(context);
 }
@@ -96,7 +99,7 @@ function openConsole(context) {
   return consoleCommand.run(context);
 }
 
-async function getConfiguredSSMClient(context) {
+export async function getConfiguredSSMClient(context) {
   return await SSM.getInstance(context);
 }
 
@@ -137,5 +140,5 @@ module.exports = {
   createDynamoDBService,
   resolveAppId,
   loadConfigurationForEnv,
-  getConfiguredSSMClient
+  getConfiguredSSMClient,
 };

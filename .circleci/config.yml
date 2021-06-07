@@ -4,11 +4,11 @@ orbs:
   aws-ecr: circleci/aws-ecr@6.15.3
 machine:
   environment:
-    PATH: '${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin'
+    PATH: ${PATH}:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin
 node12:
   working_directory: ~/repo
   docker: &ref_0
-    - image: 'circleci/node:12'
+    - image: circleci/node:12
       auth:
         username: $DOCKERHUB_USERNAME
         password: $DOCKERHUB_ACCESS_TOKEN
@@ -16,7 +16,7 @@ node12:
 defaults:
   working_directory: ~/repo
   docker: &ref_1
-    - image: '${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo:latest'
+    - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo:latest
       aws_auth:
         aws_access_key_id: $ECR_ACCESS_KEY
         aws_secret_access_key: $ECR_SECRET_ACCESS_KEY
@@ -42,7 +42,7 @@ run_e2e_tests: &ref_3
     unsetNpmRegistryUrl
   no_output_timeout: 90m
 install_cli_from_local_registery: &ref_2
-  name: 'Start verdaccio, install node CLI and amplify-app'
+  name: Start verdaccio, install node CLI and amplify-app
   command: |
     source .circleci/local_publish_helpers.sh
     startLocalRegistry "$(pwd)/.circleci/verdaccio.yaml"
@@ -60,11 +60,11 @@ jobs:
       - checkout
       - run: yarn run production-build
       - save_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache
       - save_cache:
-          key: 'amplify-cli-ssh-deps-{{ .Branch }}'
+          key: amplify-cli-ssh-deps-{{ .Branch }}
           paths:
             - ~/.ssh
       - persist_to_workspace:
@@ -78,7 +78,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Install Java
           command: sudo apt-get update && sudo apt-get install default-jdk
@@ -99,7 +99,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Install Java
           command: sudo apt-get update && sudo apt-get install default-jdk
@@ -119,7 +119,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Publish to verdaccio
           command: |
@@ -141,15 +141,15 @@ jobs:
           name: Save new amplify GitHub tag
           command: node scripts/echo-current-cli-version.js > .amplify-pkg-version
       - save_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/verdaccio-cache/
       - save_cache:
-          key: 'amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/UNIFIED_CHANGELOG.md
       - save_cache:
-          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/.amplify-pkg-version
   build_pkg_binaries:
@@ -160,9 +160,9 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Start verdaccio and package CLI
           command: |
@@ -173,7 +173,7 @@ jobs:
             yarn pkg-all
             unsetNpmRegistryUrl
       - save_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/repo/out
   graphql_e2e_tests:
@@ -184,7 +184,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run GraphQL end-to-end tests
           command: >-
@@ -203,7 +203,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Update OS Packages
           command: sudo apt-get update
@@ -225,7 +225,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run: *ref_2
       - run: *ref_3
       - store_test_results:
@@ -255,9 +255,9 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Symlink Amplify packaged CLI
           command: |
@@ -280,7 +280,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run tests migrating from CLI v4.0.0
           command: |
@@ -303,7 +303,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Update OS Packages
           command: sudo apt-get update
@@ -327,7 +327,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run tests migrating from latest CLI
           command: |
@@ -348,7 +348,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run: *ref_2
       - run:
           command: |
@@ -368,14 +368,14 @@ jobs:
     working_directory: ~/repo
     resource_class: large
     docker:
-      - image: 'cypress/base:12'
+      - image: cypress/base:12
         environment:
           TERM: dumb
     steps:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Setup Dependencies
           command: |
@@ -432,7 +432,7 @@ jobs:
             cp ../repo/cypress.json .
             cp -R ../repo/cypress .
             yarn cypress run --spec $(find . -type f -name 'auth_spec*')
-      - run: 'sudo kill -9 $(lsof -t -i:3000)'
+      - run: sudo kill -9 $(lsof -t -i:3000)
       - run: cd .circleci/ && chmod +x delete_auth.sh
       - run: expect .circleci/delete_auth.exp
       - run:
@@ -484,10 +484,10 @@ jobs:
           at: ./
       - restore_cache:
           keys:
-            - 'amplify-cli-ssh-deps-{{ .Branch }}'
+            - amplify-cli-ssh-deps-{{ .Branch }}
       - run:
           name: Authenticate with npm
-          command: 'echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc'
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
       - run:
           name: Publish Amplify CLI
           command: |
@@ -506,11 +506,11 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-unified-changelog-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Compress binaries
           command: |
@@ -529,7 +529,7 @@ jobs:
     resource_class: large
     steps:
       - restore_cache:
-          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Install packaged Amplify CLI
           command: >
@@ -551,9 +551,9 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}'
+          key: amplify-pkg-binaries-{{ .Branch }}-{{ .Revision }}
       - restore_cache:
-          key: 'amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}'
+          key: amplfiy-pkg-tag-{{ .Branch }}-{{ .Revision }}
       - run:
           name: Publish Amplify CLI GitHub release
           command: |
@@ -567,7 +567,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run cleanup script
           command: |
@@ -584,7 +584,7 @@ jobs:
       - attach_workspace:
           at: ./
       - restore_cache:
-          key: 'amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}'
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
       - run:
           name: Run cleanup script
           command: |
@@ -1862,7 +1862,7 @@ workflows:
   e2e_resource_cleanup:
     triggers:
       - schedule:
-          cron: '45 0,12 * * *'
+          cron: 45 0,12 * * *
           filters:
             branches:
               only:

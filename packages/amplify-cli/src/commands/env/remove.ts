@@ -1,6 +1,7 @@
 import ora from 'ora';
 import { FeatureFlags, stateManager, UnknownArgumentError, exitOnNextTick } from 'amplify-cli-core';
 import { getConfirmation } from '../../extensions/amplify-helpers/delete-project';
+import { removeEnvFromCloud } from '../../extensions/amplify-helpers/remove-env-from-cloud';
 
 export const run = async context => {
   const envName = context.parameters.first;
@@ -39,7 +40,7 @@ export const run = async context => {
       const spinner = ora('Deleting resources from the cloud. This may take a few minutes...');
       spinner.start();
       try {
-        await context.amplify.removeEnvFromCloud(context, envName, confirmation.deleteS3);
+        await removeEnvFromCloud(context, envName, confirmation.deleteS3);
       } catch (ex) {
         spinner.fail(`remove env failed: ${ex.message}`);
         throw ex;
