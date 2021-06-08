@@ -52,8 +52,8 @@ export class Lambda {
       await Promise.all(deletionPromises);
     } catch (e) {
       this.context.print.error(
-        'Failed to delete some or all layer versions. Check your internet connection and try again.\
- If the problem persists, try deleting the versions in the Lambda console.',
+        'Failed to delete some or all layer versions. Check your internet connection and try again. ' +
+          'If the problem persists, try deleting the versions in the Lambda console.',
       );
       e.stack = undefined;
       this.context.print.error(e);
