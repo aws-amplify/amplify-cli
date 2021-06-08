@@ -150,7 +150,7 @@ export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testi
 
   const effectiveSettings = {
     ...defaultSettings,
-    ...(settings ?? {}),
+    ...settings,
   };
 
   return new Promise((resolve, reject) => {

@@ -10,6 +10,8 @@ export class LayerCloudState {
   private layerVersionsMetadata: LayerVersionMetadata[];
   public latestVersionLogicalId: string;
 
+  private constructor() {}
+
   static getInstance(): LayerCloudState {
     if (!LayerCloudState.instance) {
       LayerCloudState.instance = new LayerCloudState();
@@ -19,19 +21,18 @@ export class LayerCloudState {
 
   private async loadLayerDataFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
     const spinner = ora('Loading layer data from the cloud...').start();
-    let layerMetadata: LayerVersionMetadata[];
     try {
       const { envName }: { envName: string } = context.amplify.getEnvInfo();
       const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
-      const Lambda = await providerPlugin.getLambdaSdk(context);
-      const layerVersionList = await Lambda.listLayerVersions(isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName);
-      const Cfn = await providerPlugin.getCloudFormationSdk(context);
-      const stackList = await Cfn.listStackResources();
+      const lambdaClient = await providerPlugin.getLambdaSdk(context);
+      const layerVersionList = await lambdaClient.listLayerVersions(isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName);
+      const cfnClient = await providerPlugin.getCloudFormationSdk(context);
+      const stackList = await cfnClient.listStackResources();
       const layerStacks = stackList?.StackResourceSummaries?.filter(stack => stack.LogicalResourceId.includes(layerName));
       let detailedLayerStack;
 
       if (layerStacks?.length > 0) {
-        detailedLayerStack = (await Cfn.listStackResources(layerStacks[0].PhysicalResourceId)).StackResourceSummaries;
+        detailedLayerStack = (await cfnClient.listStackResources(layerStacks[0].PhysicalResourceId)).StackResourceSummaries;
       } else {
         spinner.stop();
         return [];
@@ -39,20 +40,18 @@ export class LayerCloudState {
 
       layerVersionList.forEach((layerVersion: LayerVersionMetadata) => {
         let layerLogicalIdSuffix: string;
-        detailedLayerStack
-          .filter(stack => stack.ResourceType === 'AWS::Lambda::LayerVersion' && stack.PhysicalResourceId === layerVersion.LayerVersionArn)
-          .forEach(stack => {
+        detailedLayerStack.forEach(stack => {
+          if (stack.ResourceType === 'AWS::Lambda::LayerVersion' && stack.PhysicalResourceId === layerVersion.LayerVersionArn) {
             layerVersion.LogicalName = stack.LogicalResourceId;
             layerLogicalIdSuffix = stack.LogicalResourceId.replace(LayerCfnLogicalNamePrefix.LambdaLayerVersion, '');
-          });
+          }
+        });
 
-        detailedLayerStack
-          .filter(
-            stack =>
-              stack.ResourceType === 'AWS::Lambda::LayerVersionPermission' &&
-              stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn,
-          )
-          .forEach(stack => {
+        detailedLayerStack.forEach(stack => {
+          if (
+            stack.ResourceType === 'AWS::Lambda::LayerVersionPermission' &&
+            stack.PhysicalResourceId.split('#')[0] === layerVersion.LayerVersionArn
+          ) {
             layerVersion.permissions = layerVersion.permissions || [];
 
             const permissionTypeString = stack.LogicalResourceId.replace(
@@ -91,11 +90,12 @@ export class LayerCloudState {
                 orgs: orgIds,
               });
             }
-          });
+          }
+        });
 
         layerVersion.legacyLayer = layerVersion.LogicalName === undefined || layerVersion.LogicalName === 'LambdaLayer';
       });
-      layerMetadata = layerVersionList.sort((a: LayerVersionMetadata, b: LayerVersionMetadata) => b.Version - a.Version);
+      this.layerVersionsMetadata = layerVersionList.sort((a: LayerVersionMetadata, b: LayerVersionMetadata) => b.Version - a.Version);
     } catch (e) {
       spinner.fail();
       const errMessage = `An error occurred fetching the latest layer version metadata for "${layerName}": ${e.message || e}`;
@@ -104,13 +104,10 @@ export class LayerCloudState {
       exitOnNextTick(1);
     }
     spinner.stop();
-    return layerMetadata;
+    return this.layerVersionsMetadata;
   }
 
   public async getLayerVersionsFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {
-    if (this.layerVersionsMetadata) {
-      return this.layerVersionsMetadata;
-    }
-    return this.loadLayerDataFromCloud(context, layerName);
+    return this.layerVersionsMetadata || this.loadLayerDataFromCloud(context, layerName);
   }
 }

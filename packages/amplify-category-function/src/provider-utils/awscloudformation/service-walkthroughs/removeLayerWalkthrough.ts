@@ -37,7 +37,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
 
   context.print.info('Layer versions marked for deletion:');
   selectedLayerVersion.forEach(version => {
-    context.print.info(`> ${version.Version} | Description: ${version.Description || ''}`);
+    context.print.info(`- ${version.Version} | Description: ${version.Description || ''}`);
   });
 
   warnLegacyRemoval(context, legacyLayerSelectedVersions, newLayerSelectedVersions);
@@ -99,10 +99,10 @@ function warnLegacyRemoval(context: $TSContext, legacyLayerVersions: LayerVersio
 
 async function deleteLayer(context: $TSContext, layerName: string, versions: number[]) {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
-  const Lambda = await providerPlugin.getLambdaSdk(context);
+  const lambdaClient = await providerPlugin.getLambdaSdk(context);
   const spinner = ora('Deleting layer version from the cloud...').start();
   try {
-    await Lambda.deleteLayerVersions(layerName, versions);
+    await lambdaClient.deleteLayerVersions(layerName, versions);
     spinner.succeed('Layers deleted');
   } catch (ex) {
     spinner.fail('Failed deleting');

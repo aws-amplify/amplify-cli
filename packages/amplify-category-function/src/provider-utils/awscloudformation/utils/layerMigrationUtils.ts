@@ -42,13 +42,12 @@ const layerVersionMapKey = 'layerVersionMap';
 
 export async function migrateLegacyLayer(context: $TSContext, layerName: string): Promise<boolean> {
   const layerDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, layerName);
-  const legacyState = isLegacyLayer(layerName, layerDirPath);
+  const legacyState = getLegacyLayerState(layerName, layerDirPath);
 
   if (legacyState === LegacyState.NOT_LEGACY) {
     return false;
   }
 
-  // TODO add docs link when it's available
   context.print.warning(
     '\n⚠️  Amplify updated the way Lambda layers work to better support team workflows and additional features.\n\
 This change requires a migration. Amplify will create a new Lambda layer version even if no layer content changes are made.\n',
@@ -61,7 +60,7 @@ This change requires a migration. Amplify will create a new Lambda layer version
     }
   }
 
-  const runtimeCloudTemplateValues: string[] = [];
+  let runtimeCloudTemplateValues: string[];
   const layerConfiguration: { permissions: LayerPermission[]; runtimes: Partial<LayerRuntime>[]; nonMultiEnv?: boolean } = {
     permissions: undefined,
     runtimes: undefined,
@@ -71,7 +70,7 @@ This change requires a migration. Amplify will create a new Lambda layer version
 
   if (legacyState === LegacyState.MULTI_ENV_LEGACY) {
     legacyRuntimeArray = JSONUtilities.readJson<LegacyRuntime[]>(path.join(layerDirPath, LegacyFilename.layerRuntimes));
-    layerVersionMap = _.get(stateManager.getMeta(), [categoryName, layerName, layerVersionMapKey], {});
+    layerVersionMap = stateManager.getMeta()?.[categoryName]?.[layerName]?.[layerVersionMapKey] ?? {};
   } else {
     ({ layerVersionMap, runtimes: legacyRuntimeArray } = JSONUtilities.readJson<{
       [layerVersionMapKey]: LegacyVersionMap;
@@ -80,13 +79,8 @@ This change requires a migration. Amplify will create a new Lambda layer version
     layerConfiguration.nonMultiEnv = true;
   }
 
-  legacyRuntimeArray
-    .map(legacyRuntime => legacyRuntime.cloudTemplateValue)
-    .forEach((cloudTemplateValue: string) => {
-      runtimeCloudTemplateValues.push(cloudTemplateValue);
-    });
-
-  legacyRuntimeArray.forEach((runtime: LegacyRuntime) => delete runtime.cloudTemplateValue);
+  runtimeCloudTemplateValues = legacyRuntimeArray.map(legacyRuntime => legacyRuntime.cloudTemplateValue);
+  legacyRuntimeArray.forEach((runtime: LegacyRuntime) => (runtime.cloudTemplateValue = undefined));
   layerConfiguration.runtimes = legacyRuntimeArray;
 
   await Promise.all(
@@ -146,7 +140,7 @@ This change requires a migration. Amplify will create a new Lambda layer version
   return true;
 }
 
-function isLegacyLayer(layerName: string, layerDirPath: string): LegacyState {
+function getLegacyLayerState(layerName: string, layerDirPath: string): LegacyState {
   if (fs.existsSync(path.join(layerDirPath, LegacyFilename.layerParameters))) {
     return LegacyState.SINGLE_ENV_LEGACY;
   }
@@ -168,8 +162,8 @@ function migrateAmplifyProjectFiles(layerName: string, latestLegacyHash: string,
   removeLayerFromTeamProviderInfo(envName, layerName, projectRoot);
   const meta = stateManager.getMeta(projectRoot);
 
-  if (_.get(meta, [categoryName, layerName, layerVersionMapKey], undefined)) {
-    delete meta[categoryName][layerName][layerVersionMapKey];
+  if (meta?.[categoryName]?.[layerName]?.[layerVersionMapKey]) {
+    meta[categoryName][layerName][layerVersionMapKey] = undefined;
   }
 
   _.set(meta, [categoryName, layerName, versionHash], latestLegacyHash);

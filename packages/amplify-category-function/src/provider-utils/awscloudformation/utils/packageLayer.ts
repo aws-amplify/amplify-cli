@@ -81,6 +81,12 @@ export async function checkContentChanges(context: $TSContext, layerResources: A
 
   const defaultLayerPermission: LayerPermission = { type: PermissionEnum.Private };
 
+  const prePushNotificationTemplate = (resourceName: string, description: string, timestampString: string, accessPermissions?: string) => {
+    const descriptionLine = `  - ${description}: ${chalk.green('Updated layer version ')} ${chalk.gray(timestampString)}`;
+    const permissionLine = `  - ${accessPermissions}: ${chalk.green('Maintain existing permissions')}`;
+    return `${resourceName}\n${accessPermissions ? `${permissionLine}\n${descriptionLine}` : descriptionLine}`;
+  };
+
   if (changedLayerResources.length > 0) {
     context.print.info('');
     if (layerResources.filter(layer => loadPreviousLayerHash(layer.resourceName) !== undefined).length > 0) {
@@ -95,12 +101,9 @@ export async function checkContentChanges(context: $TSContext, layerResources: A
       const parameters = loadStoredLayerParameters(context, resourceName);
       layer.parameters = parameters;
       if (!_.isEqual(parameters.permissions, [defaultLayerPermission])) {
-        return ` ${resourceName}
-  - ${accessPermissions}: ${chalk.green('Maintain existing permissions')}
-  - ${description}: ${chalk.green('Updated layer version ')} ${chalk.gray(timestampString)}`;
+        return prePushNotificationTemplate(resourceName, description, timestampString, accessPermissions);
       }
-      return ` ${resourceName}
-  - ${description}: ${chalk.green('Updated layer version ')} ${chalk.gray(timestampString)}`;
+      return prePushNotificationTemplate(resourceName, description, timestampString);
     });
 
     context.print.info(prepushNotificationMessage.join(EOL));

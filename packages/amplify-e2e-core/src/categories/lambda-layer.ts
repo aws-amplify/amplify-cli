@@ -1,6 +1,5 @@
 import { $TSAny, JSONUtilities } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
-import _ from 'lodash';
 import * as path from 'path';
 import { ExecutionContext, getCLIPath, nspawn as spawn } from '..';
 import { getBackendAmplifyMeta } from '../utils';
@@ -56,13 +55,13 @@ export function expectEphemeralPermissions(
   permissions: LayerPermission[],
 ) {
   const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
-  const storedPermissions: LayerPermission[] = _.get(layerData, ['ephemeral', 'layerVersionPermissionsToUpdate', envName, version]);
+  const storedPermissions: LayerPermission[] = layerData?.ephemeral?.layerVersionPermissionsToUpdate?.[envName]?.[version];
   permissions.forEach(perm => expect(storedPermissions).toContainEqual(perm));
 }
 
 export function expectEphemeralDataIsUndefined(projRoot: string, layerProjName: LayerDirectoryType) {
   const layerData = getLayerConfig(projRoot, getLayerDirectoryName(layerProjName));
-  const ephemeralData = _.get(layerData, ['ephemeral']);
+  const ephemeralData = layerData?.ephemeral;
 
   expect(ephemeralData).toBeUndefined();
 }
@@ -179,8 +178,10 @@ export function removeLayer(cwd: string, versionsToRemove: number[], allVersions
       .wait('Choose the Layer versions you want to remove.');
 
     multiSelect(chain, versionsToRemove, allVersions);
-    chain.wait('Are you sure you want to delete the resource? This action').sendConfirmYes();
+
     chain
+      .wait('Are you sure you want to delete the resource? This action')
+      .sendConfirmYes()
       .wait('Successfully removed resource')
       .sendEof()
       .run((err: Error) => {

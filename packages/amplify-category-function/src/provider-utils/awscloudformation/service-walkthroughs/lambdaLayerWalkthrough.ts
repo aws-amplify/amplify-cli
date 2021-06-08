@@ -135,11 +135,11 @@ export async function updateLayerWalkthrough(
     defaultLayerPermissions = permissions.map(permission => permission.type);
     defaultOrgs = permissions
       .filter(p => p.type === PermissionEnum.AwsOrg)
-      .reduce((orgs: string[], permission: OrgsLayer) => (orgs = [...orgs, ...permission.orgs]), []);
+      .reduce((orgs: string[], permission: OrgsLayer) => [...orgs, ...permission.orgs], []);
 
     defaultAccounts = permissions
       .filter(p => p.type === PermissionEnum.AwsAccounts)
-      .reduce((accounts: string[], permission: AccountsLayer) => (accounts = [...accounts, ...permission.accounts]), []);
+      .reduce((accounts: string[], permission: AccountsLayer) => [...accounts, ...permission.accounts], []);
 
     // select permission strategy
     const layerInputParameters: LayerInputParams = await inquirer.prompt(layerPermissionsQuestion(defaultLayerPermissions));
@@ -199,7 +199,7 @@ async function descriptionQuestion(timestampString: string): Promise<string> {
     message: 'Description:',
     validate: (desc: string) => {
       if (desc.length === 0) return 'Description cannot be empty';
-      if (desc.length > 255) return 'Description cannot be more than 256 characters';
+      if (desc.length > 256) return 'Description cannot be more than 256 characters';
       return true;
     },
   });

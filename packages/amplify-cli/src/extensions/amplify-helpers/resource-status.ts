@@ -240,7 +240,7 @@ async function getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, category
               ]);
 
               // Compare hash with value stored on meta
-              if (currentAmplifyMeta[categoryName][resource]['lastPushDirHash'] !== dockerfileHash) {
+              if (currentAmplifyMeta[categoryName][resource].lastPushDirHash !== dockerfileHash) {
                 resources.push(amplifyMeta[categoryName][resource]);
                 return;
               }

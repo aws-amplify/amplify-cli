@@ -29,7 +29,7 @@ export interface LayerInputParams {
 }
 
 export function mapVersionNumberToChoice(layerVersion: LayerVersionMetadata): string {
-  return `${layerVersion.Version}: ${layerVersion.Description || ''}`;
+  return `${layerVersion.Version}: ${layerVersion.Description || '(no description)'}`;
 }
 
 export function layerVersionQuestion(versions: string[], message: string, defaultOption?: string): ListQuestion {
@@ -57,10 +57,7 @@ export function layerNameQuestion(projectName: string): InputQuestion {
       }
       return true;
     },
-    default: () => {
-      const [shortId] = uuid().split('-');
-      return `layer${shortId}`;
-    },
+    default: `layer${uuid().split('-')[0]}`,
   };
 }
 
@@ -243,13 +240,11 @@ export function getLayerName(context: $TSContext, layerName: string): string {
 }
 
 // Check hash results for content changes, bump version if so
-export async function ensureLayerVersion(context: $TSContext, layerName: string, previousHash: string) {
+export async function ensureLayerVersion(context: $TSContext, layerName: string, previousHash?: string) {
   const currentHash = await hashLayerVersion(pathManager.getResourceDirectoryPath(undefined, categoryName, layerName), layerName);
 
-  if (previousHash !== currentHash) {
-    if (previousHash) {
-      context.print.success(`Content changes in Lambda layer ${layerName} detected.`);
-    }
+  if (previousHash && previousHash !== currentHash) {
+    context.print.success(`Content changes in Lambda layer ${layerName} detected.`);
   }
 
   const layerParameters = loadStoredLayerParameters(context, layerName);

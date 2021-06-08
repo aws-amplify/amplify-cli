@@ -36,8 +36,7 @@ describe('amplify add lambda layer', () => {
   beforeEach(async () => {
     projRoot = await createNewProjectDir('layers');
     await initJSProjectWithProfile(projRoot, { envName });
-    const { projectName } = getProjectConfig(projRoot);
-    projName = projectName;
+    ({ projectName: projName } = getProjectConfig(projRoot));
   });
 
   afterEach(async () => {
