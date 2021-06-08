@@ -14,6 +14,7 @@ import {
   resourceAccessSetting,
   cronJobSetting,
   lambdaLayerSetting,
+  secretsConfiguration,
 } from '../utils/constants';
 import { category } from '../../../constants';
 import { getNewCFNParameters, getNewCFNEnvVariables } from '../utils/cloudformationHelpers';
@@ -32,7 +33,8 @@ import {
 import { $TSObject, JSONUtilities, stateManager } from 'amplify-cli-core';
 import { consolidateDependsOnForLambda } from '../utils/consolidateDependsOn';
 import { secretValuesWalkthrough } from './secretValuesWalkthrough';
-import { FunctionSecretsStateManager } from '../secrets/functionSecretsStateManager';
+import { FunctionSecretsStateManager } from '../secrets/functionSecretsCloudManager';
+import { getLocalFunctionSecretNames } from '../secrets/functionSecretsLocalManager';
 
 /**
  * Starting point for CLI walkthrough that generates a lambda function
@@ -81,15 +83,16 @@ export async function createWalkthrough(
     // ask lambda layer questions and merge in results
     templateParameters = merge(templateParameters, await addLayersToFunctionWalkthrough(context, templateParameters.runtime));
 
-    const functionSecretsStateManger = await FunctionSecretsStateManager.getInstance(context);
-
-    templateParameters = merge(templateParameters, await secretValuesWalkthrough(await functionSecretsStateManger.getExistingFunctionSecretNames(templateParameters.functionName)));
+    templateParameters = merge(
+      templateParameters,
+      await secretValuesWalkthrough(await getLocalFunctionSecretNames(templateParameters.functionName)),
+    );
   }
 
   return templateParameters;
 }
 
-function provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters) {
+async function provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters) {
   // Provide general information
   context.print.success('General information');
   context.print.info('| Name: '.concat(lambdaToUpdate));
@@ -136,6 +139,16 @@ function provideInformation(context, lambdaToUpdate, functionRuntime, currentPar
     context.print.info('- Not configured');
     context.print.info('');
   }
+
+  // secrets configuration
+  context.print.success('Secrets configuration');
+  const currentSecrets = await getLocalFunctionSecretNames(lambdaToUpdate);
+  if (currentSecrets.length) {
+    currentSecrets.forEach(secretName => context.print.info(`- ${secretName}`));
+  } else {
+    context.print.info('- Not configured');
+  }
+  context.print.info('');
 }
 
 /**
@@ -192,7 +205,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     resourceName: functionParameters.resourceName,
   };
 
-  provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters);
+  await provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters);
 
   // Determine which settings need to be updated
   const { selectedSettings }: any = await settingsUpdateSelection();
@@ -243,6 +256,14 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
     );
     context.amplify.writeObjectAsJson(cfnFilePath, cfnContent, true);
   }
+
+  if (selectedSettings.includes(secretsConfiguration)) {
+    merge(
+      functionParameters,
+      await secretValuesWalkthrough(await getLocalFunctionSecretNames(functionParameters.resourceName), { preConfirmed: true }),
+    );
+  }
+
   // consolidate dependsOn as above logic is overwriting
   const projectMeta = stateManager.getMeta();
   functionParameters.dependsOn = consolidateDependsOnForLambda(projectMeta, functionParameters.dependsOn, lambdaToUpdate, selectedSettings);

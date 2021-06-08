@@ -1,16 +1,23 @@
 import { FunctionParameters, retainSecret, SecretDeltas } from 'amplify-function-plugin-interface';
 import inquirer from 'inquirer';
+import { getExistingSecrets, hasExistingSecrets } from '../secrets/secretDeltaUtilities';
 
+const secretValuesWalkthroughDefaultOptions = {
+  preConfirmed: false, // true if the walkthrough has previously confirmed that secrets should be configured. false if this function should gate the flow behind a confirmation
+};
 /**
  * Walkthrough for adding secret values for a function
  * @param context The Amplify context object
  */
-export const secretValuesWalkthrough = async (existingSecretNames: string[]): Promise<Pick<FunctionParameters, 'secretDeltas'>> => {
-  const secretDeltas = existingSecretNames.reduce((acc, secretName) => ({ ...acc, [secretName]: retainSecret }), {} as SecretDeltas);
-  if (!(await addSecretsConfirm())) {
-    return { secretDeltas };
+export const secretValuesWalkthrough = async (
+  existingSecretNames: string[],
+  options: Partial<typeof secretValuesWalkthroughDefaultOptions> = secretValuesWalkthroughDefaultOptions,
+): Promise<Pick<FunctionParameters, 'secretDeltas'>> => {
+  options = { ...secretValuesWalkthroughDefaultOptions, ...options };
+  if (!(await addSecretsConfirm(options.preConfirmed))) {
+    return {};
   }
-
+  const secretDeltas = existingSecretNames.reduce((acc, secretName) => ({ ...acc, [secretName]: retainSecret }), {} as SecretDeltas);
   for (
     let operation = await selectOperation(hasExistingSecrets(secretDeltas));
     operation !== 'done';
@@ -21,8 +28,6 @@ export const secretValuesWalkthrough = async (existingSecretNames: string[]): Pr
   return { secretDeltas };
 };
 
-const hasExistingSecrets = (secretDeltas: SecretDeltas) => Object.keys(secretDeltas).length > 0;
-
 type SecretDeltasModifier = (secretDeltas: SecretDeltas) => Promise<void>;
 
 const addSecretFlow = async (secretDeltas: SecretDeltas) => {
@@ -32,13 +37,13 @@ const addSecretFlow = async (secretDeltas: SecretDeltas) => {
 };
 
 const updateSecretFlow = async (secretDeltas: SecretDeltas) => {
-  const secretToUpdate = await singleSelectSecret(Object.keys(secretDeltas), 'Select the secret to update:');
+  const secretToUpdate = await singleSelectSecret(Object.keys(getExistingSecrets(secretDeltas)), 'Select the secret to update:');
   const secretValue = await enterSecretValue(secretToUpdate);
   secretDeltas[secretToUpdate] = { operation: 'setValue', value: secretValue };
 };
 
 const removeSecretFlow = async (secretDeltas: SecretDeltas) => {
-  const secretsToRemove = await multiSelectSecret(Object.keys(secretDeltas), 'Select the secrets to delete:');
+  const secretsToRemove = await multiSelectSecret(Object.keys(getExistingSecrets(secretDeltas)), 'Select the secrets to delete:');
   secretsToRemove.forEach(secretName => (secretDeltas[secretName] = { operation: 'remove' }));
 };
 
@@ -48,8 +53,12 @@ const operationFlowMap: Record<Exclude<SecretOperation, 'done'>, SecretDeltasMod
   remove: removeSecretFlow,
 };
 
-const addSecretsConfirm = async () =>
-  (
+const addSecretsConfirm = async (preConfirmed: boolean = false) => {
+  if (preConfirmed) {
+    return true;
+  }
+
+  return (
     await inquirer.prompt<{ confirm: boolean }>({
       type: 'confirm',
       name: 'confirm',
@@ -57,6 +66,7 @@ const addSecretsConfirm = async () =>
       default: false,
     })
   ).confirm;
+};
 
 const secretNameValidator = (existingSecretNames: string[]) => (input?: string) => {
   if (input && input.length > 0 && input.length <= 2048) {
@@ -125,8 +135,8 @@ const selectOperation = async (hasExistingSecrets: boolean) =>
           disabled: !hasExistingSecrets,
         },
         {
-          name: 'Delete secrets',
-          value: 'delete',
+          name: 'Remove secrets',
+          value: 'remove',
           disabled: !hasExistingSecrets,
         },
         {

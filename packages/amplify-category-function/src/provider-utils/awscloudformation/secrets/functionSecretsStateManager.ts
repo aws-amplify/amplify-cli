@@ -1,10 +1,10 @@
 import { $TSContext } from 'amplify-cli-core';
 import { SecretDeltas } from 'amplify-function-plugin-interface';
 import { getFunctionCloudFormationTemplate, setFunctionCloudFormationTemplate } from '../utils/cloudformationHelpers';
-import { getFullyQualifiedSecretName, getFunctionSecretPrefix } from './secretName';
+import { setLocalFunctionSecretNames } from './functionParametersSecretsController';
+import { getFullyQualifiedSecretName } from './secretName';
 import { updateSecretsInCfnTemplate } from './secretsCfnModifier';
 import { SSMClientWrapper } from './ssmClientWrapper';
-import * as path from 'path';
 
 /**
  * Manages the state of function secrets in both Parameter store and the local CloudFormation template
@@ -40,13 +40,8 @@ export class FunctionSecretsStateManager {
     const origTemplate = await getFunctionCloudFormationTemplate(functionName);
     const newTemplate = await updateSecretsInCfnTemplate(origTemplate, secretDeltas, functionName);
     await setFunctionCloudFormationTemplate(functionName, newTemplate);
-  };
 
-  getExistingFunctionSecretNames = async (functionName: string, envName?: string) => {
-    const prefix = getFunctionSecretPrefix(functionName, envName);
-    const parts = path.parse(prefix);
-    const unfilteredSecrets = await this.ssmClientWrapper.getExistingSecretNamesByPath(parts.dir);
-    return unfilteredSecrets.filter(secretName => path.parse(secretName).base.startsWith(parts.base));
+    await setLocalFunctionSecretNames(functionName, secretDeltas);
   };
 
   /**

@@ -1,5 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import * as aws from 'aws-sdk';
+import ora from 'ora';
 
 export class SSMClientWrapper {
   private static instance: SSMClientWrapper;
@@ -9,42 +10,64 @@ export class SSMClientWrapper {
       SSMClientWrapper.instance = new SSMClientWrapper(await getSSMClient(context));
     }
     return SSMClientWrapper.instance;
-  }
+  };
 
-  private constructor(private readonly ssmClient: aws.SSM) { }
+  private constructor(private readonly ssmClient: aws.SSM) {}
 
   getExistingSecretNamesByPath = async (secretPath: string) => {
-    const result = await this.ssmClient.getParametersByPath({
-      Path: secretPath,
-      MaxResults: 100,
-      ParameterFilters: [
-        {
-          Key: 'Type',
-          Option: 'Equals',
-          Values: ['SecureString'],
-        }
-      ]
-    }).promise();
-    return result.Parameters.map(param => param.Name);
+    let NextToken;
+    const accumulator: string[] = [];
+    do {
+      const result = await this.ssmClient
+        .getParametersByPath({
+          Path: secretPath,
+          MaxResults: 10,
+          ParameterFilters: [
+            {
+              Key: 'Type',
+              Option: 'Equals',
+              Values: ['SecureString'],
+            },
+          ],
+          NextToken,
+        })
+        .promise();
+      accumulator.push(...result.Parameters.map(param => param.Name));
+      NextToken = result.NextToken;
+    } while (NextToken);
+    return accumulator;
   };
 
   setSecret = async (secretName: string, secretValue: string) => {
-    await this.ssmClient.putParameter({
-      Name: secretName,
-      Value: secretValue,
-      Type: 'SecureString',
-      Overwrite: true,
-    }).promise();
+    await this.ssmClient
+      .putParameter({
+        Name: secretName,
+        Value: secretValue,
+        Type: 'SecureString',
+        Overwrite: true,
+      })
+      .promise();
   };
 
   deleteSecret = async (secretName: string) => {
-    await this.ssmClient.deleteParameter({
-      Name: secretName,
-    }).promise();
-  }
+    await this.ssmClient
+      .deleteParameter({
+        Name: secretName,
+      })
+      .promise()
+      .catch(err => {
+        if (err.code !== 'ParameterNotFound') {
+          // if the value didn't exist in the first place, consider it deleted
+          throw err;
+        }
+      });
+  };
 }
 
 const getSSMClient = async (context: $TSContext) => {
-  const { client } = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', []);
+  const spinner = ora('Initializing SSM Client');
+  spinner.start();
+  const { client } = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [context]);
+  spinner.stop();
   return client as aws.SSM;
-}
+};

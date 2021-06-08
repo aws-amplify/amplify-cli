@@ -214,14 +214,14 @@ export async function updateFunctionResource(context, category, service, paramet
       }
     }
 
-    await saveMutableState(context, parameters);
+    await saveMutableState(context, parameters, { confirmSecretsUpdate: true });
     saveCFNParameters(parameters);
   } else {
     parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
     if (parameters.dependsOn) {
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
     }
-    await saveMutableState(context, parameters);
+    await saveMutableState(context, parameters, { confirmSecretsUpdate: true });
     saveCFNParameters(parameters);
   }
 

@@ -84,7 +84,7 @@ function getPinpointRegionMapping() {
 }
 
 function getConfiguredAmplifyClient(context, category, action, options = {}) {
-  return amplifyService.getConfiguredAmplifyClient(context, category, action, options);
+  return amplifyService.getConfiguredAmplifyClient(context, options);
 }
 
 function showHelpfulLinks(context, resources) {

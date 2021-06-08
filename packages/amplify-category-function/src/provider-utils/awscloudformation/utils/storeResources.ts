@@ -71,15 +71,21 @@ export function removeLayerArtifacts(context: $TSContext, layerName: string) {
   }
 }
 
+export const saveMutableStateDefaultOptions = {
+  confirmSecretsUpdate: false,
+};
+
 // ideally function update should be refactored so this function does not need to be exported
 export async function saveMutableState(
   context: $TSContext,
   parameters:
     | Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers' | 'functionName' | 'secretDeltas'>>
     | FunctionTriggerParameters,
+  options: Partial<typeof saveMutableStateDefaultOptions> = saveMutableStateDefaultOptions,
 ) {
+  options = { ...saveMutableStateDefaultOptions, ...options };
   createParametersFile(buildParametersFileObj(parameters), parameters.resourceName || parameters.functionName, functionParametersFileName);
-  await syncSecrets(context, parameters);
+  await syncSecrets(context, parameters, options.confirmSecretsUpdate);
 }
 
 // ideally function update should be refactored so this function does not need to be exported
@@ -101,10 +107,18 @@ export function saveCFNParameters(
   }
 }
 
-async function syncSecrets(context: $TSContext, parameters: Partial<FunctionParameters> | Partial<FunctionTriggerParameters>) {
-  if ('secretDeltas' in parameters) {
+async function syncSecrets(
+  context: $TSContext,
+  parameters: Partial<FunctionParameters> | Partial<FunctionTriggerParameters>,
+  confirm: boolean = false,
+) {
+  if (
+    'secretDeltas' in parameters &&
+    (!confirm ||
+      (await context.amplify.confirmPrompt('This will immediately update secret values in the cloud. Do you want to continue?', true)))
+  ) {
     const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(context);
-    await functionSecretsStateManager.syncSecretDeltas((parameters as FunctionParameters)?.secretDeltas, parameters.functionName);
+    await functionSecretsStateManager.syncSecretDeltas((parameters as FunctionParameters)?.secretDeltas, parameters.resourceName);
   }
 }
 
@@ -284,7 +298,7 @@ const layerParamsToStoredParams = (parameters: LayerParameters | StoredLayerPara
   return storedParams;
 };
 
-function createParametersFile(parameters: $TSObject, resourceName: string, parametersFileName: string) {
+export function createParametersFile(parameters: $TSObject, resourceName: string, parametersFileName: string) {
   const parametersFilePath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName, parametersFileName);
   const currentParameters: $TSAny = JSONUtilities.readJson(parametersFilePath, { throwIfNotExist: false }) || {};
   delete currentParameters.mutableParametersState; // this field was written in error in a previous version of the cli
