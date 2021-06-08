@@ -353,7 +353,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
     // remove emphemeral Lambda layer state
     if (resources.concat(resourcesToBeDeleted).filter(r => r.service === FunctionServiceNameLambdaLayer).length > 0) {
-      postPushLambdaLayerCleanup(context, resources, projectDetails.localEnvInfo.envName);
+      await postPushLambdaLayerCleanup(context, resources, projectDetails.localEnvInfo.envName);
       await context.amplify.updateamplifyMetaAfterPush(resources);
     }
 

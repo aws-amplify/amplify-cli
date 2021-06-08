@@ -222,7 +222,7 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
 }
 
 export function migrate(context: $TSContext, projectPath: string, resourceName: string) {
-  const resourceDirPath = path.join(projectPath, PathConstants.AmplifyDirName, PathConstants.BackendDirName, categoryName, resourceName);
+  const resourceDirPath = pathManager.getResourceDirectoryPath(projectPath, categoryName, resourceName);
   const cfnFilePath = path.join(resourceDirPath, `${resourceName}-cloudformation-template.json`);
   const oldCfn = JSONUtilities.readJson<$TSAny>(cfnFilePath);
   const newCfn: $TSAny = {};

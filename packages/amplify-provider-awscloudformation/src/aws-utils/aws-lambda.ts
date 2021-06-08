@@ -11,8 +11,8 @@ const logger = fileLogger('aws-lambda');
 
 export class Lambda {
   private lambda: AwsSdkLambda;
-  private context: $TSContext;
-  constructor(context: $TSContext, options = {}) {
+
+  constructor(private readonly context: $TSContext, options = {}) {
     return (async () => {
       let cred: AwsSdkConfig;
       try {
@@ -20,13 +20,12 @@ export class Lambda {
       } catch (e) {
         // ignore missing config
       }
-      this.context = context;
       this.lambda = new aws.Lambda({ ...cred, ...options });
       return this;
     })() as $TSAny;
   }
 
-  public async listLayerVersions(layerNameOrArn: string) {
+  async listLayerVersions(layerNameOrArn: string) {
     const startingParams: ListLayerVersionsRequest = { LayerName: layerNameOrArn, MaxItems: 20 };
     const result = await pagedAWSCall<ListLayerVersionsResponse, LayerVersionsListItem, string>(
       async (params: ListLayerVersionsRequest, nextMarker?: string) => {
@@ -41,15 +40,24 @@ export class Lambda {
     return result;
   }
 
-  public async deleteLayerVersions(layerNameOrArn: string, versions: number[]) {
+  async deleteLayerVersions(layerNameOrArn: string, versions: number[]) {
     const params = { LayerName: layerNameOrArn, VersionNumber: undefined };
-    for (let version of versions) {
+    const deletionPromises = [];
+    for (const version of versions) {
       params.VersionNumber = version;
-      try {
-        await this.lambda.deleteLayerVersion(params).promise();
-      } catch (e) {
-        this.context.print.error(e); // TODO full error handling
-      }
+      deletionPromises.push(this.lambda.deleteLayerVersion(params).promise());
+    }
+
+    try {
+      await Promise.all(deletionPromises);
+    } catch (e) {
+      this.context.print.error(
+        'Failed to delete some or all layer versions. Check your internet connection and try again.\
+ If the problem persists, try deleting the versions in the Lambda console.',
+      );
+      e.stack = undefined;
+      this.context.print.error(e);
+      await this.context.usageData.emitError(e);
     }
   }
 }

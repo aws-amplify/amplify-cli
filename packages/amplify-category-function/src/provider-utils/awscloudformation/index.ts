@@ -217,7 +217,7 @@ export async function updateLayerResource(
   parameters?: Partial<LayerParameters>,
 ): Promise<boolean> {
   if (!serviceConfig) {
-    throw `amplify-category-function is not configured to provide service type ${service}`;
+    throw new Error(`amplify-category-function is not configured to provide service type ${service}`);
   }
 
   if (!parameters) {

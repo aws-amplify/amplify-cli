@@ -135,11 +135,11 @@ export async function updateLayerWalkthrough(
     defaultLayerPermissions = permissions.map(permission => permission.type);
     defaultOrgs = permissions
       .filter(p => p.type === PermissionEnum.AwsOrg)
-      .reduce((orgs: string[], permission: OrgsLayer) => (orgs = [...orgs, ...permission.orgs]), []);
+      .reduce((orgs: string[], permission: OrgsLayer) => [...orgs, ...permission.orgs], []);
 
     defaultAccounts = permissions
       .filter(p => p.type === PermissionEnum.AwsAccounts)
-      .reduce((accounts: string[], permission: AccountsLayer) => (accounts = [...accounts, ...permission.accounts]), []);
+      .reduce((accounts: string[], permission: AccountsLayer) => [...accounts, ...permission.accounts], []);
 
     // select permission strategy
     const layerInputParameters: LayerInputParams = await inquirer.prompt(layerPermissionsQuestion(defaultLayerPermissions));
