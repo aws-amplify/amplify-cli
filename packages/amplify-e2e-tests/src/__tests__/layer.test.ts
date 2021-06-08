@@ -97,7 +97,7 @@ describe('amplify add lambda layer', () => {
       arns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     }
     const removeVersion = [1, 2, 3];
-    await removeLayerVersion(projRoot, removeVersion, [1, 2, 3, 4]);
+    await removeLayerVersion(projRoot, {}, removeVersion, [1, 2, 3, 4]);
     updateOptData(projRoot, settings, 'end');
     await amplifyPushLayer(projRoot, {
       acceptSuggestedLayerVersionConfigurations: true,
