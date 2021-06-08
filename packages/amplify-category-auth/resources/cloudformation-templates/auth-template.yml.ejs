@@ -1,3 +1,4 @@
+<% var autoVerifiedAttributes = props.autoVerifiedAttributes.concat(props.aliasAttributes).filter((attr, i, a) => ['email', 'phone_number'].includes(attr) && a.indexOf(attr) === i) %>
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
@@ -157,10 +158,13 @@ Resources:
           VerifyAuthChallengeResponse: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseArn
         <% } %>
       <% } %>
-      <%if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { %>
-      AutoVerifiedAttributes: !Ref autoVerifiedAttributes
+      <%if (autoVerifiedAttributes && autoVerifiedAttributes.length > 0) { %>
+      AutoVerifiedAttributes:
+      <% for(let x = 0; x < autoVerifiedAttributes.length; x++) { %>
+        - <%= autoVerifiedAttributes[x] %>
       <% } %>
-      <%if (props.autoVerifiedAttributes.includes('email')) { %>
+      <% } %>
+      <%if (autoVerifiedAttributes.includes('email')) { %>
       EmailVerificationMessage: !Ref emailVerificationMessage
       EmailVerificationSubject: !Ref emailVerificationSubject
       <% } %>
