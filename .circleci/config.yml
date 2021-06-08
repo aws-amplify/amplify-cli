@@ -293,6 +293,56 @@ jobs:
           path: packages/amplify-migration-tests/
       - store_artifacts:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+  amplify_migration_tests_non_multi_env_layers:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run tests migrating from CLI v4.28.2
+          command: >
+            source .circleci/local_publish_helpers.sh
+
+            changeNpmGlobalPath
+
+            cd packages/amplify-migration-tests
+
+            yarn run migration_v4.28.2_nonmultienv_layers --maxWorkers=3
+            $TEST_SUITE
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+  amplify_migration_tests_multi_env_layers:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run tests migrating from CLI v4.52.0
+          command: >
+            source .circleci/local_publish_helpers.sh
+
+            changeNpmGlobalPath
+
+            cd packages/amplify-migration-tests
+
+            yarn run migration_v4.52.0_multienv_layers --maxWorkers=3
+            $TEST_SUITE
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
   amplify_migration_tests_v4_30_0:
     working_directory: ~/repo
     docker: *ref_1

@@ -22,10 +22,11 @@ declare global {
 const amplifyTestsDir = 'amplify-e2e-tests';
 
 export function getCLIPath(testingWithLatestCodebase = false) {
-  if (isCI() && !testingWithLatestCodebase) {
-    return process.env.AMPLIFY_PATH || 'amplify';
-  }
-  return path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify');
+  return testingWithLatestCodebase
+    ? isCI()
+      ? path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify')
+      : 'amplify-dev'
+    : process.env.AMPLIFY_PATH || 'amplify';
 }
 
 export function isCI(): boolean {
@@ -56,6 +57,7 @@ export async function createNewProjectDir(
   } while (fs.existsSync(projectDir));
 
   fs.ensureDirSync(projectDir);
+  console.log(projectDir);
   return projectDir;
 }
 

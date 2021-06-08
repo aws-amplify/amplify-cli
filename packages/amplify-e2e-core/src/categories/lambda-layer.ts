@@ -11,8 +11,8 @@ export type LayerRuntime = 'nodejs' | 'python';
 type LayerRuntimeDisplayName = 'NodeJS' | 'Python';
 export type LayerPermissionChoice = 'Specific AWS accounts' | 'Specific AWS organization' | 'Public (Anyone on AWS can use this layer)';
 
-const layerRuntimeChoices: LayerRuntimeDisplayName[] = ['NodeJS', 'Python'];
-const permissionChoices: LayerPermissionChoice[] = [
+export const layerRuntimeChoices: LayerRuntimeDisplayName[] = ['NodeJS', 'Python'];
+export const permissionChoices: LayerPermissionChoice[] = [
   'Specific AWS accounts',
   'Specific AWS organization',
   'Public (Anyone on AWS can use this layer)',
@@ -81,7 +81,6 @@ export async function expectDeployedLayerDescription(
   expect(arn).toBeDefined();
   expect(description).toEqual(layerDescription);
 
-  const cloudData = await getLayerVersion(arn, region);
   const { LayerVersions: Versions } = await listVersions(`${getLayerDirectoryName(layerProjName)}-${envName}`, region);
 
   expect(Versions).toBeDefined();
@@ -121,6 +120,8 @@ export function addLayer(
   settings: {
     layerName: string;
     permissions?: LayerPermissionChoice[];
+    accountId?: string;
+    orgId?: string;
     projName: string;
     runtimes: LayerRuntime[];
   },
@@ -146,6 +147,15 @@ export function addLayer(
     chain.wait('The current AWS account will always have access to this layer.');
 
     multiSelect(chain, settings.permissions, permissionChoices);
+
+    if (settings.permissions.includes('Specific AWS accounts')) {
+      chain.wait('Provide a list of comma-separated AWS account IDs:').sendLine(settings.accountId);
+    }
+
+    if (settings.permissions.includes('Specific AWS organization')) {
+      chain.wait('Provide a list of comma-separated AWS organization IDs:').sendLine(settings.orgId);
+    }
+
     waitForLayerSuccessPrintout(chain, settings, 'created');
 
     chain.run((err: Error) => {
@@ -183,9 +193,15 @@ export function removeLayer(cwd: string, versionsToRemove: number[], allVersions
   });
 }
 
-export function removeLayerVersion(cwd: string, versionsToRemove: number[], allVersions: number[]): Promise<void> {
+export function removeLayerVersion(
+  cwd: string,
+  settings: { removeLegacyOnly?: boolean },
+  versionsToRemove: number[],
+  allVersions: number[],
+  testingWithLatestCodebase = false,
+): Promise<void> {
   return new Promise((resolve, reject) => {
-    const chain = spawn(getCLIPath(), ['remove', 'function'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(testingWithLatestCodebase), ['remove', 'function'], { cwd, stripColors: true })
       .wait('Choose the resource you would want to remove')
       .sendCarriageReturn() // first one
       .wait('When you delete a layer version, you can no longer configure functions to use it.')
@@ -194,22 +210,31 @@ export function removeLayerVersion(cwd: string, versionsToRemove: number[], allV
 
     multiSelect(chain, versionsToRemove, allVersions);
 
-    chain
-      .wait('All new layer versions created with the Amplify CLI will only be deleted on')
-      .sendEof()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject(err);
-        }
-      });
+    if (settings.removeLegacyOnly) {
+      chain.wait(/Warning: By continuing, these layer versions \[.+\] will be immediately deleted./);
+    }
+
+    chain.wait('All new layer versions created with the Amplify CLI will only be deleted on amplify push.');
+
+    if (settings.removeLegacyOnly) {
+      chain.wait('✔ Layers deleted');
+    }
+
+    chain.sendEof().run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject(err);
+      }
+    });
   });
 }
 
 export function updateLayer(
   cwd: string,
   settings?: {
+    layerName?: string;
+    projName?: string;
     runtimes?: string[];
     numLayers?: number;
     versions?: number;
@@ -217,6 +242,7 @@ export function updateLayer(
     dontChangePermissions?: boolean;
     changePermissionOnFutureVersion?: boolean;
     changePermissionOnLatestVersion?: boolean;
+    migrateLegacyLayer?: boolean;
   },
   testingWithLatestCodebase: boolean = false,
 ): Promise<void> {
@@ -227,6 +253,13 @@ export function updateLayer(
       .sendCarriageReturn(); // Layer
     if (settings.numLayers > 1) {
       chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
+    }
+
+    if (settings.migrateLegacyLayer === true) {
+      chain
+        .wait('⚠️  Amplify updated the way Lambda layers work to better support team workflows and additional features.')
+        .wait('Continue?')
+        .sendConfirmYes();
     }
 
     chain.wait('Do you want to adjust layer version permissions?');
@@ -276,10 +309,10 @@ export function updateOptData(projRoot: string, layerProjName: LayerDirectoryTyp
   );
 }
 
-export function addOptData(projRoot: string, layerProjName: LayerDirectoryType, data?: string): void {
+export function addOptData(projRoot: string, layerProjName: LayerDirectoryType, data: string = 'data'): void {
   fs.writeFileSync(
     path.join(projRoot, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName), 'opt', 'data.txt'),
-    data ?? 'data',
+    data,
     'utf8',
   );
 }
@@ -321,7 +354,7 @@ function getLayerRuntimes(projRoot: string, layerName: string): $TSAny {
   return JSONUtilities.readJson(runtimesFilePath);
 }
 
-function getRuntimeDisplayNames(runtimes: LayerRuntime[]) {
+export function getRuntimeDisplayNames(runtimes: LayerRuntime[]) {
   return runtimes.map(runtime => getLayerRuntimeInfo(runtime).displayName);
 }
 

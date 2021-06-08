@@ -4,8 +4,9 @@ const pushTimeoutMS = 1000 * 60 * 20; // 20 minutes;
 
 export type LayerPushSettings = {
   acceptSuggestedLayerVersionConfigurations?: boolean;
-  usePreviousPermissions?: boolean;
   layerDescription?: string;
+  migrateLegacyLayer?: boolean;
+  usePreviousPermissions?: boolean;
 };
 
 export function amplifyPush(cwd: string, testingWithLatestCodebase: boolean = false): Promise<void> {
@@ -143,6 +144,7 @@ export function amplifyPushUpdateForDependentModel(cwd: string, testingWithLates
 export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testingWithLatestCodebase: boolean = false): Promise<void> {
   const defaultSettings: LayerPushSettings = {
     acceptSuggestedLayerVersionConfigurations: true,
+    migrateLegacyLayer: false,
     usePreviousPermissions: true,
   };
 
@@ -154,9 +156,16 @@ export function amplifyPushLayer(cwd: string, settings: LayerPushSettings, testi
   return new Promise((resolve, reject) => {
     const chain = spawn(getCLIPath(testingWithLatestCodebase), ['push'], { cwd, stripColors: true, noOutputTimeout: pushTimeoutMS })
       .wait('Are you sure you want to continue?')
-      .sendConfirmYes()
-      .wait('Suggested configuration for new layer versions:')
-      .wait('Accept the suggested layer version configurations?');
+      .sendConfirmYes();
+
+    if (settings.migrateLegacyLayer === true) {
+      chain
+        .wait('⚠️  Amplify updated the way Lambda layers work to better support team workflows and additional features.')
+        .wait('Continue?')
+        .sendConfirmYes();
+    }
+
+    chain.wait('Suggested configuration for new layer versions:').wait('Accept the suggested layer version configurations?');
 
     if (effectiveSettings.acceptSuggestedLayerVersionConfigurations === true) {
       chain.sendConfirmYes();

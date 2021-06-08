@@ -4,6 +4,7 @@ import {
   addLayer,
   amplifyPush,
   amplifyPushAuth,
+  amplifyPushLayer,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
@@ -15,7 +16,6 @@ import {
   loadFunctionTestFile,
   overrideFunctionSrcNode,
   updateFunction,
-  updateLayer,
   validateLayerMetadata,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
@@ -23,13 +23,9 @@ import { initJSProjectWithProfile } from '../../migration-helpers';
 
 describe('amplify function migration', () => {
   let projRoot: string;
-  let projName: string;
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('functions');
-
-    const { projectName } = getProjectConfig(projRoot);
-    projName = projectName;
   });
 
   afterEach(async () => {
@@ -98,54 +94,38 @@ describe('amplify function migration', () => {
     const [shortId] = uuid().split('-');
     const function1 = 'function1' + shortId;
     const function2 = 'function2' + shortId;
+    const runtime: LayerRuntime = 'nodejs';
+
     await initJSProjectWithProfile(projRoot, {});
-    await addFunction(projRoot, { name: function1, functionTemplate: 'Hello World' }, 'nodejs', undefined);
-    await addFunction(projRoot, { name: function2, functionTemplate: 'Hello World' }, 'nodejs', undefined);
+    const { projectName: projName } = getProjectConfig(projRoot);
+
+    await addFunction(projRoot, { name: function1, functionTemplate: 'Hello World' }, runtime, undefined);
+    await addFunction(projRoot, { name: function2, functionTemplate: 'Hello World' }, runtime, undefined);
     await amplifyPushAuth(projRoot);
 
     const layerName = `test${shortId}`;
     const layerSettings = {
-      runtimes: ['nodejs' as LayerRuntime],
       layerName,
       projName,
+      runtimes: [runtime],
     };
+
     await addLayer(projRoot, layerSettings, true);
     await updateFunction(
       projRoot,
       {
         layerOptions: {
-          select: [layerName],
-          expectedListOptions: [layerName],
-          versions: { [layerName]: { version: 1, expectedVersionOptions: [1] } },
+          select: [projName + layerName],
+          expectedListOptions: [projName + layerName],
         },
         name: function1,
         testingWithLatestCodebase: true,
       },
-      'nodejs',
+      runtime,
     );
-    await amplifyPushAuth(projRoot, true);
-    const arns: string[] = [getCurrentLayerArnFromMeta(projRoot, { layerName: layerName, projName: projRoot }), layerName];
-
+    await amplifyPushLayer(projRoot, {}, true);
+    const arns: string[] = [getCurrentLayerArnFromMeta(projRoot, { layerName, projName })];
     const meta = getProjectMeta(projRoot);
-    await validateLayerMetadata(projRoot, { layerName: layerName, projName: projRoot }, meta, 'integtest', arns);
-  });
-
-  it('Add a layer, upgrade cli, update and push', async () => {
-    const [shortId] = uuid().split('-');
-    await initJSProjectWithProfile(projRoot, {});
-    const layerName = `test${shortId}`;
-    const layerSettings = {
-      runtimes: ['nodejs' as LayerRuntime],
-      layerName,
-      projName,
-    };
-    await addLayer(projRoot, layerSettings);
-    await amplifyPushAuth(projRoot);
-    const arns: string[] = [getCurrentLayerArnFromMeta(projRoot, { layerName: layerName, projName: projRoot })];
-    await updateLayer(projRoot, { ...layerSettings, runtimes: ['python'], numLayers: 1, permissions: [] }, true);
-    await amplifyPushAuth(projRoot, true);
-    arns.push(getCurrentLayerArnFromMeta(projRoot, { layerName: layerName, projName: projRoot }));
-    const meta = getProjectMeta(projRoot);
-    await validateLayerMetadata(projRoot, { layerName: layerName, projName: projRoot }, meta, 'integtest', arns);
+    await validateLayerMetadata(projRoot, { layerName, projName }, meta, 'integtest', arns);
   });
 });
