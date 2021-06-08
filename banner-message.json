@@ -19,7 +19,7 @@
     },
     {
       "id": "LAMBDA_LAYER_MIGRATION_WARNING",
-      "message": "Amplify has updated the way Lambda layer versions are managed. In order to take advantage of the newest features and bug fixes, a one-way migration is required. All developers and any CI/CD pipelines must upgrade to the latest version of Amplify CLI. Once the layers are migrated, you CANNOT downgrade Amplify CLI below version 5.0.0.\n\nAny update to an existing Lambda layer triggers a migration for that layer upon “amplify push”."
+      "message": "Amplify has updated the way Lambda layer versions are managed. In order to take advantage of the newest features and bug fixes, a one-way migration is required. All developers and any CI/CD pipelines must upgrade to the latest version of Amplify CLI. Once the layers are migrated, you CANNOT downgrade Amplify CLI below version 5.0.0.\n\nAny update to an existing Lambda layer triggers a migration for that layer upon 'amplify push'."
     }
   ]
 }
