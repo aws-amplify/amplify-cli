@@ -9,7 +9,7 @@ const pipenvErrMsg =
   'You must have pipenv installed and available on your PATH as "pipenv". It can be installed by running "pip3 install --user pipenv".';
 
 const venvErrMsg =
-  'You must have pipenv installed and available on your PATH as "pipenv". It can be installed by running "pip3 install venv".';
+  'You must have virtualenv installed and available on your PATH as "venv". It can be installed by running "pip3 install venv".';
 
 export async function checkDeps(): Promise<CheckDependenciesResult> {
   let hasDeps = true;
