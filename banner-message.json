@@ -16,6 +16,10 @@
     {
       "id": "COGNITO_SMS_SANDBOX_CATEGORY_AUTH_ADD_OR_UPDATE_INFO",
       "message": "You have enabled SMS based auth workflow. Verify your SNS account mode in the SNS console: https://console.aws.amazon.com/sns/v3/home#/mobile/text-messaging\r\nIf your account is in \"Sandbox\" mode, you can only send SMS messages to verified recipient phone numbers."
+    },
+    {
+      "id": "LAMBDA_LAYER_MIGRATION_WARNING",
+      "message": "Amplify has updated the way Lambda layer versions are managed. In order to take advantage of the newest features and bug fixes, a one-way migration is required. All developers and any CI/CD pipelines must upgrade to the latest version of Amplify CLI. Once the layers are migrated, you CANNOT downgrade Amplify CLI below version 5.0.0.\n\nAny update to an existing Lambda layer triggers a migration for that layer upon “amplify push”."
     }
   ]
 }
