@@ -24,7 +24,7 @@ async function displayLayerMigrationMessage() {
   const meta = stateManager.getMeta(rootPath, { throwIfNotExist: false });
   const layerResources =
     meta !== undefined
-      ? Object.keys(meta?.function).filter(
+      ? Object.keys(meta.function || {}).filter(
           resource => meta.function[resource]?.service === 'LambdaLayer' && meta.function[resource]?.layerVersionMap !== undefined,
         )
       : [];

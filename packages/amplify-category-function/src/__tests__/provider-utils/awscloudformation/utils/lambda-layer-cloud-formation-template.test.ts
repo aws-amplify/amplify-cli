@@ -1,12 +1,13 @@
 import { pathManager, stateManager } from 'amplify-cli-core';
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
+import { generateLayerCfnObj } from '../../../../provider-utils/awscloudformation/utils/lambda-layer-cloudformation-template';
+import { isMultiEnvLayer } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
 import {
   LayerParameters,
   LayerPermission,
   LayerVersionCfnMetadata,
   PermissionEnum,
 } from '../../../../provider-utils/awscloudformation/utils/layerParams';
-import { isMultiEnvLayer } from '../../../../provider-utils/awscloudformation/utils/layerHelpers';
 
 jest.mock('amplify-cli-core');
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
@@ -57,7 +58,6 @@ function validateOutput(layerCfn) {
 }
 
 describe('test layer CFN generation functions', () => {
-  let generateLayerCfnObj;
   beforeAll(() => {
     jest.mock('amplify-cli-core', () => ({
       stateManager: {
@@ -70,8 +70,6 @@ describe('test layer CFN generation functions', () => {
         readJson: jest.fn().mockReturnValue([]),
       },
     }));
-    generateLayerCfnObj = require('../../../../provider-utils/awscloudformation/utils/lambda-layer-cloudformation-template')
-      .generateLayerCfnObj;
   });
 
   it('should generate the expected CFN for a newly created LL resource', () => {
