@@ -104,16 +104,10 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
 }
 
 export function loadEnvResourceParameters(context: $TSContext, category: string, resource: string) {
-  let envParameters = {
+  return {
     ...loadEnvResourceParametersFromDeploymentSecrets(context, category, resource),
     ...loadEnvResourceParametersFromTeamproviderInfo(context, category, resource),
   };
-
-  if (category === 'hosting' && resource === 'ElasticContainer') {
-    envParameters = {};
-  }
-
-  return envParameters;
 }
 
 function loadEnvResourceParametersFromDeploymentSecrets(context: $TSContext, category: string, resource: string) {
