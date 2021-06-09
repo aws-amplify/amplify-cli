@@ -120,7 +120,7 @@ function populateCategoriesMeta(
   amplifyMeta: $TSMeta,
   teamProviderInfo: $TSTeamProviderInfo,
   category: string,
-  serviceName: string
+  serviceName: string,
 ) {
   if (amplifyMeta[category]?.[serviceName] &&
       teamProviderInfo[CATEGORIES]?.[category]?.[serviceName]) {
