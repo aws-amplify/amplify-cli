@@ -1,6 +1,8 @@
 import { $TSContext } from 'amplify-cli-core';
+import { SecretName } from 'amplify-function-plugin-interface';
 import * as aws from 'aws-sdk';
 import ora from 'ora';
+import { secretNamesToSecretDeltas } from './secretDeltaUtilities';
 
 export class SSMClientWrapper {
   private static instance: SSMClientWrapper;
@@ -14,7 +16,26 @@ export class SSMClientWrapper {
 
   private constructor(private readonly ssmClient: aws.SSM) {}
 
-  getExistingSecretNamesByPath = async (secretPath: string) => {
+  /**
+   * Returns a Map of secretNames to secret values
+   */
+  getSecrets = async (secretNames: string[]) => {
+    const accumulator = new Map<SecretName, string>();
+    const result = await this.ssmClient
+      .getParameters({
+        Names: secretNames,
+        WithDecryption: true,
+      })
+      .promise();
+
+    result.Parameters.forEach(param => accumulator.set(param.Name, param.Value));
+    return accumulator;
+  };
+
+  /**
+   * Returns all secret names under a path. Does NOT decrypt any secrets
+   */
+  getSecretNamesByPath = async (secretPath: string) => {
     let NextToken;
     const accumulator: string[] = [];
     do {
@@ -38,6 +59,9 @@ export class SSMClientWrapper {
     return accumulator;
   };
 
+  /**
+   * Sets the given secretName to the secretValue. If secretName is already present, it is overwritten.
+   */
   setSecret = async (secretName: string, secretValue: string) => {
     await this.ssmClient
       .putParameter({
@@ -49,6 +73,9 @@ export class SSMClientWrapper {
       .promise();
   };
 
+  /**
+   * Deletes secretName. If it already doesn't exist, this is treated as success. All other errors will throw.
+   */
   deleteSecret = async (secretName: string) => {
     await this.ssmClient
       .deleteParameter({

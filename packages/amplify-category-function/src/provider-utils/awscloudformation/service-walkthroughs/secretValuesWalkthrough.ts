@@ -1,4 +1,4 @@
-import { FunctionParameters, retainSecret, SecretDeltas } from 'amplify-function-plugin-interface';
+import { FunctionParameters, SecretDeltas } from 'amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import { getExistingSecrets, hasExistingSecrets } from '../secrets/secretDeltaUtilities';
 
@@ -7,17 +7,17 @@ const secretValuesWalkthroughDefaultOptions = {
 };
 /**
  * Walkthrough for adding secret values for a function
- * @param context The Amplify context object
+ * @param secretDeltas Object describing the existing secrets diff for the function. This object will be modified by this function
+ * @param options Other options for controlling the behavior of the function
  */
 export const secretValuesWalkthrough = async (
-  existingSecretNames: string[],
+  secretDeltas: SecretDeltas,
   options: Partial<typeof secretValuesWalkthroughDefaultOptions> = secretValuesWalkthroughDefaultOptions,
 ): Promise<Pick<FunctionParameters, 'secretDeltas'>> => {
   options = { ...secretValuesWalkthroughDefaultOptions, ...options };
   if (!(await addSecretsConfirm(options.preConfirmed))) {
     return {};
   }
-  const secretDeltas = existingSecretNames.reduce((acc, secretName) => ({ ...acc, [secretName]: retainSecret }), {} as SecretDeltas);
   for (
     let operation = await selectOperation(hasExistingSecrets(secretDeltas));
     operation !== 'done';
@@ -28,17 +28,28 @@ export const secretValuesWalkthrough = async (
   return { secretDeltas };
 };
 
+export const prePushMissingSecretsWalkthrough = async (functionName: string, missingSecretNames: string[]): Promise<SecretDeltas> => {
+  const secretDeltas: SecretDeltas = {};
+  for (const secretName of missingSecretNames) {
+    const secretValue = await enterSecretValue(
+      `${secretName} in ${functionName} does not have a value in this environment. Specify one now:`,
+    );
+    secretDeltas[secretName] = { operation: 'setValue', value: secretValue };
+  }
+  return secretDeltas;
+};
+
 type SecretDeltasModifier = (secretDeltas: SecretDeltas) => Promise<void>;
 
 const addSecretFlow = async (secretDeltas: SecretDeltas) => {
   const secretName = await enterSecretName(Object.keys(secretDeltas));
-  const secretValue = await enterSecretValue(secretName);
+  const secretValue = await enterSecretValue(secretValueDefaultMessage(secretName));
   secretDeltas[secretName] = { operation: 'setValue', value: secretValue };
 };
 
 const updateSecretFlow = async (secretDeltas: SecretDeltas) => {
   const secretToUpdate = await singleSelectSecret(Object.keys(getExistingSecrets(secretDeltas)), 'Select the secret to update:');
-  const secretValue = await enterSecretValue(secretToUpdate);
+  const secretValue = await enterSecretValue(secretValueDefaultMessage(secretToUpdate));
   secretDeltas[secretToUpdate] = { operation: 'setValue', value: secretValue };
 };
 
@@ -89,12 +100,14 @@ const enterSecretName = async (existingSecretNames: string[]) =>
     })
   ).secretName;
 
-const enterSecretValue = async (secretName: string) =>
+const secretValueDefaultMessage = (secretName: string) => `Enter the value for ${secretName}:`;
+
+const enterSecretValue = async (message: string) =>
   (
     await inquirer.prompt<{ secretValue: string }>({
       type: 'password',
       name: 'secretValue',
-      message: `Enter the value for ${secretName}:`,
+      message,
     })
   ).secretValue;
 

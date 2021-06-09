@@ -1,11 +1,11 @@
-import { SecretDeltas } from "amplify-function-plugin-interface";
-import Lambda from "cloudform-types/types/lambda";
-import Template from "cloudform-types/types/template";
-import _ from "lodash";
+import { SecretDeltas } from 'amplify-function-plugin-interface';
+import Lambda from 'cloudform-types/types/lambda';
+import Template from 'cloudform-types/types/template';
+import _ from 'lodash';
 import { constantCase } from 'change-case';
-import { Fn } from "cloudform-types";
-import { getFunctionSecretCfnName, getFunctionSecretCfnPrefix } from "./secretName";
-import Policy from "cloudform-types/types/iam/policy";
+import { Fn } from 'cloudform-types';
+import { getFunctionSecretCfnName, getFunctionSecretCfnPrefix } from './secretName';
+import Policy from 'cloudform-types/types/iam/policy';
 
 /** Makes changes to the function CFN template to support secrets via SSM Parameter Store
  * It sets env vars for the function for the secret names and adds a policy to the lambda execution role to access the secrets
@@ -15,7 +15,11 @@ import Policy from "cloudform-types/types/iam/policy";
  * @param functionName The name of the function
  * @returns The modified cfnTemplate
  */
-export const updateSecretsInCfnTemplate = async (cfnTemplate: Template, secretDeltas: SecretDeltas, functionName: string): Promise<Template> => {
+export const updateSecretsInCfnTemplate = async (
+  cfnTemplate: Template,
+  secretDeltas: SecretDeltas,
+  functionName: string,
+): Promise<Template> => {
   const lambdaCfn = cfnTemplate?.Resources?.LambdaFunction as Lambda.Function;
 
   if (!lambdaCfn) {
@@ -45,7 +49,7 @@ export const updateSecretsInCfnTemplate = async (cfnTemplate: Template, secretDe
   cfnTemplate.Resources.AmplifyFunctionSecretsPolicy = getFunctionSecretsPolicy(functionName);
 
   return cfnTemplate;
-}
+};
 
 // constructs an IAM policy that grants read access to all parameters that have this function's name prefix
 const getFunctionSecretsPolicy = (functionName: string) => {
@@ -58,30 +62,23 @@ const getFunctionSecretsPolicy = (functionName: string) => {
       Version: '2012-10-17',
       Statement: [
         {
-          Effect: "Allow",
-          Action: [
-            "ssm:GetParameter",
-            "ssm:GetParameters",
-          ],
-          Resource: [
-            Fn.Join('', [
-              'arn:aws:ssm',
-              Fn.Ref('AWS::Region'),
-              ':',
-              Fn.Ref('AWS::AccountId'),
-              ':parameter/',
-              getFunctionSecretCfnPrefix(functionName),
-              '*',
-            ]),
-          ],
+          Effect: 'Allow',
+          Action: ['ssm:GetParameter', 'ssm:GetParameters'],
+          Resource: Fn.Join('', [
+            'arn:aws:ssm:',
+            Fn.Ref('AWS::Region'),
+            ':',
+            Fn.Ref('AWS::AccountId'),
+            ':parameter',
+            getFunctionSecretCfnPrefix(functionName),
+            '*',
+          ]),
         },
       ],
     },
   });
-  policy.DependsOn = [
-    'LambdaExecutionRole'
-  ]
+  policy.DependsOn = ['LambdaExecutionRole'];
   return policy;
-}
+};
 
 const getSecretNameEnvVar = (secretName: string) => constantCase(secretName);

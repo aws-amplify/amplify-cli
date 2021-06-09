@@ -1,3 +1,10 @@
+/**
+ * This module contains methods for getting the full SSM parameter name of a secret from it's friendly name.
+ * Also contains methods for getting a valid CFN object that will resolve to the SSM parameter name.
+ *
+ * WARNING: be extreemly careful changing the secret prefix! (AKA you should probably never change this).
+ * This format is sandardized with other Amplify Console SSM parameters and is expected by customer functions when fetching secrets at runtime
+ */
 import { stateManager } from 'amplify-cli-core';
 import { Fn } from 'cloudform-types';
 import * as path from 'path';
@@ -5,8 +12,6 @@ import * as path from 'path';
 export const getFullyQualifiedSecretName = (secretName: string, functionName: string, envName?: string) =>
   `${getFunctionSecretPrefix(functionName, envName)}${secretName}`;
 
-// WARNING: be extreemly careful changing the secret prefix! (AKA you should probably never change this).
-// This format is tandardized with other Amplify Console SSM parameters and is expected by customer functions when fetching secrets at runtime
 export const getFunctionSecretPrefix = (functionName: string, envName: string = stateManager.getLocalEnvInfo()?.envName) => {
   const appId = getAppId();
   if (!envName) {
