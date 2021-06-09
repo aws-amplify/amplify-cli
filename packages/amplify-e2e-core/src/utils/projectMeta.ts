@@ -51,7 +51,7 @@ function getLocalEnvInfo(projectRoot: string) {
 
 function getProjectConfig(projectRoot: string) {
   const projectConfigDir = path.join(projectRoot, 'amplify', '.config', 'project-config.json');
-  return JSONUtilities.readJson(projectConfigDir);
+  return JSONUtilities.readJson<any>(projectConfigDir);
 }
 
 function getCloudBackendConfig(projectRoot: string) {
