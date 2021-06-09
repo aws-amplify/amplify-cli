@@ -8,38 +8,40 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration
 
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 pathManager_mock.getBackendDirPath.mockReturnValue('mockpath');
+
+const loadLayerConfigurationFile_mock = loadLayerConfigurationFile as jest.MockedFunction<typeof loadLayerConfigurationFile>;
+loadLayerConfigurationFile_mock.mockReturnValue({
+  permissions: [
+    {
+      type: 'Private',
+    },
+  ],
+  runtimes: [
+    {
+      value: 'nodejs',
+      name: 'NodeJS',
+      runtimePluginId: 'amplify-nodejs-function-runtime-provider',
+      layerExecutablePath: 'nodejs',
+    },
+  ],
+});
+
+const runtimePlugin_stub = ({
+  checkDependencies: jest.fn().mockResolvedValue({ hasRequiredDependencies: true }),
+  build: jest.fn().mockResolvedValue({ rebuilt: true }),
+} as unknown) as jest.Mocked<FunctionRuntimeLifecycleManager>;
+
+const context_stub = ({
+  amplify: {
+    readBreadcrumbs: jest.fn().mockReturnValue({ pluginId: 'testPluginId' }),
+    loadRuntimePlugin: jest.fn().mockResolvedValue(runtimePlugin_stub),
+    updateamplifyMetaAfterBuild: jest.fn(),
+  },
+} as unknown) as jest.Mocked<$TSContext>;
+
 describe('build function', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-  const runtimePlugin_stub = ({
-    checkDependencies: jest.fn().mockResolvedValue({ hasRequiredDependencies: true }),
-    build: jest.fn().mockResolvedValue({ rebuilt: true }),
-  } as unknown) as jest.Mocked<FunctionRuntimeLifecycleManager>;
-
-  const context_stub = ({
-    amplify: {
-      readBreadcrumbs: jest.fn().mockReturnValue({ pluginId: 'testPluginId' }),
-      loadRuntimePlugin: jest.fn().mockResolvedValue(runtimePlugin_stub),
-      updateamplifyMetaAfterBuild: jest.fn(),
-    },
-  } as unknown) as jest.Mocked<$TSContext>;
-
-  const loadLayerConfigurationFile_mock = loadLayerConfigurationFile as jest.MockedFunction<typeof loadLayerConfigurationFile>;
-  loadLayerConfigurationFile_mock.mockReturnValue({
-    permissions: [
-      {
-        type: 'Private',
-      },
-    ],
-    runtimes: [
-      {
-        value: 'nodejs',
-        name: 'NodeJS',
-        runtimePluginId: 'amplify-nodejs-function-runtime-provider',
-        layerExecutablePath: 'nodejs',
-      },
-    ],
   });
 
   it('delegates dependency checks to the runtime manager before building', async () => {
@@ -74,6 +76,7 @@ describe('build function', () => {
       'PROD',
     ]);
   });
+
   it('doesnt update amplify meta if function not rebuilt', async () => {
     runtimePlugin_stub.build.mockResolvedValueOnce({ rebuilt: false });
 
