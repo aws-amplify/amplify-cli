@@ -1,4 +1,14 @@
+import { JSONUtilities } from 'amplify-cli-core';
 import { loadFunctionParameters } from '../../../../provider-utils/awscloudformation/utils/loadFunctionParameters';
+
+jest.mock('amplify-cli-core', () => ({
+  JSONUtilities: {
+    readJson: jest.fn(),
+    writeJson: jest.fn(),
+  },
+}));
+
+const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 
 describe('load function parameters', () => {
   const permissionsBase = {
@@ -24,13 +34,12 @@ describe('load function parameters', () => {
       },
     },
   };
-  const context_stub = {
-    amplify: {
-      readJsonFile: jest.fn(() => ({ ...funcParamsBase, ...permissionsBase, ...mutableParametersStub })),
-    },
-  };
+
   it('destructures mutableParametersState if it exists', () => {
-    expect(loadFunctionParameters(context_stub, 'resourcePath')).toEqual({
+    JSONUtilities_mock.readJson.mockImplementationOnce(
+      jest.fn(() => ({ ...funcParamsBase, ...permissionsBase, ...mutableParametersStub })),
+    );
+    expect(loadFunctionParameters('resourcePath')).toEqual({
       ...funcParamsBase,
       ...mutableParametersStub.mutableParametersState,
     });
