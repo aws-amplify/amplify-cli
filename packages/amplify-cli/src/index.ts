@@ -1,15 +1,15 @@
 import {
   $TSAny,
   $TSContext,
+  BannerMessage,
   CLIContextEnvironmentProvider,
   exitOnNextTick,
   FeatureFlags,
+  JSONUtilities,
   JSONValidationError,
   pathManager,
   stateManager,
   TeamProviderInfoMigrateError,
-  BannerMessage,
-  JSONUtilities,
 } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
@@ -18,6 +18,7 @@ import * as path from 'path';
 import { logInput } from './conditional-local-logging-init';
 import { print } from './context-extensions';
 import { attachUsageData, constructContext, persistContext } from './context-manager';
+import { displayBannerMessages } from './display-banner-messages';
 import { constants } from './domain/constants';
 import { Context } from './domain/context';
 import { Input } from './domain/input';
@@ -40,7 +41,7 @@ Error.stackTraceLimit = Number.MAX_SAFE_INTEGER;
 
 let errorHandler = (e: Error) => {};
 
-process.on('uncaughtException', function(error) {
+process.on('uncaughtException', function (error) {
   // Invoke the configured error handler if it is already configured
   if (errorHandler) {
     errorHandler(error);
@@ -59,7 +60,7 @@ process.on('uncaughtException', function(error) {
 });
 
 // In this handler we have to rethrow the error otherwise the process stucks there.
-process.on('unhandledRejection', function(error) {
+process.on('unhandledRejection', function (error) {
   throw error;
 });
 
@@ -79,6 +80,9 @@ export async function run() {
     // Initialize Banner messages. These messages are set on the server side
     const pkg = JSONUtilities.readJson<$TSAny>(path.join(__dirname, '..', 'package.json'));
     BannerMessage.initialize(pkg.version);
+
+    // Display messages meant for all executions
+    await displayBannerMessages();
 
     ensureFilePermissions(pathManager.getAWSCredentialsFilePath());
     ensureFilePermissions(pathManager.getAWSConfigFilePath());
