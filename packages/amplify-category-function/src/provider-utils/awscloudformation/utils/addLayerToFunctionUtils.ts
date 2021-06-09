@@ -69,6 +69,14 @@ export const askLayerSelection = async (
     const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, layerName);
     const layerVersionChoices = layerVersions.map(mapVersionNumberToChoice);
 
+    const projectLayer: ProjectLayer = {
+      type: 'ProjectLayer',
+      resourceName: layerName,
+      env: context.amplify.getEnvInfo().envName,
+      version: undefined,
+      isLatestVersionSelected: undefined,
+    };
+
     // skip asking version for a new layer
     if (layerVersionChoices.length > 0) {
       layerVersionChoices.unshift(defaultLayerVersionPrompt);
@@ -89,22 +97,14 @@ export const askLayerSelection = async (
       const selectedVersion =
         versionSelection === defaultLayerVersionPrompt ? defaultLayerVersionPrompt : Number(_.first(versionSelection.split(':')));
 
-      lambdaLayers.push({
-        type: 'ProjectLayer',
-        resourceName: layerName,
-        version: selectedVersion,
-        isLatestVersionSelected: isLatestVersionSelected,
-        env: context.amplify.getEnvInfo().envName,
-      });
+      projectLayer.version = selectedVersion;
+      projectLayer.isLatestVersionSelected = isLatestVersionSelected;
     } else {
-      lambdaLayers.push({
-        type: 'ProjectLayer',
-        resourceName: layerName,
-        version: defaultLayerVersionPrompt,
-        isLatestVersionSelected: true,
-        env: context.amplify.getEnvInfo().envName,
-      });
+      projectLayer.version = defaultLayerVersionPrompt;
+      projectLayer.isLatestVersionSelected = true;
     }
+
+    lambdaLayers.push(projectLayer);
 
     dependsOn.push({
       category: categoryName,
@@ -112,6 +112,7 @@ export const askLayerSelection = async (
       attributes: ['Arn'], // the layer doesn't actually depend on the ARN but there's some nasty EJS at the top of the function template that breaks without this, so here it is. Hurray for tight coupling!
     });
   }
+
   return {
     lambdaLayers,
     dependsOn,
