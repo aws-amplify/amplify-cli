@@ -1,4 +1,4 @@
-import { BannerMessage, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, BannerMessage, pathManager, stateManager } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { print } from './context-extensions';
 import { Input } from './domain/input';
@@ -22,14 +22,12 @@ async function displayLayerMigrationMessage() {
   }
 
   const meta = stateManager.getMeta(rootPath, { throwIfNotExist: false });
-  const layerResources =
-    meta !== undefined
-      ? Object.keys(meta.function || {}).filter(
-          resource => meta.function[resource]?.service === 'LambdaLayer' && meta.function[resource]?.layerVersionMap !== undefined,
-        )
-      : [];
+  const hasDeprecatedLayerResources =
+    Object.values(meta?.function || {}).filter(
+      (resource: $TSAny) => resource?.service === 'LambdaLayer' && resource?.layerVersionMap !== undefined,
+    ).length > 0;
 
-  if (layerResources.length > 0 && layerMigrationBannerMessage) {
+  if (hasDeprecatedLayerResources && layerMigrationBannerMessage) {
     print.info('');
     print.warning(layerMigrationBannerMessage);
     print.info('');

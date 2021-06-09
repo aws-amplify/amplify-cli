@@ -1,4 +1,3 @@
-// 'Select up to 2 compatible runtimes:'
 import { pathManager } from 'amplify-cli-core';
 import {
   ExecutionContext,
