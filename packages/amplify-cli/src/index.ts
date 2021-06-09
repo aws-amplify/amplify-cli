@@ -71,6 +71,7 @@ export async function run() {
 
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
+
     // with non-help command supplied, give notification before execution
     if (input.command !== 'help') {
       // Checks for available update, defaults to a 1 day interval for notification

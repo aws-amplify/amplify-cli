@@ -25,7 +25,7 @@
   },
   "engines": {
     "node": ">=12.0.0",
-    "@aws-amplify/cli": ">=4.50.0"
+    "@aws-amplify/cli": ">=5.0.0"
   },
   "dependencies": {
     "amplify-frontend-android": "2.15.3",
