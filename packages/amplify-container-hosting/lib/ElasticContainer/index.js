@@ -293,8 +293,8 @@ export async function generateHostingResources(
 
   const domainConfig = {
     domain,
-    restrictAccess
-  }
+    restrictAccess,
+  };
 
   context.exeInfo.template = stack.toCloudFormation();
 

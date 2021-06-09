@@ -104,10 +104,11 @@ export function saveEnvResourceParameters(context: $TSContext, category: string,
 }
 
 export function loadEnvResourceParameters(context: $TSContext, category: string, resource: string) {
-  return {
+  const envParameters = {
     ...loadEnvResourceParametersFromDeploymentSecrets(context, category, resource),
     ...loadEnvResourceParametersFromTeamproviderInfo(context, category, resource),
   };
+  return envParameters;
 }
 
 function loadEnvResourceParametersFromDeploymentSecrets(context: $TSContext, category: string, resource: string) {
