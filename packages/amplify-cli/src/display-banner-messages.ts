@@ -1,7 +1,13 @@
 import { BannerMessage, pathManager, stateManager } from 'amplify-cli-core';
+import { isCI } from 'ci-info';
 import { print } from './context-extensions';
+import { Input } from './domain/input';
 
-export async function displayBannerMessages() {
+export async function displayBannerMessages(input: Input) {
+  const excludedCommands = ['delete', 'env', 'help', 'logout', 'version'];
+  if (isCI || (input.command && excludedCommands.includes(input.command))) {
+    return;
+  }
   await displayLayerMigrationMessage();
 }
 

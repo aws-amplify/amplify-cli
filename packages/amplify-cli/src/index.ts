@@ -81,9 +81,6 @@ export async function run() {
     const pkg = JSONUtilities.readJson<$TSAny>(path.join(__dirname, '..', 'package.json'));
     BannerMessage.initialize(pkg.version);
 
-    // Display messages meant for all executions
-    await displayBannerMessages();
-
     ensureFilePermissions(pathManager.getAWSCredentialsFilePath());
     ensureFilePermissions(pathManager.getAWSConfigFilePath());
 
@@ -146,6 +143,9 @@ export async function run() {
       // Double casting until we have properly typed context
       return 1;
     }
+
+    // Display messages meant for most executions
+    await displayBannerMessages(input);
 
     await executeCommand(context);
 
