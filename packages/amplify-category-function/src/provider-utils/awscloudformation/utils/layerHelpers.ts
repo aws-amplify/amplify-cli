@@ -336,12 +336,9 @@ const getLayerGlobs = async (
     // files must be relative to resource folder as that will be used as a base path for hashing.
     const contentFilePaths = await globby([path.join(libPathName, layerExecutablePath, '**', '*')], {
       cwd: resourcePath,
-      ignore: [
-        path.join(libPathName, layerExecutablePath, 'node_modules'),
-        path.join(libPathName, layerExecutablePath, packageJson),
-        path.join(libPathName, layerExecutablePath, 'yarn.lock'),
-        path.join(libPathName, layerExecutablePath, 'package-lock.json'),
-      ],
+      ignore: ['node_modules', packageJson, 'yarn.lock', 'package-lock.json'].map(name =>
+        path.join(libPathName, layerExecutablePath, name),
+      ),
     });
 
     result.push(...contentFilePaths);

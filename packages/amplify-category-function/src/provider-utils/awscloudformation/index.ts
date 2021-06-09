@@ -215,7 +215,7 @@ export async function updateLayerResource(
   service: ServiceName,
   serviceConfig: ServiceConfig<LayerParameters>,
   parameters?: Partial<LayerParameters>,
-): Promise<boolean> {
+) {
   if (!serviceConfig) {
     throw new Error(`amplify-category-function is not configured to provide service type ${service}`);
   }
@@ -235,18 +235,16 @@ export async function updateLayerResource(
   };
 
   if (updateWalkthroughResult.resourceUpdated === false) {
-    return false;
+    return;
   }
 
   // write out updated resources
-  const updated = await updateLayerArtifacts(context, updateWalkthroughResult.parameters, {
+  await updateLayerArtifacts(context, updateWalkthroughResult.parameters, {
     updateLayerParams: parameters.selectedVersion === undefined,
     generateCfnFile: parameters.selectedVersion !== undefined,
   });
 
   printLayerSuccessMessages(context, updateWalkthroughResult.parameters, 'updated');
-
-  return updated;
 }
 
 function printLayerSuccessMessages(context: $TSContext, parameters: LayerParameters, action: string): void {

@@ -10,7 +10,7 @@ import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interfa
 import { ServiceName, versionHash } from './constants';
 import { LayerCloudState } from './layerCloudState';
 import { loadPreviousLayerHash, ensureLayerVersion, validFilesize, loadStoredLayerParameters, getChangedResources } from './layerHelpers';
-import { LayerPermission, PermissionEnum } from './layerParams';
+import { defaultLayerPermission } from './layerParams';
 import { zipPackage } from './zipResource';
 import { accessPermissions, description } from './constants';
 import { updateLayerArtifacts } from './storeResources';
@@ -78,8 +78,6 @@ export const packageLayer: Packager = async (context, resource) => {
 
 export async function checkContentChanges(context: $TSContext, layerResources: Array<$TSAny>): Promise<void> {
   const changedLayerResources = await getChangedResources(layerResources);
-
-  const defaultLayerPermission: LayerPermission = { type: PermissionEnum.Private };
 
   const prePushNotificationTemplate = (resourceName: string, description: string, timestampString: string, accessPermissions?: string) => {
     const descriptionLine = `  - ${description}: ${chalk.green('Updated layer version ')} ${chalk.gray(timestampString)}`;
