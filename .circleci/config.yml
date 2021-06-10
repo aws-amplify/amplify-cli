@@ -2178,6 +2178,8 @@ workflows:
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
             - amplify_migration_tests_v4_30_0
+            - amplify_migration_tests_non_multi_env_layers
+            - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
           filters:
             branches:
