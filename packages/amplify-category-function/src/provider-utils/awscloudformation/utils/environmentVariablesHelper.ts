@@ -2,7 +2,7 @@ import path from 'path';
 import _ from 'lodash';
 import uuid from 'uuid';
 import inquirer from 'inquirer';
-import { $TSContext, stateManager, pathManager, JSONUtilities } from 'amplify-cli-core';
+import { $TSContext, stateManager, pathManager, JSONUtilities, exitOnNextTick } from 'amplify-cli-core';
 import { functionParametersFileName } from './constants';
 import { categoryName } from '../../../constants';
 
@@ -157,7 +157,12 @@ export const askEnvironmentVariableCarryOut = async (
   });
 };
 
-export const ensureEnvironmentVariableValues = async (context: $TSContext, currentEnvName: string, projectPath: string) => {
+export const ensureEnvironmentVariableValues = async (
+  context: $TSContext,
+  currentEnvName: string,
+  projectPath: string,
+  yesFlagSet: boolean,
+) => {
   const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {
     throwIfNotExist: false,
     default: {},
@@ -167,9 +172,8 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext, curre
   if (functionNames.length === 0) {
     return;
   }
-  context.print.info('');
-  context.print.info('Some Lambda function environment variables are defined but missing values.');
-  context.print.info('');
+  let printedMessage = false;
+
   for (const functionName of functionNames) {
     const storedList = getStoredList(functionName);
     const storedKeyValue = getStoredKeyValue(context, functionName);
@@ -177,6 +181,20 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext, curre
       const envName = item.environmentVariableName;
       const keyName = item.cloudFormationParameterName;
       if (storedKeyValue.hasOwnProperty(keyName)) continue;
+      if (!printedMessage) {
+        if (yesFlagSet) {
+          const errMessage = `An error occurred pushing an env "${currentEnvName}" due to missing environment variable values`;
+          context.print.error(errMessage);
+          await context.usageData.emitError(new Error(errMessage));
+          exitOnNextTick(1);
+        } else {
+          context.print.info('');
+          context.print.info('Some Lambda function environment variables are defined but missing values.');
+          context.print.info('');
+        }
+        printedMessage = true;
+      }
+
       const newValueQuestion: inquirer.InputQuestion = {
         type: 'input',
         name: 'newValue',

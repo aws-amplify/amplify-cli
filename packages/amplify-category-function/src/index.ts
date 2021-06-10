@@ -253,9 +253,10 @@ export async function handleAmplifyEvent(context, args) {
 }
 
 async function handlePrePush(context) {
+  const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
   const { amplify } = context;
   const localEnvInfo = amplify.getEnvInfo();
-  await ensureEnvironmentVariableValues(context, localEnvInfo.envName, localEnvInfo.projectPath);
+  await ensureEnvironmentVariableValues(context, localEnvInfo.envName, localEnvInfo.projectPath, yesFlagSet);
 }
 
 export async function lambdaLayerPrompt(context: $TSContext, resources: Array<$TSAny>): Promise<void> {
