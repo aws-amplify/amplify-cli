@@ -1,6 +1,6 @@
 {
   "name": "amplify-velocity-template",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "Velocity Template Language(VTL) for JavaScript",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "test-sub": "mocha tests --require should"
   },
   "dependencies": {
-    "lodash": "^4.17.19"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "browser": "^0.2.6",

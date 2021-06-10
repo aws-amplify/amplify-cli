@@ -100,26 +100,17 @@ export class PathManager {
   getBackendConfigFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.BackendConfigFileName]);
 
-  getTagFilePath = (projectPath?: string): string => {
-    return this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.TagsFileName]);
-  };
+  getTagFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.TagsFileName]);
 
-  getCurrentTagFilePath = (projectPath?: string): string => {
-    return this.constructPath(projectPath, [
-      PathConstants.AmplifyDirName,
-      PathConstants.CurrentCloudBackendDirName,
-      PathConstants.TagsFileName,
-    ]);
-  };
+  getCurrentTagFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName, PathConstants.TagsFileName]);
 
-  getResourceParamatersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
-    this.constructPath(projectPath, [
-      PathConstants.AmplifyDirName,
-      PathConstants.BackendDirName,
-      category,
-      resourceName,
-      PathConstants.ParametersJsonFileName,
-    ]);
+  getResourceDirectoryPath = (projectPath: string | undefined, category: string, resourceName: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, category, resourceName]);
+
+  getResourceParametersFilePath = (projectPath: string | undefined, category: string, resourceName: string): string =>
+    path.join(this.getResourceDirectoryPath(projectPath, category, resourceName), PathConstants.ParametersJsonFileName);
 
   getReadMeFilePath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.ReadMeFileName]);

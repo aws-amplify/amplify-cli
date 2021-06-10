@@ -19,6 +19,8 @@ export * from './deploymentSecretsHelper';
 export * from './deploymentState';
 export * from './utils';
 export * from './banner-message';
+export * from './cliGetCategories';
+export * from './cliRemoveResourcePrompt';
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -167,7 +169,7 @@ interface AmplifyToolkit {
   copyBatch: (context: $TSContext, jobs: $TSCopyJob[], props: object, force?: boolean, writeParams?: boolean | object) => $TSAny;
   crudFlow: () => $TSAny;
   deleteProject: () => $TSAny;
-  executeProviderUtils: () => $TSAny;
+  executeProviderUtils: (context: $TSContext, providerName: string, utilName: string, options: $TSAny) => $TSAny;
   getAllEnvs: () => string[];
   getPlugin: () => $TSAny;
   getCategoryPluginInfo: (context: $TSContext, category?: string, service?: string) => $TSAny;
@@ -186,7 +188,7 @@ interface AmplifyToolkit {
   inputValidation: (input: $TSAny) => (value: $TSAny) => boolean | string;
   listCategories: () => $TSAny;
   makeId: (n?: number) => string;
-  openEditor: () => $TSAny;
+  openEditor: (context: $TSContext, target: string, waitToContinue?: boolean) => Promise<void>;
   onCategoryOutputsChange: (context: $TSContext, currentAmplifyMeta: $TSMeta | undefined, amplifyMeta?: $TSMeta) => $TSAny;
   pathManager: $TSAny;
   pressEnterToContinue: () => $TSAny;
@@ -200,7 +202,7 @@ interface AmplifyToolkit {
   readJsonFile: () => $TSAny;
   removeEnvFromCloud: () => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
-  removeResource: () => $TSAny;
+  removeResource: (context: $TSContext, category: string, resource: string) => $TSAny;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
@@ -232,7 +234,7 @@ interface AmplifyToolkit {
   updateamplifyMetaAfterPush: (resources: $TSObject[]) => void;
   // buildType is from amplify-function-plugin-interface but can't be imported here because it would create a circular dependency
   updateamplifyMetaAfterBuild: (resource: ResourceTuple, buildType?: string) => void;
-  updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string) => void;
+  updateAmplifyMetaAfterPackage: (resource: ResourceTuple, zipFilename: string, hash?: { resourceKey: string; hashValue: string }) => void;
   updateBackendConfigAfterResourceAdd: (category: string, resourceName: string, resourceData: $TSAny) => $TSAny;
   updateBackendConfigAfterResourceUpdate: () => $TSAny;
   updateBackendConfigAfterResourceRemove: () => $TSAny;
@@ -253,7 +255,7 @@ interface AmplifyToolkit {
   getUserPoolGroupList: () => $TSAny;
   forceRemoveResource: () => $TSAny;
   writeObjectAsJson: () => $TSAny;
-  hashDir: () => $TSAny;
+  hashDir: (dir: string, exclude: string[]) => Promise<string>;
   leaveBreadcrumbs: (category: string, resourceName: string, breadcrumbs: unknown) => void;
   readBreadcrumbs: (category: string, resourceName: string) => $TSAny;
   loadRuntimePlugin: (context: $TSContext, pluginId: string) => Promise<$TSAny>;

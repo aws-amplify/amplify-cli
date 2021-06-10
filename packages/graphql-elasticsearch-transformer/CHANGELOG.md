@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.11.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.11.9...graphql-elasticsearch-transformer@4.11.10) (2021-05-29)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
+## [4.11.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.11.8...graphql-elasticsearch-transformer@4.11.9) (2021-05-26)
+
+**Note:** Version bump only for package graphql-elasticsearch-transformer
+
+
+
+
+
 ## [4.11.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-elasticsearch-transformer@4.11.7...graphql-elasticsearch-transformer@4.11.8) (2021-05-18)
 
 

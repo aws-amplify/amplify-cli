@@ -124,7 +124,7 @@ export class StateManager {
     resourceName: string,
     options?: GetOptions<$TSAny>,
   ): $TSAny => {
-    const filePath = pathManager.getResourceParamatersFilePath(projectPath, category, resourceName);
+    const filePath = pathManager.getResourceParametersFilePath(projectPath, category, resourceName);
     const mergedOptions = {
       throwIfNotExist: true,
       ...options,
@@ -217,7 +217,7 @@ export class StateManager {
   };
 
   setResourceParametersJson = (projectPath: string | undefined, category: string, resourceName: string, parameters: $TSAny): void => {
-    const filePath = pathManager.getResourceParamatersFilePath(projectPath, category, resourceName);
+    const filePath = pathManager.getResourceParametersFilePath(projectPath, category, resourceName);
 
     JSONUtilities.writeJson(filePath, parameters);
   };

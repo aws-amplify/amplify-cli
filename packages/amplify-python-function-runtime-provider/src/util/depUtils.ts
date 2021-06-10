@@ -2,11 +2,14 @@ import { CheckDependenciesResult } from 'amplify-function-plugin-interface';
 import { execAsStringPromise, getPythonBinaryName } from './pyUtils';
 import { coerce, lt } from 'semver';
 
-const minPyVersion = coerce('3.8')!;
+export const minPyVersion = coerce('3.8')!;
 const pythonErrMsg =
   'You must have python >= 3.8 installed and available on your PATH as "python3" or "python". It can be installed from https://www.python.org/downloads';
 const pipenvErrMsg =
   'You must have pipenv installed and available on your PATH as "pipenv". It can be installed by running "pip3 install --user pipenv".';
+
+const venvErrMsg =
+  'You must have virtualenv installed and available on your PATH as "venv". It can be installed by running "pip3 install venv".';
 
 export async function checkDeps(): Promise<CheckDependenciesResult> {
   let hasDeps = true;
@@ -37,6 +40,14 @@ export async function checkDeps(): Promise<CheckDependenciesResult> {
   } catch (err) {
     hasDeps = false;
     errMsg = errMsg.concat(errMsg ? '\n' : '', pipenvErrMsg);
+  }
+
+  // check venv
+  try {
+    await execAsStringPromise('virtualenv --version');
+  } catch (err) {
+    hasDeps = false;
+    errMsg = errMsg.concat(errMsg ? '\n' : '', venvErrMsg);
   }
 
   return Promise.resolve({ hasRequiredDependencies: hasDeps, errorMessage: errMsg });

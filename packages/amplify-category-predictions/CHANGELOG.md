@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.9.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.8.9...amplify-category-predictions@2.9.0) (2021-06-02)
+
+
+
+# 4.52.0 (2021-06-01)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-cli/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-cli/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+
+
+
+
+
+## [2.8.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.8.8...amplify-category-predictions@2.8.9) (2021-05-26)
+
+**Note:** Version bump only for package amplify-category-predictions
+
+
+
+
+
 ## [2.8.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-predictions@2.8.7...amplify-category-predictions@2.8.8) (2021-05-18)
 
 **Note:** Version bump only for package amplify-category-predictions
