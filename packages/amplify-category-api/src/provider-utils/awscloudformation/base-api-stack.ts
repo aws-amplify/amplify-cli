@@ -134,7 +134,10 @@ export abstract class ContainersStack extends cdk.Stack {
         new cdk.CfnParameter(this, 'env', { type: 'String' });
 
         const paramDomain = new cdk.CfnParameter(this, 'domain', { type: 'String' });
-        const paramRestrictAccess = new cdk.CfnParameter(this, 'restrictAccess', { type: 'String' });
+        const paramRestrictAccess = new cdk.CfnParameter(this, 'restrictAccess', {
+            type: 'String',
+            allowedValues: ['true', 'false'],
+        });
 
         const paramZipPath = new cdk.CfnParameter(this, 'ParamZipPath', {
             type: 'String',
