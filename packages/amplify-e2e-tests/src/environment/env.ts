@@ -22,6 +22,27 @@ export function addEnvironment(cwd: string, settings: { envName: string; numLaye
   });
 }
 
+export function updateEnvironment(cwd: string, settings: { permissionsBoundaryArn: string }) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['env', 'update'], { cwd, stripColors: true })
+      .wait('Specify an IAM Policy ARN to use as a permissions boundary for all Amplify-generated IAM Roles')
+      .sendLine(settings.permissionsBoundaryArn)
+      .run((err: Error) => (!!err ? reject(err) : resolve()));
+  });
+}
+
+export function addEnvironmentYes(cwd: string, settings: { envName: string }): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['env', 'add', '--yes', '--envName', settings.envName], {
+      cwd,
+      stripColors: true,
+      env: {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      },
+    }).run((err: Error) => (err ? reject(err) : resolve()));
+  });
+}
+
 export function addEnvironmentWithImportedAuth(cwd: string, settings: { envName: string; currentEnvName: string }): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })

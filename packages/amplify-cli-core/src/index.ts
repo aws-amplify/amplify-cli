@@ -5,6 +5,7 @@ export * from './cliContext';
 export * from './cliContextEnvironmentProvider';
 export * from './cliEnvironmentProvider';
 export * from './feature-flags';
+export * from './permissionsBoundaryState';
 export * from './jsonUtilities';
 export * from './jsonValidationError';
 export * from './serviceSelection';
@@ -184,7 +185,7 @@ interface AmplifyToolkit {
   getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => $TSAny;
   getResourceOutputs: () => $TSAny;
   getWhen: () => $TSAny;
-  inputValidation: (input: $TSAny) => $TSAny;
+  inputValidation: (input: $TSAny) => (value: $TSAny) => boolean | string;
   listCategories: () => $TSAny;
   makeId: (n?: number) => string;
   openEditor: (context: $TSContext, target: string, waitToContinue?: boolean) => Promise<void>;
