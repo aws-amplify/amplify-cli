@@ -314,6 +314,6 @@ describe('add function with layers for runtime python', () => {
     const payload = '{}';
     const response = await functionCloudInvoke(projRoot, { funcName: functionName, payload: payload });
 
-    expect(JSON.parse(response.Payload.toString()).body).toEqual(helloWorldSuccessOutput);
+    expect(JSON.parse(response.Payload.toString()).body).toMatch(helloWorldSuccessOutput);
   });
 });
