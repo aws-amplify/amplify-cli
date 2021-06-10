@@ -40,7 +40,11 @@ export type $TSContext = {
   newUserInfo?: $TSAny;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
+  postPushDeletedResourceNames: Record<CategoryName, ResourceName[]>;
 };
+
+export type CategoryName = string;
+export type ResourceName = string;
 
 export type IContextPrint = {
   info: (message: string) => void;

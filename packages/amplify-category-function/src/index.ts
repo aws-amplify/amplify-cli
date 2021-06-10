@@ -15,6 +15,8 @@ import { ServiceName } from './provider-utils/awscloudformation/utils/constants'
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
+import { prePushHandler } from './events/prePushHandler';
+import { postPushHandler } from './events/postPushHandler';
 export { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 export { updateDependentFunctionsCfn } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 export { lambdasWithApiDependency } from './provider-utils/awscloudformation/utils/getDependentFunction';
@@ -242,8 +244,14 @@ export async function executeAmplifyCommand(context) {
 }
 
 export async function handleAmplifyEvent(context, args) {
-  context.print.info(`${category} handleAmplifyEvent to be implemented`);
-  context.print.info(`Received event args ${args}`);
+  switch (args.event) {
+    case 'PrePush':
+      await prePushHandler(context);
+      break;
+    case 'PostPush':
+      await postPushHandler(context);
+      break;
+  }
 }
 
 // Object used for internal invocation of lambda functions

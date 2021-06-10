@@ -33,7 +33,7 @@ import {
 import { $TSObject, JSONUtilities, stateManager } from 'amplify-cli-core';
 import { consolidateDependsOnForLambda } from '../utils/consolidateDependsOn';
 import { secretValuesWalkthrough } from './secretValuesWalkthrough';
-import { getLocalFunctionSecretNames } from '../secrets/functionParametersSecretsController';
+import { getFunctionSecretNames } from '../secrets/functionParametersSecretsController';
 import { secretNamesToSecretDeltas } from '../secrets/secretDeltaUtilities';
 
 /**
@@ -85,7 +85,7 @@ export async function createWalkthrough(
 
     templateParameters = merge(
       templateParameters,
-      await secretValuesWalkthrough(secretNamesToSecretDeltas(await getLocalFunctionSecretNames(templateParameters.functionName))),
+      await secretValuesWalkthrough(secretNamesToSecretDeltas(await getFunctionSecretNames(templateParameters.functionName))),
     );
   }
 
@@ -142,7 +142,7 @@ async function provideInformation(context, lambdaToUpdate, functionRuntime, curr
 
   // secrets configuration
   context.print.success('Secrets configuration');
-  const currentSecrets = await getLocalFunctionSecretNames(lambdaToUpdate);
+  const currentSecrets = await getFunctionSecretNames(lambdaToUpdate);
   if (currentSecrets.length) {
     currentSecrets.forEach(secretName => context.print.info(`- ${secretName}`));
   } else {
@@ -260,7 +260,7 @@ export async function updateWalkthrough(context, lambdaToUpdate?: string) {
   if (selectedSettings.includes(secretsConfiguration)) {
     merge(
       functionParameters,
-      await secretValuesWalkthrough(secretNamesToSecretDeltas(await getLocalFunctionSecretNames(functionParameters.resourceName)), {
+      await secretValuesWalkthrough(secretNamesToSecretDeltas(await getFunctionSecretNames(functionParameters.resourceName)), {
         preConfirmed: true,
       }),
     );

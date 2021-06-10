@@ -2,7 +2,6 @@ import { $TSContext } from 'amplify-cli-core';
 import { SecretName } from 'amplify-function-plugin-interface';
 import * as aws from 'aws-sdk';
 import ora from 'ora';
-import { secretNamesToSecretDeltas } from './secretDeltaUtilities';
 
 export class SSMClientWrapper {
   private static instance: SSMClientWrapper;

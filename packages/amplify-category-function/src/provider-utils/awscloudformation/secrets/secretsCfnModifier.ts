@@ -35,7 +35,8 @@ export const updateSecretsInCfnTemplate = async (
 
   Object.entries(secretDeltas).forEach(([secretName, secretDelta]) => {
     switch (secretDelta.operation) {
-      case 'remove':
+      case 'removeLocally':
+      case 'removeInCloud': // values deleted in the cloud are also removed locally
         delete envVarsCfn[getSecretNameEnvVar(secretName)];
         break;
       case 'setValue':

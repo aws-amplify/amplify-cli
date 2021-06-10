@@ -1,4 +1,4 @@
-import { FunctionParameters, SecretDeltas } from 'amplify-function-plugin-interface';
+import { FunctionParameters, removeSecretLocal, SecretDeltas, setSecretValue } from 'amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import { getExistingSecrets, hasExistingSecrets } from '../secrets/secretDeltaUtilities';
 
@@ -44,18 +44,18 @@ type SecretDeltasModifier = (secretDeltas: SecretDeltas) => Promise<void>;
 const addSecretFlow = async (secretDeltas: SecretDeltas) => {
   const secretName = await enterSecretName(Object.keys(secretDeltas));
   const secretValue = await enterSecretValue(secretValueDefaultMessage(secretName));
-  secretDeltas[secretName] = { operation: 'setValue', value: secretValue };
+  secretDeltas[secretName] = setSecretValue(secretValue);
 };
 
 const updateSecretFlow = async (secretDeltas: SecretDeltas) => {
   const secretToUpdate = await singleSelectSecret(Object.keys(getExistingSecrets(secretDeltas)), 'Select the secret to update:');
   const secretValue = await enterSecretValue(secretValueDefaultMessage(secretToUpdate));
-  secretDeltas[secretToUpdate] = { operation: 'setValue', value: secretValue };
+  secretDeltas[secretToUpdate] = setSecretValue(secretValue);
 };
 
 const removeSecretFlow = async (secretDeltas: SecretDeltas) => {
   const secretsToRemove = await multiSelectSecret(Object.keys(getExistingSecrets(secretDeltas)), 'Select the secrets to delete:');
-  secretsToRemove.forEach(secretName => (secretDeltas[secretName] = { operation: 'remove' }));
+  secretsToRemove.forEach(secretName => (secretDeltas[secretName] = removeSecretLocal));
 };
 
 const operationFlowMap: Record<Exclude<SecretOperation, 'done'>, SecretDeltasModifier> = {
