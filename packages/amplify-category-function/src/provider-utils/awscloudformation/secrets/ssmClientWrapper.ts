@@ -88,6 +88,10 @@ export class SSMClientWrapper {
         }
       });
   };
+
+  deleteSecrets = async (secretNames: string[]) => {
+    await this.ssmClient.deleteParameters({ Names: secretNames }).promise();
+  };
 }
 
 const getSSMClient = async (context: $TSContext) => {

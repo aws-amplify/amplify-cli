@@ -12,12 +12,14 @@ import * as path from 'path';
 export const getFullyQualifiedSecretName = (secretName: string, functionName: string, envName?: string) =>
   `${getFunctionSecretPrefix(functionName, envName)}${secretName}`;
 
-export const getFunctionSecretPrefix = (functionName: string, envName: string = stateManager.getLocalEnvInfo()?.envName) => {
-  const appId = getAppId();
+export const getFunctionSecretPrefix = (functionName: string, envName?: string) =>
+  path.posix.join(getEnvSecretPrefix(envName), `AMPLIFY_${functionName}_`);
+
+export const getEnvSecretPrefix = (envName: string = stateManager.getLocalEnvInfo()?.envName) => {
   if (!envName) {
     throw new Error('Could not determine the current Amplify environment name. Try running `amplify env checkout`.');
   }
-  return path.posix.join('/amplify', appId, envName, `AMPLIFY_${functionName}_`);
+  return path.posix.join('/amplify', getAppId(), envName);
 };
 
 // Even though the following 2 functions are CFN specific, I'm putting them here to colocate all of the secret naming logic
