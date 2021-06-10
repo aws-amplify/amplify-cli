@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.7.2...amplify-function-plugin-interface@1.8.0-beta.0) (2021-06-10)
+
+
+### Features
+
+* lambda layers rework ([#7375](https://github.com/aws-amplify/amplify-cli/issues/7375)) ([a3b7d3e](https://github.com/aws-amplify/amplify-cli/commit/a3b7d3e427e16bac2b2ea27699fe53b48cf47656))
+
+
+
+
+
 ## [1.7.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-function-plugin-interface@1.7.1...amplify-function-plugin-interface@1.7.2) (2021-02-26)
 
 **Note:** Version bump only for package amplify-function-plugin-interface

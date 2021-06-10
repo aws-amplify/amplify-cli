@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.20.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.19.3...amplify-e2e-core@1.20.0-beta.0) (2021-06-10)
+
+
+### Features
+
+* add support for defining IAM Permissions Boundary for Project ([#7144](https://github.com/aws-amplify/amplify-cli/issues/7144)) ([acf031b](https://github.com/aws-amplify/amplify-cli/commit/acf031b29d4e554d647da39ffb8293010cf1d8ad))
+* lambda layers rework ([#7375](https://github.com/aws-amplify/amplify-cli/issues/7375)) ([a3b7d3e](https://github.com/aws-amplify/amplify-cli/commit/a3b7d3e427e16bac2b2ea27699fe53b48cf47656))
+
+
+### Reverts
+
+* Revert "feat: add support for defining IAM Permissions Boundary for Project (#7144)" (#7453) ([08704f0](https://github.com/aws-amplify/amplify-cli/commit/08704f0271f6f5d0e0e98ad7002f4b35c3890924)), closes [#7144](https://github.com/aws-amplify/amplify-cli/issues/7144) [#7453](https://github.com/aws-amplify/amplify-cli/issues/7453)
+
+
+
+
+
 ## [1.19.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.19.2...amplify-e2e-core@1.19.3) (2021-05-26)
 
 **Note:** Version bump only for package amplify-e2e-core
