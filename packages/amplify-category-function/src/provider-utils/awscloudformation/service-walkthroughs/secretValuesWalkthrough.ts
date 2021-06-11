@@ -1,6 +1,10 @@
+import { $TSContext, ResourceName, stateManager } from 'amplify-cli-core';
 import { FunctionParameters, removeSecretLocal, SecretDeltas, setSecretValue } from 'amplify-function-plugin-interface';
 import inquirer from 'inquirer';
+import _ from 'lodash';
+import { getLocalFunctionSecretNames } from '../secrets/functionSecretsStateManager';
 import { getExistingSecrets, hasExistingSecrets } from '../secrets/secretDeltaUtilities';
+import { categoryName } from '../utils/constants';
 
 const secretValuesWalkthroughDefaultOptions = {
   preConfirmed: false, // true if the walkthrough has previously confirmed that secrets should be configured. false if this function should gate the flow behind a confirmation
@@ -39,6 +43,40 @@ export const prePushMissingSecretsWalkthrough = async (functionName: string, mis
   return secretDeltas;
 };
 
+export const cloneEnvWalkthrough = async (
+  interactive = true,
+  functionDeltaGenerator: (funcName: string) => Promise<SecretDeltas>,
+): Promise<Record<ResourceName, SecretDeltas>> => {
+  const functionNames = Object.keys((stateManager.getBackendConfig(undefined, { throwIfNotExist: false }) || {})?.[categoryName]);
+  const functionsWithSecrets = functionNames.filter(name => !!getLocalFunctionSecretNames(name).length);
+  const allDeltas: Record<ResourceName, SecretDeltas> = {};
+
+  // if there are no functions with secrets, there's nothing to clone
+  if (!functionsWithSecrets.length) {
+    return allDeltas;
+  }
+
+  for (const funcName of functionsWithSecrets) {
+    const deltas = await functionDeltaGenerator(funcName);
+    allDeltas[funcName] = deltas;
+  }
+
+  const carryOver = !interactive || (await carryOverPrompt());
+  if (carryOver) {
+    return allDeltas;
+  }
+
+  for (
+    let funcToUpdate = await selectFunctionToUpdate(functionsWithSecrets);
+    !!funcToUpdate;
+    funcToUpdate = await selectFunctionToUpdate(functionsWithSecrets)
+  ) {
+    await secretValuesWalkthrough(allDeltas[funcToUpdate], { preConfirmed: true });
+  }
+
+  return allDeltas;
+};
+
 type SecretDeltasModifier = (secretDeltas: SecretDeltas) => Promise<void>;
 
 const addSecretFlow = async (secretDeltas: SecretDeltas) => {
@@ -63,6 +101,37 @@ const operationFlowMap: Record<Exclude<SecretOperation, 'done'>, SecretDeltasMod
   update: updateSecretFlow,
   remove: removeSecretFlow,
 };
+
+const carryOverPrompt = async () =>
+  (
+    await inquirer.prompt<{ carryOver: 'carry' | 'update' }>({
+      type: 'list',
+      name: 'carryOver',
+      message: `You have configured secrets for functions. How do you want to proceed?`,
+      choices: [
+        {
+          value: 'carry',
+          name: 'Carry over existing secret values to the new environment',
+        },
+        {
+          value: 'update',
+          name: 'Update secret values now (you can always update secret values later using `amplify update function`)',
+        },
+      ],
+    })
+  ).carryOver === 'carry';
+
+const selectFunctionToUpdate = async (funcNames: string[]) =>
+  (
+    await inquirer.prompt({
+      type: 'list',
+      name: 'funcToUpdate',
+      message: 'Select a function to update secrets for:',
+      choices: funcNames
+        .map(name => ({ name, value: name } as { name: string; value: string | false }))
+        .concat({ name: "I'm done", value: false }),
+    })
+  ).funcToUpdate as string | false;
 
 const addSecretsConfirm = async (preConfirmed: boolean = false) => {
   if (preConfirmed) {

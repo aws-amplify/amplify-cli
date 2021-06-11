@@ -16,10 +16,9 @@ export class SSMClientWrapper {
   private constructor(private readonly ssmClient: aws.SSM) {}
 
   /**
-   * Returns a Map of secretNames to secret values
+   * Returns a list of secret name value pairs
    */
   getSecrets = async (secretNames: string[]) => {
-    const accumulator = new Map<SecretName, string>();
     const result = await this.ssmClient
       .getParameters({
         Names: secretNames,
@@ -27,8 +26,7 @@ export class SSMClientWrapper {
       })
       .promise();
 
-    result.Parameters.forEach(param => accumulator.set(param.Name, param.Value));
-    return accumulator;
+    return result.Parameters.map(({ Name, Value }) => ({ secretName: Name, secretValue: Value }));
   };
 
   /**

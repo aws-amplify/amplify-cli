@@ -17,6 +17,8 @@ import { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerP
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 import { prePushHandler } from './events/prePushHandler';
 import { postPushHandler } from './events/postPushHandler';
+import { postEnvRemoveHandler } from './events/postEnvRemoveHandler';
+import { cloneSecretsOnEnvInitHandler } from './provider-utils/awscloudformation/secrets/cloneSecretsOnEnvInitHandler';
 export { isMultiEnvLayer } from './provider-utils/awscloudformation/utils/layerParams';
 export { updateDependentFunctionsCfn } from './provider-utils/awscloudformation/utils/updateDependentFunctionCfn';
 export { lambdasWithApiDependency } from './provider-utils/awscloudformation/utils/getDependentFunction';
@@ -173,6 +175,10 @@ export async function initEnv(context) {
   stateManager.setTeamProviderInfo(undefined, teamProviderInfo);
 
   await sequential(functionTasks);
+
+  if (isNewEnv) {
+    await cloneSecretsOnEnvInitHandler(context, sourceEnv, envName);
+  }
 }
 
 // Returns a wrapper around FunctionRuntimeLifecycleManager.invoke() that can be used to invoke the function with only an event
@@ -243,13 +249,16 @@ export async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
-export async function handleAmplifyEvent(context, args) {
+export async function handleAmplifyEvent(context: $TSContext, args) {
   switch (args.event) {
     case 'PrePush':
       await prePushHandler(context);
       break;
     case 'PostPush':
       await postPushHandler(context);
+      break;
+    case 'InternalOnlyPostEnvRemove':
+      await postEnvRemoveHandler(context, args?.envName);
       break;
   }
 }

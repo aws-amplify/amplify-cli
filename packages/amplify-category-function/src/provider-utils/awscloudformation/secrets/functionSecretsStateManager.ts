@@ -1,11 +1,11 @@
 import { $TSContext, JSONUtilities, pathManager, ResourceName } from 'amplify-cli-core';
-import { removeSecretCloud, SecretDeltas, SecretName } from 'amplify-function-plugin-interface';
+import { removeSecretCloud, retainSecret, SecretDeltas, SecretName, setSecretValue } from 'amplify-function-plugin-interface';
 import { getFunctionCloudFormationTemplate, setFunctionCloudFormationTemplate } from '../utils/cloudformationHelpers';
 import { getEnvSecretPrefix, getFullyQualifiedSecretName, getFunctionSecretPrefix } from './secretName';
 import { updateSecretsInCfnTemplate } from './secretsCfnModifier';
 import { SSMClientWrapper } from './ssmClientWrapper';
 import * as path from 'path';
-import { prePushMissingSecretsWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
+import { prePushMissingSecretsWalkthrough, secretValuesWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
 import { getExistingSecrets, secretNamesToSecretDeltas } from './secretDeltaUtilities';
 import { categoryName, functionParametersFileName, ServiceName } from '../utils/constants';
 import { createParametersFile } from '../utils/storeResources';
@@ -74,13 +74,28 @@ export class FunctionSecretsStateManager {
   /**
    * Checks that all locally defined secrets for the function are present in the cloud. If any are missing, it prompts for values
    */
-  ensureNewLocalSecretsSyncedToCloud = async (functionName: string) => {
-    const { added: addedSecrets } = getSecretDiff(functionName);
+  ensureNewLocalSecretsSyncedToCloud = async (functionName: string, interactive = true) => {
+    const localSecretNames = getLocalFunctionSecretNames(functionName);
+    if (!localSecretNames.length) {
+      return;
+    }
+    const cloudSecretNames = await this.getCloudFunctionSecretNames(functionName);
+    const addedSecrets = localSecretNames.filter(name => !cloudSecretNames.includes(name));
     if (!addedSecrets.length) {
       return;
     }
+    if (!interactive) {
+      throw new Error(
+        `The following secrets in ${functionName} do not have values: [${addedSecrets}]\nRun 'amplify push' interactively to specify values.`,
+      );
+    }
     const delta = await prePushMissingSecretsWalkthrough(functionName, addedSecrets);
     await this.syncSecretDeltas(delta, functionName);
+  };
+
+  deleteAllFunctionSecrets = async (functionName: string) => {
+    const cloudSecretNames = await this.getCloudFunctionSecretNames(functionName);
+    await this.syncSecretDeltas(secretNamesToSecretDeltas(cloudSecretNames, removeSecretCloud), functionName);
   };
 
   /**
@@ -105,17 +120,24 @@ export class FunctionSecretsStateManager {
     const secretNames = await this.ssmClientWrapper.getSecretNamesByPath(getEnvSecretPrefix(envName));
     await this.ssmClientWrapper.deleteSecrets(secretNames);
   };
-}
 
-/**
- * If this function returns true, then a call to ensureNewLocalSecretsSyncedToCloud must be made to get the function secrets state in sync
- *
- * Ideally this function wouldn't be necessary, consumers could just call ensureNewLocalSecretsSyncedToCloud unconditionally and it would
- * perform this check internally. But constructing the SSM client is a potentially expensive operation
- * (because loading amplify-provider-awscloudformation takes approximately one geological era) so this gives consumers a way to
- * know beforehand if they need to construct the client.
- */
-export const areAddedSecretsPending = (functionName: string) => !!getSecretDiff(functionName).added.length;
+  getEnvCloneDeltas = async (sourceEnv: string, functionName: string) => {
+    const destDelta = secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName), retainSecret);
+    const sourceCloudSecretNames = await this.ssmClientWrapper.getSecretNamesByPath(getFunctionSecretPrefix(functionName, sourceEnv));
+    const sourceCloudSecrets = await this.ssmClientWrapper.getSecrets(
+      sourceCloudSecretNames.map(name => getFullyQualifiedSecretName(name, functionName, sourceEnv)),
+    );
+    sourceCloudSecrets.reduce((acc, { secretName, secretValue }) => ({ ...acc, [secretName]: setSecretValue(secretValue) }), destDelta);
+    return destDelta;
+  };
+
+  private getCloudFunctionSecretNames = async (functionName: string, envName?: string) => {
+    const prefix = getFunctionSecretPrefix(functionName, envName);
+    const parts = path.parse(prefix);
+    const unfilteredSecrets = await this.ssmClientWrapper.getSecretNamesByPath(parts.dir);
+    return unfilteredSecrets.filter(secretName => secretName.startsWith(prefix)).map(secretName => secretName.slice(prefix.length));
+  };
+}
 
 /**
  * It is expected that this function will be called before calling syncSecretsPendingRemoval.
@@ -142,19 +164,27 @@ export const storeSecretsPendingRemoval = async (context: $TSContext, functionNa
 };
 
 /**
- * If this function returns true, then a call to syncSecretsPendingRemoval must be made to get function secrets state in sync.
- *
- * Ideally this function wouldn't be necessary, consumers could just call syncSecretsPendingRemoval unconditionally and it would
- * perform this check internally. But constructing the SSM client is a potentially expensive operation
- * (because loading amplify-provider-awscloudformation takes approximately one geologic era) so this gives consumers a way to
- * know beforehand if they need to construct the client.
- */
-export const areRemovedSecretsPending = () => _.isEmpty(secretsPendingRemoval);
-
-/**
  * Gets the secret names stored in function-parameters.json for the given function
  */
-export const getLocalFunctionSecretNames = (functionName: string, options = defaultGetFunctionSecretNamesOptions) => {
+export const getLocalFunctionSecretNames = (functionName: string, options?: typeof defaultGetFunctionSecretNamesOptions) =>
+  getLocalSecretNames(functionName, options) || [];
+
+/**
+ * Returns a best guess based on local state of whether the function has secrets in the cloud
+ */
+export const functionMayHaveSecrets = (functionName: string) => !!getLocalSecretNames(functionName);
+
+// Below are some private helper functions for managing local secret state
+
+type LocalSecretsState = {
+  secretNames: string[];
+};
+
+const defaultGetFunctionSecretNamesOptions = {
+  fromCurrentCloudBackend: false,
+};
+
+const getLocalSecretNames = (functionName: string, options = defaultGetFunctionSecretNamesOptions): string[] | undefined => {
   options = { ...defaultGetFunctionSecretNamesOptions, ...options };
   const parametersFilePath = path.join(
     options.fromCurrentCloudBackend ? pathManager.getCurrentCloudBackendDirPath() : pathManager.getBackendDirPath(),
@@ -165,8 +195,6 @@ export const getLocalFunctionSecretNames = (functionName: string, options = defa
   const funcParameters = JSONUtilities.readJson<Partial<LocalSecretsState>>(parametersFilePath, { throwIfNotExist: false });
   return funcParameters?.secretNames;
 };
-
-// Below are some private helper functions for managing local secret state
 
 /**
  * Computes the diff of secrets names between function-parameters.json in #current-cloud-backend and amplify/backend
@@ -180,14 +208,6 @@ const getSecretDiff = (functionName: string): { added: string[]; removed: string
     added: localSecretNames.filter(name => !cloudSecretNames.includes(name)),
     removed: cloudSecretNames.filter(name => !localSecretNames.includes(name)),
   };
-};
-
-type LocalSecretsState = {
-  secretNames: string[];
-};
-
-const defaultGetFunctionSecretNamesOptions = {
-  fromCurrentCloudBackend: false,
 };
 
 /**
