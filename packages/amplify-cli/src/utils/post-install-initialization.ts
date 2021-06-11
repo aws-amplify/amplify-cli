@@ -8,7 +8,6 @@ import { print } from '../context-extensions';
  * It copies some assets needed by dependency packages to the .amplify folder
  */
 export const postInstallInitialization = async () => {
-  print.info(`Initializing new Amplify CLI version...`);
   // clean any previous libs
   await fs.remove(pathManager.getAmplifyLibRoot());
   await fs.ensureDir(pathManager.getAmplifyLibRoot());
@@ -37,7 +36,6 @@ export const postInstallInitialization = async () => {
     }),
   );
   delete process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB;
-  print.success('Done initializing new version.');
 };
 
 const resolvePackageRoot = (packageName: string) => {
