@@ -16,6 +16,7 @@ import {
   $TSMeta,
   DeploymentStepState,
   DeploymentStepStatus,
+  readCFNTemplate,
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { S3 } from './aws-utils/aws-s3';
@@ -45,7 +46,6 @@ import { NETWORK_STACK_LOGICAL_ID } from './network/stack';
 import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processor';
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
-import { readCFNTemplate } from 'amplify-cli-core';
 
 const logger = fileLogger('push-resources');
 
