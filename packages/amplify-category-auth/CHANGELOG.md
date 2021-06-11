@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.33.0-siwaNonProd.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.33.0-siwaNonProd.1...amplify-category-auth@2.33.0-siwaNonProd.2) (2021-06-11)
+
+
+### Features
+
+* **amplify-category-auth:** adding apple as identity provider ([#7487](https://github.com/aws-amplify/amplify-cli/issues/7487)) ([fb46603](https://github.com/aws-amplify/amplify-cli/commit/fb46603023d340949e3f4433ce0fda7067ce9228))
+
+
+
+
+
 # [2.33.0-siwaNonProd.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.33.0-siwaNonProd.0...amplify-category-auth@2.33.0-siwaNonProd.1) (2021-05-29)
 
 
