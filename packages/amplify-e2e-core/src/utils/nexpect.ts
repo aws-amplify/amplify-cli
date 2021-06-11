@@ -457,7 +457,7 @@ function chain(context: Context): ExecutionContext {
 
         if (process.env && process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED) {
           const spinnerRegex = new RegExp(/.*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏).*/);
-          if (spinnerRegex.test(data) === false && strip(data).replace(EOL, '').trim().length > 0) {
+          if (spinnerRegex.test(data) === false && strip(data).trim().length > 0) {
             console.log(data);
           }
         }
