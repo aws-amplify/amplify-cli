@@ -315,12 +315,10 @@ function getRequiredParamsForHeadlessInit(projectType, previousValues) {
     const oAuthProviders = JSON.parse(previousValues.hostedUIProviderMeta).map(h => h.ProviderName);
     if (oAuthProviders && oAuthProviders.length > 0) {
       oAuthProviders.forEach(o => {
-        if (o === 'SignInWithApple') {
-          requiredParams.push(`${o.toLowerCase()}ClientIdUserPool`);
-          requiredParams.push(`${o.toLowerCase()}TeamIdUserPool`);
-          requiredParams.push(`${o.toLowerCase()}KeyIdUserPool`);
-          requiredParams.push(`${o.toLowerCase()}PrivateKeyUserPool`);
-        } else {
+        // Everything but SIWA is required because the private key isn't returned by Cognito
+        // so we can't initialize SIWA in a new environment programmatically.
+        // User will have to reconfigure SIWA through Admin UI or CLI.
+        if (o !== 'SignInWithApple') {
           requiredParams.push(`${o.toLowerCase()}AppIdUserPool`);
           requiredParams.push(`${o.toLowerCase()}AppSecretUserPool`);
         }
