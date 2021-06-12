@@ -183,6 +183,8 @@ def _lambda_handler(event, context):
         logger.debug(image_name + ': %s', ddb[image_name])
         # Deserialize DynamoDB type to Python types
         doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
+        if '_lastChangedAt' in doc_fields:
+            doc_fields['_lastChangedAt'] = int(doc_fields['_lastChangedAt'])
         
         # Sync enabled APIs do soft delete. We need to delete the record in ES if _deleted field is set
         if ES_USE_EXTERNAL_VERSIONING and event_name == 'MODIFY' and '_deleted' in  doc_fields and doc_fields['_deleted']:
