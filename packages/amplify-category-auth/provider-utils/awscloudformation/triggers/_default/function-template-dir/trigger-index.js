@@ -1,14 +1,13 @@
 /**
  * @fileoverview
  *
- * This CloudFormation Trigger creates a Lambda function which waits for all
- * other specified Lambdas (modules) to resolve, which should be located in the
- * same directory as this file (./).
+ * This CloudFormation Trigger creates a handler which awaits the other handlers
+ * specified in the `MODULES` env var, located at `./${MODULE}`.
  */
 
 /**
  * The names of modules to load are stored as a comma-delimited string in the
- * `MODULES` env variable.
+ * `MODULES` env var.
  */
 const moduleNames = process.env.MODULES.split(',');
 /**
@@ -17,35 +16,24 @@ const moduleNames = process.env.MODULES.split(',');
 const modules = moduleNames.map(name => require(`./${name}`));
 
 /**
- * This handler is itself a Lambda function which iterates over all of the given
- * modules and awaits them.
+ * This async handler iterates over the given modules and awaits them.
  *
- * @see https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html#nodejs-handler-async
  *
  * @param {object} event
  *
  * The event that triggered this Lambda.
  *
- * @param {object} context
- *
- * The context for this Lambda. See:
- * https://docs.aws.amazon.com/lambda/latest/dg/nodejs-context.html
- *
- * @param {function} callback
- *
- * A deprecated way to send a response non-asynchronously. See:
- * https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html#nodejs-handler-sync
- *
  * @returns
  *
- * The CloudFormation trigger event.
+ * The handler response.
  */
-exports.handler = async (event, context, callback) => {
+exports.handler = async event => {
   /**
    * Instead of naively iterating over all handlers, run them concurrently with
    * `await Promise.all(...)`. This would otherwise just be determined by the
    * order of names in the `MODULES` var.
    */
-  await Promise.all(modules.map(module => module.handler(event, context, callback)));
+  await Promise.all(modules.map(module => module.handler(event)));
   return event;
 };
