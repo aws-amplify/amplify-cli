@@ -17,7 +17,7 @@ import { IsMockableResponse } from '../..';
 import { categoryName } from '../../constants';
 import { supportedServices } from '../supported-services';
 import { ServiceConfig } from '../supportedServicesType';
-import { cfnTemplateSuffix, functionParametersFileName, provider, ServiceName, versionHash } from './utils/constants';
+import { functionParametersFileName, provider, ServiceName, versionHash } from './utils/constants';
 import { convertExternalLayersToProjectLayers, convertProjectLayersToExternalLayers } from './utils/convertLayersTypes';
 import { convertToComplete, isComplete, merge } from './utils/funcParamsUtils';
 import { isMultiEnvLayer } from './utils/layerHelpers';
@@ -395,26 +395,17 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
     // Since the CFN template and parameters.json are updated on each new layer version which are specific to each env, we need to update
     // the files accordingly to ensure the correct status is shown after env checkout. The restore flag already handles this scenario.
     if (context.input.command === 'env' && context.input?.subCommands.includes('checkout') && !context.exeInfo?.inputParams?.restore) {
-      const cfnFilename = `${resourceName}${cfnTemplateSuffix}`;
-      const currentCloudBackendDirPath = pathManager.getCurrentCloudBackendDirPath(projectPath);
-      const currentCfnTemplatePath = path.join(currentCloudBackendDirPath, categoryName, resourceName, cfnFilename);
-      const currentParametersJsonPath = path.join(
-        currentCloudBackendDirPath,
-        categoryName,
-        resourceName,
-        PathConstants.ParametersJsonFileName,
-      );
-
-      const currentParametersJson = JSONUtilities.readJson<$TSAny>(currentParametersJsonPath, { throwIfNotExist: false }) || undefined;
+      const currentParametersJson =
+        stateManager.getCurrentResourceParametersJson(projectPath, categoryName, resourceName, { throwIfNotExist: false }) || {};
       if (currentParametersJson) {
         const backendParametersJson = stateManager.getResourceParametersJson(projectPath, categoryName, resourceName);
         backendParametersJson.description = currentParametersJson.description;
         stateManager.setResourceParametersJson(projectPath, categoryName, resourceName, backendParametersJson);
       }
 
-      const backendCfnTemplatePath = path.join(pathManager.getResourceDirectoryPath(undefined, categoryName, resourceName), cfnFilename);
+      const currentCfnTemplatePath = pathManager.getCurrentCfnTemplatePath(projectPath, categoryName, resourceName);
       const { cfnTemplate: currentCfnTemplate } = await readCFNTemplate(currentCfnTemplatePath);
-      await writeCFNTemplate(currentCfnTemplate, backendCfnTemplatePath);
+      await writeCFNTemplate(currentCfnTemplate, pathManager.getResourceCfnTemplatePath(projectPath, categoryName, resourceName));
     }
   }
 }
