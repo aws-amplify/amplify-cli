@@ -1,29 +1,30 @@
 import {
-  addLayer,
   addFunction,
+  addLayer,
   addOptData,
   amplifyPull,
   amplifyPushAuth,
   amplifyPushLayer,
+  amplifyStatus,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  initJSProjectWithProfile,
   getAppId,
+  getCurrentLayerArnFromMeta,
+  getProjectConfig,
   getProjectMeta,
+  initJSProjectWithProfile,
   LayerPermission,
   LayerPermissionChoice,
   LayerPermissionName,
   LayerRuntime,
   removeLayer,
+  removeLayerVersion,
   updateLayer,
   updateOptData,
   validateLayerDir,
   validateLayerMetadata,
   validatePushedVersion,
-  getCurrentLayerArnFromMeta,
-  getProjectConfig,
-  removeLayerVersion,
 } from 'amplify-e2e-core';
 import { v4 as uuid } from 'uuid';
 import { addEnvironment, checkoutEnvironment, listEnvironment } from '../environment/env';
@@ -71,7 +72,7 @@ describe('amplify add lambda layer', () => {
     expect(validateLayerDir(projRoot, settings, settings.runtimes)).toBe(false);
   });
 
-  it('init a project add 4 layers and delete first 3 of them and push and verify', async () => {
+  it('init a project, add layer, push 4 layer versions and delete first 3 of them, then push and verify', async () => {
     const [shortId] = uuid().split('-');
     const layerName = `simplelayer${shortId}`;
     const runtime: LayerRuntime = 'nodejs';
@@ -236,11 +237,13 @@ describe('amplify add lambda layer', () => {
     await amplifyPushLayer(projRoot, {
       acceptSuggestedLayerVersionConfigurations: true,
     });
+    await amplifyStatus(projRoot, 'No Change');
     layerTestArns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     validatePushedVersion(projRoot, settings, expectedPerms);
     await validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), newEnvName, layerTestArns);
 
     await checkoutEnvironment(projRoot, { envName });
+    await amplifyStatus(projRoot, 'No Change');
     validatePushedVersion(projRoot, settings, expectedPerms);
     await validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), envName, integtestArns);
   });
@@ -309,6 +312,7 @@ describe('amplify add lambda layer - with amplify console app', () => {
     }
 
     await amplifyPull(projRoot, {});
+    await amplifyStatus(projRoot, 'No Change');
 
     validatePushedVersion(projRoot, settings, expectedPerms);
   });
