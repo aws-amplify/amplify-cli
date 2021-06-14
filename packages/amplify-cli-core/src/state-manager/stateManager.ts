@@ -133,6 +133,21 @@ export class StateManager {
     return this.getData<$TSAny>(filePath, mergedOptions);
   };
 
+  getCurrentResourceParametersJson = (
+    projectPath: string | undefined,
+    category: string,
+    resourceName: string,
+    options?: GetOptions<$TSAny>,
+  ): $TSAny => {
+    const filePath = pathManager.getCurrentResourceParametersJsonPath(projectPath, category, resourceName);
+    const mergedOptions = {
+      throwIfNotExist: true,
+      ...options,
+    };
+
+    return this.getData<$TSAny>(filePath, mergedOptions);
+  };
+
   getAmplifyAdminConfigEntry = (appId: string, options?: GetOptions<$TSAny>) => {
     const mergedOptions = {
       throwIfNotExist: false,
