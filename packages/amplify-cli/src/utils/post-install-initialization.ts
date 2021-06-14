@@ -1,7 +1,6 @@
 import { GetPackageAssetPaths, pathManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { print } from '../context-extensions';
 
 /**
  * This function is run first thing after a new Amplify installation
