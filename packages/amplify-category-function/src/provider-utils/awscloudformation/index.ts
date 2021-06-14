@@ -396,7 +396,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
     // the files accordingly to ensure the correct status is shown after env checkout. The restore flag already handles this scenario.
     if (context.input.command === 'env' && context.input?.subCommands.includes('checkout') && !context.exeInfo?.inputParams?.restore) {
       const currentParametersJson =
-        stateManager.getCurrentResourceParametersJson(projectPath, categoryName, resourceName, { throwIfNotExist: false }) || {};
+        stateManager.getCurrentResourceParametersJson(projectPath, categoryName, resourceName, { throwIfNotExist: false }) || undefined;
       if (currentParametersJson) {
         const backendParametersJson = stateManager.getResourceParametersJson(projectPath, categoryName, resourceName);
         backendParametersJson.description = currentParametersJson.description;
