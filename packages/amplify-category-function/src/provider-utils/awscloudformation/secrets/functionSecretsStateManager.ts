@@ -1,11 +1,12 @@
-import { $TSContext, JSONUtilities, pathManager, ResourceName, stateManager } from 'amplify-cli-core';
-import { retainSecret, SecretDeltas, SecretName, setSecret } from 'amplify-function-plugin-interface';
+import { $TSContext, JSONUtilities, pathManager, ResourceName } from 'amplify-cli-core';
+import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from 'amplify-function-plugin-interface';
 import * as path from 'path';
 import { prePushMissingSecretsWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
 import { getFunctionCloudFormationTemplate, setFunctionCloudFormationTemplate } from '../utils/cloudformationHelpers';
 import { categoryName, functionParametersFileName, ServiceName } from '../utils/constants';
+import { isFunctionPushed } from '../utils/funcionStateUtils';
 import { createParametersFile } from '../utils/storeResources';
-import { getExistingSecrets, secretNamesToSecretDeltas } from './secretDeltaUtilities';
+import { getExistingSecrets, hasExistingSecrets, secretNamesToSecretDeltas } from './secretDeltaUtilities';
 import { getEnvSecretPrefix, getFullyQualifiedSecretName, getFunctionSecretPrefix } from './secretName';
 import { updateSecretsInCfnTemplate } from './secretsCfnModifier';
 import { SSMClientWrapper } from './ssmClientWrapper';
@@ -65,10 +66,15 @@ export class FunctionSecretsStateManager {
       }
     });
 
-    const origTemplate = await getFunctionCloudFormationTemplate(functionName);
-    const newTemplate = await updateSecretsInCfnTemplate(origTemplate, secretDeltas, functionName);
-    await setFunctionCloudFormationTemplate(functionName, newTemplate);
-
+    try {
+      const origTemplate = await getFunctionCloudFormationTemplate(functionName);
+      const newTemplate = await updateSecretsInCfnTemplate(origTemplate, secretDeltas, functionName);
+      await setFunctionCloudFormationTemplate(functionName, newTemplate);
+    } catch (err) {
+      if (hasExistingSecrets(secretDeltas)) {
+        throw err;
+      }
+    }
     await setLocalFunctionSecretState(functionName, secretDeltas);
   };
 
@@ -96,7 +102,7 @@ export class FunctionSecretsStateManager {
 
   deleteAllFunctionSecrets = async (functionName: string) => {
     const cloudSecretNames = await this.getCloudFunctionSecretNames(functionName);
-    await this.syncSecretDeltas(secretNamesToSecretDeltas(cloudSecretNames, removeSecretCloud), functionName);
+    await this.syncSecretDeltas(secretNamesToSecretDeltas(cloudSecretNames, removeSecret), functionName);
   };
 
   /**
@@ -107,7 +113,7 @@ export class FunctionSecretsStateManager {
   syncSecretsPendingRemoval = async () => {
     await Promise.all(
       Object.entries(secretsPendingRemoval).map(([functionName, secretNames]) =>
-        this.syncSecretDeltas(secretNamesToSecretDeltas(secretNames, removeSecretCloud), functionName),
+        this.syncSecretDeltas(secretNamesToSecretDeltas(secretNames, removeSecret), functionName),
       ),
     );
     secretsPendingRemoval = {};
@@ -124,11 +130,15 @@ export class FunctionSecretsStateManager {
 
   getEnvCloneDeltas = async (sourceEnv: string, functionName: string) => {
     const destDelta = secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName), retainSecret);
-    const sourceCloudSecretNames = await this.ssmClientWrapper.getSecretNamesByPath(getFunctionSecretPrefix(functionName, sourceEnv));
+    const sourceCloudSecretNames = await this.getCloudFunctionSecretNames(functionName, sourceEnv);
     const sourceCloudSecrets = await this.ssmClientWrapper.getSecrets(
       sourceCloudSecretNames.map(name => getFullyQualifiedSecretName(name, functionName, sourceEnv)),
     );
-    sourceCloudSecrets.reduce((acc, { secretName, secretValue }) => ({ ...acc, [secretName]: setSecret(secretValue) }), destDelta);
+    sourceCloudSecrets.reduce((acc, { secretName, secretValue }) => {
+      const shortName = secretName.slice(getFunctionSecretPrefix(functionName, sourceEnv).length);
+      acc[shortName] = setSecret(secretValue);
+      return acc;
+    }, destDelta);
     return destDelta;
   };
 
@@ -140,9 +150,8 @@ export class FunctionSecretsStateManager {
   };
 
   private doRemoveSecretsInCloud = (functionName: string): boolean => {
-    const isFunctionPushed = stateManager.getCurrentMeta()?.[categoryName]?.[functionName] !== undefined;
     const isCommandPush = this.context.parameters.command === 'push';
-    return !isFunctionPushed || isCommandPush;
+    return !isFunctionPushed(functionName) || isCommandPush;
   };
 }
 
@@ -161,7 +170,9 @@ export class FunctionSecretsStateManager {
  */
 export const storeSecretsPendingRemoval = async (context: $TSContext, functionNames: string[]) => {
   functionNames.forEach(functionName => {
-    const { removed } = getSecretDiff(functionName);
+    const cloudSecretNames = getLocalFunctionSecretNames(functionName, { fromCurrentCloudBackend: true });
+    const localSecretNames = getLocalFunctionSecretNames(functionName);
+    const removed = cloudSecretNames.filter(name => !localSecretNames.includes(name));
     if (removed.length) {
       secretsPendingRemoval[functionName] = removed;
     }
@@ -169,19 +180,6 @@ export const storeSecretsPendingRemoval = async (context: $TSContext, functionNa
 
   await storeToBeRemovedFunctionsWithSecrets(context);
 };
-
-/**
- * Gets the secret names stored in function-parameters.json for the given function
- */
-export const getLocalFunctionSecretNames = (functionName: string, options?: typeof defaultGetFunctionSecretNamesOptions) =>
-  getLocalSecretNames(functionName, options) || [];
-
-/**
- * Returns a best guess based on local state of whether the function has secrets in the cloud
- */
-export const functionMayHaveSecrets = (functionName: string) => !!getLocalSecretNames(functionName);
-
-// Below are some private helper functions for managing local secret state
 
 type LocalSecretsState = {
   secretNames: string[];
@@ -191,7 +189,13 @@ const defaultGetFunctionSecretNamesOptions = {
   fromCurrentCloudBackend: false,
 };
 
-const getLocalSecretNames = (functionName: string, options = defaultGetFunctionSecretNamesOptions): string[] | undefined => {
+/**
+ * Gets the secret names stored in function-parameters.json for the given function
+ */
+export const getLocalFunctionSecretNames = (
+  functionName: string,
+  options: Partial<typeof defaultGetFunctionSecretNamesOptions> = defaultGetFunctionSecretNamesOptions,
+): string[] => {
   options = { ...defaultGetFunctionSecretNamesOptions, ...options };
   const parametersFilePath = path.join(
     options.fromCurrentCloudBackend ? pathManager.getCurrentCloudBackendDirPath() : pathManager.getBackendDirPath(),
@@ -200,22 +204,10 @@ const getLocalSecretNames = (functionName: string, options = defaultGetFunctionS
     functionParametersFileName,
   );
   const funcParameters = JSONUtilities.readJson<Partial<LocalSecretsState>>(parametersFilePath, { throwIfNotExist: false });
-  return funcParameters?.secretNames;
+  return funcParameters?.secretNames || [];
 };
 
-/**
- * Computes the diff of secrets names between function-parameters.json in #current-cloud-backend and amplify/backend
- * @param functionName the function to compute the diff of
- * @returns Object describing which secrets are newly added and which have been locally removed but are still present in the cloud
- */
-const getSecretDiff = (functionName: string): { added: string[]; removed: string[] } => {
-  const cloudSecretNames = getLocalFunctionSecretNames(functionName, { fromCurrentCloudBackend: true });
-  const localSecretNames = getLocalFunctionSecretNames(functionName);
-  return {
-    added: localSecretNames.filter(name => !cloudSecretNames.includes(name)),
-    removed: cloudSecretNames.filter(name => !localSecretNames.includes(name)),
-  };
-};
+// Below are some private helper functions for managing local secret state
 
 /**
  * Sets the secret state in function-parameters.json.
@@ -234,13 +226,14 @@ const setLocalFunctionSecretState = (functionName: string, secretDeltas: SecretD
  * Iterates over to-be-deleted lambda functions and stores any secret names for deleted functions in secretsPendingRemoval
  */
 const storeToBeRemovedFunctionsWithSecrets = async (context: $TSContext) => {
-  const resourcesToBeDeleted = ((await context.amplify.getResourceStatus())?.resourcesToBeDeleted || []) as {
+  const resourceStatus = await context.amplify.getResourceStatus(categoryName);
+  const resourcesToBeDeleted = (resourceStatus?.resourcesToBeDeleted || []) as {
     category: string;
     resourceName: string;
     service: string;
   }[];
   const deletedLambdas = resourcesToBeDeleted
-    .filter(resource => resource.category === categoryName && resource.service === ServiceName.LambdaFunction)
+    .filter(resource => resource.service === ServiceName.LambdaFunction)
     .map(resource => resource.resourceName);
   for (const deletedLambda of deletedLambdas) {
     const cloudSecretNames = await getLocalFunctionSecretNames(deletedLambda, { fromCurrentCloudBackend: true });

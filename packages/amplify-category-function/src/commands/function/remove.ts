@@ -1,12 +1,11 @@
-import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
 import { category as categoryName } from '../../constants';
-import { functionParametersFileName, ServiceName } from '../../provider-utils/awscloudformation/utils/constants';
-import { removeLayerArtifacts } from '../../provider-utils/awscloudformation/utils/storeResources';
-import * as path from 'path';
 import {
-  functionMayHaveSecrets,
   FunctionSecretsStateManager,
+  getLocalFunctionSecretNames,
 } from '../../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
+import { ServiceName } from '../../provider-utils/awscloudformation/utils/constants';
+import { isFunctionPushed } from '../../provider-utils/awscloudformation/utils/funcionStateUtils';
+import { removeLayerArtifacts } from '../../provider-utils/awscloudformation/utils/storeResources';
 
 const subcommand = 'remove';
 
@@ -16,13 +15,10 @@ module.exports = {
     const { amplify, parameters } = context;
     const resourceName = parameters.first;
 
-    // if the resource has not been pushed and it may have secrets in the cloud, we need to delete them now -- otherwise we will potentially orphan the secrets in the cloud
-    const resourceNameCallback = async (resourceName: string) => {
-      const isPushed = stateManager.getCurrentMeta()?.[categoryName]?.[resourceName] !== undefined;
-      const mayHaveSecrets = functionMayHaveSecrets(resourceName);
-      if (!isPushed && mayHaveSecrets) {
-        await (await FunctionSecretsStateManager.getInstance(context)).deleteAllFunctionSecrets(resourceName);
-      }
+    let hasSecrets = false;
+
+    const resourceNameCallback = (resourceName: string) => {
+      hasSecrets = getLocalFunctionSecretNames(resourceName).length > 0;
     };
 
     return amplify
@@ -34,9 +30,14 @@ module.exports = {
         serviceSuffix: { Lambda: '(function)', LambdaLayer: '(layer)' },
         resourceNameCallback,
       })
-      .then((resource: { service: string; resourceName: string }) => {
+      .then(async (resource: { service: string; resourceName: string }) => {
         if (resource.service === ServiceName.LambdaLayer) {
           removeLayerArtifacts(context, resource.resourceName);
+        }
+
+        // if the resource has not been pushed and it has secrets, we need to delete them now -- otherwise we will orphan the secrets in the cloud
+        if (!isFunctionPushed(resourceName) && hasSecrets) {
+          await (await FunctionSecretsStateManager.getInstance(context)).deleteAllFunctionSecrets(resourceName);
         }
       })
       .catch(err => {

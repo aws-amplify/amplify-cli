@@ -24,4 +24,7 @@ export const getExistingSecrets = (secretDeltas: SecretDeltas) =>
 export const secretNamesToSecretDeltas = (secretNames: string[], delta: SecretDelta = retainSecret): SecretDeltas =>
   secretNames.reduce((acc, secretName) => ({ ...acc, [secretName]: delta }), {} as SecretDeltas);
 
+export const hasSetSecrets = (secretDeltas: SecretDeltas) =>
+  Object.values(secretDeltas).filter(delta => delta.operation === 'set').length > 0;
+
 const existingSecretDeltaPredicate = (secretDelta: SecretDelta) => secretDelta.operation !== removeSecret.operation;

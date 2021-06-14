@@ -45,36 +45,19 @@ export const prePushMissingSecretsWalkthrough = async (functionName: string, mis
 
 export const cloneEnvWalkthrough = async (
   interactive = true,
-  functionDeltaGenerator: (funcName: string) => Promise<SecretDeltas>,
+  deltas: Record<ResourceName, SecretDeltas> = {},
 ): Promise<Record<ResourceName, SecretDeltas>> => {
-  const functionNames = Object.keys((stateManager.getBackendConfig(undefined, { throwIfNotExist: false }) || {})?.[categoryName]);
-  const functionsWithSecrets = functionNames.filter(name => !!getLocalFunctionSecretNames(name).length);
-  const allDeltas: Record<ResourceName, SecretDeltas> = {};
-
-  // if there are no functions with secrets, there's nothing to clone
-  if (!functionsWithSecrets.length) {
-    return allDeltas;
-  }
-
-  for (const funcName of functionsWithSecrets) {
-    const deltas = await functionDeltaGenerator(funcName);
-    allDeltas[funcName] = deltas;
-  }
-
   const carryOver = !interactive || (await carryOverPrompt());
   if (carryOver) {
-    return allDeltas;
+    return deltas;
   }
 
-  for (
-    let funcToUpdate = await selectFunctionToUpdate(functionsWithSecrets);
-    !!funcToUpdate;
-    funcToUpdate = await selectFunctionToUpdate(functionsWithSecrets)
-  ) {
-    await secretValuesWalkthrough(allDeltas[funcToUpdate], { preConfirmed: true });
+  const funcList = Object.keys(deltas);
+  for (let funcToUpdate = await selectFunctionToUpdate(funcList); !!funcToUpdate; funcToUpdate = await selectFunctionToUpdate(funcList)) {
+    await secretValuesWalkthrough(deltas[funcToUpdate], { preConfirmed: true });
   }
 
-  return allDeltas;
+  return deltas;
 };
 
 type SecretDeltasModifier = (secretDeltas: SecretDeltas) => Promise<void>;

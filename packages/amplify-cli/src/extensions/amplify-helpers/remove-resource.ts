@@ -37,7 +37,7 @@ export async function removeResource(
   category,
   resourceName,
   questionOptions: { serviceSuffix?; serviceDeletionInfo?: [] } = {},
-  resourceNameCallback: (resourceName: string) => Promise<void>,
+  resourceNameCallback?: (resourceName: string) => Promise<void>,
 ) {
   const amplifyMeta = stateManager.getMeta();
 
@@ -81,7 +81,10 @@ export async function removeResource(
 
     resourceName = answer.resource;
   }
-  await resourceNameCallback(resourceName);
+
+  if (resourceNameCallback) {
+    await resourceNameCallback(resourceName);
+  }
 
   context.print.info('');
   const service = _.get(amplifyMeta, [category, resourceName, 'service']);

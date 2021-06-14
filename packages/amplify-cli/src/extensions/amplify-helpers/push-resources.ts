@@ -80,6 +80,8 @@ export async function pushResources(
 
       throw err;
     }
+  } else {
+    exitOnNextTick(1);
   }
 
   return continueToPush;

@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { stateManager } from 'amplify-cli-core';
+import { $TSAny, stateManager } from 'amplify-cli-core';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
@@ -178,7 +178,7 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo):
   await raisePostEvent(context);
 }
 
-const getHandler = async (pluginInfo: PluginInfo, context: any): Promise<() => Promise<void>> => {
+const getHandler = async (pluginInfo: PluginInfo, context: any): Promise<() => Promise<$TSAny>> => {
   const pluginModule = await import(pluginInfo.packageLocation);
   let commandName = constants.ExecuteAmplifyCommand;
   let fallbackFn = () => legacyCommandExecutor(context, pluginInfo);

@@ -249,7 +249,7 @@ export async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
-export async function handleAmplifyEvent(context: $TSContext, args) {
+export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
   switch (args.event) {
     case 'PrePush':
       await prePushHandler(context);
@@ -258,7 +258,7 @@ export async function handleAmplifyEvent(context: $TSContext, args) {
       await postPushHandler(context);
       break;
     case 'InternalOnlyPostEnvRemove':
-      await postEnvRemoveHandler(context, args?.envName);
+      await postEnvRemoveHandler(context, args?.data?.envName);
       break;
   }
 }

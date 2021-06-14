@@ -19,6 +19,9 @@ export class SSMClientWrapper {
    * Returns a list of secret name value pairs
    */
   getSecrets = async (secretNames: string[]) => {
+    if (!secretNames || secretNames.length === 0) {
+      return [];
+    }
     const result = await this.ssmClient
       .getParameters({
         Names: secretNames,
