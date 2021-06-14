@@ -2,7 +2,7 @@
  * This module contains utility functions for dealing with the SecretDeltas object
  */
 
-import { removeSecretCloud, removeSecretLocal, retainSecret, SecretDelta, SecretDeltas } from 'amplify-function-plugin-interface';
+import { removeSecret, retainSecret, SecretDelta, SecretDeltas } from 'amplify-function-plugin-interface';
 
 /**
  * Determines if the SecretDeltas have any existing secrets (aka they are not marked for removal)
@@ -24,5 +24,4 @@ export const getExistingSecrets = (secretDeltas: SecretDeltas) =>
 export const secretNamesToSecretDeltas = (secretNames: string[], delta: SecretDelta = retainSecret): SecretDeltas =>
   secretNames.reduce((acc, secretName) => ({ ...acc, [secretName]: delta }), {} as SecretDeltas);
 
-const existingSecretDeltaPredicate = (secretDelta: SecretDelta) =>
-  !([removeSecretLocal.operation, removeSecretCloud.operation] as SecretDelta['operation'][]).includes(secretDelta.operation);
+const existingSecretDeltaPredicate = (secretDelta: SecretDelta) => secretDelta.operation !== removeSecret.operation;

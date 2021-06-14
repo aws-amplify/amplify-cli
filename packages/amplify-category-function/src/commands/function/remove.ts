@@ -1,5 +1,4 @@
 import { JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import _ from 'lodash';
 import { category as categoryName } from '../../constants';
 import { functionParametersFileName, ServiceName } from '../../provider-utils/awscloudformation/utils/constants';
 import { removeLayerArtifacts } from '../../provider-utils/awscloudformation/utils/storeResources';
@@ -19,7 +18,7 @@ module.exports = {
 
     // if the resource has not been pushed and it may have secrets in the cloud, we need to delete them now -- otherwise we will potentially orphan the secrets in the cloud
     const resourceNameCallback = async (resourceName: string) => {
-      const isPushed = _.isEmpty(stateManager.getCurrentMeta()?.[categoryName]?.[resourceName]);
+      const isPushed = stateManager.getCurrentMeta()?.[categoryName]?.[resourceName] !== undefined;
       const mayHaveSecrets = functionMayHaveSecrets(resourceName);
       if (!isPushed && mayHaveSecrets) {
         await (await FunctionSecretsStateManager.getInstance(context)).deleteAllFunctionSecrets(resourceName);

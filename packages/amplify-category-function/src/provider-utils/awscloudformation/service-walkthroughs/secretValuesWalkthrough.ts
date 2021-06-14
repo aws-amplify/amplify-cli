@@ -1,5 +1,5 @@
 import { $TSContext, ResourceName, stateManager } from 'amplify-cli-core';
-import { FunctionParameters, removeSecretLocal, SecretDeltas, setSecretValue } from 'amplify-function-plugin-interface';
+import { FunctionParameters, removeSecret, SecretDeltas, setSecret } from 'amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import { getLocalFunctionSecretNames } from '../secrets/functionSecretsStateManager';
@@ -38,7 +38,7 @@ export const prePushMissingSecretsWalkthrough = async (functionName: string, mis
     const secretValue = await enterSecretValue(
       `${secretName} in ${functionName} does not have a value in this environment. Specify one now:`,
     );
-    secretDeltas[secretName] = { operation: 'setValue', value: secretValue };
+    secretDeltas[secretName] = setSecret(secretValue);
   }
   return secretDeltas;
 };
@@ -82,18 +82,18 @@ type SecretDeltasModifier = (secretDeltas: SecretDeltas) => Promise<void>;
 const addSecretFlow = async (secretDeltas: SecretDeltas) => {
   const secretName = await enterSecretName(Object.keys(secretDeltas));
   const secretValue = await enterSecretValue(secretValueDefaultMessage(secretName));
-  secretDeltas[secretName] = setSecretValue(secretValue);
+  secretDeltas[secretName] = setSecret(secretValue);
 };
 
 const updateSecretFlow = async (secretDeltas: SecretDeltas) => {
   const secretToUpdate = await singleSelectSecret(Object.keys(getExistingSecrets(secretDeltas)), 'Select the secret to update:');
   const secretValue = await enterSecretValue(secretValueDefaultMessage(secretToUpdate));
-  secretDeltas[secretToUpdate] = setSecretValue(secretValue);
+  secretDeltas[secretToUpdate] = setSecret(secretValue);
 };
 
 const removeSecretFlow = async (secretDeltas: SecretDeltas) => {
   const secretsToRemove = await multiSelectSecret(Object.keys(getExistingSecrets(secretDeltas)), 'Select the secrets to delete:');
-  secretsToRemove.forEach(secretName => (secretDeltas[secretName] = removeSecretLocal));
+  secretsToRemove.forEach(secretName => (secretDeltas[secretName] = removeSecret));
 };
 
 const operationFlowMap: Record<Exclude<SecretOperation, 'done'>, SecretDeltasModifier> = {

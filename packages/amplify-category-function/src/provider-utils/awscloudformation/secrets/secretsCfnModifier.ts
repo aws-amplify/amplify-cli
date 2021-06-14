@@ -6,6 +6,7 @@ import { constantCase } from 'change-case';
 import { Fn } from 'cloudform-types';
 import { getFunctionSecretCfnName, getFunctionSecretCfnPrefix } from './secretName';
 import Policy from 'cloudform-types/types/iam/policy';
+import { getExistingSecrets, hasExistingSecrets } from './secretDeltaUtilities';
 
 /** Makes changes to the function CFN template to support secrets via SSM Parameter Store
  * It sets env vars for the function for the secret names and adds a policy to the lambda execution role to access the secrets
@@ -35,11 +36,10 @@ export const updateSecretsInCfnTemplate = async (
 
   Object.entries(secretDeltas).forEach(([secretName, secretDelta]) => {
     switch (secretDelta.operation) {
-      case 'removeLocally':
-      case 'removeInCloud': // values deleted in the cloud are also removed locally
+      case 'remove':
         delete envVarsCfn[getSecretNameEnvVar(secretName)];
         break;
-      case 'setValue':
+      case 'set':
       case 'retain': // retained values should already be present, but setting them again just to make sure
         envVarsCfn[getSecretNameEnvVar(secretName)] = getFunctionSecretCfnName(secretName, functionName);
         break;
@@ -47,7 +47,12 @@ export const updateSecretsInCfnTemplate = async (
   });
 
   // update policy to access secrets
-  cfnTemplate.Resources.AmplifyFunctionSecretsPolicy = getFunctionSecretsPolicy(functionName);
+  if (hasExistingSecrets(secretDeltas)) {
+    cfnTemplate.Resources.AmplifyFunctionSecretsPolicy = getFunctionSecretsPolicy(functionName);
+  } else {
+    // if all secrets have been removed, remove the policy
+    cfnTemplate.Resources.AmplifyFunctionSecretsPolicy = undefined;
+  }
 
   return cfnTemplate;
 };

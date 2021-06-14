@@ -239,7 +239,7 @@ export type SecretDeltas = Record<SecretName, SecretDelta>;
 
 export type SecretName = string;
 
-export type SecretDelta = RetainSecret | RemoveSecretLocally | RemoveSecretInCloud | SetSecretValue;
+export type SecretDelta = RetainSecret | RemoveSecret | SetSecret;
 
 export type RetainSecret = {
   operation: 'retain';
@@ -249,28 +249,20 @@ export const retainSecret: RetainSecret = {
   operation: 'retain',
 };
 
-export type RemoveSecretLocally = {
-  operation: 'removeLocally';
+export type RemoveSecret = {
+  operation: 'remove';
 };
 
-export const removeSecretLocal: RemoveSecretLocally = {
-  operation: 'removeLocally',
+export const removeSecret: RemoveSecret = {
+  operation: 'remove',
 };
 
-export type RemoveSecretInCloud = {
-  operation: 'removeInCloud';
-};
-
-export const removeSecretCloud: RemoveSecretInCloud = {
-  operation: 'removeInCloud',
-};
-
-export type SetSecretValue = {
-  operation: 'setValue';
+export type SetSecret = {
+  operation: 'set';
   value: string;
 };
 
-export const setSecretValue = (value: string): SetSecretValue => ({
-  operation: 'setValue',
+export const setSecret = (value: string): SetSecret => ({
+  operation: 'set',
   value,
 });

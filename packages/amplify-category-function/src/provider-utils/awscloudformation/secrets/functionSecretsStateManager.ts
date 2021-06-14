@@ -1,15 +1,14 @@
-import { $TSContext, JSONUtilities, pathManager, ResourceName } from 'amplify-cli-core';
-import { removeSecretCloud, retainSecret, SecretDeltas, SecretName, setSecretValue } from 'amplify-function-plugin-interface';
+import { $TSContext, JSONUtilities, pathManager, ResourceName, stateManager } from 'amplify-cli-core';
+import { retainSecret, SecretDeltas, SecretName, setSecret } from 'amplify-function-plugin-interface';
+import * as path from 'path';
+import { prePushMissingSecretsWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
 import { getFunctionCloudFormationTemplate, setFunctionCloudFormationTemplate } from '../utils/cloudformationHelpers';
+import { categoryName, functionParametersFileName, ServiceName } from '../utils/constants';
+import { createParametersFile } from '../utils/storeResources';
+import { getExistingSecrets, secretNamesToSecretDeltas } from './secretDeltaUtilities';
 import { getEnvSecretPrefix, getFullyQualifiedSecretName, getFunctionSecretPrefix } from './secretName';
 import { updateSecretsInCfnTemplate } from './secretsCfnModifier';
 import { SSMClientWrapper } from './ssmClientWrapper';
-import * as path from 'path';
-import { prePushMissingSecretsWalkthrough, secretValuesWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
-import { getExistingSecrets, secretNamesToSecretDeltas } from './secretDeltaUtilities';
-import { categoryName, functionParametersFileName, ServiceName } from '../utils/constants';
-import { createParametersFile } from '../utils/storeResources';
-import _ from 'lodash';
 
 let secretsPendingRemoval: Record<ResourceName, SecretName[]> = {};
 
@@ -32,12 +31,12 @@ export class FunctionSecretsStateManager {
 
   static getInstance = async (context: $TSContext) => {
     if (!FunctionSecretsStateManager.instance) {
-      FunctionSecretsStateManager.instance = new FunctionSecretsStateManager(await SSMClientWrapper.getInstance(context));
+      FunctionSecretsStateManager.instance = new FunctionSecretsStateManager(context, await SSMClientWrapper.getInstance(context));
     }
     return FunctionSecretsStateManager.instance;
   };
 
-  private constructor(private readonly ssmClientWrapper: SSMClientWrapper) {}
+  private constructor(private readonly context: $TSContext, private readonly ssmClientWrapper: SSMClientWrapper) {}
 
   /**
    * This is the main entry point to ensure secret state is in sync.
@@ -56,10 +55,12 @@ export class FunctionSecretsStateManager {
     Object.entries(secretDeltas).forEach(([secretName, secretDelta]) => {
       const fullyQualifiedSecretName = getFullyQualifiedSecretName(secretName, functionName, envName);
       switch (secretDelta.operation) {
-        case 'removeInCloud':
-          this.ssmClientWrapper.deleteSecret(fullyQualifiedSecretName);
+        case 'remove':
+          if (this.doRemoveSecretsInCloud(functionName)) {
+            this.ssmClientWrapper.deleteSecret(fullyQualifiedSecretName);
+          }
           break;
-        case 'setValue':
+        case 'set':
           this.ssmClientWrapper.setSecret(fullyQualifiedSecretName, secretDelta.value);
       }
     });
@@ -101,7 +102,7 @@ export class FunctionSecretsStateManager {
   /**
    * Syncs secretsPendingRemoval to the cloud.
    *
-   * It is expected that storeSecretsPendingRemoval has been called before calling this function.
+   * It is expected that storeSecretsPendingRemoval has been called before calling this function. If not, this function is a noop.
    */
   syncSecretsPendingRemoval = async () => {
     await Promise.all(
@@ -127,7 +128,7 @@ export class FunctionSecretsStateManager {
     const sourceCloudSecrets = await this.ssmClientWrapper.getSecrets(
       sourceCloudSecretNames.map(name => getFullyQualifiedSecretName(name, functionName, sourceEnv)),
     );
-    sourceCloudSecrets.reduce((acc, { secretName, secretValue }) => ({ ...acc, [secretName]: setSecretValue(secretValue) }), destDelta);
+    sourceCloudSecrets.reduce((acc, { secretName, secretValue }) => ({ ...acc, [secretName]: setSecret(secretValue) }), destDelta);
     return destDelta;
   };
 
@@ -136,6 +137,12 @@ export class FunctionSecretsStateManager {
     const parts = path.parse(prefix);
     const unfilteredSecrets = await this.ssmClientWrapper.getSecretNamesByPath(parts.dir);
     return unfilteredSecrets.filter(secretName => secretName.startsWith(prefix)).map(secretName => secretName.slice(prefix.length));
+  };
+
+  private doRemoveSecretsInCloud = (functionName: string): boolean => {
+    const isFunctionPushed = stateManager.getCurrentMeta()?.[categoryName]?.[functionName] !== undefined;
+    const isCommandPush = this.context.parameters.command === 'push';
+    return !isFunctionPushed || isCommandPush;
   };
 }
 
