@@ -15,18 +15,13 @@ import { SSMClientWrapper } from './ssmClientWrapper';
 let secretsPendingRemoval: Record<ResourceName, SecretName[]> = {};
 
 /**
- * Manages the state of function secrets in both Parameter store and the local CloudFormation template.
+ * Manages the state of function secrets in AWS ParameterStore as well as local state in the CFN template and function-parameters.json
  *
  * Note: Local and cloud removal are separate operations because a secret cannot be removed in the cloud before the push.
  * The expected way to handle this is:
- * 1. During CLI workflows, call syncSecretDeltas with remove operations set to 'removeLocally'
+ * 1. During CLI workflows, call syncSecretDeltas
  * 2. Before pushing, call storeSecretsPendingRemoval
  * 3. After the push completes, call syncSecretsPendingRemoval
- *
- * Additionally, it is possible that a customer adds a secret outside of a CLI workflow (such as merging from another git branch)
- * This needs to be resolved before pushing. To resolve this, the expected flow is:
- * 1. Call areAddedSecretsPending for each function in the project
- * 2. If this returns true, call ensureNewLocalSecretsSyncedToCloud for that function
  */
 export class FunctionSecretsStateManager {
   private static instance: FunctionSecretsStateManager;
@@ -101,6 +96,9 @@ export class FunctionSecretsStateManager {
     await this.syncSecretDeltas(delta, functionName);
   };
 
+  /**
+   * Deletes all secrets in the cloud for the specified function
+   */
   deleteAllFunctionSecrets = async (functionName: string) => {
     const cloudSecretNames = await this.getCloudFunctionSecretNames(functionName);
     await this.syncSecretDeltas(secretNamesToSecretDeltas(cloudSecretNames, removeSecret), functionName);
@@ -129,6 +127,12 @@ export class FunctionSecretsStateManager {
     await this.ssmClientWrapper.deleteSecrets(secretNames);
   };
 
+  /**
+   * Returns a SecretDeltas object that can be used to clone the secrets from one environment to another
+   * @param sourceEnv The environment from which to get secrets
+   * @param functionName The function from which to get secrets
+   * @returns SecretDeltas for the function in the environment
+   */
   getEnvCloneDeltas = async (sourceEnv: string, functionName: string) => {
     const destDelta = secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionName), retainSecret);
     const sourceCloudSecretNames = await this.getCloudFunctionSecretNames(functionName, sourceEnv);
@@ -143,6 +147,12 @@ export class FunctionSecretsStateManager {
     return destDelta;
   };
 
+  /**
+   * Gets all secrets in SSM for the given function
+   * @param functionName The function
+   * @param envName Optional environment. If not specified, the current env is assumed
+   * @returns string[] of all secret names for the function
+   */
   private getCloudFunctionSecretNames = async (functionName: string, envName?: string) => {
     const prefix = getFunctionSecretPrefix(functionName, envName);
     const parts = path.parse(prefix);
@@ -150,6 +160,10 @@ export class FunctionSecretsStateManager {
     return unfilteredSecrets.filter(secretName => secretName.startsWith(prefix)).map(secretName => secretName.slice(prefix.length));
   };
 
+  /**
+   * Secrets should only be removed in the cloud if the function is not yet pushed, or if the CLI operation is 'push'.
+   * This function performs this check.
+   */
   private doRemoveSecretsInCloud = (functionName: string): boolean => {
     const isCommandPush = this.context.parameters.command === 'push';
     return !isFunctionPushed(functionName) || isCommandPush;
@@ -191,7 +205,9 @@ const defaultGetFunctionSecretNamesOptions = {
 };
 
 /**
- * Gets the secret names stored in function-parameters.json for the given function
+ * Gets the secret names stored in function-parameters.json for the given function.
+ *
+ * Optionally, {fromCurrentCloudBackend: true} can be specified to get the secret names stored in #current-cloud-backend
  */
 export const getLocalFunctionSecretNames = (
   functionName: string,

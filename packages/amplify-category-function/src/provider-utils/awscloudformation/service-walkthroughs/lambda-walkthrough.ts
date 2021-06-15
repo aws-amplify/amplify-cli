@@ -91,7 +91,7 @@ export async function createWalkthrough(
   return templateParameters;
 }
 
-async function provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters) {
+function provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters) {
   // Provide general information
   context.print.success('General information');
   context.print.info('| Name: '.concat(lambdaToUpdate));
@@ -206,7 +206,7 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
     resourceName: functionParameters.resourceName,
   };
 
-  await provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters);
+  provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters);
 
   // Determine which settings need to be updated
   const { selectedSettings }: $TSAny = await settingsUpdateSelection();

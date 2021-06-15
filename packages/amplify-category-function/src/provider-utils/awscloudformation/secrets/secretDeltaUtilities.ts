@@ -24,6 +24,9 @@ export const getExistingSecrets = (secretDeltas: SecretDeltas) =>
 export const secretNamesToSecretDeltas = (secretNames: string[], delta: SecretDelta = retainSecret): SecretDeltas =>
   secretNames.reduce((acc, secretName) => ({ ...acc, [secretName]: delta }), {} as SecretDeltas);
 
+/**
+ * Determines if the SecretDeltas have any "set" operations
+ */
 export const hasSetSecrets = (secretDeltas: SecretDeltas) =>
   Object.values(secretDeltas).filter(delta => delta.operation === 'set').length > 0;
 

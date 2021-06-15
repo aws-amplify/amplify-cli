@@ -1,3 +1,7 @@
+/**
+ * Contains all of the logic for the various secret prompts
+ */
+
 import { ResourceName } from 'amplify-cli-core';
 import { FunctionParameters, removeSecret, SecretDeltas, setSecret } from 'amplify-function-plugin-interface';
 import inquirer from 'inquirer';
@@ -7,9 +11,10 @@ const secretValuesWalkthroughDefaultOptions = {
   preConfirmed: false, // true if the walkthrough has previously confirmed that secrets should be configured. false if this function should gate the flow behind a confirmation
 };
 /**
- * Walkthrough for adding secret values for a function
+ * Walkthrough loop for adding secret values for a function
  * @param secretDeltas Object describing the existing secrets diff for the function. This object will be modified by this function
  * @param options Other options for controlling the behavior of the function
+ * @returns
  */
 export const secretValuesWalkthrough = async (
   secretDeltas: SecretDeltas,
@@ -29,6 +34,12 @@ export const secretValuesWalkthrough = async (
   return { secretDeltas };
 };
 
+/**
+ * Walkthrough for resolving secrets that are defined locally but not present in the cloud on push
+ * @param functionName The function name
+ * @param missingSecretNames The secrets that are missing in the cloud
+ * @returns A SecretDeltas object defining the updates to make
+ */
 export const prePushMissingSecretsWalkthrough = async (functionName: string, missingSecretNames: string[]): Promise<SecretDeltas> => {
   const secretDeltas: SecretDeltas = {};
   for (const secretName of missingSecretNames) {
@@ -40,6 +51,12 @@ export const prePushMissingSecretsWalkthrough = async (functionName: string, mis
   return secretDeltas;
 };
 
+/**
+ * Walkthrough for updating secrets when adding a new env
+ * @param interactive Whether or not prompts can be shown
+ * @param deltas A map of resource name to SecretDeltas defining the default secret values for the new env. This object will be modified in place.
+ * @returns The updated deltas object
+ */
 export const cloneEnvWalkthrough = async (
   interactive = true,
   deltas: Record<ResourceName, SecretDeltas> = {},

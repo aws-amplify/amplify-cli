@@ -1,14 +1,15 @@
 import { SecretDeltas } from 'amplify-function-plugin-interface';
+import { constantCase } from 'change-case';
+import { Fn } from 'cloudform-types';
+import Policy from 'cloudform-types/types/iam/policy';
 import Lambda from 'cloudform-types/types/lambda';
 import Template from 'cloudform-types/types/template';
 import _ from 'lodash';
-import { constantCase } from 'change-case';
-import { Fn } from 'cloudform-types';
+import { hasExistingSecrets } from './secretDeltaUtilities';
 import { getFunctionSecretCfnName, getFunctionSecretCfnPrefix } from './secretName';
-import Policy from 'cloudform-types/types/iam/policy';
-import { getExistingSecrets, hasExistingSecrets } from './secretDeltaUtilities';
 
-/** Makes changes to the function CFN template to support secrets via SSM Parameter Store
+/**
+ * Makes changes to the function CFN template to support secrets via SSM Parameter Store
  * It sets env vars for the function for the secret names and adds a policy to the lambda execution role to access the secrets
  *
  * @param cfnTemplate The template which is modified in place and returned

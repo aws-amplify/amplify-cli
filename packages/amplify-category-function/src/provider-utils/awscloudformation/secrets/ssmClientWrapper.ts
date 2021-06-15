@@ -1,8 +1,10 @@
 import { $TSContext } from 'amplify-cli-core';
-import { SecretName } from 'amplify-function-plugin-interface';
 import * as aws from 'aws-sdk';
 import ora from 'ora';
 
+/**
+ * Wrapper around SSM SDK calls
+ */
 export class SSMClientWrapper {
   private static instance: SSMClientWrapper;
 
@@ -90,6 +92,9 @@ export class SSMClientWrapper {
       });
   };
 
+  /**
+   * Delets all secrets in secretNames
+   */
   deleteSecrets = async (secretNames: string[]) => {
     await this.ssmClient.deleteParameters({ Names: secretNames }).promise();
   };

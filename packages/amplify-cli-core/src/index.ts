@@ -43,7 +43,6 @@ export type $TSContext = {
   newUserInfo?: $TSAny;
   filesystem: IContextFilesystem;
   template: IContextTemplate;
-  postPushDeletedResourceNames: Record<CategoryName, ResourceName[]>;
 };
 
 export type CategoryName = string;
@@ -205,7 +204,13 @@ interface AmplifyToolkit {
   storeCurrentCloudBackend: () => $TSAny;
   readJsonFile: () => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
-  removeResource: (context: $TSContext, category: string, resource: string, questionOptions?: $TSAny, resourceNameCallback?: (resourceName: string) => Promise<void>) => $TSAny;
+  removeResource: (
+    context: $TSContext,
+    category: string,
+    resource: string,
+    questionOptions?: $TSAny,
+    resourceNameCallback?: (resourceName: string) => Promise<void>,
+  ) => $TSAny;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;

@@ -178,7 +178,7 @@ async function executePluginModuleCommand(context: Context, plugin: PluginInfo):
   await raisePostEvent(context);
 }
 
-const getHandler = async (pluginInfo: PluginInfo, context: any): Promise<() => Promise<$TSAny>> => {
+const getHandler = async (pluginInfo: PluginInfo, context: any): Promise<() => Promise<void>> => {
   const pluginModule = await import(pluginInfo.packageLocation);
   let commandName = constants.ExecuteAmplifyCommand;
   let fallbackFn = () => legacyCommandExecutor(context, pluginInfo);

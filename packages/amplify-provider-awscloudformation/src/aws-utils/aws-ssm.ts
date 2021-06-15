@@ -1,14 +1,14 @@
-import { $TSAny, $TSContext } from 'amplify-cli-core';
-import { loadConfiguration } from '../configuration-manager';
+import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import aws from './aws.js';
 
 export class SSM {
   private static instance: SSM;
   readonly client: AWS.SSM;
 
-  static async getInstance(context: $TSContext, options = {}): Promise<SSM> {
+  static async getInstance(context: $TSContext, options: $TSObject = {}): Promise<SSM> {
     if (!SSM.instance) {
-      let cred = {};
+      let cred: AwsSecrets = {};
       try {
         cred = await loadConfiguration(context);
       } catch (e) {
@@ -20,7 +20,7 @@ export class SSM {
     return SSM.instance;
   }
 
-  private constructor(cred: $TSAny, options = {}) {
+  private constructor(cred: AwsSecrets, options = {}) {
     this.client = new aws.SSM({ ...cred, ...options });
   }
 }

@@ -13,7 +13,7 @@ import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformati
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import {
   deleteLayerVersionPermissionsToBeUpdatedInCfn,
-  deleteLayerVersionsToBeRemovedByCfn
+  deleteLayerVersionsToBeRemovedByCfn,
 } from './provider-utils/awscloudformation/utils/layerConfiguration';
 import { checkContentChanges } from './provider-utils/awscloudformation/utils/packageLayer';
 import { supportedServices } from './provider-utils/supported-services';
