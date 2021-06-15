@@ -1,4 +1,14 @@
-import { $TSAny, $TSContext, JSONUtilities, open, PathConstants, pathManager, stateManager } from 'amplify-cli-core';
+import {
+  $TSAny,
+  $TSContext,
+  JSONUtilities,
+  open,
+  PathConstants,
+  pathManager,
+  readCFNTemplate,
+  stateManager,
+  writeCFNTemplate,
+} from 'amplify-cli-core';
 import { FunctionParameters, FunctionTemplate, FunctionTriggerParameters, LambdaLayer } from 'amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
@@ -380,6 +390,22 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
     const currentCloudVersionHash: string = _.get(currentAmplifyMeta, [categoryName, resourceName, versionHash], undefined);
     if (currentCloudVersionHash) {
       _.set(amplifyMeta, [categoryName, resourceName, versionHash], currentCloudVersionHash);
+    }
+
+    // Since the CFN template and parameters.json are updated on each new layer version which are specific to each env, we need to update
+    // the files accordingly to ensure the correct status is shown after env checkout. The restore flag already handles this scenario.
+    if (context.input.command === 'env' && context.input?.subCommands.includes('checkout') && !context.exeInfo?.inputParams?.restore) {
+      const currentParametersJson =
+        stateManager.getCurrentResourceParametersJson(projectPath, categoryName, resourceName, { throwIfNotExist: false }) || undefined;
+      if (currentParametersJson) {
+        const backendParametersJson = stateManager.getResourceParametersJson(projectPath, categoryName, resourceName);
+        backendParametersJson.description = currentParametersJson.description;
+        stateManager.setResourceParametersJson(projectPath, categoryName, resourceName, backendParametersJson);
+      }
+
+      const currentCfnTemplatePath = pathManager.getCurrentCfnTemplatePath(projectPath, categoryName, resourceName);
+      const { cfnTemplate: currentCfnTemplate } = await readCFNTemplate(currentCfnTemplatePath);
+      await writeCFNTemplate(currentCfnTemplate, pathManager.getResourceCfnTemplatePath(projectPath, categoryName, resourceName));
     }
   }
 }
