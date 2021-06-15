@@ -1,10 +1,10 @@
-import { categoryName, appsyncTableSuffix } from './constants';
+import { appsyncTableSuffix } from './constants';
 import { getAppSyncResourceName } from './appSyncHelper';
 import * as path from 'path';
 import { pathManager, readCFNTemplate, writeCFNTemplate } from 'amplify-cli-core';
-import { category } from '../../../constants';
+import { categoryName } from '../../../constants';
 
-const functionCloudFormationFilePath = (functionName: string) => path.join(pathManager.getBackendDirPath(), category, functionName, `${functionName}-cloudformation-template.json`);
+const functionCloudFormationFilePath = (functionName: string) => path.join(pathManager.getBackendDirPath(), categoryName, functionName, `${functionName}-cloudformation-template.json`);
 
 export const getFunctionCloudFormationTemplate = async (functionName: string) => {
   const { cfnTemplate } = await readCFNTemplate(functionCloudFormationFilePath(functionName));
@@ -35,6 +35,7 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
       });
     });
   }
+
   if (apiResourceName) {
     apiResourceAddCheck(currentResources, newResources, apiResourceName, categorySet, true);
   }

@@ -1,8 +1,8 @@
 import { $TSContext, ResourceName, stateManager } from 'amplify-cli-core';
 import { SecretDeltas } from 'amplify-function-plugin-interface';
 import _ from 'lodash';
+import { categoryName } from '../../../constants';
 import { cloneEnvWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
-import { categoryName } from '../utils/constants';
 import { FunctionSecretsStateManager, getLocalFunctionSecretNames } from './functionSecretsStateManager';
 
 export const cloneSecretsOnEnvInitHandler = async (context: $TSContext, sourceEnv: string, destEnv: string) => {

@@ -1,10 +1,7 @@
-import { $TSContext, ResourceName, stateManager } from 'amplify-cli-core';
+import { ResourceName } from 'amplify-cli-core';
 import { FunctionParameters, removeSecret, SecretDeltas, setSecret } from 'amplify-function-plugin-interface';
 import inquirer from 'inquirer';
-import _ from 'lodash';
-import { getLocalFunctionSecretNames } from '../secrets/functionSecretsStateManager';
 import { getExistingSecrets, hasExistingSecrets } from '../secrets/secretDeltaUtilities';
-import { categoryName } from '../utils/constants';
 
 const secretValuesWalkthroughDefaultOptions = {
   preConfirmed: false, // true if the walkthrough has previously confirmed that secrets should be configured. false if this function should gate the flow behind a confirmation

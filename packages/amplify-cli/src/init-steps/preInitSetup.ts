@@ -1,9 +1,7 @@
+import { $TSContext, exitOnNextTick, getPackageManager, NonEmptyDirectoryError } from 'amplify-cli-core';
+import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
-import { execSync } from 'child_process';
-import { $TSContext, NonEmptyDirectoryError, exitOnNextTick } from 'amplify-cli-core';
-import { getPackageManager } from '../packageManagerHelpers';
-import { normalizePackageManagerForOS } from '../packageManagerHelpers';
 import { generateLocalEnvInfoFile } from './s9-onSuccess';
 
 export async function preInitSetup(context: $TSContext) {
@@ -67,10 +65,10 @@ async function cloneRepo(context: $TSContext, repoUrl: string) {
  * @param packageManager either npm or yarn
  */
 async function installPackage() {
-  const packageManager = await getPackageManager();
-  const normalizedPackageManager = await normalizePackageManagerForOS(packageManager);
-  if (normalizedPackageManager) {
-    execSync(`${normalizedPackageManager} install`, { stdio: 'inherit' });
+  const packageManager = getPackageManager();
+
+  if (packageManager !== null) {
+    execSync(`${packageManager.executable} install`, { stdio: 'inherit' });
   }
 }
 

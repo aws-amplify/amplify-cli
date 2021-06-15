@@ -1,9 +1,9 @@
 import { $TSContext, stateManager } from 'amplify-cli-core';
+import { categoryName } from '../constants';
 import {
   FunctionSecretsStateManager,
   storeSecretsPendingRemoval,
 } from '../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
-import { categoryName } from '../provider-utils/awscloudformation/utils/constants';
 
 export const prePushHandler = async (context: $TSContext) => {
   await ensureFunctionSecrets(context);

@@ -1,9 +1,10 @@
 import { $TSContext, JSONUtilities, pathManager, ResourceName } from 'amplify-cli-core';
 import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from 'amplify-function-plugin-interface';
 import * as path from 'path';
+import { categoryName } from '../../../constants';
 import { prePushMissingSecretsWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
 import { getFunctionCloudFormationTemplate, setFunctionCloudFormationTemplate } from '../utils/cloudformationHelpers';
-import { categoryName, functionParametersFileName, ServiceName } from '../utils/constants';
+import { functionParametersFileName, ServiceName } from '../utils/constants';
 import { isFunctionPushed } from '../utils/funcionStateUtils';
 import { createParametersFile } from '../utils/storeResources';
 import { getExistingSecrets, hasExistingSecrets, secretNamesToSecretDeltas } from './secretDeltaUtilities';
