@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.23.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.23.0-beta.0...amplify-cli-core@1.23.0-beta.1) (2021-06-15)
+
+
+### Bug Fixes
+
+* copy env specific data from ccb on env checkout ([#7512](https://github.com/aws-amplify/amplify-cli/issues/7512)) ([bef6d9c](https://github.com/aws-amplify/amplify-cli/commit/bef6d9c5d1fd7e12bbacaf20639c00334d285517))
+
+
+### Features
+
+* Define IAM Permissions Boundary for Project ([#7502](https://github.com/aws-amplify/amplify-cli/issues/7502)) (ref [#4618](https://github.com/aws-amplify/amplify-cli/issues/4618)) ([08f7a3c](https://github.com/aws-amplify/amplify-cli/commit/08f7a3c45b2e98535ef325eb0a97c5bc4d3008c6)), closes [#7053](https://github.com/aws-amplify/amplify-cli/issues/7053)
+
+
+
+
+
 # [1.23.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.22.2...amplify-cli-core@1.23.0-beta.0) (2021-06-10)
 
 

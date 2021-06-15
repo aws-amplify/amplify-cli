@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.32.0-beta.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.32.0-beta.0...amplify-category-function@2.32.0-beta.1) (2021-06-15)
+
+
+### Bug Fixes
+
+* copy env specific data from ccb on env checkout ([#7512](https://github.com/aws-amplify/amplify-cli/issues/7512)) ([bef6d9c](https://github.com/aws-amplify/amplify-cli/commit/bef6d9c5d1fd7e12bbacaf20639c00334d285517))
+
+
+
+
+
 # [2.32.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.10...amplify-category-function@2.32.0-beta.0) (2021-06-10)
 
 
