@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.24.2...amplify-app@3.0.0) (2021-06-15)
+
+
+### Bug Fixes
+
+* bump amplify-cli to v5 and fix layers migration tests ([#7493](https://github.com/aws-amplify/amplify-cli/issues/7493)) ([cb196ab](https://github.com/aws-amplify/amplify-cli/commit/cb196ab4d1c9e25ef30b5276c55202a3ef347c75))
+
+
+### BREAKING CHANGES
+
+* bump amplify-cli to v5 for Lambda layers rework
+
+
+
+
+
 ## [2.24.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-app@2.24.1...amplify-app@2.24.2) (2021-05-26)
 
 **Note:** Version bump only for package amplify-app
