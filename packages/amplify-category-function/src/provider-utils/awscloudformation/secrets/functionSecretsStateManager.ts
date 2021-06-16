@@ -1,12 +1,14 @@
 import { $TSContext, JSONUtilities, pathManager, ResourceName } from 'amplify-cli-core';
 import { removeSecret, retainSecret, SecretDeltas, SecretName, setSecret } from 'amplify-function-plugin-interface';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { categoryName } from '../../../constants';
 import { prePushMissingSecretsWalkthrough } from '../service-walkthroughs/secretValuesWalkthrough';
 import { getFunctionCloudFormationTemplate, setFunctionCloudFormationTemplate } from '../utils/cloudformationHelpers';
 import { functionParametersFileName, ServiceName } from '../utils/constants';
 import { isFunctionPushed } from '../utils/funcionStateUtils';
 import { createParametersFile } from '../utils/storeResources';
+import { tryPrependSecretsUsageExample } from '../utils/updateTopLevelComment';
 import { getExistingSecrets, hasExistingSecrets, secretNamesToSecretDeltas } from './secretDeltaUtilities';
 import { getEnvSecretPrefix, getFullyQualifiedSecretName, getFunctionSecretPrefix } from './secretName';
 import { updateSecretsInCfnTemplate } from './secretsCfnModifier';
@@ -71,13 +73,14 @@ export class FunctionSecretsStateManager {
         throw err;
       }
     }
+    await tryPrependSecretsUsageExample(functionName, Object.keys(getExistingSecrets(secretDeltas)));
     await setLocalFunctionSecretState(functionName, secretDeltas);
   };
 
   /**
    * Checks that all locally defined secrets for the function are present in the cloud. If any are missing, it prompts for values
    */
-  ensureNewLocalSecretsSyncedToCloud = async (functionName: string, interactive = true) => {
+  ensureNewLocalSecretsSyncedToCloud = async (functionName: string) => {
     const localSecretNames = getLocalFunctionSecretNames(functionName);
     if (!localSecretNames.length) {
       return;
@@ -87,7 +90,7 @@ export class FunctionSecretsStateManager {
     if (!addedSecrets.length) {
       return;
     }
-    if (!interactive) {
+    if (!this.isInteractive()) {
       throw new Error(
         `The following secrets in ${functionName} do not have values: [${addedSecrets}]\nRun 'amplify push' interactively to specify values.`,
       );
@@ -168,6 +171,8 @@ export class FunctionSecretsStateManager {
     const isCommandPush = this.context.parameters.command === 'push';
     return !isFunctionPushed(functionName) || isCommandPush;
   };
+
+  private isInteractive = (): boolean => !!this.context?.exeInfo?.inputParams?.yes;
 }
 
 /**
@@ -236,7 +241,11 @@ const setLocalFunctionSecretState = (functionName: string, secretDeltas: SecretD
   const secretsParametersContent: LocalSecretsState = {
     secretNames: existingSecrets,
   };
-  createParametersFile(secretsParametersContent, functionName, functionParametersFileName);
+  const parametersFilePath = path.join(pathManager.getBackendDirPath(), categoryName, functionName, functionParametersFileName);
+  // checking for existance of the file because in the case of function deletion we don't want to create the file again
+  if (fs.existsSync(parametersFilePath)) {
+    createParametersFile(secretsParametersContent, functionName, functionParametersFileName);
+  }
 };
 
 /**

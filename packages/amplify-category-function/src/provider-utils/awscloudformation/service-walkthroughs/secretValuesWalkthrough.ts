@@ -145,24 +145,28 @@ const addSecretsConfirm = async (preConfirmed: boolean = false) => {
   ).confirm;
 };
 
-const secretNameValidator = (existingSecretNames: string[]) => (input?: string) => {
-  if (input && input.length > 0 && input.length <= 2048) {
-    if (existingSecretNames.includes(input)) {
-      return `${input} is an existing secret name. All secrets must have a unique name.`;
-    }
-    return true;
-  } else {
+const validNameRegExp = /^[a-zA-Z0-9_]+$/;
+
+const secretNameValidator = (invalidNames: string[]) => (input?: string) => {
+  if (!input || input.length === 0 || input.length > 2048) {
     return 'Secret name must be between 1 and 2048 characters long';
   }
+  if (!validNameRegExp.test(input)) {
+    return 'Secret names can only use alphanumeric characters and underscore';
+  }
+  if (invalidNames.includes(input)) {
+    return `${input} is an existing secret name. All secrets must have a unique name.`;
+  }
+  return true;
 };
 
-const enterSecretName = async (existingSecretNames: string[]) =>
+const enterSecretName = async (invalidNames: string[]) =>
   (
     await inquirer.prompt<{ secretName: string }>({
       type: 'input',
       name: 'secretName',
       message: 'Enter a secret name (this is the key used to look up the secret value):',
-      validate: secretNameValidator(existingSecretNames),
+      validate: secretNameValidator(invalidNames),
     })
   ).secretName;
 

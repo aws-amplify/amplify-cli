@@ -38,11 +38,11 @@ export const updateSecretsInCfnTemplate = async (
   Object.entries(secretDeltas).forEach(([secretName, secretDelta]) => {
     switch (secretDelta.operation) {
       case 'remove':
-        delete envVarsCfn[getSecretNameEnvVar(secretName)];
+        delete envVarsCfn[secretName];
         break;
       case 'set':
       case 'retain': // retained values should already be present, but setting them again just to make sure
-        envVarsCfn[getSecretNameEnvVar(secretName)] = getFunctionSecretCfnName(secretName, functionName);
+        envVarsCfn[secretName] = getFunctionSecretCfnName(secretName, functionName);
         break;
     }
   });
@@ -87,5 +87,3 @@ const getFunctionSecretsPolicy = (functionName: string) => {
   policy.DependsOn = ['LambdaExecutionRole'];
   return policy;
 };
-
-const getSecretNameEnvVar = (secretName: string) => constantCase(secretName);

@@ -9,7 +9,7 @@ import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { FunctionSecretsStateManager } from '../secrets/functionSecretsStateManager';
 import { isFunctionPushed } from './funcionStateUtils';
-import { hasSetSecrets } from '../secrets/secretDeltaUtilities';
+import { hasExistingSecrets, hasSetSecrets } from '../secrets/secretDeltaUtilities';
 import { LayerCloudState } from './layerCloudState';
 import { isMultiEnvLayer, isNewVersion, loadPreviousLayerHash } from './layerHelpers';
 import { createLayerConfiguration, saveLayerPermissions } from './layerConfiguration';
@@ -128,6 +128,13 @@ async function syncSecrets(context: $TSContext, parameters: Partial<FunctionPara
     if (confirmed) {
       const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(context);
       await functionSecretsStateManager.syncSecretDeltas((parameters as FunctionParameters)?.secretDeltas, parameters.resourceName);
+    }
+
+    if (hasExistingSecrets(parameters.secretDeltas)) {
+      context.print.info('Use the AWS SSM GetParameter API to retrieve secrets in your Lambda function.');
+      context.print.info(
+        'More information can be found here: https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_GetParameter.html',
+      );
     }
   }
 }
