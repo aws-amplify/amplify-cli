@@ -1,7 +1,6 @@
 const category = 'auth';
 
 const _ = require('lodash');
-const uuid = require('uuid');
 const path = require('path');
 const sequential = require('promise-sequential');
 
@@ -24,6 +23,12 @@ const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/pro
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 const { stateManager } = require('amplify-cli-core');
 const { headlessImport } = require('./provider-utils/awscloudformation/import');
+
+const {
+  doesConfigurationIncludeSMS,
+  loadResourceParameters,
+  loadImportedAuthParameters,
+} = require('./provider-utils/awscloudformation/utils/auth-sms-workflow-helper');
 
 // this function is being kept for temporary compatability.
 async function add(context) {
@@ -67,7 +72,6 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     .projectName.toLowerCase()
     .replace(/[^A-Za-z0-9_]+/g, '_');
   let currentAuthParams;
-  const [sharedId] = uuid().split('-');
 
   const immutables = {};
 
@@ -110,7 +114,8 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   const authPropsValues = authExists
     ? Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, immutables, requirements)
     : Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), requirements, {
-        resourceName: `cognito${sharedId}`,
+        resourceName: `cognito${defaults.sharedId}`,
+        sharedId: defaults.sharedId,
       }); //eslint-disable-line
   /* eslint-enable */
   const { roles } = defaults;
@@ -454,6 +459,18 @@ async function importAuth(context) {
   return providerController.importResource(context, serviceSelection, undefined, undefined, false);
 }
 
+async function isSMSWorkflowEnabled(context, resourceName) {
+  const { imported, userPoolId } = context.amplify.getImportedAuthProperties(context);
+  let userNameAndMfaConfig;
+  if (imported) {
+    userNameAndMfaConfig = await loadImportedAuthParameters(context, userPoolId);
+  } else {
+    userNameAndMfaConfig = loadResourceParameters(context, resourceName);
+  }
+  const result = doesConfigurationIncludeSMS(userNameAndMfaConfig);
+  return result;
+}
+
 module.exports = {
   externalAuthEnable,
   checkRequirements,
@@ -469,4 +486,5 @@ module.exports = {
   uploadFiles,
   category,
   importAuth,
+  isSMSWorkflowEnabled,
 };

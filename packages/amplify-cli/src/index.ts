@@ -1,9 +1,11 @@
 import {
   $TSAny,
   $TSContext,
+  BannerMessage,
   CLIContextEnvironmentProvider,
   exitOnNextTick,
   FeatureFlags,
+  JSONUtilities,
   JSONValidationError,
   pathManager,
   stateManager,
@@ -16,6 +18,7 @@ import * as path from 'path';
 import { logInput } from './conditional-local-logging-init';
 import { print } from './context-extensions';
 import { attachUsageData, constructContext, persistContext } from './context-manager';
+import { displayBannerMessages } from './display-banner-messages';
 import { constants } from './domain/constants';
 import { Context } from './domain/context';
 import { Input } from './domain/input';
@@ -65,13 +68,19 @@ process.on('unhandledRejection', function (error) {
 export async function run() {
   try {
     deleteOldVersion();
+
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
+
     // with non-help command supplied, give notification before execution
     if (input.command !== 'help') {
       // Checks for available update, defaults to a 1 day interval for notification
       notify({ defer: false, isGlobal: true });
     }
+
+    // Initialize Banner messages. These messages are set on the server side
+    const pkg = JSONUtilities.readJson<$TSAny>(path.join(__dirname, '..', 'package.json'));
+    BannerMessage.initialize(pkg.version);
 
     ensureFilePermissions(pathManager.getAWSCredentialsFilePath());
     ensureFilePermissions(pathManager.getAWSConfigFilePath());
@@ -135,6 +144,9 @@ export async function run() {
       // Double casting until we have properly typed context
       return 1;
     }
+
+    // Display messages meant for most executions
+    await displayBannerMessages(input);
 
     await executeCommand(context);
 

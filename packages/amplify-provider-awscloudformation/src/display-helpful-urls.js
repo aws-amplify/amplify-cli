@@ -1,4 +1,10 @@
+// @ts-check
 const chalk = require('chalk');
+const { BannerMessage } = require('amplify-cli-core');
+const { fileLogger } = require('./utils/aws-logger');
+const { SNS } = require('./aws-utils/aws-sns');
+
+const logger = fileLogger('display-helpful-urls');
 
 async function displayHelpfulURLs(context, resourcesToBeCreated) {
   context.print.info('');
@@ -9,6 +15,7 @@ async function displayHelpfulURLs(context, resourcesToBeCreated) {
   showContainerHostingInfo(context, resourcesToBeCreated);
   showHostedUIURLs(context, resourcesToBeCreated);
   await showRekognitionURLS(context, resourcesToBeCreated);
+  await showCognitoSandBoxMessage(context, resourcesToBeCreated);
   context.print.info('');
 }
 
@@ -91,15 +98,17 @@ function showRestAPIURL(context, resourcesToBeCreated) {
 }
 
 function showContainerHostingInfo(context, resourcesToBeCreated) {
-  const resource = resourcesToBeCreated.find(resource => resource.category === 'hosting' && resource.service === 'ElasticContainer' && !resource.hostedZoneId);
+  const resource = resourcesToBeCreated.find(
+    resource => resource.category === 'hosting' && resource.service === 'ElasticContainer' && !resource.hostedZoneId,
+  );
   if (resource && resource.output) {
     const {
       output: {
         LoadBalancerCnameDomainName,
         LoadBalancerAliasDomainName,
         CloudfrontDistributionAliasDomainName,
-        CloudfrontDistributionCnameDomainName
-      }
+        CloudfrontDistributionCnameDomainName,
+      },
     } = resource;
 
     context.print.info(`Make sure to add the following CNAMEs to your domain’s DNS records:\n`);
@@ -162,6 +171,27 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
   }
 }
 
+async function showCognitoSandBoxMessage(context, resources) {
+  const cognitoResource = resources.filter(resource => resource.service === 'Cognito');
+
+  if (cognitoResource.length > 0) {
+    const log = logger('showCognitoSandBoxMessage', [cognitoResource[0].resourceName]);
+    try {
+      log();
+      const smsWorkflowEnabled = await await context.amplify.invokePluginMethod(context, 'auth', 'cognito', 'isSMSWorkflowEnabled', [
+        context,
+        cognitoResource[0].resourceName,
+      ]);
+      if (smsWorkflowEnabled) {
+        await showSMSSandboxWarning(context);
+      }
+    } catch (e) {
+      log(e);
+      throw e;
+    }
+  }
+}
+
 async function showRekognitionURLS(context, resourcesToBeCreated) {
   const resource = resourcesToBeCreated.find(resource => {
     if (resource.identifyType && resource.identifyType === 'identifyEntities') {
@@ -185,6 +215,51 @@ async function showRekognitionURLS(context, resourcesToBeCreated) {
   }
 }
 
+async function showSMSSandboxWarning(context) {
+  const log = logger('showSMSSandBoxWarning', []);
+
+  // This message will be set only after SNS Sandbox  Sandbox API is available and AWS SDK gets updated
+  const cliUpdateWarning = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_UPDATE_WARNING');
+  const smsSandBoxMissingPermissionWarning = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_MISSING_PERMISSION');
+  const sandboxModeWarning = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_SANDBOXED_MODE_WARNING');
+  const productionModeInfo = await BannerMessage.getMessage('COGNITO_SMS_SANDBOX_PRODUCTION_MODE_INFO');
+  if (!cliUpdateWarning) {
+    return;
+  }
+
+  try {
+    const snsClient = await SNS.getInstance(context);
+    const sandboxStatus = await snsClient.isInSandboxMode();
+
+    if (sandboxStatus) {
+      if (sandboxModeWarning) {
+        context.print.warning(sandboxModeWarning);
+      }
+    } else {
+      if (productionModeInfo) {
+        context.print.warning(productionModeInfo);
+      }
+    }
+  } catch (e) {
+    if (e.code === 'AuthorizationError') {
+      if (smsSandBoxMissingPermissionWarning) {
+        context.print.warning(smsSandBoxMissingPermissionWarning);
+      }
+    } else if (e instanceof TypeError) {
+      context.print.warning(cliUpdateWarning);
+    } else if (e.code === 'ResourceNotFound') {
+      // API is not public yet. Ignore it for now. This error should not occur as `COGNITO_SMS_SANDBOX_UPDATE_WARNING` will not be set
+    } else if (e.code === 'UnknownEndpoint') {
+      // Network error. Sandbox status is for informational purpose and should not stop deployment
+      log(e);
+    } else {
+      log(e);
+      throw e;
+    }
+  }
+}
+
 module.exports = {
   displayHelpfulURLs,
+  showSMSSandboxWarning,
 };

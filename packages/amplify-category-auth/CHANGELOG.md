@@ -3,6 +3,101 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.33.0...amplify-category-auth@2.33.1) (2021-06-15)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+# [2.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.32.1...amplify-category-auth@2.33.0) (2021-06-02)
+
+
+
+# 4.52.0 (2021-06-01)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-cli/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-cli/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+
+
+
+
+
+## [2.32.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.32.0...amplify-category-auth@2.32.1) (2021-05-26)
+
+
+
+## 4.51.3 (2021-05-25)
+
+
+### Bug Fixes
+
+* add `sharedId` in `externalAuthEnable()` ([#7315](https://github.com/aws-amplify/amplify-cli/issues/7315)) ([fd552b4](https://github.com/aws-amplify/amplify-cli/commit/fd552b4c8d34d67c05330ae79804b00daa976f1d))
+* scope down usage of PassRole ([#7317](https://github.com/aws-amplify/amplify-cli/issues/7317)) ([d4d9394](https://github.com/aws-amplify/amplify-cli/commit/d4d9394f33995a6852d5b00e09d38802798ca6d7))
+* update auth sms workflow check ([#7396](https://github.com/aws-amplify/amplify-cli/issues/7396)) ([07a6fe4](https://github.com/aws-amplify/amplify-cli/commit/07a6fe47d1c39d952eef242400cdbb7e8a6a11eb))
+
+
+
+
+
+# [2.32.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.31.1...amplify-category-auth@2.32.0) (2021-05-22)
+
+
+
+## 4.51.2 (2021-05-20)
+
+
+### Bug Fixes
+
+* updated ejs template for empty object triggers ([#7351](https://github.com/aws-amplify/amplify-cli/issues/7351)) ([572ddbd](https://github.com/aws-amplify/amplify-cli/commit/572ddbda4f339d364a8a20bab0053140cf798f34))
+
+
+### Features
+
+* prep work for Cognito SMS Sandbox [#2](https://github.com/aws-amplify/amplify-cli/issues/2) ([#7338](https://github.com/aws-amplify/amplify-cli/issues/7338)) ([3dbb3bf](https://github.com/aws-amplify/amplify-cli/commit/3dbb3bfc199fdd7faac68cdee236d2625d6fb1ea))
+
+
+
+
+
+## [2.31.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.31.0...amplify-category-auth@2.31.1) (2021-05-18)
+
+
+
+## 4.51.1 (2021-05-18)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+# [2.31.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.30.6...amplify-category-auth@2.31.0) (2021-05-14)
+
+
+
+# 4.51.0 (2021-05-13)
+
+
+### Bug Fixes
+
+* [#4657](https://github.com/aws-amplify/amplify-cli/issues/4657) preserve previous authSelections in update flow ([#7255](https://github.com/aws-amplify/amplify-cli/issues/7255)) ([afbaa08](https://github.com/aws-amplify/amplify-cli/commit/afbaa08ac54bb001b640c808cf136c124089e5fc))
+* e2e failed tests for auth Triggers PR ([#7262](https://github.com/aws-amplify/amplify-cli/issues/7262)) ([fedb6c4](https://github.com/aws-amplify/amplify-cli/commit/fedb6c49cf0695e21f59929e7d0554b59290f2f1))
+* ejs template fix when no triggers added ([#7267](https://github.com/aws-amplify/amplify-cli/issues/7267)) ([81786a8](https://github.com/aws-amplify/amplify-cli/commit/81786a8d654f3ba2550e59986d85a654e5ed44dd))
+
+
+### Features
+
+* prep work for SMS Sandbox support ([#7302](https://github.com/aws-amplify/amplify-cli/issues/7302)) ([d1f85d2](https://github.com/aws-amplify/amplify-cli/commit/d1f85d2e0a9c367b71defefe6d9e00737f681ca4))
+* Support for Apple Sign In ([#7265](https://github.com/aws-amplify/amplify-cli/issues/7265)) ([9f5e659](https://github.com/aws-amplify/amplify-cli/commit/9f5e659d63362c7f47eaa147c68d40d5bcc36fcc))
+
+
+
+
+
 ## [2.30.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.30.4...amplify-category-auth@2.30.6) (2021-05-03)
 
 

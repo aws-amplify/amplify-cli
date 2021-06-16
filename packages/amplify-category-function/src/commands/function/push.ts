@@ -1,4 +1,4 @@
-import { category as categoryName } from '../../constants';
+import { categoryName } from '../../constants';
 
 const subcommand = 'push';
 

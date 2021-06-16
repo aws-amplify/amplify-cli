@@ -18,7 +18,12 @@ export const invokePluginMethod = async <T>(
   const pluginMethod: any = plugin[method];
 
   if (!pluginMethod || typeof pluginMethod !== 'function') {
-    throw new Error(`Method ${method} does not exist or not a function in category plugin: ${category}.`);
+    const error = new Error(`Method ${method} does not exist or not a function in category plugin: ${category}.`);
+
+    error.name = 'MethodNotFound';
+    error.stack = undefined;
+
+    throw error;
   }
 
   return pluginMethod(...args);

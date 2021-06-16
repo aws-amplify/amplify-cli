@@ -20,6 +20,7 @@ import { loadConfiguration } from '../configuration-manager';
 import { interpret } from 'xstate';
 import ora from 'ora';
 import throttle from 'lodash.throttle';
+import { fileLogger, Logger } from '../utils/aws-logger';
 interface DeploymentManagerOptions {
   throttleDelay?: number;
   eventPollingDelay?: number;
@@ -74,6 +75,7 @@ export class DeploymentManager {
   private s3Client: aws.S3;
   private ddbClient: aws.DynamoDB;
   private deploymentStateManager?: IDeploymentStateManager;
+  private logger: Logger;
 
   private constructor(
     creds: ConfigurationOptions,
@@ -92,7 +94,8 @@ export class DeploymentManager {
 
     this.s3Client = new aws.S3(creds);
     this.cfnClient = new aws.CloudFormation({ ...creds, maxRetries: 10, customUserAgent: this.options.userAgent });
-    this.ddbClient = new aws.DynamoDB({ ...creds, region });
+    this.ddbClient = new aws.DynamoDB({ ...creds, region, maxRetries: 10 });
+    this.logger = fileLogger('deployment-manager');
   }
 
   public deploy = async (deploymentStateManager: IDeploymentStateManager): Promise<void> => {
@@ -135,14 +138,15 @@ export class DeploymentManager {
             this.spinner.render();
             maxDeployed = Math.max(maxDeployed, state.context.currentIndex + 1);
             if (state.matches('idle')) {
-              this.spinner.text = `Starting deployment`;
+              this.logSpinnerMessage('deploy', `Starting deployment`);
             } else if (state.matches('deploy.waitForTablesToBeReady')) {
-              this.spinner.text = `Waiting for DynamoDB indices to be ready`;
+              this.logSpinnerMessage('deploy', `Waiting for DynamoDB indices to be ready`);
             } else if (state.matches('deploy')) {
-              this.spinner.text = `Deploying (${maxDeployed} of ${state.context.stacks.length})`;
+              this.logSpinnerMessage('deploy', `Deploying (${maxDeployed} of ${state.context.stacks.length})`);
             } else if (state.matches('rollback')) {
-              this.spinner.text = `Rolling back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`;
+              this.logSpinnerMessage('deploy', `Rolling back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`);
             } else if (state.matches('deployed')) {
+              this.logger('DeploymentManager', [{ spinner: 'Deployed' }])();
               this.spinner.succeed(`Deployed`);
             }
           }
@@ -152,7 +156,9 @@ export class DeploymentManager {
               return resolve();
             case 'rolledBack':
             case 'failed':
-              return reject(new DeploymentError(state.context.errors));
+              const deploymentErrors = new DeploymentError(state.context.errors);
+              this.logger('DeploymentManager', [{ stateValue: state.value }])(deploymentErrors);
+              return reject(deploymentErrors);
             default:
             // intentionally left blank as we don't care about intermediate states
           }
@@ -197,15 +203,16 @@ export class DeploymentManager {
           if (state.changed) {
             this.spinner.render();
             if (state.matches('idle')) {
-              this.spinner.text = `Starting rollback`;
+              this.logSpinnerMessage('rollback', `Starting rollback`);
             } else if (state.matches('preRollback')) {
-              this.spinner.text = `Waiting for previous deployment to finish`;
+              this.logSpinnerMessage('rollback', `Waiting for previous deployment to finish`);
             } else if (state.matches('rollback.waitForTablesToBeReady')) {
-              this.spinner.text = `Waiting for DynamoDB indices to be ready`;
+              this.logSpinnerMessage('rollback', `Waiting for DynamoDB indices to be ready`);
             } else if (state.matches('rollback')) {
-              this.spinner.text = `Rolling back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`;
+              this.logSpinnerMessage('rollback', `Rolling back (${maxDeployed - state.context.currentIndex} of ${maxDeployed})`);
             } else if (state.matches('rolledBack')) {
               this.spinner.succeed(`Rolled back succesfully`);
+              this.logger('rollback', [{ spinner: 'Rolled back successfully' }])();
             }
           }
 
@@ -213,7 +220,9 @@ export class DeploymentManager {
             case 'rolledBack':
               return resolve();
             case 'failed':
-              return reject(new DeploymentError(state.context.errors));
+              const deploymentErrors = new DeploymentError(state.context.errors);
+              this.logger('DeploymentManager', [{ stateValue: state.value }])(deploymentErrors);
+              return reject(deploymentErrors);
             default:
             // intentionally left blank as we don't care about intermediate states
           }
@@ -281,7 +290,8 @@ export class DeploymentManager {
       await this.deploymentStateManager?.startRollback();
       await this.deploymentStateManager?.startCurrentStep();
     } catch (err) {
-      // ignore, rollback should not fail because updating the deployment status fails
+      // log err but rollback should not fail because updating the deployment status fails
+      this.logger('startRolbackFn', [{ index: _.currentIndex }])(err);
     }
   };
 
@@ -307,6 +317,7 @@ export class DeploymentManager {
       if (e.code === 'NotFound') {
         throw new Error(`The cloudformation template ${templatePath} was not found in deployment bucket ${this.deploymentBucket}`);
       }
+      this.logger('ensureTemplateExists', [{ templatePath }])(e);
       throw e;
     }
   };
@@ -314,9 +325,14 @@ export class DeploymentManager {
   private getTableStatus = async (tableName: string): Promise<boolean> => {
     assert(tableName, 'table name should be passed');
 
-    const response = await this.ddbClient.describeTable({ TableName: tableName }).promise();
-    const gsis = response.Table?.GlobalSecondaryIndexes;
-    return gsis ? gsis.every(idx => idx.IndexStatus === 'ACTIVE') : true;
+    try {
+      const response = await this.ddbClient.describeTable({ TableName: tableName }).promise();
+      const gsis = response.Table?.GlobalSecondaryIndexes;
+      return gsis ? gsis.every(idx => idx.IndexStatus === 'ACTIVE') : true;
+    } catch (err) {
+      this.logger('getTableStatus', [{ tableName }])(err);
+      throw err;
+    }
   };
 
   private waitForActiveTables = async (tables: string[]): Promise<void> => {
@@ -411,5 +427,15 @@ export class DeploymentManager {
 
   private rollBackStack = async (currentStack: Readonly<DeploymentMachineOp>): Promise<void> => {
     await this.doDeploy(currentStack);
+  };
+
+  /**
+   *
+   * @param machine which state machine is the spinner message coming from
+   * @param message the message to log and show on the spinner
+   */
+  private logSpinnerMessage = (machine: string, message: string): void => {
+    this.logger(machine, [{ spinner: message }])();
+    this.spinner.text = message;
   };
 }

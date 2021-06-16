@@ -1,6 +1,6 @@
 {
   "name": "amplify-graphiql-explorer",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
@@ -26,7 +26,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts start",
-    "build": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts build",
+    "build": "cross-env SKIP_PREFLIGHT_CHECK=true react-scripts --max-old-space-size=8192 build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

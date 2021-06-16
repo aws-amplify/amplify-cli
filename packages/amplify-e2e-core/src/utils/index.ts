@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import { config } from 'dotenv';
 import execa from 'execa';
+import { getLayerDirectoryName, LayerDirectoryType } from '..';
 
 export * from './add-circleci-tags';
 export * from './api';
@@ -33,58 +34,95 @@ export function deleteAmplifyDir(root: string) {
   rimraf.sync(path.join(root, 'amplify'));
 }
 
-export function overrideFunctionSrc(root: string, name: string, code: string) {
-  let indexPath = path.join(getPathToFunction(root, name), 'src', 'index.js');
-  fs.writeFileSync(indexPath, code);
+export function loadFunctionTestFile(fileName: string) {
+  const functionPath = getTestFileNamePath(fileName);
+  return fs.readFileSync(functionPath, 'utf-8').toString();
 }
 
-export function overrideFunctionCode(root: string, name: string, fileName: string) {
-  let indexPath = path.join(getPathToFunction(root, name), 'src', 'index.js');
-  let functionPath = path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'functions', fileName);
-  fs.copySync(functionPath, indexPath);
-}
-
-export function addNodeJSDependencies(root: string, name: string, dependencies: string[]) {
-  let indexPath = path.join(getPathToFunction(root, name), 'src');
+export function addNodeDependencies(root: string, functionName: string, dependencies: string[]) {
+  let indexPath = path.join(getPathToFunction(root, functionName), 'src');
   execa.commandSync(`yarn add ${dependencies.join(' ')}`, { cwd: indexPath });
 }
 
-export function getFunctionSrc(root: string, name: string): Buffer {
-  let indexPath = path.join(getPathToFunction(root, name), 'src', 'index.js');
-  return fs.readFileSync(indexPath);
+export function overrideFunctionCodeNode(root: string, functionName: string, sourceFileName: string, targetFileName: string = 'index.js') {
+  const sourcePath = getTestFileNamePath(sourceFileName);
+  const targetPath = path.join(getPathToFunction(root, functionName), 'src', targetFileName);
+
+  fs.copySync(sourcePath, targetPath);
 }
 
-//overriding code for node
-export function overrideLayerCode(root: string, name: string, code: string, fileName: string) {
-  const dirPath = path.join(getPathToFunction(root, name), 'lib', 'nodejs', 'node_modules', name);
+export function overrideFunctionCodePython(
+  root: string,
+  functionName: string,
+  sourceFileName: string,
+  targetFileName: string = 'index.py',
+) {
+  const sourcePath = getTestFileNamePath(sourceFileName);
+  const targetPath = path.join(getPathToFunction(root, functionName), 'lib', 'python', targetFileName);
+
+  fs.copySync(sourcePath, targetPath);
+}
+
+export function overrideFunctionSrcNode(root: string, functionName: string, content: string, targetFileName: string = 'index.js') {
+  const dirPath = path.join(getPathToFunction(root, functionName), 'src');
+  const targetPath = path.join(dirPath, targetFileName);
+
   fs.ensureDirSync(dirPath);
-  const filePath = path.join(dirPath, fileName);
-  fs.writeFileSync(filePath, code);
+  fs.writeFileSync(targetPath, content);
 }
 
-// overriding code for python
-export function overrideFunctionSrcPython(root: string, name: string, source: string) {
-  const destFilePath = path.join(getPathToFunction(root, name), 'src', 'index.py');
-  fs.copyFileSync(source, destFilePath);
-}
+export function overrideFunctionSrcPython(root: string, functionName: string, content: string, targetFileName: string = 'index.py') {
+  const dirPath = path.join(getPathToFunction(root, functionName), 'src');
+  const targetPath = path.join(dirPath, targetFileName);
 
-export function overrideLayerCodePython(root: string, name: string, source: string) {
-  const dirPath = path.join(getPathToFunction(root, name), 'lib', 'python', 'lib', 'python3.8', 'site-packages');
   fs.ensureDirSync(dirPath);
-  const destfilePath = path.join(dirPath, 'testfunc.py');
-  fs.copyFileSync(source, destfilePath);
+  fs.writeFileSync(targetPath, content);
 }
 
-export function overridefunctionSrcJava(root: string, name: string, source: string) {
-  const destFilePath = path.join(getPathToFunction(root, name), 'build.gradle');
-  fs.copyFileSync(source, destFilePath);
+export function overrideLayerCodeNode(
+  root: string,
+  projName: string,
+  layerName: string,
+  content: string,
+  targetFileName: string = 'index.js',
+) {
+  const dirPath = path.join(getPathToLayer(root, { projName, layerName }), 'lib', 'nodejs');
+  const targetPath = path.join(dirPath, targetFileName);
+
+  fs.ensureDirSync(dirPath);
+  fs.writeFileSync(targetPath, content);
 }
 
-export function overrideLayerCodeJava(root: string, layerName: string, functionName: string) {
-  const destDir = path.join(getPathToFunction(root, layerName), 'lib', 'java', 'lib');
-  const srcDir = path.join(getPathToFunction(root, layerName), 'build', 'java', 'lib');
+export function overrideLayerCodePython(
+  root: string,
+  projName: string,
+  layerName: string,
+  content: string,
+  targetFileName: string = 'index.py',
+) {
+  const dirPath = path.join(getPathToLayer(root, { projName, layerName }), 'lib', 'python');
+  const targetPath = path.join(dirPath, targetFileName);
 
-  fs.copySync(srcDir, destDir);
+  fs.ensureDirSync(dirPath);
+  fs.writeFileSync(targetPath, content);
 }
 
-const getPathToFunction = (root: string, funcName: string) => path.join(root, 'amplify', 'backend', 'function', funcName);
+export function addOptFile(root: string, projName: string, layerName: string, content: string, targetFileName: string): void {
+  const dirPath = path.join(getPathToLayer(root, { projName, layerName }), 'opt');
+  const targetPath = path.join(dirPath, targetFileName);
+
+  fs.ensureDirSync(dirPath);
+  fs.writeFileSync(targetPath, content);
+}
+
+export function getFunctionSrcNode(root: string, functionName: string, fileName: string = 'index.js'): string {
+  const indexPath = path.join(getPathToFunction(root, functionName), 'src', fileName);
+
+  return fs.readFileSync(indexPath).toString();
+}
+
+const getTestFileNamePath = (fileName: string): string =>
+  path.join(__dirname, '..', '..', '..', 'amplify-e2e-tests', 'functions', fileName);
+const getPathToFunction = (root: string, funcName: string): string => path.join(root, 'amplify', 'backend', 'function', funcName);
+const getPathToLayer = (root: string, layerProjName: LayerDirectoryType): string =>
+  path.join(root, 'amplify', 'backend', 'function', getLayerDirectoryName(layerProjName));

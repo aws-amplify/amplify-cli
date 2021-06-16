@@ -469,7 +469,7 @@ async function askPaths(context, answers, currentPath) {
           await inquirer.prompt({
             name: 'isOverlappingPathOK',
             type: 'confirm',
-            message: `This path ${lowerOrderPath} is overlapping with ${higherOrderPath}. ${higherOrderPath} is going to catch all requests from ${lowerOrderPath}. Are you sure you want to continue?`,
+            message: `The path ${lowerOrderPath} overlaps with ${higherOrderPath}. Users authorized to access ${higherOrderPath} will also have access to ${lowerOrderPath}. Are you sure you want to continue?`,
             default: false,
           })
         ).isOverlappingPathOK;

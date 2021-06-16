@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.22.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.10...graphql-dynamodb-transformer@6.22.11) (2021-06-15)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [6.22.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.9...graphql-dynamodb-transformer@6.22.10) (2021-05-29)
+
+
+
+## 4.51.4 (2021-05-28)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** use modelobject key for mutation resolver creation ([#7419](https://github.com/aws-amplify/amplify-cli/issues/7419)) ([37bc551](https://github.com/aws-amplify/amplify-cli/commit/37bc551030d47de993f8227ee3af0ba6cd738ab2)), closes [#i7417](https://github.com/aws-amplify/amplify-cli/issues/i7417)
+
+
+
+
+
+## [6.22.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.8...graphql-dynamodb-transformer@6.22.9) (2021-05-26)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
+## [6.22.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.7...graphql-dynamodb-transformer@6.22.8) (2021-05-18)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** make primary key non null on del ([#6337](https://github.com/aws-amplify/amplify-cli/issues/6337)) ([4a5c679](https://github.com/aws-amplify/amplify-cli/commit/4a5c6795680b6b88efb19b923ee234253ca30c35)), closes [#2564](https://github.com/aws-amplify/amplify-cli/issues/2564)
+
+
+
+
+
+## [6.22.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.6...graphql-dynamodb-transformer@6.22.7) (2021-05-14)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
 ## [6.22.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.4...graphql-dynamodb-transformer@6.22.6) (2021-05-03)
 
 

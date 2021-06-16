@@ -18,6 +18,9 @@ import {
   getAwsIOSConfig,
   getAmplifyIOSConfig,
   amplifyPushWithoutCodegen,
+  addFunction,
+  getTable,
+  amplifyPushUpdateForDependentModel,
 } from 'amplify-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -204,5 +207,56 @@ describe('amplify add api (GraphQL)', () => {
     expect(transformConfig).toBeDefined();
     expect(transformConfig.Version).toBeDefined();
     expect(transformConfig.Version).toEqual(TRANSFORM_CURRENT_VERSION);
+  });
+
+  it('inits a project with a simple model , add a function and removes the depedent @model', async () => {
+    const random = Math.floor(Math.random() * 10000);
+    const projectName = `blogapp`;
+    const nextSchema = 'initial_key_blog.graphql';
+    const initialSchema = 'two-model-schema.graphql';
+    const fnName = `integtestfn${random}`;
+    await initJSProjectWithProfile(projRoot, { name: projectName });
+    await addApiWithSchema(projRoot, initialSchema);
+    await addFunction(
+      projRoot,
+      {
+        name: fnName,
+        functionTemplate: 'Hello World',
+        additionalPermissions: {
+          permissions: ['storage'],
+          choices: ['api', 'storage'],
+          resources: ['Comment:@model(appsync)'],
+          resourceChoices: ['Post:@model(appsync)', 'Comment:@model(appsync)'],
+          operations: ['read'],
+        },
+      },
+      'nodejs',
+    );
+    await amplifyPush(projRoot);
+    updateApiSchema(projRoot, projectName, nextSchema);
+    await amplifyPushUpdateForDependentModel(projRoot);
+    const meta = getProjectMeta(projRoot);
+    const region = meta.providers.awscloudformation.Region;
+    const { output } = meta.api.blogapp;
+    const { GraphQLAPIIdOutput, GraphQLAPIEndpointOutput, GraphQLAPIKeyOutput } = output;
+
+    expect(GraphQLAPIIdOutput).toBeDefined();
+    expect(GraphQLAPIEndpointOutput).toBeDefined();
+    expect(GraphQLAPIKeyOutput).toBeDefined();
+
+    const { graphqlApi } = await getAppSyncApi(GraphQLAPIIdOutput, region);
+
+    expect(graphqlApi).toBeDefined();
+    expect(graphqlApi.apiId).toEqual(GraphQLAPIIdOutput);
+    const tableName = `Comment-${GraphQLAPIIdOutput}-integtest`;
+    const error = { message: null };
+    try {
+      const table = await getDDBTable(tableName, region);
+      expect(table).toBeUndefined();
+    } catch (ex) {
+      Object.assign(error, ex);
+    }
+    expect(error).toBeDefined();
+    expect(error.message).toContain(`${tableName} not found`);
   });
 });

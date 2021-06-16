@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.24.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.10...graphql-auth-transformer@6.24.11) (2021-06-15)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
+## [6.24.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.9...graphql-auth-transformer@6.24.10) (2021-05-29)
+
+
+
+## 4.51.4 (2021-05-28)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** use modelobject key for mutation resolver creation ([#7419](https://github.com/aws-amplify/amplify-cli/issues/7419)) ([37bc551](https://github.com/aws-amplify/amplify-cli/commit/37bc551030d47de993f8227ee3af0ba6cd738ab2)), closes [#i7417](https://github.com/aws-amplify/amplify-cli/issues/i7417)
+
+
+
+
+
+## [6.24.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.8...graphql-auth-transformer@6.24.9) (2021-05-26)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
+## [6.24.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.7...graphql-auth-transformer@6.24.8) (2021-05-18)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** make primary key non null on del ([#6337](https://github.com/aws-amplify/amplify-cli/issues/6337)) ([4a5c679](https://github.com/aws-amplify/amplify-cli/commit/4a5c6795680b6b88efb19b923ee234253ca30c35)), closes [#2564](https://github.com/aws-amplify/amplify-cli/issues/2564)
+
+
+
+
+
+## [6.24.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.6...graphql-auth-transformer@6.24.7) (2021-05-14)
+
+
+### Bug Fixes
+
+* **graphql-auth-transformer:** fixes [@auth](https://github.com/auth) directives for Admin UI ([#7035](https://github.com/aws-amplify/amplify-cli/issues/7035)) ([d4f2f1e](https://github.com/aws-amplify/amplify-cli/commit/d4f2f1e9f5bfd1803711dcb1ba50ca845005a7e5))
+
+
+
+
+
 ## [6.24.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.4...graphql-auth-transformer@6.24.6) (2021-05-03)
 
 
