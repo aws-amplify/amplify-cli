@@ -365,7 +365,7 @@ const addEnvVarWalkthrough = (chain: ExecutionContext, options: EnvVarInputs) =>
   }
   chain.wait('Add new environment variable').sendCarriageReturn();
   chain.wait('Enter the environment variable name:').sendLine(options.key).sendCarriageReturn();
-  chain.wait('Enter the environment variable valueme:').sendLine(options.value).sendCarriageReturn();
+  chain.wait('Enter the environment variable value:').sendLine(options.value).sendCarriageReturn();
   chain.wait("I'm done").sendCarriageReturn();
 };
 

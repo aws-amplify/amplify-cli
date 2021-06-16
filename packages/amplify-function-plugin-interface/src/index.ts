@@ -134,7 +134,7 @@ export type FunctionParameters = {
   runtimePluginId: string;
   cloudwatchRule?: string;
   lambdaLayers: LambdaLayer[];
-  environmentVariables?: Record<string, any>;
+  environmentVariables?: Record<string, string>;
   secretDeltas?: SecretDeltas;
 };
 
