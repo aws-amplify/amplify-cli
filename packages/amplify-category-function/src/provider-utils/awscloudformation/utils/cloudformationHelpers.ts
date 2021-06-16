@@ -1,14 +1,17 @@
-import { categoryName, appsyncTableSuffix } from './constants';
+import { appsyncTableSuffix } from './constants';
 import { getAppSyncResourceName } from './appSyncHelper';
+import { categoryName } from '../../../constants';
 
-export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults) {
+export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCFNEnvVariables, newDefaults, apiResourceName?) {
   const currentResources = [];
   const newResources = [];
   let deletedResources = [];
+  const categorySet = new Set();
 
   if (currentDefaults.permissions) {
     Object.keys(currentDefaults.permissions).forEach(category => {
       Object.keys(currentDefaults.permissions[category]).forEach(resourceName => {
+        categorySet.add(category);
         currentResources.push(`${category.toUpperCase()}_${resourceName.toUpperCase()}_`);
       });
     });
@@ -20,6 +23,10 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
         newResources.push(`${category.toUpperCase()}_${resourceName.toUpperCase()}_`);
       });
     });
+  }
+
+  if (apiResourceName) {
+    apiResourceAddCheck(currentResources, newResources, apiResourceName, categorySet, true);
   }
 
   currentResources.forEach(resourceName => {
@@ -61,14 +68,16 @@ export function getNewCFNEnvVariables(oldCFNEnvVariables, currentDefaults, newCF
   return oldCFNEnvVariables;
 }
 
-export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNResourceParameters, newDefaults) {
+export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNResourceParameters, newDefaults, apiResourceName?) {
   const currentResources = [];
   const newResources = [];
   const deletedResources = [];
 
+  const categorySet = new Set();
   if (currentDefaults.permissions) {
     Object.keys(currentDefaults.permissions).forEach(category => {
       Object.keys(currentDefaults.permissions[category]).forEach(resourceName => {
+        categorySet.add(category);
         currentResources.push(`${category}${resourceName}`);
       });
     });
@@ -80,6 +89,11 @@ export function getNewCFNParameters(oldCFNParameters, currentDefaults, newCFNRes
         newResources.push(`${category}${resourceName}`);
       });
     });
+  }
+
+  // hack to add api category to current defaults if storage is added
+  if (apiResourceName) {
+    apiResourceAddCheck(currentResources, newResources, apiResourceName, categorySet, false);
   }
 
   currentResources.forEach(resourceName => {
@@ -225,5 +239,12 @@ export function constructCloudWatchEventComponent(cfnFilePath: string, cfnConten
       Default: 'NONE',
       Description: ' Schedule Expression',
     };
+  }
+}
+
+function apiResourceAddCheck(currentResources, newResources, apiResourceName, resourceSet, isEnvParams) {
+  const apiAddFlag = resourceSet.has('api') || !newResources.find(resource => resource.includes('storage'));
+  if (apiAddFlag) {
+    isEnvParams ? currentResources.push(`API_${apiResourceName.toUpperCase()}_`) : currentResources.push(`api${apiResourceName}`);
   }
 }

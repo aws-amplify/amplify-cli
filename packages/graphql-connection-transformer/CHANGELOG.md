@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.21.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.10...graphql-connection-transformer@4.21.11) (2021-06-15)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.9...graphql-connection-transformer@4.21.10) (2021-05-29)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.8...graphql-connection-transformer@4.21.9) (2021-05-26)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
+## [4.21.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.7...graphql-connection-transformer@4.21.8) (2021-05-18)
+
+
+### Bug Fixes
+
+* **graphql-dynamodb-transformer:** make primary key non null on del ([#6337](https://github.com/aws-amplify/amplify-cli/issues/6337)) ([4a5c679](https://github.com/aws-amplify/amplify-cli/commit/4a5c6795680b6b88efb19b923ee234253ca30c35)), closes [#2564](https://github.com/aws-amplify/amplify-cli/issues/2564)
+
+
+
+
+
+## [4.21.7](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.6...graphql-connection-transformer@4.21.7) (2021-05-14)
+
+**Note:** Version bump only for package graphql-connection-transformer
+
+
+
+
+
 ## [4.21.6](https://github.com/aws-amplify/amplify-cli/compare/graphql-connection-transformer@4.21.4...graphql-connection-transformer@4.21.6) (2021-05-03)
 
 

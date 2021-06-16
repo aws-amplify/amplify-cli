@@ -52,12 +52,6 @@ const run = async opts => {
     if (!opts.skipInit) {
       await createAmplifySkeletonProject(platform.frontend);
     }
-    if (platform.frontend === 'ios' && !opts.internalOnlyIosCallback) {
-      // the ios frontend plugin handles the post init event to call back to ampfliy-app
-      // So we need to return here if this is the original invocation of amplify-app (aka not the callback)
-      // yes, this needs to be refactored
-      return;
-    }
     updateFrameworkInProjectConfig(platform.framework);
     await createAmplifyHelperFiles(platform.frontend);
     console.log(`${emoji.get('white_check_mark')} Amplify setup completed successfully.`);

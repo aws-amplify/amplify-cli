@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-predictions",
-  "version": "2.8.6",
+  "version": "2.9.1",
   "description": "amplify-cli predictions plugin",
   "repository": {
     "type": "git",
@@ -15,8 +15,8 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-cli-core": "1.21.2",
-    "aws-sdk": "^2.845.0",
+    "amplify-cli-core": "1.23.0",
+    "aws-sdk": "^2.919.0",
     "chalk": "^3.0.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",

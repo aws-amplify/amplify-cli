@@ -128,7 +128,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -152,7 +152,7 @@ type Subscription {
 "
 `;
 
-exports[`DynamoDB transformer should add not default primary key when ID is defined 1`] = `
+exports[`DynamoDB transformer should not add default primary key when ID is defined 1`] = `
 "## [Start] Set default values. **
 #set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
@@ -162,12 +162,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -292,7 +309,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -320,12 +337,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -577,7 +611,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -600,12 +634,29 @@ $util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.i
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -877,7 +928,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -900,12 +951,29 @@ $util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.i
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -1276,7 +1344,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -1304,12 +1372,29 @@ $util.qr($context.args.input.put(\\"updatedOn\\", $util.defaultIfNull($ctx.args.
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -1563,7 +1648,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {
@@ -1708,7 +1793,7 @@ input UpdatePostInput {
 }
 
 input DeletePostInput {
-  id: ID
+  id: ID!
 }
 
 type Mutation {

@@ -1,5 +1,5 @@
 import { chooseServiceMessageAdd } from '../../provider-utils/awscloudformation/utils/constants';
-import { category } from '../../constants';
+import { categoryName } from '../../constants';
 import { supportedServices } from '../../provider-utils/supported-services';
 
 const subcommand = 'add';
@@ -12,7 +12,7 @@ module.exports = {
     const { amplify } = context;
     const servicesMetadata = supportedServices;
     return amplify
-      .serviceSelectionPrompt(context, category, servicesMetadata, chooseServiceMessageAdd)
+      .serviceSelectionPrompt(context, categoryName, servicesMetadata, chooseServiceMessageAdd)
       .then(result => {
         options = {
           service: result.service,
@@ -24,7 +24,7 @@ module.exports = {
           context.print.error('Provider not configured for this category');
           return;
         }
-        return providerController.addResource(context, category, result.service, options);
+        return providerController.addResource(context, categoryName, result.service, options);
       })
       .then(() => {
         context.print.info('');

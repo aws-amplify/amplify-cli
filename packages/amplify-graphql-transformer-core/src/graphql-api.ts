@@ -1,4 +1,5 @@
 import { APIIAMResourceProvider, GraphQLAPIProvider, MappingTemplateProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { ElasticSearchDataSourceOptions } from '@aws-amplify/graphql-transformer-interfaces/src/graphql-api-provider';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
@@ -22,13 +23,14 @@ import {
   UserPoolDefaultAction,
 } from '@aws-cdk/aws-appsync';
 import { ITable } from '@aws-cdk/aws-dynamodb';
-import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { IFunction } from '@aws-cdk/aws-lambda';
+import { Grant, IGrantable, IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
 import { CfnResource, Construct, Duration, Stack, Token } from '@aws-cdk/core';
 import { toCamelCase } from 'graphql-transformer-common';
 import { AppSyncFunctionConfiguration } from './appsync-function';
+import { ElasticsearchDataSource } from './cdk-compat/elasticsearch-datasource';
 import { TransformerSchema } from './cdk-compat/schema-asset';
-import { InlineTemplate } from './cdk-compat/template-asset';
+import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
 
 export interface GraphqlApiProps {
   /**
@@ -215,6 +217,21 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     }
   }
 
+  addElasticSearchDataSource(
+    name: string,
+    awsRegion: string,
+    endpoint: string,
+    options?: ElasticSearchDataSourceOptions,
+    stack?: Stack,
+  ): ElasticsearchDataSource {
+    if (this.dataSources.has(name)) {
+      throw new Error(`DataSource ${name} already exists in the API`);
+    }
+    const data = this.doAddElasticSearchDataSource(name, endpoint, awsRegion, options, stack);
+    this.dataSources.set(options?.name || name, data);
+    return data;
+  }
+
   public addHttpDataSource(name: string, endpoint: string, options?: DataSourceOptions, stack?: Stack): HttpDataSource {
     if (this.dataSources.has(name)) {
       throw new Error(`DataSource ${name} already exists in the API`);
@@ -268,6 +285,35 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       requestMappingTemplate,
       responseMappingTemplate,
     });
+    return fn;
+  }
+
+  addLambdaFunction(
+    functionName: string,
+    functionKey: string,
+    handlerName: string,
+    filePath: string,
+    runtime: Runtime,
+    layers?: ILayerVersion[],
+    role?: IRole,
+    environment?: { [key: string]: string },
+    stack?: Stack,
+  ): IFunction {
+    const dummycode = `if __name__ == "__main__":`; // assing dummy code so as to be overriden later
+    const fn = new Function(stack || this, functionName, {
+      code: Code.fromInline(dummycode),
+      handler: handlerName,
+      runtime,
+      role,
+      layers,
+      environment,
+    });
+    fn.addLayers();
+    const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn);
+    (fn.node.defaultChild as CfnFunction).code = {
+      s3Key: functionCode.s3ObjectKey,
+      s3Bucket: functionCode.s3BucketName,
+    };
     return fn;
   }
 
@@ -439,6 +485,31 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       name: options?.name,
       description: options?.description,
       authorizationConfig: options?.authorizationConfig,
+    });
+  }
+
+  /**
+   * add a new elasticsearch data source to this API
+   *
+   * @param id The data source's id
+   * @param endpoint The elasticsearch endpoint
+   * @param region The elasticsearch datasource region
+   * @param options The optional configuration for this data source
+   * @param stack Stack to which the elasticsearch datasource needs to be created in
+   */
+  protected doAddElasticSearchDataSource(
+    id: string,
+    endpoint: string,
+    region: string,
+    options?: ElasticSearchDataSourceOptions,
+    stack?: Stack,
+  ): ElasticsearchDataSource {
+    return new ElasticsearchDataSource(stack ?? this, id, {
+      api: this,
+      name: options?.name,
+      endpoint,
+      region,
+      serviceRole: options?.serviceRole,
     });
   }
 

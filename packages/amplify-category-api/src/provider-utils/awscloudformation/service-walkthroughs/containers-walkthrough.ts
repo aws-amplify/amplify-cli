@@ -69,8 +69,8 @@ async function askResourceName(context, allDefaultValues) {
       validate: amplify.inputValidation({
         validation: {
           operator: 'regex',
-          value: '^[a-zA-Z0-9]+$',
-          onErrorMsg: 'Resource name should be alphanumeric',
+          value: '^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$',
+          onErrorMsg: 'Resource name should be alphanumeric with no uppercase letters',
         },
         required: true,
       }),

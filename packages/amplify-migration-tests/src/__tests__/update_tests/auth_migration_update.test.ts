@@ -1,5 +1,6 @@
 import {
   addAuthWithCustomTrigger,
+  addAuthWithDefault,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
@@ -9,6 +10,7 @@ import {
   getUserPool,
   getUserPoolClients,
   updateAuthWithoutCustomTrigger,
+  updateAuthWithoutTrigger,
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
@@ -58,5 +60,15 @@ describe('amplify auth migration', () => {
     expect(updatedDirContents.includes('custom.js')).toBeFalsy();
     expect(updatedDirContents.includes('email-filter-denylist.js')).toBeTruthy();
     expect(updatedFunction.Configuration.Environment.Variables.MODULES).toEqual('email-filter-denylist');
+  });
+
+  it('...should init a project and add auth with default, and then update with latest and push', async () => {
+    // init, add and push auth with installed cli
+    await initJSProjectWithProfile(projRoot, { name: 'authMigration' });
+    await addAuthWithDefault(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    // update and push with codebase
+    await updateAuthWithoutTrigger(projRoot, { testingWithLatestCodebase: true });
+    await amplifyPushAuth(projRoot, true);
   });
 });

@@ -3,6 +3,75 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.19.3...amplify-e2e-core@1.20.0) (2021-06-15)
+
+
+### Features
+
+* add support for defining IAM Permissions Boundary for Project ([#7144](https://github.com/aws-amplify/amplify-cli/issues/7144)) ([acf031b](https://github.com/aws-amplify/amplify-cli/commit/acf031b29d4e554d647da39ffb8293010cf1d8ad))
+* Define IAM Permissions Boundary for Project ([#7502](https://github.com/aws-amplify/amplify-cli/issues/7502)) (ref [#4618](https://github.com/aws-amplify/amplify-cli/issues/4618)) ([08f7a3c](https://github.com/aws-amplify/amplify-cli/commit/08f7a3c45b2e98535ef325eb0a97c5bc4d3008c6)), closes [#7053](https://github.com/aws-amplify/amplify-cli/issues/7053)
+* lambda layers rework ([#7375](https://github.com/aws-amplify/amplify-cli/issues/7375)) ([a3b7d3e](https://github.com/aws-amplify/amplify-cli/commit/a3b7d3e427e16bac2b2ea27699fe53b48cf47656))
+
+
+### Reverts
+
+* Revert "feat: add support for defining IAM Permissions Boundary for Project (#7144)" (#7453) ([08704f0](https://github.com/aws-amplify/amplify-cli/commit/08704f0271f6f5d0e0e98ad7002f4b35c3890924)), closes [#7144](https://github.com/aws-amplify/amplify-cli/issues/7144) [#7453](https://github.com/aws-amplify/amplify-cli/issues/7453)
+
+
+
+
+
+## [1.19.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.19.2...amplify-e2e-core@1.19.3) (2021-05-26)
+
+**Note:** Version bump only for package amplify-e2e-core
+
+
+
+
+
+## [1.19.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.19.1...amplify-e2e-core@1.19.2) (2021-05-22)
+
+
+### Bug Fixes
+
+* updated ejs template for empty object triggers ([#7351](https://github.com/aws-amplify/amplify-cli/issues/7351)) ([572ddbd](https://github.com/aws-amplify/amplify-cli/commit/572ddbda4f339d364a8a20bab0053140cf798f34))
+
+
+
+
+
+## [1.19.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.19.0...amplify-e2e-core@1.19.1) (2021-05-18)
+
+
+
+## 4.51.1 (2021-05-18)
+
+
+### Bug Fixes
+
+* nexpect pathname parsing ([#7324](https://github.com/aws-amplify/amplify-cli/issues/7324)) ([#7325](https://github.com/aws-amplify/amplify-cli/issues/7325)) ([ed8dc22](https://github.com/aws-amplify/amplify-cli/commit/ed8dc221d92585a74e7e8214dcd721f5d27d5d11))
+
+
+
+
+
+# [1.19.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.18.2...amplify-e2e-core@1.19.0) (2021-05-14)
+
+
+### Features
+
+* defer root stack creation to first `amplify push` ([#7174](https://github.com/aws-amplify/amplify-cli/issues/7174)) ([d28dd1c](https://github.com/aws-amplify/amplify-cli/commit/d28dd1caca86b19a858dab0e7aa907d1cc74c86a))
+* Support for Apple Sign In ([#7265](https://github.com/aws-amplify/amplify-cli/issues/7265)) ([9f5e659](https://github.com/aws-amplify/amplify-cli/commit/9f5e659d63362c7f47eaa147c68d40d5bcc36fcc))
+
+
+### Reverts
+
+* Revert "feat: defer root stack creation to first `amplify push` (#7174)" (#7306) ([78854eb](https://github.com/aws-amplify/amplify-cli/commit/78854ebd4a3d41d34d68736d6556045302101265)), closes [#7174](https://github.com/aws-amplify/amplify-cli/issues/7174) [#7306](https://github.com/aws-amplify/amplify-cli/issues/7306)
+
+
+
+
+
 ## [1.18.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.18.0...amplify-e2e-core@1.18.2) (2021-05-03)
 
 

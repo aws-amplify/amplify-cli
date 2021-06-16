@@ -1,0 +1,130 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`check CFN resources 1`] = `
+Object {
+  "cfnResources": Array [
+    "apiattr1",
+    "apiattr2",
+  ],
+  "permissionPolicies": "randomPermissionsforapi",
+}
+`;
+
+exports[`check CFN resources for storage 1`] = `
+Object {
+  "cfnResources": Array [
+    Object {
+      "_cfJoinComponentTableArn": Array [
+        "arn:aws:dynamodb:",
+        Object {
+          "Ref": "aws_region",
+        },
+        ":",
+        Object {
+          "Ref": "aws_accountId",
+        },
+        ":table/",
+        Object {
+          "Fn::ImportValue": Object {
+            "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
+          },
+        },
+      ],
+      "_cfJoinComponentTableName": Object {
+        "Fn::ImportValue": Object {
+          "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
+        },
+      },
+      "_modelName": "storageattr1@model(appsync)",
+      "attributes": Array [
+        "GraphQLAPIIdOutput",
+      ],
+      "category": "api",
+      "needsAdditionalDynamoDBResourceProps": true,
+      "resourceName": "mock_api",
+    },
+    Object {
+      "_cfJoinComponentTableArn": Array [
+        "arn:aws:dynamodb:",
+        Object {
+          "Ref": "aws_region",
+        },
+        ":",
+        Object {
+          "Ref": "aws_accountId",
+        },
+        ":table/",
+        Object {
+          "Fn::ImportValue": Object {
+            "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
+          },
+        },
+      ],
+      "_cfJoinComponentTableName": Object {
+        "Fn::ImportValue": Object {
+          "Fn::Sub": "\${apimock_apiGraphQLAPIIdOutput}:GetAtt:storage:Name",
+        },
+      },
+      "_modelName": "storageattr2@model(appsync)",
+      "attributes": Array [
+        "GraphQLAPIIdOutput",
+      ],
+      "category": "api",
+      "needsAdditionalDynamoDBResourceProps": true,
+      "resourceName": "mock_api",
+    },
+  ],
+  "permissionPolicies": "randomPermissionsforapiandstorage",
+}
+`;
+
+exports[`env resources for CFN for DDB table and api 1`] = `
+Object {
+  "dependsOn": Array [
+    Object {
+      "attributes": Array [
+        "GraphQLAPIIdOutput",
+      ],
+      "category": "api",
+      "resourceName": "mock_api",
+    },
+  ],
+  "envVarStringList": "API_MOCK_API_GRAPHQLAPIIDOUTPUT",
+  "environmentMap": Object {
+    "API_MOCK_API_GRAPHQLAPIIDOUTPUT": Object {
+      "Ref": "apimock_apiGraphQLAPIIdOutput",
+    },
+  },
+}
+`;
+
+exports[`env resources for CFN for auth and storage for api 1`] = `
+Object {
+  "dependsOn": Array [
+    Object {
+      "attributes": Array [
+        "randombucket",
+      ],
+      "category": "storage",
+      "resourceName": "mock_api",
+    },
+    Object {
+      "attributes": Array [
+        "userPoolId",
+      ],
+      "category": "auth",
+      "resourceName": "mock_api",
+    },
+  ],
+  "envVarStringList": "AUTH_MOCK_API_USERPOOLID
+	STORAGE_MOCK_API_RANDOMBUCKET",
+  "environmentMap": Object {
+    "AUTH_MOCK_API_USERPOOLID": Object {
+      "Ref": "authmock_apiuserPoolId",
+    },
+    "STORAGE_MOCK_API_RANDOMBUCKET": Object {
+      "Ref": "storagemock_apirandombucket",
+    },
+  },
+}
+`;

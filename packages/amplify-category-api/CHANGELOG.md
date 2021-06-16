@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.10...amplify-category-api@2.31.11) (2021-06-15)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [2.31.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.9...amplify-category-api@2.31.10) (2021-06-02)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [2.31.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.8...amplify-category-api@2.31.9) (2021-05-26)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
+## [2.31.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.7...amplify-category-api@2.31.8) (2021-05-18)
+
+
+### Bug Fixes
+
+* make ECR repository name validation more strict ([#7337](https://github.com/aws-amplify/amplify-cli/issues/7337)) ([188efdd](https://github.com/aws-amplify/amplify-cli/commit/188efdde6ded25a06c6fb52e0b2abe04981b0993))
+
+
+
+
+
+## [2.31.7](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.6...amplify-category-api@2.31.7) (2021-05-14)
+
+
+### Bug Fixes
+
+* carry existing container secret config over ([#7224](https://github.com/aws-amplify/amplify-cli/issues/7224)) ([b2f3bf7](https://github.com/aws-amplify/amplify-cli/commit/b2f3bf7059ce3ca1e72cf6c451edd3e61699828a))
+* conditionally rebuild container apis on push ([#7175](https://github.com/aws-amplify/amplify-cli/issues/7175)) ([a27a033](https://github.com/aws-amplify/amplify-cli/commit/a27a033af0fe6a9db8becd15b713113c64e70eb3))
+* update overlapping REST path warning ([#7276](https://github.com/aws-amplify/amplify-cli/issues/7276)) ([3fc7534](https://github.com/aws-amplify/amplify-cli/commit/3fc75343ba228307080f3ef6a6cae4cf3387a007))
+
+
+
+
+
 ## [2.31.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.4...amplify-category-api@2.31.6) (2021-05-03)
 
 

@@ -3,6 +3,92 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.32.0...amplify-util-mock@3.33.0) (2021-06-15)
+
+
+### Features
+
+* add support for defining IAM Permissions Boundary for Project ([#7144](https://github.com/aws-amplify/amplify-cli/issues/7144)) ([acf031b](https://github.com/aws-amplify/amplify-cli/commit/acf031b29d4e554d647da39ffb8293010cf1d8ad))
+* Define IAM Permissions Boundary for Project ([#7502](https://github.com/aws-amplify/amplify-cli/issues/7502)) (ref [#4618](https://github.com/aws-amplify/amplify-cli/issues/4618)) ([08f7a3c](https://github.com/aws-amplify/amplify-cli/commit/08f7a3c45b2e98535ef325eb0a97c5bc4d3008c6)), closes [#7053](https://github.com/aws-amplify/amplify-cli/issues/7053)
+
+
+### Reverts
+
+* Revert "feat: add support for defining IAM Permissions Boundary for Project (#7144)" (#7453) ([08704f0](https://github.com/aws-amplify/amplify-cli/commit/08704f0271f6f5d0e0e98ad7002f4b35c3890924)), closes [#7144](https://github.com/aws-amplify/amplify-cli/issues/7144) [#7453](https://github.com/aws-amplify/amplify-cli/issues/7453)
+
+
+
+
+
+# [3.32.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.31.4...amplify-util-mock@3.32.0) (2021-06-02)
+
+
+
+# 4.52.0 (2021-06-01)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-cli/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-cli/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+
+
+
+
+
+## [3.31.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.31.3...amplify-util-mock@3.31.4) (2021-05-29)
+
+
+
+## 4.51.4 (2021-05-28)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** use modelobject key for mutation resolver creation ([#7419](https://github.com/aws-amplify/amplify-cli/issues/7419)) ([37bc551](https://github.com/aws-amplify/amplify-cli/commit/37bc551030d47de993f8227ee3af0ba6cd738ab2)), closes [#i7417](https://github.com/aws-amplify/amplify-cli/issues/i7417)
+
+
+
+
+
+## [3.31.3](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.31.2...amplify-util-mock@3.31.3) (2021-05-26)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.31.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.31.1...amplify-util-mock@3.31.2) (2021-05-22)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+## [3.31.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.31.0...amplify-util-mock@3.31.1) (2021-05-18)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
+# [3.31.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.30.6...amplify-util-mock@3.31.0) (2021-05-14)
+
+
+
+# 4.51.0 (2021-05-13)
+
+
+### Features
+
+* prep work for SMS Sandbox support ([#7302](https://github.com/aws-amplify/amplify-cli/issues/7302)) ([d1f85d2](https://github.com/aws-amplify/amplify-cli/commit/d1f85d2e0a9c367b71defefe6d9e00737f681ca4))
+
+
+
+
+
 ## [3.30.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.30.4...amplify-util-mock@3.30.6) (2021-05-03)
 
 

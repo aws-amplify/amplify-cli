@@ -1,6 +1,6 @@
 {
   "name": "amplify-category-storage",
-  "version": "2.11.6",
+  "version": "2.11.11",
   "description": "amplify-cli storage plugin",
   "repository": {
     "type": "git",
@@ -21,12 +21,12 @@
     "aws"
   ],
   "dependencies": {
-    "amplify-cli-core": "1.21.2",
-    "amplify-util-import": "1.4.6",
+    "amplify-cli-core": "1.23.0",
+    "amplify-util-import": "1.5.1",
     "enquirer": "^2.3.6",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "promise-sequential": "^1.1.1",
     "uuid": "^3.4.0"
   },
