@@ -2209,6 +2209,7 @@ workflows:
                 - release
                 - master
                 - beta
+                - dartNullSafetyFF
       - github_release:
           context: github-publish
           requires:
