@@ -24,7 +24,9 @@
   "dependencies": {
     "amplify-cli-core": "1.22.2",
     "amplify-function-plugin-interface": "1.7.2",
+    "aws-sdk": "^2.917.0",
     "chalk": "^3.0.0",
+    "change-case": "^4.1.2",
     "cloudform-types": "^4.2.0",
     "enquirer": "^2.3.6",
     "folder-hash": "^4.0.1",

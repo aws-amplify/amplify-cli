@@ -7,6 +7,9 @@ import { categoryName } from '../../../constants';
 import { cfnTemplateSuffix, functionParametersFileName, parametersFileName, provider, ServiceName } from './constants';
 import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
+import { FunctionSecretsStateManager } from '../secrets/functionSecretsStateManager';
+import { isFunctionPushed } from './funcionStateUtils';
+import { hasExistingSecrets, hasSetSecrets } from '../secrets/secretDeltaUtilities';
 import { LayerCloudState } from './layerCloudState';
 import { isMultiEnvLayer, isNewVersion, loadPreviousLayerHash } from './layerHelpers';
 import { createLayerConfiguration, saveLayerPermissions } from './layerConfiguration';
@@ -15,7 +18,7 @@ import { removeLayerFromTeamProviderInfo } from './layerMigrationUtils';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
-export function createFunctionResources(context: $TSContext, parameters: FunctionParameters | FunctionTriggerParameters) {
+export async function createFunctionResources(context: $TSContext, parameters: FunctionParameters | FunctionTriggerParameters) {
   context.amplify.updateamplifyMetaAfterResourceAdd(
     categoryName,
     parameters.resourceName || parameters.functionName,
@@ -24,7 +27,7 @@ export function createFunctionResources(context: $TSContext, parameters: Functio
 
   // copy template, CFN and parameter files
   copyTemplateFiles(context, parameters);
-  saveMutableState(parameters);
+  await saveMutableState(context, parameters);
   saveCFNParameters(parameters);
   context.amplify.leaveBreadcrumbs(categoryName, parameters.resourceName, createBreadcrumbs(parameters));
 }
@@ -87,12 +90,14 @@ export function removeLayerArtifacts(context: $TSContext, layerName: string) {
 }
 
 // ideally function update should be refactored so this function does not need to be exported
-export function saveMutableState(
+export async function saveMutableState(
+  context: $TSContext,
   parameters:
-    | Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers' | 'functionName'>>
+    | Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers' | 'functionName' | 'secretDeltas'>>
     | FunctionTriggerParameters,
 ) {
   createParametersFile(buildParametersFileObj(parameters), parameters.resourceName || parameters.functionName, functionParametersFileName);
+  await syncSecrets(context, parameters);
 }
 
 // ideally function update should be refactored so this function does not need to be exported
@@ -111,6 +116,26 @@ export function saveCFNParameters(
       CloudWatchRule: parameters.cloudwatchRule,
     };
     createParametersFile(params, parameters.resourceName, parametersFileName);
+  }
+}
+
+async function syncSecrets(context: $TSContext, parameters: Partial<FunctionParameters> | Partial<FunctionTriggerParameters>) {
+  if ('secretDeltas' in parameters) {
+    const doConfirm = hasSetSecrets(parameters.secretDeltas) && isFunctionPushed(parameters.resourceName);
+    const confirmed = doConfirm
+      ? await context.amplify.confirmPrompt('This will immediately update secret values in the cloud. Do you want to continue?', true)
+      : true;
+    if (confirmed) {
+      const functionSecretsStateManager = await FunctionSecretsStateManager.getInstance(context);
+      await functionSecretsStateManager.syncSecretDeltas((parameters as FunctionParameters)?.secretDeltas, parameters.resourceName);
+    }
+
+    if (hasExistingSecrets(parameters.secretDeltas)) {
+      context.print.info('Use the AWS SSM GetParameter API to retrieve secrets in your Lambda function.');
+      context.print.info(
+        'More information can be found here: https://docs.aws.amazon.com/systems-manager/latest/APIReference/API_GetParameter.html',
+      );
+    }
   }
 }
 
@@ -275,7 +300,7 @@ const amplifyMetaAndBackendParams = (parameters: LayerParameters): LayerMetaAndB
   return metadata;
 };
 
-function createParametersFile(parameters: $TSObject, resourceName: string, parametersFileName: string) {
+export function createParametersFile(parameters: $TSObject, resourceName: string, parametersFileName: string) {
   const parametersFilePath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName, parametersFileName);
   const currentParameters = JSONUtilities.readJson<$TSAny>(parametersFilePath, { throwIfNotExist: false }) || {};
   delete currentParameters.mutableParametersState; // this field was written in error in a previous version of the cli

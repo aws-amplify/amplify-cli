@@ -4,25 +4,28 @@ import _ from 'lodash';
 import * as path from 'path';
 import sequential from 'promise-sequential';
 import { categoryName } from './constants';
+import { postEnvRemoveHandler } from './events/postEnvRemoveHandler';
+import { postPushHandler } from './events/postPushHandler';
+import { prePushHandler } from './events/prePushHandler';
 import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
+import { cloneSecretsOnEnvInitHandler } from './provider-utils/awscloudformation/secrets/cloneSecretsOnEnvInitHandler';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
 import {
+  askEnvironmentVariableCarryOut
+} from './provider-utils/awscloudformation/utils/environmentVariablesHelper';
+import {
   deleteLayerVersionPermissionsToBeUpdatedInCfn,
-  deleteLayerVersionsToBeRemovedByCfn,
+  deleteLayerVersionsToBeRemovedByCfn
 } from './provider-utils/awscloudformation/utils/layerConfiguration';
 import { checkContentChanges } from './provider-utils/awscloudformation/utils/packageLayer';
 import { supportedServices } from './provider-utils/supported-services';
-import {
-  askEnvironmentVariableCarryOut,
-  ensureEnvironmentVariableValues,
-} from './provider-utils/awscloudformation/utils/environmentVariablesHelper';
 export { categoryName as category } from './constants';
 export { askExecRolePermissionsQuestions } from './provider-utils/awscloudformation/service-walkthroughs/execPermissionsWalkthrough';
-export { lambdasWithApiDependency } from './provider-utils/awscloudformation/utils/getDependentFunction';
 export { buildResource } from './provider-utils/awscloudformation/utils/build';
 export { buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 export { ServiceName } from './provider-utils/awscloudformation/utils/constants';
+export { lambdasWithApiDependency } from './provider-utils/awscloudformation/utils/getDependentFunction';
 export { hashLayerResource } from './provider-utils/awscloudformation/utils/layerHelpers';
 export { migrateLegacyLayer } from './provider-utils/awscloudformation/utils/layerMigrationUtils';
 export { packageResource } from './provider-utils/awscloudformation/utils/package';
@@ -176,6 +179,10 @@ export async function initEnv(context) {
   }
 
   await sequential(functionTasks);
+
+  if (isNewEnv) {
+    await cloneSecretsOnEnvInitHandler(context, sourceEnv, envName);
+  }
 }
 
 // Returns a wrapper around FunctionRuntimeLifecycleManager.invoke() that can be used to invoke the function with only an event
@@ -246,17 +253,18 @@ export async function executeAmplifyCommand(context) {
   await commandModule.run(context);
 }
 
-export async function handleAmplifyEvent(context, args) {
-  if (args.event === 'PrePush') {
-    await handlePrePush(context);
+export async function handleAmplifyEvent(context: $TSContext, args: $TSAny) {
+  switch (args.event) {
+    case 'PrePush':
+      await prePushHandler(context);
+      break;
+    case 'PostPush':
+      await postPushHandler(context);
+      break;
+    case 'InternalOnlyPostEnvRemove':
+      await postEnvRemoveHandler(context, args?.data?.envName);
+      break;
   }
-}
-
-async function handlePrePush(context) {
-  const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
-  const { amplify } = context;
-  const localEnvInfo = amplify.getEnvInfo();
-  await ensureEnvironmentVariableValues(context, localEnvInfo.envName, localEnvInfo.projectPath, yesFlagSet);
 }
 
 export async function lambdaLayerPrompt(context: $TSContext, resources: Array<$TSAny>): Promise<void> {

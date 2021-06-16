@@ -1,5 +1,10 @@
 import { categoryName } from '../../constants';
+import {
+  FunctionSecretsStateManager,
+  getLocalFunctionSecretNames,
+} from '../../provider-utils/awscloudformation/secrets/functionSecretsStateManager';
 import { ServiceName } from '../../provider-utils/awscloudformation/utils/constants';
+import { isFunctionPushed } from '../../provider-utils/awscloudformation/utils/funcionStateUtils';
 import { removeLayerArtifacts } from '../../provider-utils/awscloudformation/utils/storeResources';
 import { removeResource } from '../../provider-utils/awscloudformation/service-walkthroughs/removeFunctionWalkthrough';
 import { removeWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/removeLayerWalkthrough';
@@ -33,11 +38,22 @@ module.exports = {
       resourceName = response.resourceName;
     }
 
+    let hasSecrets = false;
+
+    const resourceNameCallback = async (resourceName: string) => {
+      hasSecrets = getLocalFunctionSecretNames(resourceName).length > 0;
+    };
+
     return amplify
-      .removeResource(context, categoryName, resourceName)
-      .then((resource: { service: string; resourceName: string }) => {
+      .removeResource(context, categoryName, resourceName, undefined, resourceNameCallback)
+      .then(async (resource: { service: string; resourceName: string }) => {
         if (resource?.service === ServiceName.LambdaLayer) {
           removeLayerArtifacts(context, resource.resourceName);
+        }
+
+        // if the resource has not been pushed and it has secrets, we need to delete them now -- otherwise we will orphan the secrets in the cloud
+        if (!isFunctionPushed(resourceName) && hasSecrets) {
+          await (await FunctionSecretsStateManager.getInstance(context)).deleteAllFunctionSecrets(resourceName);
         }
       })
       .catch(err => {

@@ -110,7 +110,7 @@ export async function addFunctionResource(
     completeParams = parameters;
   }
 
-  createFunctionResources(context, completeParams);
+  await createFunctionResources(context, completeParams);
   saveEnvironmentVariables(context, completeParams.resourceName, completeParams.environmentVariables);
 
   if (!completeParams.skipEdit) {
@@ -202,7 +202,7 @@ export async function updateFunctionResource(
       }
     }
 
-    saveMutableState(parameters);
+    await saveMutableState(context, parameters);
     saveCFNParameters(parameters);
     saveEnvironmentVariables(context, parameters.resourceName, parameters.environmentVariables);
   } else {
@@ -210,7 +210,7 @@ export async function updateFunctionResource(
     if (parameters.dependsOn) {
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
     }
-    saveMutableState(parameters);
+    await saveMutableState(context, parameters);
     saveCFNParameters(parameters);
     saveEnvironmentVariables(context, parameters.resourceName, parameters.environmentVariables);
   }

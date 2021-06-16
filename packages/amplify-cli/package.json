@@ -27,7 +27,7 @@
     "postinstall": "node scripts/post-install.js",
     "build": "tsc",
     "watch": "tsc -w",
-    "clean": "rimraf ./lib"
+    "clean": "rimraf ./lib tsconfig.tsbuildinfo"
   },
   "engines": {
     "node": ">=12.0.0"

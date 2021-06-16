@@ -157,13 +157,10 @@ export const askEnvironmentVariableCarryOut = async (
   });
 };
 
-export const ensureEnvironmentVariableValues = async (
-  context: $TSContext,
-  currentEnvName: string,
-  projectPath: string,
-  yesFlagSet: boolean,
-) => {
-  const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, {
+export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
+  const yesFlagSet = context?.exeInfo?.inputParams?.yes;
+  const currentEnvName = stateManager.getLocalEnvInfo()?.envName;
+  const teamProviderInfo = stateManager.getTeamProviderInfo(undefined, {
     throwIfNotExist: false,
     default: {},
   });

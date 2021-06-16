@@ -7,6 +7,7 @@ export enum AmplifyEvent {
   PostPull = 'PostPull',
   PreCodegenModels = 'PreCodegenModels',
   PostCodegenModels = 'PostCodegenModels',
+  InternalOnlyPostEnvRemove = 'InternalOnlyPostEnvRemove',
 }
 
 export class AmplifyEventData {}
@@ -26,6 +27,12 @@ export class AmplifyPostPullEventData extends AmplifyEventData {}
 export class AmplifyPreCodegenModelsEventData extends AmplifyEventData {}
 
 export class AmplifyPostCodegenModelsEventData extends AmplifyEventData {}
+
+export class AmplifyInternalOnlyPostEnvRemoveEventData extends AmplifyEventData {
+  constructor(public readonly envName: string) {
+    super();
+  }
+}
 
 export class AmplifyEventArgs {
   constructor(public event: AmplifyEvent, public data?: AmplifyEventData) {}
