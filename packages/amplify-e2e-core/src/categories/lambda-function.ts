@@ -74,8 +74,10 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: any)
       ? 'Resource access permissions'
       : settings.schedulePermissions
       ? 'Scheduled recurring invocation'
-      : 'Lambda layers configuration',
-    ['Resource access permissions', 'Scheduled recurring invocation', 'Lambda layers configuration'],
+      : settings.layerOptions
+      ? 'Lambda layers configuration'
+      : 'Environment variables configuration',
+    ['Resource access permissions', 'Scheduled recurring invocation', 'Lambda layers configuration', 'Environment variables configuration'],
   );
   if (settings.additionalPermissions) {
     // update permissions
@@ -147,7 +149,7 @@ const coreFunction = (
     if (action === 'create') {
       chain.wait('Do you want to configure advanced settings?');
 
-      if (settings.additionalPermissions || settings.schedulePermissions || settings.layerOptions) {
+      if (settings.additionalPermissions || settings.schedulePermissions || settings.layerOptions || settings.environmentVariables) {
         chain.sendConfirmYes().wait('Do you want to access other resources in this project from your Lambda function?');
         if (settings.additionalPermissions) {
           // other permissions flow
@@ -174,6 +176,15 @@ const coreFunction = (
         } else {
           chain.sendConfirmYes();
           addLayerWalkthrough(chain, settings.layerOptions);
+        }
+
+        // environment variable question
+        chain.wait('Do you want to configure environment variables for this function?');
+        if (settings.environmentVariables === undefined) {
+          chain.sendConfirmNo();
+        } else {
+          chain.sendConfirmYes();
+          addEnvVarWalkthrough(chain, settings.environmentVariables);
         }
       } else {
         chain.sendConfirmNo();
@@ -339,6 +350,23 @@ const addLayerWalkthrough = (chain: ExecutionContext, options: LayerOptions) => 
     chain.wait('Modify the layer order');
     chain.sendCarriageReturn();
   }
+};
+
+export interface EnvVarInputs {
+  key: string; // the expeted list of all layers
+  value: string;
+  envVarWalkthrough?: (chain: ExecutionContext) => void;
+}
+
+const addEnvVarWalkthrough = (chain: ExecutionContext, options: EnvVarInputs) => {
+  if (options.envVarWalkthrough) {
+    options.envVarWalkthrough(chain);
+    return;
+  }
+  chain.wait('Add new environment variable').sendCarriageReturn();
+  chain.wait('Enter the environment variable name:').sendLine(options.key).sendCarriageReturn();
+  chain.wait('Enter the environment variable valueme:').sendLine(options.value).sendCarriageReturn();
+  chain.wait("I'm done").sendCarriageReturn();
 };
 
 const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string) => {

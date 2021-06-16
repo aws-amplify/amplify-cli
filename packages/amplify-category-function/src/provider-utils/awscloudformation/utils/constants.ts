@@ -20,6 +20,7 @@ export const enum LayerCfnLogicalNamePrefix {
   LambdaLayerVersion = 'LambdaLayerVersion',
   LambdaLayerVersionPermission = 'LambdaLayerPermission',
 }
+export const environmentVariableSetting = 'Environment variables configuration';
 
 export const enum ServiceName {
   LambdaFunction = 'Lambda',
@@ -41,4 +42,4 @@ export const enum LegacyFilename {
   layerRuntimes = 'layer-runtimes.json',
 }
 
-export const advancedSettingsList = [resourceAccessSetting, cronJobSetting, lambdaLayerSetting];
+export const advancedSettingsList = [resourceAccessSetting, cronJobSetting, lambdaLayerSetting, environmentVariableSetting];
