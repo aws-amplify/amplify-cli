@@ -1,4 +1,4 @@
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { LambdaLayer } from 'amplify-function-plugin-interface';
 import { saveMutableState } from '../../../../provider-utils/awscloudformation/utils/storeResources';
 
@@ -34,7 +34,7 @@ describe('save mutable state', () => {
       lambdaLayers: [] as LambdaLayer[],
     };
 
-    await saveMutableState({}, input);
+    await saveMutableState({} as $TSContext, input);
     expect(JSONUtilities_mock.writeJson.mock.calls[0][1]).toMatchSnapshot();
   });
 
@@ -60,7 +60,7 @@ describe('save mutable state', () => {
       lambdaLayers: [],
       resourceName: 'testResourceName',
     };
-    await saveMutableState({}, input);
+    await saveMutableState({} as $TSContext, input);
     expect(JSONUtilities_mock.writeJson.mock.calls[0][1]).toMatchSnapshot();
   });
 });
