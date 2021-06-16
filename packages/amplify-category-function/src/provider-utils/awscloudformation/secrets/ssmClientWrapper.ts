@@ -1,4 +1,5 @@
 import { $TSContext } from 'amplify-cli-core';
+import aws from 'aws-sdk';
 import ora from 'ora';
 
 /**
