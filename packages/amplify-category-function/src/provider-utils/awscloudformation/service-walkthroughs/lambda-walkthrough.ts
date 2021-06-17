@@ -93,7 +93,10 @@ export async function createWalkthrough(
     // ask function secrets questions and merge in results
     templateParameters = merge(
       templateParameters,
-      await secretValuesWalkthrough(secretNamesToSecretDeltas(getLocalFunctionSecretNames(templateParameters.functionName))),
+      await secretValuesWalkthrough(
+        secretNamesToSecretDeltas(getLocalFunctionSecretNames(templateParameters.functionName)),
+        Object.keys(getStoredEnvironmentVariables(templateParameters.functionName)),
+      ),
     );
   }
 
@@ -136,7 +139,7 @@ function provideInformation(context, lambdaToUpdate, functionRuntime, currentPar
 
   // Provide environment variables
   context.print.success('Environment variables:');
-  const storedEnvironmentVariables = getStoredEnvironmentVariables(context, lambdaToUpdate);
+  const storedEnvironmentVariables = getStoredEnvironmentVariables(lambdaToUpdate);
   if (_.size(storedEnvironmentVariables) !== 0) {
     _.forEach(storedEnvironmentVariables, (environmentVariableValue, environmentVariableKey) => {
       context.print.info(`- ${environmentVariableKey}: ${environmentVariableValue}`);
@@ -259,9 +262,13 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
   if (selectedSettings.includes(secretsConfiguration)) {
     merge(
       functionParameters,
-      await secretValuesWalkthrough(secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionParameters.resourceName)), {
-        preConfirmed: true,
-      }),
+      await secretValuesWalkthrough(
+        secretNamesToSecretDeltas(getLocalFunctionSecretNames(functionParameters.resourceName)),
+        Object.keys(getStoredEnvironmentVariables(functionParameters.resourceName)),
+        {
+          preConfirmed: true,
+        },
+      ),
     );
   }
 

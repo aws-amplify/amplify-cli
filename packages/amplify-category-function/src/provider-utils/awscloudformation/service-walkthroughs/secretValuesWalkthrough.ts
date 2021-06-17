@@ -6,6 +6,7 @@ import { ResourceName } from 'amplify-cli-core';
 import { FunctionParameters, removeSecret, SecretDeltas, setSecret } from 'amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import { getExistingSecrets, hasExistingSecrets } from '../secrets/secretDeltaUtilities';
+import { getStoredEnvironmentVariables } from '../utils/environmentVariablesHelper';
 
 const secretValuesWalkthroughDefaultOptions = {
   preConfirmed: false, // true if the walkthrough has previously confirmed that secrets should be configured. false if this function should gate the flow behind a confirmation
@@ -18,6 +19,7 @@ const secretValuesWalkthroughDefaultOptions = {
  */
 export const secretValuesWalkthrough = async (
   secretDeltas: SecretDeltas,
+  envVarNames: string[] = [], // env var names must be excluded from valid secret names because it will cause an env var collision in the lambda function
   options: Partial<typeof secretValuesWalkthroughDefaultOptions> = secretValuesWalkthroughDefaultOptions,
 ): Promise<Pick<FunctionParameters, 'secretDeltas'>> => {
   options = { ...secretValuesWalkthroughDefaultOptions, ...options };
@@ -30,7 +32,7 @@ export const secretValuesWalkthrough = async (
     operation !== 'done';
     operation = await selectOperation(hasExistingSecrets(secretDeltas), firstLoop)
   ) {
-    await operationFlowMap[operation](secretDeltas);
+    await operationFlowMap[operation](secretDeltas, envVarNames);
     firstLoop = false;
   }
   return { secretDeltas };
@@ -70,16 +72,16 @@ export const cloneEnvWalkthrough = async (
 
   const funcList = Object.keys(deltas);
   for (let funcToUpdate = await selectFunctionToUpdate(funcList); !!funcToUpdate; funcToUpdate = await selectFunctionToUpdate(funcList)) {
-    await secretValuesWalkthrough(deltas[funcToUpdate], { preConfirmed: true });
+    await secretValuesWalkthrough(deltas[funcToUpdate], Object.keys(getStoredEnvironmentVariables(funcToUpdate)), { preConfirmed: true });
   }
 
   return deltas;
 };
 
-type SecretDeltasModifier = (secretDeltas: SecretDeltas) => Promise<void>;
+type SecretDeltasModifier = (secretDeltas: SecretDeltas, invalidNames?: string[]) => Promise<void>;
 
-const addSecretFlow = async (secretDeltas: SecretDeltas) => {
-  const secretName = await enterSecretName(Object.keys(secretDeltas));
+const addSecretFlow = async (secretDeltas: SecretDeltas, invalidNames: string[] = []) => {
+  const secretName = await enterSecretName(Object.keys(secretDeltas).concat(invalidNames));
   const secretValue = await enterSecretValue(secretValueDefaultMessage(secretName));
   secretDeltas[secretName] = setSecret(secretValue);
 };
@@ -157,7 +159,7 @@ const secretNameValidator = (invalidNames: string[]) => (input?: string) => {
     return 'Secret names can only use alphanumeric characters and underscore';
   }
   if (invalidNames.includes(input)) {
-    return `${input} is an existing secret name. All secrets must have a unique name.`;
+    return `${input} is an existing secret name or environment variable name. All secrets must have a unique name.`;
   }
   return true;
 };

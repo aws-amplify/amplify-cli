@@ -22,7 +22,6 @@ import { convertExternalLayersToProjectLayers, convertProjectLayersToExternalLay
 import { convertToComplete, isComplete, merge } from './utils/funcParamsUtils';
 import { isMultiEnvLayer } from './utils/layerHelpers';
 import { LayerParameters } from './utils/layerParams';
-import { saveEnvironmentVariables } from './utils/environmentVariablesHelper';
 import {
   createFunctionResources,
   createLayerArtifacts,

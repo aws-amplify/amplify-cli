@@ -6,7 +6,7 @@ import { validKey, getStoredEnvironmentVariables } from '../utils/environmentVar
 export const askEnvironmentVariableQuestions = async (
   context: $TSContext,
   resourceName: string,
-  environmentVariables: Record<string, string> = getStoredEnvironmentVariables(context, resourceName),
+  environmentVariables: Record<string, string> = getStoredEnvironmentVariables(resourceName),
   skipWalkthrough?: boolean,
 ): Promise<object> => {
   let firstLoop = true;

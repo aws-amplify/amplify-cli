@@ -8,15 +8,11 @@ import { categoryName } from '../../../constants';
 
 export const validKey = new RegExp(/^[a-zA-Z0-9_]+$/);
 
-export const getStoredEnvironmentVariables = (
-  context: $TSContext,
-  resourceName: string,
-  currentEnvName?: string,
-): Record<string, string> => {
+export const getStoredEnvironmentVariables = (resourceName: string, currentEnvName?: string): Record<string, string> => {
   const storedList = getStoredList(resourceName);
   const storedReferences = getStoredReferences(resourceName);
   const storedParameters = getStoredParameters(resourceName);
-  const storedKeyValue = getStoredKeyValue(context, resourceName, currentEnvName);
+  const storedKeyValue = getStoredKeyValue(resourceName, currentEnvName);
   const environmentVariables = {};
 
   // Search for key and take matched
@@ -39,9 +35,9 @@ export const getStoredEnvironmentVariables = (
 };
 
 export const saveEnvironmentVariables = (context: $TSContext, resourceName: string, newEnvironmentVariables: Record<string, string>) => {
-  const currentEnvironmentVariables = getStoredEnvironmentVariables(context, resourceName);
-  _.each(currentEnvironmentVariables, (value, key) => {
-    deleteEnvironmentVariable(context, resourceName, key);
+  const currentEnvironmentVariables = getStoredEnvironmentVariables(resourceName);
+  _.each(currentEnvironmentVariables, (_, key) => {
+    deleteEnvironmentVariable(resourceName, key);
   });
   _.each(newEnvironmentVariables, (value, key) => {
     setEnvironmentVariable(context, resourceName, key, value);
@@ -108,7 +104,7 @@ export const askEnvironmentVariableCarryOut = async (
   };
 
   const envVarSelectKey = async (functionName: string) => {
-    const envVars = getStoredEnvironmentVariables(context, functionName, currentEnvName);
+    const envVars = getStoredEnvironmentVariables(functionName, currentEnvName);
     const abortKey = uuid.v4();
     const keyNameQuestion: inquirer.ListQuestion = {
       type: 'list',
@@ -133,7 +129,7 @@ export const askEnvironmentVariableCarryOut = async (
   };
 
   const envVarUpdateValue = async (functionName: string, keyName: string) => {
-    const envVars = getStoredEnvironmentVariables(context, functionName, currentEnvName);
+    const envVars = getStoredEnvironmentVariables(functionName, currentEnvName);
     const newValueQuestion: inquirer.InputQuestion = {
       type: 'input',
       name: 'newValue',
@@ -153,7 +149,7 @@ export const askEnvironmentVariableCarryOut = async (
 
   await envVarQuestion();
   Object.keys(functions).forEach(functionName => {
-    setStoredKeyValue(context, functionName, functions[functionName]);
+    setStoredKeyValue(functionName, functions[functionName]);
   });
 };
 
@@ -173,7 +169,7 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
 
   for (const functionName of functionNames) {
     const storedList = getStoredList(functionName);
-    const storedKeyValue = getStoredKeyValue(context, functionName);
+    const storedKeyValue = getStoredKeyValue(functionName);
     for (const item of storedList) {
       const envName = item.environmentVariableName;
       const keyName = item.cloudFormationParameterName;
@@ -204,7 +200,7 @@ export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
         },
       };
       const { newValue } = await inquirer.prompt(newValueQuestion);
-      setStoredKeyValue(context, functionName, {
+      setStoredKeyValue(functionName, {
         ...storedKeyValue,
         [keyName]: newValue,
       });
@@ -221,7 +217,7 @@ const setEnvironmentVariable = (
   const newList = getStoredList(resourceName);
   const newReferences = getStoredReferences(resourceName);
   const newParameters = getStoredParameters(resourceName);
-  const newKeyValue = getStoredKeyValue(context, resourceName);
+  const newKeyValue = getStoredKeyValue(resourceName);
   const cameledKey = _.camelCase(newEnvironmentVariableKey);
   newList.push({
     cloudFormationParameterName: cameledKey,
@@ -234,13 +230,13 @@ const setEnvironmentVariable = (
   setStoredList(resourceName, newList);
   setStoredReference(resourceName, newReferences);
   setStoredParameters(resourceName, newParameters);
-  setStoredKeyValue(context, resourceName, newKeyValue);
+  setStoredKeyValue(resourceName, newKeyValue);
 };
 
-const deleteEnvironmentVariable = (context: $TSContext, resourceName: string, targetedKey: string): void => {
+const deleteEnvironmentVariable = (resourceName: string, targetedKey: string): void => {
   let newList = getStoredList(resourceName);
   const newReferences = getStoredReferences(resourceName);
-  const newKeyValue = getStoredKeyValue(context, resourceName);
+  const newKeyValue = getStoredKeyValue(resourceName);
   const newParameters = getStoredParameters(resourceName);
   const cameledKey = _.camelCase(targetedKey);
   newList = _.filter(newList, item => {
@@ -253,7 +249,7 @@ const deleteEnvironmentVariable = (context: $TSContext, resourceName: string, ta
   setStoredList(resourceName, newList);
   setStoredReference(resourceName, newReferences);
   setStoredParameters(resourceName, newParameters);
-  setStoredKeyValue(context, resourceName, newKeyValue);
+  setStoredKeyValue(resourceName, newKeyValue);
 };
 
 const getStoredList = (resourceName: string): { cloudFormationParameterName: string; environmentVariableName: string }[] => {
@@ -311,16 +307,16 @@ const setStoredParameters = (resourceName: string, newParameters: object): void 
   JSONUtilities.writeJson(cfnFilePath, cfnContent);
 };
 
-const getStoredKeyValue = (context: $TSContext, resourceName: string, currentEnvName?: string): object => {
+const getStoredKeyValue = (resourceName: string, currentEnvName?: string): object => {
   const projectPath = pathManager.findProjectRoot();
-  const { envName } = currentEnvName ? { envName: currentEnvName } : context.amplify.getEnvInfo();
+  const envName = currentEnvName || stateManager.getLocalEnvInfo().envName;
   const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, { throwIfNotExist: false });
   return _.get(teamProviderInfo, [envName, 'categories', categoryName, resourceName], {});
 };
 
-const setStoredKeyValue = (context: $TSContext, resourceName: string, newKeyValue: object): void => {
+const setStoredKeyValue = (resourceName: string, newKeyValue: object): void => {
   const projectPath = pathManager.findProjectRoot();
-  const { envName } = context.amplify.getEnvInfo();
+  const envName = stateManager.getLocalEnvInfo().envName;
   const teamProviderInfo = stateManager.getTeamProviderInfo(projectPath, { throwIfNotExist: false });
   _.set(teamProviderInfo, [envName, 'categories', categoryName, resourceName], newKeyValue);
   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
