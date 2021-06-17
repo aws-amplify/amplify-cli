@@ -41,6 +41,8 @@ class DDBTypesEncoder(json.JSONEncoder):
 class StreamTypeDeserializer(TypeDeserializer):
     def _deserialize_n(self, value):
         try:
+            if value != int(value): # check if casting truncates decimals
+                return float(value)
             return int(value)
         except ValueError:
             return float(value)
