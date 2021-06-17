@@ -51,18 +51,20 @@ export class FunctionSecretsStateManager {
       return;
     }
     // update values in Parameter Store
-    Object.entries(secretDeltas).forEach(([secretName, secretDelta]) => {
-      const fullyQualifiedSecretName = getFullyQualifiedSecretName(secretName, functionName, envName);
-      switch (secretDelta.operation) {
-        case 'remove':
-          if (this.doRemoveSecretsInCloud(functionName)) {
-            this.ssmClientWrapper.deleteSecret(fullyQualifiedSecretName);
-          }
-          break;
-        case 'set':
-          this.ssmClientWrapper.setSecret(fullyQualifiedSecretName, secretDelta.value);
-      }
-    });
+    await Promise.all(
+      Object.entries(secretDeltas).map(async ([secretName, secretDelta]) => {
+        const fullyQualifiedSecretName = getFullyQualifiedSecretName(secretName, functionName, envName);
+        switch (secretDelta.operation) {
+          case 'remove':
+            if (this.doRemoveSecretsInCloud(functionName)) {
+              await this.ssmClientWrapper.deleteSecret(fullyQualifiedSecretName);
+            }
+            break;
+          case 'set':
+            await this.ssmClientWrapper.setSecret(fullyQualifiedSecretName, secretDelta.value);
+        }
+      }),
+    );
 
     try {
       const origTemplate = await getFunctionCloudFormationTemplate(functionName);
