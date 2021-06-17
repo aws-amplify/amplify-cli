@@ -623,7 +623,7 @@ export class FeatureFlags {
       {
         name: 'enableDartNullSafety',
         type: 'boolean',
-        defaultValueForExistingProjects: false,
+        defaultValueForExistingProjects: true,
         defaultValueForNewProjects: true
       }
     ]);
