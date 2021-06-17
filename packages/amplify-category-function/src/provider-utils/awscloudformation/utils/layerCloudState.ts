@@ -8,7 +8,7 @@ import { LayerVersionMetadata, PermissionEnum } from './layerParams';
 export class LayerCloudState {
   private static instances: Record<string, LayerCloudState> = {};
   private layerVersionsMetadata: LayerVersionMetadata[];
-  public latestVersionLogicalIds: Record<string, string> = {};
+  public latestVersionLogicalId: string;
 
   private constructor() {}
 

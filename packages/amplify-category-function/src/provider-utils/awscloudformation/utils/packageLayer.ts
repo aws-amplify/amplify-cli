@@ -61,12 +61,12 @@ export const packageLayer: Packager = async (context, resource) => {
   }
 
   const layerCloudState = LayerCloudState.getInstance(resource.resourceName);
-  if (!layerCloudState.latestVersionLogicalIds[resource.resourceName]) {
+  if (!layerCloudState.latestVersionLogicalId) {
     // "Should" never be reachable, but sanity check just in case
     throw new Error('LogicalId missing for new layer version.');
   }
 
-  const zipFilename = createLayerZipFilename(resource.resourceName, layerCloudState.latestVersionLogicalIds[resource.resourceName]);
+  const zipFilename = createLayerZipFilename(resource.resourceName, layerCloudState.latestVersionLogicalId);
   // check zip size is less than 250MB
   if (validFilesize(context, destination)) {
     context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: versionHash, hashValue: currentHash });
