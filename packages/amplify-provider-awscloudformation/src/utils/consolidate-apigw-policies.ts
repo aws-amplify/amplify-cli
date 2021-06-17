@@ -246,8 +246,13 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
   const apiParamsFile = path.join(resourceDir, API_PARAMS_FILE);
   const cfn: any = JSONUtilities.readJson(cfnTemplate, { throwIfNotExist: false }) ?? {};
   const parameterJson = JSONUtilities.readJson(paramsFile, { throwIfNotExist: false }) ?? {};
-  const parameters = cfn?.Parameters ?? {};
-  const resources = cfn?.Resources ?? {};
+
+  if (!cfn) {
+    throw new Error(`CloudFormation template missing for REST API ${resourceName}`);
+  }
+
+  const parameters = cfn.Parameters ?? {};
+  const resources = cfn.Resources ?? {};
   let modified = false;
 
   for (const parameterName in parameters) {
@@ -278,6 +283,17 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
           delete resources[resourceName];
           modified = true;
         }
+      }
+    } else if (resource.Type === 'AWS::ApiGateway::RestApi') {
+      cfn.Outputs ??= {};
+
+      // Ensure that th REST API's ID is an output of the stack.
+      if (!cfn.Outputs.ApiId) {
+        cfn.Outputs.ApiId = {
+          Description: 'API ID (prefix of API URL)',
+          Value: { Ref: resourceName },
+        };
+        modified = true;
       }
     }
   }
