@@ -25,23 +25,45 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
     compoundExpression([
       set(ref('indexPath'), str(`/${type.toLowerCase()}/doc/_search`)),
       set(ref('nonKeywordFields'), list(nonKeywordFields)),
+      set(ref('sortValues'), list([])),
+      set(ref('primaryKey'), str(primaryKey)),
       ifElse(
         ref('util.isNullOrEmpty($context.args.sort)'),
-        compoundExpression([set(ref('sortDirection'), str('desc')), set(ref('sortField'), str(primaryKey))]),
         compoundExpression([
-          set(ref('sortDirection'), ref('util.defaultIfNull($context.args.sort.direction, "desc")')),
-          set(ref('sortField'), ref(`util.defaultIfNull($context.args.sort.field, "${primaryKey}")`)),
+          ifElse(
+            ref('nonKeywordFields.contains($primaryKey)'),
+            set(ref('sortField'), ref('util.toJson($primaryKey)')),
+            set(ref('sortField'), ref('util.toJson("${primaryKey}.keyword")')),
+          ),
+          set(ref('sortDirection'), ref('util.toJson({"order": "desc"})')),
+          qref('$sortValues.add("{$sortField: $sortDirection}")'),
         ]),
-      ),
-      ifElse(
-        ref('nonKeywordFields.contains($sortField)'),
-        compoundExpression([set(ref('sortField0'), ref('util.toJson($sortField)'))]),
-        compoundExpression([set(ref('sortField0'), ref('util.toJson("${sortField}.keyword")'))]),
+        forEach(
+          ref('sortItem'),
+          ref('context.args.sort'),
+          [
+            ifElse(
+              ref('util.isNullOrEmpty($sortItem.field)'),
+              ifElse(
+                ref('nonKeywordFields.contains($primaryKey)'),
+                set(ref('sortField'), ref('util.toJson($primaryKey)')),
+                set(ref('sortField'), ref('util.toJson("${primaryKey}.keyword")')),
+              ),
+              ifElse(
+                ref('nonKeywordFields.contains($sortItem.field)'),
+                set(ref('sortField'), ref('util.toJson($sortItem.field)')),
+                set(ref('sortField'), ref('util.toJson("${sortItem.field}.keyword")')),
+              ),
+            ),
+            set(ref('sortDirection'), ref('util.toJson({"order": $sortItem.direction})')),
+            qref('$sortValues.add("{$sortField: $sortDirection}")'),
+          ],
+        ),
       ),
       ElasticsearchMappingTemplate.searchItem({
         path: str('$indexPath'),
         size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
-        search_after: list([ref('util.toJson($context.args.nextToken)')]),
+        search_after: ref('util.toJson($context.args.nextToken)'),
         from: ref('context.args.from'),
         version: bool(includeVersion),
         query: ifElse(
@@ -51,7 +73,7 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
             match_all: obj({}),
           }),
         ),
-        sort: list([raw('{$sortField0: { "order" : $util.toJson($sortDirection) }}')]),
+        sort: ref('sortValues'),
       }),
     ]),
   );
@@ -62,7 +84,7 @@ export function responseTemplate(includeVersion = false) {
     compoundExpression([
       set(ref('es_items'), list([])),
       forEach(ref('entry'), ref('context.result.hits.hits'), [
-        iff(raw('!$foreach.hasNext'), set(ref('nextToken'), ref('entry.sort.get(0)'))),
+        iff(raw('!$foreach.hasNext'), set(ref('nextToken'), ref('entry.sort'))),
         ...getSourceMapper(includeVersion),
       ]),
       toJson(

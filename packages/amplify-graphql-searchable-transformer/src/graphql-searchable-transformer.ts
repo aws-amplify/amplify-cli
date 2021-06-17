@@ -171,9 +171,9 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         fieldName,
         [
           makeInputValueDefinition('filter', makeNamedType(`Searchable${definition.name.value}FilterInput`)),
-          makeInputValueDefinition('sort', makeNamedType(`Searchable${definition.name.value}SortInput`)),
+          makeInputValueDefinition('sort', makeListType(makeNamedType(`Searchable${definition.name.value}SortInput`))),
           makeInputValueDefinition('limit', makeNamedType('Int')),
-          makeInputValueDefinition('nextToken', makeNamedType('String')),
+          makeInputValueDefinition('nextToken', makeListType(makeNamedType('String'))),
           makeInputValueDefinition('from', makeNamedType('Int')),
         ],
         makeNamedType(`Searchable${definition.name.value}Connection`),
@@ -199,7 +199,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       makeField('items', [], makeListType(makeNamedType(definition.name.value))),
     ]);
     connectionTypeExtension = extensionWithFields(connectionTypeExtension, [
-      makeField('nextToken', [], makeNamedType('String')),
+      makeField('nextToken', [], makeListType(makeNamedType('String'))),
       makeField('total', [], makeNamedType('Int')),
     ]);
     ctx.output.addObjectExtension(connectionTypeExtension);
