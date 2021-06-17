@@ -248,8 +248,7 @@ function updateExistingApiCfn(context: $TSContext, api: $TSObject): void {
   const parameterJson = JSONUtilities.readJson(paramsFile, { throwIfNotExist: false }) ?? {};
 
   if (!cfn) {
-    // This should not happen. If it does, nothing else will work anyway so just bail out.
-    return;
+    throw new Error(`CloudFormation template missing for REST API ${resourceName}`);
   }
 
   const parameters = cfn.Parameters ?? {};
