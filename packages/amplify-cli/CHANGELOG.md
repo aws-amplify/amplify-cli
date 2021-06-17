@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.52.0...@aws-amplify/cli@5.0.0) (2021-06-15)
+
+
+### Bug Fixes
+
+* bump amplify-cli to v5 and fix layers migration tests ([#7493](https://github.com/aws-amplify/amplify-cli/issues/7493)) ([cb196ab](https://github.com/aws-amplify/amplify-cli/commit/cb196ab4d1c9e25ef30b5276c55202a3ef347c75))
+
+
+### Features
+
+* add support for defining IAM Permissions Boundary for Project ([#7144](https://github.com/aws-amplify/amplify-cli/issues/7144)) ([acf031b](https://github.com/aws-amplify/amplify-cli/commit/acf031b29d4e554d647da39ffb8293010cf1d8ad))
+* Define IAM Permissions Boundary for Project ([#7502](https://github.com/aws-amplify/amplify-cli/issues/7502)) (ref [#4618](https://github.com/aws-amplify/amplify-cli/issues/4618)) ([08f7a3c](https://github.com/aws-amplify/amplify-cli/commit/08f7a3c45b2e98535ef325eb0a97c5bc4d3008c6)), closes [#7053](https://github.com/aws-amplify/amplify-cli/issues/7053)
+* lambda layers rework ([#7375](https://github.com/aws-amplify/amplify-cli/issues/7375)) ([a3b7d3e](https://github.com/aws-amplify/amplify-cli/commit/a3b7d3e427e16bac2b2ea27699fe53b48cf47656))
+
+
+### Reverts
+
+* Revert "feat: add support for defining IAM Permissions Boundary for Project (#7144)" (#7453) ([08704f0](https://github.com/aws-amplify/amplify-cli/commit/08704f0271f6f5d0e0e98ad7002f4b35c3890924)), closes [#7144](https://github.com/aws-amplify/amplify-cli/issues/7144) [#7453](https://github.com/aws-amplify/amplify-cli/issues/7453)
+
+
+### BREAKING CHANGES
+
+* bump amplify-cli to v5 for Lambda layers rework
+
+
+
+
+
+# [4.52.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.51.4...@aws-amplify/cli@4.52.0) (2021-06-02)
+
+
+
+# 4.52.0 (2021-06-01)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-cli/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-cli/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+
+
+
+
+
+## [4.51.4](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.51.3...@aws-amplify/cli@4.51.4) (2021-05-29)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
+## [4.51.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.51.2...@aws-amplify/cli@4.51.3) (2021-05-26)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 ## [4.51.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.51.1...@aws-amplify/cli@4.51.2) (2021-05-22)
 
 **Note:** Version bump only for package @aws-amplify/cli

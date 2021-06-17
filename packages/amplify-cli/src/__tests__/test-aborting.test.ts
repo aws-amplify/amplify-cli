@@ -34,6 +34,7 @@ describe('test SIGINT with execute', () => {
       },
       BannerMessage: {
         initialize: jest.fn(),
+        getMessage: jest.fn(),
       },
       PathConstants: {
         TeamProviderFileName: 'team-provider-info.json',

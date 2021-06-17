@@ -285,6 +285,52 @@ jobs:
           path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
     working_directory: ~/repo
 
+  amplify_migration_tests_non_multi_env_layers:
+    <<: *defaults
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run tests migrating from CLI v4.28.2
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            cd packages/amplify-migration-tests
+            yarn run migration_v4.28.2_nonmultienv_layers --maxWorkers=3 $TEST_SUITE
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+    working_directory: ~/repo
+
+  amplify_migration_tests_multi_env_layers:
+    <<: *defaults
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
+    steps:
+      - attach_workspace:
+          at: ./
+      - restore_cache:
+          key: amplify-cli-yarn-deps-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Run tests migrating from CLI v4.52.0
+          command: |
+            source .circleci/local_publish_helpers.sh
+            changeNpmGlobalPath
+            cd packages/amplify-migration-tests
+            yarn run migration_v4.52.0_multienv_layers --maxWorkers=3 $TEST_SUITE
+          no_output_timeout: 90m
+      - store_test_results:
+          path: packages/amplify-migration-tests/
+      - store_artifacts:
+          path: ~/repo/packages/amplify-migration-tests/amplify-migration-reports
+    working_directory: ~/repo
+
   amplify_migration_tests_v4_30_0:
     <<: *defaults
     environment:
@@ -741,6 +787,30 @@ workflows:
                 - test-fix-status
           requires:
             - build
+      - amplify_migration_tests_non_multi_env_layers:
+          context:
+            - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - clean_e2e_resources
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build
+      - amplify_migration_tests_multi_env_layers:
+          context:
+            - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - clean_e2e_resources
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build
       - amplify_console_integration_tests:
           context:
             - amplify-ecr-image-pull
@@ -798,6 +868,8 @@ workflows:
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
             - amplify_migration_tests_v4_30_0
+            - amplify_migration_tests_non_multi_env_layers
+            - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
           filters:
             branches:

@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.32.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.10...amplify-category-function@2.32.0) (2021-06-15)
+
+
+
+# 5.0.0 (2021-06-14)
+
+
+### Bug Fixes
+
+* copy env specific data from ccb on env checkout ([#7512](https://github.com/aws-amplify/amplify-cli/issues/7512)) ([bef6d9c](https://github.com/aws-amplify/amplify-cli/commit/bef6d9c5d1fd7e12bbacaf20639c00334d285517))
+
+
+### Features
+
+* lambda layers rework ([#7375](https://github.com/aws-amplify/amplify-cli/issues/7375)) ([a3b7d3e](https://github.com/aws-amplify/amplify-cli/commit/a3b7d3e427e16bac2b2ea27699fe53b48cf47656))
+
+
+
+
+
+## [2.31.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.9...amplify-category-function@2.31.10) (2021-05-26)
+
+**Note:** Version bump only for package amplify-category-function
+
+
+
+
+
 ## [2.31.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.31.8...amplify-category-function@2.31.9) (2021-05-22)
 
 

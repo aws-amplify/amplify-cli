@@ -1,3 +1,4 @@
+import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { FunctionParameters } from 'amplify-function-plugin-interface';
 import { LayerParameters } from './awscloudformation/utils/layerParams';
 
@@ -6,18 +7,30 @@ export interface SupportedServices {
   LambdaLayer: ServiceConfig<LayerParameters>;
 }
 
-export interface ServiceConfig<T> {
+export interface ServiceConfig<Parameters> {
   alias: string;
-  walkthroughs: WalkthroughProvider<T>;
+  walkthroughs: Parameters extends FunctionParameters ? FunctionWalkthroughProvider : LayerWalkthroughProvider;
   cfnFilename?: string;
   provider: string;
-  providerController: any;
+  providerController: $TSAny;
 }
-
-export interface WalkthroughProvider<T> {
-  createWalkthrough: (context: any, params: Partial<T>) => Promise<Partial<T>>;
-  updateWalkthrough: (context: any, resourceToUpdate?: string, params?: Partial<T>) => Promise<Partial<T>>;
+export interface FunctionWalkthroughProvider {
+  createWalkthrough: (context: $TSContext, params: Partial<FunctionParameters>) => Promise<Partial<FunctionParameters>>;
+  updateWalkthrough: (
+    context: $TSContext,
+    resourceToUpdate?: string,
+    params?: Partial<FunctionParameters>,
+  ) => Promise<Partial<FunctionParameters>>;
   migrate?: Function;
   getIAMPolicies?: Function;
   askExecRolePermissionsQuestions?: Function;
+}
+
+export interface LayerWalkthroughProvider {
+  createWalkthrough: (context: $TSContext, params: Partial<LayerParameters>) => Promise<Partial<LayerParameters>>;
+  updateWalkthrough: (
+    context: $TSContext,
+    resourceToUpdate?: string,
+    params?: Partial<LayerParameters>,
+  ) => Promise<{ parameters: Partial<LayerParameters>; resourceUpdated: boolean }>;
 }

@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { Packager } from '../types/packaging-types';
 import { getRuntimeManager } from './functionPluginLoader';
+import { zipPackage } from './zipResource';
 
 /**
  * Packages lambda source code and artifacts into a lambda-compatible .zip file
@@ -24,9 +25,12 @@ export const packageFunction: Packager = async (context, resource) => {
   };
   const packageResult = await runtimeManager.package(packageRequest);
   const packageHash = packageResult.packageHash;
+  if (packageHash) {
+    await zipPackage(packageResult.zipEntries, destination);
+  }
   const zipFilename = packageHash
     ? `${resource.resourceName}-${packageHash}-build.zip`
     : resource.distZipFilename ?? `${resource.category}-${resource.resourceName}-build.zip`;
   context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename);
-  return { zipFilename, zipFilePath: destination };
+  return { newPackageCreated: true, zipFilename, zipFilePath: destination };
 };

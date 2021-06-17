@@ -7,8 +7,8 @@ import { KeyTransformer } from 'graphql-key-transformer';
 
 jest.setTimeout(2000000);
 
-let GRAPHQL_ENDPOINT = undefined;
-let GRAPHQL_CLIENT = undefined;
+let GRAPHQL_ENDPOINT: string = undefined;
+let GRAPHQL_CLIENT: GraphQLClient = undefined;
 let ddbEmulator = null;
 let dbPath = null;
 let server;
@@ -351,14 +351,25 @@ test('Test update mutation validation with three part secondary key.', async () 
 });
 
 test('Test Customer Create with list member and secondary key', async () => {
-  const createCustomer1 = await createCustomer('customer1@email.com', ['thing1', 'thing2'], 'customerusr1');
+  await createCustomer('customer1@email.com', ['thing1', 'thing2'], 'customerusr1');
   const getCustomer1 = await getCustomer('customer1@email.com');
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing1', 'thing2']);
-  // const items = await onCreateCustomer
+});
+
+test('Test cannot overwrite customer record with custom primary key', async () => {
+  await createCustomer('customer42@email.com', ['thing1', 'thing2'], 'customerusr42');
+  const response = await createCustomer('customer42@email.com', ['thing2'], 'customerusr43');
+  expect(response.errors).toBeDefined();
+  expect(response.errors[0]).toEqual(
+    expect.objectContaining({
+      message: 'The conditional request failed',
+      errorType: 'DynamoDB:ConditionalCheckFailedException',
+    }),
+  );
 });
 
 test('Test Customer Mutation with list member', async () => {
-  const updateCustomer1 = await updateCustomer('customer1@email.com', ['thing3', 'thing4'], 'new_customerusr1');
+  await updateCustomer('customer1@email.com', ['thing3', 'thing4'], 'new_customerusr1');
   const getCustomer1 = await getCustomer('customer1@email.com');
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing3', 'thing4']);
 });

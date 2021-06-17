@@ -93,7 +93,7 @@ describe('amplify add api (GraphQL)', () => {
         note: 'initial note',
       },
     };
-    const createResult = await appSyncClient.mutate({
+    const createResult: any = await appSyncClient.mutate({
       mutation: gql(createMutation),
       fetchPolicy: 'no-cache',
       variables: createInput,
@@ -120,7 +120,7 @@ describe('amplify add api (GraphQL)', () => {
       },
     };
 
-    const updateResult = await appSyncClient.mutate({
+    const updateResult: any = await appSyncClient.mutate({
       mutation: gql(updateMutation),
       fetchPolicy: 'no-cache',
       variables: updateInput,

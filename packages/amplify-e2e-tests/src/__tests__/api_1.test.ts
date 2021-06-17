@@ -20,7 +20,7 @@ import {
   amplifyPushWithoutCodegen,
   addFunction,
   getTable,
-  amplifyPushUpdateforDependentModel,
+  amplifyPushUpdateForDependentModel,
 } from 'amplify-e2e-core';
 import path from 'path';
 import { existsSync } from 'fs';
@@ -234,7 +234,7 @@ describe('amplify add api (GraphQL)', () => {
     );
     await amplifyPush(projRoot);
     updateApiSchema(projRoot, projectName, nextSchema);
-    await amplifyPushUpdateforDependentModel(projRoot);
+    await amplifyPushUpdateForDependentModel(projRoot);
     const meta = getProjectMeta(projRoot);
     const region = meta.providers.awscloudformation.Region;
     const { output } = meta.api.blogapp;

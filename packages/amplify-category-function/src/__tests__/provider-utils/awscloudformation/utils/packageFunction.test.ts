@@ -1,6 +1,5 @@
 import { getRuntimeManager } from '../../../../provider-utils/awscloudformation/utils/functionPluginLoader';
 import { $TSContext, pathManager } from 'amplify-cli-core';
-import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import { packageFunction } from '../../../../provider-utils/awscloudformation/utils/packageFunction';
 import { PackageRequestMeta } from '../../../../provider-utils/awscloudformation/types/packaging-types';
 
@@ -10,7 +9,7 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/functionPluginLoad
 
 const context_stub = {
   amplify: {
-    getEnvInfo: jest.fn().mockReturnValue('mockEnv'),
+    getEnvInfo: jest.fn().mockReturnValue({ envName: 'mockEnv' }),
     updateAmplifyMetaAfterPackage: jest.fn(),
   },
 };

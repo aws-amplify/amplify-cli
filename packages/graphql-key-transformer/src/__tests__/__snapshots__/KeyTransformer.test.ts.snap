@@ -29,12 +29,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -86,7 +103,8 @@ $util.toJson($ctx.result)
   #if( $modelObjectKey )
     #set( $condition = {
   \\"expression\\": \\"\\",
-  \\"expressionNames\\": {}
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
 } )
     #foreach( $entry in $modelObjectKey.entrySet() )
       #if( $velocityCount == 1 )
@@ -101,7 +119,8 @@ $util.toJson($ctx.result)
   \\"expression\\": \\"attribute_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
   #end
 #end
@@ -636,12 +655,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -693,7 +729,8 @@ $util.toJson($ctx.result)
   #if( $modelObjectKey )
     #set( $condition = {
   \\"expression\\": \\"\\",
-  \\"expressionNames\\": {}
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
 } )
     #foreach( $entry in $modelObjectKey.entrySet() )
       #if( $velocityCount == 1 )
@@ -708,7 +745,8 @@ $util.toJson($ctx.result)
   \\"expression\\": \\"attribute_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
   #end
 #end
@@ -1557,12 +1595,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 $util.qr($ctx.args.input.put(\\"firstName#lastName\\",\\"\${ctx.args.input.firstName}#\${ctx.args.input.lastName}\\"))
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Person\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
