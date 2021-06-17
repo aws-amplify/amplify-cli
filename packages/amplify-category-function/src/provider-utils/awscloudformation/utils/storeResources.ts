@@ -213,7 +213,10 @@ function ensureLayerRuntimeFolder(layerDirPath: string, runtime: LayerRuntime) {
 }
 
 function createLayerCfnFile(parameters: LayerParameters, layerDirPath: string) {
-  JSONUtilities.writeJson(path.join(layerDirPath, getCfnTemplateFileName(parameters.layerName)), generateLayerCfnObj(true, parameters));
+  const layerCfnObj = generateLayerCfnObj(true, parameters);
+  const layerCfnFilePath = path.join(layerDirPath, getCfnTemplateFileName(parameters.layerName));
+
+  JSONUtilities.writeJson(layerCfnFilePath, layerCfnObj);
 }
 
 async function updateLayerCfnFile(context: $TSContext, parameters: LayerParameters, layerDirPath: string): Promise<$TSObject> {

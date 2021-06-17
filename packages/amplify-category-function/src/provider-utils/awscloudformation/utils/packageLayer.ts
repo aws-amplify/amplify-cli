@@ -63,7 +63,7 @@ export const packageLayer: Packager = async (context, resource) => {
   const layerCloudState = LayerCloudState.getInstance(resource.resourceName);
   if (!layerCloudState.latestVersionLogicalId) {
     // "Should" never be reachable, but sanity check just in case
-    throw new Error('LogicalId missing for new layer version.');
+    throw new Error(`LogicalId missing for new layer version: ${resource.resourceName}.`);
   }
 
   const zipFilename = createLayerZipFilename(resource.resourceName, layerCloudState.latestVersionLogicalId);
@@ -112,6 +112,9 @@ export async function checkContentChanges(context: $TSContext, layerResources: A
     for (const layer of changedLayerResources) {
       let { parameters } = layer;
       if (!accepted) {
+        context.print.info('');
+        context.print.info(`Change options layer: ${layer.resourceName}`);
+        context.print.info('');
         parameters = await lambdaLayerNewVersionWalkthrough(parameters, timestampString);
       } else {
         parameters.description = `Updated layer version ${timestampString}`;
