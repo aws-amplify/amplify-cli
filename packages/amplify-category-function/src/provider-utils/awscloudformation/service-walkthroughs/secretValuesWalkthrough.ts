@@ -24,12 +24,14 @@ export const secretValuesWalkthrough = async (
   if (!(await addSecretsConfirm(options.preConfirmed))) {
     return {};
   }
+  let firstLoop = true;
   for (
-    let operation = await selectOperation(hasExistingSecrets(secretDeltas));
+    let operation = await selectOperation(hasExistingSecrets(secretDeltas), firstLoop);
     operation !== 'done';
-    operation = await selectOperation(hasExistingSecrets(secretDeltas))
+    operation = await selectOperation(hasExistingSecrets(secretDeltas), firstLoop)
   ) {
     await operationFlowMap[operation](secretDeltas);
+    firstLoop = false;
   }
   return { secretDeltas };
 };
@@ -201,8 +203,12 @@ const multiSelectSecret = async (existingSecretNames: string[], message: string)
     })
   ).secretNames;
 
-const selectOperation = async (hasExistingSecrets: boolean) =>
-  (
+const selectOperation = async (hasExistingSecrets: boolean, firstLoop: boolean): Promise<SecretOperation> => {
+  if (!hasExistingSecrets && firstLoop) {
+    return 'add';
+  }
+
+  return (
     await inquirer.prompt<{ operation: SecretOperation }>({
       type: 'list',
       name: 'operation',
@@ -227,7 +233,9 @@ const selectOperation = async (hasExistingSecrets: boolean) =>
           value: 'done',
         },
       ],
+      default: !firstLoop ? 'done' : 'add',
     })
   ).operation;
+};
 
 type SecretOperation = 'add' | 'update' | 'remove' | 'done';

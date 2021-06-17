@@ -1,33 +1,28 @@
 import {
   addFunction,
-  amplifyPull,
   amplifyPushAuth,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
-  getAppId,
-  getProjectMeta,
+  getLambdaFunction,
   initJSProjectWithProfile,
 } from 'amplify-e2e-core';
 import _ from 'lodash';
 
-describe('test initEnv() behavior in function', () => {
+describe('function environment variables', () => {
   let projRoot: string;
-  let projRoot2: string;
 
   beforeEach(async () => {
     projRoot = await createNewProjectDir('functions');
-    projRoot2 = await createNewProjectDir('functions2');
   });
 
   afterEach(async () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
-    deleteProjectDir(projRoot2);
   });
 
-  it('init a project and add simple function with environment variables', async () => {
-    await initJSProjectWithProfile(projRoot, { disableAmplifyAppCreation: false });
+  it('configures env vars that are accessible in the cloud', async () => {
+    await initJSProjectWithProfile(projRoot);
     const random = Math.floor(Math.random() * 10000);
     const functionName = `testfunction${random}`;
     await addFunction(
@@ -43,12 +38,11 @@ describe('test initEnv() behavior in function', () => {
       'nodejs',
     );
     await amplifyPushAuth(projRoot);
-    const meta = getProjectMeta(projRoot);
-    const appId = getAppId(projRoot);
-    expect(appId).toBeDefined();
-    const { Arn: functionArn, Region: region } = Object.keys(meta.function).map(key => meta.function[key])[0].output;
-    expect(functionArn).toBeDefined();
-    expect(region).toBeDefined();
-    expect(_.get(meta, ['function', functionName, 'FOO_BAR'], undefined)).toBeDefined();
+    const funcDef = await getLambdaFunction(`${functionName}-dev`);
+    expect(funcDef?.Configuration?.Environment?.Variables?.FOO_BAR).toEqual('fooBar');
   });
+
+  it('resolves missing env vars on push', async () => {});
+
+  it('carries over env vars to new env', async () => {});
 });

@@ -13,6 +13,7 @@ import {
   CloudFormation,
   AmplifyBackend,
   IAM,
+  SSM,
 } from 'aws-sdk';
 import _ from 'lodash';
 
@@ -114,15 +115,13 @@ export const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
-export const getLambdaFunction = async (functionName, region) => {
-  const lambda = new Lambda();
-  let res;
+export const getLambdaFunction = async (functionName: string, region?: string) => {
+  const lambda = new Lambda({ region });
   try {
-    res = await lambda.getFunction({ FunctionName: functionName }).promise();
+    return await lambda.getFunction({ FunctionName: functionName }).promise();
   } catch (e) {
     console.log(e);
   }
-  return res;
 };
 
 export const getUserPoolClients = async (userPoolId: string, clientIds: string[], region: string) => {
@@ -314,4 +313,17 @@ export const listAttachedRolePolicies = async (roleName: string, region: string)
 export const getPermissionsBoundary = async (roleName: string, region) => {
   const iamClient = new IAM({ region });
   return (await iamClient.getRole({ RoleName: roleName }).promise())?.Role?.PermissionsBoundary?.PermissionsBoundaryArn;
+};
+
+export const getSSMParameters = async (parameterNames: string[], region?: string) => {
+  const ssmClient = new SSM({ region });
+  if (!parameterNames || parameterNames.length === 0) {
+    return [];
+  }
+  return await ssmClient
+    .getParameters({
+      Names: parameterNames,
+      WithDecryption: true,
+    })
+    .promise();
 };

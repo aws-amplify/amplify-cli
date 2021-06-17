@@ -103,9 +103,23 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: any)
   }
 };
 
+export type CoreFunctionSettings = {
+  testingWithLatestCodebase?: boolean;
+  name?: string;
+  functionTemplate?: string;
+  expectFailure?: boolean;
+  additionalPermissions?: any;
+  schedulePermissions?: any;
+  layerOptions?: any;
+  environmentVariables?: any;
+  secretsConfig?: AddSecretInput;
+  triggerType?: string;
+  eventSource?: string;
+};
+
 const coreFunction = (
   cwd: string,
-  settings: any,
+  settings: CoreFunctionSettings,
   action: FunctionActions,
   runtime: FunctionRuntimes,
   functionConfigCallback: FunctionCallback,
@@ -149,7 +163,13 @@ const coreFunction = (
     if (action === 'create') {
       chain.wait('Do you want to configure advanced settings?');
 
-      if (settings.additionalPermissions || settings.schedulePermissions || settings.layerOptions || settings.environmentVariables) {
+      if (
+        settings.additionalPermissions ||
+        settings.schedulePermissions ||
+        settings.layerOptions ||
+        settings.environmentVariables ||
+        settings.secretsConfig
+      ) {
         chain.sendConfirmYes().wait('Do you want to access other resources in this project from your Lambda function?');
         if (settings.additionalPermissions) {
           // other permissions flow
@@ -186,6 +206,15 @@ const coreFunction = (
           chain.sendConfirmYes();
           addEnvVarWalkthrough(chain, settings.environmentVariables);
         }
+
+        // secrets config
+        chain.wait('Do you want to configure secret values this function can access?');
+        if (settings.secretsConfig === undefined) {
+          chain.sendConfirmNo();
+        } else {
+          chain.sendConfirmYes();
+          addSecretWalkthrough(chain, settings.secretsConfig);
+        }
       } else {
         chain.sendConfirmNo();
       }
@@ -212,7 +241,7 @@ const runChain = (chain: ExecutionContext, resolve, reject) => {
 
 export const addFunction = (
   cwd: string,
-  settings: any,
+  settings: CoreFunctionSettings,
   runtime: FunctionRuntimes,
   functionConfigCallback: FunctionCallback = undefined,
 ) => {
@@ -352,20 +381,28 @@ const addLayerWalkthrough = (chain: ExecutionContext, options: LayerOptions) => 
   }
 };
 
-export interface EnvVarInputs {
-  key: string; // the expeted list of all layers
+export type EnvVarInput = {
+  key: string;
   value: string;
-  envVarWalkthrough?: (chain: ExecutionContext) => void;
-}
+};
 
-const addEnvVarWalkthrough = (chain: ExecutionContext, options: EnvVarInputs) => {
-  if (options.envVarWalkthrough) {
-    options.envVarWalkthrough(chain);
-    return;
-  }
+const addEnvVarWalkthrough = (chain: ExecutionContext, input: EnvVarInput) => {
   chain.wait('Add new environment variable').sendCarriageReturn();
-  chain.wait('Enter the environment variable name:').sendLine(options.key).sendCarriageReturn();
-  chain.wait('Enter the environment variable value:').sendLine(options.value).sendCarriageReturn();
+  chain.wait('Enter the environment variable name:').sendLine(input.key).sendCarriageReturn();
+  chain.wait('Enter the environment variable value:').sendLine(input.value).sendCarriageReturn();
+  chain.wait("I'm done").sendCarriageReturn();
+};
+
+export type AddSecretInput = {
+  name: string;
+  value: string;
+};
+
+const addSecretWalkthrough = (chain: ExecutionContext, input: AddSecretInput) => {
+  chain.wait('Enter a secret name');
+  chain.sendLine(input.name).sendCarriageReturn();
+  chain.wait(`Enter the value for`);
+  chain.sendLine(input.value).sendCarriageReturn();
   chain.wait("I'm done").sendCarriageReturn();
 };
 
