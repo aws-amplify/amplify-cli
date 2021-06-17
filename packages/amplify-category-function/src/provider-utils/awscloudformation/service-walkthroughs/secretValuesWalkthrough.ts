@@ -233,7 +233,7 @@ const selectOperation = async (hasExistingSecrets: boolean, firstLoop: boolean):
           value: 'done',
         },
       ],
-      default: !firstLoop ? 'done' : 'add',
+      default: firstLoop ? 'add' : 'done',
     })
   ).operation;
 };

@@ -21,7 +21,7 @@ export const cloneSecretsOnEnvInitHandler = async (context: $TSContext, sourceEn
     cloneDeltas[funcName] = await funcSecretsManager.getEnvCloneDeltas(sourceEnv, funcName);
   }
 
-  const funcSecretDeltas = await cloneEnvWalkthrough(context?.exeInfo?.inputParams?.yes, cloneDeltas);
+  const funcSecretDeltas = await cloneEnvWalkthrough(!context?.exeInfo?.inputParams?.yes, cloneDeltas);
 
   await Promise.all(
     Object.entries(funcSecretDeltas).map(

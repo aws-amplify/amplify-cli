@@ -111,7 +111,6 @@ export async function addFunctionResource(
   }
 
   await createFunctionResources(context, completeParams);
-  saveEnvironmentVariables(context, completeParams.resourceName, completeParams.environmentVariables);
 
   if (!completeParams.skipEdit) {
     await openEditor(context, category, completeParams.resourceName, completeParams.functionTemplate);
@@ -204,7 +203,6 @@ export async function updateFunctionResource(
 
     await saveMutableState(context, parameters);
     saveCFNParameters(parameters);
-    saveEnvironmentVariables(context, parameters.resourceName, parameters.environmentVariables);
   } else {
     parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
     if (parameters.dependsOn) {
@@ -212,7 +210,6 @@ export async function updateFunctionResource(
     }
     await saveMutableState(context, parameters);
     saveCFNParameters(parameters);
-    saveEnvironmentVariables(context, parameters.resourceName, parameters.environmentVariables);
   }
 
   if (!parameters || (parameters && !parameters.skipEdit)) {

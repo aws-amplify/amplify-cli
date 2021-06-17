@@ -387,9 +387,8 @@ export type EnvVarInput = {
 };
 
 const addEnvVarWalkthrough = (chain: ExecutionContext, input: EnvVarInput) => {
-  chain.wait('Add new environment variable').sendCarriageReturn();
-  chain.wait('Enter the environment variable name:').sendLine(input.key).sendCarriageReturn();
-  chain.wait('Enter the environment variable value:').sendLine(input.value).sendCarriageReturn();
+  chain.wait('Enter the environment variable name:').sendLine(input.key);
+  chain.wait('Enter the environment variable value:').sendLine(input.value);
   chain.wait("I'm done").sendCarriageReturn();
 };
 
@@ -400,9 +399,9 @@ export type AddSecretInput = {
 
 const addSecretWalkthrough = (chain: ExecutionContext, input: AddSecretInput) => {
   chain.wait('Enter a secret name');
-  chain.sendLine(input.name).sendCarriageReturn();
+  chain.sendLine(input.name);
   chain.wait(`Enter the value for`);
-  chain.sendLine(input.value).sendCarriageReturn();
+  chain.sendLine(input.value);
   chain.wait("I'm done").sendCarriageReturn();
 };
 

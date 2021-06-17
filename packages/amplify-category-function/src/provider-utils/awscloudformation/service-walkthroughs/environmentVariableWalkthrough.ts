@@ -9,42 +9,53 @@ export const askEnvironmentVariableQuestions = async (
   environmentVariables: Record<string, string> = getStoredEnvironmentVariables(context, resourceName),
   skipWalkthrough?: boolean,
 ): Promise<object> => {
-  const operation = skipWalkthrough ? 'abort' : await selectEnvironmentVariableQuestion(environmentVariables);
-  switch (operation) {
-    case 'add': {
-      const { newEnvironmentVariableKey, newEnvironmentVariableValue } = await addEnvironmentVariableQuestion(environmentVariables);
-      environmentVariables[newEnvironmentVariableKey] = newEnvironmentVariableValue;
-      return await askEnvironmentVariableQuestions(context, resourceName, environmentVariables);
+  let firstLoop = true;
+  for (
+    let operation = skipWalkthrough ? 'abort' : await selectEnvironmentVariableQuestion(_.size(environmentVariables) > 0, firstLoop);
+    operation !== 'abort';
+    operation = await selectEnvironmentVariableQuestion(_.size(environmentVariables) > 0, firstLoop)
+  ) {
+    switch (operation) {
+      case 'add': {
+        const { newEnvironmentVariableKey, newEnvironmentVariableValue } = await addEnvironmentVariableQuestion(environmentVariables);
+        environmentVariables[newEnvironmentVariableKey] = newEnvironmentVariableValue;
+        break;
+      }
+      case 'update': {
+        const { newEnvironmentVariableKey, newEnvironmentVariableValue, targetedKey } = await updateEnvironmentVariableQuestion(
+          environmentVariables,
+        );
+        delete environmentVariables[targetedKey];
+        environmentVariables[newEnvironmentVariableKey] = newEnvironmentVariableValue;
+        break;
+      }
+      case 'remove': {
+        const targetedKey = await removeEnvironmentVariableQuestion(environmentVariables);
+        delete environmentVariables[targetedKey];
+        break;
+      }
     }
-    case 'update': {
-      const { newEnvironmentVariableKey, newEnvironmentVariableValue, targetedKey } = await updateEnvironmentVariableQuestion(
-        environmentVariables,
-      );
-      delete environmentVariables[targetedKey];
-      environmentVariables[newEnvironmentVariableKey] = newEnvironmentVariableValue;
-      return await askEnvironmentVariableQuestions(context, resourceName, environmentVariables);
-    }
-    case 'remove': {
-      const targetedKey = await removeEnvironmentVariableQuestion(environmentVariables);
-      delete environmentVariables[targetedKey];
-      return await askEnvironmentVariableQuestions(context, resourceName, environmentVariables);
-    }
-    case 'abort':
-    default:
-      return {
-        environmentMap: Object.keys(environmentVariables).reduce(
-          (acc, cur) => ({
-            ...acc,
-            [cur]: { Ref: _.camelCase(cur) },
-          }),
-          {},
-        ),
-        environmentVariables,
-      };
+    firstLoop = false;
   }
+  return {
+    environmentMap: Object.keys(environmentVariables).reduce(
+      (acc, cur) => ({
+        ...acc,
+        [cur]: { Ref: _.camelCase(cur) },
+      }),
+      {},
+    ),
+    environmentVariables,
+  };
 };
 
-const selectEnvironmentVariableQuestion = async (environmentVariables: object): Promise<'add' | 'update' | 'remove' | 'abort'> => {
+const selectEnvironmentVariableQuestion = async (
+  hasExistingEnvVars: boolean,
+  firstLoop: boolean,
+): Promise<'add' | 'update' | 'remove' | 'abort'> => {
+  if (!hasExistingEnvVars && firstLoop) {
+    return 'add';
+  }
   const { operation } = await inquirer.prompt([
     {
       name: 'operation',
@@ -58,18 +69,19 @@ const selectEnvironmentVariableQuestion = async (environmentVariables: object): 
         {
           value: 'update',
           name: 'Update existing environment variables',
-          disabled: _.size(environmentVariables) === 0,
+          disabled: !hasExistingEnvVars,
         },
         {
           value: 'remove',
           name: 'Remove existing environment variables',
-          disabled: _.size(environmentVariables) === 0,
+          disabled: !hasExistingEnvVars,
         },
         {
           value: 'abort',
           name: "I'm done",
         },
       ],
+      default: firstLoop ? 'add' : 'abort',
     },
   ]);
 

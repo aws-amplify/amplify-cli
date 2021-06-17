@@ -68,7 +68,7 @@ export const askEnvironmentVariableCarryOut = async (
     const envVarQuestion: inquirer.ListQuestion = {
       type: 'list',
       name: 'envVar',
-      message: 'You have configured environment variables for Functions. How do you want to proceed?',
+      message: 'You have configured environment variables for functions. How do you want to proceed?',
       choices: [
         {
           value: 'carry',

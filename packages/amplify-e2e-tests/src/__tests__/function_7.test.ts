@@ -52,17 +52,53 @@ describe('function secret value', () => {
     expect(JSON.parse(response.Payload.toString())[0]?.Value).toEqual('testsecretvalue');
   });
 
-  it('removes secrets immediately when func not pushed', async () => {});
+  it('removes secrets immediately when func not pushed', async () => {
+    // add func w/ secret
+    // remove secret
+    // check that ssm param doesn't exist
+  });
 
-  it('removes secrets immediately when unpushed function is removed from project', async () => {});
+  it('removes secrets immediately when unpushed function is removed from project', async () => {
+    // add func w/ secret
+    // remove func
+    // check that ssm param doesn't exist
+  });
 
-  it('removes secrets on push when func is already pushed', async () => {});
+  it('removes secrets on push when func is already pushed', async () => {
+    // add func w/ secret
+    // push
+    // remove secret
+    // check that ssm param still exists
+    // push
+    // check that ssm param doesn't exist
+  });
 
-  it('removes secrets on push when pushed function is removed', async () => {});
+  it('removes secrets on push when pushed function is removed', async () => {
+    // add func w/ secret
+    // push
+    // remove func
+    // check that ssm param still exists
+    // push
+    // check that ssm param doesn't exist
+  });
 
-  it('removes all secrets from env when env is removed', async () => {});
+  it('removes all secrets from env when env is removed', async () => {
+    // add func w/ secret
+    // checkout new env
+    // remove orig env
+    // check that ssm param doesn't exist
+  });
 
-  it('prompts for missing secrets and removes unused secrets on push', async () => {});
+  it('prompts for missing secrets and removes unused secrets on push', async () => {
+    // add func w/ secret
+    // replace contents of function-parameters.json with a different secret name
+    // push -> should prompt for value for new secret
+    // unused secret should be removed in cloud
+  });
 
-  it('copies secrets on env add', async () => {});
+  it('copies secrets on env add', async () => {
+    // add func w/ secret
+    // env add --yes
+    // check that secret exists in new env
+  });
 });

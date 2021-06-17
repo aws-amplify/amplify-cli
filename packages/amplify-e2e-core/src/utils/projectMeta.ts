@@ -123,6 +123,11 @@ function setParameters(projRoot: string, category: string, resourceName: string,
   JSONUtilities.writeJson(parametersPath, parameters);
 }
 
+function setTeamProviderInfo(projRoot: string, content: unknown) {
+  const teamProviderFilePath: string = path.join(projRoot, 'amplify', 'team-provider-info.json');
+  JSONUtilities.writeJson(teamProviderFilePath, content);
+}
+
 export {
   getProjectMeta,
   getProjectTags,
@@ -144,5 +149,6 @@ export {
   getParameters,
   getCloudBackendConfig,
   setParameters,
+  setTeamProviderInfo,
   getLocalEnvInfo,
 };

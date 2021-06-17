@@ -15,6 +15,7 @@ import { isMultiEnvLayer, isNewVersion, loadPreviousLayerHash } from './layerHel
 import { createLayerConfiguration, saveLayerPermissions } from './layerConfiguration';
 import { LayerParameters, LayerRuntime, LayerVersionMetadata } from './layerParams';
 import { removeLayerFromTeamProviderInfo } from './layerMigrationUtils';
+import { saveEnvironmentVariables } from './environmentVariablesHelper';
 
 // handling both FunctionParameters and FunctionTriggerParameters here is a hack
 // ideally we refactor the auth trigger flows to use FunctionParameters directly and get rid of FunctionTriggerParameters altogether
@@ -93,10 +94,16 @@ export function removeLayerArtifacts(context: $TSContext, layerName: string) {
 export async function saveMutableState(
   context: $TSContext,
   parameters:
-    | Partial<Pick<FunctionParameters, 'mutableParametersState' | 'resourceName' | 'lambdaLayers' | 'functionName' | 'secretDeltas'>>
+    | Partial<
+        Pick<
+          FunctionParameters,
+          'mutableParametersState' | 'resourceName' | 'lambdaLayers' | 'functionName' | 'secretDeltas' | 'environmentVariables'
+        >
+      >
     | FunctionTriggerParameters,
 ) {
   createParametersFile(buildParametersFileObj(parameters), parameters.resourceName || parameters.functionName, functionParametersFileName);
+  saveEnvironmentVariables(context, parameters.resourceName, parameters.environmentVariables);
   await syncSecrets(context, parameters);
 }
 

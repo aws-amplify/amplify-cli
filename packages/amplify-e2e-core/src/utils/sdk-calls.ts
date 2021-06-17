@@ -115,7 +115,7 @@ export const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
-export const getLambdaFunction = async (functionName: string, region?: string) => {
+export const getLambdaFunction = async (functionName: string, region: string) => {
   const lambda = new Lambda({ region });
   try {
     return await lambda.getFunction({ FunctionName: functionName }).promise();
