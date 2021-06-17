@@ -65,7 +65,7 @@ export const askLayerSelection = async (
   layerSelections = layerSelections.filter(selection => selection !== provideExistingARNsPrompt);
 
   for (const layerName of layerSelections) {
-    const layerCloudState = LayerCloudState.getInstance();
+    const layerCloudState = LayerCloudState.getInstance(layerName);
     const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, layerName);
     const layerVersionChoices = layerVersions.map(mapVersionNumberToChoice);
 

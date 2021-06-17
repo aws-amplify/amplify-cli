@@ -24,8 +24,8 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
   if (isNewVersion) {
     const [shortId] = uuid().split('-');
     logicalName = `${LayerCfnLogicalNamePrefix.LambdaLayerVersion}${shortId}`;
-    const layerCloudState = LayerCloudState.getInstance();
-    layerCloudState.latestVersionLogicalId = logicalName; // Store in singleton so it can be used in zipfile name
+    const layerCloudState = LayerCloudState.getInstance(parameters.layerName);
+    layerCloudState.latestVersionLogicalIds[parameters.layerName] = logicalName; // Store in singleton so it can be used in zipfile name
     versionList.unshift({ LogicalName: logicalName, legacyLayer: false });
   } else {
     logicalName = _.first(versionList).LogicalName;

@@ -220,7 +220,7 @@ async function updateLayerCfnFile(context: $TSContext, parameters: LayerParamete
   let layerVersionList: LayerVersionMetadata[] = [];
 
   if (loadPreviousLayerHash(parameters.layerName)) {
-    const layerCloudState = LayerCloudState.getInstance();
+    const layerCloudState = LayerCloudState.getInstance(parameters.layerName);
 
     layerVersionList = await layerCloudState.getLayerVersionsFromCloud(context, parameters.layerName);
   }
