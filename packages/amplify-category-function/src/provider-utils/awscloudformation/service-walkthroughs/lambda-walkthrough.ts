@@ -87,7 +87,7 @@ export async function createWalkthrough(
 
     // ask environment variable questions and merge in results
     if (await context.amplify.confirmPrompt('Do you want to configure environment variables for this function?', false)) {
-      templateParameters = merge(templateParameters, await askEnvironmentVariableQuestions(context, templateParameters.functionName));
+      templateParameters = merge(templateParameters, await askEnvironmentVariableQuestions(templateParameters.functionName));
     }
 
     // ask function secrets questions and merge in results
@@ -277,7 +277,7 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
   functionParameters.dependsOn = consolidateDependsOnForLambda(projectMeta, functionParameters.dependsOn, lambdaToUpdate, selectedSettings);
   merge(
     functionParameters,
-    await askEnvironmentVariableQuestions(context, lambdaToUpdate, undefined, !selectedSettings.includes(environmentVariableSetting)),
+    await askEnvironmentVariableQuestions(lambdaToUpdate, undefined, !selectedSettings.includes(environmentVariableSetting)),
   );
   return functionParameters;
 }

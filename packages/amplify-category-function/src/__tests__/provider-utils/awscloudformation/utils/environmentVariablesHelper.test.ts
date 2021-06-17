@@ -14,6 +14,7 @@ jest.mock('amplify-cli-core', () => ({
   stateManager: {
     getTeamProviderInfo: jest.fn().mockReturnValue(''),
     setTeamProviderInfo: jest.fn().mockReturnValue(''),
+    getLocalEnvInfo: jest.fn().mockReturnValue({ envName: 'testenv' }),
   },
   pathManager: {
     findProjectRoot: jest.fn().mockReturnValue(''),
@@ -28,7 +29,7 @@ jest.mock('amplify-cli-core', () => ({
 
 describe('getStoredEnvironmentVariables', () => {
   it('does not throw error', () => {
-    expect(getStoredEnvironmentVariables(context_stub, 'test')).toEqual({});
+    expect(getStoredEnvironmentVariables('test')).toEqual({});
   });
 });
 

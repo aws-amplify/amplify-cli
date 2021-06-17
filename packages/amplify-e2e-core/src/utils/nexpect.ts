@@ -21,7 +21,9 @@ import { EOL } from 'os';
 import retimer = require('retimer');
 import { join, parse } from 'path';
 
-const DEFAULT_NO_OUTPUT_TIMEOUT = 30 * 1000; // 5 Minutes
+const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
+  ? Number.parseInt(process.env.AMPLIFY_TEST_TIMEOUT_SEC, 10)
+  : 5 * 60 * 1000; // 5 Minutes
 const EXIT_CODE_TIMEOUT = 2;
 const EXIT_CODE_GENERIC_ERROR = 3;
 

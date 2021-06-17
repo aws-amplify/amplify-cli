@@ -12,6 +12,8 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
+jest.mock('../../../../provider-utils/awscloudformation/utils/environmentVariablesHelper');
+
 const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 

@@ -1,10 +1,9 @@
 import inquirer from 'inquirer';
 import _ from 'lodash';
-import { $TSContext } from 'amplify-cli-core';
 import { validKey, getStoredEnvironmentVariables } from '../utils/environmentVariablesHelper';
+import { getLocalFunctionSecretNames } from '../secrets/functionSecretsStateManager';
 
 export const askEnvironmentVariableQuestions = async (
-  context: $TSContext,
   resourceName: string,
   environmentVariables: Record<string, string> = getStoredEnvironmentVariables(resourceName),
   skipWalkthrough?: boolean,
@@ -17,13 +16,17 @@ export const askEnvironmentVariableQuestions = async (
   ) {
     switch (operation) {
       case 'add': {
-        const { newEnvironmentVariableKey, newEnvironmentVariableValue } = await addEnvironmentVariableQuestion(environmentVariables);
+        const { newEnvironmentVariableKey, newEnvironmentVariableValue } = await addEnvironmentVariableQuestion(
+          environmentVariables,
+          getLocalFunctionSecretNames(resourceName),
+        );
         environmentVariables[newEnvironmentVariableKey] = newEnvironmentVariableValue;
         break;
       }
       case 'update': {
         const { newEnvironmentVariableKey, newEnvironmentVariableValue, targetedKey } = await updateEnvironmentVariableQuestion(
           environmentVariables,
+          getLocalFunctionSecretNames(resourceName),
         );
         delete environmentVariables[targetedKey];
         environmentVariables[newEnvironmentVariableKey] = newEnvironmentVariableValue;
@@ -90,6 +93,7 @@ const selectEnvironmentVariableQuestion = async (
 
 const addEnvironmentVariableQuestion = async (
   environmentVariables: object,
+  secretNames: string[],
 ): Promise<{ newEnvironmentVariableKey: string; newEnvironmentVariableValue: string }> => {
   const { newEnvironmentVariableKey, newEnvironmentVariableValue } = await inquirer.prompt([
     {
@@ -100,8 +104,8 @@ const addEnvironmentVariableQuestion = async (
         if (!validKey.test(input)) {
           return 'You can use the following characters: a-z A-Z 0-9 _';
         }
-        if (_.has(environmentVariables, input)) {
-          return `Key "${input}" is used already`;
+        if (_.has(environmentVariables, input) || secretNames.includes(input)) {
+          return `Key "${input}" is already used`;
         }
         return true;
       },
@@ -110,12 +114,7 @@ const addEnvironmentVariableQuestion = async (
       name: 'newEnvironmentVariableValue',
       message: 'Enter the environment variable value:',
       type: 'input',
-      validate: input => {
-        if (input.length >= 2048) {
-          return 'The value must be 2048 characters or less';
-        }
-        return true;
-      },
+      validate: envVarValueValidator,
     },
   ]);
   return {
@@ -126,6 +125,7 @@ const addEnvironmentVariableQuestion = async (
 
 const updateEnvironmentVariableQuestion = async (
   environmentVariables: object,
+  secretNames: string[] = [],
 ): Promise<{ newEnvironmentVariableKey: string; newEnvironmentVariableValue: string; targetedKey: string }> => {
   const { targetedKey } = await inquirer.prompt([
     {
@@ -145,8 +145,8 @@ const updateEnvironmentVariableQuestion = async (
         if (!validKey.test(input)) {
           return 'You can use the following characters: a-z A-Z 0-9 _';
         }
-        if (_.has(environmentVariables, input) && input !== targetedKey) {
-          return `Key "${input}" is used already`;
+        if ((_.has(environmentVariables, input) && input !== targetedKey) || secretNames.includes(input)) {
+          return `Key "${input}" is already used.`;
         }
         return true;
       },
@@ -156,12 +156,7 @@ const updateEnvironmentVariableQuestion = async (
       name: 'newEnvironmentVariableValue',
       message: 'Enter the environment variable value:',
       type: 'input',
-      validate: input => {
-        if (input.length >= 2048) {
-          return 'The value must be 2048 characters or less';
-        }
-        return true;
-      },
+      validate: envVarValueValidator,
       default: environmentVariables[targetedKey],
     },
   ]);
@@ -184,4 +179,11 @@ const removeEnvironmentVariableQuestion = async (environmentVariables: object): 
   ]);
 
   return targetedKey;
+};
+
+const envVarValueValidator = (input: string) => {
+  if (input.length < 1 || input.length > 2048) {
+    return 'The valud must be bewteen 1 and 2048 characters long';
+  }
+  return true;
 };
