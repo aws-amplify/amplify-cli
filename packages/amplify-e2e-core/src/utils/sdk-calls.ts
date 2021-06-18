@@ -323,7 +323,7 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
   }
   return await ssmClient
     .getParameters({
-      Names: parameterNames.map(name => path.posix.join('amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
+      Names: parameterNames.map(name => path.posix.join('/amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
       WithDecryption: true,
     })
     .promise();

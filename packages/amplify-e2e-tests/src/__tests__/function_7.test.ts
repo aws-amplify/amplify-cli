@@ -102,7 +102,7 @@ describe('function secret value', () => {
     const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
     const result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.InvalidParameters).toEqual([`amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
+    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
     expect(result.Parameters.length).toBe(0);
   });
 
@@ -132,7 +132,7 @@ describe('function secret value', () => {
     const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
     const result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.InvalidParameters).toEqual([`amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
+    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
     expect(result.Parameters.length).toBe(0);
   });
 
@@ -175,7 +175,7 @@ describe('function secret value', () => {
     expect(appId).toBeDefined();
     let result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
     expect(result.Parameters.length).toBe(1);
-    expect(result.Parameters[0].Name).toEqual(`amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`);
+    expect(result.Parameters[0].Name).toEqual(`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`);
     expect(result.Parameters[0].Value).toEqual('testsecretvalue');
     expect(result.InvalidParameters.length).toBe(0);
 
@@ -186,7 +186,7 @@ describe('function secret value', () => {
     ({ AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation);
     expect(appId).toBeDefined();
     result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.InvalidParameters).toEqual([`amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
+    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
     expect(result.Parameters.length).toBe(0);
   });
 
@@ -220,7 +220,7 @@ describe('function secret value', () => {
     expect(appId).toBeDefined();
     let result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
     expect(result.Parameters.length).toBe(1);
-    expect(result.Parameters[0].Name).toEqual(`amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`);
+    expect(result.Parameters[0].Name).toEqual(`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`);
     expect(result.Parameters[0].Value).toEqual('testsecretvalue');
     expect(result.InvalidParameters.length).toBe(0);
 
@@ -231,7 +231,7 @@ describe('function secret value', () => {
     ({ AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation);
     expect(appId).toBeDefined();
     result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.InvalidParameters).toEqual([`amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
+    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
     expect(result.Parameters.length).toBe(0);
   });
 
@@ -262,7 +262,7 @@ describe('function secret value', () => {
     expect(appId).toBeDefined();
     let result = await getSSMParameters(region, appId, newEnvName, funcName, ['TEST_SECRET']);
     expect(result.Parameters.length).toBe(1);
-    expect(result.Parameters[0].Name).toEqual(`amplify/${appId}/${newEnvName}/AMPLIFY_${funcName}_TEST_SECRET`);
+    expect(result.Parameters[0].Name).toEqual(`/amplify/${appId}/${newEnvName}/AMPLIFY_${funcName}_TEST_SECRET`);
     expect(result.Parameters[0].Value).toEqual('testsecretvalue');
     expect(result.InvalidParameters.length).toBe(0);
 
@@ -273,7 +273,7 @@ describe('function secret value', () => {
     ({ AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation);
     expect(appId).toBeDefined();
     result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.InvalidParameters).toEqual([`amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
+    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
     expect(result.Parameters.length).toBe(0);
   });
 
@@ -315,9 +315,9 @@ describe('function secret value', () => {
 
     // check that old value is removed and new one is added
     const result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET', 'A_NEW_SECRET']);
-    expect(result.InvalidParameters).toEqual([`amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
+    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
     expect(result.Parameters.length).toBe(1);
-    expect(result.Parameters[0].Name).toEqual(`amplify/${appId}/integtest/AMPLIFY_${funcName}_A_NEW_SECRET`);
+    expect(result.Parameters[0].Name).toEqual(`/amplify/${appId}/integtest/AMPLIFY_${funcName}_A_NEW_SECRET`);
     expect(result.Parameters[0].Value).toEqual('anewtestsecretvalue');
   });
 });
