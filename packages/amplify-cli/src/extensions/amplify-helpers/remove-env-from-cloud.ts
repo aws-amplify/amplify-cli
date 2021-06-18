@@ -24,10 +24,12 @@ export async function removeEnvFromCloud(context, envName, deleteS3) {
 
   try {
     await Promise.all(providerPromises);
-  } catch (e) {
+  } catch (e: any) {
     context.print.info('');
     context.print.error(`Error in deleting env:${envName}`);
     context.print.info(e.message);
-    throw e;
+    if (e.code !== 'NotFoundException') {
+      throw e;
+    }
   }
 }

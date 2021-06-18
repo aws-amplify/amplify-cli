@@ -34,9 +34,11 @@ export async function deleteProject(context) {
           context.print.warning('Amplify App cannot be deleted, other environments still linked to Application');
         }
       }
-    } catch (ex) {
-      spinner.fail('Project delete failed');
-      throw ex;
+    } catch (ex: any) {
+      if (ex.code !== 'NotFoundException') {
+        spinner.fail('Project delete failed');
+        throw ex;
+      }
     }
     spinner.succeed('Project deleted in the cloud');
     // Remove amplify dir
