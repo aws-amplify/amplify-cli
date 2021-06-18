@@ -100,7 +100,7 @@ function validateInputParams(channelInput) {
 }
 
 async function disable(context) {
-  const channelOutput = context.exeInfo.serviceMeta.output[channelName];
+  const channelOutput = validateInputParams(context.exeInfo.serviceMeta.output[channelName]);
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     EmailChannelRequest: {
