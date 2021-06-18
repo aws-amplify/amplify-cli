@@ -15,6 +15,7 @@ import {
   IAM,
   SSM,
 } from 'aws-sdk';
+import * as path from 'path';
 import _ from 'lodash';
 
 export const getDDBTable = async (tableName: string, region: string) => {
@@ -315,14 +316,14 @@ export const getPermissionsBoundary = async (roleName: string, region) => {
   return (await iamClient.getRole({ RoleName: roleName }).promise())?.Role?.PermissionsBoundary?.PermissionsBoundaryArn;
 };
 
-export const getSSMParameters = async (parameterNames: string[], region?: string) => {
+export const getSSMParameters = async (region: string, appId: string, envName: string, funcName: string, parameterNames: string[]) => {
   const ssmClient = new SSM({ region });
   if (!parameterNames || parameterNames.length === 0) {
-    return [];
+    throw new Error('no parameterNames specified');
   }
   return await ssmClient
     .getParameters({
-      Names: parameterNames,
+      Names: parameterNames.map(name => path.posix.join('amplify', appId, envName, `AMPLIFY_${funcName}_${name}`)),
       WithDecryption: true,
     })
     .promise();

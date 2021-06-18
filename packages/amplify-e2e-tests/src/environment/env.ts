@@ -31,14 +31,18 @@ export function updateEnvironment(cwd: string, settings: { permissionsBoundaryAr
   });
 }
 
-export function addEnvironmentYes(cwd: string, settings: { envName: string }): Promise<void> {
+export function addEnvironmentYes(cwd: string, settings: { envName: string; disableAmplifyAppCreation?: boolean }): Promise<void> {
+  settings.disableAmplifyAppCreation = settings.disableAmplifyAppCreation ?? true;
+  const env = settings.disableAmplifyAppCreation
+    ? {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      }
+    : undefined;
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add', '--yes', '--envName', settings.envName], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env,
     }).run((err: Error) => (err ? reject(err) : resolve()));
   });
 }

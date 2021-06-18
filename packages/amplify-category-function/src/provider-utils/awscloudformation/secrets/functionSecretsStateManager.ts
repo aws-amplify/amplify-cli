@@ -174,7 +174,7 @@ export class FunctionSecretsStateManager {
     return !isFunctionPushed(functionName) || isCommandPush;
   };
 
-  private isInteractive = (): boolean => !!this.context?.exeInfo?.inputParams?.yes;
+  private isInteractive = (): boolean => !this.context?.input?.options?.yes;
 }
 
 /**

@@ -67,7 +67,7 @@ const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: a
   });
 };
 
-const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: any) => {
+const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: CoreFunctionSettings) => {
   singleSelect(
     chain.wait('Which setting do you want to update?'),
     settings.additionalPermissions
@@ -76,13 +76,22 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: any)
       ? 'Scheduled recurring invocation'
       : settings.layerOptions
       ? 'Lambda layers configuration'
-      : 'Environment variables configuration',
-    ['Resource access permissions', 'Scheduled recurring invocation', 'Lambda layers configuration', 'Environment variables configuration'],
+      : settings.environmentVariables
+      ? 'Environment variables configuration'
+      : 'Configure secret values',
+    [
+      'Resource access permissions',
+      'Scheduled recurring invocation',
+      'Lambda layers configuration',
+      'Environment variables configuration',
+      'Configure secret values',
+    ],
   );
   if (settings.additionalPermissions) {
     // update permissions
     additionalPermissions(cwd, chain, settings);
-  } else if (settings.schedulePermissions) {
+  }
+  if (settings.schedulePermissions) {
     // update scheduling
     if (settings.schedulePermissions.noScheduleAdded) {
       chain.wait('Do you want to invoke this function on a recurring schedule?');
@@ -91,7 +100,8 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: any)
     }
     chain.sendConfirmYes();
     cronWalkthrough(chain, settings, settings.schedulePermissions.noScheduleAdded ? 'create' : 'update');
-  } else {
+  }
+  if (settings.layerOptions) {
     // update layers
     chain.wait('Do you want to enable Lambda layers for this function?');
     if (settings.layerOptions === undefined) {
@@ -100,6 +110,31 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: any)
       chain.sendConfirmYes();
       addLayerWalkthrough(chain, settings.layerOptions);
     }
+  }
+  if (settings.secretsConfig) {
+    if (settings.secretsConfig.operation === 'add') {
+      throw new Error('Secres update walkthrough only supports update and delete');
+    }
+    // this walkthrough assumes 1 existing secret is configured for the function
+    const actions = ['Add a secret', 'Update a secret', 'Remove secrets', "I'm done"];
+    const action = settings.secretsConfig.operation === 'delete' ? actions[2] : actions[1];
+    chain.wait('What do you want to do?');
+    singleSelect(chain, action, actions);
+    switch (settings.secretsConfig.operation) {
+      case 'delete': {
+        chain.wait('Select the secrets to delete:');
+        chain.sendLine(' '); // assumes one secret
+        break;
+      }
+      case 'update': {
+        chain.wait('Select the secret to update:');
+        chain.sendCarriageReturn(); // assumes one secret
+        chain.sendLine(settings.secretsConfig.value);
+        break;
+      }
+    }
+    chain.wait('What do you want to do?');
+    chain.sendCarriageReturn(); // "I'm done"
   }
 };
 
@@ -112,7 +147,7 @@ export type CoreFunctionSettings = {
   schedulePermissions?: any;
   layerOptions?: any;
   environmentVariables?: any;
-  secretsConfig?: AddSecretInput;
+  secretsConfig?: AddSecretInput | UpdateSecretInput | DeleteSecretInput;
   triggerType?: string;
   eventSource?: string;
 };
@@ -212,6 +247,9 @@ const coreFunction = (
         if (settings.secretsConfig === undefined) {
           chain.sendConfirmNo();
         } else {
+          if (settings.secretsConfig.operation !== 'add') {
+            throw new Error('add walkthrough only supports add secrets operation');
+          }
           chain.sendConfirmYes();
           addSecretWalkthrough(chain, settings.secretsConfig);
         }
@@ -320,6 +358,11 @@ export const selectTemplate = (chain: any, functionTemplate: string, runtime: Fu
   singleSelect(chain, functionTemplate, templateChoices);
 };
 
+export const removeFunction = (cwd: string, funcName: string) =>
+  new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run(err => (err ? reject(err) : resolve()));
+  });
+
 export interface LayerOptions {
   select: string[]; // list options to select
   expectedListOptions: string[]; // the expeted list of all layers
@@ -393,6 +436,18 @@ const addEnvVarWalkthrough = (chain: ExecutionContext, input: EnvVarInput) => {
 };
 
 export type AddSecretInput = {
+  operation: 'add';
+  name: string;
+  value: string;
+};
+
+export type DeleteSecretInput = {
+  operation: 'delete';
+  name: string;
+};
+
+export type UpdateSecretInput = {
+  operation: 'update';
   name: string;
   value: string;
 };
