@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.17.12-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@4.17.11...graphql-versioned-transformer@4.17.12-flutter-preview.0) (2021-06-18)
+
+**Note:** Version bump only for package graphql-versioned-transformer
+
+
+
+
+
 ## [4.17.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-versioned-transformer@4.17.10...graphql-versioned-transformer@4.17.11) (2021-06-15)
 
 **Note:** Version bump only for package graphql-versioned-transformer

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.24.0-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.23.0...amplify-cli-core@1.24.0-flutter-preview.0) (2021-06-18)
+
+
+### Features
+
+* **amplify-cli-core:** add feature flag for dart null safety support ([96a2fa8](https://github.com/aws-amplify/amplify-cli/commit/96a2fa84c60226e0193b816a07d811119d344641))
+
+
+
+
+
 # [1.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.22.2...amplify-cli-core@1.23.0) (2021-06-15)
 
 

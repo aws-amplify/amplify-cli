@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.22.12-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.11...graphql-dynamodb-transformer@6.22.12-flutter-preview.0) (2021-06-18)
+
+**Note:** Version bump only for package graphql-dynamodb-transformer
+
+
+
+
+
 ## [6.22.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-dynamodb-transformer@6.22.10...graphql-dynamodb-transformer@6.22.11) (2021-06-15)
 
 **Note:** Version bump only for package graphql-dynamodb-transformer

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.24.12-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.11...graphql-auth-transformer@6.24.12-flutter-preview.0) (2021-06-18)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
 ## [6.24.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.10...graphql-auth-transformer@6.24.11) (2021-06-15)
 
 **Note:** Version bump only for package graphql-auth-transformer

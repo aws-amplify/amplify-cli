@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.0.0...@aws-amplify/cli@5.1.0-flutter-preview.0) (2021-06-18)
+
+
+### Features
+
+* **amplify-cli:** update codegen dependency to tag version ([#7547](https://github.com/aws-amplify/amplify-cli/issues/7547)) ([67784be](https://github.com/aws-amplify/amplify-cli/commit/67784be8cc8a56df2ed8d51f62996b6af979f0ab))
+
+
+
+
+
 # [5.0.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@4.52.0...@aws-amplify/cli@5.0.0) (2021-06-15)
 
 

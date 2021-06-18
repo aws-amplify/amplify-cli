@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.53.0-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.52.0...amplify-provider-awscloudformation@4.53.0-flutter-preview.0) (2021-06-18)
+
+
+### Features
+
+* **amplify-cli:** update codegen dependency to tag version ([#7547](https://github.com/aws-amplify/amplify-cli/issues/7547)) ([67784be](https://github.com/aws-amplify/amplify-cli/commit/67784be8cc8a56df2ed8d51f62996b6af979f0ab))
+
+
+
+
+
 # [4.52.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.51.0...amplify-provider-awscloudformation@4.52.0) (2021-06-15)
 
 

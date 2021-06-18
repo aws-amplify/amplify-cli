@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.12-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.11...amplify-category-api@2.31.12-flutter-preview.0) (2021-06-18)
+
+**Note:** Version bump only for package amplify-category-api
+
+
+
+
+
 ## [2.31.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.10...amplify-category-api@2.31.11) (2021-06-15)
 
 **Note:** Version bump only for package amplify-category-api

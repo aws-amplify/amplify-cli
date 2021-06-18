@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.33.2-flutter-preview.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.33.1...amplify-category-auth@2.33.2-flutter-preview.0) (2021-06-18)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
 ## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.33.0...amplify-category-auth@2.33.1) (2021-06-15)
 
 **Note:** Version bump only for package amplify-category-auth
