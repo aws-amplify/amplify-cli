@@ -288,8 +288,6 @@ export async function execute(input: Input): Promise<number> {
       context.usageData.emitSuccess();
     }
 
-    persistContext(context);
-
     return exitCode;
   } catch (e) {
     // ToDo: add logging to the core, and log execution errors using the unified core logging.
