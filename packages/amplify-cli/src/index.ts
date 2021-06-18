@@ -17,7 +17,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { logInput } from './conditional-local-logging-init';
 import { print } from './context-extensions';
-import { attachUsageData, constructContext, persistContext } from './context-manager';
+import { attachUsageData, constructContext } from './context-manager';
 import { displayBannerMessages } from './display-banner-messages';
 import { constants } from './domain/constants';
 import { Context } from './domain/context';
@@ -155,8 +155,6 @@ export async function run() {
     if (exitCode === 0) {
       context.usageData.emitSuccess();
     }
-
-    persistContext(context);
 
     // no command supplied defaults to help, give update notification at end of execution
     if (input.command === 'help') {
