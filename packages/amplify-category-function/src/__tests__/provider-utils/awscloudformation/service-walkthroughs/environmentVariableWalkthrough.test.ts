@@ -18,7 +18,7 @@ const context_stub = {} as $TSContext;
 describe('askEnvironmentVariableQuestions', () => {
   it('does not throw error', () => {
     expect(async () => {
-      await askEnvironmentVariableQuestions(context_stub, 'test');
+      await askEnvironmentVariableQuestions('test');
     }).not.toThrow();
   });
 });

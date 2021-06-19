@@ -40,30 +40,27 @@ const crudOptions = ['create', 'read', 'update', 'delete'];
 const appSyncOptions = ['Query', 'Mutation', 'Subscription'];
 
 const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: any) => {
-  multiSelect(
-    chain.wait('Select the categories you want this function to have access to'),
-    settings.additionalPermissions.permissions,
-    settings.additionalPermissions.choices,
-  );
-  // when single resource, it gets autoselected
-  if (settings.additionalPermissions.resourceChoices === undefined) {
-    settings.additionalPermissions.resourceChoices = settings.additionalPermissions.resources;
+  multiSelect(chain.wait('Select the categories you want this function to have access to'), settings.permissions, settings.choices);
+  if (settings.resourceChoices === undefined) {
+    settings.resourceChoices = settings.resources;
   }
-  if (settings.additionalPermissions.resourceChoices.length > 1) {
-    multiSelect(
-      chain.wait(/Select the (operations you want to permit on *|one you would like your *)/),
-      settings.additionalPermissions.resources,
-      settings.additionalPermissions.resourceChoices,
-    );
+  // when single resource, it gets autoselected
+  if (settings.resourceChoices.length > 1) {
+    chain.wait('Select the one you would like your Lambda to access');
+    if (settings.keepExistingResourceSelection) {
+      chain.sendCarriageReturn();
+    } else {
+      multiSelect(chain, settings.resources, settings.resourceChoices);
+    }
   }
 
   // n-resources repeated questions
-  settings.additionalPermissions.resources.forEach(elem => {
+  settings.resources.forEach((elem: string) => {
     const service = _.get(getBackendAmplifyMeta(cwd), ['api', elem, 'service']);
     const gqlpermff = !!_.get(loadFeatureFlags(cwd), ['features', 'appsync', 'generategraphqlpermissions']);
     const isAppSyncApi = service === 'AppSync';
     const allChoices = isAppSyncApi && gqlpermff ? appSyncOptions : crudOptions;
-    multiSelect(chain.wait(`Select the operations you want to permit on ${elem}`), settings.additionalPermissions.operations, allChoices);
+    multiSelect(chain.wait(`Select the operations you want to permit on ${elem}`), settings.operations, allChoices);
   });
 };
 
@@ -89,7 +86,7 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
   );
   if (settings.additionalPermissions) {
     // update permissions
-    additionalPermissions(cwd, chain, settings);
+    additionalPermissions(cwd, chain, settings.additionalPermissions);
   }
   if (settings.schedulePermissions) {
     // update scheduling
@@ -209,7 +206,7 @@ const coreFunction = (
         if (settings.additionalPermissions) {
           // other permissions flow
           chain.sendConfirmYes();
-          additionalPermissions(cwd, chain, settings);
+          additionalPermissions(cwd, chain, settings.additionalPermissions);
         } else {
           chain.sendConfirmNo();
         }
@@ -286,7 +283,7 @@ export const addFunction = (
   return coreFunction(cwd, settings, 'create', runtime, functionConfigCallback);
 };
 
-export const updateFunction = (cwd: string, settings: any, runtime: FunctionRuntimes) => {
+export const updateFunction = (cwd: string, settings: CoreFunctionSettings, runtime: FunctionRuntimes) => {
   return coreFunction(cwd, settings, 'update', runtime, undefined);
 };
 

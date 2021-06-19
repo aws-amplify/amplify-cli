@@ -60,6 +60,11 @@ export const askEnvironmentVariableCarryOut = async (
     return;
   }
 
+  const hasEnvVars = !!functionNames.find(funcName => !_.isEmpty(getStoredEnvironmentVariables(funcName)));
+  if (!hasEnvVars) {
+    return;
+  }
+
   const envVarQuestion = async () => {
     const envVarQuestion: inquirer.ListQuestion = {
       type: 'list',

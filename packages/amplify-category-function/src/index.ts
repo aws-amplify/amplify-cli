@@ -11,12 +11,10 @@ import { updateConfigOnEnvInit } from './provider-utils/awscloudformation';
 import { cloneSecretsOnEnvInitHandler } from './provider-utils/awscloudformation/secrets/cloneSecretsOnEnvInitHandler';
 import { buildFunction, buildTypeKeyMap } from './provider-utils/awscloudformation/utils/buildFunction';
 import { ServiceName } from './provider-utils/awscloudformation/utils/constants';
-import {
-  askEnvironmentVariableCarryOut
-} from './provider-utils/awscloudformation/utils/environmentVariablesHelper';
+import { askEnvironmentVariableCarryOut } from './provider-utils/awscloudformation/utils/environmentVariablesHelper';
 import {
   deleteLayerVersionPermissionsToBeUpdatedInCfn,
-  deleteLayerVersionsToBeRemovedByCfn
+  deleteLayerVersionsToBeRemovedByCfn,
 } from './provider-utils/awscloudformation/utils/layerConfiguration';
 import { checkContentChanges } from './provider-utils/awscloudformation/utils/packageLayer';
 import { supportedServices } from './provider-utils/supported-services';
@@ -173,14 +171,11 @@ export async function initEnv(context) {
   stateManager.setMeta(projectPath, amplifyMeta);
   stateManager.setTeamProviderInfo(projectPath, teamProviderInfo);
 
-  if (sourceEnv && isNewEnv) {
-    const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
-    await askEnvironmentVariableCarryOut(context, sourceEnv, context.exeInfo.localEnvInfo.projectPath, yesFlagSet);
-  }
-
   await sequential(functionTasks);
 
   if (isNewEnv) {
+    const yesFlagSet = _.get(context, ['parameters', 'options', 'yes'], false);
+    await askEnvironmentVariableCarryOut(context, sourceEnv, context.exeInfo.localEnvInfo.projectPath, yesFlagSet);
     await cloneSecretsOnEnvInitHandler(context, sourceEnv, envName);
   }
 }
