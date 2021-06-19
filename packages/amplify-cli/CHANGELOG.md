@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1-beta.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.0.1-beta.0...@aws-amplify/cli@5.0.1-beta.1) (2021-06-19)
+
+
+### Bug Fixes
+
+* catch no updates CFN error and fix CFN poller hang ([#7548](https://github.com/aws-amplify/amplify-cli/issues/7548)) ([312eec3](https://github.com/aws-amplify/amplify-cli/commit/312eec3b5cd9019b500cf1984919af1dee5ef2e0))
+
+
+
+
+
 ## [5.0.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.0.0...@aws-amplify/cli@5.0.1-beta.0) (2021-06-18)
 
 **Note:** Version bump only for package @aws-amplify/cli
