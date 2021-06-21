@@ -17,4 +17,3 @@ export async function handleAmplifyEvent(context: any, args: any) {
     context.print.info(`${category} handleAmplifyEvent to be implemented`);
     context.print.info(`Received event args ${args}`);
 }
-  

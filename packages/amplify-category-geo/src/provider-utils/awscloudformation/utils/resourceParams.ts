@@ -21,4 +21,3 @@ export enum DataProvider {
     Esri = "Esri",
     Here = "Here"
 }
-  

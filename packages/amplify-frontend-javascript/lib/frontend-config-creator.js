@@ -188,9 +188,9 @@ function getAWSExportsObject(resources) {
   if (Object.entries(geoConfig).length > 0) {
     geoConfig.region = projectRegion;
     Object.assign(
-      configOutput, 
-      { 
-        geo: geoConfig 
+      configOutput,
+      {
+        geo: geoConfig
       }
     );
   }

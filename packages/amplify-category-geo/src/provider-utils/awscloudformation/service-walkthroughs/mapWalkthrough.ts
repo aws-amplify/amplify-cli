@@ -22,7 +22,7 @@ export async function createMapWalkthrough(
 
   // get the map data provider
   parameters = merge(parameters, await mapDataProviderWalkthrough(parameters));
-  
+
   // get the map style parameters
   parameters = merge(parameters, await mapStyleWalkthrough(parameters));
 
@@ -55,7 +55,7 @@ async function mapNameWalkthrough(context: any): Promise<Partial<MapParameters>>
         },
     };
     return await inquirer.prompt([mapNamePrompt]);
-}  
+}
 
 async function mapDataProviderWalkthrough(parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> {
     const dataProviderPrompt = {
@@ -66,7 +66,7 @@ async function mapDataProviderWalkthrough(parameters: Partial<MapParameters>): P
         default: parameters.dataProvider ? parameters.dataProvider : 'Esri'
     };
     return await inquirer.prompt([dataProviderPrompt]);
-} 
+}
 
 async function mapStyleTypeWalkthrough(parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> {
     const mapStyleTypePrompt = {
@@ -196,7 +196,7 @@ function getCurrentMapParameters(context: $TSContext, mapName: string): Partial<
         const categoryResources = amplifyMeta[category];
         Object.keys(categoryResources).forEach(resource => {
             const categoryResource = categoryResources[resource];
-            if (categoryResource.service === ServiceName.Map 
+            if (categoryResource.service === ServiceName.Map
                 && categoryResource.resourceName === mapName) {
                 mapParams.mapStyleType = categoryResource.mapStyleType;
                 mapParams.accessType = categoryResource.mapStyleType;

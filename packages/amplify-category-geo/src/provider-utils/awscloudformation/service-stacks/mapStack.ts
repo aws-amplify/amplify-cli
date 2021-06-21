@@ -27,7 +27,7 @@ export class MapStack extends cdk.Stack {
             'unauthRoleName',
             'env'
         ]);
-        
+
         this.resources = this.constructResources();
 
         new cdk.CfnOutput(this, 'Name', {
@@ -46,10 +46,10 @@ export class MapStack extends cdk.Stack {
 
     private constructResources(): Map<string, CfnResource> {
         let resourcesMap: Map<string, cdk.CfnResource> = new Map();
-        
+
         const mapResource = this.constructMapResource();
         resourcesMap.set('map', mapResource);
-        
+
         const mapPolicyResource = this.constructMapPolicyResource(mapResource);
         resourcesMap.set('mapPolicy', mapPolicyResource);
 
@@ -78,9 +78,9 @@ export class MapStack extends cdk.Stack {
               new iam.PolicyStatement({
                 effect: iam.Effect.ALLOW,
                 actions: [
-                    "geo:GetMapStyleDescriptor", 
-                    "geo:GetMapGlyphs", 
-                    "geo:GetMapSprites", 
+                    "geo:GetMapStyleDescriptor",
+                    "geo:GetMapGlyphs",
+                    "geo:GetMapSprites",
                     "geo:GetMapTile"
                 ],
                 resources: [mapResource.getAtt('MapArn').toString()],

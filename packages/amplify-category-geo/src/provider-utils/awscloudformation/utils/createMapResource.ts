@@ -23,7 +23,7 @@ export function updateMapResource(context: $TSContext, parameters: MapParameters
   generateCfnFile(parameters);
 
   const mapMetaParameters = updateAmplifyMeta(context, parameters);
-  
+
   // context.amplify.updateamplifyMetaAfterResourceUpdate(
   //   category,
   //   parameters.mapName,

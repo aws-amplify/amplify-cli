@@ -73,4 +73,3 @@ export function convertToCompleteMapParams(partial: Partial<MapParameters>): Map
 export function getGeoMapStyle(dataProvider: DataProvider, mapStyleType: MapStyleType) {
     return `Vector${dataProvider}${mapStyleType}`;
 }
-  

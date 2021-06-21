@@ -19,7 +19,7 @@ export async function addResource(
 ): Promise<string> {
   // load the service config for this service
   const BAD_SERVICE_ERR = new Error(`amplify-category-geo is not configured to provide service type ${service}`);
-  
+
   while (!checkIfAuthExists(context)) {
     if (
       await context.amplify.confirmPrompt(
@@ -60,7 +60,7 @@ function checkIfAuthExists(context: any) {
     }
     return authExists;
 }
-  
+
 export async function addMapResource(
   context: any,
   service: string,
@@ -114,6 +114,7 @@ export function openConsole(context: any, service: ServiceName) {
   switch (service) {
     case ServiceName.Map:
         selection = "maps";
+        break;
     default:
         selection = undefined;
   }
