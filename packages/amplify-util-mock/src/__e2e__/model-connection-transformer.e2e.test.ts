@@ -1,7 +1,7 @@
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
@@ -49,6 +49,9 @@ beforeAll(async () => {
         }),
         new ModelConnectionTransformer(),
       ],
+      featureFlags: {
+        getBoolean: name => (name === 'improvePluralization' ? true : false),
+      } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
 
@@ -95,7 +98,7 @@ test('Test queryPost query', async () => {
             title
         }
     }`,
-    {}
+    {},
   );
   expect(createResponse.data.createPost.id).toBeDefined();
   expect(createResponse.data.createPost.title).toEqual('Test Query');
@@ -110,7 +113,7 @@ test('Test queryPost query', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(createCommentResponse.data.createComment.id).toBeDefined();
   expect(createCommentResponse.data.createComment.content).toEqual('A comment!');
@@ -129,7 +132,7 @@ test('Test queryPost query', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponse.data.getPost).toBeDefined();
   const items = queryResponse.data.getPost.comments.items;
@@ -154,7 +157,7 @@ test('Test queryPost query with sortField', async () => {
             title
         }
     }`,
-    {}
+    {},
   );
   expect(createResponse.data.createPost.id).toBeDefined();
   expect(createResponse.data.createPost.title).toEqual(title);
@@ -173,7 +176,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(createCommentResponse1.data.createSortedComment.id).toBeDefined();
   expect(createCommentResponse1.data.createSortedComment.content).toEqual(comment1);
@@ -196,7 +199,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(createCommentResponse2.data.createSortedComment.id).toBeDefined();
   expect(createCommentResponse2.data.createSortedComment.content).toEqual(comment2);
@@ -217,7 +220,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponse.data.getPost).toBeDefined();
   const items = queryResponse.data.getPost.sortedComments.items;
@@ -239,7 +242,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseDesc.data.getPost).toBeDefined();
   const itemsDesc = queryResponseDesc.data.getPost.sortedComments.items;
@@ -261,7 +264,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyCondition.data.getPost).toBeDefined();
   const itemsDescWithKeyCondition = queryResponseWithKeyCondition.data.getPost.sortedComments.items;
@@ -282,7 +285,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionEq.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionEq = queryResponseWithKeyConditionEq.data.getPost.sortedComments.items;
@@ -303,7 +306,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionGt.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionGt = queryResponseWithKeyConditionGt.data.getPost.sortedComments.items;
@@ -324,7 +327,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionGe.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionGe = queryResponseWithKeyConditionGe.data.getPost.sortedComments.items;
@@ -346,7 +349,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionLe.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionLe = queryResponseWithKeyConditionLe.data.getPost.sortedComments.items;
@@ -368,7 +371,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionLt.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionLt = queryResponseWithKeyConditionLt.data.getPost.sortedComments.items;
@@ -389,7 +392,7 @@ test('Test queryPost query with sortField', async () => {
             }
         }
     }`,
-    {}
+    {},
   );
   expect(queryResponseWithKeyConditionBetween.data.getPost).toBeDefined();
   const itemsDescWithKeyConditionBetween = queryResponseWithKeyConditionBetween.data.getPost.sortedComments.items;
@@ -411,7 +414,7 @@ test('Test create comment without a post and then querying the comment.', async 
                 }
             }
         }`,
-      {}
+      {},
     );
     expect(createCommentResponse1.data.createComment.id).toBeDefined();
     expect(createCommentResponse1.data.createComment.content).toEqual(comment1);
@@ -427,7 +430,7 @@ test('Test create comment without a post and then querying the comment.', async 
                 }
             }
         }`,
-      {}
+      {},
     );
     expect(queryResponseDesc.data.getComment).toBeDefined();
     expect(queryResponseDesc.data.getComment.post).toBeNull();
@@ -450,7 +453,7 @@ test('Test default limit is 50', async () => {
       }
     }
     `,
-    {}
+    {},
   );
   expect(createPost.data.createPost).toBeDefined();
   expect(createPost.data.createPost.id).toEqual(postID);
@@ -469,7 +472,7 @@ test('Test default limit is 50', async () => {
           }
         }      
       `,
-      {}
+      {},
     );
   }
 
@@ -490,7 +493,7 @@ test('Test default limit is 50', async () => {
           }
         }
       }`,
-    { id: postID }
+    { id: postID },
   );
 
   expect(getPost.data.getPost.comments.items.length).toEqual(50);
