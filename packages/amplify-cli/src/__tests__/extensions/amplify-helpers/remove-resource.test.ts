@@ -236,7 +236,7 @@ describe('remove-resource', () => {
       await expect(removeResource(context as any, 'function', 'lambdaLayer1')).resolves.toBeUndefined();
 
       expect(context.print.error).toBeCalledWith('Resource cannot be removed because it has a dependency on another resource');
-      expect(context.print.error).toBeCalledWith('Dependency: Lambda:lambda1');
+      expect(context.print.error).toBeCalledWith('Dependency: Lambda - lambda1');
       expect(context.print.error).toBeCalledWith('An error occurred when removing the resources from the local directory');
       expect(context.usageData.emitError).toBeCalledWith(
         new Error('Resource cannot be removed because it has a dependency on another resource'),
