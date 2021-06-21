@@ -9,7 +9,8 @@ const fsMock = fs as jest.Mocked<typeof fs>;
 fsMock.readFileSync.mockImplementation(() => 'test');
 fsMock.writeFileSync.mockImplementation();
 
-const amplifyMark = '#amplify';
+const amplifyMark = '#amplify-do-not-edit-begin';
+const amplifyEndMark = '#amplify-do-not-edit-end';
 
 const ignoreList = [
   'amplify/\\#current-cloud-backend',
@@ -32,7 +33,7 @@ const ignoreList = [
   '.secret-*',
 ];
 
-const toAppend = `${os.EOL + os.EOL + amplifyMark + os.EOL}${ignoreList.join(os.EOL)}`;
+const toAppend = `${os.EOL + os.EOL + amplifyMark + os.EOL}${ignoreList.join(os.EOL)}${os.EOL + amplifyEndMark + os.EOL}`;
 
 describe('git-manager', () => {
   beforeEach(() => {
