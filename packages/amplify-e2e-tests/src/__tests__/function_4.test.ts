@@ -38,8 +38,8 @@ describe('java function tests', () => {
     projRoot = await createNewProjectDir('java-functions');
     await initJSProjectWithProfile(projRoot, {});
 
-    const random = Math.floor(Math.random() * 10000);
-    funcName = `javatestfn${random}`;
+    const [shortId] = uuid().split('-');
+    funcName = `javatestfn${shortId}`;
 
     await addFunction(
       projRoot,
