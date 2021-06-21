@@ -112,11 +112,12 @@ describe('amplify add api (GraphQL)', () => {
         }
       }
     `;
+    const createResultData = createResult.data as any;
     const updateInput = {
       input: {
-        noteId: createResult.data.createNote.noteId,
+        noteId: createResultData.createNote.noteId,
         note: 'note updated',
-        _version: createResult.data.createNote._version,
+        _version: createResultData.createNote._version,
       },
     };
 
@@ -125,13 +126,14 @@ describe('amplify add api (GraphQL)', () => {
       fetchPolicy: 'no-cache',
       variables: updateInput,
     });
+    const updateResultData = updateResult.data as any;
 
-    expect(updateResult.data).toBeDefined();
-    expect(updateResult.data.updateNote).toBeDefined();
-    expect(updateResult.data.updateNote.noteId).toEqual(createResult.data.createNote.noteId);
-    expect(updateResult.data.updateNote.note).not.toEqual(createResult.data.createNote.note);
-    expect(updateResult.data.updateNote._version).not.toEqual(createResult.data.createNote._version);
-    expect(updateResult.data.updateNote.note).toEqual(updateInput.input.note);
+    expect(updateResultData).toBeDefined();
+    expect(updateResultData.updateNote).toBeDefined();
+    expect(updateResultData.updateNote.noteId).toEqual(createResultData.createNote.noteId);
+    expect(updateResultData.updateNote.note).not.toEqual(createResultData.createNote.note);
+    expect(updateResultData.updateNote._version).not.toEqual(createResultData.createNote._version);
+    expect(updateResultData.updateNote.note).toEqual(updateInput.input.note);
   });
 
   it('init a project with conflict detection enabled and toggle disable', async () => {
