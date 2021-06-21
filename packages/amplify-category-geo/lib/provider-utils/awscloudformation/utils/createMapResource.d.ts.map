@@ -1,1 +1,0 @@
-{"version":3,"file":"createMapResource.d.ts","sourceRoot":"","sources":["../../../../src/provider-utils/awscloudformation/utils/createMapResource.ts"],"names":[],"mappings":"AAAA,OAAO,EAAsC,UAAU,EAAa,MAAM,kBAAkB,CAAC;AAC7F,OAAO,EAAE,aAAa,EAAkB,MAAM,aAAa,CAAC;AAO5D,wBAAgB,iBAAiB,CAAC,OAAO,EAAE,UAAU,EAAE,UAAU,EAAE,aAAa,QAW/E"}
