@@ -2,7 +2,7 @@ import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { GraphQLClient } from './utils/graphql-client';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { KeyTransformer } from 'graphql-key-transformer';
 
 jest.setTimeout(2000000);
@@ -62,6 +62,9 @@ beforeAll(async () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+    featureFlags: {
+      getBoolean: name => (name === 'improvePluralization' ? true : false),
+    } as FeatureFlagProvider,
   });
   const out = transformer.transform(validSchema);
   let ddbClient;

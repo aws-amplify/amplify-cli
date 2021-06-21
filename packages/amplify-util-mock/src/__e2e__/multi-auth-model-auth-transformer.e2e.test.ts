@@ -3,7 +3,7 @@ import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import gql from 'graphql-tag';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
 
@@ -128,6 +128,9 @@ beforeAll(async () => {
         },
       }),
     ],
+    featureFlags: {
+      getBoolean: name => (name === 'improvePluralization' ? true : false),
+    } as FeatureFlagProvider,
   });
 
   try {
