@@ -1,5 +1,4 @@
 import { SecretDeltas } from 'amplify-function-plugin-interface';
-import { constantCase } from 'change-case';
 import { Fn } from 'cloudform-types';
 import Policy from 'cloudform-types/types/iam/policy';
 import Lambda from 'cloudform-types/types/lambda';

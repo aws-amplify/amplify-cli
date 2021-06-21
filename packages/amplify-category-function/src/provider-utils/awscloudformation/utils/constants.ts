@@ -8,7 +8,7 @@ export const appsyncTableSuffix = '@model(appsync)';
 export const resourceAccessSetting = 'Resource access permissions';
 export const cronJobSetting = 'Scheduled recurring invocation';
 export const lambdaLayerSetting = 'Lambda layers configuration';
-export const secretsConfiguration = 'Configure secret values';
+export const secretsConfiguration = 'Secret values configuration';
 export const accessPermissions = 'Access permissions';
 export const description = 'Description';
 export const deleteVersionsField = 'layerVersionsToDelete';
@@ -43,4 +43,10 @@ export const enum LegacyFilename {
   layerRuntimes = 'layer-runtimes.json',
 }
 
-export const advancedSettingsList = [resourceAccessSetting, cronJobSetting, lambdaLayerSetting, environmentVariableSetting, secretsConfiguration];
+export const advancedSettingsList = [
+  resourceAccessSetting,
+  cronJobSetting,
+  lambdaLayerSetting,
+  environmentVariableSetting,
+  secretsConfiguration,
+];

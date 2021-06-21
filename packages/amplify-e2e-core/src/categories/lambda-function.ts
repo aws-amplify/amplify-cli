@@ -75,13 +75,13 @@ const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: Core
       ? 'Lambda layers configuration'
       : settings.environmentVariables
       ? 'Environment variables configuration'
-      : 'Configure secret values',
+      : 'Secret values configuration',
     [
       'Resource access permissions',
       'Scheduled recurring invocation',
       'Lambda layers configuration',
       'Environment variables configuration',
-      'Configure secret values',
+      'Secret values configuration',
     ],
   );
   if (settings.additionalPermissions) {

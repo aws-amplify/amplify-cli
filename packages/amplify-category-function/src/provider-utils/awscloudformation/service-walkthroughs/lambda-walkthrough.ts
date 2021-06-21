@@ -106,8 +106,8 @@ export async function createWalkthrough(
 function provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters) {
   // Provide general information
   context.print.success('General information');
-  context.print.info('| Name: '.concat(lambdaToUpdate));
-  context.print.info('| Runtime: '.concat(functionRuntime));
+  context.print.info('- Name: '.concat(lambdaToUpdate));
+  context.print.info('- Runtime: '.concat(functionRuntime));
   context.print.info('');
 
   // Provide resource access permission information
@@ -130,24 +130,12 @@ function provideInformation(context, lambdaToUpdate, functionRuntime, currentPar
   // Provide scheduling information
   context.print.success('Scheduled recurring invocation');
   if (scheduleParameters.cloudwatchRule && scheduleParameters.cloudwatchRule !== 'NONE') {
-    context.print.info('| '.concat(scheduleParameters.cloudwatchRule));
+    context.print.info('- '.concat(scheduleParameters.cloudwatchRule));
     context.print.info('');
-  } else {
-    context.print.info('| Not configured');
-    context.print.info('');
-  }
-
-  // Provide environment variables
-  context.print.success('Environment variables:');
-  const storedEnvironmentVariables = getStoredEnvironmentVariables(lambdaToUpdate);
-  if (_.size(storedEnvironmentVariables) !== 0) {
-    _.forEach(storedEnvironmentVariables, (environmentVariableValue, environmentVariableKey) => {
-      context.print.info(`- ${environmentVariableKey}: ${environmentVariableValue}`);
-    });
   } else {
     context.print.info('- Not configured');
+    context.print.info('');
   }
-  context.print.info('');
 
   // Provide lambda layer information
   context.print.success('Lambda layers');
@@ -164,6 +152,18 @@ function provideInformation(context, lambdaToUpdate, functionRuntime, currentPar
     context.print.info('- Not configured');
     context.print.info('');
   }
+
+  // Provide environment variables
+  context.print.success('Environment variables:');
+  const storedEnvironmentVariables = getStoredEnvironmentVariables(lambdaToUpdate);
+  if (_.size(storedEnvironmentVariables) !== 0) {
+    _.forEach(storedEnvironmentVariables, (environmentVariableValue, environmentVariableKey) => {
+      context.print.info(`- ${environmentVariableKey}: ${environmentVariableValue}`);
+    });
+  } else {
+    context.print.info('- Not configured');
+  }
+  context.print.info('');
 
   // secrets configuration
   context.print.success('Secrets configuration');
