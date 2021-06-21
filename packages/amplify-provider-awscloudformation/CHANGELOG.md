@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.52.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.52.0...amplify-provider-awscloudformation@4.52.1) (2021-06-19)
+
+
+
+## 5.0.1 (2021-06-18)
+
+
+### Bug Fixes
+
+* catch no updates CFN error and fix CFN poller hang ([#7548](https://github.com/aws-amplify/amplify-cli/issues/7548)) ([312eec3](https://github.com/aws-amplify/amplify-cli/commit/312eec3b5cd9019b500cf1984919af1dee5ef2e0))
+* ensure REST API CFN outputs the API ID ([#7538](https://github.com/aws-amplify/amplify-cli/issues/7538)) ([c3f4128](https://github.com/aws-amplify/amplify-cli/commit/c3f41284f86a48427f6a8084e8ffbcd10812b81d))
+
+
+
+
+
 # [4.52.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.51.0...amplify-provider-awscloudformation@4.52.0) (2021-06-15)
 
 
