@@ -101,9 +101,7 @@ describe('function secret value', () => {
     const meta = getProjectMeta(projRoot);
     const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
-    const result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
-    expect(result.Parameters.length).toBe(0);
+    await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
   });
 
   it('removes secrets immediately when unpushed function is removed from project', async () => {
@@ -131,9 +129,7 @@ describe('function secret value', () => {
     const meta = getProjectMeta(projRoot);
     const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
-    const result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
-    expect(result.Parameters.length).toBe(0);
+    await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
   });
 
   it('removes secrets on push when func is already pushed', async () => {
@@ -170,24 +166,15 @@ describe('function secret value', () => {
     );
 
     // check that ssm param still exists
-    let meta = getProjectMeta(projRoot);
-    let { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
+    const meta = getProjectMeta(projRoot);
+    const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
-    let result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.Parameters.length).toBe(1);
-    expect(result.Parameters[0].Name).toEqual(`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`);
-    expect(result.Parameters[0].Value).toEqual('testsecretvalue');
-    expect(result.InvalidParameters.length).toBe(0);
+    await expectParams([{ name: 'TEST_SECRET', value: 'testsecretvalue' }], [], region, appId, 'integtest', funcName);
 
     await amplifyPushAuth(projRoot);
 
     // check that ssm param doesn't exist
-    meta = getProjectMeta(projRoot);
-    ({ AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation);
-    expect(appId).toBeDefined();
-    result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
-    expect(result.Parameters.length).toBe(0);
+    await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
   });
 
   it('removes secrets on push when pushed function is removed', async () => {
@@ -215,24 +202,15 @@ describe('function secret value', () => {
     await removeFunction(projRoot, funcName);
 
     // check that ssm param still exists
-    let meta = getProjectMeta(projRoot);
-    let { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
+    const meta = getProjectMeta(projRoot);
+    const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
-    let result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.Parameters.length).toBe(1);
-    expect(result.Parameters[0].Name).toEqual(`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`);
-    expect(result.Parameters[0].Value).toEqual('testsecretvalue');
-    expect(result.InvalidParameters.length).toBe(0);
+    await expectParams([{ name: 'TEST_SECRET', value: 'testsecretvalue' }], [], region, appId, 'integtest', funcName);
 
     await amplifyPushAuth(projRoot);
 
     // check that ssm param doesn't exist
-    meta = getProjectMeta(projRoot);
-    ({ AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation);
-    expect(appId).toBeDefined();
-    result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
-    expect(result.Parameters.length).toBe(0);
+    await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
   });
 
   it('removes / copies secrets when env removed / added, respectively', async () => {
@@ -256,25 +234,17 @@ describe('function secret value', () => {
 
     const newEnvName = 'testtest';
     await addEnvironmentYes(projRoot, { envName: newEnvName });
+
     // check that ssm param exists for new env
-    let meta = getProjectMeta(projRoot);
-    let { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
+    const meta = getProjectMeta(projRoot);
+    const { AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation;
     expect(appId).toBeDefined();
-    let result = await getSSMParameters(region, appId, newEnvName, funcName, ['TEST_SECRET']);
-    expect(result.Parameters.length).toBe(1);
-    expect(result.Parameters[0].Name).toEqual(`/amplify/${appId}/${newEnvName}/AMPLIFY_${funcName}_TEST_SECRET`);
-    expect(result.Parameters[0].Value).toEqual('testsecretvalue');
-    expect(result.InvalidParameters.length).toBe(0);
+    await expectParams([{ name: 'TEST_SECRET', value: 'testsecretvalue' }], [], region, appId, newEnvName, funcName);
 
     await removeEnvironment(projRoot, { envName: 'integtest' });
 
     // check that ssm param doesn't exist in removed env
-    meta = getProjectMeta(projRoot);
-    ({ AmplifyAppId: appId, Region: region } = meta?.providers?.awscloudformation);
-    expect(appId).toBeDefined();
-    result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET']);
-    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
-    expect(result.Parameters.length).toBe(0);
+    await expectParams([], ['TEST_SECRET'], region, appId, 'integtest', funcName);
   });
 
   it('prompts for missing secrets and removes unused secrets on push', async () => {
@@ -314,10 +284,30 @@ describe('function secret value', () => {
     expect(appId).toBeDefined();
 
     // check that old value is removed and new one is added
-    const result = await getSSMParameters(region, appId, 'integtest', funcName, ['TEST_SECRET', 'A_NEW_SECRET']);
-    expect(result.InvalidParameters).toEqual([`/amplify/${appId}/integtest/AMPLIFY_${funcName}_TEST_SECRET`]);
-    expect(result.Parameters.length).toBe(1);
-    expect(result.Parameters[0].Name).toEqual(`/amplify/${appId}/integtest/AMPLIFY_${funcName}_A_NEW_SECRET`);
-    expect(result.Parameters[0].Value).toEqual('anewtestsecretvalue');
+    await expectParams([{ name: 'A_NEW_SECRET', value: 'anewtestsecretvalue' }], ['TEST_SECRET'], region, appId, 'integtest', funcName);
   });
 });
+
+const expectParams = async (
+  expectToExist: NameValuePair[],
+  expectNotExist: string[],
+  region: string,
+  appId: string,
+  envName: string,
+  funcName: string,
+) => {
+  const result = await getSSMParameters(region, appId, envName, funcName, expectToExist.map(exist => exist.name).concat(expectNotExist));
+  expect(result.InvalidParameters.length).toBe(expectNotExist.length);
+  expect(result.InvalidParameters.sort()).toEqual(expectNotExist.sort());
+
+  expect(result.Parameters.length).toBe(expectToExist.length);
+  const mappedResult = result.Parameters.map(param => ({ name: param.Name, value: param.Value })).sort(sortByName);
+  const mappedExpect = expectToExist
+    .map(exist => ({ name: `/amplify/${appId}/${envName}/AMPLIFY_${funcName}_${exist.name}`, value: exist.value }))
+    .sort(sortByName);
+  expect(mappedResult).toEqual(mappedExpect);
+};
+
+const sortByName = (a: NameValuePair, b: NameValuePair) => a.name.localeCompare(b.name);
+
+type NameValuePair = { name: string; value: string };
