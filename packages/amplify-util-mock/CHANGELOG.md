@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.33.1-authHeadlessImportTest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.33.0...amplify-util-mock@3.33.1-authHeadlessImportTest.0) (2021-06-21)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 # [3.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.32.0...amplify-util-mock@3.33.0) (2021-06-15)
 
 

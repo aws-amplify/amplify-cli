@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.52.1-authHeadlessImportTest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.52.0...amplify-provider-awscloudformation@4.52.1-authHeadlessImportTest.0) (2021-06-21)
+
+
+### Bug Fixes
+
+* **import-auth:** sync backend-config.json to current cloud folder on push ([74b4991](https://github.com/aws-amplify/amplify-cli/commit/74b499133c28f57d891627f5863a356466f16a96))
+
+
+
+
+
 # [4.52.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.51.0...amplify-provider-awscloudformation@4.52.0) (2021-06-15)
 
 

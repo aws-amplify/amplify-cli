@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.5-authHeadlessImportTest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@2.2.4...amplify-graphql-docs-generator@2.2.5-authHeadlessImportTest.0) (2021-06-21)
+
+**Note:** Version bump only for package amplify-graphql-docs-generator
+
+
+
+
+
 ## [2.2.4](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphql-docs-generator@2.2.3...amplify-graphql-docs-generator@2.2.4) (2021-05-14)
 
 **Note:** Version bump only for package amplify-graphql-docs-generator

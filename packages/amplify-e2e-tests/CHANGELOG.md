@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.43.0-authHeadlessImportTest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.42.0...amplify-e2e-tests@2.43.0-authHeadlessImportTest.0) (2021-06-21)
+
+
+### Features
+
+* **import-auth:** add headless support ([d27538b](https://github.com/aws-amplify/amplify-cli/commit/d27538b5153ff3abf86af6ffde7a3322d729f263))
+
+
+
+
+
 # [2.42.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.41.0...amplify-e2e-tests@2.42.0) (2021-06-15)
 
 

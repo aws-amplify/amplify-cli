@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.2-authHeadlessImportTest.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.1...amplify-graphiql-explorer@1.6.2-authHeadlessImportTest.0) (2021-06-21)
+
+**Note:** Version bump only for package amplify-graphiql-explorer
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-graphiql-explorer@1.6.0...amplify-graphiql-explorer@1.6.1) (2021-05-18)
 
 
