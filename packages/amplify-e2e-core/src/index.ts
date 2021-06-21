@@ -21,7 +21,7 @@ declare global {
 
 const amplifyTestsDir = 'amplify-e2e-tests';
 
-export function getCLIPath(testingWithLatestCodebase = true) {
+export function getCLIPath(testingWithLatestCodebase = false) {
   return testingWithLatestCodebase
     ? path.join(__dirname, '..', '..', 'amplify-cli', 'bin', 'amplify')
     : process.env.AMPLIFY_PATH || 'amplify';
