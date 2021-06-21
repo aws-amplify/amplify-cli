@@ -414,7 +414,7 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     authConfig: opts.authConfig,
     buildParameters: opts.buildParameters,
     stacks: opts.projectConfig.stacks || {},
-    featuerFlags: new AmplifyCLIFeatureFlagAdapter(),
+    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
   });
   return transform.transform(userProjectConfig.schema.toString());
 }

@@ -51,7 +51,7 @@ describe('multi-key GSI behavior', () => {
           id
         }
       }
-      
+
     `;
 
     const createResult = await appSyncClient.mutate({
@@ -109,7 +109,7 @@ describe('multi-key GSI behavior', () => {
       }
     `;
 
-    const createResult = await appSyncClient.mutate({
+    const createResult: any = await appSyncClient.mutate({
       mutation: gql(createMutation),
       fetchPolicy: 'no-cache',
     });
@@ -162,7 +162,7 @@ describe('multi-key GSI behavior', () => {
     }
   `;
 
-    const createResult = await appSyncClient.mutate({
+    const createResult: any = await appSyncClient.mutate({
       mutation: gql(createMutation),
       fetchPolicy: 'no-cache',
     });

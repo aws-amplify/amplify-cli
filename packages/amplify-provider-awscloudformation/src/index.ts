@@ -25,9 +25,13 @@ import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 import { resolveAppId } from './utils/resolve-appId';
 import { loadConfigurationForEnv } from './configuration-manager';
+import { Lambda } from './aws-utils/aws-lambda';
+import CloudFormation from './aws-utils/aws-cfn';
+import { $TSContext } from 'amplify-cli-core';
 
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
+import { updateEnv } from './update-env';
 
 function init(context) {
   return initializer.run(context);
@@ -98,6 +102,14 @@ function openConsole(context) {
   return consoleCommand.run(context);
 }
 
+async function getLambdaSdk(context: $TSContext) {
+  return await new Lambda(context);
+}
+
+async function getCloudFormationSdk(context: $TSContext) {
+  return await new CloudFormation(context);
+}
+
 module.exports = {
   adminBackendMap,
   adminLoginFlow,
@@ -106,6 +118,8 @@ module.exports = {
   init,
   initEnv,
   isAmplifyAdminApp,
+  getCloudFormationSdk,
+  getLambdaSdk,
   onInitSuccessful,
   configure,
   configureNewUser,
@@ -135,4 +149,5 @@ module.exports = {
   createDynamoDBService,
   resolveAppId,
   loadConfigurationForEnv,
+  updateEnv,
 };

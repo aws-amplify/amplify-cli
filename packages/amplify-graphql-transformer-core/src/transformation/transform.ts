@@ -61,7 +61,7 @@ export interface GraphQLTransformOptions {
   readonly authConfig?: AppSyncAuthConfiguration;
   readonly buildParameters?: Record<string, any>;
   readonly stacks?: Record<string, Template>;
-  readonly featuerFlags?: FeatureFlagProvider;
+  readonly featureFlags?: FeatureFlagProvider;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -110,7 +110,7 @@ export class GraphQLTransform {
     this.seenTransformations = {};
     const parsedDocument = parse(schema);
     this.app = new App();
-    const context = new TransformerContext(this.app, parsedDocument, this.stackMappingOverrides, this.options.featuerFlags);
+    const context = new TransformerContext(this.app, parsedDocument, this.stackMappingOverrides, this.options.featureFlags);
     const validDirectiveNameMap = this.transformers.reduce(
       (acc: any, t: TransformerPluginProvider) => ({ ...acc, [t.directive.name.value]: true }),
       {

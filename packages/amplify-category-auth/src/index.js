@@ -1,7 +1,6 @@
 const category = 'auth';
 
 const _ = require('lodash');
-const uuid = require('uuid');
 const path = require('path');
 const sequential = require('promise-sequential');
 
@@ -72,7 +71,6 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
     .projectName.toLowerCase()
     .replace(/[^A-Za-z0-9_]+/g, '_');
   let currentAuthParams;
-  const [sharedId] = uuid().split('-');
 
   const immutables = {};
 
@@ -115,7 +113,8 @@ async function externalAuthEnable(context, externalCategory, resourceName, requi
   const authPropsValues = authExists
     ? Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), currentAuthParams, immutables, requirements)
     : Object.assign(defaults.functionMap[requirements.authSelections](currentAuthName), requirements, {
-        resourceName: `cognito${sharedId}`,
+        resourceName: `cognito${defaults.sharedId}`,
+        sharedId: defaults.sharedId,
       }); //eslint-disable-line
   /* eslint-enable */
   const { roles } = defaults;

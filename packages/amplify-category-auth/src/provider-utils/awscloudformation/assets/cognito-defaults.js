@@ -96,4 +96,5 @@ module.exports = {
   withSocialDefaults,
   entityKeys,
   roles,
+  sharedId,
 };

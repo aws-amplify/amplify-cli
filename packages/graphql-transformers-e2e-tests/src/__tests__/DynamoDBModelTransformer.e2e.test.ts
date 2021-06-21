@@ -15,7 +15,17 @@ jest.setTimeout(2000000);
 const cf = new CloudFormationClient('us-west-2');
 const customS3Client = new S3Client('us-west-2');
 const awsS3Client = new S3({ region: 'us-west-2' });
-
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `DynamoDBModelTransformerTest-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-model-transformer-test-bucket-${BUILD_TIMESTAMP}`;
@@ -68,6 +78,11 @@ beforeAll(async () => {
       EMPIRE
       JEDI
     }
+    type Require @model {
+      id: ID!
+      requiredField: String!
+      notRequiredField: String
+    }
     type Comment @model(timestamps: { createdAt: "createdOn", updatedAt: "updatedOn" }) {
       id: ID!
       title: String!
@@ -76,6 +91,7 @@ beforeAll(async () => {
     }
   `;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -200,7 +216,67 @@ test('Test createPost mutation', async () => {
   expect(response.data.createPost.createdAt).toBeDefined();
   expect(response.data.createPost.updatedAt).toBeDefined();
 });
-
+test('Test updateComment mutation with null and empty', async () => {
+  const requiredFieldValue = 'thisisrequired';
+  const notRequiredFieldValue = 'thisisnotrequired';
+  const response = await GRAPHQL_CLIENT.query(
+    /* GraphQL */ `
+      mutation($input: CreateRequireInput!) {
+        createRequire(input: $input) {
+          id
+          requiredField
+          notRequiredField
+        }
+      }
+    `,
+    {
+      input: {
+        requiredField: requiredFieldValue,
+        notRequiredField: notRequiredFieldValue,
+      },
+    },
+  );
+  expect(response.data.createRequire.id).toBeDefined();
+  const id = response.data.createRequire.id;
+  const updateResponse = await GRAPHQL_CLIENT.query(
+    /* GraphQL */ `
+      mutation($input: UpdateRequireInput!) {
+        updateRequire(input: $input) {
+          id
+          requiredField
+          notRequiredField
+        }
+      }
+    `,
+    {
+      input: {
+        id: id,
+      },
+    },
+  );
+  expect(updateResponse.data.updateRequire.requiredField).toEqual(requiredFieldValue);
+  expect(updateResponse.data.updateRequire.notRequiredField).toEqual(notRequiredFieldValue);
+  const update2Response = await GRAPHQL_CLIENT.query(
+    /* GraphQL */ `
+      mutation($input: UpdateRequireInput!) {
+        updateRequire(input: $input) {
+          id
+          requiredField
+          notRequiredField
+        }
+      }
+    `,
+    {
+      input: {
+        id: id,
+        requiredField: null,
+      },
+    },
+  );
+  expect(update2Response.errors[0].message).toEqual(
+    'An argument you marked as Non-Null is set to Null in the query or the body of your request.',
+  );
+});
 test('Test updatePost mutation', async () => {
   const createResponse = await GRAPHQL_CLIENT.query(
     `mutation {

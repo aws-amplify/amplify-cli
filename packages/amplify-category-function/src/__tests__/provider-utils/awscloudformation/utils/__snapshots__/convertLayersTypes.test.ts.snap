@@ -1,0 +1,95 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`convert both layers when add/checkout to same env 1`] = `
+Array [
+  Object {
+    "env": "dev",
+    "isLatestVersionSelected": true,
+    "resourceName": "mocklayer4",
+    "type": "ProjectLayer",
+    "version": 4,
+  },
+]
+`;
+
+exports[`convert both layers when add/checkout to same env 2`] = `
+Array [
+  Object {
+    "env": "dev",
+    "isLatestVersionSelected": false,
+    "resourceName": "mocklayer2",
+    "type": "ProjectLayer",
+    "version": 2,
+  },
+]
+`;
+
+exports[`convert ExternalLayer when checkout env if required when add/checkout to env 1`] = `
+Array [
+  Object {
+    "env": "dev",
+    "isLatestVersionSelected": false,
+    "resourceName": "mocklayer1",
+    "type": "ProjectLayer",
+    "version": 1,
+  },
+  Object {
+    "env": "dev",
+    "isLatestVersionSelected": false,
+    "resourceName": "mocklayer2",
+    "type": "ProjectLayer",
+    "version": 2,
+  },
+  Object {
+    "arn": Object {
+      "Fn::Sub": "arn:aws:lambda:mockRegion:mockaccountId:layer:mocklayer3-prod:3",
+    },
+    "type": "ExternalLayer",
+  },
+  Object {
+    "arn": Object {
+      "Fn::Sub": "arn:aws:lambda:mockRegion:mockaccountId:layer:mocklayer4-staging:4",
+    },
+    "type": "ExternalLayer",
+  },
+  Object {
+    "env": "dev",
+    "isLatestVersionSelected": false,
+    "resourceName": "mocklayer5",
+    "type": "ProjectLayer",
+    "version": 5,
+  },
+]
+`;
+
+exports[`convert ProjectLayer when checkout env if required when add/checkout to same env 1`] = `
+Array [
+  Object {
+    "env": "prod",
+    "isLatestVersionSelected": true,
+    "resourceName": "mocklayer1",
+    "type": "ProjectLayer",
+    "version": 1,
+  },
+  Object {
+    "arn": Object {
+      "Fn::Sub": "mockLayerArn",
+    },
+    "type": "ExternalLayer",
+  },
+  Object {
+    "env": "prod",
+    "isLatestVersionSelected": true,
+    "resourceName": "mocklayer3",
+    "type": "ProjectLayer",
+    "version": 3,
+  },
+  Object {
+    "env": "prod",
+    "isLatestVersionSelected": true,
+    "resourceName": "mocklayer4",
+    "type": "ProjectLayer",
+    "version": 4,
+  },
+]
+`;

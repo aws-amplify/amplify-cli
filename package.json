@@ -81,9 +81,11 @@
     "@babel/plugin-proposal-numeric-separator": "^7.10.4",
     "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "@babel/plugin-transform-typescript": "7.10.5",
-    "@commitlint/cli": "^8.1.0",
-    "@commitlint/config-conventional": "^8.1.0",
-    "@commitlint/config-lerna-scopes": "^8.1.0",
+    "@commitlint/cli": "^12.1.2",
+    "@commitlint/config-conventional": "^12.1.2",
+    "@commitlint/config-lerna-scopes": "^12.1.2",
+    "@commitlint/cz-commitlint": "^12.1.2",
+    "@commitlint/prompt": "^12.1.2",
     "@types/jest": "^26.0.20",
     "@types/js-yaml": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^4.14.2",
@@ -92,9 +94,8 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "codecov": "^3.7.0",
-    "commitizen": "^3.1.2",
+    "commitizen": "^4.2.4",
     "copyfiles": "^2.2.0",
-    "cz-conventional-changelog": "^3.0.2",
     "eslint": "^7.19.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^7.2.0",
@@ -129,7 +130,7 @@
   },
   "config": {
     "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
+      "path": "./node_modules/@commitlint/cz-commitlint"
     }
   }
 }

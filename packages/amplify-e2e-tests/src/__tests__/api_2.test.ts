@@ -93,7 +93,7 @@ describe('amplify add api (GraphQL)', () => {
         note: 'initial note',
       },
     };
-    const createResult = await appSyncClient.mutate({
+    const createResult: any = await appSyncClient.mutate({
       mutation: gql(createMutation),
       fetchPolicy: 'no-cache',
       variables: createInput,
@@ -120,7 +120,7 @@ describe('amplify add api (GraphQL)', () => {
       },
     };
 
-    const updateResult = await appSyncClient.mutate({
+    const updateResult: any = await appSyncClient.mutate({
       mutation: gql(updateMutation),
       fetchPolicy: 'no-cache',
       variables: updateInput,
@@ -393,16 +393,18 @@ describe('amplify add api (REST)', () => {
       allowGuestUsers: true,
     });
     await addRestApi(projRoot, {
+      isFirstRestApi: false,
       existingLambda: true,
       restrictAccess: true,
       allowGuestUsers: true,
     });
     await addRestApi(projRoot, {
+      isFirstRestApi: false,
       existingLambda: true,
       restrictAccess: true,
       allowGuestUsers: false,
     });
-    await addRestApi(projRoot, { existingLambda: true });
+    await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true });
     await updateAuthAddAdminQueries(projRoot);
     await amplifyPushUpdate(projRoot);
 
@@ -426,5 +428,13 @@ describe('amplify add api (REST)', () => {
     for (let i = 0; i < unauthPolicies.length; i++) {
       expect(unauthPolicies[i].PolicyName).toMatch(/PolicyAPIGWUnauth\d/);
     }
+  });
+
+  it('adds a rest api and then adds a path to the existing api', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
+    await addRestApi(projRoot, { existingLambda: true });
+    await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true, path: '/newpath' });
+    await amplifyPushUpdate(projRoot);
   });
 });

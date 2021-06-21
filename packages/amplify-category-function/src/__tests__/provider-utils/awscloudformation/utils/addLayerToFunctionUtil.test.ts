@@ -1,39 +1,39 @@
+import { $TSContext } from 'amplify-cli-core';
+import { FunctionDependency, LambdaLayer } from 'amplify-function-plugin-interface';
+import enquirer from 'enquirer';
+import inquirer, { CheckboxQuestion, InputQuestion } from 'inquirer';
+import { categoryName } from '../../../../constants';
 import {
-  askLayerSelection,
-  provideExistingARNsPrompt,
   askCustomArnQuestion,
   askLayerOrderQuestion,
+  askLayerSelection,
+  provideExistingARNsPrompt,
 } from '../../../../provider-utils/awscloudformation/utils/addLayerToFunctionUtils';
-import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
-import enquirer from 'enquirer';
 import { ServiceName } from '../../../../provider-utils/awscloudformation/utils/constants';
-import { LambdaLayer, FunctionDependency } from 'amplify-function-plugin-interface';
-import { category } from '../../../../constants';
-import { LayerMetadataFactory } from '../../../../provider-utils/awscloudformation/utils/layerParams';
-import { getLayerRuntimes } from '../../../../provider-utils/awscloudformation/utils/layerRuntimes';
+import { getLayerRuntimes } from '../../../../provider-utils/awscloudformation/utils/layerConfiguration';
+import { LayerCloudState } from '../../../../provider-utils/awscloudformation/utils/layerCloudState';
+import { LayerVersionMetadata } from '../../../../provider-utils/awscloudformation/utils/layerParams';
 
 jest.mock('inquirer');
 jest.mock('enquirer', () => ({ prompt: jest.fn() }));
-jest.mock('../../../../provider-utils/awscloudformation/utils/layerParams');
-
-jest.mock('../../../../provider-utils/awscloudformation/utils/layerRuntimes', () => ({
+jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers');
+jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');
+jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration', () => ({
   getLayerRuntimes: jest.fn(),
 }));
 
 const getLayerRuntimes_mock = getLayerRuntimes as jest.MockedFunction<typeof getLayerRuntimes>;
 const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
 const enquirer_mock = enquirer as jest.Mocked<typeof enquirer>;
-const layerMetadataFactory_stub: LayerMetadataFactory = () =>
-  ({
-    listVersions: () => [3, 2, 1],
-    syncVersions: async () => true,
-  } as any);
+
+const context_stub = ({
+  amplify: {
+    getEnvInfo: jest.fn().mockReturnValue({ envName: 'mockEnv' }),
+    getProviderPlugins: jest.fn(),
+  },
+} as unknown) as $TSContext;
 
 const runtimeValue = 'lolcode';
-
-const backendDirPath = 'randomvalue';
-
-const layerName = 'randomLayer';
 
 const amplifyMetaStub = {
   function: {
@@ -53,6 +53,8 @@ const previousSelectionsStub: LambdaLayer[] = [
     type: 'ProjectLayer',
     resourceName: 'aLayer',
     version: 2,
+    isLatestVersionSelected: false,
+    env: 'mockEnv',
   },
 ];
 
@@ -67,6 +69,37 @@ getLayerRuntimes_mock.mockImplementation(() => {
   ];
 });
 
+const layerCloudReturnStub: LayerVersionMetadata[] = [
+  {
+    LayerVersionArn: 'fakeArn1',
+    Description: '',
+    CreatedDate: '',
+    CompatibleRuntimes: ['nodejs14.x'],
+    LicenseInfo: '',
+    permissions: [],
+    LogicalName: 'myLayer',
+    Version: 1,
+    legacyLayer: false,
+  },
+  {
+    LogicalName: 'aLayer',
+    Version: 2,
+    LayerVersionArn: 'fakeArn2',
+    Description: '',
+    CreatedDate: '',
+    CompatibleRuntimes: ['nodejs14.x'],
+    LicenseInfo: '',
+    permissions: [],
+    legacyLayer: false,
+  },
+];
+
+const layerCloudState_mock = LayerCloudState as jest.Mocked<typeof LayerCloudState>;
+layerCloudState_mock.getInstance.mockReturnValue(({
+  getLayerVersionsFromCloud: jest.fn(async () => layerCloudReturnStub),
+  latestVersionLogicalId: 'mockLogicalId',
+} as unknown) as LayerCloudState);
+
 describe('layer selection question', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -74,7 +107,7 @@ describe('layer selection question', () => {
 
   it('returns empty and prompts for arns when no layers available', async () => {
     const amplifyMetaStub = {};
-    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, [], 'fake-backend-path');
+    const result = await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, []);
     expect(result.lambdaLayers).toStrictEqual([]);
     expect(result.dependsOn).toStrictEqual([]);
     expect(result.askArnQuestion).toBe(true);
@@ -85,13 +118,7 @@ describe('layer selection question', () => {
       layerSelections: [],
     }));
 
-    const result = await askLayerSelection(
-      layerMetadataFactory_stub,
-      amplifyMetaStub,
-      runtimeValue,
-      previousSelectionsStub,
-      'fake-backend-path',
-    );
+    await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub);
     expect((inquirer_mock.prompt.mock.calls[0][0] as CheckboxQuestion).choices[1].checked).toBe(true);
   });
 
@@ -100,20 +127,8 @@ describe('layer selection question', () => {
       layerSelections: [provideExistingARNsPrompt],
     }));
 
-    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, [], 'fake-backend-path');
+    const result = await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, []);
     expect(result.askArnQuestion).toBe(true);
-  });
-
-  it('sets the default version for each layer to the previous selection', async () => {
-    (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
-      layerSelections: ['aLayer'],
-    }));
-    (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
-      versionSelection: 2,
-    }));
-
-    await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, previousSelectionsStub, 'fake-backend-path');
-    expect((inquirer_mock.prompt.mock.calls[1][0] as ListQuestion).default).toBe('2');
   });
 
   it('returns the selected layers', async () => {
@@ -121,20 +136,22 @@ describe('layer selection question', () => {
       layerSelections: [provideExistingARNsPrompt, 'aLayer'],
     }));
     (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
-      versionSelection: 2,
+      versionSelection: `${2}: layer description`,
     }));
 
-    const result = await askLayerSelection(layerMetadataFactory_stub, amplifyMetaStub, runtimeValue, [], 'fake-backend-path');
+    const result = await askLayerSelection(context_stub, amplifyMetaStub, runtimeValue, []);
     const expectedLambdaLayers: LambdaLayer[] = [
       {
         type: 'ProjectLayer',
         resourceName: 'aLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
     ];
     const expectedDependsOn: FunctionDependency[] = [
       {
-        category,
+        category: categoryName,
         resourceName: 'aLayer',
         attributes: ['Arn'],
       },
@@ -149,6 +166,7 @@ describe('custom arn question', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
   it('sets default ARNs to previous values', async () => {
     const previousSelectionsStub: LambdaLayer[] = [
       {
@@ -162,6 +180,7 @@ describe('custom arn question', () => {
     await askCustomArnQuestion(1, previousSelectionsStub);
     expect((inquirer_mock.prompt.mock.calls[0][0] as InputQuestion).default).toBe('someArn');
   });
+
   it('returns ARNs as LambdaLayer array', async () => {
     (inquirer_mock.prompt as any).mockImplementationOnce(() => ({
       arns: ['arn1', 'arn2'],
@@ -187,6 +206,7 @@ describe('layer order question', () => {
       sortedNames: ['myLayer', 'anotherLayer', 'someArn'],
     }));
   });
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -201,11 +221,15 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ProjectLayer',
         resourceName: 'anotherLayer',
         version: 1,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
     ];
 
@@ -214,6 +238,8 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ExternalLayer',
@@ -236,11 +262,15 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ProjectLayer',
         resourceName: 'anotherLayer',
         version: 1,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
     ];
 
@@ -249,11 +279,15 @@ describe('layer order question', () => {
         type: 'ProjectLayer',
         resourceName: 'myLayer',
         version: 2,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ProjectLayer',
         resourceName: 'anotherLayer',
         version: 1,
+        isLatestVersionSelected: false,
+        env: 'mockEnv',
       },
       {
         type: 'ExternalLayer',
