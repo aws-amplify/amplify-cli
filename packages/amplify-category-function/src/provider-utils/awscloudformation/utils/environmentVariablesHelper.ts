@@ -60,7 +60,7 @@ export const askEnvironmentVariableCarryOut = async (
     return;
   }
 
-  const hasEnvVars = !!functionNames.find(funcName => !_.isEmpty(getStoredEnvironmentVariables(funcName)));
+  const hasEnvVars = !!functionNames.find(funcName => !_.isEmpty(getStoredEnvironmentVariables(funcName, currentEnvName)));
   if (!hasEnvVars) {
     return;
   }
