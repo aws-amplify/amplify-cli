@@ -9,10 +9,10 @@ export interface AuthFlowConfig extends Partial<AwsSdkConfig> {
 }
 
 export interface AwsSdkConfig {
-  accessKeyId: string;
+  accessKeyId?: string;
   expiration?: Date;
-  region: string;
-  secretAccessKey: string;
+  region?: string;
+  secretAccessKey?: string;
   sessionToken?: string;
   httpOptions?: {
     agent: $TSAny;

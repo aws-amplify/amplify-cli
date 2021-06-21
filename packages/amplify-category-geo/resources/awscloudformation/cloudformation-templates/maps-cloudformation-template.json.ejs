@@ -1,0 +1,119 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Amazon Location Map resource stack created using Amplify CLI",
+    "Parameters": {
+        "mapName": {
+            "Type": "String"
+        },
+        "mapStyle": {
+            "Type": "String"
+        },
+        "pricingPlan": {
+            "Type": "String"
+        },
+        "accessType": {
+            "Type": "String"
+        },
+        "authRoleName": {
+            "Type": "String"
+        },
+        "unauthRoleName": {
+            "Type": "String"
+        }
+    },
+    "Conditions": {
+        "AuthGuestRoleAccess": {
+            "Fn::Equals": [
+                {
+                    "Ref": "accessType"
+                },
+                "AuthAndGuestUsers"
+            ]
+        }
+    },
+    "Resources": {
+        "Map": {
+            "Type": "AWS::Location::Map",
+            "Properties": {
+                "Configuration": {
+                    "Style": {
+                        "Ref": "mapStyle"
+                    }
+                },
+                "MapName": {
+                    "Ref": "mapName"
+                },
+                "PricingPlan": {
+                    "Ref": "pricingPlan"
+                }
+            }
+        },
+        "MapPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": {
+                    "Fn::Join": [ 
+                        "", 
+                        [
+                            {
+                              "Ref": "mapName"
+                            },
+                            "policy"
+                        ]
+                    ]
+                },
+                "Roles": {
+                    "Fn::If": [
+                        "AuthGuestRoleAccess",
+                        [
+                            {
+                                "Ref": "authRoleName"
+                            },
+                            {
+                                "Ref": "unauthRoleName"
+                            }
+                        ],
+                        [
+                            {
+                                "Ref": "authRoleName"
+                            }
+                        ]
+                    ]
+                },
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "MapsReadOnly",
+                            "Effect": "Allow",
+                            "Action": [
+                                "geo:GetMapStyleDescriptor", 
+                                "geo:GetMapGlyphs", 
+                                "geo:GetMapSprites", 
+                                "geo:GetMapTile"
+                            ],
+                            "Resource": {
+                                "Fn::GetAtt": [ "Map", "Arn" ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    "Outputs": {
+        "Name": {
+            "Value": {
+                "Ref": "Map"
+            }
+        },
+        "Arn": {
+            "Value": {
+                "Fn::GetAtt": [
+                    "Map",
+                    "Arn"
+                ]
+            }
+        }
+    }
+}

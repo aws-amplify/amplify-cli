@@ -1,0 +1,15 @@
+{
+    "name": "geo",
+    "type": "category",
+    "commands": [
+        "add",
+        "push",
+        "remove",
+        "update",
+        "help"
+    ],
+    "commandAliases":{
+        "configure": "update"
+    },
+    "eventHandlers": []
+}

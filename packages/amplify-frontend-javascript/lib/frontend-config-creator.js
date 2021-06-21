@@ -105,6 +105,7 @@ function getAWSExportsObject(resources) {
   const { serviceResourceMapping } = resources;
   const configOutput = {};
   const predictionsConfig = {};
+  const geoConfig = {};
 
   const projectRegion = resources.metadata.Region;
   configOutput.aws_project_region = projectRegion;
@@ -167,6 +168,12 @@ function getAWSExportsObject(resources) {
           ...getInferConfig(serviceResourceMapping[service]),
         };
         break;
+      case 'Map':
+        geoConfig.maps = {
+          ...geoConfig.maps,
+          ...getMapConfig(serviceResourceMapping[service]),
+        };
+        break;
       default:
         break;
     }
@@ -175,6 +182,17 @@ function getAWSExportsObject(resources) {
   // add predictions config if predictions resources exist
   if (Object.entries(predictionsConfig).length > 0) {
     Object.assign(configOutput, { predictions: predictionsConfig });
+  }
+
+  // add geo config if predictions resources exist
+  if (Object.entries(geoConfig).length > 0) {
+    geoConfig.region = projectRegion;
+    Object.assign(
+      configOutput, 
+      { 
+        geo: geoConfig 
+      }
+    );
   }
 
   return configOutput;
@@ -522,6 +540,23 @@ function getSumerianConfig(sumerianResources) {
       scenes,
     },
   };
+}
+
+function getMapConfig(mapResources) {
+  let defaultMap = "";
+  const mapConfig = {
+    items: {}
+  };
+  mapResources.forEach(mapResource => {
+    mapConfig.items[mapResource.resourceName] = {
+      style: mapResource.mapStyle
+    }
+    if(mapResource.isDefaultMap) {
+      defaultMap = mapResource.resourceName;
+    }
+  });
+  mapConfig.default = defaultMap;
+  return mapConfig;
 }
 
 module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig };
