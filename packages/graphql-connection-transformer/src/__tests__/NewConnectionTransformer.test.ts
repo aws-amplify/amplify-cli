@@ -13,6 +13,17 @@ import { ResolverResourceIDs } from 'graphql-transformer-common';
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 
 test('ModelConnectionTransformer should fail if connection was called on an object that is not a Model type.', () => {
   const validSchema = `
@@ -30,6 +41,7 @@ test('ModelConnectionTransformer should fail if connection was called on an obje
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError(`@connection must be on an @model object type field.`);
@@ -51,6 +63,7 @@ test('ModelConnectionTransformer should fail if connection was with an object th
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError(`Object type Test1 must be annotated with @model.`);
@@ -72,6 +85,7 @@ test('ModelConnectionTransformer should fail if the field type where the directi
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError('Unknown type "Test2". Did you mean "Test" or "Test1"?');
@@ -93,6 +107,7 @@ test('ModelConnectionTransformer should fail if an empty list of fields is passe
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError('No fields passed in to @connection directive.');
@@ -118,6 +133,7 @@ test('ModelConnectionTransformer should fail if any of the fields passed in are 
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError('name is not a field in Test');
@@ -143,6 +159,7 @@ test('ModelConnectionTransformer should fail if the query is not run on the defa
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError(
@@ -167,6 +184,7 @@ test('ModelConnectionTransformer should fail if keyName provided does not exist.
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError('Key notDefault does not exist for model Test1');
@@ -189,6 +207,7 @@ test('ModelConnectionTransformer should fail if first field does not match PK of
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
@@ -214,6 +233,7 @@ test('ModelConnectionTransformer should fail if sort key type passed in does not
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
@@ -239,6 +259,7 @@ test('ModelConnectionTransformer should fail if partial sort key is passed in co
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError(
@@ -266,6 +287,7 @@ test('ModelConnectionTransformer should accept connection without sort key', () 
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).not.toThrowError();
@@ -291,6 +313,7 @@ test('ModelConnectionTransformer should fail if sort key type passed in does not
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
@@ -316,6 +339,7 @@ test('ModelConnectionTransformer should fail if partition key type passed in doe
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   expect(() => transformer.transform(validSchema)).toThrowError('email field is not of type ID');
@@ -341,6 +365,7 @@ test('Test ModelConnectionTransformer for One-to-One getItem case.', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(validSchema);
@@ -374,6 +399,7 @@ test('Test ModelConnectionTransformer for One-to-Many query case.', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(validSchema);
@@ -411,6 +437,7 @@ test('Test ModelConnectionTransformer for bidirectional One-to-Many query case.'
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(validSchema);
@@ -457,6 +484,7 @@ test('Test ModelConnectionTransformer for One-to-Many query with a composite sor
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(validSchema);
@@ -496,6 +524,7 @@ test('Test ModelConnectionTransformer for One-to-Many query with a composite sor
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(validSchema);
@@ -536,6 +565,7 @@ test('Test ModelConnectionTransformer for One-to-One getItem with composite sort
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
   });
 
   const out = transformer.transform(validSchema);
@@ -579,6 +609,7 @@ test('Many-to-many without conflict resolution generates correct schema', () => 
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
     transformConfig: {
       Version: TRANSFORM_CURRENT_VERSION,
     },
@@ -619,6 +650,7 @@ test('Many-to-many with conflict resolution generates correct schema', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer(), new ModelConnectionTransformer()],
+    featureFlags,
     transformConfig: {
       Version: TRANSFORM_CURRENT_VERSION,
       ResolverConfig: {
