@@ -97,12 +97,12 @@ input SearchablePostSortInput {
 
 type SearchablePostConnection {
   items: [Post]
-  nextToken: [String]
+  nextToken: String
   total: Int
 }
 
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: [String], from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -642,7 +642,7 @@ $util.toJson($ListRequest)
   \\"path\\": \\"$indexPath\\",
   \\"params\\": {
       \\"body\\":     {
-                #if( $context.args.nextToken )\\"search_after\\": $util.toJson($context.args.nextToken), #end
+                #if( $context.args.nextToken )\\"search_after\\": $util.base64Decode($context.args.nextToken), #end
                 #if( $context.args.from )\\"from\\": $context.args.from, #end
                 \\"size\\": #if( $context.args.limit ) $context.args.limit #else 100 #end,
                 \\"sort\\": $sortValues,
@@ -660,7 +660,7 @@ $util.transform.toElasticsearchQueryDSL($ctx.args.filter)
   "Query.searchPosts.res.vtl": "#set( $es_items = [] )
 #foreach( $entry in $context.result.hits.hits )
   #if( !$foreach.hasNext )
-    #set( $nextToken = $entry.sort )
+    #set( $nextToken = $util.base64Encode($util.toJson($entry.sort)) )
   #end
   $util.qr($es_items.add($entry.get(\\"_source\\")))
 #end
@@ -803,13 +803,13 @@ input SearchablePostSortInput {
 
 type SearchablePostConnection {
   items: [Post]
-  nextToken: [String]
+  nextToken: String
   total: Int
 }
 
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: [String], from: Int): SearchablePostConnection
-  searchUsers(filter: SearchableUserFilterInput, sort: [SearchableUserSortInput], limit: Int, nextToken: [String], from: Int): SearchableUserConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchUsers(filter: SearchableUserFilterInput, sort: [SearchableUserSortInput], limit: Int, nextToken: String, from: Int): SearchableUserConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
   getUser(id: ID!): User
@@ -836,7 +836,7 @@ input SearchableUserSortInput {
 
 type SearchableUserConnection {
   items: [User]
-  nextToken: [String]
+  nextToken: String
   total: Int
 }
 
@@ -1122,12 +1122,12 @@ input SearchablePostSortInput {
 
 type SearchablePostConnection {
   items: [Post]
-  nextToken: [String]
+  nextToken: String
   total: Int
 }
 
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: [String], from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -1373,12 +1373,12 @@ input SearchablePostSortInput {
 
 type SearchablePostConnection {
   items: [Post]
-  nextToken: [String]
+  nextToken: String
   total: Int
 }
 
 type Query {
-  customSearchPost(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: [String], from: Int): SearchablePostConnection
+  customSearchPost(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -1624,12 +1624,12 @@ input SearchablePostSortInput {
 
 type SearchablePostConnection {
   items: [Post]
-  nextToken: [String]
+  nextToken: String
   total: Int
 }
 
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: [String], from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }

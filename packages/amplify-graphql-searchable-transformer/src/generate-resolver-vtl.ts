@@ -63,7 +63,7 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
       ElasticsearchMappingTemplate.searchItem({
         path: str('$indexPath'),
         size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
-        search_after: ref('util.toJson($context.args.nextToken)'),
+        search_after: ref('util.base64Decode($context.args.nextToken)'),
         from: ref('context.args.from'),
         version: bool(includeVersion),
         query: ifElse(
@@ -84,7 +84,7 @@ export function responseTemplate(includeVersion = false) {
     compoundExpression([
       set(ref('es_items'), list([])),
       forEach(ref('entry'), ref('context.result.hits.hits'), [
-        iff(raw('!$foreach.hasNext'), set(ref('nextToken'), ref('entry.sort'))),
+        iff(raw('!$foreach.hasNext'), set(ref('nextToken'), ref('util.base64Encode($util.toJson($entry.sort))'))),
         ...getSourceMapper(includeVersion),
       ]),
       toJson(
