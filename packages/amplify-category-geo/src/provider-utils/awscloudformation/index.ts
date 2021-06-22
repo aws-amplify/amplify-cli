@@ -2,13 +2,14 @@ import { convertToCompleteMapParams, isCompleteMapParams, MapParameters, Provide
 import { merge } from './utils/resourceUtils';
 import { supportedServices, ServiceConfig } from '../supportedServices';
 import { ServiceName, provider } from './utils/constants';
-import _ from 'lodash';
 import { open, exitOnNextTick } from 'amplify-cli-core';
 import { createMapResource, modifyMapResource, getCurrentMapParameters } from './utils/mapResourceUtils';
 import { $TSContext } from 'amplify-cli-core';
 import { removeWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/removeWalkthrough';
 import { category } from '../../constants';
 import { updateDefaultMapWalkthrough } from '../awscloudformation/service-walkthroughs/mapWalkthrough';
+import { addPlaceIndexResource } from './provider-controllers/placeIndex';
+import { GeoParameters } from './utils/resourceParamsUtils';
 
 /**
  * Entry point for creating a new Geo resource
@@ -19,7 +20,7 @@ import { updateDefaultMapWalkthrough } from '../awscloudformation/service-walkth
 export async function addResource(
   context: $TSContext,
   service: string,
-  parameters?: Partial<MapParameters>
+  parameters?: Partial<GeoParameters>
 ): Promise<string> {
   // load the service config for this service
   const BAD_SERVICE_ERR = new Error(`amplify-category-geo is not configured to provide service type ${service}`);
@@ -42,6 +43,8 @@ export async function addResource(
     case ServiceName.Map:
       const serviceConfig: ServiceConfig<MapParameters> = supportedServices[service];
       return addMapResource(context, service, serviceConfig, parameters);
+    case ServiceName.PlaceIndex:
+      return addPlaceIndexResource(context);
     default:
       throw BAD_SERVICE_ERR;
   }

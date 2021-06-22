@@ -2,6 +2,8 @@ import { MapParameters } from './awscloudformation/utils/mapParams';
 import { createMapWalkthrough, updateMapWalkthrough } from './awscloudformation/service-walkthroughs/mapWalkthrough';
 import * as geoController from './awscloudformation';
 import { $TSContext } from 'amplify-cli-core';
+import { createPlaceIndexWalkthrough, updatePlaceIndexWalkthrough } from './awscloudformation/service-walkthroughs/placeIndexWalkthrough';
+import { PlaceIndexParameters } from './awscloudformation/utils/placeIndexParams';
 
 export interface SupportedServices extends Record<string, any> {
   Map: ServiceConfig<MapParameters>;
@@ -32,8 +34,8 @@ export const supportedServices: SupportedServices = {
   PlaceIndex: {
     alias: 'Place Index (search places, geocode and reverse geocode)',
     walkthroughs: {
-      createWalkthrough: null,
-      updateWalkthrough: null
+      createWalkthrough: createPlaceIndexWalkthrough,
+      updateWalkthrough: updatePlaceIndexWalkthrough
     },
     provider: 'awscloudformation',
     providerController: geoController,
