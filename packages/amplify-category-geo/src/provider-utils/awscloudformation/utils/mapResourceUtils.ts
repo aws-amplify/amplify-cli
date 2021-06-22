@@ -77,7 +77,7 @@ export function createParametersFile(parameters: $TSObject, resourceName: string
 export function readParametersFile(resourceName: string, parametersFileName: string): $TSAny {
   const parametersFilePath = path.join(pathManager.getBackendDirPath(), category, resourceName, parametersFileName);
   return JSONUtilities.readJson(parametersFilePath, { throwIfNotExist: false }) || {};
-} 
+}
 
 export function constructMapMetaParameters(params: MapParameters): MapMetaParameters {
   let result: MapMetaParameters = {

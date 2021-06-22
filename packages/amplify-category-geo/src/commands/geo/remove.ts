@@ -12,12 +12,12 @@ module.exports = {
     const servicesMetadata = supportedServices;
 
     const selectedService = await amplify.serviceSelectionPrompt(
-        context, 
-        category, 
-        servicesMetadata, 
+        context,
+        category,
+        servicesMetadata,
         chooseServiceMessageRemove
     );
-    
+
     const resourceToRemove = await removeWalkthrough(context, selectedService.service);
 
     return amplify

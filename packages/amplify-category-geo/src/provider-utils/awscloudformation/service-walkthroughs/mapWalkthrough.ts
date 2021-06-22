@@ -148,7 +148,6 @@ export async function updateMapWalkthrough(context: $TSContext, parameters?: Par
     }
 
     parameters.mapName = resourceToUpdate;
-    
     parameters = merge(parameters, await mapAccessWalkthrough(parameters));
 
     // ask if the map should be set as a default

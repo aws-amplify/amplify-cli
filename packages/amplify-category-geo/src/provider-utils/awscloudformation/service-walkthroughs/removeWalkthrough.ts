@@ -6,7 +6,7 @@ import inquirer from 'inquirer';
  */
 export async function removeWalkthrough(context: $TSContext ,service: string) : Promise<string> {
     const resources = await getServiceResources(context, service);
-    
+
     if (resources.length === 0) {
         context.print.error(`No ${service} type resource exists in the project.`);
         return;
