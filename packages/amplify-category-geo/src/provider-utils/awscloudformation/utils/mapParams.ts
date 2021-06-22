@@ -26,7 +26,8 @@ export enum EsriMapStyleType {
     Navigation = "Navigation",
     Streets = "Streets",
     Topographic = "Topographic",
-    Canvas = "Canvas"
+    DarkGrayCanvas = "DarkGrayCanvas",
+    LightGrayCanvas = "LightGrayCanvas"
 }
 
 /**
@@ -38,6 +39,17 @@ export enum EsriMapStyleType {
 
 export type MapStyleType = EsriMapStyleType | HereMapStyleType;
 
+/**
+ * Supported Geo Map Styles
+ */
+export enum MapStyle {
+    VectorEsriNavigation = "VectorEsriNavigation",
+    VectorEsriStreets = "VectorEsriStreets",
+    VectorEsriTopographic = "VectorEsriTopographic",
+    VectorEsriDarkGrayCanvas = "VectorEsriDarkGrayCanvas",
+    VectorEsriLightGrayCanvas = "VectorEsriLightGrayCanvas",
+    VectorHereBerlin = "VectorHereBerlin",
+}
 
 /**
  * Designed to be backwards compatible with the old way of representing dependencies as
@@ -73,3 +85,23 @@ export function convertToCompleteMapParams(partial: Partial<MapParameters>): Map
 export function getGeoMapStyle(dataProvider: DataProvider, mapStyleType: MapStyleType) {
     return `Vector${dataProvider}${mapStyleType}`;
 }
+
+export function getMapStyleComponents(mapStyle: string): Pick<MapParameters, 'dataProvider' | 'mapStyleType'> {
+    switch(mapStyle) {
+        case MapStyle.VectorEsriDarkGrayCanvas:
+            return { dataProvider: DataProvider.Esri, mapStyleType: EsriMapStyleType.DarkGrayCanvas };
+        case MapStyle.VectorEsriLightGrayCanvas:
+            return { dataProvider: DataProvider.Esri, mapStyleType: EsriMapStyleType.LightGrayCanvas };
+        case MapStyle.VectorEsriNavigation:
+            return { dataProvider: DataProvider.Esri, mapStyleType: EsriMapStyleType.Navigation };
+        case MapStyle.VectorEsriStreets:
+            return { dataProvider: DataProvider.Esri, mapStyleType: EsriMapStyleType.Streets };
+        case MapStyle.VectorEsriTopographic:
+            return { dataProvider: DataProvider.Esri, mapStyleType: EsriMapStyleType.Topographic };
+        case MapStyle.VectorHereBerlin:
+            return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.Berlin };
+        default:
+            throw new Error(`Invalid map style ${mapStyle} found in amplify meta`);
+    }
+}
+

@@ -1,10 +1,11 @@
-import { convertToCompleteMapParams, isCompleteMapParams, MapParameters } from './utils/mapParams';
+import { convertToCompleteMapParams, isCompleteMapParams, MapParameters, ProviderContext } from './utils/mapParams';
 import { merge } from './utils/resourceParamsUtils';
 import { supportedServices, ServiceConfig } from '../supportedServices';
 import { ServiceName, provider } from './utils/constants';
 import _ from 'lodash';
 import { open, exitOnNextTick } from 'amplify-cli-core';
-import { createMapResource } from './utils/createMapResource';
+import { createMapResource, modifyMapResource } from './utils/mapResourceUtils';
+import { $TSContext } from 'amplify-cli-core';
 
 /**
  * Entry point for creating a new Geo resource
@@ -43,7 +44,29 @@ export async function addResource(
   }
 }
 
-function checkIfAuthExists(context: any) {
+/**
+ * Entry point for updating existing Geo resource
+ * @param context Amplify Core Context object
+ * @param service The cloud service that is providing the category
+ * @param parameters Parameters used to configure the resource. If not specified, a walkthrough will be launched to populate it.
+ */
+ export async function updateResource(
+  context: any,
+  service: string
+): Promise<string> {
+  // load the service config for this service
+  const BAD_SERVICE_ERR = new Error(`amplify-category-geo is not configured to provide service type ${service}`);
+
+  switch (service) {
+    case ServiceName.Map:
+      const serviceConfig: ServiceConfig<MapParameters> = supportedServices[service];
+      return updateMapResource(context, service, serviceConfig);
+    default:
+      throw BAD_SERVICE_ERR;
+  }
+}
+
+function checkIfAuthExists(context: $TSContext) {
     const { amplify } = context;
     const { amplifyMeta } = amplify.getProjectDetails();
     let authExists = false;
@@ -62,7 +85,7 @@ function checkIfAuthExists(context: any) {
 }
 
 export async function addMapResource(
-  context: any,
+  context: $TSContext,
   service: string,
   serviceConfig: ServiceConfig<MapParameters>,
   parameters?: Partial<MapParameters>
@@ -72,11 +95,7 @@ export async function addMapResource(
   if (!parameters || !isCompleteMapParams(parameters)) {
     // initialize the Map parameters
     let mapParams: Partial<MapParameters> = {
-      providerContext: {
-        provider: provider,
-        service: service,
-        projectName: context.amplify.getProjectDetails().projectConfig.projectName,
-      },
+      providerContext: setProviderContext(context, service)
     };
 
     // merge in given parameters
@@ -93,18 +112,55 @@ export async function addMapResource(
   createMapResource(context, completeParams);
 
   const { print } = context;
-
   print.success(`Successfully added resource ${completeParams.mapName} locally.`);
+  printNextStepsSuccessMessage(context);
+  return completeParams.mapName;
+}
+
+function printNextStepsSuccessMessage(context: $TSContext) {
+  const { print } = context;
   print.info('');
   print.success('Next steps:');
-  print.info(`Check out sample function code generated in <project-dir>/amplify/backend/function/${completeParams.mapName}/src`);
-  print.info('"amplify function build" builds all of your functions currently in the project');
-  print.info('"amplify mock function <functionName>" runs your function locally');
   print.info('"amplify push" builds all of your local backend resources and provisions them in the cloud');
   print.info(
     '"amplify publish" builds all of your local backend and front-end resources (if you added hosting category) and provisions them in the cloud',
   );
-  return completeParams.mapName;
+}
+
+function setProviderContext(context: $TSContext, service: string): ProviderContext {
+  return {
+    provider: provider,
+    service: service,
+    projectName: context.amplify.getProjectDetails().projectConfig.projectName,
+  };
+}
+
+export async function updateMapResource(
+  context: $TSContext,
+  service: string,
+  serviceConfig: ServiceConfig<MapParameters>
+): Promise<string> {
+  // initialize the Map parameters
+  let mapParams: Partial<MapParameters> = {
+    providerContext: setProviderContext(context, service)
+  };
+  // populate the parameters for the resource
+  // This will modify mapParams
+  await serviceConfig.walkthroughs.updateWalkthrough(context, mapParams);
+
+  if (mapParams.mapName && mapParams.isDefaultMap && mapParams.accessType) {
+    modifyMapResource(context, {
+      accessType: mapParams.accessType,
+      mapName: mapParams.mapName,
+      isDefaultMap: mapParams.isDefaultMap
+    });
+  }
+  else throw new Error('Insufficient information to update Map resource.');
+
+  const { print } = context;
+  print.success(`Successfully updated resource ${mapParams.mapName} locally.`);
+  printNextStepsSuccessMessage(context);
+  return mapParams.mapName;
 }
 
 export function openConsole(context: any, service: ServiceName) {

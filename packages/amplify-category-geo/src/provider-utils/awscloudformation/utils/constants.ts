@@ -1,5 +1,6 @@
 export const chooseServiceMessageAdd = 'Select which capability you want to add:';
 export const chooseServiceMessageUpdate = 'Select which capability you want to update:';
+export const chooseServiceMessageRemove = 'Select which capability you want to remove:';
 export const parametersFileName = 'parameters.json';
 export const provider = 'awscloudformation';
 

@@ -1,6 +1,7 @@
 import { MapParameters } from './awscloudformation/utils/mapParams';
 import { createMapWalkthrough, updateMapWalkthrough } from './awscloudformation/service-walkthroughs/mapWalkthrough';
 import * as geoController from './awscloudformation';
+import { $TSContext } from 'amplify-cli-core';
 
 export interface SupportedServices extends Record<string, any> {
   Map: ServiceConfig<MapParameters>;
@@ -14,8 +15,8 @@ export interface ServiceConfig<T> {
 }
 
 export interface WalkthroughProvider<T> {
-  createWalkthrough: (context: any, params: Partial<T>) => Promise<Partial<T>>;
-  updateWalkthrough: (context: any, resourceToUpdate?: string, params?: Partial<T>) => Promise<Partial<T>>;
+  createWalkthrough: (context: $TSContext, parameters?: Partial<T>) => Promise<Partial<T>>;
+  updateWalkthrough: (context: $TSContext, parameters?: Partial<T>, resourceToUpdate?: string) => Promise<Partial<T>>;
 }
 
 export const supportedServices: SupportedServices = {

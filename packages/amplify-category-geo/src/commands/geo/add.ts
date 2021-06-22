@@ -16,8 +16,7 @@ module.exports = {
       .then((result: {service: string, providerName: string}) => {
         options = {
           service: result.service,
-          providerPlugin: result.providerName,
-          build: true,
+          providerPlugin: result.providerName
         };
         const providerController = servicesMetadata[result.service].providerController;
         if (!providerController) {

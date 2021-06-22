@@ -9,22 +9,19 @@ import { AccessType } from '../utils/resourceParams';
 export class MapStack extends cdk.Stack {
     protected readonly parameters: ReadonlyMap<string, cdk.CfnParameter>;
     protected readonly resources: ReadonlyMap<string, cdk.CfnResource>;
-    protected readonly mapName: string;
-    protected readonly mapStyle: string;
-    protected readonly pricingPlan: string;
     protected readonly accessType: string;
 
-    constructor(scope: cdk.Construct, id: string, private readonly props: MapParameters) {
+    constructor(scope: cdk.Construct, id: string, private readonly props: Pick<MapParameters, 'accessType'>) {
         super(scope, id);
 
-        this.mapName = this.props.mapName;
-        this.mapStyle = getGeoMapStyle(this.props.dataProvider, this.props.mapStyleType);
-        this.pricingPlan = this.props.pricingPlan;
         this.accessType = this.props.accessType;
 
         this.parameters = this.constructInputParameters([
             'authRoleName',
             'unauthRoleName',
+            'mapName',
+            'mapStyle',
+            'pricingPlan',
             'env'
         ]);
 
@@ -58,11 +55,11 @@ export class MapStack extends cdk.Stack {
 
     private constructMapResource(): CfnResource {
         return new location.CfnMap(this, 'Map', {
-            mapName: this.mapName,
+            mapName: this.parameters.get('mapName').valueAsString,
             configuration: {
-                style: this.mapStyle
+                style: this.parameters.get('mapStyle').valueAsString
             },
-            pricingPlan: this.pricingPlan
+            pricingPlan: this.parameters.get('pricingPlan').valueAsString
         });
     }
 
@@ -95,7 +92,7 @@ export class MapStack extends cdk.Stack {
         }
 
         return new iam.CfnPolicy(this, 'MapPolicy', {
-            policyName: `${this.mapName}Policy`,
+            policyName: cdk.Fn.join("", [this.parameters.get('mapName').valueAsString, "Policy"]),
             roles: cognitoRoles,
             policyDocument: policy
         });
