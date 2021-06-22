@@ -389,6 +389,10 @@ const hashLayerVersion = async (layerPath: string, layerName: string, includeRes
 
     const filePaths = await globby(layerFilePaths, { cwd: layerPath });
 
+    // Sort the globbed files to make sure subsequent hashing on the same set of files will be ending
+    // up in the same hash
+    filePaths.sort();
+
     return filePaths
       .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'binary'))
       .reduce((acc, it) => acc.update(it), crypto.createHash('sha256'))
