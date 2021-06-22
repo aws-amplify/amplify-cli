@@ -619,7 +619,13 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
-      }
+      },
+      {
+        name: 'emitAuthProvider',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
     ]);
 
     this.registerFlag('appSync', [
