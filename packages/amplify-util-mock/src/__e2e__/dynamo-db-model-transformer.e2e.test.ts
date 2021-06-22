@@ -1,6 +1,6 @@
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
 
@@ -59,9 +59,6 @@ beforeAll(async () => {
           },
         }),
       ],
-      featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
-      } as FeatureFlagProvider,
     });
     const out = await transformer.transform(validSchema);
     let ddbClient;
@@ -182,8 +179,7 @@ test('Test createPost mutation', async () => {
 });
 
 test('Test query on get query with null field', async () => {
-  const createResponse = await GRAPHQL_CLIENT.query(
-    `
+  const createResponse = await GRAPHQL_CLIENT.query(`
     mutation {
       createPost(input: { title: "Cool Post" }) {
         id
@@ -191,24 +187,19 @@ test('Test query on get query with null field', async () => {
         createdAt
         updatedAt
       }
-    }`,
-    {},
-  );
+    }`, {});
   expect(createResponse.data.createPost.id).toBeDefined();
   expect(createResponse.data.createPost.title).toEqual('Cool Post');
   const postID = createResponse.data.createPost.id;
   try {
-    const queryResponse = await GRAPHQL_CLIENT.query(
-      `
+    const queryResponse = await GRAPHQL_CLIENT.query(`
     query {
       getPost(id: "${postID}") {
         id
         title
         episode
       }
-    }`,
-      {},
-    );
+    }`, {});
     expect(queryResponse.data.getPost.id).toEqual(postID);
     expect(queryResponse.data.getPost.episode).toBeNull();
   } catch (err) {
