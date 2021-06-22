@@ -356,7 +356,7 @@ const getLayerGlobs = async (
     const pipfileLockFilePath = path.join(layerCodePath, pipfileLock);
 
     if (fs.existsSync(pipfileLockFilePath)) {
-      result.push(path.join(libPathName, layerExecutablePath, pipfileLockFilePath));
+      result.push(path.join(libPathName, layerExecutablePath, pipfileLock));
     }
 
     // Add layer direct content from lib/python and exclude well known files from list.
