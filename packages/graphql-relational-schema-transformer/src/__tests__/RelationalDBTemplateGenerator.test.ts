@@ -67,7 +67,7 @@ test('Test Adding Resolvers to CloudForm Template', () => {
   expect(baseTemplate.Resources).toBeDefined();
   expect(baseTemplate.Resources).not.toHaveProperty('');
 
-  const finalTemplate = templateGenerator.addRelationalResolvers(baseTemplate, 'someFilePath');
+  const finalTemplate = templateGenerator.addRelationalResolvers(baseTemplate, 'someFilePath', true);
   expect(finalTemplate).toBeDefined();
 });
 

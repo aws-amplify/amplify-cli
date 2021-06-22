@@ -1,9 +1,20 @@
-import { parse, DefinitionNode, InputObjectTypeDefinitionNode } from 'graphql';
+import { parse } from 'graphql';
 import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 import { getObjectType, getField } from './test-helpers';
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 
 test('Test ModelAuthTransformer validation happy case', () => {
   const validSchema = `
@@ -15,6 +26,7 @@ test('Test ModelAuthTransformer validation happy case', () => {
     }
     `;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -46,6 +58,7 @@ test('Test OwnerField with Subscriptions', () => {
             postOwner: String
         }`;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -100,6 +113,9 @@ describe('add missing implicit owner fields to type', () => {
     ff = {
       getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
         if (name === 'addMissingOwnerFields') {
+          return true;
+        }
+        if (name === 'improvePluralization') {
           return true;
         }
       }),

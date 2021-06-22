@@ -1,53 +1,71 @@
+import { $TSContext, exitOnNextTick, ResourceDoesNotExistError } from 'amplify-cli-core';
 import inquirer, { InputQuestion } from 'inquirer';
 import _ from 'lodash';
-import { getLayerMetadataFactory, LayerMetadata, LayerParameters, Permission } from '../utils/layerParams';
+import { ServiceName } from '../utils/constants';
 import { runtimeWalkthrough } from '../utils/functionPluginLoader';
+import { LayerCloudState } from '../utils/layerCloudState';
+import { saveLayerVersionPermissionsToBeUpdatedInCfn } from '../utils/layerConfiguration';
 import {
-  layerInputParamsToLayerPermissionArray,
-  layerAccountAccessQuestion,
+  layerAccountAccessPrompt,
   LayerInputParams,
+  layerInputParamsToLayerPermissionArray,
   layerNameQuestion,
-  layerOrgAccessQuestion,
+  layerOrgAccessPrompt,
   layerPermissionsQuestion,
   layerVersionQuestion,
+  loadPreviousLayerHash,
+  loadStoredLayerParameters,
+  previousPermissionsQuestion,
 } from '../utils/layerHelpers';
-import { ServiceName } from '../utils/constants';
-import { ResourceDoesNotExistError, exitOnNextTick } from 'amplify-cli-core';
+import { migrateLegacyLayer } from '../utils/layerMigrationUtils';
+import { AccountsLayer, defaultLayerPermission, LayerParameters, LayerRuntime, OrgsLayer, PermissionEnum } from '../utils/layerParams';
 
-export async function createLayerWalkthrough(context: any, parameters: Partial<LayerParameters> = {}): Promise<Partial<LayerParameters>> {
-  _.assign(parameters, await inquirer.prompt(layerNameQuestion(context)));
+export async function createLayerWalkthrough(
+  context: $TSContext,
+  parameters: Partial<LayerParameters> = {},
+): Promise<Partial<LayerParameters>> {
+  const projectName = context.amplify
+    .getProjectDetails()
+    .projectConfig.projectName.toLowerCase()
+    .replace(/[^a-zA-Z0-9]/gi, '');
+  let { layerName } = await inquirer.prompt(layerNameQuestion(projectName));
+  parameters.layerName = `${projectName}${layerName}`; // prefix with project name
 
-  let runtimeReturn = await runtimeWalkthrough(context, parameters);
-  parameters.runtimes = runtimeReturn.map(val => val.runtime);
+  const runtimeReturn = await runtimeWalkthrough(context, parameters);
 
-  let layerInputParameters: LayerInputParams = {};
+  // need to map cloudTemplateValue: string => cloudTemplateValues: string[]
+  parameters.runtimes = runtimeReturn.map(val => ({
+    name: val.runtime.name,
+    value: val.runtime.value,
+    layerExecutablePath: val.runtime.layerExecutablePath,
+    cloudTemplateValues: [val.runtime.cloudTemplateValue],
+    layerDefaultFiles: val.runtime?.layerDefaultFiles ?? [],
+    runtimePluginId: val.runtimePluginId,
+  })) as LayerRuntime[];
+
+  const layerInputParameters: LayerInputParams = {};
   _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion()));
 
-  for (let permission of layerInputParameters.layerPermissions) {
+  for (const permission of layerInputParameters.layerPermissions) {
     switch (permission) {
-      case Permission.awsAccounts:
-        _.assign(layerInputParameters, await inquirer.prompt(layerAccountAccessQuestion()));
+      case PermissionEnum.AwsAccounts:
+        layerInputParameters.accountIds = await layerAccountAccessPrompt();
         break;
-      case Permission.awsOrg:
-        _.assign(layerInputParameters, await inquirer.prompt(layerOrgAccessQuestion()));
+      case PermissionEnum.AwsOrg:
+        layerInputParameters.orgIds = await layerOrgAccessPrompt();
         break;
     }
   }
-  // add layer version to parameters
-  parameters.layerVersionMap = {
-    1: {
-      permissions: layerInputParamsToLayerPermissionArray(layerInputParameters),
-    },
-  };
+  parameters.permissions = layerInputParamsToLayerPermissionArray(layerInputParameters);
   parameters.build = true;
   return parameters;
 }
 
 export async function updateLayerWalkthrough(
-  context: any,
-  lambdaToUpdate?: string, // resourceToUpdate not used in this method but required by the SupportedServices interface
+  context: $TSContext,
+  lambdaToUpdate?: string,
   parameters?: Partial<LayerParameters>,
-): Promise<Partial<LayerParameters>> {
+): Promise<{ parameters: Partial<LayerParameters>; resourceUpdated: boolean }> {
   const { allResources } = await context.amplify.getResourceStatus();
   const resources = allResources.filter(resource => resource.service === ServiceName.LambdaLayer).map(resource => resource.resourceName);
 
@@ -57,63 +75,133 @@ export async function updateLayerWalkthrough(
     await context.usageData.emitError(new ResourceDoesNotExistError(errMessage));
     exitOnNextTick(0);
   }
-  const resourceQuestion: InputQuestion = [
-    {
-      name: 'resourceName',
-      message: 'Select the Lambda layer to update:',
-      type: 'list',
-      choices: resources,
-    },
-  ];
+
   if (resources.length === 1) {
     parameters.layerName = resources[0];
+  } else if (lambdaToUpdate && resources.includes(lambdaToUpdate)) {
+    parameters.layerName = lambdaToUpdate;
   } else {
+    const resourceQuestion: InputQuestion = [
+      {
+        name: 'resourceName',
+        message: 'Select the Lambda layer to update:',
+        type: 'list',
+        choices: resources,
+      },
+    ];
     const resourceAnswer = await inquirer.prompt(resourceQuestion);
     parameters.layerName = resourceAnswer.resourceName;
   }
 
-  // load the current layer state
-  const layerState: LayerMetadata = getLayerMetadataFactory(context)(parameters.layerName);
-  await layerState.syncVersions();
-  parameters.runtimes = layerState.runtimes || [];
+  // if legacy layer, perform migration
+  const hasMigrated = await migrateLegacyLayer(context, parameters.layerName);
 
-  // runtime question
-  if (await context.amplify.confirmPrompt('Do you want to update the compatible runtimes?', false)) {
-    const runtimeReturn = await runtimeWalkthrough(context, parameters as LayerParameters);
-    layerState.updateCompatibleRuntimes(runtimeReturn.map(val => val.runtime));
-  }
+  // check if layer is still in create state
+  const layerHasDeployed = loadPreviousLayerHash(parameters.layerName) !== undefined;
+  let permissionsUpdateConfirmed = false;
 
-  let layerInputParameters: LayerInputParams = {};
+  // load parameters.json
+  const storedLayerParameters = loadStoredLayerParameters(context, parameters.layerName);
+  let { permissions } = storedLayerParameters;
 
   if (await context.amplify.confirmPrompt('Do you want to adjust layer version permissions?', true)) {
+    permissionsUpdateConfirmed = true;
+    let defaultLayerPermissions: PermissionEnum[];
+    let defaultOrgs: string[] = [];
+    let defaultAccounts: string[] = [];
+    let selectedVersionNumber: number;
+
     // select layer version
-    const selectedVersion = Number((await inquirer.prompt(layerVersionQuestion(layerState.listVersions()))).layerVersion as string);
+    if (layerHasDeployed) {
+      const layerCloudState = LayerCloudState.getInstance(parameters.layerName);
+      const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, parameters.layerName);
+      const latestVersionText = 'Future layer versions';
+      const layerVersionChoices = [
+        latestVersionText,
+        ...layerVersions.map(layerVersionMetadata => `${layerVersionMetadata.Version}: ${layerVersionMetadata.Description}`),
+      ];
+      const selectedVersion: string = (
+        await inquirer.prompt(layerVersionQuestion(layerVersionChoices, 'Select the layer version to update:'))
+      ).versionSelection;
+
+      if (selectedVersion !== latestVersionText) {
+        selectedVersionNumber = Number(_.first(selectedVersion.split(':')));
+        parameters.selectedVersion = _.first(layerVersions.filter(version => version.Version === selectedVersionNumber));
+        permissions = parameters.selectedVersion.permissions;
+      }
+    }
 
     // load defaults
-    const defaultLayerPermissions = layerState.getVersion(selectedVersion).permissions.map(permission => permission.type);
-    const defaultOrgs = layerState.getVersion(selectedVersion).listOrgAccess();
-    const defaultAccounts = layerState.getVersion(selectedVersion).listAccountAccess();
+    defaultLayerPermissions = permissions.map(permission => permission.type);
+    defaultOrgs = permissions
+      .filter(p => p.type === PermissionEnum.AwsOrg)
+      .reduce((orgs: string[], permission: OrgsLayer) => [...orgs, ...permission.orgs], []);
+
+    defaultAccounts = permissions
+      .filter(p => p.type === PermissionEnum.AwsAccounts)
+      .reduce((accounts: string[], permission: AccountsLayer) => [...accounts, ...permission.accounts], []);
 
     // select permission strategy
-    _.assign(layerInputParameters, await inquirer.prompt(layerPermissionsQuestion(defaultLayerPermissions)));
-
+    const layerInputParameters: LayerInputParams = await inquirer.prompt(layerPermissionsQuestion(defaultLayerPermissions));
     // get the account and/or org IDs based on the permissions selected and pass defaults in the questions workflow
-    for (let permission of layerInputParameters.layerPermissions) {
+    for (const permission of layerInputParameters.layerPermissions) {
       switch (permission) {
-        case Permission.awsAccounts:
-          _.assign(layerInputParameters, await inquirer.prompt(layerAccountAccessQuestion(defaultAccounts)));
+        case PermissionEnum.AwsAccounts:
+          layerInputParameters.accountIds = await layerAccountAccessPrompt(defaultAccounts);
           break;
-        case Permission.awsOrg:
-          _.assign(layerInputParameters, await inquirer.prompt(layerOrgAccessQuestion(defaultOrgs)));
+        case PermissionEnum.AwsOrg:
+          layerInputParameters.orgIds = await layerOrgAccessPrompt(defaultOrgs);
           break;
       }
     }
 
     // update layer version based on inputs
-    const layerPermissions = layerInputParamsToLayerPermissionArray(layerInputParameters);
-    layerState.setPermissionsForVersion(selectedVersion, layerPermissions);
+    parameters.permissions = layerInputParamsToLayerPermissionArray(layerInputParameters);
+
+    // update ephemeral state if deployed version is picked
+    if (selectedVersionNumber) {
+      const { envName }: { envName: string } = context.amplify.getEnvInfo();
+      saveLayerVersionPermissionsToBeUpdatedInCfn(parameters.layerName, envName, selectedVersionNumber, parameters.permissions);
+    }
   }
-  _.assign(parameters, layerState.toStoredLayerParameters());
+
+  const resourceUpdated = permissionsUpdateConfirmed && !_.isEqual(permissions, parameters.permissions);
+
+  // In case answer to updating permissions is 'no', but migration occurred
+  if (hasMigrated && parameters.permissions === undefined) {
+    parameters.permissions = permissions;
+  }
+
+  parameters.runtimes = storedLayerParameters.runtimes;
   parameters.build = true;
-  return parameters;
+  return { parameters, resourceUpdated };
+}
+
+export async function lambdaLayerNewVersionWalkthrough(params: LayerParameters, timestampString: string): Promise<LayerParameters> {
+  const changeLayerPermissions = await inquirer.prompt(previousPermissionsQuestion());
+  let permissions = params.permissions;
+  if (!changeLayerPermissions.usePreviousPermissions) {
+    permissions = [defaultLayerPermission];
+  }
+  const description = await descriptionQuestion(timestampString);
+
+  return {
+    ...params,
+    permissions,
+    description,
+  };
+}
+
+async function descriptionQuestion(timestampString: string): Promise<string> {
+  const response = await inquirer.prompt({
+    name: 'description',
+    default: `${'Updated layer version'} ${timestampString}`,
+    message: 'Description:',
+    validate: (desc: string) => {
+      if (desc.length === 0) return 'Description cannot be empty';
+      if (desc.length > 256) return 'Description cannot be more than 256 characters';
+      return true;
+    },
+  });
+  return response.description;
 }

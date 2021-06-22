@@ -16,7 +16,17 @@ jest.setTimeout(2000000);
 const cf = new CloudFormationClient('us-west-2');
 const customS3Client = new S3Client('us-west-2');
 const awsS3Client = new S3({ region: 'us-west-2' });
-
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 const BUILD_TIMESTAMP = moment().format('YYYYMMDDHHmmss');
 const STACK_NAME = `KeyTransformerTests-${BUILD_TIMESTAMP}`;
 const BUCKET_NAME = `appsync-key-transformer-test-bucket-${BUILD_TIMESTAMP}`;
@@ -95,6 +105,7 @@ beforeAll(async () => {
     console.warn(`Could not create bucket: ${e}`);
   }
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new KeyTransformer(),
@@ -381,14 +392,31 @@ test('Test create/update mutation validation with three part secondary key.', as
 });
 
 test('Test Customer Create with list member and secondary key', async () => {
-  const createCustomer1 = await createCustomer('customer1@email.com', ['thing1', 'thing2'], 'customerusr1');
+  await createCustomer('customer1@email.com', ['thing1', 'thing2'], 'customerusr1');
   const getCustomer1 = await getCustomer('customer1@email.com');
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing1', 'thing2']);
-  // const items = await onCreateCustomer
+});
+
+test('Test cannot overwrite customer record with custom primary key', async () => {
+  await createCustomer('customer42@email.com', ['thing1', 'thing2'], 'customerusr42');
+  const response = await createCustomer('customer42@email.com', ['thing2'], 'customerusr43');
+  expect(response.errors).toBeDefined();
+  expect(response.errors[0]).toEqual(
+    expect.objectContaining({
+      errorType: 'DynamoDB:ConditionalCheckFailedException',
+      message: expect.stringContaining('The conditional request failed'),
+    }),
+  );
 });
 
 test('Test Customer Mutation with list member', async () => {
-  const updateCustomer1 = await updateCustomer('customer1@email.com', ['thing3', 'thing4'], 'new_customerusr1');
+  await updateCustomer('customer1@email.com', ['thing3', 'thing4'], 'new_customerusr1');
+  const getCustomer1 = await getCustomer('customer1@email.com');
+  expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing3', 'thing4']);
+});
+
+test('Test Customer Mutation with list member', async () => {
+  await updateCustomer('customer1@email.com', ['thing3', 'thing4'], 'new_customerusr1');
   const getCustomer1 = await getCustomer('customer1@email.com');
   expect(getCustomer1.data.getCustomer.addresslist).toEqual(['thing3', 'thing4']);
 });

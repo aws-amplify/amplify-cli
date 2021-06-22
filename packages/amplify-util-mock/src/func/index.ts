@@ -100,7 +100,7 @@ const resolveEvent = async (context: $TSContext, resourceName: string): Promise<
     const validatorOutput = eventNameValidator(eventName);
     const isValid = typeof validatorOutput !== 'string';
     if (!isValid) {
-      context.print.warning(validatorOutput);
+      context.print.warning(validatorOutput as string);
     } else {
       promptForEvent = false;
     }

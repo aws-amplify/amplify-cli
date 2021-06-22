@@ -29,12 +29,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -86,7 +103,8 @@ $util.toJson($ctx.result)
   #if( $modelObjectKey )
     #set( $condition = {
   \\"expression\\": \\"\\",
-  \\"expressionNames\\": {}
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
 } )
     #foreach( $entry in $modelObjectKey.entrySet() )
       #if( $velocityCount == 1 )
@@ -101,7 +119,8 @@ $util.toJson($ctx.result)
   \\"expression\\": \\"attribute_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
   #end
 #end
@@ -158,6 +177,12 @@ $util.toJson($ctx.result)
   $util.qr($dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
 #end
 $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#set( $optionalNonNullableFields = [\\"orderId\\", \\"status\\", \\"createdAt\\", \\"name\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
@@ -636,12 +661,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Item\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -693,7 +735,8 @@ $util.toJson($ctx.result)
   #if( $modelObjectKey )
     #set( $condition = {
   \\"expression\\": \\"\\",
-  \\"expressionNames\\": {}
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
 } )
     #foreach( $entry in $modelObjectKey.entrySet() )
       #if( $velocityCount == 1 )
@@ -708,7 +751,8 @@ $util.toJson($ctx.result)
   \\"expression\\": \\"attribute_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
   #end
 #end
@@ -766,6 +810,12 @@ $util.toJson($ctx.result)
   $util.qr($dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
 #end
 $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#set( $optionalNonNullableFields = [\\"orderId\\", \\"status\\", \\"createdAt\\", \\"name\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
@@ -1557,12 +1607,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 $util.qr($ctx.args.input.put(\\"firstName#lastName\\",\\"\${ctx.args.input.firstName}#\${ctx.args.input.lastName}\\"))
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Person\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -1647,6 +1714,12 @@ exports[`GSI composite sort keys are wrapped in conditional to check presence in
   $util.qr($dynamodbNameOverrideMap.put(\\"firstName#lastName\\", \\"firstNameLastName\\"))
 #end
 $util.qr($ctx.args.input.put(\\"firstName#lastName\\",\\"\${ctx.args.input.firstName}#\${ctx.args.input.lastName}\\"))
+#set( $optionalNonNullableFields = [\\"firstName\\", \\"lastName\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )

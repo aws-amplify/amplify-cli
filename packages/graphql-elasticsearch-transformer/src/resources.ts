@@ -437,10 +437,11 @@ export class ResourceFactory {
     nonKeywordFields: Expression[],
     primaryKey: string,
     queryTypeName: string,
+    improvePluralization: boolean,
     nameOverride?: string,
     includeVersion: boolean = false,
   ) {
-    const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type)));
+    const fieldName = nameOverride ? nameOverride : graphqlName('search' + plurality(toUpper(type), improvePluralization));
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ResourceConstants.RESOURCES.ElasticsearchDataSourceLogicalID, 'Name'),

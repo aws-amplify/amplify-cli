@@ -1,4 +1,6 @@
-export function getPluginInstance(context, pluginName) {
+import { $TSContext } from 'amplify-cli-core';
+
+export function getPluginInstance(context: $TSContext, pluginName: string) {
   let result;
   let pluginInfo;
   if (context.pluginPlatform.plugins[pluginName] && context.pluginPlatform.plugins[pluginName].length > 0) {

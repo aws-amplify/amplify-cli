@@ -45,7 +45,3 @@ const getProjectSettings = (): ProjectSettings => {
 
   return projectSettings;
 };
-export function persistContext(context: Context): void {
-  // write to the backend and current backend
-  // and get the frontend plugin to write to the config files.
-}

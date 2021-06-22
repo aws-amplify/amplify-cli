@@ -152,7 +152,7 @@ type Subscription {
 "
 `;
 
-exports[`DynamoDB transformer should add not default primary key when ID is defined 1`] = `
+exports[`DynamoDB transformer should not add default primary key when ID is defined 1`] = `
 "## [Start] Set default values. **
 #set( $createdAt = $util.time.nowISO8601() )
 ## Automatically set the createdAt timestamp. **
@@ -162,12 +162,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -320,12 +337,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -352,7 +386,13 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 `;
 
 exports[`Test create and update mutation input should have timestamps as nullable fields when the type makes it non-nullable 3`] = `
-"#if( $authCondition && $authCondition.expression != \\"\\" )
+"#set( $optionalNonNullableFields = [\\"createdAt\\", \\"updatedAt\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
+#if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )
@@ -600,12 +640,29 @@ $util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.i
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -632,7 +689,13 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 `;
 
 exports[`Test not to include createdAt and updatedAt field when timestamps is set to null 3`] = `
-"#if( $authCondition && $authCondition.expression != \\"\\" )
+"#set( $optionalNonNullableFields = [] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
+#if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )
@@ -900,12 +963,29 @@ $util.qr($context.args.input.put(\\"id\\", $util.defaultIfNull($ctx.args.input.i
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -932,7 +1012,13 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 `;
 
 exports[`Test resolver template not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 3`] = `
-"#if( $authCondition && $authCondition.expression != \\"\\" )
+"#set( $optionalNonNullableFields = [] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
+#if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )
@@ -1178,7 +1264,7 @@ enum ModelAttributeTypes {
 
 type Query {
   getEntity(id: ID!): Entity
-  listEntitys(filter: ModelEntityFilterInput, limit: Int, nextToken: String): ModelEntityConnection
+  listEntities(filter: ModelEntityFilterInput, limit: Int, nextToken: String): ModelEntityConnection
 }
 "
 `;
@@ -1304,12 +1390,29 @@ $util.qr($context.args.input.put(\\"updatedOn\\", $util.defaultIfNull($ctx.args.
 ## [End] Set default values. **
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -1336,7 +1439,13 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 `;
 
 exports[`Test timestamp parameters when generating resolvers and output schema 3`] = `
-"#if( $authCondition && $authCondition.expression != \\"\\" )
+"#set( $optionalNonNullableFields = [] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
+#if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )

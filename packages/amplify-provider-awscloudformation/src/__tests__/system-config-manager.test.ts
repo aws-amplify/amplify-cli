@@ -36,18 +36,14 @@ describe('profile tests', () => {
   });
 
   it('should fail to return profiled aws credentials', async () => {
+    const profile_file_contents = '[fake]\nmalformed_key_id=fakeAccessKey\nmalformed_secret_access_key=fakeSecretKey\n'
     fs_mock.readFileSync.mockImplementationOnce(() => {
-      return '[fake]\nmalformed_key_id=fakeAccessKey\nmalformed_secret_access_key=fakeSecretKey\n';
+      return profile_file_contents;
     }).mockImplementationOnce(() => {
-      return '[fake]\nmalformed_key_id=fakeAccessKey\nmalformed_secret_access_key=fakeSecretKey\n';
+      return profile_file_contents;
     });
     const getProfileCredentials_mock = jest.fn(getProfileCredentials);
-    try {
-      const profile_config =  getProfiledAwsConfig(context_stub, 'fake');
-    } catch (e) {
-      expect(e.message).toEqual("Profile configuration for 'fake' is invalid: missing aws_access_key_id, aws_secret_access_key");
-    }
-    // await expect(() => getProfiledAwsConfig(context_stub, 'fake')).toThrow("Profile configuration for 'fake' is invalid: missing aws_access_key_id, aws_secret_access_key");
+    await expect(() => getProfiledAwsConfig(context_stub, 'fake')).rejects.toThrowError("Profile configuration for 'fake' is invalid: missing aws_access_key_id, aws_secret_access_key");
     expect(getProfileCredentials_mock).toHaveBeenCalledTimes(0);
   });
 
