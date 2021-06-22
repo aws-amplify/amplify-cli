@@ -356,7 +356,7 @@ const getLayerGlobs = async (
     const pipfileLockFilePath = path.join(layerCodePath, pipfileLock);
 
     if (fs.existsSync(pipfileLockFilePath)) {
-      result.push(path.join(libPathName, layerExecutablePath, pipfileLockFilePath));
+      result.push(path.join(libPathName, layerExecutablePath, pipfileLock));
     }
 
     // Add layer direct content from lib/python and exclude well known files from list.
@@ -388,6 +388,10 @@ const hashLayerVersion = async (layerPath: string, layerName: string, includeRes
     const layerFilePaths = await getLayerGlobs(layerPath, layerName, runtimeId, layerExecutablePath, includeResourceFiles);
 
     const filePaths = await globby(layerFilePaths, { cwd: layerPath });
+
+    // Sort the globbed files to make sure subsequent hashing on the same set of files will be ending
+    // up in the same hash
+    filePaths.sort();
 
     return filePaths
       .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'binary'))

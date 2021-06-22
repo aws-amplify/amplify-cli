@@ -28,14 +28,14 @@ E2E tests internally use a forked version of [nexpect](https://www.npmjs.com/pac
 
 To configure the amount of time nexpect will wait for CLI responses, you can set the `AMPLIFY_TEST_TIMEOUT_SEC` environment variable. It is helpful to set this to a low value (10 seconds or so) when writing new tests so that you don't spend unnecessary time waiting for nexpect to error out on a misconfigured wait() block
 
-If you want to log the test results for debugging, set the environment variable `VERBOSE_LOGGING_DO_NOT_USE_OR_YOU_WILL_BE_FIRED` to `true` and output logs will be written to temp files. The temp file paths will be printed as the tests run and you can `cat` or `tail` the logs to see the CLI output
+If you want to log the test results for debugging, set the environment variable `VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED` to `true` and output logs will be written to temp files. The temp file paths will be printed as the tests run and you can `cat` or `tail` the logs to see the CLI output
 
 ```sh
-env VERBOSE_LOGGING_DO_NOT_USE_OR_YOU_WILL_BE_FIRED=true yarn e2e
+env VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED=true yarn e2e
 ```
 
 ```typescript
-import { initJSProjectWithProfile, deleteProject, amplifyPush } from '../init';
+import { amplifyPush, deleteProject, initJSProjectWithProfile } from '../init';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../utils';
 
 describe('amplify your test', () => {

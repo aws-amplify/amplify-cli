@@ -44,7 +44,7 @@ export async function removeResource(
   context: $TSContext,
   category,
   resourceName,
-  questionOptions: { serviceSuffix?; serviceDeletionInfo?: [] } = {},
+  questionOptions: { serviceSuffix?; serviceDeletionInfo?: {} } = {},
   resourceNameCallback?: (resourceName: string) => Promise<void>,
 ) {
   const amplifyMeta = stateManager.getMeta();
@@ -111,11 +111,11 @@ export async function removeResource(
   }
 
   try {
-    return deleteResourceFiles(context, category, resourceName, resourceDir);
+    return await deleteResourceFiles(context, category, resourceName, resourceDir);
   } catch (err) {
     context.print.info(err.stack);
     context.print.error('An error occurred when removing the resources from the local directory');
-    context.usageData.emitError(err);
+    await context.usageData.emitError(err);
     process.exitCode = 1;
   }
 }

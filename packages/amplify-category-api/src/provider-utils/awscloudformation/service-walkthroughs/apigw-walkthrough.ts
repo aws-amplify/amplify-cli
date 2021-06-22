@@ -66,6 +66,7 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
       name: 'operation',
       message: 'What would you like to do',
       type: 'list',
+      when: context.input.command !== 'add',
       choices: [
         { name: 'Add another path', value: 'add' },
         { name: 'Update path', value: 'update' },
@@ -75,6 +76,12 @@ export async function updateWalkthrough(context, defaultValuesFilename) {
   ];
 
   const updateApi = await inquirer.prompt(question);
+
+  // Inquirer does not currently support combining 'when' and 'default', so
+  // manually set the operation if the user ended up here via amplify api add.
+  if (context.input.command === 'add') {
+    updateApi.operation = 'add';
+  }
 
   if (updateApi.resourceName === 'AdminQueries') {
     const errMessage = `The Admin Queries API is maintained through the Auth category and should be updated using 'amplify update auth' command`;

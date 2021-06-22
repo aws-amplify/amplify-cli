@@ -177,6 +177,12 @@ $util.toJson($ctx.result)
   $util.qr($dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
 #end
 $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#set( $optionalNonNullableFields = [\\"orderId\\", \\"status\\", \\"createdAt\\", \\"name\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
@@ -804,6 +810,12 @@ $util.toJson($ctx.result)
   $util.qr($dynamodbNameOverrideMap.put(\\"status#createdAt\\", \\"statusCreatedAt\\"))
 #end
 $util.qr($ctx.args.input.put(\\"status#createdAt\\",\\"\${ctx.args.input.status}#\${ctx.args.input.createdAt}\\"))
+#set( $optionalNonNullableFields = [\\"orderId\\", \\"status\\", \\"createdAt\\", \\"name\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
@@ -1702,6 +1714,12 @@ exports[`GSI composite sort keys are wrapped in conditional to check presence in
   $util.qr($dynamodbNameOverrideMap.put(\\"firstName#lastName\\", \\"firstNameLastName\\"))
 #end
 $util.qr($ctx.args.input.put(\\"firstName#lastName\\",\\"\${ctx.args.input.firstName}#\${ctx.args.input.lastName}\\"))
+#set( $optionalNonNullableFields = [\\"firstName\\", \\"lastName\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
