@@ -4,17 +4,6 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { ModelAuthTransformer, AppSyncAuthConfiguration, AppSyncAuthMode } from '../ModelAuthTransformer';
 import { KeyTransformer } from '../../../graphql-key-transformer/src/KeyTransformer';
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
 
 const noAuthModeDefaultConfig: AppSyncAuthConfiguration = {
   defaultAuthentication: {
@@ -191,7 +180,6 @@ const getRecursiveSchemaWithDiffModesOnParentType = (authDir1: string, authDir2:
 
 const getTransformer = (authConfig: AppSyncAuthConfiguration) =>
   new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new KeyTransformer(),
@@ -742,7 +730,7 @@ describe('Type directive transformation tests', () => {
     @auth(rules: [
       { allow: private, provider: iam, operations: [read] },
       { allow: groups, groups: ["Group"], operations: [read, update, delete] }
-    ])
+    ]) 
     @key(name: "byUser", fields: ["postUserId"])
     {
     id: ID!
@@ -780,7 +768,7 @@ describe('Type directive transformation tests', () => {
       title: String!
       editors: [PostEditor] @connection(keyName: "byPost", fields: ["id"])
     }
-
+    
     # Create a join model and disable queries as you don't need them
     # and can query through Post.editors and User.posts
     type PostEditor
@@ -794,7 +782,7 @@ describe('Type directive transformation tests', () => {
       post: Post! @connection(fields: ["postID"])
       editor: User! @connection(fields: ["editorID"])
     }
-
+    
     type User @model @auth(rules: [{ allow: owner }]) {
       id: ID!
       username: String!

@@ -34,20 +34,9 @@ import AWS = require('aws-sdk');
 import 'isomorphic-fetch';
 
 jest.setTimeout(2000000);
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
+
 const transformAndParseSchema = (schema: string, version: number = TRANSFORM_CURRENT_VERSION): DocumentNode => {
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new VersionedModelTransformer(),
@@ -615,7 +604,6 @@ describe(`Deployed Mutation Condition tests`, () => {
 `;
 
     const transformer = new GraphQLTransform({
-      featureFlags,
       transformers: [
         new DynamoDBModelTransformer(),
         new VersionedModelTransformer(),

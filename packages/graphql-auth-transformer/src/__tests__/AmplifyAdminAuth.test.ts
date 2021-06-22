@@ -1,18 +1,8 @@
 import { GraphQLTransform } from 'graphql-transformer-core';
+import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 import _ from 'lodash';
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
 
 test('Test simple model with public auth rule and amplify admin app is present', () => {
   const validSchema = `
@@ -24,7 +14,6 @@ test('Test simple model with public auth rule and amplify admin app is present',
     }
     `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -57,7 +46,6 @@ test('Test simple model with public auth rule and amplify admin app is not enabl
       }
       `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -86,7 +74,6 @@ test('Test simple model with private auth rule and amplify admin app is present'
       }
       `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -119,7 +106,6 @@ test('Test simple model with private auth rule and amplify admin app not enabled
       }
       `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -152,7 +138,6 @@ test('Test model with public auth rule without all operations and amplify admin 
       }
       `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -197,7 +182,6 @@ test('Test simple model with private auth rule, few operations, and amplify admi
       }
       `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -241,7 +225,6 @@ test('Test simple model with private IAM auth rule, few operations, and amplify 
       }
       `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -280,7 +263,6 @@ test('Test simple model with AdminUI enabled should add IAM policy only for fiel
       }
       `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({

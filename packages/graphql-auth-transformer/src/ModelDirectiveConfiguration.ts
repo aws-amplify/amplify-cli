@@ -41,14 +41,12 @@ type ModelDirectiveOperation = {
 export class ModelDirectiveConfiguration {
   map: Map<ModelDirectiveOperationType, ModelDirectiveOperation> = new Map();
 
-  constructor(directive: DirectiveNode, def: ObjectTypeDefinitionNode, improvePluralization: boolean) {
+  constructor(directive: DirectiveNode, def: ObjectTypeDefinitionNode) {
     const typeName = def.name.value;
     const directiveArguments: ModelDirectiveArgs = getDirectiveArguments(directive);
 
     const makeName = (operation: ModelDirectiveOperationType, nameOverride?: string, isList: boolean = false) =>
-      nameOverride
-        ? nameOverride
-        : graphqlName(operation + (isList ? plurality(toUpper(typeName), improvePluralization) : toUpper(typeName)));
+      nameOverride ? nameOverride : graphqlName(operation + (isList ? plurality(toUpper(typeName)) : toUpper(typeName)));
 
     let shouldHaveCreate = true;
     let shouldHaveUpdate = true;

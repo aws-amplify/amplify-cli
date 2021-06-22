@@ -28,17 +28,7 @@ import 'isomorphic-fetch';
 (global as any).fetch = require('node-fetch');
 
 jest.setTimeout(2000000);
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
+
 describe(`ModelAuthTests`, () => {
   const cf = new CloudFormationClient('us-west-2');
 
@@ -205,7 +195,6 @@ describe(`ModelAuthTests`, () => {
       }
       `;
     const transformer = new GraphQLTransform({
-      featureFlags,
       transformers: [
         new DynamoDBModelTransformer(),
         new ModelConnectionTransformer(),
@@ -929,7 +918,7 @@ describe(`ModelAuthTests`, () => {
     expect((req2.errors[0] as any).errorType).toEqual('Unauthorized');
   });
 
-  test(`Test listSalaries w/ Admin group protection authorized`, async () => {
+  test(`Test listSalarys w/ Admin group protection authorized`, async () => {
     const req = await GRAPHQL_CLIENT_1.query(
       `
       mutation {
@@ -947,7 +936,7 @@ describe(`ModelAuthTests`, () => {
     const req2 = await GRAPHQL_CLIENT_1.query(
       `
       query {
-          listSalaries(filter: { wage: { eq: 101 }}) {
+          listSalarys(filter: { wage: { eq: 101 }}) {
               items {
                   id
                   wage
@@ -957,12 +946,12 @@ describe(`ModelAuthTests`, () => {
       `,
       {},
     );
-    expect(req2.data.listSalaries.items.length).toEqual(1);
-    expect(req2.data.listSalaries.items[0].id).toEqual(req.data.createSalary.id);
-    expect(req2.data.listSalaries.items[0].wage).toEqual(101);
+    expect(req2.data.listSalarys.items.length).toEqual(1);
+    expect(req2.data.listSalarys.items[0].id).toEqual(req.data.createSalary.id);
+    expect(req2.data.listSalarys.items[0].wage).toEqual(101);
   });
 
-  test(`Test listSalaries w/ Admin group protection not authorized`, async () => {
+  test(`Test listSalarys w/ Admin group protection not authorized`, async () => {
     const req = await GRAPHQL_CLIENT_1.query(
       `
       mutation {
@@ -980,7 +969,7 @@ describe(`ModelAuthTests`, () => {
     const req2 = await GRAPHQL_CLIENT_2.query(
       `
       query {
-          listSalaries(filter: { wage: { eq: 102 }}) {
+          listSalarys(filter: { wage: { eq: 102 }}) {
               items {
                   id
                   wage
@@ -990,7 +979,7 @@ describe(`ModelAuthTests`, () => {
       `,
       {},
     );
-    expect(req2.data.listSalaries.items).toEqual([]);
+    expect(req2.data.listSalarys.items).toEqual([]);
   });
 
   /**
@@ -2828,7 +2817,7 @@ describe(`ModelAuthTests`, () => {
 
     const listResponse = await GRAPHQL_CLIENT_3.query(
       `query {
-          listTestIdentities(filter: { title: { eq: "Test title update" } }, limit: 100) {
+          listTestIdentitys(filter: { title: { eq: "Test title update" } }, limit: 100) {
               items {
                   id
                   title
@@ -2838,7 +2827,7 @@ describe(`ModelAuthTests`, () => {
       }`,
       {},
     );
-    const relevantPost = listResponse.data.listTestIdentities.items.find(p => p.id === getReq.data.getTestIdentity.id);
+    const relevantPost = listResponse.data.listTestIdentitys.items.find(p => p.id === getReq.data.getTestIdentity.id);
     expect(relevantPost).toBeTruthy();
     expect(relevantPost.title).toEqual('Test title update');
     expect(relevantPost.owner.slice(0, 19)).toEqual('https://cognito-idp');

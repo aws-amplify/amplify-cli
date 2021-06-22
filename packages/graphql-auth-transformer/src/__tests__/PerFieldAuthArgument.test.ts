@@ -4,17 +4,7 @@ import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { KeyTransformer } from 'graphql-key-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
+
 test('Test that subscriptions are only generated if the respective mutation operation exists', () => {
   const validSchema = `
       type Salary
@@ -29,7 +19,6 @@ test('Test that subscriptions are only generated if the respective mutation oper
         secret: String @auth(rules: [{allow: owner}])
       }`;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -72,14 +61,14 @@ test('Test per-field @auth on a @connection field', () => {
     {
       id: ID!
       name: String!
-      tags: [Tag]
+      tags: [Tag] 
         @connection(keyName: "byTags", fields: ["id"])
         @auth(rules: [ { allow: groups, groups: ["admin"] } ])
     }
     type Tag
       @model
       @key(name: "byTags", fields: ["postID"])
-      @auth(rules: [ { allow: groups, groups: ["admin"] } ])
+      @auth(rules: [ { allow: groups, groups: ["admin"] } ]) 
     {
       id: ID!
       postID: ID!
@@ -89,7 +78,6 @@ test('Test per-field @auth on a @connection field', () => {
     }
   `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new KeyTransformer(),
@@ -125,7 +113,6 @@ test('Test per-field @auth without model', () => {
   `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({

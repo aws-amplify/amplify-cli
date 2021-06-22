@@ -368,7 +368,7 @@ export class ModelAuthTransformer extends Transformer {
     this.propagateAuthDirectivesToNestedTypes(def, rules, ctx);
 
     // Retrieve the configuration options for the related @model directive
-    const modelConfiguration = new ModelDirectiveConfiguration(modelDirective, def, ctx.featureFlags.getBoolean('improvePluralization'));
+    const modelConfiguration = new ModelDirectiveConfiguration(modelDirective, def);
 
     // Get the directives we need to add to the GraphQL nodes
     const directives = this.getDirectivesForRules(rules, rules.length === 0 ? this.shouldAddDefaultAuthDirective() : false);
@@ -516,11 +516,7 @@ Static group authorization should perform as expected.`,
       const isDeleteRule = isOpRule('delete');
 
       // Retrieve the configuration options for the related @model directive
-      const modelConfiguration = new ModelDirectiveConfiguration(
-        modelDirective,
-        parent,
-        ctx.featureFlags.getBoolean('improvePluralization'),
-      );
+      const modelConfiguration = new ModelDirectiveConfiguration(modelDirective, parent);
       // The field handler adds the read rule on the object
       const readRules = rules.filter((rule: AuthRule) => isReadRule(rule));
       this.protectReadForField(ctx, parent, definition, readRules, modelConfiguration);

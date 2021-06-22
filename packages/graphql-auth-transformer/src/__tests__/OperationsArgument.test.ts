@@ -2,17 +2,6 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
 
 test('Test "read" auth operation', () => {
   const validSchema = `
@@ -24,7 +13,6 @@ test('Test "read" auth operation', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -56,7 +44,6 @@ test('Test "create", "update", "delete" auth operations', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -96,7 +83,6 @@ test('Test that operation overwrites queries in auth operations', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -138,7 +124,6 @@ test('Test that checks subscription resolvers are generated with auth logic', ()
     }
     `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -179,7 +164,6 @@ test('Test that checks subscription resolvers are created without auth logic', (
     }
     `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -223,7 +207,6 @@ test('Test that subscriptions are only generated if the respective mutation oper
     }
     `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({

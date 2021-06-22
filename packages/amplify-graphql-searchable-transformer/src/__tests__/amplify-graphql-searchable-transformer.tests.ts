@@ -3,17 +3,6 @@ import { SearchableModelTransformer } from '../';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { anything, countResources, expect as cdkExpect, haveResource } from '@aws-cdk/assert';
 import { parse } from 'graphql';
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
 
 test('Test SearchableModelTransformer validation happy case', () => {
   const validSchema = `
@@ -26,7 +15,6 @@ test('Test SearchableModelTransformer validation happy case', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -45,7 +33,6 @@ test('Test SearchableModelTransformer vtl', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
 
   const out = transformer.transform(validSchema);
@@ -63,7 +50,6 @@ test('Test SearchableModelTransformer with query overrides', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -81,7 +67,6 @@ test('Test SearchableModelTransformer with only create mutations', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -105,7 +90,6 @@ test('Test SearchableModelTransformer with multiple model searchable directives'
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -124,7 +108,6 @@ test('Test SearchableModelTransformer with sort fields', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -154,7 +137,6 @@ test('it generates expected resources', () => {
  `;
   const transformer = new GraphQLTransform({
     transformers: [new ModelTransformer(), new SearchableModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();

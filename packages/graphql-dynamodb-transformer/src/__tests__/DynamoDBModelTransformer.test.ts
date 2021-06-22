@@ -14,20 +14,6 @@ import {
 import { FeatureFlagProvider, GraphQLTransform, TRANSFORM_BASE_VERSION, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from '../DynamoDBModelTransformer';
 import { getBaseType } from 'graphql-transformer-common';
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    if (name === 'validateTypeNameReservedWords') {
-      return false;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
 
 test('Test DynamoDBModelTransformer validation happy case', () => {
   const validSchema = `
@@ -40,7 +26,6 @@ test('Test DynamoDBModelTransformer validation happy case', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -56,7 +41,6 @@ test('Test DynamoDBModelTransformer with query overrides', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -91,7 +75,6 @@ test('Test DynamoDBModelTransformer with mutation overrides', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -113,7 +96,6 @@ test('Test DynamoDBModelTransformer with only create mutations', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -142,7 +124,6 @@ test('Test DynamoDBModelTransformer with multiple model directives', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -189,7 +170,6 @@ test('Test DynamoDBModelTransformer with filter', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -222,7 +202,6 @@ test('Test DynamoDBModelTransformer with mutations set to null', () => {
       `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -242,7 +221,6 @@ test('Test DynamoDBModelTransformer with queries set to null', () => {
       `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -264,7 +242,6 @@ test('Test DynamoDBModelTransformer with subscriptions set to null', () => {
       `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -288,7 +265,6 @@ test('Test DynamoDBModelTransformer with queries and mutations set to null', () 
       `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -316,7 +292,6 @@ test('Test DynamoDBModelTransformer with advanced subscriptions', () => {
       `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -362,7 +337,6 @@ test('Test DynamoDBModelTransformer with non-model types and enums', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -411,7 +385,6 @@ test('Test DynamoDBModelTransformer with mutation input overrides when mutations
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -446,7 +419,6 @@ test('Test DynamoDBModelTransformer with mutation input overrides when mutations
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -474,7 +446,6 @@ test('Test non model objects contain id as a type for fields', () => {
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -499,7 +470,6 @@ test('Test schema includes attribute enum when only queries specified', () => {
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
     transformConfig: {
       Version: 5,
     },
@@ -519,7 +489,6 @@ test('Test only get does not generate superfluous input and filter types', () =>
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
     transformConfig: {
       Version: 5,
     },
@@ -539,7 +508,6 @@ test('Test timestamp parameters when generating resolvers and output schema', ()
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const result = transformer.transform(validSchema);
   expect(result).toBeDefined();
@@ -561,7 +529,6 @@ test('Test resolver template not to auto generate createdAt and updatedAt when t
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const result = transformer.transform(validSchema);
   expect(result).toBeDefined();
@@ -583,7 +550,6 @@ test('Test create and update mutation input should have timestamps as nullable f
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const result = transformer.transform(validSchema);
   expect(result).toBeDefined();
@@ -603,7 +569,6 @@ test('Test not to include createdAt and updatedAt field when timestamps is set t
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const result = transformer.transform(validSchema);
   expect(result).toBeDefined();
@@ -637,7 +602,6 @@ test('DynamoDB transformer should add default primary key when not defined', () 
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const result = transformer.transform(validSchema);
   expect(result).toBeDefined();
@@ -663,7 +627,6 @@ test('DynamoDB transformer should not add default primary key when ID is defined
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const result = transformer.transform(validSchema);
   expect(result).toBeDefined();
@@ -714,7 +677,6 @@ test('Schema should compile successfully when subscription is missing from schem
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -757,7 +719,6 @@ function transformerVersionSnapshot(version: number): string {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer()],
-    featureFlags,
     transformConfig: {
       Version: version,
     },
