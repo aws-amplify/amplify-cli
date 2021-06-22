@@ -900,7 +900,7 @@ export const importedAuthEnvInit = async (
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
-    return await headlessImport(context, cognito, identity, providerName, resourceName, resource, resourceParameters, headlessParams);
+    return await headlessImport(context, cognito, identity, providerName, resourceName, resourceParameters, headlessParams);
   }
 
   // If region mismatch, signal prompt for new arguments, only in interactive mode, headless does not matter
@@ -1113,13 +1113,12 @@ export const importedAuthEnvInit = async (
   };
 };
 
-const headlessImport = async (
+export const headlessImport = async (
   context: $TSContext,
   cognito: ICognitoUserPoolService,
   identity: IIdentityPoolService,
   providerName: string,
   resourceName: string,
-  resource: MetaConfiguration,
   resourceParameters: ResourceParameters,
   headlessParams: ImportAuthHeadlessParameters,
 ): Promise<{ succeeded: boolean; envSpecificParameters: EnvSpecificResourceParameters }> => {
@@ -1131,7 +1130,7 @@ const headlessImport = async (
   const projectConfig = context.amplify.getProjectConfig();
 
   // If region mismatch, signal prompt for new arguments, only in interactive mode, headless does not matter
-  if (resourceParameters.region !== Region) {
+  if (resourceParameters.region && resourceParameters.region !== Region) {
     throw new Error(importMessages.NewEnvDifferentRegion(resourceName, resourceParameters.region, Region));
   }
 
@@ -1232,7 +1231,7 @@ const headlessImport = async (
   // Import questions succeeded, create the create the required CLI resource state from the answers.
   const projectType: string = projectConfig.frontend;
 
-  const newState = await updateStateFiles(context, questionParameters, answers, projectType, false);
+  const newState = await updateStateFiles(context, questionParameters, answers, projectType, true);
 
   return {
     succeeded: true,
