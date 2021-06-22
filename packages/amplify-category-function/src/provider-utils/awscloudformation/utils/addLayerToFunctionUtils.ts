@@ -1,14 +1,17 @@
-import _ from 'lodash';
-import { FunctionRuntime, FunctionDependency, LambdaLayer, ProjectLayer, ExternalLayer } from 'amplify-function-plugin-interface';
-import { category } from '../../..';
-import { ServiceName } from './constants';
-import inquirer, { CheckboxQuestion, ListQuestion, InputQuestion } from 'inquirer';
+import { $TSContext, $TSMeta } from 'amplify-cli-core';
+import { ExternalLayer, FunctionDependency, FunctionRuntime, LambdaLayer, ProjectLayer } from 'amplify-function-plugin-interface';
 import enquirer from 'enquirer';
-import { LayerMetadataFactory } from './layerParams';
-import { getLayerRuntimes } from './layerRuntimes';
+import inquirer, { CheckboxQuestion, InputQuestion } from 'inquirer';
+import _ from 'lodash';
+import { categoryName } from '../../../constants';
+import { ServiceName } from './constants';
+import { LayerCloudState } from './layerCloudState';
+import { getLayerRuntimes } from './layerConfiguration';
+import { layerVersionQuestion, mapVersionNumberToChoice } from './layerHelpers';
 
-const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
 export const provideExistingARNsPrompt = 'Provide existing Lambda layer ARNs';
+const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
+const defaultLayerVersionPrompt = 'Always choose latest version';
 const versionSelectionPrompt = (layerName: string) => `Select a version for ${layerName}:`;
 const ARNEntryPrompt = (remainingLayers: number) => `Enter up to ${remainingLayers} existing Lambda layer ARNs (comma-separated):`;
 const layerOrderPrompt = 'Modify the layer order (Layers with conflicting files will overwrite contents of layers earlier in the list):';
@@ -23,21 +26,20 @@ const layerARNRegex = /^arn:[a-zA-Z0-9-]+:lambda:[a-zA-Z0-9-]+:\d{12}:layer:[a-z
  * @param previousSelections previous layers added to the function (used to populate default selections)
  */
 export const askLayerSelection = async (
-  layerMetadataFactory: LayerMetadataFactory,
-  amplifyMeta,
+  context: $TSContext,
+  amplifyMeta: $TSMeta,
   runtimeValue: string,
   previousSelections: LambdaLayer[] = [],
-  backendDir: string,
 ): Promise<{ lambdaLayers: LambdaLayer[]; dependsOn: FunctionDependency[]; askArnQuestion: boolean }> => {
   const lambdaLayers: LambdaLayer[] = [];
   const dependsOn: FunctionDependency[] = [];
 
-  const functionMeta = _.get(amplifyMeta, [category]) || {};
+  const functionMeta = _.get(amplifyMeta, [categoryName]) || {};
   const layerOptions = _.keys(functionMeta)
     .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
     .filter(key => {
       // filter by compatible runtimes
-      return isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes || getLayerRuntimes(backendDir, key));
+      return isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes || getLayerRuntimes(key));
     });
 
   if (layerOptions.length === 0) {
@@ -58,36 +60,65 @@ export const askLayerSelection = async (
     choices: choices,
     validate: (input: string[]) => input.length <= 5 || 'Select at most 5 entries from the list',
   };
-  let layerSelections = (await inquirer.prompt(layerSelectionQuestion)).layerSelections;
+  let layerSelections: string[] = (await inquirer.prompt(layerSelectionQuestion)).layerSelections;
   const askArnQuestion = layerSelections.includes(provideExistingARNsPrompt);
   layerSelections = layerSelections.filter(selection => selection !== provideExistingARNsPrompt);
 
-  for (let selection of layerSelections) {
-    const currentSelectionDefaults = filterProjectLayers(previousSelections).find(sel => sel.resourceName === selection);
-    const currentVersion = currentSelectionDefaults ? currentSelectionDefaults.version.toString() : undefined;
-    const layerState = layerMetadataFactory(selection);
-    await layerState.syncVersions(); // make sure we are reflecting the latest changes;
-    const layerVersionPrompt: ListQuestion = {
-      type: 'list',
-      name: 'versionSelection',
-      message: versionSelectionPrompt(selection),
-      choices: layerState.listVersions().map(num => num.toString()),
-      default: currentVersion,
-      filter: numStr => parseInt(numStr, 10),
+  for (const layerName of layerSelections) {
+    const layerCloudState = LayerCloudState.getInstance(layerName);
+    const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, layerName);
+    const layerVersionChoices = layerVersions.map(mapVersionNumberToChoice);
+
+    const projectLayer: ProjectLayer = {
+      type: 'ProjectLayer',
+      resourceName: layerName,
+      env: context.amplify.getEnvInfo().envName,
+      version: undefined,
+      isLatestVersionSelected: undefined,
     };
 
-    const versionSelection = (await inquirer.prompt(layerVersionPrompt)).versionSelection as number;
-    lambdaLayers.push({
-      type: 'ProjectLayer',
-      resourceName: selection,
-      version: versionSelection,
-    });
+    // skip asking version for a new layer
+    if (layerVersionChoices.length > 0) {
+      layerVersionChoices.unshift(defaultLayerVersionPrompt);
+      const previousLayerSelection = _.first(filterProjectLayers(previousSelections).filter(prev => prev.resourceName === layerName));
+
+      let defaultLayerSelection: string;
+
+      if (previousLayerSelection === undefined || previousLayerSelection.isLatestVersionSelected) {
+        defaultLayerSelection = defaultLayerVersionPrompt;
+      } else {
+        const previouslySelectedLayerVersion = _.first(layerVersions.filter(v => v.Version === previousLayerSelection.version));
+
+        // Fallback to defaultLayerVersionPrompt as it is possible that a function is associated with a non-existent layer version
+        defaultLayerSelection = previouslySelectedLayerVersion
+          ? mapVersionNumberToChoice(previouslySelectedLayerVersion)
+          : defaultLayerVersionPrompt;
+      }
+
+      const versionSelection = (
+        await inquirer.prompt(layerVersionQuestion(layerVersionChoices, versionSelectionPrompt(layerName), defaultLayerSelection))
+      ).versionSelection;
+
+      const isLatestVersionSelected = versionSelection === defaultLayerVersionPrompt;
+      const selectedVersion =
+        versionSelection === defaultLayerVersionPrompt ? defaultLayerVersionPrompt : Number(_.first(versionSelection.split(':')));
+
+      projectLayer.version = selectedVersion;
+      projectLayer.isLatestVersionSelected = isLatestVersionSelected;
+    } else {
+      projectLayer.version = defaultLayerVersionPrompt;
+      projectLayer.isLatestVersionSelected = true;
+    }
+
+    lambdaLayers.push(projectLayer);
+
     dependsOn.push({
-      category,
-      resourceName: selection,
+      category: categoryName,
+      resourceName: layerName,
       attributes: ['Arn'], // the layer doesn't actually depend on the ARN but there's some nasty EJS at the top of the function template that breaks without this, so here it is. Hurray for tight coupling!
     });
   }
+
   return {
     lambdaLayers,
     dependsOn,

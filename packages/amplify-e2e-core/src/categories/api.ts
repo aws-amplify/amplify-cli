@@ -259,10 +259,46 @@ export function addRestApi(cwd: string, settings: any) {
     if (!('existingLambda' in settings) && !('isCrud' in settings)) {
       reject(new Error('Missing property in settings object in addRestApi()'));
     } else {
+      const isFirstRestApi = settings.isFirstRestApi ?? true;
       let chain = spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
         .wait('Please select from one of the below mentioned services')
         .send(KEY_DOWN_ARROW)
-        .sendCarriageReturn() // REST
+        .sendCarriageReturn(); // REST
+
+      if (!isFirstRestApi) {
+        chain.wait('Would you like to add a new path to an existing REST API');
+
+        if (settings.path) {
+          chain
+            .sendConfirmYes()
+            .wait('Please select the REST API you would want to update')
+            .sendCarriageReturn() // Select the first REST API
+            .wait('Provide a path')
+            .sendLine(settings.path)
+            .wait('Choose a lambda source')
+            .send(KEY_DOWN_ARROW)
+            .sendCarriageReturn() // Existing lambda
+            .wait('Choose the Lambda function to invoke by this path')
+            .sendCarriageReturn() // Pick first one
+            .wait('Restrict API access')
+            .sendConfirmNo() // Do not restrict access
+            .wait('Do you want to add another path')
+            .sendConfirmNo() // Do not add another path
+            .sendEof()
+            .run((err: Error) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve();
+              }
+            });
+          return;
+        } else {
+          chain.sendConfirmNo();
+        }
+      }
+
+      chain
         .wait('Provide a friendly name for your resource to be used as a label for this category in the project')
         .sendCarriageReturn()
         .wait('Provide a path')

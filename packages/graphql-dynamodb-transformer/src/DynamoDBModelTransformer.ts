@@ -27,6 +27,7 @@ import {
   makeUpdateInputObject,
   makeModelXConditionInputObject,
   makeAttributeTypeEnum,
+  getFieldsOptionalNonNullableField,
 } from './definitions';
 import { ModelDirectiveArgs, getCreatedAtFieldName, getUpdatedAtFieldName } from './ModelDirectiveArgs';
 import { ResourceFactory } from './resources';
@@ -361,6 +362,10 @@ export class DynamoDBModelTransformer extends Transformer {
 
     if (shouldMakeUpdate) {
       const updateInput = makeUpdateInputObject(def, nonModelArray, ctx, isSyncEnabled);
+      const optionalNonNullableFields = getFieldsOptionalNonNullableField(
+        updateInput.fields.map(r => r),
+        def,
+      );
       if (!ctx.getType(updateInput.name.value)) {
         ctx.addInput(updateInput);
       }
@@ -369,6 +374,7 @@ export class DynamoDBModelTransformer extends Transformer {
         nameOverride: updateFieldNameOverride,
         syncConfig: this.opts.SyncConfig,
         timestamps: timestampFields,
+        optionalNonNullableFields,
       });
       const resourceId = ResolverResourceIDs.DynamoDBUpdateResolverResourceID(typeName);
       ctx.setResource(resourceId, updateResolver);
@@ -706,7 +712,7 @@ export class DynamoDBModelTransformer extends Transformer {
   }
 
   // Due to the current architecture of Transformers we've to handle the 'id' field removal
-  // here, because KeyTranformer will not be invoked if there are no @key directives declared
+  // here, because KeyTransformer will not be invoked if there are no @key directives declared
   // on the type.
   private updateMutationConditionInput(ctx: TransformerContext, type: ObjectTypeDefinitionNode): void {
     if (this.supportsConditions(ctx)) {

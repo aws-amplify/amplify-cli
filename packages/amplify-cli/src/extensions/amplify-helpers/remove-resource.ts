@@ -1,9 +1,17 @@
-import * as path from 'path';
+import {
+  $TSContext,
+  exitOnNextTick,
+  MissingParametersError,
+  pathManager,
+  promptConfirmationRemove,
+  ResourceDoesNotExistError,
+  stateManager,
+} from 'amplify-cli-core';
 import * as inquirer from 'inquirer';
 import _ from 'lodash';
-import { stateManager, $TSContext, pathManager, ResourceDoesNotExistError, MissingParametersError, exitOnNextTick } from 'amplify-cli-core';
-import { updateBackendConfigAfterResourceRemove } from './update-backend-config';
+import * as path from 'path';
 import { removeResourceParameters } from './envResourceParams';
+import { updateBackendConfigAfterResourceRemove } from './update-backend-config';
 
 export async function forceRemoveResource(context: $TSContext, category, name, dir) {
   const amplifyMeta = stateManager.getMeta();
@@ -36,7 +44,7 @@ export async function removeResource(
   context: $TSContext,
   category,
   resourceName,
-  questionOptions: { serviceSuffix?; serviceDeletionInfo?: [] } = {},
+  questionOptions: { serviceSuffix?; serviceDeletionInfo?: {} } = {},
 ) {
   const amplifyMeta = stateManager.getMeta();
 
@@ -91,28 +99,18 @@ export async function removeResource(
 
   const resourceDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
 
-  let promptText =
-    'Are you sure you want to delete the resource? This action deletes all files related to this resource from the backend directory.';
-
-  // For imported resources we have to show a different message to ensure customers that resource
-  // will NOT be deleted in the cloud.
-  if (serviceType === 'imported') {
-    promptText =
-      'Are you sure you want to unlink this imported resource from this Amplify backend environment? The imported resource itself will not be deleted.';
-  }
-
-  const confirm = (context.input.options && context.input.options.yes) || (await context.amplify.confirmPrompt(promptText));
+  const confirm = await promptConfirmationRemove(context, serviceType);
 
   if (!confirm) {
     return;
   }
 
   try {
-    return deleteResourceFiles(context, category, resourceName, resourceDir);
+    return await deleteResourceFiles(context, category, resourceName, resourceDir);
   } catch (err) {
     context.print.info(err.stack);
     context.print.error('An error occurred when removing the resources from the local directory');
-    context.usageData.emitError(err);
+    await context.usageData.emitError(err);
     process.exitCode = 1;
   }
 }
@@ -126,8 +124,10 @@ const deleteResourceFiles = async (context, category, resourceName, resourceDir,
         resourceItem.dependsOn.forEach(dependsOnItem => {
           if (dependsOnItem.category === category && dependsOnItem.resourceName === resourceName) {
             context.print.error('Resource cannot be removed because it has a dependency on another resource');
-            context.print.error(`Dependency: ${resourceItem.service}:${resourceItem.resourceName}`);
-            throw new Error('Resource cannot be removed because it has a dependency on another resource');
+            context.print.error(`Dependency: ${resourceItem.service} - ${resourceItem.resourceName}`);
+            const error = new Error('Resource cannot be removed because it has a dependency on another resource');
+            error.stack = undefined;
+            throw error;
           }
         });
       }

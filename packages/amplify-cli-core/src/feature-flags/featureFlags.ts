@@ -621,6 +621,12 @@ export class FeatureFlags {
         defaultValueForNewProjects: true,
       },
       {
+        name: 'emitAuthProvider',
+        type: 'boolean',
+        defaultValueForExistingProjects: false,
+        defaultValueForNewProjects: true,
+      },
+      {
         name: 'generateIndexRules',
         type: 'boolean',
         defaultValueForExistingProjects: false,
