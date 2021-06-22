@@ -8,7 +8,7 @@ import { constructCloudWatchEventComponent } from '../utils/cloudformationHelper
 import { minuteHelper, hourHelper, timeHelper, weekHelper, monthHelper, yearHelper } from '../utils/cronHelper';
 import { CronExpressionsMode } from '../utils/constants';
 import { CronExpression } from '../utils/cronExpression';
-const categoryName = 'function';
+import { categoryName } from '../../../constants';
 
 export async function scheduleWalkthrough(
   context: any,

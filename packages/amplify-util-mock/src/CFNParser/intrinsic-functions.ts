@@ -103,10 +103,12 @@ export function cfnRef(valNode, { params, resources }: CloudFormationParseContex
   }
 
   if (Object.keys(resources).includes(key)) {
-    if (!('ref' in resources[key].result)) {
+    const result = resources[key]?.result ?? {};
+    const refKey = Object.keys(result).find(k => k.toLowerCase() === 'ref');
+    if (!refKey) {
       throw new Error(`Ref is missing in resource ${key}`);
     }
-    return resources[key].result.ref;
+    return result[refKey];
   }
   console.warn(`Could not find ref for ${JSON.stringify(valNode)}. Using unsubstituted value.`);
   return key;

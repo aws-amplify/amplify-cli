@@ -13,7 +13,7 @@ declare global {
   }
 }
 
-import { isRegExp, format } from 'util';
+import { types, format } from 'util';
 import { Recorder } from '../asciinema-recorder';
 import { AssertionError } from 'assert';
 import strip = require('strip-ansi');
@@ -189,34 +189,34 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendKeyDown: function (repeat?: number): ExecutionContext {
-      const repeatitions = repeat ? Math.max(1, repeat) : 1;
+      const repetitions = repeat ? Math.max(1, repeat) : 1;
       var _send: ExecutionStep = {
         fn: () => {
-          for (let i = 0; i < repeatitions; i++) {
+          for (let i = 0; i < repetitions; ++i) {
             context.process.write(KEY_DOWN_ARROW);
           }
           return true;
         },
         name: '_send',
         shift: true,
-        description: `'[send] <Down> (${repeatitions})`,
+        description: `'[send] <Down> (${repetitions})`,
         requiresInput: false,
       };
       context.queue.push(_send);
       return chain(context);
     },
     sendKeyUp: function (repeat?: number): ExecutionContext {
-      const repeatitions = repeat ? Math.max(1, repeat) : 1;
+      const repetitions = repeat ? Math.max(1, repeat) : 1;
       var _send: ExecutionStep = {
         fn: () => {
-          for (let i = 0; i < repeatitions; i++) {
+          for (let i = 0; i < repetitions; ++i) {
             context.process.write(KEY_UP_ARROW);
           }
           return true;
         },
         name: '_send',
         shift: true,
-        description: `'[send] <Up> (${repeatitions})`,
+        description: `'[send] <Up> (${repetitions})`,
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -454,9 +454,14 @@ function chain(context: Context): ExecutionContext {
       function onLine(data: string | Buffer) {
         noOutputTimer.reschedule(context.noOutputTimeout);
         data = data.toString();
-        if (process.env && process.env.VERBOSE_LOGGING_DO_NOT_USE_OR_YOU_WILL_BE_FIRED) {
-          console.log(data);
+
+        if (process.env && process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED) {
+          const spinnerRegex = new RegExp(/.*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏).*/);
+          if (spinnerRegex.test(data) === false && strip(data).trim().length > 0) {
+            console.log(data);
+          }
         }
+
         if (context.stripColors) {
           data = strip(data);
         }
@@ -550,7 +555,7 @@ function chain(context: Context): ExecutionContext {
 }
 
 function testExpectation(data: string, expectation: string | RegExp, context: Context): boolean {
-  if (isRegExp(expectation)) {
+  if (types.isRegExp(expectation)) {
     return expectation.test(data);
   } else if (context.ignoreCase) {
     return data.toLowerCase().indexOf(expectation.toLowerCase()) > -1;
@@ -574,7 +579,7 @@ function createUnexpectedEndError(message: string, remainingQueue: ExecutionStep
 
 function createExpectationError(expected: string | RegExp, actual: string) {
   var expectation;
-  if (isRegExp(expected)) {
+  if (types.isRegExp(expected)) {
     expectation = 'to match ' + expected;
   } else {
     expectation = 'to contain ' + JSON.stringify(expected);

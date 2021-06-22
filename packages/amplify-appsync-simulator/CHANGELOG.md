@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.26.6...amplify-appsync-simulator@1.27.0) (2021-06-02)
+
+
+
+# 4.52.0 (2021-06-01)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-cli/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-cli/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+
+
+
+
+
 ## [1.26.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.26.5...amplify-appsync-simulator@1.26.6) (2021-05-26)
 
 **Note:** Version bump only for package amplify-appsync-simulator

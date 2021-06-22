@@ -12,8 +12,8 @@ import {
 import { ServiceName } from './constants';
 import _ from 'lodash';
 import { LayerParameters } from './layerParams';
-import { $TSContext } from 'amplify-cli-core';
-import { category } from '../../../constants';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { categoryName } from '../../../constants';
 /*
  * This file contains the logic for loading, selecting and executing function plugins (currently runtime and template plugins)
  */
@@ -21,7 +21,7 @@ import { category } from '../../../constants';
 /**
  * Selects a function template
  */
-export async function templateWalkthrough(context: any, params: Partial<FunctionParameters>): Promise<FunctionTemplateParameters> {
+export async function templateWalkthrough(context: $TSContext, params: Partial<FunctionParameters>): Promise<FunctionTemplateParameters> {
   const { service } = params.providerContext;
   const selectionOptions: PluginSelectionOptions<FunctionTemplateCondition> = {
     pluginType: 'functionTemplate',
@@ -57,7 +57,7 @@ export async function templateWalkthrough(context: any, params: Partial<Function
  * Selects one or more runtimes for a Lambda layer
  */
 export async function runtimeWalkthrough(
-  context: any,
+  context: $TSContext,
   params: Partial<FunctionParameters> | Partial<LayerParameters>,
 ): Promise<Array<Pick<FunctionParameters, 'runtimePluginId'> & FunctionRuntimeParameters>> {
   const { service } = params.providerContext;
@@ -72,8 +72,7 @@ export async function runtimeWalkthrough(
     predicate: condition => {
       return condition.provider === params.providerContext.provider && condition.services.includes(service);
     },
-    selectionPrompt:
-      service === ServiceName.LambdaLayer ? 'Select up to 2 compatible runtimes:' : 'Choose the runtime that you want to use:',
+    selectionPrompt: 'Choose the runtime that you want to use:',
     notFoundMessage: `No runtimes found for provider ${params.providerContext.provider} and service ${params.providerContext.service}`,
     service,
     runtimeState: runtimeLayers,
@@ -121,7 +120,7 @@ async function _functionRuntimeWalkthroughHelper(
  * Parses plugin metadata to present plugin selections to the user and return the selection.
  */
 async function getSelectionsFromContributors<T>(
-  context: any,
+  context: $TSContext,
   selectionOptions: PluginSelectionOptions<T>,
 ): Promise<Array<PluginSelection>> {
   const notFoundSuffix = 'You can download and install additional plugins then rerun this command';
@@ -170,7 +169,7 @@ async function getSelectionsFromContributors<T>(
     // ask which template to use
     let answer = await inquirer.prompt([
       {
-        type: selectionOptions.service === ServiceName.LambdaLayer ? 'checkbox' : 'list',
+        type: 'list',
         name: 'selection',
         message: selectionOptions.selectionPrompt,
         choices: selections,
@@ -193,7 +192,7 @@ async function getSelectionsFromContributors<T>(
   });
 }
 
-export async function loadPluginFromFactory(pluginPath, expectedFactoryFunction, context): Promise<any> {
+export async function loadPluginFromFactory(pluginPath: string, expectedFactoryFunction: string, context: $TSContext): Promise<$TSAny> {
   let plugin;
   try {
     plugin = await import(pluginPath);
@@ -210,7 +209,7 @@ export async function getRuntimeManager(
   context: $TSContext,
   resourceName: string,
 ): Promise<FunctionRuntimeLifecycleManager & { runtime: string }> {
-  const { pluginId, functionRuntime } = context.amplify.readBreadcrumbs(category, resourceName);
+  const { pluginId, functionRuntime } = context.amplify.readBreadcrumbs(categoryName, resourceName);
   return {
     ...((await context.amplify.loadRuntimePlugin(context, pluginId)) as FunctionRuntimeLifecycleManager),
     runtime: functionRuntime,

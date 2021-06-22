@@ -18,8 +18,10 @@ import {
   raw,
   comment,
   forEach,
+  list,
   and,
   RESOLVER_VERSION_ID,
+  Expression,
 } from 'graphql-mapping-template';
 import {
   ResourceConstants,
@@ -45,6 +47,10 @@ type MutationResolverInput = {
     createdAtField?: string;
     updatedAtField?: string;
   };
+};
+
+type MutationUpdateResolverInput = MutationResolverInput & {
+  optionalNonNullableFields: string[];
 };
 
 export class ResourceFactory {
@@ -395,15 +401,7 @@ export class ResourceFactory {
       RequestMappingTemplate: printBlock('Prepare DynamoDB PutItem Request')(
         compoundExpression([
           qref(`$context.args.input.put("__typename", "${type}")`),
-          set(
-            ref('condition'),
-            obj({
-              expression: str('attribute_not_exists(#id)'),
-              expressionNames: obj({
-                '#id': str('id'),
-              }),
-            }),
-          ),
+          this.addDefaultConditionExpression('create'),
           iff(
             ref('context.args.condition'),
             compoundExpression([
@@ -475,9 +473,18 @@ export class ResourceFactory {
     );
   }
 
-  public makeUpdateResolver({ type, nameOverride, syncConfig, mutationTypeName = 'Mutation', timestamps }: MutationResolverInput) {
+  public makeUpdateResolver({
+    type,
+    nameOverride,
+    syncConfig,
+    mutationTypeName = 'Mutation',
+    timestamps,
+    optionalNonNullableFields,
+  }: MutationUpdateResolverInput) {
     const fieldName = nameOverride ? nameOverride : graphqlName(`update` + toUpper(type));
     const isSyncEnabled = syncConfig ? true : false;
+    const optionalNonNullableExpression: Expression[] = optionalNonNullableFields.map(str);
+
     return new AppSync.Resolver({
       ApiId: Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'),
       DataSourceName: Fn.GetAtt(ModelResourceIDs.ModelTableDataSourceID(type), 'Name'),
@@ -485,6 +492,14 @@ export class ResourceFactory {
       TypeName: mutationTypeName,
       RequestMappingTemplate: print(
         compoundExpression([
+          set(ref('optionalNonNullableFields'), list(optionalNonNullableExpression)),
+          forEach(ref('field'), ref('optionalNonNullableFields'), [
+            iff(
+              and([ref('context.arguments.input.keySet().contains($field)'), ref('util.isNull($context.args.input.get($field))')]),
+              ref('util.error("An argument you marked as Non-Null is set to Null in the query or the body of your request.")'),
+            ),
+          ]),
+
           ifElse(
             raw(`$${ResourceConstants.SNIPPETS.AuthCondition} && $${ResourceConstants.SNIPPETS.AuthCondition}.expression != ""`),
             compoundExpression([
@@ -501,38 +516,7 @@ export class ResourceFactory {
                 ]),
               ),
             ]),
-            ifElse(
-              ref(ResourceConstants.SNIPPETS.ModelObjectKey),
-              compoundExpression([
-                set(
-                  ref('condition'),
-                  obj({
-                    expression: str(''),
-                    expressionNames: obj({}),
-                    expressionValues: obj({}),
-                  }),
-                ),
-                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`), [
-                  ifElse(
-                    raw('$velocityCount == 1'),
-                    qref('$condition.put("expression", "attribute_exists(#keyCondition$velocityCount)")'),
-                    qref('$condition.put(\
-"expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
-                  ),
-                  qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")'),
-                ]),
-              ]),
-              set(
-                ref('condition'),
-                obj({
-                  expression: str('attribute_exists(#id)'),
-                  expressionNames: obj({
-                    '#id': str('id'),
-                  }),
-                  expressionValues: obj({}),
-                }),
-              ),
-            ),
+            this.addDefaultConditionExpression('update'),
           ),
           ...(timestamps && timestamps.updatedAtField
             ? [
@@ -776,36 +760,7 @@ export class ResourceFactory {
                 ]),
               ),
             ]),
-            ifElse(
-              ref(ResourceConstants.SNIPPETS.ModelObjectKey),
-              compoundExpression([
-                set(
-                  ref('condition'),
-                  obj({
-                    expression: str(''),
-                    expressionNames: obj({}),
-                  }),
-                ),
-                forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`), [
-                  ifElse(
-                    raw('$velocityCount == 1'),
-                    qref('$condition.put("expression", "attribute_exists(#keyCondition$velocityCount)")'),
-                    qref('$condition.put(\
-"expression", "$condition.expression AND attribute_exists(#keyCondition$velocityCount)")'),
-                  ),
-                  qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")'),
-                ]),
-              ]),
-              set(
-                ref('condition'),
-                obj({
-                  expression: str('attribute_exists(#id)'),
-                  expressionNames: obj({
-                    '#id': str('id'),
-                  }),
-                }),
-              ),
-            ),
+            this.addDefaultConditionExpression('delete'),
           ),
           iff(
             ref(ResourceConstants.SNIPPETS.VersionedCondition),
@@ -864,4 +819,44 @@ export class ResourceFactory {
       ...(syncConfig && { SyncConfig: SyncUtils.syncResolverConfig(syncConfig) }),
     });
   }
+
+  /**
+   * Adds the default Condition Expression uses ModelObjectkey if @key is used
+   * @returns
+   */
+
+  private addDefaultConditionExpression = (operation: string): Expression => {
+    const attributeCheck = operation === 'create' ? 'attribute_not_exists' : 'attribute_exists';
+    return ifElse(
+      ref(ResourceConstants.SNIPPETS.ModelObjectKey),
+      compoundExpression([
+        set(
+          ref('condition'),
+          obj({
+            expression: str(''),
+            expressionNames: obj({}),
+            expressionValues: obj({}),
+          }),
+        ),
+        forEach(ref('entry'), ref(`${ResourceConstants.SNIPPETS.ModelObjectKey}.entrySet()`), [
+          ifElse(
+            raw('$velocityCount == 1'),
+            qref(`$condition.put("expression", "${attributeCheck}(#keyCondition$velocityCount)")`),
+            qref('$condition.put(' + `"expression", "$condition.expression AND ${attributeCheck}(#keyCondition$velocityCount)")`),
+          ),
+          qref('$condition.expressionNames.put("#keyCondition$velocityCount", "$entry.key")'),
+        ]),
+      ]),
+      set(
+        ref('condition'),
+        obj({
+          expression: str(`${attributeCheck}(#id)`),
+          expressionNames: obj({
+            '#id': str('id'),
+          }),
+          expressionValues: obj({}),
+        }),
+      ),
+    );
+  };
 }

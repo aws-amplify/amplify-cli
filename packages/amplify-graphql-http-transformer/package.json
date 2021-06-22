@@ -1,7 +1,7 @@
 {
   "name": "@aws-amplify/graphql-http-transformer",
   "version": "0.3.2",
-  "description": "Amplify GraphQL @http tranformer",
+  "description": "Amplify GraphQL @http transformer",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws-amplify/amplify-cli.git",

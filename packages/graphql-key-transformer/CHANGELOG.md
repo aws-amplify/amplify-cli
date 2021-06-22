@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.23.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.23.10...graphql-key-transformer@2.23.11) (2021-06-15)
+
+**Note:** Version bump only for package graphql-key-transformer
+
+
+
+
+
+## [2.23.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.23.9...graphql-key-transformer@2.23.10) (2021-05-29)
+
+
+
+## 4.51.4 (2021-05-28)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** use modelobject key for mutation resolver creation ([#7419](https://github.com/aws-amplify/amplify-cli/issues/7419)) ([37bc551](https://github.com/aws-amplify/amplify-cli/commit/37bc551030d47de993f8227ee3af0ba6cd738ab2)), closes [#i7417](https://github.com/aws-amplify/amplify-cli/issues/i7417)
+
+
+
+
+
 ## [2.23.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-key-transformer@2.23.8...graphql-key-transformer@2.23.9) (2021-05-26)
 
 **Note:** Version bump only for package graphql-key-transformer

@@ -124,7 +124,22 @@ export class StateManager {
     resourceName: string,
     options?: GetOptions<$TSAny>,
   ): $TSAny => {
-    const filePath = pathManager.getResourceParamatersFilePath(projectPath, category, resourceName);
+    const filePath = pathManager.getResourceParametersFilePath(projectPath, category, resourceName);
+    const mergedOptions = {
+      throwIfNotExist: true,
+      ...options,
+    };
+
+    return this.getData<$TSAny>(filePath, mergedOptions);
+  };
+
+  getCurrentResourceParametersJson = (
+    projectPath: string | undefined,
+    category: string,
+    resourceName: string,
+    options?: GetOptions<$TSAny>,
+  ): $TSAny => {
+    const filePath = pathManager.getCurrentResourceParametersJsonPath(projectPath, category, resourceName);
     const mergedOptions = {
       throwIfNotExist: true,
       ...options,
@@ -217,7 +232,7 @@ export class StateManager {
   };
 
   setResourceParametersJson = (projectPath: string | undefined, category: string, resourceName: string, parameters: $TSAny): void => {
-    const filePath = pathManager.getResourceParamatersFilePath(projectPath, category, resourceName);
+    const filePath = pathManager.getResourceParametersFilePath(projectPath, category, resourceName);
 
     JSONUtilities.writeJson(filePath, parameters);
   };

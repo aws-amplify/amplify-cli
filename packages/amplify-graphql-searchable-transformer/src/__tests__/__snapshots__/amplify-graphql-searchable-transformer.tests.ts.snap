@@ -573,7 +573,7 @@ $util.toJson($GetRequest)
   #set( $ListRequest.nextToken = $context.args.nextToken )
 #end
 #if( $context.args.filter )
-  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($$ctx.args.filter)) )
+  #set( $filterExpression = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.args.filter)) )
   #if( !$util.isNullOrBlank($filterExpression.expression) )
     #if( $filterEpression.expressionValues.size() == 0 )
       $util.qr($filterEpression.remove(\\"expressionValues\\"))
@@ -581,7 +581,7 @@ $util.toJson($GetRequest)
     #set( $ListRequest.filter = $filterExpression )
   #end
 #end
-#if( !$$util.isNull($ctx.stash.modelQuery) )
+#if( !$util.isNull($ctx.stash.modelQuery) )
   #set( $Query = $util.parseJson($util.transform.toDynamoDBFilterExpression($ctx.stash.modelQuery)) )
   $util.qr($ListRequest.put(\\"operation\\", \\"Query\\"))
   $util.qr($ListRequest.put(\\"query\\", $Query))

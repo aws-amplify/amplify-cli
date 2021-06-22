@@ -35,6 +35,18 @@ describe('profile tests', () => {
     expect(getProfileCredentials_mock).toHaveBeenCalledTimes(0);
   });
 
+  it('should fail to return profiled aws credentials', async () => {
+    const profile_file_contents = '[fake]\nmalformed_key_id=fakeAccessKey\nmalformed_secret_access_key=fakeSecretKey\n'
+    fs_mock.readFileSync.mockImplementationOnce(() => {
+      return profile_file_contents;
+    }).mockImplementationOnce(() => {
+      return profile_file_contents;
+    });
+    const getProfileCredentials_mock = jest.fn(getProfileCredentials);
+    await expect(() => getProfiledAwsConfig(context_stub, 'fake')).rejects.toThrowError("Profile configuration for 'fake' is invalid: missing aws_access_key_id, aws_secret_access_key");
+    expect(getProfileCredentials_mock).toHaveBeenCalledTimes(0);
+  });
+
   it('should return profile credentials with aws prefix snake_case', () => {
     fs_mock.readFileSync.mockImplementationOnce(() => {
       return '[fake]\naws_access_key_id=fakeAccessKey\naws_secret_access_key=fakeSecretKey\n';
@@ -61,26 +73,6 @@ describe('profile tests', () => {
     });
     const creds = getProfileCredentials('fake');
     expect(creds).toBeDefined();
-    expect(fs_mock.existsSync).toHaveBeenCalledTimes(1);
-    expect(fs_mock.readFileSync).toHaveBeenCalledTimes(1);
-  });
-
-  it('should fail to return profile credentials', () => {
-    fs_mock.readFileSync.mockImplementationOnce(() => {
-      return '[fake]\nmalformed_access_key_id=fakeAccessKey\naws_secret_access_key=fakeSecretKey\n';
-    });
-    expect(() => getProfileCredentials('fake')).toThrow("Profile configuration for 'fake' is invalid: missing aws_access_key_id");
-    expect(fs_mock.existsSync).toHaveBeenCalledTimes(1);
-    expect(fs_mock.readFileSync).toHaveBeenCalledTimes(1);
-  });
-
-  it('should fail to return profile credentials', () => {
-    fs_mock.readFileSync.mockImplementationOnce(() => {
-      return '[fake]\nmalformed_key_id=fakeAccessKey\nmalformed_secret_access_key=fakeSecretKey\n';
-    });
-    expect(() => getProfileCredentials('fake')).toThrowError(
-      "Profile configuration for 'fake' is invalid: missing aws_access_key_id, aws_secret_access_key",
-    );
     expect(fs_mock.existsSync).toHaveBeenCalledTimes(1);
     expect(fs_mock.readFileSync).toHaveBeenCalledTimes(1);
   });

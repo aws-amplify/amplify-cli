@@ -9,7 +9,7 @@ export {
   StackManagerProvider,
   TransformerResolversManagerProvider,
   DataSourceInstance,
-  TranformerTransformSchemaStepContextProvider,
+  TransformerTransformSchemaStepContextProvider,
   TransformerBeforeStepContextProvider,
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,

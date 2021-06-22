@@ -286,15 +286,16 @@ class CloudFormation {
 
                 const cfnCompleteStatus = 'stackUpdateComplete';
                 if (updateErr) {
-                  console.error('Error updating cloudformation stack');
-                  reject(updateErr);
+                  if (self.pollForEvents) {
+                    clearInterval(self.pollForEvents);
+                  }
+                  return reject(updateErr);
                 }
                 cfnModel.waitFor(cfnCompleteStatus, cfnStackCheckParams, completeErr => {
                   if (self.pollForEvents) {
                     clearInterval(self.pollForEvents);
                   }
                   if (completeErr) {
-                    console.error('Error updating cloudformation stack');
                     this.collectStackErrors(cfnParentStackParams.StackName).then(() => reject(completeErr));
                   } else {
                     return self.updateamplifyMetaFileWithStackOutputs(stackName).then(() => resolve());
@@ -423,6 +424,16 @@ class CloudFormation {
     });
   }
 
+  async listStackResources(stackId) {
+    const meta = stateManager.getMeta();
+    stackId = stackId || _.get(meta, ['providers', providerName, 'StackName'], undefined);
+    if (!stackId) {
+      throw new Error(`StackId not found in amplify-meta for provider ${providerName}`);
+    }
+    // StackName param can be a StackName, StackId, or a PhysicalResourceId
+    return this.cfn.listStackResources({ StackName: stackId }).promise();
+  }
+
   deleteResourceStack(envName) {
     const { teamProviderInfo } = this.context.amplify.getProjectDetails();
     const teamProvider = teamProviderInfo[envName][providerName];
@@ -453,7 +464,7 @@ class CloudFormation {
           cfnModel.deleteStack(cfnStackParams, deleteErr => {
             if (deleteErr) {
               console.log(`Error deleting stack ${stackName}`);
-              reject(deleteErr);
+              return reject(deleteErr);
             }
             cfnModel.waitFor(cfnDeleteStatus, cfnStackParams, completeErr => {
               if (err) {

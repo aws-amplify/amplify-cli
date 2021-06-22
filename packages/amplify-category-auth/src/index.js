@@ -16,12 +16,13 @@ const { ENV_SPECIFIC_PARAMS } = require('./provider-utils/awscloudformation/cons
 
 const { transformUserPoolGroupSchema } = require('./provider-utils/awscloudformation/utils/transform-user-pool-group');
 const { uploadFiles } = require('./provider-utils/awscloudformation/utils/trigger-file-uploader');
-const { validateAddAuthRequest, validateUpdateAuthRequest } = require('amplify-util-headless-input');
+const { validateAddAuthRequest, validateUpdateAuthRequest, validateImportAuthRequest } = require('amplify-util-headless-input');
 const { getAddAuthRequestAdaptor, getUpdateAuthRequestAdaptor } = require('./provider-utils/awscloudformation/utils/auth-request-adaptors');
 const { getAddAuthHandler, getUpdateAuthHandler } = require('./provider-utils/awscloudformation/handlers/resource-handlers');
 const { projectHasAuth } = require('./provider-utils/awscloudformation/utils/project-has-auth');
 const { attachPrevParamsToContext } = require('./provider-utils/awscloudformation/utils/attach-prev-params-to-context');
 const { stateManager } = require('amplify-cli-core');
+const { headlessImport } = require('./provider-utils/awscloudformation/import');
 
 const {
   doesConfigurationIncludeSMS,
@@ -398,6 +399,35 @@ const executeAmplifyHeadlessCommand = async (context, headlessPayload) => {
       await validateUpdateAuthRequest(headlessPayload)
         .then(getUpdateAuthRequestAdaptor(context.amplify.getProjectConfig().frontend, context.updatingAuth.requiredAttributes))
         .then(getUpdateAuthHandler(context));
+      return;
+    case 'import':
+      if (projectHasAuth(context)) {
+        return;
+      }
+      await validateImportAuthRequest(headlessPayload);
+      const { provider } = require('./provider-utils/supported-services').supportedServices.Cognito;
+      const providerPlugin = context.amplify.getPluginInstance(context, provider);
+      const cognito = await providerPlugin.createCognitoUserPoolService(context);
+      const identity = await providerPlugin.createIdentityPoolService(context);
+      const { JSONUtilities } = require('amplify-cli-core/lib/jsonUtilities');
+      const {
+        userPoolId,
+        identityPoolId,
+        nativeClientId,
+        webClientId,
+      } = JSONUtilities.parse(headlessPayload);
+      const projectConfig = context.amplify.getProjectConfig();
+      const resourceName = projectConfig.projectName.toLowerCase().replace(/[^A-Za-z0-9_]+/g, '_');
+      const resourceParams = {
+        authSelections: identityPoolId ? 'identityPoolAndUserPool' : 'userPoolOnly',
+        resourceName,
+      };
+      await headlessImport(context, cognito, identity, provider, resourceName, resourceParams, {
+        userPoolId,
+        identityPoolId,
+        nativeClientId,
+        webClientId,
+      });
       return;
     default:
       context.print.error(`Headless mode for ${context.input.command} auth is not implemented yet`);
