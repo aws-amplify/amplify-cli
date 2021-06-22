@@ -37,44 +37,26 @@ import {
   str,
   toJson,
 } from 'graphql-mapping-template';
+import { actionToDataSourceMap, actionToRoleAction, allowedActions } from './utils/action-maps';
+import {
+  amzJsonContentType,
+  convertTextToSpeech,
+  directiveDefinition,
+  identifyEntities,
+  identifyLabels,
+  identifyLabelsAmzTarget,
+  identifyText,
+  identifyTextAmzTarget,
+  translateText,
+  translateTextAmzTarget,
+  PREDICTIONS_DIRECTIVE_STACK,
+} from './utils/constants';
 
 type PredictionsDirectiveConfiguration = {
   actions: string[] | undefined;
   resolverFieldName: string;
   resolverTypeName: string;
 };
-
-const PREDICTIONS_DIRECTIVE_STACK = 'PredictionsDirectiveStack';
-const directiveDefinition = /* GraphQL */ `
-  directive @predictions(actions: [PredictionsActions!]!) on FIELD_DEFINITION
-  enum PredictionsActions {
-    identifyText
-    identifyLabels
-    convertTextToSpeech
-    translateText
-  }
-`;
-
-const allowedActions = new Map([
-  ['identifyText', ['translateText']],
-  ['identifyLabels', ['translateText', 'convertTextToSpeech']],
-  ['translateText', ['convertTextToSpeech']],
-  ['convertTextToSpeech', []],
-]);
-
-const actionToDataSourceMap = new Map([
-  ['identifyEntities', 'RekognitionDataSource'],
-  ['identifyText', 'RekognitionDataSource'],
-  ['identifyLabels', 'RekognitionDataSource'],
-  ['translateText', 'TranslateDataSource'],
-  ['convertTextToSpeech', 'LambdaDataSource'],
-]);
-
-const actionToRoleAction = new Map([
-  ['identifyText', 'rekognition:DetectText'],
-  ['identifyLabels', 'rekognition:DetectLabels'],
-  ['translateText', 'translate:TranslateText'],
-]);
 
 export type PredictionsConfig = {
   bucketName: string;
@@ -220,7 +202,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
         if (!datasource) {
           let predictionLambda;
 
-          if (action === 'convertTextToSpeech') {
+          if (action === convertTextToSpeech) {
             predictionLambda = createPredictionsLambda(context, stack);
             role.attachInlinePolicy(
               new iam.Policy(stack, 'PredictionsLambdaAccess', {
@@ -281,9 +263,9 @@ function createPredictionsDataSource(
   let datasource;
 
   switch (action) {
-    case 'identifyEntities':
-    case 'identifyText':
-    case 'identifyLabels':
+    case identifyEntities:
+    case identifyText:
+    case identifyLabels:
       datasource = context.api.addHttpDataSource(
         'RekognitionDataSource',
         cdk.Fn.sub('https://rekognition.${AWS::Region}.amazonaws.com'),
@@ -296,7 +278,7 @@ function createPredictionsDataSource(
         stack,
       );
       break;
-    case 'translateText':
+    case translateText:
       datasource = context.api.addHttpDataSource(
         'TranslateDataSource',
         cdk.Fn.sub('https://translate.${AWS::Region}.amazonaws.com'),
@@ -309,7 +291,7 @@ function createPredictionsDataSource(
         stack,
       );
       break;
-    case 'convertTextToSpeech':
+    case convertTextToSpeech:
     default:
       datasource = context.api.addLambdaDataSource(
         'LambdaDataSource',
@@ -428,9 +410,9 @@ function joinWithEnv(context: TransformerContextProvider, separator: string, lis
 
 function needsList(action: string, isCurrentlyList: boolean): boolean {
   switch (action) {
-    case 'identifyLabels':
+    case identifyLabels:
       return true;
-    case 'convertTextToSpeech':
+    case convertTextToSpeech:
       return false;
     default:
       return isCurrentlyList;
@@ -536,7 +518,7 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
   let actionFunctionResolver;
 
   switch (action) {
-    case 'identifyText':
+    case identifyText:
       actionFunctionResolver = {
         request: compoundExpression([
           set(ref('bucketName'), ref('ctx.stash.get("s3Bucket")')),
@@ -555,8 +537,8 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
                   }),
                 }),
                 headers: obj({
-                  'Content-Type': str('application/x-amz-json-1.1'),
-                  'X-Amz-Target': str('RekognitionService.DetectText'),
+                  'Content-Type': str(amzJsonContentType),
+                  'X-Amz-Target': str(identifyTextAmzTarget),
                 }),
               }),
             }),
@@ -581,7 +563,7 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
       };
       break;
 
-    case 'identifyLabels':
+    case identifyLabels:
       actionFunctionResolver = {
         request: compoundExpression([
           set(ref('bucketName'), ref('ctx.stash.get("s3Bucket")')),
@@ -603,8 +585,8 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
                   MinConfidence: int(55),
                 }),
                 headers: obj({
-                  'Content-Type': str('application/x-amz-json-1.1'),
-                  'X-Amz-Target': str('RekognitionService.DetectLabels'),
+                  'Content-Type': str(amzJsonContentType),
+                  'X-Amz-Target': str(identifyLabelsAmzTarget),
                 }),
               }),
             }),
@@ -627,7 +609,7 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
       };
       break;
 
-    case 'translateText':
+    case translateText:
       actionFunctionResolver = {
         request: compoundExpression([
           set(ref('text'), ref('util.defaultIfNull($ctx.args.input.translateText.text, $ctx.prev.result)')),
@@ -642,8 +624,8 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
                   Text: ref('text'),
                 }),
                 headers: obj({
-                  'Content-Type': str('application/x-amz-json-1.1'),
-                  'X-Amz-Target': str('AWSShineFrontendService_20170701.TranslateText'),
+                  'Content-Type': str(amzJsonContentType),
+                  'X-Amz-Target': str(translateTextAmzTarget),
                 }),
               }),
             }),
@@ -661,7 +643,7 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
       };
       break;
 
-    case 'convertTextToSpeech':
+    case convertTextToSpeech:
     default:
       actionFunctionResolver = {
         request: compoundExpression([
@@ -674,7 +656,7 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
             payload: toJson(
               obj({
                 uuid: str('$util.autoId()'),
-                action: str('convertTextToSpeech'),
+                action: str(convertTextToSpeech),
                 voiceID: ref('ctx.args.input.convertTextToSpeech.voiceID'),
                 text: ref('text'),
               }),
