@@ -1,6 +1,6 @@
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { deploy, launchDDBLocal, terminateDDB } from './utils/index';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
@@ -129,9 +129,6 @@ beforeAll(async () => {
         },
       }),
     ],
-    featureFlags: {
-      getBoolean: name => (name === 'improvePluralization' ? true : false),
-    } as FeatureFlagProvider,
   });
 
   try {

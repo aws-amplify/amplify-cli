@@ -1,6 +1,6 @@
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { FunctionTransformer } from 'graphql-function-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, logDebug } from './utils/index';
 
@@ -36,9 +36,6 @@ beforeAll(async () => {
   try {
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new FunctionTransformer()],
-      featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
-      } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
 
@@ -81,7 +78,7 @@ test('Test simple echo function', async () => {
             fieldName
         }
     }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(response, null, 4));
   expect(response.data.echo.arguments.msg).toEqual('Hello');
@@ -100,7 +97,7 @@ test('Test simple duplicate function', async () => {
             fieldName
         }
     }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(response, null, 4));
   expect(response.data.duplicate.arguments.msg).toEqual('Hello');
@@ -113,7 +110,7 @@ test('Test pipeline of @function(s)', async () => {
     `query {
         pipeline(msg: "IGNORED")
     }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(response, null, 4));
   expect(response.data.pipeline).toEqual('Hello, world!');
@@ -130,7 +127,7 @@ test('Test pipelineReverse of @function(s)', async () => {
             fieldName
         }
     }`,
-    {},
+    {}
   );
   logDebug(JSON.stringify(response, null, 4));
   expect(response.data.pipelineReverse.arguments.msg).toEqual('Hello');

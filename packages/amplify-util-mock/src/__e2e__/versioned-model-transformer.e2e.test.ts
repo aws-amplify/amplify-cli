@@ -1,5 +1,5 @@
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
+import { GraphQLTransform } from 'graphql-transformer-core';
 import { VersionedModelTransformer } from 'graphql-versioned-transformer';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, terminateDDB, logDebug } from './utils/index';
@@ -25,9 +25,6 @@ beforeAll(async () => {
   try {
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new VersionedModelTransformer()],
-      featureFlags: {
-        getBoolean: name => (name === 'improvePluralization' ? true : false),
-      } as FeatureFlagProvider,
     });
     const out = transformer.transform(validSchema);
 
