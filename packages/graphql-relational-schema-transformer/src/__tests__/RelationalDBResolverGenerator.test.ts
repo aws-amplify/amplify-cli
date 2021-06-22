@@ -1,4 +1,6 @@
 import * as fs from 'fs-extra';
+
+import { JSONMappingParameters } from 'cloudform-types/types/kinesisAnalyticsV2/applicationReferenceDataSource';
 import { RelationalDBResolverGenerator } from '../RelationalDBResolverGenerator';
 import { TemplateContext } from '../RelationalDBSchemaTransformer';
 import { parse } from 'graphql';
@@ -6,7 +8,7 @@ import { parse } from 'graphql';
 jest.mock('fs-extra', () => ({
   writeFileSync: jest.fn(),
 }));
-const writeFileSync_mock = fs.writeFileSync as jest.MockedFunction<typeof fs.writeFileSync>;
+
 afterEach(() => jest.clearAllMocks());
 
 /**
@@ -39,7 +41,7 @@ test('Test Basic CRUDL Resolver Generation', () => {
   const generator = new RelationalDBResolverGenerator(context);
 
   // TEST
-  const resources: { [key: string]: any } = generator.createRelationalResolvers('someFilePath', true);
+  const resources: { [key: string]: any } = generator.createRelationalResolvers('someFilePath');
 
   // VERIFY
   expect(resources).toBeDefined();
@@ -77,9 +79,9 @@ test('verify generated templates', () => {
   simplePrimaryKeyTypeMap.set('Tomatoes', 'String');
   const context = new TemplateContext(schema, simplePrimaryKeyMap, simpleStringFieldMap, simpleIntFieldMap, simplePrimaryKeyTypeMap);
   const generator = new RelationalDBResolverGenerator(context);
-  generator.createRelationalResolvers('testFilePath', true);
-  expect(writeFileSync_mock.mock.calls.length).toBe(10);
-  writeFileSync_mock.mock.calls.forEach(call => {
+  generator.createRelationalResolvers('testFilePath');
+  expect(fs.writeFileSync.mock.calls.length).toBe(10);
+  fs.writeFileSync.mock.calls.forEach(call => {
     expect(call.length).toBe(3);
     expect(call[0]).toMatchSnapshot();
     expect(call[1]).toMatchSnapshot();
@@ -104,36 +106,9 @@ test('verify generated templates using a Int primary key', () => {
   simplePrimaryKeyTypeMap.set('Apples', 'Int');
   const context = new TemplateContext(schema, simplePrimaryKeyMap, simpleStringFieldMap, simpleIntFieldMap, simplePrimaryKeyTypeMap);
   const generator = new RelationalDBResolverGenerator(context);
-  generator.createRelationalResolvers('testFilePath', true);
-  expect(writeFileSync_mock.mock.calls.length).toBe(10);
-  writeFileSync_mock.mock.calls.forEach(call => {
-    expect(call.length).toBe(3);
-    expect(call[0]).toMatchSnapshot();
-    expect(call[1]).toMatchSnapshot();
-    expect(call[2]).toBe('utf8');
-  });
-});
-
-test('verify generated templates with old pluralization', () => {
-  // SETUP
-  const schema = parse(`
-      type Apples {
-        id: Int
-        name: String
-      }
-    `);
-  let simpleStringFieldMap = new Map<string, string[]>();
-  let simpleIntFieldMap = new Map<string, string[]>();
-  let simplePrimaryKeyMap = new Map<string, string>();
-  let simplePrimaryKeyTypeMap = new Map<string, string>();
-
-  simplePrimaryKeyMap.set('Apples', 'Id');
-  simplePrimaryKeyTypeMap.set('Apples', 'Int');
-  const context = new TemplateContext(schema, simplePrimaryKeyMap, simpleStringFieldMap, simpleIntFieldMap, simplePrimaryKeyTypeMap);
-  const generator = new RelationalDBResolverGenerator(context);
-  generator.createRelationalResolvers('testFilePath', false);
-  expect(writeFileSync_mock.mock.calls.length).toBe(10);
-  writeFileSync_mock.mock.calls.forEach(call => {
+  generator.createRelationalResolvers('testFilePath');
+  expect(fs.writeFileSync.mock.calls.length).toBe(10);
+  fs.writeFileSync.mock.calls.forEach(call => {
     expect(call.length).toBe(3);
     expect(call[0]).toMatchSnapshot();
     expect(call[1]).toMatchSnapshot();

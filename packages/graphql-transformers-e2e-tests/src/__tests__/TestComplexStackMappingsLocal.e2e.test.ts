@@ -29,17 +29,6 @@ type Post @model @searchable {
     score: Int @function(name: "scorefunc")
 }
 `;
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
 
 /**
  * We test this schema with the same set of rules multiple times. This protects against a subtle bug in the stack mapping
@@ -62,7 +51,6 @@ test('Test that every resource exists in the correct stack given a complex schem
 
 function transpileAndCheck(schema: string) {
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new HttpTransformer(),
@@ -97,7 +85,7 @@ function transpileAndCheck(schema: string) {
       'FunctionDirectiveStack',
       'HttpStack',
       'NoneDataSource',
-    ]),
+    ])
   );
   expectExactKeys(out.rootStack.Outputs, new Set(['GraphQLAPIIdOutput', 'GraphQLAPIEndpointOutput', 'GraphQLAPIKeyOutput']));
 
@@ -116,7 +104,7 @@ function transpileAndCheck(schema: string) {
       'SubscriptiononCreateUserResolver',
       'SubscriptiononDeleteUserResolver',
       'SubscriptiononUpdateUserResolver',
-    ]),
+    ])
   );
   expectExactKeys(out.stacks.User.Outputs, new Set(['GetAttUserTableStreamArn', 'GetAttUserDataSourceName', 'GetAttUserTableName']));
 
@@ -132,11 +120,11 @@ function transpileAndCheck(schema: string) {
       'CreateUserPostResolver',
       'UpdateUserPostResolver',
       'DeleteUserPostResolver',
-    ]),
+    ])
   );
   expectExactKeys(
     out.stacks.UserPost.Outputs,
-    new Set(['GetAttUserPostTableStreamArn', 'GetAttUserPostDataSourceName', 'GetAttUserPostTableName']),
+    new Set(['GetAttUserPostTableStreamArn', 'GetAttUserPostDataSourceName', 'GetAttUserPostTableName'])
   );
 
   // Check Post
@@ -151,7 +139,7 @@ function transpileAndCheck(schema: string) {
       'CreatePostResolver',
       'UpdatePostResolver',
       'DeletePostResolver',
-    ]),
+    ])
   );
   expectExactKeys(out.stacks.Post.Outputs, new Set(['GetAttPostTableStreamArn', 'GetAttPostDataSourceName', 'GetAttPostTableName']));
 
@@ -166,21 +154,21 @@ function transpileAndCheck(schema: string) {
       'ElasticSearchStreamingLambdaFunction',
       'SearchablePostLambdaMapping',
       'SearchPostResolver',
-    ]),
+    ])
   );
   expectExactKeys(out.stacks.SearchableStack.Outputs, new Set(['ElasticsearchDomainArn', 'ElasticsearchDomainEndpoint']));
 
   // Check connections
   expectExactKeys(
     out.stacks.ConnectionStack.Resources,
-    new Set(['UserpostsResolver', 'UserPostuserResolver', 'UserPostpostResolver', 'PostauthorsResolver']),
+    new Set(['UserpostsResolver', 'UserPostuserResolver', 'UserPostpostResolver', 'PostauthorsResolver'])
   );
   expectExactKeys(out.stacks.ConnectionStack.Outputs, new Set([]));
 
   // Check function stack
   expectExactKeys(
     out.stacks.FunctionDirectiveStack.Resources,
-    new Set(['ScorefuncLambdaDataSourceRole', 'ScorefuncLambdaDataSource', 'InvokeScorefuncLambdaDataSource', 'PostscoreResolver']),
+    new Set(['ScorefuncLambdaDataSourceRole', 'ScorefuncLambdaDataSource', 'InvokeScorefuncLambdaDataSource', 'PostscoreResolver'])
   );
   expectExactKeys(out.stacks.ConnectionStack.Outputs, new Set([]));
 

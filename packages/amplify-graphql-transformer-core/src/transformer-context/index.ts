@@ -26,20 +26,15 @@ export class TransformerContext implements TransformerContextProvider {
   public readonly resourceHelper: TransformerResourceHelper;
   public readonly featureFlags: FeatureFlagProvider;
   public _api?: GraphQLAPIProvider;
-  constructor(
-    app: App,
-    public readonly inputDocument: DocumentNode,
-    stackMapping: Record<string, string>,
-    featureFlags?: FeatureFlagProvider,
-  ) {
+  constructor(app: App, public readonly inputDocument: DocumentNode, stackMapping: Record<string, string>, featuerFlags?: FeatureFlagProvider) {
     this.output = new TransformerOutput(inputDocument);
     this.resolvers = new ResolverManager();
     this.dataSources = new TransformerDataSourceManager();
     this.providerRegistry = new TransformerContextProviderRegistry();
-    const stackManager = new StackManager(app, stackMapping);
-    this.stackManager = stackManager;
+    const stackManager = new  StackManager(app, stackMapping);
+    this.stackManager = stackManager
     this.resourceHelper = new TransformerResourceHelper(stackManager);
-    this.featureFlags = featureFlags ?? new NoopFeatureFlagProvider();
+    this.featureFlags = featuerFlags ?? new NoopFeatureFlagProvider();
   }
 
   /**

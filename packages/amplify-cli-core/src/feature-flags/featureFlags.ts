@@ -516,12 +516,6 @@ export class FeatureFlags {
         defaultValueForNewProjects: true,
       },
       {
-        name: 'improvePluralization',
-        type: 'boolean',
-        defaultValueForExistingProjects: false,
-        defaultValueForNewProjects: true,
-      },
-      {
         name: 'validateTypeNameReservedWords',
         type: 'boolean',
         defaultValueForExistingProjects: true,
@@ -625,7 +619,7 @@ export class FeatureFlags {
         type: 'boolean',
         defaultValueForExistingProjects: false,
         defaultValueForNewProjects: true,
-      },
+      }
     ]);
 
     this.registerFlag('appSync', [

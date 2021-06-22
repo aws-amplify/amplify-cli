@@ -2,20 +2,6 @@ import { parse, InputObjectTypeDefinitionNode, DefinitionNode, DocumentNode, Kin
 import { GraphQLTransform, InvalidDirectiveError, SyncConfig, ConflictHandlerType, FeatureFlagProvider } from 'graphql-transformer-core';
 import { KeyTransformer } from '../KeyTransformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    if (name === 'skipOverrideMutationInputTypes') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
 
 test('Check KeyTransformer Resolver Code', () => {
   const validSchema = `
@@ -34,7 +20,6 @@ test('Check KeyTransformer Resolver Code', () => {
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -50,7 +35,6 @@ test('KeyTransformer should fail if more than 1 @key is provided without a name.
 
   const transformer = new GraphQLTransform({
     transformers: [new KeyTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
@@ -66,7 +50,6 @@ test('KeyTransformer should fail if more than 1 @key is provided with the same n
 
   const transformer = new GraphQLTransform({
     transformers: [new KeyTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
@@ -82,7 +65,6 @@ test('KeyTransformer should fail if referencing a field that does not exist.', (
 
   const transformer = new GraphQLTransform({
     transformers: [new KeyTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
@@ -98,7 +80,6 @@ test('Test that a primary @key fails if pointing to nullable fields.', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new KeyTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
@@ -114,7 +95,6 @@ test('Test that model with an LSI but no primary sort key will fail.', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new KeyTransformer()],
-    featureFlags,
   });
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
 });
@@ -129,7 +109,6 @@ test('KeyTransformer should fail if a non-existing type field is defined as key 
 
   const transformer = new GraphQLTransform({
     transformers: [new KeyTransformer()],
-    featureFlags,
   });
 
   expect(() => transformer.transform(invalidSchema)).toThrowError(InvalidDirectiveError);
@@ -149,7 +128,6 @@ test('Check sortDirection validation code present in list resolver code for simp
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -171,7 +149,6 @@ test('Check sortDirection validation code present in list resolver code for comp
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -190,7 +167,6 @@ test('KeyTransformer should remove default primary key when primary key overidde
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -213,7 +189,6 @@ test('KeyTransformer should not remove default primary key when primary key not 
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -248,7 +223,6 @@ test('Check KeyTransformer Resolver Code when sync enabled', () => {
   };
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags,
     transformConfig: {
       ResolverConfig: {
         project: config,
@@ -275,7 +249,6 @@ test('Test that sort direction and filter input are generated if default list qu
     }`;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -313,7 +286,6 @@ test('GSI composite sort keys are wrapped in conditional to check presence in mu
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags,
   });
 
   const result = transformer.transform(validSchema);
@@ -328,6 +300,20 @@ function getInputType(doc: DocumentNode, type: string): InputObjectTypeDefinitio
 }
 
 describe('check schema input', () => {
+  let ff: FeatureFlagProvider;
+  beforeEach(() => {
+    ff = {
+      getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+        if (name === 'skipOverrideMutationInputTypes') {
+          return true;
+        }
+      }),
+      getNumber: jest.fn(),
+      getObject: jest.fn(),
+      getString: jest.fn(),
+    };
+  });
+
   it('@model mutation with user defined null args ', () => {
     const validSchema = /* GraphQL */ `
       type Call
@@ -353,7 +339,7 @@ describe('check schema input', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-      featureFlags,
+      featureFlags: ff,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -390,7 +376,7 @@ describe('check schema input', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-      featureFlags,
+      featureFlags: ff,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -425,7 +411,7 @@ describe('check schema input', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-      featureFlags,
+      featureFlags: ff,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -471,7 +457,7 @@ describe('check schema input', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-      featureFlags,
+      featureFlags: ff,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();
@@ -520,7 +506,7 @@ describe('check schema input', () => {
     `;
     const transformer = new GraphQLTransform({
       transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-      featureFlags,
+      featureFlags: ff,
     });
     const out = transformer.transform(validSchema);
     expect(out).toBeDefined();

@@ -12,17 +12,6 @@ import { GraphQLTransform, TRANSFORM_CURRENT_VERSION } from 'graphql-transformer
 import { ResolverResourceIDs, ModelResourceIDs, ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelConnectionTransformer } from '../ModelConnectionTransformer';
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
 
 test('Test ModelConnectionTransformer simple one to many happy case', () => {
   const validSchema = `
@@ -38,7 +27,6 @@ test('Test ModelConnectionTransformer simple one to many happy case', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -79,7 +67,6 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -120,7 +107,6 @@ test('Test that ModelConnection Transformer throws error when the field in conne
   `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   try {
     transformer.transform(invalidSchema);
@@ -149,7 +135,6 @@ test('Test ModelConnectionTransformer simple one to many happy case with custom 
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -193,7 +178,6 @@ test('Test ModelConnectionTransformer complex one to many happy case', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -242,7 +226,6 @@ test('Test ModelConnectionTransformer many to many should fail', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   try {
     transformer.transform(validSchema);
@@ -271,7 +254,6 @@ test('Test ModelConnectionTransformer many to many should fail due to missing ot
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   try {
     transformer.transform(validSchema);
@@ -296,7 +278,6 @@ test('Test ModelConnectionTransformer many to many should fail due to missing ot
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -339,7 +320,6 @@ test('Test ModelConnectionTransformer with non null @connections', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -393,7 +373,6 @@ test('Test ModelConnectionTransformer with sortField fails if not specified in a
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   expect(() => {
     transformer.transform(validSchema);
@@ -416,7 +395,6 @@ test('Test ModelConnectionTransformer with sortField creates a connection resolv
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -434,7 +412,6 @@ test('Test ModelConnectionTransformer with sortField creates a connection resolv
 test('Test ModelConnectionTransformer throws with invalid key fields', () => {
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
 
   const invalidSchema = `
@@ -492,7 +469,6 @@ test('Test ModelConnectionTransformer throws with invalid key fields', () => {
 test('Test ModelConnectionTransformer does not throw with valid key fields', () => {
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
 
   const validSchema = `
@@ -565,7 +541,6 @@ test('Test ModelConnectionTransformer sortField with missing @key should fail', 
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
 
   try {
@@ -592,7 +567,6 @@ test('Test ModelConnectionTransformer overrides the default limit', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
 
   const out = transformer.transform(validSchema);
@@ -617,7 +591,6 @@ test('Test ModelConnectionTransformer uses the default limit', () => {
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -644,7 +617,6 @@ test('Test ModelConnectionTransformer with keyField overrides the default limit'
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
 
   const out = transformer.transform(validSchema);
@@ -669,7 +641,6 @@ test('Test ModelConnectionTransformer with keyField uses the default limit', () 
     `;
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
   });
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
@@ -696,7 +667,6 @@ test('Connection on models with no codegen includes AttributeTypeEnum', () => {
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
     transformConfig: {
       Version: TRANSFORM_CURRENT_VERSION,
     },
@@ -713,13 +683,13 @@ test('Connection on models with no codegen includes custom enum filters', () => 
       id: ID!,
       cartItems: [CartItem] @connection(name: "CartCartItem")
     }
-
+    
     type CartItem @model(queries: null, mutations: null, subscriptions: null) {
       id: ID!
       productType: PRODUCT_TYPE!
       cart: Cart @connection(name: "CartCartItem")
     }
-
+    
     enum PRODUCT_TYPE {
       UNIT
       PACKAGE
@@ -728,7 +698,6 @@ test('Connection on models with no codegen includes custom enum filters', () => 
 
   const transformer = new GraphQLTransform({
     transformers: [new DynamoDBModelTransformer(), new ModelConnectionTransformer()],
-    featureFlags,
     transformConfig: {
       Version: TRANSFORM_CURRENT_VERSION,
     },

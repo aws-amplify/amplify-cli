@@ -10,17 +10,7 @@ import {
   expectNullableInputValues,
   expectInputValueToHandle,
 } from '../testUtil';
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
+
 test('Test that a primary @key with a single field changes the hash key.', () => {
   const validSchema = `
     type Test @model @key(fields: ["email"]) {
@@ -29,7 +19,6 @@ test('Test that a primary @key with a single field changes the hash key.', () =>
     `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
@@ -55,7 +44,6 @@ test('Test that a primary @key with 2 fields changes the hash and sort key.', ()
     `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
@@ -89,7 +77,6 @@ test('Test that a primary @key with id as hashKey does not have it required in c
     `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
@@ -117,7 +104,6 @@ test('Test that a primary @key with id and createdAt it is not a required in cre
     `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
@@ -145,7 +131,6 @@ test('Test that a primary @key with emailId and location makes it a required in 
     `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
@@ -173,7 +158,6 @@ test('Test that a primary @key with 3 fields changes the hash and sort keys.', (
     `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
@@ -212,7 +196,6 @@ test('Test that a secondary @key with 3 fields changes the hash and sort keys an
     `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
@@ -260,7 +243,6 @@ test('Test that a secondary @key with a single field adds a GSI.', () => {
     `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
@@ -295,7 +277,6 @@ test('Test that a secondary @key with a multiple field adds an GSI.', () => {
     `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
@@ -345,16 +326,15 @@ test('Test that a secondary @key with a multiple field adds an LSI with GSI FF t
     }
     `;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'secondaryKeyAsGSI') return false;
-        if (featureName === 'improvePluralization') return true;
-        return defaultValue || false;
-      },
-    } as unknown) as FeatureFlagProvider,
-  });
+    const transformer = new GraphQLTransform({
+      transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+      featureFlags: {
+        getBoolean: (featureName: string, defaultValue: boolean) => {
+          if (featureName === 'secondaryKeyAsGSI') return false;
+          return defaultValue || false;
+        },
+      } as unknown as FeatureFlagProvider
+    });
 
   const out = transformer.transform(validSchema);
   let tableResource = out.stacks.Test.Resources.TestTable;
@@ -389,16 +369,15 @@ test('Test that a secondary @key with a multiple field adds an GSI based on enab
     }
     `;
 
-  const transformer = new GraphQLTransform({
-    transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
-    featureFlags: ({
-      getBoolean: (featureName: string, defaultValue: boolean) => {
-        if (featureName === 'secondaryKeyAsGSI') return true;
-        if (featureName === 'improvePluralization') return true;
-        return defaultValue || false;
-      },
-    } as unknown) as FeatureFlagProvider,
-  });
+    const transformer = new GraphQLTransform({
+      transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
+      featureFlags: {
+        getBoolean: (featureName: string, defaultValue: boolean) => {
+          if (featureName === 'secondaryKeyAsGSI') return true;
+          return defaultValue || false;
+        },
+      } as unknown as FeatureFlagProvider
+    });
 
   const out = transformer.transform(validSchema);
   let tableResource = out.stacks.Test.Resources.TestTable;
@@ -433,7 +412,6 @@ test('Test that a primary @key with complex fields will update the input objects
     `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 
@@ -497,7 +475,6 @@ test('Test that connection type is generated for custom query when queries is se
     `;
 
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [new DynamoDBModelTransformer(), new KeyTransformer()],
   });
 

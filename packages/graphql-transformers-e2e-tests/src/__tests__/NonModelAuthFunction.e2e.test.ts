@@ -32,17 +32,7 @@ import { AuthenticationDetails } from 'amazon-cognito-identity-js';
 
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
+
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;
 
@@ -123,7 +113,6 @@ beforeAll(async () => {
     console.warn(`Could not setup function: ${e}`);
   }
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new FunctionTransformer(),

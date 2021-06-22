@@ -2,17 +2,6 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { ResourceConstants } from 'graphql-transformer-common';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
-const featureFlags = {
-  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
-    return;
-  }),
-  getNumber: jest.fn(),
-  getObject: jest.fn(),
-  getString: jest.fn(),
-};
 
 test('Test ModelAuthTransformer validation happy case w/ static groups', () => {
   const validSchema = `
@@ -24,7 +13,6 @@ test('Test ModelAuthTransformer validation happy case w/ static groups', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -40,7 +28,7 @@ test('Test ModelAuthTransformer validation happy case w/ static groups', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-    'AMAZON_COGNITO_USER_POOLS',
+    'AMAZON_COGNITO_USER_POOLS'
   );
 });
 
@@ -55,7 +43,6 @@ test('Test ModelAuthTransformer validation happy case w/ dynamic groups', () => 
     }
     `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -71,7 +58,7 @@ test('Test ModelAuthTransformer validation happy case w/ dynamic groups', () => 
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-    'AMAZON_COGNITO_USER_POOLS',
+    'AMAZON_COGNITO_USER_POOLS'
   );
 });
 
@@ -86,7 +73,6 @@ test('Test ModelAuthTransformer validation happy case w/ dynamic group', () => {
     }
     `;
   const transformer = new GraphQLTransform({
-    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
@@ -102,7 +88,7 @@ test('Test ModelAuthTransformer validation happy case w/ dynamic group', () => {
   const out = transformer.transform(validSchema);
   expect(out).toBeDefined();
   expect(out.rootStack.Resources[ResourceConstants.RESOURCES.GraphQLAPILogicalID].Properties.AuthenticationType).toEqual(
-    'AMAZON_COGNITO_USER_POOLS',
+    'AMAZON_COGNITO_USER_POOLS'
   );
 });
 
@@ -118,7 +104,6 @@ test('Test ModelAuthTransformer validation @auth on non @model. Should fail.', (
             }
         `;
     const transformer = new GraphQLTransform({
-      featureFlags,
       transformers: [
         new DynamoDBModelTransformer(),
         new ModelAuthTransformer({
