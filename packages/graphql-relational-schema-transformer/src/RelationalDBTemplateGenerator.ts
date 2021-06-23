@@ -47,9 +47,9 @@ export class RelationalDBTemplateGenerator {
    * @param template - the Cloudform template
    * @returns the given template, updated with new resolvers.
    */
-  public addRelationalResolvers(template: Template, resolverFilePath: string): Template {
+  public addRelationalResolvers(template: Template, resolverFilePath: string, improvePluralization: boolean): Template {
     let resolverGenerator = new RelationalDBResolverGenerator(this.context);
-    template.Resources = { ...template.Resources, ...resolverGenerator.createRelationalResolvers(resolverFilePath) };
+    template.Resources = { ...template.Resources, ...resolverGenerator.createRelationalResolvers(resolverFilePath, improvePluralization) };
     return template;
   }
 
