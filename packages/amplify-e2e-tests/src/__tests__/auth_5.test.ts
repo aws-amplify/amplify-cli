@@ -135,7 +135,6 @@ describe('headless auth', () => {
     });
 
     test.each([
-      ['userpool only', false],
       ['userpool with identitypool', true],
     ])(' cognito userpool %s', async (_: string, withIdentityPool: boolean) => {
       const ogProjectDetails = await setupOgProjectWithAuth(ogProjectRoot, ogProjectSettings, withIdentityPool);
