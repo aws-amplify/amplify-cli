@@ -31,6 +31,16 @@ clean_e2e_resources: &clean_e2e_resources
     yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
   working_directory: ~/repo
 
+scan_e2e_test_artifacts: &scan_e2e_test_artifacts
+  name: Scan And Cleanup E2E Test Artifacts
+  command: |
+    if ! yarn ts-node .circleci/scan_artifacts.ts; then
+      echo "Cleaning the repository"
+      git clean -fdx
+      exit 1
+    fi
+  when: always
+
 run_e2e_tests: &run_e2e_tests
   name: Run Amplify end-to-end tests
   command: |
@@ -221,6 +231,7 @@ jobs:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run: *install_cli_from_local_registery
       - run: *run_e2e_tests
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
@@ -258,6 +269,7 @@ jobs:
             amplify version
       - run: *install_cli_from_local_registery
       - run: *run_e2e_tests
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
@@ -395,6 +407,7 @@ jobs:
             yarn run console-integration --maxWorkers=3
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-console-integration-tests/
       - store_artifacts:
