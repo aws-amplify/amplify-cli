@@ -207,7 +207,6 @@ test('Test deletePost mutation with wrong version', async () => {
     }`,
     {},
   );
-  expect(deleteResponse.errors.length).toEqual(1);
-  expect((deleteResponse.errors[0] as any).data).toBeNull();
-  expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
+  expect(deleteResponse.data.deletePost).toBeNull();
+  expect(deleteResponse.errors).toBeUndefined();
 });

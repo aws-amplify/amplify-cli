@@ -36,7 +36,16 @@ export class DynamoDBDataLoader implements AmplifyAppSyncSimulatorDataLoader {
         case 'UpdateItem':
           return await this.updateItem(payload);
         case 'DeleteItem':
-          return await this.deleteItem(payload);
+          try {
+            return await this.deleteItem(payload);
+          } catch (err) {
+            // These errors are reported in the DDB metrics, but AppSync suppresses them.
+            if (err.code === 'ConditionalCheckFailedException') {
+              return null;
+            }
+
+            throw err;
+          }
         case 'Query':
           return await this.query(payload);
         case 'Scan':

@@ -515,9 +515,7 @@ test('Test deletePost mutation when not authorized', async () => {
     {},
   );
   expect(deleteResponse.data.deletePost).toEqual(null);
-  expect(deleteResponse.errors.length).toEqual(1);
-  expect((deleteResponse.errors[0] as any).data).toBeNull();
-  expect((deleteResponse.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
+  expect(deleteResponse.errors).toBeUndefined();
 });
 
 test('Test listPosts query when authorized', async () => {
@@ -714,9 +712,7 @@ test(`Test deleteSalary w/ Admin group protection not authorized`, async () => {
     }
     `);
   expect(req2.data.deleteSalary).toEqual(null);
-  expect(req2.errors.length).toEqual(1);
-  expect((req2.errors[0] as any).data).toBeNull();
-  expect((req2.errors[0] as any).errorType).toEqual('DynamoDB:ConditionalCheckFailedException');
+  expect(req2.errors).toBeUndefined();
 });
 
 test(`Test and Admin can get a salary created by any user`, async () => {
@@ -2598,7 +2594,7 @@ test("Test deleteOwnerCreateUpdateDeleteProtected with 'update' operation set", 
   );
   logDebug(response2);
   expect(response2.data.deleteOwnerCreateUpdateDeleteProtected).toBeNull();
-  expect(response2.errors).toHaveLength(1);
+  expect(response2.errors).toBeUndefined();
 
   const response3 = await GRAPHQL_CLIENT_1.query(
     `mutation {
