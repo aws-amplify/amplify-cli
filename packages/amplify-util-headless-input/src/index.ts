@@ -5,9 +5,10 @@ import {
   addAuthRequestSchemaSupplier,
   updateApiRequestSchemaSupplier,
   updateAuthRequestSchemaSupplier,
+  importAuthRequestSchemaSupplier,
 } from './schemaSuppliers';
 import { noopUpgradePipeline } from './upgradePipelines';
-import { AddStorageRequest, AddApiRequest, AddAuthRequest, UpdateAuthRequest, UpdateApiRequest } from 'amplify-headless-interface';
+import { AddStorageRequest, AddApiRequest, AddAuthRequest, UpdateAuthRequest, ImportAuthRequest, UpdateApiRequest } from 'amplify-headless-interface';
 
 export const validateAddStorageRequest = (raw: string) => {
   return new HeadlessInputValidator(addStorageRequestSchemaSupplier, noopUpgradePipeline).validate<AddStorageRequest>(raw);
@@ -27,4 +28,8 @@ export const validateAddAuthRequest = (raw: string) => {
 
 export const validateUpdateAuthRequest = (raw: string) => {
   return new HeadlessInputValidator(updateAuthRequestSchemaSupplier, noopUpgradePipeline).validate<UpdateAuthRequest>(raw);
+};
+
+export const validateImportAuthRequest = (raw: string) => {
+  return new HeadlessInputValidator(importAuthRequestSchemaSupplier, noopUpgradePipeline).validate<ImportAuthRequest>(raw);
 };

@@ -77,6 +77,7 @@ describe('populate cfn params', () => {
       'AWS::AccountId': '1234',
       'AWS::StackId': 'arn:aws:cloudformation:us-test-1:1234:stack/my-test-stack',
       'AWS::StackName': 'test-stack-name',
+      'AWS::URLSuffix': 'amazonaws.com',
     });
   });
 
@@ -93,6 +94,7 @@ describe('populate cfn params', () => {
       'AWS::AccountId': '12345678910',
       'AWS::StackId': 'fake-stack-id',
       'AWS::StackName': 'local-testing',
+      'AWS::URLSuffix': 'amazonaws.com',
     });
   });
 

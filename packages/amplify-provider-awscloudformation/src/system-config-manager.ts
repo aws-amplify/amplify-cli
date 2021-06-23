@@ -86,6 +86,7 @@ export async function getProfiledAwsConfig(context: $TSContext, profileName: str
         ...profileConfig,
         ...profileCredentials,
       };
+      validateCredentials(awsConfig, profileName);
     }
   } else {
     const err = new Error(`Profile configuration is missing for: ${profileName}`);
@@ -289,15 +290,11 @@ export function getProfileCredentials(profileName: string) {
     });
   }
   profileCredentials = normalizeKeys(profileCredentials);
-  validateCredentials(profileCredentials, profileName);
   return profileCredentials;
 }
 
 function validateCredentials(credentials: $TSAny, profileName: string) {
   const missingKeys = [];
-  if (credentials?.source_profile && credentials?.role_arn) {
-    return;
-  }
   if (!credentials?.accessKeyId) {
     missingKeys.push('aws_access_key_id');
   }
