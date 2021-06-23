@@ -878,8 +878,10 @@ async function formNestedStack(
       },
       DependsOn: [],
     };
-    const authResource = amplifyMeta?.auth ?? {};
-    const authRootStackResourceName = `auth${Object.keys(authResource)[0]}`;
+
+    const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito');
+    const authRootStackResourceName = `auth${cognitoResource.resourceName}`;
+
     stack.Properties.Parameters['userpoolId'] = {
       'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolId'],
     };
@@ -888,18 +890,23 @@ async function formNestedStack(
     };
     stack.DependsOn.push(authRootStackResourceName);
 
-    const { dependsOn } = authResource[Object.keys(authResource)[0]];
+    const { dependsOn } = cognitoResource.resource as { dependsOn };
 
     dependsOn.forEach(resource => {
-      const dependsOnStackName = resource.category + resource.resourceName;
+      const dependsOnStackName = `${resource.category}${resource.resourceName}`;
+
       stack.DependsOn.push(dependsOnStackName);
+
       const dependsOnAttributes = resource?.attributes;
+
       dependsOnAttributes.forEach(attribute => {
         const parameterKey = `${resource.category}${resource.resourceName}${attribute}`;
         const parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${attribute}`] };
+
         stack.Properties.Parameters[parameterKey] = parameterValue;
       });
     });
+
     nestedStack.Resources[AUTH_TRIGGER_STACK] = stack;
   }
 
