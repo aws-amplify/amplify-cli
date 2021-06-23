@@ -263,7 +263,17 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
         const nestedStack = await formNestedStack(context, context.amplify.getProjectDetails());
 
-        await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
+        try {
+          await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
+        } catch (err) {
+          if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
+            return;
+          } else {
+            throw err;
+          }
+        } finally {
+          spinner.stop();
+        }
       }
     }
 
@@ -966,8 +976,8 @@ async function formNestedStack(
 
                 parameterValue = outputAttributeValue;
               } else {
+                // Fn::GetAtt adds dependency in root stack and dependsOn stack
                 const dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
-
                 parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
               }
 

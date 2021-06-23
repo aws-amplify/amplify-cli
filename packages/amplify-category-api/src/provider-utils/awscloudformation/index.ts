@@ -136,9 +136,10 @@ async function isRestContainer(context) {
 }
 
 export async function updateResource(context, category, service, options) {
+  const allowContainers = options?.allowContainers ?? true;
   let useContainerResource = false;
   let apiType = API_TYPE.GRAPHQL;
-  if (isContainersEnabled(context)) {
+  if (allowContainers && isContainersEnabled(context)) {
     const {
       hasAPIGatewayContainerResource,
       hasAPIGatewayLambdaResource,

@@ -24,14 +24,14 @@ npm run e2e __tests__/init.test.ts
 
 E2E tests internally use a forked version of [nexpect](https://www.npmjs.com/package/nexpect) to run the CLI. There are helper methods that helps you to set up and delete project. The recommended pattern is to create a helper method that creates a resources as a helper method so these method could be used in other tests. For instance, `initJSProjectWithProfile` is a helper method that is used in `init` tests and also used in all the other tests to initalize a new Javascript project. The tests should have all the assertions to make sure the resource created by the helper method is setup correctly. We recommend using `aws-sdk` to make assert the resource configuration.
 
-If you want to log the test results for debugging, set the environment variable `VERBOSE_LOGGING_DO_NOT_USE_OR_YOU_WILL_BE_FIRED` to `true` and the output from the CLI will be printed on to the screen. Please refrain (as the variable name suggest) setting this in CI as test report will have all the CLI execution logs.
+If you want to log the test results for debugging, set the environment variable `VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED` to `true` and the output from the CLI will be printed on to the screen. Please refrain (as the variable name suggest) setting this in CI as test report will have all the CLI execution logs.
 
 ```sh
-env VERBOSE_LOGGING_DO_NOT_USE_OR_YOU_WILL_BE_FIRED=true yarn e2e
+env VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED=true yarn e2e
 ```
 
 ```typescript
-import { initJSProjectWithProfile, deleteProject, amplifyPush } from '../init';
+import { amplifyPush, deleteProject, initJSProjectWithProfile } from '../init';
 import { createNewProjectDir, deleteProjectDir, getProjectMeta } from '../utils';
 
 describe('amplify your test', () => {
