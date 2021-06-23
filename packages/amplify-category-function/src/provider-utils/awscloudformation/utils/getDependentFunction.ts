@@ -27,10 +27,12 @@ export async function lambdasWithApiDependency(
     const selectedCategories = currentParameters.permissions;
     let deletedModelFound: boolean;
 
-    for (const selectedResources of Object.values(selectedCategories)) {
-      deletedModelFound = Object.keys(selectedResources).some(r => modelsDeleted.includes(r));
-      if (deletedModelFound) {
-        dependentFunctions.push(lambda);
+    if (selectedCategories !== undefined && selectedCategories.length !== 0) {
+      for (const selectedResources of Object.values(selectedCategories)) {
+        deletedModelFound = Object.keys(selectedResources).some(r => modelsDeleted.includes(r));
+        if (deletedModelFound) {
+          dependentFunctions.push(lambda);
+        }
       }
     }
   }
