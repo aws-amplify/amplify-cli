@@ -96,7 +96,7 @@ export type MapMetaParameters = Pick<MapParameters, 'isDefaultMap' | 'pricingPla
   mapStyle: string;
 }
 
-function updateDefaultMap(context: $TSContext) {
+export function updateDefaultMap(context: $TSContext) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 

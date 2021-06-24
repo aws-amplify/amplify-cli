@@ -101,7 +101,7 @@ export function getMapStyleComponents(mapStyle: string): Pick<MapParameters, 'da
         case MapStyle.VectorHereBerlin:
             return { dataProvider: DataProvider.Here, mapStyleType: HereMapStyleType.Berlin };
         default:
-            throw new Error(`Invalid map style ${mapStyle} found in amplify meta`);
+            throw new Error(`Invalid map style ${mapStyle}`);
     }
 }
 

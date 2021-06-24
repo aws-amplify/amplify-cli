@@ -14,7 +14,7 @@ import { $TSContext } from 'amplify-cli-core';
  * @param parameters Parameters used to configure the resource. If not specified, a walkthrough will be launched to populate it.
  */
 export async function addResource(
-  context: any,
+  context: $TSContext,
   service: string,
   parameters?: Partial<MapParameters>
 ): Promise<string> {

@@ -37,7 +37,7 @@ export async function createMapWalkthrough(
   return parameters;
 }
 
-async function mapNameWalkthrough(context: any): Promise<Partial<MapParameters>> {
+export async function mapNameWalkthrough(context: any): Promise<Partial<MapParameters>> {
     const mapNamePrompt = {
         type: 'input',
         name: 'mapName',
@@ -56,7 +56,7 @@ async function mapNameWalkthrough(context: any): Promise<Partial<MapParameters>>
     return await inquirer.prompt([mapNamePrompt]);
 }
 
-async function mapDataProviderWalkthrough(parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> {
+export async function mapDataProviderWalkthrough(parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> {
     const dataProviderPrompt = {
         type: 'list',
         name: 'dataProvider',
@@ -67,7 +67,7 @@ async function mapDataProviderWalkthrough(parameters: Partial<MapParameters>): P
     return await inquirer.prompt([dataProviderPrompt]);
 }
 
-async function mapStyleTypeWalkthrough(parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> {
+export async function mapStyleTypeWalkthrough(parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> {
     const mapStyleTypePrompt = {
         type: 'list',
         name: 'mapStyleType',
@@ -78,7 +78,7 @@ async function mapStyleTypeWalkthrough(parameters: Partial<MapParameters>): Prom
     return await inquirer.prompt([mapStyleTypePrompt]);
 }
 
-async function mapAccessWalkthrough(parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> {
+export async function mapAccessWalkthrough(parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> {
     const mapAccessPrompt = {
         type: 'list',
         name: 'accessType',
@@ -89,7 +89,7 @@ async function mapAccessWalkthrough(parameters: Partial<MapParameters>): Promise
     return await inquirer.prompt([mapAccessPrompt]);
 }
 
-async function pricingPlanWalkthrough(parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> {
+export async function pricingPlanWalkthrough(parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> {
     const pricingPlanPrompt = {
         type: 'list',
         name: 'pricingPlan',
@@ -100,7 +100,7 @@ async function pricingPlanWalkthrough(parameters: Partial<MapParameters>): Promi
     return await inquirer.prompt([pricingPlanPrompt]);
 }
 
-async function mapStyleWalkthrough(parameters:Partial<MapParameters>): Promise<Partial<MapParameters>> {
+export async function mapStyleWalkthrough(parameters:Partial<MapParameters>): Promise<Partial<MapParameters>> {
     let params: Partial<MapParameters> = parameters;
     if (params.dataProvider == DataProvider.Here) {
         // single style supported for Here Maps
@@ -123,12 +123,12 @@ export async function updateMapWalkthrough(context: $TSContext, parameters?: Par
     const mapResources = ((await context.amplify.getResourceStatus()).allResources as any[])
     .filter(resource => resource.service === ServiceName.Map)
 
-    const mapResourceNames = mapResources.map(resource => resource.resourceName);
-
     if (mapResources.length === 0) {
         context.print.error('No Map resource to update. Use "amplify add geo" to create a new Map.');
         return;
     }
+
+    const mapResourceNames = mapResources.map(resource => resource.resourceName);
 
     if (resourceToUpdate) {
         if (!mapResourceNames.includes(resourceToUpdate)) {
@@ -148,7 +148,8 @@ export async function updateMapWalkthrough(context: $TSContext, parameters?: Par
     }
 
     parameters.mapName = resourceToUpdate;
-    parameters = merge(parameters, await mapAccessWalkthrough(parameters));
+    const accessType = await mapAccessWalkthrough(parameters);
+    parameters = merge(parameters, accessType);
 
     // ask if the map should be set as a default
     parameters.isDefaultMap = await context.amplify.confirmPrompt('Do you want to set this map as default?', true)
