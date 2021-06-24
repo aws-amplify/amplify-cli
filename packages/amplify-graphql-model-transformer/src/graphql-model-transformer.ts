@@ -266,7 +266,8 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         `${def!.name.value}DS`,
         table,
         {
-          name: `${def!.name.value}DS`,
+          // This name is used by the mock functionality. Changing this can break mock.
+          name: `${def!.name.value}Table`,
         },
         stack,
       );
