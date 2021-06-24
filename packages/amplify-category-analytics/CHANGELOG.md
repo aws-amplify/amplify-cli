@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.21.10...amplify-category-analytics@2.21.11) (2021-06-24)
+
+**Note:** Version bump only for package amplify-category-analytics
+
+
+
+
+
 ## [2.21.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.21.9...amplify-category-analytics@2.21.10) (2021-06-15)
 
 **Note:** Version bump only for package amplify-category-analytics

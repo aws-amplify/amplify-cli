@@ -1,6 +1,6 @@
 {
   "name": "graphql-function-transformer",
-  "version": "2.5.10",
+  "version": "2.5.11",
   "description": "Implements the @function directive.",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "graphql": "^14.5.8",
     "graphql-mapping-template": "4.18.1",
     "graphql-transformer-common": "4.19.3",
-    "graphql-transformer-core": "6.28.10"
+    "graphql-transformer-core": "6.28.11"
   },
   "jest": {
     "transform": {
