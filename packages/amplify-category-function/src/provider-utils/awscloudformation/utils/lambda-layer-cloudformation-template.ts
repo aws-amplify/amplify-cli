@@ -96,8 +96,13 @@ function constructLayerVersionCfnObject(
   hasRuntimes: boolean,
 ) {
   const description: string | IntrinsicFunction = layerVersion.CreatedDate ? layerVersion.Description : Fn.Ref('description');
+  let compatibleRuntimes: { CompatibleRuntimes: string[] | IntrinsicFunction };
+  if (hasRuntimes) {
+    compatibleRuntimes = { CompatibleRuntimes: layerVersion.CompatibleRuntimes || Fn.Ref('runtimes') };
+  }
+
   const newLayerVersion = new Lambda.LayerVersion({
-    CompatibleRuntimes: layerVersion.CompatibleRuntimes || (hasRuntimes ? Fn.Ref('runtimes') : undefined),
+    ...compatibleRuntimes,
     Content: {
       S3Bucket: Fn.Ref('deploymentBucketName'),
       S3Key: layerVersion.CreatedDate

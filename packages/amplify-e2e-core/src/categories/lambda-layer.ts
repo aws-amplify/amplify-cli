@@ -375,17 +375,20 @@ function waitForLayerSuccessPrintout(
   settings: { layerName?: string; projName?: string; runtimes?: LayerRuntime[] } | $TSAny,
   action: string,
 ) {
-  chain
-    .wait(`✅ Lambda layer folders & files ${action}:`)
-    .wait(path.join('amplify', 'backend', 'function', settings.projName + settings.layerName))
-    .wait('Next steps:')
-    .wait('Move your libraries to the following folder:');
+  chain.wait(`✅ Lambda layer folders & files ${action}:`);
 
-  const runtimes = settings.runtimes && settings.layerName && settings.projName ? settings.runtimes : [];
-  for (const runtime of runtimes) {
-    const { displayName, path } = getLayerRuntimeInfo(runtime);
-    const layerRuntimeDir = `[${displayName}]: amplify/backend/function/${settings.projName + settings.layerName}/${path}`;
-    chain.wait(layerRuntimeDir);
+  if (settings?.runtimes?.length > 0) {
+    chain
+      .wait(path.join('amplify', 'backend', 'function', settings.projName + settings.layerName))
+      .wait('Next steps:')
+      .wait('Move your libraries to the following folder:');
+
+    const runtimes = settings.layerName && settings.projName ? settings.runtimes : [];
+    for (const runtime of runtimes) {
+      const { displayName, path } = getLayerRuntimeInfo(runtime);
+      const layerRuntimeDir = `[${displayName}]: amplify/backend/function/${settings.projName + settings.layerName}/${path}`;
+      chain.wait(layerRuntimeDir);
+    }
   }
 
   chain
