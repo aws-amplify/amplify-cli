@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.0.1...@aws-amplify/cli@5.0.2-beta.0) (2021-06-24)
+
+
+### Bug Fixes
+
+* **cli:** make sure to await returned promise from async functions ([#7379](https://github.com/aws-amplify/amplify-cli/issues/7379)) ([af2a52a](https://github.com/aws-amplify/amplify-cli/commit/af2a52a445266f875d2849898501b6c0ca82288f))
+
+
+
+
+
 ## [5.0.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.0.0...@aws-amplify/cli@5.0.1) (2021-06-19)
 
 
