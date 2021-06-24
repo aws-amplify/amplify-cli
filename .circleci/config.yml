@@ -1220,6 +1220,14 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/function_5.test.ts
       CLI_REGION: ap-southeast-1
+  frontend_config_drift-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps: *ref_5
+    environment:
+      TEST_SUITE: src/__tests__/frontend_config_drift.test.ts
+      CLI_REGION: ap-southeast-2
   configure-project-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1227,7 +1235,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/configure-project.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
   api_4-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1235,7 +1243,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/api_4.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: us-west-2
   schema-iterative-update-4-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
     docker: *ref_1
@@ -1926,6 +1934,16 @@ jobs:
       TEST_SUITE: src/__tests__/function_5.test.ts
       CLI_REGION: ap-southeast-1
     steps: *ref_6
+  frontend_config_drift-amplify_e2e_tests_pkg_linux:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    environment:
+      AMPLIFY_DIR: /home/circleci/repo/out
+      AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
+      TEST_SUITE: src/__tests__/frontend_config_drift.test.ts
+      CLI_REGION: ap-southeast-2
+    steps: *ref_6
   configure-project-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
     docker: *ref_1
@@ -1934,7 +1952,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/configure-project.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: us-east-2
     steps: *ref_6
   api_4-amplify_e2e_tests_pkg_linux:
     working_directory: ~/repo
@@ -1944,7 +1962,7 @@ jobs:
       AMPLIFY_DIR: /home/circleci/repo/out
       AMPLIFY_PATH: /home/circleci/repo/out/amplify-pkg-linux
       TEST_SUITE: src/__tests__/api_4.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: us-west-2
     steps: *ref_6
 workflows:
   version: 2
@@ -2047,11 +2065,11 @@ workflows:
             - analytics-amplify_e2e_tests
             - notifications-amplify_e2e_tests
             - schema-iterative-update-locking-amplify_e2e_tests
-            - api_4-amplify_e2e_tests
-            - schema-auth-10-amplify_e2e_tests
+            - configure-project-amplify_e2e_tests
             - hosting-amplify_e2e_tests
             - tags-amplify_e2e_tests
             - s3-sse-amplify_e2e_tests
+            - api_4-amplify_e2e_tests
             - hostingPROD-amplify_e2e_tests
             - amplify-app-amplify_e2e_tests
             - init-amplify_e2e_tests
@@ -2071,17 +2089,17 @@ workflows:
             - feature-flags-amplify_e2e_tests
             - schema-versioned-amplify_e2e_tests
             - plugin-amplify_e2e_tests
-            - configure-project-amplify_e2e_tests
+            - frontend_config_drift-amplify_e2e_tests
       - done_with_pkg_linux_e2e_tests:
           requires:
             - analytics-amplify_e2e_tests_pkg_linux
             - notifications-amplify_e2e_tests_pkg_linux
             - schema-iterative-update-locking-amplify_e2e_tests_pkg_linux
-            - api_4-amplify_e2e_tests_pkg_linux
-            - schema-auth-10-amplify_e2e_tests_pkg_linux
+            - configure-project-amplify_e2e_tests_pkg_linux
             - hosting-amplify_e2e_tests_pkg_linux
             - tags-amplify_e2e_tests_pkg_linux
             - s3-sse-amplify_e2e_tests_pkg_linux
+            - api_4-amplify_e2e_tests_pkg_linux
             - hostingPROD-amplify_e2e_tests_pkg_linux
             - amplify-app-amplify_e2e_tests_pkg_linux
             - init-amplify_e2e_tests_pkg_linux
@@ -2101,7 +2119,7 @@ workflows:
             - feature-flags-amplify_e2e_tests_pkg_linux
             - schema-versioned-amplify_e2e_tests_pkg_linux
             - plugin-amplify_e2e_tests_pkg_linux
-            - configure-project-amplify_e2e_tests_pkg_linux
+            - frontend_config_drift-amplify_e2e_tests_pkg_linux
       - amplify_migration_tests_latest:
           context:
             - amplify-ecr-image-pull
@@ -2308,7 +2326,7 @@ workflows:
           filters: *ref_10
           requires:
             - function_2-amplify_e2e_tests
-      - api_4-amplify_e2e_tests:
+      - configure-project-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
@@ -2374,6 +2392,12 @@ workflows:
           filters: *ref_10
           requires:
             - delete-amplify_e2e_tests
+      - api_4-amplify_e2e_tests:
+          context: *ref_8
+          post-steps: *ref_9
+          filters: *ref_10
+          requires:
+            - schema-auth-10-amplify_e2e_tests
       - storage-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
@@ -2668,7 +2692,7 @@ workflows:
           filters: *ref_10
           requires:
             - auth_3-amplify_e2e_tests
-      - configure-project-amplify_e2e_tests:
+      - frontend_config_drift-amplify_e2e_tests:
           context: *ref_8
           post-steps: *ref_9
           filters: *ref_10
@@ -2746,7 +2770,7 @@ workflows:
           filters: *ref_13
           requires:
             - function_2-amplify_e2e_tests_pkg_linux
-      - api_4-amplify_e2e_tests_pkg_linux:
+      - configure-project-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
@@ -2816,6 +2840,12 @@ workflows:
           filters: *ref_13
           requires:
             - delete-amplify_e2e_tests_pkg_linux
+      - api_4-amplify_e2e_tests_pkg_linux:
+          context: *ref_11
+          post-steps: *ref_12
+          filters: *ref_13
+          requires:
+            - schema-auth-10-amplify_e2e_tests_pkg_linux
       - storage-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
@@ -3130,7 +3160,7 @@ workflows:
           filters: *ref_13
           requires:
             - auth_3-amplify_e2e_tests_pkg_linux
-      - configure-project-amplify_e2e_tests_pkg_linux:
+      - frontend_config_drift-amplify_e2e_tests_pkg_linux:
           context: *ref_11
           post-steps: *ref_12
           filters: *ref_13
