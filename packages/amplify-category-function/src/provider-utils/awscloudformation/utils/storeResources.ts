@@ -125,7 +125,9 @@ function writeLayerRuntimesToParametersFile(parameters: LayerParameters) {
     runtimes = runtimes.concat(r.cloudTemplateValues);
     return runtimes;
   }, []);
-  stateManager.setResourceParametersJson(undefined, categoryName, parameters.layerName, { runtimes });
+  if (runtimes.length > 0) {
+    stateManager.setResourceParametersJson(undefined, categoryName, parameters.layerName, { runtimes });
+  }
 }
 
 function saveLayerDescription(layerName: string, description?: string): boolean {
