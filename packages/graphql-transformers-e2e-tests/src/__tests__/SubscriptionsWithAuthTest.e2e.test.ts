@@ -37,7 +37,17 @@ const anyAWS = AWS as any;
 if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
   delete anyAWS.config.credentials;
 }
-
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 // to deal with bug in cognito-identity-js
 (global as any).fetch = require('node-fetch');
 // to deal with subscriptions in node env
@@ -240,6 +250,7 @@ beforeAll(async () => {
     }`;
 
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelAuthTransformer({
