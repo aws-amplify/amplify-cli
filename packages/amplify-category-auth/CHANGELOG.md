@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.33.1...amplify-category-auth@2.34.0) (2021-06-24)
+
+
+### Features
+
+* **import-auth:** add headless support ([#7266](https://github.com/aws-amplify/amplify-cli/issues/7266)) ([7fa478b](https://github.com/aws-amplify/amplify-cli/commit/7fa478bbfebbbe70e286eb19d436d772c32c4fd2))
+
+
+
+
+
 ## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.33.0...amplify-category-auth@2.33.1) (2021-06-15)
 
 **Note:** Version bump only for package amplify-category-auth

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.6.0...@aws-amplify/graphql-transformer-interfaces@1.6.1) (2021-06-24)
+
+
+### Bug Fixes
+
+* correct 'tranformer' typo ([#7408](https://github.com/aws-amplify/amplify-cli/issues/7408)) ([9420f1b](https://github.com/aws-amplify/amplify-cli/commit/9420f1b29137fd7621d7d902a147e596776357df))
+
+
+
+
+
 # [1.6.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.5.0...@aws-amplify/graphql-transformer-interfaces@1.6.0) (2021-05-18)
 
 
