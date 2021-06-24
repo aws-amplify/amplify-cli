@@ -162,6 +162,93 @@ export function addAuthViaAPIWithTrigger(cwd: string, settings: any): Promise<vo
   });
 }
 
+export function addAuthwithUserPoolGroupsViaAPIWithTrigger(cwd: string, settings: any): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['add', 'api'], { cwd, stripColors: true })
+      .wait('Please select from one of the below mentioned services:')
+      .sendCarriageReturn()
+      .wait('Provide API name')
+      .sendCarriageReturn()
+      .wait('Choose the default authorization type for the API')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Do you want to use the default authentication and security configuration?')
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Select the authentication/authorization services that you want to use:')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Please provide a friendly name for your resource that will be used to label this category in the project:')
+      .sendCarriageReturn()
+      .wait('Please provide a name for your user pool:')
+      .sendCarriageReturn()
+      .wait('How do you want users to be able to sign in')
+      .sendCarriageReturn()
+      .wait('Do you want to add User Pool Groups?')
+      .sendCarriageReturn()
+      .wait('Provide a name for your user pool group:')
+      .sendLine('admin')
+      .wait('Do you want to add another User Pool Group')
+      .sendCarriageReturn()
+      .wait('Sort the user pool groups in order of preference')
+      .sendCarriageReturn()
+      .wait('Do you want to add an admin queries API?')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Multifactor authentication (MFA) user login options:')
+      .sendCarriageReturn()
+      .wait('Email based user registration/forgot password:')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Please specify an SMS verification message:')
+      .sendCarriageReturn()
+      .wait('Do you want to override the default password policy for this User Pool?')
+      .sendCarriageReturn()
+      .wait('What attributes are required for signing up?')
+      .sendCarriageReturn()
+      .wait(`Specify the app's refresh token expiration period (in days):`)
+      .sendCarriageReturn()
+      .wait(' Do you want to specify the user attributes this app can read and write?')
+      .sendCarriageReturn()
+      .wait('Do you want to enable any of the following capabilities?')
+      .send(KEY_DOWN_ARROW)
+      .send(KEY_DOWN_ARROW)
+      .send(' ')
+      .sendCarriageReturn()
+      .wait('Do you want to use an OAuth flow?')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Do you want to configure Lambda Triggers for Cognito?')
+      .sendCarriageReturn()
+      .wait('Which triggers do you want to enable for Cognito')
+      .sendCarriageReturn()
+      .wait('What functionality do you want to use for Post Confirmation')
+      .sendCarriageReturn()
+      .wait('Enter the name of the group to which users will be added.')
+      .send('mygroup')
+      .sendCarriageReturn()
+      .wait('Do you want to edit your add-to-group function now?')
+      .sendLine('n')
+      .wait(/.*Do you want to configure advanced settings for the GraphQL API.*/)
+      .sendCarriageReturn()
+      .wait('Do you have an annotated GraphQL schema?')
+      .sendLine('n')
+      .sendCarriageReturn()
+      .wait('Choose a schema template:')
+      .sendCarriageReturn()
+      .wait('Do you want to edit the schema now?')
+      .sendLine('n')
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject(err);
+        }
+      });
+  });
+}
+
 export function addAuthWithCustomTrigger(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'auth'], { cwd, stripColors: true })
