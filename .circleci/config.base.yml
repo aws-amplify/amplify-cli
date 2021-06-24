@@ -291,6 +291,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -314,6 +315,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.28.2_nonmultienv_layers --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -337,6 +339,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.52.0_multienv_layers --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -363,6 +366,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.30.0_auth --maxWorkers=3
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -384,6 +388,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -510,6 +515,7 @@ jobs:
             yarn cypress run --spec $(find . -type f -name 'api_spec*')
       - run: cd .circleci/ && chmod +x delete_api.sh
       - run: expect .circleci/delete_api.exp
+      - run: *scan_e2e_test_artifacts
       - store_artifacts:
           path: /root/aws-amplify-cypress-auth/cypress/videos
       - store_artifacts:
@@ -540,6 +546,7 @@ jobs:
             else
               echo "Skipping deploy."
             fi
+      - run: *scan_e2e_test_artifacts
   github_prerelease:
     <<: *node12
     steps:
@@ -606,6 +613,7 @@ jobs:
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     working_directory: ~/repo
@@ -623,6 +631,7 @@ jobs:
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources workflow ${CIRCLE_WORKFLOW_ID}
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     working_directory: ~/repo
