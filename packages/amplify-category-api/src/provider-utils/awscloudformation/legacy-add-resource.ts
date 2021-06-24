@@ -1,5 +1,6 @@
 import { JSONUtilities } from 'amplify-cli-core';
 import { serviceMetadataFor } from './utils/dynamic-imports';
+import { checkCaseSensitivityIssue } from './utils/check-case-sensitivity';
 import fs from 'fs-extra';
 import path from 'path';
 import { parametersFileName, cfnParametersFilename, rootAssetDir } from './aws-constants';
@@ -31,6 +32,9 @@ export const legacyAddResource = async (serviceWalkthroughPromise: Promise<any>,
 
     const parameters = { ...answers };
     const resourceDirPath = path.join(projectBackendDirPath, category, parameters.resourceName);
+
+    checkCaseSensitivityIssue(context, category, parameters.resourceName);
+
     fs.ensureDirSync(resourceDirPath);
 
     const parametersFilePath = path.join(resourceDirPath, parametersFileName);

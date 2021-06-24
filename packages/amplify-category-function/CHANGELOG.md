@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.32.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.32.1...amplify-category-function@2.32.2) (2021-06-24)
+
+
+### Bug Fixes
+
+* [#7569](https://github.com/aws-amplify/amplify-cli/issues/7569) - make hashing predictable by sorting files first ([#7581](https://github.com/aws-amplify/amplify-cli/issues/7581)) ([c3d60cd](https://github.com/aws-amplify/amplify-cli/commit/c3d60cd6798785867fbd47d1b98755cfb16a93d1))
+* file path for Pipfile.lock for python layer globbing, add e2e tests ([#7577](https://github.com/aws-amplify/amplify-cli/issues/7577)) ([e8250af](https://github.com/aws-amplify/amplify-cli/commit/e8250afa0c0ae45d6379f2ad260d32bfb8cad3dc))
+
+
+
+
+
 ## [2.32.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.32.0...amplify-category-function@2.32.1) (2021-06-19)
 
 

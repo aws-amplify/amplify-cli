@@ -8,7 +8,7 @@ import {
   updateAuthAddAdminQueries,
 } from 'amplify-e2e-core';
 import * as path from 'path';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'fs';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 const providerName = 'awscloudformation';
@@ -437,6 +437,25 @@ describe('amplify add api (REST)', () => {
     await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
     await addRestApi(projRoot, { existingLambda: true });
     await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true, path: '/newpath' });
+    await amplifyPushUpdate(projRoot);
+  });
+
+  it('migrates malformed project files during push', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
+    await addRestApi(projRoot, { existingLambda: true, restrictAccess: true });
+
+    const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
+    const apis = readdirSync(apisDirectory);
+    const apiName = apis[0];
+    const apiDirectory = path.join(apisDirectory, apiName);
+    const cfnTemplateFile = path.join(apiDirectory, `${apiName}-cloudformation-template.json`);
+    const cfnTemplate = JSON.parse(readFileSync(cfnTemplateFile, 'utf8'));
+
+    // The ApiId output is required, and will be added automatically if it is missing.
+    cfnTemplate.Outputs.ApiId = undefined;
+
+    writeFileSync(cfnTemplateFile, JSON.stringify(cfnTemplate));
     await amplifyPushUpdate(projRoot);
   });
 });

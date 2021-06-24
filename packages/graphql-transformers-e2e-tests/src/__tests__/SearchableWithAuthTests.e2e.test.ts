@@ -30,7 +30,17 @@ import 'isomorphic-fetch';
 
 // To overcome of the way of how AmplifyJS picks up currentUserCredentials
 const anyAWS = AWS as any;
-
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 if (anyAWS && anyAWS.config && anyAWS.config.credentials) {
   delete anyAWS.config.credentials;
 }
@@ -152,6 +162,7 @@ beforeAll(async () => {
     }`;
 
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new ModelConnectionTransformer(),

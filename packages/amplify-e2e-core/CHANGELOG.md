@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.20.0...amplify-e2e-core@1.21.0) (2021-06-24)
+
+
+### Bug Fixes
+
+* support adding REST API paths in 'add api' ([#7229](https://github.com/aws-amplify/amplify-cli/issues/7229)) ([fa9404a](https://github.com/aws-amplify/amplify-cli/commit/fa9404afd1eedd342ea6ff2033fcbd143b33748a))
+
+
+### Features
+
+* **import-auth:** add headless support ([#7266](https://github.com/aws-amplify/amplify-cli/issues/7266)) ([7fa478b](https://github.com/aws-amplify/amplify-cli/commit/7fa478bbfebbbe70e286eb19d436d772c32c4fd2))
+
+
+
+
+
 # [1.20.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.19.3...amplify-e2e-core@1.20.0) (2021-06-15)
 
 

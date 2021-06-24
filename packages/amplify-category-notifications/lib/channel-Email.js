@@ -100,10 +100,13 @@ function validateInputParams(channelInput) {
 }
 
 async function disable(context) {
+  const channelOutput = validateInputParams(context.exeInfo.serviceMeta.output[channelName]);
   const params = {
     ApplicationId: context.exeInfo.serviceMeta.output.Id,
     EmailChannelRequest: {
       Enabled: false,
+      FromAddress: channelOutput.FromAddress,
+      Identity: channelOutput.Identity,
     },
   };
   spinner.start('Updating Email Channel.');
