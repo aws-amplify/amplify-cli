@@ -53,7 +53,9 @@ export function legacyAddLayer(
       chain.wait('Provide a list of comma-separated AWS organization IDs:').sendLine(settings.orgId);
     }
 
-    chain.wait('Move your libraries to the following folder:');
+    if (settings.runtimes.length > 0) {
+      chain.wait('Move your libraries to the following folder:');
+    }
 
     chain.run((err: Error) => {
       if (!err) {
