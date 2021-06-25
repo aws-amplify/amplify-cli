@@ -4,8 +4,11 @@ import { supportedServices, ServiceConfig } from '../supportedServices';
 import { ServiceName, provider } from './utils/constants';
 import _ from 'lodash';
 import { open, exitOnNextTick } from 'amplify-cli-core';
-import { createMapResource, modifyMapResource } from './utils/mapResourceUtils';
+import { createMapResource, modifyMapResource, getCurrentMapParameters } from './utils/mapResourceUtils';
 import { $TSContext } from 'amplify-cli-core';
+import { removeWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/removeWalkthrough';
+import { category } from '../../constants';
+import { updateDefaultMapWalkthrough } from '../awscloudformation/service-walkthroughs/mapWalkthrough';
 
 /**
  * Entry point for creating a new Geo resource
@@ -50,7 +53,7 @@ export async function addResource(
  * @param service The cloud service that is providing the category
  * @param parameters Parameters used to configure the resource. If not specified, a walkthrough will be launched to populate it.
  */
- export async function updateResource(
+export async function updateResource(
   context: any,
   service: string
 ): Promise<string> {
@@ -64,7 +67,23 @@ export async function addResource(
     default:
       throw BAD_SERVICE_ERR;
   }
-}
+};
+
+export async function removeResource(
+  context: any,
+  service: string
+): Promise<string> {
+  // load the service config for this service
+  const BAD_SERVICE_ERR = new Error(`amplify-category-geo is not configured to provide service type ${service}`);
+
+  switch (service) {
+    case ServiceName.Map:
+      const serviceConfig: ServiceConfig<MapParameters> = supportedServices[service];
+      return removeMapResource(context, service);
+    default:
+      throw BAD_SERVICE_ERR;
+  }
+};
 
 function checkIfAuthExists(context: $TSContext) {
     const { amplify } = context;
@@ -74,12 +93,12 @@ function checkIfAuthExists(context: $TSContext) {
     const authCategory = 'auth';
 
     if (amplifyMeta[authCategory] && Object.keys(amplifyMeta[authCategory]).length > 0) {
-        const categoryResources = amplifyMeta[authCategory];
-        Object.keys(categoryResources).forEach(resource => {
+      const categoryResources = amplifyMeta[authCategory];
+      Object.keys(categoryResources).forEach(resource => {
         if (categoryResources[resource].service === authServiceName) {
-            authExists = true;
+          authExists = true;
         }
-        });
+      });
     }
     return authExists;
 }
@@ -148,7 +167,7 @@ export async function updateMapResource(
   // This will modify mapParams
   await serviceConfig.walkthroughs.updateWalkthrough(context, mapParams);
 
-  if (mapParams.mapName && mapParams.isDefaultMap && mapParams.accessType) {
+  if (mapParams.mapName && mapParams.isDefaultMap !== undefined && mapParams.accessType) {
     modifyMapResource(context, {
       accessType: mapParams.accessType,
       mapName: mapParams.mapName,
@@ -161,7 +180,35 @@ export async function updateMapResource(
   print.success(`Successfully updated resource ${mapParams.mapName} locally.`);
   printNextStepsSuccessMessage(context);
   return mapParams.mapName;
-}
+};
+
+export async function removeMapResource(
+  context: any,
+  service: string
+): Promise<string> {
+  const { amplify } = context;
+  const resourceToRemove = await removeWalkthrough(context, service);
+  const resourceParameters = getCurrentMapParameters(context, resourceToRemove);
+  
+  // choose another default if removing a default map
+  if (resourceParameters.isDefaultMap) {
+    await updateDefaultMapWalkthrough(context, resourceToRemove);
+  }
+
+  await amplify.removeResource(context, category, resourceToRemove)
+    .catch(err => {
+      if (err.stack) {
+        context.print.info(err.stack);
+        context.print.error(`An error occurred when removing the geo resource ${resourceToRemove}`);
+      }
+
+      context.usageData.emitError(err);
+      process.exitCode = 1;
+  });
+  
+  printNextStepsSuccessMessage(context);
+  return resourceToRemove;
+};
 
 export function openConsole(context: any, service: ServiceName) {
   const amplifyMeta = context.amplify.getProjectMeta();

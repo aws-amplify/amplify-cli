@@ -1,7 +1,6 @@
 import { chooseServiceMessageRemove } from '../../provider-utils/awscloudformation/utils/constants';
 import { category } from '../../constants';
 import { supportedServices } from '../../provider-utils/supportedServices';
-import { removeWalkthrough } from '../../provider-utils/awscloudformation/service-walkthroughs/removeWalkthrough';
 
 const subcommand = 'remove';
 
@@ -10,26 +9,24 @@ module.exports = {
   run: async (context: any) => {
     const { amplify } = context;
     const servicesMetadata = supportedServices;
-
-    const selectedService = await amplify.serviceSelectionPrompt(
-        context,
-        category,
-        servicesMetadata,
-        chooseServiceMessageRemove
-    );
-
-    const resourceToRemove = await removeWalkthrough(context, selectedService.service);
-
     return amplify
-      .removeResource(context, category, resourceToRemove)
-      .catch(err => {
-        if (err.stack) {
-          context.print.info(err.stack);
-          context.print.error('An error occurred when removing the geo resource');
+      .serviceSelectionPrompt(context, category, servicesMetadata, chooseServiceMessageRemove)
+      .then((result: {service: string, providerName: string}) => {
+        const providerController = servicesMetadata[result.service].providerController;
+        if (!providerController) {
+          context.print.error('Provider not configured for this category');
+          return;
         }
-
+        return providerController.removeResource(context, result.service);
+      })
+      .then(() => {
+        context.print.info('');
+      })
+      .catch((err: any) => {
+        context.print.info(err.stack);
+        context.print.error('There was an error removing the geo resource');
         context.usageData.emitError(err);
         process.exitCode = 1;
-    });
+      });
   }
 };

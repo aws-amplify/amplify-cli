@@ -1,10 +1,12 @@
 import { JSONUtilities, pathManager, $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
-import { MapParameters, getGeoMapStyle } from './mapParams';
+import { MapParameters, getGeoMapStyle, getMapStyleComponents } from './mapParams';
 import _ from 'lodash';
 import path from 'path';
 import { parametersFileName, provider, ServiceName } from './constants';
 import { category } from '../../../constants';
 import { MapStack } from '../service-stacks/mapStack';
+import { AccessType } from './resourceParams';
+import { createParametersFile, getServiceMetaInfo } from './resourceUtils';
 
 export function createMapResource(context: $TSContext, parameters: MapParameters) {
   // generate CFN files
@@ -36,12 +38,15 @@ export function modifyMapResource(context: $TSContext, parameters: Pick<MapParam
     updateDefaultMap(context);
   }
 
-  context.amplify.updateamplifyMetaAfterResourceUpdate(
-    category,
-    parameters.mapName,
-    'isDefaultMap',
-    parameters.isDefaultMap
-  );
+  const paramsToUpdate = ['accessType', 'isDefaultMap'];
+  paramsToUpdate.forEach(param => {
+    context.amplify.updateamplifyMetaAfterResourceUpdate(
+      category,
+      parameters.mapName,
+      param,
+      parameters[param]
+    );
+  });
 }
 
 export function saveCFNParameters(
@@ -68,49 +73,68 @@ export function generateTemplateFile(parameters: Pick<MapParameters, 'accessType
     JSONUtilities.writeJson(path.normalize(path.join(resourceDir, cfnFileName(parameters.mapName))), mapStack.toCloudFormation());
 }
 
-export function createParametersFile(parameters: $TSObject, resourceName: string, parametersFileName: string) {
-  const parametersFilePath = path.join(pathManager.getBackendDirPath(), category, resourceName, parametersFileName);
-  const currentParameters: $TSAny = JSONUtilities.readJson(parametersFilePath, { throwIfNotExist: false }) || {};
-  JSONUtilities.writeJson(parametersFilePath, { ...currentParameters, ...parameters });
-}
-
-export function readParametersFile(resourceName: string, parametersFileName: string): $TSAny {
-  const parametersFilePath = path.join(pathManager.getBackendDirPath(), category, resourceName, parametersFileName);
-  return JSONUtilities.readJson(parametersFilePath, { throwIfNotExist: false }) || {};
-}
-
 export function constructMapMetaParameters(params: MapParameters): MapMetaParameters {
   let result: MapMetaParameters = {
-    isDefaultMap: true,
+    isDefaultMap: params.isDefaultMap,
     providerPlugin: provider,
     service: ServiceName.Map,
     mapStyle: getGeoMapStyle(params.dataProvider, params.mapStyleType),
-    pricingPlan: params.pricingPlan
+    pricingPlan: params.pricingPlan,
+    accessType: params.accessType
   };
   return result;
+}
+
+export function readMapMetaParameters(context: $TSContext, mapName: string): MapMetaParameters {
+  const serviceMetaInfo = getServiceMetaInfo(context, ServiceName.Map);
+  let mapMetaParameters: MapMetaParameters;
+  Object.keys(serviceMetaInfo).forEach(resource => {
+    const resourceMetaInfo = serviceMetaInfo[resource];
+    if (resource === mapName) {
+      mapMetaParameters = {
+        ...resourceMetaInfo
+      };
+    }
+  });
+  if (!mapMetaParameters) {
+    throw new Error(`Error reading Map Meta Parameters for ${mapName}`);
+  }
+  else return mapMetaParameters;
 }
 
 export type MapMetaParameters = Pick<MapParameters, 'isDefaultMap' | 'pricingPlan'> & {
   providerPlugin: string;
   service: string;
   mapStyle: string;
+  accessType: AccessType;
 }
 
-export function updateDefaultMap(context: $TSContext) {
+export async function updateDefaultMap(context: $TSContext, defaultMap?: string) {
   const { amplify } = context;
   const { amplifyMeta } = amplify.getProjectDetails();
 
   if (amplifyMeta[category]) {
     const categoryResources = amplifyMeta[category];
     Object.keys(categoryResources).forEach(resource => {
-      if (categoryResources[resource].service === ServiceName.Map && categoryResources[resource].isDefaultMap) {
+      if (categoryResources[resource].service === ServiceName.Map) {
         amplify.updateamplifyMetaAfterResourceUpdate(
           category,
           resource,
           'isDefaultMap',
-          false
+          (defaultMap === resource)
         );
       }
     });
   }
+}
+
+export function getCurrentMapParameters(context: $TSContext, mapName: string): Partial<MapParameters> {
+  const currentMapMetaParameters: MapMetaParameters = readMapMetaParameters(context, mapName);
+  return {
+    mapStyleType: getMapStyleComponents(currentMapMetaParameters.mapStyle).mapStyleType,
+    dataProvider: getMapStyleComponents(currentMapMetaParameters.mapStyle).dataProvider,
+    pricingPlan: currentMapMetaParameters.pricingPlan,
+    accessType: currentMapMetaParameters.accessType,
+    isDefaultMap: currentMapMetaParameters.isDefaultMap
+  };
 }

@@ -1,11 +1,13 @@
 import _ from 'lodash';
 import inquirer from 'inquirer';
 import { merge } from '../utils/resourceParamsUtils';
-import { HereMapStyleType, MapParameters, EsriMapStyleType, getMapStyleComponents } from '../utils/mapParams';
+import { HereMapStyleType, MapParameters, EsriMapStyleType } from '../utils/mapParams';
 import uuid from 'uuid';
 import { AccessType, DataProvider, PricingPlan } from '../utils/resourceParams';
 import { apiDocs, ServiceName } from '../utils/constants';
 import { $TSContext } from 'amplify-cli-core';
+import { getCurrentMapParameters, updateDefaultMap } from '../utils/mapResourceUtils';
+import { getServiceMetaInfo } from '../utils/resourceUtils';
 
 /**
  * Starting point for CLI walkthrough that generates a map resource
@@ -31,8 +33,14 @@ export async function createMapWalkthrough(
   // get the pricing plan
   parameters = merge(parameters, await pricingPlanWalkthrough(parameters));
 
-  // ask if the map should be set as a default
-  parameters.isDefaultMap = await context.amplify.confirmPrompt('Do you want to set this map as default?', true)
+  // ask if the map should be set as a default. Default to true if it's the only map
+  const currentMapResources = await getServiceMetaInfo(context, ServiceName.Map);
+  if (currentMapResources && Object.keys(currentMapResources).length > 0) {
+    parameters.isDefaultMap = await context.amplify.confirmPrompt('Do you want to set this map as default?', true)
+  }
+  else {
+      parameters.isDefaultMap = true;
+  }
 
   return parameters;
 }
@@ -148,11 +156,42 @@ export async function updateMapWalkthrough(context: $TSContext, parameters?: Par
     }
 
     parameters.mapName = resourceToUpdate;
-    const accessType = await mapAccessWalkthrough(parameters);
-    parameters = merge(parameters, accessType);
+    parameters = merge(parameters, getCurrentMapParameters(context, resourceToUpdate));
+    
+    // overwrite the parameters based on user input
+    parameters.accessType = (await mapAccessWalkthrough(parameters)).accessType;
 
-    // ask if the map should be set as a default
-    parameters.isDefaultMap = await context.amplify.confirmPrompt('Do you want to set this map as default?', true)
-
+    const otherMapResources = mapResourceNames.filter(mapResourceName => mapResourceName != resourceToUpdate);
+    // if this is the only map, default cannot be removed
+    if (otherMapResources.length > 0) {
+        const isDefaultMap = await context.amplify.confirmPrompt('Do you want to set this map as default?', true);
+        // If a default map is updated, ask for new default
+        if (parameters.isDefaultMap && !isDefaultMap) {
+            await updateDefaultMapWalkthrough(context, resourceToUpdate, otherMapResources);
+        }
+        parameters.isDefaultMap = isDefaultMap;
+    }
     return parameters;
+}
+
+export async function updateDefaultMapWalkthrough(context: $TSContext, currentDefault: string, availableMaps?: string[]): Promise<string> {
+    if (!availableMaps) {
+        availableMaps = ((await context.amplify.getResourceStatus()).allResources as any[])
+        .filter(resource => resource.service === ServiceName.Map)
+        .map(resource => resource.resourceName);
+    }
+    const otherMapResources = availableMaps.filter(mapResourceName => mapResourceName != currentDefault);
+    if (otherMapResources && otherMapResources.length > 0) {
+        const defaultMapQuestion = [
+            {
+                name: 'resourceName',
+                message: 'Select the Map you want to set as default:',
+                type: 'list',
+                choices: otherMapResources
+            }
+        ];
+        const defaultMapName = (await inquirer.prompt(defaultMapQuestion)).resourceName as string;
+        await updateDefaultMap(context, defaultMapName);
+    }
+    return currentDefault;
 }
