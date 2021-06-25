@@ -10,7 +10,7 @@ import { App } from '@aws-cdk/core';
 import { DocumentNode } from 'graphql';
 import { GraphQLApi } from '../graphql-api';
 import { TransformerDataSourceManager } from './datasource';
-import { NoopFeatureFlagProvider } from './noop-featuer-flag';
+import { NoopFeatureFlagProvider } from './noop-feature-flag';
 import { TransformerOutput } from './output';
 import { TransformerContextProviderRegistry } from './provider-registry';
 import { ResolverManager } from './resolver';

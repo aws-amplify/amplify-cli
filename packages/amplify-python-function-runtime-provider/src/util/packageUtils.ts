@@ -36,7 +36,7 @@ export async function pythonPackage(context: any, params: PackageRequest): Promi
         );
       }
 
-      [optPath, ...libGlob].forEach(folder => {
+      [...libGlob].forEach(folder => {
         if (fs.lstatSync(folder).isDirectory()) {
           zipEntries.push({ packageFolder: folder });
         }

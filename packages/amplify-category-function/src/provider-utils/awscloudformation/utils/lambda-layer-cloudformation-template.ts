@@ -19,6 +19,7 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
   const multiEnvLayer = isMultiEnvLayer(parameters.layerName);
   const resourceName = parameters.layerName;
   const layerName = multiEnvLayer ? Fn.Sub(`${parameters.layerName}-` + '${env}', { env: Fn.Ref('env') }) : parameters.layerName;
+  const hasRuntimes = parameters.runtimes.length > 0;
   let logicalName: string;
 
   if (isNewVersion) {
@@ -38,7 +39,7 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
       },
     },
   };
-  const cfnObj = getLayerCfnObjBase();
+  const cfnObj = getLayerCfnObjBase(hasRuntimes);
   const { envName } = stateManager.getLocalEnvInfo();
   const layerVersionsToBeRemoved = getLayerVersionsToBeRemovedByCfn(resourceName, envName);
   const skipLayerVersionSet = new Set<number>(layerVersionsToBeRemoved);
@@ -46,7 +47,7 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
   for (const layerVersion of versionList.filter(r => !skipLayerVersionSet.has(r.Version))) {
     let shortId: string;
     if (!layerVersion.legacyLayer) {
-      cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion, resourceName);
+      cfnObj.Resources[layerVersion.LogicalName] = constructLayerVersionCfnObject(layerName, layerVersion, resourceName, hasRuntimes);
       shortId = layerVersion.LogicalName.replace(LayerCfnLogicalNamePrefix.LambdaLayerVersion, '');
     }
     const permissionObjects = constructLayerVersionPermissionObjects(layerVersion, parameters, shortId, envName);
@@ -56,8 +57,8 @@ export function generateLayerCfnObj(isNewVersion: boolean, parameters: LayerPara
   return { ...cfnObj, ...outputObj };
 }
 
-function getLayerCfnObjBase() {
-  return {
+function getLayerCfnObjBase(hasRuntimes: boolean) {
+  const cfnBase = {
     AWSTemplateFormatVersion: '2010-09-09',
     Description: 'Lambda layer resource stack creation using Amplify CLI',
     Parameters: {
@@ -74,22 +75,34 @@ function getLayerCfnObjBase() {
         Type: 'String',
         Default: '',
       },
-      runtimes: {
-        Type: 'List<String>',
-      },
+      runtimes: undefined,
     },
     Resources: {},
   };
+
+  if (hasRuntimes) {
+    cfnBase.Parameters.runtimes = {
+      Type: 'List<String>',
+    };
+  }
+
+  return cfnBase;
 }
 
 function constructLayerVersionCfnObject(
   layerName: string | IntrinsicFunction,
   layerVersion: LayerVersionCfnMetadata,
   resourceName: string,
+  hasRuntimes: boolean,
 ) {
   const description: string | IntrinsicFunction = layerVersion.CreatedDate ? layerVersion.Description : Fn.Ref('description');
+  let compatibleRuntimes: { CompatibleRuntimes: string[] | IntrinsicFunction };
+  if (hasRuntimes) {
+    compatibleRuntimes = { CompatibleRuntimes: layerVersion.CompatibleRuntimes || Fn.Ref('runtimes') };
+  }
+
   const newLayerVersion = new Lambda.LayerVersion({
-    CompatibleRuntimes: layerVersion.CompatibleRuntimes || Fn.Ref('runtimes'),
+    ...compatibleRuntimes,
     Content: {
       S3Bucket: Fn.Ref('deploymentBucketName'),
       S3Key: layerVersion.CreatedDate

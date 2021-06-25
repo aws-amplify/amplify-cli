@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.27.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.0...amplify-appsync-simulator@1.27.1) (2021-06-24)
+
+
+### Bug Fixes
+
+* validates optional non nullable fields to be not null  ([#7170](https://github.com/aws-amplify/amplify-cli/issues/7170)) ([1ca842c](https://github.com/aws-amplify/amplify-cli/commit/1ca842c703bfc34e65bfffff85908ea8b2ccb521))
+
+
+
+
+
 # [1.27.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.26.6...amplify-appsync-simulator@1.27.0) (2021-06-02)
 
 
