@@ -189,7 +189,7 @@ export async function removeMapResource(
   const { amplify } = context;
   const resourceToRemove = await removeWalkthrough(context, service);
   const resourceParameters = getCurrentMapParameters(context, resourceToRemove);
-  
+
   // choose another default if removing a default map
   if (resourceParameters.isDefaultMap) {
     await updateDefaultMapWalkthrough(context, resourceToRemove);
@@ -205,7 +205,7 @@ export async function removeMapResource(
       context.usageData.emitError(err);
       process.exitCode = 1;
   });
-  
+
   printNextStepsSuccessMessage(context);
   return resourceToRemove;
 };

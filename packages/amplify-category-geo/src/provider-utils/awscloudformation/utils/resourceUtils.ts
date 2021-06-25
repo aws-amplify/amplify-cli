@@ -27,4 +27,3 @@ export function getServiceMetaInfo(context:$TSContext, service: string): any {
     }
     return serviceMetaInfo;
 }
-  

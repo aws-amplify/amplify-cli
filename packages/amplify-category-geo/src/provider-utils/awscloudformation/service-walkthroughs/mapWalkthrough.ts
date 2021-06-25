@@ -157,7 +157,7 @@ export async function updateMapWalkthrough(context: $TSContext, parameters?: Par
 
     parameters.mapName = resourceToUpdate;
     parameters = merge(parameters, getCurrentMapParameters(context, resourceToUpdate));
-    
+
     // overwrite the parameters based on user input
     parameters.accessType = (await mapAccessWalkthrough(parameters)).accessType;
 
