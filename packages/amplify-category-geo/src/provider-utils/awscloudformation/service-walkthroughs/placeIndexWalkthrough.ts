@@ -29,6 +29,11 @@ import { AccessType, DataProvider, PricingPlan } from '../utils/resourceParams';
     parameters = merge(parameters, await placeIndexStorageWalkthrough(parameters))
     // get the pricing plan
     parameters = merge(parameters, await placeIndexPricingWalkthrough(parameters))
+  } else {
+    parameters = merge(parameters, {
+      dataSourceIntendedUse: DataSourceIntendedUse.SingleUse,
+      pricingPlan: PricingPlan.RequestBasedUsage
+    })
   }
   return parameters;
 }
@@ -51,10 +56,10 @@ import { AccessType, DataProvider, PricingPlan } from '../utils/resourceParams';
   context.print.info('remove place index walkthrough');
 }
 
-async function placeIndexNameWalkthrough(context: $TSContext): Promise<Pick<PlaceIndexParameters, 'placeIndexName'>> {
+async function placeIndexNameWalkthrough(context: $TSContext): Promise<Pick<PlaceIndexParameters, 'indexName'>> {
   const placeIndexNamePrompt = {
     type: 'input',
-    name: 'placeIndexName',
+    name: 'indexName',
     message: 'Provide a name for the place index:',
     validate: context.amplify.inputValidation({
         operator: 'regex',
@@ -137,7 +142,7 @@ async function placeIndexPricingWalkthrough(parameters: Partial<PlaceIndexParame
         },
         {
           name: "Mobile Asset Management",
-          value: PricingPlan.MobileAssetManagement        
+          value: PricingPlan.MobileAssetManagement
         }
       ],
       default: parameters.pricingPlan || PricingPlan.RequestBasedUsage
