@@ -1,32 +1,23 @@
-import fs from 'fs-extra';
-import { checkCaseSensitivityIssue } from '../../../../provider-utils/awscloudformation/utils/check-case-sensitivity';
+import { isNameUnique } from '../../../../provider-utils/awscloudformation/utils/check-case-sensitivity';
+import { stateManager } from 'amplify-cli-core';
 
-const mockExit = jest.spyOn(process, 'exit').mockImplementation();
-jest.spyOn(fs, 'readdir').mockImplementation(_ => new Promise(resolve => resolve(['testBlog', 'testblogcasesensitivefs'])));
+jest.mock('amplify-cli-core');
 
-const contextStub = {
-  amplify: {
-    pathManager: {
-      getBackendDirPath: jest.fn(_ => 'mock/backend/path'),
-    },
+const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
+
+stateManager_mock.getMeta.mockReturnValue({
+  api: {
+    testBlog: {},
   },
-  print: {
-    error: jest.fn(),
-  },
-};
-
-test('conflict does not exist if the name matches exactly', async () => {
-  await checkCaseSensitivityIssue(contextStub, 'api', 'testBlog');
-  expect(mockExit).toBeCalledTimes(0);
 });
 
-test('conflict does not exist if names do not match whatsoever', async () => {
-  await checkCaseSensitivityIssue(contextStub, 'api', 'newname');
-  expect(mockExit).toBeCalledTimes(0);
+test('conflict exists if names differ by case only', () => {
+  expect(() => isNameUnique('api', 'testblog')).toThrowErrorMatchingInlineSnapshot(
+    `"A resource named testBlog already exists. Amplify resource names must be unique and are case-insensitive."`,
+  );
 });
 
-test('conflict exists if names are different by case only', async () => {
-  await checkCaseSensitivityIssue(contextStub, 'api', 'testblog');
-  expect(mockExit).toBeCalledTimes(1);
-  mockExit.mockRestore();
+test('conflict does not exist if names differ by characters', () => {
+  const result = isNameUnique('api', 'newname');
+  expect(result).toBe(true);
 });
