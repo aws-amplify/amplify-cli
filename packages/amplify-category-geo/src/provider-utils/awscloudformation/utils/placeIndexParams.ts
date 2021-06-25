@@ -5,7 +5,7 @@ import { DataProvider, ResourceParameters } from './resourceParams';
  */
 export type PlaceIndexParameters = ResourceParameters & {
     providerContext: ProviderContext; // higher level context around the function
-    placeIndexName: string; // name of the place index
+    indexName: string; // name of the place index
     indexPolicyName: string;
     dataProvider: DataProvider;
     dataSourceIntendedUse: DataSourceIntendedUse;
