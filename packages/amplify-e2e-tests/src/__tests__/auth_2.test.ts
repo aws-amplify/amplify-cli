@@ -5,6 +5,7 @@ import {
   amplifyPush,
   validateNodeModulesDirRemoval,
   updateFunction,
+  addAuthwithUserPoolGroupsViaAPIWithTrigger,
 } from 'amplify-e2e-core';
 import { addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger } from 'amplify-e2e-core';
 import {
@@ -98,7 +99,7 @@ describe('amplify add auth...', () => {
 
   it('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthViaAPIWithTrigger(projRoot, {});
+    await addAuthwithUserPoolGroupsViaAPIWithTrigger(projRoot, {});
     await updateFunction(
       projRoot,
       {
@@ -115,8 +116,9 @@ describe('amplify add auth...', () => {
     );
     await amplifyPush(projRoot);
     const meta = getProjectMeta(projRoot);
-    const functionName = `${Object.keys(meta.auth)[0]}PostConfirmation-integtest`;
-    const authMeta = Object.keys(meta.auth).map(key => meta.auth[key])[0];
+    const authKey = Object.keys(meta.auth).find(key => meta.auth[key].service === 'Cognito');
+    const functionName = `${authKey}PostConfirmation-integtest`;
+    const authMeta = meta.auth[authKey];
     const id = authMeta.output.UserPoolId;
     const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];

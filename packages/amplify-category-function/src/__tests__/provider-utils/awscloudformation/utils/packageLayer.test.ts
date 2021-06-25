@@ -18,6 +18,7 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/layerHelpers', () 
   getChangedResources: jest.fn(),
   ensureLayerVersion: jest.fn().mockReturnValue('newhash'),
 }));
+jest.mock('../../../../provider-utils/awscloudformation/utils/zipResource');
 
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 
@@ -41,7 +42,7 @@ loadLayerConfigurationFile_mock.mockReturnValue({
 const validFilesize_mock = validFilesize as jest.MockedFunction<typeof validFilesize>;
 validFilesize_mock.mockReturnValue(true);
 
-pathManager_mock.getBackendDirPath.mockReturnValue('backend/dir/path');
+pathManager_mock.getResourceDirectoryPath.mockReturnValue('backend/dir/path/testcategory/testResourceName/');
 
 const runtimePlugin_stub = ({
   checkDependencies: jest.fn().mockResolvedValue({ hasRequiredDependencies: true }),

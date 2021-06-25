@@ -29,6 +29,7 @@ import {
   loadFunctionTestFile,
   overrideFunctionSrcNode,
   overrideLayerCodeNode,
+  overrideLayerCodePython,
   updateFunction,
   updateLayer,
   validatePushedVersion,
@@ -297,17 +298,15 @@ describe('amplify add lambda layer with changes', () => {
   });
 
   /*
-add node layer
-add files in opt
-push
-remove node_modules (simulate gitignore),
-amplify status -> no change
-delete yarn.lock
-amplify status -> update
-push
--> should not create layer version
-, (it should force a npm/yarn), node_module should exists with content, push should succeed
-
+    add node layer
+    add files in opt
+    push
+    remove node_modules (simulate gitignore),
+    amplify status -> no change
+    delete yarn.lock
+    amplify status -> update
+    push
+    -> should not create layer version, (it should force a npm/yarn), node_module should exist with content, push should succeed
   */
 
   it('add node layer, remove lock file, node_modules, verify status, push', async () => {
@@ -318,14 +317,6 @@ push
     const settings = {
       runtimes: [layerRuntime],
       layerName,
-      projName,
-    };
-    const settingsUpdate = {
-      runtimes: [layerRuntime],
-      layerName: layerName,
-      changePermissionOnFutureVersion: true,
-      permissions: ['Public (Anyone on AWS can use this layer)'],
-      numLayers: 1,
       projName,
     };
 
@@ -341,7 +332,7 @@ push
       usePreviousPermissions: true,
     });
 
-    const firstArn = getCurrentLayerArnFromMeta(projRoot, settingsUpdate);
+    const firstArn = getCurrentLayerArnFromMeta(projRoot, { layerName, projName });
 
     // 1. Remove node_modules
     // 2. Check status: No Change
@@ -360,6 +351,75 @@ push
     // 3. Remove yarn.lock
     // 4. Check status: Update
     fs.removeSync(path.join(layerPath, 'lib', 'nodejs', 'yarn.lock'));
+
+    await amplifyStatus(projRoot, 'Update');
+
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+      usePreviousPermissions: true,
+    });
+
+    const secondArn = getCurrentLayerArnFromMeta(projRoot, settings);
+
+    // Layer ARNs must match as no new version should have been deployed, as
+    expect(firstArn).toEqual(secondArn);
+  });
+
+  /*
+    add python layer
+    add files in opt
+    push
+    remove lib/python3.8/site-packages (simulate gitignore),
+    amplify status -> no change
+    delete Pipfile.lock
+    amplify status -> update
+    push
+    -> should not create layer version, (it should force a pip install),
+    lib/python3.8/site-packages should exist with content, push should succeed
+  */
+
+  it('add python layer, remove lock file, site-packages, verify status, push', async () => {
+    const [shortId] = uuid().split('-');
+    const layerName = `simplelayer${shortId}`;
+    const layerRuntime: LayerRuntime = 'python';
+
+    const settings = {
+      runtimes: [layerRuntime],
+      layerName,
+      projName,
+    };
+
+    await addLayer(projRoot, settings);
+
+    const pipfileContent = loadFunctionTestFile('titlecase.pipfile');
+    overrideLayerCodePython(projRoot, settings.projName, settings.layerName, pipfileContent, 'Pipfile');
+
+    addOptData(projRoot, settings);
+
+    await amplifyPushLayer(projRoot, {
+      acceptSuggestedLayerVersionConfigurations: true,
+      usePreviousPermissions: true,
+    });
+
+    const firstArn = getCurrentLayerArnFromMeta(projRoot, { layerName, projName });
+
+    // 1. Remove lib/python3.8/site-packages
+    // 2. Check status: No Change
+    const layerPath = path.join(
+      projRoot,
+      'amplify',
+      'backend',
+      'function',
+      getLayerDirectoryName({ projName: settings.projName, layerName: settings.layerName }),
+    );
+
+    rimraf.sync(path.join(layerPath, 'lib', 'python', 'lib'));
+
+    await amplifyStatus(projRoot, 'No Change');
+
+    // 3. Remove Pipfile.lock
+    // 4. Check status: Update
+    fs.removeSync(path.join(layerPath, 'lib', 'python', 'Pipfile.lock'));
 
     await amplifyStatus(projRoot, 'Update');
 

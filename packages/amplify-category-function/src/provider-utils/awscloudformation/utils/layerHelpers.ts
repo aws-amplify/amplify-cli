@@ -10,7 +10,7 @@ import uuid from 'uuid';
 import { categoryName } from '../../../constants';
 import { cfnTemplateSuffix, LegacyFilename, parametersFileName, provider, ServiceName, versionHash } from './constants';
 import { getLayerConfiguration, LayerConfiguration, loadLayerConfigurationFile } from './layerConfiguration';
-import { LayerParameters, LayerPermission, LayerVersionMetadata, PermissionEnum } from './layerParams';
+import { LayerParameters, LayerPermission, LayerRuntime, LayerVersionMetadata, PermissionEnum } from './layerParams';
 import { updateLayerArtifacts } from './storeResources';
 
 // These glob patterns cover the resource files Amplify stores in the layer resource's directory,
@@ -21,6 +21,8 @@ const layerResourceGlobs = [parametersFileName, `*${cfnTemplateSuffix}`];
 const libPathName = 'lib';
 const optPathName = 'opt';
 const packageJson = 'package.json';
+const pipfile = 'Pipfile';
+const pipfileLock = 'Pipfile.lock';
 
 export interface LayerInputParams {
   layerPermissions?: PermissionEnum[];
@@ -299,8 +301,7 @@ export async function getChangedResources(resources: Array<$TSAny>): Promise<Arr
 const getLayerGlobs = async (
   resourcePath: string,
   resourceName: string,
-  runtimeId: string,
-  layerExecutablePath: string,
+  runtimes: LayerRuntime[],
   includeResourceFiles: boolean,
 ): Promise<string[]> => {
   const result: string[] = [];
@@ -309,46 +310,74 @@ const getLayerGlobs = async (
     result.push(...layerResourceGlobs);
   }
 
-  const layerCodePath = path.join(resourcePath, libPathName, layerExecutablePath);
-
   // Add to hashable files/folders
   result.push(optPathName);
 
-  //TODO let function runtimes export globs later instead of hardcoding in here
-  if (runtimeId === 'nodejs') {
-    const packageManager = getPackageManager(layerCodePath);
+  for (const runtime of runtimes) {
+    const { value: runtimeId, layerExecutablePath } = runtime;
+    let layerCodePath: string;
 
-    // If no packagemanager was detected it means no package.json present at the resource path,
-    // so no files to hash related to packages.
-    if (packageManager !== null) {
-      // Add to hashable files/folders
-      result.push(path.join(libPathName, layerExecutablePath, packageJson));
-
-      // If lock file is present, add to hashable files/folders
-      const lockFilePath = path.join(layerCodePath, packageManager.lockFile);
-
-      if (fs.existsSync(lockFilePath)) {
-        result.push(path.join(libPathName, layerExecutablePath, packageManager.lockFile));
-      }
+    if (layerExecutablePath !== undefined) {
+      layerCodePath = path.join(resourcePath, libPathName, layerExecutablePath);
     }
 
-    // Add layer direct content from lib/nodejs and exclude well known files from list.
-    // files must be relative to resource folder as that will be used as a base path for hashing.
-    const contentFilePaths = await globby([path.join(libPathName, layerExecutablePath, '**', '*')], {
-      cwd: resourcePath,
-      ignore: ['node_modules', packageJson, 'yarn.lock', 'package-lock.json'].map(name =>
-        path.join(libPathName, layerExecutablePath, name),
-      ),
-    });
+    //TODO let function runtimes export globs later instead of hardcoding in here
+    if (runtimeId === 'nodejs') {
+      const packageManager = getPackageManager(layerCodePath);
 
-    result.push(...contentFilePaths);
-  } else if (runtimeId === 'python') {
-    // No special treatment needed for python yet.
-  } else {
-    const error = new Error(`Unsupported layer runtime: ${runtimeId} for resource: ${resourceName}`);
-    error.stack = undefined;
+      // If no packagemanager was detected it means no package.json present at the resource path,
+      // so no files to hash related to packages.
+      if (packageManager !== null) {
+        // Add to hashable files/folders
+        result.push(path.join(libPathName, layerExecutablePath, packageJson));
 
-    throw error;
+        // If lock file is present, add to hashable files/folders
+        const lockFilePath = path.join(layerCodePath, packageManager.lockFile);
+
+        if (fs.existsSync(lockFilePath)) {
+          result.push(path.join(libPathName, layerExecutablePath, packageManager.lockFile));
+        }
+      }
+
+      // Add layer direct content from lib/nodejs and exclude well known files from list.
+      // files must be relative to resource folder as that will be used as a base path for hashing.
+      const contentFilePaths = await globby([path.join(libPathName, layerExecutablePath, '**', '*')], {
+        cwd: resourcePath,
+        ignore: ['node_modules', packageJson, 'yarn.lock', 'package-lock.json'].map(name =>
+          path.join(libPathName, layerExecutablePath, name),
+        ),
+      });
+
+      result.push(...contentFilePaths);
+    } else if (runtimeId === 'python') {
+      // Add to hashable files/folders
+      const pipfileFilePath = path.join(layerCodePath, pipfile);
+
+      if (fs.existsSync(pipfileFilePath)) {
+        result.push(path.join(libPathName, layerExecutablePath, pipfile));
+      }
+
+      // If lock file is present, add to hashable files/folders
+      const pipfileLockFilePath = path.join(layerCodePath, pipfileLock);
+
+      if (fs.existsSync(pipfileLockFilePath)) {
+        result.push(path.join(libPathName, layerExecutablePath, pipfileLock));
+      }
+
+      // Add layer direct content from lib/python and exclude well known files from list.
+      // files must be relative to resource folder as that will be used as a base path for hashing.
+      const contentFilePaths = await globby([path.join(libPathName, layerExecutablePath, '**', '*')], {
+        cwd: resourcePath,
+        ignore: ['lib', pipfile, pipfileLock].map(name => path.join(libPathName, layerExecutablePath, name)),
+      });
+
+      result.push(...contentFilePaths);
+    } else if (runtimeId !== undefined) {
+      const error = new Error(`Unsupported layer runtime: ${runtimeId} for resource: ${resourceName}`);
+      error.stack = undefined;
+
+      throw error;
+    }
   }
 
   return result;
@@ -360,11 +389,13 @@ const hashLayerVersion = async (layerPath: string, layerName: string, includeRes
   const layerConfig: LayerConfiguration = loadLayerConfigurationFile(layerName, false);
 
   if (layerConfig) {
-    const { value: runtimeId, layerExecutablePath } = layerConfig.runtimes[0];
-
-    const layerFilePaths = await getLayerGlobs(layerPath, layerName, runtimeId, layerExecutablePath, includeResourceFiles);
+    const layerFilePaths = await getLayerGlobs(layerPath, layerName, layerConfig.runtimes, includeResourceFiles);
 
     const filePaths = await globby(layerFilePaths, { cwd: layerPath });
+
+    // Sort the globbed files to make sure subsequent hashing on the same set of files will be ending
+    // up in the same hash
+    filePaths.sort();
 
     return filePaths
       .map(filePath => fs.readFileSync(path.join(layerPath, filePath), 'binary'))

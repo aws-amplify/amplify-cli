@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformers-e2e-tests",
-  "version": "6.24.1",
+  "version": "6.24.2",
   "description": "End to end functional tests for appsync supported transformers.",
   "private": true,
   "repository": {
@@ -27,7 +27,7 @@
     "cloudform-types": "^4.2.0",
     "graphql": "^14.5.8",
     "graphql-transformer-common": "4.19.3",
-    "graphql-transformer-core": "6.28.10",
+    "graphql-transformer-core": "6.28.11",
     "moment": "^2.24.0"
   },
   "devDependencies": {
@@ -39,20 +39,20 @@
     "aws-sdk": "^2.919.0",
     "execa": "4.1.0",
     "fs-extra": "^8.1.0",
-    "graphql-auth-transformer": "6.24.11",
-    "graphql-connection-transformer": "4.21.11",
-    "graphql-dynamodb-transformer": "6.22.11",
-    "graphql-elasticsearch-transformer": "4.11.11",
-    "graphql-function-transformer": "2.5.10",
-    "graphql-http-transformer": "4.17.10",
-    "graphql-key-transformer": "2.23.11",
-    "graphql-predictions-transformer": "2.5.10",
+    "graphql-auth-transformer": "6.24.12",
+    "graphql-connection-transformer": "4.21.12",
+    "graphql-dynamodb-transformer": "6.22.12",
+    "graphql-elasticsearch-transformer": "4.11.12",
+    "graphql-function-transformer": "2.5.11",
+    "graphql-http-transformer": "4.17.11",
+    "graphql-key-transformer": "2.23.12",
+    "graphql-predictions-transformer": "2.5.11",
     "graphql-tag": "^2.10.1",
-    "graphql-versioned-transformer": "4.17.11",
+    "graphql-versioned-transformer": "4.17.12",
     "isomorphic-fetch": "^2.2.1",
     "jest-junit": "^12.0.0",
     "node-fetch": "^2.6.1",
-    "ws": "^7.2.1"
+    "ws": "^7.4.6"
   },
   "jest": {
     "transform": {

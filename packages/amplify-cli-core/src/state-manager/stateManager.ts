@@ -12,6 +12,11 @@ export type GetOptions<T> = {
   default?: T;
 };
 
+export type ResourceEntry = {
+  resourceName: string;
+  resource: Record<string, object>;
+};
+
 export class StateManager {
   metaFileExists = (projectPath?: string): boolean => this.doesExist(pathManager.getAmplifyMetaFilePath, projectPath);
 
@@ -261,6 +266,64 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, cliJSON, {
       keepComments: true,
     });
+  };
+
+  getResourceFromMeta = (
+    amplifyMeta: Record<string, any>,
+    categoryName: string,
+    serviceName: string,
+    resourceName?: string | undefined,
+    throwIfNotExist: boolean = true,
+  ): ResourceEntry | null => {
+    const resources = this.filterResourcesFromMeta(amplifyMeta, categoryName, serviceName, resourceName);
+
+    if (resources.length == 0) {
+      const withNamePart = resourceName ? `with name: ${resourceName} ` : '';
+
+      if (throwIfNotExist) {
+        throw new Error(`Resource for ${serviceName} service in ${categoryName} category, ${withNamePart}was not found.`);
+      } else {
+        return null;
+      }
+    } else if (resources.length > 1) {
+      throw new Error(
+        `${resources.length} resources were found for ${serviceName} service in ${categoryName} category, but expected only 1.`,
+      );
+    }
+
+    return resources[0];
+  };
+
+  private filterResourcesFromMeta = (
+    amplifyMeta: Record<string, any>,
+    categoryName: string,
+    serviceName: string,
+    resourceName?: string,
+  ): ResourceEntry[] => {
+    const categoryResources = _.get(amplifyMeta, [categoryName]);
+
+    if (!categoryResources) {
+      return [];
+    }
+
+    const result: ResourceEntry[] = [];
+
+    for (const resourceKey of Object.keys(categoryResources)) {
+      if (categoryResources[resourceKey].service === serviceName && (!resourceName || (resourceName && resourceKey === resourceName))) {
+        result.push({
+          resourceName: resourceKey,
+          resource: categoryResources[resourceKey],
+        });
+
+        // If we have a match and we had a resourceName parameter passed in
+        // break out as same object key cannot exists within the same object
+        if (resourceName && result.length === 1) {
+          break;
+        }
+      }
+    }
+
+    return result;
   };
 
   private doesExist = (filePathGetter: (projPath?: string) => string, projectPath?: string): boolean => {

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.23.0...amplify-cli-core@1.23.1) (2021-06-24)
+
+
+### Bug Fixes
+
+* **graphql-transformer-common:** improve generated graphql pluralization ([#7258](https://github.com/aws-amplify/amplify-cli/issues/7258)) ([fc3ad0d](https://github.com/aws-amplify/amplify-cli/commit/fc3ad0dd5a12a7912c59ae12024f593b4cdf7f2d)), closes [#4224](https://github.com/aws-amplify/amplify-cli/issues/4224)
+
+
+
+
+
 # [1.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.22.2...amplify-cli-core@1.23.0) (2021-06-15)
 
 

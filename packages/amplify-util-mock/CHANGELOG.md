@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.33.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.33.1...amplify-util-mock@3.33.2) (2021-06-24)
+
+
+### Bug Fixes
+
+* let mock startup with gql transformer v2 ([#7433](https://github.com/aws-amplify/amplify-cli/issues/7433)) ([f994ec2](https://github.com/aws-amplify/amplify-cli/commit/f994ec2ab4e9d190fcbabb5d599f15f798401f76))
+* support AWS::URLSuffix CFN pseudo-param in mock ([#7416](https://github.com/aws-amplify/amplify-cli/issues/7416)) ([ef5a507](https://github.com/aws-amplify/amplify-cli/commit/ef5a507f2b9ebcc96fad2a0bfaeb2ffb35284e6a))
+* **graphql-transformer-common:** improve generated graphql pluralization ([#7258](https://github.com/aws-amplify/amplify-cli/issues/7258)) ([fc3ad0d](https://github.com/aws-amplify/amplify-cli/commit/fc3ad0dd5a12a7912c59ae12024f593b4cdf7f2d)), closes [#4224](https://github.com/aws-amplify/amplify-cli/issues/4224)
+
+
+
+
+
+## [3.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.33.0...amplify-util-mock@3.33.1) (2021-06-19)
+
+**Note:** Version bump only for package amplify-util-mock
+
+
+
+
+
 # [3.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-util-mock@3.32.0...amplify-util-mock@3.33.0) (2021-06-15)
 
 

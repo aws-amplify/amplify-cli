@@ -5,8 +5,7 @@ const path = require('path');
 const { RelationalDBSchemaTransformer } = require('graphql-relational-schema-transformer');
 const { RelationalDBTemplateGenerator, AuroraServerlessMySQLDatabaseReader } = require('graphql-relational-schema-transformer');
 const { mergeTypeDefs } = require('@graphql-tools/merge');
-const { ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
-
+const { FeatureFlags, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 const subcommand = 'add-graphql-datasource';
 const categories = 'categories';
 const category = 'api';
@@ -143,7 +142,11 @@ module.exports = {
         context[rdsResourceName] = resourceName;
         context[rdsDatasource] = datasource;
         let template = templateGenerator.createTemplate(context);
-        template = templateGenerator.addRelationalResolvers(template, resolversDir);
+        template = templateGenerator.addRelationalResolvers(
+          template,
+          resolversDir,
+          FeatureFlags.getBoolean('graphqltransformer.improvePluralization'),
+        );
         const cfn = templateGenerator.printCloudformationTemplate(template);
 
         /**

@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.53.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.52.1...amplify-provider-awscloudformation@4.53.0) (2021-06-24)
+
+
+### Bug Fixes
+
+* includes getAtt to maintain dependency in root stack ([#7392](https://github.com/aws-amplify/amplify-cli/issues/7392)) ([d24b44a](https://github.com/aws-amplify/amplify-cli/commit/d24b44a4731e407fac0391817e851314f1bb13f8))
+* Move credential validation to the top function call ([#7401](https://github.com/aws-amplify/amplify-cli/issues/7401)) ([97ed227](https://github.com/aws-amplify/amplify-cli/commit/97ed2275572f89ab2dd231ec15e3ac8602f7987e))
+* **graphql-transformer-common:** improve generated graphql pluralization ([#7258](https://github.com/aws-amplify/amplify-cli/issues/7258)) ([fc3ad0d](https://github.com/aws-amplify/amplify-cli/commit/fc3ad0dd5a12a7912c59ae12024f593b4cdf7f2d)), closes [#4224](https://github.com/aws-amplify/amplify-cli/issues/4224)
+
+
+### Features
+
+* **import-auth:** add headless support ([#7266](https://github.com/aws-amplify/amplify-cli/issues/7266)) ([7fa478b](https://github.com/aws-amplify/amplify-cli/commit/7fa478bbfebbbe70e286eb19d436d772c32c4fd2))
+
+
+
+
+
+## [4.52.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.52.0...amplify-provider-awscloudformation@4.52.1) (2021-06-19)
+
+
+
+## 5.0.1 (2021-06-18)
+
+
+### Bug Fixes
+
+* catch no updates CFN error and fix CFN poller hang ([#7548](https://github.com/aws-amplify/amplify-cli/issues/7548)) ([312eec3](https://github.com/aws-amplify/amplify-cli/commit/312eec3b5cd9019b500cf1984919af1dee5ef2e0))
+* ensure REST API CFN outputs the API ID ([#7538](https://github.com/aws-amplify/amplify-cli/issues/7538)) ([c3f4128](https://github.com/aws-amplify/amplify-cli/commit/c3f41284f86a48427f6a8084e8ffbcd10812b81d))
+
+
+
+
+
 # [4.52.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.51.0...amplify-provider-awscloudformation@4.52.0) (2021-06-15)
 
 

@@ -128,7 +128,7 @@ This change requires a migration. Amplify will create a new Lambda layer version
   }
 
   stateManager.setResourceParametersJson(undefined, categoryName, layerName, {
-    runtimes: runtimeCloudTemplateValues,
+    runtimes: runtimeCloudTemplateValues.length > 0 ? runtimeCloudTemplateValues : undefined,
     description: '',
   });
 

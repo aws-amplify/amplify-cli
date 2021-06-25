@@ -201,6 +201,12 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
 #end
 ## [End] Check authMode and execute owner/group checks **
 
+#set( $optionalNonNullableFields = [\\"title\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
@@ -865,6 +871,12 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
 #end
 ## [End] Check authMode and execute owner/group checks **
 
+#set( $optionalNonNullableFields = [\\"title\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )

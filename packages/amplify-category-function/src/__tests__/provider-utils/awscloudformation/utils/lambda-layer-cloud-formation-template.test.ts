@@ -28,7 +28,13 @@ const parameters_stub: LayerParameters = {
     projectName: 'project',
     service: ServiceName.LambdaLayer,
   },
-  runtimes: [],
+  runtimes: [
+    {
+      name: 'NodeJS',
+      value: 'nodejs',
+      cloudTemplateValues: ['nodejs14x'],
+    },
+  ],
 };
 
 // Not using a snapshot since the LogicalNames will contain random characters
