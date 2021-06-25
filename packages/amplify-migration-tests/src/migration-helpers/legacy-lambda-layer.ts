@@ -71,6 +71,10 @@ export function legacyAddOptData(projRoot: string, layerName: string): void {
   fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), 'data', 'utf8');
 }
 
+export function legacyUpdateOptData(projRoot: string, layerName: string, data: string): void {
+  fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), data, 'utf8');
+}
+
 export function validateLayerConfigFilesMigrated(projRoot: string, layerName: string) {
   const layerDirPath = pathManager.getResourceDirectoryPath(projRoot, 'function', layerName);
   return (
