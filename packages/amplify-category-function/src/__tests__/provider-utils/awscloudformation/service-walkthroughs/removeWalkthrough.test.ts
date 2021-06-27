@@ -9,6 +9,7 @@ describe('remove walkthough test', () => {
   const saveLayerVersionsToBeRemovedByCfn = jest.fn();
   const selectPromptMock = jest.fn();
   const updateLayerArtifacts = jest.fn();
+  const getLambdaFunctionsDependentOnLayerFromMetaMock = jest.fn().mockReturnValue([]);
 
   beforeEach(() => {
     mockContext = {
@@ -56,6 +57,7 @@ describe('remove walkthough test', () => {
       getLayerName: jest.fn().mockReturnValue(layerName),
       loadLayerDataFromCloud: loadLayerDataFromCloudMock,
       loadStoredLayerParameters: loadStoredLayerParameters,
+      getLambdaFunctionsDependentOnLayerFromMeta: getLambdaFunctionsDependentOnLayerFromMetaMock,
     }));
 
     jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState', () => ({
