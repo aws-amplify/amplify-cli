@@ -26,6 +26,19 @@ describe('remove walkthough test', () => {
       promptConfirmationRemove: jest.fn().mockReturnValue(true),
       stateManager: {
         getLocalEnvInfo: jest.fn().mockReturnValue({ envName }),
+        getMeta: jest.fn().mockReturnValue({
+          function: {
+            mockFunction: {
+              service: 'Lambda',
+              dependsOn: [
+                {
+                  category: 'function',
+                  resourceName: 'depschecktestMyLayer',
+                },
+              ],
+            },
+          },
+        }),
       },
     }));
 
