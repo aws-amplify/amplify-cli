@@ -1,4 +1,4 @@
-import { $TSAny, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSObject, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
 import { ephemeralField, deleteVersionsField, layerConfigurationFileName, updateVersionPermissionsField } from './constants';
@@ -111,8 +111,21 @@ export function writeLayerConfigurationFile(layerName: string, layerConfig: $TSA
 }
 
 function loadLayerCloudTemplateRuntimes(layerName: string): string[] {
-  const { runtimes } = stateManager.getResourceParametersJson(undefined, categoryName, layerName) || [];
+  const { runtimes } = loadLayerParametersJson(layerName);
   return runtimes;
+}
+
+function loadLayerParametersJson(layerName: string): $TSObject {
+  const parameters = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
+
+  if (Array.isArray(parameters.runtimes) && _.isEmpty(parameters.runtimes)) {
+    // An empty array could be written to the parameters file in versions 5.0.0 - 5.0.2 when migrating a layer with no runtimes.
+    // This needs to be removed in order for push to succeed otherwise cloudformation will throw an error.
+    delete parameters.runtimes;
+    stateManager.setResourceParametersJson(undefined, categoryName, layerName, parameters);
+  }
+
+  return parameters;
 }
 
 function toStoredRuntimeMetadata(runtimes: LayerRuntime[]) {
