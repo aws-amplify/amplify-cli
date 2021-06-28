@@ -437,7 +437,8 @@ describe('nodejs', () => {
         },
         'nodejs',
       );
-      addNodeDependencies(projRoot, fnName, ['aws-appsync', 'isomorphic-fetch', 'graphql-tag']);
+      // Pin aws-appsync to 4.0.3 until https://github.com/awslabs/aws-mobile-appsync-sdk-js/issues/647 is fixed.
+      addNodeDependencies(projRoot, fnName, ['aws-appsync@4.0.3', 'isomorphic-fetch', 'graphql-tag']);
       overrideFunctionCodeNode(projRoot, fnName, 'mutation-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);
