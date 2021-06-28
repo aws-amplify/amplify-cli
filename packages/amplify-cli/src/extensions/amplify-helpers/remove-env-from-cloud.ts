@@ -1,6 +1,7 @@
 import { getProjectConfig } from './get-project-config';
 import { getAllCategoryPluginInfo } from './get-all-category-pluginInfos';
 import { getProviderPlugins } from './get-provider-plugins';
+import { raiseIntenralOnlyPostEnvRemoveEvent } from '../../execution-manager';
 
 export async function removeEnvFromCloud(context, envName, deleteS3) {
   const { providers } = getProjectConfig();
@@ -24,6 +25,7 @@ export async function removeEnvFromCloud(context, envName, deleteS3) {
 
   try {
     await Promise.all(providerPromises);
+    await raiseIntenralOnlyPostEnvRemoveEvent(context, envName);
   } catch (e) {
     context.print.info('');
     context.print.error(`Error in deleting env:${envName}`);

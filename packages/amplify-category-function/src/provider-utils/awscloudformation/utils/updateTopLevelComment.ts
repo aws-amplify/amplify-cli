@@ -1,20 +1,19 @@
 import fs from 'fs-extra';
 import path from 'path';
-import { topLevelCommentPrefix, topLevelCommentSuffix } from '../../../constants';
+import { categoryName, topLevelCommentPrefix, topLevelCommentSuffix } from '../../../constants';
 import _ from 'lodash';
+import { pathManager } from 'amplify-cli-core';
 /**
  * This is legacy code that has been copied here.
  * In the future we either need to get rid of the top level comment entirely, or create a template hook to modify it
  */
 export const tryUpdateTopLevelComment = (resourceDirPath: string, envVars: string[]) => {
-  const newComment = createTopLevelComment(envVars);
-  const appJSFilePath = path.join(resourceDirPath, 'src', 'app.js');
-  const indexJSFilePath = path.join(resourceDirPath, 'src', 'index.js');
-  if (fs.existsSync(appJSFilePath)) {
-    updateTopLevelComment(appJSFilePath, newComment);
-  } else if (fs.existsSync(indexJSFilePath)) {
-    updateTopLevelComment(indexJSFilePath, newComment);
+  const sourceFilePath = getSourceFilePath(resourceDirPath);
+  if (!sourceFilePath) {
+    return;
   }
+  const newComment = createTopLevelComment(envVars);
+  updateTopLevelComment(sourceFilePath, newComment);
 };
 
 const createTopLevelComment = (envVars: string[]) => `${topLevelCommentPrefix}${envVars.sort().join('\n\t')}${topLevelCommentSuffix}`;
@@ -30,3 +29,45 @@ const updateTopLevelComment = (filePath, newComment) => {
   }
   fs.writeFileSync(filePath, fileContents);
 };
+
+const getSourceFilePath = (resourceDirPath: string): string | undefined => {
+  const appJSFilePath = path.join(resourceDirPath, 'src', 'app.js');
+  const indexJSFilePath = path.join(resourceDirPath, 'src', 'index.js');
+  return fs.existsSync(appJSFilePath) ? appJSFilePath : fs.existsSync(indexJSFilePath) ? indexJSFilePath : undefined;
+};
+
+export const tryPrependSecretsUsageExample = async (functionName: string, secretNames: string[]): Promise<void> => {
+  const sourceFilePath = getSourceFilePath(path.join(pathManager.getBackendDirPath(), categoryName, functionName));
+  if (!sourceFilePath) {
+    return;
+  }
+  const secretsHeader = secretNames?.length > 0 ? secretsUsageTemplate(secretNames) : '';
+  let fileContent = await fs.readFile(sourceFilePath, 'utf8');
+  const match = fileContent.match(secretsUsageRegex);
+  if (match?.length > 0) {
+    fileContent = fileContent.replace(secretsUsageRegex, secretsHeader);
+  } else {
+    fileContent = secretsHeader + fileContent;
+  }
+  await fs.writeFile(sourceFilePath, fileContent);
+};
+
+const secretsUsageHeader = '/*\nUse the following code to retrieve configured secrets from SSM:';
+
+const secretsUsageFooter = "Parameters will be of the form { Name: 'secretName', Value: 'secretValue', ... }[]\n*/\n";
+
+const secretsUsageTemplate = (secretNames: string[]) =>
+  `${secretsUsageHeader}
+
+const aws = require('aws-sdk');
+
+const { Parameters } = await (new aws.SSM())
+  .getParameters({
+    Names: ${JSON.stringify(secretNames)}.map(secretName => process.env[secretName]),
+    WithDecryption: true,
+  })
+  .promise();
+
+${secretsUsageFooter}`;
+
+const secretsUsageRegex = new RegExp(`${_.escapeRegExp(secretsUsageHeader)}.+${_.escapeRegExp(secretsUsageFooter)}`, 'sm');

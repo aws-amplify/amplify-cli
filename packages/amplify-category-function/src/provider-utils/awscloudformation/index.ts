@@ -109,7 +109,7 @@ export async function addFunctionResource(
     completeParams = parameters;
   }
 
-  createFunctionResources(context, completeParams);
+  await createFunctionResources(context, completeParams);
 
   if (!completeParams.skipEdit) {
     await openEditor(context, category, completeParams.resourceName, completeParams.functionTemplate);
@@ -200,14 +200,14 @@ export async function updateFunctionResource(
       }
     }
 
-    saveMutableState(parameters);
+    await saveMutableState(context, parameters);
     saveCFNParameters(parameters);
   } else {
     parameters = await serviceConfig.walkthroughs.updateWalkthrough(context, parameters, resourceToUpdate);
     if (parameters.dependsOn) {
       context.amplify.updateamplifyMetaAfterResourceUpdate(category, parameters.resourceName, 'dependsOn', parameters.dependsOn);
     }
-    saveMutableState(parameters);
+    await saveMutableState(context, parameters);
     saveCFNParameters(parameters);
   }
 

@@ -18,6 +18,8 @@ jest.mock('../../../extensions/amplify-helpers/get-provider-plugins', () => ({
   }),
 }));
 
+jest.mock('../../../execution-manager');
+
 const getAllCategoryPluginInfoMock = getAllCategoryPluginInfo as jest.MockedFunction<typeof getAllCategoryPluginInfo>;
 const deleteEnvMock = jest.fn();
 const deletePinpointAppForEnvMock = jest.fn();

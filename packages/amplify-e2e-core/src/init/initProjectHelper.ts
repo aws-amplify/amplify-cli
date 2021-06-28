@@ -22,7 +22,7 @@ const defaultSettings = {
   permissionsBoundaryArn: undefined,
 };
 
-export function initJSProjectWithProfile(cwd: string, settings: Object): Promise<void> {
+export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof defaultSettings>): Promise<void> {
   const s = { ...defaultSettings, ...settings };
   let env;
 
