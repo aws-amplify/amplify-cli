@@ -1,16 +1,16 @@
-import _ from 'lodash';
+import _, { join } from 'lodash';
 import inquirer from 'inquirer';
-import { merge } from '../utils/resourceParamsUtils';
+import { merge } from '../utils/resourceUtils';
 import { HereMapStyleType, MapParameters, EsriMapStyleType } from '../utils/mapParams';
 import uuid from 'uuid';
 import { AccessType, DataProvider, PricingPlan } from '../utils/resourceParams';
 import { apiDocs, ServiceName } from '../utils/constants';
 import { $TSContext } from 'amplify-cli-core';
-import { getCurrentMapParameters, updateDefaultMap } from '../utils/mapResourceUtils';
+import { getCurrentMapParameters, updateDefaultMap, getMapFriendlyName } from '../utils/mapResourceUtils';
 import { getServiceMetaInfo } from '../utils/resourceUtils';
 
 /**
- * Starting point for CLI walkthrough that generates a map resource
+ * Starting point for CLI walkthrough that creates a map resource
  * @param context The Amplify Context object
  * @param parameters The configurations of the Map Resource
  */
@@ -123,8 +123,9 @@ export async function mapStyleWalkthrough(parameters:Partial<MapParameters>): Pr
 
 
 /**
- * Starting point for CLI walkthrough that updates a map resource
+ * Starting point for CLI walkthrough that updates an existing map resource
  * @param context The Amplify Context object
+ * @param parameters The configurations of the Map resource
  * @param resourceToUpdate Name of the Map resource to update
  */
 export async function updateMapWalkthrough(context: $TSContext, parameters?: Partial<MapParameters>, resourceToUpdate?: string) {
@@ -171,9 +172,19 @@ export async function updateMapWalkthrough(context: $TSContext, parameters?: Par
         }
         parameters.isDefaultMap = isDefaultMap;
     }
+    else {
+        parameters.isDefaultMap = true; // only map is always the default
+    }
     return parameters;
 }
 
+/**
+ * Walkthrough to choose a different default map
+ * @param context The Amplify Context object
+ * @param currentDefault The current default map name
+ * @param availableMaps The names of available maps
+ * @returns name of the new default map choosen
+ */
 export async function updateDefaultMapWalkthrough(context: $TSContext, currentDefault: string, availableMaps?: string[]): Promise<string> {
     if (!availableMaps) {
         availableMaps = ((await context.amplify.getResourceStatus()).allResources as any[])
@@ -182,15 +193,20 @@ export async function updateDefaultMapWalkthrough(context: $TSContext, currentDe
     }
     const otherMapResources = availableMaps.filter(mapResourceName => mapResourceName != currentDefault);
     if (otherMapResources && otherMapResources.length > 0) {
+        const mapChoices = [];
+        const mapFriendlyNames = await getMapFriendlyName(context, otherMapResources);
+        for (let [index, val] of mapFriendlyNames.entries()) {
+            mapChoices.push({ name: val, value:otherMapResources[index] });
+        }
         const defaultMapQuestion = [
             {
-                name: 'resourceName',
+                name: 'defaultMapName',
                 message: 'Select the Map you want to set as default:',
                 type: 'list',
-                choices: otherMapResources
+                choices: mapChoices
             }
         ];
-        const defaultMapName = (await inquirer.prompt(defaultMapQuestion)).resourceName as string;
+        const defaultMapName = (await inquirer.prompt(defaultMapQuestion)).defaultMapName as string;
         await updateDefaultMap(context, defaultMapName);
     }
     return currentDefault;

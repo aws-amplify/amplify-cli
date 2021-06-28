@@ -1,18 +1,17 @@
 import { $TSContext, AmplifyFrontend } from 'amplify-cli-core';
-import { removeWalkthrough } from '../../../provider-utils/awscloudformation/service-walkthroughs/removeWalkthrough';
+import { removeResource } from '../../../provider-utils/awscloudformation/index';
 import path from 'path';
-import { category } from '../../../constants';
 
-const mockRemoveWalkthrough = removeWalkthrough as jest.MockedFunction< typeof removeWalkthrough >;
+const mockRemoveResource = removeResource as jest.MockedFunction< typeof removeResource >;
 const mockResource = 'resource12345';
-mockRemoveWalkthrough.mockImplementation((context: $TSContext, service: string): Promise<string> => {
+mockRemoveResource.mockImplementation((context: $TSContext, service: string): Promise<string> => {
     return new Promise<string>((resolve) => {
 		resolve(mockResource);
 	});
 });
 
 jest.mock('amplify-cli-core');
-jest.mock('../../../provider-utils/awscloudformation/service-walkthroughs/removeWalkthrough');
+jest.mock('../../../provider-utils/awscloudformation/index');
 
 
 describe('remove command tests', () => {
@@ -27,26 +26,17 @@ describe('remove command tests', () => {
             amplify: {
                 serviceSelectionPrompt: async () => {
                     return { service: service, providerName: provider};
-                },
-                removeResource: jest.fn()
+                }
             },
             print: {
                 info: jest.fn()
             }
         };
 
-        mockContext.amplify.removeResource.mockImplementation((context: $TSContext, category: string, resourceToRemove: string): {} => {
-            return {
-                resource: mockResource,
-                catch: jest.fn()
-            };
-        });
-
         let commandPath = path.normalize(path.join(__dirname, '..', '..', '..',  'commands', 'geo', 'remove'));
         const commandModule = require(commandPath);
         await commandModule.run(mockContext);
 
-        expect(mockRemoveWalkthrough).toHaveBeenCalledWith(mockContext, service);
-        expect(mockContext.amplify.removeResource).toHaveBeenCalledWith(mockContext, category, mockResource);
+        expect(mockRemoveResource).toHaveBeenCalledWith(mockContext, service);
     });
 });

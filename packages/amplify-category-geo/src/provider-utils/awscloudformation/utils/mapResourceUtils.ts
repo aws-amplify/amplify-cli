@@ -28,17 +28,16 @@ export function createMapResource(context: $TSContext, parameters: MapParameters
   );
 }
 
-export function modifyMapResource(context: $TSContext, parameters: Pick<MapParameters, 'accessType' | 'mapName' | 'isDefaultMap'>) {
+export async function modifyMapResource(context: $TSContext, parameters: Pick<MapParameters, 'accessType' | 'mapName' | 'isDefaultMap'>) {
   // generate CFN files
   generateTemplateFile(parameters);
 
   // update the default map
   if (parameters.isDefaultMap) {
-    // remove the previous default map
-    updateDefaultMap(context);
+    await updateDefaultMap(context, parameters.mapName);
   }
 
-  const paramsToUpdate = ['accessType', 'isDefaultMap'];
+  const paramsToUpdate = ['accessType'];
   paramsToUpdate.forEach(param => {
     context.amplify.updateamplifyMetaAfterResourceUpdate(
       category,
@@ -66,6 +65,9 @@ export function saveCFNParameters(
     createParametersFile(params, parameters.mapName, parametersFileName);
 }
 
+/**
+ * creates a CDK stack for the Map resource and generates the CFN template
+ */
 export function generateTemplateFile(parameters: Pick<MapParameters, 'accessType' | 'mapName'>) {
     const mapStack = new MapStack(undefined, 'MapStack', parameters);
     const cfnFileName = (resourceName: string) => `${resourceName}-cloudformation-template.json`;
@@ -73,6 +75,9 @@ export function generateTemplateFile(parameters: Pick<MapParameters, 'accessType
     JSONUtilities.writeJson(path.normalize(path.join(resourceDir, cfnFileName(parameters.mapName))), mapStack.toCloudFormation());
 }
 
+/**
+ * Gives the Map resource configurations to be stored in Amplify Meta file
+ */
 export function constructMapMetaParameters(params: MapParameters): MapMetaParameters {
   let result: MapMetaParameters = {
     isDefaultMap: params.isDefaultMap,
@@ -85,6 +90,9 @@ export function constructMapMetaParameters(params: MapParameters): MapMetaParame
   return result;
 }
 
+/**
+ * Get the Map resource configurations stored in Amplify Meta file
+ */
 export function readMapMetaParameters(context: $TSContext, mapName: string): MapMetaParameters {
   const serviceMetaInfo = getServiceMetaInfo(context, ServiceName.Map);
   let mapMetaParameters: MapMetaParameters;
@@ -110,22 +118,15 @@ export type MapMetaParameters = Pick<MapParameters, 'isDefaultMap' | 'pricingPla
 }
 
 export async function updateDefaultMap(context: $TSContext, defaultMap?: string) {
-  const { amplify } = context;
-  const { amplifyMeta } = amplify.getProjectDetails();
-
-  if (amplifyMeta[category]) {
-    const categoryResources = amplifyMeta[category];
-    Object.keys(categoryResources).forEach(resource => {
-      if (categoryResources[resource].service === ServiceName.Map) {
-        amplify.updateamplifyMetaAfterResourceUpdate(
-          category,
-          resource,
-          'isDefaultMap',
-          (defaultMap === resource)
-        );
-      }
-    });
-  }
+  const currentMapResources = await getServiceMetaInfo(context, ServiceName.Map);
+  Object.keys(currentMapResources).forEach(resource => {
+    context.amplify.updateamplifyMetaAfterResourceUpdate(
+      category,
+      resource,
+      'isDefaultMap',
+      (defaultMap === resource)
+    );
+  });
 }
 
 export function getCurrentMapParameters(context: $TSContext, mapName: string): Partial<MapParameters> {
@@ -137,4 +138,23 @@ export function getCurrentMapParameters(context: $TSContext, mapName: string): P
     accessType: currentMapMetaParameters.accessType,
     isDefaultMap: currentMapMetaParameters.isDefaultMap
   };
+}
+
+/**
+ * Generates friendly names for the map resources by appending map style
+ * @param context The Amplify Context object
+ * @param mapNames The maps for which friendly names are needed
+ * @returns Friendly names for the given map resources
+ */
+export async function getMapFriendlyName(context: $TSContext, mapNames: string[]): Promise<string[]> {
+  const currentMapResources = await getServiceMetaInfo(context, ServiceName.Map);
+  if (currentMapResources && Object.keys(currentMapResources).length > 0) {
+      return mapNames.map(mapName => {
+          if (currentMapResources[mapName] && currentMapResources[mapName].mapStyle) {
+              return mapName + ' (' + currentMapResources[mapName].mapStyle + ')';
+          }
+          return mapName;
+      })
+  }
+  return mapNames;
 }

@@ -1,6 +1,6 @@
 import { EsriMapStyleType } from '../../../../provider-utils/awscloudformation/utils/mapParams';
 import { AccessType } from '../../../../provider-utils/awscloudformation/utils/resourceParams';
-import { merge } from '../../../../provider-utils/awscloudformation/utils/resourceParamsUtils';
+import { merge } from '../../../../provider-utils/awscloudformation/utils/resourceUtils';
 
 describe('parameter merge utility function works as expected', () => {
     it('merge utility function retains existing value', () => {

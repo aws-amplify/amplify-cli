@@ -32,6 +32,7 @@ export class MapStack extends cdk.Stack {
         });
     }
 
+    // construct the stack CFN input parameters
     private constructInputParameters(parameterNames: Array<string>): Map<string, cdk.CfnParameter> {
         let parametersMap: Map<string, cdk.CfnParameter> = new Map();
         parameterNames.forEach(parameterName => {
@@ -69,6 +70,7 @@ export class MapStack extends cdk.Stack {
         return cfn;
     }
 
+    // Grant read-only access to the Map for Authorized and/or Guest users
     private constructMapPolicyResource(mapResource: CfnResource): CfnResource {
         let policy = new iam.PolicyDocument({
             statements: [

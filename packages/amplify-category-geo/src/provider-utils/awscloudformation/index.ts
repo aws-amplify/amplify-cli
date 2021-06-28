@@ -1,5 +1,5 @@
 import { convertToCompleteMapParams, isCompleteMapParams, MapParameters, ProviderContext } from './utils/mapParams';
-import { merge } from './utils/resourceParamsUtils';
+import { merge } from './utils/resourceUtils';
 import { supportedServices, ServiceConfig } from '../supportedServices';
 import { ServiceName, provider } from './utils/constants';
 import _ from 'lodash';
