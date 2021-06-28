@@ -15,11 +15,11 @@ export function createLayerConfiguration(layerDirPath: string, parameters: Layer
 
 export function getLayerConfiguration(layerName: string) {
   const layerConfig: LayerConfiguration = loadLayerConfigurationFile(layerName);
-  const cloudTemplateValues = loadLayerCloudTemplateRuntimes(layerName);
+  const { runtimes: cloudTemplateValues, description } = loadLayerParametersJson(layerName);
   layerConfig.runtimes.forEach(runtimeMeta => {
     runtimeMeta.cloudTemplateValues = cloudTemplateValues.filter((ctv: string) => ctv.startsWith(runtimeMeta.value));
   });
-  layerConfig.description = getLayerDescription(layerName);
+  layerConfig.description = description;
   return layerConfig;
 }
 
@@ -100,11 +100,6 @@ export function loadLayerParametersJson(layerName: string): $TSObject {
   return parameters;
 }
 
-function getLayerDescription(layerName: string): string {
-  const { description } = loadLayerParametersJson(layerName);
-  return description;
-}
-
 export function loadLayerConfigurationFile(layerName: string, throwIfNotExist = true) {
   const layerConfigFilePath = path.join(
     pathManager.getResourceDirectoryPath(undefined, categoryName, layerName),
@@ -121,11 +116,6 @@ export function writeLayerConfigurationFile(layerName: string, layerConfig: $TSA
   );
 
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
-}
-
-function loadLayerCloudTemplateRuntimes(layerName: string): string[] {
-  const { runtimes } = loadLayerParametersJson(layerName);
-  return runtimes;
 }
 
 function toStoredRuntimeMetadata(runtimes: LayerRuntime[]) {
