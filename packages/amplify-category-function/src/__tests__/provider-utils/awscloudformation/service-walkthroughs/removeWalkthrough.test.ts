@@ -34,7 +34,7 @@ describe('remove walkthough test', () => {
               dependsOn: [
                 {
                   category: 'function',
-                  resourceName: 'depschecktestMyLayer',
+                  resourceName: 'mockLayer',
                 },
               ],
             },
