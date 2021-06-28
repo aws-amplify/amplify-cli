@@ -1,4 +1,4 @@
-const { extractApplePrivateKey } = require('../../../../provider-utils/awscloudformation/utils/extract-apple-private-key');
+import { extractApplePrivateKey } from '../../../../provider-utils/awscloudformation/utils/extract-apple-private-key';
 
 describe('When extracting apple private key...', () => {
   const expectedOutput =

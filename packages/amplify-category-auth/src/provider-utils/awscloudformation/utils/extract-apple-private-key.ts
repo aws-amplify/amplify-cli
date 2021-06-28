@@ -1,6 +1,6 @@
 const PRIVATE_KEY_REGEX = /(-+BEGINPRIVATEKEY-+)(.+[^-])(-+ENDPRIVATEKEY-+)/;
 
-function extractApplePrivateKey(key) {
+export function extractApplePrivateKey(key: string) {
   // Remove spaces and new lines
   let keyString = key.replace(/[\r\n\s]+/g, '');
 
@@ -11,7 +11,3 @@ function extractApplePrivateKey(key) {
   }
   return keyString;
 }
-
-module.exports = {
-  extractApplePrivateKey,
-};
