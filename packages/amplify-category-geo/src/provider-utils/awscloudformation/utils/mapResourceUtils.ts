@@ -1,4 +1,4 @@
-import { JSONUtilities, pathManager, $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
+import { JSONUtilities, pathManager, $TSContext } from 'amplify-cli-core';
 import { MapParameters, getGeoMapStyle, getMapStyleComponents } from './mapParams';
 import _ from 'lodash';
 import path from 'path';

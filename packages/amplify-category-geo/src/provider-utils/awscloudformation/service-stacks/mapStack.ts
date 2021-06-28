@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import * as location from '@aws-cdk/aws-location';
 import * as iam from '@aws-cdk/aws-iam';
-import { MapParameters, getGeoMapStyle } from '../utils/mapParams';
+import { MapParameters } from '../utils/mapParams';
 import { CfnResource } from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { AccessType } from '../utils/resourceParams';

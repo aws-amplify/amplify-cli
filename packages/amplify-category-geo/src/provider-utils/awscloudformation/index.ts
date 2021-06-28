@@ -78,7 +78,6 @@ export async function removeResource(
 
   switch (service) {
     case ServiceName.Map:
-      const serviceConfig: ServiceConfig<MapParameters> = supportedServices[service];
       return removeMapResource(context, service);
     default:
       throw BAD_SERVICE_ERR;

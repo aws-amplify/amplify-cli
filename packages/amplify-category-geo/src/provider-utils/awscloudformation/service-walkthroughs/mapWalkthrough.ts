@@ -1,4 +1,4 @@
-import _, { join } from 'lodash';
+import _ from 'lodash';
 import inquirer from 'inquirer';
 import { merge } from '../utils/resourceUtils';
 import { HereMapStyleType, MapParameters, EsriMapStyleType } from '../utils/mapParams';
