@@ -9,7 +9,7 @@ import { generateLayerCfnObj } from './lambda-layer-cloudformation-template';
 import { convertLambdaLayerMetaToLayerCFNArray } from './layerArnConverter';
 import { LayerCloudState } from './layerCloudState';
 import { isMultiEnvLayer, isNewVersion, loadPreviousLayerHash } from './layerHelpers';
-import { createLayerConfiguration, saveLayerPermissions } from './layerConfiguration';
+import { createLayerConfiguration, loadLayerParametersJson, saveLayerPermissions } from './layerConfiguration';
 import { LayerParameters, LayerRuntime, LayerVersionMetadata } from './layerParams';
 import { removeLayerFromTeamProviderInfo } from './layerMigrationUtils';
 
@@ -131,7 +131,7 @@ function writeLayerRuntimesToParametersFile(parameters: LayerParameters) {
 }
 
 function saveLayerDescription(layerName: string, description?: string): boolean {
-  const layerConfig = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
+  const layerConfig = loadLayerParametersJson(layerName);
   let updated = false;
 
   if (layerConfig.description !== description) {

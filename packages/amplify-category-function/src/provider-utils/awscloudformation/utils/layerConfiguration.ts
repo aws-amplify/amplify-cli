@@ -87,8 +87,21 @@ export function saveLayerPermissions(layerDirPath: string, permissions: LayerPer
   return updated;
 }
 
+export function loadLayerParametersJson(layerName: string): $TSObject {
+  const parameters = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
+
+  if (Array.isArray(parameters.runtimes) && _.isEmpty(parameters.runtimes)) {
+    // An empty array could be written to the parameters file in versions 5.0.0 - 5.0.2 when migrating a layer with no runtimes.
+    // This needs to be removed in order for push to succeed otherwise cloudformation will throw an error.
+    delete parameters.runtimes;
+    stateManager.setResourceParametersJson(undefined, categoryName, layerName, parameters);
+  }
+
+  return parameters;
+}
+
 function getLayerDescription(layerName: string): string {
-  const { description } = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
+  const { description } = loadLayerParametersJson(layerName);
   return description;
 }
 
@@ -113,19 +126,6 @@ export function writeLayerConfigurationFile(layerName: string, layerConfig: $TSA
 function loadLayerCloudTemplateRuntimes(layerName: string): string[] {
   const { runtimes } = loadLayerParametersJson(layerName);
   return runtimes;
-}
-
-function loadLayerParametersJson(layerName: string): $TSObject {
-  const parameters = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
-
-  if (Array.isArray(parameters.runtimes) && _.isEmpty(parameters.runtimes)) {
-    // An empty array could be written to the parameters file in versions 5.0.0 - 5.0.2 when migrating a layer with no runtimes.
-    // This needs to be removed in order for push to succeed otherwise cloudformation will throw an error.
-    delete parameters.runtimes;
-    stateManager.setResourceParametersJson(undefined, categoryName, layerName, parameters);
-  }
-
-  return parameters;
 }
 
 function toStoredRuntimeMetadata(runtimes: LayerRuntime[]) {
