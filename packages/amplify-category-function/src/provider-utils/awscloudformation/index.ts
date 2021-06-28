@@ -20,6 +20,7 @@ import { ServiceConfig } from '../supportedServicesType';
 import { functionParametersFileName, provider, ServiceName, versionHash } from './utils/constants';
 import { convertExternalLayersToProjectLayers, convertProjectLayersToExternalLayers } from './utils/convertLayersTypes';
 import { convertToComplete, isComplete, merge } from './utils/funcParamsUtils';
+import { loadLayerParametersJson } from './utils/layerConfiguration';
 import { isMultiEnvLayer } from './utils/layerHelpers';
 import { LayerParameters } from './utils/layerParams';
 import {
@@ -398,7 +399,7 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
       const currentParametersJson =
         stateManager.getCurrentResourceParametersJson(projectPath, categoryName, resourceName, { throwIfNotExist: false }) || undefined;
       if (currentParametersJson) {
-        const backendParametersJson = stateManager.getResourceParametersJson(projectPath, categoryName, resourceName);
+        const backendParametersJson = loadLayerParametersJson(resourceName);
         backendParametersJson.description = currentParametersJson.description;
         stateManager.setResourceParametersJson(projectPath, categoryName, resourceName, backendParametersJson);
       }
