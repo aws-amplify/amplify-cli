@@ -190,13 +190,17 @@ interface SignInWithAppleSocialProviderConfig {
    * The client ID (sometimes called apple services ID) configured with the provider.
    */
   clientId: string;
-
+  /**
+   * The team ID configured with the provider
+   */
   teamId: string;
   /**
    * The key ID (sometimes called apple private key ID) configured with the provider.
    */
   keyId: string;
-
+  /**
+   * The private key configured with the provider.
+   */
   privateKey: string;
 }
 
