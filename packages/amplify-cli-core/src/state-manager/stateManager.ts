@@ -236,6 +236,42 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, meta);
   };
 
+  setSampleBashHook = (projectPath: string | undefined, scriptSourcePath: string): void => {
+    const toFilePath = pathManager.getSampleBashHookFilePath(projectPath);
+
+    fs.copySync(scriptSourcePath, toFilePath);
+  };
+
+  setCurrentSampleBashHook = (projectPath: string | undefined, scriptSourcePath: string): void => {
+    const toFilePath = pathManager.getCurrentSampleBashHookFilePath(projectPath);
+
+    fs.copySync(scriptSourcePath, toFilePath);
+  };
+
+  setSampleNodeHook = (projectPath: string | undefined, scriptSourcePath: string): void => {
+    const toFilePath = pathManager.getSampleNodeHookFilePath(projectPath);
+
+    fs.copySync(scriptSourcePath, toFilePath);
+  };
+
+  setCurrentSampleNodeHook = (projectPath: string | undefined, scriptSourcePath: string): void => {
+    const toFilePath = pathManager.getCurrentSampleNodeHookFilePath(projectPath);
+
+    fs.copySync(scriptSourcePath, toFilePath);
+  };
+
+  setSampleHooksDir = (projectPath: string | undefined, dirSourcePath: string): void => {
+    const toDirPath = pathManager.getHooksDirPath(projectPath);
+
+    fs.copySync(dirSourcePath, toDirPath);
+  };
+
+  setCurrentSampleHooksDir = (projectPath: string | undefined, dirSourcePath: string): void => {
+    const toDirPath = pathManager.getCurrentHooksDirPath(projectPath);
+
+    fs.copySync(dirSourcePath, toDirPath);
+  };
+
   setResourceParametersJson = (projectPath: string | undefined, category: string, resourceName: string, parameters: $TSAny): void => {
     const filePath = pathManager.getResourceParametersFilePath(projectPath, category, resourceName);
 
