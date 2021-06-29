@@ -20,6 +20,9 @@ export const PathConstants = {
   BackendDirName: 'backend',
   CurrentCloudBackendDirName: '#current-cloud-backend',
 
+  // 2nd level
+  HooksDirName: 'hooks',
+
   // FileNames
   AmplifyAdminConfigFileName: 'config.json',
 
@@ -30,6 +33,9 @@ export const PathConstants = {
   TagsFileName: 'tags.json',
   ParametersJsonFileName: 'parameters.json',
   ReadMeFileName: 'README.md',
+
+  SampleBashHookFileName: 'pre-add.js.sample',
+  SampleNodeHookFileName: 'post-add.sh.sample',
 
   LocalEnvFileName: 'local-env-info.json',
   LocalAWSInfoFileName: 'local-aws-info.json',
@@ -155,6 +161,43 @@ export class PathManager {
   getDotAWSAmplifyDirPath = (): string => path.normalize(path.join(homedir(), PathConstants.DotAWSDirName, PathConstants.AmplifyDirName));
 
   getDeploymentSecrets = (): string => path.normalize(path.join(this.getDotAWSAmplifyDirPath(), PathConstants.DeploymentSecretsFileName));
+
+  getHooksDirPath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName, PathConstants.HooksDirName]);
+  getCurrentHooksDirPath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName, PathConstants.HooksDirName]);
+
+  getSampleBashHookFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      PathConstants.HooksDirName,
+      PathConstants.SampleBashHookFileName,
+    ]);
+
+  getCurrentSampleBashHookFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.CurrentCloudBackendDirName,
+      PathConstants.HooksDirName,
+      PathConstants.SampleBashHookFileName,
+    ]);
+
+  getSampleNodeHookFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      PathConstants.HooksDirName,
+      PathConstants.SampleNodeHookFileName,
+    ]);
+
+  getCurrentSampleNodeHookFilePath = (projectPath?: string): string =>
+    this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.CurrentCloudBackendDirName,
+      PathConstants.HooksDirName,
+      PathConstants.SampleNodeHookFileName,
+    ]);
 
   private constructPath = (projectPath?: string, segments: string[] = []): string => {
     if (!projectPath) {
