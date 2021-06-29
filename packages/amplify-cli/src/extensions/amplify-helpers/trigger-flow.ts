@@ -36,6 +36,7 @@ export const addTrigger = async triggerOptions => {
     functionName,
     triggerEnvs = '[]',
     category,
+    categoryPolicies,
     parentStack,
     targetPath,
     parentResource,
@@ -96,6 +97,7 @@ export const addTrigger = async triggerOptions => {
     FunctionServiceNameLambdaFunction,
     {
       trigger: true,
+      categoryPolicies,
       cloudResourceTemplatePath: path.join(triggerDir, 'cloudformation-templates', triggerTemplate),
       functionTemplate: {
         sourceRoot,
@@ -151,6 +153,7 @@ export const updateTrigger = async triggerOptions => {
     key,
     values,
     context,
+    categoryPolicies,
     functionName,
     triggerEnvs = '[]',
     category,
@@ -172,6 +175,7 @@ export const updateTrigger = async triggerOptions => {
       FunctionServiceNameLambdaFunction,
       {
         trigger: true,
+        categoryPolicies,
         modules: values,
         parentResource,
         functionName,
@@ -355,8 +359,34 @@ export const getTriggerPermissions = async (context, triggers, category) => {
       }
     }
   }
-
   return permissions.map(i => JSONUtilities.stringify(i));
+};
+
+export const generateIAMPolicies = (coreAnswers, permissions) => {
+  let policy = {};
+  policy = {
+    Effect: 'Allow',
+    Action: permissions.actions,
+    Resource: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:aws:lambda:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':function:',
+            {
+              Ref: `function${coreAnswers.functionName}`,
+            },
+          ],
+        ],
+      },
+    ],
+  };
 };
 
 // helper function to show help text and redisplay question if 'learn more' is selected

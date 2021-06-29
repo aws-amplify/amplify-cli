@@ -6,6 +6,7 @@ import {
   validateNodeModulesDirRemoval,
   updateFunction,
   addAuthwithUserPoolGroupsViaAPIWithTrigger,
+  invokeFunction,
 } from 'amplify-e2e-core';
 import { addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger } from 'amplify-e2e-core';
 import {
@@ -83,6 +84,17 @@ describe('amplify add auth...', () => {
     expect(clients).toHaveLength(2);
     expect(lambdaFunction).toBeDefined();
     expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
+    const region = id.split('_')[0];
+    const result1 = await invokeFunction(
+      functionName,
+      JSON.stringify({
+        userPoolId: 'id',
+        userName: 'testUser',
+      }),
+      region,
+    );
+    expect(result1.StatusCode).toBe(200);
+    expect(result1.Payload).toBeDefined();
   });
 
   it('...should allow the user to add auth via API category, with a trigger', async () => {

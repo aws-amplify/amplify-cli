@@ -12,6 +12,7 @@ import {
   getUserPoolClients,
   updateAuthWithoutCustomTrigger,
   updateAuthWithoutTrigger,
+  addAuthWithGroupTrigger,
 } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import { join } from 'path';
@@ -93,6 +94,16 @@ describe('amplify auth migration', () => {
       service: 'cognito',
     };
     await updateAuthWithoutTrigger(projRoot, { testingWithLatestCodebase: true, overrides: overridesObj });
+    await amplifyPushAuth(projRoot, true);
+  });
+
+  it('...should init a project and add auth with trigger, and then update with latest and push', async () => {
+    // init, add and push auth with installed cli
+    await initJSProjectWithProfile(projRoot, 'authTriggerTest');
+    await addAuthWithGroupTrigger(projRoot, {});
+    await amplifyPushAuth(projRoot);
+    // update and push with codebase
+    await updateAuthWithTrigger(projRoot, { testingWithLatestCodebase: true });
     await amplifyPushAuth(projRoot, true);
   });
 });

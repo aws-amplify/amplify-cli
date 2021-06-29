@@ -59,6 +59,7 @@ export interface ServiceQuestionsBaseResult {
   verificationBucketName?: string;
   resourceNameTruncated?: string;
   sharedId?: string;
+  permissions?: string;
 }
 
 export interface OAuthResult {
