@@ -545,7 +545,7 @@ export function addAuthWithSignInSignOutUrl(cwd: string, settings: any): Promise
   });
 }
 
-export function addAuthWithDefaultSocial_v30(cwd: string, settings: any): Promise<void> {
+export function addAuthWithDefaultSocial_v4_30(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders(
       true,
