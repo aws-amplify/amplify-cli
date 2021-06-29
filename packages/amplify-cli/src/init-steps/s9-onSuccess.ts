@@ -1,4 +1,5 @@
 import * as fs from 'fs-extra';
+import { join } from 'path';
 import sequential from 'promise-sequential';
 import { CLIContextEnvironmentProvider, FeatureFlags, pathManager, stateManager, $TSContext } from 'amplify-cli-core';
 import { getFrontendPlugins } from '../extensions/amplify-helpers/get-frontend-plugins';
@@ -180,8 +181,10 @@ function generateReadMeFile(context: $TSContext) {
 
 function generateHooksSampleFiles(context: $TSContext) {
   const { projectPath } = context.exeInfo.localEnvInfo;
-  stateManager.setSampleHooksDir(projectPath, '../resources/sampleHookScripts');
-  stateManager.setCurrentSampleHooksDir(projectPath, '../resources/sampleHookScripts');
+  const sampleHookScriptsDirPath = join(__dirname, '..', '..', 'resources', 'sampleHookScripts');
+
+  stateManager.setSampleHooksDir(projectPath, sampleHookScriptsDirPath);
+  stateManager.setCurrentSampleHooksDir(projectPath, sampleHookScriptsDirPath);
   //   const path = require('path')
   // let hookSampleFilesPath = path.normalize(path.join(projectPath, ...['amplify', '#current-cloud-backend', 'hooks', 'sampleFile1']));
   // let dirPath = path.dirname(hookSampleFilesPath);
