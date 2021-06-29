@@ -1,8 +1,5 @@
-/* eslint-disable no-param-reassign */
-import {
-  $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager,
-} from 'amplify-cli-core';
-import { FunctionParameters, ProjectLayer } from 'amplify-function-plugin-interface';
+import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
+import { FunctionParameters, FunctionTriggerParameters, ProjectLayer } from 'amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';

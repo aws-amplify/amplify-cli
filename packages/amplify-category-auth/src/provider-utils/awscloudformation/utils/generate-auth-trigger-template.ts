@@ -1,18 +1,19 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { CustomResource } from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { Construct, CustomResource } from '@aws-cdk/core';
+import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 import { v4 as uuid } from 'uuid';
-import { AuthTriggerConnection, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 import { authTriggerAssetFilePath } from '../constants';
+import { AuthTriggerConnection, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
 
 type CustomResourceAuthStackProps = Readonly<{
   description: string;
   authTriggerConnections: AuthTriggerConnection[];
+  permissions: string;
 }>;
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -50,7 +51,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
         type: 'String',
       });
       createPermissionToInvokeLambda(this, fnName, userpoolArn, config);
-      // eslint-disable-next-line no-param-reassign
+      createPermissionsForAuthTrigger(this, fnName, userpoolArn, permissions);
       config.lambdaFunctionArn = fnArn.valueAsString;
     });
 
@@ -77,9 +78,10 @@ export const generateNestedAuthTriggerTemplate = async (
   const cfnFileName = 'auth-trigger-cloudformation-template.json';
   const targetDir = path.join(pathManager.getBackendDirPath(), category, resourceName, 'build');
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
-  const { authTriggerConnections } = request;
+  const { authTriggerConnections, permissions } = request;
   if (authTriggerConnections) {
-    const cfnObject = await createCustomResourceForAuthTrigger(authTriggerConnections);
+    const cfnObject = await createCustomResourceforAuthTrigger(JSON.parse(authTriggerConnections), permissions);
+    // create policy for auth trigger as auth doesnt depend on function to break circular dependency
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
     // delete the custom stack template if the triggers aren't defined
@@ -91,10 +93,11 @@ export const generateNestedAuthTriggerTemplate = async (
   }
 };
 
-const createCustomResourceForAuthTrigger = (authTriggerConnections: AuthTriggerConnection[]): Record<string, unknown> => {
-  const stack = new CustomResourceAuthStack(undefined as unknown as Construct, 'Amplify', {
+async function createCustomResourceforAuthTrigger(context: any, authTriggerConnections: AuthTriggerConnection[], permissions: string) {
+  const stack = new CustomResourceAuthStack(undefined as any, 'Amplify', {
     description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
-    authTriggerConnections,
+    authTriggerConnections: authTriggerConnections,
+    permissions: permissions,
   });
   const cfn = stack.toCloudFormation();
   return cfn;
@@ -142,4 +145,8 @@ const createPermissionToInvokeLambda = (
     principal: 'cognito-idp.amazonaws.com',
     sourceArn: userpoolArn.valueAsString,
   });
-};
+}
+
+function createPermissionsForAuthTrigger(stack: cdk.Stack, userPoolArn) {
+  new iam.Policy();
+}
