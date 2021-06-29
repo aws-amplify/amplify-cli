@@ -918,7 +918,7 @@ function getIAMPolicies(resourceName, crudOptions) {
         ],
   };
 
-  const attributes = ['Name', 'Arn'];
+  const attributes = ['Name', 'Arn', 'StreamArn'];
 
   return { policy, attributes };
 }

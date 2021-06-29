@@ -46,12 +46,18 @@ export function addSimpleDDB(cwd: string, settings: any): Promise<void> {
   });
 }
 
-export function addDDBWithTrigger(cwd: string, settings: any): Promise<void> {
+export function addDDBWithTrigger(cwd: string, settings: { ddbResourceName?: string }): Promise<void> {
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['add', 'storage'], { cwd, stripColors: true })
       .wait('Please select from one of the below mentioned services')
       .sendLine(KEY_DOWN_ARROW)
-      .wait('Please provide a friendly name for your resource')
+      .wait('Please provide a friendly name for your resource');
+    if (settings.ddbResourceName) {
+      chain.sendLine(settings.ddbResourceName);
+    } else {
+      chain.sendCarriageReturn();
+    }
+    chain
       .sendCarriageReturn()
       .wait('Please provide table name')
       .sendCarriageReturn()
@@ -135,7 +141,11 @@ export function updateSimpleDDBwithGSI(cwd: string, settings: any): Promise<void
       .wait('Please provide the GSI name')
       .sendLine('gsi2')
       .wait('Please choose partition key for the GSI')
+      .sendKeyDown()
+      .sendKeyDown()
       .sendCarriageReturn()
+      .wait('Do you want to add a sort key to your global secondary index?')
+      .sendLine('n')
       .wait('Do you want to add more global secondary indexes to your table?')
       .sendLine('n')
       .wait('Do you want to keep existing global seconday indexes created on your table?')

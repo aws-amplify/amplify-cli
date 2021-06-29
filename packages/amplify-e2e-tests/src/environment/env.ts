@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, getSocialProviders } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, getSocialProviders, isCI } from 'amplify-e2e-core';
 
 export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -31,14 +31,26 @@ export function updateEnvironment(cwd: string, settings: { permissionsBoundaryAr
   });
 }
 
-export function addEnvironmentYes(cwd: string, settings: { envName: string }): Promise<void> {
+export function addEnvironmentYes(cwd: string, settings: { envName: string; disableAmplifyAppCreation?: boolean }): Promise<void> {
+  settings.disableAmplifyAppCreation = settings.disableAmplifyAppCreation ?? true;
+  const env = settings.disableAmplifyAppCreation
+    ? {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      }
+    : undefined;
+
+  const providerConfig = {
+    awscloudformation: {
+      configLevel: 'project',
+      useProfile: true,
+      profileName: isCI() ? 'amplify-integ-test-user' : 'default',
+    },
+  };
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'add', '--yes', '--envName', settings.envName], {
+    spawn(getCLIPath(), ['env', 'add', '--yes', '--envName', settings.envName, '--providers', JSON.stringify(providerConfig)], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env,
     }).run((err: Error) => (err ? reject(err) : resolve()));
   });
 }
