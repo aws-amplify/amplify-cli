@@ -215,3 +215,25 @@ export function amplifyPushIterativeRollback(cwd: string, testingWithLatestCodeb
       });
   });
 }
+
+export function amplifyPushMissingEnvVar(cwd: string, newEnvVarValue: string) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+      .wait('Enter the missing environment variable value of')
+      .sendLine(newEnvVarValue)
+      .wait('Are you sure you want to continue?')
+      .sendConfirmYes()
+      .run(err => (err ? reject(err) : resolve()));
+  });
+}
+
+export function amplifyPushMissingFuncSecret(cwd: string, newSecretValue: string) {
+  return new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['push'], { cwd, stripColors: true })
+      .wait('does not have a value in this environment. Specify one now:')
+      .sendLine(newSecretValue)
+      .wait('Are you sure you want to continue?')
+      .sendConfirmYes()
+      .run(err => (err ? reject(err) : resolve()));
+  });
+}

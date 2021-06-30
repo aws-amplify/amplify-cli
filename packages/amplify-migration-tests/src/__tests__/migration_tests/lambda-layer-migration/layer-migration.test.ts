@@ -17,6 +17,7 @@ import {
   initJSProjectWithProfileOldDX,
   legacyAddLayer,
   legacyAddOptData,
+  legacyUpdateOptData,
   validateLayerConfigFilesMigrated,
   versionCheck,
 } from '../../../migration-helpers';
@@ -160,15 +161,7 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
     await amplifyPushAuth(projRoot, false);
     await updateLayer(projRoot, { ...layerSettings, dontChangePermissions: true, migrateLegacyLayer: true }, true);
     await amplifyPushLayer(projRoot, {}, true);
-    await updateLayer(
-      projRoot,
-      {
-        ...layerSettings,
-        permissions: ['Public (Anyone on AWS can use this layer)'],
-        changePermissionOnLatestVersion: true,
-      },
-      true,
-    );
+    legacyUpdateOptData(projRoot, layerName, 'update');
     await amplifyPushLayer(projRoot, {}, true);
 
     expect(validateLayerConfigFilesMigrated(projRoot, layerName)).toBe(true);

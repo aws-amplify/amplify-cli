@@ -1,4 +1,4 @@
-import { JSONUtilities, pathManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, pathManager } from 'amplify-cli-core';
 import { LambdaLayer } from 'amplify-function-plugin-interface';
 import { saveMutableState } from '../../../../provider-utils/awscloudformation/utils/storeResources';
 
@@ -12,6 +12,8 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
+jest.mock('../../../../provider-utils/awscloudformation/utils/environmentVariablesHelper');
+
 const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
 
@@ -22,7 +24,7 @@ describe('save mutable state', () => {
     jest.clearAllMocks();
   });
 
-  it('destructures mutableParametersState in the stored object', () => {
+  it('destructures mutableParametersState in the stored object', async () => {
     const mutableParametersStateContents = {
       permissions: {
         something: 'a value',
@@ -34,11 +36,11 @@ describe('save mutable state', () => {
       lambdaLayers: [] as LambdaLayer[],
     };
 
-    saveMutableState(input);
+    await saveMutableState({} as $TSContext, input);
     expect(JSONUtilities_mock.writeJson.mock.calls[0][1]).toMatchSnapshot();
   });
 
-  it('removes mutableParametersState from the existing file if present', () => {
+  it('removes mutableParametersState from the existing file if present', async () => {
     JSONUtilities_mock.readJson.mockImplementationOnce(() => ({
       lambdaLayers: [],
       permissions: {
@@ -60,7 +62,7 @@ describe('save mutable state', () => {
       lambdaLayers: [],
       resourceName: 'testResourceName',
     };
-    saveMutableState(input);
+    await saveMutableState({} as $TSContext, input);
     expect(JSONUtilities_mock.writeJson.mock.calls[0][1]).toMatchSnapshot();
   });
 });

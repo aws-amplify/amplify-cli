@@ -1,21 +1,15 @@
-import fs from 'fs-extra';
-import path from 'path';
+import { stateManager } from 'amplify-cli-core';
 
-export const checkCaseSensitivityIssue = async (context: any, category: string, resourceName: string) => {
-  const projectBackendDirPath = context.amplify.pathManager.getBackendDirPath();
-
-  const caseSensitivityConflict = async () => {
-    const basePath = path.join(projectBackendDirPath, category);
-    const filenames = await fs.readdir(basePath);
-    const lowerCaseMatch = filenames.find(name => name.toLowerCase() === resourceName.toLowerCase());
-    return lowerCaseMatch === resourceName ? false : lowerCaseMatch;
-  };
-
-  const conflict = await caseSensitivityConflict();
-  if (conflict) {
-    context.print.error(
-      `Unable to create resource with name ${resourceName} since a resource named ${conflict} already exists. Amplify resource names are case-insensitive.`,
-    );
-    process.exit(1);
+export const isNameUnique = (category: string, resourceName: string, throwOnMatch = true) => {
+  const resourceNames = Object.keys(stateManager.getMeta()?.[category] || {});
+  const matchIdx = resourceNames.map(name => name.toLowerCase()).indexOf(resourceName.toLowerCase());
+  if (matchIdx === -1) {
+    return true;
+  }
+  const msg = `A resource named ${resourceNames[matchIdx]} already exists. Amplify resource names must be unique and are case-insensitive.`;
+  if (throwOnMatch) {
+    throw new Error(msg);
+  } else {
+    return msg;
   }
 };
