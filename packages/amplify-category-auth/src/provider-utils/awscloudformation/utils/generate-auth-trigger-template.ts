@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
-import { AuthTriggerConnection, CognitoStackOptions } from '../service-walkthrough-types/cognito-user-input-types';
+import { AuthTriggerConnection, CognitoStackOptions, AuthTriggerPermissions } from '../service-walkthrough-types/cognito-user-input-types';
 import { CustomResource } from '@aws-cdk/core';
 import { authTriggerAssetFilePath } from '../constants';
 import { v4 as uuid } from 'uuid';
@@ -13,7 +13,7 @@ import { v4 as uuid } from 'uuid';
 type CustomResourceAuthStackProps = Readonly<{
   description: string;
   authTriggerConnections: AuthTriggerConnection[];
-  permissions: string;
+  permissions: AuthTriggerPermissions[];
 }>;
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -38,7 +38,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
     new cdk.CfnCondition(this, 'ShouldNotCreateEnvResources', {
       expression: cdk.Fn.conditionEquals(env, 'NONE'),
     });
-
+    const index = 0;
     props.authTriggerConnections.forEach(config => {
       const fnName = new cdk.CfnParameter(this, `function${config.lambdaFunctionName}Name`, {
         type: 'String',
@@ -47,7 +47,8 @@ export class CustomResourceAuthStack extends cdk.Stack {
         type: 'String',
       });
       createPermissionToInvokeLambda(this, fnName, userpoolArn, config);
-      createPermissionsForAuthTrigger(this, fnName, userpoolArn, permissions);
+      const permission = props.permissions.filter(permission => config.triggerType === permission.triggerType);
+      createPermissionsForAuthTrigger(this, fnName, userpoolArn, permission, env);
       config.lambdaFunctionArn = fnArn.valueAsString;
     });
 
@@ -66,7 +67,7 @@ export async function generateNestedAuthTriggerTemplate(category: string, resour
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
   const { authTriggerConnections, permissions } = request;
   if (authTriggerConnections) {
-    const cfnObject = await createCustomResourceforAuthTrigger(context, JSON.parse(authTriggerConnections), permissions);
+    const cfnObject = await createCustomResourceforAuthTrigger(context, JSON.parse(authTriggerConnections), JSON.parse(permissions));
     // create policy for auth trigger as auth doesnt depend on function to break circular dependency
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
@@ -131,6 +132,9 @@ function createPermissionToInvokeLambda(
   });
 }
 
-function createPermissionsForAuthTrigger(stack: cdk.Stack, userPoolArn) {
-  new iam.Policy();
-}
+// function createPermissionsForAuthTrigger(stack: cdk.Stack,fnName:cdk.CfnParameter,userpoolArn: cdk.CfnParameter,permissions:AuthTriggerPermissions, env: cdk.CfnParameter){
+//   new iam.Policy(stack, 'AmplifyResourcePolicy', {
+//     policyName: permissions.policyName,
+//     roles: iam.Role(cdk.Fn.join('',[fnName.toString(),'-',cdk.Fn.ref(env.toString())])
+//   })
+// }
