@@ -161,6 +161,17 @@ export type AuthTriggerConnection = {
   lambdaFunctionArn?: string;
 };
 
+export type AuthTriggerPermissions = {
+  policyName: string;
+  triggerType: string;
+  effect: string;
+  actions: [string];
+  resource: {
+    paramType: string;
+    keys: [string];
+  };
+};
+
 export type AuthTriggerConfig = {
   triggers: $TSObject;
   authTriggerConnections: AuthTriggerConnection[];
