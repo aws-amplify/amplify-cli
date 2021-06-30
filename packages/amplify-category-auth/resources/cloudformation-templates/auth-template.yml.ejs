@@ -295,6 +295,7 @@ Resources:
       FunctionName: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseName
       SourceArn: !GetAtt UserPool.Arn
   <% } %>
+  <% } %>
   # Updating lambda role with permissions to Cognito
   <% if (props.permissions && props.permissions.length > 0) { %>
   <% for(var i=0; i < props.permissions.length; i++) { %>
@@ -325,7 +326,6 @@ Resources:
 
       Roles:
         - !Join ['',["<%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}`%>", '-', !Ref env]]
-  <% } %>
   <% } %>
   <% } %>
   UserPoolClientWeb:
