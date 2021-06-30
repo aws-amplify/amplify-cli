@@ -1,6 +1,6 @@
 {
     "name": "@aws-amplify/graphql-transformer-core",
-    "version": "0.6.2",
+    "version": "0.6.3-beta.0",
     "description": "A framework to transform from GraphQL SDL to AWS CloudFormation.",
     "repository": {
         "type": "git",
@@ -58,7 +58,7 @@
         "fs-extra": "^8.1.0",
         "glob": "^7.1.6",
         "graphql": "^14.5.8",
-        "graphql-transformer-common": "4.19.3",
+        "graphql-transformer-common": "4.19.4-beta.0",
         "lodash": "^4.17.21",
         "ts-dedent": "^2.0.0"
     },

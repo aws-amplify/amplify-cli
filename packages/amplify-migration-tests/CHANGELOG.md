@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.2-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.0.1...amplify-migration-tests@3.0.2-beta.0) (2021-06-30)
+
+
+### Bug Fixes
+
+* handle migrated layers with no runtime or multiple runtimes ([#7603](https://github.com/aws-amplify/amplify-cli/issues/7603)) ([856fdf7](https://github.com/aws-amplify/amplify-cli/commit/856fdf7d226c8a6dc47a8e2278b13dd793fee22a))
+
+
+
+
+
 ## [3.0.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.0.0...amplify-migration-tests@3.0.1) (2021-06-24)
 
 **Note:** Version bump only for package amplify-migration-tests

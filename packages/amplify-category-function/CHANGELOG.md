@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.33.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.32.2...amplify-category-function@2.33.0-beta.0) (2021-06-30)
+
+
+### Bug Fixes
+
+* **amplify-category-function:** incorrectly migrated layers' parameters.json ([#7629](https://github.com/aws-amplify/amplify-cli/issues/7629)) ([22c5e8e](https://github.com/aws-amplify/amplify-cli/commit/22c5e8ebc7eda5da432599c9a60ff2a964ef5bc9))
+* [#7587](https://github.com/aws-amplify/amplify-cli/issues/7587) - resource filtering in same category for crud ([#7598](https://github.com/aws-amplify/amplify-cli/issues/7598)) ([caf95d0](https://github.com/aws-amplify/amplify-cli/commit/caf95d005b5e8207a704bf481e93da5345a10356))
+* handle migrated layers with no runtime or multiple runtimes ([#7603](https://github.com/aws-amplify/amplify-cli/issues/7603)) ([856fdf7](https://github.com/aws-amplify/amplify-cli/commit/856fdf7d226c8a6dc47a8e2278b13dd793fee22a))
+
+
+### Features
+
+* configure env vars and secrets for lambda functions ([#7529](https://github.com/aws-amplify/amplify-cli/issues/7529)) ([fac354e](https://github.com/aws-amplify/amplify-cli/commit/fac354e5e26846e8b1499d3a4718b15983e0110f))
+
+
+
+
+
 ## [2.32.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.32.1...amplify-category-function@2.32.2) (2021-06-24)
 
 
