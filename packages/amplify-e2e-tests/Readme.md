@@ -10,6 +10,8 @@ Please see sample.env for the keys that are expected in your `.env` file.
 
 The `.env` file does not get commited as its in the `.gitignore` file.
 
+Set `AMPLIFY_PATH` to point to `amplify-cli/bin/amplify`
+
 ## Running individual tests
 
 Amplify E2E tests use Jest. So all the standard Jest comnmads work.
@@ -24,7 +26,9 @@ npm run e2e __tests__/init.test.ts
 
 E2E tests internally use a forked version of [nexpect](https://www.npmjs.com/package/nexpect) to run the CLI. There are helper methods that helps you to set up and delete project. The recommended pattern is to create a helper method that creates a resources as a helper method so these method could be used in other tests. For instance, `initJSProjectWithProfile` is a helper method that is used in `init` tests and also used in all the other tests to initalize a new Javascript project. The tests should have all the assertions to make sure the resource created by the helper method is setup correctly. We recommend using `aws-sdk` to make assert the resource configuration.
 
-If you want to log the test results for debugging, set the environment variable `VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED` to `true` and the output from the CLI will be printed on to the screen. Please refrain (as the variable name suggest) setting this in CI as test report will have all the CLI execution logs.
+To configure the amount of time nexpect will wait for CLI responses, you can set the `AMPLIFY_TEST_TIMEOUT_SEC` environment variable. It is helpful to set this to a low value (10 seconds or so) when writing new tests so that you don't spend unnecessary time waiting for nexpect to error out on a misconfigured wait() block
+
+If you want to log the test results for debugging, set the environment variable `VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED` to `true` and output logs will be written to temp files. The temp file paths will be printed as the tests run and you can `cat` or `tail` the logs to see the CLI output
 
 ```sh
 env VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED=true yarn e2e

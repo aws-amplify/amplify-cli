@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.6.2...@aws-amplify/graphql-transformer-core@0.6.3) (2021-06-30)
+
+
+### Bug Fixes
+
+* correct featuer typo in gql transformer v2 ([#7584](https://github.com/aws-amplify/amplify-cli/issues/7584)) ([81659ee](https://github.com/aws-amplify/amplify-cli/commit/81659ee2399025307cc1aa05252a712623a95818))
+
+
+
+
+
 ## [0.6.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-core@0.6.1...@aws-amplify/graphql-transformer-core@0.6.2) (2021-06-24)
 
 

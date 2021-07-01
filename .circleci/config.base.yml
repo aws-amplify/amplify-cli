@@ -694,6 +694,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
                 - iterative-update
           requires:
             - build
@@ -706,6 +707,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
                 - beta
           requires:
             - build
@@ -715,6 +717,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
                 - beta
                 - backendManager
                 - iterative-update
@@ -745,6 +748,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
                 - compute-functions
                 - iterative-update
           requires:
@@ -792,6 +796,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
           requires:
             - build
       - amplify_migration_tests_v4_30_0:
@@ -804,6 +809,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
                 - graphqlschemae2e
                 - feat-import
                 - test-fix-status
@@ -819,6 +825,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
           requires:
             - build
       - amplify_migration_tests_multi_env_layers:
@@ -831,6 +838,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
           requires:
             - build
       - amplify_console_integration_tests:

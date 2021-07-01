@@ -45,6 +45,9 @@ export type $TSContext = {
   template: IContextTemplate;
 };
 
+export type CategoryName = string;
+export type ResourceName = string;
+
 export type IContextPrint = {
   info: (message: string) => void;
   fancy: (message?: string) => void;
@@ -200,9 +203,14 @@ interface AmplifyToolkit {
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
   readJsonFile: () => $TSAny;
-  removeEnvFromCloud: () => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
-  removeResource: (context: $TSContext, category: string, resource: string) => $TSAny;
+  removeResource: (
+    context: $TSContext,
+    category: string,
+    resource: string,
+    questionOptions?: $TSAny,
+    resourceNameCallback?: (resourceName: string) => Promise<void>,
+  ) => $TSAny;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
