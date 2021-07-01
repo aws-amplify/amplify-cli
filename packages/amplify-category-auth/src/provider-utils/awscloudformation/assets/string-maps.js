@@ -364,6 +364,21 @@ const coreAttributes = [
   },
 ];
 
+const aliasAttributes = [
+  {
+    name: 'Also allow sign in with verified email address',
+    value: 'email',
+  },
+  {
+    name: 'Also allow sign in with verified phone number',
+    value: 'phone_number',
+  },
+  {
+    name: 'Also allow sign in with preferred username (a username that your users can change)',
+    value: 'preferred_username',
+  },
+];
+
 const appClientReadAttributes = [
   ...coreAttributes,
   {
@@ -565,6 +580,7 @@ const getAllMaps = edit => {
     disableOptionsOnEdit();
   }
   return {
+    aliasAttributes,
     coreAttributes,
     authSelectionMap,
     appClientReadAttributes,
@@ -588,6 +604,7 @@ const getAllMaps = edit => {
 };
 
 module.exports = {
+  aliasAttributes,
   coreAttributes,
   appClientReadAttributes,
   authSelectionMap,
