@@ -7,6 +7,7 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
     ElasticsearchStreamingLambdaHandlerName,
     ElasticsearchStreamingLambdaRuntime,
     ElasticsearchStreamingFunctionName,
+    ElasticsearchStreamingFunctionBatchSize,
     ElasticsearchStreamingIAMRoleName,
     ElasticsearchDebugStreamingLambda,
     ElasticsearchInstanceCount,
@@ -45,6 +46,14 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
         description: 'The name of the streaming lambda function.',
         default: 'DdbToEsFn',
       }),
+    ],
+
+    [
+      ElasticsearchStreamingFunctionBatchSize,
+      new CfnParameter(stack, ElasticsearchStreamingFunctionBatchSize, {
+        description: 'The maximum number of records to stream to Elasticsearch per batch.',
+        default: 100
+      })
     ],
 
     [

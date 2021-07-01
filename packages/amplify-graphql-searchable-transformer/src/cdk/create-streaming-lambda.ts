@@ -70,13 +70,17 @@ export const createEventSourceMapping = (
   stack: Construct,
   type: string,
   target: IFunction,
+  parameterMap: Map<string, CfnParameter>,
   tableStreamArn?: string,
 ): EventSourceMapping => {
+  const { ElasticsearchStreamingFunctionBatchSize } = ResourceConstants.PARAMETERS;
   assert(tableStreamArn);
+  throw Error("Just please break");
   return new EventSourceMapping(stack, SearchableResourceIDs.SearchableEventSourceMappingID(type), {
-    eventSourceArn: tableStreamArn,
+    //eventSourceArn: tableStreamArn,
+    eventSourceArn: "sadf",
     target,
-    batchSize: 1,
+    batchSize: parameterMap.get(ElasticsearchStreamingFunctionBatchSize)!.valueAsNumber,
     enabled: true,
     startingPosition: StartingPosition.LATEST,
   });
