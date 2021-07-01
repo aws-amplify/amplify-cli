@@ -420,21 +420,22 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
   if (answers.hostedUI) {
     res.hostedUIProviderMeta = JSON.stringify(
       oAuthProviders.map(el => {
-        const delimmiter = ['Facebook', 'SignInWithApple'].includes(el) ? ',' : ' ';
+        const lowerCaseEl = el.toLowerCase();
+        const delimmiter = el === 'Facebook' || el === 'SignInWithApple' ? ',' : ' ';
         const scopes = [];
         const maps = {};
         attributesForMapping.forEach(a => {
           const attributeKey = attributeProviderMap[a];
-          if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].scope) {
-            if (scopes.indexOf(attributeKey[`${el.toLowerCase()}`].scope) === -1) {
-              scopes.push(attributeKey[`${el.toLowerCase()}`].scope);
+          if (attributeKey && attributeKey[`${lowerCaseEl}`] && attributeKey[`${lowerCaseEl}`].scope) {
+            if (scopes.indexOf(attributeKey[`${lowerCaseEl}`].scope) === -1) {
+              scopes.push(attributeKey[`${lowerCaseEl}`].scope);
             }
           }
           if (el === 'Google' && !scopes.includes('openid')) {
             scopes.unshift('openid');
           }
-          if (attributeKey && attributeKey[`${el.toLowerCase()}`] && attributeKey[`${el.toLowerCase()}`].attr) {
-            maps[a] = attributeKey[`${el.toLowerCase()}`].attr;
+          if (attributeKey && attributeKey[`${lowerCaseEl}`] && attributeKey[`${lowerCaseEl}`].attr) {
+            maps[a] = attributeKey[`${lowerCaseEl}`].attr;
           }
         });
         return {
@@ -446,19 +447,20 @@ function userPoolProviders(oAuthProviders, coreAnswers, prevAnswers) {
     );
     res.hostedUIProviderCreds = JSON.stringify(
       oAuthProviders.map(el => {
+        const lowerCaseEl = el.toLowerCase();
         if (el === 'SignInWithApple') {
           return {
             ProviderName: el,
-            client_id: coreAnswers[`${el.toLowerCase()}ClientIdUserPool`],
-            team_id: coreAnswers[`${el.toLowerCase()}TeamIdUserPool`],
-            key_id: coreAnswers[`${el.toLowerCase()}KeyIdUserPool`],
-            private_key: coreAnswers[`${el.toLowerCase()}PrivateKeyUserPool`],
+            client_id: coreAnswers[`${lowerCaseEl}ClientIdUserPool`],
+            team_id: coreAnswers[`${lowerCaseEl}TeamIdUserPool`],
+            key_id: coreAnswers[`${lowerCaseEl}KeyIdUserPool`],
+            private_key: coreAnswers[`${lowerCaseEl}PrivateKeyUserPool`],
           };
         } else {
           return {
             ProviderName: el,
-            client_id: coreAnswers[`${el.toLowerCase()}AppIdUserPool`],
-            client_secret: coreAnswers[`${el.toLowerCase()}AppSecretUserPool`],
+            client_id: coreAnswers[`${lowerCaseEl}AppIdUserPool`],
+            client_secret: coreAnswers[`${lowerCaseEl}AppSecretUserPool`],
           };
         }
       }),
@@ -532,19 +534,20 @@ function parseOAuthCreds(providers, metadata, envCreds) {
     const parsedMetaData = JSON.parse(metadata);
     const parsedCreds = JSON.parse(envCreds);
     providers.forEach(el => {
+      const lowerCaseEl = el.toLowerCase();
       try {
         const provider = parsedMetaData.find(i => i.ProviderName === el);
         const creds = parsedCreds.find(i => i.ProviderName === el);
         if (el === 'SignInWithApple') {
-          providerKeys[`${el.toLowerCase()}ClientIdUserPool`] = creds.client_id;
-          providerKeys[`${el.toLowerCase()}TeamIdUserPool`] = creds.team_id;
-          providerKeys[`${el.toLowerCase()}KeyIdUserPool`] = creds.key_id;
-          providerKeys[`${el.toLowerCase()}PrivateKeyUserPool`] = creds.private_key;
+          providerKeys[`${lowerCaseEl}ClientIdUserPool`] = creds.client_id;
+          providerKeys[`${lowerCaseEl}TeamIdUserPool`] = creds.team_id;
+          providerKeys[`${lowerCaseEl}KeyIdUserPool`] = creds.key_id;
+          providerKeys[`${lowerCaseEl}PrivateKeyUserPool`] = creds.private_key;
         } else {
-          providerKeys[`${el.toLowerCase()}AppIdUserPool`] = creds.client_id;
-          providerKeys[`${el.toLowerCase()}AppSecretUserPool`] = creds.client_secret;
+          providerKeys[`${lowerCaseEl}AppIdUserPool`] = creds.client_id;
+          providerKeys[`${lowerCaseEl}AppSecretUserPool`] = creds.client_secret;
         }
-        providerKeys[`${el.toLowerCase()}AuthorizeScopes`] = provider.authorize_scopes.split(',');
+        providerKeys[`${lowerCaseEl}AuthorizeScopes`] = provider.authorize_scopes.split(',');
       } catch (e) {
         return null;
       }
