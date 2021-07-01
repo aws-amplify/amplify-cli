@@ -297,7 +297,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondtion **
+## Begin - KeyCondition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
@@ -314,8 +314,8 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 }))
 #end
 ## End - KeyCondition **
-## Start Condtion block **
-#if( $ctx.stash.conditions && $inputConditionObjectName.size() != 0 )
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
   \\"and\\": $ctx.stash.conditions
 } )
@@ -326,7 +326,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"expressionNames\\": $Conditions.expressionNames
 } )
   #end
-  ## End Condtion block **
+  ## End condition block **
 #end
 #if( $Conditions )
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
@@ -381,8 +381,8 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Start Condtion block **
-#if( $ctx.stash.conditions && $inputConditionObjectName.size() != 0 )
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
   \\"and\\": $ctx.stash.conditions
 } )
@@ -393,7 +393,7 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   \\"expressionNames\\": $Conditions.expressionNames
 } )
   #end
-  ## End Condtion block **
+  ## End condition block **
 #end
 #if( $Conditions )
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
@@ -509,8 +509,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Start Condtion block **
-#if( $ctx.stash.conditions && $inputConditionObjectName.size() != 0 )
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
   \\"and\\": $ctx.stash.conditions
 } )
@@ -521,7 +521,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"expressionNames\\": $Conditions.expressionNames
 } )
   #end
-  ## End Condtion block **
+  ## End condition block **
 #end
 #set( $UpdateItem = {
   \\"version\\": \\"2018-05-29\\",
