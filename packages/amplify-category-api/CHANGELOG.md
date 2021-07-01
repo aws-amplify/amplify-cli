@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.31.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.12...amplify-category-api@2.31.13) (2021-06-30)
+
+
+### Bug Fixes
+
+* api resource name case sensitivity failure ([#7452](https://github.com/aws-amplify/amplify-cli/issues/7452)) ([7bd5524](https://github.com/aws-amplify/amplify-cli/commit/7bd5524703a8ac963cf4d9ef6a1fbb031e42e3c4))
+* unique api name check works when no existing apis ([#7615](https://github.com/aws-amplify/amplify-cli/issues/7615)) ([8cef10f](https://github.com/aws-amplify/amplify-cli/commit/8cef10f051bea8428f3b16095137e14346218bb3))
+
+
+
+
+
 ## [2.31.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-api@2.31.11...amplify-category-api@2.31.12) (2021-06-24)
 
 
