@@ -3,7 +3,7 @@ import {
   getNamedType,
   getNonNullType,
   getInputValueDefinition,
-  getGraphQLTypeFromMySQLType,
+  getGraphQLTypeFromPostgreSQLType,
   getTypeDefinition,
   getFieldDefinition,
   getInputTypeDefinition,
@@ -13,10 +13,10 @@ import { IRelationalDBReader } from './IRelationalDBReader';
 import { toUpper } from 'graphql-transformer-common';
 
 /**
- * A class to manage interactions with a Aurora Serverless MySQL Relational Databse
+ * A class to manage interactions with a Aurora Serverless PostgreSQL Relational Databse
  * using the Aurora Data API
  */
-export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader {
+export class AuroraServerlessPostgreSQLDatabaseReader implements IRelationalDBReader {
   auroraClient: AuroraDataAPIClient;
   dbRegion: string;
   awsSecretStoreArn: string;
@@ -28,7 +28,7 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
   }
 
   constructor(dbRegion: string, awsSecretStoreArn: string, dbClusterOrInstanceArn: string, database: string, aws: any) {
-    this.auroraClient = new AuroraDataAPIClient(dbRegion, awsSecretStoreArn, dbClusterOrInstanceArn, database, aws, false);
+    this.auroraClient = new AuroraDataAPIClient(dbRegion, awsSecretStoreArn, dbClusterOrInstanceArn, database, aws, true);
     this.dbRegion = dbRegion;
     this.awsSecretStoreArn = awsSecretStoreArn;
     this.dbClusterOrInstanceArn = dbClusterOrInstanceArn;
@@ -36,11 +36,11 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
   }
 
   /**
-   * Stores some of the Aurora Serverless MySQL context into the template context,
+   * Stores some of the Aurora Serverless PostgreSQL context into the template context,
    * for later consumption.
    *
    * @param contextShell the basic template context, with db source independent fields set.
-   * @returns a fully hydrated template context, complete with Aurora Serverless MySQL context.
+   * @returns a fully hydrated template context, complete with Aurora Serverless PostgreSQL context.
    */
   hydrateTemplateContext = async (contextShell: TemplateContext): Promise<TemplateContext> => {
     /**
@@ -49,7 +49,7 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
      */
     contextShell.secretStoreArn = this.awsSecretStoreArn;
     contextShell.rdsClusterIdentifier = this.dbClusterOrInstanceArn;
-    contextShell.databaseSchema = 'mysql';
+    contextShell.databaseSchema = 'postgresql';
     contextShell.databaseName = this.database;
     contextShell.region = this.dbRegion;
     return contextShell;
@@ -112,7 +112,7 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
       // If a field is the primary key, save it.
       if (columnDescription.Key == 'PRI') {
         primaryKey = columnDescription.Field;
-        primaryKeyType = getGraphQLTypeFromMySQLType(columnDescription.Type);
+        primaryKeyType = getGraphQLTypeFromPostgreSQLType(columnDescription.Type);
       } else {
         /**
          * If the field is not a key, then store it in the fields list.
@@ -120,7 +120,7 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
          *
          * Currently we will only auto-gen query resolvers for the Int and String scalars
          */
-        const type = getGraphQLTypeFromMySQLType(columnDescription.Type);
+        const type = getGraphQLTypeFromPostgreSQLType(columnDescription.Type);
         if (type === 'Int') {
           intFieldList.push(columnDescription.Field);
         } else if (type === 'String') {
@@ -129,7 +129,7 @@ export class AuroraServerlessMySQLDatabaseReader implements IRelationalDBReader 
       }
 
       // Create the basic field type shape, to be consumed by every field definition
-      const baseType = getNamedType(getGraphQLTypeFromMySQLType(columnDescription.Type));
+      const baseType = getNamedType(getGraphQLTypeFromPostgreSQLType(columnDescription.Type));
 
       const isPrimaryKey = columnDescription.Key == 'PRI';
       const isNullable = columnDescription.Null == 'YES';

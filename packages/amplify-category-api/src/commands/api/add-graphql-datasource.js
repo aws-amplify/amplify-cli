@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 const graphql = require('graphql');
 const path = require('path');
 const { RelationalDBSchemaTransformer } = require('graphql-relational-schema-transformer');
-const { RelationalDBTemplateGenerator, AuroraServerlessMySQLDatabaseReader } = require('graphql-relational-schema-transformer');
+const { RelationalDBTemplateGenerator, AuroraServerlessPostgreSQLDatabaseReader, AuroraServerlessMySQLDatabaseReader } = require('graphql-relational-schema-transformer');
 const { mergeTypeDefs } = require('@graphql-tools/merge');
 const { FeatureFlags, ResourceDoesNotExistError, exitOnNextTick } = require('amplify-cli-core');
 const subcommand = 'add-graphql-datasource';
@@ -78,11 +78,9 @@ module.exports = {
 
         fs.writeFileSync(backendConfigFilePath, JSON.stringify(backendConfig, null, 4));
 
-        /**
-         * Load the MySqlRelationalDBReader
-         */
         // eslint-disable-next-line max-len
-        const dbReader = new AuroraServerlessMySQLDatabaseReader(
+        const DBReader =  context.isPostgres ? AuroraServerlessPostgreSQLDatabaseReader : AuroraServerlessMySQLDatabaseReader
+        const dbReader = new DBReader(
           answers.region,
           answers.secretStoreArn,
           answers.dbClusterArn,

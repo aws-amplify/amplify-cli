@@ -170,24 +170,22 @@ async function selectDatabase(context, inputs, clusterArn, secretArn, AWS) {
   const databaseList = [];
   params.secretArn = secretArn;
   params.resourceArn = clusterArn;
-  params.sql = 'SHOW databases';
-
+  const dbCluster = await new AWS.RDS().describeDBClusters({ DBClusterIdentifier: clusterArn }).promise();
+  context.isPostgres = dbCluster.DBClusters.some(cluster => cluster.Engine.includes('postgres'));
+  params.sql = context.isPostgres ? 'SELECT datname FROM pg_database;' : 'show databases';
   spinner.start('Fetching Aurora Serverless cluster...');
-
   try {
     const dataApiResult = await DataApi.executeStatement(params).promise();
-
-    // eslint-disable-next-line prefer-destructuring
     const records = dataApiResult.records;
-
+    const validRecordValues = context.isPostgres
+      ? ['rdsadmin', 'postgres', 'template1', 'template0']
+      : ['information_schema', 'performance_schema', 'mysql'];
     for (const record of records) {
       const recordValue = record[0].stringValue;
-      // ignore the three meta tables that the cluster creates
-      if (!['information_schema', 'performance_schema', 'mysql'].includes(recordValue)) {
+      if (!validRecordValues.includes(recordValue)) {
         databaseList.push(recordValue);
       }
     }
-
     spinner.succeed('Fetched Aurora Serverless cluster.');
   } catch (err) {
     spinner.fail(err.message);

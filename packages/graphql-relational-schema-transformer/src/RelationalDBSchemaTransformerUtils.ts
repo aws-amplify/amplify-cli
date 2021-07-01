@@ -277,3 +277,36 @@ export function getGraphQLTypeFromMySQLType(dbType: string): string {
   }
   return `String`;
 }
+
+/**
+ * Given the DB type for a column, make a best effort to select the appropriate GraphQL type for
+ * the corresponding field.
+ *
+ * @param dbType the SQL column type.
+ * @returns the GraphQL field type.
+ */
+export function getGraphQLTypeFromPostgreSQLType(dbType: string): string {
+  const normalizedType = dbType.toUpperCase().split('(')[0];
+  if (`BOOL` == normalizedType) {
+    return `Boolean`;
+  } else if (`JSON` == normalizedType) {
+    return `AWSJSON`;
+  } else if (`TIME` == normalizedType) {
+    return `AWSTime`;
+  } else if (`DATE` == normalizedType) {
+    return `AWSDate`;
+  } else if (`DATETIME` == normalizedType) {
+    return `AWSDateTime`;
+  } else if (`TIMESTAMP` == normalizedType) {
+    return `AWSTimestamp`;
+  } else if (`TIMESTAMPTZ` == normalizedType) {
+    return `AWSTimestamp`;
+  } else if (`TIMESTAMP WITH TIME ZONE` == normalizedType) {
+    return `AWSTimestamp`;
+  } else if (intTypes.indexOf(normalizedType) > -1) {
+    return `Int`;
+  } else if (floatTypes.indexOf(normalizedType) > -1) {
+    return `Float`;
+  }
+  return `String`;
+}
