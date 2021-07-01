@@ -298,11 +298,11 @@ export function getGraphQLTypeFromPostgreSQLType(dbType: string): string {
   } else if (`DATETIME` == normalizedType) {
     return `AWSDateTime`;
   } else if (`TIMESTAMP` == normalizedType) {
-    return `AWSTimestamp`;
+    return `String`;
   } else if (`TIMESTAMPTZ` == normalizedType) {
-    return `AWSTimestamp`;
+    return `String`;
   } else if (`TIMESTAMP WITH TIME ZONE` == normalizedType) {
-    return `AWSTimestamp`;
+    return `String`;
   } else if (intTypes.indexOf(normalizedType) > -1) {
     return `Int`;
   } else if (floatTypes.indexOf(normalizedType) > -1) {

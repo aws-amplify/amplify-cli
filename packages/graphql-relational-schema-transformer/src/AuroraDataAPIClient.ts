@@ -4,9 +4,14 @@
  */
 export class AuroraDataAPIClient {
   AWS: any;
+  RDSDataService: any;
   RDS: any;
   Params: DataApiParams;
   isPostgres: boolean;
+
+  setRDSDataServiceClient(rdsDataserviceClient: any) {
+    this.RDSDataService = rdsDataserviceClient;
+  }
 
   setRDSClient(rdsClient: any) {
     this.RDS = rdsClient;
@@ -14,7 +19,7 @@ export class AuroraDataAPIClient {
 
   async getIsPostgres() {
     if (typeof this.isPostgres === 'undefined') {
-      const dbCluster = await new this.AWS.RDS().describeDBClusters().promise();
+      const dbCluster = await this.RDS.describeDBClusters({DBClusterIdentifier: this.Params.resourceArn}).promise();
       this.isPostgres = dbCluster.DBClusters.some(cluster => cluster.Engine.includes('postgres'));
     }
     return this.isPostgres;
@@ -26,7 +31,8 @@ export class AuroraDataAPIClient {
       region: databaseRegion,
     });
 
-    this.RDS = new this.AWS.RDSDataService();
+    this.RDSDataService = new this.AWS.RDSDataService();
+    this.RDS = new this.AWS.RDS();
     this.Params = new DataApiParams();
     this.isPostgres = isPostgres
     this.Params.secretArn = awsSecretStoreArn;
@@ -43,7 +49,7 @@ export class AuroraDataAPIClient {
     this.Params.sql = await this.getIsPostgres()
       ? "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;"
       : 'SHOW TABLES';
-    const response = await this.RDS.executeStatement(this.Params).promise();
+    const response = await this.RDSDataService.executeStatement(this.Params).promise();
 
     let tableList = [];
     const records = response['records'];
@@ -71,11 +77,11 @@ export class AuroraDataAPIClient {
       table_name = '${tableName}'`
       : `DESCRIBE \`${tableName}\``;
 
-    const response = await this.RDS.executeStatement(this.Params).promise();
+    const response = await this.RDSDataService.executeStatement(this.Params).promise();
     let primaryKey = '';
     if (await this.getIsPostgres()) {
       // get primaryKey for table
-      const primaryKeyResponse = await this.RDS.executeStatement({
+      const primaryKeyResponse = await this.RDSDataService.executeStatement({
         ...this.Params,
         sql: `SELECT               
         pg_attribute.attname, 
@@ -151,7 +157,7 @@ export class AuroraDataAPIClient {
       : `SELECT TABLE_NAME FROM information_schema.key_column_usage
             WHERE referenced_table_name is not null 
             AND REFERENCED_TABLE_NAME = '${tableName}';`;
-    const response = await this.RDS.executeStatement(this.Params).promise();
+    const response = await this.RDSDataService.executeStatement(this.Params).promise();
     let tableList = [];
     const records = response['records'];
     for (const record of records) {
