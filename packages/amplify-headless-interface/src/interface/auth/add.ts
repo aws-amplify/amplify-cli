@@ -199,9 +199,10 @@ interface SignInWithAppleSocialProviderConfig {
    */
   keyId: string;
   /**
-   * The private key configured with the provider.
+   * The private key configured with the provider. Value can be undefined on an update request.
+   * Every member can be updated except the privateKey because the privateKey isn't easily retrievable.
    */
-  privateKey: string;
+  privateKey?: string;
 }
 
 /**

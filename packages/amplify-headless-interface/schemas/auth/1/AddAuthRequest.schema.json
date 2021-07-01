@@ -420,8 +420,12 @@
                     "type": "array",
                     "items": {
                         "anyOf": [
-                            { "$ref": "#/definitions/CognitoSocialProviderConfiguration" }, 
-                            { "$ref": "#/definitions/CognitoSignInWithAppleProviderConfiguration" }
+                            {
+                                "$ref": "#/definitions/SocialProviderConfig"
+                            },
+                            {
+                                "$ref": "#/definitions/SignInWithAppleSocialProviderConfig"
+                            }
                         ]
                     }
                 }
@@ -433,8 +437,7 @@
                 "redirectSignoutURIs"
             ]
         },
-        "CognitoSocialProviderConfiguration": {
-            "description": "Defines a Cognito oAuth social provider",
+        "SocialProviderConfig": {
             "type": "object",
             "properties": {
                 "provider": {
@@ -461,40 +464,37 @@
                 "provider"
             ]
         },
-        "CognitoSignInWithAppleProviderConfiguration": {
-            "description": "Defines the Cognito Sign in with Apple oAuth social provider",
+        "SignInWithAppleSocialProviderConfig": {
             "type": "object",
             "properties": {
                 "provider": {
-                    "description": "Sign in with Apple provider name",
+                    "type": "string",
                     "enum": [
                         "SIGN_IN_WITH_APPLE"
-                    ],
-                    "type": "string"
+                    ]
                 },
                 "clientId": {
-                    "description": "The App client ID (sometimes called app ID or service ID). Usually takes the form com.yourapp.auth",
+                    "description": "The client ID (sometimes called apple services ID) configured with the provider.",
                     "type": "string"
                 },
                 "teamId": {
-                    "description": "The Team ID",
+                    "description": "The team ID configured with the provider",
                     "type": "string"
                 },
                 "keyId": {
-                    "description": "The key id",
+                    "description": "The key ID (sometimes called apple private key ID) configured with the provider.",
                     "type": "string"
                 },
                 "privateKey": {
-                    "description": "The private key cert",
+                    "description": "The private key configured with the provider. Value can be undefined on an update request.\nEvery member can be updated except the privateKey because the privateKey isn't easily retrievable.",
                     "type": "string"
                 }
             },
             "required": [
                 "clientId",
-                "teamId",
                 "keyId",
-                "privateKey",
-                "provider"
+                "provider",
+                "teamId"
             ]
         },
         "NoCognitoIdentityPool": {
@@ -560,6 +560,7 @@
                 "provider": {
                     "enum": [
                         "AMAZON",
+                        "APPLE",
                         "FACEBOOK",
                         "GOOGLE"
                     ],
