@@ -216,15 +216,16 @@ function getOAuthProviderKeys(currentEnvSpecificValues, resourceParams) {
   const { hostedUIProviderCreds = '[]' } = currentEnvSpecificValues;
   const configuredProviders = JSON.parse(hostedUIProviderCreds).map(h => h.ProviderName);
   const deltaProviders = _.intersection(oAuthProviders, configuredProviders);
-  deltaProviders.forEach(d => {
-    if (d === 'SignInWithApple') {
-      currentEnvSpecificValues[`${d.toLowerCase()}ClientIdUserPool`] = configuredProviders[`${d.toLowerCase()}ClientIdUserPool`];
-      currentEnvSpecificValues[`${d.toLowerCase()}TeamIdUserPool`] = configuredProviders[`${d.toLowerCase()}TeamIdUserPool`];
-      currentEnvSpecificValues[`${d.toLowerCase()}KeyIdUserPool`] = configuredProviders[`${d.toLowerCase()}KeyIdUserPool`];
-      currentEnvSpecificValues[`${d.toLowerCase()}PrivateKeyUserPool`] = configuredProviders[`${d.toLowerCase()}PrivateKeyUserPool`];
+  deltaProviders.forEach(provider => {
+    const lowerCaseProvider = provider.toLowerCase();
+    if (provider === 'SignInWithApple') {
+      currentEnvSpecificValues[`${lowerCaseProvider}ClientIdUserPool`] = configuredProviders[`${lowerCaseProvider}ClientIdUserPool`];
+      currentEnvSpecificValues[`${lowerCaseProvider}TeamIdUserPool`] = configuredProviders[`${lowerCaseProvider}TeamIdUserPool`];
+      currentEnvSpecificValues[`${lowerCaseProvider}KeyIdUserPool`] = configuredProviders[`${lowerCaseProvider}KeyIdUserPool`];
+      currentEnvSpecificValues[`${lowerCaseProvider}PrivateKeyUserPool`] = configuredProviders[`${lowerCaseProvider}PrivateKeyUserPool`];
     } else {
-      currentEnvSpecificValues[`${d.toLowerCase()}AppIdUserPool`] = configuredProviders[`${d.toLowerCase()}AppIdUserPool`];
-      currentEnvSpecificValues[`${d.toLowerCase()}AppSecretUserPool`] = configuredProviders[`${d.toLowerCase()}AppSecretUserPool`];
+      currentEnvSpecificValues[`${lowerCaseProvider}AppIdUserPool`] = configuredProviders[`${lowerCaseProvider}AppIdUserPool`];
+      currentEnvSpecificValues[`${lowerCaseProvider}AppSecretUserPool`] = configuredProviders[`${lowerCaseProvider}AppSecretUserPool`];
     }
   });
   return currentEnvSpecificValues;
@@ -256,33 +257,35 @@ function formatCredsforEnvParams(currentEnvSpecificValues, result, resourceParam
 function parseCredsForHeadless(mergedValues, envParams) {
   const oAuthProviders = JSON.parse(mergedValues.hostedUIProviderMeta).map(h => h.ProviderName);
   envParams.hostedUIProviderCreds = JSON.stringify(
-    oAuthProviders.map(el => {
-      if (el === 'SignInWithApple') {
+    oAuthProviders.map(provider => {
+      const lowerCaseProvider = provider.toLowerCase();
+      if (provider === 'SignInWithApple') {
         return {
-          ProviderName: el,
-          client_id: mergedValues[`${el.toLowerCase()}ClientIdUserPool`],
-          team_id: mergedValues[`${el.toLowerCase()}TeamIdUserPool`],
-          key_id: mergedValues[`${el.toLowerCase()}KeyIdUserPool`],
-          private_key: mergedValues[`${el.toLowerCase()}PrivateKeyUserPool`],
+          ProviderName: provider,
+          client_id: mergedValues[`${lowerCaseProvider}ClientIdUserPool`],
+          team_id: mergedValues[`${lowerCaseProvider}TeamIdUserPool`],
+          key_id: mergedValues[`${lowerCaseProvider}KeyIdUserPool`],
+          private_key: mergedValues[`${lowerCaseProvider}PrivateKeyUserPool`],
         };
       } else {
         return {
-          ProviderName: el,
-          client_id: mergedValues[`${el.toLowerCase()}AppIdUserPool`],
-          client_secret: mergedValues[`${el.toLowerCase()}AppSecretUserPool`],
+          ProviderName: provider,
+          client_id: mergedValues[`${lowerCaseProvider}AppIdUserPool`],
+          client_secret: mergedValues[`${lowerCaseProvider}AppSecretUserPool`],
         };
       }
     }),
   );
-  oAuthProviders.forEach(i => {
-    if (i === 'SignInWithApple') {
-      delete envParams[`${i.toLowerCase()}ClientIdUserPool`];
-      delete envParams[`${i.toLowerCase()}TeamIdUserPool`];
-      delete envParams[`${i.toLowerCase()}KeyIdUserPool`];
-      delete envParams[`${i.toLowerCase()}PrivateKeyUserPool`];
+  oAuthProviders.forEach(provider => {
+    const lowerCaseProvider = provider.toLowerCase();
+    if (provider === 'SignInWithApple') {
+      delete envParams[`${lowerCaseProvider}ClientIdUserPool`];
+      delete envParams[`${lowerCaseProvider}TeamIdUserPool`];
+      delete envParams[`${lowerCaseProvider}KeyIdUserPool`];
+      delete envParams[`${lowerCaseProvider}PrivateKeyUserPool`];
     } else {
-      delete envParams[`${i.toLowerCase()}AppIdUserPool`];
-      delete envParams[`${i.toLowerCase()}AppSecretUserPool`];
+      delete envParams[`${lowerCaseProvider}AppIdUserPool`];
+      delete envParams[`${lowerCaseProvider}AppSecretUserPool`];
     }
   });
 }
@@ -314,13 +317,14 @@ function getRequiredParamsForHeadlessInit(projectType, previousValues) {
   if (previousValues.hostedUIProviderMeta) {
     const oAuthProviders = JSON.parse(previousValues.hostedUIProviderMeta).map(h => h.ProviderName);
     if (oAuthProviders && oAuthProviders.length > 0) {
-      oAuthProviders.forEach(o => {
+      oAuthProviders.forEach(provider => {
+        const lowerCaseProvider = provider.toLowerCase();
         // Everything but SIWA is required because the private key isn't returned by Cognito
         // so we can't initialize SIWA in a new environment programmatically.
         // User will have to reconfigure SIWA through Admin UI or CLI.
-        if (o !== 'SignInWithApple') {
-          requiredParams.push(`${o.toLowerCase()}AppIdUserPool`);
-          requiredParams.push(`${o.toLowerCase()}AppSecretUserPool`);
+        if (provider !== 'SignInWithApple') {
+          requiredParams.push(`${lowerCaseProvider}AppIdUserPool`);
+          requiredParams.push(`${lowerCaseProvider}AppSecretUserPool`);
         }
       });
     }
