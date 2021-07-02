@@ -1,4 +1,4 @@
-import { JavaString, toJavaString } from '../../../velocity/value-mapper/string';
+import { JavaString } from '../../../velocity/value-mapper/string';
 
 describe('JavaString', () => {
   it('replaceAll', () => {
@@ -130,9 +130,5 @@ describe('JavaString', () => {
 
     const str4 = new JavaString('foo bar      ');
     expect(str4.trim().toString()).toEqual('foo bar');
-  });
-  it('toJavaString', () => {
-    const str = toJavaString('foo bar');
-    expect(str instanceof JavaString).toBeTruthy();
   });
 });
