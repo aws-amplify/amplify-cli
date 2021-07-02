@@ -107,3 +107,7 @@ export class JavaString {
     return this.value && this.value.length;
   }
 }
+/**
+ * Mapper function to convert string to JavaString
+ */
+export const toJavaString = (value: string): JavaString => new JavaString(value);
