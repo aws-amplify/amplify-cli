@@ -104,8 +104,16 @@ function backupAmplifyFolder() {
 
       throw error;
     }
-
-    fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
+    try {
+      fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
+    } catch (e) {
+      if (e.code === 'EPERM') {
+        throw new Error(
+          'Could move attach the backend to the project. Ensure that there no applications locking the `amplify` folder and try again',
+        );
+      }
+      throw e;
+    }
   }
 }
 
