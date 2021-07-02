@@ -1,4 +1,3 @@
-import { JavaString } from './string';
 import { toJSON } from './to-json';
 
 export class JavaArray extends Array<any> {
@@ -8,13 +7,6 @@ export class JavaArray extends Array<any> {
       // splice sends a single object
       values = [values];
     }
-    values = values.map(value => {
-        if (typeof value === 'string' && !((value as any) instanceof JavaString)) {
-          return new JavaString(value);
-        }
-          return value;
-      });
-
     if (values.length !== 1) {
       super(...values);
     } else {
