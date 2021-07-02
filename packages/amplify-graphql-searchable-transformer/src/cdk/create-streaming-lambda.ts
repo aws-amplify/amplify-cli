@@ -1,6 +1,6 @@
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { EventSourceMapping, IFunction, LayerVersion, Runtime, StartingPosition } from '@aws-cdk/aws-lambda';
-import { CfnParameter, Construct, Fn, Stack } from '@aws-cdk/core';
+import { CfnParameter, Construct, Fn, Stack, Duration } from '@aws-cdk/core';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
 import * as path from 'path';
@@ -73,14 +73,13 @@ export const createEventSourceMapping = (
   parameterMap: Map<string, CfnParameter>,
   tableStreamArn?: string,
 ): EventSourceMapping => {
-  const { ElasticsearchStreamingFunctionBatchSize } = ResourceConstants.PARAMETERS;
+  const { ElasticsearchStreamBatchSize, ElasticsearchStreamMaximumBatchingWindowInSeconds } = ResourceConstants.PARAMETERS;
   assert(tableStreamArn);
-  throw Error("Just please break");
   return new EventSourceMapping(stack, SearchableResourceIDs.SearchableEventSourceMappingID(type), {
-    //eventSourceArn: tableStreamArn,
-    eventSourceArn: "sadf",
+    eventSourceArn: tableStreamArn,
     target,
-    batchSize: parameterMap.get(ElasticsearchStreamingFunctionBatchSize)!.valueAsNumber,
+    batchSize: parameterMap.get(ElasticsearchStreamBatchSize)!.valueAsNumber,
+    maxBatchingWindow: Duration.seconds(parameterMap.get(ElasticsearchStreamMaximumBatchingWindowInSeconds)!.valueAsNumber),
     enabled: true,
     startingPosition: StartingPosition.LATEST,
   });
