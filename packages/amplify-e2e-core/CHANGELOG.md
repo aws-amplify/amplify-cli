@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.21.0...amplify-e2e-core@1.22.0) (2021-06-30)
+
+
+### Bug Fixes
+
+* [#7561](https://github.com/aws-amplify/amplify-cli/issues/7561) - auth trigger usage with user groups ([#7592](https://github.com/aws-amplify/amplify-cli/issues/7592)) ([d1d372e](https://github.com/aws-amplify/amplify-cli/commit/d1d372ee55d2fb1c15022642837c1f6fb6994ac8))
+* handle migrated layers with no runtime or multiple runtimes ([#7603](https://github.com/aws-amplify/amplify-cli/issues/7603)) ([856fdf7](https://github.com/aws-amplify/amplify-cli/commit/856fdf7d226c8a6dc47a8e2278b13dd793fee22a))
+
+
+### Features
+
+* configure env vars and secrets for lambda functions ([#7529](https://github.com/aws-amplify/amplify-cli/issues/7529)) ([fac354e](https://github.com/aws-amplify/amplify-cli/commit/fac354e5e26846e8b1499d3a4718b15983e0110f))
+
+
+
+
+
 # [1.21.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.20.0...amplify-e2e-core@1.21.0) (2021-06-24)
 
 
