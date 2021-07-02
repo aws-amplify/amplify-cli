@@ -169,6 +169,9 @@ export interface CognitoOAuthConfiguration {
   socialProviderConfigurations?: CognitoSocialProviderConfiguration[];
 }
 
+/**
+ * Defines a Cognito oAuth social provider
+ */
 interface SocialProviderConfig {
   /**
    * Social providers supported by Amplify and Cognito
@@ -184,6 +187,9 @@ interface SocialProviderConfig {
   clientSecret: string;
 }
 
+/**
+ * Defines a Cognito Sign in with Apple oAuth social provider
+ */
 interface SignInWithAppleSocialProviderConfig {
   provider: 'SIGN_IN_WITH_APPLE';
   /**

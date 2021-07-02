@@ -438,6 +438,7 @@
             ]
         },
         "SocialProviderConfig": {
+            "description": "Defines a Cognito oAuth social provider",
             "type": "object",
             "properties": {
                 "provider": {
@@ -465,6 +466,7 @@
             ]
         },
         "SignInWithAppleSocialProviderConfig": {
+            "description": "Defines a Cognito Sign in with Apple oAuth social provider",
             "type": "object",
             "properties": {
                 "provider": {
