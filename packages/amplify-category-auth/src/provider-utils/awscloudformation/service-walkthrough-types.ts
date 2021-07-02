@@ -50,6 +50,10 @@ export interface SocialProviderResult {
   googleAppSecretUserPool?: string;
   loginwithamazonAppIdUserPool?: string;
   loginwithamazonAppSecretUserPool?: string;
+  signinwithappleClientIdUserPool?: string;
+  signinwithappleTeamIdUserPool?: string;
+  signinwithappleKeyIdUserPool?: string;
+  signinwithapplePrivateKeyUserPool?: string;
 }
 
 export interface IdentityPoolResult {
@@ -62,6 +66,7 @@ export interface IdentityPoolResult {
   googleAndroid?: string;
   facebookAppId?: string;
   amazonAppId?: string;
+  appleAppId?: string;
   selectedParties?: string; // serialized json
   audiences?: string[];
 }
