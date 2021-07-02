@@ -109,7 +109,7 @@ function backupAmplifyFolder() {
     } catch (e) {
       if (e.code === 'EPERM') {
         throw new Error(
-          'Could move attach the backend to the project. Ensure that there are no applications locking the `amplify` folder and try again',
+          'Could attach the backend to the project. Ensure that there are no applications locking the `amplify` folder and try again',
         );
       }
       throw e;
