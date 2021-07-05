@@ -7,41 +7,38 @@ Parameters:
     Type: String
   unauthRoleArn:
     Type: String
-
-  <% if (props.dependsOn && props.dependsOn.length > 0) { %>
-  <% for(var i=0; i < props.dependsOn.length; i++) { %>
-  <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
+  <% if (props.dependsOn && props.dependsOn.length > 0) { -%>
+  <% for(var i=0; i < props.dependsOn.length; i++) { -%>
+  <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { -%>
   <%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>:
     Type: String
     Default: <%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>
-  <% } %>
-  <% } %>
-  <% } %>
-
+  <% } -%>
+  <% } -%>
+  <% } -%>
   <% for(var i=0; i < Object.keys(props).length; i++) { -%>
-  <% if (typeof Object.values(props)[i] === 'string' || (Object.values(props)[i] && Object.values(props)[i].value)) { %>
+  <% if (typeof Object.values(props)[i] === 'string' || (Object.values(props)[i] && Object.values(props)[i].value)) { -%>
   <%=Object.keys(props)[i]%>:
     Type: String
   <% } -%>
-
-  <% if (typeof Object.values(props)[i] === 'boolean') { %>
+  <% if (typeof Object.values(props)[i] === 'boolean') { -%>
   <%=Object.keys(props)[i]%>:
     Type: String
   <% } -%>
-  <% if (typeof Object.values(props)[i] === 'number') { %>
+  <% if (typeof Object.values(props)[i] === 'number') { -%>
   <%=Object.keys(props)[i]%>:
     Type: Number
   <% } -%>
-  <% if (Object.keys(props)[i] === 'parentStack') { %>
+  <% if (Object.keys(props)[i] === 'parentStack') { -%>
   <%=Object.keys(props)[i]%>:
     Type: String
   <% } -%>
-  <% if (Array.isArray(Object.values(props)[i])) { %>
+  <% if (Array.isArray(Object.values(props)[i])) { -%>
   <%=Object.keys(props)[i]%>:
     Type: CommaDelimitedList
   <% } -%>
   <% } -%>
-  <% if(Object.keys(props).includes('hostedUIProviderMeta') && !Object.keys(props).includes('hostedUIProviderCreds')) { %>
+  <% if(Object.keys(props).includes('hostedUIProviderMeta') && !Object.keys(props).includes('hostedUIProviderCreds')) { -%>
   hostedUIProviderCreds:
     Type: String
     Default: '[]'
@@ -49,12 +46,12 @@ Parameters:
 
 Conditions:
   ShouldNotCreateEnvResources: !Equals [ !Ref env, NONE ]
-  <%if (props.authSelections !=='identityPoolOnly' ) { %>
+  <%if (props.authSelections !=='identityPoolOnly' ) { -%>
   ShouldOutputAppClientSecrets: !Equals [!Ref userpoolClientGenerateSecret, true ]
-  <% } %>
+  <% } -%>
 
 Resources:
-  <%if (props.verificationBucketName) { %>
+  <%if (props.verificationBucketName) { -%>
   CustomMessageConfirmationBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: "Retain"
@@ -75,8 +72,8 @@ Resources:
             AllowedOrigins:
               - "*"
             MaxAge: 3000
-  <% } %>
-  <%if (props.authSelections !== 'identityPoolOnly') { %>
+  <% } -%>
+  <%if (props.authSelections !== 'identityPoolOnly') { -%>
   # BEGIN SNS ROLE RESOURCE
   SNSRole:
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
@@ -114,56 +111,56 @@ Resources:
     UpdateReplacePolicy: Retain
     Properties:
       UserPoolName: !If [ShouldNotCreateEnvResources, !Ref userPoolName, !Join ['',[!Ref userPoolName, '-', !Ref env]]]
-      <%if (props.requiredAttributes && props.requiredAttributes.length > 0) { %>
-      <%if (props.usernameCaseSensitive !== undefined) { %>
+      <%if (props.requiredAttributes && props.requiredAttributes.length > 0) { -%>
+      <%if (props.usernameCaseSensitive !== undefined) { -%>
       UsernameConfiguration:
         CaseSensitive: <%= props.usernameCaseSensitive %>
-      <% } %>
+      <% } -%>
       Schema:
-        <% for(var i=0; i < props.requiredAttributes.length; i++) { %>
+        <% for(var i=0; i < props.requiredAttributes.length; i++) { -%>
         -
           Name: <%= props.requiredAttributes[i] %>
           Required: true
           Mutable: true
-        <% } %>
-      <% } %>
-      <%if (!props.breakCircularDependency && props.triggers && props.triggers !== '{}' && props.dependsOn) { %>
+        <% } -%>
+      <% } -%>
+      <%if (!props.breakCircularDependency && props.triggers && props.triggers !== '{}' && props.dependsOn) { -%>
       LambdaConfig:
-        <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { %>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { -%>
           CreateAuthChallenge: !Ref function<%=props.resourceName%>CreateAuthChallengeArn
-        <% } %>
-        <%if (props.dependsOn.find(i => i.resourceName.includes('CustomMessage'))) { %>
+        <% } -%>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('CustomMessage'))) { -%>
           CustomMessage: !Ref function<%=props.resourceName%>CustomMessageArn
-        <% } %>
-        <%if (props.dependsOn.find(i => i.resourceName.includes('DefineAuthChallenge'))) { %>
+        <% } -%>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('DefineAuthChallenge'))) { -%>
           DefineAuthChallenge: !Ref function<%=props.resourceName%>DefineAuthChallengeArn
-        <% } %>
-        <%if (props.dependsOn.find(i => i.resourceName.includes('PostAuthentication'))) { %>
+        <% } -%>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PostAuthentication'))) { -%>
           PostAuthentication: !Ref function<%=props.resourceName%>PostAuthenticationArn
-        <% } %>
-        <%if (props.dependsOn.find(i => i.resourceName.includes('PostConfirmation'))) { %>
+        <% } -%>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PostConfirmation'))) { -%>
           PostConfirmation: !Ref function<%=props.resourceName%>PostConfirmationArn
-        <% } %>
-        <%if (props.dependsOn.find(i => i.resourceName.includes('PreAuthentication'))) { %>
+        <% } -%>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PreAuthentication'))) { -%>
           PreAuthentication: !Ref function<%=props.resourceName%>PreAuthenticationArn
-        <% } %>
-        <%if (props.dependsOn.find(i => i.resourceName.includes('PreSignup'))) { %>
+        <% } -%>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PreSignup'))) { -%>
           PreSignUp: !Ref function<%=props.resourceName%>PreSignupArn
-        <% } %>
-        <%if (props.dependsOn.find(i => i.resourceName.includes('PreTokenGeneration'))) { %>
+        <% } -%>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('PreTokenGeneration'))) { -%>
           PreTokenGeneration: !Ref function<%=props.resourceName%>PreTokenGenerationArn
-        <% } %>
-        <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { %>
+        <% } -%>
+        <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { -%>
           VerifyAuthChallengeResponse: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseArn
-        <% } %>
-      <% } %>
-      <%if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { %>
+        <% } -%>
+      <% } -%>
+      <%if (props.autoVerifiedAttributes && props.autoVerifiedAttributes.length > 0) { -%>
       AutoVerifiedAttributes: !Ref autoVerifiedAttributes
-      <% } %>
-      <%if (props.autoVerifiedAttributes.includes('email')) { %>
+      <% } -%>
+      <%if (props.autoVerifiedAttributes.includes('email')) { -%>
       EmailVerificationMessage: !Ref emailVerificationMessage
       EmailVerificationSubject: !Ref emailVerificationSubject
-      <% } %>
+      <% } -%>
       Policies:
         PasswordPolicy:
           MinimumLength: !Ref passwordPolicyMinLength
@@ -171,20 +168,20 @@ Resources:
           RequireNumbers: <%=  props.passwordPolicyCharacters.includes('Requires Numbers') %>
           RequireSymbols: <%= props.passwordPolicyCharacters.includes('Requires Symbols') %>
           RequireUppercase: <%= props.passwordPolicyCharacters.includes('Requires Uppercase') %>
-      <% if (props.usernameAttributes && props.usernameAttributes !== 'username') { %>
+      <% if (props.usernameAttributes && props.usernameAttributes !== 'username') { -%>
       UsernameAttributes: !Ref usernameAttributes
-      <% } %>
+      <% } -%>
       MfaConfiguration: !Ref mfaConfiguration
       SmsVerificationMessage: !Ref smsVerificationMessage
       SmsAuthenticationMessage: !Ref smsAuthenticationMessage
       SmsConfiguration:
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
-    <%if (props.mfaConfiguration != 'OFF') { %>
+    <%if (props.mfaConfiguration != 'OFF') { -%>
     DependsOn: SNSRole
-    <% } %>
-  <%if (!props.breakCircularDependency && props.triggers && props.dependsOn) { %>
-  <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { %>
+    <% } -%>
+  <%if (!props.breakCircularDependency && props.triggers && props.dependsOn) { -%>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('CreateAuthChallenge'))) { -%>
   UserPoolCreateAuthChallengeLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
@@ -193,8 +190,8 @@ Resources:
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>CreateAuthChallengeName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>
-  <%if (props.dependsOn.find(i => i.resourceName.includes('CustomMessage'))) { %>
+  <% } -%>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('CustomMessage'))) { -%>
   UserPoolCustomMessageLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
@@ -203,8 +200,8 @@ Resources:
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>CustomMessageName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>
-  <%if (props.dependsOn.find(i => i.resourceName.includes('DefineAuthChallenge'))) { %>
+  <% } -%>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('DefineAuthChallenge'))) { -%>
   UserPoolDefineAuthChallengeLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
@@ -213,8 +210,8 @@ Resources:
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>DefineAuthChallengeName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>
-  <%if (props.dependsOn.find(i => i.resourceName.includes('PostAuthentication'))) { %>
+  <% } -%>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('PostAuthentication'))) { -%>
   UserPoolPostAuthenticationLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
@@ -223,8 +220,8 @@ Resources:
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PostAuthenticationName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>
-  <%if (props.dependsOn.find(i => i.resourceName.includes('PostConfirmation'))) { %>
+  <% } -%>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('PostConfirmation'))) { -%>
   UserPoolPostConfirmationLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
@@ -233,8 +230,8 @@ Resources:
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PostConfirmationName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>
-  <%if (props.dependsOn.find(i => i.resourceName.includes('PreAuthentication'))) { %>
+  <% } -%>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('PreAuthentication'))) { -%>
   UserPoolPreAuthenticationLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
@@ -243,8 +240,8 @@ Resources:
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PreAuthenticationName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>
-  <%if (props.dependsOn.find(i => i.resourceName.includes('PreSignup'))) { %>
+  <% } -%>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('PreSignup'))) { -%>
   UserPoolPreSignupLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
@@ -253,8 +250,8 @@ Resources:
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PreSignupName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>
-  <%if (props.dependsOn.find(i => i.resourceName.includes('PreTokenGeneration'))) { %>
+  <% } -%>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('PreTokenGeneration'))) { -%>
   UserPoolPreTokenGenerationLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
@@ -263,8 +260,8 @@ Resources:
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>PreTokenGenerationName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>
-  <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { %>
+  <% } -%>
+  <%if (props.dependsOn.find(i => i.resourceName.includes('VerifyAuthChallengeResponse'))) { -%>
   UserPoolVerifyAuthChallengeResponseLambdaInvokePermission:
     Type: "AWS::Lambda::Permission"
     DependsOn: UserPool
@@ -273,10 +270,10 @@ Resources:
       Principal: "cognito-idp.amazonaws.com"
       FunctionName: !Ref function<%=props.resourceName%>VerifyAuthChallengeResponseName
       SourceArn: !GetAtt UserPool.Arn
-  <% } %>
+  <% } -%>
   # Updating lambda role with permissions to Cognito
-  <% if (props.permissions && props.permissions.length > 0) { %>
-  <% for(var i=0; i < props.permissions.length; i++) { %>
+  <% if (props.permissions && props.permissions.length > 0) { -%>
+  <% for(var i=0; i < props.permissions.length; i++) { -%>
   <%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}${JSON.parse(props.permissions[i]).policyName}:`%>
     Type: AWS::IAM::Policy
     Properties:
@@ -286,37 +283,37 @@ Resources:
         Statement:
           - Effect: <%= JSON.parse(props.permissions[i]).effect %>
             Action:
-            <% for(let x = 0; x < JSON.parse(props.permissions[i]).actions.length; x++) { %>
+            <% for(let x = 0; x < JSON.parse(props.permissions[i]).actions.length; x++) { -%>
               - <%=JSON.parse(props.permissions[i]).actions[x]%>
-            <% } %>
-            <% if(JSON.parse(props.permissions[i]).resource.paramType === 'string') { %>
+            <% } -%>
+            <% if(JSON.parse(props.permissions[i]).resource.paramType === 'string') { -%>
             Resource: "<%=JSON.parse(props.permissions[i]).resource.keys %>"
-            <% } %>
-            <% if(JSON.parse(props.permissions[i]).resource.paramType === '!GetAtt') { %>
+            <% } -%>
+            <% if(JSON.parse(props.permissions[i]).resource.paramType === '!GetAtt') { -%>
             Resource: !GetAtt
-            <% for(let z = 0; z < JSON.parse(props.permissions[i]).resource.keys.length; z++) { %>
+            <% for(let z = 0; z < JSON.parse(props.permissions[i]).resource.keys.length; z++) { -%>
               - <%= JSON.parse(props.permissions[i]).resource.keys[z] %>
-            <% } %>
-            <% } %>
-            <% if(JSON.parse(props.permissions[i]).resource.paramType === '!Ref') { %>
+            <% } -%>
+            <% } -%>
+            <% if(JSON.parse(props.permissions[i]).resource.paramType === '!Ref') { -%>
             Resource: !Ref <%=JSON.parse(props.permissions[i]).resource.keys %>
-            <% } %>
+            <% } -%>
 
       Roles:
         - !Join ['',["<%=`${props.resourceName}${JSON.parse(props.permissions[i]).trigger}`%>", '-', !Ref env]]
-  <% } %>
-  <% } %>
-  <% } %>
+  <% } -%>
+  <% } -%>
+  <% } -%>
   UserPoolClientWeb:
   # Created provide application access to user pool
   # Depends on UserPool for ID reference
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
       ClientName: <%= props.resourceNameTruncated %>_app_clientWeb
-      <%if (props.userpoolClientSetAttributes) { %>
+      <%if (props.userpoolClientSetAttributes) { -%>
       ReadAttributes: !Ref userpoolClientReadAttributes
       WriteAttributes: !Ref userpoolClientWriteAttributes
-      <% } %>
+      <% } -%>
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
     DependsOn: UserPool
@@ -326,10 +323,10 @@ Resources:
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
       ClientName: <%= props.resourceNameTruncated %>_app_client
-      <%if (props.userpoolClientSetAttributes) { %>
+      <%if (props.userpoolClientSetAttributes) { -%>
       ReadAttributes: !Ref userpoolClientReadAttributes
       WriteAttributes: !Ref userpoolClientWriteAttributes
-      <% } %>
+      <% } -%>
       GenerateSecret: !Ref userpoolClientGenerateSecret
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
@@ -436,7 +433,7 @@ Resources:
       clientId: !Ref UserPoolClient
       userpoolId: !Ref UserPool
     DependsOn: UserPoolClientLogPolicy
-  <%if (props.hostedUIDomainName) { %>
+  <%if (props.hostedUIDomainName) { -%>
   HostedUICustomResource:
     Type: 'AWS::Lambda::Function'
     Properties:
@@ -559,9 +556,9 @@ Resources:
       userPoolId: !Ref UserPool
       hostedUIDomainName: !If [ShouldNotCreateEnvResources, !Ref hostedUIDomainName, !Join ['-',[!Ref hostedUIDomainName, !Ref env]]]
     DependsOn: HostedUICustomResourceLogPolicy
-  <% } %>
+  <% } -%>
 
-  <%if (props.hostedUIProviderMeta) { %>
+  <%if (props.hostedUIProviderMeta) { -%>
   HostedUIProvidersCustomResource:
     Type: 'AWS::Lambda::Function'
     Properties:
@@ -701,8 +698,8 @@ Resources:
       hostedUIProviderMeta: !Ref hostedUIProviderMeta
       hostedUIProviderCreds: !Ref hostedUIProviderCreds
     DependsOn: HostedUIProvidersCustomResourceLogPolicy
-  <% } %>
-  <%if (props.oAuthMetadata) { %>
+  <% } -%>
+  <%if (props.oAuthMetadata) { -%>
   OAuthCustomResource:
     Type: 'AWS::Lambda::Function'
     Properties:
@@ -799,9 +796,9 @@ Resources:
       webClientId: !Ref 'UserPoolClientWeb'
       nativeClientId: !Ref 'UserPoolClient'
     DependsOn: OAuthCustomResourceLogPolicy
-  <% } %>
+  <% } -%>
 
-  <%if (props.mfaConfiguration != 'OFF') { %>
+  <%if (props.mfaConfiguration != 'OFF') { -%>
   # BEGIN MFA LAMBDA RESOURCES
   MFALambdaRole:
   # Created to execute Lambda which sets MFA config values
@@ -927,11 +924,11 @@ Resources:
       smsAuthenticationMessage: !Ref smsAuthenticationMessage
       smsConfigExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
     DependsOn: MFALogPolicy
-  <% } %>
   <% } -%>
-  <%if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') { %>
+  <% } -%>
+  <%if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections === 'identityPoolOnly') { -%>
   # BEGIN IDENTITY POOL RESOURCES
-  <%if (props.audiences && props.audiences.length > 0) { %>
+  <%if (props.audiences && props.audiences.length > 0) { -%>
   OpenIdLambdaRole:
   # Created to execute Lambda which sets MFA config values
   # Depends on UserPoolClientInputs to prevent further identity pool resources from being created before userpool is ready
@@ -1093,14 +1090,14 @@ Resources:
       clientIdList: <%= props.audiences.join() %>
       url: 'https://accounts.google.com'
     DependsOn: OpenIdLogPolicy
-  <% } %>
+  <% } -%>
 
   IdentityPool:
   # Always created
     Type: AWS::Cognito::IdentityPool
     Properties:
       IdentityPoolName: !If [ShouldNotCreateEnvResources, '<%= props.identityPoolName %>', !Join ['',['<%= props.identityPoolName %>', '__', !Ref env]]]
-      <%if (props.authSelections !== 'identityPoolOnly') { %>
+      <%if (props.authSelections !== 'identityPoolOnly') { -%>
       CognitoIdentityProviders:
         - ClientId:  !Ref UserPoolClient
           ProviderName: !Sub
@@ -1111,30 +1108,30 @@ Resources:
             - cognito-idp.${region}.amazonaws.com/${client}
             - { region: !Ref "AWS::Region",  client: !Ref UserPool}
       <% } -%>
-      <%if (props.authProviders && Object.keys(props.authProviders).length > 0 && props.authProviders !== '{}' && !(Object.keys(props.authProviders).length === 1 && props.authProviders[0] === 'accounts.google.com' && props.audiences)) { %>
+      <%if (props.authProviders && Object.keys(props.authProviders).length > 0 && props.authProviders !== '{}' && !(Object.keys(props.authProviders).length === 1 && props.authProviders[0] === 'accounts.google.com' && props.audiences)) { -%>
       SupportedLoginProviders:
-        <%if (props.authProviders.indexOf('graph.facebook.com') !== -1) { %>
+        <%if (props.authProviders.indexOf('graph.facebook.com') !== -1) { -%>
         graph.facebook.com: !Ref facebookAppId
-        <% } %>
-        <%if (props.authProviders.indexOf('accounts.google.com') !== -1 && !props.audiences) { %>
+        <% } -%>
+        <%if (props.authProviders.indexOf('accounts.google.com') !== -1 && !props.audiences) { -%>
         accounts.google.com: !Ref googleClientId
-        <% } %>
-        <%if (props.authProviders.indexOf('www.amazon.com') !== -1) { %>
+        <% } -%>
+        <%if (props.authProviders.indexOf('www.amazon.com') !== -1) { -%>
         www.amazon.com: !Ref amazonAppId
-        <% } %>
-        <%if (props.authProviders.indexOf('appleid.apple.com') !== -1) { %>
+        <% } -%>
+        <%if (props.authProviders.indexOf('appleid.apple.com') !== -1) { -%>
         appleid.apple.com: !Ref appleAppId
-        <% } %>
-      <% } %>
+        <% } -%>
+      <% } -%>
       AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
-      <%if (props.audiences && props.audiences.length > 0) { %>
+      <%if (props.audiences && props.audiences.length > 0) { -%>
       OpenIdConnectProviderARNs:
         - !GetAtt OpenIdLambdaInputs.providerArn
     DependsOn: OpenIdLambdaInputs
-      <% } %>
-    <%if ((!props.audiences || props.audiences.length === 0) && props.authSelections !== 'identityPoolOnly') { %>
+      <% } -%>
+    <%if ((!props.audiences || props.audiences.length === 0) && props.authSelections !== 'identityPoolOnly') { -%>
     DependsOn: UserPoolClientInputs
-    <% } %>
+    <% } -%>
 
   IdentityPoolRoleMap:
   # Created to map Auth and Unauth roles to the identity pool
@@ -1146,25 +1143,25 @@ Resources:
           unauthenticated: !Ref unauthRoleArn
           authenticated: !Ref authRoleArn
     DependsOn: IdentityPool
-  <% } %>
+  <% } -%>
 
 Outputs :
-  <%if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') { %>
+  <%if (props.authSelections === 'identityPoolAndUserPool' || props.authSelections == 'identityPoolOnly') { -%>
   IdentityPoolId:
     Value: !Ref 'IdentityPool'
     Description:  Id for the identity pool
   IdentityPoolName:
     Value: !GetAtt IdentityPool.Name
-  <% } %>
-  <%if (props.hostedUIDomainName) { %>
+  <% } -%>
+  <%if (props.hostedUIDomainName) { -%>
   HostedUIDomain:
     Value: !If [ShouldNotCreateEnvResources, !Ref hostedUIDomainName, !Join ['-',[!Ref hostedUIDomainName, !Ref env]]]
-  <% } %>
-  <%if (props.oAuthMetadata) { %>
+  <% } -%>
+  <%if (props.oAuthMetadata) { -%>
   OAuthMetadata:
     Value: !Ref oAuthMetadata
-  <% } %>
-  <%if (props.authSelections !== 'identityPoolOnly') { %>
+  <% } -%>
+  <%if (props.authSelections !== 'identityPoolOnly') { -%>
   UserPoolId:
     Value: !Ref 'UserPool'
     Description:  Id for the user pool
@@ -1182,33 +1179,33 @@ Outputs :
   AppClientSecret:
     Value: !GetAtt UserPoolClientInputs.appSecret
     Condition: ShouldOutputAppClientSecrets
-  <%if (props.mfaConfiguration != 'OFF') { %>
+  <%if (props.mfaConfiguration != 'OFF') { -%>
   CreatedSNSRole:
     Value: !GetAtt SNSRole.Arn
     Description: role arn
-  <% } %>
-  <%if (props.googleClientId) { %>
+  <% } -%>
+  <%if (props.googleClientId) { -%>
   GoogleWebClient:
     Value: !Ref googleClientId
-  <% } %>
-  <%if (props.googleIos) { %>
+  <% } -%>
+  <%if (props.googleIos) { -%>
   GoogleIOSClient:
     Value: !Ref googleIos
-  <% } %>
-  <%if (props.googleAndroid) { %>
+  <% } -%>
+  <%if (props.googleAndroid) { -%>
   GoogleAndroidClient:
     Value: !Ref googleAndroid
-  <% } %>
-  <%if (props.facebookAppId) { %>
+  <% } -%>
+  <%if (props.facebookAppId) { -%>
   FacebookWebClient:
     Value: !Ref facebookAppId
-  <% } %>
-  <%if (props.amazonAppId) { %>
+  <% } -%>
+  <%if (props.amazonAppId) { -%>
   AmazonWebClient:
     Value: !Ref amazonAppId
-  <% } %>
-  <%if (props.appleAppId) { %>
+  <% } -%>
+  <%if (props.appleAppId) { -%>
   AppleWebClient:
     Value: !Ref appleAppId
-  <% } %>
-  <% } %>
+  <% } -%>
+  <% } -%>

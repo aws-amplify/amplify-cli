@@ -46,16 +46,16 @@
         "env": {
             "Type": "String"
         }<%if (props.dependsOn && props.dependsOn.length > 0) { %>,<% } %>
-    <% if (props.dependsOn) { %>
-    <% for(var i=0; i < props.dependsOn.length; i++) { %>
-    <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { %>
+    <% if (props.dependsOn) { -%>
+    <% for(var i=0; i < props.dependsOn.length; i++) { -%>
+    <% for(var j=0; j < props.dependsOn[i].attributes.length; j++) { -%>
         "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>": {
             "Type": "String",
             "Default": "<%= props.dependsOn[i].category %><%= props.dependsOn[i].resourceName %><%= props.dependsOn[i].attributes[j] %>"
             }<%if (i !== props.dependsOn.length - 1 || j !== props.dependsOn[i].attributes.length - 1) { %>,<% } %>
-        <% } %>
-        <% } %>
-    <% } %>
+        <% } -%>
+        <% } -%>
+    <% } -%>
     },
     "Conditions": {
         "ShouldNotCreateEnvResources": {
@@ -184,7 +184,7 @@
                     ]
                 }
             }
-        }<% if (props.categoryPolicies && props.categoryPolicies.length > 0 ) { %>
+        }<% if (props.categoryPolicies && props.categoryPolicies.length > 0 ) { -%>
         ,"AmplifyResourcesPolicy": {
             "DependsOn": ["LambdaExecutionRole"],
             "Type": "AWS::IAM::Policy",
@@ -197,7 +197,7 @@
                 }
             }
         }
-        <% } %>
+        <% } -%>
     },
     "Outputs": {
         "Name": {
