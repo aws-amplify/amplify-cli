@@ -1,6 +1,7 @@
 import { JavaArray } from './../../../velocity/value-mapper/array';
 import { JavaMap } from '../../../velocity/value-mapper/map';
-import { toJavaString } from '../../../velocity/value-mapper/string';
+import { JavaString } from '../../../velocity/value-mapper/string';
+import { map as mapper } from '../../../velocity/value-mapper/mapper';
 
 describe('JavaMap', () => {
   let identityMapper = jest.fn().mockImplementation(val => val);
@@ -38,7 +39,10 @@ describe('JavaMap', () => {
   it('entrySet', () => {
     const obj = { foo: 'Foo Value', bar: 'Bar Value' };
     const map = new JavaMap(obj, identityMapper);
-    expect(map.entrySet().toJSON()).toEqual([{ key: 'foo', value: 'Foo Value' }, { key: 'bar', value: 'Bar Value' }]);
+    expect(map.entrySet().toJSON()).toEqual([
+      { key: 'foo', value: 'Foo Value' },
+      { key: 'bar', value: 'Bar Value' },
+    ]);
   });
 
   it('equal', () => {
@@ -71,7 +75,7 @@ describe('JavaMap', () => {
   it('keySet returns a JavaArray with each element of type JavaString', () => {
     const obj = { foo: 'Foo Value', bar: 'Bar Value' };
     const map = new JavaMap(obj, identityMapper);
-    expect(map.keySet()).toEqual(new JavaArray([toJavaString('foo'), toJavaString('bar')], toJavaString));
+    expect(map.keySet()).toEqual(new JavaArray([new JavaString('foo'), new JavaString('bar')], mapper));
   });
 
   it('put', () => {
