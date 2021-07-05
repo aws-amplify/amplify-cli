@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, singleSelect } from '..';
+import { nspawn as spawn, getCLIPath, singleSelect, injectSessionToken } from '..';
 
 type AmplifyConfiguration = {
   accessKeyId: string;
@@ -66,6 +66,7 @@ export function amplifyConfigure(settings: AmplifyConfiguration): Promise<void> 
       .wait('Successfully set up the new user.')
       .run((err: Error) => {
         if (!err) {
+          injectSessionToken();
           resolve();
         } else {
           reject(err);
@@ -125,6 +126,7 @@ export function amplifyConfigureProject(settings: {
 
     chain.wait('Successfully made configuration changes to your project.').run((err: Error) => {
       if (!err) {
+        injectSessionToken();
         resolve();
       } else {
         reject(err);

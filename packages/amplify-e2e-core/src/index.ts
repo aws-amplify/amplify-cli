@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { spawnSync, execSync } from 'child_process';
 import { v4 as uuid } from 'uuid';
+import { pathManager } from 'amplify-cli-core';
 
 export * from './configure/';
 export * from './init/';
@@ -29,6 +30,12 @@ export function getCLIPath(testingWithLatestCodebase = false) {
 
 export function isCI(): boolean {
   return process.env.CI && process.env.CIRCLECI ? true : false;
+}
+
+export function injectSessionToken() {
+  if (!fs.readFileSync(pathManager.getAWSCredentialsFilePath()).toString().includes('aws_session_token')) {
+    fs.appendFileSync(pathManager.getAWSCredentialsFilePath(), `aws_session_token=${process.env.AWS_SESSION_TOKEN}`);
+  }
 }
 
 export function npmInstall(cwd: string) {

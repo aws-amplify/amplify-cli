@@ -35,6 +35,7 @@ export function getConfigFromProfile() {
   return {
     accessKeyId: credentials[profileName].aws_access_key_id,
     secretAccessKey: credentials[profileName].aws_secret_access_key,
+    sessionToken: credentials[profileName].aws_session_token,
     region: config[configKeyName].region,
   };
 }
@@ -62,31 +63,33 @@ export function setupAWSProfile() {
   Object.keys(credentials).forEach(key => {
     const keyName = key.trim();
     if (profileName === keyName) {
-      credentials[key].aws_access_key_id = process.env.CONSOLE_AWS_ACCESS_KEY_ID;
-      credentials[key].aws_secret_access_key = process.env.CONSOLE_AWS_SECRET_ACCESS_KEY;
+      credentials[key].aws_access_key_id = process.env.AWS_ACCESS_KEY_ID;
+      credentials[key].aws_secret_access_key = process.env.AWS_SECRET_ACCESS_KEY;
+      credentials[key].aws_session_token = process.env.AWS_SESSION_TOKEN;
       isCredSet = true;
     }
   });
   if (!isCredSet) {
     credentials[profileName] = {
-      aws_access_key_id: process.env.CONSOLE_AWS_ACCESS_KEY_ID,
-      aws_secret_access_key: process.env.CONSOLE_AWS_SECRET_ACCESS_KEY,
+      aws_access_key_id: process.env.AWS_ACCESS_KEY_ID,
+      aws_secret_access_key: process.env.AWS_SECRET_ACCESS_KEY,
+      aws_session_token: process.env.AWS_SESSION_TOKEN,
     };
   }
 
-  process.env.CONSOLE_REGION = process.env.CONSOLE_REGION || testRegionPool[Math.floor(Math.random() * testRegionPool.length)];
+  process.env.CLI_REGION = process.env.CLI_REGION || testRegionPool[Math.floor(Math.random() * testRegionPool.length)];
   let isConfigSet = false;
   Object.keys(config).forEach(key => {
     const keyName = key.replace('profile', '').trim();
     if (profileName === keyName) {
-      config[key].region = process.env.CONSOLE_REGION;
+      config[key].region = process.env.CLI_REGION;
       isConfigSet = true;
     }
   });
   if (!isConfigSet) {
     const keyName = profileName === 'default' ? 'default' : `profile ${profileName}`;
     config[keyName] = {
-      region: process.env.CONSOLE_REGION,
+      region: process.env.CLI_REGION,
     };
   }
 
