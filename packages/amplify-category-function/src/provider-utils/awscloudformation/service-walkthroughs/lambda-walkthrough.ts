@@ -1,5 +1,5 @@
 import { $TSAny, $TSContext, $TSObject, JSONUtilities, pathManager, stateManager } from 'amplify-cli-core';
-import { FunctionParameters, FunctionTriggerParameters, ProjectLayer } from 'amplify-function-plugin-interface';
+import { FunctionParameters, ProjectLayer } from 'amplify-function-plugin-interface';
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
@@ -455,6 +455,7 @@ export function updateCFNFileForResourcePermissions(
   JSONUtilities.writeJson(cfnFilePath, cfnContent);
   tryUpdateTopLevelComment(resourceDirPath, _.keys(functionParameters.environmentMap));
 }
+
 const addLayerCFNParameters = (context: $TSContext, functionParameters: Partial<FunctionParameters>, resourceDirPath: string) => {
   const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);
