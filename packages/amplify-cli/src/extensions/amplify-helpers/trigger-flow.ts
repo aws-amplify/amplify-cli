@@ -358,33 +358,6 @@ export const getTriggerPermissions = async (context, triggers, category) => {
   return permissions.map(i => JSONUtilities.stringify(i));
 };
 
-export const generateIAMPolicies = (coreAnswers, permissions) => {
-  let policy = {};
-  policy = {
-    Effect: 'Allow',
-    Action: permissions.actions,
-    Resource: [
-      {
-        'Fn::Join': [
-          '',
-          [
-            'arn:aws:lambda:',
-            {
-              Ref: 'AWS::Region',
-            },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':function:',
-            {
-              Ref: `function${coreAnswers.functionName}`,
-            },
-          ],
-        ],
-      },
-    ],
-  };
-};
-
 // helper function to show help text and redisplay question if 'learn more' is selected
 const learnMoreLoop = async (key, map, metaData: { URL?; name }, question) => {
   let selections: { templates?; triggers?: [] | undefined } = await inquirer.prompt(question);

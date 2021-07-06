@@ -42,7 +42,7 @@ export class CustomResourceAuthStack extends cdk.Stack {
     new cdk.CfnCondition(this, 'ShouldNotCreateEnvResources', {
       expression: cdk.Fn.conditionEquals(env, 'NONE'),
     });
-    const index = 0;
+
     props.authTriggerConnections.forEach(config => {
       const fnName = new cdk.CfnParameter(this, `function${config.lambdaFunctionName}Name`, {
         type: 'String',
