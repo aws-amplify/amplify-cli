@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.6.1...@aws-amplify/graphql-transformer-interfaces@1.7.0-beta.0) (2021-07-06)
+
+
+### Features
+
+* port [@predictions](https://github.com/predictions) to GraphQL Transformer v2 ([#7387](https://github.com/aws-amplify/amplify-cli/issues/7387)) ([3f2e647](https://github.com/aws-amplify/amplify-cli/commit/3f2e647b9dfe14aa5919b46f53342937dd0c7fa9))
+
+
+
+
+
 ## [1.6.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-transformer-interfaces@1.6.0...@aws-amplify/graphql-transformer-interfaces@1.6.1) (2021-06-24)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.4-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.4.3...@aws-amplify/graphql-model-transformer@0.4.4-beta.0) (2021-07-06)
+
+
+### Bug Fixes
+
+* get mock working with gql transformer v2 ([#7574](https://github.com/aws-amplify/amplify-cli/issues/7574)) ([4fa2900](https://github.com/aws-amplify/amplify-cli/commit/4fa2900d6b9ca515677d06bdffe29f56401b9c86))
+
+
+
+
+
 ## [0.4.3](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/graphql-model-transformer@0.4.2...@aws-amplify/graphql-model-transformer@0.4.3) (2021-06-30)
 
 

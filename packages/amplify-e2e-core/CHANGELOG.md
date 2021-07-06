@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.23.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.22.0...amplify-e2e-core@1.23.0-beta.0) (2021-07-06)
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
 # [1.22.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.21.0...amplify-e2e-core@1.22.0) (2021-06-30)
 
 
