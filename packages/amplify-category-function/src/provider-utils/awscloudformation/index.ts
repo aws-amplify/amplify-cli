@@ -19,7 +19,6 @@ import { IsMockableResponse } from '../..';
 import { categoryName } from '../../constants';
 import { supportedServices } from '../supported-services';
 import { ServiceConfig } from '../supportedServicesType';
-import { updateCFNFileForTriggerResourcePermissions } from './service-walkthroughs/lambda-walkthrough';
 import { functionParametersFileName, provider, ServiceName, versionHash } from './utils/constants';
 import { convertExternalLayersToProjectLayers, convertProjectLayersToExternalLayers } from './utils/convertLayersTypes';
 import { convertToComplete, isComplete, merge } from './utils/funcParamsUtils';
@@ -206,12 +205,6 @@ export async function updateFunctionResource(
       previousParameters = JSONUtilities.readJson(parametersFilePath);
 
       if ('trigger' in previousParameters) {
-        // update existing trigger permissions as update flow in triggers doesnt change CFN Resources
-        if (!previousParameters.categoryPolicies) {
-          const projectBackendDirPath = pathManager.getBackendDirPath();
-          const resourceDirPath = path.join(projectBackendDirPath, category, parameters.functionName);
-          updateCFNFileForTriggerResourcePermissions(resourceDirPath, parameters);
-        }
         parameters = _.assign({}, previousParameters, parameters);
         if (parameters.triggerEnvs && parameters.triggerEnvs instanceof String) {
           parameters.triggerEnvs = JSONUtilities.parse(parameters.triggerEnvs) || [];

@@ -86,7 +86,7 @@ describe('amplify add auth...', () => {
     const result1 = await invokeFunction(
       functionName,
       JSON.stringify({
-        userPoolId: 'id',
+        userPoolId: id,
         userName: 'testUser',
       }),
       region,

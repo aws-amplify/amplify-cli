@@ -1042,7 +1042,11 @@ export const formNestedStack = async (
 
     dependsOn.forEach((resource: { category: any; resourceName: any; attributes: any; }) => {
       const dependsOnStackName = `${resource.category}${resource.resourceName}`;
-
+      if (isAuthTrigger(resource)) {
+        const lambdaRoleKey = `function${resource.resourceName}LambdaExecutionRole`;
+        const lambdaRoleValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.LambdaExecutionRoleArn`] };
+        stack.Properties.Parameters[lambdaRoleKey] = lambdaRoleValue;
+      }
       stack.DependsOn.push(dependsOnStackName);
 
       const dependsOnAttributes = resource?.attributes;
