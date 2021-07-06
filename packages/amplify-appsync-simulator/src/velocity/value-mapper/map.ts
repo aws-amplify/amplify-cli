@@ -1,6 +1,5 @@
 import { JavaArray } from './array';
 import { toJSON } from './to-json';
-import { map } from './mapper';
 
 export class JavaMap {
   private map: Map<string, any>;
@@ -57,7 +56,7 @@ export class JavaMap {
   }
 
   keySet() {
-    return map(Array.from(this.map.keys()));
+    return new JavaArray(Array.from(this.map.keys()).map(this.mapper as any), this.mapper);
   }
 
   put(key, value) {
