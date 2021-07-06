@@ -154,7 +154,6 @@ export interface FunctionTriggerParameters {
   key: string; // name of the trigger template
   modules: any[];
   parentResource: string;
-  categoryPolicies?: object[]; // IAM policies that should be applied to this lambda
   functionName: string;
   resourceName: string;
   parentStack: string;

@@ -47,8 +47,13 @@ export class CustomResourceAuthStack extends cdk.Stack {
         type: 'String',
       });
       createPermissionToInvokeLambda(this, fnName, userpoolArn, config);
-      const permission = props.permissions.filter(permission => config.triggerType === permission.triggerType);
-      createPermissionsForAuthTrigger(this, fnName, userpoolArn, permission, env);
+      const permission = props.permissions.find(permission => config.triggerType === permission.trigger);
+      if (permission !== undefined) {
+        const roleArn = new cdk.CfnParameter(this, `function${config.lambdaFunctionName}LambdaExecutionRole`, {
+          type: 'String',
+        });
+        createPermissionsForAuthTrigger(this, fnName, roleArn, permission, userpoolArn);
+      }
       config.lambdaFunctionArn = fnArn.valueAsString;
     });
 
@@ -67,8 +72,13 @@ export async function generateNestedAuthTriggerTemplate(category: string, resour
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
   const { authTriggerConnections, permissions } = request;
   if (authTriggerConnections) {
-    const cfnObject = await createCustomResourceforAuthTrigger(context, JSON.parse(authTriggerConnections), JSON.parse(permissions));
+    const cfnObject = await createCustomResourceforAuthTrigger(
+      context,
+      JSON.parse(authTriggerConnections),
+      permissions!.map(i => JSONUtilities.parse(i)),
+    );
     // create policy for auth trigger as auth doesnt depend on function to break circular dependency
+
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
   } else {
     // delete the custom stack template if the triggers arent defined
@@ -80,7 +90,11 @@ export async function generateNestedAuthTriggerTemplate(category: string, resour
   }
 }
 
-async function createCustomResourceforAuthTrigger(context: any, authTriggerConnections: AuthTriggerConnection[], permissions: string) {
+async function createCustomResourceforAuthTrigger(
+  context: any,
+  authTriggerConnections: AuthTriggerConnection[],
+  permissions: AuthTriggerPermissions[],
+) {
   const stack = new CustomResourceAuthStack(undefined as any, 'Amplify', {
     description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
     authTriggerConnections: authTriggerConnections,
@@ -132,9 +146,23 @@ function createPermissionToInvokeLambda(
   });
 }
 
-// function createPermissionsForAuthTrigger(stack: cdk.Stack,fnName:cdk.CfnParameter,userpoolArn: cdk.CfnParameter,permissions:AuthTriggerPermissions, env: cdk.CfnParameter){
-//   new iam.Policy(stack, 'AmplifyResourcePolicy', {
-//     policyName: permissions.policyName,
-//     roles: iam.Role(cdk.Fn.join('',[fnName.toString(),'-',cdk.Fn.ref(env.toString())])
-//   })
-// }
+function createPermissionsForAuthTrigger(
+  stack: cdk.Stack,
+  fnName: cdk.CfnParameter,
+  roleArn: cdk.CfnParameter,
+  permissions: AuthTriggerPermissions,
+  userpoolArn: cdk.CfnParameter,
+) {
+  const myRole = iam.Role.fromRoleArn(stack, 'LambdaExecutionRole', roleArn.valueAsString);
+  new iam.Policy(stack, `${fnName}${permissions.trigger}${permissions.policyName}`, {
+    policyName: permissions.policyName,
+    statements: [
+      new iam.PolicyStatement({
+        effect: permissions.effect === iam.Effect.ALLOW ? iam.Effect.ALLOW : iam.Effect.DENY,
+        actions: permissions.actions,
+        resources: [userpoolArn.valueAsString],
+      }),
+    ],
+    roles: [myRole],
+  });
+}

@@ -455,40 +455,6 @@ export function updateCFNFileForResourcePermissions(
   JSONUtilities.writeJson(cfnFilePath, cfnContent);
   tryUpdateTopLevelComment(resourceDirPath, _.keys(functionParameters.environmentMap));
 }
-
-export function updateCFNFileForTriggerResourcePermissions(resourceDirPath: string, functionParameters: FunctionTriggerParameters) {
-  const cfnFileName = `${functionParameters.functionName}-cloudformation-template.json`;
-  const cfnFilePath = path.join(resourceDirPath, cfnFileName);
-  const cfnContent = JSONUtilities.readJson<$TSAny>(cfnFilePath);
-
-  if (!cfnContent.Resources.AmplifyResourcesPolicy) {
-    cfnContent.Resources.AmplifyResourcesPolicy = {
-      DependsOn: ['LambdaExecutionRole'],
-      Type: 'AWS::IAM::Policy',
-      Properties: {
-        PolicyName: functionParameters.categoryPolicies.policyName,
-        Roles: [
-          {
-            Ref: 'LambdaExecutionRole',
-          },
-        ],
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [],
-        },
-      },
-    };
-  }
-
-  if (functionParameters.categoryPolicies.length === 0) {
-    delete cfnContent.Resources.AmplifyResourcesPolicy;
-  } else {
-    cfnContent.Resources.AmplifyResourcesPolicy.Properties.PolicyDocument.Statement = {};
-  }
-
-  JSONUtilities.writeJson(cfnFilePath, cfnContent);
-}
-
 const addLayerCFNParameters = (context: $TSContext, functionParameters: Partial<FunctionParameters>, resourceDirPath: string) => {
   const cfnFileName = `${functionParameters.resourceName}-cloudformation-template.json`;
   const cfnFilePath = path.join(resourceDirPath, cfnFileName);

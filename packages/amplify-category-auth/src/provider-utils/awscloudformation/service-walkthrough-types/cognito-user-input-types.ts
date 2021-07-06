@@ -56,10 +56,7 @@ export interface ServiceQuestionsBaseResult {
   usernameCaseSensitive?: boolean;
   useEnabledMfas?: boolean;
   authTriggerConnections?: string;
-  verificationBucketName?: string;
-  resourceNameTruncated?: string;
-  sharedId?: string;
-  permissions?: string;
+  permissions?: [string];
 }
 
 export interface OAuthResult {
@@ -162,12 +159,12 @@ export type AuthTriggerConnection = {
 
 export type AuthTriggerPermissions = {
   policyName: string;
-  triggerType: string;
+  trigger: string;
   effect: string;
-  actions: [string];
+  actions: string[];
   resource: {
     paramType: string;
-    keys: [string];
+    keys: string[];
   };
 };
 
