@@ -6,11 +6,26 @@ exports.handler = async function (event, context) {
     const userPoolId = event.ResourceProperties.userpoolId;
     const lambdaConfig = event.ResourceProperties.lambdaConfig;
     const config = {};
+    const cognitoclient = new aws.CognitoIdentityServiceProvider();
+    const userPoolConfig = await cognitoclient.describeUserPool({ UserPoolId: userPoolId }).promise();
+    // convert describe userPool return object to updateUserpool input
+    const userPoolParams = userPoolConfig.UserPool;
+    delete userPoolParams.Id;
+    delete userPoolParams.Name;
+    delete userPoolParams.LastModifiedDate;
+    delete userPoolParams.CreationDate;
+    delete userPoolParams.SchemaAttributes;
+    delete userPoolParams.EstimatedNumberOfUsers;
+    delete userPoolParams.UsernameConfiguration;
+    delete userPoolParams.Arn;
+    delete userPoolParams.AdminCreateUserConfig.UnusedAccountValidityDays;
+    console.log(userPoolParams);
     lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
     if (event.RequestType == 'Delete') {
-      const authParams = { UserPoolId: userPoolId, LambdaConfig: {} };
-      const cognitoclient = new aws.CognitoIdentityServiceProvider();
       try {
+        const authParams = userPoolParams;
+        authParams['UserPoolId'] = userPoolId;
+        authParams['LambdaConfig'] = {};
         const result = await cognitoclient.updateUserPool(authParams).promise();
         console.log('delete response data ' + JSON.stringify(result));
         await response.send(event, context, response.SUCCESS, {});
@@ -20,9 +35,10 @@ exports.handler = async function (event, context) {
       }
     }
     if (event.RequestType == 'Update' || event.RequestType == 'Create') {
-      const authParams = { UserPoolId: userPoolId, LambdaConfig: config };
+      const authParams = userPoolParams;
+      authParams['UserPoolId'] = userPoolId;
+      authParams['LambdaConfig'] = config;
       console.log(authParams);
-      const cognitoclient = new aws.CognitoIdentityServiceProvider();
       try {
         const result = await cognitoclient.updateUserPool(authParams).promise();
         console.log('createOrUpdate response data ' + JSON.stringify(result));
