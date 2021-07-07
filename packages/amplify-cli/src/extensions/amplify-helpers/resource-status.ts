@@ -8,14 +8,16 @@ import { getEnvInfo } from './get-env-info';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
 import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-policy';
-import { pathManager, stateManager, $TSMeta, $TSAny, NotInitializedError } from 'amplify-cli-core';
+import { pathManager, stateManager, $TSMeta, $TSAny, NotInitializedError, ViewResourceTableParams } from 'amplify-cli-core';
+import * as resourceStatus from './resource-status-diff';
+import { ResourceDiff, IResourceDiffCollection, ICategoryStatusCollection } from './resource-status-diff';
+
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, hashFunction) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
   if (!lastPushTimeStamp) {
     return false;
   }
-
   const localBackendDir = path.normalize(path.join(pathManager.getBackendDirPath(), category, resourceName));
   const cloudBackendDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), category, resourceName));
 
@@ -256,11 +258,9 @@ async function getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, category
   if (category !== undefined && resourceName !== undefined) {
     resources = resources.filter(resource => resource.category === category && resource.resourceName === resourceName);
   }
-
   if (category !== undefined && !resourceName) {
     resources = resources.filter(resource => resource.category === category);
   }
-
   return resources;
 }
 
@@ -356,6 +356,7 @@ async function asyncForEach(array, callback) {
 }
 
 export async function getResourceStatus(category?, resourceName?, providerName?, filteredResources?) {
+
   const amplifyProjectInitStatus = getCloudInitStatus();
   let amplifyMeta: $TSAny;
   let currentAmplifyMeta: $TSMeta = {};
@@ -373,7 +374,6 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
   let resourcesToBeUpdated: any = await getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeSynced: any = getResourcesToBeSynced(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeDeleted: any = getResourcesToBeDeleted(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
-
   let allResources: any = getAllResources(amplifyMeta, category, resourceName, filteredResources);
 
   resourcesToBeCreated = resourcesToBeCreated.filter(resource => resource.category !== 'provider');
@@ -398,17 +398,241 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
   };
 }
 
+
+async function getResourceDiffs ( resourcesToBeUpdated,
+                                  resourcesToBeDeleted,
+                                  resourcesToBeCreated) {
+    const result : IResourceDiffCollection = {
+      updatedDiff : await resourceStatus.CollateResourceDiffs( resourcesToBeUpdated , resourceStatus.stackMutationType.UPDATE),
+      deletedDiff : await resourceStatus.CollateResourceDiffs( resourcesToBeDeleted , resourceStatus.stackMutationType.DELETE),
+      createdDiff : await resourceStatus.CollateResourceDiffs( resourcesToBeCreated , resourceStatus.stackMutationType.CREATE)
+    }
+    return result;
+}
+
+function getSummaryTableData({  resourcesToBeUpdated,
+                                resourcesToBeDeleted,
+                                resourcesToBeCreated,
+                                resourcesToBeSynced,
+                                allResources } ){
+
+      let noChangeResources = _.differenceWith(
+      allResources,
+      resourcesToBeCreated.concat(resourcesToBeUpdated).concat(resourcesToBeSynced),
+      _.isEqual,
+      );
+      noChangeResources = noChangeResources.filter(resource => resource.category !== 'providers');
+
+      const createOperationLabel = 'Create';
+      const updateOperationLabel = 'Update';
+      const deleteOperationLabel = 'Delete';
+      const importOperationLabel = 'Import';
+      const unlinkOperationLabel = 'Unlink';
+      const noOperationLabel = 'No Change';
+      const tableOptions = [['Category', 'Resource name', 'Operation', 'Provider plugin']];
+
+      for (let i = 0; i < resourcesToBeCreated.length; ++i) {
+          tableOptions.push([
+              capitalize(resourcesToBeCreated[i].category),
+              resourcesToBeCreated[i].resourceName,
+              createOperationLabel,
+              resourcesToBeCreated[i].providerPlugin,
+          ]);
+      }
+
+      for (let i = 0; i < resourcesToBeUpdated.length; ++i) {
+          tableOptions.push([
+              capitalize(resourcesToBeUpdated[i].category),
+              resourcesToBeUpdated[i].resourceName,
+              updateOperationLabel,
+              resourcesToBeUpdated[i].providerPlugin,
+          ]);
+      }
+
+      for (let i = 0; i < resourcesToBeSynced.length; ++i) {
+          let operation;
+
+          switch (resourcesToBeSynced[i].sync) {
+              case 'import':
+              operation = importOperationLabel;
+              break;
+              case 'unlink':
+              operation = unlinkOperationLabel;
+              break;
+              default:
+              // including refresh
+              operation = noOperationLabel;
+              break;
+          }
+
+          tableOptions.push([
+              capitalize(resourcesToBeSynced[i].category),
+              resourcesToBeSynced[i].resourceName,
+              operation /*syncOperationLabel*/,
+              resourcesToBeSynced[i].providerPlugin,
+              ]);
+      }
+
+      for (let i = 0; i < resourcesToBeDeleted.length; ++i) {
+          tableOptions.push([
+              capitalize(resourcesToBeDeleted[i].category),
+              resourcesToBeDeleted[i].resourceName,
+              deleteOperationLabel,
+              resourcesToBeDeleted[i].providerPlugin,
+              ]);
+      }
+
+      for (let i = 0; i < noChangeResources.length; ++i) {
+          tableOptions.push([
+              capitalize(noChangeResources[i].category),
+              noChangeResources[i].resourceName,
+              noOperationLabel,
+              noChangeResources[i].providerPlugin,
+          ]);
+      }
+      return tableOptions;
+}
+
+
+async function viewResourceDiffs( { resourcesToBeUpdated,
+                                    resourcesToBeDeleted,
+                                    resourcesToBeCreated
+                                  } ){
+    const resourceDiffs  = await getResourceDiffs ( resourcesToBeUpdated,
+                                                    resourcesToBeDeleted,
+                                                    resourcesToBeCreated );
+    for await ( let resourceDiff  of resourceDiffs.updatedDiff){
+      //Print with UPDATE styling theme
+      resourceDiff.printResourceDetailStatus(resourceStatus.stackMutationType.UPDATE);
+    }
+    print.info("\n");
+    for await (let resourceDiff  of resourceDiffs.deletedDiff){
+      //Print with DELETE styling theme
+      resourceDiff.printResourceDetailStatus(resourceStatus.stackMutationType.DELETE);
+    }
+    print.info("\n");
+    for await (let resourceDiff  of resourceDiffs.createdDiff){
+      //Print with CREATE styling theme
+      resourceDiff.printResourceDetailStatus(resourceStatus.stackMutationType.CREATE);
+    }
+    print.info("\n");
+}
+
+function viewEnvInfo(){
+  const { envName } = getEnvInfo();
+  print.info(`
+  ${chalk.green('Current Environment')}: ${envName}
+  `);
+}
+
+function viewSummaryTable( resourceStateData ){
+  const tableOptions = getSummaryTableData( resourceStateData )
+  const { table } = print;
+  table(tableOptions, { format: 'lean' });
+}
+
+//Helper function to merge multi-category status
+function mergeMultiCategoryStatus( accumulator : ICategoryStatusCollection, currentObject : ICategoryStatusCollection ){
+     if ( !accumulator ){
+       return currentObject;
+     } else if (!currentObject ){
+       return accumulator;
+     } else {
+        let mergedResult :ICategoryStatusCollection = {
+            resourcesToBeCreated: accumulator.resourcesToBeCreated.concat(currentObject.resourcesToBeCreated),
+            resourcesToBeUpdated: accumulator.resourcesToBeUpdated.concat(currentObject.resourcesToBeUpdated),
+            resourcesToBeDeleted: accumulator.resourcesToBeDeleted.concat(currentObject.resourcesToBeDeleted),
+            resourcesToBeSynced: accumulator.resourcesToBeSynced.concat(currentObject.resourcesToBeSynced),
+            allResources:accumulator.allResources.concat(currentObject.allResources),
+            tagsUpdated: accumulator.tagsUpdated || currentObject.tagsUpdated
+        }
+        return mergedResult;
+     }
+}
+
+
+
+//Filter resource status for the given categories
+export async function getMultiCategoryStatus( inputs: ViewResourceTableParams | undefined ){
+    if ( ! (inputs?.categoryList?.length) ){
+        // all diffs ( amplify -v )
+        return await getResourceStatus();
+    } else {
+        let results : any[] = [];
+        //diffs for only the required categories (amplify -v <category1>...<categoryN>)
+        for await ( let category of inputs.categoryList ){
+          if( category ){
+            const categoryResult =  await getResourceStatus( category,
+                                                            undefined,
+                                                            undefined,
+                                                            undefined );
+            results.push(categoryResult);
+          }
+        }
+
+        let mergedResult : ICategoryStatusCollection= {
+          resourcesToBeCreated: [],
+          resourcesToBeUpdated: [],
+          resourcesToBeDeleted: [],
+          resourcesToBeSynced: [],
+          allResources:[],
+          tagsUpdated: false
+        };
+        results.map( resourceResult => {
+                          mergedResult = mergeMultiCategoryStatus(mergedResult, resourceResult);
+                     });
+
+        return mergedResult;
+    }
+}
+
+export async function showStatusTable( tableViewFilter : ViewResourceTableParams ){
+      const amplifyProjectInitStatus = getCloudInitStatus();
+      const {
+        resourcesToBeCreated,
+        resourcesToBeUpdated,
+        resourcesToBeDeleted,
+        resourcesToBeSynced,
+        allResources,
+        tagsUpdated,
+      } = await getMultiCategoryStatus(tableViewFilter);
+
+      //1. Display Environment Info
+      if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
+        viewEnvInfo();
+      }
+      //2. Display Summary Table
+      viewSummaryTable({  resourcesToBeUpdated,
+                          resourcesToBeCreated,
+                          resourcesToBeDeleted,
+                          resourcesToBeSynced,
+                          allResources
+                      });
+      //3. Display Tags Status
+      if (tagsUpdated) {
+        print.info('\nTag Changes Detected');
+      }
+
+      //4. Display Detailed Diffs (Cfn/NonCfn)
+      if ( tableViewFilter.verbose ) {
+          await viewResourceDiffs( {  resourcesToBeUpdated,
+                                      resourcesToBeDeleted,
+                                      resourcesToBeCreated } );
+      }
+
+      const resourceChanged = resourcesToBeCreated.length +
+                              resourcesToBeUpdated.length +
+                              resourcesToBeSynced.length +
+                              resourcesToBeDeleted.length > 0 || tagsUpdated;
+
+      return resourceChanged;
+}
+
+
+
 export async function showResourceTable(category, resourceName, filteredResources) {
-  const amplifyProjectInitStatus = getCloudInitStatus();
 
-  if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
-    const { envName } = getEnvInfo();
-
-    print.info('');
-    print.info(`${chalk.green('Current Environment')}: ${envName}`);
-    print.info('');
-  }
-
+  //Prepare state for view
   const {
     resourcesToBeCreated,
     resourcesToBeUpdated,
@@ -417,89 +641,28 @@ export async function showResourceTable(category, resourceName, filteredResource
     allResources,
     tagsUpdated,
   } = await getResourceStatus(category, resourceName, undefined, filteredResources);
+  const amplifyProjectInitStatus = getCloudInitStatus();
 
-  let noChangeResources = _.differenceWith(
-    allResources,
-    resourcesToBeCreated.concat(resourcesToBeUpdated).concat(resourcesToBeSynced),
-    _.isEqual,
-  );
-  noChangeResources = noChangeResources.filter(resource => resource.category !== 'providers');
-
-  const createOperationLabel = 'Create';
-  const updateOperationLabel = 'Update';
-  const deleteOperationLabel = 'Delete';
-  const importOperationLabel = 'Import';
-  const unlinkOperationLabel = 'Unlink';
-  const noOperationLabel = 'No Change';
-  const tableOptions = [['Category', 'Resource name', 'Operation', 'Provider plugin']];
-
-  for (let i = 0; i < resourcesToBeCreated.length; ++i) {
-    tableOptions.push([
-      capitalize(resourcesToBeCreated[i].category),
-      resourcesToBeCreated[i].resourceName,
-      createOperationLabel,
-      resourcesToBeCreated[i].providerPlugin,
-    ]);
+  //1. Display Environment Info
+  if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
+    viewEnvInfo();
   }
-
-  for (let i = 0; i < resourcesToBeUpdated.length; ++i) {
-    tableOptions.push([
-      capitalize(resourcesToBeUpdated[i].category),
-      resourcesToBeUpdated[i].resourceName,
-      updateOperationLabel,
-      resourcesToBeUpdated[i].providerPlugin,
-    ]);
-  }
-
-  for (let i = 0; i < resourcesToBeSynced.length; ++i) {
-    let operation;
-
-    switch (resourcesToBeSynced[i].sync) {
-      case 'import':
-        operation = importOperationLabel;
-        break;
-      case 'unlink':
-        operation = unlinkOperationLabel;
-        break;
-      default:
-        // including refresh
-        operation = noOperationLabel;
-        break;
-    }
-
-    tableOptions.push([
-      capitalize(resourcesToBeSynced[i].category),
-      resourcesToBeSynced[i].resourceName,
-      operation /*syncOperationLabel*/,
-      resourcesToBeSynced[i].providerPlugin,
-    ]);
-  }
-
-  for (let i = 0; i < resourcesToBeDeleted.length; ++i) {
-    tableOptions.push([
-      capitalize(resourcesToBeDeleted[i].category),
-      resourcesToBeDeleted[i].resourceName,
-      deleteOperationLabel,
-      resourcesToBeDeleted[i].providerPlugin,
-    ]);
-  }
-
-  for (let i = 0; i < noChangeResources.length; ++i) {
-    tableOptions.push([
-      capitalize(noChangeResources[i].category),
-      noChangeResources[i].resourceName,
-      noOperationLabel,
-      noChangeResources[i].providerPlugin,
-    ]);
-  }
-
-  const { table } = print;
-
-  table(tableOptions, { format: 'markdown' });
-
+  //2. Display Summary Table
+  viewSummaryTable({  resourcesToBeUpdated,
+                      resourcesToBeCreated,
+                      resourcesToBeDeleted,
+                      resourcesToBeSynced,
+                      allResources
+                  });
+  //3. Display Tags Status
   if (tagsUpdated) {
     print.info('\nTag Changes Detected');
   }
+
+  //4. Display Detailed Diffs (Cfn/NonCfn)
+  await viewResourceDiffs( { resourcesToBeUpdated,
+                             resourcesToBeDeleted,
+                             resourcesToBeCreated } );
 
   const resourceChanged =
     resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 || tagsUpdated;
