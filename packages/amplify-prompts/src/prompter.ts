@@ -65,6 +65,61 @@ class AmplifyPrompter implements Prompter {
     });
     return await options.transform(result);
   };
+
+  pickOne = async <T = string>(message: string, choices: Choice<T>[], options?: BaseOptions<T>) =>
+    (await this.pickCommon('autocomplete', message, choices, options)) as T;
+
+  pickMany = async <T = string>(message: string, choices: Choice<T>[], options?: BaseOptions<T>) =>
+    (await this.pickCommon('multiselect', message, choices, options)) as T[];
+
+  /**
+   * Common list pick functionality. If type is 'autocomplete', a value of type T is returned. If type is multiselect a T[] is returned.
+   */
+  private pickCommon = async <T = string>(
+    type: 'autocomplete' | 'multiselect',
+    message: string,
+    choices: Choice<T>[],
+    options?: BaseOptions<T>,
+  ): Promise<T | T[]> => {
+    // some choices must be provided
+    if (choices?.length === 0) {
+      throw new Error(`No choices provided for prompt [${message}]`);
+    }
+
+    // map string[] choices into GenericChoice<T>[]
+    const genericChoices: GenericChoice<T>[] =
+      typeof choices[0] === 'string'
+        ? (((choices as string[]).map(choice => ({ name: choice, value: choice })) as unknown) as GenericChoice<T>[]) // this assertion is safe because the choice array can only be a string[] if the generic type is a string
+        : (choices as GenericChoice<T>[]);
+
+    // enquirer requires all choice values be strings, so set up a mapping of string => T
+    // and format choices to conform to enquirer's interface
+    const choiceValueMap = new Map<string, T>();
+    let initialIdx: number = 0;
+    const enquirerChoices = genericChoices.map((choice, idx) => {
+      choiceValueMap.set(choice.name, choice.value);
+      if (choice.value === options?.initial) {
+        initialIdx = idx;
+      }
+      return { name: choice.name, disabled: choice.disabled, hint: choice.hint };
+    });
+
+    const { result } = await this.prompter<{ result: T extends 'autocomplete' ? string : string[] }>({
+      type,
+      name: 'result',
+      message,
+      initial: initialIdx,
+      choices: enquirerChoices,
+      validate: options?.validate,
+    });
+
+    if (Array.isArray(result)) {
+      return result.map(item => choiceValueMap.get(item) as T);
+    } else {
+      // result is a string
+      return choiceValueMap.get(result) as T;
+    }
+  };
 }
 
 export const prompter: Prompter = new AmplifyPrompter();
@@ -74,6 +129,8 @@ type Prompter = {
   yesOrNo: (message: string) => Promise<boolean>;
   stringInput: (message: string, options?: StringInputOptions) => Promise<string>;
   genericInput: <T>(message: string, options: GenericInputOptions<T>) => Promise<T>;
+  pickOne: <T = string>(message: string, choices: Choice<T>[], options?: BaseOptions<T>) => Promise<T>;
+  pickMany: <T = string>(message: string, choices: Choice<T>[], options?: BaseOptions<T>) => Promise<T[]>;
 };
 
 type StringInputOptions = BaseOptions & Partial<TransformOption> & InputOptions;
@@ -91,4 +148,13 @@ type BaseOptions<T = string> = {
 
 type TransformOption<T = string> = {
   transform: (value: string) => T | Promise<T>;
+};
+
+type Choice<T = string> = T extends string ? GenericChoice<T> | string : GenericChoice<T>;
+
+type GenericChoice<T> = {
+  name: string;
+  value: T;
+  hint?: string;
+  disabled?: boolean;
 };
