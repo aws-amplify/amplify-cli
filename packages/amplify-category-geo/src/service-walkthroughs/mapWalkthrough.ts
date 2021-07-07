@@ -90,9 +90,9 @@ export const mapStyleWalkthrough = async (parameters: Partial<MapParameters>): P
         { name: 'LightGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriLightGrayCanvas },
         { name: 'DarkGrayCanvas (data provided by Esri)', value: MapStyle.VectorEsriDarkGrayCanvas }
     ];
-    const mapStyleDefault = parameters.dataProvider && parameters.mapStyleType ? 
+    const mapStyleDefault = parameters.dataProvider && parameters.mapStyleType ?
         getGeoMapStyle(parameters.dataProvider, parameters.mapStyleType) : 'VectorEsriStreets';
-    
+
     const mapStyleTypePrompt = {
         type: 'list',
         name: 'mapStyle',
@@ -129,7 +129,7 @@ export const updateMapWalkthrough = async (
             context.print.error(`No Map named ${resourceToUpdate} exists in the project.`);
             return parameters;
         }
-    } 
+    }
     else {
         const resourceQuestion = [
             {
@@ -172,8 +172,8 @@ export const updateMapWalkthrough = async (
  * @returns name of the new default map choosen
  */
 export const updateDefaultMapWalkthrough = async (
-    context: $TSContext, 
-    currentDefault: string, 
+    context: $TSContext,
+    currentDefault: string,
     availableMaps?: string[]
 ): Promise<string> => {
     if (!availableMaps) {

@@ -50,7 +50,7 @@ export const updateMapResource = async (
   printNextStepsSuccessMessage(context);
   return mapParams.name;
 };
-  
+
 export const removeMapResource = async (
   context: any
 ): Promise<string | undefined> => {

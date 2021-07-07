@@ -29,7 +29,7 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
 };
 
 export const modifyPlaceIndexResource = async (
-  context: $TSContext, 
+  context: $TSContext,
   parameters: Pick<PlaceIndexParameters, 'accessType' | 'name' | 'isDefault'>
   ) => {
   // generate CFN files
@@ -89,7 +89,7 @@ export const constructPlaceIndexMetaParameters = (params: PlaceIndexParameters):
 /**
  * The Meta information stored for a Place Index Resource
  */
-export type PlaceIndexMetaParameters = Pick<PlaceIndexParameters, 
+export type PlaceIndexMetaParameters = Pick<PlaceIndexParameters,
     'isDefault' | 'pricingPlan' | 'accessType' |
     'dataSourceIntendedUse' | 'dataProvider'> & {
   providerPlugin: string;
