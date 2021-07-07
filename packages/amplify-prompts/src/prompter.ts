@@ -66,20 +66,20 @@ class AmplifyPrompter implements Prompter {
     return await options.transform(result);
   };
 
-  pickOne = async <T = string>(message: string, choices: Choice<T>[], options?: BaseOptions<T>) =>
-    (await this.pickCommon('autocomplete', message, choices, options)) as T;
+  pickOne = async <T>(message: string, choices: Choice<T>[], options?: ListOptions<T>) =>
+    (await this.pickCommon('one', message, choices, options)) as T;
 
-  pickMany = async <T = string>(message: string, choices: Choice<T>[], options?: BaseOptions<T>) =>
-    (await this.pickCommon('multiselect', message, choices, options)) as T[];
+  pickMany = async <T>(message: string, choices: Choice<T>[], options?: ListOptions<T>) =>
+    (await this.pickCommon('many', message, choices, options)) as T[];
 
   /**
    * Common list pick functionality. If type is 'autocomplete', a value of type T is returned. If type is multiselect a T[] is returned.
    */
   private pickCommon = async <T = string>(
-    type: 'autocomplete' | 'multiselect',
+    type: 'one' | 'many',
     message: string,
     choices: Choice<T>[],
-    options?: BaseOptions<T>,
+    options?: ListOptions<T>,
   ): Promise<T | T[]> => {
     // some choices must be provided
     if (choices?.length === 0) {
@@ -96,19 +96,25 @@ class AmplifyPrompter implements Prompter {
     // and format choices to conform to enquirer's interface
     const choiceValueMap = new Map<string, T>();
     let initialIdx: number = 0;
+    const initialPredicate: ItemPredicate<T> =
+      typeof options?.initial === 'function' ? (options.initial as ItemPredicate<T>) : (item: T) => item === (options?.initial as T);
     const enquirerChoices = genericChoices.map((choice, idx) => {
       choiceValueMap.set(choice.name, choice.value);
-      if (choice.value === options?.initial) {
+      if (initialPredicate(choice.value)) {
         initialIdx = idx;
       }
       return { name: choice.name, disabled: choice.disabled, hint: choice.hint };
     });
 
-    const { result } = await this.prompter<{ result: T extends 'autocomplete' ? string : string[] }>({
-      type,
+    const { result } = await this.prompter<{ result: T extends 'one' ? string : string[] }>({
+      type: 'autocomplete',
       name: 'result',
       message,
       initial: initialIdx,
+      // there is a typo in the .d.ts file for this field
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      multiple: type === 'many',
       choices: enquirerChoices,
       validate: options?.validate,
     });
@@ -129,28 +135,31 @@ type Prompter = {
   yesOrNo: (message: string) => Promise<boolean>;
   stringInput: (message: string, options?: StringInputOptions) => Promise<string>;
   genericInput: <T>(message: string, options: GenericInputOptions<T>) => Promise<T>;
-  pickOne: <T = string>(message: string, choices: Choice<T>[], options?: BaseOptions<T>) => Promise<T>;
-  pickMany: <T = string>(message: string, choices: Choice<T>[], options?: BaseOptions<T>) => Promise<T[]>;
+  pickOne: <T = string>(message: string, choices: Choice<T>[], options?: ListOptions<T>) => Promise<T>;
+  pickMany: <T = string>(message: string, choices: Choice<T>[], options?: ListOptions<T>) => Promise<T[]>;
 };
 
-type StringInputOptions = BaseOptions & Partial<TransformOption> & InputOptions;
-
-type GenericInputOptions<T> = BaseOptions<T> & TransformOption<T> & InputOptions;
+// the following types are the building blocks of the method input types
 
 type InputOptions = {
   hidden?: boolean;
 };
 
-type BaseOptions<T = string> = {
+type InitialValueOption<T> = {
   initial?: T;
+};
+
+type ValidateValueOption = {
   validate?: (value: string) => boolean | Promise<boolean> | string | Promise<string>;
 };
 
-type TransformOption<T = string> = {
+type TransformOption<T> = {
   transform: (value: string) => T | Promise<T>;
 };
 
-type Choice<T = string> = T extends string ? GenericChoice<T> | string : GenericChoice<T>;
+type ItemPredicate<T> = (item: T) => Promise<boolean> | boolean;
+
+type Choice<T> = T extends string ? GenericChoice<T> | string : GenericChoice<T>;
 
 type GenericChoice<T> = {
   name: string;
@@ -158,3 +167,13 @@ type GenericChoice<T> = {
   hint?: string;
   disabled?: boolean;
 };
+
+// the following types are the method input types
+
+type BaseOptions<T = string> = ValidateValueOption & InitialValueOption<T>;
+
+type ListOptions<T = string> = ValidateValueOption & InitialValueOption<T | ItemPredicate<T>>;
+
+type StringInputOptions = BaseOptions & Partial<TransformOption<string>> & InputOptions;
+
+type GenericInputOptions<T> = BaseOptions<T> & TransformOption<T> & InputOptions;
