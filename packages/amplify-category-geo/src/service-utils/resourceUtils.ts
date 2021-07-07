@@ -36,8 +36,8 @@ export const generateTemplateFile = (stack: BaseStack, resourceName: string) => 
  * Update the CFN input parameters for given Geo resource
  */
 export const updateParametersFile = (
-  parameters: $TSObject, 
-  resourceName: string, 
+  parameters: $TSObject,
+  resourceName: string,
   parametersFileName: string
 ) => {
   const parametersFilePath = path.join(pathManager.getBackendDirPath(), category, resourceName, parametersFileName);
@@ -50,13 +50,13 @@ export const updateParametersFile = (
  * @param service The type of the resource
  * @returns resource information available in Amplify Meta file
  */
-export const getGeoServiceMeta = async (service: string): Promise<$TSObject> => _.pickBy(stateManager.getMeta()?.[category], (val) => val.service === service) 
+export const getGeoServiceMeta = async (service: string): Promise<$TSObject> => _.pickBy(stateManager.getMeta()?.[category], (val) => val.service === service)
 
 /**
  * Get the Geo resource configurations stored in Amplify Meta file
  */
 export const readResourceMetaParameters = async (
-  service: ServiceName, 
+  service: ServiceName,
   resourceName: string
 ): Promise<$TSObject> => {
   const serviceResources = await getGeoServiceMeta(service);

@@ -49,14 +49,14 @@ export const updatePlaceIndexResource = async (
   printNextStepsSuccessMessage(context);
   return placeIndexParams.name;
 };
-  
+
 export const removePlaceIndexResource = async (
   context: any
 ): Promise<string | undefined> => {
   const { amplify } = context;
   const resourceToRemove = await removeWalkthrough(context, ServiceName.PlaceIndex);
   if (!resourceToRemove) return;
-  
+
   const resourceParameters = await getCurrentPlaceIndexParameters(resourceToRemove);
 
   // choose another default if removing a default place index

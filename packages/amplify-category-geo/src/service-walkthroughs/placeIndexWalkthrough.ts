@@ -127,7 +127,7 @@ export const updatePlaceIndexWalkthrough = async (
             context.print.error(`No search index named ${resourceToUpdate} exists in the project.`);
             return parameters;
         }
-    } 
+    }
     else {
         const resourceQuestion = [
             {
@@ -170,8 +170,8 @@ export const updatePlaceIndexWalkthrough = async (
  * @returns name of the new default place index choosen
  */
 export const updateDefaultPlaceIndexWalkthrough = async (
-    context: $TSContext, 
-    currentDefault: string, 
+    context: $TSContext,
+    currentDefault: string,
     availablePlaceIndices?: string[]
 ): Promise<string> => {
     if (!availablePlaceIndices) {

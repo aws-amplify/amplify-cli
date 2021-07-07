@@ -11,7 +11,7 @@ export class PlaceIndexStack extends BaseStack {
 
   constructor(scope: cdk.Construct, id: string, private readonly props: Pick<PlaceIndexParameters, 'accessType'>) {
     super(scope, id);
-    
+
     this.accessType = this.props.accessType;
 
     this.parameters = this.constructInputParameters([
@@ -35,10 +35,10 @@ export class PlaceIndexStack extends BaseStack {
 
     const indexResource = this.constructIndexResource();
     resourcesMap.set('placeIndex', indexResource);
-    
+
     const indexPolicyResource = this.constructIndexPolicyResource(indexResource);
     resourcesMap.set('indexPolicy', indexPolicyResource);
-    
+
     return resourcesMap;
   }
 

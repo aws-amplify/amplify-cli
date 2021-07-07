@@ -29,7 +29,7 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
 };
 
 export const modifyMapResource = async (
-  context: $TSContext, 
+  context: $TSContext,
   parameters: Pick<MapParameters, 'accessType' | 'name' | 'isDefault'>
   ) => {
   // generate CFN files
