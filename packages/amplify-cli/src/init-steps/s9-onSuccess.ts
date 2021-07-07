@@ -74,6 +74,7 @@ export async function onSuccess(context: $TSContext) {
 
 function generateLocalRuntimeFiles(context: $TSContext) {
   generateLocalEnvInfoFile(context);
+  generateHooksSampleFiles(context);
   generateAmplifyMetaFile(context);
   generateLocalTagsFile(context);
 }
@@ -124,7 +125,6 @@ function generateNonRuntimeFiles(context: $TSContext) {
   generateTeamProviderInfoFile(context);
   generateGitIgnoreFile(context);
   generateReadMeFile(context);
-  generateHooksSampleFiles(context);
 }
 
 function generateProjectConfigFile(context: $TSContext) {
@@ -185,17 +185,6 @@ function generateHooksSampleFiles(context: $TSContext) {
 
   stateManager.setSampleHooksDir(projectPath, sampleHookScriptsDirPath);
   stateManager.setCurrentSampleHooksDir(projectPath, sampleHookScriptsDirPath);
-  //   const path = require('path')
-  // let hookSampleFilesPath = path.normalize(path.join(projectPath, ...['amplify', '#current-cloud-backend', 'hooks', 'sampleFile1']));
-  // let dirPath = path.dirname(hookSampleFilesPath);
-  // fs.ensureDirSync(dirPath);
-  // fs.writeFileSync(hookSampleFilesPath, 'jabdfjabfa');
-  //      hookSampleFilesPath = path.normalize(path.join(projectPath, ...['amplify', "backend",'hooks','sampleFile1']));
-  //       dirPath = path.dirname(hookSampleFilesPath);
-  //      fs.ensureDirSync(dirPath);
-  //     fs.writeFileSync(hookSampleFilesPath, "jabdfjabfa");
-  //     // const hookSampleFilesPath = path.normalize(path.join(projectPath, ...segments));
-  //   // const readMeFilePath = pathManager.getReadMeFilePath(projectPath);
 }
 
 function printWelcomeMessage(context: $TSContext) {
