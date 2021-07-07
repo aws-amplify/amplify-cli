@@ -17,7 +17,7 @@ import uuid from 'uuid';
 import _ from 'lodash';
 import { getAppSyncResourceName, getAppSyncAuthConfig, checkIfAuthExists, authConfigHasApiKey } from './utils/amplify-meta-utils';
 import { printApiKeyWarnings } from './utils/print-api-key-warnings';
-import { checkCaseSensitivityIssue } from './utils/check-case-sensitivity';
+import { isNameUnique } from './utils/check-case-sensitivity';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -50,7 +50,7 @@ class CfnApiArtifactHandler implements ApiArtifactHandler {
     }
     const serviceConfig = request.serviceConfiguration;
 
-    checkCaseSensitivityIssue(this.context, 'api', serviceConfig.apiName);
+    isNameUnique('api', serviceConfig.apiName);
 
     const resourceDir = this.getResourceDir(serviceConfig.apiName);
 

@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, getSocialProviders } from 'amplify-e2e-core';
+import { nspawn as spawn, getCLIPath, getSocialProviders, isCI } from 'amplify-e2e-core';
 
 export function addEnvironment(cwd: string, settings: { envName: string; numLayers?: number }): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -31,14 +31,26 @@ export function updateEnvironment(cwd: string, settings: { permissionsBoundaryAr
   });
 }
 
-export function addEnvironmentYes(cwd: string, settings: { envName: string }): Promise<void> {
+export function addEnvironmentYes(cwd: string, settings: { envName: string; disableAmplifyAppCreation?: boolean }): Promise<void> {
+  settings.disableAmplifyAppCreation = settings.disableAmplifyAppCreation ?? true;
+  const env = settings.disableAmplifyAppCreation
+    ? {
+        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
+      }
+    : undefined;
+
+  const providerConfig = {
+    awscloudformation: {
+      configLevel: 'project',
+      useProfile: true,
+      profileName: isCI() ? 'amplify-integ-test-user' : 'default',
+    },
+  };
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['env', 'add', '--yes', '--envName', settings.envName], {
+    spawn(getCLIPath(), ['env', 'add', '--yes', '--envName', settings.envName, '--providers', JSON.stringify(providerConfig)], {
       cwd,
       stripColors: true,
-      env: {
-        CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
-      },
+      env,
     }).run((err: Error) => (err ? reject(err) : resolve()));
   });
 }
@@ -153,7 +165,18 @@ export function pullEnvironment(cwd: string): Promise<void> {
 }
 
 export function addEnvironmentHostedUI(cwd: string, settings: { envName: string }): Promise<void> {
-  const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, GOOGLE_APP_ID, GOOGLE_APP_SECRET, AMAZON_APP_ID, AMAZON_APP_SECRET } = getSocialProviders();
+  const {
+    FACEBOOK_APP_ID,
+    FACEBOOK_APP_SECRET,
+    GOOGLE_APP_ID,
+    GOOGLE_APP_SECRET,
+    AMAZON_APP_ID,
+    AMAZON_APP_SECRET,
+    APPLE_APP_ID,
+    APPLE_TEAM_ID,
+    APPLE_KEY_ID,
+    APPLE_PRIVATE_KEY,
+  } = getSocialProviders();
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add'], { cwd, stripColors: true })
       .wait('Do you want to use an existing environment?')
@@ -176,6 +199,14 @@ export function addEnvironmentHostedUI(cwd: string, settings: { envName: string 
       .sendLine(AMAZON_APP_ID)
       .wait('Enter your Amazon App Secret for your OAuth flow:')
       .sendLine(AMAZON_APP_SECRET)
+      .wait('Enter your Services ID for your OAuth flow:')
+      .sendLine(APPLE_APP_ID)
+      .wait('Enter your Team ID for your OAuth flow:')
+      .sendLine(APPLE_TEAM_ID)
+      .wait('Enter your Key ID for your OAuth flow:')
+      .sendLine(APPLE_KEY_ID)
+      .wait('Enter your Private Key for your OAuth flow:')
+      .sendLine(APPLE_PRIVATE_KEY)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {

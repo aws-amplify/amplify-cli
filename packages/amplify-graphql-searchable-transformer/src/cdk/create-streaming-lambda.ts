@@ -40,6 +40,7 @@ export const createLambda = (
     ],
     lambdaRole,
     enviroment,
+    undefined,
     stack,
   );
 };

@@ -6,6 +6,7 @@ import uuid from 'uuid';
 import { rootAssetDir } from '../aws-constants';
 import { checkForPathOverlap, validatePathName, formatCFNPathParamsForExpressJs } from '../utils/rest-api-path-utils';
 import { ResourceDoesNotExistError, exitOnNextTick, $TSContext, stateManager, open } from 'amplify-cli-core';
+import { isNameUnique } from '../utils/check-case-sensitivity';
 
 // keep in sync with ServiceName in amplify-category-function, but probably it will not change
 const FunctionServiceNameLambdaFunction = 'Lambda';
@@ -183,21 +184,25 @@ async function pathFlow(context, answers, currentPath?) {
 
 async function askApiNames(context, defaults) {
   const { amplify } = context;
-  // TODO: Check if default name is already taken
+  const apiNameValidator = (input: string) => {
+    const amplifyValidatorOutput = amplify.inputValidation({
+      validation: {
+        operator: 'regex',
+        value: '^[a-zA-Z0-9]+$',
+        onErrorMsg: 'Resource name should be alphanumeric',
+      },
+      required: true,
+    })(input);
+    const uniqueCheck = isNameUnique(category, input, false);
+    return typeof amplifyValidatorOutput === 'string' ? amplifyValidatorOutput : typeof uniqueCheck === 'string' ? uniqueCheck : true;
+  };
   const answer: { apiName?: string; resourceName: string } = await inquirer.prompt([
     {
       name: 'resourceName',
       type: 'input',
       message: 'Provide a friendly name for your resource to be used as a label for this category in the project:',
       default: defaults.resourceName,
-      validate: amplify.inputValidation({
-        validation: {
-          operator: 'regex',
-          value: '^[a-zA-Z0-9]+$',
-          onErrorMsg: 'Resource name should be alphanumeric',
-        },
-        required: true,
-      }),
+      validate: apiNameValidator,
     },
   ]);
 
