@@ -658,11 +658,7 @@ export async function showResourceTable(category, resourceName, filteredResource
   if (tagsUpdated) {
     print.info('\nTag Changes Detected');
   }
-
-  //4. Display Detailed Diffs (Cfn/NonCfn)
-  await viewResourceDiffs( { resourcesToBeUpdated,
-                             resourcesToBeDeleted,
-                             resourcesToBeCreated } );
+  print.info(`\n${chalk.blueBright("Note: ")}Please use 'amplify status ${ chalk.greenBright("-v")}' to view detailed status and cloudformation-diff.\n`);
 
   const resourceChanged =
     resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 || tagsUpdated;
