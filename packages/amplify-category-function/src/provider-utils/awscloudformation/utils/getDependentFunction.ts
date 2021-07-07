@@ -27,7 +27,7 @@ export async function lambdasWithApiDependency(
     const selectedCategories = currentParameters.permissions;
     let deletedModelFound: boolean;
 
-    if (selectedCategories !== undefined && selectedCategories.length !== 0) {
+    if (typeof selectedCategories === 'object' && selectedCategories !== null) {
       for (const selectedResources of Object.values(selectedCategories)) {
         deletedModelFound = Object.keys(selectedResources).some(r => modelsDeleted.includes(r));
         if (deletedModelFound) {
