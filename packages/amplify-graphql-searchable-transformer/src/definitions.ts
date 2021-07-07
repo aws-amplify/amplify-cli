@@ -5,10 +5,13 @@ import {
   FieldDefinitionNode,
   Kind,
   TypeNode,
+  NamedTypeNode,
+  DocumentNode,
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
+  DefinitionNode,
 } from 'graphql';
-import { graphqlName, makeNamedType, isScalar, makeListType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
+import { graphqlName, makeNamedType, isScalar, isEnum, makeListType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
 
 const ID_CONDITIONS = [
   'ne',
@@ -31,6 +34,7 @@ const INT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const FLOAT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const BOOLEAN_CONDITIONS = ['eq', 'ne'];
 import assert from 'assert';
+import { EnumType } from '@aws-cdk/aws-appsync';
 
 export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(type);
@@ -59,7 +63,7 @@ export function makeSearchableScalarInputObject(type: string): InputObjectTypeDe
   };
 }
 
-export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode, document: DocumentNode): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(obj.name.value);
   assert(obj.fields);
   const fields: InputValueDefinitionNode[] = obj.fields
@@ -75,6 +79,22 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode):
           directives: [],
         } as InputValueDefinitionNode),
     );
+
+  fields.push(
+    ...obj.fields
+    .filter((field: FieldDefinitionNode) => isEnum(field.type, document))
+    .map(
+      (field: FieldDefinitionNode) =>
+        ({
+          kind: Kind.INPUT_VALUE_DEFINITION,
+          name: field.name,
+          type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName('String')),
+          // TODO: Service does not support new style descriptions so wait.
+          // description: field.description,
+          directives: [],
+        } as InputValueDefinitionNode),
+    )
+  );
 
   fields.push(
     {
