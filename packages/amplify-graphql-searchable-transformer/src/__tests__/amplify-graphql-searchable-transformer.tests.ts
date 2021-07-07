@@ -191,7 +191,14 @@ test('it generates expected resources', () => {
       },
     }),
   );
-
+  cdkExpect(searchableStack).to(
+    haveResource('AWS::Elasticsearch::Domain', {
+      DomainName: anything(),
+      EBSOptions: anything(),
+      ElasticsearchClusterConfig: anything(),
+      ElasticsearchVersion: '7.10',
+    })
+  );
   cdkExpect(searchableStack).to(
     haveResource('AWS::AppSync::DataSource', {
       ApiId: {

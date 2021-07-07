@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.12.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.11.12...amplify-category-storage@2.12.0) (2021-06-30)
+
+
+### Features
+
+* configure env vars and secrets for lambda functions ([#7529](https://github.com/aws-amplify/amplify-cli/issues/7529)) ([fac354e](https://github.com/aws-amplify/amplify-cli/commit/fac354e5e26846e8b1499d3a4718b15983e0110f))
+* load existing ddb columns during update workflow ([#7293](https://github.com/aws-amplify/amplify-cli/issues/7293)) ([4c9a80a](https://github.com/aws-amplify/amplify-cli/commit/4c9a80a7d77b69a953302e7b4ddac155ef4916c3))
+
+
+
+
+
 ## [2.11.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-storage@2.11.11...amplify-category-storage@2.11.12) (2021-06-24)
 
 **Note:** Version bump only for package amplify-category-storage

@@ -297,6 +297,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
     layers?: ILayerVersion[],
     role?: IRole,
     environment?: { [key: string]: string },
+    timeout?: Duration,
     stack?: Stack,
   ): IFunction {
     const dummycode = `if __name__ == "__main__":`; // assing dummy code so as to be overriden later
@@ -307,6 +308,7 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       role,
       layers,
       environment,
+      timeout,
     });
     fn.addLayers();
     const functionCode = new S3MappingFunctionCode(functionKey, filePath).bind(fn);

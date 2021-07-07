@@ -102,7 +102,7 @@ type SearchablePostConnection {
 }
 
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -297,7 +297,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Begin - KeyCondtion **
+## Begin - KeyCondition **
 #if( $ctx.stash.metadata.modelObjectKey )
   #set( $keyConditionExpr = {} )
   #foreach( $entry in $ctx.stash.metadata.modelObjectKey.entrySet() )
@@ -314,8 +314,8 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 }))
 #end
 ## End - KeyCondition **
-## Start Condtion block **
-#if( $ctx.stash.conditions && $inputConditionObjectName.size() != 0 )
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
   \\"and\\": $ctx.stash.conditions
 } )
@@ -326,7 +326,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
   \\"expressionNames\\": $Conditions.expressionNames
 } )
   #end
-  ## End Condtion block **
+  ## End condition block **
 #end
 #if( $Conditions )
   $util.qr($PutObject.put(\\"condition\\", $Conditions))
@@ -381,8 +381,8 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Start Condtion block **
-#if( $ctx.stash.conditions && $inputConditionObjectName.size() != 0 )
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
   \\"and\\": $ctx.stash.conditions
 } )
@@ -393,7 +393,7 @@ $util.qr($DeleteRequest.put(\\"key\\", $Key))
   \\"expressionNames\\": $Conditions.expressionNames
 } )
   #end
-  ## End Condtion block **
+  ## End condition block **
 #end
 #if( $Conditions )
   $util.qr($DeleteRequest.put(\\"condition\\", $Conditions))
@@ -509,8 +509,8 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
 #if( $context.args.condition )
   $util.qr($ctx.stash.conditions.add($context.args.condition))
 #end
-## Start Condtion block **
-#if( $ctx.stash.conditions && $inputConditionObjectName.size() != 0 )
+## Start condition block **
+#if( $ctx.stash.conditions && $ctx.stash.conditions.size() != 0 )
   #set( $mergedConditions = {
   \\"and\\": $ctx.stash.conditions
 } )
@@ -521,7 +521,7 @@ $util.qr($update.put(\\"expression\\", \\"$expression\\"))
   \\"expressionNames\\": $Conditions.expressionNames
 } )
   #end
-  ## End Condtion block **
+  ## End condition block **
 #end
 #set( $UpdateItem = {
   \\"version\\": \\"2018-05-29\\",
@@ -607,17 +607,34 @@ $util.toJson($ListRequest)
 ## [End] Get ResponseTemplate. **",
   "Query.searchPosts.req.vtl": "#set( $indexPath = \\"/post/doc/_search\\" )
 #set( $nonKeywordFields = [] )
+#set( $sortValues = [] )
+#set( $primaryKey = \\"id\\" )
 #if( $util.isNullOrEmpty($context.args.sort) )
-  #set( $sortDirection = \\"desc\\" )
-  #set( $sortField = \\"id\\" )
+  #if( $nonKeywordFields.contains($primaryKey) )
+    #set( $sortField = $util.toJson($primaryKey) )
+  #else
+    #set( $sortField = $util.toJson(\\"\${primaryKey}.keyword\\") )
+  #end
+  #set( $sortDirection = $util.toJson({\\"order\\": \\"desc\\"}) )
+  $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
 #else
-  #set( $sortDirection = $util.defaultIfNull($context.args.sort.direction, \\"desc\\") )
-  #set( $sortField = $util.defaultIfNull($context.args.sort.field, \\"id\\") )
-#end
-#if( $nonKeywordFields.contains($sortField) )
-  #set( $sortField0 = $util.toJson($sortField) )
-#else
-  #set( $sortField0 = $util.toJson(\\"\${sortField}.keyword\\") )
+  #foreach( $sortItem in $context.args.sort )
+    #if( $util.isNullOrEmpty($sortItem.field) )
+      #if( $nonKeywordFields.contains($primaryKey) )
+        #set( $sortField = $util.toJson($primaryKey) )
+      #else
+        #set( $sortField = $util.toJson(\\"\${primaryKey}.keyword\\") )
+      #end
+    #else
+      #if( $nonKeywordFields.contains($sortItem.field) )
+        #set( $sortField = $util.toJson($sortItem.field) )
+      #else
+        #set( $sortField = $util.toJson(\\"\${sortItem.field}.keyword\\") )
+      #end
+    #end
+    #set( $sortDirection = $util.toJson({\\"order\\": $sortItem.direction}) )
+    $util.qr($sortValues.add(\\"{$sortField: $sortDirection}\\"))
+  #end
 #end
 {
   \\"version\\": \\"2018-05-29\\",
@@ -625,10 +642,10 @@ $util.toJson($ListRequest)
   \\"path\\": \\"$indexPath\\",
   \\"params\\": {
       \\"body\\":     {
-                #if( $context.args.nextToken )\\"search_after\\": [$util.toJson($context.args.nextToken)], #end
+                #if( $context.args.nextToken )\\"search_after\\": $util.base64Decode($context.args.nextToken), #end
                 #if( $context.args.from )\\"from\\": $context.args.from, #end
                 \\"size\\": #if( $context.args.limit ) $context.args.limit #else 100 #end,
-                \\"sort\\": [{$sortField0: { \\"order\\" : $util.toJson($sortDirection) }}],
+                \\"sort\\": $sortValues,
                 \\"version\\": false,
                 \\"query\\": #if( $context.args.filter )
 $util.transform.toElasticsearchQueryDSL($ctx.args.filter)
@@ -643,7 +660,7 @@ $util.transform.toElasticsearchQueryDSL($ctx.args.filter)
   "Query.searchPosts.res.vtl": "#set( $es_items = [] )
 #foreach( $entry in $context.result.hits.hits )
   #if( !$foreach.hasNext )
-    #set( $nextToken = $entry.sort.get(0) )
+    #set( $nextToken = $util.base64Encode($util.toJson($entry.sort)) )
   #end
   $util.qr($es_items.add($entry.get(\\"_source\\")))
 #end
@@ -791,8 +808,8 @@ type SearchablePostConnection {
 }
 
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
-  searchUsers(filter: SearchableUserFilterInput, sort: SearchableUserSortInput, limit: Int, nextToken: String, from: Int): SearchableUserConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchUsers(filter: SearchableUserFilterInput, sort: [SearchableUserSortInput], limit: Int, nextToken: String, from: Int): SearchableUserConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
   getUser(id: ID!): User
@@ -1110,7 +1127,7 @@ type SearchablePostConnection {
 }
 
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -1361,7 +1378,7 @@ type SearchablePostConnection {
 }
 
 type Query {
-  customSearchPost(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  customSearchPost(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
@@ -1612,7 +1629,7 @@ type SearchablePostConnection {
 }
 
 type Query {
-  searchPosts(filter: SearchablePostFilterInput, sort: SearchablePostSortInput, limit: Int, nextToken: String, from: Int): SearchablePostConnection
+  searchPosts(filter: SearchablePostFilterInput, sort: [SearchablePostSortInput], limit: Int, nextToken: String, from: Int): SearchablePostConnection
   getPost(id: ID!): Post
   listPosts(filter: ModelPostFilterInput, limit: Int, nextToken: String): ModelPostConnection
 }
