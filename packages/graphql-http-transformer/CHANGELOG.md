@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.18.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.17.11...graphql-http-transformer@4.18.0) (2021-06-30)
+
+
+### Features
+
+* **graphql-http-transformer:** support ${aws_region} template in [@http](https://github.com/http) url ([#7277](https://github.com/aws-amplify/amplify-cli/issues/7277)) ([7a740c3](https://github.com/aws-amplify/amplify-cli/commit/7a740c306f117d4566e86a94cd3632e785b1a420))
+
+
+
+
+
 ## [4.17.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-http-transformer@4.17.10...graphql-http-transformer@4.17.11) (2021-06-24)
 
 **Note:** Version bump only for package graphql-http-transformer

@@ -10,7 +10,7 @@ export const createEsDomain = (stack: Construct, parameterMap: Map<string, CfnPa
   const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
   const domain = new Domain(stack, ElasticsearchDomainLogicalID, {
-    version: ElasticsearchVersion.V6_2,
+    version: { version: "7.10" } as ElasticsearchVersion,
     ebs: {
       enabled: true,
       volumeType: EbsDeviceVolumeType.GP2,
