@@ -5,11 +5,9 @@ import {
   FieldDefinitionNode,
   Kind,
   TypeNode,
-  NamedTypeNode,
   DocumentNode,
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
-  DefinitionNode,
 } from 'graphql';
 import { graphqlName, makeNamedType, isScalar, isEnum, makeListType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
 
