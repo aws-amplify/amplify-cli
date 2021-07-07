@@ -2,8 +2,21 @@
  * Parameters common to geo resources
  */
 export type ResourceParameters = {
+    providerContext: ProviderContext,
+    name: string,
     pricingPlan: PricingPlan,
-    accessType: AccessType
+    accessType: AccessType,
+    isDefault: boolean,
+    dataProvider: DataProvider
+}
+
+/**
+ * higher level context
+ */
+export interface ProviderContext {
+    provider: string;
+    service: string;
+    projectName: string;
 }
 
 export enum PricingPlan {

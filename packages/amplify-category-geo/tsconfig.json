@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "./lib",
     "rootDir": "./src",
-    "strict": false
+    "strict": true
   },
   "references": [
     {"path": "../amplify-cli-core"}
