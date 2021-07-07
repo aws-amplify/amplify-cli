@@ -39,6 +39,10 @@ export function showAllHelp(context) {
       description: 'Shows the state of local resources not yet pushed to the cloud (Create/Update/Delete).',
     },
     {
+      name: 'status -v [<category> ...]',
+      description: 'Shows the detailed verbose diff between local and deployed resources, including cloudformation-diff',
+    },
+    {
       name: 'delete',
       description: 'Deletes all of the resources tied to the project from the cloud.',
     },
