@@ -1,29 +1,21 @@
-import { chooseServiceMessageAdd } from '../../provider-utils/awscloudformation/utils/constants';
+import { chooseServiceMessageAdd, provider } from '../../service-utils/constants';
 import { category } from '../../constants';
-import { supportedServices } from '../../provider-utils/supportedServices';
+import { supportedServices } from '../../supportedServices';
+import { $TSContext } from 'amplify-cli-core';
+import { addResource } from '../../provider-controllers';
 
-const subcommand = 'add';
+export const name = 'add';
 
-let options;
-
-module.exports = {
-  name: subcommand,
-  run: async (context: any) => {
-    const { amplify } = context;
-    const servicesMetadata = supportedServices;
+export const run = async(context: $TSContext) => {
+  const { amplify } = context;
     return amplify
-      .serviceSelectionPrompt(context, category, servicesMetadata, chooseServiceMessageAdd)
+      .serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageAdd)
       .then((result: {service: string, providerName: string}) => {
-        options = {
-          service: result.service,
-          providerPlugin: result.providerName
-        };
-        const providerController = servicesMetadata[result.service].providerController;
-        if (!providerController) {
-          context.print.error('Provider not configured for this category');
+        if (result.providerName !== provider) {
+          context.print.error(`Provider ${result.providerName} not configured for this category`);
           return;
         }
-        return providerController.addResource(context, result.service, options);
+        return addResource(context, result.service);
       })
       .then(() => {
         context.print.info('');
@@ -34,5 +26,4 @@ module.exports = {
         context.usageData.emitError(err);
         process.exitCode = 1;
       });
-  },
 };

@@ -13,6 +13,7 @@ export const enum ServiceName {
 
 export const apiDocs = {
   mapStyles: "https://docs.aws.amazon.com/location-maps/latest/APIReference/API_MapConfiguration.html",
-  pricingPlan: "https://aws.amazon.com/location/pricing/"
+  pricingPlan: "https://aws.amazon.com/location/pricing/",
+  dataSourceUsage: "https://docs.aws.amazon.com/location-places/latest/APIReference/API_DataSourceConfiguration.html"
 }
 

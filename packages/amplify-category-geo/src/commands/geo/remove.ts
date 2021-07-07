@@ -1,23 +1,21 @@
-import { chooseServiceMessageRemove } from '../../provider-utils/awscloudformation/utils/constants';
+import { chooseServiceMessageRemove, provider } from '../../service-utils/constants';
 import { category } from '../../constants';
-import { supportedServices } from '../../provider-utils/supportedServices';
+import { supportedServices } from '../../supportedServices';
+import { $TSContext } from 'amplify-cli-core';
+import { removeResource } from '../../provider-controllers';
 
-const subcommand = 'remove';
+export const name = 'remove';
 
-module.exports = {
-  name: subcommand,
-  run: async (context: any) => {
-    const { amplify } = context;
-    const servicesMetadata = supportedServices;
+export const run = async(context: $TSContext) => {
+  const { amplify } = context;
     return amplify
-      .serviceSelectionPrompt(context, category, servicesMetadata, chooseServiceMessageRemove)
+      .serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageRemove)
       .then((result: {service: string, providerName: string}) => {
-        const providerController = servicesMetadata[result.service].providerController;
-        if (!providerController) {
-          context.print.error('Provider not configured for this category');
+        if (result.providerName !== provider) {
+          context.print.error(`Provider ${result.providerName} not configured for this category`);
           return;
         }
-        return providerController.removeResource(context, result.service);
+        return removeResource(context, result.service);
       })
       .then(() => {
         context.print.info('');
@@ -28,5 +26,4 @@ module.exports = {
         context.usageData.emitError(err);
         process.exitCode = 1;
       });
-  }
 };
