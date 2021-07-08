@@ -11,6 +11,7 @@ import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-polic
 import { pathManager, stateManager, $TSMeta, $TSAny, NotInitializedError, ViewResourceTableParams } from 'amplify-cli-core';
 import * as resourceStatus from './resource-status-diff';
 import { ResourceDiff, IResourceDiffCollection, ICategoryStatusCollection } from './resource-status-diff';
+import { getAmplifyMetaFilePath } from './path-manager';
 
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, hashFunction) {
@@ -354,22 +355,34 @@ async function asyncForEach(array, callback) {
     await callback(array[index], index, array);
   }
 }
+export function getAmplifyMeta(){
+  const amplifyProjectInitStatus = getCloudInitStatus();
+  if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
+    return {
+      amplifyMeta : stateManager.getMeta(),
+      currentAmplifyMeta : stateManager.getCurrentMeta()
+    }
+  } else if (amplifyProjectInitStatus === CLOUD_NOT_INITIALIZED) {
+    return {
+      amplifyMeta : stateManager.getBackendConfig(),
+      currentAmplifyMeta : {}
+    }
+  } else {
+    throw new NotInitializedError();
+  }
+}
+
+//Get the name of the AWS service provisioning the resource
+export function getResourceService( category: string, resourceName: string){
+  let { amplifyMeta } = getAmplifyMeta();
+  const categoryMeta = (amplifyMeta)?amplifyMeta[category]:{};
+  return categoryMeta[resourceName]?.service;
+}
 
 export async function getResourceStatus(category?, resourceName?, providerName?, filteredResources?) {
 
   const amplifyProjectInitStatus = getCloudInitStatus();
-  let amplifyMeta: $TSAny;
-  let currentAmplifyMeta: $TSMeta = {};
-
-  if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
-    amplifyMeta = stateManager.getMeta();
-    currentAmplifyMeta = stateManager.getCurrentMeta();
-  } else if (amplifyProjectInitStatus === CLOUD_NOT_INITIALIZED) {
-    amplifyMeta = stateManager.getBackendConfig();
-  } else {
-    throw new NotInitializedError();
-  }
-
+  let { amplifyMeta, currentAmplifyMeta } = getAmplifyMeta();
   let resourcesToBeCreated: any = getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeUpdated: any = await getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeSynced: any = getResourcesToBeSynced(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);

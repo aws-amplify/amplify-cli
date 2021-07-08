@@ -7,7 +7,18 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { print } from './print';
 import { pathManager } from 'amplify-cli-core';
 import chalk from 'chalk';
+import { getResourceService } from './resource-status';
 
+const ResourceProviderServiceNames = {
+  S3 : "S3",
+  DDB : "DynamoDB",
+  LAMBDA : "Lambda",
+  S3AndCLOUDFNT: "S3AndCloudFront",
+  PINPOINT: "Pinpoint",
+  COGNITO: "Cognito",
+  APIGW: 'API Gateway',
+  APPSYNC : 'AppSync',
+}
 const CategoryTypes = {
     PROVIDERS : "providers",
     API : "api",
@@ -92,10 +103,12 @@ interface ResourcePaths {
 
 }
 
+
 export class ResourceDiff {
     resourceName: string;
     category : string;
     provider : string;
+    service: string;
     resourceFiles : ResourcePaths;
     localBackendDir : string;
     cloudBackendDir : string;
@@ -112,6 +125,7 @@ export class ResourceDiff {
         this.resourceName = resourceName;
         this.category = category;
         this.provider = this.normalizeProviderForFileNames(provider);
+        this.service = getResourceService(category, resourceName);
         this.localTemplate = {}; //requires file-access, hence loaded from async methods
         this.cloudTemplate = {}; //requires file-access, hence loaded from async methods
         //Note: All file names include full-path but no extension.Extension will be added later.
@@ -125,7 +139,7 @@ export class ResourceDiff {
             localPreBuildTemplateFile: path.normalize(path.join(this.localBackendDir, category, resourceName, this.getResourceProviderFileName(resourceName, this.provider))),
             cloudPreBuildTemplateFile: path.normalize(path.join(this.cloudBackendDir , category, resourceName, this.getResourceProviderFileName(resourceName, this.provider))),
         }
-        //console.log("SACPC:ResourceDiff: ", this.resourceFiles);
+        console.log("SACPCDEBUG:ResourceDiff: ", this.resourceFiles);
     }
 
     normalizeProviderForFileNames(provider:string){
@@ -278,6 +292,9 @@ export class ResourceDiff {
     getResourceProviderFileName(  resourceName : string, providerType : string ){
         //resourceName is the name of an instantiated category type e.g name of your s3 bucket
         //providerType is the name of the cloud infrastructure provider e.g cloudformation/terraform
+        if( this.service === ResourceProviderServiceNames.S3 ){
+          return `s3-cloudformation-template`;
+        }
         return `${resourceName}-${providerType}-template`
     }
 
