@@ -32,7 +32,6 @@ const INT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const FLOAT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const BOOLEAN_CONDITIONS = ['eq', 'ne'];
 import assert from 'assert';
-import { EnumType } from '@aws-cdk/aws-appsync';
 
 export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(type);
