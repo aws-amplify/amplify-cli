@@ -76,7 +76,7 @@ export const removeResource = async (
   }
 };
 
-const projectHasAuth = () => !!Object.values(
+export const projectHasAuth = () => !!Object.values(
   stateManager.getMeta()?.auth || {}
 ).find(meta => (meta as $TSObject)['service'] === 'Cognito');
 

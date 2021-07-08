@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`cdk stack creation for map resource creates Map policy for Authorized and Guest users access type 1`] = `
+exports[`cdk stack creation for map service creates Map policy for Authorized and Guest users access type 1`] = `
 Object {
   "Outputs": Object {
     "Name": Object {
@@ -94,7 +94,7 @@ Object {
 }
 `;
 
-exports[`cdk stack creation for map resource creates Map policy for Authorized users only access type 1`] = `
+exports[`cdk stack creation for map service creates Map policy for Authorized users only access type 1`] = `
 Object {
   "Outputs": Object {
     "Name": Object {

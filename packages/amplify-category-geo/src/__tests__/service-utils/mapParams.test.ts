@@ -1,4 +1,4 @@
-import { getGeoMapStyle, getMapStyleComponents } from "../../../../provider-utils/awscloudformation/utils/mapParams";
+import { getGeoMapStyle, getMapStyleComponents } from "../../service-utils/mapParams";
 
 describe('map style construction works as expected', () => {
     const mapStyles = [

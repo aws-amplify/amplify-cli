@@ -1,4 +1,4 @@
-import { DataProvider, ResourceParameters } from './resourceParams';
+import { ResourceParameters } from './resourceParams';
 import _ from 'lodash';
 
 /**

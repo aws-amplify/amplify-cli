@@ -1,8 +1,8 @@
-import { AccessType } from '../../../../provider-utils/awscloudformation/utils/resourceParams';
-import { MapStack } from '../../../../provider-utils/awscloudformation/service-stacks/mapStack';
+import { AccessType } from '../../service-utils/resourceParams';
+import { MapStack } from '../../service-stacks/mapStack';
+import { App } from '@aws-cdk/core';
 
-describe('cdk stack creation for map resource', () => {
-    const provider = 'awscloudformation';
+describe('cdk stack creation for map service', () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
@@ -11,7 +11,7 @@ describe('cdk stack creation for map resource', () => {
         const stackProps = {
             accessType: AccessType.AuthorizedUsers
         }
-        const mapStack = new MapStack(undefined, 'MapStack', stackProps);
+        const mapStack = new MapStack(new App(), 'MapStack', stackProps);
         expect(mapStack.toCloudFormation()).toMatchSnapshot();
     });
 
@@ -19,7 +19,7 @@ describe('cdk stack creation for map resource', () => {
         const stackProps = {
             accessType: AccessType.AuthorizedAndGuestUsers
         }
-        const mapStack = new MapStack(undefined, 'MapStack', stackProps);
+        const mapStack = new MapStack(new App(), 'MapStack', stackProps);
         expect(mapStack.toCloudFormation()).toMatchSnapshot();
     });
 });
