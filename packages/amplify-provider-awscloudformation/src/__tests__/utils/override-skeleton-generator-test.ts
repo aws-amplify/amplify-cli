@@ -8,9 +8,9 @@ import { generateOverrideSkeleton } from '../../utils/override-skeleton-generato
 const mockProjectPath = 'mockProjectPath';
 const context_stub = ({
   amplify: {
-    getEnvInfo: () => ({
-      projectPath: mockProjectPath,
-    }),
+    pathManager: {
+      getBackendDirPath: () => path.join(mockProjectPath, 'amplify', 'backend'),
+    },
   },
 } as unknown) as jest.Mocked<$TSContext>;
 
