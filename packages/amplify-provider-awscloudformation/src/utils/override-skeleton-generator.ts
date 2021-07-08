@@ -5,12 +5,10 @@ import execa from 'execa';
 import { $TSContext } from 'amplify-cli-core';
 
 export const generateOverrideSkeleton = async (context: $TSContext): Promise<void> => {
-  let projectPath: string;
-  ({ projectPath } = context.amplify.getEnvInfo());
-
   // 1. Create skeleton package
+  const backendDir = context.amplify.pathManager.getBackendDirPath();
 
-  const overrideDirPath = path.join(projectPath, 'amplify', 'backend', 'awscloudformation', 'overrides');
+  const overrideDirPath = path.normalize(path.join(backendDir, 'awscloudformation', 'overrides'));
 
   if (fs.existsSync(overrideDirPath)) {
     context.print.warning(`Overrides folder already exists. Please make your changes in ${overrideDirPath} directory`);
@@ -18,15 +16,15 @@ export const generateOverrideSkeleton = async (context: $TSContext): Promise<voi
   }
 
   fs.ensureDirSync(overrideDirPath);
-  const overrideResourceDir = path.join(__dirname, '../../', 'resources', 'overrides-resource');
+  const overrideResourceDir = path.normalize(path.join(__dirname, '..', '..', 'resources', 'overrides-resource'));
   fs.copySync(overrideResourceDir, overrideDirPath);
 
   // 2. Build Override Directory
 
-  buildOverrideDir(overrideDirPath, context);
+  buildOverrideDir(overrideDirPath);
 };
 
-function buildOverrideDir(cwd: string, context: $TSContext) {
+function buildOverrideDir(cwd: string) {
   const packageManager = getPackageManager(cwd);
 
   if (packageManager === null) {

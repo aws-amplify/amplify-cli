@@ -1,9 +1,8 @@
-/* 
+/*
     entry code for amplify override root
 */
 
 import { generateOverrideSkeleton } from '../../utils/override-skeleton-generator';
-
 
 const subcommand = 'override';
 
