@@ -1,0 +1,6 @@
+{
+    "version": 1,
+    "userPoolId": "123",
+    "webClientId": "111",
+    "nativeClientId": "222"
+}

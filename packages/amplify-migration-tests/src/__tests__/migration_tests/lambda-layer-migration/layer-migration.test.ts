@@ -17,6 +17,7 @@ import {
   initJSProjectWithProfileOldDX,
   legacyAddLayer,
   legacyAddOptData,
+  legacyUpdateOptData,
   validateLayerConfigFilesMigrated,
   versionCheck,
 } from '../../../migration-helpers';
@@ -142,6 +143,27 @@ describe('test lambda layer migration flow introduced in v5.0.0', () => {
     );
     await amplifyPushLayer(projRoot, {}, true);
     await removeLayerVersion(projRoot, { removeLegacyOnly: true }, [1], [1, 2], true);
+    expect(validateLayerConfigFilesMigrated(projRoot, layerName)).toBe(true);
+  });
+
+  it('migrates a layer with no runtime', async () => {
+    const { projectName: projName } = getProjectConfig(projRoot);
+    const [shortId] = uuid().split('-');
+    const layerName = `test${shortId}`;
+    const layerSettings = {
+      layerName,
+      projName,
+      runtimes: [],
+    };
+
+    await legacyAddLayer(projRoot, layerSettings);
+    legacyAddOptData(projRoot, layerName);
+    await amplifyPushAuth(projRoot, false);
+    await updateLayer(projRoot, { ...layerSettings, dontChangePermissions: true, migrateLegacyLayer: true }, true);
+    await amplifyPushLayer(projRoot, {}, true);
+    legacyUpdateOptData(projRoot, layerName, 'update');
+    await amplifyPushLayer(projRoot, {}, true);
+
     expect(validateLayerConfigFilesMigrated(projRoot, layerName)).toBe(true);
   });
 });

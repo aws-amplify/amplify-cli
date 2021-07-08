@@ -6,17 +6,17 @@ import { LegacyPermissionEnum } from './layerMigrationUtils';
 import { LayerVersionMetadata, PermissionEnum } from './layerParams';
 
 export class LayerCloudState {
-  private static instance: LayerCloudState;
+  private static instances: Record<string, LayerCloudState> = {};
   private layerVersionsMetadata: LayerVersionMetadata[];
   public latestVersionLogicalId: string;
 
   private constructor() {}
 
-  static getInstance(): LayerCloudState {
-    if (!LayerCloudState.instance) {
-      LayerCloudState.instance = new LayerCloudState();
+  static getInstance(layerName: string): LayerCloudState {
+    if (!LayerCloudState.instances[layerName]) {
+      LayerCloudState.instances[layerName] = new LayerCloudState();
     }
-    return LayerCloudState.instance;
+    return LayerCloudState.instances[layerName];
   }
 
   private async loadLayerDataFromCloud(context: $TSContext, layerName: string): Promise<LayerVersionMetadata[]> {

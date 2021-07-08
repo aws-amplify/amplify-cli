@@ -386,7 +386,13 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 `;
 
 exports[`Test create and update mutation input should have timestamps as nullable fields when the type makes it non-nullable 3`] = `
-"#if( $authCondition && $authCondition.expression != \\"\\" )
+"#set( $optionalNonNullableFields = [\\"createdAt\\", \\"updatedAt\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
+#if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )
@@ -683,7 +689,13 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 `;
 
 exports[`Test not to include createdAt and updatedAt field when timestamps is set to null 3`] = `
-"#if( $authCondition && $authCondition.expression != \\"\\" )
+"#set( $optionalNonNullableFields = [] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
+#if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )
@@ -1000,7 +1012,13 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 `;
 
 exports[`Test resolver template not to auto generate createdAt and updatedAt when the type in schema is not AWSDateTime 3`] = `
-"#if( $authCondition && $authCondition.expression != \\"\\" )
+"#set( $optionalNonNullableFields = [] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
+#if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )
@@ -1246,7 +1264,7 @@ enum ModelAttributeTypes {
 
 type Query {
   getEntity(id: ID!): Entity
-  listEntitys(filter: ModelEntityFilterInput, limit: Int, nextToken: String): ModelEntityConnection
+  listEntities(filter: ModelEntityFilterInput, limit: Int, nextToken: String): ModelEntityConnection
 }
 "
 `;
@@ -1421,7 +1439,13 @@ $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
 `;
 
 exports[`Test timestamp parameters when generating resolvers and output schema 3`] = `
-"#if( $authCondition && $authCondition.expression != \\"\\" )
+"#set( $optionalNonNullableFields = [] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
+#if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
     #foreach( $entry in $modelObjectKey.entrySet() )

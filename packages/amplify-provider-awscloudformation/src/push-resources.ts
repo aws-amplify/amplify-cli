@@ -203,7 +203,13 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
     await updateS3Templates(context, resources, projectDetails.amplifyMeta);
 
     // We do not need CloudFormation update if only syncable resources are the changes.
-    if (resourcesToBeCreated.length > 0 || resourcesToBeUpdated.length > 0 || resourcesToBeDeleted.length > 0 || tagsUpdated) {
+    if (
+      resourcesToBeCreated.length > 0 ||
+      resourcesToBeUpdated.length > 0 ||
+      resourcesToBeDeleted.length > 0 ||
+      tagsUpdated ||
+      context.exeInfo.forcePush
+    ) {
       // If there is an API change, there will be one deployment step. But when there needs an iterative update the step count is > 1
       if (deploymentSteps.length > 1) {
         // create deployment manager
@@ -257,7 +263,17 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
         const nestedStack = await formNestedStack(context, context.amplify.getProjectDetails());
 
-        await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
+        try {
+          await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
+        } catch (err) {
+          if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
+            return;
+          } else {
+            throw err;
+          }
+        } finally {
+          spinner.stop();
+        }
       }
     }
 
@@ -277,6 +293,9 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       }
 
       if (unlinkedResources.length > 0) {
+        // Sync backend-config.json to cloud folder
+        await context.amplify.updateamplifyMetaAfterPush(unlinkedResources);
+
         for (let i = 0; i < unlinkedResources.length; i++) {
           context.amplify.updateamplifyMetaAfterResourceDelete(unlinkedResources[i].category, unlinkedResources[i].resourceName);
         }
@@ -859,8 +878,10 @@ async function formNestedStack(
       },
       DependsOn: [],
     };
-    const authResource = amplifyMeta?.auth ?? {};
-    const authRootStackResourceName = `auth${Object.keys(authResource)[0]}`;
+
+    const cognitoResource = stateManager.getResourceFromMeta(amplifyMeta, 'auth', 'Cognito');
+    const authRootStackResourceName = `auth${cognitoResource.resourceName}`;
+
     stack.Properties.Parameters['userpoolId'] = {
       'Fn::GetAtt': [authRootStackResourceName, 'Outputs.UserPoolId'],
     };
@@ -869,18 +890,23 @@ async function formNestedStack(
     };
     stack.DependsOn.push(authRootStackResourceName);
 
-    const { dependsOn } = authResource[Object.keys(authResource)[0]];
+    const { dependsOn } = cognitoResource.resource as { dependsOn };
 
     dependsOn.forEach(resource => {
-      const dependsOnStackName = resource.category + resource.resourceName;
+      const dependsOnStackName = `${resource.category}${resource.resourceName}`;
+
       stack.DependsOn.push(dependsOnStackName);
+
       const dependsOnAttributes = resource?.attributes;
+
       dependsOnAttributes.forEach(attribute => {
         const parameterKey = `${resource.category}${resource.resourceName}${attribute}`;
         const parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${attribute}`] };
+
         stack.Properties.Parameters[parameterKey] = parameterValue;
       });
     });
+
     nestedStack.Resources[AUTH_TRIGGER_STACK] = stack;
   }
 
@@ -957,8 +983,8 @@ async function formNestedStack(
 
                 parameterValue = outputAttributeValue;
               } else {
+                // Fn::GetAtt adds dependency in root stack and dependsOn stack
                 const dependsOnStackName = dependsOn[i].category + dependsOn[i].resourceName;
-
                 parameterValue = { 'Fn::GetAtt': [dependsOnStackName, `Outputs.${dependsOn[i].attributes[j]}`] };
               }
 

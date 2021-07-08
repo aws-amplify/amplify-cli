@@ -13,17 +13,22 @@ declare global {
   }
 }
 
-import { isRegExp, format } from 'util';
+import { types, format } from 'util';
 import { Recorder } from '../asciinema-recorder';
 import { AssertionError } from 'assert';
 import strip = require('strip-ansi');
 import { EOL } from 'os';
 import retimer = require('retimer');
 import { join, parse } from 'path';
+import * as fs from 'fs-extra';
+import * as os from 'os';
 
-const DEFAULT_NO_OUTPUT_TIMEOUT = 5 * 60 * 1000; // 5 Minutes
+const DEFAULT_NO_OUTPUT_TIMEOUT = process.env.AMPLIFY_TEST_TIMEOUT_SEC
+  ? Number.parseInt(process.env.AMPLIFY_TEST_TIMEOUT_SEC, 10) * 1000
+  : 5 * 60 * 1000; // 5 Minutes
 const EXIT_CODE_TIMEOUT = 2;
 const EXIT_CODE_GENERIC_ERROR = 3;
+const LOG_DUMP_FILE = process.env.LOG_DUMP_FILE;
 
 // https://notes.burke.libbey.me/ansi-escape-codes/
 export const KEY_UP_ARROW = '\x1b[A';
@@ -189,34 +194,34 @@ function chain(context: Context): ExecutionContext {
       return chain(context);
     },
     sendKeyDown: function (repeat?: number): ExecutionContext {
-      const repeatitions = repeat ? Math.max(1, repeat) : 1;
+      const repetitions = repeat ? Math.max(1, repeat) : 1;
       var _send: ExecutionStep = {
         fn: () => {
-          for (let i = 0; i < repeatitions; i++) {
+          for (let i = 0; i < repetitions; ++i) {
             context.process.write(KEY_DOWN_ARROW);
           }
           return true;
         },
         name: '_send',
         shift: true,
-        description: `'[send] <Down> (${repeatitions})`,
+        description: `'[send] <Down> (${repetitions})`,
         requiresInput: false,
       };
       context.queue.push(_send);
       return chain(context);
     },
     sendKeyUp: function (repeat?: number): ExecutionContext {
-      const repeatitions = repeat ? Math.max(1, repeat) : 1;
+      const repetitions = repeat ? Math.max(1, repeat) : 1;
       var _send: ExecutionStep = {
         fn: () => {
-          for (let i = 0; i < repeatitions; i++) {
+          for (let i = 0; i < repetitions; ++i) {
             context.process.write(KEY_UP_ARROW);
           }
           return true;
         },
         name: '_send',
         shift: true,
-        description: `'[send] <Up> (${repeatitions})`,
+        description: `'[send] <Up> (${repetitions})`,
         requiresInput: false,
       };
       context.queue.push(_send);
@@ -302,9 +307,23 @@ function chain(context: Context): ExecutionContext {
       let options;
       let noOutputTimer;
 
+      let logDumpFile: fs.WriteStream;
+
+      if (process.env.VERBOSE_LOGGING_DO_NOT_USE_IN_CI_OR_YOU_WILL_BE_FIRED) {
+        const rand = Math.floor(Math.random() * 10000);
+        const logdir = join(os.tmpdir(), 'amplify_e2e_logs');
+        fs.ensureDirSync(logdir);
+        const filename = join(logdir, `amplify_e2e_log_${rand}`);
+        logDumpFile = fs.createWriteStream(filename);
+        console.log(`CLI test logs at [${filename}]`);
+      }
+
       const exitHandler = (code: number, signal: any) => {
         noOutputTimer.clear();
         context.process.removeOnExitHandlers(exitHandler);
+        if (logDumpFile) {
+          logDumpFile.close();
+        }
         if (code !== 0) {
           if (code === EXIT_CODE_TIMEOUT) {
             const err = new Error(
@@ -441,6 +460,8 @@ function chain(context: Context): ExecutionContext {
         }
       }
 
+      const spinnerRegex = new RegExp(/.*(⠋|⠙|⠹|⠸|⠼|⠴|⠦|⠧|⠇|⠏).*/);
+
       //
       // **onLine**
       //
@@ -454,9 +475,10 @@ function chain(context: Context): ExecutionContext {
       function onLine(data: string | Buffer) {
         noOutputTimer.reschedule(context.noOutputTimeout);
         data = data.toString();
-        if (process.env && process.env.VERBOSE_LOGGING_DO_NOT_USE_OR_YOU_WILL_BE_FIRED) {
-          console.log(data);
+        if (logDumpFile && spinnerRegex.test(data) === false && strip(data).trim().length > 0) {
+          logDumpFile.write(data);
         }
+
         if (context.stripColors) {
           data = strip(data);
         }
@@ -550,7 +572,7 @@ function chain(context: Context): ExecutionContext {
 }
 
 function testExpectation(data: string, expectation: string | RegExp, context: Context): boolean {
-  if (isRegExp(expectation)) {
+  if (types.isRegExp(expectation)) {
     return expectation.test(data);
   } else if (context.ignoreCase) {
     return data.toLowerCase().indexOf(expectation.toLowerCase()) > -1;
@@ -574,7 +596,7 @@ function createUnexpectedEndError(message: string, remainingQueue: ExecutionStep
 
 function createExpectationError(expected: string | RegExp, actual: string) {
   var expectation;
-  if (isRegExp(expected)) {
+  if (types.isRegExp(expected)) {
     expectation = 'to match ' + expected;
   } else {
     expectation = 'to contain ' + JSON.stringify(expected);

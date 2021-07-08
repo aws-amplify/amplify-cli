@@ -2,6 +2,7 @@ import Resource from 'cloudform-types/types/resource';
 import _ from 'lodash';
 import { applyS3SSEModification } from './modifiers/s3-sse-modifier';
 import { Template } from 'cloudform-types';
+import { iamRolePermissionsBoundaryModifier } from './modifiers/iam-role-permissions-boundary-modifier';
 
 // modifies the template in-place
 export type TemplateModifier = (template: Template) => Promise<void>;
@@ -25,6 +26,7 @@ const getResourceModifiers = (type: string): ResourceModifier<Resource>[] => {
 
 const resourceTransformerRegistry: Record<string, ResourceModifier<Resource>[]> = {
   'AWS::S3::Bucket': [applyS3SSEModification],
+  'AWS::IAM::Role': [iamRolePermissionsBoundaryModifier],
 };
 
 const identityResourceModifier: ResourceModifier<Resource> = async resource => resource;

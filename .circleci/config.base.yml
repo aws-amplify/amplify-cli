@@ -31,6 +31,16 @@ clean_e2e_resources: &clean_e2e_resources
     yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
   working_directory: ~/repo
 
+scan_e2e_test_artifacts: &scan_e2e_test_artifacts
+  name: Scan And Cleanup E2E Test Artifacts
+  command: |
+    if ! yarn ts-node .circleci/scan_artifacts.ts; then
+      echo "Cleaning the repository"
+      git clean -fdx
+      exit 1
+    fi
+  when: always
+
 run_e2e_tests: &run_e2e_tests
   name: Run Amplify end-to-end tests
   command: |
@@ -221,6 +231,7 @@ jobs:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run: *install_cli_from_local_registery
       - run: *run_e2e_tests
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
@@ -258,6 +269,7 @@ jobs:
             amplify version
       - run: *install_cli_from_local_registery
       - run: *run_e2e_tests
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
@@ -279,6 +291,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -302,6 +315,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.28.2_nonmultienv_layers --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -325,6 +339,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.52.0_multienv_layers --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -351,6 +366,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.30.0_auth --maxWorkers=3
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -372,6 +388,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -395,6 +412,7 @@ jobs:
             yarn run console-integration --maxWorkers=3
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-console-integration-tests/
       - store_artifacts:
@@ -497,6 +515,7 @@ jobs:
             yarn cypress run --spec $(find . -type f -name 'api_spec*')
       - run: cd .circleci/ && chmod +x delete_api.sh
       - run: expect .circleci/delete_api.exp
+      - run: *scan_e2e_test_artifacts
       - store_artifacts:
           path: /root/aws-amplify-cypress-auth/cypress/videos
       - store_artifacts:
@@ -527,6 +546,7 @@ jobs:
             else
               echo "Skipping deploy."
             fi
+      - run: *scan_e2e_test_artifacts
   github_prerelease:
     <<: *node12
     steps:
@@ -593,6 +613,7 @@ jobs:
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     working_directory: ~/repo
@@ -610,6 +631,7 @@ jobs:
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources workflow ${CIRCLE_WORKFLOW_ID}
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     working_directory: ~/repo
@@ -672,6 +694,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
                 - iterative-update
           requires:
             - build
@@ -684,6 +707,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
                 - beta
           requires:
             - build
@@ -693,6 +717,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
                 - beta
                 - backendManager
                 - iterative-update
@@ -723,6 +748,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
                 - compute-functions
                 - iterative-update
           requires:
@@ -770,6 +796,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
           requires:
             - build
       - amplify_migration_tests_v4_30_0:
@@ -782,6 +809,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
                 - graphqlschemae2e
                 - feat-import
                 - test-fix-status
@@ -797,6 +825,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
           requires:
             - build
       - amplify_migration_tests_multi_env_layers:
@@ -809,6 +838,7 @@ workflows:
             branches:
               only:
                 - master
+                - func-env-vars-secrets
           requires:
             - build
       - amplify_console_integration_tests:

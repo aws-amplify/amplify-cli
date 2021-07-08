@@ -35,7 +35,6 @@ export class AmplifyToolkit {
   private _pushResources: any;
   private _storeCurrentCloudBackend: any;
   private _readJsonFile: any;
-  private _removeEnvFromCloud: any;
   private _removeResource: any;
   private _sharedQuestions: any;
   private _showAllHelp: any;
@@ -231,11 +230,6 @@ export class AmplifyToolkit {
   get readJsonFile(): any {
     this._readJsonFile = this._readJsonFile || require(path.join(this._amplifyHelpersDirPath, 'read-json-file')).readJsonFile;
     return this._readJsonFile;
-  }
-  get removeEnvFromCloud(): any {
-    this._removeEnvFromCloud =
-      this._removeEnvFromCloud || require(path.join(this._amplifyHelpersDirPath, 'remove-env-from-cloud')).removeEnvFromCloud;
-    return this._removeEnvFromCloud;
   }
   get removeResource(): any {
     this._removeResource = this._removeResource || require(path.join(this._amplifyHelpersDirPath, 'remove-resource')).removeResource;

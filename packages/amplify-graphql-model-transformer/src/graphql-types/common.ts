@@ -1,10 +1,10 @@
-import { TranformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformerTransformSchemaStepContextProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   EnumTypeDefinitionNode,
   FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   ObjectTypeDefinitionNode,
-  TypeDefinitionNode
+  TypeDefinitionNode,
 } from 'graphql';
 import {
   DEFAULT_SCALARS,
@@ -13,7 +13,7 @@ import {
   makeField,
   makeNamedType,
   makeValueNode,
-  toPascalCase
+  toPascalCase,
 } from 'graphql-transformer-common';
 import {
   ATTRIBUTE_TYPES,
@@ -27,13 +27,13 @@ import {
   INT_FUNCTIONS,
   SIZE_CONDITIONS,
   STRING_CONDITIONS,
-  STRING_FUNCTIONS
+  STRING_FUNCTIONS,
 } from '../definitions';
 import {
   EnumWrapper,
   InputFieldWraper,
   InputObjectDefinitionWrapper,
-  ObjectDefinationWrapper
+  ObjectDefinationWrapper,
 } from '../wrappers/object-definition-wrapper';
 
 /**
@@ -43,7 +43,7 @@ import {
  * @param object ModelObjectDefination
  */
 export const makeConditionFilterInput = (
-  ctx: TranformerTransformSchemaStepContextProvider,
+  ctx: TransformerTransformSchemaStepContextProvider,
   name: string,
   object: ObjectTypeDefinitionNode,
 ): InputObjectDefinitionWrapper => {
@@ -74,7 +74,7 @@ export const makeConditionFilterInput = (
   return input;
 };
 
-export const addModelConditionInputs = (ctx: TranformerTransformSchemaStepContextProvider): void => {
+export const addModelConditionInputs = (ctx: TransformerTransformSchemaStepContextProvider): void => {
   const conditionsInput: TypeDefinitionNode[] = ['String', 'Int', 'Float', 'Boolean', 'ID'].map(scalarName =>
     makeModelScalarFilterInputObject(scalarName, true),
   );
@@ -101,7 +101,7 @@ export function generateModelScalarFilterInputName(typeName: string, includeFilt
   return `Model${typeName}${includeFilter ? 'Filter' : ''}Input`;
 }
 export const createEnumModelFilters = (
-  ctx: TranformerTransformSchemaStepContextProvider,
+  ctx: TransformerTransformSchemaStepContextProvider,
   type: ObjectTypeDefinitionNode,
 ): InputObjectTypeDefinitionNode[] => {
   // add enum type if present

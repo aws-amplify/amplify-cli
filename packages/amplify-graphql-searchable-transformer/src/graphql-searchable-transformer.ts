@@ -158,7 +158,9 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         searchFieldNameOverride = directiveArguments.queries.search;
       }
     }
-    const fieldName = searchFieldNameOverride ? searchFieldNameOverride : graphqlName(`search${plurality(toUpper(definition.name.value))}`);
+    const fieldName = searchFieldNameOverride
+      ? searchFieldNameOverride
+      : graphqlName(`search${plurality(toUpper(definition.name.value), ctx.featureFlags.getBoolean('improvePluralization'))}`);
     this.searchableObjectTypeDefinitions.push({
       node: definition,
       fieldName,
@@ -171,7 +173,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         fieldName,
         [
           makeInputValueDefinition('filter', makeNamedType(`Searchable${definition.name.value}FilterInput`)),
-          makeInputValueDefinition('sort', makeNamedType(`Searchable${definition.name.value}SortInput`)),
+          makeInputValueDefinition('sort', makeListType(makeNamedType(`Searchable${definition.name.value}SortInput`))),
           makeInputValueDefinition('limit', makeNamedType('Int')),
           makeInputValueDefinition('nextToken', makeNamedType('String')),
           makeInputValueDefinition('from', makeNamedType('Int')),

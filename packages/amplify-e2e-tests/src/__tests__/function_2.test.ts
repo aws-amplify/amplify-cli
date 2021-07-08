@@ -336,7 +336,8 @@ describe('nodejs', () => {
 
     it('update DDB trigger function to add permissions should not changed its dependsOn attributes of the trigger source', async () => {
       await initJSProjectWithProfile(projRoot, {});
-      await addDDBWithTrigger(projRoot, {});
+      const ddbResourceName = 'testddbresource';
+      await addDDBWithTrigger(projRoot, { ddbResourceName });
 
       const originalAmplifyMeta = getBackendAmplifyMeta(projRoot);
       const functionResourceName = Object.keys(originalAmplifyMeta.function)[0];
@@ -345,9 +346,12 @@ describe('nodejs', () => {
       await updateFunction(
         projRoot,
         {
-          permissions: ['storage'],
-          choices: ['function', 'storage'],
-          operations: ['read', 'update'],
+          additionalPermissions: {
+            resources: [ddbResourceName],
+            permissions: ['storage'],
+            choices: ['function', 'storage'],
+            operations: ['read', 'update'],
+          },
         },
         'nodejs',
       );
@@ -393,9 +397,20 @@ describe('nodejs', () => {
       const functionMeta = readJsonFile(metaPath).function[fnName];
       delete functionMeta.lastPushTimeStamp;
 
-      // Don't update anything, sends 'n' to the question:
-      // Do you want to update the Lambda function permissions to access...?
-      await updateFunction(projRoot, {}, 'nodejs');
+      await updateFunction(
+        projRoot,
+        {
+          additionalPermissions: {
+            permissions: [], // keep existing selection
+            choices: ['api', 'storage', 'function'],
+            resources: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            keepExistingResourceSelection: true, // keep existing resource selection
+            resourceChoices: [ddbName, 'Post:@model(appsync)', 'Comment:@model(appsync)'],
+            operations: [], // keep existing selection
+          },
+        },
+        'nodejs',
+      );
       const updatedFunctionConfig = readJsonFile(configPath).function[fnName];
       const updatedFunctionMeta = readJsonFile(metaPath).function[fnName];
       delete updatedFunctionMeta.lastPushTimeStamp;
@@ -437,7 +452,8 @@ describe('nodejs', () => {
         },
         'nodejs',
       );
-      addNodeDependencies(projRoot, fnName, ['aws-appsync', 'isomorphic-fetch', 'graphql-tag']);
+      // Pin aws-appsync to 4.0.3 until https://github.com/awslabs/aws-mobile-appsync-sdk-js/issues/647 is fixed.
+      addNodeDependencies(projRoot, fnName, ['aws-appsync@4.0.3', 'isomorphic-fetch', 'graphql-tag']);
       overrideFunctionCodeNode(projRoot, fnName, 'mutation-appsync.js');
       await amplifyPush(projRoot);
       const meta = getProjectMeta(projRoot);

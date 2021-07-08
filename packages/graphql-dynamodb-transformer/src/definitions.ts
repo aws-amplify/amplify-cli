@@ -15,6 +15,7 @@ import {
 import {
   wrapNonNull,
   unwrapNonNull,
+  isNonNullType,
   makeNamedType,
   toUpper,
   graphqlName,
@@ -201,6 +202,21 @@ export function makeCreateInputObject(
     ],
     directives: [],
   };
+}
+export function getFieldsOptionalNonNullableField(fields: InputValueDefinitionNode[], obj: ObjectTypeDefinitionNode): string[] {
+  const fieldMap = fields.reduce((map, field) => {
+    map.set(field.name.value, field);
+    return map;
+  }, new Map<string, InputValueDefinitionNode>());
+
+  return obj.fields
+    .filter(
+      r =>
+        fieldMap.has(r.name.value) && //field exists in the model
+        isNonNullType(r.type) && // field was non null type in model
+        fieldMap.get(r.name.value).type.kind !== Kind.NON_NULL_TYPE, // field is not nullable type in update mutation model
+    )
+    .map(r => r.name.value);
 }
 
 export function makeUpdateInputObject(

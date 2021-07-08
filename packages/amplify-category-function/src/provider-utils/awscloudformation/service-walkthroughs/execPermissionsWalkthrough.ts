@@ -80,13 +80,16 @@ export const askExecRolePermissionsQuestions = async (
       // A Lambda function cannot depend on itself
       // Lambda layer dependencies are handled seperately, also apply the filter if the selected resource is within the function category
       // but serviceName argument was no passed in
+      const selectedResource = _.get(amplifyMeta, [categoryName, resourceNameToUpdate]);
+
       if (serviceName === ServiceName.LambdaFunction || selectedCategory === categoryName) {
         resourcesList = resourcesList.filter(
-          resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service === serviceName,
+          resourceName =>
+            resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].service === selectedResource.service,
         );
       } else {
         resourcesList = resourcesList.filter(
-          resourceName => resourceName !== resourceNameToUpdate && amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
+          resourceName => resourceName !== resourceNameToUpdate && !amplifyMeta[selectedCategory][resourceName].iamAccessUnavailable,
         );
       }
     }
@@ -189,7 +192,6 @@ const selectResourcesInCategory = (choices: DistinctChoice<any>[], currentPermis
   name: 'resources',
   message: `${_.capitalize(category)} has ${choices.length} resources in this project. Select the one you would like your Lambda to access`,
   choices,
-  validate: answers => (_.isEmpty(answers) ? 'You must select at least one resource' : true),
   default: fetchPermissionResourcesForCategory(currentPermissionMap, category),
 });
 

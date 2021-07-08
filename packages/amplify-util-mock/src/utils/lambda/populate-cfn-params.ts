@@ -32,6 +32,7 @@ const getCfnPseudoParams = (): Record<string, string> => {
     'AWS::AccountId': accountId,
     'AWS::StackId': stackId,
     'AWS::StackName': stackName,
+    'AWS::URLSuffix': 'amazonaws.com',
   };
 };
 

@@ -65,7 +65,7 @@ export const askLayerSelection = async (
   layerSelections = layerSelections.filter(selection => selection !== provideExistingARNsPrompt);
 
   for (const layerName of layerSelections) {
-    const layerCloudState = LayerCloudState.getInstance();
+    const layerCloudState = LayerCloudState.getInstance(layerName);
     const layerVersions = await layerCloudState.getLayerVersionsFromCloud(context, layerName);
     const layerVersionChoices = layerVersions.map(mapVersionNumberToChoice);
 
@@ -83,10 +83,16 @@ export const askLayerSelection = async (
       const previousLayerSelection = _.first(filterProjectLayers(previousSelections).filter(prev => prev.resourceName === layerName));
 
       let defaultLayerSelection: string;
+
       if (previousLayerSelection === undefined || previousLayerSelection.isLatestVersionSelected) {
         defaultLayerSelection = defaultLayerVersionPrompt;
       } else {
-        defaultLayerSelection = mapVersionNumberToChoice(_.first(layerVersions.filter(v => v.Version === previousLayerSelection.version)));
+        const previouslySelectedLayerVersion = _.first(layerVersions.filter(v => v.Version === previousLayerSelection.version));
+
+        // Fallback to defaultLayerVersionPrompt as it is possible that a function is associated with a non-existent layer version
+        defaultLayerSelection = previouslySelectedLayerVersion
+          ? mapVersionNumberToChoice(previouslySelectedLayerVersion)
+          : defaultLayerVersionPrompt;
       }
 
       const versionSelection = (

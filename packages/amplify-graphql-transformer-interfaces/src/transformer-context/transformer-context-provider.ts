@@ -31,4 +31,4 @@ export type TransformerValidationStepContextProvider = Pick<
   'inputDocument' | 'output' | 'providerRegistry' | 'dataSources' | 'featureFlags'
 >;
 export type TransformerPrepareStepContextProvider = TransformerValidationStepContextProvider;
-export type TranformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;
+export type TransformerTransformSchemaStepContextProvider = TransformerValidationStepContextProvider;

@@ -27,7 +27,7 @@ import { importMessages } from './messages';
 import uuid from 'uuid';
 
 // Currently the CLI only supports the output generation of these providers
-const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon'];
+const supportedIdentityProviders = ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'];
 
 export const importResource = async (
   context: $TSContext,
@@ -752,6 +752,9 @@ const createMetaOutput = (answers: ImportAnswers, hasOAuthConfig: boolean): Meta
           case 'accounts.google.com':
             output.GoogleWebClient = answers.identityPool!.SupportedLoginProviders![key];
             break;
+          case 'appleid.apple.com':
+            output.AppleWebClient = answers.identityPool!.SupportedLoginProviders![key];
+            break;
           default:
             // We don't do anything with the providers that the CLI currently does not support.
             break;
@@ -815,6 +818,9 @@ const createEnvSpecificResourceParameters = (
         case 'graph.facebook.com':
           envSpecificResourceParameters.facebookAppId = answers.identityPool!.SupportedLoginProviders![key];
           break;
+        case 'appleid.apple.com':
+          envSpecificResourceParameters.appleAppId = answers.identityPool!.SupportedLoginProviders![key];
+          break;
         case 'accounts.google.com': {
           switch (projectType) {
             case 'javascript':
@@ -840,11 +846,23 @@ const createEnvSpecificResourceParameters = (
 };
 
 const createOAuthCredentials = (identityProviders: IdentityProviderType[]): string => {
-  const credentials = identityProviders.map(idp => ({
-    ProviderName: idp.ProviderName!,
-    client_id: idp.ProviderDetails!.client_id,
-    client_secret: idp.ProviderDetails!.client_secret,
-  }));
+  const credentials = identityProviders.map(idp => {
+    if (idp.ProviderName === 'SignInWithApple') {
+      return {
+        ProviderName: idp.ProviderName!,
+        client_id: idp.ProviderDetails!.client_id,
+        team_id: idp.ProviderDetails!.team_id,
+        key_id: idp.ProviderDetails!.key_id,
+        private_key: idp.ProviderDetails!.private_key,
+      };
+    } else {
+      return {
+        ProviderName: idp.ProviderName!,
+        client_id: idp.ProviderDetails!.client_id,
+        client_secret: idp.ProviderDetails!.client_secret,
+      };
+    }
+  });
 
   return JSON.stringify(credentials);
 };
@@ -900,7 +918,7 @@ export const importedAuthEnvInit = async (
 
   if (isInHeadlessMode) {
     // Validate required parameters' presence and merge into parameters
-    return await headlessImport(context, cognito, identity, providerName, resourceName, resource, resourceParameters, headlessParams);
+    return await headlessImport(context, cognito, identity, providerName, resourceName, resourceParameters, headlessParams);
   }
 
   // If region mismatch, signal prompt for new arguments, only in interactive mode, headless does not matter
@@ -1113,13 +1131,12 @@ export const importedAuthEnvInit = async (
   };
 };
 
-const headlessImport = async (
+export const headlessImport = async (
   context: $TSContext,
   cognito: ICognitoUserPoolService,
   identity: IIdentityPoolService,
   providerName: string,
   resourceName: string,
-  resource: MetaConfiguration,
   resourceParameters: ResourceParameters,
   headlessParams: ImportAuthHeadlessParameters,
 ): Promise<{ succeeded: boolean; envSpecificParameters: EnvSpecificResourceParameters }> => {
@@ -1131,7 +1148,7 @@ const headlessImport = async (
   const projectConfig = context.amplify.getProjectConfig();
 
   // If region mismatch, signal prompt for new arguments, only in interactive mode, headless does not matter
-  if (resourceParameters.region !== Region) {
+  if (resourceParameters.region && resourceParameters.region !== Region) {
     throw new Error(importMessages.NewEnvDifferentRegion(resourceName, resourceParameters.region, Region));
   }
 
@@ -1232,7 +1249,7 @@ const headlessImport = async (
   // Import questions succeeded, create the create the required CLI resource state from the answers.
   const projectType: string = projectConfig.frontend;
 
-  const newState = await updateStateFiles(context, questionParameters, answers, projectType, false);
+  const newState = await updateStateFiles(context, questionParameters, answers, projectType, true);
 
   return {
     succeeded: true,
