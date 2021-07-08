@@ -1,7 +1,7 @@
 import { $TSContext } from 'amplify-cli-core';
 import _ from 'lodash';
 import { eventNames } from 'process';
-import { generateRootStackTemplate,CommandType } from './root-stack-builder/root-stack-builder';
+import { generateRootStackTemplate, CommandType } from './root-stack-builder/root-stack-builder';
 
 const moment = require('moment');
 const path = require('path');
@@ -22,7 +22,6 @@ const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-pus
 const logger = fileLogger('attach-backend');
 const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
 const nestedStackFileName = 'nested-cloudformation-stack.yml';
-
 
 export async function run(context) {
   await configurationManager.init(context);
@@ -55,14 +54,14 @@ export async function run(context) {
 
     //const rootStack = JSONUtilities.readJson(initTemplateFilePath);
     const nestedStackFileName = 'nested-cloudformation-stack.yml';
-    const rootStack = generateRootStackTemplate({
+    const rootStack = await generateRootStackTemplate({
       stackName: stackName,
       event: CommandType.INIT,
       rootStackFileName: nestedStackFileName,
-      modifiers:[prePushCfnTemplateModifier]
+      cfnmodifier: prePushCfnTemplateModifier,
     });
     // prepush modifier
-    await prePushCfnTemplateModifier(rootStack);
+    //await prePushCfnTemplateModifier(rootStack);
     // Track Amplify Console generated stacks
     if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
       rootStack.Description = 'Root Stack for AWS Amplify Console';
