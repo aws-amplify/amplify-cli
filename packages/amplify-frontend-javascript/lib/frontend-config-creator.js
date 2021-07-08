@@ -174,6 +174,12 @@ function getAWSExportsObject(resources) {
           ...getMapConfig(serviceResourceMapping[service]),
         };
         break;
+      case 'PlaceIndex':
+        geoConfig.place_indexes = {
+          ...geoConfig.place_indexes,
+          ...getPlaceIndexConfig(serviceResourceMapping[service]),
+        };
+        break;
       default:
         break;
     }
@@ -551,12 +557,27 @@ function getMapConfig(mapResources) {
     mapConfig.items[mapResource.resourceName] = {
       style: mapResource.mapStyle
     }
-    if(mapResource.isDefaultMap) {
+    if(mapResource.isDefault) {
       defaultMap = mapResource.resourceName;
     }
   });
   mapConfig.default = defaultMap;
   return mapConfig;
+}
+
+function getPlaceIndexConfig(placeIndexResources) {
+  let defaultPlaceIndex = "";
+  const placeIndexConfig = {
+    items: []
+  };
+  placeIndexResources.forEach(placeIndexResource => {
+    placeIndexConfig.items.push(placeIndexResource.resourceName);
+    if(placeIndexResource.isDefault) {
+      defaultPlaceIndex = placeIndexResource.resourceName;
+    }
+  });
+  placeIndexConfig.default = defaultPlaceIndex;
+  return placeIndexConfig;
 }
 
 module.exports = { createAWSExports, createAmplifyConfig, deleteAmplifyConfig };
