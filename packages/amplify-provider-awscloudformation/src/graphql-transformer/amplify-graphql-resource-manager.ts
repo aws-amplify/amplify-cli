@@ -4,7 +4,7 @@ import { DiffChanges, DiffableProject, getGQLDiff } from './utils';
 import { DynamoDB, Template } from 'cloudform-types';
 import { GSIChange, getGSIDiffs } from './gsi-diff-helpers';
 import { GSIRecord, TemplateState, getPreviousDeploymentRecord, getTableNames } from '../utils/amplify-resource-state-utils';
-import { ROOT_APPSYNC_S3_KEY, hashDirectory } from '../upload-appsync-files';
+import { ROOT_APPSYNC_S3_KEY, hashGQLResource } from '../upload-appsync-files';
 import { addGSI, getGSIDetails, removeGSI } from './dynamodb-gsi-helpers';
 import {
   cantAddAndRemoveGSIAtSameTimeRule,
@@ -121,7 +121,7 @@ export class GraphQLResourceManager {
 
     const { parameters, capabilities } = await getPreviousDeploymentRecord(this.cfnClient, this.resourceMeta.stackId);
 
-    const buildHash = await hashDirectory(this.backendApiProjectRoot);
+    const buildHash = await hashGQLResource(this.backendApiProjectRoot, this.resourceMeta.resourceName);
 
     // copy the last deployment state as current state
     let previousStepPath = cloudBuildDir;
@@ -179,7 +179,7 @@ export class GraphQLResourceManager {
     const stateFileDir = this.getStateFilesDirectory();
 
     const { parameters, capabilities } = await getPreviousDeploymentRecord(this.cfnClient, this.resourceMeta.stackId);
-    const buildHash = await hashDirectory(this.backendApiProjectRoot);
+    const buildHash = await hashGQLResource(this.backendApiProjectRoot, this.resourceMeta.resourceName);
 
     const stepNumber = 'initial-stack';
     const stepPath = path.join(stateFileDir, `${stepNumber}`);
@@ -207,7 +207,7 @@ export class GraphQLResourceManager {
   };
 
   public getCloudStateFilesDirectory = async (): Promise<string> => {
-    const buildHash = await hashDirectory(this.backendApiProjectRoot);
+    const buildHash = await hashGQLResource(this.backendApiProjectRoot, this.resourceMeta.resourceName);
     return `${ROOT_APPSYNC_S3_KEY}/${buildHash}/states`;
   };
 

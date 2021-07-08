@@ -16,7 +16,7 @@ import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 
 import { ProviderName as providerName } from '../constants';
-import { hashDirectory } from '../upload-appsync-files';
+import { hashGQLResource } from '../upload-appsync-files';
 import { writeDeploymentToDisk } from './utils';
 import { loadProject as readTransformerConfiguration } from './transform-config';
 import { loadProject } from 'graphql-transformer-core';
@@ -234,7 +234,7 @@ export async function transformGraphQLSchema(context, options) {
   const schemaDirPath = path.normalize(path.join(resourceDir, SCHEMA_DIR_NAME));
   let deploymentRootKey = await getPreviousDeploymentRootKey(previouslyDeployedBackendDir);
   if (!deploymentRootKey) {
-    const deploymentSubKey = await hashDirectory(resourceDir);
+    const deploymentSubKey = await hashGQLResource(resourceDir, resources[0].resourceName);
     deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
   }
   const projectBucket = options.dryRun ? 'fake-bucket' : getProjectBucket(context);

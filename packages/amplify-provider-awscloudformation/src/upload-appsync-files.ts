@@ -1,16 +1,16 @@
-const fs = require('fs');
-const fsext = require('fs-extra');
-const path = require('path');
-
-const TransformPackage = require('graphql-transformer-core');
-const { S3 } = require('./aws-utils/aws-s3');
-const { fileLogger } = require('./utils/aws-logger');
+import fs from 'fs-extra';
+import path from 'path';
+import ora from 'ora';
+import crypto from 'crypto';
+import globby from 'globby';
+import { stateManager, JSONUtilities } from 'amplify-cli-core';
+import { uploadAPIProject } from 'graphql-transformer-core';
+import { S3 } from './aws-utils/aws-s3';
+import { fileLogger } from './utils/aws-logger';
+import { ProviderName as providerName } from './constants';
 const logger = fileLogger('upload-appsync-files');
 
-const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
-const providerName = require('./constants').ProviderName;
-const { hashElement } = require('folder-hash');
-const ora = require('ora');
+export const ROOT_APPSYNC_S3_KEY = 'amplify-appsync-files';
 
 const PARAM_FILE_NAME = 'parameters.json';
 const CF_FILE_NAME = 'cloudformation-template.json';
@@ -28,7 +28,7 @@ function getProjectBucket(context) {
  * @param {*} allResources
  * @param {*} options
  */
-async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, options = {}) {
+export async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, options: any = {}) {
   const allApiResourceToUpdate = resourcesToUpdate.filter(resource => resource.service === 'AppSync');
   const allApiResources = allResources.filter(resource => resource.service === 'AppSync');
   const { defaultParams, useDeprecatedParameters } = options;
@@ -40,7 +40,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     if (useDeprecatedParameters) {
       deploymentSubKey = new Date().getTime();
     } else {
-      deploymentSubKey = await hashDirectory(resourceDir);
+      deploymentSubKey = await hashGQLResource(resourceDir, allApiResources[0].resourceName);
     }
     const deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
     return deploymentRootKey;
@@ -170,7 +170,7 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     const jsonString = JSON.stringify(currentParameters, null, 4);
     const buildDirectoryPath = path.join(backEndDir, category, resourceName, 'build');
     const parametersOutputFilePath = path.join(buildDirectoryPath, PARAM_FILE_NAME);
-    fsext.ensureDirSync(buildDirectoryPath);
+    fs.ensureDirSync(buildDirectoryPath);
     fs.writeFileSync(parametersOutputFilePath, jsonString, 'utf8');
   };
 
@@ -189,9 +189,9 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
     if (!fs.existsSync(resourceBuildDir)) {
       return;
     }
-    const spinner = new ora('Uploading files...');
+    const spinner = ora('Uploading files...');
     spinner.start();
-    await TransformPackage.uploadAPIProject({
+    await uploadAPIProject({
       directory: resourceBuildDir,
       upload: async blob => {
         const { Key, Body } = blob;
@@ -227,21 +227,17 @@ async function uploadAppSyncFiles(context, resourcesToUpdate, allResources, opti
  * Hashes the project directory into a single value. The same project configuration
  * should return the same hash.
  */
-async function hashDirectory(directory) {
-  const options = {
-    encoding: 'hex',
-    folders: {
-      exclude: ['build'],
-    },
-  };
+export async function hashGQLResource(directory: string, resourceName: string): Promise<string> {
+  const filePaths: string[] = await globby([path.join('**', '*')], {
+    cwd: directory,
+    ignore: ['build'],
+  });
+  // update the glob with authconfig in api
+  const apiConfig = stateManager.getBackendConfig(directory);
 
-  const hashResult = await hashElement(directory, options);
-
-  return hashResult.hash;
+  return filePaths
+    .map(filePath => fs.readFileSync(path.join(directory, filePath), 'binary'))
+    .reduce((acc, it) => acc.update(it), crypto.createHash('sha256'))
+    .update(JSONUtilities.stringify(apiConfig.api[resourceName].output.authConfig, { minify: true }))
+    .digest('hex');
 }
-
-module.exports = {
-  ROOT_APPSYNC_S3_KEY,
-  uploadAppSyncFiles,
-  hashDirectory,
-};

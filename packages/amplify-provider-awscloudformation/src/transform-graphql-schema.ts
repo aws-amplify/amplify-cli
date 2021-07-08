@@ -36,7 +36,7 @@ import {
 } from 'graphql-transformer-core';
 
 import { print } from 'graphql';
-import { hashDirectory } from './upload-appsync-files';
+import { hashGQLResource } from './upload-appsync-files';
 import { exitOnNextTick, FeatureFlags } from 'amplify-cli-core';
 import { transformGraphQLSchema as transformGraphQLSchemaV6 } from './graphql-transformer/transform-graphql-schema';
 
@@ -439,7 +439,7 @@ export async function transformGraphQLSchema(context, options) {
   const schemaDirPath = path.normalize(path.join(resourceDir, schemaDirName));
   let deploymentRootKey = await getPreviousDeploymentRootKey(previouslyDeployedBackendDir);
   if (!deploymentRootKey) {
-    const deploymentSubKey = await hashDirectory(resourceDir);
+    const deploymentSubKey = await hashGQLResource(resourceDir, resources[0].resourceName);
     deploymentRootKey = `${ROOT_APPSYNC_S3_KEY}/${deploymentSubKey}`;
   }
   const projectBucket = options.dryRun ? 'fake-bucket' : getProjectBucket(context);

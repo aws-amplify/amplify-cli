@@ -24,11 +24,13 @@ import { IdentityPoolService, createIdentityPoolService } from './aws-utils/Iden
 import { S3Service, createS3Service } from './aws-utils/S3Service';
 import { DynamoDBService, createDynamoDBService } from './aws-utils/DynamoDBService';
 import { resolveAppId } from './utils/resolve-appId';
+import { hashGQLResource } from './upload-appsync-files';
 import { loadConfigurationForEnv } from './configuration-manager';
 import { Lambda } from './aws-utils/aws-lambda';
 import CloudFormation from './aws-utils/aws-cfn';
 import { $TSContext } from 'amplify-cli-core';
 
+export { hashGQLResource } from './upload-appsync-files';
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
 import { updateEnv } from './update-env';
@@ -124,6 +126,7 @@ module.exports = {
   configure,
   configureNewUser,
   constants,
+  hashGQLResource,
   pushResources,
   storeCurrentCloudBackend,
   providerUtils,
