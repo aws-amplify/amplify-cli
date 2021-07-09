@@ -15,7 +15,7 @@ export class ViewResourceTableParams {
     public filteredResourceList : any //resources to *not* display - TBD define union of valid types
     getCategoryFromCLIOptions( cliOptions : object ){
         if ( cliOptions ){
-            return Object.keys(cliOptions).filter( key => (key != 'verbose') && (key !== 'yes') )
+            return (Object.keys(cliOptions).filter( key => (key != 'verbose') && (key !== 'yes') )).map(category => category.toLowerCase());
         } else {
             return [];
         }

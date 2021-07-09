@@ -380,7 +380,7 @@ export function getResourceService( category: string, resourceName: string){
   return categoryMeta[resourceName]?.service;
 }
 
-export async function getResourceStatus(category?, resourceName?, providerName?, filteredResources?) {
+export async function getResourceStatus(category?, resourceName?, providerName?, filteredResources?): Promise<resourceStatus.ICategoryStatusCollection>{
 
   const amplifyProjectInitStatus = getCloudInitStatus();
   let { amplifyMeta, currentAmplifyMeta } = getAmplifyMeta();
@@ -402,14 +402,14 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
   // if not equal there is a tag update
   const tagsUpdated = !_.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
-  return {
-    resourcesToBeCreated,
-    resourcesToBeUpdated,
-    resourcesToBeSynced,
-    resourcesToBeDeleted,
-    tagsUpdated,
-    allResources,
-  };
+  return  {
+            resourcesToBeCreated,
+            resourcesToBeUpdated,
+            resourcesToBeSynced,
+            resourcesToBeDeleted,
+            tagsUpdated,
+            allResources,
+        };
 }
 
 
@@ -565,40 +565,31 @@ function mergeMultiCategoryStatus( accumulator : ICategoryStatusCollection, curr
 }
 
 
-
+function resourceBelongsToCategoryList( category , categoryList ){
+  if( typeof category === 'string'){
+    return categoryList.includes( category )
+  } else {
+    return false;
+  }
+}
+function filterResourceCategory( resourceList , categoryList){
+  return (resourceList)? resourceList.filter(resource => resourceBelongsToCategoryList(resource.category, categoryList)) : []
+}
 //Filter resource status for the given categories
 export async function getMultiCategoryStatus( inputs: ViewResourceTableParams | undefined ){
-    if ( ! (inputs?.categoryList?.length) ){
-        // all diffs ( amplify -v )
-        return await getResourceStatus();
-    } else {
-        let results : any[] = [];
+    let resourceStatusResults = await getResourceStatus();
+    if ( inputs?.categoryList?.length ){
         //diffs for only the required categories (amplify -v <category1>...<categoryN>)
-        for await ( let category of inputs.categoryList ){
-          if( category ){
-            const categoryResult =  await getResourceStatus( category,
-                                                            undefined,
-                                                            undefined,
-                                                            undefined );
-            results.push(categoryResult);
-          }
-        }
-
-        let mergedResult : ICategoryStatusCollection= {
-          resourcesToBeCreated: [],
-          resourcesToBeUpdated: [],
-          resourcesToBeDeleted: [],
-          resourcesToBeSynced: [],
-          allResources:[],
-          tagsUpdated: false
-        };
-        results.map( resourceResult => {
-                          mergedResult = mergeMultiCategoryStatus(mergedResult, resourceResult);
-                     });
-
-        return mergedResult;
-    }
+        //TBD: optimize search
+        resourceStatusResults.resourcesToBeCreated = filterResourceCategory(resourceStatusResults.resourcesToBeCreated, inputs.categoryList);
+        resourceStatusResults.resourcesToBeUpdated = filterResourceCategory(resourceStatusResults.resourcesToBeUpdated, inputs.categoryList);
+        resourceStatusResults.resourcesToBeSynced  = filterResourceCategory(resourceStatusResults.resourcesToBeSynced, inputs.categoryList);
+        resourceStatusResults.resourcesToBeDeleted = filterResourceCategory(resourceStatusResults.resourcesToBeDeleted, inputs.categoryList);
+        resourceStatusResults.allResources = filterResourceCategory(resourceStatusResults.allResources, inputs.categoryList)
+      }
+    return resourceStatusResults;
 }
+
 
 export async function showStatusTable( tableViewFilter : ViewResourceTableParams ){
       const amplifyProjectInitStatus = getCloudInitStatus();

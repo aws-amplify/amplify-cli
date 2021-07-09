@@ -8,6 +8,8 @@ import { print } from './print';
 import { pathManager } from 'amplify-cli-core';
 import chalk from 'chalk';
 import { getResourceService } from './resource-status';
+import { getBackendConfigFilePath } from './path-manager';
+import * as glob from 'glob';
 
 const ResourceProviderServiceNames = {
   S3 : "S3",
@@ -94,13 +96,12 @@ function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 interface ResourcePaths {
-    cloudBuildTemplateFile : string; //cloud file path after transformation
-    localBuildTemplateFile : string; //file path
     cloudTemplateFile : string;
     localTemplateFile : string;
-    localPreBuildTemplateFile : string;
-    cloudPreBuildTemplateFile : string;
-
+    localPreBuildCfnFile : string;
+    cloudPreBuildCfnFile : string;
+    localBuildCfnFile : string;
+    cloudBuildCfnFile : string;
 }
 
 
@@ -132,14 +133,12 @@ export class ResourceDiff {
         this.resourceFiles = {
             localTemplateFile : path.normalize(path.join(this.localBackendDir, category, resourceName)),
             cloudTemplateFile : path.normalize(path.join(this.cloudBackendDir, category, resourceName)),
-            //Used for API category, since cloudformation is overridden by user generated changes
-            localBuildTemplateFile : path.normalize(path.join(this.localBackendDir, category, resourceName, 'build',`${this.provider}-template`)),
-            cloudBuildTemplateFile : path.normalize(path.join(this.cloudBackendDir, category, resourceName, 'build', `${this.provider}-template`)),
-            //Use for non-API category like storage, auth
-            localPreBuildTemplateFile: path.normalize(path.join(this.localBackendDir, category, resourceName, this.getResourceProviderFileName(resourceName, this.provider))),
-            cloudPreBuildTemplateFile: path.normalize(path.join(this.cloudBackendDir , category, resourceName, this.getResourceProviderFileName(resourceName, this.provider))),
-        }
-        console.log("SACPCDEBUG:ResourceDiff: ", this.resourceFiles);
+            //Paths using glob for Cfn file and Build file
+            localPreBuildCfnFile : this.globCfnFilePath( path.normalize(path.join(this.localBackendDir, category, resourceName))),
+            cloudPreBuildCfnFile : this.globCfnFilePath( path.normalize(path.join(this.cloudBackendDir, category, resourceName))),
+            localBuildCfnFile : this.globCfnFilePath( path.normalize(path.join(this.localBackendDir, category, resourceName, 'build'))),
+            cloudBuildCfnFile : this.globCfnFilePath( path.normalize(path.join(this.cloudBackendDir, category, resourceName, 'build'))),
+          }
     }
 
     normalizeProviderForFileNames(provider:string){
@@ -151,11 +150,11 @@ export class ResourceDiff {
       }
     }
 
-    calculateDiffTemplate = async () => {
-      const resourceTemplatePaths = await this.getResourceFilePaths()
+    calculateCfnDiff = async () =>{
+      const resourceTemplatePaths = await this.getCfnResourceFilePaths();
       //load resource template objects
-      this.localTemplate = await this.loadCloudFormationTemplate(resourceTemplatePaths.localTemplatePath)
-      this.cloudTemplate = await this.loadCloudFormationTemplate(resourceTemplatePaths.cloudTemplatePath);
+      this.localTemplate = await this.loadCfnTemplate(resourceTemplatePaths.localTemplatePath)
+      this.cloudTemplate = await this.loadCfnTemplate(resourceTemplatePaths.cloudTemplatePath);
       const diff = cfnDiff.diffTemplate(this.cloudTemplate, this.localTemplate );
       return diff;
     }
@@ -164,28 +163,17 @@ export class ResourceDiff {
        return this.category.toLowerCase() == categoryType
     }
 
-    getResourceFilePaths = async() => {
-      if ( this.isCategory(CategoryTypes.API) ){
-          //API artifacts are stored in build folder for cloud resources
-          //SACPCTBD!!: This should not rely on the presence or absence of a file, it should be based on the context state.
-          //e.g user-added, amplify-built-not-deployed, amplify-deployed-failed, amplify-deployed-success
-          return {
-            localTemplatePath : (checkExist(this.resourceFiles.localBuildTemplateFile))?this.resourceFiles.localBuildTemplateFile: this.resourceFiles.localPreBuildTemplateFile ,
-            cloudTemplatePath : (checkExist(this.resourceFiles.cloudBuildTemplateFile))?this.resourceFiles.cloudBuildTemplateFile: this.resourceFiles.cloudPreBuildTemplateFile
-          }
-        }
-        return {
-            localTemplatePath: this.resourceFiles.localPreBuildTemplateFile ,
-            cloudTemplatePath: this.resourceFiles.cloudPreBuildTemplateFile
-        }
+    getCfnResourceFilePaths = async() => {
+      return {
+            localTemplatePath : (checkExist(this.resourceFiles.localBuildCfnFile))?this.resourceFiles.localBuildCfnFile: this.resourceFiles.localPreBuildCfnFile ,
+            cloudTemplatePath : (checkExist(this.resourceFiles.cloudBuildCfnFile))?this.resourceFiles.cloudBuildCfnFile: this.resourceFiles.cloudPreBuildCfnFile
+      }
     }
 
     printResourceDetailStatus = async ( mutationInfo : StackMutationInfo ) => {
       const header = `${ mutationInfo.consoleStyle(mutationInfo.label)}`;
-      const diff = await this.calculateDiffTemplate();
-      //display template diff to console
-      //print.info(`[\u27A5] ${vaporStyle("Stack: ")} ${capitalize(this.category)}/${this.resourceName} : ${header}`);
-      print.info(`${vaporStyle(`[\u27A5] Resource Stack: ${capitalize(this.category)}/${this.resourceName}`)} : ${header}`);
+      const diff = await this.calculateCfnDiff();
+      print.info(`${resourceDetailSectionStyle(`[\u27A5] Resource Stack: ${capitalize(this.category)}/${this.resourceName}`)} : ${header}`);
       const diffCount = this.printStackDiff( diff );
       if ( diffCount === 0 ){
           console.log("No changes  ")
@@ -196,80 +184,6 @@ export class ResourceDiff {
        let parts = cfnType.split("::");
        parts.shift(); //remove "AWS::"
        return parts.join("::")
-    }
-
-    normalizeCdkChangeImpact( cdkChangeImpact : cfnDiff.ResourceImpact ){
-        switch (cdkChangeImpact) {
-          case cfnDiff.ResourceImpact.MAY_REPLACE:
-            return chalk.italic(chalk.yellow('may be replaced'));
-          case cfnDiff.ResourceImpact.WILL_REPLACE:
-            return chalk.italic(chalk.bold(chalk.red('replace')));
-          case cfnDiff.ResourceImpact.WILL_DESTROY:
-            return chalk.italic(chalk.bold(chalk.red('destroy')));
-          case cfnDiff.ResourceImpact.WILL_ORPHAN:
-            return chalk.italic(chalk.yellow('orphan'));
-          case cfnDiff.ResourceImpact.WILL_UPDATE:
-          case cfnDiff.ResourceImpact.WILL_CREATE:
-          case cfnDiff.ResourceImpact.NO_CHANGE:
-            return ''; // no extra info is gained here
-        }
-    }
-
-    getActionStyle( changeType:StackMutationInfo, valueType ){
-      return ` ${changeType.consoleStyle(changeType.icon)} ${this.normalizeAWSResourceName(valueType)}`
-    }
-
-    getUpdateImpactStyle( summaryStringArray ){
-      return summaryStringArray.join(`\n  \u2514\u2501 `)
-    }
-
-    constructChangeSummary( change ){
-       let action : string;
-       let propChangeSummary : string[] = [];
-       if ( change.isAddition ){
-          action = this.getActionStyle(stackMutationType.CREATE, change.newValue.Type);
-       } else if (change.isRemoval){
-          action = this.getActionStyle(stackMutationType.DELETE, change.oldValue.Type);
-       } else {
-           //Its an update
-           action = this.getActionStyle(stackMutationType.UPDATE, change.newValue.Type);
-           Object.keys(change.propertyDiffs).map( propType => {
-             const changeData = change.propertyDiffs[propType];
-             if ( changeData.isDifferent ) {
-                   const summary = `${propType} ${this.normalizeCdkChangeImpact(changeData.changeImpact)}`;
-                   propChangeSummary.push(summary)
-             }
-           })
-       }
-       if ( propChangeSummary.length > 0 ){
-        const summaryString = this.getUpdateImpactStyle(propChangeSummary)
-        return `${action} ${summaryString}`
-       } else {
-        return action
-       }
-    }
-
-    getDiffSummary = async () => {
-      const templateDiff = await this.calculateDiffTemplate();
-      const results : string[] = [];
-      templateDiff.resources.forEachDifference( (logicalId, change)=> {
-        results.push( this.constructChangeSummary( change ));
-      });
-      if ( results.length > 0){
-        return results.join("\n");
-      } else {
-        return chalk.grey("no change");
-      }
-    }
-
-    printResourceSummaryStatus = async ( mutationInfo : StackMutationInfo ) => {
-      const header = `${ mutationInfo.consoleStyle(mutationInfo.label)}`;
-      const templateDiff = await this.calculateDiffTemplate();
-      //display template diff to console
-      print.info(`[\u27A5] ${vaporStyle("Stack: ")} ${capitalize(this.category)}/${this.resourceName} : ${header}`);
-      templateDiff.resources.forEachDifference( (logicalId, change)=> {
-        console.log(this.constructChangeSummary( change )  );
-      })
     }
 
     printStackDiff = ( templateDiff, stream?: cfnDiff.FormatStream ) =>{
@@ -324,6 +238,52 @@ export class ResourceDiff {
         }
     }
 
+    getFilePathExtension( filePath :string ){
+       const ext = path.extname( filePath );
+       return (ext)? (ext.substring(1)).toLowerCase() : "" ;
+    }
+
+    globCfnFilePath( fileFolder : string ){
+      if (fs.existsSync(fileFolder )) {
+        const globOptions: glob.IOptions = {
+          absolute: false,
+          cwd: fileFolder,
+          follow: false,
+          nodir: true,
+        };
+
+        const templateFileNames = glob.sync('**/*template.{yaml,yml,json}', globOptions);
+        for (const templateFileName of templateFileNames) {
+          const absolutePath = path.join(fileFolder, templateFileName);
+          return absolutePath; //We support only one cloudformation template ( nested templates are picked )
+        }
+      }
+      return ""
+    }
+
+    //Load Cloudformation template from file.
+    //The filePath should end in json/yaml or yml
+    loadCfnTemplate = async(filePath) => {
+      if( filePath === ""){
+        return {}
+      }
+      const fileType = this.getFilePathExtension(filePath)
+      try {
+        //Load yaml or yml or json files
+        let providerObject = {};
+        if (fs.existsSync(filePath) ){
+            providerObject = await this.loadStructuredFile(filePath, //Filename with extension
+                                                           InputFileExtensionDeserializers[fileType] //Deserialization function
+                                                           );
+        }
+        return providerObject;
+      } catch (e) {
+        //No resource file found
+        console.log(e);
+        throw e;
+      }
+    }
+
 }
 
 function checkExist( filePath ){
@@ -350,11 +310,11 @@ export interface ICategoryStatusCollection {
   resourcesToBeDeleted: any[],
   resourcesToBeSynced: any[],
   allResources:any[],
-  tagsUpdated: false
+  tagsUpdated: boolean
 }
 
-//const vaporStyle = chalk.hex('#8be8fd').bgHex('#282a36');
-const vaporStyle = chalk.bgRgb(15, 100, 204)
+//Console text styling for resource details section
+const resourceDetailSectionStyle = chalk.bgRgb(15, 100, 204)
 
 
 export async function CollateResourceDiffs( resources , mutationInfo : StackMutationInfo  /* create/update/delete */ ){
