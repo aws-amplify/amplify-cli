@@ -141,36 +141,8 @@ export class ResourceDiff {
           }
     }
 
-    normalizeProviderForFileNames(provider:string){
-      //file-names are currently standardized around "cloudformation" not awscloudformation.
-      if ( provider === "awscloudformation"){
-        return CategoryProviders.CLOUDFORMATION
-      } else {
-        return provider;
-      }
-    }
-
-    calculateCfnDiff = async () =>{
-      const resourceTemplatePaths = await this.getCfnResourceFilePaths();
-      //load resource template objects
-      this.localTemplate = await this.loadCfnTemplate(resourceTemplatePaths.localTemplatePath)
-      this.cloudTemplate = await this.loadCfnTemplate(resourceTemplatePaths.cloudTemplatePath);
-      const diff = cfnDiff.diffTemplate(this.cloudTemplate, this.localTemplate );
-      return diff;
-    }
-
-    isCategory( categoryType ){
-       return this.category.toLowerCase() == categoryType
-    }
-
-    getCfnResourceFilePaths = async() => {
-      return {
-            localTemplatePath : (checkExist(this.resourceFiles.localBuildCfnFile))?this.resourceFiles.localBuildCfnFile: this.resourceFiles.localPreBuildCfnFile ,
-            cloudTemplatePath : (checkExist(this.resourceFiles.cloudBuildCfnFile))?this.resourceFiles.cloudBuildCfnFile: this.resourceFiles.cloudPreBuildCfnFile
-      }
-    }
-
-    printResourceDetailStatus = async ( mutationInfo : StackMutationInfo ) => {
+    //API :View: Print the resource detail status for the given mutation (Create/Update/Delete)
+    public printResourceDetailStatus = async ( mutationInfo : StackMutationInfo ) => {
       const header = `${ mutationInfo.consoleStyle(mutationInfo.label)}`;
       const diff = await this.calculateCfnDiff();
       print.info(`${resourceDetailSectionStyle(`[\u27A5] Resource Stack: ${capitalize(this.category)}/${this.resourceName}`)} : ${header}`);
@@ -180,13 +152,36 @@ export class ResourceDiff {
       }
     }
 
-    normalizeAWSResourceName( cfnType ){
-       let parts = cfnType.split("::");
-       parts.shift(); //remove "AWS::"
-       return parts.join("::")
+    //API :Data: Calculate the difference in cloudformation templates between local and cloud templates
+    public calculateCfnDiff = async () => {
+      const resourceTemplatePaths = await this.getCfnResourceFilePaths();
+      //load resource template objects
+      this.localTemplate = await this.loadCfnTemplate(resourceTemplatePaths.localTemplatePath)
+      this.cloudTemplate = await this.loadCfnTemplate(resourceTemplatePaths.cloudTemplatePath);
+      const diff : cfnDiff.TemplateDiff = cfnDiff.diffTemplate(this.cloudTemplate, this.localTemplate );
+      return diff;
     }
 
-    printStackDiff = ( templateDiff, stream?: cfnDiff.FormatStream ) =>{
+    //helper: Select cloudformation file path from build folder or non build folder.
+    private getCfnResourceFilePaths = async() => {
+      return {
+            localTemplatePath : (checkExist(this.resourceFiles.localBuildCfnFile))?this.resourceFiles.localBuildCfnFile: this.resourceFiles.localPreBuildCfnFile ,
+            cloudTemplatePath : (checkExist(this.resourceFiles.cloudBuildCfnFile))?this.resourceFiles.cloudBuildCfnFile: this.resourceFiles.cloudPreBuildCfnFile
+      }
+    }
+
+    //helper: Get category provider from filename
+    private normalizeProviderForFileNames(provider:string):string{
+      //file-names are currently standardized around "cloudformation" not awscloudformation.
+      if ( provider === "awscloudformation"){
+        return CategoryProviders.CLOUDFORMATION
+      } else {
+        return provider;
+      }
+    }
+
+    //helper: Convert cloudformation template diff data using CDK api
+    private printStackDiff = ( templateDiff, stream?: cfnDiff.FormatStream ) =>{
         // filter out 'AWS::CDK::Metadata' resources from the template
         if (templateDiff.resources ) {
           templateDiff.resources = templateDiff.resources.filter(change => {
@@ -202,56 +197,27 @@ export class ResourceDiff {
         return templateDiff.differenceCount;
     }
 
-
-    getResourceProviderFileName(  resourceName : string, providerType : string ){
-        //resourceName is the name of an instantiated category type e.g name of your s3 bucket
-        //providerType is the name of the cloud infrastructure provider e.g cloudformation/terraform
-        if( this.service === ResourceProviderServiceNames.S3 ){
-          return `s3-cloudformation-template`;
-        }
-        return `${resourceName}-${providerType}-template`
-    }
-
-    loadStructuredFile = async(fileName: string, deserializeFunction) => {
+    //helper: reads file and deserializes
+    private loadStructuredFile = async(fileName: string, deserializeFunction) => {
         const contents = await fs.readFile(fileName, { encoding: 'utf-8' });
         return deserializeFunction(contents);
     }
 
-    loadCloudFormationTemplate = async( filePath ) => {
-        try {
-          //Load yaml or yml or json files
-          let providerObject = {};
-          const inputFileExtensions = Object.keys(InputFileExtensionDeserializers)
-          for( let i = 0 ; i < inputFileExtensions.length ; i++ ){
-            if ( fs.existsSync(`${filePath}.${inputFileExtensions[i]}`) ){
-              providerObject = await this.loadStructuredFile(`${filePath}.${inputFileExtensions[i]}`, //Filename with extension
-                                                             InputFileExtensionDeserializers[inputFileExtensions[i]] //Deserialization function
-                                                             );
-              return providerObject;
-            }
-          }
-          return providerObject;
-        } catch (e) {
-          //No resource file found
-          console.log(e);
-          throw e;
-        }
-    }
-
-    getFilePathExtension( filePath :string ){
+    //helper: returns file-extention of the filePath
+    private getFilePathExtension( filePath :string ){
        const ext = path.extname( filePath );
        return (ext)? (ext.substring(1)).toLowerCase() : "" ;
     }
 
-    globCfnFilePath( fileFolder : string ){
-      if (fs.existsSync(fileFolder )) {
+    //Search and return the path to cloudformation template in the given folder
+    private globCfnFilePath( fileFolder : string ){
+      if (fs.existsSync( fileFolder )) {
         const globOptions: glob.IOptions = {
           absolute: false,
           cwd: fileFolder,
           follow: false,
           nodir: true,
         };
-
         const templateFileNames = glob.sync('**/*template.{yaml,yml,json}', globOptions);
         for (const templateFileName of templateFileNames) {
           const absolutePath = path.join(fileFolder, templateFileName);
@@ -263,7 +229,7 @@ export class ResourceDiff {
 
     //Load Cloudformation template from file.
     //The filePath should end in json/yaml or yml
-    loadCfnTemplate = async(filePath) => {
+    private loadCfnTemplate = async(filePath) => {
       if( filePath === ""){
         return {}
       }
