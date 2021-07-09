@@ -136,7 +136,6 @@ const attributeProviderMap = {
     facebook: {},
     google: {},
     loginwithamazon: {},
-    signinwithapple: {},
   },
   birthdate: {
     facebook: {
@@ -148,7 +147,6 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
-    signinwithapple: {},
   },
   email: {
     facebook: {
@@ -163,10 +161,6 @@ const attributeProviderMap = {
       attr: 'email',
       scope: 'profile',
     },
-    signinwithapple: {
-      attr: 'email',
-      scope: 'email',
-    },
   },
   family_name: {
     facebook: {
@@ -178,10 +172,6 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
-    signinwithapple: {
-      attr: 'lastName',
-      scope: 'name',
-    },
   },
   gender: {
     facebook: {
@@ -193,7 +183,6 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
-    signinwithapple: {},
   },
   given_name: {
     facebook: {
@@ -205,10 +194,6 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
-    signinwithapple: {
-      attr: 'firstName',
-      scope: 'name',
-    },
   },
   locale: {
     facebook: {},
@@ -217,7 +202,6 @@ const attributeProviderMap = {
       attr: 'postal_code',
       scope: 'postal_code',
     },
-    signinwithapple: {},
   },
   middle_name: {
     facebook: {
@@ -226,7 +210,6 @@ const attributeProviderMap = {
     },
     google: {},
     loginwithamazon: {},
-    signinwithapple: {},
   },
   name: {
     facebook: {
@@ -241,13 +224,11 @@ const attributeProviderMap = {
       attr: 'name',
       scope: 'profile',
     },
-    signinwithapple: {},
   },
   nickname: {
     facebook: {},
     google: {},
     loginwithamazon: {},
-    signinwithapple: {},
   },
   phone_number: {
     facebook: {},
@@ -256,7 +237,6 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
-    signinwithapple: {},
   },
   picture: {
     facebook: {
@@ -268,31 +248,26 @@ const attributeProviderMap = {
       scope: 'profile',
     },
     loginwithamazon: {},
-    signinwithapple: {},
   },
   preferred_username: {
     facebook: {},
     google: {},
     loginwithamazon: {},
-    signinwithapple: {},
   },
   profile: {
     facebook: {},
     google: {},
     loginwithamazon: {},
-    signinwithapple: {},
   },
   zoneinfo: {
     facebook: {},
     google: {},
     loginwithamazon: {},
-    signinwithapple: {},
   },
   website: {
     facebook: {},
     google: {},
     loginwithamazon: {},
-    signinwithapple: {},
   },
   username: {
     facebook: {
@@ -307,7 +282,6 @@ const attributeProviderMap = {
       attr: 'user_id',
       scope: 'profile:user_id',
     },
-    signinwithapple: {},
   },
   updated_at: {
     facebook: {
@@ -316,7 +290,6 @@ const attributeProviderMap = {
     },
     google: {},
     loginwithamazon: {},
-    signinwithapple: {},
   },
 };
 
@@ -419,11 +392,6 @@ const authProviders = [
     value: 'www.amazon.com',
     answerHashKey: 'amazonAppId',
   },
-  {
-    name: 'Apple',
-    value: 'appleid.apple.com',
-    answerHashKey: 'appleAppId',
-  },
 ];
 
 const hostedUIProviders = [
@@ -438,10 +406,6 @@ const hostedUIProviders = [
   {
     name: 'Login With Amazon',
     value: 'LoginWithAmazon',
-  },
-  {
-    name: 'Sign in with Apple',
-    value: 'SignInWithApple',
   },
 ];
 

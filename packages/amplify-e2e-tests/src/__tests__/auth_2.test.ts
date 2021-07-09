@@ -51,7 +51,7 @@ describe('amplify add auth...', () => {
     validateNodeModulesDirRemoval(projRoot);
     expect(clients[0].UserPoolClient.CallbackURLs[0]).toEqual('https://www.google.com/');
     expect(clients[0].UserPoolClient.LogoutURLs[0]).toEqual('https://www.nytimes.com/');
-    expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(5);
+    expect(clients[0].UserPoolClient.SupportedIdentityProviders).toHaveLength(4);
   });
 
   it('...should init a project and add auth a PostConfirmation: add-to-group trigger', async () => {

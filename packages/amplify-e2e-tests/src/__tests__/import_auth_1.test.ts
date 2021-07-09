@@ -347,7 +347,7 @@ describe('auth import userpool only', () => {
 
   // Used for creating custom app clients. This should match with web app client setting for import to work
   const customAppClientSettings: AppClientSettings = {
-    supportedIdentityProviders: ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon', 'SignInWithApple'],
+    supportedIdentityProviders: ['COGNITO', 'Facebook', 'Google', 'LoginWithAmazon'],
     allowedOAuthFlowsUserPoolClient: true,
     callbackURLs: ['https://sin1/', 'https://sin2/'],
     logoutURLs: ['https://sout1/', 'https://sout2/'],
