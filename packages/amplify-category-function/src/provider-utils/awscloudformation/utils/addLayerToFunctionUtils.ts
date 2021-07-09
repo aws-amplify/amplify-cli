@@ -53,7 +53,7 @@ export const askLayerSelection = async (
     };
   }
 
-  const disabledMessage = 'Layer requires migration. Run "amplify update function" and choose this layer to migrate.';
+  const disabledMessage = 'Layer requires migration. Run "amplify function update" and choose this layer to migrate.';
   const currentResourceNames = filterProjectLayers(previousSelections).map(sel => (sel as ProjectLayer).resourceName);
   const choices = layerOptions.map(op => ({
     name: op,
