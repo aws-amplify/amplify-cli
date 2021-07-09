@@ -46,6 +46,7 @@ import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processo
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
+import { CommandType, generateRootStackTemplate } from './root-stack-builder/root-stack-builder';
 
 const logger = fileLogger('push-resources');
 
@@ -817,8 +818,13 @@ async function formNestedStack(
   serviceName?: string,
   skipEnv?: boolean,
 ) {
-  const initTemplateFilePath = path.join(__dirname, '..', 'resources', rootStackFileName);
-  const nestedStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
+  // const initTemplateFilePath = path.join(__dirname, '..', 'resources', rootStackFileName);
+  // const nestedStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
+
+  const nestedStack = await generateRootStackTemplate({
+    event: CommandType.PUSH,
+    rootStackFileName: rootStackFileName,
+  });
 
   // Track Amplify Console generated stacks
   try {
@@ -843,10 +849,10 @@ async function formNestedStack(
         TemplateURL: APIGatewayAuthURL,
         Parameters: {
           authRoleName: {
-            Ref: 'AuthRoleName',
+            Ref: 'authRoleName',
           },
           unauthRoleName: {
-            Ref: 'UnauthRoleName',
+            Ref: 'unauthRoleName',
           },
           env: context.exeInfo.localEnvInfo.envName,
         },

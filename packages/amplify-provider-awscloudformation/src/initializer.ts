@@ -55,13 +55,11 @@ export async function run(context) {
     //const rootStack = JSONUtilities.readJson(initTemplateFilePath);
     const nestedStackFileName = 'nested-cloudformation-stack.yml';
     const rootStack = await generateRootStackTemplate({
-      stackName: stackName,
       event: CommandType.INIT,
       rootStackFileName: nestedStackFileName,
-      cfnmodifier: prePushCfnTemplateModifier,
     });
     // prepush modifier
-    //await prePushCfnTemplateModifier(rootStack);
+    await prePushCfnTemplateModifier(rootStack);
     // Track Amplify Console generated stacks
     if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
       rootStack.Description = 'Root Stack for AWS Amplify Console';

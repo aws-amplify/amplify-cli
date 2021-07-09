@@ -19,18 +19,18 @@ export class AmplifyRootStack extends cdk.Stack {
     this.templateOptions.description = ROOT_CFN_DESCRIPTION;
     const CfnParameters: { [k: string]: cdk.CfnParameter } = {};
 
-    CfnParameters.deploymentBucketName = new cdk.CfnParameter(this, 'deploymentBucketName', {
+    CfnParameters.deploymentBucketName = new cdk.CfnParameter(this, 'DeploymentBucketName', {
       type: 'String',
       description: 'Name of the common deployment bucket provided by the parent stack',
       default: 'DeploymentBucket',
     });
 
-    CfnParameters.authRoleName = new cdk.CfnParameter(this, 'authRoleName', {
+    CfnParameters.authRoleName = new cdk.CfnParameter(this, 'AuthRoleName', {
       type: 'String',
       default: 'AuthRoleName',
     });
 
-    CfnParameters.unauthRoleName = new cdk.CfnParameter(this, 'unauthRoleName', {
+    CfnParameters.unauthRoleName = new cdk.CfnParameter(this, 'UnauthRoleName', {
       type: 'String',
       default: 'UnauthRoleName',
     });
@@ -96,12 +96,6 @@ export class AmplifyRootStack extends cdk.Stack {
       exportName: cdk.Fn.sub('${AWS::StackName}-StackId'),
     });
 
-    cfnOutputs.deploymentBucketName = new cdk.CfnOutput(this, 'DeploymentBucketName', {
-      description: 'CloudFormation provider root stack deployment bucket name',
-      value: CfnParameters.deploymentBucketName.valueAsString,
-      exportName: cdk.Fn.sub('${AWS::StackName}-DeploymentBucketName'),
-    });
-
     cfnOutputs.authRoleArn = new cdk.CfnOutput(this, 'AuthRoleArn', {
       value: cdk.Fn.getAtt('AuthRole', 'Arn').toString(),
     });
@@ -109,16 +103,9 @@ export class AmplifyRootStack extends cdk.Stack {
     cfnOutputs.unauthRoleArn = new cdk.CfnOutput(this, 'UnauthRoleArn', {
       value: cdk.Fn.getAtt('UnauthRole', 'Arn').toString(),
     });
-
-    cfnOutputs.authRoleName = new cdk.CfnOutput(this, 'AuthRoleName', {
-      value: CfnParameters.authRoleName.valueAsString,
-    });
-
-    cfnOutputs.unauthRoleName = new cdk.CfnOutput(this, 'UnauthRoleName', {
-      value: CfnParameters.unauthRoleName.valueAsString,
-    });
-
-    this.templateObj = { ...CfnParameters, ...cfnOutputs };
+    this.templateObj = {};
+    this.templateObj['Parameters'] = { ...CfnParameters };
+    this.templateObj['Outputs'] = { ...cfnOutputs };
     this.templateObj.Resources = { ...CfnResources };
   }
 
@@ -134,14 +121,43 @@ export enum CommandType {
 }
 
 type RootStackOptions = {
-  stackName: string;
-  cfnmodifier?: Function;
   rootStackFileName: string;
   event: CommandType;
 };
 
+export class AmplifyRootStackOutputs extends cdk.Stack {
+  public templateObj: AmplifyRootStackTemplateProps;
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+    const cfnOutputs: { [k: string]: cdk.CfnOutput } = {};
+    cfnOutputs.deploymentBucketName = new cdk.CfnOutput(this, 'DeploymentBucketName', {
+      description: 'CloudFormation provider root stack deployment bucket name',
+      value: cdk.Fn.ref('DeploymentBucketName'),
+      exportName: cdk.Fn.sub('${AWS::StackName}-DeploymentBucketName'),
+    });
+
+    cfnOutputs.authRoleName = new cdk.CfnOutput(this, 'AuthRoleName', {
+      value: cdk.Fn.ref('AuthRoleName'),
+    });
+
+    cfnOutputs.unauthRoleName = new cdk.CfnOutput(this, 'UnauthRoleName', {
+      value: cdk.Fn.ref('UnauthRoleName'),
+    });
+    this.templateObj = {};
+    this.templateObj['Outputs'] = { ...cfnOutputs };
+  }
+
+  toCloudFormation() {
+    prepareApp(this);
+    return this._toCloudFormation();
+  }
+}
+
 export const generateRootStackTemplate = async (props: RootStackOptions): Promise<Template> => {
   const stack = new AmplifyRootStack(undefined as any, 'Amplify');
+  const stackOutputs = new AmplifyRootStackOutputs(undefined as any, 'AmplifyOutputs');
+  // merge the outputs in one to get the combined object
+  //Object.assign(stack.templateObj,stackOutputs.templateObj);
   if (props.event === CommandType.INIT) {
     // no override required
     //apply init modifiers if any
@@ -149,10 +165,19 @@ export const generateRootStackTemplate = async (props: RootStackOptions): Promis
 
   if (props.event === CommandType.PUSH) {
     // apply override here during push
+    //applyoverrides(stack.templateObj);
   }
 
   const cfnRootStack: Template = stack.toCloudFormation();
-  await props.cfnmodifier(cfnRootStack);
+  const cfnRootStackOutputs: Template = stackOutputs.toCloudFormation();
+  Object.assign(cfnRootStack.Outputs, cfnRootStackOutputs.Outputs);
   JSONUtilities.writeJson('/Users/akz/workspace/projects/init_check6/template.yml', cfnRootStack);
   return cfnRootStack;
 };
+
+// class AmplifyTransform {
+//     transform();
+//     generateResources();
+//     applyOverrides();
+//     synthesizeTemplates();
+// }
