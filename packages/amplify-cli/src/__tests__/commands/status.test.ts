@@ -43,8 +43,8 @@ describe('amplify status: ', () => {
         expect(mockContextWithVerboseOptionAndCLArgs.amplify.showStatusTable).toBeCalled();
     });
 
-    it('status -v <category> run method should call context.amplify.showStatusTable', async () => {
-        const mockContextWithVerboseOptionAndCLArgs = {
+    it('status -v <category>* run method should call context.amplify.showStatusTable', async () => {
+        const mockContextWithVerboseOptionWithCategoriesAndCLArgs = {
             amplify: {
               showStatusTable: jest.fn(),
             },
@@ -57,8 +57,8 @@ describe('amplify status: ', () => {
                 }
             }
         };
-        runStatusCmd(mockContextWithVerboseOptionAndCLArgs)
-        expect(mockContextWithVerboseOptionAndCLArgs.amplify.showStatusTable).toBeCalled();
+        runStatusCmd(mockContextWithVerboseOptionWithCategoriesAndCLArgs)
+        expect(mockContextWithVerboseOptionWithCategoriesAndCLArgs.amplify.showStatusTable).toBeCalled();
     });
 
 
