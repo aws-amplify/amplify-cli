@@ -12,6 +12,7 @@
     "lib",
     "coverage",
     "src/__tests__",
+    "resources/overrides-resource/override.ts"
   ],
   "references": [
     {"path": "../amplify-cli-core"},
