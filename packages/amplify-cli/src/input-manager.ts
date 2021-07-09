@@ -123,25 +123,27 @@ export function verifyInput(pluginPlatform: PluginPlatform, input: Input): Input
         break;
       }
 
-      // if `input.command` is not a command name or an alias for a command, check the
-      // first sub-command for a verb / noun swap (i.e. `env add` versus `add env`).
-      if (commands && input.subCommands && commands!.includes(input.subCommands[0])) {
-        const command = input.subCommands[0];
-        input.subCommands[0] = input.command!;
-        input.command = command;
+      if (Array.isArray(input.subCommands) && input.subCommands.length > 0) {
+        // if `input.command` is not a command name or an alias for a command, check the
+        // first sub-command for a verb / noun swap (i.e. `env add` versus `add env`).
+        if (commands && commands!.includes(input.subCommands[0])) {
+          const command = input.subCommands[0];
+          input.subCommands[0] = input.command!;
+          input.command = command;
 
-        result.verified = true;
-        break;
-      }
+          result.verified = true;
+          break;
+        }
 
-      // same as above, but check if the first sub-command is an alias.
-      if (commandAliases && input.subCommands && Object.keys(commandAliases).includes(input.subCommands[0])) {
-        const command = commandAliases[input.subCommands[0]];
-        input.subCommands[0] = input.command!;
-        input.command = command;
+        // same as above, but check if the first sub-command is an alias.
+        if (commandAliases && commandAliases.hasOwnProperty(input.subCommands[0])) {
+          const command = commandAliases[input.subCommands[0]];
+          input.subCommands[0] = input.command!;
+          input.command = command;
 
-        result.verified = true;
-        break;
+          result.verified = true;
+          break;
+        }
       }
 
       // if `input.command` is the default plugin command, check `input.options` for what to do.
