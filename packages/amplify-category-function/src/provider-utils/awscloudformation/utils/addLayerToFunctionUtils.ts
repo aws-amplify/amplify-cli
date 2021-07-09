@@ -39,8 +39,10 @@ export const askLayerSelection = async (
   const layerOptions = _.keys(functionMeta)
     .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
     .filter(key => {
-      // filter by compatible runtimes
-      return isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes || getLayerRuntimes(key));
+      // filter by compatible runtimes - unless no runtimes are present for the given Lambda layer
+      // since any Lambda function can depend on /opt folder content if there is no runtime.
+      const runtimes = functionMeta[key].runtimes || getLayerRuntimes(key);
+      return Array.isArray(runtimes) && (_.isEmpty(runtimes) || isRuntime(runtimeValue).inRuntimes(runtimes));
     });
 
   if (layerOptions.length === 0) {

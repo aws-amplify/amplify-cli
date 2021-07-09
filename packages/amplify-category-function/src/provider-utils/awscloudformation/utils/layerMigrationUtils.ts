@@ -170,7 +170,7 @@ export function readLegacyRuntimes(layerName: string, legacyState: LegacyState):
   }
 }
 
-export function removeLayerFromTeamProviderInfo(envName: string, layerName: string, projectRoot?: string) {
+export function removeLayerFromTeamProviderInfo(projectRoot: string | undefined, envName: string, layerName: string) {
   const nonCfnDataKey = 'nonCFNdata';
   const teamProviderInfo = stateManager.getTeamProviderInfo(projectRoot);
 
@@ -190,7 +190,7 @@ function readLegacyLayerParametersJson(layerDirPath: string) {
 
 function migrateAmplifyProjectFiles(layerName: string, latestLegacyHash: string, envName?: string) {
   const projectRoot = pathManager.findProjectRoot();
-  removeLayerFromTeamProviderInfo(envName, layerName, projectRoot);
+  removeLayerFromTeamProviderInfo(projectRoot, envName, layerName);
   const meta = stateManager.getMeta(projectRoot);
 
   if (meta?.[categoryName]?.[layerName]?.[layerVersionMapKey]) {
