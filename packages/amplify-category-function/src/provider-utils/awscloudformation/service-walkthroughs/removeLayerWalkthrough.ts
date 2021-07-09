@@ -136,7 +136,8 @@ function disablePinnedVersions(
       if (layerDependency.resourceName === layerName && layerDependency.isLatestVersionSelected === false) {
         for (const layerVersion of layerVersionList) {
           if (layerVersion.Version === layerDependency.version) {
-            layerVersion.isPinned = `Can't be removed. ${lambdaFunctionName} depends on this version.`;
+            layerVersion.pinnedByFunctions ||= [];
+            layerVersion.pinnedByFunctions.push(lambdaFunctionName);
             break;
           }
         }
@@ -153,7 +154,12 @@ const question = (layerVersionList: LayerVersionForPossibleRemoval[]): QuestionC
     choices: layerVersionList
       .sort((versiona, versionb) => versiona.Version - versionb.Version)
       .map(version => ({
-        disabled: version.isPinned,
+        disabled:
+          Array.isArray(version.pinnedByFunctions) && version.pinnedByFunctions.length > 0
+            ? `Can't be removed. ${version.pinnedByFunctions.join(', ')} depend${
+                version.pinnedByFunctions.length > 1 ? '' : 's'
+              } on this version.`
+            : false,
         name: `${version.Version}: ${version.Description}`,
         short: version.Version.toString(),
         value: version,
@@ -162,5 +168,5 @@ const question = (layerVersionList: LayerVersionForPossibleRemoval[]): QuestionC
 ];
 
 interface LayerVersionForPossibleRemoval extends LayerVersionMetadata {
-  isPinned?: string;
+  pinnedByFunctions?: string[];
 }
