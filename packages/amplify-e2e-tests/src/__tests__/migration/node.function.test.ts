@@ -44,7 +44,7 @@ describe('nodejs version migration tests', () => {
 
     fs.writeFileSync(projectConfigFileName, projectConfigContent, 'utf-8');
 
-    // Write back the nodejs version to 'node10.x' to test migration
+    // Write back the nodejs version to 'node12.x' to test migration
     const authResourceName = Object.keys(meta.auth)[0];
     const authStackFileName = path.join(
       projectRoot,
