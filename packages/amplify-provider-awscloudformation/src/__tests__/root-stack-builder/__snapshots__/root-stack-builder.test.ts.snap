@@ -13,22 +13,6 @@ Object {
         ],
       },
     },
-    "AuthRoleName": Object {
-      "Value": Object {
-        "Ref": "authRoleName",
-      },
-    },
-    "DeploymentBucketName": Object {
-      "Description": "CloudFormation provider root stack deployment bucket name",
-      "Export": Object {
-        "Name": Object {
-          "Fn::Sub": "\${AWS::StackName}-DeploymentBucketName",
-        },
-      },
-      "Value": Object {
-        "Ref": "deploymentBucketName",
-      },
-    },
     "Region": Object {
       "Description": "CloudFormation provider root stack Region",
       "Export": Object {
@@ -70,23 +54,18 @@ Object {
         ],
       },
     },
-    "UnauthRoleName": Object {
-      "Value": Object {
-        "Ref": "unauthRoleName",
-      },
-    },
   },
   "Parameters": Object {
-    "authRoleName": Object {
+    "AuthRoleName": Object {
       "Default": "AuthRoleName",
       "Type": "String",
     },
-    "deploymentBucketName": Object {
+    "DeploymentBucketName": Object {
       "Default": "DeploymentBucket",
       "Description": "Name of the common deployment bucket provided by the parent stack",
       "Type": "String",
     },
-    "unauthRoleName": Object {
+    "UnauthRoleName": Object {
       "Default": "UnauthRoleName",
       "Type": "String",
     },
@@ -108,7 +87,7 @@ Object {
           "Version": "2012-10-17",
         },
         "RoleName": Object {
-          "Ref": "authRoleName",
+          "Ref": "AuthRoleName",
         },
       },
       "Type": "AWS::IAM::Role",
@@ -117,7 +96,7 @@ Object {
       "DeletionPolicy": "Retain",
       "Properties": Object {
         "BucketName": Object {
-          "Ref": "deploymentBucketName",
+          "Ref": "DeploymentBucketName",
         },
       },
       "Type": "AWS::S3::Bucket",
@@ -139,7 +118,7 @@ Object {
           "Version": "2012-10-17",
         },
         "RoleName": Object {
-          "Ref": "unauthRoleName",
+          "Ref": "UnauthRoleName",
         },
       },
       "Type": "AWS::IAM::Role",

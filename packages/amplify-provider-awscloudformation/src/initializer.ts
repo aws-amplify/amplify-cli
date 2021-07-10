@@ -1,7 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import _ from 'lodash';
-import { eventNames } from 'process';
-import { generateRootStackTemplate, CommandType } from './root-stack-builder/root-stack-builder';
+import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from './root-stack-builder/root-stack-builder';
 
 const moment = require('moment');
 const path = require('path');
@@ -54,10 +53,16 @@ export async function run(context) {
 
     //const rootStack = JSONUtilities.readJson(initTemplateFilePath);
     const nestedStackFileName = 'nested-cloudformation-stack.yml';
-    const rootStack = await generateRootStackTemplate({
-      event: CommandType.INIT,
-      rootStackFileName: nestedStackFileName,
-    });
+    // CFN transform for Root stack
+    const props: RootStackTransformOptions = {
+      resourceConfig: {
+        category: 'root',
+        stackFileName: nestedStackFileName,
+      },
+    };
+    // generate , override and deploy stacks to disk
+    const rootTransform = new AmplifyRootStackTransform(props, CommandType.INIT);
+    const rootStack = await rootTransform.transform();
     // prepush modifier
     await prePushCfnTemplateModifier(rootStack);
     // Track Amplify Console generated stacks

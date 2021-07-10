@@ -5,7 +5,6 @@ import * as path from 'path';
 import { prepareApp } from '@aws-cdk/core/lib/private/prepare-app';
 import { AmplifyRootStackResourceProps, AmplifyRootStackTemplateProps } from './types';
 import { JSONUtilities, pathManager } from 'amplify-cli-core';
-import * as constants from '../constants';
 import { Template } from 'cloudform-types';
 
 const CFN_TEMPLATE_FORMAT_VERSION = '2010-09-09';
@@ -123,8 +122,12 @@ export enum CommandType {
 type RootStackOptions = {
   rootStackFileName: string;
   event: CommandType;
+  overrideDir?: string;
 };
 
+/**
+ * additional class to merge CFN parameters and CFN outputs as cdk doesnt allow same logical ID of constructs in same stack
+ */
 export class AmplifyRootStackOutputs extends cdk.Stack {
   public templateObj: AmplifyRootStackTemplateProps;
   constructor(scope: cdk.Construct, id: string) {
@@ -153,31 +156,97 @@ export class AmplifyRootStackOutputs extends cdk.Stack {
   }
 }
 
-export const generateRootStackTemplate = async (props: RootStackOptions): Promise<Template> => {
-  const stack = new AmplifyRootStack(undefined as any, 'Amplify');
-  const stackOutputs = new AmplifyRootStackOutputs(undefined as any, 'AmplifyOutputs');
-  // merge the outputs in one to get the combined object
-  //Object.assign(stack.templateObj,stackOutputs.templateObj);
-  if (props.event === CommandType.INIT) {
-    // no override required
-    //apply init modifiers if any
+export interface ResourceConfig {
+  resourceName?: string;
+  category: string;
+  stackFileName: string;
+}
+
+export interface RootStackTransformOptions {
+  //inputParser: IInputParser[];  // not needed for root stack
+  resourceConfig?: ResourceConfig;
+}
+
+export interface DeploymentOptions {
+  templateStack: Template;
+}
+
+export class AmplifyRootStackTransform {
+  private _rootTemplateObj: AmplifyRootStackTemplateProps; // Props to modify Root stack data
+  private _resourceConfig: ResourceConfig; // Config about resource to build
+  private _rootStackOptions: RootStackOptions; // options to help generate  cfn template
+  private _command: CommandType;
+  constructor(options: RootStackTransformOptions, command: CommandType) {
+    this._resourceConfig = options.resourceConfig;
+    this._command = command;
   }
 
-  if (props.event === CommandType.PUSH) {
-    // apply override here during push
-    //applyoverrides(stack.templateObj);
+  public async transform(): Promise<Template> {
+    // parse Input data
+    this._rootStackOptions = await this.getInput(); // get RootStackOPtions from cli-inputs.json
+    // generate cfn stack
+    const template = await this.generateRootStackTemplate();
+    // save stack
+    if (this._command === CommandType.PUSH) {
+      await this.deployOverrideStacksToDisk({
+        templateStack: template,
+      });
+    }
+    return template;
   }
+  /**
+   *
+   * @returns Object required to generate Stack using cdk
+   */
+  private getInput = async (): Promise<RootStackOptions> => {
+    if (this._command === CommandType.INIT) {
+      const buildConfig: RootStackOptions = {
+        event: this._command,
+        rootStackFileName: this._resourceConfig.stackFileName,
+      };
+      return buildConfig;
+    } else {
+      const projectPath = pathManager.findProjectRoot();
+      const buildConfig: RootStackOptions = {
+        event: this._command,
+        rootStackFileName: this._resourceConfig.stackFileName,
+        overrideDir: pathManager.getOverrideDirPath(projectPath, 'root'),
+      };
+      return buildConfig;
+    }
+  };
 
-  const cfnRootStack: Template = stack.toCloudFormation();
-  const cfnRootStackOutputs: Template = stackOutputs.toCloudFormation();
-  Object.assign(cfnRootStack.Outputs, cfnRootStackOutputs.Outputs);
-  JSONUtilities.writeJson('/Users/akz/workspace/projects/init_check6/template.yml', cfnRootStack);
-  return cfnRootStack;
-};
+  /**
+   * Generates Root stack Template
+   * @returns CFN Template
+   */
+  private generateRootStackTemplate = async (): Promise<Template> => {
+    const stack = new AmplifyRootStack(undefined as any, 'Amplify');
+    const stackOutputs = new AmplifyRootStackOutputs(undefined as any, 'AmplifyOutputs');
+    // merge the outputs in one to get the combined object
+    Object.assign(stack.templateObj, stackOutputs.templateObj);
+    if (this._rootStackOptions.event === CommandType.INIT) {
+      // no override required
+      //apply init modifiers if any
+    }
 
-// class AmplifyTransform {
-//     transform();
-//     generateResources();
-//     applyOverrides();
-//     synthesizeTemplates();
-// }
+    if (this._rootStackOptions.event === CommandType.PUSH) {
+      // apply override here during push
+      //applyoverrides(stack.templateObj);
+      const projectPath = pathManager.findProjectRoot();
+      const overridePath = pathManager.getOverrideDirPath(projectPath, 'root');
+      const { overrideProps } = await import(path.join(overridePath, 'build', 'override.js'));
+      stack.templateObj = overrideProps(stack.templateObj);
+    }
+
+    const cfnRootStack: Template = stack.toCloudFormation();
+    const cfnRootStackOutputs: Template = stackOutputs.toCloudFormation();
+    Object.assign(cfnRootStack.Outputs, cfnRootStackOutputs.Outputs);
+    return cfnRootStack;
+  };
+
+  private deployOverrideStacksToDisk = async (props: DeploymentOptions) => {
+    const rootFilePath = path.join(pathManager.getBackendDirPath(), 'awscloudformation', 'build', this._resourceConfig.stackFileName);
+    JSONUtilities.writeJson(rootFilePath, props.templateStack);
+  };
+}

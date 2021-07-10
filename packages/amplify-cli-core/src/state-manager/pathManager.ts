@@ -20,6 +20,10 @@ export const PathConstants = {
   BackendDirName: 'backend',
   CurrentCloudBackendDirName: '#current-cloud-backend',
 
+  // 2nd Level
+  OverrideDirName: 'overrides',
+  ProvideName: 'awscloudformation',
+
   // FileNames
   AmplifyAdminConfigFileName: 'config.json',
 
@@ -35,6 +39,7 @@ export const PathConstants = {
   LocalAWSInfoFileName: 'local-aws-info.json',
   TeamProviderInfoFileName: 'team-provider-info.json',
   BackendConfigFileName: 'backend-config.json',
+  OverrideFileName: 'override.js',
 
   CLIJSONFileName: 'cli.json',
   CLIJSONFileNameGlob: 'cli*.json',
@@ -77,6 +82,24 @@ export class PathManager {
   getBackendDirPath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName]);
 
+  getOverrideDirPath = (projectPath?: string, category?: string, resourceName?: string): string => {
+    if (category === 'root') {
+      return this.constructPath(projectPath, [
+        PathConstants.AmplifyDirName,
+        PathConstants.BackendDirName,
+        PathConstants.ProvideName,
+        PathConstants.OverrideDirName,
+      ]);
+    } else {
+      return this.constructPath(projectPath, [
+        PathConstants.AmplifyDirName,
+        PathConstants.BackendDirName,
+        category!,
+        resourceName!,
+        PathConstants.OverrideDirName,
+      ]);
+    }
+  };
   getCurrentCloudBackendDirPath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName]);
 

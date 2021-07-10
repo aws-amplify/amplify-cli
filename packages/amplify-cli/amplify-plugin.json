@@ -2,6 +2,7 @@
   "name": "core",
   "type": "core",
   "commands": [
+    "build-overrides",
     "categories",
     "configure",
     "console",
