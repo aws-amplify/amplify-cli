@@ -855,10 +855,10 @@ async function formNestedStack(
         TemplateURL: APIGatewayAuthURL,
         Parameters: {
           authRoleName: {
-            Ref: 'authRoleName',
+            Ref: 'AuthRoleName',
           },
           unauthRoleName: {
-            Ref: 'unauthRoleName',
+            Ref: 'UnauthRoleName',
           },
           env: context.exeInfo.localEnvInfo.envName,
         },
