@@ -405,14 +405,9 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
       }
 
       const currentCfnTemplatePath = pathManager.getCurrentCfnTemplatePath(projectPath, categoryName, resourceName);
-      try {
-        const { cfnTemplate: currentCfnTemplate } = await readCFNTemplate(currentCfnTemplatePath);
+      const { cfnTemplate: currentCfnTemplate } = (await readCFNTemplate(currentCfnTemplatePath, { throwIfNotExist: false })) || {};
+      if (currentCfnTemplate !== undefined) {
         await writeCFNTemplate(currentCfnTemplate, pathManager.getResourceCfnTemplatePath(projectPath, categoryName, resourceName));
-      } catch (e) {
-        if (e.message === `No CloudFormation template found at ${currentCfnTemplatePath}`) {
-          return; // If the file doesn't exist, env just doesn't have the resource yet
-        }
-        throw e;
       }
     }
   }

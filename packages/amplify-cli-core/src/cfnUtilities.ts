@@ -1,12 +1,26 @@
-import * as yaml from 'js-yaml';
 import { Template } from 'cloudform-types';
-import { JSONUtilities } from './jsonUtilities';
 import * as fs from 'fs-extra';
+import * as yaml from 'js-yaml';
 import * as path from 'path';
+import { JSONUtilities } from './jsonUtilities';
 
-export async function readCFNTemplate(filePath: string): Promise<{ templateFormat: CFNTemplateFormat; cfnTemplate: Template }> {
-  if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile) {
-    throw new Error(`No CloudFormation template found at ${filePath}`);
+export async function readCFNTemplate(filePath: string): Promise<{ templateFormat: CFNTemplateFormat; cfnTemplate: Template }>;
+export async function readCFNTemplate(
+  filePath: string,
+  options: { throwIfNotExist: boolean },
+): Promise<{ templateFormat: CFNTemplateFormat; cfnTemplate: Template } | undefined>;
+
+export async function readCFNTemplate(filePath: string, options: { throwIfNotExist: boolean } = { throwIfNotExist: true }) {
+  const errorMessage = `No CloudFormation template found at ${filePath}`;
+  if (!fs.existsSync(filePath)) {
+    if (options.throwIfNotExist === false) {
+      return undefined;
+    }
+    throw new Error(errorMessage);
+  }
+
+  if (!fs.statSync(filePath).isFile) {
+    throw new Error(errorMessage);
   }
   const fileContent = await fs.readFile(filePath, 'utf8');
   // We use the first character to determine if the content is json or yaml because historically the CLI could
