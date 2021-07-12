@@ -3,7 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [2.35.0-ext.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.34.1...amplify-category-auth@2.35.0-ext.0) (2021-07-14)
+# [2.35.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.34.1...amplify-category-auth@2.35.0) (2021-07-12)
+
+
+
+## 5.1.1 (2021-07-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** check for siwa Cognito idp params ([#7678](https://github.com/aws-amplify/amplify-cli/issues/7678)) ([0c0adfb](https://github.com/aws-amplify/amplify-cli/commit/0c0adfb78350a192d4f44b722d6038b23c505527))
 
 
 ### Features

@@ -3,12 +3,11 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [4.55.0-ext.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.54.0...amplify-provider-awscloudformation@4.55.0-ext.0) (2021-07-14)
+# [4.55.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.54.0...amplify-provider-awscloudformation@4.55.0) (2021-07-12)
 
 
 ### Features
 
-* amplify add override root command and skeleton generation ([#7684](https://github.com/aws-amplify/amplify-cli/issues/7684)) ([fad1e25](https://github.com/aws-amplify/amplify-cli/commit/fad1e25b13be9f6c9402f6f7043f16d9415bd6a9))
 * port [@predictions](https://github.com/predictions) to GraphQL Transformer v2 ([#7387](https://github.com/aws-amplify/amplify-cli/issues/7387)) ([3f2e647](https://github.com/aws-amplify/amplify-cli/commit/3f2e647b9dfe14aa5919b46f53342937dd0c7fa9))
 
 
