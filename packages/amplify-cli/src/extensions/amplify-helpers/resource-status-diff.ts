@@ -15,7 +15,7 @@ const CategoryProviders = {
 
 interface StackMutationInfo {
   label : String;
-  consoleStyle : (string)=>string ;
+  consoleStyle : chalk.Chalk;
   icon : String;
 }
 //helper for summary styling

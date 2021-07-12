@@ -1,5 +1,6 @@
 import { ViewResourceTableParams, CLIParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
+export { ViewResourceTableParams, CLIParams };
 
 export * from './cfnUtilities';
 export * from './cliContext';

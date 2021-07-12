@@ -2,7 +2,7 @@
 
 import { print } from './print';
 import { CLOUD_INITIALIZED,  getCloudInitStatus } from './get-cloud-init-status';
-import { ViewResourceTableParams } from "amplify-cli-core/lib/cliViewAPI";
+import { ViewResourceTableParams } from "amplify-cli-core";
 import { viewSummaryTable, viewEnvInfo, viewResourceDiffs } from './resource-status-view';
 import { getMultiCategoryStatus, getResourceStatus, getHashForResourceDir } from './resource-status-data';
 import chalk from 'chalk';

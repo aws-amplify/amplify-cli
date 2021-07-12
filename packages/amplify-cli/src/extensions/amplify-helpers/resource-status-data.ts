@@ -125,7 +125,6 @@ export async function getResourceStatus(
   providerName?,
   filteredResources?,
 ): Promise<resourceStatus.ICategoryStatusCollection> {
-  const amplifyProjectInitStatus = getCloudInitStatus();
   let { amplifyMeta, currentAmplifyMeta } = getAmplifyMeta();
   let resourcesToBeCreated: any = getResourcesToBeCreated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);
   let resourcesToBeUpdated: any = await getResourcesToBeUpdated(amplifyMeta, currentAmplifyMeta, category, resourceName, filteredResources);

@@ -1,4 +1,4 @@
-import { ViewResourceTableParams, CLIParams } from "amplify-cli-core/lib/cliViewAPI";
+import { ViewResourceTableParams, CLIParams } from "amplify-cli-core";
 
 
 export const run = async context => {
