@@ -19,8 +19,6 @@ export const PathConstants = {
   DotConfigDirName: '.config',
   BackendDirName: 'backend',
   CurrentCloudBackendDirName: '#current-cloud-backend',
-
-  // 2nd level
   HooksDirName: 'hooks',
 
   // FileNames
