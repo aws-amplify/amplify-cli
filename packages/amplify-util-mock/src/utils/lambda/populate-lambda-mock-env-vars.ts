@@ -28,11 +28,11 @@ const getAwsCredentials = async (_, context: $TSContext): Promise<Record<string,
   } catch {
     // swallow no appId found as it's not necessary for mocking
   }
-  const awsConfig = await loadConfigurationForEnv(context, env, appId);
+  const awsConfigInfo = await loadConfigurationForEnv(context, env, appId);
   return {
-    AWS_ACCESS_KEY_ID: awsConfig.accessKeyId,
-    AWS_SECRET_ACCESS_KEY: awsConfig.secretAccessKey,
-    AWS_SESSION_TOKEN: awsConfig.sessionToken,
+    AWS_ACCESS_KEY_ID: awsConfigInfo.accessKeyId,
+    AWS_SECRET_ACCESS_KEY: awsConfigInfo.secretAccessKey,
+    AWS_SESSION_TOKEN: awsConfigInfo.sessionToken,
   };
 };
 
