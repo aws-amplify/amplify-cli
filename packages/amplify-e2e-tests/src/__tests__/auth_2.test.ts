@@ -106,7 +106,7 @@ describe('amplify add auth...', () => {
     expect(lambdaFunction.Configuration.Environment.Variables.GROUP).toEqual('mygroup');
   });
 
-  it.only('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
+  it('...should allow the user to add auth via API category, with a trigger and function dependsOn API', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthwithUserPoolGroupsViaAPIWithTrigger(projRoot, { transformerVersion: 1 });
     await updateFunction(
