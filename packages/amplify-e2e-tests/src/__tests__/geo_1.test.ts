@@ -17,7 +17,7 @@ import path from 'path';
 describe('amplify geo add', () => {
   let projRoot: string;
   beforeEach(async () => {
-    projRoot = await createNewProjectDir('amplify-geo-test');
+    projRoot = await createNewProjectDir('geo-add-test');
   });
 
   afterEach(async () => {
@@ -29,7 +29,7 @@ describe('amplify geo add', () => {
   });
 
   it('init a project with default auth config and add the map resource', async () => {
-    await initJSProjectWithProfile(projRoot, { name: 'geotest' });
+    await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addMapWithDefault(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
@@ -42,7 +42,7 @@ describe('amplify geo add', () => {
   });
 
   it('init a project with default auth config and add the place index resource', async () => {
-    await initJSProjectWithProfile(projRoot, { name: 'geotest' });
+    await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addPlaceIndexWithDefault(projRoot);
     await amplifyPushWithoutCodegen(projRoot);
@@ -53,5 +53,4 @@ describe('amplify geo add', () => {
     const placeIndex = await getPlaceIndex(placeIndexId, region);
     expect(placeIndex.IndexName).toBeDefined();
   });
-
 })
