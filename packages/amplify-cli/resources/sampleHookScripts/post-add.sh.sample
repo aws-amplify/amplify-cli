@@ -2,29 +2,16 @@
 # To start using this script please change the filename:
 # post-add.sh.sample  ->  post-add.sh
 #
-# parameters available:
-# $0 - path to the running script file (default)
-# $1 - data - String JSON argument (passed by Amplify)
-# $2 - error - String JSON argument or null (passed by Amplify)
-#
-# exiting with a non zero status - exit 1
-# will result in Amplify CLI process to exit.
-
+# exiting with a non zero status will result in Amplify CLI process to exit.
 if [ -z "$(which jq)" ]; then
     echo "Please install jq to run the sample script."
     exit 1
 fi
-
-if ! [ -z "$2" ]; then
-    echo "Amplify CLI emitted an error:" $(echo $2 | jq -r '.message')
+parameters=`cat`
+if echo $parameters | jq --exit-status '.error' >/dev/null; then 
+    echo "Amplify CLI emitted an error:" $(echo $parameters | jq -r '.error | .message')
     exit 1
 fi
-
-projectPath=$(echo $1 | jq -r '.projectPath')
-amplifyCommand=$(echo $1 | jq -r '.amplify | .command')
-amplifySubCommands=$(echo $1 | jq -r '.amplify | .subCommands | .[]')
-echo "project root path:" $projectPath
-echo "Amplify CLI command:" $amplifyCommand
-echo "Amplify CLI sub-commands:" $amplifySubCommands
-
+echo "project root path:" $(pwd);
+echo "Amplify CLI command:" $(echo $parameters | jq -r '.data | .amplify | .command')
 exit 0

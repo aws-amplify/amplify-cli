@@ -74,7 +74,6 @@ export async function onSuccess(context: $TSContext) {
 
 function generateLocalRuntimeFiles(context: $TSContext) {
   generateLocalEnvInfoFile(context);
-  generateHooksSampleFiles(context);
   generateAmplifyMetaFile(context);
   generateLocalTagsFile(context);
 }
@@ -125,6 +124,7 @@ function generateNonRuntimeFiles(context: $TSContext) {
   generateTeamProviderInfoFile(context);
   generateGitIgnoreFile(context);
   generateReadMeFile(context);
+  generateHooksSampleFiles(context);
 }
 
 function generateProjectConfigFile(context: $TSContext) {
@@ -184,7 +184,6 @@ function generateHooksSampleFiles(context: $TSContext) {
   const sampleHookScriptsDirPath = join(__dirname, '..', '..', 'resources', 'sampleHookScripts');
 
   stateManager.setSampleHooksDir(projectPath, sampleHookScriptsDirPath);
-  stateManager.setCurrentSampleHooksDir(projectPath, sampleHookScriptsDirPath);
 }
 
 function printWelcomeMessage(context: $TSContext) {
