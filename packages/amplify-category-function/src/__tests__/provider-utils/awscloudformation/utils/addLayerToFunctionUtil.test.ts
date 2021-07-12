@@ -21,6 +21,7 @@ jest.mock('../../../../provider-utils/awscloudformation/utils/layerCloudState');
 jest.mock('../../../../provider-utils/awscloudformation/utils/layerConfiguration', () => ({
   getLayerRuntimes: jest.fn(),
 }));
+jest.mock('../../../../provider-utils/awscloudformation/utils/layerMigrationUtils');
 
 const getLayerRuntimes_mock = getLayerRuntimes as jest.MockedFunction<typeof getLayerRuntimes>;
 const inquirer_mock = inquirer as jest.Mocked<typeof inquirer>;
