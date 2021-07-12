@@ -1,4 +1,4 @@
-exports.handler = async (event, context) => {
+exports.handler = async event => {
   event.response = {
     claimsOverrideDetails: {
       claimsToAddOrOverride: {

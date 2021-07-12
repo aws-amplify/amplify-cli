@@ -1,4 +1,4 @@
-exports.handler = async (event, context) => {
+exports.handler = async event => {
   if (event.request.session.length === 1 && event.request.session[0].challengeName === 'SRP_A') {
     event.response.issueTokens = false;
     event.response.failAuthentication = false;

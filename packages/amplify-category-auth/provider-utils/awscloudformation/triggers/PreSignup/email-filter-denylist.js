@@ -1,4 +1,4 @@
-exports.handler = async (event, context) => {
+exports.handler = async event => {
   // disallowed domains
   const dld = process.env.DOMAINDENYLIST.split(',').map(d => d.trim());
 

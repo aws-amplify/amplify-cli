@@ -1,4 +1,4 @@
-exports.handler = async (event, context) => {
+exports.handler = async event => {
   if (event.request.privateChallengeParameters.answer === event.request.challengeAnswer) {
     event.response.answerCorrect = true;
   } else {
