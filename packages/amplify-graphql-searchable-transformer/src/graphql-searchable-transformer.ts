@@ -160,7 +160,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     }
     const fieldName = searchFieldNameOverride
       ? searchFieldNameOverride
-      : graphqlName(`search${plurality(toUpper(definition.name.value), ctx.featureFlags.getBoolean('improvePluralization', false))}`);
+      : graphqlName(`search${plurality(toUpper(definition.name.value), ctx.featureFlags.getBoolean('improvePluralization', true))}`);
     this.searchableObjectTypeDefinitions.push({
       node: definition,
       fieldName,
