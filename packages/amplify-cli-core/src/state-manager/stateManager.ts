@@ -236,38 +236,17 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, meta);
   };
 
-  setSampleBashHook = (projectPath: string | undefined, scriptSourcePath: string): void => {
-    const toFilePath = pathManager.getSampleBashHookFilePath(projectPath);
+  getHooksConfigJson = (projectPath: string | undefined): $TSAny => {
+    const filePath = pathManager.getHooksConfigFilePath(projectPath);
+    const mergedOptions = {
+      throwIfNotExist: false,
+      default: {},
+    };
 
-    fs.copySync(scriptSourcePath, toFilePath);
+    return this.getData<$TSAny>(filePath, mergedOptions);
   };
-
-  setCurrentSampleBashHook = (projectPath: string | undefined, scriptSourcePath: string): void => {
-    const toFilePath = pathManager.getCurrentSampleBashHookFilePath(projectPath);
-
-    fs.copySync(scriptSourcePath, toFilePath);
-  };
-
-  setSampleNodeHook = (projectPath: string | undefined, scriptSourcePath: string): void => {
-    const toFilePath = pathManager.getSampleNodeHookFilePath(projectPath);
-
-    fs.copySync(scriptSourcePath, toFilePath);
-  };
-
-  setCurrentSampleNodeHook = (projectPath: string | undefined, scriptSourcePath: string): void => {
-    const toFilePath = pathManager.getCurrentSampleNodeHookFilePath(projectPath);
-
-    fs.copySync(scriptSourcePath, toFilePath);
-  };
-
   setSampleHooksDir = (projectPath: string | undefined, dirSourcePath: string): void => {
     const toDirPath = pathManager.getHooksDirPath(projectPath);
-
-    fs.copySync(dirSourcePath, toDirPath);
-  };
-
-  setCurrentSampleHooksDir = (projectPath: string | undefined, dirSourcePath: string): void => {
-    const toDirPath = pathManager.getCurrentHooksDirPath(projectPath);
 
     fs.copySync(dirSourcePath, toDirPath);
   };
