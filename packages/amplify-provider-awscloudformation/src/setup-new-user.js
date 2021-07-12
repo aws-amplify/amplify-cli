@@ -9,7 +9,7 @@ const { open } = require('amplify-cli-core');
 const isOnWsl = require('is-wsl');
 
 async function run(context) {
-  const awsConfig = {
+  const awsConfigInfo = {
     accessKeyId: constants.DefaultAWSAccessKeyId,
     secretAccessKey: constants.DefaultAWSSecretAccessKey,
     region: constants.DefaultAWSRegion,
@@ -30,10 +30,10 @@ async function run(context) {
       name: 'region',
       message: 'region: ',
       choices: awsRegions,
-      default: awsConfig.region,
+      default: awsConfigInfo.region,
     },
   ]);
-  awsConfig.region = answers.region;
+  awsConfigInfo.region = answers.region;
   context.print.info('Specify the username of the new IAM user:');
   const { userName } = await inquirer.prompt([
     {
@@ -44,7 +44,7 @@ async function run(context) {
     },
   ]);
 
-  let deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', userName).replace('{region}', awsConfig.region);
+  let deepLinkURL = constants.AWSCreateIAMUsersUrl.replace('{userName}', userName).replace('{region}', awsConfigInfo.region);
   const isOnWindows = process.platform === 'win32';
   if (isOnWindows || isOnWsl) {
     deepLinkURL = deepLinkURL.replace('$new', '`$new');
@@ -61,7 +61,7 @@ async function run(context) {
       mask: '*',
       name: 'accessKeyId',
       message: 'accessKeyId: ',
-      default: awsConfig.accessKeyId,
+      default: awsConfigInfo.accessKeyId,
       transformer: obfuscationUtil.transform,
       validate: input => {
         if (input === constants.DefaultAWSAccessKeyId || input.length < 16 || input.length > 128 || !/^[\w]+$/.test(input)) {
@@ -83,7 +83,7 @@ async function run(context) {
       mask: '*',
       name: 'secretAccessKey',
       message: 'secretAccessKey: ',
-      default: awsConfig.secretAccessKey,
+      default: awsConfigInfo.secretAccessKey,
       transformer: obfuscationUtil.transform,
       validate: input => {
         if (input === constants.DefaultAWSSecretAccessKey || input.trim().length === 0) {
@@ -95,13 +95,13 @@ async function run(context) {
   ]);
 
   if (accountDetails.accessKeyId) {
-    awsConfig.accessKeyId = accountDetails.accessKeyId.trim();
+    awsConfigInfo.accessKeyId = accountDetails.accessKeyId.trim();
   }
   if (accountDetails.secretAccessKey) {
-    awsConfig.secretAccessKey = accountDetails.secretAccessKey.trim();
+    awsConfigInfo.secretAccessKey = accountDetails.secretAccessKey.trim();
   }
 
-  if (validateAWSConfig(awsConfig)) {
+  if (validateAWSConfig(awsConfigInfo)) {
     let profileName = 'default';
     context.print.warning('This would update/create the AWS Profile in your local machine');
     const profileDetails = await inquirer.prompt([
@@ -115,7 +115,7 @@ async function run(context) {
 
     profileName = profileDetails.pn.trim();
 
-    systemConfigManager.setProfile(awsConfig, profileName);
+    systemConfigManager.setProfile(awsConfigInfo, profileName);
     context.print.info('');
     context.print.success('Successfully set up the new user.');
     return profileName;
@@ -125,8 +125,10 @@ async function run(context) {
   throw new Error('New user setup failed.');
 }
 
-function validateAWSConfig(awsConfig) {
-  return awsConfig.accessKeyId !== constants.DefaultAWSAccessKeyId && awsConfig.secretAccessKey !== constants.DefaultAWSSecretAccessKey;
+function validateAWSConfig(awsConfigInfo) {
+  return (
+    awsConfigInfo.accessKeyId !== constants.DefaultAWSAccessKeyId && awsConfigInfo.secretAccessKey !== constants.DefaultAWSSecretAccessKey
+  );
 }
 
 module.exports = {
