@@ -1,4 +1,4 @@
-exports.handler = (event, context, callback) => {
+exports.handler = async (event, context) => {
   // disallowed domains
   const dld = process.env.DOMAINBLACKLIST.split(',').map(d => d.trim());
 

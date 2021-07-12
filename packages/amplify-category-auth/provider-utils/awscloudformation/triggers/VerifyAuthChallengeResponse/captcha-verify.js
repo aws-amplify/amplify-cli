@@ -2,7 +2,7 @@
 const axios = require('axios');
 /* eslint-enable */
 
-exports.handler = async (event) => {
+exports.handler = async event => {
   const response = await axios.post(
     `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHASECRET}&response=${event.request.challengeAnswer}`,
     {},
@@ -14,11 +14,11 @@ exports.handler = async (event) => {
    * If the challenge fails, throw an error.
    */
   const challengeSucceeded = response && response.data && response.data.success;
-  if (challengeSucceeded) {
-    event.response.answerCorrect = true;
-  } else {
-    event.response.answerCorrect = false;
+  event.response.answerCorrect = !!challengeSucceeded;
+
+  if (!challengeSucceeded) {
     throw new Error('CAPTCHA verification error');
   }
+
   return event;
 };

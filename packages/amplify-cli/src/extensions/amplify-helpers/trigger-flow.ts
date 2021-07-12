@@ -51,10 +51,9 @@ export const addTrigger = async triggerOptions => {
    */
   const sourceRoot = path.join(triggerDir, 'function-template-dir');
   /**
-   * The function template dir for the default trigger template, i.e.
-   * _default/function-template-dir.
+   * The function template dir for the default trigger template.
    */
-  const defaultRoot = path.resolve(triggerDir, '..', '_default', 'function-template-dir');
+  const defaultRoot = path.resolve(triggerDir, '..', 'function-template-dir');
   /**
    * A key-value map of input filenames and output filepaths.
    */
@@ -69,10 +68,10 @@ export const addTrigger = async triggerOptions => {
   const destMap = {};
   /**
    * For each templateFile (i.e. trigger-index.js), use
-   * {triggerDir}/../_default/{templateFile} if {triggerDir}/{templateFile}
+   * {triggerDir}/../{templateFile} if {triggerDir}/{templateFile}
    * override does not exist.
    */
-  const templateFiles = ['trigger-index.js', 'package.json.ejs', 'event.json'];
+  const templateFiles = Object.keys(templateMap);
   const sourceFiles = templateFiles.map(file => {
     const defaultTemplate = path.resolve(defaultRoot, file);
     const overrideTemplate = path.resolve(sourceRoot, file);
