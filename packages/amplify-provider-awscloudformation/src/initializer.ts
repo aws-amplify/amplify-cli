@@ -32,10 +32,13 @@ export async function run(context) {
     const timeStamp = `${moment().format('Hmmss')}`;
     const { envName = '' } = context.exeInfo.localEnvInfo;
     let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
-    const awsConfig = await configurationManager.getAwsConfig(context);
+    const awsConfigInfo = await configurationManager.getAwsConfig(context);
+
+    await configurePermissionsBoundaryForInit(context);
+
     const amplifyServiceParams = {
       context,
-      awsConfig,
+      awsConfigInfo,
       projectName,
       envName,
       stackName,
@@ -85,7 +88,7 @@ export async function run(context) {
     spinner.start('Initializing project in the cloud...');
 
     try {
-      const cfnItem = await new Cloudformation(context, 'init', awsConfig);
+      const cfnItem = await new Cloudformation(context, 'init', awsConfigInfo);
       const stackDescriptionData = await cfnItem.createResourceStack(params);
 
       processStackCreationData(context, amplifyAppId, stackDescriptionData);
