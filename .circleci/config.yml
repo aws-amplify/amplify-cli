@@ -1027,6 +1027,30 @@ jobs:
     environment:
       TEST_SUITE: src/__tests__/predictions.test.ts
       CLI_REGION: eu-central-1
+  geo_3-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps: *ref_4
+    environment:
+      TEST_SUITE: src/__tests__/geo_3.test.ts
+      CLI_REGION: ap-northeast-1
+  geo_2-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps: *ref_4
+    environment:
+      TEST_SUITE: src/__tests__/geo_2.test.ts
+      CLI_REGION: ap-southeast-1
+  geo_1-amplify_e2e_tests:
+    working_directory: ~/repo
+    docker: *ref_1
+    resource_class: large
+    steps: *ref_4
+    environment:
+      TEST_SUITE: src/__tests__/geo_1.test.ts
+      CLI_REGION: ap-southeast-2
   containers-api-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1034,7 +1058,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/containers-api.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: us-east-2
   schema-iterative-update-2-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1042,7 +1066,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-2.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-west-2
   feature-flags-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1050,7 +1074,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/feature-flags.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: eu-west-2
   analytics-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1058,7 +1082,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/analytics.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-central-1
   hosting-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1066,7 +1090,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/hosting.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: ap-northeast-1
   amplify-app-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1074,7 +1098,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/amplify-app.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-southeast-1
   schema-predictions-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1082,7 +1106,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/schema-predictions.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-2
   interactions-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1090,7 +1114,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/interactions.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: us-east-2
   schema-data-access-patterns-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1098,7 +1122,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/schema-data-access-patterns.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-west-2
   schema-versioned-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1106,7 +1130,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/schema-versioned.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: eu-west-2
   notifications-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1114,7 +1138,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/notifications.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-central-1
   tags-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1122,7 +1146,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/tags.test.ts
-      CLI_REGION: us-west-2
+      CLI_REGION: ap-northeast-1
   init-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1130,7 +1154,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/init.test.ts
-      CLI_REGION: eu-west-2
+      CLI_REGION: ap-southeast-1
   amplify-configure-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1138,7 +1162,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/amplify-configure.test.ts
-      CLI_REGION: eu-central-1
+      CLI_REGION: ap-southeast-2
   datastore-modelgen-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1146,7 +1170,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/datastore-modelgen.test.ts
-      CLI_REGION: ap-northeast-1
+      CLI_REGION: us-east-2
   init-special-case-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1154,7 +1178,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/init-special-case.test.ts
-      CLI_REGION: ap-southeast-1
+      CLI_REGION: us-west-2
   plugin-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1162,7 +1186,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/plugin.test.ts
-      CLI_REGION: ap-southeast-2
+      CLI_REGION: eu-west-2
   schema-iterative-update-locking-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
@@ -1170,7 +1194,7 @@ jobs:
     steps: *ref_5
     environment:
       TEST_SUITE: src/__tests__/schema-iterative-update-locking.test.ts
-      CLI_REGION: us-east-2
+      CLI_REGION: eu-central-1
   s3-sse-amplify_e2e_tests:
     working_directory: ~/repo
     docker: *ref_1
