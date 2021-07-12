@@ -6,6 +6,7 @@ import chalk from 'chalk';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { print } from './print';
 import { pathManager, readCFNTemplate } from 'amplify-cli-core';
+import { Template } from 'cloudform-types';
 import { getResourceService } from './resource-status-data';
 
 const CategoryProviders = {
@@ -104,12 +105,8 @@ export class ResourceDiff {
     resourceFiles : IResourcePaths;
     localBackendDir : string;
     cloudBackendDir : string;
-    localTemplate : {
-                        [key: string]: any;
-                    };
-    cloudTemplate : {
-                        [key: string]: any;
-                    };
+    localTemplate : Template;
+    cloudTemplate : Template;
 
     constructor( category, resourceName, provider ){
         this.localBackendDir = pathManager.getBackendDirPath();
@@ -188,7 +185,7 @@ export class ResourceDiff {
     }
 
     //helper: Convert cloudformation template diff data using CDK api
-    private printStackDiff = ( templateDiff, stream?: cfnDiff.FormatStream ) =>{
+    private printStackDiff = ( templateDiff : cfnDiff.TemplateDiff, stream?: cfnDiff.FormatStream ) =>{
         // filter out 'AWS::CDK::Metadata' since info is not helpful and formatDifferences doesnt know how to format it.
         if (templateDiff.resources ) {
           templateDiff.resources = templateDiff.resources.filter(change => {

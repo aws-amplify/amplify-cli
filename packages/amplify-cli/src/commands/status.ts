@@ -1,4 +1,3 @@
-import { constructCloudWatchEventComponent } from "amplify-category-function/src/provider-utils/awscloudformation/utils/cloudformationHelpers";
 import { ViewResourceTableParams, CLIParams } from "amplify-cli-core/lib/cliViewAPI";
 
 
