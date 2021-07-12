@@ -54,6 +54,8 @@ export class ResourceConstants {
     ElasticsearchDebugStreamingLambda: 'ElasticSearchDebugStreamingLambda',
     ElasticsearchStreamingIAMRoleName: 'ElasticSearchStreamingIAMRoleName',
     ElasticsearchStreamingFunctionName: 'ElasticSearchStreamingFunctionName',
+    ElasticsearchStreamBatchSize: 'ElasticSearchStreamBatchSize',
+    ElasticsearchStreamMaximumBatchingWindowInSeconds: 'ElasticSearchStreamMaximumBatchingWindowInSeconds',
     ElasticsearchInstanceCount: 'ElasticSearchInstanceCount',
     ElasticsearchInstanceType: 'ElasticSearchInstanceType',
     ElasticsearchEBSVolumeGB: 'ElasticSearchEBSVolumeGB',
