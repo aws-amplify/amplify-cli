@@ -13,11 +13,8 @@ import {
   CloudFormation,
   AmplifyBackend,
   IAM,
-<<<<<<< HEAD
   SSM,
-=======
   Location,
->>>>>>> bab6d1bdc... test: add e2e test for geo
 } from 'aws-sdk';
 import * as path from 'path';
 import _ from 'lodash';
@@ -326,7 +323,6 @@ export const listAttachedRolePolicies = async (roleName: string, region: string)
   return (await service.listAttachedRolePolicies({ RoleName: roleName }).promise()).AttachedPolicies;
 };
 
-<<<<<<< HEAD
 export const getPermissionsBoundary = async (roleName: string, region) => {
   const iamClient = new IAM({ region });
   return (await iamClient.getRole({ RoleName: roleName }).promise())?.Role?.PermissionsBoundary?.PermissionsBoundaryArn;
@@ -344,7 +340,6 @@ export const getSSMParameters = async (region: string, appId: string, envName: s
     })
     .promise();
 };
-=======
 //Amazon location service calls
 export const getMap = async (mapName: string, region: string) => {
   const service = new Location({region});
@@ -359,4 +354,3 @@ export const getPlaceIndex = async (placeIndexName: string, region: string) => {
     IndexName: placeIndexName
   }).promise()
 }
->>>>>>> bab6d1bdc... test: add e2e test for geo
