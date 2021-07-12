@@ -1,13 +1,12 @@
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as glob from 'glob';
+import chalk from 'chalk';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import { print } from './print';
 import { pathManager, readCFNTemplate } from 'amplify-cli-core';
-import chalk from 'chalk';
-import { getResourceService } from './resource-status';
-import * as glob from 'glob';
-
+import { getResourceService } from './resource-status-data';
 
 const CategoryProviders = {
     CLOUDFORMATION : "cloudformation",
@@ -159,7 +158,7 @@ export class ResourceDiff {
 
 
      //helper: wrapper around readCFNTemplate type to handle expressions.
-     safeReadCFNTemplate = async(filePath : string ) => {
+     private safeReadCFNTemplate = async(filePath : string ) => {
       try {
         const templateResult = await readCFNTemplate(filePath);
         return templateResult.cfnTemplate;
