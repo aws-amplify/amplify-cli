@@ -9,7 +9,7 @@ const defaultReadCFNTemplateOptions = { throwIfNotExist: true };
 export async function readCFNTemplate(filePath: string): Promise<{ templateFormat: CFNTemplateFormat; cfnTemplate: Template }>;
 export async function readCFNTemplate(
   filePath: string,
-  options: { throwIfNotExist: boolean },
+  options: Partial<typeof defaultReadCFNTemplateOptions>,
 ): Promise<{ templateFormat: CFNTemplateFormat; cfnTemplate: Template } | undefined>;
 
 export async function readCFNTemplate(
