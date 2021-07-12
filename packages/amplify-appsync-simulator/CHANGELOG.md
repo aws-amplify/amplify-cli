@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.27.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.1...amplify-appsync-simulator@1.27.2) (2021-07-12)
+
+
+### Bug Fixes
+
+* get mock working with gql transformer v2 ([#7574](https://github.com/aws-amplify/amplify-cli/issues/7574)) ([4fa2900](https://github.com/aws-amplify/amplify-cli/commit/4fa2900d6b9ca515677d06bdffe29f56401b9c86))
+
+
+
+
+
 ## [1.27.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-appsync-simulator@1.27.0...amplify-appsync-simulator@1.27.1) (2021-06-24)
 
 
