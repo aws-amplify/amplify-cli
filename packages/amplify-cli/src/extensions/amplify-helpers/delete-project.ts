@@ -35,10 +35,10 @@ export async function deleteProject(context) {
         }
       }
     } catch (ex) {
-      spinner.fail('Project delete failed');
+      spinner.fail('Project delete failed.');
       throw ex;
     }
-    spinner.succeed('Project deleted in the cloud');
+    spinner.succeed('Project deleted in the cloud.');
     // Remove amplify dir
     const { frontend } = context.amplify.getProjectConfig();
     const frontendPlugins = getFrontendPlugins(context);

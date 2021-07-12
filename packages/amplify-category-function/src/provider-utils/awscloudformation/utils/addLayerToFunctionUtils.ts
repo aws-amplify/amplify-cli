@@ -8,6 +8,7 @@ import { ServiceName } from './constants';
 import { LayerCloudState } from './layerCloudState';
 import { getLayerRuntimes } from './layerConfiguration';
 import { layerVersionQuestion, mapVersionNumberToChoice } from './layerHelpers';
+import { getLegacyLayerState, LegacyState } from './layerMigrationUtils';
 
 export const provideExistingARNsPrompt = 'Provide existing Lambda layer ARNs';
 const layerSelectionPrompt = 'Provide existing layers or select layers in this project to access from this function (pick up to 5):';
@@ -38,8 +39,10 @@ export const askLayerSelection = async (
   const layerOptions = _.keys(functionMeta)
     .filter(key => functionMeta[key].service === ServiceName.LambdaLayer)
     .filter(key => {
-      // filter by compatible runtimes
-      return isRuntime(runtimeValue).inRuntimes(functionMeta[key].runtimes || getLayerRuntimes(key));
+      // filter by compatible runtimes - unless no runtimes are present for the given Lambda layer
+      // since any Lambda function can depend on /opt folder content if there is no runtime.
+      const runtimes = functionMeta[key].runtimes || getLayerRuntimes(key);
+      return Array.isArray(runtimes) && (_.isEmpty(runtimes) || isRuntime(runtimeValue).inRuntimes(runtimes));
     });
 
   if (layerOptions.length === 0) {
@@ -49,9 +52,19 @@ export const askLayerSelection = async (
       askArnQuestion: true,
     };
   }
+
+  const disabledMessage = 'Layer requires migration. Run "amplify function update" and choose this layer to migrate.';
   const currentResourceNames = filterProjectLayers(previousSelections).map(sel => (sel as ProjectLayer).resourceName);
-  const choices = layerOptions.map(op => ({ name: op, checked: currentResourceNames.includes(op) }));
-  choices.unshift({ name: provideExistingARNsPrompt, checked: previousSelections.map(sel => sel.type).includes('ExternalLayer') });
+  const choices = layerOptions.map(op => ({
+    name: op,
+    checked: currentResourceNames.includes(op),
+    disabled: getLegacyLayerState(op) !== LegacyState.NOT_LEGACY ? disabledMessage : false,
+  }));
+  choices.unshift({
+    name: provideExistingARNsPrompt,
+    checked: previousSelections.map(sel => sel.type).includes('ExternalLayer'),
+    disabled: false,
+  });
 
   const layerSelectionQuestion: CheckboxQuestion = {
     type: 'checkbox',

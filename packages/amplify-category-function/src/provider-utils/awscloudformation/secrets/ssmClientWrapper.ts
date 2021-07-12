@@ -102,8 +102,15 @@ export class SSMClientWrapper {
 
 const getSSMClient = async (context: $TSContext) => {
   const spinner = ora('Initializing SSM Client');
-  spinner.start();
-  const { client } = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [context]);
-  spinner.stop();
-  return client as aws.SSM;
+  try {
+    spinner.start();
+
+    const { client } = await context.amplify.invokePluginMethod(context, 'awscloudformation', undefined, 'getConfiguredSSMClient', [
+      context,
+    ]);
+
+    return client as aws.SSM;
+  } finally {
+    spinner.stop();
+  }
 };

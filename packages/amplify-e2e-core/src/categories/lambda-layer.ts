@@ -379,7 +379,7 @@ function waitForLayerSuccessPrintout(
 
   if (settings?.runtimes?.length > 0) {
     chain
-      .wait(path.join('amplify', 'backend', 'function', settings.projName + settings.layerName))
+      .wait(path.join('amplify', 'backend', 'function', (settings.projName || '') + settings.layerName))
       .wait('Next steps:')
       .wait('Move your libraries to the following folder:');
 

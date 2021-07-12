@@ -70,14 +70,14 @@ async function onSuccess(context: $TSContext) {
 
       context.print.info('');
       context.print.success(`Successfully pulled backend environment ${envName} from the cloud.`);
-      context.print.info(`Run 'amplify pull' to sync upstream changes.`);
+      context.print.info(`Run 'amplify pull' to sync future upstream changes.`);
       context.print.info('');
     } else {
       removeFolderStructure();
 
       context.print.info('');
       context.print.success(`Added backend environment config object to your project.`);
-      context.print.info(`Run 'amplify pull' to sync upstream changes.`);
+      context.print.info(`Run 'amplify pull' to sync future upstream changes.`);
       context.print.info('');
     }
   } else {
@@ -104,8 +104,16 @@ function backupAmplifyFolder() {
 
       throw error;
     }
-
-    fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
+    try {
+      fs.moveSync(amplifyDirPath, backupAmplifyDirPath);
+    } catch (e) {
+      if (e.code === 'EPERM') {
+        throw new Error(
+          'Could not attach the backend to the project. Ensure that there are no applications locking the `amplify` folder and try again',
+        );
+      }
+      throw e;
+    }
   }
 }
 
