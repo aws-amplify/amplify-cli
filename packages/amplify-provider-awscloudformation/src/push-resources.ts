@@ -16,6 +16,7 @@ import {
   $TSMeta,
   DeploymentStepState,
   DeploymentStepStatus,
+  readCFNTemplate,
 } from 'amplify-cli-core';
 import ora from 'ora';
 import { S3 } from './aws-utils/aws-s3';
@@ -628,25 +629,25 @@ async function prepareResource(context: $TSContext, resource: $TSAny) {
     const cfnParamsFilePath = path.normalize(path.join(resourceDir, 'parameters.json'));
     JSONUtilities.writeJson(cfnParamsFilePath, cfnParams);
   } else {
-    const cfnMeta = JSONUtilities.readJson<$TSAny>(cfnFilePath);
-    cfnMeta.Parameters.deploymentBucketName = paramType;
-    cfnMeta.Parameters.s3Key = paramType;
+    const { cfnTemplate } = await readCFNTemplate(cfnFilePath);
+    cfnTemplate.Parameters.deploymentBucketName = paramType;
+    cfnTemplate.Parameters.s3Key = paramType;
     const deploymentBucketNameRef = 'deploymentBucketName';
     const s3KeyRef = 's3Key';
 
-    if (cfnMeta.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
-      cfnMeta.Resources.LambdaFunction.Properties.CodeUri = {
+    if (cfnTemplate.Resources.LambdaFunction.Type === 'AWS::Serverless::Function') {
+      cfnTemplate.Resources.LambdaFunction.Properties.CodeUri = {
         Bucket: Fn.Ref(deploymentBucketNameRef),
         Key: Fn.Ref(s3KeyRef),
       };
     } else {
-      cfnMeta.Resources.LambdaFunction.Properties.Code = {
+      cfnTemplate.Resources.LambdaFunction.Properties.Code = {
         S3Bucket: Fn.Ref(deploymentBucketNameRef),
         S3Key: Fn.Ref(s3KeyRef),
       };
     }
     storeS3BucketInfo(category, s3Bucket, envName, resourceName, s3Key);
-    JSONUtilities.writeJson(cfnFilePath, cfnMeta);
+    JSONUtilities.writeJson(cfnFilePath, cfnTemplate);
   }
 }
 
