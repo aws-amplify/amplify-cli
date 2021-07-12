@@ -9,6 +9,12 @@ import { loadPluginFromFactory } from './functionPluginLoader';
 import { writeLayerConfigurationFile } from './layerConfiguration';
 import { defaultLayerPermission, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
+export const enum LegacyState {
+  NOT_LEGACY,
+  MULTI_ENV_LEGACY,
+  SINGLE_ENV_LEGACY,
+}
+
 export const enum LegacyPermissionEnum {
   AwsAccounts = 'awsAccounts',
   AwsOrg = 'awsOrg',
@@ -32,17 +38,16 @@ type LegacyVersionMap = {
   };
 };
 
-const enum LegacyState {
-  NOT_LEGACY,
-  MULTI_ENV_LEGACY,
-  SINGLE_ENV_LEGACY,
-}
+type LegacyLayerParametersJson = {
+  [layerVersionMapKey]: LegacyVersionMap;
+  runtimes: LegacyRuntime[];
+};
 
 const layerVersionMapKey = 'layerVersionMap';
 
 export async function migrateLegacyLayer(context: $TSContext, layerName: string): Promise<boolean> {
   const layerDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, layerName);
-  const legacyState = getLegacyLayerState(layerName, layerDirPath);
+  const legacyState = getLegacyLayerState(layerName);
 
   if (legacyState === LegacyState.NOT_LEGACY) {
     return false;
@@ -69,13 +74,10 @@ This change requires a migration. Amplify will create a new Lambda layer version
   let layerVersionMap: LegacyVersionMap;
 
   if (legacyState === LegacyState.MULTI_ENV_LEGACY) {
-    legacyRuntimeArray = JSONUtilities.readJson<LegacyRuntime[]>(path.join(layerDirPath, LegacyFilename.layerRuntimes));
+    legacyRuntimeArray = readLegacyRuntimes(layerName, legacyState);
     layerVersionMap = stateManager.getMeta()?.[categoryName]?.[layerName]?.[layerVersionMapKey] ?? {};
   } else {
-    ({ layerVersionMap, runtimes: legacyRuntimeArray } = JSONUtilities.readJson<{
-      [layerVersionMapKey]: LegacyVersionMap;
-      runtimes: LegacyRuntime[];
-    }>(path.join(layerDirPath, LegacyFilename.layerParameters)));
+    ({ layerVersionMap, runtimes: legacyRuntimeArray } = readLegacyLayerParametersJson(layerDirPath));
     layerConfiguration.nonMultiEnv = true;
   }
 
@@ -140,7 +142,8 @@ This change requires a migration. Amplify will create a new Lambda layer version
   return true;
 }
 
-function getLegacyLayerState(layerName: string, layerDirPath: string): LegacyState {
+export function getLegacyLayerState(layerName: string): LegacyState {
+  const layerDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, layerName);
   if (fs.existsSync(path.join(layerDirPath, LegacyFilename.layerParameters))) {
     return LegacyState.SINGLE_ENV_LEGACY;
   }
@@ -157,20 +160,17 @@ function getLegacyLayerState(layerName: string, layerDirPath: string): LegacySta
 ${chalk.red('Ensure your layer content is backed up!')}`);
 }
 
-function migrateAmplifyProjectFiles(layerName: string, latestLegacyHash: string, envName?: string) {
-  const projectRoot = pathManager.findProjectRoot();
-  removeLayerFromTeamProviderInfo(envName, layerName, projectRoot);
-  const meta = stateManager.getMeta(projectRoot);
-
-  if (meta?.[categoryName]?.[layerName]?.[layerVersionMapKey]) {
-    meta[categoryName][layerName][layerVersionMapKey] = undefined;
+export function readLegacyRuntimes(layerName: string, legacyState: LegacyState): LegacyRuntime[] {
+  const layerDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, layerName);
+  if (legacyState === LegacyState.SINGLE_ENV_LEGACY) {
+    return readLegacyLayerParametersJson(layerDirPath).runtimes;
   }
-
-  _.set(meta, [categoryName, layerName, versionHash], latestLegacyHash);
-  stateManager.setMeta(projectRoot, meta);
+  if (legacyState === LegacyState.MULTI_ENV_LEGACY) {
+    return JSONUtilities.readJson<LegacyRuntime[]>(path.join(layerDirPath, LegacyFilename.layerRuntimes));
+  }
 }
 
-export function removeLayerFromTeamProviderInfo(envName: string, layerName: string, projectRoot?: string) {
+export function removeLayerFromTeamProviderInfo(projectRoot: string | undefined, envName: string, layerName: string) {
   const nonCfnDataKey = 'nonCFNdata';
   const teamProviderInfo = stateManager.getTeamProviderInfo(projectRoot);
 
@@ -182,4 +182,21 @@ export function removeLayerFromTeamProviderInfo(envName: string, layerName: stri
     }
   }
   stateManager.setTeamProviderInfo(projectRoot, teamProviderInfo);
+}
+
+function readLegacyLayerParametersJson(layerDirPath: string) {
+  return JSONUtilities.readJson<LegacyLayerParametersJson>(path.join(layerDirPath, LegacyFilename.layerParameters));
+}
+
+function migrateAmplifyProjectFiles(layerName: string, latestLegacyHash: string, envName?: string) {
+  const projectRoot = pathManager.findProjectRoot();
+  removeLayerFromTeamProviderInfo(projectRoot, envName, layerName);
+  const meta = stateManager.getMeta(projectRoot);
+
+  if (meta?.[categoryName]?.[layerName]?.[layerVersionMapKey]) {
+    meta[categoryName][layerName][layerVersionMapKey] = undefined;
+  }
+
+  _.set(meta, [categoryName, layerName, versionHash], latestLegacyHash);
+  stateManager.setMeta(projectRoot, meta);
 }

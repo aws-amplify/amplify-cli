@@ -1,8 +1,9 @@
 import { $TSAny, $TSObject, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
-import { ephemeralField, deleteVersionsField, layerConfigurationFileName, updateVersionPermissionsField } from './constants';
+import { deleteVersionsField, ephemeralField, layerConfigurationFileName, updateVersionPermissionsField } from './constants';
 import { categoryName } from '../../../constants';
+import { getLegacyLayerState, LegacyState, readLegacyRuntimes } from './layerMigrationUtils';
 import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
 export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes' | 'description'>;
@@ -24,7 +25,16 @@ export function getLayerConfiguration(layerName: string) {
 }
 
 export function getLayerRuntimes(layerName: string) {
-  return getLayerConfiguration(layerName).runtimes;
+  try {
+    return getLayerConfiguration(layerName).runtimes;
+  } catch (e) {
+    // File might not exist for layers that need to be migrated
+    const legacyState = getLegacyLayerState(layerName);
+    if (legacyState !== LegacyState.NOT_LEGACY) {
+      return readLegacyRuntimes(layerName, legacyState);
+    }
+    throw e;
+  }
 }
 
 export function saveLayerRuntimes(layerDirPath: string, runtimes: LayerRuntime[] = []) {

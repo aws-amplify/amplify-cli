@@ -86,7 +86,7 @@ export const updateLayerArtifacts = async (
 
 export function removeLayerArtifacts(context: $TSContext, layerName: string) {
   if (isMultiEnvLayer(layerName)) {
-    removeLayerFromTeamProviderInfo(context.amplify.getEnvInfo().envName, layerName);
+    removeLayerFromTeamProviderInfo(undefined, context.amplify.getEnvInfo().envName, layerName);
   }
 }
 
