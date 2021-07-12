@@ -70,14 +70,14 @@ async function onSuccess(context: $TSContext) {
 
       context.print.info('');
       context.print.success(`Successfully pulled backend environment ${envName} from the cloud.`);
-      context.print.info(`Run 'amplify pull' to sync upstream changes.`);
+      context.print.info(`Run 'amplify pull' to sync future upstream changes.`);
       context.print.info('');
     } else {
       removeFolderStructure();
 
       context.print.info('');
       context.print.success(`Added backend environment config object to your project.`);
-      context.print.info(`Run 'amplify pull' to sync upstream changes.`);
+      context.print.info(`Run 'amplify pull' to sync future upstream changes.`);
       context.print.info('');
     }
   } else {

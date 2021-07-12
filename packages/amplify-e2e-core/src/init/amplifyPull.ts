@@ -55,7 +55,7 @@ export function amplifyPull(
     }
 
     if (settings.emptyDir) {
-      chain.wait(/Successfully pulled backend environment .+ from the cloud\./).wait("Run 'amplify pull' to sync upstream changes.");
+      chain.wait(/Successfully pulled backend environment .+ from the cloud\./).wait("Run 'amplify pull' to sync future upstream changes.");
     } else {
       chain.wait('Post-pull status').wait('Current Environment').wait(tableHeaderRegex).wait(tableSeperator);
     }
