@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.0.2...amplify-migration-tests@3.1.0) (2021-07-12)
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
 ## [3.0.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.0.1...amplify-migration-tests@3.0.2) (2021-06-30)
 
 
