@@ -1,3 +1,5 @@
+import { ProviderContext } from 'amplify-cli-core';
+
 /**
  * Parameters common to geo resources
  */
@@ -8,15 +10,6 @@ export type ResourceParameters = {
     accessType: AccessType,
     isDefault: boolean,
     dataProvider: DataProvider
-}
-
-/**
- * higher level context
- */
-export interface ProviderContext {
-    provider: string;
-    service: string;
-    projectName: string;
 }
 
 export enum PricingPlan {

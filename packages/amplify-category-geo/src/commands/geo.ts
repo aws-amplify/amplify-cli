@@ -6,8 +6,8 @@ export const name = category;
 export const run = async (context: $TSContext) => {
   if (/^win/.test(process.platform)) {
     try {
-      const { run } = require(`./${category}/${context.parameters.first}`);
-      return run(context);
+      const { runCommand } = require(`./${category}/${context.parameters.first}`);
+      return runCommand(context);
     } catch (e) {
       context.print.error('Command not found');
     }

@@ -18,7 +18,7 @@ export const addMapResource = async (
   await createMapWalkthrough(context, mapParams);
   const completeParameters: MapParameters = convertToCompleteMapParams(mapParams);
 
-  createMapResource(context, completeParameters);
+  await createMapResource(context, completeParameters);
 
   const { print } = context;
   print.success(`Successfully added resource ${completeParameters.name} locally.`);
@@ -42,8 +42,9 @@ export const updateMapResource = async (
       name: mapParams.name,
       isDefault: mapParams.isDefault
     });
+  } else {
+    throw new Error('Insufficient information to update Map resource.');
   }
-  else throw new Error('Insufficient information to update Map resource.');
 
   const { print } = context;
   print.success(`Successfully updated resource ${mapParams.name} locally.`);

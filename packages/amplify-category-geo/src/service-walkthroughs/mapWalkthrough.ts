@@ -4,8 +4,8 @@ import inquirer from 'inquirer';
 import { merge } from '../service-utils/resourceUtils';
 import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, EsriMapStyleType } from '../service-utils/mapParams';
 import { apiDocs, ServiceName } from '../service-utils/constants';
-import { $TSContext } from 'amplify-cli-core';
-import { getCurrentMapParameters, getMapFriendlyName } from '../service-utils/mapUtils';
+import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/mapUtils';
 import { getGeoServiceMeta, updateDefaultResource } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, pricingPlanWalkthrough } from './resourceWalkthrough';
 import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
@@ -26,7 +26,7 @@ export const createMapWalkthrough = async (
   parameters = merge(parameters, await resourceAccessWalkthrough(parameters, ServiceName.Map));
 
   // optional advanced walkthrough
-  parameters = await mapAdvancedWalkthrough(context, parameters);
+  parameters = merge(parameters, await mapAdvancedWalkthrough(context, parameters));
 
   // ask if the map should be set as a default. Default to true if it's the only map
   const currentMapResources = await getGeoServiceMeta(ServiceName.Map);
@@ -56,7 +56,7 @@ export const mapNameWalkthrough = async (context: any): Promise<Partial<MapParam
             return `map${shortId}`;
         },
     };
-    return await inquirer.prompt([mapNamePrompt]);
+    return { name: (await inquirer.prompt([mapNamePrompt])).name as string };
 };
 
 export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> => {
@@ -182,12 +182,10 @@ export const updateDefaultMapWalkthrough = async (
         .map(resource => resource.resourceName);
     }
     const otherMapResources = availableMaps.filter(mapResourceName => mapResourceName != currentDefault);
-    if (otherMapResources && otherMapResources.length > 0) {
-        const mapChoices = [];
-        const mapFriendlyNames = await getMapFriendlyName(otherMapResources);
-        for (let [index, val] of mapFriendlyNames.entries()) {
-            mapChoices.push({ name: val, value:otherMapResources[index] });
-        }
+    if (otherMapResources?.length > 0) {
+        const mapFriendlyNames = await getMapFriendlyNames(otherMapResources);
+        const mapChoices = mapFriendlyNames.map((friendlyName, index) => ({ name: friendlyName, value: otherMapResources[index] }));
+        
         const defaultMapQuestion = [
             {
                 name: 'defaultMapName',

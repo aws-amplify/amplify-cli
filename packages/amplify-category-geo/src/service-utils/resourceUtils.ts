@@ -50,7 +50,7 @@ export const updateParametersFile = (
  * @param service The type of the resource
  * @returns resource information available in Amplify Meta file
  */
-export const getGeoServiceMeta = async (service: string): Promise<$TSObject> => _.pickBy(stateManager.getMeta()?.[category], (val) => val.service === service)
+export const getGeoServiceMeta = async (service: ServiceName): Promise<$TSObject> => _.pickBy(stateManager.getMeta()?.[category], (val) => val.service === service)
 
 /**
  * Get the Geo resource configurations stored in Amplify Meta file

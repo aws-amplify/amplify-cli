@@ -8,22 +8,21 @@ export const name = 'remove';
 
 export const run = async(context: $TSContext) => {
   const { amplify } = context;
-    return amplify
-      .serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageRemove)
-      .then((result: {service: string, providerName: string}) => {
-        if (result.providerName !== provider) {
-          context.print.error(`Provider ${result.providerName} not configured for this category`);
-          return;
-        }
-        return removeResource(context, result.service);
-      })
-      .then(() => {
-        context.print.info('');
-      })
-      .catch((err: any) => {
-        context.print.info(err.stack);
-        context.print.error('There was an error removing the geo resource');
-        context.usageData.emitError(err);
-        process.exitCode = 1;
-      });
+  try {
+    const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageRemove);
+
+    if (result.providerName !== provider) {
+      context.print.error(`Provider ${result.providerName} not configured for this category`);
+      return;
+    }
+
+    return await removeResource(context, result.service);
+    
+  } catch (error) {
+    context.print.info('');
+    context.print.info(error.stack);
+    context.print.error('There was an error removing the geo resource');
+    context.usageData.emitError(error);
+    process.exitCode = 1;
+  }
 };

@@ -1,7 +1,7 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { addResource } from '../../../provider-controllers/index';
-import path from 'path';
 import { ServiceName } from '../../../service-utils/constants';
+import { run } from '../../../commands/geo/add';
 
 const mockAddResource = addResource as jest.MockedFunction< typeof addResource >;
 mockAddResource.mockImplementation((context: $TSContext, service: string): Promise<string> => {
@@ -16,38 +16,36 @@ jest.mock('../../../provider-controllers/index');
 
 describe('add command tests', () => {
     const provider = 'awscloudformation';
-    const commandPath = path.normalize(path.join(__dirname, '..', '..', '..',  'commands', 'geo', 'add'));
-    const commandModule = require(commandPath);
-    let mockContext: $TSObject;
+    let mockContext: $TSContext;
         
     beforeEach(() => {
         jest.clearAllMocks();
-        mockContext = {
+        mockContext = ({
             print: {
                 info: jest.fn()
             },
             amplify: {}
-        };
+        } as unknown) as $TSContext;
     });
 
     it('add resource workflow is invoked for map service', async() => {
         const service = ServiceName.Map;
-        mockContext.amplify.serviceSelectionPrompt = async () => {
+        mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
             return { service: service, providerName: provider};
-        };
+        });
 
-        await commandModule.run(mockContext, service);
+        await run(mockContext);
 
         expect(mockAddResource).toHaveBeenCalledWith(mockContext, service);
     });
 
     it('add resource workflow is invoked for place index service', async() => {
         const service = ServiceName.PlaceIndex;
-        mockContext.amplify.serviceSelectionPrompt = async () => {
+        mockContext.amplify.serviceSelectionPrompt = jest.fn().mockImplementation( async () => {
             return { service: service, providerName: provider};
-        };
+        });
 
-        await commandModule.run(mockContext, service);
+        await run(mockContext);
 
         expect(mockAddResource).toHaveBeenCalledWith(mockContext, service);
     });

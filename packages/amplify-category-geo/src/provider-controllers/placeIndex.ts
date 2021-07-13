@@ -18,7 +18,7 @@ export const addPlaceIndexResource = async (
   await createPlaceIndexWalkthrough(context, placeIndexParams);
   const completeParameters: PlaceIndexParameters = convertToCompletePlaceIndexParams(placeIndexParams);
 
-  createPlaceIndexResource(context, completeParameters);
+  await createPlaceIndexResource(context, completeParameters);
 
   const { print } = context;
   print.success(`Successfully added resource ${completeParameters.name} locally.`);
@@ -42,7 +42,9 @@ export const updatePlaceIndexResource = async (
       isDefault: placeIndexParams.isDefault
     });
   }
-  else throw new Error('Insufficient information to update Place Index resource.');
+  else {
+    throw new Error('Insufficient information to update Place Index resource.');
+  }
 
   const { print } = context;
   print.success(`Successfully updated resource ${placeIndexParams.name} locally.`);

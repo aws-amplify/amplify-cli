@@ -26,7 +26,7 @@ export const createPlaceIndexWalkthrough = async (
   parameters = merge(parameters, await resourceAccessWalkthrough(parameters, ServiceName.PlaceIndex));
 
   // optional advanced walkthrough
-  parameters = await placeIndexAdvancedWalkthrough(context, parameters);
+  parameters = merge(parameters, await placeIndexAdvancedWalkthrough(context, parameters));
 
   // ask if the place index should be set as a default. Default to true if it's the only place index
   const currentPlaceIndexResources = await getGeoServiceMeta(ServiceName.PlaceIndex);
@@ -56,7 +56,7 @@ export const placeIndexNameWalkthrough = async (context: any): Promise<Partial<P
             return `placeindex${shortId}`;
         },
     };
-    return await inquirer.prompt([indexNamePrompt]);
+    return { name: (await inquirer.prompt([indexNamePrompt])).name as string };
 };
 
 export const placeIndexAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {
@@ -98,7 +98,7 @@ export const placeIndexDataStorageWalkthrough = async (parameters: Partial<Place
       choices: Object.keys(DataSourceIntendedUse),
       default: parameters.dataSourceIntendedUse ? parameters.dataSourceIntendedUse : 'SingleUse'
   };
-  return await inquirer.prompt([dataSourceUsagePrompt]);
+  return { dataSourceIntendedUse: (await inquirer.prompt([dataSourceUsagePrompt])).dataSourceIntendedUse as DataSourceIntendedUse };
 };
 
 /**
@@ -180,7 +180,7 @@ export const updateDefaultPlaceIndexWalkthrough = async (
         .map(resource => resource.resourceName);
     }
     const otherIndexResources = availablePlaceIndices.filter(indexResourceName => indexResourceName != currentDefault);
-    if (otherIndexResources && otherIndexResources.length > 0) {
+    if (otherIndexResources?.length > 0) {
         const defaultIndexQuestion = [
             {
                 name: 'defaultIndexName',

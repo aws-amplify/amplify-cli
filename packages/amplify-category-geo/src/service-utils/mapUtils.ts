@@ -109,7 +109,7 @@ export const getCurrentMapParameters = async (mapName: string): Promise<Partial<
  * @param mapNames The maps for which friendly names are needed
  * @returns Friendly names for the given map resources
  */
-export const getMapFriendlyName = async (mapNames: string[]): Promise<string[]> => {
+export const getMapFriendlyNames = async (mapNames: string[]): Promise<string[]> => {
   const currentMapResources = await getGeoServiceMeta(ServiceName.Map);
   return mapNames.map(mapName => {
     const mapStyle = currentMapResources?.[mapName]?.mapStyle;

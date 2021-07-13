@@ -1,17 +1,32 @@
 import { $TSContext, $TSObject } from 'amplify-cli-core';
-import path from 'path';
 import { category } from './constants';
+import * as addCommand from './commands/geo/add';
+import * as updateCommand from './commands/geo/update';
+import * as removeCommand from './commands/geo/remove';
+import * as consoleCommand from './commands/geo/console';
+import * as helpCommand from './commands/geo';
 
 export const executeAmplifyCommand = async (context: $TSContext) => {
-    let commandPath = path.normalize(path.join(__dirname, 'commands'));
-    if (context.input.command === 'help') {
-        commandPath = path.join(commandPath, category);
-    } else {
-        commandPath = path.join(commandPath, category, context.input.command);
+    switch(context.input.command) {
+        case 'add':
+            await addCommand.run(context);
+            break;
+        case 'update':
+            await updateCommand.run(context);
+            break;
+        case 'remove':
+            await removeCommand.run(context);
+            break;
+        case 'console':
+            await consoleCommand.run(context);
+            break;
+        case 'help':
+            await helpCommand.run(context);
+            break;
+        default:
+            context.print.error(`The subcommand ${context.input.command} is not supported for ${category} category`);
+            break;
     }
-
-    const commandModule = require(commandPath);
-    await commandModule.run(context);
 };
 
 export const handleAmplifyEvent = (context: $TSContext, args: $TSObject) => {

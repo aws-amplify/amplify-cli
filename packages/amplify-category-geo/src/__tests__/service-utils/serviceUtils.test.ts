@@ -67,8 +67,8 @@ describe('Test Map resource utility functions', () => {
     });
 
     it('generates friendly names for maps containing the map styles', async() => {
-        const getMapFriendlyName = require('../../service-utils/mapUtils').getMapFriendlyName;
-        const mapFriendlyNames = await getMapFriendlyName(['map1', 'map2']);
+        const getMapFriendlyNames = require('../../service-utils/mapUtils').getMapFriendlyNames;
+        const mapFriendlyNames = await getMapFriendlyNames(['map1', 'map2']);
         expect(mapFriendlyNames).toEqual([
             `map1 (${map1Params.mapStyle})`,
             `map2 (${map2Params.mapStyle})`

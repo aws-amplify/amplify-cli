@@ -1,4 +1,4 @@
-import { ProviderContext } from '../service-utils/resourceParams';
+import { ProviderContext } from 'amplify-cli-core';
 import { ServiceName, provider } from '../service-utils/constants';
 import { $TSObject, open, stateManager } from 'amplify-cli-core';
 import { $TSContext } from 'amplify-cli-core';
@@ -78,7 +78,7 @@ export const removeResource = async (
 
 export const projectHasAuth = () => !!Object.values(
   stateManager.getMeta()?.auth || {}
-).find(meta => (meta as $TSObject)['service'] === 'Cognito');
+).find(meta => (meta as $TSObject)?.service === 'Cognito');
 
 export const printNextStepsSuccessMessage = (context: $TSContext) => {
   const { print } = context;
