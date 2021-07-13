@@ -3,7 +3,7 @@ import { stateManager, exitOnNextTick, ResourceDoesNotExistError, MissingParamet
 import * as inquirer from 'inquirer';
 import { updateBackendConfigAfterResourceRemove } from '../../../extensions/amplify-helpers/update-backend-config';
 import { removeResourceParameters } from '../../../extensions/amplify-helpers/envResourceParams';
-
+const path = require('path');
 jest.mock('../../../extensions/amplify-helpers/envResourceParams');
 jest.mock('../../../extensions/amplify-helpers/update-backend-config');
 
@@ -215,7 +215,7 @@ describe('remove-resource', () => {
           },
         },
       });
-      expect(context.filesystem.remove).toBeCalledWith('backendDirPath/function/lambda1');
+      expect(context.filesystem.remove).toBeCalledWith(path.join("backendDirPath", "function","lambda1"));
       expect(removeResourceParameters).toBeCalledWith(context, 'function', 'lambda1');
       expect(updateBackendConfigAfterResourceRemove).toBeCalledWith('function', 'lambda1');
       expect(context.print.success).toBeCalledWith('Successfully removed resource');
