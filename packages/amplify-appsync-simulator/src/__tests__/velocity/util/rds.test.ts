@@ -3,8 +3,8 @@ import { mockedInputToRdsJsonString, mockedOutputFromRdsJsonString } from './moc
 import { GraphQLResolveInfo } from 'graphql';
 
 const stubInfo = {} as unknown;
-export const mockInfo = stubInfo as GraphQLResolveInfo;
-var util;
+const mockInfo = stubInfo as GraphQLResolveInfo;
+let util;
 
 beforeEach(() => {
   util = create(undefined, undefined, mockInfo);
