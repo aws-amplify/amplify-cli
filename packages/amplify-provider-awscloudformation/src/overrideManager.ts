@@ -1,5 +1,5 @@
 import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from './root-stack-builder';
-
+import { rootStackFileName } from './push-resources';
 /**
  *
  * @param context
@@ -14,7 +14,7 @@ export async function transformCfnWithOverrides(context) {
   // CFN transform for Root stack
   const props: RootStackTransformOptions = {
     resourceConfig: {
-      stackFileName: 'nested-cloudformation-stack.yml',
+      stackFileName: rootStackFileName,
     },
   };
   // generate , override and deploy stacks to disk

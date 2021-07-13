@@ -33,6 +33,7 @@ import { $TSContext } from 'amplify-cli-core';
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
 import { updateEnv } from './update-env';
+export { rootStackFileName } from './push-resources';
 
 function init(context) {
   return initializer.run(context);

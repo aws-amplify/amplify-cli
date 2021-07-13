@@ -20,9 +20,7 @@ export class RootStackSythesizer extends LegacyStackSynthesizer {
       this.setStackAsset(templateName, template);
       return;
     } else {
-      throw new Error(
-        'Error synthesizing the template. Expected Stack to be either instance of TransformerRootStack or TransformerNestedStack',
-      );
+      throw new Error('Error synthesizing the template. Expected Stack to be either instance of AmplifyRootStack');
     }
   }
 

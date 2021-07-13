@@ -1,7 +1,7 @@
 import { $TSContext } from 'amplify-cli-core';
 import _ from 'lodash';
 import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from './root-stack-builder';
-
+import { rootStackFileName } from './push-resources';
 const moment = require('moment');
 const path = require('path');
 const { pathManager, PathConstants, stateManager, JSONUtilities } = require('amplify-cli-core');
@@ -20,7 +20,6 @@ const { fileLogger } = require('./utils/aws-logger');
 const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
 const logger = fileLogger('attach-backend');
 const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
-const rootStackFileName = 'root-cloudformation-stack.json';
 
 export async function run(context) {
   await configurationManager.init(context);

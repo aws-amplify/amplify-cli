@@ -54,8 +54,7 @@ const logger = fileLogger('push-resources');
 const ApiServiceNameElasticContainer = 'ElasticContainer';
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
-const rootStackFileName = 'rootStackTemplate.json';
-const nestedStackFileName = 'nested-cloudformation-stack.yml';
+export const rootStackFileName = 'root-cloudformation-stack.json';
 const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
@@ -80,6 +79,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       resourcesToBeDeleted,
       tagsUpdated,
       allResources,
+      rootStackUpdated,
     } = resourceDefinition;
     const cloudformationMeta = context.amplify.getProjectMeta().providers.awscloudformation;
     const {
@@ -222,12 +222,12 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
         // generate nested stack
         const backEndDir = pathManager.getBackendDirPath();
-        const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, nestedStackFileName));
-        await generateAndUploadRootStack(context, nestedStackFilepath, nestedStackFileName);
+        const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, rootStackFileName));
+        await generateAndUploadRootStack(context, nestedStackFilepath, rootStackFileName);
 
         // Use state manager to do the final deployment. The final deployment include not just API change but the whole Amplify Project
         const finalStep: DeploymentOp = {
-          stackTemplatePathOrUrl: nestedStackFileName,
+          stackTemplatePathOrUrl: rootStackFileName,
           tableNames: [],
           stackName: cloudformationMeta.StackName,
           parameters: {
@@ -663,7 +663,7 @@ async function updateCloudFormationNestedStack(
   resourcesToBeUpdated: $TSAny,
 ) {
   const backEndDir = pathManager.getBackendDirPath();
-  const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, nestedStackFileName));
+  const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, rootStackFileName));
 
   JSONUtilities.writeJson(nestedStackFilepath, nestedStack);
 
@@ -821,7 +821,7 @@ async function formNestedStack(
   // CFN transform for Root stack
   const props: RootStackTransformOptions = {
     resourceConfig: {
-      stackFileName: nestedStackFileName,
+      stackFileName: rootStackFileName,
     },
   };
   // generate , override and deploy stacks to disk
