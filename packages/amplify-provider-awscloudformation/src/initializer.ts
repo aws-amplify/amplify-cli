@@ -1,6 +1,6 @@
 import { $TSContext } from 'amplify-cli-core';
 import _ from 'lodash';
-import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from './root-stack-builder/root-stack-builder';
+import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from './root-stack-builder';
 
 const moment = require('moment');
 const path = require('path');
@@ -20,7 +20,7 @@ const { fileLogger } = require('./utils/aws-logger');
 const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
 const logger = fileLogger('attach-backend');
 const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
-const nestedStackFileName = 'nested-cloudformation-stack.yml';
+const rootStackFileName = 'root-cloudformation-stack.json';
 
 export async function run(context) {
   await configurationManager.init(context);
@@ -51,13 +51,10 @@ export async function run(context) {
     const authRoleName = `${stackName}-authRole`;
     const unauthRoleName = `${stackName}-unauthRole`;
 
-    //const rootStack = JSONUtilities.readJson(initTemplateFilePath);
-    const nestedStackFileName = 'nested-cloudformation-stack.yml';
     // CFN transform for Root stack
     const props: RootStackTransformOptions = {
       resourceConfig: {
-        category: 'root',
-        stackFileName: nestedStackFileName,
+        stackFileName: rootStackFileName,
       },
     };
     // generate , override and deploy stacks to disk

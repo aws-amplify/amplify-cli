@@ -46,7 +46,7 @@ import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processo
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
-import { CommandType, AmplifyRootStackTransform, RootStackTransformOptions } from './root-stack-builder/root-stack-builder';
+import { CommandType, AmplifyRootStackTransform, RootStackTransformOptions } from './root-stack-builder';
 
 const logger = fileLogger('push-resources');
 
@@ -818,13 +818,9 @@ async function formNestedStack(
   serviceName?: string,
   skipEnv?: boolean,
 ) {
-  // const initTemplateFilePath = path.join(__dirname, '..', 'resources', rootStackFileName);
-  // const nestedStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
-
   // CFN transform for Root stack
   const props: RootStackTransformOptions = {
     resourceConfig: {
-      category: 'root',
       stackFileName: nestedStackFileName,
     },
   };

@@ -13,9 +13,14 @@ module.exports = {
       await context.amplify.executeProviderUtils(context, 'awscloudformation', 'buildOverrides', {
         forceCompile: true,
       });
-    } catch (err) {
-      context.print.error(err.toString());
-      context.usageData.emitError(err);
+    } catch (error) {
+      context.print.error(error.message);
+
+      if (error.stack) {
+        context.print.info(error.stack);
+      }
+
+      context.usageData.emitError(error);
       process.exitCode = 1;
     }
   },
