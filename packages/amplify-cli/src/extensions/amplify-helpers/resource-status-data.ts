@@ -8,7 +8,7 @@ import { hashElement, HashElementOptions } from 'folder-hash';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import * as resourceStatus from './resource-status-diff';
 import { IResourceDiffCollection } from './resource-status-diff';
-import { ViewResourceTableParams } from 'amplify-cli-core/src/cliViewAPI';
+import { ViewResourceTableParams } from 'amplify-cli-core';
 
 
 //API: Filter resource status for the given categories

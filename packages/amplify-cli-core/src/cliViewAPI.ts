@@ -17,19 +17,36 @@ export class ViewResourceTableParams {
     public get command() {
         return this._command;
     }
+    public set command( command : string) {
+        this._command = command;
+    }
+
     public get verbose() {
         return this._verbose;
     }
+    public set verbose( tf: boolean ) {
+        this._verbose = tf;
+    }
+
     public get help() {
         return this._help;
+    }
+    public set help( isHelp: boolean ) {
+        this._help = isHelp;
     }
 
     public get categoryList() {
         return this._categoryList;
     }
+    public set categoryList( categories: string[] | [] ){
+        this._categoryList = categories
+    }
 
     public get filteredResourceList() {
         return this._filteredResourceList;
+    }
+    public set filteredResourceList( resourceList : any ) {
+        this._filteredResourceList = resourceList ;
     }
 
     getCategoryFromCLIOptions(cliOptions: object) {
@@ -76,6 +93,10 @@ ${this.styleCommand('-v [category ...]')} : (Verbose mode) Displays the cloudfor
                     ${this.stylePrompt('#>')} ${this.styleCommand('amplify status -v ')}${this.styleOption('api storage')}
                                
         `;
+    }
+
+    public logErrorException( e : Error  ){
+        console.log(e.name , e.message);
     }
 
     public constructor(cliParams: CLIParams) {

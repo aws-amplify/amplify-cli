@@ -5,13 +5,18 @@ export const run = async context => {
   const cliParams:CLIParams  = { cliCommand : context?.input?.command,
                                  cliSubcommands: context?.input?.subCommands,
                                  cliOptions : context?.input?.options }
+
   const view = new ViewResourceTableParams( cliParams );
   if ( context?.input?.subCommands?.includes("help")){
      console.log( view.getStyledHelp())
   } else {
-    await context.amplify.showStatusTable( view );
-    await context.amplify.showHelpfulProviderLinks(context);
-    await showAmplifyConsoleHostingStatus(context);
+    try {
+      await context.amplify.showStatusTable( view );
+      await context.amplify.showHelpfulProviderLinks(context);
+      await showAmplifyConsoleHostingStatus(context);
+    } catch ( e ){
+      view.logErrorException(e);
+    }
   }
 };
 
