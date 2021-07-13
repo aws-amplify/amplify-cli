@@ -3,9 +3,11 @@ import { run } from '../../commands/upgrade';
 import fetch, { Response } from 'node-fetch';
 import { $TSContext } from 'amplify-cli-core';
 import * as core from 'amplify-cli-core';
-
+import * as path from "path";
 jest.mock('fs-extra');
 const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;
+const rex1 = /\\/ig;
+
 
 jest.mock('node-fetch');
 const fetch_mock = fetch as jest.MockedFunction<typeof fetch>;
@@ -54,6 +56,27 @@ describe('run upgrade using packaged CLI', () => {
     });
   });
 
+  async function replaceSlashes() {
+    for (let i = 0; i < fs_mock.move.mock.calls[0].length; i++) {
+      if (typeof fs_mock.move.mock.calls[0]['' + i] === 'string') {
+        fs_mock.move.mock.calls[0]['' + i] = fs_mock.move.mock.calls[0]['' + i].replace(rex1, '/');
+      }
+    }
+
+    for (let i = 0; i < fs_mock.move.mock.calls[1].length; i++) {
+      if (typeof fs_mock.move.mock.calls[1]['' + i] === 'string') {
+        fs_mock.move.mock.calls[1]['' + i] = fs_mock.move.mock.calls[1]['' + i].replace(rex1, '/');
+      }
+    }
+
+    for (let i = 0; i < fs_mock.chmod.mock.calls[0].length; i++) {
+      if (typeof fs_mock.chmod.mock.calls[0][0] === 'string') {
+        fs_mock.chmod.mock.calls[0][0] = fs_mock.chmod.mock.calls[0][0].replace(rex1, '/');
+      }
+    }
+  }
+
+
   it('exits early if no new packaged version available', async () => {
     // setup
     fetch_mock.mockResolvedValueOnce(({
@@ -96,18 +119,23 @@ describe('run upgrade using packaged CLI', () => {
     await run(context_stub_typed);
 
     // validate
+    replaceSlashes();
     expect(fs_mock.move.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify-pkg-linux",
-        "homedir/bin/amplify",
+        "${path.posix.join('homedir', 'bin', 'amplify-pkg-linux')}",
+        "${path.posix.join('homedir', 'bin', 'amplify')}",
         Object {
           "overwrite": true,
         },
       ]
     `);
+
+    if (typeof fs_mock.chmod.mock.calls[0][0] === 'string') {
+      fs_mock.chmod.mock.calls[0][0] = fs_mock.chmod.mock.calls[0][0].replace(rex1, '/');
+    }
     expect(fs_mock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify",
+        "${path.posix.join('homedir', 'bin', 'amplify')}",
         "700",
       ]
     `);
@@ -147,24 +175,25 @@ describe('run upgrade using packaged CLI', () => {
     await run(context_stub_typed);
 
     // validate
-    expect(fs_mock.move.mock.calls[0]).toMatchInlineSnapshot(`
+      replaceSlashes();
+      expect(fs_mock.move.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify.exe",
-        "homedir/bin/amplify-old.exe",
+        "${path.posix.join('homedir', 'bin', 'amplify.exe')}",
+        "${path.posix.join('homedir', 'bin', 'amplify-old.exe')}",
       ]
     `);
-    expect(fs_mock.move.mock.calls[1]).toMatchInlineSnapshot(`
+      expect(fs_mock.move.mock.calls[1]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify-pkg-win.exe",
-        "homedir/bin/amplify.exe",
+        "${path.posix.join('homedir', 'bin', 'amplify-pkg-win.exe')}",
+        "${path.posix.join('homedir', 'bin', 'amplify.exe')}",
         Object {
           "overwrite": true,
         },
       ]
     `);
-    expect(fs_mock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
+      expect(fs_mock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "homedir/bin/amplify.exe",
+        "${path.posix.join('homedir', 'bin', 'amplify.exe')}",
         "700",
       ]
     `);
