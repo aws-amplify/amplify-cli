@@ -94,13 +94,14 @@ export async function configure(context: $TSContext) {
 async function enableServerlessContainers(context: $TSContext) {
   const frontend = context.exeInfo.projectConfig.frontend;
   const { config = {} } = context.exeInfo.projectConfig[frontend] || {};
-  // TODO: check for headless mode parameter to avoid the question
-  const { ServerlessContainers } = await prompt({
-    type: 'confirm',
-    name: 'ServerlessContainers',
-    message: 'Do you want to enable container-based deployments?',
-    default: config.ServerlessContainers === true,
-  });
+  const { ServerlessContainers } =
+    config.ServerlessContainers ??
+    (await prompt({
+      type: 'confirm',
+      name: 'ServerlessContainers',
+      message: 'Do you want to enable container-based deployments?',
+      default: config.ServerlessContainers === true,
+    }));
 
   if (!context.exeInfo.projectConfig[frontend]) {
     context.exeInfo.projectConfig[frontend] = { config };
