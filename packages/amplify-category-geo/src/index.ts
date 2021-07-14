@@ -4,7 +4,7 @@ import * as addCommand from './commands/geo/add';
 import * as updateCommand from './commands/geo/update';
 import * as removeCommand from './commands/geo/remove';
 import * as consoleCommand from './commands/geo/console';
-import * as helpCommand from './commands/geo';
+import * as helpCommand from './commands/geo/help';
 
 export const executeAmplifyCommand = async (context: $TSContext) => {
     switch(context.input.command) {

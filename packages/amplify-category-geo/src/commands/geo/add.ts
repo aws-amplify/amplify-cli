@@ -18,7 +18,7 @@ export const run = async(context: $TSContext) => {
     }
 
     return await addResource(context, result.service);
-    
+
   } catch (error) {
     context.print.info('');
     context.print.info(error.stack);

@@ -6,7 +6,8 @@
         "push",
         "remove",
         "update",
-        "help"
+        "help",
+        "console"
     ],
     "commandAliases":{
         "configure": "update"

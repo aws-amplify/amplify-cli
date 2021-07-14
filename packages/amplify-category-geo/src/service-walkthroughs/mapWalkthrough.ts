@@ -185,7 +185,7 @@ export const updateDefaultMapWalkthrough = async (
     if (otherMapResources?.length > 0) {
         const mapFriendlyNames = await getMapFriendlyNames(otherMapResources);
         const mapChoices = mapFriendlyNames.map((friendlyName, index) => ({ name: friendlyName, value: otherMapResources[index] }));
-        
+
         const defaultMapQuestion = [
             {
                 name: 'defaultMapName',

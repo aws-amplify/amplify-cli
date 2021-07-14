@@ -17,7 +17,7 @@ export const run = async(context: $TSContext) => {
     }
 
     return await removeResource(context, result.service);
-    
+
   } catch (error) {
     context.print.info('');
     context.print.info(error.stack);

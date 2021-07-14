@@ -1,17 +1,9 @@
 import { $TSContext } from 'amplify-cli-core';
-import { category } from '../constants';
+import { category } from '../../constants';
 
 export const name = category;
 
 export const run = async (context: $TSContext) => {
-  if (/^win/.test(process.platform)) {
-    try {
-      const { runCommand } = require(`./${category}/${context.parameters.first}`);
-      return runCommand(context);
-    } catch (e) {
-      context.print.error('Command not found');
-    }
-  }
   const header = `amplify ${category} <subcommand>`;
 
   const commands = [
