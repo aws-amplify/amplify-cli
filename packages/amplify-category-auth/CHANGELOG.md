@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.35.1-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.35.0...amplify-category-auth@2.35.1-geo.0) (2021-07-14)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** \n made OS specific ([#7663](https://github.com/aws-amplify/amplify-cli/issues/7663)) ([3c0823e](https://github.com/aws-amplify/amplify-cli/commit/3c0823e8e004e00808351e958f5b587e8d77bd01)), closes [#7662](https://github.com/aws-amplify/amplify-cli/issues/7662)
+* **auth:** standardize CloudFormation trigger templates, prevent errors at runtime ([#7219](https://github.com/aws-amplify/amplify-cli/issues/7219)) ([f9796bd](https://github.com/aws-amplify/amplify-cli/commit/f9796bd3aca6606f155d37ac6a8931d6bdec25b9))
+
+
+
+
+
 # [2.35.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.34.1...amplify-category-auth@2.35.0) (2021-07-12)
 
 
