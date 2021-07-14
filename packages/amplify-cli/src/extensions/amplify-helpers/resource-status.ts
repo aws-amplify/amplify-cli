@@ -532,15 +532,16 @@ export async function showResourceTable(category, resourceName, filteredResource
 }
 
 async function isRootStackModifiedSinceLastPush(hashFunction): Promise<boolean> {
-  const localBackendDir = path.normalize(path.join(pathManager.getBackendDirPath(), 'awscloudformation', 'build'));
-  const cloudBackendDir = path.normalize(path.join(pathManager.getCurrentCloudBackendDirPath(), 'awscloudformation', 'build'));
+  try {
+    const projectPath = pathManager.findProjectRoot();
+    const localBackendDir = pathManager.getRootStackDirPath(projectPath!);
+    const cloudBackendDir = pathManager.getCurrentCloudRootStackDirPath(projectPath!);
 
-  if (!fs.existsSync(localBackendDir)) {
-    return false;
+    const localDirHash = await hashFunction(localBackendDir, [rootStackFileName]);
+    const cloudDirHash = await hashFunction(cloudBackendDir, [rootStackFileName]);
+
+    return localDirHash !== cloudDirHash;
+  } catch (error) {
+    throw new Error('Amplify Project not initialized.');
   }
-
-  const localDirHash = await hashFunction(localBackendDir, [rootStackFileName]);
-  const cloudDirHash = await hashFunction(cloudBackendDir, [rootStackFileName]);
-
-  return localDirHash !== cloudDirHash;
 }

@@ -1,5 +1,6 @@
 import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from './root-stack-builder';
-import { rootStackFileName } from './push-resources';
+import { rootStackFileName } from '.';
+import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
 /**
  *
  * @param context
@@ -19,6 +20,8 @@ export async function transformCfnWithOverrides(context) {
   };
   // generate , override and deploy stacks to disk
   const rootTransform = new AmplifyRootStackTransform(props, CommandType.PUSH);
-  const template = rootTransform.transform();
+  const rootStack = await rootTransform.transform();
+  // prepush modifier
+  await prePushCfnTemplateModifier(rootStack);
   // generate CFN for other Resources
 }

@@ -65,7 +65,8 @@ export class AmplifyRootStackTransform {
     this.applyOverride();
 
     // generate CFN template
-    const template = await this.synthesizeTemplates();
+    const template: Template = await this.synthesizeTemplates();
+
     // save stack
     if (this._command === CommandType.PUSH) {
       await this.deployOverrideStacksToDisk({

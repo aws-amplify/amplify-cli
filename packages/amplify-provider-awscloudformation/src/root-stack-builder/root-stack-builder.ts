@@ -102,6 +102,7 @@ export class AmplifyRootStack extends cdk.Stack {
     cfnOutputs.unauthRoleArn = new cdk.CfnOutput(this, 'UnauthRoleArn', {
       value: cdk.Fn.getAtt('UnauthRole', 'Arn').toString(),
     });
+    templateObj = {};
     templateObj['Parameters'] = { ...CfnParameters };
     templateObj['Outputs'] = { ...cfnOutputs };
     templateObj.Resources = { ...CfnResources };
@@ -132,6 +133,7 @@ export class AmplifyRootStackOutputs extends cdk.Stack {
     cfnOutputs.unauthRoleName = new cdk.CfnOutput(this, 'UnauthRoleName', {
       value: cdk.Fn.ref('UnauthRoleName'),
     });
+    templateObj = {};
     templateObj['Outputs'] = { ...cfnOutputs };
   }
 

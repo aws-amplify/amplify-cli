@@ -23,6 +23,7 @@ export const PathConstants = {
   // 2nd Level
   OverrideDirName: 'overrides',
   ProviderName: 'awscloudformation',
+  CfnStacksBuildDirName: 'build',
 
   // FileNames
   AmplifyAdminConfigFileName: 'config.json',
@@ -100,6 +101,25 @@ export class PathManager {
       PathConstants.OverrideDirName,
     ]);
   };
+
+  getRootStackDirPath = (projectPath: string): string => {
+    return this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      PathConstants.ProviderName,
+      PathConstants.CfnStacksBuildDirName,
+    ]);
+  };
+
+  getCurrentCloudRootStackDirPath = (projectPath: string): string => {
+    return this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.CurrentCloudBackendDirName,
+      PathConstants.ProviderName,
+      PathConstants.CfnStacksBuildDirName,
+    ]);
+  };
+
   getCurrentCloudBackendDirPath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName]);
 

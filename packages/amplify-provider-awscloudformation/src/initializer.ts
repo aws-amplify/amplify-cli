@@ -1,10 +1,10 @@
 import { $TSContext } from 'amplify-cli-core';
 import _ from 'lodash';
 import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from './root-stack-builder';
-import { rootStackFileName } from './push-resources';
+import { rootStackFileName } from '.';
+import { pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
 const moment = require('moment');
 const path = require('path');
-const { pathManager, PathConstants, stateManager, JSONUtilities } = require('amplify-cli-core');
 const glob = require('glob');
 const archiver = require('./utils/archiver');
 const fs = require('fs-extra');
@@ -26,7 +26,6 @@ export async function run(context) {
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
     context.exeInfo = context.exeInfo || {};
     const { projectName } = context.exeInfo.projectConfig;
-    const initTemplateFilePath = path.join(__dirname, '..', 'resources', 'rootStackTemplate.json');
     const timeStamp = `${moment().format('Hmmss')}`;
     const { envName = '' } = context.exeInfo.localEnvInfo;
     let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
@@ -176,11 +175,38 @@ function cloneCLIJSONForNewEnvironment(context) {
 export async function onInitSuccessful(context) {
   configurationManager.onInitSuccessful(context);
   if (context.exeInfo.isNewEnv) {
+    await storeRootStackTemplate(context);
     context = await storeCurrentCloudBackend(context);
     await storeArtifactsForAmplifyService(context);
   }
   return context;
 }
+
+const storeRootStackTemplate = async (context: $TSContext) => {
+  // generate template again as the folder structure was not created when root stack was initiaized
+  const props: RootStackTransformOptions = {
+    resourceConfig: {
+      stackFileName: rootStackFileName,
+    },
+  };
+  const rootTransform = new AmplifyRootStackTransform(props, CommandType.INIT);
+  const rootStack = await rootTransform.transform();
+  // prepush modifier
+  await prePushCfnTemplateModifier(rootStack);
+
+  // RootStack deployed to backend/awscloudformation/build
+  const projectRoot = pathManager.findProjectRoot();
+  const rootStackBackendBuildDir = pathManager.getRootStackDirPath(projectRoot);
+  const rootStackCloudBackendBuildDir = pathManager.getCurrentCloudRootStackDirPath(projectRoot);
+
+  fs.ensureDirSync(rootStackBackendBuildDir);
+  const rootStackBackendFilePath = path.join(rootStackBackendBuildDir, rootStackFileName);
+  const rootStackCloudBackendFilePath = path.join(rootStackCloudBackendBuildDir, rootStackFileName);
+
+  JSONUtilities.writeJson(rootStackBackendFilePath, rootStack);
+  // copy the awscloudformation backend to #current-cloud-backend
+  fs.copySync(rootStackBackendFilePath, rootStackCloudBackendFilePath);
+};
 
 function storeCurrentCloudBackend(context) {
   const zipFilename = '#current-cloud-backend.zip';

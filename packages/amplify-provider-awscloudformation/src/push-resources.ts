@@ -47,6 +47,7 @@ import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-t
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
 import { CommandType, AmplifyRootStackTransform, RootStackTransformOptions } from './root-stack-builder';
+import { rootStackFileName } from '.';
 
 const logger = fileLogger('push-resources');
 
@@ -54,7 +55,7 @@ const logger = fileLogger('push-resources');
 const ApiServiceNameElasticContainer = 'ElasticContainer';
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
-export const rootStackFileName = 'root-cloudformation-stack.json';
+
 const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
@@ -827,6 +828,24 @@ async function formNestedStack(
   // generate , override and deploy stacks to disk
   const rootTransform = new AmplifyRootStackTransform(props, CommandType.PUSH);
   const nestedStack = await rootTransform.transform();
+
+  // get the {deploymentBucketName , AuthRoleName , UnAuthRole from overridded data}
+
+  const metaToBeUpdated = {
+    DeploymentBucketName: nestedStack.Resources.DeploymentBucket.Properties.BucketName,
+    AuthRoleName: nestedStack.Resources.AuthRoleName.Properties.RoleName,
+    UnauthRoleName: nestedStack.Resources.AuthRoleName.Properties.RoleName,
+  };
+  // sanitize this data if needed
+  for (const key in Object.keys(metaToBeUpdated)) {
+    if (metaToBeUpdated[key] === 'object' && 'Ref' in metaToBeUpdated[key]) {
+      delete metaToBeUpdated[key];
+    }
+  }
+  // update amplify meta with updated root stack Info
+  if (Object.keys(metaToBeUpdated).length) {
+    context.amplify.updateProvideramplifyMeta(providerName, metaToBeUpdated);
+  }
 
   // Track Amplify Console generated stacks
   try {
