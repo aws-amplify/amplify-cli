@@ -230,7 +230,7 @@
         },
         "Handler": "index.handler",
         "Runtime": "nodejs12.x",
-        "Timeout": "300",
+        "Timeout": 300,
         "Role": {
           "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
         }

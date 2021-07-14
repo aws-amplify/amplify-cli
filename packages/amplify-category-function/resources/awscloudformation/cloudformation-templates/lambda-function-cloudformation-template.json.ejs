@@ -93,7 +93,7 @@
             "Role": { "Fn::GetAtt": ["LambdaExecutionRole", "Arn"] },
             "Runtime": "<%= props.runtime.cloudTemplateValue %>",
             "Layers": <%- JSON.stringify(props.lambdaLayersCFNArray) %>,
-            "Timeout": "25"
+            "Timeout": 25
           }
         },
         "LambdaExecutionRole": {
