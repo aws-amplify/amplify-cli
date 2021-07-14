@@ -1,27 +1,48 @@
 import { getCLIPath, nspawn as spawn, KEY_DOWN_ARROW } from '..';
 
+export type GeoConfig = {
+  isAdditional?: boolean
+  isDefault?: boolean
+  resourceName?: string
+}
+
+const defaultGeoConfig: GeoConfig = {
+  isAdditional: false,
+  isDefault: true,
+  resourceName: '\r'
+}
+
 /**
  * Add map with default values. Assume auth is already configured
  * @param cwd command directory
  */
-export function addMapWithDefault(cwd: string): Promise<void> {
+export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
+  const config = { ...defaultGeoConfig, ...settings };
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
       .wait('Select which capability you want to add:')
       .sendCarriageReturn()
       .wait('Provide a name for the Map:')
-      .sendCarriageReturn()
+      .sendLine(config.resourceName)
       .wait('Who can access this Map?')
       .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')
-      .sendConfirmNo()
-      .run((err: Error) => {
-        if (!err) {
-          resolve();
-        } else {
-          reject();
-        }
-      })
+      .sendConfirmNo();
+    if (config.isAdditional) {
+      chain.wait('Do you want to set this map as default?')
+      if (config.isDefault) {
+        chain.sendConfirmYes()
+      } else {
+        chain.sendConfirmNo()
+      }
+    }
+    chain.run((err: Error) => {
+      if (!err) {
+        resolve();
+      } else {
+        reject();
+      }
+    })
   });
 }
 
