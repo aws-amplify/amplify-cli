@@ -23,7 +23,8 @@ describe('remove command tests', () => {
         jest.clearAllMocks();
         mockContext = ({
             print: {
-                info: jest.fn()
+                info: jest.fn(),
+                warning: jest.fn()
             },
             amplify: {}
         } as unknown) as $TSContext;
