@@ -44,6 +44,7 @@
     "amplify-category-predictions": "2.9.6",
     "amplify-category-storage": "2.12.3",
     "amplify-category-xr": "2.8.15",
+    "amplify-category-geo": "0.0.3",
     "amplify-cli-core": "1.25.1",
     "amplify-cli-logger": "1.1.0",
     "amplify-codegen": "^2.23.1",
@@ -166,6 +167,11 @@
         "name": "function",
         "type": "category",
         "packageName": "amplify-category-function"
+      },
+      "geo": {
+        "name": "geo",
+        "type": "category",
+        "packageName": "amplify-category-geo"
       },
       "hosting": [
         {
