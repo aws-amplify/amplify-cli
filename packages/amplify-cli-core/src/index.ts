@@ -5,6 +5,7 @@ export * from './cliContext';
 export * from './cliContextEnvironmentProvider';
 export * from './cliEnvironmentProvider';
 export * from './feature-flags';
+export * from './permissionsBoundaryState';
 export * from './jsonUtilities';
 export * from './jsonValidationError';
 export * from './serviceSelection';
@@ -43,6 +44,9 @@ export type $TSContext = {
   filesystem: IContextFilesystem;
   template: IContextTemplate;
 };
+
+export type CategoryName = string;
+export type ResourceName = string;
 
 export type IContextPrint = {
   info: (message: string) => void;
@@ -193,7 +197,7 @@ interface AmplifyToolkit {
   getResourceStatus: (category?: $TSAny, resourceName?: $TSAny, providerName?: $TSAny, filteredResources?: $TSAny) => $TSAny;
   getResourceOutputs: () => $TSAny;
   getWhen: () => $TSAny;
-  inputValidation: (input: $TSAny) => $TSAny;
+  inputValidation: (input: $TSAny) => (value: $TSAny) => boolean | string;
   listCategories: () => $TSAny;
   makeId: (n?: number) => string;
   openEditor: (context: $TSContext, target: string, waitToContinue?: boolean) => Promise<void>;
@@ -208,9 +212,14 @@ interface AmplifyToolkit {
   ) => $TSAny;
   storeCurrentCloudBackend: () => $TSAny;
   readJsonFile: () => $TSAny;
-  removeEnvFromCloud: () => $TSAny;
   removeDeploymentSecrets: (context: $TSContext, category: string, resource: string) => void;
-  removeResource: (context: $TSContext, category: string, resource: string) => $TSAny;
+  removeResource: (
+    context: $TSContext,
+    category: string,
+    resource: string,
+    questionOptions?: $TSAny,
+    resourceNameCallback?: (resourceName: string) => Promise<void>,
+  ) => $TSAny;
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;

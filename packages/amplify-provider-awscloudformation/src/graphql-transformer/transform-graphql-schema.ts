@@ -13,8 +13,8 @@ import {
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { FunctionTransformer } from '@aws-amplify/graphql-function-transformer';
 import { HttpTransformer } from '@aws-amplify/graphql-http-transformer';
+import { PredictionsTransformer } from '@aws-amplify/graphql-predictions-transformer';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
-
 import { ProviderName as providerName } from '../constants';
 import { hashDirectory } from '../upload-appsync-files';
 import { writeDeploymentToDisk } from './utils';
@@ -51,6 +51,7 @@ function getTransformerFactory(context, resourceDir) {
       new ModelTransformer(),
       new FunctionTransformer(),
       new HttpTransformer(),
+      new PredictionsTransformer(options?.storageConfig),
       // TODO: initialize transformer plugins
     ];
 
@@ -414,7 +415,7 @@ async function _buildProject(opts: ProjectOptions<TransformerFactoryArgs>) {
     authConfig: opts.authConfig,
     buildParameters: opts.buildParameters,
     stacks: opts.projectConfig.stacks || {},
-    featuerFlags: new AmplifyCLIFeatureFlagAdapter(),
+    featureFlags: new AmplifyCLIFeatureFlagAdapter(),
   });
   return transform.transform(userProjectConfig.schema.toString());
 }

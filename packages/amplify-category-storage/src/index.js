@@ -164,4 +164,5 @@ module.exports = {
   getPermissionPolicies,
   executeAmplifyCommand,
   handleAmplifyEvent,
+  category,
 };

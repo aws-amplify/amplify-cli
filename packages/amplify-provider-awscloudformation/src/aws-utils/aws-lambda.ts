@@ -2,8 +2,7 @@ const aws = require('./aws');
 import { $TSAny, $TSContext } from 'amplify-cli-core';
 import { Lambda as AwsSdkLambda } from 'aws-sdk';
 import { LayerVersionsListItem, ListLayerVersionsRequest, ListLayerVersionsResponse } from 'aws-sdk/clients/lambda';
-import { loadConfiguration } from '../configuration-manager';
-import { AwsSdkConfig } from '../utils/auth-types';
+import { AwsSecrets, loadConfiguration } from '../configuration-manager';
 import { fileLogger } from '../utils/aws-logger';
 import { pagedAWSCall } from './paged-call';
 
@@ -14,7 +13,7 @@ export class Lambda {
 
   constructor(private readonly context: $TSContext, options = {}) {
     return (async () => {
-      let cred: AwsSdkConfig;
+      let cred: AwsSecrets;
       try {
         cred = await loadConfiguration(context);
       } catch (e) {

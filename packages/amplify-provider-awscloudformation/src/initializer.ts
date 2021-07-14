@@ -1,3 +1,6 @@
+import { $TSContext } from 'amplify-cli-core';
+import _ from 'lodash';
+
 const moment = require('moment');
 const path = require('path');
 const { pathManager, PathConstants, stateManager, JSONUtilities } = require('amplify-cli-core');
@@ -15,8 +18,9 @@ const amplifyServiceMigrate = require('./amplify-service-migrate');
 const { fileLogger } = require('./utils/aws-logger');
 const { prePushCfnTemplateModifier } = require('./pre-push-cfn-processor/pre-push-cfn-modifier');
 const logger = fileLogger('attach-backend');
+const { configurePermissionsBoundaryForInit } = require('./permissions-boundary/permissions-boundary');
 
-async function run(context) {
+export async function run(context) {
   await configurationManager.init(context);
   if (!context.exeInfo || context.exeInfo.isNewEnv) {
     context.exeInfo = context.exeInfo || {};
@@ -25,11 +29,13 @@ async function run(context) {
     const timeStamp = `${moment().format('Hmmss')}`;
     const { envName = '' } = context.exeInfo.localEnvInfo;
     let stackName = normalizeStackName(`amplify-${projectName}-${envName}-${timeStamp}`);
-    const awsConfig = await configurationManager.getAwsConfig(context);
+    const awsConfigInfo = await configurationManager.getAwsConfig(context);
+
+    await configurePermissionsBoundaryForInit(context);
 
     const amplifyServiceParams = {
       context,
-      awsConfig,
+      awsConfigInfo,
       projectName,
       envName,
       stackName,
@@ -74,7 +80,7 @@ async function run(context) {
     spinner.start('Initializing project in the cloud...');
 
     try {
-      const cfnItem = await new Cloudformation(context, 'init', awsConfig);
+      const cfnItem = await new Cloudformation(context, 'init', awsConfigInfo);
       const stackDescriptionData = await cfnItem.createResourceStack(params);
 
       processStackCreationData(context, amplifyAppId, stackDescriptionData);
@@ -100,6 +106,8 @@ async function run(context) {
     context.exeInfo.inputParams.amplify.appId
   ) {
     await amplifyServiceMigrate.run(context);
+  } else {
+    setCloudFormationOutputInContext(context, {});
   }
 }
 
@@ -114,19 +122,22 @@ function processStackCreationData(context, amplifyAppId, stackDescriptiondata) {
       metadata[constants.AmplifyAppIdLabel] = amplifyAppId;
     }
 
-    context.exeInfo.amplifyMeta = {};
-    if (!context.exeInfo.amplifyMeta.providers) {
-      context.exeInfo.amplifyMeta.providers = {};
-    }
-    context.exeInfo.amplifyMeta.providers[constants.ProviderName] = metadata;
-
-    if (context.exeInfo.isNewEnv) {
-      const { envName } = context.exeInfo.localEnvInfo;
-      context.exeInfo.teamProviderInfo[envName] = {};
-      context.exeInfo.teamProviderInfo[envName][constants.ProviderName] = metadata;
-    }
+    setCloudFormationOutputInContext(context, metadata);
   } else {
     throw new Error('No stack data present');
+  }
+}
+
+function setCloudFormationOutputInContext(context: $TSContext, cfnOutput: object) {
+  _.set(context, ['exeInfo', 'amplifyMeta', 'providers', constants.ProviderName], cfnOutput);
+  const { envName } = context.exeInfo.localEnvInfo;
+  if (envName) {
+    const providerInfo = _.get(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName]);
+    if (providerInfo) {
+      _.merge(providerInfo, cfnOutput);
+    } else {
+      _.set(context, ['exeInfo', 'teamProviderInfo', envName, constants.ProviderName], cfnOutput);
+    }
   }
 }
 
@@ -150,7 +161,7 @@ function cloneCLIJSONForNewEnvironment(context) {
   }
 }
 
-async function onInitSuccessful(context) {
+export async function onInitSuccessful(context) {
   configurationManager.onInitSuccessful(context);
   if (context.exeInfo.isNewEnv) {
     context = await storeCurrentCloudBackend(context);
@@ -247,8 +258,3 @@ function normalizeStackName(stackName) {
   }
   return result;
 }
-
-module.exports = {
-  run,
-  onInitSuccessful,
-};

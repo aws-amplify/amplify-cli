@@ -20,7 +20,6 @@ export function legacyAddLayer(
     permissions?: LayerPermissionChoice[];
     accountId?: string;
     orgId?: string;
-    projName: string;
     runtimes: LayerRuntime[];
   },
 ): Promise<void> {
@@ -53,7 +52,9 @@ export function legacyAddLayer(
       chain.wait('Provide a list of comma-separated AWS organization IDs:').sendLine(settings.orgId);
     }
 
-    chain.wait('Move your libraries to the following folder:');
+    if (settings.runtimes.length > 0) {
+      chain.wait('Move your libraries to the following folder:');
+    }
 
     chain.run((err: Error) => {
       if (!err) {
@@ -67,6 +68,10 @@ export function legacyAddLayer(
 
 export function legacyAddOptData(projRoot: string, layerName: string): void {
   fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), 'data', 'utf8');
+}
+
+export function legacyUpdateOptData(projRoot: string, layerName: string, data: string): void {
+  fs.writeFileSync(path.join(projRoot, 'amplify', 'backend', 'function', layerName, 'opt', 'data.txt'), data, 'utf8');
 }
 
 export function validateLayerConfigFilesMigrated(projRoot: string, layerName: string) {

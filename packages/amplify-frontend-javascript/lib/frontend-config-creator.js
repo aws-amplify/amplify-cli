@@ -294,7 +294,12 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     responseType,
   };
 
-  if (cognitoResource.output.GoogleWebClient || cognitoResource.output.FacebookWebClient || cognitoResource.output.AmazonWebClient) {
+  if (
+    cognitoResource.output.GoogleWebClient ||
+    cognitoResource.output.FacebookWebClient ||
+    cognitoResource.output.AmazonWebClient ||
+    cognitoResource.output.AppleWebClient
+  ) {
     idpFederation = true;
   }
 

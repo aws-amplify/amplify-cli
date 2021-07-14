@@ -133,10 +133,8 @@ export function getAllPluginNames(pluginPlatform: PluginPlatform): Set<string> {
 }
 
 export async function scan(pluginPlatform?: PluginPlatform): Promise<PluginPlatform> {
-  print.info('Scanning for plugins...');
   try {
     const result = await scanPluginPlatform(pluginPlatform);
-    print.info('Plugin scan successful');
     return result;
   } catch (e) {
     print.error('Plugin scan failed.');

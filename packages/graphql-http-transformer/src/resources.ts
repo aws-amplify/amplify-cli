@@ -1,4 +1,4 @@
-import { AppSync, Fn, Value } from 'cloudform-types';
+import { AppSync, Fn, IntrinsicFunction, Value } from 'cloudform-types';
 import {
   and,
   comment,
@@ -40,7 +40,7 @@ export class ResourceFactory {
       Name: HttpResourceIDs.HttpDataSourceID(baseURL),
       Type: 'HTTP',
       HttpConfig: {
-        Endpoint: this.replaceEnv(baseURL),
+        Endpoint: this.replaceEnvAndRegion(baseURL),
       },
     });
   }
@@ -49,14 +49,28 @@ export class ResourceFactory {
     return value.match(/(\${env})/) !== null;
   }
 
-  private replaceEnv(value: string): Value<string> {
-    if (!this.referencesEnv(value)) {
+  private referencesRegion(value: string): boolean {
+    return value.match(/(\${aws_region})/) !== null;
+  }
+
+  private replaceEnvAndRegion(value: string): Value<string> {
+    const vars: {
+      [key: string]: IntrinsicFunction;
+    } = {};
+
+    if (this.referencesEnv(value)) {
+      vars.env = Fn.Ref(ResourceConstants.PARAMETERS.Env);
+    }
+
+    if (this.referencesRegion(value)) {
+      vars.aws_region = Fn.Ref('AWS::Region');
+    }
+
+    if (!vars.env && !vars.aws_region) {
       return value;
     }
 
-    return Fn.Sub(value, {
-      env: Fn.Ref(ResourceConstants.PARAMETERS.Env),
-    });
+    return Fn.Sub(value, vars);
   }
 
   private makeVtlStringArray(inputArray: string[]) {
@@ -70,7 +84,7 @@ export class ResourceFactory {
       comment('START: Manually checking that all non-null arguments are provided either in the query or the body'),
       iff(
         or(nonNullArgs.map((arg: string) => parens(and([raw(`!$ctx.args.body.${arg}`), raw(`!$ctx.args.query.${arg}`)])))),
-        ref('util.error("An argument you marked as Non-Null is not present ' + 'in the query nor the body of your request."))')
+        ref('util.error("An argument you marked as Non-Null is not present ' + 'in the query nor the body of your request."))'),
       ),
       comment('END: Manually checking that all non-null arguments are provided either in the query or the body'),
     ]);
@@ -90,7 +104,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
       FieldName: field,
       TypeName: type,
-      RequestMappingTemplate: this.replaceEnv(
+      RequestMappingTemplate: this.replaceEnvAndRegion(
         print(
           compoundExpression([
             set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
@@ -103,8 +117,8 @@ export class ResourceFactory {
                 headers: ref('util.toJson($headers)'),
               }),
             }),
-          ])
-        )
+          ]),
+        ),
       ),
       ResponseMappingTemplate: print(
         ifElse(
@@ -112,10 +126,10 @@ export class ResourceFactory {
           ifElse(
             ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
             ref('utils.xml.toJsonString($ctx.result.body)'),
-            ref('ctx.result.body')
+            ref('ctx.result.body'),
           ),
-          ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
-        )
+          ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))'),
+        ),
       ),
     }); // .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
   }
@@ -135,7 +149,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
       FieldName: field,
       TypeName: type,
-      RequestMappingTemplate: this.replaceEnv(
+      RequestMappingTemplate: this.replaceEnvAndRegion(
         print(
           compoundExpression([
             nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
@@ -151,8 +165,8 @@ export class ResourceFactory {
                 headers: ref('util.toJson($headers)'),
               }),
             }),
-          ])
-        )
+          ]),
+        ),
       ),
       ResponseMappingTemplate: print(
         ifElse(
@@ -161,10 +175,10 @@ export class ResourceFactory {
           ifElse(
             ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
             ref('utils.xml.toJsonString($ctx.result.body)'),
-            ref('ctx.result.body')
+            ref('ctx.result.body'),
           ),
-          ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
-        )
+          ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))'),
+        ),
       ),
     }); // .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
   }
@@ -184,7 +198,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
       FieldName: field,
       TypeName: type,
-      RequestMappingTemplate: this.replaceEnv(
+      RequestMappingTemplate: this.replaceEnvAndRegion(
         print(
           compoundExpression([
             nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
@@ -200,8 +214,8 @@ export class ResourceFactory {
                 headers: ref('util.toJson($headers)'),
               }),
             }),
-          ])
-        )
+          ]),
+        ),
       ),
       ResponseMappingTemplate: print(
         ifElse(
@@ -209,10 +223,10 @@ export class ResourceFactory {
           ifElse(
             ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
             ref('utils.xml.toJsonString($ctx.result.body)'),
-            ref('ctx.result.body')
+            ref('ctx.result.body'),
           ),
-          ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
-        )
+          ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))'),
+        ),
       ),
     }); // .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
   }
@@ -229,7 +243,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
       FieldName: field,
       TypeName: type,
-      RequestMappingTemplate: this.replaceEnv(
+      RequestMappingTemplate: this.replaceEnvAndRegion(
         print(
           compoundExpression([
             set(ref('headers'), ref('utils.http.copyHeaders($ctx.request.headers)')),
@@ -241,8 +255,8 @@ export class ResourceFactory {
                 headers: ref('util.toJson($headers)'),
               }),
             }),
-          ])
-        )
+          ]),
+        ),
       ),
       ResponseMappingTemplate: print(
         ifElse(
@@ -250,10 +264,10 @@ export class ResourceFactory {
           ifElse(
             ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
             ref('utils.xml.toJsonString($ctx.result.body)'),
-            ref('ctx.result.body')
+            ref('ctx.result.body'),
           ),
-          ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
-        )
+          ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))'),
+        ),
       ),
     }); // .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
   }
@@ -273,7 +287,7 @@ export class ResourceFactory {
       DataSourceName: Fn.GetAtt(HttpResourceIDs.HttpDataSourceID(baseURL), 'Name'),
       FieldName: field,
       TypeName: type,
-      RequestMappingTemplate: this.replaceEnv(
+      RequestMappingTemplate: this.replaceEnvAndRegion(
         print(
           compoundExpression([
             nonNullArgs.length > 0 ? this.makeNonNullChecks(nonNullArgs) : null,
@@ -289,8 +303,8 @@ export class ResourceFactory {
                 headers: ref('util.toJson($headers)'),
               }),
             }),
-          ])
-        )
+          ]),
+        ),
       ),
       ResponseMappingTemplate: print(
         ifElse(
@@ -298,10 +312,10 @@ export class ResourceFactory {
           ifElse(
             ref('ctx.result.headers.get("Content-Type").toLowerCase().contains("xml")'),
             ref('utils.xml.toJsonString($ctx.result.body)'),
-            ref('ctx.result.body')
+            ref('ctx.result.body'),
           ),
-          ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))')
-        )
+          ref('util.qr($util.appendError($ctx.result.body, $ctx.result.statusCode))'),
+        ),
       ),
     }); // .dependsOn(ResourceConstants.RESOURCES.GraphQLSchemaLogicalID)
   }

@@ -176,7 +176,7 @@ export const generateCreateRequestTemplate = (modelName: string): string => {
 
     iff(ref('context.args.condition'), qref(methodCall(ref('ctx.stash.conditions.add'), ref('context.args.condition')))),
     // key conditions
-    comment('Begin - KeyCondtion'),
+    comment('Begin - KeyCondition'),
     ifElse(
       ref('ctx.stash.metadata.modelObjectKey'),
       compoundExpression([

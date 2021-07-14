@@ -31,6 +31,16 @@ clean_e2e_resources: &clean_e2e_resources
     yarn clean-e2e-resources job ${CIRCLE_BUILD_NUM}
   working_directory: ~/repo
 
+scan_e2e_test_artifacts: &scan_e2e_test_artifacts
+  name: Scan And Cleanup E2E Test Artifacts
+  command: |
+    if ! yarn ts-node .circleci/scan_artifacts.ts; then
+      echo "Cleaning the repository"
+      git clean -fdx
+      exit 1
+    fi
+  when: always
+
 run_e2e_tests: &run_e2e_tests
   name: Run Amplify end-to-end tests
   command: |
@@ -221,6 +231,7 @@ jobs:
           key: amplify-verdaccio-cache-{{ .Branch }}-{{ .Revision }}
       - run: *install_cli_from_local_registery
       - run: *run_e2e_tests
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
@@ -258,6 +269,7 @@ jobs:
             amplify version
       - run: *install_cli_from_local_registery
       - run: *run_e2e_tests
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-e2e-tests/
       - store_artifacts:
@@ -279,6 +291,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.0.0 --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -287,7 +300,8 @@ jobs:
 
   amplify_migration_tests_non_multi_env_layers:
     <<: *defaults
-
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - attach_workspace:
           at: ./
@@ -301,6 +315,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.28.2_nonmultienv_layers --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -309,7 +324,8 @@ jobs:
 
   amplify_migration_tests_multi_env_layers:
     <<: *defaults
-
+    environment:
+      AMPLIFY_PATH: /home/circleci/.npm-global/lib/node_modules/@aws-amplify/cli/bin/amplify
     steps:
       - attach_workspace:
           at: ./
@@ -323,6 +339,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.52.0_multienv_layers --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -349,6 +366,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration_v4.30.0_auth --maxWorkers=3
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -370,6 +388,7 @@ jobs:
             cd packages/amplify-migration-tests
             yarn run migration --maxWorkers=3 $TEST_SUITE
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-migration-tests/
       - store_artifacts:
@@ -393,6 +412,7 @@ jobs:
             yarn run console-integration --maxWorkers=3
           name: 'Run Amplify Console integration tests'
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_test_results:
           path: packages/amplify-console-integration-tests/
       - store_artifacts:
@@ -495,6 +515,7 @@ jobs:
             yarn cypress run --spec $(find . -type f -name 'api_spec*')
       - run: cd .circleci/ && chmod +x delete_api.sh
       - run: expect .circleci/delete_api.exp
+      - run: *scan_e2e_test_artifacts
       - store_artifacts:
           path: /root/aws-amplify-cypress-auth/cypress/videos
       - store_artifacts:
@@ -505,7 +526,7 @@ jobs:
           path: /root/aws-amplify-cypress-api/cypress/screenshots
 
   deploy:
-    <<: *defaults
+    <<: *node12
     steps:
       - attach_workspace:
           at: ./
@@ -518,13 +539,8 @@ jobs:
       - run:
           name: Publish Amplify CLI
           command: |
-            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              git config --global user.email $GITHUB_EMAIL
-              git config --global user.name $GITHUB_USER
-              npm run publish:$CIRCLE_BRANCH
-            else
-              echo "Skipping deploy."
-            fi
+            bash ./.circleci/publish.sh
+      - run: *scan_e2e_test_artifacts
   github_prerelease:
     <<: *node12
     steps:
@@ -591,6 +607,7 @@ jobs:
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     working_directory: ~/repo
@@ -608,6 +625,7 @@ jobs:
             cd packages/amplify-e2e-tests
             yarn clean-e2e-resources workflow ${CIRCLE_WORKFLOW_ID}
           no_output_timeout: 90m
+      - run: *scan_e2e_test_artifacts
       - store_artifacts:
           path: ~/repo/packages/amplify-e2e-tests/amplify-e2e-reports
     working_directory: ~/repo
@@ -670,7 +688,8 @@ workflows:
             branches:
               only:
                 - master
-                - iterative-update
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
             - mock_e2e_tests
@@ -683,6 +702,8 @@ workflows:
               only:
                 - master
                 - beta
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
             - mock_e2e_tests
@@ -692,10 +713,9 @@ workflows:
               only:
                 - master
                 - beta
-                - backendManager
-                - iterative-update
                 - release
-                - compute-functions
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
       - build_pkg_binaries:
@@ -709,6 +729,8 @@ workflows:
             branches:
               only:
                 - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
       - amplify_e2e_tests:
           context:
             - amplify-ecr-image-pull
@@ -721,8 +743,8 @@ workflows:
             branches:
               only:
                 - master
-                - compute-functions
-                - iterative-update
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - publish_to_local_registry
       - done_with_node_e2e_tests:
@@ -740,6 +762,8 @@ workflows:
             branches:
               only:
                 - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries
@@ -756,6 +780,8 @@ workflows:
             branches:
               only:
                 - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
       - amplify_migration_tests_v4:
@@ -768,6 +794,8 @@ workflows:
             branches:
               only:
                 - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
       - amplify_migration_tests_v4_30_0:
@@ -780,9 +808,36 @@ workflows:
             branches:
               only:
                 - master
-                - graphqlschemae2e
-                - feat-import
-                - test-fix-status
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - build
+      - amplify_migration_tests_non_multi_env_layers:
+          context:
+            - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - clean_e2e_resources
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
+          requires:
+            - build
+      - amplify_migration_tests_multi_env_layers:
+          context:
+            - amplify-ecr-image-pull
+            - e2e-auth-credentials
+            - clean_e2e_resources
+            - e2e-test-context
+          filters:
+            branches:
+              only:
+                - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
       - amplify_console_integration_tests:
@@ -842,6 +897,8 @@ workflows:
             - amplify_migration_tests_latest
             - amplify_migration_tests_v4
             - amplify_migration_tests_v4_30_0
+            - amplify_migration_tests_non_multi_env_layers
+            - amplify_migration_tests_multi_env_layers
             - github_prerelease_install_sanity_check
           filters:
             branches:
@@ -849,6 +906,8 @@ workflows:
                 - release
                 - master
                 - beta
+                - /tagged-release\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
       - github_release:
           context: github-publish
           requires:

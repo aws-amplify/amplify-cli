@@ -1,7 +1,7 @@
 import { ModelAuthTransformer } from 'graphql-auth-transformer';
 import { ModelConnectionTransformer } from 'graphql-connection-transformer';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
-import { GraphQLTransform } from 'graphql-transformer-core';
+import { FeatureFlagProvider, GraphQLTransform } from 'graphql-transformer-core';
 import { signUpAddToGroupAndGetJwtToken } from './utils/cognito-utils';
 import { GraphQLClient } from './utils/graphql-client';
 import { deploy, launchDDBLocal, logDebug, terminateDDB } from './utils/index';
@@ -112,6 +112,9 @@ type Stage @model @auth(rules: [{ allow: groups, groups: ["Admin"]}]) {
         },
       }),
     ],
+    featureFlags: {
+      getBoolean: name => (name === 'improvePluralization' ? true : false),
+    } as FeatureFlagProvider,
   });
 
   try {

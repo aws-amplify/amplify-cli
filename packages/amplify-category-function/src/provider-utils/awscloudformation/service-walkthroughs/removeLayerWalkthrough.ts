@@ -11,7 +11,7 @@ import { updateLayerArtifacts } from '../utils/storeResources';
 const removeLayerQuestion = 'Choose the Layer versions you want to remove.';
 
 export async function removeWalkthrough(context: $TSContext, layerName: string): Promise<string | undefined> {
-  const layerCloudState = LayerCloudState.getInstance();
+  const layerCloudState = LayerCloudState.getInstance(layerName);
   const layerVersionList = await layerCloudState.getLayerVersionsFromCloud(context, layerName);
 
   // if the layer hasn't been pushed return and remove it

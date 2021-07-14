@@ -3,8 +3,15 @@ import * as path from 'path';
 
 import { $TSObject, JSONUtilities } from 'amplify-cli-core';
 import { AppClientSettings, DynamoDBProjectDetails } from './types';
-import { AuthProjectDetails, StorageProjectDetails } from '.';
-import { getBackendAmplifyMeta, getProjectMeta, getTeamProviderInfo } from 'amplify-e2e-core';
+import { AuthProjectDetails, createIDPAndUserPoolWithOAuthSettings, createUserPoolOnlyWithOAuthSettings, StorageProjectDetails } from '.';
+import {
+  addAuthIdentityPoolAndUserPoolWithOAuth,
+  addAuthUserPoolOnlyWithOAuth,
+  amplifyPushAuth,
+  getBackendAmplifyMeta,
+  getProjectMeta,
+  getTeamProviderInfo
+} from 'amplify-e2e-core';
 
 import _ from 'lodash';
 import { v4 as uuid } from 'uuid';
@@ -18,7 +25,6 @@ export const getShortId = (): string => {
 export const getAuthProjectDetails = (projectRoot: string): AuthProjectDetails => {
   const meta = getBackendAmplifyMeta(projectRoot);
   const team = getTeamProviderInfo(projectRoot);
-
   const authMetaKey = Object.keys(meta.auth)
     .filter(key => meta.auth[key].service === 'Cognito')
     .map(key => key)[0];
@@ -106,6 +112,8 @@ export const getOGAuthProjectDetails = (projectRoot: string): AuthProjectDetails
       AppClientIDWeb: authMeta.output.AppClientIDWeb,
       HostedUIDomain: authMeta.output.HostedUIDomain,
       OAuthMetadata: authMeta.output.OAuthMetadata ? JSON.parse(authMeta.output.OAuthMetadata) : undefined,
+      IdentityPoolId: authMeta.output.IdentityPoolId,
+      IdentityPoolName: authMeta.output.IdentityPoolName,
     },
     team: {
       userPoolId: authMeta.output.UserPoolId,
@@ -317,4 +325,30 @@ export const deleteAppClient = async (profileName: string, projectRoot: string, 
 
   const cognitoClient = new aws.CognitoIdentityServiceProvider({ region: projectDetails.providers.awscloudformation.Region });
   await cognitoClient.deleteUserPoolClient({ ClientId: clientId, UserPoolId: authDetails.meta.UserPoolId }).promise();
+};
+
+/**
+ * sets up a project with auth (userpool only or userpool & identitypool)
+ * @param ogProjectRoot
+ * @param ogProjectSettings
+ * @param withIdentityPool
+ */
+export const setupOgProjectWithAuth = async (
+  ogProjectRoot: string,
+  ogProjectSettings: { name: string },
+  withIdentityPool: boolean = false,
+) => {
+  const ogShortId = getShortId();
+  const ogSettings = withIdentityPool
+    ? createIDPAndUserPoolWithOAuthSettings(ogProjectSettings.name, ogShortId)
+    : createUserPoolOnlyWithOAuthSettings(ogProjectSettings.name, ogShortId);
+
+  if ('identityPoolName' in ogSettings) {
+    await addAuthIdentityPoolAndUserPoolWithOAuth(ogProjectRoot, ogSettings);
+  } else {
+    await addAuthUserPoolOnlyWithOAuth(ogProjectRoot, ogSettings);
+  }
+  await amplifyPushAuth(ogProjectRoot);
+
+  return getOGAuthProjectDetails(ogProjectRoot);
 };

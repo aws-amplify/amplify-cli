@@ -1,8 +1,9 @@
-import { $TSAny, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSObject, JSONUtilities, pathManager, recursiveOmit, stateManager } from 'amplify-cli-core';
 import _ from 'lodash';
 import * as path from 'path';
-import { ephemeralField, deleteVersionsField, layerConfigurationFileName, updateVersionPermissionsField } from './constants';
+import { deleteVersionsField, ephemeralField, layerConfigurationFileName, updateVersionPermissionsField } from './constants';
 import { categoryName } from '../../../constants';
+import { getLegacyLayerState, LegacyState, readLegacyRuntimes } from './layerMigrationUtils';
 import { LayerParameters, LayerPermission, LayerRuntime, PermissionEnum } from './layerParams';
 
 export type LayerConfiguration = Pick<LayerParameters, 'permissions' | 'runtimes' | 'description'>;
@@ -15,16 +16,25 @@ export function createLayerConfiguration(layerDirPath: string, parameters: Layer
 
 export function getLayerConfiguration(layerName: string) {
   const layerConfig: LayerConfiguration = loadLayerConfigurationFile(layerName);
-  const cloudTemplateValues = loadLayerCloudTemplateRuntimes(layerName);
+  const { runtimes: cloudTemplateValues, description } = loadLayerParametersJson(layerName);
   layerConfig.runtimes.forEach(runtimeMeta => {
     runtimeMeta.cloudTemplateValues = cloudTemplateValues.filter((ctv: string) => ctv.startsWith(runtimeMeta.value));
   });
-  layerConfig.description = getLayerDescription(layerName);
+  layerConfig.description = description;
   return layerConfig;
 }
 
 export function getLayerRuntimes(layerName: string) {
-  return getLayerConfiguration(layerName).runtimes;
+  try {
+    return getLayerConfiguration(layerName).runtimes;
+  } catch (e) {
+    // File might not exist for layers that need to be migrated
+    const legacyState = getLegacyLayerState(layerName);
+    if (legacyState !== LegacyState.NOT_LEGACY) {
+      return readLegacyRuntimes(layerName, legacyState);
+    }
+    throw e;
+  }
 }
 
 export function saveLayerRuntimes(layerDirPath: string, runtimes: LayerRuntime[] = []) {
@@ -87,9 +97,17 @@ export function saveLayerPermissions(layerDirPath: string, permissions: LayerPer
   return updated;
 }
 
-function getLayerDescription(layerName: string): string {
-  const { description } = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
-  return description;
+export function loadLayerParametersJson(layerName: string): $TSObject {
+  const parameters = stateManager.getResourceParametersJson(undefined, categoryName, layerName);
+
+  if (Array.isArray(parameters.runtimes) && _.isEmpty(parameters.runtimes)) {
+    // An empty array could be written to the parameters file in versions 5.0.0 - 5.0.2 when migrating a layer with no runtimes.
+    // This needs to be removed in order for push to succeed otherwise cloudformation will throw an error.
+    delete parameters.runtimes;
+    stateManager.setResourceParametersJson(undefined, categoryName, layerName, parameters);
+  }
+
+  return parameters;
 }
 
 export function loadLayerConfigurationFile(layerName: string, throwIfNotExist = true) {
@@ -108,11 +126,6 @@ export function writeLayerConfigurationFile(layerName: string, layerConfig: $TSA
   );
 
   JSONUtilities.writeJson(layerConfigFilePath, layerConfig);
-}
-
-function loadLayerCloudTemplateRuntimes(layerName: string): string[] {
-  const { runtimes } = stateManager.getResourceParametersJson(undefined, categoryName, layerName) || [];
-  return runtimes;
 }
 
 function toStoredRuntimeMetadata(runtimes: LayerRuntime[]) {

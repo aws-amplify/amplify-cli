@@ -8,7 +8,7 @@ import {
   updateAuthAddAdminQueries,
 } from 'amplify-e2e-core';
 import * as path from 'path';
-import { existsSync } from 'fs';
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'fs';
 import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
 import gql from 'graphql-tag';
 const providerName = 'awscloudformation';
@@ -112,11 +112,12 @@ describe('amplify add api (GraphQL)', () => {
         }
       }
     `;
+    const createResultData = createResult.data as any;
     const updateInput = {
       input: {
-        noteId: createResult.data.createNote.noteId,
+        noteId: createResultData.createNote.noteId,
         note: 'note updated',
-        _version: createResult.data.createNote._version,
+        _version: createResultData.createNote._version,
       },
     };
 
@@ -125,13 +126,14 @@ describe('amplify add api (GraphQL)', () => {
       fetchPolicy: 'no-cache',
       variables: updateInput,
     });
+    const updateResultData = updateResult.data as any;
 
-    expect(updateResult.data).toBeDefined();
-    expect(updateResult.data.updateNote).toBeDefined();
-    expect(updateResult.data.updateNote.noteId).toEqual(createResult.data.createNote.noteId);
-    expect(updateResult.data.updateNote.note).not.toEqual(createResult.data.createNote.note);
-    expect(updateResult.data.updateNote._version).not.toEqual(createResult.data.createNote._version);
-    expect(updateResult.data.updateNote.note).toEqual(updateInput.input.note);
+    expect(updateResultData).toBeDefined();
+    expect(updateResultData.updateNote).toBeDefined();
+    expect(updateResultData.updateNote.noteId).toEqual(createResultData.createNote.noteId);
+    expect(updateResultData.updateNote.note).not.toEqual(createResultData.createNote.note);
+    expect(updateResultData.updateNote._version).not.toEqual(createResultData.createNote._version);
+    expect(updateResultData.updateNote.note).toEqual(updateInput.input.note);
   });
 
   it('init a project with conflict detection enabled and toggle disable', async () => {
@@ -393,16 +395,18 @@ describe('amplify add api (REST)', () => {
       allowGuestUsers: true,
     });
     await addRestApi(projRoot, {
+      isFirstRestApi: false,
       existingLambda: true,
       restrictAccess: true,
       allowGuestUsers: true,
     });
     await addRestApi(projRoot, {
+      isFirstRestApi: false,
       existingLambda: true,
       restrictAccess: true,
       allowGuestUsers: false,
     });
-    await addRestApi(projRoot, { existingLambda: true });
+    await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true });
     await updateAuthAddAdminQueries(projRoot);
     await amplifyPushUpdate(projRoot);
 
@@ -426,5 +430,32 @@ describe('amplify add api (REST)', () => {
     for (let i = 0; i < unauthPolicies.length; i++) {
       expect(unauthPolicies[i].PolicyName).toMatch(/PolicyAPIGWUnauth\d/);
     }
+  });
+
+  it('adds a rest api and then adds a path to the existing api', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
+    await addRestApi(projRoot, { existingLambda: true });
+    await addRestApi(projRoot, { isFirstRestApi: false, existingLambda: true, path: '/newpath' });
+    await amplifyPushUpdate(projRoot);
+  });
+
+  it('migrates malformed project files during push', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    await addFunction(projRoot, { functionTemplate: 'Hello World' }, 'nodejs');
+    await addRestApi(projRoot, { existingLambda: true, restrictAccess: true });
+
+    const apisDirectory = path.join(projRoot, 'amplify', 'backend', 'api');
+    const apis = readdirSync(apisDirectory);
+    const apiName = apis[0];
+    const apiDirectory = path.join(apisDirectory, apiName);
+    const cfnTemplateFile = path.join(apiDirectory, `${apiName}-cloudformation-template.json`);
+    const cfnTemplate = JSON.parse(readFileSync(cfnTemplateFile, 'utf8'));
+
+    // The ApiId output is required, and will be added automatically if it is missing.
+    cfnTemplate.Outputs.ApiId = undefined;
+
+    writeFileSync(cfnTemplateFile, JSON.stringify(cfnTemplate));
+    await amplifyPushUpdate(projRoot);
   });
 });

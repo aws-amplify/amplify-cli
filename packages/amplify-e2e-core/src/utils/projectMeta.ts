@@ -63,9 +63,18 @@ function getParameterPath(projRoot: string, category: string, resourceName: stri
   return path.join(projRoot, 'amplify', 'backend', category, resourceName, 'parameters.json');
 }
 
+function getCategoryParameterPath(projRoot: string, category: string, resourceName: string) {
+  return path.join(projRoot, 'amplify', 'backend', category, resourceName, `${category}-parameters.json`);
+}
+
 function getTeamProviderInfo(projectRoot: string) {
   const teamProviderFilePath: string = path.join(projectRoot, 'amplify', 'team-provider-info.json');
   return JSON.parse(fs.readFileSync(teamProviderFilePath, 'utf8'));
+}
+
+function setTeamProviderInfo(projRoot: string, content: unknown) {
+  const teamProviderFilePath: string = path.join(projRoot, 'amplify', 'team-provider-info.json');
+  JSONUtilities.writeJson(teamProviderFilePath, content);
 }
 
 function getS3StorageBucketName(projectRoot: string) {
@@ -118,9 +127,19 @@ function getParameters(projRoot: string, category: string, resourceName: string)
   return JSONUtilities.parse(fs.readFileSync(parametersPath, 'utf8'));
 }
 
-function setParameters(projRoot: string, category: string, resourceName: string, parameters: any) {
+function setParameters(projRoot: string, category: string, resourceName: string, parameters: unknown) {
   const parametersPath = getParameterPath(projRoot, category, resourceName);
   JSONUtilities.writeJson(parametersPath, parameters);
+}
+
+function getCategoryParameters(projRoot: string, category: string, resourceName: string): any {
+  const filepath = getCategoryParameterPath(projRoot, category, resourceName);
+  return JSONUtilities.parse(fs.readFileSync(filepath, 'utf8'));
+}
+
+function setCategoryParameters(projRoot: string, category: string, resourceName: string, params: unknown): any {
+  const filepath = getCategoryParameterPath(projRoot, category, resourceName);
+  JSONUtilities.writeJson(filepath, params);
 }
 
 export {
@@ -142,7 +161,10 @@ export {
   getProjectConfig,
   getTeamProviderInfo,
   getParameters,
-  getCloudBackendConfig,
   setParameters,
+  getCategoryParameters,
+  setCategoryParameters,
+  getCloudBackendConfig,
+  setTeamProviderInfo,
   getLocalEnvInfo,
 };
