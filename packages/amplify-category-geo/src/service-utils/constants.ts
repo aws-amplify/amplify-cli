@@ -1,3 +1,4 @@
+export const previewBanner = 'Amplify Geo category is in developer preview and not intended for production use at this time.';
 export const chooseServiceMessageAdd = 'Select which capability you want to add:';
 export const chooseServiceMessageUpdate = 'Select which capability you want to update:';
 export const chooseServiceMessageRemove = 'Select which capability you want to remove:';
