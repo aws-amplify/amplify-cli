@@ -81,9 +81,9 @@ export class AmplifyRootStackTransform {
       // add check here to see if the override folder is present or not
       const projectPath = pathManager.findProjectRoot();
       const overridePath = pathManager.getRootOverrideDirPath(projectPath);
-      const { overrideProps } = await import(path.join(overridePath, 'build', 'override.ts'));
-      if (overrideProps === 'function' && overrideProps != null) {
-        this._rootTemplateObj = overrideProps(this._rootTemplateObj);
+      const fn = await import(path.join(overridePath, 'override'));
+      if (fn.overrideProps === 'function' && fn.overrideProps != null) {
+        this._rootTemplateObj = fn.overrideProps(this._rootTemplateObj);
       } else {
         console.log('There is no override setup yet for Root Stack. To enable override : Run amplify override root');
       }

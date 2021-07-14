@@ -833,8 +833,8 @@ async function formNestedStack(
 
   const metaToBeUpdated = {
     DeploymentBucketName: nestedStack.Resources.DeploymentBucket.Properties.BucketName,
-    AuthRoleName: nestedStack.Resources.AuthRoleName.Properties.RoleName,
-    UnauthRoleName: nestedStack.Resources.AuthRoleName.Properties.RoleName,
+    AuthRoleName: nestedStack.Resources.AuthRole.Properties.RoleName,
+    UnauthRoleName: nestedStack.Resources.UnuthRole.Properties.RoleName,
   };
   // sanitize this data if needed
   for (const key in Object.keys(metaToBeUpdated)) {
