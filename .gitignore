@@ -66,3 +66,4 @@ packages/**/reports/junit/*
 test.out.log
 *.tsbuildinfo
 packages/amplify-graphiql-explorer/.eslintcache
+packages/amplify-category-geo/lib/

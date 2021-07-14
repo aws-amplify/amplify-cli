@@ -39,6 +39,7 @@
     "amplify-category-api": "2.31.23",
     "amplify-category-auth": "2.38.0",
     "amplify-category-function": "2.34.7",
+    "amplify-category-geo": "1.0.0",
     "amplify-category-hosting": "2.7.21",
     "amplify-category-interactions": "2.6.5",
     "amplify-category-notifications": "2.19.4",
@@ -169,6 +170,11 @@
         "name": "function",
         "type": "category",
         "packageName": "amplify-category-function"
+      },
+      "geo": {
+        "name": "geo",
+        "type": "category",
+        "packageName": "amplify-category-geo"
       },
       "hosting": [
         {

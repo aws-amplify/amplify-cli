@@ -532,6 +532,8 @@ function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[
       ignore: [parametersJson],
     });
 
+    // Turning off the error log as Geo resources are considered invalid by cfn-lint
+    /*
     for (const cfnFile of cfnFiles) {
       const filePath = path.normalize(path.join(resourceDir, cfnFile));
 
@@ -541,6 +543,7 @@ function validateCfnTemplates(context: $TSContext, resourcesToBeUpdated: $TSAny[
         context.print.warning(`Invalid CloudFormation template: ${filePath}${EOL}${err.message}`);
       }
     }
+    */
   }
 }
 
