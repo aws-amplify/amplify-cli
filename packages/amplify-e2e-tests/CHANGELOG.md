@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.45.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.44.0...amplify-e2e-tests@2.45.0) (2021-07-12)
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
+# [2.44.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.43.0...amplify-e2e-tests@2.44.0) (2021-06-30)
+
+
+### Bug Fixes
+
+* [#7561](https://github.com/aws-amplify/amplify-cli/issues/7561) - auth trigger usage with user groups ([#7592](https://github.com/aws-amplify/amplify-cli/issues/7592)) ([d1d372e](https://github.com/aws-amplify/amplify-cli/commit/d1d372ee55d2fb1c15022642837c1f6fb6994ac8))
+* pin dependency version in e2e test ([#7625](https://github.com/aws-amplify/amplify-cli/issues/7625)) ([5d47fda](https://github.com/aws-amplify/amplify-cli/commit/5d47fda12d4ffe904aba09d16e474c51f18e4b2f))
+
+
+### Features
+
+* configure env vars and secrets for lambda functions ([#7529](https://github.com/aws-amplify/amplify-cli/issues/7529)) ([fac354e](https://github.com/aws-amplify/amplify-cli/commit/fac354e5e26846e8b1499d3a4718b15983e0110f))
+
+
+
+
+
 # [2.43.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.42.0...amplify-e2e-tests@2.43.0) (2021-06-24)
 
 

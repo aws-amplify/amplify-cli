@@ -1,4 +1,4 @@
-import { $TSContext, exitOnNextTick, getPackageManager, NonEmptyDirectoryError } from 'amplify-cli-core';
+import { $TSContext, exitOnNextTick, getPackageManager, NonEmptyDirectoryError, pathManager } from 'amplify-cli-core';
 import { execSync } from 'child_process';
 import * as fs from 'fs-extra';
 import * as url from 'url';
@@ -12,6 +12,7 @@ export async function preInitSetup(context: $TSContext) {
 
     await validateGithubRepo(context, repoUrl);
     await cloneRepo(context, repoUrl);
+    cleanAmplifyArtifacts();
     await installPackage();
     await setLocalEnvDefaults(context);
   }
@@ -93,5 +94,18 @@ async function setLocalEnvDefaults(context: $TSContext) {
 
   context.exeInfo.inputParams.amplify.envName = envName;
 
-  await generateLocalEnvInfoFile(context);
+  generateLocalEnvInfoFile(context);
+}
+
+/**
+ * After cloning a project, remove the environment specific, perhaps accidentally checked in Amplify state files
+ * to make sure further commands will run correctly, like 'amplify delete'
+ */
+function cleanAmplifyArtifacts() {
+  const projectPath = process.cwd();
+
+  fs.removeSync(pathManager.getAmplifyMetaFilePath(projectPath));
+  fs.removeSync(pathManager.getTeamProviderInfoFilePath(projectPath));
+  fs.removeSync(pathManager.getLocalAWSInfoFilePath(projectPath));
+  fs.removeSync(pathManager.getLocalEnvFilePath(projectPath));
 }

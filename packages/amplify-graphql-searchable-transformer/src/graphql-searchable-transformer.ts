@@ -119,7 +119,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       ddbTable.grantStreamRead(lambdaRole);
 
       // creates event source mapping from ddb to lambda
-      createEventSourceMapping(stack, type, lambda, ddbTable.tableStreamArn);
+      createEventSourceMapping(stack, type, lambda, parameterMap, ddbTable.tableStreamArn);
 
       const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
       assert(typeName);
@@ -173,7 +173,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
         fieldName,
         [
           makeInputValueDefinition('filter', makeNamedType(`Searchable${definition.name.value}FilterInput`)),
-          makeInputValueDefinition('sort', makeNamedType(`Searchable${definition.name.value}SortInput`)),
+          makeInputValueDefinition('sort', makeListType(makeNamedType(`Searchable${definition.name.value}SortInput`))),
           makeInputValueDefinition('limit', makeNamedType('Int')),
           makeInputValueDefinition('nextToken', makeNamedType('String')),
           makeInputValueDefinition('from', makeNamedType('Int')),
