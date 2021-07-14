@@ -1,4 +1,4 @@
-import { chooseServiceMessageRemove, provider } from '../../service-utils/constants';
+import { chooseServiceMessageRemove, previewBanner, provider } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { supportedServices } from '../../supportedServices';
 import { $TSContext } from 'amplify-cli-core';
@@ -9,6 +9,7 @@ export const name = 'remove';
 export const run = async(context: $TSContext) => {
   const { amplify } = context;
   try {
+    context.print.warning(previewBanner);
     const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageRemove);
 
     if (result.providerName !== provider) {
