@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.6-ext.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.8.5...amplify-go-function-runtime-provider@1.8.6-ext.0) (2021-07-14)
+
+
+### Bug Fixes
+
+* **amplify-go-function-runtime-provider:** localinvoke build error with Go 1.16 ([#7621](https://github.com/aws-amplify/amplify-cli/issues/7621)) ([140a825](https://github.com/aws-amplify/amplify-cli/commit/140a8255a6e4d9faaf8af2bfa1db2302cea1cd23))
+
+
+
+
+
 ## [1.8.5](https://github.com/aws-amplify/amplify-cli/compare/amplify-go-function-runtime-provider@1.8.4...amplify-go-function-runtime-provider@1.8.5) (2021-06-30)
 
 **Note:** Version bump only for package amplify-go-function-runtime-provider

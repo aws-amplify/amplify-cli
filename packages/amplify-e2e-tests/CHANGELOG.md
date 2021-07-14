@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.45.0-ext.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.44.0...amplify-e2e-tests@2.45.0-ext.0) (2021-07-14)
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
 # [2.44.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.43.0...amplify-e2e-tests@2.44.0) (2021-06-30)
 
 
