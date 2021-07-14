@@ -1,0 +1,186 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cdk stack creation for map service creates Map policy for Authorized and Guest users access type 1`] = `
+Object {
+  "Outputs": Object {
+    "Name": Object {
+      "Value": Object {
+        "Ref": "Map",
+      },
+    },
+  },
+  "Parameters": Object {
+    "authRoleName": Object {
+      "Type": "String",
+    },
+    "env": Object {
+      "Type": "String",
+    },
+    "mapName": Object {
+      "Type": "String",
+    },
+    "mapStyle": Object {
+      "Type": "String",
+    },
+    "pricingPlan": Object {
+      "Type": "String",
+    },
+    "unauthRoleName": Object {
+      "Type": "String",
+    },
+  },
+  "Resources": Object {
+    "Map": Object {
+      "Properties": Object {
+        "Configuration": Object {
+          "Style": Object {
+            "Ref": "mapStyle",
+          },
+        },
+        "MapName": Object {
+          "Ref": "mapName",
+        },
+        "PricingPlan": Object {
+          "Ref": "pricingPlan",
+        },
+      },
+      "Type": "AWS::Location::Map",
+    },
+    "MapPolicy": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "geo:GetMapStyleDescriptor",
+                "geo:GetMapGlyphs",
+                "geo:GetMapSprites",
+                "geo:GetMapTile",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "Map",
+                  "MapArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              Object {
+                "Ref": "mapName",
+              },
+              "Policy",
+            ],
+          ],
+        },
+        "Roles": Array [
+          Object {
+            "Ref": "authRoleName",
+          },
+          Object {
+            "Ref": "unauthRoleName",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+  },
+}
+`;
+
+exports[`cdk stack creation for map service creates Map policy for Authorized users only access type 1`] = `
+Object {
+  "Outputs": Object {
+    "Name": Object {
+      "Value": Object {
+        "Ref": "Map",
+      },
+    },
+  },
+  "Parameters": Object {
+    "authRoleName": Object {
+      "Type": "String",
+    },
+    "env": Object {
+      "Type": "String",
+    },
+    "mapName": Object {
+      "Type": "String",
+    },
+    "mapStyle": Object {
+      "Type": "String",
+    },
+    "pricingPlan": Object {
+      "Type": "String",
+    },
+    "unauthRoleName": Object {
+      "Type": "String",
+    },
+  },
+  "Resources": Object {
+    "Map": Object {
+      "Properties": Object {
+        "Configuration": Object {
+          "Style": Object {
+            "Ref": "mapStyle",
+          },
+        },
+        "MapName": Object {
+          "Ref": "mapName",
+        },
+        "PricingPlan": Object {
+          "Ref": "pricingPlan",
+        },
+      },
+      "Type": "AWS::Location::Map",
+    },
+    "MapPolicy": Object {
+      "Properties": Object {
+        "PolicyDocument": Object {
+          "Statement": Array [
+            Object {
+              "Action": Array [
+                "geo:GetMapStyleDescriptor",
+                "geo:GetMapGlyphs",
+                "geo:GetMapSprites",
+                "geo:GetMapTile",
+              ],
+              "Effect": "Allow",
+              "Resource": Object {
+                "Fn::GetAtt": Array [
+                  "Map",
+                  "MapArn",
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": Object {
+          "Fn::Join": Array [
+            "",
+            Array [
+              Object {
+                "Ref": "mapName",
+              },
+              "Policy",
+            ],
+          ],
+        },
+        "Roles": Array [
+          Object {
+            "Ref": "authRoleName",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+  },
+}
+`;
