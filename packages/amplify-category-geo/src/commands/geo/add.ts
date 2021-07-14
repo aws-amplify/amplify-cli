@@ -1,4 +1,4 @@
-import { chooseServiceMessageAdd, provider } from '../../service-utils/constants';
+import { chooseServiceMessageAdd, previewBanner, provider } from '../../service-utils/constants';
 import { category } from '../../constants';
 import { supportedServices } from '../../supportedServices';
 import { $TSContext } from 'amplify-cli-core';
@@ -10,6 +10,7 @@ export const run = async(context: $TSContext) => {
   const { amplify } = context;
 
   try {
+    context.print.warning(previewBanner);
     const result: {service: string, providerName: string} = await amplify.serviceSelectionPrompt(context, category, supportedServices, chooseServiceMessageAdd);
 
     if (result.providerName !== provider) {
