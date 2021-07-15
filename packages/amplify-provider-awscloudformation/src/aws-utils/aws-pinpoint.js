@@ -15,10 +15,10 @@ const serviceRegionMap = {
   'cn-northwest-1': 'us-west-2',
   'ap-south-1': 'us-west-2',
   'ap-northeast-3': 'us-west-2',
-  'ap-northeast-2': 'us-west-2',
+  'ap-northeast-2': 'ap-northeast-2',
   'ap-southeast-1': 'us-west-2',
   'ap-southeast-2': 'us-west-2',
-  'ap-northeast-1': 'us-west-2',
+  'ap-northeast-1': 'ap-northeast-1',
   'eu-central-1': 'eu-central-1',
   'eu-west-1': 'eu-west-1',
   'eu-west-2': 'eu-west-1',
@@ -38,6 +38,7 @@ async function getConfiguredPinpointClient(context, category, action, envName) {
   } catch (e) {
     // ignore missing config
   }
+
   category = category || 'missing';
   action = action || ['missing'];
   const userAgentAction = `${category}:${action[0]}`;
