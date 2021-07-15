@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import ora from 'ora';
 import sequential from 'promise-sequential';
-import { stateManager, $TSAny, $TSMeta, $TSContext } from 'amplify-cli-core';
+import { stateManager, $TSAny, $TSMeta, $TSContext, $TSTeamProviderInfo } from 'amplify-cli-core';
 import { getProviderPlugins } from './extensions/amplify-helpers/get-provider-plugins';
 const spinner = ora('');
+const CATEGORIES = 'categories';
 
 export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $TSMeta) {
   const currentEnv = context.exeInfo.localEnvInfo.envName;
@@ -26,6 +27,7 @@ export async function initializeEnv(context: $TSContext, currentAmplifyMeta?: $T
 
     if (!context.exeInfo.restoreBackend) {
       populateAmplifyMeta(projectPath, amplifyMeta);
+      populateCategoriesMeta(projectPath, amplifyMeta, teamProviderInfo[currentEnv], 'hosting', 'ElasticContainer');
     }
 
     const categoryInitializationTasks: (() => Promise<$TSAny>)[] = [];
@@ -111,4 +113,18 @@ function populateAmplifyMeta(projectPath: string, amplifyMeta: $TSMeta) {
   const backendConfig = stateManager.getBackendConfig(projectPath);
   Object.assign(amplifyMeta, backendConfig);
   stateManager.setMeta(projectPath, amplifyMeta);
+}
+
+function populateCategoriesMeta(
+  projectPath: string,
+  amplifyMeta: $TSMeta,
+  teamProviderInfo: $TSTeamProviderInfo,
+  category: string,
+  serviceName: string,
+) {
+  if (amplifyMeta[category]?.[serviceName] &&
+      teamProviderInfo[CATEGORIES]?.[category]?.[serviceName]) {
+    Object.assign(amplifyMeta[category][serviceName], teamProviderInfo[CATEGORIES][category][serviceName]);
+    stateManager.setMeta(projectPath, amplifyMeta);
+  }
 }
