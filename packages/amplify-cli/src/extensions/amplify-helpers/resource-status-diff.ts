@@ -107,8 +107,9 @@ export class ResourceDiff {
     cloudBackendDir : string;
     localTemplate : Template;
     cloudTemplate : Template;
+    mutationInfo : StackMutationInfo;
 
-    constructor( category, resourceName, provider ){
+    constructor( category, resourceName, provider, mutationInfo ){
         this.localBackendDir = pathManager.getBackendDirPath();
         this.cloudBackendDir = pathManager.getCurrentCloudBackendDirPath();
         this.resourceName = resourceName;
@@ -117,6 +118,7 @@ export class ResourceDiff {
         this.service = getResourceService(category, resourceName);
         this.localTemplate = {}; //requires file-access, hence loaded from async methods
         this.cloudTemplate = {}; //requires file-access, hence loaded from async methods
+        this.mutationInfo = mutationInfo;
         //Resource Path state
         const localResourceAbsolutePathFolder = path.normalize(path.join(this.localBackendDir, category, resourceName));
         const cloudResourceAbsolutePathFolder = path.normalize(path.join(this.cloudBackendDir, category, resourceName));
@@ -147,6 +149,13 @@ export class ResourceDiff {
       //set the member template objects
       this.localTemplate = await this.safeReadCFNTemplate(resourceTemplatePaths.localTemplatePath);
       this.cloudTemplate  = await this.safeReadCFNTemplate(resourceTemplatePaths.cloudTemplatePath);
+
+      //Note!! :- special handling to support multi-env. Currently in multi-env, when new env is created,
+      //we do *Not* delete the cloud-backend folder. Hence this logic will always give no diff for new resources.
+      //TBD: REMOVE this once we delete cloud-backend folder for new envs
+      if ( this.mutationInfo.label == stackMutationType.CREATE.label ){
+        this.cloudTemplate = {} ;//Dont use the parent env's template
+      }
 
       //calculate diff of graphs.
       const diff : cfnDiff.TemplateDiff = cfnDiff.diffTemplate(this.cloudTemplate, this.localTemplate );
@@ -240,11 +249,11 @@ export interface ICategoryStatusCollection {
 
 //"CollateResourceDiffs" - Calculates the diffs for the list of resources provided.
 // note:- The mutationInfo may be used for styling in enhanced summary.
-export async function CollateResourceDiffs( resources , _mutationInfo : StackMutationInfo  /* create/update/delete */ ){
+export async function CollateResourceDiffs( resources , mutationInfo : StackMutationInfo  /* create/update/delete */ ){
     const provider = CategoryProviders.CLOUDFORMATION;
     let resourceDiffs : ResourceDiff[] = [];
     for await (let resource of resources) {
-      resourceDiffs.push( new ResourceDiff( resource.category, resource.resourceName, provider ) );
+      resourceDiffs.push( new ResourceDiff( resource.category, resource.resourceName, provider, mutationInfo ) );
     }
     return resourceDiffs;
   }

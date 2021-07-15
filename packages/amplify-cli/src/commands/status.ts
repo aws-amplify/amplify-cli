@@ -23,7 +23,7 @@ export const run = async context => {
 async function showAmplifyConsoleHostingStatus( context) {
   const pluginInfo = context.amplify.getCategoryPluginInfo(context, 'hosting', 'amplifyhosting');
   if (pluginInfo && pluginInfo.packageLocation) {
-    const { status } = require(pluginInfo.packageLocation);
+    const { status } = await import(pluginInfo.packageLocation);
     if (status) {
       await status(context);
     }
