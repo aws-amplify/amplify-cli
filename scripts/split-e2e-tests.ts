@@ -37,12 +37,12 @@ const KNOWN_SUITES_SORTED_ACCORDING_TO_RUNTIME = [
   'src/__tests__/feature-flags.test.ts',
   'src/__tests__/schema-iterative-update-2.test.ts',
   'src/__tests__/containers-api.test.ts',
-  'src/__tests__/geo_1.test.ts',
-  'src/__tests__/geo_2.test.ts',
-  'src/__tests__/geo_3.test.ts',
   //<20m
   'src/__tests__/predictions.test.ts',
   'src/__tests__/hostingPROD.test.ts',
+  'src/__tests__/geo-add.test.ts',
+  'src/__tests__/geo-update.test.ts',
+  'src/__tests__/geo-remove.test.ts',
   //<25m
   'src/__tests__/schema-auth-10.test.ts',
   'src/__tests__/schema-key.test.ts',
