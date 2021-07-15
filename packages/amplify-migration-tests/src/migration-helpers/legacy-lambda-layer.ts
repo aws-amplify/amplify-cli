@@ -20,7 +20,6 @@ export function legacyAddLayer(
     permissions?: LayerPermissionChoice[];
     accountId?: string;
     orgId?: string;
-    projName: string;
     runtimes: LayerRuntime[];
   },
 ): Promise<void> {

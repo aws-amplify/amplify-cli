@@ -589,24 +589,44 @@ Resources:
             - '   let providerCredsIndex = hostedUIProviderCreds.findIndex((provider) => provider.ProviderName === providerName);'
             - '   let providerCreds = hostedUIProviderCreds[providerCredsIndex];'
             - '   let requestParams = {'
-            - '    ProviderDetails: {'
-            - '     ''client_id'': providerCreds.client_id,'
-            - '     ''client_secret'': providerCreds.client_secret,'
-            - '     ''authorize_scopes'': providerMeta.authorize_scopes'
-            - '    },'
             - '    ProviderName: providerMeta.ProviderName,'
             - '    UserPoolId: userPoolId,'
-            - '    AttributeMapping: providerMeta.AttributeMapping'
+            - '    AttributeMapping: providerMeta.AttributeMapping,'
             - '   };'
+            - '   if (providerMeta.ProviderName === ''SignInWithApple'') {'
+            - '     if (providerCreds.client_id && providerCreds.team_id && providerCreds.key_id && providerCreds.private_key) {'
+            - '      requestParams.ProviderDetails = {'
+            - '       ''client_id'': providerCreds.client_id,'
+            - '       ''team_id'': providerCreds.team_id,'
+            - '       ''key_id'': providerCreds.key_id,'
+            - '       ''private_key'': providerCreds.private_key,'
+            - '       ''authorize_scopes'': providerMeta.authorize_scopes,'
+            - '      };'
+            - '     } else {'
+            - '       requestParams = null;'
+            - '     }'
+            - '   } else {'
+            - '    requestParams.ProviderDetails = {'
+            - '     ''client_id'': providerCreds.client_id,'
+            - '     ''client_secret'': providerCreds.client_secret,'
+            - '     ''authorize_scopes'': providerMeta.authorize_scopes,'
+            - '    };'
+            - '   }'
             - '   return requestParams;'
             - '  };'
             - '  let createIdentityProvider = (providerName) => {'
             - '   let requestParams = getRequestParams(providerName);'
+            - '   if (!requestParams) {'
+            - '     return Promise.resolve();'
+            - '   }'
             - '   requestParams.ProviderType = requestParams.ProviderName;'
             - '   return identity.createIdentityProvider(requestParams).promise();'
             - '  };'
             - '  let updateIdentityProvider = (providerName) => {'
             - '   let requestParams = getRequestParams(providerName);'
+            - '   if (!requestParams) {'
+            - '     return Promise.resolve();'
+            - '   }'
             - '   return identity.updateIdentityProvider(requestParams).promise();'
             - '  };'
             - '  let deleteIdentityProvider = (providerName) => {'
@@ -1112,6 +1132,9 @@ Resources:
         <%if (props.authProviders.indexOf('www.amazon.com') !== -1) { %>
         www.amazon.com: !Ref amazonAppId
         <% } %>
+        <%if (props.authProviders.indexOf('appleid.apple.com') !== -1) { %>
+        appleid.apple.com: !Ref appleAppId
+        <% } %>
       <% } %>
       AllowUnauthenticatedIdentities: !Ref allowUnauthenticatedIdentities
       <%if (props.audiences && props.audiences.length > 0) { %>
@@ -1193,5 +1216,9 @@ Outputs :
   <%if (props.amazonAppId) { %>
   AmazonWebClient:
     Value: !Ref amazonAppId
+  <% } %>
+  <%if (props.appleAppId) { %>
+  AppleWebClient:
+    Value: !Ref appleAppId
   <% } %>
   <% } %>
