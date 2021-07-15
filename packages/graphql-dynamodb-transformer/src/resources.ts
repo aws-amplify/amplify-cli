@@ -751,7 +751,7 @@ export class ResourceFactory {
       RequestMappingTemplate: print(
         compoundExpression([
           ifElse(
-            ref(ResourceConstants.SNIPPETS.AuthCondition),
+            raw(`$${ResourceConstants.SNIPPETS.AuthCondition} && $${ResourceConstants.SNIPPETS.AuthCondition}.expression != ""`),
             compoundExpression([
               set(ref('condition'), ref(ResourceConstants.SNIPPETS.AuthCondition)),
               ifElse(
