@@ -236,6 +236,21 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, meta);
   };
 
+  getHooksConfigJson = (projectPath: string | undefined): $TSAny => {
+    const filePath = pathManager.getHooksConfigFilePath(projectPath);
+    const mergedOptions = {
+      throwIfNotExist: false,
+      default: {},
+    };
+
+    return this.getData<$TSAny>(filePath, mergedOptions);
+  };
+  setSampleHooksDir = (projectPath: string | undefined, dirSourcePath: string): void => {
+    const toDirPath = pathManager.getHooksDirPath(projectPath);
+
+    fs.copySync(dirSourcePath, toDirPath);
+  };
+
   setResourceParametersJson = (projectPath: string | undefined, category: string, resourceName: string, parameters: $TSAny): void => {
     const filePath = pathManager.getResourceParametersFilePath(projectPath, category, resourceName);
 
