@@ -361,8 +361,8 @@ export const removeFunction = (cwd: string, funcName: string) =>
   });
 
 export interface LayerOptions {
-  select: string[]; // list options to select
-  expectedListOptions: string[]; // the expeted list of all layers
+  select?: string[]; // list options to select
+  expectedListOptions?: string[]; // the expected list of all layers
   versions?: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the verison and expected version for each layer
   customArns?: string[]; // external ARNs to enter
   skipLayerAssignment?: boolean; // true if the layer assigment must be left unchanged for the function, otherwise true
