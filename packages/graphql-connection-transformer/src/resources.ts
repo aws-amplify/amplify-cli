@@ -263,6 +263,7 @@ export class ResourceFactory {
     relatedType: string,
     connectionAttributes: string[],
     keySchema: KeySchema[],
+    sortKeyInfo?: { sortKeyIsStringLike: boolean },
   ): Resolver {
     const partitionKeyName = keySchema[0].AttributeName as string;
 
@@ -284,10 +285,18 @@ export class ResourceFactory {
       ]);
     } else if (connectionAttributes[1]) {
       const sortKeyName = keySchema[1].AttributeName as string;
-      keyObj.attributes.push([
-        sortKeyName,
-        ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[1]}, "${NONE_VALUE}"))`),
-      ]);
+      if (sortKeyInfo && !sortKeyInfo.sortKeyIsStringLike) {
+        // Use Int minvalue as default
+        keyObj.attributes.push([
+          sortKeyName,
+          ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNull($ctx.source.${connectionAttributes[1]}, ${NONE_INT_VALUE}))`),
+        ]);
+      } else {
+        keyObj.attributes.push([
+          sortKeyName,
+          ref(`util.dynamodb.toDynamoDBJson($util.defaultIfNullOrBlank($ctx.source.${connectionAttributes[1]}, "${NONE_VALUE}"))`),
+        ]);
+      }
     }
 
     return new Resolver({

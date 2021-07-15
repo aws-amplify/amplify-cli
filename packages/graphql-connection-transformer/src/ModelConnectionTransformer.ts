@@ -596,13 +596,44 @@ export class ModelConnectionTransformer extends Transformer {
         );
       }
 
+      const keySchema = <KeySchema[]>tableResource.Properties.KeySchema;
+      let sortKeyInfo: { sortKeyIsStringLike: boolean } = undefined;
+      if (args.fields.length > 1) {
+        const sortKeyField = keySchema[1] ? relatedType.fields.find(f => f.name.value === keySchema[1].AttributeName) : undefined;
+
+        // If a sort key field is found then add a simple sort key, else add a composite sort key.
+        let sortFieldType: string | undefined = undefined;
+        if (sortKeyField) {
+          sortFieldType = getBaseType(sortKeyField.type);
+        } else {
+          const compositeSortKeyType: SortKeyFieldInfoTypeName = 'Composite';
+          sortFieldType = compositeSortKeyType;
+        }
+
+        let sortKeyIsStringLike = true;
+
+        // We cannot use $util.defaultIfNullOrBlank on non-string types
+        if (
+          sortFieldType === STANDARD_SCALARS.Int ||
+          sortFieldType === STANDARD_SCALARS.Float ||
+          sortFieldType === STANDARD_SCALARS.Bolean
+        ) {
+          sortKeyIsStringLike = false;
+        }
+
+        sortKeyInfo = {
+          sortKeyIsStringLike,
+        };
+      }
+
       // Start with GetItem resolver for case where the connection is to a single object.
       const getResolver = this.resources.makeGetItemConnectionWithKeyResolver(
         parentTypeName,
         fieldName,
         relatedTypeName,
         args.fields,
-        <KeySchema[]>tableResource.Properties.KeySchema,
+        keySchema,
+        sortKeyInfo,
       );
 
       ctx.setResource(ResolverResourceIDs.ResolverResourceID(parentTypeName, fieldName), getResolver);
