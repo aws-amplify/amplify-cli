@@ -31,9 +31,9 @@ export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promis
     if (config.isAdditional) {
       chain.wait('Do you want to set this map as default?')
       if (config.isDefault) {
-        chain.sendConfirmYes()
+        chain.sendConfirmYes();
       } else {
-        chain.sendConfirmNo()
+        chain.sendConfirmNo();
       }
     }
     chain.run((err: Error) => {
@@ -50,19 +50,28 @@ export function addMapWithDefault(cwd: string, settings: GeoConfig = {}): Promis
  * Add place index with default values. Assume auth is already configured
  * @param cwd command directory
  */
-export function addPlaceIndexWithDefault(cwd: string): Promise<void> {
+export function addPlaceIndexWithDefault(cwd: string, settings: GeoConfig = {}): Promise<void> {
+  const config = { ...defaultGeoConfig, ...settings };
   return new Promise((resolve, reject) => {
-    spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
+    const chain = spawn(getCLIPath(), ['geo', 'add'], { cwd, stripColors: true })
       .wait('Select which capability you want to add:')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Provide a name for the location search index (place index):')
-      .sendCarriageReturn()
+      .sendLine(config.resourceName)
       .wait('Who can access this Search Index?')
       .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')
-      .sendConfirmNo()
-      .run((err: Error) => {
+      .sendConfirmNo();
+      if (config.isAdditional) {
+        chain.wait('Do you want to set this search index as default?');
+        if (config.isDefault) {
+          chain.sendConfirmYes();
+        } else {
+          chain.sendConfirmNo();
+        }
+      }
+      chain.run((err: Error) => {
         if (!err) {
           resolve();
         } else {
@@ -86,6 +95,32 @@ export function addPlaceIndexWithDefault(cwd: string): Promise<void> {
       .wait('Who can access this Map?')
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject();
+        }
+      })
+  });
+}
+
+/**
+ * Update the second map as default. Assume auth is already configured and two maps added with first default
+ * @param cwd command directory
+ */
+ export function updateSecondMapAsDefault(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+      .wait('Select which capability you want to update:')
+      .sendCarriageReturn()
+      .wait('Select the Map you want to update')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Who can access this Map?')
+      .sendCarriageReturn()
+      .wait('Do you want to set this map as default?')
+      .sendConfirmYes()
       .run((err: Error) => {
         if (!err) {
           resolve();
@@ -122,6 +157,33 @@ export function addPlaceIndexWithDefault(cwd: string): Promise<void> {
 }
 
 /**
+ * Update the second place index as default. Assume auth is already configured and two indexes added with first default
+ * @param cwd command directory
+ */
+ export function updateSecondPlaceIndexAsDefault(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['geo', 'update'], { cwd, stripColors: true })
+      .wait('Select which capability you want to update:')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Select the search index you want to update')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Who can access this Search Index?')
+      .sendCarriageReturn()
+      .wait('Do you want to set this search index as default?')
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject();
+        }
+      })
+  });
+}
+
+/**
  * Remove an existing map. Assume auth is already configured
  * @param cwd command directory
  */
@@ -131,6 +193,31 @@ export function addPlaceIndexWithDefault(cwd: string): Promise<void> {
       .wait('Select which capability you want to remove:')
       .sendCarriageReturn()
       .wait('Select the Map you want to remove')
+      .sendCarriageReturn()
+      .wait('Are you sure you want to delete the resource?')
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject();
+        }
+      })
+  });
+}
+
+/**
+ * Remove an existing default map. Assume auth is already configured and two maps added with first default
+ * @param cwd command directory
+ */
+ export function removeFirstDefaultMap(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+      .wait('Select which capability you want to remove:')
+      .sendCarriageReturn()
+      .wait('Select the Map you want to remove')
+      .sendCarriageReturn()
+      .wait('Select the Map you want to set as default:')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
       .sendConfirmYes()
@@ -155,6 +242,32 @@ export function addPlaceIndexWithDefault(cwd: string): Promise<void> {
       .send(KEY_DOWN_ARROW)
       .sendCarriageReturn()
       .wait('Select the PlaceIndex you want to remove')
+      .sendCarriageReturn()
+      .wait('Are you sure you want to delete the resource?')
+      .sendConfirmYes()
+      .run((err: Error) => {
+        if (!err) {
+          resolve();
+        } else {
+          reject();
+        }
+      })
+  });
+}
+
+/**
+ * Remove an existing default index. Assume auth is already configured and two indexes added with first default
+ * @param cwd command directory
+ */
+ export function removeFirstDefaultPlaceIndex(cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    spawn(getCLIPath(), ['geo', 'remove'], { cwd, stripColors: true })
+      .wait('Select which capability you want to remove:')
+      .send(KEY_DOWN_ARROW)
+      .sendCarriageReturn()
+      .wait('Select the PlaceIndex you want to remove')
+      .sendCarriageReturn()
+      .wait('Select the search index you want to set as default:')
       .sendCarriageReturn()
       .wait('Are you sure you want to delete the resource?')
       .sendConfirmYes()
