@@ -47,7 +47,7 @@ describe('setupNewUser.run', () => {
     expect(
       open,
     ).toBeCalledWith(
-      'https://console.aws.amazon.com/iam/home?region=test#/users$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess',
+      'https://console.aws.amazon.com/iam/home?region=test#/users$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess-Amplify',
       { wait: false },
     );
   });
@@ -59,7 +59,7 @@ describe('setupNewUser.run', () => {
     expect(
       open,
     ).toBeCalledWith(
-      'https://console.aws.amazon.com/iam/home?region=test#/users`$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess',
+      'https://console.aws.amazon.com/iam/home?region=test#/users`$new?step=final&accessKey&userNames=test&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess-Amplify',
       { wait: false },
     );
   });

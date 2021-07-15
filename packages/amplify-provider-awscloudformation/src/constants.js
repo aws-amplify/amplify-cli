@@ -11,7 +11,7 @@ module.exports = {
   DefaultAWSRegion: 'us-east-1',
   AWSAmazonConsoleUrl: 'https://console.aws.amazon.com/',
   AWSCreateIAMUsersUrl:
-    'https://console.aws.amazon.com/iam/home?region={region}#/users$new?step=final&accessKey&userNames={userName}&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess',
+    'https://console.aws.amazon.com/iam/home?region={region}#/users$new?step=final&accessKey&userNames={userName}&permissionType=policies&policies=arn:aws:iam::aws:policy%2FAdministratorAccess-Amplify',
   FunctionCategoryName: 'function',
   // keep in sync with ServiceName in amplify-category-function, but probably it will not change
   FunctionServiceNameLambdaLayer: 'LambdaLayer',
