@@ -1,6 +1,8 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as ini from 'ini';
+
 import { spawnSync, execSync } from 'child_process';
 import { v4 as uuid } from 'uuid';
 import { pathManager } from 'amplify-cli-core';
@@ -33,9 +35,11 @@ export function isCI(): boolean {
 }
 
 export function injectSessionToken() {
-  if (!fs.readFileSync(pathManager.getAWSCredentialsFilePath()).toString().includes('aws_session_token')) {
-    fs.appendFileSync(pathManager.getAWSCredentialsFilePath(), `aws_session_token=${process.env.AWS_SESSION_TOKEN}`);
+  const credentialsContents = ini.parse(fs.readFileSync(pathManager.getAWSCredentialsFilePath()).toString());
+  for (const key of Object.keys(credentialsContents)) {
+    credentialsContents[key].aws_session_token = process.env.AWS_SESSION_TOKEN;
   }
+  fs.writeFileSync(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
 }
 
 export function npmInstall(cwd: string) {

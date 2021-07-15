@@ -77,19 +77,19 @@ export function setupAWSProfile() {
     };
   }
 
-  process.env.CLI_REGION = process.env.CLI_REGION || testRegionPool[Math.floor(Math.random() * testRegionPool.length)];
+  process.env.CONSOLE_REGION = process.env.CONSOLE_REGION || testRegionPool[Math.floor(Math.random() * testRegionPool.length)];
   let isConfigSet = false;
   Object.keys(config).forEach(key => {
     const keyName = key.replace('profile', '').trim();
     if (profileName === keyName) {
-      config[key].region = process.env.CLI_REGION;
+      config[key].region = process.env.CONSOLE_REGION;
       isConfigSet = true;
     }
   });
   if (!isConfigSet) {
     const keyName = profileName === 'default' ? 'default' : `profile ${profileName}`;
     config[keyName] = {
-      region: process.env.CLI_REGION,
+      region: process.env.CONSOLE_REGION,
     };
   }
 
