@@ -214,6 +214,12 @@ describe('amplify add lambda layer', () => {
       numLayers: 1,
       projName,
     };
+
+    const noLayerEnv = 'nolayerenv';
+
+    await addEnvironment(projRoot, { envName: noLayerEnv });
+    await checkoutEnvironment(projRoot, { envName });
+
     const integtestArns: string[] = [];
     const expectedPerms: LayerPermission[] = [{ type: LayerPermissionName.public }];
     await addLayer(projRoot, settings);
@@ -233,14 +239,16 @@ describe('amplify add lambda layer', () => {
     const layerTestArns: string[] = [];
     const newEnvName = 'layertest';
     await addEnvironment(projRoot, { envName: newEnvName, numLayers: 1 });
-    await listEnvironment(projRoot, { numEnv: 2 });
-    await amplifyPushLayer(projRoot, {
-      acceptSuggestedLayerVersionConfigurations: true,
-    });
+    await listEnvironment(projRoot, { numEnv: 3 });
+    await amplifyPushLayer(projRoot, { acceptSuggestedLayerVersionConfigurations: true });
     await amplifyStatus(projRoot, 'No Change');
     layerTestArns.push(getCurrentLayerArnFromMeta(projRoot, settings));
     validatePushedVersion(projRoot, settings, expectedPerms);
     await validateLayerMetadata(projRoot, settings, getProjectMeta(projRoot), newEnvName, layerTestArns);
+
+    // Test to make sure we can checkout and push a previously created env where the layer does not exist yet
+    await checkoutEnvironment(projRoot, { envName: noLayerEnv });
+    await amplifyPushLayer(projRoot, { acceptSuggestedLayerVersionConfigurations: true });
 
     await checkoutEnvironment(projRoot, { envName });
     await amplifyStatus(projRoot, 'No Change');

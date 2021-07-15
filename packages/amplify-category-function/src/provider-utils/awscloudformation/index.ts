@@ -405,8 +405,10 @@ export async function updateConfigOnEnvInit(context: $TSContext, resourceName: s
       }
 
       const currentCfnTemplatePath = pathManager.getCurrentCfnTemplatePath(projectPath, categoryName, resourceName);
-      const { cfnTemplate: currentCfnTemplate } = await readCFNTemplate(currentCfnTemplatePath);
-      await writeCFNTemplate(currentCfnTemplate, pathManager.getResourceCfnTemplatePath(projectPath, categoryName, resourceName));
+      const { cfnTemplate: currentCfnTemplate } = (await readCFNTemplate(currentCfnTemplatePath, { throwIfNotExist: false })) || {};
+      if (currentCfnTemplate !== undefined) {
+        await writeCFNTemplate(currentCfnTemplate, pathManager.getResourceCfnTemplatePath(projectPath, categoryName, resourceName));
+      }
     }
   }
 }
