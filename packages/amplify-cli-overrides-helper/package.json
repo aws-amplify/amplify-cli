@@ -1,5 +1,5 @@
 {
-    "name": "amplify-cli-overrides-helper",
+    "name": "@aws-amplify/cli-overrides-helper",
     "version": "1.0.0",
     "description": "Amplify CLI Overrides Helper utility package",
     "repository": {
