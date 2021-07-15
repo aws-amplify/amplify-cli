@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from './root-stack-builder';
 import { rootStackFileName } from '.';
 import { pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
+import { Template } from 'cloudform-types';
 const moment = require('moment');
 const path = require('path');
 const glob = require('glob');
@@ -175,24 +176,26 @@ function cloneCLIJSONForNewEnvironment(context) {
 export async function onInitSuccessful(context) {
   configurationManager.onInitSuccessful(context);
   if (context.exeInfo.isNewEnv) {
-    await storeRootStackTemplate(context);
+    await storeRootStackTemplate();
     context = await storeCurrentCloudBackend(context);
     await storeArtifactsForAmplifyService(context);
   }
   return context;
 }
 
-const storeRootStackTemplate = async (context: $TSContext) => {
+export const storeRootStackTemplate = async (template?: Template) => {
   // generate template again as the folder structure was not created when root stack was initiaized
-  const props: RootStackTransformOptions = {
-    resourceConfig: {
-      stackFileName: rootStackFileName,
-    },
-  };
-  const rootTransform = new AmplifyRootStackTransform(props, CommandType.INIT);
-  const rootStack = await rootTransform.transform();
-  // prepush modifier
-  await prePushCfnTemplateModifier(rootStack);
+  if (template === undefined) {
+    const props: RootStackTransformOptions = {
+      resourceConfig: {
+        stackFileName: rootStackFileName,
+      },
+    };
+    const rootTransform = new AmplifyRootStackTransform(props, CommandType.INIT);
+    template = await rootTransform.transform();
+    // prepush modifier
+    await prePushCfnTemplateModifier(template);
+  }
 
   // RootStack deployed to backend/awscloudformation/build
   const projectRoot = pathManager.findProjectRoot();
@@ -203,7 +206,7 @@ const storeRootStackTemplate = async (context: $TSContext) => {
   const rootStackBackendFilePath = path.join(rootStackBackendBuildDir, rootStackFileName);
   const rootStackCloudBackendFilePath = path.join(rootStackCloudBackendBuildDir, rootStackFileName);
 
-  JSONUtilities.writeJson(rootStackBackendFilePath, rootStack);
+  JSONUtilities.writeJson(rootStackBackendFilePath, template);
   // copy the awscloudformation backend to #current-cloud-backend
   fs.copySync(rootStackBackendFilePath, rootStackCloudBackendFilePath);
 };

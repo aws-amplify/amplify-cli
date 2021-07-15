@@ -62,7 +62,7 @@ export class AmplifyRootStackTransform {
     await this.generateRootStackTemplate();
 
     // apply override on Amplify Object having CDK Constructs for Root Stack
-    this.applyOverride();
+    await this.applyOverride();
 
     // generate CFN template
     const template: Template = await this.synthesizeTemplates();
@@ -81,8 +81,8 @@ export class AmplifyRootStackTransform {
       // add check here to see if the override folder is present or not
       const projectPath = pathManager.findProjectRoot();
       const overridePath = pathManager.getRootOverrideDirPath(projectPath);
-      const fn = await import(path.join(overridePath, 'override'));
-      if (fn.overrideProps === 'function' && fn.overrideProps != null) {
+      const fn = await import(path.join(overridePath, 'build', 'override.js'));
+      if (typeof fn.overrideProps === 'function' && fn.overrideProps != null) {
         this._rootTemplateObj = fn.overrideProps(this._rootTemplateObj);
       } else {
         console.log('There is no override setup yet for Root Stack. To enable override : Run amplify override root');
@@ -126,6 +126,7 @@ export class AmplifyRootStackTransform {
    */
   private synthesizeTemplates = async (): Promise<Template> => {
     this.app?.synth({ force: true, skipValidation: true });
+    console.log(this._rootTemplateObj);
     const templates = this._synthesizer.collectStacks();
     const templatesOutput = this._synthesizerOutputs.collectStacks();
     const cfnRootStack: Template = templates.get('AmplifyRootStack');

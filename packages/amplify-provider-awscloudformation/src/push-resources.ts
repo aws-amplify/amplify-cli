@@ -48,6 +48,8 @@ import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-f
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
 import { CommandType, AmplifyRootStackTransform, RootStackTransformOptions } from './root-stack-builder';
 import { rootStackFileName } from '.';
+import { storeRootStackTemplate } from './initializer';
+import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
 
 const logger = fileLogger('push-resources');
 
@@ -210,6 +212,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       resourcesToBeUpdated.length > 0 ||
       resourcesToBeDeleted.length > 0 ||
       tagsUpdated ||
+      rootStackUpdated ||
       context.exeInfo.forcePush
     ) {
       // If there is an API change, there will be one deployment step. But when there needs an iterative update the step count is > 1
@@ -267,6 +270,9 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
         try {
           await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
+          storeRootStackTemplate(nestedStack);
+          // if the only root stack updates, function is called with empty resources . this fn copies amplifyMeta and backend Config to #current-cloud-backend
+          context.amplify.updateamplifyMetaAfterPush([]);
         } catch (err) {
           if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
             return;
@@ -664,19 +670,15 @@ async function updateCloudFormationNestedStack(
   resourcesToBeUpdated: $TSAny,
 ) {
   const backEndDir = pathManager.getBackendDirPath();
-  const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, rootStackFileName));
-
-  JSONUtilities.writeJson(nestedStackFilepath, nestedStack);
-
-  const transformedStackPath = await preProcessCFNTemplate(nestedStackFilepath);
-
+  const projectRoot = pathManager.findProjectRoot();
+  const nestedStackFilePath = path.join(pathManager.getRootStackDirPath(projectRoot), rootStackFileName);
   const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated));
   const providerDirectory = path.normalize(path.join(backEndDir, providerName));
 
-  const log = logger('updateCloudFormationNestedStack', [providerDirectory, transformedStackPath]);
+  const log = logger('updateCloudFormationNestedStack', [providerDirectory, nestedStackFilePath]);
   try {
     log();
-    await cfnItem.updateResourceStack(transformedStackPath);
+    await cfnItem.updateResourceStack(nestedStackFilePath);
   } catch (error) {
     log(error);
     throw error;
@@ -828,17 +830,18 @@ async function formNestedStack(
   // generate , override and deploy stacks to disk
   const rootTransform = new AmplifyRootStackTransform(props, CommandType.PUSH);
   const nestedStack = await rootTransform.transform();
+  await prePushCfnTemplateModifier(nestedStack);
 
   // get the {deploymentBucketName , AuthRoleName , UnAuthRole from overridded data}
 
   const metaToBeUpdated = {
     DeploymentBucketName: nestedStack.Resources.DeploymentBucket.Properties.BucketName,
     AuthRoleName: nestedStack.Resources.AuthRole.Properties.RoleName,
-    UnauthRoleName: nestedStack.Resources.UnuthRole.Properties.RoleName,
+    UnauthRoleName: nestedStack.Resources.UnauthRole.Properties.RoleName,
   };
   // sanitize this data if needed
-  for (const key in Object.keys(metaToBeUpdated)) {
-    if (metaToBeUpdated[key] === 'object' && 'Ref' in metaToBeUpdated[key]) {
+  for (const key of Object.keys(metaToBeUpdated)) {
+    if (typeof metaToBeUpdated[key] === 'object' && 'Ref' in metaToBeUpdated[key]) {
       delete metaToBeUpdated[key];
     }
   }
