@@ -2,8 +2,12 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import { LocalLogDirectory } from 'amplify-cli-logger';
 
-const amplifyMark = '#amplify';
+const amplifyMark = '#amplify-do-not-edit-begin';
+const amplifyEndMark = '#amplify-do-not-edit-end';
+const legacyAmplifyMark = '#amplify';
 const amplifyMarkRegExp = new RegExp(`^${amplifyMark}`);
+const amplifyEndMarkRegExp = new RegExp(`^${amplifyEndMark}`);
+const legacyAmplifyMarkRegExp = new RegExp(`^${legacyAmplifyMark}`);
 
 export function insertAmplifyIgnore(gitIgnoreFilePath: string): void {
   if (fs.existsSync(gitIgnoreFilePath)) {
@@ -26,10 +30,10 @@ function removeAmplifyIgnore(gitIgnoreFilePath: string): void {
       const newLine = gitIgnoreStringArray[i].trim();
 
       if (isInRemoval) {
-        if (newLine.length === 0) {
+        if (amplifyEndMarkRegExp.test(newLine) || newLine.length === 0) {
           isInRemoval = false;
         }
-      } else if (amplifyMarkRegExp.test(newLine)) {
+      } else if (amplifyMarkRegExp.test(newLine) || legacyAmplifyMarkRegExp.test(newLine)) {
         isInRemoval = true;
       } else {
         newGitIgnoreString += newLine + os.EOL;
@@ -64,7 +68,7 @@ function getGitIgnoreAppendString() {
     '.secret-*',
   ];
 
-  const toAppend = `${os.EOL + os.EOL + amplifyMark + os.EOL}${ignoreList.join(os.EOL)}`;
+  const toAppend = `${os.EOL + os.EOL + amplifyMark + os.EOL}${ignoreList.join(os.EOL)}${os.EOL + amplifyEndMark + os.EOL}`;
 
   return toAppend;
 }
