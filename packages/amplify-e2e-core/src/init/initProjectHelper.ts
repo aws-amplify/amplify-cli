@@ -1,4 +1,4 @@
-import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags } from '..';
+import { nspawn as spawn, getCLIPath, singleSelect, addCircleCITags, injectSessionToken } from '..';
 import { KEY_DOWN_ARROW } from '../utils';
 import { amplifyRegions } from '../configure';
 
@@ -78,6 +78,7 @@ export function initJSProjectWithProfile(cwd: string, settings?: Partial<typeof 
 
     chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
       if (err) {
+        injectSessionToken();
         reject(err);
       } else {
         resolve();
@@ -121,6 +122,7 @@ export function initAndroidProjectWithProfile(cwd: string, settings: Object): Pr
         if (!err) {
           addCircleCITags(cwd);
 
+          injectSessionToken();
           resolve();
         } else {
           reject(err);
@@ -162,6 +164,7 @@ export function initIosProjectWithProfile(cwd: string, settings: Object): Promis
         if (!err) {
           addCircleCITags(cwd);
 
+          injectSessionToken();
           resolve();
         } else {
           reject(err);
@@ -200,6 +203,7 @@ export function initFlutterProjectWithProfile(cwd: string, settings: Object): Pr
 
     chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
       if (!err) {
+        injectSessionToken();
         resolve();
       } else {
         reject(err);
@@ -260,6 +264,7 @@ export function initProjectWithAccessKey(
 
     chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
       if (!err) {
+        injectSessionToken();
         resolve();
       } else {
         reject(err);
@@ -299,6 +304,7 @@ export function initNewEnvWithAccessKey(cwd: string, s: { envName: string; acces
 
     chain.wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything').run((err: Error) => {
       if (!err) {
+        injectSessionToken();
         resolve();
       } else {
         reject(err);
@@ -330,6 +336,7 @@ export function initNewEnvWithProfile(cwd: string, s: { envName: string }): Prom
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
+        injectSessionToken();
           resolve();
         } else {
           reject(err);
@@ -364,6 +371,7 @@ export function amplifyInitSandbox(cwd: string, settings: {}): Promise<void> {
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
+        injectSessionToken();
           resolve();
         } else {
           reject(err);
@@ -380,7 +388,12 @@ export function amplifyInitYes(cwd: string): Promise<void> {
       env: {
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
-    }).run((err: Error) => (err ? reject(err) : resolve()));
+    }).run((err: Error) => (err ? reject(err) :
+      (() => {
+        injectSessionToken();
+        resolve();
+      })()
+    ));
   });
 }
 
@@ -390,6 +403,7 @@ export function amplifyVersion(cwd: string, expectedVersion: string, testingWith
       .wait(expectedVersion)
       .run((err: Error) => {
         if (!err) {
+        injectSessionToken();
           resolve();
         } else {
           reject(err);
@@ -409,6 +423,7 @@ export function amplifyStatusWithMigrate(cwd: string, expectedStatus: string, te
       .sendLine('\r')
       .run((err: Error) => {
         if (!err) {
+        injectSessionToken();
           resolve();
         } else {
           reject(err);
@@ -425,6 +440,7 @@ export function amplifyStatus(cwd: string, expectedStatus: string, testingWithLa
       .sendLine('\r')
       .run((err: Error) => {
         if (!err) {
+        injectSessionToken();
           resolve();
         } else {
           reject(err);
