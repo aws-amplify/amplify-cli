@@ -40,8 +40,8 @@ export async function generateFiles(context: $TSContext) {
     throwIfNotExist: false,
     default: {},
   });
-
-  await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
+  const localMeta = stateManager.getMeta();
+  await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta, localMeta);
 
   return context;
 }
