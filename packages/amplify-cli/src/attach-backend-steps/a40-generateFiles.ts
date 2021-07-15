@@ -41,7 +41,9 @@ export async function generateFiles(context: $TSContext) {
     default: {},
   });
 
-  await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
+  if (!context.exeInfo.existingLocalEnvInfo?.noUpdateBackend) {
+    await context.amplify.onCategoryOutputsChange(context, currentAmplifyMeta);
+  }
 
   return context;
 }
@@ -64,7 +66,7 @@ function generateNonRuntimeFiles(context: $TSContext) {
 }
 
 function generateProjectConfigFile(context: $TSContext) {
-  if (context.exeInfo.isNewProject) {
+  if (context.exeInfo.isNewProject || context.exeInfo.existingLocalEnvInfo?.noUpdateBackend) {
     const { projectPath } = context.exeInfo.localEnvInfo;
 
     stateManager.setProjectConfig(projectPath, context.exeInfo.projectConfig);
@@ -74,6 +76,10 @@ function generateProjectConfigFile(context: $TSContext) {
 function generateTeamProviderInfoFile(context: $TSContext) {
   const { projectPath, envName } = context.exeInfo.localEnvInfo;
   const { existingTeamProviderInfo, teamProviderInfo } = context.exeInfo;
+
+  if (context.exeInfo.existingLocalEnvInfo?.noUpdateBackend) {
+    return stateManager.setTeamProviderInfo(projectPath, existingTeamProviderInfo);
+  }
 
   if (existingTeamProviderInfo) {
     if (existingTeamProviderInfo[envName]) {
