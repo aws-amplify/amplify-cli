@@ -63,32 +63,54 @@ describe('amplify geo add', () => {
     expect(placeIndex.IndexName).toBeDefined();
   });
 
-  it.only('init a project with default auth config and add two map resources with the second set to default', async () => {
-    const map1Id = `map${generateRandomShortId}`;
-    const map2Id = `map${generateRandomShortId}`;
+  it('init a project with default auth config and add two map resources with the second set to default', async () => {
+    const map1Id = `map${generateRandomShortId()}`;
+    const map2Id = `map${generateRandomShortId()}`;
     await initJSProjectWithProfile(projRoot, {});
     await addAuthWithDefault(projRoot);
     await addMapWithDefault(projRoot, { resourceName: map1Id });
     await addMapWithDefault(projRoot, { resourceName: map2Id, isAdditional: true });
     await amplifyPushWithoutCodegen(projRoot);
 
-    //check amplify meta file
+    // //check amplify meta file
     const meta = getProjectMeta(projRoot);
     expect(meta.geo[map1Id].isDefault).toBe(false);
     expect(meta.geo[map2Id].isDefault).toBe(true);
-    //check if resource is provisioned in cloud
+    // //check if resource is provisioned in cloud
     const region = meta.providers.awscloudformation.Region;
     const map1 = await getMap(map1Id, region);
     const map2 = await getMap(map2Id, region);
     expect(map1.MapName).toBeDefined();
     expect(map2.MapName).toBeDefined();
-    //check aws export file
+    // //check aws export file
     const awsExport: any = getAWSExports(projRoot).default;
     expect(awsExport.geo.maps.items[map1Id]).toBeDefined();
     expect(awsExport.geo.maps.items[map2Id]).toBeDefined();
+    expect(awsExport.geo.maps.default).toEqual(map2Id);
   });
 
-  it('init a project with default auth config and add two map resources with the second set to default', async () => {
+  it('init a project with default auth config and add two place index resources with the second set to default', async () => {
+    const index1Id = `placeindex${generateRandomShortId()}`;
+    const index2Id = `placeindex${generateRandomShortId()}`;
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addPlaceIndexWithDefault(projRoot, { resourceName: index1Id });
+    await addPlaceIndexWithDefault(projRoot, { resourceName: index2Id, isAdditional: true });
+    await amplifyPushWithoutCodegen(projRoot);
 
+    // //check amplify meta file
+    const meta = getProjectMeta(projRoot);
+    expect(meta.geo[index1Id].isDefault).toBe(false);
+    expect(meta.geo[index2Id].isDefault).toBe(true);
+    // //check if resource is provisioned in cloud
+    const region = meta.providers.awscloudformation.Region;
+    const index1 = await getPlaceIndex(index1Id, region);
+    const index2 = await getPlaceIndex(index2Id, region);
+    expect(index1.IndexName).toBeDefined();
+    expect(index2.IndexName).toBeDefined();
+    // //check aws export file
+    const awsExport: any = getAWSExports(projRoot).default;
+    expect(awsExport.geo.place_indexes.items).toBeDefined();
+    expect(awsExport.geo.place_indexes.default).toEqual(index2Id);
   });
 })
