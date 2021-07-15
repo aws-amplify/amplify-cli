@@ -6,6 +6,8 @@ import {
   validateNodeModulesDirRemoval,
   updateFunction,
   addAuthwithUserPoolGroupsViaAPIWithTrigger,
+  addUserToUserPool,
+  invokeFunction,
 } from 'amplify-e2e-core';
 import { addAuthWithDefaultSocial, addAuthWithGroupTrigger, addAuthWithRecaptchaTrigger, addAuthViaAPIWithTrigger } from 'amplify-e2e-core';
 import {
@@ -120,10 +122,18 @@ describe('amplify add auth...', () => {
     const functionName = `${authKey}PostConfirmation-integtest`;
     const authMeta = meta.auth[authKey];
     const id = authMeta.output.UserPoolId;
-    const userPool = await getUserPool(id, meta.providers.awscloudformation.Region);
+    const region = meta.providers.awscloudformation.Region;
+    const userPool = await getUserPool(id, region);
     const clientIds = [authMeta.output.AppClientIDWeb, authMeta.output.AppClientID];
-    const clients = await getUserPoolClients(id, clientIds, meta.providers.awscloudformation.Region);
-    const lambdaFunction = await getLambdaFunction(functionName, meta.providers.awscloudformation.Region);
+    const clients = await getUserPoolClients(id, clientIds, region);
+    await addUserToUserPool(id, region);
+    const lambdaFunction = await getLambdaFunction(functionName, region);
+    const lambdaEvent = {
+      userPoolId: id,
+      userName: 'testUser',
+    };
+    const result = await invokeFunction(functionName, JSON.stringify(lambdaEvent), region);
+    expect(result.StatusCode).toBe(200);
     expect(userPool.UserPool).toBeDefined();
     expect(Object.keys(userPool.UserPool.LambdaConfig)[0]).toBe('PostConfirmation');
     expect(Object.values(userPool.UserPool.LambdaConfig)[0]).toBe(meta.function[functionName.split('-')[0]].output.Arn);

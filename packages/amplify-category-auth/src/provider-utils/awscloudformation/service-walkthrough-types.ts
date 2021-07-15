@@ -28,6 +28,7 @@ export interface ServiceQuestionsBaseResult {
   userpoolClientWriteAttributes: string[];
   usernameCaseSensitive?: boolean;
   authTriggerConnections?: string;
+  permissions?: [string];
 }
 
 export interface OAuthResult {
@@ -118,6 +119,17 @@ export type AuthTriggerConnection = {
   lambdaFunctionName: string;
   triggerType: TriggerType;
   lambdaFunctionArn?: string;
+};
+
+export type AuthTriggerPermissions = {
+  policyName: string;
+  trigger: string;
+  effect: string;
+  actions: string[];
+  resource: {
+    paramType: string;
+    keys: string[];
+  };
 };
 
 export type AuthTriggerConfig = {

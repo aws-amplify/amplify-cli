@@ -352,7 +352,6 @@ export const getTriggerPermissions = async (context, triggers, category) => {
       }
     }
   }
-
   return permissions.map(i => JSONUtilities.stringify(i));
 };
 
