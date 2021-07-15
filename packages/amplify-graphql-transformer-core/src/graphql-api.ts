@@ -113,6 +113,7 @@ export class IamResource implements APIIAMResourceProvider {
 
 export type TransformerAPIProps = GraphqlApiProps & {
   readonly createApiKey?: boolean;
+  readonly host?: TransformHostProvider;
 };
 export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
   /**
@@ -207,9 +208,15 @@ export class GraphQLApi extends GraphqlApiBase implements GraphQLAPIProvider {
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
 
-    this.host = new DefaultTransformHost({
-      api: this
-    });
+    if (props.host) {
+      this.host = props.host;
+      this.host.setAPI(this);
+    }
+    else {
+      this.host = new DefaultTransformHost({
+        api: this
+      });
+    }
   }
 
   /**

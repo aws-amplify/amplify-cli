@@ -36,6 +36,7 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateModelSchema } from './validation';
+import {TransformHostProvider} from "@aws-amplify/graphql-transformer-interfaces/lib/transform-host-provider";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
@@ -62,6 +63,7 @@ export interface GraphQLTransformOptions {
   readonly buildParameters?: Record<string, any>;
   readonly stacks?: Record<string, Template>;
   readonly featureFlags?: FeatureFlagProvider;
+  readonly host?: TransformHostProvider;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -246,6 +248,7 @@ export class GraphQLTransform {
     const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
+      host: this.options.host
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,
