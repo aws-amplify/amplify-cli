@@ -152,19 +152,23 @@ function showHostedUIURLs(context, resourcesToBeCreated) {
     }
     const { Region } = amplifyMeta.providers.awscloudformation;
 
-    const { HostedUIDomain, AppClientIDWeb, OAuthMetadata } = amplifyMeta[category][resourceName].output;
+    const { HostedUIDomain, HostedUICustomDomain, AppClientIDWeb, OAuthMetadata } = amplifyMeta[category][resourceName].output;
 
     if (OAuthMetadata) {
       const oAuthMetadata = JSON.parse(OAuthMetadata);
-      const hostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/`;
+      const hostedUIEndpoint = HostedUICustomDomain
+        ? `https://${HostedUICustomDomain}`
+        : `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/`;
       context.print.info(chalk`Hosted UI Endpoint: {blue.underline ${hostedUIEndpoint}}`);
       const redirectURIs = oAuthMetadata.CallbackURLs.concat(oAuthMetadata.LogoutURLs);
       if (redirectURIs.length > 0) {
         const [responseType] = oAuthMetadata.AllowedOAuthFlows;
 
-        const testHostedUIEndpoint = `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com/login?response_type=${
-          responseType === 'implicit' ? 'token' : 'code'
-        }&client_id=${AppClientIDWeb}&redirect_uri=${redirectURIs[0]}\n`;
+        const testHostedUIEndpoint =
+          (HostedUICustomDomain ? `https://${HostedUICustomDomain}` : `https://${HostedUIDomain}.auth.${Region}.amazoncognito.com`) +
+          `/login?response_type=${responseType === 'implicit' ? 'token' : 'code'}&client_id=${AppClientIDWeb}&redirect_uri=${
+            redirectURIs[0]
+          }\n`;
         context.print.info(chalk`Test Your Hosted UI Endpoint: {blue.underline ${testHostedUIEndpoint}}`);
       }
     }
