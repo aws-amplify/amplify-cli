@@ -3,7 +3,7 @@ import { run } from '../../commands/upgrade';
 import fetch, { Response } from 'node-fetch';
 import { $TSContext } from 'amplify-cli-core';
 import * as core from 'amplify-cli-core';
-import * as path from "path";
+import * as path from 'path';
 jest.mock('fs-extra');
 const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;
 
