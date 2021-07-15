@@ -9,6 +9,7 @@ import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './
 import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
 import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-policy';
 import { pathManager, stateManager, $TSMeta, $TSAny, NotInitializedError } from 'amplify-cli-core';
+import { rootStackFileName } from 'amplify-provider-awscloudformation';
 
 async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPushTimeStamp, hashFunction) {
   // Pushing the resource for the first time hence no lastPushTimeStamp
@@ -27,6 +28,17 @@ async function isBackendDirModifiedSinceLastPush(resourceName, category, lastPus
   const cloudDirHash = await hashFunction(cloudBackendDir, resourceName);
 
   return localDirHash !== cloudDirHash;
+}
+
+export function getHashForRootStack(dirPath, files?: string[]) {
+  const options: HashElementOptions = {
+    folders: { exclude: ['.*', 'node_modules', 'test_coverage', 'dist', 'build'] },
+    files: {
+      include: files,
+    },
+  };
+
+  return hashElement(dirPath, options).then(result => result.hash);
 }
 
 export function getHashForResourceDir(dirPath, files?: string[]) {
@@ -388,6 +400,10 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
   // if not equal there is a tag update
   const tagsUpdated = !_.isEqual(stateManager.getProjectTags(), stateManager.getCurrentProjectTags());
 
+  // check if there is an update in root stack
+
+  const rootStackUpdated: boolean = await isRootStackModifiedSinceLastPush(getHashForRootStack);
+
   return {
     resourcesToBeCreated,
     resourcesToBeUpdated,
@@ -395,6 +411,7 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
     resourcesToBeDeleted,
     tagsUpdated,
     allResources,
+    rootStackUpdated,
   };
 }
 
@@ -416,6 +433,7 @@ export async function showResourceTable(category, resourceName, filteredResource
     resourcesToBeSynced,
     allResources,
     tagsUpdated,
+    rootStackUpdated,
   } = await getResourceStatus(category, resourceName, undefined, filteredResources);
 
   let noChangeResources = _.differenceWith(
@@ -501,8 +519,29 @@ export async function showResourceTable(category, resourceName, filteredResource
     print.info('\nTag Changes Detected');
   }
 
+  if (rootStackUpdated) {
+    print.info('\n RootStack Changes Detected');
+  }
+
   const resourceChanged =
-    resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 || tagsUpdated;
+    resourcesToBeCreated.length + resourcesToBeUpdated.length + resourcesToBeSynced.length + resourcesToBeDeleted.length > 0 ||
+    tagsUpdated ||
+    rootStackUpdated;
 
   return resourceChanged;
+}
+
+async function isRootStackModifiedSinceLastPush(hashFunction): Promise<boolean> {
+  try {
+    const projectPath = pathManager.findProjectRoot();
+    const localBackendDir = pathManager.getRootStackDirPath(projectPath!);
+    const cloudBackendDir = pathManager.getCurrentCloudRootStackDirPath(projectPath!);
+
+    const localDirHash = await hashFunction(localBackendDir, [rootStackFileName]);
+    const cloudDirHash = await hashFunction(cloudBackendDir, [rootStackFileName]);
+
+    return localDirHash !== cloudDirHash;
+  } catch (error) {
+    throw new Error('Amplify Project not initialized.');
+  }
 }

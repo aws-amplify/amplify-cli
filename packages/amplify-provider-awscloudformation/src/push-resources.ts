@@ -46,6 +46,10 @@ import { preProcessCFNTemplate } from './pre-push-cfn-processor/cfn-pre-processo
 import { AUTH_TRIGGER_STACK, AUTH_TRIGGER_TEMPLATE } from './utils/upload-auth-trigger-template';
 import { ensureValidFunctionModelDependencies } from './utils/remove-dependent-function';
 import { legacyLayerMigration, postPushLambdaLayerCleanup, prePushLambdaLayerPrompt } from './lambdaLayerInvocations';
+import { CommandType, AmplifyRootStackTransform, RootStackTransformOptions } from './root-stack-builder';
+import { rootStackFileName } from '.';
+import { storeRootStackTemplate } from './initializer';
+import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
 
 const logger = fileLogger('push-resources');
 
@@ -53,8 +57,7 @@ const logger = fileLogger('push-resources');
 const ApiServiceNameElasticContainer = 'ElasticContainer';
 
 const spinner = ora('Updating resources in the cloud. This may take a few minutes...');
-const rootStackFileName = 'rootStackTemplate.json';
-const nestedStackFileName = 'nested-cloudformation-stack.yml';
+
 const optionalBuildDirectoryName = 'build';
 const cfnTemplateGlobPattern = '*template*.+(yaml|yml|json)';
 const parametersJson = 'parameters.json';
@@ -79,6 +82,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       resourcesToBeDeleted,
       tagsUpdated,
       allResources,
+      rootStackUpdated,
     } = resourceDefinition;
     const cloudformationMeta = context.amplify.getProjectMeta().providers.awscloudformation;
     const {
@@ -208,6 +212,7 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
       resourcesToBeUpdated.length > 0 ||
       resourcesToBeDeleted.length > 0 ||
       tagsUpdated ||
+      rootStackUpdated ||
       context.exeInfo.forcePush
     ) {
       // If there is an API change, there will be one deployment step. But when there needs an iterative update the step count is > 1
@@ -221,12 +226,12 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
         // generate nested stack
         const backEndDir = pathManager.getBackendDirPath();
-        const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, nestedStackFileName));
-        await generateAndUploadRootStack(context, nestedStackFilepath, nestedStackFileName);
+        const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, rootStackFileName));
+        await generateAndUploadRootStack(context, nestedStackFilepath, rootStackFileName);
 
         // Use state manager to do the final deployment. The final deployment include not just API change but the whole Amplify Project
         const finalStep: DeploymentOp = {
-          stackTemplatePathOrUrl: nestedStackFileName,
+          stackTemplatePathOrUrl: rootStackFileName,
           tableNames: [],
           stackName: cloudformationMeta.StackName,
           parameters: {
@@ -265,6 +270,9 @@ export async function run(context: $TSContext, resourceDefinition: $TSObject) {
 
         try {
           await updateCloudFormationNestedStack(context, nestedStack, resourcesToBeCreated, resourcesToBeUpdated);
+          storeRootStackTemplate(nestedStack);
+          // if the only root stack updates, function is called with empty resources . this fn copies amplifyMeta and backend Config to #current-cloud-backend
+          context.amplify.updateamplifyMetaAfterPush([]);
         } catch (err) {
           if (err?.name === 'ValidationError' && err?.message === 'No updates are to be performed.') {
             return;
@@ -662,19 +670,15 @@ async function updateCloudFormationNestedStack(
   resourcesToBeUpdated: $TSAny,
 ) {
   const backEndDir = pathManager.getBackendDirPath();
-  const nestedStackFilepath = path.normalize(path.join(backEndDir, providerName, nestedStackFileName));
-
-  JSONUtilities.writeJson(nestedStackFilepath, nestedStack);
-
-  const transformedStackPath = await preProcessCFNTemplate(nestedStackFilepath);
-
+  const projectRoot = pathManager.findProjectRoot();
+  const nestedStackFilePath = path.join(pathManager.getRootStackDirPath(projectRoot), rootStackFileName);
   const cfnItem = await new Cloudformation(context, generateUserAgentAction(resourcesToBeCreated, resourcesToBeUpdated));
   const providerDirectory = path.normalize(path.join(backEndDir, providerName));
 
-  const log = logger('updateCloudFormationNestedStack', [providerDirectory, transformedStackPath]);
+  const log = logger('updateCloudFormationNestedStack', [providerDirectory, nestedStackFilePath]);
   try {
     log();
-    await cfnItem.updateResourceStack(transformedStackPath);
+    await cfnItem.updateResourceStack(nestedStackFilePath);
   } catch (error) {
     log(error);
     throw error;
@@ -817,8 +821,34 @@ async function formNestedStack(
   serviceName?: string,
   skipEnv?: boolean,
 ) {
-  const initTemplateFilePath = path.join(__dirname, '..', 'resources', rootStackFileName);
-  const nestedStack = JSONUtilities.readJson<Template>(initTemplateFilePath);
+  // CFN transform for Root stack
+  const props: RootStackTransformOptions = {
+    resourceConfig: {
+      stackFileName: rootStackFileName,
+    },
+  };
+  // generate , override and deploy stacks to disk
+  const rootTransform = new AmplifyRootStackTransform(props, CommandType.PUSH);
+  const nestedStack = await rootTransform.transform();
+  await prePushCfnTemplateModifier(nestedStack);
+
+  // get the {deploymentBucketName , AuthRoleName , UnAuthRole from overridded data}
+
+  const metaToBeUpdated = {
+    DeploymentBucketName: nestedStack.Resources.DeploymentBucket.Properties.BucketName,
+    AuthRoleName: nestedStack.Resources.AuthRole.Properties.RoleName,
+    UnauthRoleName: nestedStack.Resources.UnauthRole.Properties.RoleName,
+  };
+  // sanitize this data if needed
+  for (const key of Object.keys(metaToBeUpdated)) {
+    if (typeof metaToBeUpdated[key] === 'object' && 'Ref' in metaToBeUpdated[key]) {
+      delete metaToBeUpdated[key];
+    }
+  }
+  // update amplify meta with updated root stack Info
+  if (Object.keys(metaToBeUpdated).length) {
+    context.amplify.updateProvideramplifyMeta(providerName, metaToBeUpdated);
+  }
 
   // Track Amplify Console generated stacks
   try {
