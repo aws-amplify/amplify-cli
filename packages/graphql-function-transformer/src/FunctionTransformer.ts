@@ -176,7 +176,7 @@ export class FunctionTransformer extends Transformer {
         compoundExpression([qref(`$ctx.stash.put("typeName", "${type}")`), qref(`$ctx.stash.put("fieldName", "${field}")`), obj({})])
       ),
       ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
-    }).dependsOn(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region));
+    });
   };
 
   appendFunctionToResolver(resolver: any, functionId: string) {
@@ -186,6 +186,7 @@ export class FunctionTransformer extends Transformer {
       Array.isArray(resolver.Properties.PipelineConfig.Functions)
     ) {
       resolver.Properties.PipelineConfig.Functions.push(Fn.GetAtt(functionId, 'FunctionId'));
+      resolver.dependsOn(functionId)
     }
     return resolver;
   }
