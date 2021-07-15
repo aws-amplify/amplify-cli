@@ -1,5 +1,267 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Test SearchableModelTransformer enum type generates StringFilterInput 1`] = `
+"
+type Employee {
+  id: ID!
+  firstName: String!
+  lastName: String!
+  type: EmploymentType!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+enum EmploymentType {
+  FULLTIME
+  HOURLY
+}
+
+input SearchableStringFilterInput {
+  ne: String
+  gt: String
+  lt: String
+  gte: String
+  lte: String
+  eq: String
+  match: String
+  matchPhrase: String
+  matchPhrasePrefix: String
+  multiMatch: String
+  exists: Boolean
+  wildcard: String
+  regexp: String
+  range: [String]
+}
+
+input SearchableIntFilterInput {
+  ne: Int
+  gt: Int
+  lt: Int
+  gte: Int
+  lte: Int
+  eq: Int
+  range: [Int]
+}
+
+input SearchableFloatFilterInput {
+  ne: Float
+  gt: Float
+  lt: Float
+  gte: Float
+  lte: Float
+  eq: Float
+  range: [Float]
+}
+
+input SearchableBooleanFilterInput {
+  eq: Boolean
+  ne: Boolean
+}
+
+input SearchableIDFilterInput {
+  ne: ID
+  gt: ID
+  lt: ID
+  gte: ID
+  lte: ID
+  eq: ID
+  match: ID
+  matchPhrase: ID
+  matchPhrasePrefix: ID
+  multiMatch: ID
+  exists: Boolean
+  wildcard: ID
+  regexp: ID
+  range: [ID]
+}
+
+input SearchableEmployeeFilterInput {
+  id: SearchableIDFilterInput
+  firstName: SearchableStringFilterInput
+  lastName: SearchableStringFilterInput
+  type: SearchableStringFilterInput
+  and: [SearchableEmployeeFilterInput]
+  or: [SearchableEmployeeFilterInput]
+  not: SearchableEmployeeFilterInput
+}
+
+enum SearchableSortDirection {
+  asc
+  desc
+}
+
+enum SearchableEmployeeSortableFields {
+  id
+  firstName
+  lastName
+}
+
+input SearchableEmployeeSortInput {
+  field: SearchableEmployeeSortableFields
+  direction: SearchableSortDirection
+}
+
+type SearchableEmployeeConnection {
+  items: [Employee]
+  nextToken: String
+  total: Int
+}
+
+type Query {
+  searchEmployees(filter: SearchableEmployeeFilterInput, sort: [SearchableEmployeeSortInput], limit: Int, nextToken: String, from: Int): SearchableEmployeeConnection
+  getEmployee(id: ID!): Employee
+  listEmployees(filter: ModelEmployeeFilterInput, limit: Int, nextToken: String): ModelEmployeeConnection
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+type ModelEmployeeConnection {
+  items: [Employee]
+  nextToken: String
+}
+
+input ModelEmployeeFilterInput {
+  id: ModelIDInput
+  firstName: ModelStringInput
+  lastName: ModelStringInput
+  type: ModelEmploymentTypeInput
+  and: [ModelEmployeeFilterInput]
+  or: [ModelEmployeeFilterInput]
+  not: ModelEmployeeFilterInput
+}
+
+input ModelEmploymentTypeInput {
+  eq: EmploymentType
+  ne: EmploymentType
+}
+
+input ModelEmployeeConditionInput {
+  id: ModelIDInput
+  firstName: ModelStringInput
+  lastName: ModelStringInput
+  type: ModelEmploymentTypeInput
+  and: [ModelEmployeeConditionInput]
+  or: [ModelEmployeeConditionInput]
+  not: ModelEmployeeConditionInput
+}
+
+input CreateEmployeeInput {
+  id: ID
+  firstName: String!
+  lastName: String!
+  type: EmploymentType!
+}
+
+type Mutation {
+  createEmployee(input: CreateEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
+  updateEmployee(input: UpdateEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
+  deleteEmployee(input: DeleteEmployeeInput!, condition: ModelEmployeeConditionInput): Employee
+}
+
+input UpdateEmployeeInput {
+  id: ID!
+  firstName: String
+  lastName: String
+  type: EmploymentType
+}
+
+input DeleteEmployeeInput {
+  id: ID!
+}
+
+type Subscription {
+  onCreateEmployee: Employee @aws_subscribe(mutations: [\\"createEmployee\\"])
+  onUpdateEmployee: Employee @aws_subscribe(mutations: [\\"updateEmployee\\"])
+  onDeleteEmployee: Employee @aws_subscribe(mutations: [\\"deleteEmployee\\"])
+}
+
+"
+`;
+
 exports[`Test SearchableModelTransformer validation happy case 1`] = `
 "
 type Post {
