@@ -60,6 +60,18 @@ describe('uninstall packaged CLI on mac / linux', () => {
       value: originalPlatform,
     });
   });
+
+  expect.addSnapshotSerializer({
+    test(val) {
+      return typeof val === 'string';
+    },
+    print(val) {
+      if (typeof val === 'string')
+        return `"${val.replace(/\\/ig, '/')}"`;
+      return '';
+    },
+  });
+
   it('removes the .amplify dir', async () => {
     await run(context_stub_typed);
 
