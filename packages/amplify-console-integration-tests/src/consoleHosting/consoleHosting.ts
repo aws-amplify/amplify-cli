@@ -37,8 +37,6 @@ export function deleteProject(cwd: string, deleteDeploymentBucket: Boolean = tru
 export function addEnvironment(cwd: string, settings: any): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'add', '--providers', JSON.stringify(settings.providersParam)], { cwd, stripColors: true })
-      .wait('Do you want to use an existing environment?')
-      .sendLine('n')
       .wait('Enter a name for the environment')
       .sendLine(settings.envName)
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')

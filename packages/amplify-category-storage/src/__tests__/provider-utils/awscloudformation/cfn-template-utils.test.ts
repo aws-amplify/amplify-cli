@@ -10,7 +10,7 @@ pathManager_mock.getBackendDirPath.mockReturnValue('/test/path');
 
 describe('get existing table column names', () => {
   it('returns empty array when no template exists', async () => {
-    readCFNTemplate_mock.mockRejectedValueOnce('the template does not exist');
+    readCFNTemplate_mock.mockResolvedValueOnce(undefined);
     const result = await getExistingTableColumnNames('testResource');
     expect(result).toEqual([]);
   });
