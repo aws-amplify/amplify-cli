@@ -196,7 +196,7 @@ export function removeLayer(cwd: string, versionsToRemove: number[], allVersions
 
 export function removeLayerVersion(
   cwd: string,
-  settings: { removeLegacyOnly?: boolean },
+  settings: { removeLegacyOnly?: boolean; removeNoLayerVersions?: boolean },
   versionsToRemove: number[],
   allVersions: number[],
   testingWithLatestCodebase = false,
@@ -215,7 +215,9 @@ export function removeLayerVersion(
       chain.wait(/Warning: By continuing, these layer versions \[.+\] will be immediately deleted./);
     }
 
-    chain.wait('All new layer versions created with the Amplify CLI will only be deleted on amplify push.');
+    if (!settings.removeNoLayerVersions) {
+      chain.wait('All new layer versions created with the Amplify CLI will only be deleted on amplify push.');
+    }
 
     if (settings.removeLegacyOnly) {
       chain.wait('✔ Layers deleted');

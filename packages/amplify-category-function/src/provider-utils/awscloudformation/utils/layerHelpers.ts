@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, $TSMeta, getPackageManager, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSMeta, $TSObject, getPackageManager, pathManager, stateManager } from 'amplify-cli-core';
 import crypto from 'crypto';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import * as fs from 'fs-extra';
@@ -239,6 +239,14 @@ export function getLayerName(context: $TSContext, layerName: string): string {
   const { envName }: { envName: string } = context.amplify.getEnvInfo();
 
   return isMultiEnvLayer(layerName) ? `${layerName}-${envName}` : layerName;
+}
+
+export function getLambdaFunctionsDependentOnLayerFromMeta(layerName: string, meta: $TSMeta) {
+  return Object.entries(meta[categoryName]).filter(
+    ([_, lambdaFunction]: [string, $TSObject]) =>
+      lambdaFunction.service === ServiceName.LambdaFunction &&
+      lambdaFunction?.dependsOn.filter(dependency => dependency.resourceName === layerName).length > 0,
+  );
 }
 
 // Check hash results for content changes, bump version if so

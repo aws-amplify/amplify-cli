@@ -1,11 +1,13 @@
-import { $TSContext, stateManager } from 'amplify-cli-core';
+import { $TSContext, $TSObject, pathManager, stateManager } from 'amplify-cli-core';
 import chalk from 'chalk';
 import inquirer, { QuestionCollection } from 'inquirer';
 import ora from 'ora';
+import { categoryName } from '../../../constants';
 import { LayerCloudState } from '../utils/layerCloudState';
 import { saveLayerVersionsToBeRemovedByCfn } from '../utils/layerConfiguration';
-import { loadStoredLayerParameters, getLayerName } from '../utils/layerHelpers';
+import { getLambdaFunctionsDependentOnLayerFromMeta, getLayerName, loadStoredLayerParameters } from '../utils/layerHelpers';
 import { LayerVersionMetadata } from '../utils/layerParams';
+import { loadFunctionParameters } from '../utils/loadFunctionParameters';
 import { updateLayerArtifacts } from '../utils/storeResources';
 
 const removeLayerQuestion = 'Choose the Layer versions you want to remove.';
@@ -19,8 +21,12 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
     return layerName;
   }
 
+  // Disable any pinned versions in the version list
+  const lambdaFunctionsDependentOnLayer = getLambdaFunctionsDependentOnLayerFromMeta(layerName, stateManager.getMeta());
+  disablePinnedVersions(lambdaFunctionsDependentOnLayer, layerName, layerVersionList);
+
   const { versions } = await inquirer.prompt(question(layerVersionList));
-  const selectedLayerVersion = versions as LayerVersionMetadata[];
+  const selectedLayerVersion = versions as LayerVersionForPossibleRemoval[];
 
   // if nothing is selected return;
   if (selectedLayerVersion.length === 0) {
@@ -44,7 +50,7 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
   const totalSelectedVersionsToRemove = newLayerSelectedVersions.length + legacyLayerSelectedVersions.length;
 
   if (legacyLayerSelectedVersions.length > 0) {
-    await deleteLayer(
+    await deleteLayerVersionsWithSdk(
       context,
       getLayerName(context, layerName),
       legacyLayerSelectedVersions.map(r => r.Version),
@@ -77,7 +83,11 @@ export async function removeWalkthrough(context: $TSContext, layerName: string):
   return layerName;
 }
 
-function warnLegacyRemoval(context: $TSContext, legacyLayerVersions: LayerVersionMetadata[], newLayerVersions: LayerVersionMetadata[]) {
+function warnLegacyRemoval(
+  context: $TSContext,
+  legacyLayerVersions: LayerVersionForPossibleRemoval[],
+  newLayerVersions: LayerVersionForPossibleRemoval[],
+) {
   const amplifyPush = chalk.green('amplify push');
   const legacyVersions: number[] = legacyLayerVersions.map(r => r.Version);
 
@@ -97,7 +107,7 @@ function warnLegacyRemoval(context: $TSContext, legacyLayerVersions: LayerVersio
   context.print.info('');
 }
 
-async function deleteLayer(context: $TSContext, layerName: string, versions: number[]) {
+async function deleteLayerVersionsWithSdk(context: $TSContext, layerName: string, versions: number[]) {
   const providerPlugin = await import(context.amplify.getProviderPlugins(context).awscloudformation);
   const lambdaClient = await providerPlugin.getLambdaSdk(context);
   const spinner = ora('Deleting layer version from the cloud...').start();
@@ -112,17 +122,51 @@ async function deleteLayer(context: $TSContext, layerName: string, versions: num
   }
 }
 
-const question = (layerVersionMetadata: LayerVersionMetadata[]): QuestionCollection[] => [
+function disablePinnedVersions(
+  lambdaFunctionsDependentOnLayer: [string, $TSObject][],
+  layerName: string,
+  layerVersionList: LayerVersionForPossibleRemoval[],
+) {
+  lambdaFunctionsDependentOnLayer.forEach(([lambdaFunctionName]: [string, $TSObject]) => {
+    const { lambdaLayers: lambdaLayerDependencies } = loadFunctionParameters(
+      pathManager.getResourceDirectoryPath(undefined, categoryName, lambdaFunctionName),
+    );
+
+    lambdaLayerDependencies.forEach(layerDependency => {
+      if (layerDependency.resourceName === layerName && layerDependency.isLatestVersionSelected === false) {
+        for (const layerVersion of layerVersionList) {
+          if (layerVersion.Version === layerDependency.version) {
+            layerVersion.pinnedByFunctions ||= [];
+            layerVersion.pinnedByFunctions.push(lambdaFunctionName);
+            break;
+          }
+        }
+      }
+    });
+  });
+}
+
+const question = (layerVersionList: LayerVersionForPossibleRemoval[]): QuestionCollection[] => [
   {
     name: 'versions',
     message: removeLayerQuestion,
     type: 'checkbox',
-    choices: layerVersionMetadata
+    choices: layerVersionList
       .sort((versiona, versionb) => versiona.Version - versionb.Version)
       .map(version => ({
+        disabled:
+          Array.isArray(version.pinnedByFunctions) && version.pinnedByFunctions.length > 0
+            ? `Can't be removed. ${version.pinnedByFunctions.join(', ')} depend${
+                version.pinnedByFunctions.length > 1 ? '' : 's'
+              } on this version.`
+            : false,
         name: `${version.Version}: ${version.Description}`,
         short: version.Version.toString(),
         value: version,
       })),
   },
 ];
+
+interface LayerVersionForPossibleRemoval extends LayerVersionMetadata {
+  pinnedByFunctions?: string[];
+}
