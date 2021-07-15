@@ -159,13 +159,13 @@ describe('run upgrade using packaged CLI', () => {
     await run(context_stub_typed);
 
     // validate
-      expect(fs_mock.move.mock.calls[0]).toMatchInlineSnapshot(`
+    expect(fs_mock.move.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
         "${path.posix.join('homedir', 'bin', 'amplify.exe')}",
         "${path.posix.join('homedir', 'bin', 'amplify-old.exe')}",
       ]
     `);
-      expect(fs_mock.move.mock.calls[1]).toMatchInlineSnapshot(`
+    expect(fs_mock.move.mock.calls[1]).toMatchInlineSnapshot(`
       Array [
         "${path.posix.join('homedir', 'bin', 'amplify-pkg-win.exe')}",
         "${path.posix.join('homedir', 'bin', 'amplify.exe')}",
@@ -174,7 +174,7 @@ describe('run upgrade using packaged CLI', () => {
         },
       ]
     `);
-      expect(fs_mock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
+    expect(fs_mock.chmod.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
         "${path.posix.join('homedir', 'bin', 'amplify.exe')}",
         "700",
