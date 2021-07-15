@@ -62,7 +62,11 @@ function getNewAWSConfigObject(context, amplifyResources, cloudAmplifyResources)
 
   const customConfigs = getCustomConfigs(cloudAWSConfig, currentAWSConfig);
 
+  const { envName } = context.amplify.getEnvInfo();
+  const environmentConfig = { envName };
+
   Object.assign(newAWSConfig, customConfigs);
+  Object.assign(newAWSConfig, environmentConfig);
   return newAWSConfig;
 }
 
