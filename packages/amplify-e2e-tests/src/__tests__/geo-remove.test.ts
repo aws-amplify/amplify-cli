@@ -8,14 +8,15 @@ import {
   addPlaceIndexWithDefault,
   getProjectMeta,
   amplifyPushWithoutCodegen,
-  getMap,
-  getPlaceIndex,
   removeMap,
   amplifyPushUpdate,
-  removePlaceIndex
+  removePlaceIndex,
+  removeFirstDefaultMap,
+  removeFirstDefaultPlaceIndex
 } from 'amplify-e2e-core';
 import { existsSync } from 'fs';
 import path from 'path';
+import { generateTwoResourceIdsInOrder } from './geo-update.test';
 
 describe('amplify geo remove', () => {
   let projRoot: string;
@@ -57,5 +58,41 @@ describe('amplify geo remove', () => {
     await amplifyPushUpdate(projRoot);
     const newMeta = getProjectMeta(projRoot);
     expect(newMeta.geo[placeIndexId]).toBeUndefined();
+  });
+
+  it('init a project with default auth config and two map resources, then remove the default map', async () => {
+    const [map1Id, map2Id] = generateTwoResourceIdsInOrder();
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addMapWithDefault(projRoot, { resourceName: map1Id });
+    await addMapWithDefault(projRoot, { resourceName: map2Id, isAdditional: true, isDefault: false })
+    await amplifyPushWithoutCodegen(projRoot);
+    const oldMeta = getProjectMeta(projRoot);
+    expect(oldMeta.geo[map1Id].isDefault).toBe(true);
+    expect(oldMeta.geo[map2Id].isDefault).toBe(false);
+    //remove map
+    await removeFirstDefaultMap(projRoot);
+    await amplifyPushUpdate(projRoot);
+    const newMeta = getProjectMeta(projRoot);
+    expect(newMeta.geo[map1Id]).toBeUndefined();
+    expect(newMeta.geo[map2Id].isDefault).toBe(true);
+  });
+
+  it('init a project with default auth config and two index resources, then remove the default index', async () => {
+    const [index1Id, index2Id] = generateTwoResourceIdsInOrder();
+    await initJSProjectWithProfile(projRoot, {});
+    await addAuthWithDefault(projRoot);
+    await addPlaceIndexWithDefault(projRoot, { resourceName: index1Id });
+    await addPlaceIndexWithDefault(projRoot, { resourceName: index2Id, isAdditional: true, isDefault: false })
+    await amplifyPushWithoutCodegen(projRoot);
+    const oldMeta = getProjectMeta(projRoot);
+    expect(oldMeta.geo[index1Id].isDefault).toBe(true);
+    expect(oldMeta.geo[index2Id].isDefault).toBe(false);
+    //remove map
+    await removeFirstDefaultPlaceIndex(projRoot);
+    await amplifyPushUpdate(projRoot);
+    const newMeta = getProjectMeta(projRoot);
+    expect(newMeta.geo[index1Id]).toBeUndefined();
+    expect(newMeta.geo[index2Id].isDefault).toBe(true);
   });
 })
