@@ -60,7 +60,7 @@ export class FunctionTransformer extends Transformer {
     } else if (resolver.Properties.Kind === 'PIPELINE') {
       ctx.setResource(
         resolverKey,
-        this.appendFunctionToResolver(resolver, FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region))
+        this.appendFunctionToResolver(resolver, FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region)),
       );
     }
   };
@@ -80,7 +80,7 @@ export class FunctionTransformer extends Transformer {
         Fn.Join('-', [
           FunctionResourceIDs.FunctionIAMRoleName(name, false), // max of 64. 64-26-38 = 0
           Fn.GetAtt(ResourceConstants.RESOURCES.GraphQLAPILogicalID, 'ApiId'), // 26
-        ])
+        ]),
       ),
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
@@ -148,14 +148,15 @@ export class FunctionTransformer extends Transformer {
             source: ref('util.toJson($ctx.source)'),
             request: ref('util.toJson($ctx.request)'),
             prev: ref('util.toJson($ctx.prev)'),
+            selectionSetList: str('$ctx.info.selectionSetList'),
           }),
-        })
+        }),
       ),
       ResponseMappingTemplate: printBlock('Handle error or return result')(
         compoundExpression([
           iff(ref('ctx.error'), raw('$util.error($ctx.error.message, $ctx.error.type)')),
           raw('$util.toJson($ctx.result)'),
-        ])
+        ]),
       ),
     }).dependsOn(FunctionResourceIDs.FunctionDataSourceID(name, region));
   };
@@ -173,7 +174,7 @@ export class FunctionTransformer extends Transformer {
         Functions: [Fn.GetAtt(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region), 'FunctionId')],
       },
       RequestMappingTemplate: printBlock('Stash resolver specific context.')(
-        compoundExpression([qref(`$ctx.stash.put("typeName", "${type}")`), qref(`$ctx.stash.put("fieldName", "${field}")`), obj({})])
+        compoundExpression([qref(`$ctx.stash.put("typeName", "${type}")`), qref(`$ctx.stash.put("fieldName", "${field}")`), obj({})]),
       ),
       ResponseMappingTemplate: '$util.toJson($ctx.prev.result)',
     }).dependsOn(FunctionResourceIDs.FunctionAppSyncFunctionConfigurationID(name, region));
