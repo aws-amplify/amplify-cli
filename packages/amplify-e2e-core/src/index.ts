@@ -34,11 +34,10 @@ export function isCI(): boolean {
   return process.env.CI && process.env.CIRCLECI ? true : false;
 }
 
-export function injectSessionToken() {
+export function injectSessionToken(profileName: string) {
   const credentialsContents = ini.parse(fs.readFileSync(pathManager.getAWSCredentialsFilePath()).toString());
-  for (const key of Object.keys(credentialsContents)) {
-    credentialsContents[key].aws_session_token = process.env.AWS_SESSION_TOKEN;
-  }
+  credentialsContents[profileName] = credentialsContents[profileName] || {};
+  credentialsContents[profileName].aws_session_token = process.env.AWS_SESSION_TOKEN;
   fs.writeFileSync(pathManager.getAWSCredentialsFilePath(), ini.stringify(credentialsContents));
 }
 

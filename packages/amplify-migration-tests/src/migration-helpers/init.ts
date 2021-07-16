@@ -1,4 +1,4 @@
-import { addCircleCITags, getCLIPath, nspawn as spawn, injectSessionToken } from 'amplify-e2e-core';
+import { addCircleCITags, getCLIPath, nspawn as spawn } from 'amplify-e2e-core';
 
 const defaultSettings = {
   name: '\r',
@@ -107,7 +107,6 @@ export function initJSProjectWithProfile(cwd: string, settings: Object, testingW
       .wait('Try "amplify add api" to create a backend API and then "amplify publish" to deploy everything')
       .run((err: Error) => {
         if (!err) {
-          injectSessionToken();
           resolve();
         } else {
           reject(err);

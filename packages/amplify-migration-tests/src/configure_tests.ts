@@ -21,12 +21,12 @@ async function setupAmplify(version: string = 'latest') {
       secretAccessKey: AWS_SECRET_ACCESS_KEY,
       profileName: 'amplify-integ-test-user',
     });
-    injectSessionToken();
+    if (process.env.AWS_SESSION_TOKEN) {
+      injectSessionToken('amplify-integ-test-user');
+    }
   } else {
     console.log('AWS Profile is already configured');
-    injectSessionToken();
   }
-
 }
 
 process.nextTick(async () => {
