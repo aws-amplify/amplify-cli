@@ -4,10 +4,10 @@ import { LocalLogDirectory } from 'amplify-cli-logger';
 
 const amplifyMark = '#amplify-do-not-edit-begin';
 const amplifyEndMark = '#amplify-do-not-edit-end';
-const legacyAmplifyMark = '#amplify';
+const deprecatedAmplifyMark = '#amplify';
 const amplifyMarkRegExp = new RegExp(`^${amplifyMark}`);
 const amplifyEndMarkRegExp = new RegExp(`^${amplifyEndMark}`);
-const legacyAmplifyMarkRegExp = new RegExp(`^${legacyAmplifyMark}`);
+const deprecatedAmplifyMarkRegExp = new RegExp(`^${deprecatedAmplifyMark}`);
 
 export function insertAmplifyIgnore(gitIgnoreFilePath: string): void {
   if (fs.existsSync(gitIgnoreFilePath)) {
@@ -33,7 +33,7 @@ function removeAmplifyIgnore(gitIgnoreFilePath: string): void {
         if (amplifyEndMarkRegExp.test(newLine) || newLine.length === 0) {
           isInRemoval = false;
         }
-      } else if (amplifyMarkRegExp.test(newLine) || legacyAmplifyMarkRegExp.test(newLine)) {
+      } else if (amplifyMarkRegExp.test(newLine) || deprecatedAmplifyMarkRegExp.test(newLine)) {
         isInRemoval = true;
       } else {
         newGitIgnoreString += newLine + os.EOL;
