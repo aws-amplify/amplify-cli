@@ -19,6 +19,7 @@ import {
   ListValueNode,
   ObjectValueNode,
   InputObjectTypeDefinitionNode,
+  UnionTypeDefinitionNode,
 } from 'graphql';
 
 type ScalarMap = {
@@ -250,6 +251,17 @@ export function extendFieldWithDirectives(field: FieldDefinitionNode, directives
   }
 
   return field;
+}
+
+export function defineUnionType(name: string, types: NamedTypeNode[] = []): UnionTypeDefinitionNode {
+  return {
+    kind: Kind.UNION_TYPE_DEFINITION,
+    name: {
+      kind: 'Name',
+      value: name
+    },
+    types: types,
+  };
 }
 
 export function makeInputObjectDefinition(name: string, inputs: InputValueDefinitionNode[]): InputObjectTypeDefinitionNode {

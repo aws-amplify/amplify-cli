@@ -39,6 +39,7 @@ export class ElasticsearchMappingTemplate {
     path,
     sort,
     version = bool(false),
+    aggs,
   }: {
     path: Expression;
     sort?: Expression | ObjectNode;
@@ -47,6 +48,7 @@ export class ElasticsearchMappingTemplate {
     search_after?: Expression | ListNode;
     from?: Expression;
     version?: BooleanNode;
+    aggs?: Expression | ObjectNode;
   }): ObjectNode {
     return obj({
       version: str(RESOLVER_VERSION_ID),
@@ -59,7 +61,8 @@ export class ElasticsearchMappingTemplate {
                 "size": ${print(size)},
                 "sort": ${print(sort)},
                 "version": ${print(version)},
-                "query": ${print(query)}
+                "query": ${print(query)},
+                "aggs": ${print(aggs)}
                 }`),
       }),
     });

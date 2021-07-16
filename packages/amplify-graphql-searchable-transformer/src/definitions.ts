@@ -31,6 +31,7 @@ const INT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const FLOAT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const BOOLEAN_CONDITIONS = ['eq', 'ne'];
 import assert from 'assert';
+import { makeNonNullType } from 'graphql-transformer-common';
 
 export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(type);
@@ -202,6 +203,38 @@ export function makeSearchableXSortInputObject(obj: ObjectTypeDefinitionNode): I
         //     kind: 'StringValue',
         //     value: `The id of the ${obj.name.value} to delete.`
         // },
+        directives: [],
+      },
+    ],
+    directives: [],
+  };
+}
+
+export function makeSearchableXAggregationInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
+  const name = graphqlName(`Searchable${obj.name.value}AggregationInput`);
+  return {
+    kind: Kind.INPUT_OBJECT_TYPE_DEFINITION,
+    name: {
+      kind: 'Name',
+      value: name,
+    },
+    fields: [
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: { kind: 'Name', value: 'name' },
+        type: makeNonNullType(makeNamedType('String')),
+        directives: [],
+      },
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: { kind: 'Name', value: 'type' },
+        type: makeNonNullType(makeNamedType('String')),
+        directives: [],
+      },
+      {
+        kind: Kind.INPUT_VALUE_DEFINITION,
+        name: { kind: 'Name', value: 'field' },
+        type: makeNonNullType(makeNamedType('String')),
         directives: [],
       },
     ],
