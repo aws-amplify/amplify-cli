@@ -160,6 +160,27 @@ export class S3 {
     return result;
   }
 
+  async getObjects(s3Params: $TSAny, envName?: string): Promise<$TSAny[]> {
+    if (!s3Params.hasOwnProperty('Bucket')) {
+      const projectDetails = this.context.amplify.getProjectDetails();
+      if (!envName) envName = this.context.amplify.getEnvInfo().envName;
+      const projectBucket = projectDetails.teamProviderInfo[envName][providerName].DeploymentBucketName;
+      s3Params.Bucket = projectBucket;
+    }
+
+    // TODO: logs
+    //   const log = logger("downloadHooks.s3.listObjects", [params]);
+    let listObjects;
+    try {
+      // log();
+      listObjects = await this.s3.listObjects(s3Params).promise();
+      return listObjects.Contents;
+    } catch (ex) {
+      // log(ex);
+      return [];
+    }
+  }
+
   public async deleteDirectory(bucketName: string, dirPath: string): Promise<void> {
     logger('deleteDirectory.s3.getAllObjectVersions', [{ BucketName: bucketName }])();
     const allObjects = await this.getAllObjectVersions(bucketName, { Prefix: dirPath });
