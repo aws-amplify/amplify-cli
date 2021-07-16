@@ -35,7 +35,7 @@ export function showAllHelp(context) {
       description: "Executes amplify push, and then executes the project's start command to test run the client-side application locally.",
     },
     {
-      name: 'status',
+      name: 'status [<category> ...]',
       description: 'Shows the state of local resources not yet pushed to the cloud (Create/Update/Delete).',
     },
     {
