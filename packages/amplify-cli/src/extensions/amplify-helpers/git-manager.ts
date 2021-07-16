@@ -11,7 +11,7 @@ const deprecatedAmplifyMarkRegExp = new RegExp(`^${deprecatedAmplifyMark}`);
 
 export function insertAmplifyIgnore(gitIgnoreFilePath: string): void {
   if (fs.existsSync(gitIgnoreFilePath)) {
-    removeAmplifyIgnore(gitIgnoreFilePath);
+    rebuildAmplifyIgnore(gitIgnoreFilePath);
 
     fs.appendFileSync(gitIgnoreFilePath, getGitIgnoreAppendString());
   } else {
@@ -19,7 +19,7 @@ export function insertAmplifyIgnore(gitIgnoreFilePath: string): void {
   }
 }
 
-function removeAmplifyIgnore(gitIgnoreFilePath: string): void {
+function rebuildAmplifyIgnore(gitIgnoreFilePath: string): void {
   if (fs.existsSync(gitIgnoreFilePath)) {
     let newGitIgnoreString = '';
     const gitIgnoreStringArray = fs.readFileSync(gitIgnoreFilePath, 'utf8').split(os.EOL);
