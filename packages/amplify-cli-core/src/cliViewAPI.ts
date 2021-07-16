@@ -79,14 +79,18 @@ ${this.styleHeader('NAME')}
 ${this.styleCommand('amplify status')} --  Shows the state of local resources not yet pushed to the cloud (Create/Update/Delete)
 
 ${this.styleHeader('SYNOPSIS')}
-${this.styleCommand('amplify status')} [${this.styleCommand('-v')} [${this.styleOption('category ...')}] ] 
+${this.styleCommand('amplify status')} [${this.styleCommand('-v')}|${this.styleCommand('--verbose')}] [${this.styleOption('category ...')}] 
 
 ${this.styleHeader('DESCRIPTION')}
 The amplify status command displays the difference between the deployed state and the local state of the application.
 The following options are available: 
 
-${this.styleNOOP('no options')}        : (Summary mode) Displays the summary of local state vs deployed state of the application
-${this.styleCommand('-v [category ...]')} : (Verbose mode) Displays the cloudformation diff for all resources for the specificed category. 
+${this.styleCommand('[category ...]')}    : (Summary mode) Displays the summary of local state vs deployed state of the application
+                    usage:
+                    ${this.stylePrompt('#>')} ${this.styleCommand('amplify status')}
+                    ${this.stylePrompt('#>')} ${this.styleCommand('amplify status')} ${this.styleOption('api storage')}
+
+${this.styleCommand('-v [category ...]')} : (Verbose mode) Displays the cloudformation diff for all resources for the specified category. 
                     If no category is provided, it shows the diff for all categories.
                     usage:
                     ${this.stylePrompt('#>')} ${this.styleCommand('amplify status -v')}

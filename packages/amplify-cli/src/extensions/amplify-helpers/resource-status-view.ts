@@ -10,17 +10,14 @@ export async function viewResourceDiffs({ resourcesToBeUpdated, resourcesToBeDel
     //Print with UPDATE styling theme
     resourceDiff.printResourceDetailStatus(resourceStatus.stackMutationType.UPDATE);
   }
-  print.info('\n');
   for await (let resourceDiff of resourceDiffs.deletedDiff) {
     //Print with DELETE styling theme
     resourceDiff.printResourceDetailStatus(resourceStatus.stackMutationType.DELETE);
   }
-  print.info('\n');
   for await (let resourceDiff of resourceDiffs.createdDiff) {
     //Print with CREATE styling theme
     resourceDiff.printResourceDetailStatus(resourceStatus.stackMutationType.CREATE);
   }
-  print.info('\n');
 }
 
 //view: displays environment specific info

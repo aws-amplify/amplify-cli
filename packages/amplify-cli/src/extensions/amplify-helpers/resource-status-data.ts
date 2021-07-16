@@ -486,7 +486,7 @@ export function getHashForResourceDir(dirPath, files?: string[]) {
   return hashElement(dirPath, options).then(result => result.hash);
 }
 
-//helper: remove specificed resources from list of given resources
+//helper: remove specified resources from list of given resources
 function filterResources(resources, filteredResources) {
   if (!filteredResources) {
     return resources;
