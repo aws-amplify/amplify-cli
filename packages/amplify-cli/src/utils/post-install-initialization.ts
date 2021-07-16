@@ -1,14 +1,12 @@
 import { GetPackageAssetPaths, pathManager } from 'amplify-cli-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { print } from '../context-extensions';
 
 /**
  * This function is run first thing after a new Amplify installation
  * It copies some assets needed by dependency packages to the .amplify folder
  */
 export const postInstallInitialization = async () => {
-  print.info(`Initializing new Amplify CLI version...`);
   // clean any previous libs
   await fs.remove(pathManager.getAmplifyLibRoot());
   await fs.ensureDir(pathManager.getAmplifyLibRoot());
@@ -37,7 +35,6 @@ export const postInstallInitialization = async () => {
     }),
   );
   delete process.env.AMPLIFY_SUPPRESS_NO_PKG_LIB;
-  print.success('Done initializing new version.');
 };
 
 const resolvePackageRoot = (packageName: string) => {

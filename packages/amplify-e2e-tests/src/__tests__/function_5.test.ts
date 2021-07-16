@@ -1,14 +1,19 @@
 import {
   addFunction,
+  addApiWithSchema,
   amplifyPull,
   amplifyPushAuth,
+  amplifyPush,
   createNewProjectDir,
   deleteProject,
   deleteProjectDir,
   getAppId,
   getProjectMeta,
   initJSProjectWithProfile,
+  updateApiSchema,
   updateFunction,
+  getLambdaFunction,
+  amplifyPushWithoutCodegen,
 } from 'amplify-e2e-core';
 import _ from 'lodash';
 
@@ -62,5 +67,52 @@ describe('test initEnv() behavior in function', () => {
     expect(functionArn2).toBeDefined();
     expect(region2).toBeDefined();
     expect(_.get(meta2, ['function', functionName, 's3Bucket'], undefined)).toBeDefined();
+  });
+});
+
+describe('test dependency in root stack', () => {
+  let projRoot: string;
+
+  beforeEach(async () => {
+    projRoot = await createNewProjectDir('functions');
+  });
+
+  afterEach(async () => {
+    await deleteProject(projRoot);
+    deleteProjectDir(projRoot);
+  });
+
+  it('init a project with api and function and update the @model and add function access to @model ', async () => {
+    await initJSProjectWithProfile(projRoot, {});
+    const projectName = 'mytestapi';
+    await addApiWithSchema(projRoot, 'simple_model.graphql', { apiName: projectName });
+    const random = Math.floor(Math.random() * 10000);
+    const fnName = `integtestfn${random}`;
+    await addFunction(
+      projRoot,
+      {
+        name: fnName,
+        functionTemplate: 'Hello World',
+      },
+      'nodejs',
+    );
+    await amplifyPush(projRoot);
+    await updateApiSchema(projRoot, projectName, 'two-model-schema.graphql');
+    await updateFunction(
+      projRoot,
+      {
+        name: fnName,
+        functionTemplate: 'Hello World',
+        additionalPermissions: {
+          permissions: ['storage'],
+          choices: ['api', 'function', 'storage'],
+          resources: ['Comment:@model(appsync)'],
+          resourceChoices: ['Post:@model(appsync)', 'Comment:@model(appsync)'],
+          operations: ['read'],
+        },
+      },
+      'nodejs',
+    );
+    await amplifyPushWithoutCodegen(projRoot);
   });
 });

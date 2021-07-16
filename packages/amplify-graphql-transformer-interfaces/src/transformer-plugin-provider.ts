@@ -18,7 +18,7 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerValidationStepContextProvider,
-  TranformerTransformSchemaStepContextProvider,
+  TransformerTransformSchemaStepContextProvider,
 } from './transformer-context/transformer-context-provider';
 
 export enum TransformerPluginType {
@@ -121,7 +121,7 @@ export interface TransformerPluginProvider {
   /**
    * Update the schema with additional queries and input types
    */
-  transformSchema?: (context: TranformerTransformSchemaStepContextProvider) => void;
+  transformSchema?: (context: TransformerTransformSchemaStepContextProvider) => void;
 
   /**
    * generate resolvers

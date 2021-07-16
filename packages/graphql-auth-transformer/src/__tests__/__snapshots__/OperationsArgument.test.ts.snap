@@ -63,12 +63,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -184,6 +201,12 @@ exports[`Test "create", "update", "delete" auth operations 4`] = `
 #end
 ## [End] Check authMode and execute owner/group checks **
 
+#set( $optionalNonNullableFields = [\\"title\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
@@ -423,7 +446,8 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
   #if( $modelObjectKey )
     #set( $condition = {
   \\"expression\\": \\"\\",
-  \\"expressionNames\\": {}
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
 } )
     #foreach( $entry in $modelObjectKey.entrySet() )
       #if( $velocityCount == 1 )
@@ -438,7 +462,8 @@ exports[`Test "create", "update", "delete" auth operations 5`] = `
   \\"expression\\": \\"attribute_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
   #end
 #end
@@ -708,12 +733,29 @@ $util.qr($context.args.input.put(\\"updatedAt\\", $util.defaultIfNull($ctx.args.
 
 ## [Start] Prepare DynamoDB PutItem Request. **
 $util.qr($context.args.input.put(\\"__typename\\", \\"Post\\"))
-#set( $condition = {
+#if( $modelObjectKey )
+  #set( $condition = {
+  \\"expression\\": \\"\\",
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
+} )
+  #foreach( $entry in $modelObjectKey.entrySet() )
+    #if( $velocityCount == 1 )
+      $util.qr($condition.put(\\"expression\\", \\"attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #else
+      $util.qr($condition.put(\\"expression\\", \\"$condition.expression AND attribute_not_exists(#keyCondition$velocityCount)\\"))
+    #end
+    $util.qr($condition.expressionNames.put(\\"#keyCondition$velocityCount\\", \\"$entry.key\\"))
+  #end
+#else
+  #set( $condition = {
   \\"expression\\": \\"attribute_not_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
+#end
 #if( $context.args.condition )
   #set( $condition.expressionValues = {} )
   #set( $conditionFilterExpressions = $util.parseJson($util.transform.toDynamoDBConditionExpression($context.args.condition)) )
@@ -829,6 +871,12 @@ exports[`Test that operation overwrites queries in auth operations 4`] = `
 #end
 ## [End] Check authMode and execute owner/group checks **
 
+#set( $optionalNonNullableFields = [\\"title\\"] )
+#foreach( $field in $optionalNonNullableFields )
+  #if( $context.arguments.input.keySet().contains($field) && $util.isNull($context.args.input.get($field)) )
+$util.error(\\"An argument you marked as Non-Null is set to Null in the query or the body of your request.\\")
+  #end
+#end
 #if( $authCondition && $authCondition.expression != \\"\\" )
   #set( $condition = $authCondition )
   #if( $modelObjectKey )
@@ -1068,7 +1116,8 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
   #if( $modelObjectKey )
     #set( $condition = {
   \\"expression\\": \\"\\",
-  \\"expressionNames\\": {}
+  \\"expressionNames\\": {},
+  \\"expressionValues\\": {}
 } )
     #foreach( $entry in $modelObjectKey.entrySet() )
       #if( $velocityCount == 1 )
@@ -1083,7 +1132,8 @@ exports[`Test that operation overwrites queries in auth operations 5`] = `
   \\"expression\\": \\"attribute_exists(#id)\\",
   \\"expressionNames\\": {
       \\"#id\\": \\"id\\"
-  }
+  },
+  \\"expressionValues\\": {}
 } )
   #end
 #end

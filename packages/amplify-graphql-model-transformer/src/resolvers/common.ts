@@ -18,17 +18,17 @@ import {
 } from 'graphql-mapping-template';
 
 /**
- * Helper method to genrate code that converts DynamoDB condition object to condtion
+ * Helper method to generate code that converts DynamoDB condition object to condition
  * expression
- * @param inputConditionObjectName : Variable in stash that holds condtion object
+ * @param inputConditionObjectName : Variable in stash that holds condition object
  * @param conditionOutputVariableName: Variable to store generated DDB expression
  */
 export const generateConditionSlot = (inputConditionObjectName: string, conditionOutputVariableName: string): CompoundExpressionNode => {
   const statements: Expression[] = [
-    comment('Start Condtion block'),
+    comment('Start condition block'),
 
     iff(
-      and([ref(inputConditionObjectName), notEquals(methodCall(ref('inputConditionObjectName.size')), int(0))]),
+      and([ref(inputConditionObjectName), notEquals(methodCall(ref(`${inputConditionObjectName}.size`)), int(0))]),
       compoundExpression([
         set(ref('mergedConditions'), obj({ and: ref(inputConditionObjectName) })),
         set(
@@ -48,7 +48,7 @@ export const generateConditionSlot = (inputConditionObjectName: string, conditio
             }),
           ),
         ),
-        comment('End Condtion block'),
+        comment('End condition block'),
       ]),
     ),
   ];

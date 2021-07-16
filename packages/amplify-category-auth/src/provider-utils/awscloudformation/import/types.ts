@@ -44,6 +44,7 @@ export type MetaOutput = {
   AmazonWebClient?: string;
   FacebookWebClient?: string;
   GoogleWebClient?: string;
+  AppleWebClient?: string;
   HostedUIDomain?: string;
   OAuthMetadata?: string;
   CreatedSNSRole?: string;
@@ -59,6 +60,7 @@ export type EnvSpecificResourceParameters = {
   identityPoolName?: string;
   facebookAppId?: string;
   amazonAppId?: string;
+  appleAppId?: string;
   googleIos?: string;
   googleAndroid?: string;
   googleClientId?: string;

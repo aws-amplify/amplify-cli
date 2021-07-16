@@ -32,9 +32,9 @@ export class JavaMap {
             key,
             value,
           },
-          this.mapper
-        )
-      )
+          this.mapper,
+        ),
+      ),
     );
 
     return new JavaArray(entries, this.mapper);
@@ -46,7 +46,7 @@ export class JavaMap {
 
   get(key) {
     if (this.map.has(key.toString())) {
-      return this.map.get(key);
+      return this.map.get(key.toString());
     }
     return null;
   }
@@ -56,7 +56,7 @@ export class JavaMap {
   }
 
   keySet() {
-    return new JavaArray(Array.from(this.map.keys()), this.mapper);
+    return new JavaArray(Array.from(this.map.keys()).map(this.mapper as any), this.mapper);
   }
 
   put(key, value) {
@@ -95,7 +95,7 @@ export class JavaMap {
         ...sum,
         [key]: toJSON(value),
       }),
-      {}
+      {},
     );
   }
 }

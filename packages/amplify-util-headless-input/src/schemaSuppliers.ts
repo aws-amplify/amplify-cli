@@ -12,6 +12,10 @@ export const updateAuthRequestSchemaSupplier: VersionedSchemaSupplier = version 
   return getSchema('UpdateAuthRequest', 'auth', version);
 };
 
+export const importAuthRequestSchemaSupplier: VersionedSchemaSupplier = version => {
+  return getSchema('ImportAuthRequest', 'auth', version);
+};
+
 export const addApiRequestSchemaSupplier: VersionedSchemaSupplier = version => {
   return getSchema('AddApiRequest', 'api', version);
 };

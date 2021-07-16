@@ -1,8 +1,8 @@
 import { $TSContext, $TSObject } from 'amplify-cli-core';
+import * as path from 'path';
 import { loadFunctionParameters } from './loadFunctionParameters';
-import path from 'path';
 import { ServiceName } from './constants';
-import { category } from '../../../constants';
+import { categoryName } from '../../../constants';
 
 export async function lambdasWithApiDependency(
   context: $TSContext,
@@ -22,15 +22,17 @@ export async function lambdasWithApiDependency(
 
   // initialize function parameters for update
   for (const lambda of lambdaFuncResources) {
-    const resourceDirPath = path.join(backendDir, category, lambda.resourceName);
-    const currentParameters = loadFunctionParameters(context, resourceDirPath);
+    const resourceDirPath = path.join(backendDir, categoryName, lambda.resourceName);
+    const currentParameters = loadFunctionParameters(resourceDirPath);
     const selectedCategories = currentParameters.permissions;
     let deletedModelFound: boolean;
 
-    for (const selectedResources of Object.values(selectedCategories)) {
-      deletedModelFound = Object.keys(selectedResources).some(r => modelsDeleted.includes(r));
-      if (deletedModelFound) {
-        dependentFunctions.push(lambda);
+    if (typeof selectedCategories === 'object' && selectedCategories !== null) {
+      for (const selectedResources of Object.values(selectedCategories)) {
+        deletedModelFound = Object.keys(selectedResources).some(r => modelsDeleted.includes(r));
+        if (deletedModelFound) {
+          dependentFunctions.push(lambda);
+        }
       }
     }
   }

@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.6.12](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.11...amplify-nodejs-function-template-provider@1.6.12) (2021-06-30)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [1.6.11](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.10...amplify-nodejs-function-template-provider@1.6.11) (2021-06-24)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [1.6.10](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.9...amplify-nodejs-function-template-provider@1.6.10) (2021-06-15)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
+## [1.6.9](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.8...amplify-nodejs-function-template-provider@1.6.9) (2021-05-26)
+
+**Note:** Version bump only for package amplify-nodejs-function-template-provider
+
+
+
+
+
 ## [1.6.8](https://github.com/aws-amplify/amplify-cli/compare/amplify-nodejs-function-template-provider@1.6.7...amplify-nodejs-function-template-provider@1.6.8) (2021-05-18)
 
 **Note:** Version bump only for package amplify-nodejs-function-template-provider

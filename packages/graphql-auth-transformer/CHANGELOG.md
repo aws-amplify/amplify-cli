@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.24.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.12...graphql-auth-transformer@6.24.13) (2021-06-30)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
+## [6.24.12](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.11...graphql-auth-transformer@6.24.12) (2021-06-24)
+
+
+### Bug Fixes
+
+* **graphql-transformer-common:** improve generated graphql pluralization ([#7258](https://github.com/aws-amplify/amplify-cli/issues/7258)) ([fc3ad0d](https://github.com/aws-amplify/amplify-cli/commit/fc3ad0dd5a12a7912c59ae12024f593b4cdf7f2d)), closes [#4224](https://github.com/aws-amplify/amplify-cli/issues/4224)
+* validates optional non nullable fields to be not null  ([#7170](https://github.com/aws-amplify/amplify-cli/issues/7170)) ([1ca842c](https://github.com/aws-amplify/amplify-cli/commit/1ca842c703bfc34e65bfffff85908ea8b2ccb521))
+
+
+
+
+
+## [6.24.11](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.10...graphql-auth-transformer@6.24.11) (2021-06-15)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
+## [6.24.10](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.9...graphql-auth-transformer@6.24.10) (2021-05-29)
+
+
+
+## 4.51.4 (2021-05-28)
+
+
+### Bug Fixes
+
+* **graphql-model-transformer:** use modelobject key for mutation resolver creation ([#7419](https://github.com/aws-amplify/amplify-cli/issues/7419)) ([37bc551](https://github.com/aws-amplify/amplify-cli/commit/37bc551030d47de993f8227ee3af0ba6cd738ab2)), closes [#i7417](https://github.com/aws-amplify/amplify-cli/issues/i7417)
+
+
+
+
+
+## [6.24.9](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.8...graphql-auth-transformer@6.24.9) (2021-05-26)
+
+**Note:** Version bump only for package graphql-auth-transformer
+
+
+
+
+
 ## [6.24.8](https://github.com/aws-amplify/amplify-cli/compare/graphql-auth-transformer@6.24.7...graphql-auth-transformer@6.24.8) (2021-05-18)
 
 

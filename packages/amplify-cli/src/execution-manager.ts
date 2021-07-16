@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { stateManager } from 'amplify-cli-core';
+import { $TSAny, stateManager } from 'amplify-cli-core';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
@@ -18,6 +18,7 @@ import {
   AmplifyPostPullEventData,
   AmplifyPreCodegenModelsEventData,
   AmplifyPostCodegenModelsEventData,
+  AmplifyInternalOnlyPostEnvRemoveEventData,
 } from './domain/amplify-event';
 import { isHeadlessCommand, readHeadlessPayload } from './utils/headless-input-utils';
 
@@ -128,7 +129,8 @@ async function selectPluginForExecution(context: Context, pluginCandidates: Plug
     const amplifyMeta = context.amplify.getProjectMeta();
     const { Region } = amplifyMeta.providers['awscloudformation'];
 
-    if (!isContainersEnabled(context) || Region !== 'us-east-1') { // SSL Certificates only available to be created on us-east-1 only
+    if (!isContainersEnabled(context) || Region !== 'us-east-1') {
+      // SSL Certificates only available to be created on us-east-1 only
       pluginCandidates = pluginCandidates.filter(plugin => !plugin.manifest.services?.includes('ElasticContainer'));
     }
 
@@ -305,6 +307,13 @@ async function raisePostPullEvent(context: Context) {
 
 async function raisePostCodegenModelsEvent(context: Context) {
   await raiseEvent(context, new AmplifyEventArgs(AmplifyEvent.PostCodegenModels, new AmplifyPostCodegenModelsEventData()));
+}
+
+export async function raiseIntenralOnlyPostEnvRemoveEvent(context: Context, envName: string) {
+  await raiseEvent(
+    context,
+    new AmplifyEventArgs(AmplifyEvent.InternalOnlyPostEnvRemove, new AmplifyInternalOnlyPostEnvRemoveEventData(envName)),
+  );
 }
 
 export async function raiseEvent(context: Context, args: AmplifyEventArgs) {

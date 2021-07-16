@@ -2,6 +2,17 @@ import { GraphQLTransform } from 'graphql-transformer-core';
 import { DynamoDBModelTransformer } from 'graphql-dynamodb-transformer';
 import { ModelAuthTransformer } from '../ModelAuthTransformer';
 import { SearchableModelTransformer } from 'graphql-elasticsearch-transformer';
+const featureFlags = {
+  getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
+    if (name === 'improvePluralization') {
+      return true;
+    }
+    return;
+  }),
+  getNumber: jest.fn(),
+  getObject: jest.fn(),
+  getString: jest.fn(),
+};
 
 test('test auth logic is enabled on owner/static rules in resposne es resolver', () => {
   const validSchema = `
@@ -17,6 +28,7 @@ test('test auth logic is enabled on owner/static rules in resposne es resolver',
         }
     `;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new SearchableModelTransformer(),
@@ -35,11 +47,11 @@ test('test auth logic is enabled on owner/static rules in resposne es resolver',
   // expect response resolver to contain auth logic for owner rule
   expect(out).toBeDefined();
   expect(out.resolvers['Query.searchComments.res.vtl']).toContain(
-    '## Authorization rule: { allow: owner, ownerField: "owner", identityClaim: "cognito:username" } **'
+    '## Authorization rule: { allow: owner, ownerField: "owner", identityClaim: "cognito:username" } **',
   );
   // expect response resolver to contain auth logic for group rule
   expect(out.resolvers['Query.searchComments.res.vtl']).toContain(
-    '## Authorization rule: { allow: groups, groups: ["writer"], groupClaim: "cognito:groups" } **'
+    '## Authorization rule: { allow: groups, groups: ["writer"], groupClaim: "cognito:groups" } **',
   );
 });
 
@@ -57,6 +69,7 @@ test('test auth logic is enabled for iam/apiKey auth rules in response es resolv
         }
     `;
   const transformer = new GraphQLTransform({
+    featureFlags,
     transformers: [
       new DynamoDBModelTransformer(),
       new SearchableModelTransformer(),

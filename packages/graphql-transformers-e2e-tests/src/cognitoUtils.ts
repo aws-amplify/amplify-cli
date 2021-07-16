@@ -51,6 +51,8 @@ export async function signupUser(userPoolId: string, name: string, pw: string) {
         UserAttributes: [{ Name: 'email', Value: name }],
         Username: name,
         TemporaryPassword: pw,
+        DesiredDeliveryMediums: [],
+        MessageAction: 'SUPPRESS',
       },
       (err, data) => (err ? rej(err) : res(data)),
     );

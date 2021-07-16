@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.35.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.34.1...amplify-category-auth@2.35.0) (2021-07-12)
+
+
+
+## 5.1.1 (2021-07-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** check for siwa Cognito idp params ([#7678](https://github.com/aws-amplify/amplify-cli/issues/7678)) ([0c0adfb](https://github.com/aws-amplify/amplify-cli/commit/0c0adfb78350a192d4f44b722d6038b23c505527))
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
+## [2.34.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.34.0...amplify-category-auth@2.34.1) (2021-06-30)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+# [2.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.33.1...amplify-category-auth@2.34.0) (2021-06-24)
+
+
+### Features
+
+* **import-auth:** add headless support ([#7266](https://github.com/aws-amplify/amplify-cli/issues/7266)) ([7fa478b](https://github.com/aws-amplify/amplify-cli/commit/7fa478bbfebbbe70e286eb19d436d772c32c4fd2))
+
+
+
+
+
+## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.33.0...amplify-category-auth@2.33.1) (2021-06-15)
+
+**Note:** Version bump only for package amplify-category-auth
+
+
+
+
+
+# [2.33.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.32.1...amplify-category-auth@2.33.0) (2021-06-02)
+
+
+
+# 4.52.0 (2021-06-01)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-cli/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-cli/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+
+
+
+
+
+## [2.32.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.32.0...amplify-category-auth@2.32.1) (2021-05-26)
+
+
+
+## 4.51.3 (2021-05-25)
+
+
+### Bug Fixes
+
+* add `sharedId` in `externalAuthEnable()` ([#7315](https://github.com/aws-amplify/amplify-cli/issues/7315)) ([fd552b4](https://github.com/aws-amplify/amplify-cli/commit/fd552b4c8d34d67c05330ae79804b00daa976f1d))
+* scope down usage of PassRole ([#7317](https://github.com/aws-amplify/amplify-cli/issues/7317)) ([d4d9394](https://github.com/aws-amplify/amplify-cli/commit/d4d9394f33995a6852d5b00e09d38802798ca6d7))
+* update auth sms workflow check ([#7396](https://github.com/aws-amplify/amplify-cli/issues/7396)) ([07a6fe4](https://github.com/aws-amplify/amplify-cli/commit/07a6fe47d1c39d952eef242400cdbb7e8a6a11eb))
+
+
+
+
+
 # [2.32.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.31.1...amplify-category-auth@2.32.0) (2021-05-22)
 
 

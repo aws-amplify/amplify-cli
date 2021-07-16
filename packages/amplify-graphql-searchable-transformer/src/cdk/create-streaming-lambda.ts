@@ -1,6 +1,6 @@
 import { GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { EventSourceMapping, IFunction, LayerVersion, Runtime, StartingPosition } from '@aws-cdk/aws-lambda';
-import { CfnParameter, Construct, Fn, Stack } from '@aws-cdk/core';
+import { CfnParameter, Construct, Fn, Stack, Duration } from '@aws-cdk/core';
 import { Effect, IRole, Policy, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { ResourceConstants, SearchableResourceIDs } from 'graphql-transformer-common';
 import * as path from 'path';
@@ -40,6 +40,7 @@ export const createLambda = (
     ],
     lambdaRole,
     enviroment,
+    undefined,
     stack,
   );
 };
@@ -70,13 +71,16 @@ export const createEventSourceMapping = (
   stack: Construct,
   type: string,
   target: IFunction,
+  parameterMap: Map<string, CfnParameter>,
   tableStreamArn?: string,
 ): EventSourceMapping => {
+  const { ElasticsearchStreamBatchSize, ElasticsearchStreamMaximumBatchingWindowInSeconds } = ResourceConstants.PARAMETERS;
   assert(tableStreamArn);
   return new EventSourceMapping(stack, SearchableResourceIDs.SearchableEventSourceMappingID(type), {
     eventSourceArn: tableStreamArn,
     target,
-    batchSize: 1,
+    batchSize: parameterMap.get(ElasticsearchStreamBatchSize)!.valueAsNumber,
+    maxBatchingWindow: Duration.seconds(parameterMap.get(ElasticsearchStreamMaximumBatchingWindowInSeconds)!.valueAsNumber),
     enabled: true,
     startingPosition: StartingPosition.LATEST,
   });

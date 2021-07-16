@@ -232,13 +232,19 @@ async function showSMSSandboxWarning(context) {
     const sandboxStatus = await snsClient.isInSandboxMode();
 
     if (sandboxStatus) {
-      sandboxModeWarning && context.print.warning(sandboxModeWarning);
+      if (sandboxModeWarning) {
+        context.print.warning(sandboxModeWarning);
+      }
     } else {
-      productionModeInfo && context.print.warning(productionModeInfo);
+      if (productionModeInfo) {
+        context.print.warning(productionModeInfo);
+      }
     }
   } catch (e) {
     if (e.code === 'AuthorizationError') {
-      smsSandBoxMissingPermissionWarning && context.print.warning(smsSandBoxMissingPermissionWarning);
+      if (smsSandBoxMissingPermissionWarning) {
+        context.print.warning(smsSandBoxMissingPermissionWarning);
+      }
     } else if (e instanceof TypeError) {
       context.print.warning(cliUpdateWarning);
     } else if (e.code === 'ResourceNotFound') {

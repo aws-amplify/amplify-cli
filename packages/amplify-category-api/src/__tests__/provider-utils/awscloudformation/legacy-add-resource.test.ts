@@ -2,6 +2,7 @@ import { legacyAddResource } from '../../../provider-utils/awscloudformation/leg
 import { category } from '../../../category-constants';
 
 jest.mock('fs-extra');
+jest.mock('amplify-cli-core');
 
 describe('legacy add resource', () => {
   const contextStub = {

@@ -40,70 +40,118 @@ const crudOptions = ['create', 'read', 'update', 'delete'];
 const appSyncOptions = ['Query', 'Mutation', 'Subscription'];
 
 const additionalPermissions = (cwd: string, chain: ExecutionContext, settings: any) => {
-  multiSelect(
-    chain.wait('Select the categories you want this function to have access to'),
-    settings.additionalPermissions.permissions,
-    settings.additionalPermissions.choices,
-  );
-  // when single resource, it gets autoselected
-  if (settings.additionalPermissions.resourceChoices === undefined) {
-    settings.additionalPermissions.resourceChoices = settings.additionalPermissions.resources;
+  multiSelect(chain.wait('Select the categories you want this function to have access to'), settings.permissions, settings.choices);
+  if (settings.resourceChoices === undefined) {
+    settings.resourceChoices = settings.resources;
   }
-  if (settings.additionalPermissions.resourceChoices.length > 1) {
-    multiSelect(
-      chain.wait(/Select the (operations you want to permit on *|one you would like your *)/),
-      settings.additionalPermissions.resources,
-      settings.additionalPermissions.resourceChoices,
-    );
+  // when single resource, it gets autoselected
+  if (settings.resourceChoices.length > 1) {
+    chain.wait('Select the one you would like your Lambda to access');
+    if (settings.keepExistingResourceSelection) {
+      chain.sendCarriageReturn();
+    } else {
+      multiSelect(chain, settings.resources, settings.resourceChoices);
+    }
   }
 
   // n-resources repeated questions
-  settings.additionalPermissions.resources.forEach(elem => {
+  settings.resources.forEach((elem: string) => {
     const service = _.get(getBackendAmplifyMeta(cwd), ['api', elem, 'service']);
     const gqlpermff = !!_.get(loadFeatureFlags(cwd), ['features', 'appsync', 'generategraphqlpermissions']);
     const isAppSyncApi = service === 'AppSync';
     const allChoices = isAppSyncApi && gqlpermff ? appSyncOptions : crudOptions;
-    multiSelect(chain.wait(`Select the operations you want to permit on ${elem}`), settings.additionalPermissions.operations, allChoices);
+    multiSelect(chain.wait(`Select the operations you want to permit on ${elem}`), settings.operations, allChoices);
   });
 };
 
-const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: any) => {
+const updateFunctionCore = (cwd: string, chain: ExecutionContext, settings: CoreFunctionSettings) => {
   singleSelect(
     chain.wait('Which setting do you want to update?'),
     settings.additionalPermissions
       ? 'Resource access permissions'
       : settings.schedulePermissions
       ? 'Scheduled recurring invocation'
-      : 'Lambda layers configuration',
-    ['Resource access permissions', 'Scheduled recurring invocation', 'Lambda layers configuration'],
+      : settings.layerOptions
+      ? 'Lambda layers configuration'
+      : settings.environmentVariables
+      ? 'Environment variables configuration'
+      : 'Secret values configuration',
+    [
+      'Resource access permissions',
+      'Scheduled recurring invocation',
+      'Lambda layers configuration',
+      'Environment variables configuration',
+      'Secret values configuration',
+    ],
   );
   if (settings.additionalPermissions) {
     // update permissions
-    additionalPermissions(cwd, chain, settings);
-  } else if (settings.schedulePermissions) {
+    additionalPermissions(cwd, chain, settings.additionalPermissions);
+  }
+  if (settings.schedulePermissions) {
     // update scheduling
     if (settings.schedulePermissions.noScheduleAdded) {
       chain.wait('Do you want to invoke this function on a recurring schedule?');
     } else {
       chain.wait(`Do you want to update or remove the function's schedule?`);
     }
-    chain.sendLine('y');
+    chain.sendConfirmYes();
     cronWalkthrough(chain, settings, settings.schedulePermissions.noScheduleAdded ? 'create' : 'update');
-  } else {
+  }
+  if (settings.layerOptions) {
     // update layers
-    chain.wait('Do you want to configure Lambda layers for this function?');
+    chain.wait('Do you want to enable Lambda layers for this function?');
     if (settings.layerOptions === undefined) {
-      chain.sendLine('n');
+      chain.sendConfirmNo();
     } else {
-      chain.sendLine('y');
+      chain.sendConfirmYes();
       addLayerWalkthrough(chain, settings.layerOptions);
     }
   }
+  if (settings.secretsConfig) {
+    if (settings.secretsConfig.operation === 'add') {
+      throw new Error('Secres update walkthrough only supports update and delete');
+    }
+    // this walkthrough assumes 1 existing secret is configured for the function
+    const actions = ['Add a secret', 'Update a secret', 'Remove secrets', "I'm done"];
+    const action = settings.secretsConfig.operation === 'delete' ? actions[2] : actions[1];
+    chain.wait('What do you want to do?');
+    singleSelect(chain, action, actions);
+    switch (settings.secretsConfig.operation) {
+      case 'delete': {
+        chain.wait('Select the secrets to delete:');
+        chain.sendLine(' '); // assumes one secret
+        break;
+      }
+      case 'update': {
+        chain.wait('Select the secret to update:');
+        chain.sendCarriageReturn(); // assumes one secret
+        chain.sendLine(settings.secretsConfig.value);
+        break;
+      }
+    }
+    chain.wait('What do you want to do?');
+    chain.sendCarriageReturn(); // "I'm done"
+  }
+};
+
+export type CoreFunctionSettings = {
+  testingWithLatestCodebase?: boolean;
+  name?: string;
+  functionTemplate?: string;
+  expectFailure?: boolean;
+  additionalPermissions?: any;
+  schedulePermissions?: any;
+  layerOptions?: LayerOptions;
+  environmentVariables?: any;
+  secretsConfig?: AddSecretInput | UpdateSecretInput | DeleteSecretInput;
+  triggerType?: string;
+  eventSource?: string;
 };
 
 const coreFunction = (
   cwd: string,
-  settings: any,
+  settings: CoreFunctionSettings,
   action: FunctionActions,
   runtime: FunctionRuntimes,
   functionConfigCallback: FunctionCallback,
@@ -147,43 +195,70 @@ const coreFunction = (
     if (action === 'create') {
       chain.wait('Do you want to configure advanced settings?');
 
-      if (settings.additionalPermissions || settings.schedulePermissions || settings.layerOptions) {
-        chain.sendLine('y').wait('Do you want to access other resources in this project from your Lambda function?');
+      if (
+        settings.additionalPermissions ||
+        settings.schedulePermissions ||
+        settings.layerOptions ||
+        settings.environmentVariables ||
+        settings.secretsConfig
+      ) {
+        chain.sendConfirmYes().wait('Do you want to access other resources in this project from your Lambda function?');
         if (settings.additionalPermissions) {
           // other permissions flow
-          chain.sendLine('y');
-          additionalPermissions(cwd, chain, settings);
+          chain.sendConfirmYes();
+          additionalPermissions(cwd, chain, settings.additionalPermissions);
         } else {
-          chain.sendLine('n');
+          chain.sendConfirmNo();
         }
 
         //scheduling questions
         chain.wait('Do you want to invoke this function on a recurring schedule?');
 
         if (settings.schedulePermissions === undefined) {
-          chain.sendLine('n');
+          chain.sendConfirmNo();
         } else {
-          chain.sendLine('y');
+          chain.sendConfirmYes();
           cronWalkthrough(chain, settings, action);
         }
 
         // lambda layers question
-        chain.wait('Do you want to configure Lambda layers for this function?');
+        chain.wait('Do you want to enable Lambda layers for this function?');
         if (settings.layerOptions === undefined) {
-          chain.sendLine('n');
+          chain.sendConfirmNo();
         } else {
-          chain.sendLine('y');
+          chain.sendConfirmYes();
           addLayerWalkthrough(chain, settings.layerOptions);
         }
+
+        // environment variable question
+        chain.wait('Do you want to configure environment variables for this function?');
+        if (settings.environmentVariables === undefined) {
+          chain.sendConfirmNo();
+        } else {
+          chain.sendConfirmYes();
+          addEnvVarWalkthrough(chain, settings.environmentVariables);
+        }
+
+        // secrets config
+        chain.wait('Do you want to configure secret values this function can access?');
+        if (settings.secretsConfig === undefined) {
+          chain.sendConfirmNo();
+        } else {
+          if (settings.secretsConfig.operation !== 'add') {
+            throw new Error('add walkthrough only supports add secrets operation');
+          }
+          chain.sendConfirmYes();
+          addSecretWalkthrough(chain, settings.secretsConfig);
+        }
       } else {
-        chain.sendLine('n');
+        chain.sendConfirmNo();
       }
     } else {
       updateFunctionCore(cwd, chain, settings);
     }
 
     // edit function question
-    chain.wait('Do you want to edit the local lambda function now?').sendLine('n').sendEof();
+    chain.wait('Do you want to edit the local lambda function now?').sendConfirmNo().sendEof();
 
     runChain(chain, resolve, reject);
   });
@@ -201,14 +276,14 @@ const runChain = (chain: ExecutionContext, resolve, reject) => {
 
 export const addFunction = (
   cwd: string,
-  settings: any,
+  settings: CoreFunctionSettings,
   runtime: FunctionRuntimes,
   functionConfigCallback: FunctionCallback = undefined,
 ) => {
   return coreFunction(cwd, settings, 'create', runtime, functionConfigCallback);
 };
 
-export const updateFunction = (cwd: string, settings: any, runtime: FunctionRuntimes) => {
+export const updateFunction = (cwd: string, settings: CoreFunctionSettings, runtime: FunctionRuntimes) => {
   return coreFunction(cwd, settings, 'update', runtime, undefined);
 };
 
@@ -248,7 +323,7 @@ export const functionBuild = (cwd: string, settings: any): Promise<void> => {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['function', 'build'], { cwd, stripColors: true })
       .wait('Are you sure you want to continue building the resources?')
-      .sendLine('Y')
+      .sendConfirmYes()
       .sendEof()
       .run((err: Error) => {
         if (!err) {
@@ -260,9 +335,9 @@ export const functionBuild = (cwd: string, settings: any): Promise<void> => {
   });
 };
 
-export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
+export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
   const runtimeName = getRuntimeDisplayName(runtime);
-  chain.wait('Choose the runtime that you want to use');
+  chain.wait('Choose the runtime that you want to use:');
 
   // reset cursor to top of list because node is default but it throws off offset calculations
   moveUp(chain, runtimeChoices.indexOf(getRuntimeDisplayName('nodejs')));
@@ -270,7 +345,7 @@ export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
   singleSelect(chain, runtimeName, runtimeChoices);
 };
 
-export const selectTemplate = (chain: any, functionTemplate: string, runtime: FunctionRuntimes) => {
+export const selectTemplate = (chain: ExecutionContext, functionTemplate: string, runtime: FunctionRuntimes) => {
   const templateChoices = getTemplateChoices(runtime);
   chain.wait('Choose the function template that you want to use');
 
@@ -280,40 +355,106 @@ export const selectTemplate = (chain: any, functionTemplate: string, runtime: Fu
   singleSelect(chain, functionTemplate, templateChoices);
 };
 
+export const removeFunction = (cwd: string, funcName: string) =>
+  new Promise<void>((resolve, reject) => {
+    spawn(getCLIPath(), ['remove', 'function', funcName, '--yes'], { cwd, stripColors: true }).run(err => (err ? reject(err) : resolve()));
+  });
+
 export interface LayerOptions {
-  select: string[]; // list options to select
-  expectedListOptions: string[]; // the expeted list of all layers
-  versions: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the verison and expected version for each layer
+  select?: string[]; // list options to select
+  expectedListOptions?: string[]; // the expected list of all layers
+  versions?: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the verison and expected version for each layer
   customArns?: string[]; // external ARNs to enter
+  skipLayerAssignment?: boolean; // true if the layer assigment must be left unchanged for the function, otherwise true
+  layerWalkthrough?: (chain: ExecutionContext) => void; // If this function is provided the addLayerWalkthrough will invoke it instead of the standard one, suitable for full customization
 }
 
 const addLayerWalkthrough = (chain: ExecutionContext, options: LayerOptions) => {
-  const prependedListOptions = ['Provide existing Lambda layer ARNs', ...options.expectedListOptions];
-  const amendedSelection = [...options.select];
-  const hasCustomArns = options.customArns && options.customArns.length > 0;
-  if (hasCustomArns) {
-    amendedSelection.unshift('Provide existing Lambda layer ARNs');
+  if (options.layerWalkthrough) {
+    options.layerWalkthrough(chain);
+
+    return;
   }
+
   chain.wait('Provide existing layers');
-  multiSelect(chain, amendedSelection, prependedListOptions);
-  options.select.forEach(selection => {
-    chain.wait(`Select a version for ${selection}`);
-    singleSelect(
-      chain,
-      options.versions[selection].version.toString(),
-      options.versions[selection].expectedVersionOptions.map(op => op.toString()),
-    );
-  });
+
+  const hasCustomArns = options.customArns && options.customArns.length > 0;
+
+  // If no select passed in then it was called from update function probably and
+  // there is a layer already assigned and no need to change
+  if (options.skipLayerAssignment === true) {
+    chain.sendCarriageReturn();
+  } else {
+    const prependedListOptions = ['Provide existing Lambda layer ARNs', ...options.expectedListOptions];
+    const amendedSelection = [...options.select];
+
+    if (hasCustomArns) {
+      amendedSelection.unshift('Provide existing Lambda layer ARNs');
+    }
+
+    multiSelect(chain, amendedSelection, prependedListOptions);
+  }
+
+  // If no versions present in options, skip the version selection prompt
+  if (options.versions) {
+    options.select.forEach(selection => {
+      chain.wait(`Select a version for ${selection}`);
+
+      singleSelect(chain, options.versions[selection].version.toString(), [
+        'Always choose latest version',
+        ...options.versions[selection].expectedVersionOptions.map(op => op.toString()),
+      ]);
+    });
+  }
+
   if (hasCustomArns) {
     chain.wait('existing Lambda layer ARNs (comma-separated)');
     chain.sendLine(options.customArns.join(', '));
   }
+
   // not going to attempt to automate the reorder thingy. For e2e tests we can just create the lambda layers in the order we want them
   const totalLength = hasCustomArns ? options.customArns.length : 0 + options.select.length;
+
   if (totalLength > 1) {
     chain.wait('Modify the layer order');
     chain.sendCarriageReturn();
   }
+};
+
+export type EnvVarInput = {
+  key: string;
+  value: string;
+};
+
+const addEnvVarWalkthrough = (chain: ExecutionContext, input: EnvVarInput) => {
+  chain.wait('Enter the environment variable name:').sendLine(input.key);
+  chain.wait('Enter the environment variable value:').sendLine(input.value);
+  chain.wait("I'm done").sendCarriageReturn();
+};
+
+export type AddSecretInput = {
+  operation: 'add';
+  name: string;
+  value: string;
+};
+
+export type DeleteSecretInput = {
+  operation: 'delete';
+  name: string;
+};
+
+export type UpdateSecretInput = {
+  operation: 'update';
+  name: string;
+  value: string;
+};
+
+const addSecretWalkthrough = (chain: ExecutionContext, input: AddSecretInput) => {
+  chain.wait('Enter a secret name');
+  chain.sendLine(input.name);
+  chain.wait(`Enter the value for`);
+  chain.sendLine(input.value);
+  chain.wait("I'm done").sendCarriageReturn();
 };
 
 const cronWalkthrough = (chain: ExecutionContext, settings: any, action: string) => {

@@ -36,7 +36,7 @@ interface ProjectConfig {
   config?: AwsConfig;
 }
 
-interface AwsSecrets {
+export interface AwsSecrets {
   accessKeyId?: string;
   secretAccessKey?: string;
   region?: string;
@@ -63,6 +63,11 @@ export async function init(context: $TSContext) {
     context.exeInfo.awsConfigInfo = {
       configLevel: 'project',
       config: { useProfile: false },
+    };
+  } else if (authTypeConfig.type === 'general') {
+    context.exeInfo.awsConfigInfo = {
+      configLevel: 'general',
+      config: {},
     };
   } else {
     context.exeInfo.awsConfigInfo = {
@@ -522,7 +527,7 @@ function getCurrentConfig(context: $TSContext) {
 }
 
 function getConfigForEnv(context: $TSContext, envName: string) {
-  const projectConfigInfo: ProjectConfig = context?.exeInfo?.awsConfig || {
+  const projectConfigInfo: ProjectConfig = context?.exeInfo?.awsConfigInfo || {
     configLevel: 'general',
     config: {},
   };
@@ -581,7 +586,7 @@ function removeProjectConfig(envName: string) {
   }
 }
 
-export async function loadConfiguration(context: $TSContext) {
+export async function loadConfiguration(context: $TSContext): Promise<AwsSecrets> {
   const { envName } = context.amplify.getEnvInfo();
   const config = await loadConfigurationForEnv(context, envName);
   return config;
@@ -599,11 +604,13 @@ function loadConfigFromPath(profilePath: string): AwsSdkConfig {
 
 export async function loadConfigurationForEnv(context: $TSContext, env: string, appId?: string): Promise<AwsSdkConfig> {
   const { awsConfigInfo } = context.exeInfo || {};
+
   if (awsConfigInfo?.config?.accessKeyId && awsConfigInfo?.config?.secretAccessKey) {
     // Already loaded config
     if (!awsConfigInfo.region) {
       awsConfigInfo.region = resolveRegion();
     }
+
     return awsConfigInfo.config;
   }
 
@@ -614,6 +621,7 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
   if (authType.type === 'admin') {
     projectConfigInfo.configLevel = 'amplifyAdmin';
     appId = appId || authType.appId;
+
     try {
       awsConfig = await getTempCredsWithAdminTokens(context, appId);
     } catch (e) {
@@ -632,6 +640,7 @@ export async function loadConfigurationForEnv(context: $TSContext, env: string, 
   } else if (authType.type === 'accessKeys') {
     awsConfig = loadConfigFromPath(projectConfigInfo.config.awsConfigFilePath);
   }
+
   return awsConfig;
 }
 
@@ -649,6 +658,7 @@ export function resolveRegion(): string {
   // For details of how aws region is set, check the following link
   // https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/setting-region.html
   let region: string;
+
   if (process.env.AWS_REGION) {
     region = process.env.AWS_REGION;
   }
@@ -659,6 +669,7 @@ export function resolveRegion(): string {
     const profileName = process.env.AWS_PROFILE || 'default';
     region = systemConfigManager.getProfileRegion(profileName);
   }
+
   return region;
 }
 
@@ -694,6 +705,7 @@ async function newUserCheck(context: $TSContext) {
 
 function scanConfig(context: $TSContext) {
   let configSource: string = getConfigLevel(context);
+
   if (!configSource) {
     const namedProfiles: $TSAny = systemConfigManager.getNamedProfiles();
     if (namedProfiles && Object.keys(namedProfiles).length > 0) {
@@ -715,6 +727,7 @@ function scanConfig(context: $TSContext) {
 
 function getConfigLevel(context: $TSContext): ProjectType {
   let configLevel: ProjectType;
+
   try {
     const namedProfiles = systemConfigManager.getNamedProfiles();
     const configInfoFilePath = pathManager.getLocalAWSInfoFilePath();
@@ -738,25 +751,27 @@ function getConfigLevel(context: $TSContext): ProjectType {
   } catch (e) {
     // no need to do anything
   }
+
   return configLevel;
 }
 
-export async function getAwsConfig(context: $TSContext): Promise<AwsConfig> {
+export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
   const { awsConfigInfo } = context.exeInfo;
   const httpProxy = process.env.HTTP_PROXY || process.env.HTTPS_PROXY;
 
-  let awsConfig: AwsSdkConfig;
+  let resultAWSConfigInfo: AwsSdkConfig;
+
   if (awsConfigInfo.configLevel === 'project') {
     if (awsConfigInfo.config.useProfile) {
       try {
-        awsConfig = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
+        resultAWSConfigInfo = await systemConfigManager.getProfiledAwsConfig(context, awsConfigInfo.config.profileName);
       } catch (e) {
         context.print.error(`Failed to get profile: ${e.message || e}`);
         await context.usageData.emitError(e);
         exitOnNextTick(1);
       }
     } else {
-      awsConfig = {
+      resultAWSConfigInfo = {
         accessKeyId: awsConfigInfo.config.accessKeyId,
         secretAccessKey: awsConfigInfo.config.secretAccessKey,
         region: awsConfigInfo.config.region,
@@ -765,7 +780,7 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsConfig> {
   } else if (awsConfigInfo.configLevel === 'amplifyAdmin') {
     const appId = resolveAppId(context);
     try {
-      awsConfig = await getTempCredsWithAdminTokens(context, appId);
+      resultAWSConfigInfo = await getTempCredsWithAdminTokens(context, appId);
     } catch (err) {
       context.print.error('Failed to fetch Amplify Admin credentials');
       throw new Error(err);
@@ -773,13 +788,13 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsConfig> {
   }
 
   if (httpProxy) {
-    awsConfig = {
-      ...awsConfig,
+    resultAWSConfigInfo = {
+      ...resultAWSConfigInfo,
       httpOptions: { agent: proxyAgent(httpProxy) },
     };
   }
 
-  return awsConfig;
+  return resultAWSConfigInfo;
 }
 
 async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectConfig): Promise<AuthFlowConfig> {
@@ -807,6 +822,12 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
   useProfile = useProfile ?? projectConfig?.config?.useProfile;
   profileName = profileName ?? projectConfig?.config?.profileName;
 
+  const generalCreds = projectConfig?.configLevel === 'general';
+
+  if (generalCreds) {
+    return { type: 'general' };
+  }
+
   if (useProfile && profileName) {
     return { type: 'profile', profileName };
   }
@@ -816,8 +837,8 @@ async function determineAuthFlow(context: $TSContext, projectConfig?: ProjectCon
   }
 
   if (projectConfig?.config?.awsConfigFilePath) {
-    const awsConfig = loadConfigFromPath(projectConfig.config.awsConfigFilePath);
-    return { ...awsConfig, type: 'accessKeys' };
+    const awsConfigInfo = loadConfigFromPath(projectConfig.config.awsConfigFilePath);
+    return { ...awsConfigInfo, type: 'accessKeys' };
   }
 
   let appId: string;

@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.8.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.7.3...amplify-console-integration-tests@1.8.0) (2021-07-12)
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-console-integration-tests/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
+## [1.7.3](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.7.2...amplify-console-integration-tests@1.7.3) (2021-06-30)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
+## [1.7.2](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.7.1...amplify-console-integration-tests@1.7.2) (2021-06-24)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
+## [1.7.1](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.7.0...amplify-console-integration-tests@1.7.1) (2021-06-15)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
+# [1.7.0](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.6.3...amplify-console-integration-tests@1.7.0) (2021-06-02)
+
+
+
+# 4.52.0 (2021-06-01)
+
+
+### Features
+
+* add support for SMS Sandbox ([#7436](https://github.com/aws-amplify/amplify-console-integration-tests/issues/7436)) ([cdcb626](https://github.com/aws-amplify/amplify-console-integration-tests/commit/cdcb6260c11bbedef5b056fdcd730612d8bb3230))
+
+
+
+
+
+## [1.6.3](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.6.2...amplify-console-integration-tests@1.6.3) (2021-05-26)
+
+**Note:** Version bump only for package amplify-console-integration-tests
+
+
+
+
+
 ## [1.6.2](https://github.com/aws-amplify/amplify-console-integration-tests/compare/amplify-console-integration-tests@1.6.1...amplify-console-integration-tests@1.6.2) (2021-05-22)
 
 **Note:** Version bump only for package amplify-console-integration-tests
