@@ -1,85 +1,70 @@
-import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, pathManager, stateManager, PathConstants } from 'amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
 import ignore from 'ignore';
 import { S3 } from '../aws-utils/aws-s3';
 import * as aws from 'aws-sdk';
 import fs from 'fs-extra';
+import { sync } from 'glob';
 
 const S3_HOOKS_DIRECTORY = 'hooks/';
 
 export async function uploadHooksDirectory(context: $TSContext): Promise<string[]> {
-  // resolves with list of successfully uploaded files
-  // rejects with error with upload fails
-  // deletes the previous state of hooks from S3 completely
+  /**
+   * uploads all files except ignored files in hooks directory to S3 bucket
+   * returns promise that resolves with list of successfully uploaded files
+   * return empty array if hooks directory doesnt exist
+   * throws error if upload to S3 fials
+   * deletes the previous state of hooks from S3 completely
+   *
+   * @param {$TSContext} context
+   * @returns {Promise<string[]>} or throws error
+   */
 
-  return new Promise(async (resolve, reject) => {
-    const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo.localEnvInfo.projectPath);
-    // TODO: delete s3 hooks direcotry
-    try {
-      if (!fs.existsSync(hooksDirectoryPath)) {
-        resolve([]);
-      }
-    } catch (e) {
-      resolve([]);
-    }
-    const relativeFilePathsToUpload = getNonIgnoredFileList(context);
-    const filesSuccessfullyUploaded = [];
-    const s3 = await S3.getInstance(context);
-    for (let relativeFilePathToUpload of relativeFilePathsToUpload) {
-      const absolutefilePathToUpload = path.join(hooksDirectoryPath, relativeFilePathToUpload);
-      if (fs.existsSync(absolutefilePathToUpload)) {
-        const s3Params = {
-          Body: fs.createReadStream(absolutefilePathToUpload),
-          Key: getS3UploadPath(relativeFilePathToUpload),
-        };
-        // TODO: logger?
-        // const log = logger('uploadFile.s3.uploadFile', [{ Key: key }]);
-        try {
-          // TODO: log ?
-          // log();
-          await s3.uploadFile(s3Params);
-          filesSuccessfullyUploaded.push(relativeFilePathToUpload);
-        } catch (ex) {
-          // TODO: log ?
-          // log(ex);
-          reject(ex);
-        }
-      }
-    }
-    resolve(filesSuccessfullyUploaded);
-  });
-}
-
-export async function deleteS3HooksDirectory() {
-  console.log('here');
-}
-
-function getHooksFilePathList(context: $TSContext): string[] {
-  // returns list of relative file paths of all files in the hooks directory
   const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo.localEnvInfo.projectPath);
-  return fs.readdirSync(hooksDirectoryPath);
-}
+  // TODO: delete s3 hooks direcotry
 
-function getNonIgnoredFileList(context: $TSContext): string[] {
-  // returns list of relative file paths of all files in the hooks directory except the ones ignored in hooks-config.json
-  const ig = ignore();
-  const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo.localEnvInfo.projectPath);
-  const configFile = stateManager.getHooksConfigJson(context.exeInfo.localEnvInfo.projectPath);
-  // TODO: test ignore on push
-  if (typeof configFile === 'object' && configFile !== null && configFile.hasOwnProperty('ignore') && Array.isArray(configFile.ignore)) {
-    configFile.ignore = configFile.ignore.filter(listItem => typeof listItem === 'string' || listItem instanceof String);
-    ig.add(configFile.ignore);
+  if (!fs.existsSync(hooksDirectoryPath)) {
+    return [];
   }
-  const filePathList = getHooksFilePathList(context);
-  return ig.filter(filePathList);
+
+  const relativeFilePathsToUpload = getNonIgnoredFileList(context);
+  const filesSuccessfullyUploaded = [];
+  const s3 = await S3.getInstance(context);
+
+  for (const relativeFilePathToUpload of relativeFilePathsToUpload) {
+    const absolutefilePathToUpload = path.join(hooksDirectoryPath, relativeFilePathToUpload);
+    if (fs.existsSync(absolutefilePathToUpload)) {
+      const s3Params = {
+        Body: fs.createReadStream(absolutefilePathToUpload),
+        Key: getS3Key(relativeFilePathToUpload),
+      };
+      try {
+        await s3.uploadFile(s3Params);
+        filesSuccessfullyUploaded.push(relativeFilePathToUpload);
+      } catch (ex) {
+        throw ex;
+      }
+    }
+  }
+  return filesSuccessfullyUploaded;
 }
 
-function getS3UploadPath(relativePath: string): string {
-  return S3_HOOKS_DIRECTORY + relativePath.split(path.sep).join(path.posix.sep);
-}
-
-export async function downloadHooks(context: $TSContext, backendEnv: $TSAny, awsConfigInfo: $TSAny) {
+export async function downloadHooks(
+  context: $TSContext,
+  backendEnv: { deploymentArtifacts: string },
+  awsConfigInfo: aws.S3.ClientConfiguration,
+): Promise<void> {
+  /**
+   * downloads hooks directory from S3 and places in amplify project.
+   * used when no amplify project exist.
+   *
+   * @param {$TSContext} context
+   * @param {{ deploymentArtifacts: string }} backendEnv backendEnv object used to get deploymentBucket
+   * @param {aws.S3.ClientConfiguratio} awsConfigInfo aws credentials information to create S3 object
+   * @return {Promise<void>}
+   */
+  // used by attach-backend
   if (!backendEnv) {
     return;
   }
@@ -106,7 +91,7 @@ export async function downloadHooks(context: $TSContext, backendEnv: $TSAny, aws
   }
 
   // loop over each object in S3 hooks directory and download the file
-  for (let listHookObject of listHookObjects.Contents) {
+  for (const listHookObject of listHookObjects.Contents) {
     const params = {
       Key: listHookObject.Key,
       Bucket: deploymentBucketName,
@@ -120,15 +105,152 @@ export async function downloadHooks(context: $TSContext, backendEnv: $TSAny, aws
     } catch (ex) {
       // log(ex);
     }
-    try {
-      let relativeFilePath: string = listHookObject.Key;
-      if (relativeFilePath.substring(0, S3_HOOKS_DIRECTORY.length).localeCompare(S3_HOOKS_DIRECTORY) === 0) {
-        relativeFilePath = relativeFilePath.substring(S3_HOOKS_DIRECTORY.length);
-      }
-      // relativeFilePath has POSIX seperation, split and join to get OS specific path
-      const hooksFilePath = path.join(hooksDirPath, ...relativeFilePath.split('/'));
-      fs.ensureFileSync(hooksFilePath);
-      fs.writeFileSync(hooksFilePath, hooksFileObject.Body);
-    } catch (ex) {}
+    const hooksFilePath = getHooksFilePathFromS3Key(hooksDirPath, listHookObject.Key);
+    placeFile(hooksFilePath, hooksFileObject.Body);
   }
+}
+
+export async function pullHooks(context: $TSContext): Promise<void> {
+  /**
+   * pulls hooks directory from S3 and places in amplify project.
+   * cleans the existing hooks directory
+   *
+   * @param {$TSContext} context
+   * @return {Promise<void>}
+   */
+  // used by pull-backend
+  const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
+  const hooksDirPath = pathManager.getHooksDirPath();
+
+  const s3 = await S3.getInstance(context);
+  // const file = await downloadZip(s3, tempDir, S3BackendZipFileName);
+
+  const listHookObjects = await s3.getObjects({
+    Prefix: S3_HOOKS_DIRECTORY,
+  });
+
+  cleanHooksDirectory(context);
+
+  // loop over each object in S3 hooks directory and download the file
+  for (const listHookObject of listHookObjects) {
+    let hooksFileData = null;
+    try {
+      // log();
+      hooksFileData = await s3.getFile({
+        Key: listHookObject.Key,
+      });
+    } catch (ex) {}
+
+    const hooksFilePath = getHooksFilePathFromS3Key(hooksDirPath, listHookObject.Key);
+    placeFile(hooksFilePath, hooksFileData);
+  }
+}
+
+// hooks utility functions:
+function getHooksFilePathList(context: $TSContext): string[] {
+  /**
+   * returns list of relative file paths (no directories) of all files in the hooks directory
+   *
+   * @param {$TSContext} context
+   * @return {string[]} array of relative file paths to hooks directory
+   */
+
+  const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo.localEnvInfo.projectPath);
+  const posixHooksDirectoryPath = convertToPosixPath(hooksDirectoryPath);
+
+  return sync(posixHooksDirectoryPath.concat('/**/*'))
+    .filter(file => fs.lstatSync(file).isFile())
+    .map(file => path.relative(hooksDirectoryPath, file));
+}
+
+function getNonIgnoredFileList(context: $TSContext): string[] {
+  /**
+   * returns list of relative file paths (no directories) of all files in the hooks directory except the ones ignored in hooks-config.json
+   *
+   * @param {$TSContext} context
+   * @return {string[]} array of relative file paths to hooks directory
+   */
+  //
+
+  const ig = ignore();
+  const configFile = stateManager.getHooksConfigJson(context.exeInfo.localEnvInfo.projectPath);
+
+  if (typeof configFile === 'object' && configFile !== null && configFile.hasOwnProperty('ignore') && Array.isArray(configFile.ignore)) {
+    configFile.ignore = configFile.ignore.filter(listItem => typeof listItem === 'string' || listItem instanceof String);
+    ig.add(configFile.ignore);
+  }
+
+  return ig.filter(getHooksFilePathList(context));
+}
+
+function getHooksFilePathFromS3Key(hooksDirPath: string, s3Key: string): string {
+  /**
+   * returns absolute path to hooks file from s3 key
+   *
+   * @param {string} hooksDirPath hooks directory path
+   * @param {string} s3Key s3 key
+   * @return {string} absolute path
+   */
+
+  if (s3Key.substring(0, S3_HOOKS_DIRECTORY.length).localeCompare(S3_HOOKS_DIRECTORY) === 0) {
+    s3Key = s3Key.substring(S3_HOOKS_DIRECTORY.length);
+  }
+
+  // s3Key has POSIX seperation, split and join to get OS specific path
+  return path.join(hooksDirPath, ...s3Key.split('/'));
+}
+
+function cleanHooksDirectory(context: $TSContext): void {
+  /**
+   * removes all files in hooks directory except ignored files
+   *
+   * @param {$TSContext} context The number to raise.
+   * @return {void}
+   */
+
+  const relativeFilePathsList = getNonIgnoredFileList(context);
+  const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo.localEnvInfo.projectPath);
+  for (const relativeFilePath of relativeFilePathsList) {
+    const absolutefilePathToUpload = path.join(hooksDirectoryPath, relativeFilePath);
+    if (fs.lstatSync(absolutefilePathToUpload).isFile() && relativeFilePath.localeCompare(PathConstants.HooksConfigFileName) !== 0) {
+      fs.removeSync(absolutefilePathToUpload);
+    }
+  }
+}
+
+// general utility functions:
+function placeFile(filePath: string, data: $TSAny): void {
+  /**
+   * quietly ensures a file esists else creates one and writes the data
+   *
+   * @param {string} filePath path to file
+   * @param {$TSAny} data data to be placed in the file
+   * @return {void}
+   */
+  try {
+    fs.ensureFileSync(filePath);
+    fs.writeFileSync(filePath, data);
+  } catch (ex) {}
+}
+
+function convertToPosixPath(filePath: string): string {
+  /**
+   * Returns POSIX path.
+   *
+   * @param {string} filePath any file path
+   * @return {string} posixFilePath
+   */
+
+  return filePath.split(path.sep).join(path.posix.sep);
+}
+
+function getS3Key(relativePath: string): string {
+  /**
+   * Returns S3 key to hooks files
+   *
+   * @param {string} relativePath relative path to hooks directory
+   * @return {string} S3 key to hooks files
+   */
+
+  return S3_HOOKS_DIRECTORY + convertToPosixPath(relativePath);
 }
