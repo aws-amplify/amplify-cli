@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.24.0...amplify-cli-core@1.24.1-beta.0) (2021-07-16)
+
+
+### Bug Fixes
+
+* checkout into existing env with new LL ([#7687](https://github.com/aws-amplify/amplify-cli/issues/7687)) ([3e2e630](https://github.com/aws-amplify/amplify-cli/commit/3e2e6305b5a74db2a282dc33b0cc5d24f1c8eaaf))
+
+
+
+
+
 # [1.24.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-cli-core@1.23.1...amplify-cli-core@1.24.0) (2021-06-30)
 
 

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.55.1-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.55.0...amplify-provider-awscloudformation@4.55.1-beta.0) (2021-07-16)
+
+
+### Bug Fixes
+
+* [#7441](https://github.com/aws-amplify/amplify-cli/issues/7441) - init from git prompts for credentials twice ([#7682](https://github.com/aws-amplify/amplify-cli/issues/7682)) ([7471c5f](https://github.com/aws-amplify/amplify-cli/commit/7471c5fcc86af0e17a967066a388f67891f93355))
+* **amplify-provider-awscloudformation:** rebase code and fixed yaml template load ([#7518](https://github.com/aws-amplify/amplify-cli/issues/7518)) ([8dfb71c](https://github.com/aws-amplify/amplify-cli/commit/8dfb71cb78fafc108a3d9d67505d46c208607026))
+
+
+
+
+
 # [4.55.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-provider-awscloudformation@4.54.0...amplify-provider-awscloudformation@4.55.0) (2021-07-12)
 
 
