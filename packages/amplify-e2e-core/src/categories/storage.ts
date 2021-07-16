@@ -253,8 +253,6 @@ export function addS3AndAuthWithAuthOnlyAccess(cwd: string, settings: any): Prom
       .sendCarriageReturn() // Default config
       .wait('How do you want users to be able to sign in')
       .sendCarriageReturn() // Username
-      .wait('Would you like to allow signing in with alternative options?')
-      .sendCarriageReturn()
       .wait('Do you want to configure advanced settings')
       .sendCarriageReturn() // No, I am done.
       .wait('Please provide a friendly name for your resource')

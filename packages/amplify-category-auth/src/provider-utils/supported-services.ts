@@ -284,38 +284,14 @@ export const supportedServices = {
         ],
       },
       {
-        key: 'usernameAttributes',
-        question: 'How do you want users to be able to sign in?',
-        type: 'list',
-        map: 'signInOptions',
-        prefix: 'Warning: you will not be able to edit these selections.',
-        prefixColor: 'red',
-        learnMore:
-          "Selecting 'Email' and/or 'Phone Number' will allow end users to sign-up using these values.  Selecting 'Username' will require a unique username for users.",
-        required: true,
-        andConditions: [
-          {
-            key: 'authSelections',
-            value: 'identityPoolOnly',
-            operator: '!=',
-          },
-          {
-            preventEdit: 'always',
-          },
-        ],
-      },
-      {
         key: 'aliasAttributes',
-        question: 'Would you like to enable alternative options to sign up and sign in?',
+        question: 'How do you want users to be able to sign in?',
         required: true,
         type: 'multiselect',
         map: 'aliasAttributes',
+        prefixColor: 'red',
+        prefix: 'Warning: you will not be able to edit these selections.',
         andConditions: [
-          {
-            key: 'usernameAttributes',
-            value: 'username',
-            operator: '=',
-          },
           {
             key: 'authSelections',
             value: 'identityPoolOnly',

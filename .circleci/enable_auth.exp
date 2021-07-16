@@ -4,8 +4,6 @@ expect "Do you want to use default authentication and security configuration?\r"
 send -- "\r"
 expect "How do you want users to be able to sign in when using your Cognito User Pool?\r"
 send -- "\r"
-expect "Would you like to allow signing in with alternative options?\r"
-send -- "\r"
 expect "Do you want to configure advanced settings?\r"
 send -- "\r"
 set timeout 70

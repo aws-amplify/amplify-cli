@@ -171,8 +171,6 @@ export function updateApiWithMultiAuth(cwd: string, settings: any) {
       .sendCarriageReturn()
       .wait('How do you want users to be able to sign in?')
       .sendCarriageReturn()
-      .wait('Would you like to allow signing in with alternative options?')
-      .sendCarriageReturn()
       .wait('Do you want to configure advanced settings?')
       .sendCarriageReturn()
       // OIDC
@@ -478,8 +476,6 @@ function setupCognitoUserPool(chain: any) {
     .wait('Do you want to use the default authentication and security configuration')
     .sendCarriageReturn()
     .wait('How do you want users to be able to sign in')
-    .sendCarriageReturn()
-    .wait('Would you like to allow signing in with alternative options?')
     .sendCarriageReturn()
     .wait('Do you want to configure advanced settings?')
     .sendCarriageReturn();

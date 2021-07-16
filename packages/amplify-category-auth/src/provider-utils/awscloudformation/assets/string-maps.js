@@ -393,16 +393,17 @@ const coreAttributes = [
 
 const aliasAttributes = [
   {
-    name: 'Also allow sign in with verified email address',
+    name: 'Email',
     value: 'email',
+    checked: true,
   },
   {
-    name: 'Also allow sign in with verified phone number',
-    value: 'phone_number',
-  },
-  {
-    name: 'Also allow sign in with preferred username (a username that your users can change)',
+    name: 'Username',
     value: 'preferred_username',
+  },
+  {
+    name: 'Phone number',
+    value: 'phone_number',
   },
 ];
 
