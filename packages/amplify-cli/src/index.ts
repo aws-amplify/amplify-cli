@@ -64,6 +64,19 @@ process.on('unhandledRejection', function (error) {
   throw error;
 });
 
+function normalizeStatusCommandOptions( statusCommandOptions){
+  let options = statusCommandOptions;
+  //Normalize 'amplify status -v' to verbose, since -v is interpreted as 'version'
+  if ( options && options.hasOwnProperty('v') ){
+          options.verbose = true;
+          if ( typeof options['v'] === 'string'){
+            options[ options['v'] ] = true ;
+          }
+          delete options['v']
+  }
+  return options;
+}
+
 // entry from commandline
 export async function run() {
   try {
@@ -71,11 +84,15 @@ export async function run() {
 
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
-
     // with non-help command supplied, give notification before execution
     if (input.command !== 'help') {
       // Checks for available update, defaults to a 1 day interval for notification
       notify({ defer: false, isGlobal: true });
+    }
+
+    //Normalize status command options
+    if ( input.command == 'status'){
+      input.options  = normalizeStatusCommandOptions(input.options)
     }
 
     // Initialize Banner messages. These messages are set on the server side

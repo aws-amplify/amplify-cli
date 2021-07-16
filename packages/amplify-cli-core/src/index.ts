@@ -1,4 +1,6 @@
+import { ViewResourceTableParams, CLIParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
+export { ViewResourceTableParams, CLIParams };
 
 export * from './cfnUtilities';
 export * from './cliContext';
@@ -21,6 +23,7 @@ export * from './utils';
 export * from './banner-message';
 export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
+export * from "./cliViewAPI";
 
 // Temporary types until we can finish full type definition across the whole CLI
 
@@ -164,6 +167,7 @@ export interface AmplifyProjectConfig {
 
 export type $TSCopyJob = any;
 
+
 // Temporary interface until Context refactor
 interface AmplifyToolkit {
   confirmPrompt: (prompt: string, defaultValue?: boolean) => Promise<boolean>;
@@ -216,6 +220,7 @@ interface AmplifyToolkit {
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
   showHelpfulProviderLinks: () => $TSAny;
   showResourceTable: () => $TSAny;
+  showStatusTable:( resourceTableParams : ViewResourceTableParams )=> $TSAny; //Enhanced Status with CFN-Diff
   serviceSelectionPrompt: (
     context: $TSContext,
     category: string,

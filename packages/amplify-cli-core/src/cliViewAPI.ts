@@ -1,0 +1,109 @@
+//Use this file to store all types used between the CLI commands and the view/display functions
+// CLI=>(command-handler)==[CLI-View-API]=>(ux-handler/report-handler)=>output-stream
+import chalk from 'chalk';
+export interface CLIParams {
+    cliCommand: string;
+    cliSubcommands: string[] | undefined;
+    cliOptions: { [key: string]: any };
+}
+//Resource Table filter and display params (params used for summary/display view of resource table)
+export class ViewResourceTableParams {
+    private _command: string;
+    private _verbose: boolean; //display table in verbose mode
+    private _help: boolean; //display help for the command
+    private _categoryList: string[] | []; //categories to  display
+    private _filteredResourceList: any; //resources to *not* display - TBD define union of valid types
+
+    public get command() {
+        return this._command;
+    }
+    public set command( command : string) {
+        this._command = command;
+    }
+
+    public get verbose() {
+        return this._verbose;
+    }
+    public set verbose( tf: boolean ) {
+        this._verbose = tf;
+    }
+
+    public get help() {
+        return this._help;
+    }
+    public set help( isHelp: boolean ) {
+        this._help = isHelp;
+    }
+
+    public get categoryList() {
+        return this._categoryList;
+    }
+    public set categoryList( categories: string[] | [] ){
+        this._categoryList = categories
+    }
+
+    public get filteredResourceList() {
+        return this._filteredResourceList;
+    }
+    public set filteredResourceList( resourceList : any ) {
+        this._filteredResourceList = resourceList ;
+    }
+
+    getCategoryFromCLIOptions(cliOptions: object) {
+        if (cliOptions) {
+            return Object.keys(cliOptions)
+                .filter(key => key != 'verbose' && key !== 'yes')
+                .map(category => category.toLowerCase());
+        } else {
+            return [];
+        }
+    }
+    styleHeader(str: string) {
+        return chalk.italic(chalk.bgGray.whiteBright(str));
+    }
+    styleCommand(str: string) {
+        return chalk.greenBright(str);
+    }
+    styleOption(str: string) {
+        return chalk.yellowBright(str);
+    }
+    stylePrompt(str: string) {
+        return chalk.bold(chalk.yellowBright(str));
+    }
+    styleNOOP(str: string) {
+        return chalk.italic(chalk.grey(str));
+    }
+    public getStyledHelp() {
+        return `
+${this.styleHeader('NAME')}
+${this.styleCommand('amplify status')} --  Shows the state of local resources not yet pushed to the cloud (Create/Update/Delete)
+
+${this.styleHeader('SYNOPSIS')}
+${this.styleCommand('amplify status')} [${this.styleCommand('-v')} [${this.styleOption('category ...')}] ] 
+
+${this.styleHeader('DESCRIPTION')}
+The amplify status command displays the difference between the deployed state and the local state of the application.
+The following options are available: 
+
+${this.styleNOOP('no options')}        : (Summary mode) Displays the summary of local state vs deployed state of the application
+${this.styleCommand('-v [category ...]')} : (Verbose mode) Displays the cloudformation diff for all resources for the specificed category. 
+                    If no category is provided, it shows the diff for all categories.
+                    usage:
+                    ${this.stylePrompt('#>')} ${this.styleCommand('amplify status -v')}
+                    ${this.stylePrompt('#>')} ${this.styleCommand('amplify status -v ')}${this.styleOption('api storage')}
+                               
+        `;
+    }
+
+    public logErrorException( e : Error  ){
+        console.log(e.name , e.message);
+    }
+
+    public constructor(cliParams: CLIParams) {
+        this._command = cliParams.cliCommand;
+        this._verbose = cliParams.cliOptions?.verbose === true;
+        this._categoryList = this.getCategoryFromCLIOptions(cliParams.cliOptions);
+        this._filteredResourceList = []; //TBD - add support to provide resources
+        this._help = cliParams.cliSubcommands ? cliParams.cliSubcommands.includes('help') : false;
+    }
+}
