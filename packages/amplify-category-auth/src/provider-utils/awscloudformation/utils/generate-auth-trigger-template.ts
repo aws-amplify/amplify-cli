@@ -91,11 +91,13 @@ function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTrig
     code: lambda.Code.fromInline(triggerCode),
     handler: 'index.handler',
   });
+  // reason to add iam::PassRole
+  //AccessDeniedException: User: arn:aws:sts::<ACCOUNT_ID>:assumed-role/amplify-emailcheck-dev-17-authTriggerFnServiceRole-1JAJZTK0HHAHP/amplify-emailcheck-dev-17374-authTriggerFn7FCFA449-SP7WeFmC9mD1 is not authorized to perform: iam:PassRole on resource: arn:aws:iam::ACCOUNT_ID:role/sns533b49c5173740-dev
   if (authTriggerFn.role) {
     authTriggerFn.role.addToPrincipalPolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
-        actions: ['cognito-idp:DescribeUserPoolClient', 'cognito-idp:UpdateUserPool'],
+        actions: ['cognito-idp:DescribeUserPoolClient', 'cognito-idp:UpdateUserPool', 'cognito-idp:DescribeUserPool', 'iam:PassRole'],
         resources: ['*'],
       }),
     );
