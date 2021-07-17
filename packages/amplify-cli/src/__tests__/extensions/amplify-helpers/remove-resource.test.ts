@@ -1,9 +1,10 @@
+import * as path from 'path';
 import { removeResource, forceRemoveResource } from '../../../extensions/amplify-helpers/remove-resource';
 import { stateManager, exitOnNextTick, ResourceDoesNotExistError, MissingParametersError } from 'amplify-cli-core';
 import * as inquirer from 'inquirer';
 import { updateBackendConfigAfterResourceRemove } from '../../../extensions/amplify-helpers/update-backend-config';
 import { removeResourceParameters } from '../../../extensions/amplify-helpers/envResourceParams';
-import * as path from 'path';
+
 jest.mock('../../../extensions/amplify-helpers/envResourceParams');
 jest.mock('../../../extensions/amplify-helpers/update-backend-config');
 
