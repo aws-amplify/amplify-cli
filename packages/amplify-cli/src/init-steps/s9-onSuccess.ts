@@ -180,6 +180,7 @@ function generateReadMeFile(context: $TSContext) {
 }
 
 function generateHooksSampleFiles(context: $TSContext) {
+  // TODO: delete amplify/hooks if exist
   const { projectPath } = context.exeInfo.localEnvInfo;
   const sampleHookScriptsDirPath = join(__dirname, '..', '..', 'resources', 'sampleHookScripts');
 
