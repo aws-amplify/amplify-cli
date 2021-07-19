@@ -39,6 +39,26 @@ async function syncCurrentCloudBackend(context: $TSContext) {
   }
 }
 
+async function pushHooks(context: $TSContext) {
+  context.exeInfo.pushHooks = true;
+
+  try {
+    const providerPlugins = getProviderPlugins(context);
+    const pushHooksTasks: (() => Promise<$TSAny>)[] = [];
+    context.exeInfo.projectConfig.providers.forEach(provider => {
+      const providerModule = require(providerPlugins[provider]);
+      pushHooksTasks.push(() => providerModule.uploadHooksDirectory(context));
+    });
+
+    spinner.start(`Pushing Hooks to the cloud.`);
+    await sequential(pushHooksTasks);
+    spinner.succeed(`Successfully pushed hooks to the cloud.`);
+  } catch (e) {
+    spinner.fail(`There was an error pushing the hooks.`);
+    throw e;
+  }
+}
+
 export const run = async (context: $TSContext) => {
   try {
     context.amplify.constructExeInfo(context);
@@ -48,6 +68,7 @@ export const run = async (context: $TSContext) => {
     if (context.parameters.options.force) {
       context.exeInfo.forcePush = true;
     }
+    await pushHooks(context);
     await syncCurrentCloudBackend(context);
     return await context.amplify.pushResources(context);
   } catch (e) {
