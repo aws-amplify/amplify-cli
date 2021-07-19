@@ -1,4 +1,4 @@
-<% var autoVerifiedAttributes = props.autoVerifiedAttributes.concat(props.aliasAttributes).filter((attr, i, a) => ['email', 'phone_number'].includes(attr) && a.indexOf(attr) === i) %>
+<% var autoVerifiedAttributes = props.autoVerifiedAttributes.concat(props.aliasAttributes).filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i) %>
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
@@ -846,7 +846,7 @@ Resources:
       - PolicyName: <%=`${props.resourceNameTruncated}_sns_pass_role_policy`%>
         PolicyDocument:
           Version: 2012-10-17
-          Statement: 
+          Statement:
             - Effect: Allow
               Action:
                 - 'iam:PassRole'

@@ -30,6 +30,7 @@ import {
   PasswordRecoveryResult,
   UsernameAttributes,
   AliasAttributes,
+  AttributeType,
 } from '../service-walkthrough-types';
 import { pascalCase } from 'change-case';
 
@@ -272,9 +273,9 @@ const signinAttributeMap: Record<CognitoUserPoolSigninMethod, UsernameAttributes
 };
 
 const aliasAttributeMap: Record<CognitoUserAliasAttributes, AliasAttributes> = {
-  [CognitoUserAliasAttributes.PREFERRED_USERNAME]: 'preferred_username',
-  [CognitoUserAliasAttributes.EMAIL]: 'email',
-  [CognitoUserAliasAttributes.PHONE_NUMBER]: 'phone_number',
+  [CognitoUserAliasAttributes.PREFERRED_USERNAME]: AttributeType.PREFERRED_USERNAME,
+  [CognitoUserAliasAttributes.EMAIL]: AttributeType.EMAIL,
+  [CognitoUserAliasAttributes.PHONE_NUMBER]: AttributeType.PHONE_NUMBER,
 };
 
 const socialFederationKeyMap = (provider: 'FACEBOOK' | 'AMAZON' | 'GOOGLE' | 'APPLE', projectType: string): string => {
