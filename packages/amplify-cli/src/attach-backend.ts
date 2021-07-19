@@ -30,7 +30,7 @@ export async function attachBackend(context: $TSContext, inputParams) {
     await generateFiles(context);
     await onSuccess(context);
   } catch (e) {
-    removeFolderStructure();
+    removeAmplifyFolderStructure();
     restoreOriginalAmplifyFolder();
 
     context.print.error('Failed to pull the backend.');
@@ -59,11 +59,11 @@ async function onSuccess(context: $TSContext) {
   await postPullCodegen(context);
 
   if (!inputParams.yes) {
-    const confirmKeepCodebase = context.exeInfo.existingLocalEnvInfo?.noUpdateBackend
+    const shouldKeepAmplifyDir = context.exeInfo.existingLocalEnvInfo?.noUpdateBackend
       ? !context.exeInfo.existingLocalEnvInfo.noUpdateBackend
       : await context.amplify.confirmPrompt('Do you plan on modifying this backend?', true);
 
-    if (confirmKeepCodebase) {
+    if (shouldKeepAmplifyDir) {
       if (stateManager.currentMetaFileExists()) {
         await initializeEnv(context, stateManager.getCurrentMeta());
       }
@@ -76,7 +76,7 @@ async function onSuccess(context: $TSContext) {
       context.print.info('');
     } else {
       stateManager.setLocalEnvInfo(process.cwd(), { ...context.exeInfo.localEnvInfo, noUpdateBackend: true });
-      removeFolderStructure(true);
+      removeAmplifyFolderStructure(true);
 
       context.print.info('');
       context.print.success(`Added backend environment config object to your project.`);
@@ -153,7 +153,7 @@ function setupFolderStructure(): void {
   fs.ensureDirSync(backendDirPath);
 }
 
-function removeFolderStructure(partial = false) {
+function removeAmplifyFolderStructure(partial = false) {
   const projectPath = process.cwd();
   if (partial) {
     fs.removeSync(pathManager.getBackendDirPath(projectPath));
