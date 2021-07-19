@@ -6,7 +6,7 @@ import { S3 } from '../aws-utils/aws-s3';
 import * as aws from 'aws-sdk';
 import fs from 'fs-extra';
 import { sync } from 'glob';
-
+import { ProviderName } from '../constants';
 const S3_HOOKS_DIRECTORY = 'hooks/';
 
 export async function uploadHooksDirectory(context: $TSContext): Promise<string[]> {
@@ -22,7 +22,7 @@ export async function uploadHooksDirectory(context: $TSContext): Promise<string[
    */
 
   const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo.localEnvInfo.projectPath);
-  // TODO: delete s3 hooks direcotry
+  await deleteHooksFromS3(context);
 
   if (!fs.existsSync(hooksDirectoryPath)) {
     return [];
@@ -146,6 +146,18 @@ export async function pullHooks(context: $TSContext): Promise<void> {
   }
 }
 
+export async function deleteHooksFromS3(context: $TSContext): Promise<void> {
+  const envName = context.amplify.getEnvInfo().envName;
+  const projectDetails = context.amplify.getProjectDetails();
+  const projectBucket = projectDetails.teamProviderInfo[envName][ProviderName].DeploymentBucketName;
+
+  const s3 = await S3.getInstance(context);
+  try {
+    await s3.deleteDirectory(projectBucket, S3_HOOKS_DIRECTORY);
+  } catch (ex) {
+    throw ex;
+  }
+}
 // hooks utility functions:
 function getHooksFilePathList(context: $TSContext): string[] {
   /**
