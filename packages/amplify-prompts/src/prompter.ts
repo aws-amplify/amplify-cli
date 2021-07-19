@@ -1,6 +1,10 @@
 import { prompt } from 'enquirer';
+import { Prompt } from 'enquirer';
+// enquirer actions are not part of the TS types, but they are the recommended way to override enquirer behavior
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import * as actions from 'enquirer/lib/combos';
 import { isYes } from './flags';
-
 class AmplifyPrompter implements Prompter {
   constructor(private readonly prompter: typeof prompt = prompt) {}
 
@@ -40,51 +44,41 @@ class AmplifyPrompter implements Prompter {
   };
 
   /**
-   * Convenience method to make it easy to get a string response from a prompt.
-   * Same as genericInput<string>
+   * Prompt for an input.
+   * By default the input is a string, but can be any type.
+   * If the type is not a string, the transform function is required to map the prompt response (which is always a string) to the expected return type
    * @param message The prompt message
-   * @param options Prompt options
+   * @param options Prompt options. options.transform is required if T !== string
    * @returns The prompt response
    */
-  stringInput = async (message: string, options?: StringInputOptions) =>
-    this.genericInput<string>(message, { ...options, transform: options?.transform ?? (input => input) });
-
-  /**
-   * Prompt for a data type besides a string.
-   * In this case the transform option is required to map the prompt response (which is always a string) to the expected return type
-   * @param message The prompt message
-   * @param options Prompt options. options.transform is required
-   * @returns The prompt response
-   */
-  genericInput = async <T>(message: string, options: GenericInputOptions<T>) => {
+  input = async <T = string>(message: string, options: InputOptions<T>) => {
     const { result } = await this.prompter<{ result: string }>({
       type: options?.hidden ? 'invisible' : 'input',
       name: 'result',
       message,
       validate: options?.validate,
     });
-    return await options.transform(result);
+    return typeof options.transform === 'function' ? await options.transform(result) : ((result as unknown) as T); // this type assertion is safe because transform must be defined unless T is string
   };
 
-  pickOne = async <T>(message: string, choices: Choice<T>[], options?: ListOptions<T>) =>
-    (await this.pickCommon('one', message, choices, options)) as T;
-
-  pickMany = async <T>(message: string, choices: Choice<T>[], options?: ListOptions<T>) =>
-    (await this.pickCommon('many', message, choices, options)) as T[];
-
   /**
-   * Common list pick functionality. If type is 'autocomplete', a value of type T is returned. If type is multiselect a T[] is returned.
+   * Pick item(s) from a selection set.
+   * @param message The prompt message
+   * @param choices The selection set to choose from
+   * @param options Control prompt settings. options.multiselect = true is required if PickType = 'many'
+   * @returns The item(s) selected. If PickType = 'one' this is a single value. If PickType = 'many', this is an array
    */
-  private pickCommon = async <T = string>(
-    type: 'one' | 'many',
+  pick = async <M extends PickType, T = string>(
     message: string,
     choices: Choice<T>[],
-    options?: ListOptions<T>,
-  ): Promise<T | T[]> => {
+    ...options: M extends 'many' ? [PickOptions<M, T>] : [PickOptions<M, T>?]
+  ): Promise<PickReturn<M, T>> => {
     // some choices must be provided
     if (choices?.length === 0) {
       throw new Error(`No choices provided for prompt [${message}]`);
     }
+
+    const opts = options?.[0];
 
     // map string[] choices into GenericChoice<T>[]
     const genericChoices: GenericChoice<T>[] =
@@ -97,7 +91,7 @@ class AmplifyPrompter implements Prompter {
     const choiceValueMap = new Map<string, T>();
     let initialIdx: number = 0;
     const initialPredicate: ItemPredicate<T> =
-      typeof options?.initial === 'function' ? (options.initial as ItemPredicate<T>) : (item: T) => item === (options?.initial as T);
+      typeof opts?.initial === 'function' ? (opts.initial as ItemPredicate<T>) : (item: T) => item === (opts?.initial as T);
     const enquirerChoices = genericChoices.map((choice, idx) => {
       choiceValueMap.set(choice.name, choice.value);
       if (initialPredicate(choice.value)) {
@@ -106,24 +100,36 @@ class AmplifyPrompter implements Prompter {
       return { name: choice.name, disabled: choice.disabled, hint: choice.hint };
     });
 
-    const { result } = await this.prompter<{ result: T extends 'one' ? string : string[] }>({
+    actions.ctrl.a = 'a';
+
+    const { result } = await this.prompter<{ result: M extends 'many' ? string[] : string }>({
+      // actions is not part of the TS interface but it's part of the JS API
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      actions,
+      // footer is not part of the TS interface but it's part of the JS API
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      footer: opts?.multiselect ? '(Use <space> to select, <ctrl + a> to toggle all)' : undefined,
       type: 'autocomplete',
       name: 'result',
       message,
-      initial: initialIdx,
-      // there is a typo in the .d.ts file for this field
+      initial: opts?.multiselect ? undefined : initialIdx,
+      // there is a typo in the .d.ts file for this field -- muliple -> multiple
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      multiple: type === 'many',
+      multiple: opts?.multiselect,
       choices: enquirerChoices,
-      validate: options?.validate,
+      validate: opts?.validate,
     });
 
+    this.prompter;
+
     if (Array.isArray(result)) {
-      return result.map(item => choiceValueMap.get(item) as T);
+      return result.map(item => choiceValueMap.get(item) as T) as PickReturn<M, T>;
     } else {
       // result is a string
-      return choiceValueMap.get(result) as T;
+      return choiceValueMap.get(result as string) as PickReturn<M, T>;
     }
   };
 }
@@ -133,15 +139,17 @@ export const prompter: Prompter = new AmplifyPrompter();
 type Prompter = {
   confirmContinue: (message?: string) => Promise<boolean>;
   yesOrNo: (message: string) => Promise<boolean>;
-  stringInput: (message: string, options?: StringInputOptions) => Promise<string>;
-  genericInput: <T>(message: string, options: GenericInputOptions<T>) => Promise<T>;
-  pickOne: <T = string>(message: string, choices: Choice<T>[], options?: ListOptions<T>) => Promise<T>;
-  pickMany: <T = string>(message: string, choices: Choice<T>[], options?: ListOptions<T>) => Promise<T[]>;
+  input: <T = string>(message: string, options: InputOptions<T>) => Promise<T>;
+  pick: <M extends PickType, T = string>(
+    message: string,
+    choices: Choice<T>[],
+    ...options: M extends 'many' ? [PickOptions<M, T>] : [PickOptions<M, T>?]
+  ) => Promise<PickReturn<M, T>>;
 };
 
 // the following types are the building blocks of the method input types
 
-type InputOptions = {
+type HiddenInputOption = {
   hidden?: boolean;
 };
 
@@ -157,6 +165,16 @@ type TransformOption<T> = {
   transform: (value: string) => T | Promise<T>;
 };
 
+type OptionalTransformOption<T> = T extends string ? Partial<TransformOption<T>> : TransformOption<T>;
+
+type MultiselectOption<M extends PickType> = M extends 'many'
+  ? {
+      multiselect: true;
+    }
+  : {
+      multiselect?: false;
+    };
+
 type ItemPredicate<T> = (item: T) => Promise<boolean> | boolean;
 
 type Choice<T> = T extends string ? GenericChoice<T> | string : GenericChoice<T>;
@@ -168,12 +186,14 @@ type GenericChoice<T> = {
   disabled?: boolean;
 };
 
+type PickType = 'many' | 'one';
+
+type PickReturn<M extends PickType, T> = M extends 'many' ? T[] : T;
+
 // the following types are the method input types
 
-type BaseOptions<T = string> = ValidateValueOption & InitialValueOption<T>;
+type BaseOptions<T> = ValidateValueOption & InitialValueOption<T>;
 
-type ListOptions<T = string> = ValidateValueOption & InitialValueOption<T | ItemPredicate<T>>;
+type PickOptions<M extends PickType, T> = ValidateValueOption & InitialValueOption<T | ItemPredicate<T>> & MultiselectOption<M>;
 
-type StringInputOptions = BaseOptions & Partial<TransformOption<string>> & InputOptions;
-
-type GenericInputOptions<T> = BaseOptions<T> & TransformOption<T> & InputOptions;
+type InputOptions<T> = BaseOptions<T> & OptionalTransformOption<T> & HiddenInputOption;

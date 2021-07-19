@@ -8,7 +8,7 @@ const driver = async () => {
   // const third = await prompter.genericInput<number>('This is a number', { transform: input => Number.parseInt(input, 10) });
   // console.log(third);
   const options = ['first option', 'second option', 'third option'];
-  const fourth = await prompter.pickOne('pick an option', options, { initial: item => item === 'second option' });
+  const fourth = await prompter.pick<'many'>('pick an option', options, { multiselect: true });
   console.log(fourth);
 };
 
