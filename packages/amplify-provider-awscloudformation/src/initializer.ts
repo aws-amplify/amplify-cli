@@ -1,9 +1,11 @@
 import { $TSContext } from 'amplify-cli-core';
 import _ from 'lodash';
-import { AmplifyRootStackTransform, CommandType, RootStackTransformOptions } from './root-stack-builder';
+import { CommandType } from './root-stack-builder';
 import { rootStackFileName } from '.';
 import { pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
 import { Template } from 'cloudform-types';
+import { transformRootStack } from './overrideManager';
+
 const moment = require('moment');
 const path = require('path');
 const glob = require('glob');
@@ -51,16 +53,7 @@ export async function run(context) {
     const unauthRoleName = `${stackName}-unauthRole`;
 
     // CFN transform for Root stack
-    const props: RootStackTransformOptions = {
-      resourceConfig: {
-        stackFileName: rootStackFileName,
-      },
-    };
-    // generate , override and deploy stacks to disk
-    const rootTransform = new AmplifyRootStackTransform(props, CommandType.INIT);
-    const rootStack = await rootTransform.transform();
-    // prepush modifier
-    await prePushCfnTemplateModifier(rootStack);
+    const rootStack = await transformRootStack(CommandType.PRE_INIT);
     // Track Amplify Console generated stacks
     if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
       rootStack.Description = 'Root Stack for AWS Amplify Console';
@@ -186,16 +179,11 @@ export async function onInitSuccessful(context) {
 export const storeRootStackTemplate = async (template?: Template) => {
   // generate template again as the folder structure was not created when root stack was initiaized
   if (template === undefined) {
-    const props: RootStackTransformOptions = {
-      resourceConfig: {
-        stackFileName: rootStackFileName,
-      },
-    };
-    const rootTransform = new AmplifyRootStackTransform(props, CommandType.INIT);
-    template = await rootTransform.transform();
-    // prepush modifier
-    await prePushCfnTemplateModifier(template);
+    template = await transformRootStack(CommandType.INIT);
   }
+
+  // prepush modifier
+  await prePushCfnTemplateModifier(template);
 
   // RootStack deployed to backend/awscloudformation/build
   const projectRoot = pathManager.findProjectRoot();
