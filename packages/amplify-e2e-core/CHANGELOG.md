@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.23.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.23.0...amplify-e2e-core@1.23.1) (2021-07-16)
+
+
+### Bug Fixes
+
+* add/update function when some LL are not yet migrated ([#7674](https://github.com/aws-amplify/amplify-cli/issues/7674)) ([9688681](https://github.com/aws-amplify/amplify-cli/commit/968868103744edcfbed6b082b3d9a92867180f73))
+
+
+
+
+
 # [1.23.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-core@1.22.0...amplify-e2e-core@1.23.0) (2021-07-12)
 
 
