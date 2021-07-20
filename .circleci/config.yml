@@ -553,9 +553,9 @@ jobs:
     steps:
       - setup_remote_docker
       - aws-ecr/build-and-push-image:
-          aws-access-key-id: ECR_PUSH_ACCESS_KEY
-          aws-secret-access-key: ECR_PUSH_SECRET_ACCESS_KEY
-          aws-session-token: ECR_PUSH_SESSION_TOKEN
+          aws-access-key-id: ECR_ACCESS_KEY
+          aws-secret-access-key: ECR_SECRET_ACCESS_KEY
+          aws-session-token: ECR_SESSION_TOKEN
           region: ECR_REGION
           checkout: true
           create-repo: false
