@@ -1,10 +1,11 @@
 import * as fs from 'fs-extra';
-import { pathManager } from './pathManager';
-import { $TSMeta, $TSTeamProviderInfo, $TSAny, DeploymentSecrets } from '..';
-import { JSONUtilities } from '../jsonUtilities';
 import _ from 'lodash';
+import * as path from 'path';
+import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets } from '..';
 import { SecretFileMode } from '../cliConstants';
-import { Tag, ReadTags, HydrateTags } from '../tags';
+import { JSONUtilities } from '../jsonUtilities';
+import { HydrateTags, ReadTags, Tag } from '../tags';
+import { pathManager } from './pathManager';
 
 export type GetOptions<T> = {
   throwIfNotExist?: boolean;
@@ -292,6 +293,33 @@ export class StateManager {
     }
 
     return resources[0];
+  };
+
+  convertNumBytes = (numBytes: number) => ({
+    toKB: () => Math.round(numBytes / 1024),
+    toMB: () => Math.round(numBytes / 1024 ** 2),
+  });
+
+  getFolderSize = async (filePath: string) => {
+    try {
+      const fsStats = await fs.stat(filePath);
+      if (fsStats.isFile()) {
+        const { size } = fsStats;
+        return size;
+      }
+      if (!fsStats.isDirectory()) {
+        throw new Error(`Unrecognized file type [${filePath}]`);
+      }
+      const dir = await fs.readdir(filePath);
+      let totalSizeInBytes = 0;
+      for (const dirEntry of dir) {
+        const fullPath = path.join(filePath, dirEntry);
+        totalSizeInBytes += await this.getFolderSize(fullPath);
+      }
+      return totalSizeInBytes;
+    } catch (error) {
+      throw new Error(`Calculating file size failed for [${filePath}]: ${error.message || error}`);
+    }
   };
 
   private filterResourcesFromMeta = (

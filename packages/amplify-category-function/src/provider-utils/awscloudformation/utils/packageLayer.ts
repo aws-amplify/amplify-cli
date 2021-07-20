@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, pathManager } from 'amplify-cli-core';
+import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
 import { ZipEntry } from 'amplify-function-plugin-interface';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -10,7 +10,7 @@ import { loadLayerConfigurationFile } from './layerConfiguration';
 import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
 import { ServiceName, versionHash } from './constants';
 import { LayerCloudState } from './layerCloudState';
-import { loadPreviousLayerHash, ensureLayerVersion, validFilesize, loadStoredLayerParameters, getChangedResources } from './layerHelpers';
+import { loadPreviousLayerHash, ensureLayerVersion, loadStoredLayerParameters, getChangedResources } from './layerHelpers';
 import { defaultLayerPermission } from './layerParams';
 import { zipPackage } from './zipResource';
 import { accessPermissions, description } from './constants';
@@ -35,6 +35,17 @@ export const packageLayer: Packager = async (context, resource) => {
   const distDir = path.join(resourcePath, 'dist');
   fs.ensureDirSync(distDir);
   const destination = path.join(distDir, 'latest-build.zip');
+
+  // check total layer size is less than 250MB
+  let layerSizeInBytes = 0;
+  // Add up all the lib/opt folders
+  layerSizeInBytes += await stateManager.getFolderSize(path.join(resourcePath, 'lib'));
+  layerSizeInBytes += await stateManager.getFolderSize(path.join(resourcePath, 'opt'));
+
+  if (layerSizeInBytes > 250 * 1024 ** 2) {
+    throw new Error(`Lambda layer ${resource.resourceName} is too large: ${stateManager.convertNumBytes(layerSizeInBytes).toMB()}/250 MB`);
+  }
+
   let zipEntries: ZipEntry[] = [{ sourceFolder: path.join(resourcePath, 'opt') }];
 
   for (const runtime of runtimes) {
@@ -64,6 +75,7 @@ export const packageLayer: Packager = async (context, resource) => {
       zipEntries = [...zipEntries, ...packageResult.zipEntries];
     }
   }
+
   await zipPackage(zipEntries, destination);
 
   const layerCloudState = LayerCloudState.getInstance(resource.resourceName);
@@ -73,12 +85,7 @@ export const packageLayer: Packager = async (context, resource) => {
   }
 
   const zipFilename = createLayerZipFilename(resource.resourceName, layerCloudState.latestVersionLogicalId);
-  // check zip size is less than 250MB
-  if (validFilesize(context, destination)) {
-    context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: versionHash, hashValue: currentHash });
-  } else {
-    throw new Error('File size greater than 250MB');
-  }
+  context.amplify.updateAmplifyMetaAfterPackage(resource, zipFilename, { resourceKey: versionHash, hashValue: currentHash });
   return { newPackageCreated: true, zipFilename, zipFilePath: destination };
 };
 
