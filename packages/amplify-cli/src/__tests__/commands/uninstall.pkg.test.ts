@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 import { hideSync } from 'hidefile';
 import { setRegPendingDelete } from '../../utils/win-utils';
 import { windowsPathSerializer } from '../../../tests/amplify-helpers/testUtils/snapshot-serializer';
-import path from 'path';
+import * as path from 'path';
 
 jest.mock('execa');
 const execa_mock = execa as jest.Mocked<typeof execa>;
@@ -111,7 +111,7 @@ describe('uninstall packaged CLI on windows', () => {
 
     expect(fs_mock.move.mock.calls[0]).toMatchInlineSnapshot(`
       Array [
-        "${path.join('homedir','.amplify','bin','amplify.exe')}",
+        "${path.join('homedir', '.amplify', 'bin', 'amplify.exe')}",
         "a/test/path/.amplify-pending-delete.exe",
         Object {
           "overwrite": true,
