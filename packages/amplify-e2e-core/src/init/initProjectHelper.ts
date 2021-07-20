@@ -380,7 +380,13 @@ export function amplifyInitYes(cwd: string): Promise<void> {
       env: {
         CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_CREATION: '1',
       },
-    }).run((err: Error) => (err ? reject(err) : resolve()));
+    }).run((err: Error) =>
+      err
+        ? reject(err)
+        : (() => {
+            resolve();
+          })(),
+    );
   });
 }
 
