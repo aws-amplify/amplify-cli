@@ -33,8 +33,7 @@ export function enableContainerHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['configure', 'project'], { cwd, stripColors: true })
       .wait('Which setting do you want to configure?')
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown(2)
       .sendCarriageReturn()
       .wait('Do you want to enable container-based deployments?')
       .sendConfirmYes()
@@ -52,8 +51,7 @@ export function addDevContainerHosting(cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['add', 'hosting'], { cwd, stripColors: true })
       .wait('Select the plugin module to execute')
-      .send(KEY_DOWN_ARROW)
-      .send(KEY_DOWN_ARROW)
+      .sendKeyDown(2)
       .sendCarriageReturn()
       .wait('Provide your web app endpoint (e.g. app.example.com or www.example.com):')
       .sendLine('www.test-amplify-app.com')

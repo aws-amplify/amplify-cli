@@ -1,16 +1,23 @@
-import { createReactTestProject } from 'amplify-e2e-core';
+import { 
+  addDevContainerHosting,
+  createNewProjectDir,
+  deleteProject,
+  deleteProjectDir,
+  enableContainerHosting,
+  getBackendAmplifyMeta,
+  initJSProjectWithProfile,
+  removeHosting
+} from 'amplify-e2e-core';
 
-import { initJSProjectWithProfile, deleteProject } from 'amplify-e2e-core';
-import { enableContainerHosting, addDevContainerHosting, removeHosting } from 'amplify-e2e-core';
-import { deleteProjectDir, getBackendAmplifyMeta } from 'amplify-e2e-core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+
 
 describe('amplify add hosting - container', () => {
   let projRoot: string;
 
   beforeAll(async () => {
-    projRoot = await createReactTestProject();
+    projRoot = await createNewProjectDir('container-hosting');
     await initJSProjectWithProfile(projRoot, {});
     await enableContainerHosting(projRoot);
     await addDevContainerHosting(projRoot);
