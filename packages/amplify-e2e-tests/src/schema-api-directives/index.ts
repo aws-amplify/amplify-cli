@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs-extra';
-import { runTest, runAutTest } from './common';
+import { runTest, runAuthTest } from './common';
 import { runFunctionTest } from './functionTester';
 
 //The contents in the test files might be modified from its original version in the Amplify CLI doc,
@@ -35,7 +35,7 @@ export async function testSchema(projectDir: string, directive: string, section:
     } else {
       switch (directive) {
         case 'auth':
-          await runAutTest(projectDir, testModule);
+          await runAuthTest(projectDir, testModule);
           break;
         case 'function':
           await runFunctionTest(projectDir, testModule);

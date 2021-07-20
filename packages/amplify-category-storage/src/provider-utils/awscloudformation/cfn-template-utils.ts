@@ -30,12 +30,8 @@ const loadCfnTemplateSafe = async (resourceName?: string): Promise<Template | un
   if (!resourceName) {
     return undefined;
   }
-  try {
-    const { cfnTemplate } = await readCFNTemplate(getCloudFormationTemplatePath(resourceName));
-    return cfnTemplate;
-  } catch {
-    return undefined;
-  }
+  const { cfnTemplate } = (await readCFNTemplate(getCloudFormationTemplatePath(resourceName), { throwIfNotExist: false })) || {};
+  return cfnTemplate;
 };
 
 const getTableFromTemplate = (cfnTemplate?: Template): Table | undefined => {

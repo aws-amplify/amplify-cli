@@ -16,10 +16,7 @@ node12:
 defaults:
   working_directory: ~/repo
   docker: &ref_1
-    - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo:latest
-      aws_auth:
-        aws_access_key_id: $ECR_ACCESS_KEY
-        aws_secret_access_key: $ECR_SECRET_ACCESS_KEY
+    - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
   resource_class: large
 clean_e2e_resources: &ref_7
   name: Cleanup resources
@@ -549,7 +546,7 @@ jobs:
           path: /root/aws-amplify-cypress-api/cypress/screenshots
   deploy:
     working_directory: ~/repo
-    docker: *ref_1
+    docker: *ref_0
     resource_class: large
     steps:
       - attach_workspace:
@@ -563,13 +560,7 @@ jobs:
       - run:
           name: Publish Amplify CLI
           command: |
-            if [ -z "$CIRCLE_PULL_REQUEST" ]; then
-              git config --global user.email $GITHUB_EMAIL
-              git config --global user.name $GITHUB_USER
-              npm run publish:$CIRCLE_BRANCH
-            else
-              echo "Skipping deploy."
-            fi
+            bash ./.circleci/publish.sh
       - run: *ref_4
   github_prerelease:
     working_directory: ~/repo
@@ -2057,8 +2048,8 @@ workflows:
             branches:
               only:
                 - master
-                - func-env-vars-secrets
-                - iterative-update
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
             - mock_e2e_tests
@@ -2070,8 +2061,9 @@ workflows:
             branches:
               only:
                 - master
-                - func-env-vars-secrets
                 - beta
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
             - mock_e2e_tests
@@ -2080,12 +2072,10 @@ workflows:
             branches:
               only:
                 - master
-                - func-env-vars-secrets
                 - beta
-                - backendManager
-                - iterative-update
                 - release
-                - compute-functions
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
       - build_pkg_binaries:
@@ -2099,6 +2089,8 @@ workflows:
             branches:
               only:
                 - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
       - done_with_node_e2e_tests:
           requires:
             - analytics-amplify_e2e_tests
@@ -2169,6 +2161,8 @@ workflows:
             branches:
               only:
                 - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
       - amplify_migration_tests_v4:
@@ -2181,7 +2175,8 @@ workflows:
             branches:
               only:
                 - master
-                - func-env-vars-secrets
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
       - amplify_migration_tests_v4_30_0:
@@ -2194,10 +2189,8 @@ workflows:
             branches:
               only:
                 - master
-                - func-env-vars-secrets
-                - graphqlschemae2e
-                - feat-import
-                - test-fix-status
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
       - amplify_migration_tests_non_multi_env_layers:
@@ -2210,7 +2203,8 @@ workflows:
             branches:
               only:
                 - master
-                - func-env-vars-secrets
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
       - amplify_migration_tests_multi_env_layers:
@@ -2223,7 +2217,8 @@ workflows:
             branches:
               only:
                 - master
-                - func-env-vars-secrets
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - build
       - amplify_console_integration_tests:
@@ -2291,6 +2286,8 @@ workflows:
                 - release
                 - master
                 - beta
+                - /tagged-release\/.*/
+                - /tagged-release-without-e2e-tests\/.*/
       - github_release:
           context: github-publish
           requires:
@@ -2311,9 +2308,8 @@ workflows:
             branches:
               only:
                 - master
-                - func-env-vars-secrets
-                - compute-functions
-                - iterative-update
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - publish_to_local_registry
       - schema-auth-6-amplify_e2e_tests:
@@ -2766,6 +2762,8 @@ workflows:
             branches:
               only:
                 - master
+                - /tagged-release\/.*/
+                - /run-e2e\/*./
           requires:
             - done_with_node_e2e_tests
             - build_pkg_binaries

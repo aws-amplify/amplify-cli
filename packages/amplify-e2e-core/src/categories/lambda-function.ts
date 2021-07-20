@@ -142,7 +142,7 @@ export type CoreFunctionSettings = {
   expectFailure?: boolean;
   additionalPermissions?: any;
   schedulePermissions?: any;
-  layerOptions?: any;
+  layerOptions?: LayerOptions;
   environmentVariables?: any;
   secretsConfig?: AddSecretInput | UpdateSecretInput | DeleteSecretInput;
   triggerType?: string;
@@ -335,7 +335,7 @@ export const functionBuild = (cwd: string, settings: any): Promise<void> => {
   });
 };
 
-export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
+export const selectRuntime = (chain: ExecutionContext, runtime: FunctionRuntimes) => {
   const runtimeName = getRuntimeDisplayName(runtime);
   chain.wait('Choose the runtime that you want to use:');
 
@@ -345,7 +345,7 @@ export const selectRuntime = (chain: any, runtime: FunctionRuntimes) => {
   singleSelect(chain, runtimeName, runtimeChoices);
 };
 
-export const selectTemplate = (chain: any, functionTemplate: string, runtime: FunctionRuntimes) => {
+export const selectTemplate = (chain: ExecutionContext, functionTemplate: string, runtime: FunctionRuntimes) => {
   const templateChoices = getTemplateChoices(runtime);
   chain.wait('Choose the function template that you want to use');
 
@@ -361,8 +361,8 @@ export const removeFunction = (cwd: string, funcName: string) =>
   });
 
 export interface LayerOptions {
-  select: string[]; // list options to select
-  expectedListOptions: string[]; // the expeted list of all layers
+  select?: string[]; // list options to select
+  expectedListOptions?: string[]; // the expected list of all layers
   versions?: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the verison and expected version for each layer
   customArns?: string[]; // external ARNs to enter
   skipLayerAssignment?: boolean; // true if the layer assigment must be left unchanged for the function, otherwise true
