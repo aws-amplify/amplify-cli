@@ -60,7 +60,7 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
             set(ref('sortDirection'), ref('util.toJson({"order": $sortItem.direction})')),
             qref('$sortValues.add("{$sortField: $sortDirection}")'),
           ],
-        )
+        ),
       ),
       forEach(
         ref('aggItem'),
