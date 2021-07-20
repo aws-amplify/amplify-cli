@@ -381,7 +381,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: '300'
       Role: !GetAtt
         - UserPoolClientRole
@@ -507,7 +507,7 @@ Resources:
 
 
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: '300'
       Role: !GetAtt
         - UserPoolClientRole
@@ -659,7 +659,7 @@ Resources:
             - '} '
 
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: '300'
       Role: !GetAtt
         - UserPoolClientRole
@@ -758,7 +758,7 @@ Resources:
             - '}'
 
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: '300'
       Role: !GetAtt
         - UserPoolClientRole
@@ -836,6 +836,15 @@ Resources:
               Action:
                 - 'iam:PassRole'
               Resource: !If [ShouldNotCreateEnvResources, '<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_totp_lambda_role`%>', !Join ['',['<%= `arn:aws:iam:::role/${props.resourceNameTruncated}_totp_lambda_role` %>', '-', !Ref env]]]
+      - PolicyName: <%=`${props.resourceNameTruncated}_sns_pass_role_policy`%>
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement: 
+            - Effect: Allow
+              Action:
+                - 'iam:PassRole'
+              Resource: !GetAtt SNSRole.Arn
+    DependsOn: SNSRole
   MFALambda:
   # Lambda which sets MFA config values
   # Depends on MFALambdaRole for role ARN
@@ -879,7 +888,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: '300'
       Role: !GetAtt
         - MFALambdaRole
@@ -1039,7 +1048,7 @@ Resources:
             - ' }'
             - '};'
       Handler: index.handler
-      Runtime: nodejs12.x
+      Runtime: nodejs14.x
       Timeout: '300'
       Role: !GetAtt
         - OpenIdLambdaRole
