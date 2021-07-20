@@ -1,6 +1,6 @@
 import { isDebug, isSilent } from './flags';
 
-class AmplifyPrinter implements Printer {
+export class AmplifyPrinter implements Printer {
   constructor(private readonly outputStream: NodeJS.WritableStream = process.stdout) {}
 
   debug = (line: string): void => {
