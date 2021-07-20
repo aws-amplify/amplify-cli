@@ -174,8 +174,6 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       this.generateSearchableInputs(ctx, definition);
       this.generateSearchableXConnectionType(ctx, definition);
       this.generateSearchableAggregateTypes(ctx);
-      //this.generateSearchableXAggregateResultType(ctx, definition);
-      //this.generateSearchableXAggregateBucketType(ctx, definition);
       const queryField = makeField(
         fieldName,
         [
