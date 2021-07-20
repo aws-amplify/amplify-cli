@@ -17,7 +17,10 @@ node12: &node12
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo-public:latest
+    - image: ${AWS_ECR_ACCOUNT_URL}/amplify-cli-e2e-base-image-repo:latest
+      aws_auth:
+        aws_access_key_id: $ECR_ACCESS_KEY
+        aws_secret_access_key: $ECR_SECRET_ACCESS_KEY
   resource_class: large
 
 clean_e2e_resources: &clean_e2e_resources

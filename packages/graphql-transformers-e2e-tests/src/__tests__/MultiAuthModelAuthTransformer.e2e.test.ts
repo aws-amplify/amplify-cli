@@ -548,7 +548,6 @@ beforeAll(async () => {
         credentials: {
           accessKeyId: unauthCredentials.accessKeyId,
           secretAccessKey: unauthCredentials.secretAccessKey,
-          sessionToken: unauthCredentials.sessionToken,
         },
       },
       offlineConfig: {

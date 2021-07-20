@@ -7,7 +7,6 @@ export async function initWithoutCredentialFileAndNoNewUserSetup(projRoot) {
   const settings = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
     region: process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || 'us-west-2',
   };
 

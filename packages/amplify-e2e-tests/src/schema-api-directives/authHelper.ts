@@ -70,7 +70,6 @@ export function getConfiguredCognitoClient(): CognitoIdentityServiceProvider {
   const awsconfig = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
     region: process.env.CLI_REGION,
   };
 
@@ -125,7 +124,6 @@ export function getConfiguredAppsyncClientIAMAuth(url: string, region: string): 
       credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-        sessionToken: process.env.AWS_SESSION_TOKEN,
       },
     },
   });

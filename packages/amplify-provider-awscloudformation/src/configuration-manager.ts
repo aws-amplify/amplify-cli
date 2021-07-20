@@ -217,7 +217,6 @@ async function initialize(context: $TSContext, authConfig?: AuthFlowConfig) {
     ) {
       awsConfigInfo.config.accessKeyId = awsConfigInfo.config.accessKeyId || authConfig.accessKeyId;
       awsConfigInfo.config.secretAccessKey = awsConfigInfo.config.secretAccessKey || authConfig.secretAccessKey;
-      awsConfigInfo.config.sessionToken = awsConfigInfo.config.sessionToken || authConfig.sessionToken;
       awsConfigInfo.config.region = awsConfigInfo.config.region || authConfig.region;
     } else {
       await promptForAuthConfig(context, authConfig);
@@ -431,7 +430,6 @@ async function promptForAuthConfig(context: $TSContext, authConfig?: AuthFlowCon
   if (!obfuscateUtil.isObfuscated(answers.secretAccessKey)) {
     awsConfigInfo.config.secretAccessKey = answers.secretAccessKey;
   }
-  awsConfigInfo.config.sessionToken = awsConfigInfo.config.sessionToken || process.env.AWS_SESSION_TOKEN;
   awsConfigInfo.config.region = answers.region;
 }
 
@@ -457,7 +455,6 @@ async function validateConfig(context: $TSContext) {
         credentials: {
           accessKeyId: awsConfigInfo.config.accessKeyId,
           secretAccessKey: awsConfigInfo.config.secretAccessKey,
-          sessionToken: awsConfigInfo.config.sessionToken,
         },
       });
       try {
@@ -498,7 +495,6 @@ function persistLocalEnvConfig(context: $TSContext) {
       const awsSecrets = {
         accessKeyId: awsConfigInfo.config.accessKeyId,
         secretAccessKey: awsConfigInfo.config.secretAccessKey,
-        sessionToken: awsConfigInfo.config.sessionToken,
         region: awsConfigInfo.config.region,
       };
       const sharedConfigDirPath = path.join(pathManager.getHomeDotAmplifyDirPath(), constants.ProviderName);
@@ -778,7 +774,6 @@ export async function getAwsConfig(context: $TSContext): Promise<AwsSdkConfig> {
       resultAWSConfigInfo = {
         accessKeyId: awsConfigInfo.config.accessKeyId,
         secretAccessKey: awsConfigInfo.config.secretAccessKey,
-        sessionToken: awsConfigInfo.config.sessionToken,
         region: awsConfigInfo.config.region,
       };
     }
