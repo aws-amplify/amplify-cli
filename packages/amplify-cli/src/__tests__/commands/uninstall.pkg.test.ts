@@ -4,7 +4,7 @@ import execa from 'execa';
 import * as fs from 'fs-extra';
 import { hideSync } from 'hidefile';
 import { setRegPendingDelete } from '../../utils/win-utils';
-import { snapshotSerializer } from '../../snapshot-serializer';
+import { windowsPathSerializer } from '../../../tests/amplify-helpers/testUtils/snapshot-serializer';
 import path from 'path';
 
 jest.mock('execa');
@@ -45,7 +45,8 @@ const setRegPendingDelete_mock = setRegPendingDelete as jest.MockedFunction<type
 
 // save original process.platform
 const originalPlatform = process.platform;
-snapshotSerializer();
+
+expect.addSnapshotSerializer(windowsPathSerializer);
 
 const context_stub_typed = (context_stub as unknown) as $TSContext;
 

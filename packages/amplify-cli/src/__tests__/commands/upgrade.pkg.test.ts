@@ -4,7 +4,7 @@ import fetch, { Response } from 'node-fetch';
 import { $TSContext } from 'amplify-cli-core';
 import * as core from 'amplify-cli-core';
 import * as path from 'path';
-import {snapshotSerializer} from '../../snapshot-serializer';
+import { windowsPathSerializer } from '../../../tests/amplify-helpers/testUtils/snapshot-serializer';
 jest.mock('fs-extra');
 const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;
 
@@ -46,7 +46,7 @@ const context_stub_typed = (context_stub as unknown) as $TSContext;
 
 // save original process.platform
 const originalPlatform = process.platform;
-snapshotSerializer();
+expect.addSnapshotSerializer(windowsPathSerializer);
 
 describe('run upgrade using packaged CLI', () => {
   beforeEach(() => jest.clearAllMocks());
