@@ -1,4 +1,4 @@
-import {Duration, Stack} from "@aws-cdk/core";
+import {Duration, Stack} from '@aws-cdk/core';
 import {
   BaseDataSource,
   CfnResolver,
@@ -7,16 +7,16 @@ import {
   HttpDataSource,
   LambdaDataSource,
   NoneDataSource
-} from "@aws-cdk/aws-appsync";
-import {ITable} from "@aws-cdk/aws-dynamodb";
-import {IFunction, ILayerVersion, Runtime} from "@aws-cdk/aws-lambda";
+} from '@aws-cdk/aws-appsync';
+import {ITable} from '@aws-cdk/aws-dynamodb';
+import {IFunction, ILayerVersion, Runtime} from '@aws-cdk/aws-lambda';
 import {
   AppSyncFunctionConfigurationProvider,
   DataSourceOptions,
   ElasticSearchDataSourceOptions,
   MappingTemplateProvider
-} from "./graphql-api-provider";
-import {IRole} from "@aws-cdk/aws-iam";
+} from './graphql-api-provider';
+import {IRole} from '@aws-cdk/aws-iam';
 
 
 export interface TransformHostProvider {

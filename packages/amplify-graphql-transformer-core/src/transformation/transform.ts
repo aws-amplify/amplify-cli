@@ -36,7 +36,7 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateModelSchema } from './validation';
-import {TransformHostProvider} from "@aws-amplify/graphql-transformer-interfaces/lib/transform-host-provider";
+import {TransformHostProvider} from '@aws-amplify/graphql-transformer-interfaces';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {
