@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.1.1...@aws-amplify/cli@5.1.2) (2021-07-16)
+
+
+### Bug Fixes
+
+* [#7441](https://github.com/aws-amplify/amplify-cli/issues/7441) - init from git prompts for credentials twice ([#7682](https://github.com/aws-amplify/amplify-cli/issues/7682)) ([7471c5f](https://github.com/aws-amplify/amplify-cli/commit/7471c5fcc86af0e17a967066a388f67891f93355))
+* show friendly error message when pull fails with EPERM ([#7653](https://github.com/aws-amplify/amplify-cli/issues/7653)) ([38955e3](https://github.com/aws-amplify/amplify-cli/commit/38955e3c065538cec99059feb8641b9e644bd8aa)), closes [#7448](https://github.com/aws-amplify/amplify-cli/issues/7448)
+* **amplify-cli:** remove redundant prompt [#6535](https://github.com/aws-amplify/amplify-cli/issues/6535) ([#7098](https://github.com/aws-amplify/amplify-cli/issues/7098)) ([34560cd](https://github.com/aws-amplify/amplify-cli/commit/34560cd5e386119aef1adaa249cf2b2c13243200))
+* **auth:** standardize CloudFormation trigger templates, prevent errors at runtime ([#7219](https://github.com/aws-amplify/amplify-cli/issues/7219)) ([f9796bd](https://github.com/aws-amplify/amplify-cli/commit/f9796bd3aca6606f155d37ac6a8931d6bdec25b9))
+
+
+
+
+
 ## [5.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.1.0...@aws-amplify/cli@5.1.1) (2021-07-12)
 
 **Note:** Version bump only for package @aws-amplify/cli
