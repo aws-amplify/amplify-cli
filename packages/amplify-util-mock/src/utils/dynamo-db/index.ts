@@ -42,7 +42,6 @@ export function configureDDBDataSource(config, ddbConfig) {
           region: ddbConfig.region,
           accessKeyId: ddbConfig.accessKeyId,
           secretAccessKey: ddbConfig.secretAccessKey,
-          sessionToken: ddbConfig.sessionToken || process.env.AWS_SESSION_TOKEN,
         },
       };
     }),

@@ -36,7 +36,6 @@ export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, 
     const iam = new IAM({
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      sessionToken: process.env.AWS_SESSION_TOKEN,
     });
 
     const { Role: role } = await iam.getRole({ RoleName: roleName }).promise();
@@ -56,7 +55,9 @@ export const toHaveValidPolicyConditionMatchingIdpId = async (roleName: string, 
         return false;
       }
     });
+    
     message = pass ? 'Found Matching Condition' : 'Matching Condition does not exist';
+   
   } catch (e) {
     pass = false;
     message = 'IAM GetRole threw Error: ' + e.message;

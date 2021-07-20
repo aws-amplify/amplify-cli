@@ -12,7 +12,6 @@ async function run(context) {
   const awsConfigInfo = {
     accessKeyId: constants.DefaultAWSAccessKeyId,
     secretAccessKey: constants.DefaultAWSSecretAccessKey,
-    sessionToken: process.env.AWS_SESSION_TOKEN,
     region: constants.DefaultAWSRegion,
   };
 
