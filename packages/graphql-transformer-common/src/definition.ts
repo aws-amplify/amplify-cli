@@ -19,6 +19,7 @@ import {
   ListValueNode,
   ObjectValueNode,
   InputObjectTypeDefinitionNode,
+  DocumentNode,
 } from 'graphql';
 
 type ScalarMap = {
@@ -110,6 +111,13 @@ export function isScalarOrEnum(type: TypeNode, enums: EnumTypeDefinitionNode[]) 
     }
     return Boolean(DEFAULT_SCALARS[type.name.value]);
   }
+}
+
+export function isEnum(type: TypeNode, document: DocumentNode) {
+  const baseType = getBaseType(type);
+  return document.definitions.find(def => {
+    return def.kind === Kind.ENUM_TYPE_DEFINITION && def.name.value === baseType;
+  });
 }
 
 export function getBaseType(type: TypeNode): string {
