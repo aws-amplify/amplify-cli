@@ -210,6 +210,26 @@ export function makeSearchableXSortInputObject(obj: ObjectTypeDefinitionNode): I
   };
 }
 
+export function makeSearchableAggregateTypeEnumObject(): EnumTypeDefinitionNode {
+  const name = graphqlName(`SearchableAggregateType`);
+  const values: EnumValueDefinitionNode[] = ['TERMS', 'AVG', 'MIN', 'MAX', 'SUM']
+    .map((type: string) => ({
+      kind: Kind.ENUM_VALUE_DEFINITION,
+      name: { kind: 'Name', value: type },
+      directives: [],
+    }));
+
+  return {
+    kind: Kind.ENUM_TYPE_DEFINITION,
+    name: {
+      kind: 'Name',
+      value: name,
+    },
+    values,
+    directives: [],
+  };
+}
+
 export function makeSearchableXAggregationInputObject(obj: ObjectTypeDefinitionNode): InputObjectTypeDefinitionNode {
   const name = graphqlName(`Searchable${obj.name.value}AggregationInput`);
   return {
@@ -228,7 +248,7 @@ export function makeSearchableXAggregationInputObject(obj: ObjectTypeDefinitionN
       {
         kind: Kind.INPUT_VALUE_DEFINITION,
         name: { kind: 'Name', value: 'type' },
-        type: makeNonNullType(makeNamedType('String')),
+        type: makeNonNullType(makeNamedType('SearchableAggregateType')),
         directives: [],
       },
       {

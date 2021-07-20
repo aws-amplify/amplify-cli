@@ -35,6 +35,7 @@ import {
   makeSearchableXSortableFieldsEnumObject,
   makeSearchableXSortInputObject,
   makeSearchableXAggregationInputObject,
+  makeSearchableAggregateTypeEnumObject,
 } from './definitions';
 import assert from 'assert';
 import { setMappings } from './cdk/create-layer-cfnMapping';
@@ -343,6 +344,11 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     if (!ctx.output.hasType(`Searchable${definition.name.value}AggregationInput`)) {
       const searchableXAggregationInputDirection = makeSearchableXAggregationInputObject(definition);
       ctx.output.addInput(searchableXAggregationInputDirection);
+    }
+
+    if (!ctx.output.hasType('SearchableAggregateType')) {
+      const searchableAggregateTypeEnum = makeSearchableAggregateTypeEnumObject();
+      ctx.output.addEnum(searchableAggregateTypeEnum);
     }
   }
 }
