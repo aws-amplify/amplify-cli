@@ -19,7 +19,6 @@ exports.handler = async function (event, context) {
     delete userPoolParams.UsernameConfiguration;
     delete userPoolParams.Arn;
     delete userPoolParams.AdminCreateUserConfig.UnusedAccountValidityDays;
-    console.log(userPoolParams);
     lambdaConfig.forEach(lambda => (config[`${lambda.triggerType}`] = lambda.lambdaFunctionArn));
     if (event.RequestType == 'Delete') {
       try {
@@ -38,7 +37,6 @@ exports.handler = async function (event, context) {
       const authParams = userPoolParams;
       authParams['UserPoolId'] = userPoolId;
       authParams['LambdaConfig'] = config;
-      console.log(authParams);
       try {
         const result = await cognitoclient.updateUserPool(authParams).promise();
         console.log('createOrUpdate response data ' + JSON.stringify(result));
