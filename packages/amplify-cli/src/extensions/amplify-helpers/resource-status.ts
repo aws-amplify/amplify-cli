@@ -415,7 +415,7 @@ export async function getResourceStatus(category?, resourceName?, providerName?,
   };
 }
 
-export async function showResourceTable(category, resourceName, filteredResources) {
+export async function showResourceTable(category?, resourceName?, filteredResources?) {
   const amplifyProjectInitStatus = getCloudInitStatus();
 
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
