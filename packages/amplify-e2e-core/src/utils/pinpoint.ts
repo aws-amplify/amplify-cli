@@ -14,7 +14,6 @@ const settings = {
   startCmd: '\r',
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  sessionToken: process.env.AWS_SESSION_TOKEN,
   region: process.env.CLI_REGION,
   pinpointResourceName: 'testpinpoint',
 };
@@ -47,7 +46,6 @@ export async function pinpointAppExist(pinpointProjectId: string): Promise<boole
   const pinpointClient = new Pinpoint({
     accessKeyId: settings.accessKeyId,
     secretAccessKey: settings.secretAccessKey,
-    sessionToken: settings.sessionToken,
     region: _.get(serviceRegionMap, settings.region, defaultPinpointRegion),
   });
 
