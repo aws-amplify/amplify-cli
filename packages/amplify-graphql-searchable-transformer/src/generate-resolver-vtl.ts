@@ -66,10 +66,6 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
         ref('aggItem'),
         ref('context.args.aggregates'),
         [
-          //set(ref('aggregateField'), ref('util.toJson({$aggItem.name: {$aggItem.type: {"field": $aggItem.field}}})')),
-          //qref('$aggregateValues.add("$aggregateField")'),
-          //set(ref('aggregateField'), ref('{$aggItem.type: {"field": $aggItem.field}}')),
-          //set(ref('aggregateName'), ref('aggItem.name')),
           ifElse(
             ref('nonKeywordFields.contains($aggItem.field)'),
             qref('$aggregateValues.put("$aggItem.name", {"$aggItem.type": {"field": "$aggItem.field"}})'),
