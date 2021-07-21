@@ -57,7 +57,7 @@ export interface ServiceQuestionsBaseResult {
   usernameCaseSensitive?: boolean;
   useEnabledMfas?: boolean;
   authTriggerConnections?: string;
-  permissions?: [string];
+  permissions?: string[];
 }
 
 export interface OAuthResult {

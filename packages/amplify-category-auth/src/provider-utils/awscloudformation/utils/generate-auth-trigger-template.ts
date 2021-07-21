@@ -85,11 +85,12 @@ export const generateNestedAuthTriggerTemplate = async (
   const targetDir = path.join(pathManager.getBackendDirPath(), category, resourceName, 'build');
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
   const { authTriggerConnections, permissions } = request;
+  let triggerPermissions: AuthTriggerPermissions[] = [];
   if (authTriggerConnections) {
-    const cfnObject = await createCustomResourceforAuthTrigger(
-      JSON.parse(authTriggerConnections),
-      permissions!.map(i => JSONUtilities.parse(i)),
-    );
+    if (permissions) {
+      triggerPermissions = permissions.map(i => JSONUtilities.parse(i));
+    }
+    const cfnObject = await createCustomResourceforAuthTrigger(JSONUtilities.parse(authTriggerConnections), triggerPermissions);
     // create policy for auth trigger as auth doesnt depend on function to break circular dependency
 
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
@@ -103,19 +104,22 @@ export const generateNestedAuthTriggerTemplate = async (
   }
 };
 
-async function createCustomResourceforAuthTrigger(
-  context: any,
+export async function createCustomResourceforAuthTrigger(
   authTriggerConnections: AuthTriggerConnection[],
   permissions: AuthTriggerPermissions[],
 ) {
-  const stack = new CustomResourceAuthStack(undefined as any, 'Amplify', {
-    description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
-    authTriggerConnections: authTriggerConnections,
-    permissions: permissions,
-  });
-  const cfn = stack.toCloudFormation();
-  return cfn;
-};
+  if (Array.isArray(authTriggerConnections) && authTriggerConnections.length) {
+    const stack = new CustomResourceAuthStack(undefined as any, 'Amplify', {
+      description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
+      authTriggerConnections,
+      permissions,
+    });
+    const cfn = stack.toCloudFormation();
+    return cfn;
+  } else {
+    throw new Error('Auth Trigger Connections must have value when trigger are selected');
+  }
+}
 
 const createCustomResource = (stack: cdk.Stack, authTriggerConnections: AuthTriggerConnection[], userpoolId: cdk.CfnParameter): void => {
   const triggerCode = fs.readFileSync(authTriggerAssetFilePath, 'utf-8');
