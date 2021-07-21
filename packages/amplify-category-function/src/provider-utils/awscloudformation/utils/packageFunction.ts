@@ -42,8 +42,7 @@ export const packageFunction: Packager = async (context, resource) => {
     // Add up all the project lib/opt folders
     if (layer.type === 'ProjectLayer') {
       const layerDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, layer.resourceName);
-      layersSizeInBytes += await getFolderSize(path.join(layerDirPath, 'lib'));
-      layersSizeInBytes += await getFolderSize(path.join(layerDirPath, 'opt'));
+      layersSizeInBytes += await getFolderSize([path.join(layerDirPath, 'lib'), path.join(layerDirPath, 'opt')]);
     }
   }
 

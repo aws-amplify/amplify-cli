@@ -37,8 +37,7 @@ export const packageLayer: Packager = async (context, resource) => {
   // check total layer size is less than 250MB
   let layerSizeInBytes = 0;
   // Add up all the lib/opt folders
-  layerSizeInBytes += await getFolderSize(path.join(resourcePath, 'lib'));
-  layerSizeInBytes += await getFolderSize(path.join(resourcePath, 'opt'));
+  layerSizeInBytes += await getFolderSize([path.join(resourcePath, 'lib'), path.join(resourcePath, 'opt')]);
 
   if (layerSizeInBytes > lambdaPackageLimitInMB * 1024 ** 2) {
     throw new Error(

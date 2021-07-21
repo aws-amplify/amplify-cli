@@ -84,10 +84,10 @@ describe('package function', () => {
   });
 
   it('fails to pacakge layer that is greater than 250MB in size', async () => {
-    getFolderSize_mock.mockResolvedValue(200 * 1024 ** 2); // 200MB
-    convertNumBytes_mock.mockReturnValue({ toKB: jest.fn(), toMB: jest.fn().mockReturnValueOnce(400) });
+    getFolderSize_mock.mockResolvedValue(260 * 1024 ** 2); // 260MB
+    convertNumBytes_mock.mockReturnValue({ toKB: jest.fn(), toMB: jest.fn().mockReturnValueOnce(260) });
     await expect(async () => await packageLayer((context_stub as unknown) as $TSContext, resourceRequest)).rejects.toEqual(
-      new Error(`Lambda layer ${resourceRequest.resourceName} is too large: 400/250 MB`),
+      new Error(`Lambda layer ${resourceRequest.resourceName} is too large: 260/250 MB`),
     );
   });
 });
