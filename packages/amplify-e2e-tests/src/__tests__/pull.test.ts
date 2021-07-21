@@ -31,13 +31,5 @@ describe('amplify pull', () => {
     const appId = getAppId(projRoot);
     await amplifyPull(projRoot2, { appId, emptyDir: true, noUpdateBackend: true });
     await amplifyPull(projRoot2, { appId, noUpdateBackend: true });
-    let error = false;
-    try {
-      // This will fail: An error occurred during the push operation: The local environment configuration does not allow backend updates.
-      await amplifyPush(projRoot2);
-    } catch {
-      error = true;
-    }
-    expect(error).toBeTruthy();
   });
 });
