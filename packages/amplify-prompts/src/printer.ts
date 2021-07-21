@@ -13,6 +13,10 @@ export class AmplifyPrinter implements Printer {
     this.writeSilenceableLine(line);
   };
 
+  blankLine = (): void => {
+    this.writeSilenceableLine();
+  };
+
   success = (line: string): void => {
     this.writeSilenceableLine(`✅ ${line}`);
   };
@@ -25,13 +29,13 @@ export class AmplifyPrinter implements Printer {
     this.writeLine(`🛑 ${line}`);
   };
 
-  private writeSilenceableLine = (line: string): void => {
+  private writeSilenceableLine = (line?: string): void => {
     if (!isSilent) {
       this.writeLine(line);
     }
   };
 
-  private writeLine = (line: string): void => {
+  private writeLine = (line: string = ''): void => {
     this.outputStream.write(`${line}\n`);
   };
 }
@@ -41,7 +45,9 @@ export class AmplifyPrinter implements Printer {
  */
 export const printer: Printer = new AmplifyPrinter();
 
-export type Printer = Record<LineType, (line: string) => void>;
+export type Printer = Record<LineType, (line: string) => void> & {
+  blankLine: () => void;
+};
 
 enum LineType {
   debug = 'debug',

@@ -62,6 +62,7 @@ class AmplifyPrompter implements Prompter {
       name: 'result',
       message,
       validate: opts?.validate as ValidatorCast,
+      initial: opts?.initial,
     });
     return typeof opts?.transform === 'function' ? ((await opts.transform(result)) as T) : ((result as unknown) as T); // this type assertion is safe because transform must be defined unless T is string
   };
@@ -75,7 +76,7 @@ class AmplifyPrompter implements Prompter {
    */
   pick = async <M extends PickType, T = string>(
     message: string,
-    choices: Choice<T>[],
+    choices: Choices<T>,
     ...options: M extends 'one' ? [PickOptions<M>?] : [PickOptions<M>]
   ): Promise<PickReturn<M, T>> => {
     if (isYes) {
@@ -104,7 +105,7 @@ class AmplifyPrompter implements Prompter {
 
     actions.ctrl.a = 'a';
 
-    let result = typeof choices[0] === 'string' ? choices[0] : (choices[0].name as string | string[]);
+    let result = typeof choices[0] === 'string' ? choices[0] : ((choices[0] as GenericChoice<T>).name as string | string[]);
 
     if (choices?.length === 1) {
       this.print.info(`Only one option for ${message}. Selecting ${result} by default.`);
@@ -143,11 +144,11 @@ export const prompter: Prompter = new AmplifyPrompter();
 
 type Prompter = {
   confirmContinue: (message?: string) => Promise<boolean>;
-  yesOrNo: (message: string) => Promise<boolean>;
+  yesOrNo: (message: string, initial?: boolean) => Promise<boolean>;
   input: <T = string>(message: string, ...options: T extends string ? [InputOptions<T>?] : [InputOptions<T>]) => Promise<T>;
   pick: <M extends PickType, T = string>(
     message: string,
-    choices: Choice<T>[],
+    choices: Choices<T>,
     ...options: M extends 'one' ? [PickOptions<M>?] : [PickOptions<M>]
   ) => Promise<PickReturn<M, T>>;
 };
@@ -186,14 +187,13 @@ type MultiselectOption<M extends PickType> = M extends 'many'
       multiselect?: false;
     };
 
-type Choice<T> = T extends string ? GenericChoice<T> | string : GenericChoice<T>;
+type Choices<T> = T extends string ? GenericChoice<T>[] | string[] : GenericChoice<T>[];
 
 type GenericChoice<T> = {
   name: string;
   value: T;
   hint?: string;
   disabled?: boolean;
-  selected?: boolean;
 };
 
 type PickType = 'many' | 'one';

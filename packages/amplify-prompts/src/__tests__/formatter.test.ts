@@ -5,7 +5,7 @@ jest.mock('../printer');
 
 const printer_mock = printer as jest.Mocked<typeof printer>;
 
-describe('amplify formatter', () => {
+describe('list', () => {
   beforeEach(jest.clearAllMocks);
   it('prints list items at info level', () => {
     const items = ['item1', 'item2'];

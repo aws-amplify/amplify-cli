@@ -28,7 +28,7 @@ export const minLength = (minLen: number, message?: string): Validator => (input
  * Logically "and"s several validators
  * If a validator returns an error message, that message is returned by this function, unless an override message is specified
  */
-export const and = (validators: Validator[], message?: string): Validator => async (input: string) => {
+export const and = (validators: [Validator, Validator, ...Validator[]], message?: string): Validator => async (input: string) => {
   for (const validator of validators) {
     const result = await validator(input);
     if (typeof result === 'string') {
@@ -42,7 +42,7 @@ export const and = (validators: Validator[], message?: string): Validator => asy
  * Logically "or" several validators
  * If all validators return an error message, the LAST error message is returned by this function, unless an override message is specified
  */
-export const or = (validators: Validator[], message?: string): Validator => async (input: string) => {
+export const or = (validators: [Validator, Validator, ...Validator[]], message?: string): Validator => async (input: string) => {
   let result: string | true = true;
   for (const validator of validators) {
     result = await validator(input);
@@ -58,4 +58,4 @@ export const or = (validators: Validator[], message?: string): Validator => asyn
  * If validator returns true, it returns message. If validator returns an error message, it returns true.
  */
 export const not = (validator: Validator, message: string): Validator => async (input: string) =>
-  !(await validator(input)) ? true : message;
+  typeof (await validator(input)) === 'string' ? true : message;

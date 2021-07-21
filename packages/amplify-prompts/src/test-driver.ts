@@ -8,7 +8,11 @@ const driver = async () => {
     validate: and([alphanumeric(), minLength(10)], 'input must be alphanumeric and have length >= 10'),
   });
   console.log(second);
-  const third = await prompter.input<number>('This is a number', { transform: input => Number.parseInt(input, 10), validate: integer() });
+  const third = await prompter.input<number>('This is a number', {
+    transform: input => Number.parseInt(input, 10),
+    validate: integer(),
+    initial: 12,
+  });
   console.log(third);
   const options = ['first option', 'second option', 'third option'];
   const fourth = await prompter.pick('pick an option', options);
