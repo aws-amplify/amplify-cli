@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import * as path from 'path';
 import { $TSAny, $TSMeta, $TSTeamProviderInfo, DeploymentSecrets } from '..';
 import { SecretFileMode } from '../cliConstants';
 import { JSONUtilities } from '../jsonUtilities';
