@@ -126,7 +126,7 @@ test('Test multiple owner rules with Subscriptions', () => {
   expect(out.schema).toContain('onUpdatePost(owner: String, editors: String)');
   expect(out.schema).toContain('onDeletePost(owner: String, editors: String)');
 
-  // expect logic in the resolvers to check for owner args as an allowerOwner
+  // expect logic in the resolvers to check for owner args as an allowedOwner
   expect(out.resolvers['Subscription.onCreatePost.res.vtl']).toContain(
     '#set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )',
   );
@@ -137,7 +137,7 @@ test('Test multiple owner rules with Subscriptions', () => {
     '#set( $allowedOwners0 = $util.defaultIfNull($ctx.args.owner, null) )',
   );
 
-  // expect logic in the resolvers to check for editors args as an allowerOwner
+  // expect logic in the resolvers to check for editors args as an allowedOwner
   expect(out.resolvers['Subscription.onCreatePost.res.vtl']).toContain(
     '#set( $allowedOwners1 = $util.defaultIfNull($ctx.args.editors, null) )',
   );
