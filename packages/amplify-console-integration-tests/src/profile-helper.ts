@@ -65,7 +65,9 @@ export function setupAWSProfile() {
     if (profileName === keyName) {
       credentials[key].aws_access_key_id = process.env.AWS_ACCESS_KEY_ID;
       credentials[key].aws_secret_access_key = process.env.AWS_SECRET_ACCESS_KEY;
-      credentials[key].aws_session_token = process.env.AWS_SESSION_TOKEN;
+      if (process.env.AWS_SESSION_TOKEN) {
+        credentials[key].aws_session_token = process.env.AWS_SESSION_TOKEN;
+      }
       isCredSet = true;
     }
   });
@@ -73,8 +75,10 @@ export function setupAWSProfile() {
     credentials[profileName] = {
       aws_access_key_id: process.env.AWS_ACCESS_KEY_ID,
       aws_secret_access_key: process.env.AWS_SECRET_ACCESS_KEY,
-      aws_session_token: process.env.AWS_SESSION_TOKEN,
     };
+    if (process.env.AWS_SESSION_TOKEN) {
+      credentials[profileName].aws_session_token = process.env.AWS_SESSION_TOKEN;
+    }
   }
 
   process.env.CONSOLE_REGION = process.env.CONSOLE_REGION || testRegionPool[Math.floor(Math.random() * testRegionPool.length)];
