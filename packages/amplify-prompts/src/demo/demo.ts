@@ -5,6 +5,10 @@ import { alphanumeric, and, integer, minLength } from '../validators';
 const printResult = (result: any) => console.log(`Prommpt result was [${result}]`);
 const printTypeofResult = (result: any) => console.log(`Response type was [${typeof result}]`);
 
+/**
+ * The following is meant to be a runnable example of functionality offered by amplify-prommpts
+ * Run `yarn demo` to see it in action
+ */
 const demo = async () => {
   // confirmContinue
   printer.info(

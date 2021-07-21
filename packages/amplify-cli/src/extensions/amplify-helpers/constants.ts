@@ -1,5 +1,3 @@
-import { confirmPrompt } from './confirm-prompt';
-
 export const amplifyCLIConstants = Object.freeze({
   AmplifyCLIDirName: 'amplify',
   DotAmplifyDirName: '.amplify',

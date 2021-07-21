@@ -1,6 +1,9 @@
 import chalk from 'chalk';
 import { isDebug, isSilent } from './flags';
 
+/**
+ * Provides methods for printing lines to a writeable stream (stdout by default)
+ */
 export class AmplifyPrinter implements Printer {
   constructor(private readonly outputStream: NodeJS.WritableStream = process.stdout) {}
 

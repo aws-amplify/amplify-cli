@@ -6,6 +6,10 @@ import * as actions from 'enquirer/lib/combos';
 import { isYes } from './flags';
 import { Validator } from './validators';
 import { printer } from './printer';
+
+/**
+ * Provides methods for collecting interactive customer responses from the shell
+ */
 class AmplifyPrompter implements Prompter {
   constructor(private readonly prompter: typeof prompt = prompt, private readonly print: typeof printer = printer) {}
 
@@ -145,10 +149,12 @@ export const prompter: Prompter = new AmplifyPrompter();
 type Prompter = {
   confirmContinue: (message?: string) => Promise<boolean>;
   yesOrNo: (message: string, initial?: boolean) => Promise<boolean>;
+  // options is typed using spread because it's the only way to make it optional if T is a string but required otherwise
   input: <T = string>(message: string, ...options: T extends string ? [InputOptions<T>?] : [InputOptions<T>]) => Promise<T>;
   pick: <M extends PickType, T = string>(
     message: string,
     choices: Choices<T>,
+    // options is typed using spread because it's the only way to make it required if M is 'many' but optional if M is 'one'
     ...options: M extends 'one' ? [PickOptions<M>?] : [PickOptions<M>]
   ) => Promise<PickReturn<M, T>>;
 };
