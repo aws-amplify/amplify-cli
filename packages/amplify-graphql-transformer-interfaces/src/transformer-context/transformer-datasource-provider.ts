@@ -6,7 +6,7 @@ import { InterfaceTypeDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 
 export enum AppSyncDataSourceType {
   AMAZON_DYNAMODB = 'AMAZON_DYNAMODB',
-  AMAZON_ELASTICSEARCH = 'AMAZON_ELASTICSEARCH',
+  AMAZON_OPENSEARCH = 'AMAZON_OPENSEARCH',
   AWS_LAMBDA = 'AWS_LAMBDA',
   RELATIONAL_DATABASE = 'RELATIONAL_DATABASE',
   HTTP = 'HTTP',
