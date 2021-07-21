@@ -267,9 +267,9 @@ const mfaTypeMap: Record<'SMS' | 'TOTP', 'SMS Text Message' | 'TOTP'> = {
 
 const signinAttributeMap: Record<CognitoUserPoolSigninMethod, UsernameAttributes[] | undefined> = {
   [CognitoUserPoolSigninMethod.USERNAME]: undefined,
-  [CognitoUserPoolSigninMethod.EMAIL]: ['email'],
-  [CognitoUserPoolSigninMethod.PHONE_NUMBER]: ['phone_number'],
-  [CognitoUserPoolSigninMethod.EMAIL_AND_PHONE_NUMBER]: ['email', 'phone_number'],
+  [CognitoUserPoolSigninMethod.EMAIL]: [AttributeType.EMAIL],
+  [CognitoUserPoolSigninMethod.PHONE_NUMBER]: [AttributeType.PHONE_NUMBER],
+  [CognitoUserPoolSigninMethod.EMAIL_AND_PHONE_NUMBER]: [AttributeType.EMAIL, AttributeType.PHONE_NUMBER],
 };
 
 const aliasAttributeMap: Record<CognitoUserAliasAttributes, AliasAttributes> = {
