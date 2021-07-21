@@ -7,7 +7,7 @@
     "outDir": "lib"
   },
   "include": [
-    "src/**/*"  
+    "src/**/*"
   ],
   "references": [
     { "path": "../amplify-category-function" },
