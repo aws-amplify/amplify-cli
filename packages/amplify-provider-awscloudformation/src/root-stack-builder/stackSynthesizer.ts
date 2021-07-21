@@ -1,4 +1,4 @@
-import { ISynthesisSession, Stack, LegacyStackSynthesizer, CfnParameter } from '@aws-cdk/core';
+import { ISynthesisSession, Stack, LegacyStackSynthesizer } from '@aws-cdk/core';
 import { Template } from './types';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 

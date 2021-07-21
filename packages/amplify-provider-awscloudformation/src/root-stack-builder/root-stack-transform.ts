@@ -4,6 +4,7 @@ import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder'
 import { RootStackSythesizer } from './stackSynthesizer';
 import { App } from '@aws-cdk/core';
 import * as cdk from '@aws-cdk/core';
+import { buildOverrideDir } from '../utils/override-skeleton-generator';
 
 export enum CommandType {
   'PUSH',
@@ -42,6 +43,7 @@ export interface DeploymentOptions {
 
 export interface OverrideOptions {
   overrideFnPath: string;
+  overrideDir: string;
 }
 
 export class AmplifyRootStackTransform {
@@ -97,6 +99,7 @@ export class AmplifyRootStackTransform {
     if (this._rootStackOptions.event === CommandType.PUSH) {
       const { overrideProps } = await import(this._overrideProps.overrideFnPath);
       if (typeof overrideProps === 'function' && overrideProps) {
+        await buildOverrideDir(this._overrideProps.overrideDir);
         this._rootTemplateObj = overrideProps(this._rootTemplateObj as AmplifyRootStackTemplate);
       } else {
         console.log('There is no override setup yet for Root Stack. To enable override : Run amplify override root');

@@ -4,6 +4,8 @@ import { prePushCfnTemplateModifier } from '../../pre-push-cfn-processor/pre-pus
 
 jest.mock('amplify-cli-core');
 
+jest.mock('../../utils/override-skeleton-generator');
+
 describe('Check RootStack Template', () => {
   it('Generated rootstack template during init', async () => {
     // CFN transform for Root stack
@@ -24,6 +26,7 @@ describe('Check RootStack Template', () => {
     const rootStackFileName = 'template.json';
     const rootFilePath = 'randomPath';
     const overridePath = path.join(__dirname, 'overrides', 'override.js');
+    const overrideDir = path.join(__dirname, 'overrides');
 
     const props: RootStackTransformOptions = {
       resourceConfig: {
@@ -34,6 +37,7 @@ describe('Check RootStack Template', () => {
       },
       overrideOptions: {
         overrideFnPath: overridePath,
+        overrideDir,
       },
       cfnModifiers: prePushCfnTemplateModifier,
     };

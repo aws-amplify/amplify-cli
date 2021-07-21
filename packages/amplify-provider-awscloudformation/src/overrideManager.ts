@@ -35,6 +35,7 @@ export const transformRootStack = async (commandType: CommandType): Promise<Temp
       const projectPath = pathManager.findProjectRoot();
       const rootFilePath = path.join(pathManager.getRootStackDirPath(projectPath), rootStackFileName);
       const overrideFnPath = path.join(pathManager.getRootOverrideDirPath(projectPath), 'build', 'override.js');
+      const overrideDir = pathManager.getRootOverrideDirPath(projectPath);
 
       props = {
         resourceConfig: {
@@ -45,6 +46,7 @@ export const transformRootStack = async (commandType: CommandType): Promise<Temp
         },
         overrideOptions: {
           overrideFnPath,
+          overrideDir,
         },
         cfnModifiers: prePushCfnTemplateModifier,
       };
