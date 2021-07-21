@@ -42,7 +42,7 @@ export const run = async (context: $TSContext) => {
   try {
     context.amplify.constructExeInfo(context);
     if (context.exeInfo.localEnvInfo.noUpdateBackend) {
-      throw new ConfigurationError('This local environment was configured to not publish backend updates.');
+      throw new ConfigurationError('The local environment configuration does not allow backend updates.');
     }
     if (context.parameters.options.force) {
       context.exeInfo.forcePush = true;
