@@ -284,15 +284,13 @@ export const supportedServices = {
         ],
       },
       {
-        key: 'usernameAttributes',
+        key: 'aliasAttributes',
         question: 'How do you want users to be able to sign in?',
-        type: 'list',
-        map: 'signInOptions',
-        prefix: 'Warning: you will not be able to edit these selections.',
-        prefixColor: 'red',
-        learnMore:
-          "Selecting 'Email' and/or 'Phone Number' will allow end users to sign-up using these values.  Selecting 'Username' will require a unique username for users.",
         required: true,
+        type: 'multiselect',
+        map: 'aliasAttributes',
+        prefixColor: 'red',
+        prefix: 'Warning: you will not be able to edit these selections.',
         andConditions: [
           {
             key: 'authSelections',

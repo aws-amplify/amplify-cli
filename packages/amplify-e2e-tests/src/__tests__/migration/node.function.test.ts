@@ -56,7 +56,7 @@ describe('nodejs version migration tests', () => {
     );
     let authStackContent = fs.readFileSync(authStackFileName).toString();
 
-    authStackContent = authStackContent.replace('nodejs14.x', 'nodejs10.x');
+    authStackContent = authStackContent.replace('nodejs12.x', 'nodejs10.x');
 
     fs.writeFileSync(authStackFileName, authStackContent, 'utf-8');
 

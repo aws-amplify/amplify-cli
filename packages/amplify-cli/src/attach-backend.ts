@@ -30,7 +30,7 @@ export async function attachBackend(context: $TSContext, inputParams) {
     await generateFiles(context);
     await onSuccess(context);
   } catch (e) {
-    removeFolderStructure();
+    removeAmplifyFolderStructure();
     restoreOriginalAmplifyFolder();
 
     context.print.error('Failed to pull the backend.');
@@ -59,9 +59,11 @@ async function onSuccess(context: $TSContext) {
   await postPullCodegen(context);
 
   if (!inputParams.yes) {
-    const confirmKeepCodebase = await context.amplify.confirmPrompt('Do you plan on modifying this backend?', true);
+    const shouldKeepAmplifyDir = context.exeInfo.existingLocalEnvInfo?.noUpdateBackend
+      ? !context.exeInfo.existingLocalEnvInfo.noUpdateBackend
+      : await context.amplify.confirmPrompt('Do you plan on modifying this backend?', true);
 
-    if (confirmKeepCodebase) {
+    if (shouldKeepAmplifyDir) {
       if (stateManager.currentMetaFileExists()) {
         await initializeEnv(context, stateManager.getCurrentMeta());
       }
@@ -73,7 +75,8 @@ async function onSuccess(context: $TSContext) {
       context.print.info(`Run 'amplify pull' to sync future upstream changes.`);
       context.print.info('');
     } else {
-      removeFolderStructure();
+      stateManager.setLocalEnvInfo(process.cwd(), { ...context.exeInfo.localEnvInfo, noUpdateBackend: true });
+      removeAmplifyFolderStructure(true);
 
       context.print.info('');
       context.print.success(`Added backend environment config object to your project.`);
@@ -150,12 +153,15 @@ function setupFolderStructure(): void {
   fs.ensureDirSync(backendDirPath);
 }
 
-function removeFolderStructure() {
+function removeAmplifyFolderStructure(partial = false) {
   const projectPath = process.cwd();
-
-  const amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
-
-  fs.removeSync(amplifyDirPath);
+  if (partial) {
+    fs.removeSync(pathManager.getBackendDirPath(projectPath));
+    fs.removeSync(pathManager.getCurrentCloudBackendDirPath(projectPath));
+  } else {
+    const amplifyDirPath = pathManager.getAmplifyDirPath(projectPath);
+    fs.removeSync(amplifyDirPath);
+  }
 }
 
 function prepareContext(context: $TSContext, inputParams) {
@@ -175,5 +181,39 @@ function prepareContext(context: $TSContext, inputParams) {
     existingTeamProviderInfo: stateManager.getTeamProviderInfo(projectPath, {
       throwIfNotExist: false,
     }),
+    existingLocalEnvInfo: stateManager.getLocalEnvInfo(projectPath, {
+      throwIfNotExist: false,
+    }),
+    existingLocalAwsInfo: stateManager.getLocalAWSInfo(projectPath, {
+      throwIfNotExist: false,
+    }),
   };
+  updateContextForNoUpdateBackendProjects(context);
+}
+
+function updateContextForNoUpdateBackendProjects(context) {
+  if (context.exeInfo.existingLocalEnvInfo?.noUpdateBackend) {
+    const envName = context.exeInfo.existingLocalEnvInfo.envName;
+    context.exeInfo.isNewProject = false;
+    context.exeInfo.localEnvInfo = context.exeInfo.existingLocalEnvInfo;
+    context.exeInfo.projectConfig = context.exeInfo.existingProjectConfig;
+    context.exeInfo.awsConfigInfo = context.exeInfo.existingLocalAwsInfo[envName];
+    context.exeInfo.awsConfigInfo.config = { ...context.exeInfo.existingLocalAwsInfo[envName] };
+    context.exeInfo.teamProviderInfo = context.exeInfo.existingTeamProviderInfo;
+    context.exeInfo.inputParams = context.exeInfo.inputParams || {};
+    context.exeInfo.inputParams.amplify = context.exeInfo.inputParams.amplify || {};
+
+    context.exeInfo.inputParams.amplify.defaultEditor =
+      context.exeInfo.inputParams.amplify.defaultEditor || context.exeInfo.existingLocalEnvInfo.defaultEditor;
+    context.exeInfo.inputParams.amplify.projectName =
+      context.exeInfo.inputParams.amplify.projectName || context.exeInfo.existingProjectConfig.projectName;
+    context.exeInfo.inputParams.amplify.envName = context.exeInfo.inputParams.amplify.envName || envName;
+    context.exeInfo.inputParams.amplify.frontend =
+      context.exeInfo.inputParams.amplify.frontend || context.exeInfo.existingProjectConfig.frontend;
+    context.exeInfo.inputParams.amplify.appId =
+      context.exeInfo.inputParams.amplify.appId || context.exeInfo.existingTeamProviderInfo[envName].awscloudformation?.AmplifyAppId;
+    context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend] =
+      context.exeInfo.inputParams[context.exeInfo.inputParams.amplify.frontend] ||
+      context.exeInfo.existingProjectConfig[context.exeInfo.inputParams.amplify.frontend];
+  }
 }
