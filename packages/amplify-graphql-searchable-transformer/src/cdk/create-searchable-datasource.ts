@@ -5,7 +5,7 @@ import { ResourceConstants } from 'graphql-transformer-common';
 import assert from 'assert';
 import { Stack } from '@aws-cdk/core';
 
-export const createEsDataSource = (
+export const createSearchableDataSource = (
   stack: Stack,
   graphqlApiProvider: GraphQLAPIProvider,
   domainEndpoint: string,
@@ -15,7 +15,7 @@ export const createEsDataSource = (
   const { ElasticsearchDataSourceLogicalID } = ResourceConstants.RESOURCES;
   assert(region);
   const dsEndpoint = 'https://' + domainEndpoint;
-  return graphqlApiProvider.host.addElasticSearchDataSource(
+  return graphqlApiProvider.addSearchableDataSource(
     ElasticsearchDataSourceLogicalID,
     region,
     dsEndpoint,

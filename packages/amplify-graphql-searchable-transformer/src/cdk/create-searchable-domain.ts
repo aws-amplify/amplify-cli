@@ -4,13 +4,13 @@ import { IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { CfnParameter, Construct, Fn } from '@aws-cdk/core';
 import { ResourceConstants } from 'graphql-transformer-common';
 
-export const createEsDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string): Domain => {
+export const createSearchableDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string): Domain => {
   const { ElasticsearchEBSVolumeGB, ElasticsearchInstanceType, ElasticsearchInstanceCount } = ResourceConstants.PARAMETERS;
   const { ElasticsearchDomainLogicalID } = ResourceConstants.RESOURCES;
   const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
   const domain = new Domain(stack, ElasticsearchDomainLogicalID, {
-    version: { version: "7.10" } as ElasticsearchVersion,
+    version: { version: '7.10' } as ElasticsearchVersion,
     ebs: {
       enabled: true,
       volumeType: EbsDeviceVolumeType.GP2,
@@ -30,7 +30,7 @@ export const createEsDomain = (stack: Construct, parameterMap: Map<string, CfnPa
   return domain;
 };
 
-export const createEsDomainRole = (
+export const createSearchableDomainRole = (
   stack: Construct,
   parameterMap: Map<string, CfnParameter>,
   apiId: string,
