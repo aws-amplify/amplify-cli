@@ -72,7 +72,7 @@ export function requestTemplate(primaryKey: string, nonKeywordFields: Expression
           ),
         ],
       ),
-      ElasticsearchMappingTemplate.searchItem({
+      ElasticsearchMappingTemplate.searchTemplate({
         path: str('$indexPath'),
         size: ifElse(ref('context.args.limit'), ref('context.args.limit'), int(ResourceConstants.DEFAULT_SEARCHABLE_PAGE_LIMIT), true),
         search_after: ref('util.base64Decode($context.args.nextToken)'),
