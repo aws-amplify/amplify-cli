@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/aws-amplify/amplify-cli#readme",
   "dependencies": {
+    "chalk": "^4.1.1",
     "enquirer": "^2.3.6"
   },
   "devDependencies": {

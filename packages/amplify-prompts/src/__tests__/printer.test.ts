@@ -38,7 +38,15 @@ it('does not print debug lines by default', () => {
 it('prints info line by default', () => {
   printer.info(testInput);
   expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "this is a test line
+    "[0mthis is a test line[0m
+    "
+  `);
+});
+
+it('prints info line in specified color', () => {
+  printer.info(testInput, 'blue');
+  expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
+    "[34mthis is a test line[39m
     "
   `);
 });
@@ -52,7 +60,7 @@ it('does not print info line when silent flag is set', () => {
 it('prints success line by default', () => {
   printer.success(testInput);
   expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "✅ this is a test line
+    "✅ [32mthis is a test line[39m
     "
   `);
 });
@@ -66,7 +74,7 @@ it('does not print success line when silent flag is set', () => {
 it('prints warn line by default', () => {
   printer.warn(testInput);
   expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "⚠️ this is a test line
+    "⚠️ [33mthis is a test line[39m
     "
   `);
 });
@@ -75,7 +83,7 @@ it('prints warn line when silent flag is set', () => {
   flags_mock.isSilent = true;
   printer.warn(testInput);
   expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "⚠️ this is a test line
+    "⚠️ [33mthis is a test line[39m
     "
   `);
 });
@@ -83,7 +91,7 @@ it('prints warn line when silent flag is set', () => {
 it('prints error line by default', () => {
   printer.error(testInput);
   expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "🛑 this is a test line
+    "🛑 [31mthis is a test line[39m
     "
   `);
 });
@@ -92,7 +100,7 @@ it('prints error line when silent flag is set', () => {
   flags_mock.isSilent = true;
   printer.error(testInput);
   expect(writeStream_stub.write.mock.calls[0][0]).toMatchInlineSnapshot(`
-    "🛑 this is a test line
+    "🛑 [31mthis is a test line[39m
     "
   `);
 });

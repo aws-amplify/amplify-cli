@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { isDebug, isSilent } from './flags';
 
 export class AmplifyPrinter implements Printer {
@@ -9,8 +10,8 @@ export class AmplifyPrinter implements Printer {
     }
   };
 
-  info = (line: string): void => {
-    this.writeSilenceableLine(line);
+  info = (line: string, color: Color = 'reset'): void => {
+    this.writeSilenceableLine(chalk[color](line));
   };
 
   blankLine = (): void => {
@@ -18,15 +19,15 @@ export class AmplifyPrinter implements Printer {
   };
 
   success = (line: string): void => {
-    this.writeSilenceableLine(`✅ ${line}`);
+    this.writeSilenceableLine(`✅ ${chalk.green(line)}`);
   };
 
   warn = (line: string): void => {
-    this.writeLine(`⚠️ ${line}`);
+    this.writeLine(`⚠️ ${chalk.yellow(line)}`);
   };
 
   error = (line: string): void => {
-    this.writeLine(`🛑 ${line}`);
+    this.writeLine(`🛑 ${chalk.red(line)}`);
   };
 
   private writeSilenceableLine = (line?: string): void => {
@@ -45,14 +46,13 @@ export class AmplifyPrinter implements Printer {
  */
 export const printer: Printer = new AmplifyPrinter();
 
-export type Printer = Record<LineType, (line: string) => void> & {
+export type Printer = {
+  debug: (line: string) => void;
+  info: (line: string, color?: Color) => void;
   blankLine: () => void;
+  success: (line: string) => void;
+  warn: (line: string) => void;
+  error: (line: string) => void;
 };
 
-enum LineType {
-  debug = 'debug',
-  info = 'info',
-  success = 'success',
-  warn = 'warn',
-  error = 'error',
-}
+type Color = 'green' | 'blue' | 'yellow' | 'red' | 'reset';
