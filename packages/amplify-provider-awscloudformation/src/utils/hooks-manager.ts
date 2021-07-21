@@ -4,7 +4,7 @@ import _ from 'lodash';
 import ignore from 'ignore';
 import { S3 } from '../aws-utils/aws-s3';
 import * as aws from 'aws-sdk';
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import { sync } from 'glob';
 import { ProviderName } from '../constants';
 const S3_HOOKS_DIRECTORY = 'hooks/';
@@ -64,7 +64,6 @@ export async function downloadHooks(
    * @param {aws.S3.ClientConfiguratio} awsConfigInfo aws credentials information to create S3 object
    * @return {Promise<void>}
    */
-  // used by attach-backend
   if (!backendEnv) {
     return;
   }

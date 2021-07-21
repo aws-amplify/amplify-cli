@@ -10,6 +10,7 @@ import {
   pathManager,
   stateManager,
   TeamProviderInfoMigrateError,
+  executeHooks,
 } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
@@ -260,6 +261,7 @@ export async function run() {
         print.error('');
         print.error(`Learn more about feature flags: https://docs.amplify.aws/cli/reference/feature-flags`);
       }
+      // TODO: add hooks: await executeHooks(context, 'post');
     } else {
       if (error.message) {
         print.error(error.message);

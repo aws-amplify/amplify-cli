@@ -54,7 +54,6 @@ async function onSuccess(context: $TSContext) {
       fs.removeSync(backendDirPath);
       fs.copySync(backupBackendDirPath, backendDirPath);
     }
-    // TODO: check if fs.existsSync(backupHooksDirPath)
   }
 
   await postPullCodegen(context);

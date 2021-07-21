@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as inquirer from 'inquirer';
-import { $TSAny, stateManager } from 'amplify-cli-core';
+import { $TSAny, stateManager, executeHooks } from 'amplify-cli-core';
 import { twoStringSetsAreEqual, twoStringSetsAreDisjoint } from './utils/set-ops';
 import { Context } from './domain/context';
 import { constants } from './domain/constants';
@@ -236,6 +236,7 @@ const legacyCommandExecutor = async (context: Context, plugin: PluginInfo) => {
 const EVENT_EMITTING_PLUGINS = new Set([constants.CORE, constants.CODEGEN]);
 
 async function raisePreEvent(context: Context) {
+  await executeHooks(context, 'pre');
   const { command, plugin } = context.input;
   if (!plugin || !EVENT_EMITTING_PLUGINS.has(plugin)) {
     return;
@@ -291,6 +292,7 @@ async function raisePostEvent(context: Context) {
       await raisePostCodegenModelsEvent(context);
       break;
   }
+  await executeHooks(context, 'post');
 }
 
 async function raisePostInitEvent(context: Context) {
