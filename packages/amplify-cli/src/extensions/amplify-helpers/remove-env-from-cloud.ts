@@ -30,6 +30,8 @@ export async function removeEnvFromCloud(context, envName, deleteS3) {
     context.print.info('');
     context.print.error(`Error occurred while deleting env: ${envName}.`);
     context.print.info(e.message);
-    throw e;
+    if (e.code !== 'NotFoundException') {
+      throw e;
+    }
   }
 }
