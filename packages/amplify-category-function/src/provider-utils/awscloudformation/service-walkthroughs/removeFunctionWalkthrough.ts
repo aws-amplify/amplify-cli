@@ -7,6 +7,10 @@ import { ServiceName } from '../utils/constants';
 export async function removeResource(resourceName?: string): Promise<$TSAny> {
   const enabledCategoryResources = getEnabledResources();
 
+  if (enabledCategoryResources.length === 0) {
+    throw new Error('No Lambda function resource to remove. Use "amplify add function" to create a new function.');
+  }
+
   if (resourceName) {
     const resource = enabledCategoryResources.find(categoryResource => categoryResource.value.resourceName === resourceName);
     return resource.value;

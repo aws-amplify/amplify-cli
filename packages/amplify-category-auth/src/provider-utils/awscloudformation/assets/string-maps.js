@@ -391,6 +391,22 @@ const coreAttributes = [
   },
 ];
 
+const aliasAttributes = [
+  {
+    name: 'Email',
+    value: 'email',
+    checked: true,
+  },
+  {
+    name: 'Username',
+    value: 'preferred_username',
+  },
+  {
+    name: 'Phone number',
+    value: 'phone_number',
+  },
+];
+
 const appClientReadAttributes = [
   ...coreAttributes,
   {
@@ -601,6 +617,7 @@ const getAllMaps = edit => {
     disableOptionsOnEdit();
   }
   return {
+    aliasAttributes,
     coreAttributes,
     authSelectionMap,
     appClientReadAttributes,
@@ -624,6 +641,7 @@ const getAllMaps = edit => {
 };
 
 module.exports = {
+  aliasAttributes,
   coreAttributes,
   appClientReadAttributes,
   authSelectionMap,

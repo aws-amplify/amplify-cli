@@ -119,7 +119,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       ddbTable.grantStreamRead(lambdaRole);
 
       // creates event source mapping from ddb to lambda
-      createEventSourceMapping(stack, type, lambda, ddbTable.tableStreamArn);
+      createEventSourceMapping(stack, type, lambda, parameterMap, ddbTable.tableStreamArn);
 
       const { attributeName } = (table as any).keySchema.find((att: any) => att.keyType === 'HASH');
       assert(typeName);
@@ -160,7 +160,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
     }
     const fieldName = searchFieldNameOverride
       ? searchFieldNameOverride
-      : graphqlName(`search${plurality(toUpper(definition.name.value), ctx.featureFlags.getBoolean('improvePluralization'))}`);
+      : graphqlName(`search${plurality(toUpper(definition.name.value), ctx.featureFlags.getBoolean('improvePluralization', true))}`);
     this.searchableObjectTypeDefinitions.push({
       node: definition,
       fieldName,
@@ -214,7 +214,7 @@ export class SearchableModelTransformer extends TransformerPluginBase {
       .map(makeSearchableScalarInputObject)
       .forEach((node: InputObjectTypeDefinitionNode) => ctx.output.addInput(node));
 
-    const searchableXQueryFilterInput = makeSearchableXFilterInputObject(definition);
+    const searchableXQueryFilterInput = makeSearchableXFilterInputObject(definition, ctx.inputDocument);
     if (!ctx.output.hasType(searchableXQueryFilterInput.name.value)) {
       ctx.output.addInput(searchableXQueryFilterInput);
     }

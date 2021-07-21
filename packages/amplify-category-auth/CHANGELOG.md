@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.35.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.35.0...amplify-category-auth@2.35.1) (2021-07-16)
+
+
+
+## 5.1.2 (2021-07-15)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** \n made OS specific ([#7663](https://github.com/aws-amplify/amplify-cli/issues/7663)) ([3c0823e](https://github.com/aws-amplify/amplify-cli/commit/3c0823e8e004e00808351e958f5b587e8d77bd01)), closes [#7662](https://github.com/aws-amplify/amplify-cli/issues/7662)
+* **amplify-category-auth:** added passrole policy to MFALambaRole ([#7729](https://github.com/aws-amplify/amplify-cli/issues/7729)) ([cd5d33a](https://github.com/aws-amplify/amplify-cli/commit/cd5d33aa822ceeb19a1af847d8c3eab0f1d10632))
+* **auth:** standardize CloudFormation trigger templates, prevent errors at runtime ([#7219](https://github.com/aws-amplify/amplify-cli/issues/7219)) ([f9796bd](https://github.com/aws-amplify/amplify-cli/commit/f9796bd3aca6606f155d37ac6a8931d6bdec25b9))
+
+
+
+
+
+# [2.35.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.34.1...amplify-category-auth@2.35.0) (2021-07-12)
+
+
+
+## 5.1.1 (2021-07-07)
+
+
+### Bug Fixes
+
+* **amplify-category-auth:** check for siwa Cognito idp params ([#7678](https://github.com/aws-amplify/amplify-cli/issues/7678)) ([0c0adfb](https://github.com/aws-amplify/amplify-cli/commit/0c0adfb78350a192d4f44b722d6038b23c505527))
+
+
+### Features
+
+* support for sign in with apple ([#7413](https://github.com/aws-amplify/amplify-cli/issues/7413)) ([00d6676](https://github.com/aws-amplify/amplify-cli/commit/00d6676b4c1d6995cac01956078f7b6ee6186814))
+
+
+
+
+
 ## [2.34.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-auth@2.34.0...amplify-category-auth@2.34.1) (2021-06-30)
 
 **Note:** Version bump only for package amplify-category-auth

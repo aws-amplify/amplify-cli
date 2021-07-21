@@ -2,7 +2,7 @@ import { getCLIPath, nspawn as spawn } from '..';
 
 export function amplifyPull(
   cwd: string,
-  settings: { override?: boolean; emptyDir?: boolean; appId?: string; withRestore?: boolean },
+  settings: { override?: boolean; emptyDir?: boolean; appId?: string; withRestore?: boolean; noUpdateBackend?: boolean },
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const tableHeaderRegex = /\|\sCategory\s+\|\sResource\sname\s+\|\sOperation\s+\|\sProvider\splugin\s+\|/;
@@ -41,8 +41,8 @@ export function amplifyPull(
         .wait('Start Command:')
         .sendCarriageReturn()
         .wait('Do you plan on modifying this backend?')
-        .sendLine('y');
-    } else {
+        .sendLine(settings.noUpdateBackend ? 'n' : 'y');
+    } else if (!settings.noUpdateBackend) {
       chain.wait('Pre-pull status').wait('Current Environment').wait(tableHeaderRegex).wait(tableSeperator);
     }
 
@@ -54,8 +54,10 @@ export function amplifyPull(
         .sendLine('y');
     }
 
-    if (settings.emptyDir) {
-      chain.wait(/Successfully pulled backend environment .+ from the cloud\./).wait("Run 'amplify pull' to sync upstream changes.");
+    if (settings.noUpdateBackend) {
+      chain.wait('Added backend environment config object to your project.').wait("Run 'amplify pull' to sync future upstream changes.");
+    } else if (settings.emptyDir) {
+      chain.wait(/Successfully pulled backend environment .+ from the cloud\./).wait("Run 'amplify pull' to sync future upstream changes.");
     } else {
       chain.wait('Post-pull status').wait('Current Environment').wait(tableHeaderRegex).wait(tableSeperator);
     }
