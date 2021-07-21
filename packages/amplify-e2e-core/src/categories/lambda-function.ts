@@ -175,11 +175,7 @@ const coreFunction = (
         selectTemplate(chain, settings.functionTemplate, runtime);
       }
     } else {
-      chain
-        .wait('Select which capability you want to update:')
-        .sendCarriageReturn() // lambda function
-        .wait('Select the Lambda function you want to update')
-        .sendCarriageReturn(); // assumes only one function configured in the project
+      chain.wait('Select the Lambda function you want to update').sendCarriageReturn(); // assumes only one function configured in the project
     }
 
     if (functionConfigCallback) {
