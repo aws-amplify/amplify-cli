@@ -8,7 +8,6 @@ describe('Check RootStack Template', () => {
   it('Generated rootstack template during init', async () => {
     // CFN transform for Root stack
     const rootStackFileName = 'template.json';
-    const rootFilePath = 'randomPath';
     const props: RootStackTransformOptions = {
       resourceConfig: {
         stackFileName: rootStackFileName,

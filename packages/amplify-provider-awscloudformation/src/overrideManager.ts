@@ -24,14 +24,14 @@ export const transformRootStack = async (commandType: CommandType): Promise<Temp
   try {
     let props: RootStackTransformOptions;
     // add check here to see if the override folder is present or not
-    if (commandType === CommandType.PRE_INIT) {
+    if (commandType === CommandType.INIT) {
       props = {
         resourceConfig: {
           stackFileName: rootStackFileName,
         },
         cfnModifiers: prePushCfnTemplateModifier,
       };
-    } else if (commandType === CommandType.PUSH || commandType === CommandType.INIT) {
+    } else if (commandType === CommandType.PUSH || commandType === CommandType.ON_INIT) {
       const projectPath = pathManager.findProjectRoot();
       const rootFilePath = path.join(pathManager.getRootStackDirPath(projectPath), rootStackFileName);
       const overrideFnPath = path.join(pathManager.getRootOverrideDirPath(projectPath), 'build', 'override.js');

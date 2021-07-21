@@ -35,7 +35,7 @@ import { uploadAuthTriggerFiles } from './upload-auth-trigger-files';
 import archiver from './utils/archiver';
 import amplifyServiceManager from './amplify-service-manager';
 import { DeploymentManager, DeploymentStep, DeploymentOp, DeploymentStateManager, runIterativeRollback } from './iterative-deployment';
-import { Fn, Template } from 'cloudform-types';
+import { Fn } from 'cloudform-types';
 import { getGqlUpdatedResource } from './graphql-transformer/utils';
 import { isAmplifyAdminApp } from './utils/admin-helpers';
 import { fileLogger } from './utils/aws-logger';
@@ -50,7 +50,7 @@ import { CommandType } from './root-stack-builder';
 import { rootStackFileName } from '.';
 import { storeRootStackTemplate } from './initializer';
 import { transformRootStack } from './overrideManager';
-import { prePushCfnTemplateModifier } from './pre-push-cfn-processor/pre-push-cfn-modifier';
+import { Template } from './root-stack-builder/types';
 
 const logger = fileLogger('push-resources');
 

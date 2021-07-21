@@ -1,18 +1,8 @@
 import { ISynthesisSession, Stack, LegacyStackSynthesizer, CfnParameter } from '@aws-cdk/core';
-import { Template } from 'cloudform-types';
+import { Template } from './types';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 
 export class RootStackSythesizer extends LegacyStackSynthesizer {
-  static mockImplementation(
-    arg0: () => {
-      addStack: () => jest.Mock<any, any>;
-      setStackAsset: () => jest.Mock<any, any>;
-      getStack: () => jest.Mock<any, any>;
-      synthesize: () => jest.Mock<any, any>;
-    },
-  ) {
-    throw new Error('Method not implemented.');
-  }
   private stacks: Map<string, Stack> = new Map();
   private static readonly stackAssets: Map<string, Template> = new Map();
 

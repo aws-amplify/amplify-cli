@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { CommandType } from './root-stack-builder';
 import { rootStackFileName } from '.';
 import { pathManager, PathConstants, stateManager, JSONUtilities } from 'amplify-cli-core';
-import { Template } from 'cloudform-types';
+import { Template } from './root-stack-builder/types';
 import { transformRootStack } from './overrideManager';
 
 const moment = require('moment');
@@ -53,7 +53,7 @@ export async function run(context) {
     const unauthRoleName = `${stackName}-unauthRole`;
 
     // CFN transform for Root stack
-    const rootStack = await transformRootStack(CommandType.PRE_INIT);
+    const rootStack = await transformRootStack(CommandType.INIT);
     // Track Amplify Console generated stacks
     if (!!process.env.CLI_DEV_INTERNAL_DISABLE_AMPLIFY_APP_DELETION) {
       rootStack.Description = 'Root Stack for AWS Amplify Console';
@@ -179,11 +179,8 @@ export async function onInitSuccessful(context) {
 export const storeRootStackTemplate = async (template?: Template) => {
   // generate template again as the folder structure was not created when root stack was initiaized
   if (template === undefined) {
-    template = await transformRootStack(CommandType.INIT);
+    template = await transformRootStack(CommandType.ON_INIT);
   }
-
-  // prepush modifier
-  await prePushCfnTemplateModifier(template);
 
   // RootStack deployed to backend/awscloudformation/build
   const projectRoot = pathManager.findProjectRoot();

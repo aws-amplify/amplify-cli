@@ -18,7 +18,6 @@ const JSONUtilities_mock = JSONUtilities as jest.Mocked<typeof JSONUtilities>;
 const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 
 describe('run', () => {
-  jest.clearAllMocks();
   it('transforms the root stack using the pre-push modifier', async () => {
     // setup
     const context_stub = {

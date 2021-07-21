@@ -142,7 +142,7 @@ export class AmplifyRootStack extends cdk.Stack implements AmplifyRootStackTempl
     });
   };
 
-  // add Function for CUstom Resource in Root stack
+  // add Function for Custom Resource in Root stack
   /**
    *
    * @param _

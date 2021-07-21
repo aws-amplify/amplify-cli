@@ -1,7 +1,5 @@
-import * as path from 'path';
-import { AmplifyRootStackTemplate } from './types';
+import { AmplifyRootStackTemplate, Template } from './types';
 import { JSONUtilities, pathManager } from 'amplify-cli-core';
-import { Template } from 'cloudform-types';
 import { AmplifyRootStack, AmplifyRootStackOutputs } from './root-stack-builder';
 import { RootStackSythesizer } from './stackSynthesizer';
 import { App } from '@aws-cdk/core';
@@ -10,7 +8,7 @@ import * as cdk from '@aws-cdk/core';
 export enum CommandType {
   'PUSH',
   'INIT',
-  'PRE_INIT',
+  'ON_INIT',
 }
 
 type RootStackOptions = {
@@ -98,7 +96,7 @@ export class AmplifyRootStackTransform {
   private applyOverride = async () => {
     if (this._rootStackOptions.event === CommandType.PUSH) {
       const { overrideProps } = await import(this._overrideProps.overrideFnPath);
-      if (typeof overrideProps === 'function' && overrideProps != null) {
+      if (typeof overrideProps === 'function' && overrideProps) {
         this._rootTemplateObj = overrideProps(this._rootTemplateObj as AmplifyRootStackTemplate);
       } else {
         console.log('There is no override setup yet for Root Stack. To enable override : Run amplify override root');
@@ -110,7 +108,7 @@ export class AmplifyRootStackTransform {
    * @returns Object required to generate Stack using cdk
    */
   private getInput = async (): Promise<RootStackOptions> => {
-    if (this._command === CommandType.INIT || this._command === CommandType.PRE_INIT) {
+    if (this._command === CommandType.INIT || this._command === CommandType.ON_INIT) {
       const buildConfig: RootStackOptions = {
         event: this._command,
         rootStackFileName: this._resourceConfig.stackFileName,
@@ -248,7 +246,9 @@ export class AmplifyRootStackTransform {
   };
 
   private deployOverrideStacksToDisk = async (props: DeploymentOptions) => {
-    JSONUtilities.writeJson(props.rootFilePath, props.templateStack);
+    if (this._rootStackOptions.event === CommandType.PUSH) {
+      JSONUtilities.writeJson(props.rootFilePath, props.templateStack);
+    }
   };
 
   public getRootStack(): AmplifyRootStack {
