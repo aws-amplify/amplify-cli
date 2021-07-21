@@ -9,3 +9,7 @@ export const windowsPathSerializer = {
     return `"${(val as string).replace(/\\/g, '\\')}"`;
   }
 };
+
+test('validateWindowsPathSerializer', () => {
+  expect(windowsPathSerializer).toBeDefined();
+});

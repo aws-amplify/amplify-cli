@@ -4,7 +4,7 @@ import fetch, { Response } from 'node-fetch';
 import { $TSContext } from 'amplify-cli-core';
 import * as core from 'amplify-cli-core';
 import * as path from 'path';
-import { windowsPathSerializer } from '../../../tests/amplify-helpers/testUtils/snapshot-serializer';
+import { windowsPathSerializer } from '../testUtils/snapshot-serializer';
 jest.mock('fs-extra');
 const fs_mock = (fs as unknown) as jest.Mocked<typeof fs>;
 

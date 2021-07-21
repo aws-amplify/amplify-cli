@@ -4,7 +4,7 @@ import execa from 'execa';
 import * as fs from 'fs-extra';
 import { hideSync } from 'hidefile';
 import { setRegPendingDelete } from '../../utils/win-utils';
-import { windowsPathSerializer } from '../../../tests/amplify-helpers/testUtils/snapshot-serializer';
+import { windowsPathSerializer } from '../testUtils/snapshot-serializer';
 import * as path from 'path';
 
 jest.mock('execa');
