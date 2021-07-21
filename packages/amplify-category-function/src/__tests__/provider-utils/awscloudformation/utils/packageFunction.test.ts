@@ -1,5 +1,5 @@
 import { getRuntimeManager } from '../../../../provider-utils/awscloudformation/utils/functionPluginLoader';
-import { $TSContext, pathManager, stateManager } from 'amplify-cli-core';
+import { $TSContext, getFolderSize, pathManager } from 'amplify-cli-core';
 import { packageFunction } from '../../../../provider-utils/awscloudformation/utils/packageFunction';
 import { PackageRequestMeta } from '../../../../provider-utils/awscloudformation/types/packaging-types';
 import { zipPackage } from '../../../../provider-utils/awscloudformation/utils/zipResource';
@@ -17,12 +17,12 @@ const context_stub = {
 };
 
 const pathManager_mock = pathManager as jest.Mocked<typeof pathManager>;
-const stateManager_mock = stateManager as jest.Mocked<typeof stateManager>;
 const getRuntimeManager_mock = getRuntimeManager as jest.MockedFunction<typeof getRuntimeManager>;
 const zipPackage_mock = zipPackage as jest.MockedFunction<typeof zipPackage>;
+const getFolderSize_mock = getFolderSize as jest.MockedFunction<typeof getFolderSize>;
 
 pathManager_mock.getResourceDirectoryPath.mockReturnValue('backend/dir/path/testcategory/testResourceName');
-stateManager_mock.getFolderSize.mockResolvedValue(50 * 1024 ** 2);
+getFolderSize_mock.mockResolvedValue(50 * 1024 ** 2);
 
 const runtimeManager_mock = {
   package: jest.fn().mockResolvedValue({
@@ -56,7 +56,7 @@ describe('package function', () => {
   });
 
   it('throws an error when the size of the function is too large', async () => {
-    stateManager_mock.getFolderSize.mockResolvedValueOnce(251 * 1024 ** 2);
-    expect(async () => await packageFunction((context_stub as unknown) as $TSContext, resourceRequest)).rejects.toThrow();
+    getFolderSize_mock.mockResolvedValueOnce(251 * 1024 ** 2);
+    await expect(async () => await packageFunction((context_stub as unknown) as $TSContext, resourceRequest)).rejects.toThrow();
   });
 });

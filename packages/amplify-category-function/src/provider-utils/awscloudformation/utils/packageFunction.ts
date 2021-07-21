@@ -1,6 +1,8 @@
-import { pathManager, stateManager } from 'amplify-cli-core';
+import { convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
+import { LambdaLayer } from 'amplify-function-plugin-interface';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { lambdaPackageLimitInMB } from './constants';
 import { categoryName } from '../../../constants';
 import { Packager } from '../types/packaging-types';
 import { getRuntimeManager } from './functionPluginLoader';
@@ -31,25 +33,27 @@ export const packageFunction: Packager = async (context, resource) => {
     await zipPackage(packageResult.zipEntries, destination);
   }
 
-  const functionSizeInBytes = await stateManager.getFolderSize(path.join(resourcePath, 'src'));
+  const functionSizeInBytes = await getFolderSize(path.join(resourcePath, 'src'));
   let layersSizeInBytes = 0;
 
-  const functionParameters = loadFunctionParameters(resourcePath);
+  const functionParameters: { lambdaLayers?: LambdaLayer[] } = loadFunctionParameters(resourcePath);
 
   for (const layer of functionParameters?.lambdaLayers || []) {
-    // Add up all the lib/opt folders
-    const layerDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, layer.resourceName);
-    layersSizeInBytes += await stateManager.getFolderSize(path.join(layerDirPath, 'lib'));
-    layersSizeInBytes += await stateManager.getFolderSize(path.join(layerDirPath, 'opt'));
+    // Add up all the project lib/opt folders
+    if (layer.type === 'ProjectLayer') {
+      const layerDirPath = pathManager.getResourceDirectoryPath(undefined, categoryName, layer.resourceName);
+      layersSizeInBytes += await getFolderSize(path.join(layerDirPath, 'lib'));
+      layersSizeInBytes += await getFolderSize(path.join(layerDirPath, 'opt'));
+    }
   }
 
-  if (functionSizeInBytes + layersSizeInBytes > 250 * 1024 ** 2) {
+  if (functionSizeInBytes + layersSizeInBytes > lambdaPackageLimitInMB * 1024 ** 2) {
     throw new Error(
       `Total size of Lambda function ${
         resource.resourceName
-      } plus it's dependent layers exceeds 250MB limit. Lambda function is ${stateManager
-        .convertNumBytes(functionSizeInBytes)
-        .toMB()}MB. Dependent Lambda layers are ${stateManager.convertNumBytes(layersSizeInBytes).toMB()}MB.`,
+      } plus it's dependent layers exceeds ${lambdaPackageLimitInMB}MB limit. Lambda function is ${convertNumBytes(
+        functionSizeInBytes,
+      ).toMB()}MB. Dependent Lambda layers are ${convertNumBytes(layersSizeInBytes).toMB()}MB.`,
     );
   }
 

@@ -1,21 +1,19 @@
-import { $TSAny, $TSContext, pathManager, stateManager } from 'amplify-cli-core';
-import { ZipEntry } from 'amplify-function-plugin-interface';
-import * as path from 'path';
+import { $TSAny, $TSContext, convertNumBytes, getFolderSize, pathManager } from 'amplify-cli-core';
+import { FunctionRuntimeLifecycleManager, ZipEntry } from 'amplify-function-plugin-interface';
+import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import _ from 'lodash';
-import chalk from 'chalk';
 import { EOL } from 'os';
-import { Packager } from '../types/packaging-types';
-import { loadLayerConfigurationFile } from './layerConfiguration';
-import { FunctionRuntimeLifecycleManager } from 'amplify-function-plugin-interface';
-import { ServiceName, versionHash } from './constants';
-import { LayerCloudState } from './layerCloudState';
-import { loadPreviousLayerHash, ensureLayerVersion, loadStoredLayerParameters, getChangedResources } from './layerHelpers';
-import { defaultLayerPermission } from './layerParams';
-import { zipPackage } from './zipResource';
-import { accessPermissions, description } from './constants';
-import { updateLayerArtifacts } from './storeResources';
+import * as path from 'path';
 import { lambdaLayerNewVersionWalkthrough } from '../service-walkthroughs/lambdaLayerWalkthrough';
+import { Packager } from '../types/packaging-types';
+import { accessPermissions, description, lambdaPackageLimitInMB, ServiceName, versionHash } from './constants';
+import { LayerCloudState } from './layerCloudState';
+import { loadLayerConfigurationFile } from './layerConfiguration';
+import { ensureLayerVersion, getChangedResources, loadPreviousLayerHash, loadStoredLayerParameters } from './layerHelpers';
+import { defaultLayerPermission } from './layerParams';
+import { updateLayerArtifacts } from './storeResources';
+import { zipPackage } from './zipResource';
 
 /**
  * Packages lambda layer code and artifacts into a lambda-compatible .zip file
@@ -39,11 +37,13 @@ export const packageLayer: Packager = async (context, resource) => {
   // check total layer size is less than 250MB
   let layerSizeInBytes = 0;
   // Add up all the lib/opt folders
-  layerSizeInBytes += await stateManager.getFolderSize(path.join(resourcePath, 'lib'));
-  layerSizeInBytes += await stateManager.getFolderSize(path.join(resourcePath, 'opt'));
+  layerSizeInBytes += await getFolderSize(path.join(resourcePath, 'lib'));
+  layerSizeInBytes += await getFolderSize(path.join(resourcePath, 'opt'));
 
-  if (layerSizeInBytes > 250 * 1024 ** 2) {
-    throw new Error(`Lambda layer ${resource.resourceName} is too large: ${stateManager.convertNumBytes(layerSizeInBytes).toMB()}/250 MB`);
+  if (layerSizeInBytes > lambdaPackageLimitInMB * 1024 ** 2) {
+    throw new Error(
+      `Lambda layer ${resource.resourceName} is too large: ${convertNumBytes(layerSizeInBytes).toMB()}/${lambdaPackageLimitInMB} MB`,
+    );
   }
 
   let zipEntries: ZipEntry[] = [{ sourceFolder: path.join(resourcePath, 'opt') }];

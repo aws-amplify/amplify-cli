@@ -295,33 +295,6 @@ export class StateManager {
     return resources[0];
   };
 
-  convertNumBytes = (numBytes: number) => ({
-    toKB: () => Math.round(numBytes / 1024),
-    toMB: () => Math.round(numBytes / 1024 ** 2),
-  });
-
-  getFolderSize = async (filePath: string) => {
-    try {
-      const fsStats = await fs.stat(filePath);
-      if (fsStats.isFile()) {
-        const { size } = fsStats;
-        return size;
-      }
-      if (!fsStats.isDirectory()) {
-        throw new Error(`Unrecognized file type [${filePath}]`);
-      }
-      const dir = await fs.readdir(filePath);
-      let totalSizeInBytes = 0;
-      for (const dirEntry of dir) {
-        const fullPath = path.join(filePath, dirEntry);
-        totalSizeInBytes += await this.getFolderSize(fullPath);
-      }
-      return totalSizeInBytes;
-    } catch (error) {
-      throw new Error(`Calculating file size failed for [${filePath}]: ${error.message || error}`);
-    }
-  };
-
   private filterResourcesFromMeta = (
     amplifyMeta: Record<string, any>,
     categoryName: string,
