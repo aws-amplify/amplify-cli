@@ -71,12 +71,12 @@ export async function generateNestedAuthTriggerTemplate(category: string, resour
   const targetDir = path.join(pathManager.getBackendDirPath(), category, resourceName, 'build');
   const authTriggerCfnFilePath = path.join(targetDir, cfnFileName);
   const { authTriggerConnections, permissions } = request;
+  let triggerPermissions: AuthTriggerPermissions[] = [];
   if (authTriggerConnections) {
-    const cfnObject = await createCustomResourceforAuthTrigger(
-      context,
-      JSON.parse(authTriggerConnections),
-      permissions!.map(i => JSONUtilities.parse(i)),
-    );
+    if (permissions) {
+      triggerPermissions = permissions.map(i => JSONUtilities.parse(i));
+    }
+    const cfnObject = await createCustomResourceforAuthTrigger(JSONUtilities.parse(authTriggerConnections), triggerPermissions);
     // create policy for auth trigger as auth doesnt depend on function to break circular dependency
 
     JSONUtilities.writeJson(authTriggerCfnFilePath, cfnObject);
@@ -90,18 +90,21 @@ export async function generateNestedAuthTriggerTemplate(category: string, resour
   }
 }
 
-async function createCustomResourceforAuthTrigger(
-  context: any,
+export async function createCustomResourceforAuthTrigger(
   authTriggerConnections: AuthTriggerConnection[],
   permissions: AuthTriggerPermissions[],
 ) {
-  const stack = new CustomResourceAuthStack(undefined as any, 'Amplify', {
-    description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
-    authTriggerConnections: authTriggerConnections,
-    permissions: permissions,
-  });
-  const cfn = stack.toCloudFormation();
-  return cfn;
+  if (Array.isArray(authTriggerConnections) && authTriggerConnections.length) {
+    const stack = new CustomResourceAuthStack(undefined as any, 'Amplify', {
+      description: 'Custom Resource stack for Auth Trigger created using Amplify CLI',
+      authTriggerConnections,
+      permissions,
+    });
+    const cfn = stack.toCloudFormation();
+    return cfn;
+  } else {
+    throw new Error('Auth Trigger Connections must have value when trigger are selected');
+  }
 }
 
 function createCustomResource(stack: cdk.Stack, authTriggerConnections: AuthTriggerConnection[], userpoolId: cdk.CfnParameter) {

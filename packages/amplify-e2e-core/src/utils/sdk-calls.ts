@@ -164,25 +164,22 @@ export const getUserPoolClients = async (userPoolId: string, clientIds: string[]
   return res;
 };
 
-export const addUserToUserPool = async (userPoolId: string, region: string) => {
+export const adminConfirmSignUp = async (userPoolId: string, region: string, userName: string) => {
   const provider = new CognitoIdentityServiceProvider({ region });
   const params = {
     UserPoolId: userPoolId /* required */,
-    Username: 'testUser' /* required */,
-    UserAttributes: [
-      {
-        Name: 'demoKey' /* required */,
-        Value: 'randomValue',
-      },
-    ],
-    ValidationData: [
-      {
-        Name: 'demoKey' /* required */,
-        Value: 'demoValue',
-      },
-    ],
+    Username: userName /* required */,
   };
-  const res = await provider.adminCreateUser(params);
+  await provider.adminConfirmSignUp(params).promise();
+};
+
+export const adminListGroupForUser = async (userPoolId: string, region: string, userName: string) => {
+  const provider = new CognitoIdentityServiceProvider({ region });
+  const params = {
+    UserPoolId: userPoolId /* required */,
+    Username: userName /* required */,
+  };
+  return await provider.adminListGroupsForUser(params).promise();
 };
 
 export const getBot = async (botName: string, region: string) => {

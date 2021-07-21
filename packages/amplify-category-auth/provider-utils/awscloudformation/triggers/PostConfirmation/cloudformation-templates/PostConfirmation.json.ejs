@@ -197,8 +197,9 @@
             }
         },
         "LambdaExecutionRoleArn": {
-            "Value": {"Fn::GetAtt": ["LambdaExecutionRole", "Arn"]}
-
+            "Value": {
+                "Fn::GetAtt": ["LambdaExecutionRole", "Arn"]
+            }
         },
         "Region": {
             "Value": {
