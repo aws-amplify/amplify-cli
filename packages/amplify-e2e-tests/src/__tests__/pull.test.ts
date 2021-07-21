@@ -20,7 +20,6 @@ describe('amplify pull', () => {
   afterEach(async () => {
     await deleteProject(projRoot);
     deleteProjectDir(projRoot);
-    await deleteProject(projRoot2);
     deleteProjectDir(projRoot2);
   });
 
