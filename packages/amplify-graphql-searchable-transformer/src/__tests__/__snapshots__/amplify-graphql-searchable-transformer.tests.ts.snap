@@ -101,14 +101,49 @@ input SearchableEmployeeSortInput {
   direction: SearchableSortDirection
 }
 
+input SearchableEmployeeAggregationInput {
+  name: String!
+  type: SearchableAggregateType!
+  field: String!
+}
+
+enum SearchableAggregateType {
+  terms
+  avg
+  min
+  max
+  sum
+}
+
 type SearchableEmployeeConnection {
   items: [Employee]
   nextToken: String
   total: Int
+  aggregateItems: [SearchableAggregateResult]
 }
 
+type SearchableAggregateResult {
+  name: String!
+  result: SearchableAggregateGenericResult
+}
+
+type SearchableAggregateScalarResult {
+  value: Float!
+}
+
+type SearchableAggregateBucketResult {
+  buckets: [SearchableAggregateBucketResultItem]
+}
+
+type SearchableAggregateBucketResultItem {
+  key: String!
+  doc_count: Int!
+}
+
+union SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
 type Query {
-  searchEmployees(filter: SearchableEmployeeFilterInput, sort: [SearchableEmployeeSortInput], limit: Int, nextToken: String, from: Int): SearchableEmployeeConnection
+  searchEmployees(filter: SearchableEmployeeFilterInput, sort: [SearchableEmployeeSortInput], limit: Int, nextToken: String, from: Int, aggregates: [SearchableEmployeeAggregationInput]): SearchableEmployeeConnection
   getEmployee(id: ID!): Employee
   listEmployees(filter: ModelEmployeeFilterInput, limit: Int, nextToken: String): ModelEmployeeConnection
 }

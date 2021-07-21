@@ -19,7 +19,6 @@ import {
   methodCall,
 } from 'graphql-mapping-template';
 import { ResourceConstants } from 'graphql-transformer-common';
-import { util } from 'prettier';
 
 export function requestTemplate(primaryKey: string, nonKeywordFields: Expression[], includeVersion: boolean = false, type: string): string {
   return print(
