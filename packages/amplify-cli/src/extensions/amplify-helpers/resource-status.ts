@@ -5,6 +5,7 @@ import { CLOUD_INITIALIZED,  getCloudInitStatus } from './get-cloud-init-status'
 import { ViewResourceTableParams } from "amplify-cli-core";
 import { viewSummaryTable, viewEnvInfo, viewResourceDiffs } from './resource-status-view';
 import { getMultiCategoryStatus, getResourceStatus, getHashForResourceDir } from './resource-status-data';
+import { getEnvInfo } from './get-env-info';
 import chalk from 'chalk';
 
 export { getResourceStatus, getHashForResourceDir }
@@ -51,7 +52,16 @@ export async function showStatusTable( tableViewFilter : ViewResourceTableParams
       return resourceChanged;
 }
 
-export async function showResourceTable(category, resourceName, filteredResources) {
+export async function showResourceTable(category?, resourceName?, filteredResources?) {
+  const amplifyProjectInitStatus = getCloudInitStatus();
+
+  if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
+    const { envName } = getEnvInfo().envName;
+
+    print.info('');
+    print.info(`${chalk.green('Current Environment')}: ${envName}`);
+    print.info('');
+  }
 
   //Prepare state for view
   const {
@@ -62,7 +72,6 @@ export async function showResourceTable(category, resourceName, filteredResource
     allResources,
     tagsUpdated,
   } = await getResourceStatus(category, resourceName, undefined, filteredResources);
-  const amplifyProjectInitStatus = getCloudInitStatus();
 
   //1. Display Environment Info
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
