@@ -1,5 +1,5 @@
 import {
-  OpenSearchMappingTemplate,
+  SearchableMappingTemplate,
   print,
   str,
   ref,
