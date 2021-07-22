@@ -182,11 +182,27 @@ Resources:
       AliasAttributes: !Ref aliasAttributes
       <% } %>
       MfaConfiguration: !Ref mfaConfiguration
+      <% if(props.useEnabledMfas && props.mfaConfiguration != 'OFF') {%>
+      EnabledMfas:
+        <% if(props.mfaTypes.includes('SMS Text Message') ||
+        props.autoVerifiedAttributes.includes('phone_number') ||
+        props.requiredAttributes.includes('phone_number')) {%> 
+        - SMS_MFA
+        <% } %>
+        <% if(props.mfaTypes.includes('TOTP')) {%>
+        - SOFTWARE_TOKEN_MFA
+        <% } %>
+      <% } %>  
+      <% if(!props.useEnabledMfas || 
+      (props.mfaConfiguration != 'OFF' && props.mfaTypes.includes('SMS Text Message')) || 
+      props.autoVerifiedAttributes.includes('phone_number') ||
+      props.requiredAttributes.includes('phone_number')) {%> 
       SmsVerificationMessage: !Ref smsVerificationMessage
       SmsAuthenticationMessage: !Ref smsAuthenticationMessage
       SmsConfiguration:
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
+      <% } %>
     <%if (props.mfaConfiguration != 'OFF') { %>
     DependsOn: SNSRole
     <% } %>
@@ -818,7 +834,7 @@ Resources:
     DependsOn: OAuthCustomResourceLogPolicy
   <% } %>
 
-  <%if (props.mfaConfiguration != 'OFF') { %>
+  <%if (!props.useEnabledMfas && props.mfaConfiguration != 'OFF') { %>
   # BEGIN MFA LAMBDA RESOURCES
   MFALambdaRole:
   # Created to execute Lambda which sets MFA config values
