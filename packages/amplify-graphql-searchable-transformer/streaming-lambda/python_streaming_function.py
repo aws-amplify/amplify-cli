@@ -14,7 +14,7 @@ from botocore.session import Session
 from boto3.dynamodb.types import TypeDeserializer
 
 
-# The following parameters are required to configure the OS cluster
+# The following parameters are required to configure the OpenSearch cluster
 OPENSEARCH_ENDPOINT = os.environ['OPENSEARCH_ENDPOINT']
 OPENSEARCH_REGION = os.environ['OPENSEARCH_REGION']
 DEBUG = True if os.environ['DEBUG'] == "1" else False
@@ -81,7 +81,7 @@ def post_data_to_opensearch(payload, region, creds, host, path, method='POST', p
 def post_to_opensearch(payload):
     '''Post data to OpenSearch cluster with exponential backoff'''
 
-    # Get aws_region and credentials to post signed URL to ES
+    # Get aws_region and credentials to post signed URL to OpenSearch
     opensearch_region = OPENSEARCH_REGION or os.environ['AWS_REGION']
     session = Session({'region': opensearch_region})
     creds = get_credentials(session)
@@ -98,21 +98,21 @@ def post_to_opensearch(payload):
             time.sleep(seconds)
 
         try:
-            es_ret_str = post_data_to_opensearch(
+            opensearch_ret_str = post_data_to_opensearch(
                 payload, opensearch_region, creds, opensearch_endpoint, '/_bulk')
-            logger.debug('Return from ES: %s', es_ret_str)
-            es_ret = json.loads(es_ret_str)
+            logger.debug('Return from OpenSearch: %s', opensearch_ret_str)
+            opensearch_ret = json.loads(opensearch_ret_str)
 
-            if es_ret['errors']:
+            if opensearch_ret['errors']:
                 logger.error(
-                    'OpenSearch post unsuccessful, errors present, took=%sms', es_ret['took'])
+                    'OpenSearch post unsuccessful, errors present, took=%sms', opensearch_ret['took'])
                 # Filter errors
-                es_errors = [item for item in es_ret['items']
+                opensearch_errors = [item for item in opensearch_ret['items']
                             if item.get('index', {}).get('error')]
                 logger.error('List of items with errors: %s',
-                            json.dumps(es_errors))
+                            json.dumps(opensearch_errors))
             else:
-                logger.info('OpenSearch post successful, took=%sms', es_ret['took'])
+                logger.info('OpenSearch post successful, took=%sms', opensearch_ret['took'])
             break  # Sending to OpenSearch was ok, break retry loop
         except Searchable_Exception as e:
             if (e.status_code >= 500) and (e.status_code <= 599):
@@ -189,7 +189,7 @@ def _lambda_handler(event, context):
         # Deserialize DynamoDB type to Python types
         doc_fields = ddb_deserializer.deserialize({'M': ddb[image_name]})
         
-        # Sync enabled APIs do soft delete. We need to delete the record in ES if _deleted field is set
+        # Sync enabled APIs do soft delete. We need to delete the record in OpenSearch if _deleted field is set
         if OPENSEARCH_USE_EXTERNAL_VERSIONING and event_name == 'MODIFY' and '_deleted' in  doc_fields and doc_fields['_deleted']:
             is_ddb_insert_or_update = False
             is_ddb_delete = True
