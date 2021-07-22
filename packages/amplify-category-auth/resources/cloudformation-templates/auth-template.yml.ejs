@@ -1,4 +1,4 @@
-<% var autoVerifiedAttributes = props.autoVerifiedAttributes.concat(props.aliasAttributes).filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i) %>
+<% var autoVerifiedAttributes = props.autoVerifiedAttributes ? props.autoVerifiedAttributes.concat(props.aliasAttributes).filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i) : [] %>
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
@@ -164,7 +164,7 @@ Resources:
         - <%= autoVerifiedAttributes[x] %>
       <% } %>
       <% } %>
-      <%if (autoVerifiedAttributes.includes('email')) { %>
+      <%if (autoVerifiedAttributes && autoVerifiedAttributes.includes('email')) { %>
       EmailVerificationMessage: !Ref emailVerificationMessage
       EmailVerificationSubject: !Ref emailVerificationSubject
       <% } %>
