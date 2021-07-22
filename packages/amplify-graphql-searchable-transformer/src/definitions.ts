@@ -9,7 +9,7 @@ import {
   EnumTypeDefinitionNode,
   EnumValueDefinitionNode,
 } from 'graphql';
-import { graphqlName, makeNamedType, isScalar, isEnum, makeListType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
+import { graphqlName, makeNamedType, isScalar, isEnum, makeListType, makeNonNullType, getBaseType, SearchableResourceIDs } from 'graphql-transformer-common';
 
 const ID_CONDITIONS = [
   'ne',
@@ -32,7 +32,6 @@ const INT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const FLOAT_CONDITIONS = ['ne', 'gt', 'lt', 'gte', 'lte', 'eq', 'range'];
 const BOOLEAN_CONDITIONS = ['eq', 'ne'];
 import assert from 'assert';
-import { makeNonNullType } from 'graphql-transformer-common';
 
 export function makeSearchableScalarInputObject(type: string): InputObjectTypeDefinitionNode {
   const name = SearchableResourceIDs.SearchableFilterInputTypeName(type);

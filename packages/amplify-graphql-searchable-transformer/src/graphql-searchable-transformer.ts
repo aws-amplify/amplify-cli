@@ -21,6 +21,7 @@ import {
   makeField,
   makeListType,
   makeNamedType,
+  makeNonNullType,
   makeInputValueDefinition,
   graphqlName,
   plurality,
@@ -43,7 +44,6 @@ import { createEsDomain, createEsDomainRole } from './cdk/create-es-domain';
 import { createEsDataSource } from './cdk/create-es-datasource';
 import { createEventSourceMapping, createLambda, createLambdaRole } from './cdk/create-streaming-lambda';
 import { createStackOutputs } from './cdk/create-cfnOutput';
-import { makeNonNullType } from 'graphql-transformer-common';
 
 const nonKeywordTypes = ['Int', 'Float', 'Boolean', 'AWSTimestamp', 'AWSDate', 'AWSDateTime'];
 const STACK_NAME = 'SearchableStack';
