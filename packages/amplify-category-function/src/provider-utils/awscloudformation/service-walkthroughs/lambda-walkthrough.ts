@@ -3,7 +3,7 @@ import { FunctionParameters, ProjectLayer } from 'amplify-function-plugin-interf
 import inquirer from 'inquirer';
 import _ from 'lodash';
 import path from 'path';
-import { categoryName } from '../../../constants';
+import { categoryName, envVarPrintoutPrefix, topLevelCommentPrefix, topLevelCommentSuffix } from '../../../constants';
 import { getNewCFNEnvVariables, getNewCFNParameters } from '../utils/cloudformationHelpers';
 import {
   advancedSettingsList,
@@ -88,6 +88,9 @@ export async function createWalkthrough(
     // ask environment variable questions and merge in results
     if (await context.amplify.confirmPrompt('Do you want to configure environment variables for this function?', false)) {
       templateParameters = merge(templateParameters, await askEnvironmentVariableQuestions(templateParameters.functionName));
+      //update top-level comment to be inserted into example
+      templateParameters.topLevelComment = buildTopLevelComment( templateParameters.environmentMap );
+      showEnvVars(context, templateParameters.environmentMap);
     }
 
     // ask function secrets questions and merge in results
@@ -101,6 +104,24 @@ export async function createWalkthrough(
   }
 
   return templateParameters;
+}
+
+//Function to display Lambda environment variables after setting them.
+function showEnvVars(context, envVariableMap){
+  const keys = Object.keys(envVariableMap); //sorted list of existing env variables
+  const envVarViewArr = keys;
+  const envVarViewString= envVarViewArr.join("\n\t");
+  context.print.info(`${envVarPrintoutPrefix}${envVarViewString}`);
+}
+
+//Insert 'Environment Map' keys - (env, region, resource-names, user supplied variables)
+//into topLevelComment to be inserted into example files and displayed to the user
+function buildTopLevelComment( envVariableMap ){
+  const keys = Object.keys(envVariableMap); //sorted list of existing env variables
+  const envVarViewArr = keys;
+  const envVarViewString= envVarViewArr.join("\n\t");
+  const result = `${topLevelCommentPrefix}${envVarViewString}${topLevelCommentSuffix}`;
+  return result;
 }
 
 function provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters) {
@@ -279,6 +300,8 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
     functionParameters,
     await askEnvironmentVariableQuestions(lambdaToUpdate, undefined, !selectedSettings.includes(environmentVariableSetting)),
   );
+   //update top-level comment to be inserted into example
+   functionParameters.topLevelComment = buildTopLevelComment( functionParameters.environmentMap );
   return functionParameters;
 }
 
