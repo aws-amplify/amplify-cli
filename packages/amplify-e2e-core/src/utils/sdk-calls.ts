@@ -116,7 +116,10 @@ export const getUserPool = async (userpoolId, region) => {
   return res;
 };
 
-export const getMFAConfiguration = async (userPoolId, region): Promise<CognitoIdentityServiceProvider.GetUserPoolMfaConfigResponse> => {
+export const getMFAConfiguration = async (
+  userPoolId: string,
+  region: string,
+): Promise<CognitoIdentityServiceProvider.GetUserPoolMfaConfigResponse> => {
   config.update({ region });
   return await new CognitoIdentityServiceProvider().getUserPoolMfaConfig({ UserPoolId: userPoolId }).promise();
 };
