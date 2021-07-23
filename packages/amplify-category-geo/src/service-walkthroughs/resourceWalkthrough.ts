@@ -8,14 +8,19 @@ export async function resourceAccessWalkthrough<T extends ResourceParameters>(
     parameters: Partial<T>,
     service: ServiceName
 ): Promise<Partial<T>> {
-    const indexAccessPrompt = {
+    const accessChoices = [
+        { name: 'Authorized users only', value: AccessType.AuthorizedUsers },
+        { name: 'Authorized and Guest users', value: AccessType.AuthorizedAndGuestUsers }
+    ];
+
+    const accessPrompt = {
         type: 'list',
         name: 'accessType',
         message: `Who can access this ${getServiceFriendlyName(service)}?`,
-        choices: Object.keys(AccessType),
-        default: parameters.accessType ? parameters.accessType : 'AuthorizedUsers'
+        choices: accessChoices,
+        default: parameters.accessType ? parameters.accessType : AccessType.AuthorizedUsers
     };
-    return await inquirer.prompt([indexAccessPrompt]);
+    return await inquirer.prompt([accessPrompt]);
 };
 
 export async function pricingPlanWalkthrough<T extends ResourceParameters>(
@@ -33,7 +38,7 @@ export async function pricingPlanWalkthrough<T extends ResourceParameters>(
     const pricingPlanBusinessTypePrompt = {
         type: 'list',
         name: 'pricingPlanBusinessType',
-        message: 'Are you tracking commercial assets for your business?',
+        message: 'Are you tracking commercial assets for your business in your app?',
         choices: pricingPlanBusinessTypeChoices,
         default: pricingPlan === PricingPlan.RequestBasedUsage ? YesOrNo.No : YesOrNo.Yes
     };
