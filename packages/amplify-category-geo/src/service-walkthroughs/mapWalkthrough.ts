@@ -4,11 +4,11 @@ import inquirer from 'inquirer';
 import { merge } from '../service-utils/resourceUtils';
 import { MapParameters, getGeoMapStyle, MapStyle, getMapStyleComponents, EsriMapStyleType } from '../service-utils/mapParams';
 import { apiDocs, ServiceName } from '../service-utils/constants';
-import { $TSAny, $TSContext } from 'amplify-cli-core';
+import { $TSContext } from 'amplify-cli-core';
 import { getCurrentMapParameters, getMapFriendlyNames } from '../service-utils/mapUtils';
-import { getGeoServiceMeta, updateDefaultResource } from '../service-utils/resourceUtils';
+import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan} from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, pricingPlanWalkthrough } from './resourceWalkthrough';
-import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
+import { DataProvider } from '../service-utils/resourceParams';
 
 /**
  * Starting point for CLI walkthrough that creates a map resource
@@ -24,6 +24,11 @@ export const createMapWalkthrough = async (
 
   // get the access
   parameters = merge(parameters, await resourceAccessWalkthrough(parameters, ServiceName.Map));
+
+  // initiate pricing plan walkthrough if this is the first Map/Place Index added
+  if (!(await geoServiceExists(ServiceName.Map)) && !(await geoServiceExists(ServiceName.PlaceIndex))) {
+    parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters));
+  }
 
   // optional advanced walkthrough
   parameters = merge(parameters, await mapAdvancedWalkthrough(context, parameters));
@@ -60,22 +65,28 @@ export const mapNameWalkthrough = async (context: any): Promise<Partial<MapParam
 };
 
 export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> => {
+    const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
+    const currentPricingPlan = parameters.pricingPlan ? parameters.pricingPlan : await getGeoPricingPlan();
     context.print.info('Available advanced settings:');
     context.print.info('- Map style & Map data provider (default: Streets provided by Esri)');
-    context.print.info('- Map pricing plan (default: RequestBasedUsage)');
+    if (includePricingPlan) {
+        context.print.info(`- Map pricing plan (current: ${currentPricingPlan})`);
+    }
     context.print.info('');
 
     if(await context.amplify.confirmPrompt('Do you want to configure advanced settings?', false)) {
         // get the map style parameters
         parameters = merge(parameters, await mapStyleWalkthrough(parameters));
 
-        // get the pricing plan
-        parameters = merge(parameters, await pricingPlanWalkthrough(parameters, ServiceName.Map));
+        if (includePricingPlan) {
+            // get the pricing plan
+            parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters));
+        }
     }
     else {
         parameters.dataProvider = DataProvider.Esri;
         parameters.mapStyleType = EsriMapStyleType.Streets;
-        parameters.pricingPlan = PricingPlan.RequestBasedUsage;
+        parameters.pricingPlan = currentPricingPlan;
     }
 
     return parameters;

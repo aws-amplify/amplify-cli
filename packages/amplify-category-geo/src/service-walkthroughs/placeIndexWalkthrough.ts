@@ -6,7 +6,7 @@ import { DataSourceIntendedUse, PlaceIndexParameters } from '../service-utils/pl
 import { apiDocs, ServiceName } from '../service-utils/constants';
 import { $TSContext } from 'amplify-cli-core';
 import { getCurrentPlaceIndexParameters } from '../service-utils/placeIndexUtils';
-import { getGeoServiceMeta, updateDefaultResource } from '../service-utils/resourceUtils';
+import { getGeoServiceMeta, updateDefaultResource, geoServiceExists, getGeoPricingPlan } from '../service-utils/resourceUtils';
 import { resourceAccessWalkthrough, pricingPlanWalkthrough, dataProviderWalkthrough } from './resourceWalkthrough';
 import { DataProvider, PricingPlan } from '../service-utils/resourceParams';
 
@@ -24,6 +24,11 @@ export const createPlaceIndexWalkthrough = async (
 
   // get the access
   parameters = merge(parameters, await resourceAccessWalkthrough(parameters, ServiceName.PlaceIndex));
+
+  // initiate pricing plan walkthrough if this is the first Map/Place Index added
+  if (!(await geoServiceExists(ServiceName.Map)) && !(await geoServiceExists(ServiceName.PlaceIndex))) {
+    parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters));
+  }
 
   // optional advanced walkthrough
   parameters = merge(parameters, await placeIndexAdvancedWalkthrough(context, parameters));
@@ -60,18 +65,24 @@ export const placeIndexNameWalkthrough = async (context: any): Promise<Partial<P
 };
 
 export const placeIndexAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {
+    const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
+    const currentPricingPlan = parameters.pricingPlan ? parameters.pricingPlan : await getGeoPricingPlan();
     context.print.info('Available advanced settings:');
     context.print.info('- Search data provider (default: Esri)');
     context.print.info('- Search result storage location (default: no result storage)');
-    context.print.info('- Search pricing plan (default: RequestBasedUsage)');
+    if (includePricingPlan) {
+        context.print.info(`- Map pricing plan (current: ${currentPricingPlan})`);
+    }
     context.print.info('');
 
     if(await context.amplify.confirmPrompt('Do you want to configure advanced settings?', false)) {
         // get the place index data provider
         parameters = merge(parameters, await dataProviderWalkthrough(parameters, ServiceName.PlaceIndex));
 
-        // get the pricing plan
-        parameters = merge(parameters, await pricingPlanWalkthrough(parameters, ServiceName.PlaceIndex));
+        if (includePricingPlan) {
+            // get the pricing plan
+            parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters));
+        }
 
         // get the place index data storage option if the pricing plan is RequestBasedUsage
         if (parameters.pricingPlan === PricingPlan.RequestBasedUsage) {
@@ -84,7 +95,7 @@ export const placeIndexAdvancedWalkthrough = async (context: $TSContext, paramet
     else {
       parameters.dataProvider = DataProvider.Esri;
       parameters.dataSourceIntendedUse = DataSourceIntendedUse.SingleUse;
-      parameters.pricingPlan = PricingPlan.RequestBasedUsage;
+      parameters.pricingPlan = currentPricingPlan;
     }
 
     return parameters;

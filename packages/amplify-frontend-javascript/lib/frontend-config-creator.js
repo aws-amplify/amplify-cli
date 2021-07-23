@@ -190,13 +190,15 @@ function getAWSExportsObject(resources) {
     Object.assign(configOutput, { predictions: predictionsConfig });
   }
 
-  // add geo config if predictions resources exist
+  // add geo config if geo resources exist
   if (Object.entries(geoConfig).length > 0) {
     geoConfig.region = projectRegion;
     Object.assign(
       configOutput,
       {
-        geo: geoConfig
+        geo: {
+          amazon_location_services: geoConfig
+        }
       }
     );
   }

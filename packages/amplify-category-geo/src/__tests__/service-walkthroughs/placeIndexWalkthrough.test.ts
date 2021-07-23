@@ -3,6 +3,7 @@ import { DataSourceIntendedUse, PlaceIndexParameters } from '../../service-utils
 import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
+import { YesOrNo } from '../../service-walkthroughs/resourceWalkthrough';
 
 jest.mock('amplify-cli-core');
 
@@ -14,7 +15,8 @@ describe('Search walkthrough works as expected', () => {
     const secondaryPlaceIndexName = 'secondaryindex12345';
     const mockMapResource = {
         resourceName: 'map12345',
-        service: ServiceName.Map
+        service: ServiceName.Map,
+        pricingPlan: PricingPlan.MobileAssetTracking
     };
     const mockPlaceIndexResource = {
         resourceName: mockPlaceIndexName,
@@ -33,7 +35,7 @@ describe('Search walkthrough works as expected', () => {
         name: mockPlaceIndexName,
         dataProvider: DataProvider.Esri,
         dataSourceIntendedUse: DataSourceIntendedUse.SingleUse,
-        pricingPlan: PricingPlan.RequestBasedUsage,
+        pricingPlan: PricingPlan.MobileAssetTracking,
         accessType: AccessType.AuthorizedUsers,
         isDefault: false
     };
@@ -83,8 +85,8 @@ describe('Search walkthrough works as expected', () => {
                 else if(questions[0].name === 'dataSourceIntendedUse') {
                     mockUserInput['dataSourceIntendedUse'] = mockPlaceIndexParameters.dataSourceIntendedUse;
                 }
-                else if(questions[0].name === 'pricingPlan') {
-                    mockUserInput['pricingPlan'] = mockPlaceIndexParameters.pricingPlan;
+                else if(questions[0].name === 'pricingPlanBusinessType') {
+                    mockUserInput['pricingPlanBusinessType'] = YesOrNo.Yes;
                 }
                 else if(questions[0].name === 'resourceName') {
                     mockUserInput['resourceName'] = mockPlaceIndexParameters.name;
@@ -160,7 +162,7 @@ describe('Search walkthrough works as expected', () => {
         expect(mockContext.print.error).toBeCalledWith('No search index resource to update. Use "amplify add geo" to create a new search index.');
     });
 
-    it('sets parameters based on user input for add place index walkthrough', async() => {
+    it('sets parameters based on user input for adding subsequent place index walkthrough', async() => {
         let indexParams: Partial<PlaceIndexParameters> = {
             providerContext: mockPlaceIndexParameters.providerContext
         };
@@ -182,7 +184,7 @@ describe('Search walkthrough works as expected', () => {
 
         expect({ ...mockPlaceIndexParameters, isDefault: true }).toMatchObject(indexParams);
         // place index default setting question is skipped
-        expect(mockContext.amplify.confirmPrompt).toBeCalledTimes(1);
+        expect(mockContext.amplify.confirmPrompt).toBeCalledTimes(2);
         expect(mockContext.amplify.confirmPrompt).toBeCalledWith('Do you want to configure advanced settings?', false);
     });
 
