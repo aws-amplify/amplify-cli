@@ -3,6 +3,7 @@ import { EsriMapStyleType, getGeoMapStyle, MapParameters, MapStyle } from '../..
 import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
+import { YesOrNo } from '../../service-walkthroughs/resourceWalkthrough';
 
 jest.mock('amplify-cli-core');
 
@@ -25,7 +26,8 @@ describe('Map walkthrough works as expected', () => {
     };
     const mockPlaceIndexResource = {
         resourceName: 'placeIndex12345',
-        service: 'PlaceIndex'
+        service: ServiceName.PlaceIndex,
+        pricingPlan: PricingPlan.MobileAssetTracking
     };
 
     const mockMapParameters: MapParameters = {
@@ -37,7 +39,7 @@ describe('Map walkthrough works as expected', () => {
         name: mockMapName,
         mapStyleType: EsriMapStyleType.Streets,
         dataProvider: DataProvider.Esri,
-        pricingPlan: PricingPlan.RequestBasedUsage,
+        pricingPlan: PricingPlan.MobileAssetTracking,
         accessType: AccessType.AuthorizedUsers,
         isDefault: false
     };
@@ -84,8 +86,8 @@ describe('Map walkthrough works as expected', () => {
                 else if(questions[0].name === 'mapStyle') {
                     mockUserInput['mapStyle'] = getGeoMapStyle(mockMapParameters.dataProvider, mockMapParameters.mapStyleType);
                 }
-                else if(questions[0].name === 'pricingPlan') {
-                    mockUserInput['pricingPlan'] = mockMapParameters.pricingPlan;
+                else if(questions[0].name === 'pricingPlanBusinessType') {
+                    mockUserInput['pricingPlanBusinessType'] = YesOrNo.Yes;
                 }
                 else if(questions[0].name === 'resourceName') {
                     mockUserInput['resourceName'] = mockMapParameters.name;
@@ -161,7 +163,7 @@ describe('Map walkthrough works as expected', () => {
         expect(mockContext.print.error).toBeCalledWith('No Map resource to update. Use "amplify add geo" to create a new Map.');
     });
 
-    it('sets parameters based on user input for add map walkthrough', async() => {
+    it('sets parameters based on user input for adding subsequent map walkthrough', async() => {
         let mapParams: Partial<MapParameters> = {
             providerContext: mockMapParameters.providerContext
         };
@@ -183,7 +185,7 @@ describe('Map walkthrough works as expected', () => {
 
         expect({ ...mockMapParameters, isDefault: true }).toMatchObject(mapParams);
         // map default setting question is skipped
-        expect(mockContext.amplify.confirmPrompt).toBeCalledTimes(1);
+        expect(mockContext.amplify.confirmPrompt).toBeCalledTimes(2);
         expect(mockContext.amplify.confirmPrompt).toBeCalledWith('Do you want to configure advanced settings?', false);
     });
 
