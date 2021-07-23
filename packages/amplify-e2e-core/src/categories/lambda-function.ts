@@ -175,6 +175,9 @@ const coreFunction = (
         selectTemplate(chain, settings.functionTemplate, runtime);
       }
     } else {
+      if (settings.layerOptions && settings.layerOptions.layerAndFunctionExist) {
+        chain.wait('Select which capability you want to update:').sendCarriageReturn() // lambda function
+      }
       chain.wait('Select the Lambda function you want to update').sendCarriageReturn(); // assumes only one function configured in the project
     }
 
@@ -358,6 +361,7 @@ export const removeFunction = (cwd: string, funcName: string) =>
 
 export interface LayerOptions {
   select?: string[]; // list options to select
+  layerAndFunctionExist?: boolean; // whether this test involves both a function and a layer
   expectedListOptions?: string[]; // the expected list of all layers
   versions?: Record<string, { version: number; expectedVersionOptions: number[] }>; // map with keys for each element of select that determines the verison and expected version for each layer
   customArns?: string[]; // external ARNs to enter
