@@ -27,7 +27,6 @@ export interface ServiceQuestionsBaseResult {
   userpoolClientReadAttributes: string[];
   userpoolClientWriteAttributes: string[];
   usernameCaseSensitive?: boolean;
-  useEnabledMfas?: boolean;
   authTriggerConnections?: string;
 }
 
