@@ -6,7 +6,7 @@ import chalk from 'chalk';
 //view: displays resource-diff (cloudformation-diff, input parameters (pending))
 export async function viewResourceDiffs({ resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeCreated }) {
   const resourceDiffs = await getResourceDiffs(resourcesToBeUpdated, resourcesToBeDeleted, resourcesToBeCreated);
-  for await (let resourceDiff of resourceDiffs.updatedDiff) {
+  for await (const resourceDiff of resourceDiffs.updatedDiff) {
     //Print with UPDATE styling theme
     resourceDiff.printResourceDetailStatus(resourceStatus.stackMutationType.UPDATE);
   }
