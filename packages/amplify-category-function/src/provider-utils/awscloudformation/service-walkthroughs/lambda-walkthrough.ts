@@ -90,7 +90,9 @@ export async function createWalkthrough(
       templateParameters = merge(templateParameters, await askEnvironmentVariableQuestions(templateParameters.functionName));
       //update top-level comment to be inserted into example
       templateParameters.topLevelComment = buildTopLevelComment( templateParameters.environmentMap );
-      showEnvVars(context, templateParameters.environmentMap);
+      //show updated environment variables
+      const envVarViewString = buildShowEnvVars(templateParameters.environmentMap);
+      context.print.info(envVarViewString);
     }
 
     // ask function secrets questions and merge in results
@@ -106,22 +108,22 @@ export async function createWalkthrough(
   return templateParameters;
 }
 
-//Function to display Lambda environment variables after setting them.
-function showEnvVars(context, envVariableMap){
-  const keys = Object.keys(envVariableMap); //sorted list of existing env variables
-  const envVarViewArr = keys;
+//Function to build message to be displayed when
+//Lambda environment variables are enabled.
+export function buildShowEnvVars(envVariableMap){
+  const envVarViewArr = Object.keys(envVariableMap); //sorted list of existing env variables
   const envVarViewString= envVarViewArr.join("\n\t");
-  context.print.info(`${envVarPrintoutPrefix}${envVarViewString}`);
+  const showEnvComment = `${envVarPrintoutPrefix}${envVarViewString}`;
+  return showEnvComment;
 }
 
 //Insert 'Environment Map' keys - (env, region, resource-names, user supplied variables)
 //into topLevelComment to be inserted into example files and displayed to the user
-function buildTopLevelComment( envVariableMap ){
-  const keys = Object.keys(envVariableMap); //sorted list of existing env variables
-  const envVarViewArr = keys;
+export function buildTopLevelComment( envVariableMap ){
+  const envVarViewArr = Object.keys(envVariableMap);
   const envVarViewString= envVarViewArr.join("\n\t");
-  const result = `${topLevelCommentPrefix}${envVarViewString}${topLevelCommentSuffix}`;
-  return result;
+  const topLevelComment = `${topLevelCommentPrefix}${envVarViewString}${topLevelCommentSuffix}`;
+  return topLevelComment;
 }
 
 function provideInformation(context, lambdaToUpdate, functionRuntime, currentParameters, scheduleParameters) {
@@ -300,8 +302,8 @@ export async function updateWalkthrough(context: $TSContext, lambdaToUpdate?: st
     functionParameters,
     await askEnvironmentVariableQuestions(lambdaToUpdate, undefined, !selectedSettings.includes(environmentVariableSetting)),
   );
-   //update top-level comment to be inserted into example
-   functionParameters.topLevelComment = buildTopLevelComment( functionParameters.environmentMap );
+  //update top-level comment to be inserted into example
+  functionParameters.topLevelComment = buildTopLevelComment( functionParameters.environmentMap );
   return functionParameters;
 }
 
