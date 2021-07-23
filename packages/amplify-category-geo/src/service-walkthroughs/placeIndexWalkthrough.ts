@@ -36,7 +36,10 @@ export const createPlaceIndexWalkthrough = async (
   // ask if the place index should be set as a default. Default to true if it's the only place index
   const currentPlaceIndexResources = await getGeoServiceMeta(ServiceName.PlaceIndex);
   if (currentPlaceIndexResources && Object.keys(currentPlaceIndexResources).length > 0) {
-    parameters.isDefault = await context.amplify.confirmPrompt('Do you want to set this search index as default?', true)
+    parameters.isDefault = await context.amplify.confirmPrompt(
+        'Do you want to set this search index as default? It will be used in Amplify Search API calls if no explicit reference is provided.',
+        true
+    );
   }
   else {
       parameters.isDefault = true;
@@ -65,7 +68,8 @@ export const placeIndexNameWalkthrough = async (context: any): Promise<Partial<P
 };
 
 export const placeIndexAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<PlaceIndexParameters>): Promise<Partial<PlaceIndexParameters>> => {
-    const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
+    // const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
+    const includePricingPlan = false;
     const currentPricingPlan = parameters.pricingPlan ? parameters.pricingPlan : await getGeoPricingPlan();
     context.print.info('Available advanced settings:');
     context.print.info('- Search data provider (default: Esri)');
@@ -82,6 +86,9 @@ export const placeIndexAdvancedWalkthrough = async (context: $TSContext, paramet
         if (includePricingPlan) {
             // get the pricing plan
             parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters));
+        }
+        else {
+            parameters.pricingPlan = currentPricingPlan;
         }
 
         // get the place index data storage option if the pricing plan is RequestBasedUsage

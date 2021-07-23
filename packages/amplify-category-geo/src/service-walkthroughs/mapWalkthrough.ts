@@ -36,7 +36,10 @@ export const createMapWalkthrough = async (
   // ask if the map should be set as a default. Default to true if it's the only map
   const currentMapResources = await getGeoServiceMeta(ServiceName.Map);
   if (currentMapResources && Object.keys(currentMapResources).length > 0) {
-    parameters.isDefault = await context.amplify.confirmPrompt('Do you want to set this map as default?', true)
+    parameters.isDefault = await context.amplify.confirmPrompt(
+        'Do you want to set this map as default? It will be used in Amplify Map API calls if no explicit reference is provided.',
+        true
+    );
   }
   else {
       parameters.isDefault = true;
@@ -65,7 +68,8 @@ export const mapNameWalkthrough = async (context: any): Promise<Partial<MapParam
 };
 
 export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Partial<MapParameters>): Promise<Partial<MapParameters>> => {
-    const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
+    // const includePricingPlan = await geoServiceExists(ServiceName.Map) || await geoServiceExists(ServiceName.PlaceIndex);
+    const includePricingPlan = false;
     const currentPricingPlan = parameters.pricingPlan ? parameters.pricingPlan : await getGeoPricingPlan();
     context.print.info('Available advanced settings:');
     context.print.info('- Map style & Map data provider (default: Streets provided by Esri)');
@@ -81,6 +85,9 @@ export const mapAdvancedWalkthrough = async (context: $TSContext, parameters: Pa
         if (includePricingPlan) {
             // get the pricing plan
             parameters = merge(parameters, await pricingPlanWalkthrough(context, parameters));
+        }
+        else {
+            parameters.pricingPlan = currentPricingPlan;
         }
     }
     else {
