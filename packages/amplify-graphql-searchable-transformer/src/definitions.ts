@@ -227,7 +227,7 @@ export function makeSearchableXSortInputObject(obj: ObjectTypeDefinitionNode): I
 }
 
 export function makeSearchableAggregateTypeEnumObject(): EnumTypeDefinitionNode {
-  const name = graphqlName(`SearchableAggregateType`);
+  const name = graphqlName('SearchableAggregateType');
   const values: EnumValueDefinitionNode[] = ['terms', 'avg', 'min', 'max', 'sum']
     .map((type: string) => ({
       kind: Kind.ENUM_VALUE_DEFINITION,
