@@ -254,6 +254,7 @@ describe('amplify add lambda layer with changes', () => {
         expectedListOptions: [fullLayerName],
         versions: { [fullLayerName]: { version: 1, expectedVersionOptions: [1] } },
         skipLayerAssignment: true,
+        layerAndFunctionExist: true,
       },
     };
 
@@ -277,6 +278,7 @@ describe('amplify add lambda layer with changes', () => {
       layerName,
       projName,
       layerOptions: {
+        layerAndFunctionExist: true,
         layerWalkthrough: (chain: ExecutionContext): void => {
           chain
             .wait('Provide existing layers')
