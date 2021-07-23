@@ -48,7 +48,7 @@ const defaultAWSConfig: AwsConfig = {
 };
 
 export async function init(context: $TSContext) {
-  if (!context.exeInfo.isNewProject && doesAwsConfigExists(context)) {
+  if (context.exeInfo.existingLocalEnvInfo?.noUpdateBackend || (!context.exeInfo.isNewProject && doesAwsConfigExists(context))) {
     return context;
   }
   normalizeInputParams(context);

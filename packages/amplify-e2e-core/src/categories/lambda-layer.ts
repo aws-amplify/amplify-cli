@@ -251,9 +251,6 @@ export function updateLayer(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const chain: ExecutionContext = spawn(getCLIPath(testingWithLatestCodebase), ['update', 'function'], { cwd, stripColors: true })
-      .wait('Select which capability you want to update:')
-      .sendKeyDown()
-      .sendCarriageReturn(); // Layer
     if (settings.numLayers > 1) {
       chain.wait('Select the Lambda layer to update:').sendCarriageReturn();
     }

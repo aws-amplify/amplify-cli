@@ -35,7 +35,7 @@ export async function deleteProject(context) {
         }
       }
       spinner.succeed('Project deleted in the cloud.');
-    } catch (ex) {
+    } catch (ex: any) {
       if (ex.code === 'NotFoundException') {
         spinner.succeed('Project already deleted in the cloud.');
       } else {
