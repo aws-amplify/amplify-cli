@@ -24,10 +24,14 @@ export async function attachUsageData(context: Context) {
   } else {
     context.usageData = NoUsageData.Instance;
   }
-  context.usageData.init(config.usageDataConfig.installationUuid, getVersion(context), context.input, '', getProjectSettings());
+  context.usageData.init(
+    config.usageDataConfig.installationUuid,
+    context.versionInfo.currentCLIVersion,
+    context.input,
+    '',
+    getProjectSettings(),
+  );
 }
-
-const getVersion = (context: Context) => context.pluginPlatform.plugins.core[0].packageVersion;
 
 const getProjectSettings = (): ProjectSettings => {
   const projectSettings: ProjectSettings = {};

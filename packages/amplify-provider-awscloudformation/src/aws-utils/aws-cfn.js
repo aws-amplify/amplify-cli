@@ -219,7 +219,7 @@ class CloudFormation {
       });
   }
 
-  updateResourceStack(filePath) {
+  updateResourceStack(context, filePath) {
     const cfnFile = path.parse(filePath).base;
     const projectDetails = this.context.amplify.getProjectDetails();
     const stackName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].StackName : '';
@@ -230,6 +230,11 @@ class CloudFormation {
     const unauthRoleName = projectDetails.amplifyMeta.providers ? projectDetails.amplifyMeta.providers[providerName].UnauthRoleName : '';
 
     const Tags = this.context.amplify.getTags(this.context);
+
+    Tags.push({
+      Key: 'amplify:DeployedByCLIVersion',
+      Value: context.versionInfo.currentCLIVersion,
+    });
 
     if (!stackName) {
       throw new Error('Project stack has not been created yet. Use amplify init to initialize the project.');

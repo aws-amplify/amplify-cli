@@ -55,6 +55,18 @@ export async function run(context) {
       rootStack.Description = 'Root Stack for AWS Amplify Console';
     }
 
+    rootStack.Metadata = {
+      AmplifyCLI: {
+        DeployedByCLIVersion: context.versionInfo.currentCLIVersion,
+        MinimumCompatibleCLIVersion: context.versionInfo.minimumCLIVersion,
+      },
+    };
+
+    Tags.push({
+      Key: 'amplify:DeployedByCLIVersion',
+      Value: context.versionInfo.currentCLIVersion,
+    });
+
     const params = {
       StackName: stackName,
       Capabilities: ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],

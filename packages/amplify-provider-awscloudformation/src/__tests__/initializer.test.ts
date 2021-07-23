@@ -31,8 +31,12 @@ describe('run', () => {
         },
         teamProviderInfo: {},
       },
+      versionInfo: {
+        currentCLIVersion: '5.2.0',
+        minimumCLIVersion: '5.0.0',
+      },
       amplify: {
-        getTags: jest.fn(),
+        getTags: jest.fn().mockImplementation(() => []),
       },
     };
     CloudFormation_mock.mockImplementation(
@@ -51,8 +55,12 @@ describe('run', () => {
     JSONUtilities_mock.readJson.mockReturnValueOnce({});
     stateManager_mock.getLocalEnvInfo.mockReturnValueOnce({});
 
-    // execute
-    await run(context_stub);
+    try {
+      // execute
+      await run(context_stub);
+    } catch (error) {
+      console.log(error.stack);
+    }
 
     // verify
     expect(prePushCfnTemplateModifier).toBeCalled();
