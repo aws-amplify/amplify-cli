@@ -4,7 +4,7 @@ import chalk from 'chalk';
 export interface CLIParams {
     cliCommand: string;
     cliSubcommands: string[] | undefined;
-    cliOptions: { [key: string]: any };
+    cliOptions: Record<string,$TSAny>;
 }
 //Resource Table filter and display params (params used for summary/display view of resource table)
 export class ViewResourceTableParams {
