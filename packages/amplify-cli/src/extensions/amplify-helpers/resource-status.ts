@@ -56,7 +56,7 @@ export async function showResourceTable(category?, resourceName?, filteredResour
   const amplifyProjectInitStatus = getCloudInitStatus();
 
   if (amplifyProjectInitStatus === CLOUD_INITIALIZED) {
-    const { envName } = getEnvInfo().envName;
+    const { envName } = getEnvInfo();
 
     print.info('');
     print.info(`${chalk.green('Current Environment')}: ${envName}`);
