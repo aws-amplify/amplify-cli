@@ -1,5 +1,4 @@
 <% var autoVerifiedAttributes = props.autoVerifiedAttributes ? props.autoVerifiedAttributes.concat(props.aliasAttributes).filter((attr, i, aliasAttributeArray) => ['email', 'phone_number'].includes(attr) && aliasAttributeArray.indexOf(attr) === i) : [] %>
-<% var configureSMS = ((props.autoVerifiedAttributes && props.autoVerifiedAttributes.includes('phone_number')) || (props.mfaConfiguration != 'OFF' && props.mfaTypes && props.mfaTypes.includes('SMS Text Message')) || (props.requiredAttributes && props.requiredAttributes.includes('phone_number'))) %> 
 AWSTemplateFormatVersion: 2010-09-09
 
 Parameters:
@@ -79,7 +78,6 @@ Resources:
             MaxAge: 3000
   <% } %>
   <%if (props.authSelections !== 'identityPoolOnly') { %>
-  <% if(!props.useEnabledMfas || configureSMS) { %>
   # BEGIN SNS ROLE RESOURCE
   SNSRole:
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
@@ -109,7 +107,6 @@ Resources:
                 Action:
                   - "sns:Publish"
                 Resource: "*"
-  <% } %> 
   # BEGIN USER POOL RESOURCES
   UserPool:
   # Created upon user selection
@@ -185,23 +182,12 @@ Resources:
       AliasAttributes: !Ref aliasAttributes
       <% } %>
       MfaConfiguration: !Ref mfaConfiguration
-      <% if(props.useEnabledMfas && props.mfaConfiguration != 'OFF') {%>
-      EnabledMfas:
-        <% if(configureSMS) {%> 
-        - SMS_MFA
-        <% } %>
-        <% if(props.mfaTypes.includes('TOTP')) {%>
-        - SOFTWARE_TOKEN_MFA
-        <% } %>
-      <% } %>  
-      <% if(!props.useEnabledMfas || configureSMS) {%> 
       SmsVerificationMessage: !Ref smsVerificationMessage
       SmsAuthenticationMessage: !Ref smsAuthenticationMessage
       SmsConfiguration:
         SnsCallerArn: !GetAtt SNSRole.Arn
         ExternalId: <%=`${props.resourceNameTruncated}_role_external_id`%>
-      <% } %>
-    <%if (configureSMS) { %>
+    <%if (props.mfaConfiguration != 'OFF') { %>
     DependsOn: SNSRole
     <% } %>
   <%if (!props.breakCircularDependency && props.triggers && props.dependsOn) { %>
@@ -832,7 +818,7 @@ Resources:
     DependsOn: OAuthCustomResourceLogPolicy
   <% } %>
 
-  <%if (!props.useEnabledMfas && props.mfaConfiguration != 'OFF') { %>
+  <%if (props.mfaConfiguration != 'OFF') { %>
   # BEGIN MFA LAMBDA RESOURCES
   MFALambdaRole:
   # Created to execute Lambda which sets MFA config values
@@ -1222,7 +1208,7 @@ Outputs :
   AppClientSecret:
     Value: !GetAtt UserPoolClientInputs.appSecret
     Condition: ShouldOutputAppClientSecrets
-  <%if (!props.useEnabledMfas || configureSMS) { %>
+  <%if (props.mfaConfiguration != 'OFF') { %>
   CreatedSNSRole:
     Value: !GetAtt SNSRole.Arn
     Description: role arn
