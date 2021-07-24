@@ -11,7 +11,7 @@ if [ -z "$CIRCLE_PULL_REQUEST" ]; then
       export NPM_TAG="${CIRCLE_BRANCH/tagged-release\//}"
     fi
     if [ -z "$NPM_TAG" ]; then
-        echo "Tag name is missing. Name your banch with either tagged-release/<tag-name> or tagged-release-without-e2e-tests/<tag-name>"
+        echo "Tag name is missing. Name your branch with either tagged-release/<tag-name> or tagged-release-without-e2e-tests/<tag-name>"
         exit 1
       fi
       echo "Publishing to NPM with tag $NPM_TAG"
