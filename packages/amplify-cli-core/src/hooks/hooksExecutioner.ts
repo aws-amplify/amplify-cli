@@ -1,117 +1,59 @@
-import { $TSContext, $TSAny } from '.';
-import { pathManager } from './state-manager/pathManager';
-import { stateManager } from './state-manager/stateManager';
+import { $TSContext, $TSAny } from '..';
+import { pathManager } from '../state-manager/pathManager';
+import { stateManager } from '../state-manager/stateManager';
+import { HooksExtension, HooksConfig, FileObj, EventPrefix, HooksEvent, DataParameter, ErrorParameter } from './hooksTypes';
 
 import * as which from 'which';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import execa from 'execa';
+import { HooksHandler } from './hooksHandler';
+import _ from 'lodash';
 
-const supportedEnvEvents = ['add', 'update', 'remove', 'pull', 'checkout', 'list', 'get', 'import'];
 const defaultSupportedExt = { js: { runtime: 'node' }, sh: { runtime: 'bash' } };
 
-type FileObj = {
-  baseName?: string;
-  extension?: string;
-  filePath?: string;
-  fileName?: string;
-};
+export async function executeHooks(context?: $TSAny, eventPrefix?: EventPrefix, errorParameter?: ErrorParameter): Promise<void> {
+  const hooksHandler = HooksHandler.initialize();
 
-type EventPrefix = 'pre' | 'post';
+  // if input is passed and command is not defined
+  if (context?.input && !hooksHandler.hooksEvent.command) hooksHandler.setHooksEventFromInput(context.input);
 
-export type HooksEvent = {
-  command: string;
-  subCommand?: string;
-  seperator: '-' | string;
-  eventPrefix?: EventPrefix;
-};
+  // to check if any suppported events were recognised
+  if (!hooksHandler.hooksEvent.command) return;
 
-type DataParameter = {
-  amplify: {
-    version?: string;
-    environment?: string;
-    command?: string;
-    subCommand?: string;
-    argv?: string[];
-  };
-};
+  hooksHandler.hooksEvent.eventPrefix = eventPrefix;
 
-type ErrorParameter = { message: string; stack: string };
-
-export async function executeHooks(
-  context: $TSAny,
-  eventPrefix?: EventPrefix,
-  errorParameter?: ErrorParameter,
-  hooksEvent?: HooksEvent,
-): Promise<void> {
-  hooksEvent = hooksEvent ? hooksEvent : getHooksEvent(context.input, eventPrefix);
-  if (!hooksEvent) return;
   const projectPath = pathManager.findProjectRoot() ?? process.cwd();
   const hooksDirPath = pathManager.getHooksDirPath(projectPath);
   if (!fs.existsSync(hooksDirPath)) {
     return;
   }
-  const hooksConfig = stateManager.getHooksConfigJson(projectPath);
 
-  const { commandHookFileObj, subCommandHookFileObj } = getHooksFileObjs(hooksDirPath, hooksEvent, hooksConfig);
+  const hooksConfig: HooksConfig = stateManager.getHooksConfigJson(projectPath) ?? {};
+
+  const { commandHookFileObj, subCommandHookFileObj } = getHooksFileObjs(hooksDirPath, hooksHandler.hooksEvent, hooksConfig);
 
   let executionQueue = [commandHookFileObj, subCommandHookFileObj];
-  if (hooksEvent.eventPrefix?.localeCompare('post') === 0) executionQueue = [subCommandHookFileObj, commandHookFileObj];
+  // executionQueue changes for a post event as more specific script file - with sub-command is executed first
+  if (hooksHandler.hooksEvent.eventPrefix?.localeCompare('post') === 0) executionQueue = [subCommandHookFileObj, commandHookFileObj];
 
-  const dataParameter: DataParameter = {
+  // merging because we want to remoe as many undeifined values as possible
+  hooksHandler.dataParameter = _.merge(hooksHandler.dataParameter, {
     amplify: {
-      version: stateManager.getAmplifyVersion(),
-      environment: context.amplify.getEnvInfo().envName,
-      command: hooksEvent.command,
-      subCommand: hooksEvent.subCommand,
-      argv: context?.input?.argv,
+      environment: context?.amplify?.getEnvInfo()?.envName ?? undefined,
+      command: hooksHandler.hooksEvent.command,
+      subCommand: hooksHandler.hooksEvent.subCommand,
+      argv: hooksHandler.hooksEvent.argv,
     },
-  };
+  });
 
   for (let execFileObj of executionQueue) {
     if (execFileObj) {
       const runtime = getRuntime(execFileObj, hooksConfig);
 
-      await exec(execFileObj, runtime, dataParameter, errorParameter);
+      await exec(execFileObj, runtime, hooksHandler.dataParameter, errorParameter);
     }
   }
-}
-
-export function getHooksEvent(input: $TSAny, eventPrefix?: EventPrefix): HooksEvent | undefined {
-  /**
-   * returns Amplify hooks event from input object
-   *
-   * @param {$TSAny} input
-   * @returns {HooksEvent | undefined}
-   */
-
-  let command: string = input.command;
-  let subCommand: string = input.plugin;
-
-  switch (command) {
-    case 'env':
-      subCommand = 'env';
-      let envCommand = supportedEnvEvents.find(cmd => cmd.localeCompare(input.subCommands[0]) === 0);
-      if (!envCommand) return;
-      command = envCommand;
-      break;
-    case 'configure':
-      command = 'update';
-      break;
-    case 'gql-compile':
-      command = 'gqlcompile';
-      break;
-    case 'add-graphql-datasource':
-      command = 'addgraphqldatasource';
-      break;
-  }
-
-  if (subCommand === 'mock') {
-    subCommand = command;
-    command = 'mock';
-  }
-
-  return { command: command, subCommand: subCommand, eventPrefix, seperator: '-' };
 }
 
 async function exec(
@@ -138,7 +80,6 @@ async function exec(
       }),
     });
     childProcess.stdout?.pipe(process.stdout);
-
     await childProcess;
   } catch (err) {
     if (err?.stderr?.length > 0) console.error(err.stderr);
@@ -154,7 +95,7 @@ async function exec(
 function getHooksFileObjs(
   hooksDirPath: string,
   hooksEvent: HooksEvent,
-  hooksConfig: $TSAny,
+  hooksConfig: HooksConfig,
 ): { commandHookFileObj?: FileObj; subCommandHookFileObj?: FileObj } {
   const extensionsSupported = getSupportedExtensions(hooksConfig);
 
@@ -184,7 +125,7 @@ function getHooksFileObjs(
 
 function throwOnDuplicateHooksFiles(files: FileObj[]): FileObj | undefined {
   if (files.length > 1) {
-    throw Error('found duplicate hook scripts');
+    throw Error('found duplicate hook scripts: ' + files.map(file => file.fileName).join(', '));
   } else if (files.length === 1) {
     return files[0];
   }
@@ -202,7 +143,7 @@ function splitFileName(filename: string): FileObj {
   return fileObject;
 }
 
-function getRuntime(fileObj: FileObj, hooksConfig: $TSAny): string | undefined {
+function getRuntime(fileObj: FileObj, hooksConfig: HooksConfig): string | undefined {
   const { extension } = fileObj;
   if (!extension) return;
   const isWin = process.platform === 'win32' || process.env.OSTYPE === 'cygwin' || process.env.OSTYPE === 'msys';
@@ -218,6 +159,6 @@ function getRuntime(fileObj: FileObj, hooksConfig: $TSAny): string | undefined {
   return executablePath;
 }
 
-function getSupportedExtensions(hooksConfig: $TSAny): $TSAny {
+function getSupportedExtensions(hooksConfig: HooksConfig): $TSAny {
   return { ...defaultSupportedExt, ...hooksConfig?.extension };
 }

@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, pathManager, stateManager, PathConstants } from 'amplify-cli-core';
+import { $TSAny, $TSContext, pathManager, stateManager, PathConstants, HooksConfig } from 'amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
 import ignore from 'ignore';
@@ -9,27 +9,26 @@ import { sync } from 'glob';
 import { ProviderName } from '../constants';
 const S3_HOOKS_DIRECTORY = 'hooks/';
 
-export async function uploadHooksDirectory(context: $TSContext): Promise<string[]> {
+export async function uploadHooksDirectory(context: $TSContext): Promise<void> {
   /**
    * uploads all files except ignored files in hooks directory to S3 bucket
    * returns promise that resolves with list of successfully uploaded files
-   * return empty array if hooks directory doesnt exist
+   * return void
    * throws error if upload to S3 fials
    * deletes the previous state of hooks from S3 completely
    *
    * @param {$TSContext} context
-   * @returns {Promise<string[]>} or throws error
+   * @returns {Promise<void>} or throws error
    */
 
   const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo.localEnvInfo.projectPath);
   await deleteHooksFromS3(context);
 
   if (!fs.existsSync(hooksDirectoryPath)) {
-    return [];
+    return;
   }
 
   const relativeFilePathsToUpload = getNonIgnoredFileList(context);
-  const filesSuccessfullyUploaded = [];
   const s3 = await S3.getInstance(context);
 
   for (const relativeFilePathToUpload of relativeFilePathsToUpload) {
@@ -41,13 +40,12 @@ export async function uploadHooksDirectory(context: $TSContext): Promise<string[
       };
       try {
         await s3.uploadFile(s3Params);
-        filesSuccessfullyUploaded.push(relativeFilePathToUpload);
       } catch (ex) {
         throw ex;
       }
     }
   }
-  return filesSuccessfullyUploaded;
+  return;
 }
 
 export async function downloadHooks(
@@ -86,7 +84,7 @@ export async function downloadHooks(
     listHookObjects = await s3Client.listObjects(params).promise();
   } catch (ex) {
     // log(ex);
-    return;
+    throw ex;
   }
 
   // loop over each object in S3 hooks directory and download the file
@@ -103,6 +101,7 @@ export async function downloadHooks(
       hooksFileObject = await s3Client.getObject(params).promise();
     } catch (ex) {
       // log(ex);
+      throw ex;
     }
     const hooksFilePath = getHooksFilePathFromS3Key(hooksDirPath, listHookObject.Key);
     placeFile(hooksFilePath, hooksFileObject.Body);
@@ -184,12 +183,9 @@ function getNonIgnoredFileList(context: $TSContext): string[] {
   //
 
   const ig = ignore();
-  const configFile = stateManager.getHooksConfigJson(context.exeInfo.localEnvInfo.projectPath);
+  const configFile: HooksConfig = stateManager.getHooksConfigJson(context.exeInfo.localEnvInfo.projectPath) ?? {};
 
-  if (typeof configFile === 'object' && configFile !== null && configFile.hasOwnProperty('ignore') && Array.isArray(configFile.ignore)) {
-    configFile.ignore = configFile.ignore.filter(listItem => typeof listItem === 'string' || listItem instanceof String);
-    ig.add(configFile.ignore);
-  }
+  if (configFile.ignore) ig.add(configFile.ignore);
 
   return ig.filter(getHooksFilePathList(context));
 }
@@ -232,7 +228,7 @@ function cleanHooksDirectory(context: $TSContext): void {
 // general utility functions:
 function placeFile(filePath: string, data: $TSAny): void {
   /**
-   * quietly ensures a file esists else creates one and writes the data
+   * ensures a file exists at filePath, else creates one, and writes the data
    *
    * @param {string} filePath path to file
    * @param {$TSAny} data data to be placed in the file
@@ -241,7 +237,9 @@ function placeFile(filePath: string, data: $TSAny): void {
   try {
     fs.ensureFileSync(filePath);
     fs.writeFileSync(filePath, data);
-  } catch (ex) {}
+  } catch (ex) {
+    throw ex;
+  }
 }
 
 function convertToPosixPath(filePath: string): string {

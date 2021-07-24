@@ -11,6 +11,7 @@ import {
   stateManager,
   TeamProviderInfoMigrateError,
   executeHooks,
+  HooksHandler,
 } from 'amplify-cli-core';
 import { isCI } from 'ci-info';
 import { EventEmitter } from 'events';
@@ -117,6 +118,10 @@ export async function run() {
 
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
+
+    const hooksHandler = HooksHandler.initialize();
+    hooksHandler.setHooksEventFromInput(input);
+
     // with non-help command supplied, give notification before execution
     if (input.command !== 'help') {
       // Checks for available update, defaults to a 1 day interval for notification
@@ -158,6 +163,8 @@ export async function run() {
     rewireDeprecatedCommands(input);
     logInput(input);
     const context = constructContext(pluginPlatform, input);
+
+    hooksHandler.dataParameter.amplify.environment = context.amplify.getEnvInfo()?.envName;
 
     // Initialize feature flags
     const contextEnvironmentProvider = new CLIContextEnvironmentProvider({
@@ -261,7 +268,6 @@ export async function run() {
         print.error('');
         print.error(`Learn more about feature flags: https://docs.amplify.aws/cli/reference/feature-flags`);
       }
-      // TODO: add hooks: await executeHooks(context, 'post');
     } else {
       if (error.message) {
         print.error(error.message);
@@ -270,6 +276,10 @@ export async function run() {
         print.info(error.stack);
       }
     }
+    await executeHooks(undefined, 'post', {
+      message: error.message ?? 'undefined error in Amplify process',
+      stack: error.stack ?? 'undefined error stack',
+    });
     exitOnNextTick(1);
   }
 }
