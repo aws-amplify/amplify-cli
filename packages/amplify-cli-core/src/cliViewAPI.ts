@@ -1,7 +1,6 @@
 //Use this file to store all types used between the CLI commands and the view/display functions
 // CLI=>(command-handler)==[CLI-View-API]=>(ux-handler/report-handler)=>output-stream
 import chalk from 'chalk';
-import { isContext } from 'vm';
 import { $TSAny, $TSContext } from '.';
 export interface CLIParams {
     cliCommand: string;
