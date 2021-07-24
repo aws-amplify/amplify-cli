@@ -1,21 +1,21 @@
-import { ViewResourceTableParams, CLIParams } from "amplify-cli-core";
+import { ViewResourceTableParams, CLIParams, $TSContext } from "amplify-cli-core";
 
 
-export const run = async context => {
+export const run = async (context : $TSContext) => {
   const cliParams:CLIParams  = { cliCommand : context?.input?.command,
                                  cliSubcommands: context?.input?.subCommands,
                                  cliOptions : context?.input?.options }
 
   const view = new ViewResourceTableParams( cliParams );
   if ( context?.input?.subCommands?.includes("help")){
-     console.log( view.getStyledHelp())
+    context.print.info( view.getStyledHelp() );
   } else {
     try {
       await context.amplify.showStatusTable( view );
       await context.amplify.showHelpfulProviderLinks(context);
       await showAmplifyConsoleHostingStatus(context);
     } catch ( e ){
-      view.logErrorException(e);
+      view.logErrorException(e, context);
     }
   }
 };

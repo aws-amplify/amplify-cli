@@ -1,6 +1,5 @@
-import { ViewResourceTableParams, CLIParams } from './cliViewAPI';
+import { ViewResourceTableParams } from './cliViewAPI';
 import { ServiceSelection } from './serviceSelection';
-export { ViewResourceTableParams, CLIParams };
 
 export * from './cfnUtilities';
 export * from './cliContext';
@@ -218,7 +217,7 @@ interface AmplifyToolkit {
   sharedQuestions: () => $TSAny;
   showAllHelp: () => $TSAny;
   showHelp: (header: string, commands: { name: string; description: string }[]) => $TSAny;
-  showHelpfulProviderLinks: () => $TSAny;
+  showHelpfulProviderLinks: (context : $TSContext) => $TSAny;
   showResourceTable: () => $TSAny;
   showStatusTable:( resourceTableParams : ViewResourceTableParams )=> $TSAny; //Enhanced Status with CFN-Diff
   serviceSelectionPrompt: (

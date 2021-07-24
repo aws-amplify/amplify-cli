@@ -63,13 +63,14 @@ export const stackMutationType :  StackMutationType = {
       icon : `[ ]`
     }
 }
-//Console text styling for resource details section
-const resourceDetailSectionStyle = chalk.bgRgb(15, 100, 204)
 
 //helper to capitalize string
-function capitalize(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+export function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
+
+//Console text styling for resource details section
+const resourceDetailSectionStyle = chalk.bgRgb(15, 100, 204)
 
 //IResourcePaths: Interface for (build/prebuild) paths to local and cloud CFN files
 interface IResourcePaths {
@@ -252,7 +253,7 @@ export interface ICategoryStatusCollection {
 export async function CollateResourceDiffs( resources , mutationInfo : StackMutationInfo  /* create/update/delete */ ){
     const provider = CategoryProviders.CLOUDFORMATION;
     let resourceDiffs : ResourceDiff[] = [];
-    for await (let resource of resources) {
+    for await (const resource of resources) {
       resourceDiffs.push( new ResourceDiff( resource.category, resource.resourceName, provider, mutationInfo ) );
     }
     return resourceDiffs;

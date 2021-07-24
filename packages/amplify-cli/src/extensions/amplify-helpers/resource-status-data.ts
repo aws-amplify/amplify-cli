@@ -3,13 +3,11 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ServiceName as FunctionServiceName, hashLayerResource } from 'amplify-category-function';
 import { removeGetUserEndpoints } from '../amplify-helpers/remove-pinpoint-policy';
-import { pathManager, stateManager, NotInitializedError } from 'amplify-cli-core';
+import { pathManager, stateManager, NotInitializedError, ViewResourceTableParams } from 'amplify-cli-core';
 import { hashElement, HashElementOptions } from 'folder-hash';
 import { CLOUD_INITIALIZED, CLOUD_NOT_INITIALIZED, getCloudInitStatus } from './get-cloud-init-status';
 import * as resourceStatus from './resource-status-diff';
-import { IResourceDiffCollection } from './resource-status-diff';
-import { ViewResourceTableParams } from 'amplify-cli-core';
-
+import { IResourceDiffCollection, capitalize } from './resource-status-diff';
 
 //API: Filter resource status for the given categories
 export async function getMultiCategoryStatus(inputs: ViewResourceTableParams | undefined) {
@@ -35,6 +33,43 @@ export async function getResourceDiffs(resourcesToBeUpdated, resourcesToBeDelete
   return result;
 }
 
+function resourceToTableRow( resource, operation ){
+  return [
+    capitalize(resource.category),
+    resource.resourceName,
+    operation /*syncOperationLabel*/,
+    resource.providerPlugin,
+  ]
+}
+
+const ResourceOperationLabel = {
+  Create : 'Create',
+  Update : 'Update',
+  Delete : 'Delete',
+  Import : 'Import',
+  Unlink : 'Unlink',
+  NoOp : 'No Change',
+}
+
+const TableColumnLabels = {
+  Category: 'Category',
+  ResourceName: 'Resource name',
+  Operation: 'Operation',
+  ProviderPlugin: 'Provider plugin'
+}
+
+function getLabelForResourceSyncOperation( syncOperationType : string ) {
+  switch (syncOperationType) {
+    case 'import':
+      return ResourceOperationLabel.Import;
+    case 'unlink':
+      return ResourceOperationLabel.Unlink;
+    default:
+      // including refresh
+      return ResourceOperationLabel.NoOp;
+  }
+}
+
 export function getSummaryTableData({
   resourcesToBeUpdated,
   resourcesToBeDeleted,
@@ -49,72 +84,30 @@ export function getSummaryTableData({
   );
   noChangeResources = noChangeResources.filter(resource => resource.category !== 'providers');
 
-  const createOperationLabel = 'Create';
-  const updateOperationLabel = 'Update';
-  const deleteOperationLabel = 'Delete';
-  const importOperationLabel = 'Import';
-  const unlinkOperationLabel = 'Unlink';
-  const noOperationLabel = 'No Change';
-  const tableOptions = [['Category', 'Resource name', 'Operation', 'Provider plugin']];
+  const tableOptions = [[TableColumnLabels.Category,
+                         TableColumnLabels.ResourceName,
+                         TableColumnLabels.Operation,
+                         TableColumnLabels.ProviderPlugin]];
 
-  for (let i = 0; i < resourcesToBeCreated.length; ++i) {
-    tableOptions.push([
-      capitalize(resourcesToBeCreated[i].category),
-      resourcesToBeCreated[i].resourceName,
-      createOperationLabel,
-      resourcesToBeCreated[i].providerPlugin,
-    ]);
+  for ( const resource of resourcesToBeCreated ) {
+    tableOptions.push( resourceToTableRow(resource, ResourceOperationLabel.Create) );
   }
 
-  for (let i = 0; i < resourcesToBeUpdated.length; ++i) {
-    tableOptions.push([
-      capitalize(resourcesToBeUpdated[i].category),
-      resourcesToBeUpdated[i].resourceName,
-      updateOperationLabel,
-      resourcesToBeUpdated[i].providerPlugin,
-    ]);
+  for (const resource of resourcesToBeUpdated) {
+    tableOptions.push( resourceToTableRow(resource, ResourceOperationLabel.Update) )
   }
 
-  for (let i = 0; i < resourcesToBeSynced.length; ++i) {
-    let operation;
-
-    switch (resourcesToBeSynced[i].sync) {
-      case 'import':
-        operation = importOperationLabel;
-        break;
-      case 'unlink':
-        operation = unlinkOperationLabel;
-        break;
-      default:
-        // including refresh
-        operation = noOperationLabel;
-        break;
-    }
-
-    tableOptions.push([
-      capitalize(resourcesToBeSynced[i].category),
-      resourcesToBeSynced[i].resourceName,
-      operation /*syncOperationLabel*/,
-      resourcesToBeSynced[i].providerPlugin,
-    ]);
+  for (const resource of resourcesToBeSynced) {
+    const operation = getLabelForResourceSyncOperation(resource.sync);
+    tableOptions.push( resourceToTableRow( resource, operation  /*syncOperationLabel*/ ) )
   }
 
-  for (let i = 0; i < resourcesToBeDeleted.length; ++i) {
-    tableOptions.push([
-      capitalize(resourcesToBeDeleted[i].category),
-      resourcesToBeDeleted[i].resourceName,
-      deleteOperationLabel,
-      resourcesToBeDeleted[i].providerPlugin,
-    ]);
+  for (const resource of resourcesToBeDeleted) {
+    tableOptions.push(resourceToTableRow(resource, ResourceOperationLabel.Delete));
   }
 
-  for (let i = 0; i < noChangeResources.length; ++i) {
-    tableOptions.push([
-      capitalize(noChangeResources[i].category),
-      noChangeResources[i].resourceName,
-      noOperationLabel,
-      noChangeResources[i].providerPlugin,
-    ]);
+  for (const resource of noChangeResources ) {
+    tableOptions.push(resourceToTableRow( resource, ResourceOperationLabel.NoOp));
   }
   return tableOptions;
 }
@@ -530,7 +523,4 @@ async function asyncForEach(array, callback) {
     await callback(array[index], index, array);
   }
 }
-//TODO: replace with some library function
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-}
+
