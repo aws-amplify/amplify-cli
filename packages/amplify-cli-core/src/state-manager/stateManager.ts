@@ -241,20 +241,20 @@ export class StateManager {
     JSONUtilities.writeJson(filePath, meta);
   };
 
-  getHooksConfigJson = (projectPath: string | undefined): $TSAny => {
+  getHooksConfigJson = (projectPath: string | undefined): HooksConfig | undefined => {
     const filePath = pathManager.getHooksConfigFilePath(projectPath);
     const mergedOptions = {
       throwIfNotExist: false,
       default: {},
     };
 
-    return this.getData<$TSAny>(filePath, mergedOptions);
+    return this.getData<HooksConfig>(filePath, mergedOptions);
   };
 
-  setSampleHooksDir = (projectPath: string | undefined, dirSourcePath: string): void => {
-    const toDirPath = pathManager.getHooksDirPath(projectPath);
-
-    fs.copySync(dirSourcePath, toDirPath);
+  setSampleHooksDir = (projectPath: string | undefined, sourceDirPath: string): void => {
+    const targetDirPath = pathManager.getHooksDirPath(projectPath);
+    // only create the hooks directory with sample hooks if the directory doesnt already exists
+    if (!fs.existsSync(targetDirPath)) fs.copySync(sourceDirPath, targetDirPath);
   };
 
   setResourceParametersJson = (projectPath: string | undefined, category: string, resourceName: string, parameters: $TSAny): void => {
