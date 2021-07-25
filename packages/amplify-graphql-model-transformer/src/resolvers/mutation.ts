@@ -59,12 +59,22 @@ export const generateUpdateRequestTemplate = (modelName: string): string => {
 
     forEach(ref('entry'), ref(`util.map.copyAndRemoveAllKeys($mergedValues, $keyFields).entrySet()`), [
       ifElse(
+        raw(
+          '!$util.isNull($ctx.stash.metadata.dynamodbNameOverrideMap) && $ctx.stash.metadata.dynamodbNameOverrideMap.containsKey("$entry.key")',
+        ),
+        set(ref('entryKeyAttributeName'), raw('$ctx.stash.metadata.dynamodbNameOverrideMap.get("$entry.key")')),
+        set(ref('entryKeyAttributeName'), raw('$entry.key')),
+      ),
+      ifElse(
         ref('util.isNull($entry.value)'),
-        compoundExpression([set(ref('discard'), ref(`expRemove.add("#$entry.key")`)), qref(`$expNames.put("#$entry.key", "$entry.key")`)]),
         compoundExpression([
-          qref(`$expSet.put("#$entry.key", ":$entry.key")`),
-          qref(`$expNames.put("#$entry.key", "$entry.key")`),
-          qref(`$expValues.put(":$entry.key", $util.dynamodb.toDynamoDB($entry.value))`),
+          set(ref('discard'), ref(`expRemove.add("#$entryKeyAttributeName")`)),
+          qref(`$expNames.put("#$entryKeyAttributeName", "$entry.key")`),
+        ]),
+        compoundExpression([
+          qref('$expSet.put("#$entryKeyAttributeName", ":$entryKeyAttributeName")'),
+          qref('$expNames.put("#$entryKeyAttributeName", "$entry.key")'),
+          qref('$expValues.put(":$entryKeyAttributeName", $util.dynamodb.toDynamoDB($entry.value))'),
         ]),
       ),
     ]),

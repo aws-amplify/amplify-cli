@@ -673,7 +673,7 @@ $util.qr($mergedValues.put(\\"__typename\\", \\"Post\\"))
 #if( $ctx.stash.metadata.modelObjectKey )
   $util.qr($PutObject.put(\\"key\\", $ctx.stash.metadata.modelObjectKey))
 #else
-  #set( $Key = {
+  #set( $key = {
   \\"id\\":   $util.dynamodb.toDynamoDB($mergedValues.id)
 } )
   $util.qr($PutObject.put(\\"key\\", $Key))
