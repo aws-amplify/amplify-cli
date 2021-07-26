@@ -1,10 +1,10 @@
-import {TransformHostProvider} from '@aws-amplify/graphql-transformer-interfaces';
+import { TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ElasticSearchDataSourceOptions,
   MappingTemplateProvider
 } from '@aws-amplify/graphql-transformer-interfaces/lib/graphql-api-provider';
-import {Duration, Stack, Token} from '@aws-cdk/core';
-import {ElasticsearchDataSource} from './cdk-compat/elasticsearch-datasource';
+import { Duration, Stack, Token } from '@aws-cdk/core';
+import { ElasticsearchDataSource } from './cdk-compat/elasticsearch-datasource';
 import {
   BaseDataSource, CfnResolver,
   DataSourceOptions,
@@ -14,13 +14,13 @@ import {
   LambdaDataSource,
   NoneDataSource
 } from '@aws-cdk/aws-appsync';
-import {ITable} from '@aws-cdk/aws-dynamodb';
-import {CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime} from '@aws-cdk/aws-lambda';
-import {AppSyncFunctionConfiguration} from './appsync-function';
-import {IRole} from '@aws-cdk/aws-iam';
-import {InlineTemplate, S3MappingFunctionCode} from './cdk-compat/template-asset';
-import {toCamelCase} from 'graphql-transformer-common';
-import {GraphQLApi} from './graphql-api';
+import { ITable } from '@aws-cdk/aws-dynamodb';
+import { CfnFunction, Code, Function, IFunction, ILayerVersion, Runtime } from '@aws-cdk/aws-lambda';
+import { AppSyncFunctionConfiguration } from './appsync-function';
+import { IRole } from '@aws-cdk/aws-iam';
+import { InlineTemplate, S3MappingFunctionCode } from './cdk-compat/template-asset';
+import { toCamelCase } from 'graphql-transformer-common';
+import { GraphQLApi } from './graphql-api';
 
 
 export interface DefaultTransformHostOptions {
