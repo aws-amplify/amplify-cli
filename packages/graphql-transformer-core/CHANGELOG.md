@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.29.0-geo.0](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.28.13...graphql-transformer-core@6.29.0-geo.0) (2021-07-26)
+
+
+### Features
+
+* add [@aws](https://github.com/aws)_lambda to GQL transformer pass through directive list ([#7757](https://github.com/aws-amplify/amplify-cli/issues/7757)) ([509dfd1](https://github.com/aws-amplify/amplify-cli/commit/509dfd17deea5eba28efb76deed5b416333dd32e))
+
+
+
+
+
 ## [6.28.13](https://github.com/aws-amplify/amplify-cli/compare/graphql-transformer-core@6.28.12...graphql-transformer-core@6.28.13) (2021-07-16)
 
 **Note:** Version bump only for package graphql-transformer-core

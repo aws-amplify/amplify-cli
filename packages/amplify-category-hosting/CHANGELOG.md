@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.7.14-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.7.13...amplify-category-hosting@2.7.14-geo.0) (2021-07-26)
+
+**Note:** Version bump only for package amplify-category-hosting
+
+
+
+
+
 ## [2.7.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-hosting@2.7.12...amplify-category-hosting@2.7.13) (2021-07-16)
 
 **Note:** Version bump only for package amplify-category-hosting

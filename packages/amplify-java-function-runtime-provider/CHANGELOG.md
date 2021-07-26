@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.8.7-geo.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-runtime-provider@1.8.6...amplify-java-function-runtime-provider@1.8.7-geo.0) (2021-07-26)
+
+**Note:** Version bump only for package amplify-java-function-runtime-provider
+
+
+
+
+
 ## [1.8.6](https://github.com/aws-amplify/amplify-cli/compare/amplify-java-function-runtime-provider@1.8.5...amplify-java-function-runtime-provider@1.8.6) (2021-07-16)
 
 **Note:** Version bump only for package amplify-java-function-runtime-provider
