@@ -5,16 +5,16 @@ import { CfnParameter, Construct, Fn } from '@aws-cdk/core';
 import { ResourceConstants } from 'graphql-transformer-common';
 
 export const createSearchableDomain = (stack: Construct, parameterMap: Map<string, CfnParameter>, apiId: string): Domain => {
-  const { ElasticsearchEBSVolumeGB, ElasticsearchInstanceType, ElasticsearchInstanceCount } = ResourceConstants.PARAMETERS;
-  const { ElasticsearchDomainLogicalID } = ResourceConstants.RESOURCES;
+  const { OpenSearchEBSVolumeGB, OpenSearchInstanceType, OpenSearchInstanceCount } = ResourceConstants.PARAMETERS;
+  const { OpenSearchDomainLogicalID } = ResourceConstants.RESOURCES;
   const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
 
-  const domain = new Domain(stack, ElasticsearchDomainLogicalID, {
+  const domain = new Domain(stack, OpenSearchDomainLogicalID, {
     version: { version: '7.10' } as ElasticsearchVersion,
     ebs: {
       enabled: true,
       volumeType: EbsDeviceVolumeType.GP2,
-      volumeSize: parameterMap.get(ElasticsearchEBSVolumeGB)?.valueAsNumber,
+      volumeSize: parameterMap.get(OpenSearchEBSVolumeGB)?.valueAsNumber,
     },
     zoneAwareness: {
       enabled: false,
@@ -23,8 +23,8 @@ export const createSearchableDomain = (stack: Construct, parameterMap: Map<strin
   });
 
   (domain.node.defaultChild as CfnDomain).elasticsearchClusterConfig = {
-    instanceCount: parameterMap.get(ElasticsearchInstanceCount)?.valueAsNumber,
-    instanceType: parameterMap.get(ElasticsearchInstanceType)?.valueAsString,
+    instanceCount: parameterMap.get(OpenSearchInstanceCount)?.valueAsNumber,
+    instanceType: parameterMap.get(OpenSearchInstanceType)?.valueAsString,
   };
 
   return domain;
@@ -36,15 +36,15 @@ export const createSearchableDomainRole = (
   apiId: string,
   envParam: CfnParameter,
 ): IRole => {
-  const { ElasticsearchAccessIAMRoleLogicalID } = ResourceConstants.RESOURCES;
-  const { ElasticsearchAccessIAMRoleName } = ResourceConstants.PARAMETERS;
+  const { OpenSearchAccessIAMRoleLogicalID } = ResourceConstants.RESOURCES;
+  const { OpenSearchAccessIAMRoleName } = ResourceConstants.PARAMETERS;
   const { HasEnvironmentParameter } = ResourceConstants.CONDITIONS;
-  return new Role(stack, ElasticsearchAccessIAMRoleLogicalID, {
+  return new Role(stack, OpenSearchAccessIAMRoleLogicalID, {
     assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
     roleName: Fn.conditionIf(
       HasEnvironmentParameter,
-      Fn.join('-', [parameterMap.get(ElasticsearchAccessIAMRoleName)!.valueAsString, apiId, envParam.valueAsString]),
-      Fn.join('-', [parameterMap.get(ElasticsearchAccessIAMRoleName)!.valueAsString, apiId, envParam.valueAsString]),
+      Fn.join('-', [parameterMap.get(OpenSearchAccessIAMRoleName)!.valueAsString, apiId, envParam.valueAsString]),
+      Fn.join('-', [parameterMap.get(OpenSearchAccessIAMRoleName)!.valueAsString, apiId, envParam.valueAsString]),
     ).toString(),
   });
 };

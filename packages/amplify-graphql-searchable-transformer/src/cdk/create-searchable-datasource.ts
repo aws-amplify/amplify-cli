@@ -12,16 +12,16 @@ export const createSearchableDataSource = (
   role: IRole,
   region?: string,
 ): BaseDataSource => {
-  const { ElasticsearchDataSourceLogicalID } = ResourceConstants.RESOURCES;
+  const { OpenSearchDataSourceLogicalID } = ResourceConstants.RESOURCES;
   assert(region);
   const dsEndpoint = 'https://' + domainEndpoint;
   return graphqlApiProvider.addSearchableDataSource(
-    ElasticsearchDataSourceLogicalID,
+    OpenSearchDataSourceLogicalID,
     region,
     dsEndpoint,
     {
       serviceRole: role,
-      name: ElasticsearchDataSourceLogicalID,
+      name: OpenSearchDataSourceLogicalID,
     },
     stack,
   );
