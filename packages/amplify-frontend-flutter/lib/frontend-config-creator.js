@@ -241,6 +241,8 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     };
   }
 
+  Object.assign(cognitoConfig, cognitoResource.frontEndConfig);
+
   return cognitoConfig;
 }
 

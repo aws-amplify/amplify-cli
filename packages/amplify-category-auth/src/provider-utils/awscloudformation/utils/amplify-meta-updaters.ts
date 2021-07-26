@@ -16,7 +16,7 @@ export const getPostAddAuthMetaUpdater = (context: any, resultMetadata: { servic
     providerPlugin: resultMetadata.providerName,
   };
   const parametersJSONPath = path.join(context.amplify.pathManager.getBackendDirPath(), 'auth', resourceName, 'parameters.json');
-  const authParameters = JSONUtilities.readJson<{ dependsOn: any[]; triggers: string; identityPoolName: string }>(parametersJSONPath)!;
+  const authParameters = JSONUtilities.readJson<$TSAny>(parametersJSONPath)!;
 
   if (authParameters.dependsOn) {
     options.dependsOn = authParameters.dependsOn;
@@ -36,6 +36,7 @@ export const getPostAddAuthMetaUpdater = (context: any, resultMetadata: { servic
   }
 
   options.customAuth = customAuthConfigured;
+  options.frontEndConfig = getFrontEndConfig(authParameters);
 
   context.amplify.updateamplifyMetaAfterResourceAdd('auth', resourceName, options);
 
@@ -79,6 +80,7 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
       triggers.VerifyAuthChallengeResponse.length > 0;
   }
   context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'customAuth', customAuthConfigured);
+  context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'frontEndConfig', getFrontEndConfig(authParameters));
 
   // Update Identity Pool dependency attributes on userpool groups
   const allResources = context.amplify.getProjectMeta();
@@ -100,3 +102,71 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
   }
   return resourceName;
 };
+
+function getFrontEndConfig(authParameters: any) {
+  const frontEndConfig: any = {};
+
+  let loginMechanism: string[] = [];
+
+  if (authParameters.aliasAttributes) {
+    let aliasAttributes = authParameters.aliasAttributes.map((att: string) => att.toUpperCase());
+    loginMechanism = [...aliasAttributes];
+  }
+
+  if (authParameters.authProviders) {
+    if (authParameters.authProviders.includes('accounts.google.com')) {
+      loginMechanism.push('GOOGLE');
+    }
+    if (authParameters.authProviders.includes('graph.facebook.com')) {
+      loginMechanism.push('FACEBOOK');
+    }
+    if (authParameters.authProviders.includes('www.amazon.com')) {
+      loginMechanism.push('AMAZON');
+    }
+    if (authParameters.authProviders.includes('appleid.apple.com')) {
+      loginMechanism.push('APPLE');
+    }
+  }
+
+  if (loginMechanism.length) {
+    frontEndConfig.loginMechanism = loginMechanism;
+  }
+
+  if (authParameters.requiredAttributes) {
+    let requiredAttributes = authParameters.requiredAttributes.map((att: string) => att.toUpperCase());
+    frontEndConfig.signupAttributes = [...requiredAttributes];
+  }
+
+  if (authParameters.mfaConfiguration) {
+    frontEndConfig.mfaConfiguration = authParameters.mfaConfiguration;
+  }
+
+  if (authParameters.mfaTypes) {
+    frontEndConfig.mfaTypes = [];
+
+    if (authParameters.mfaTypes.includes('SMS Text Message')) {
+      frontEndConfig.mfaTypes.push('SMS');
+    }
+
+    if (authParameters.mfaTypes.includes('TOTP')) {
+      frontEndConfig.mfaTypes.push('TOTP');
+    }
+  }
+
+  if (authParameters.passwordPolicyMinLength || authParameters.passwordPolicyCharacters) {
+    let passwordProtectionSettings: any = {};
+
+    if (authParameters.passwordPolicyMinLength) {
+      passwordProtectionSettings.passwordPolicyMinLength = authParameters.passwordPolicyMinLength;
+    }
+
+    if (authParameters.passwordPolicyCharacters) {
+      let passwordPolicyCharacters = authParameters.passwordPolicyCharacters.map((i: string) => i.replace(/ /g, '_').toUpperCase());
+      passwordProtectionSettings.passwordPolicyCharacters = passwordPolicyCharacters;
+    }
+
+    frontEndConfig.passwordProtectionSettings = passwordProtectionSettings;
+  }
+
+  return frontEndConfig;
+}
