@@ -205,7 +205,7 @@ test('it generates expected resources', () => {
         Ref: anything(),
       },
       Name: 'OpenSearchDataSource',
-      Type: 'AMAZON_OPENSEARCH',
+      Type: 'AMAZON_ELASTICSEARCH',
       ElasticsearchConfig: {
         AwsRegion: {
           'Fn::Select': [
