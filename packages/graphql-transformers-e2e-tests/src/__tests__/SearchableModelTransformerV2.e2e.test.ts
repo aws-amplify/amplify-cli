@@ -1,6 +1,5 @@
 import { ResourceConstants } from 'graphql-transformer-common';
-import { GraphQLTransform, ConflictHandlerType } from '@aws-amplify/graphql-transformer-core';
-//import { SearchableModelTransformer } from '../../../amplify-graphql-searchable-transformer';
+import { GraphQLTransform } from '@aws-amplify/graphql-transformer-core';
 import { SearchableModelTransformer } from '@aws-amplify/graphql-searchable-transformer';
 import { ModelTransformer } from '@aws-amplify/graphql-model-transformer';
 import { CloudFormationClient } from '../CloudFormationClient';
