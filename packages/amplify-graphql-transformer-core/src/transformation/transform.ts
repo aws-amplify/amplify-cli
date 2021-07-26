@@ -1,5 +1,5 @@
 /* eslint-disable no-new */
-import { FeatureFlagProvider, GraphQLAPIProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FeatureFlagProvider, GraphQLAPIProvider, TransformerPluginProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { App, Aws, CfnOutput, Fn } from '@aws-cdk/core';
 import assert from 'assert';
@@ -36,7 +36,6 @@ import {
   sortTransformerPlugins,
 } from './utils';
 import { validateModelSchema } from './validation';
-import {TransformHostProvider} from '@aws-amplify/graphql-transformer-interfaces';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function isFunction(obj: any): obj is Function {

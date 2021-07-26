@@ -1,4 +1,4 @@
-import { APIIAMResourceProvider, GraphQLAPIProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { APIIAMResourceProvider, GraphQLAPIProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import {
   ApiKeyConfig,
   AuthorizationConfig,
@@ -16,7 +16,6 @@ import {
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { CfnResource, Construct, Duration, Stack } from '@aws-cdk/core';
 import { TransformerSchema } from './cdk-compat/schema-asset';
-import {TransformHostProvider} from '@aws-amplify/graphql-transformer-interfaces';
 import {DefaultTransformHost} from './transform-host';
 
 export interface GraphqlApiProps {
