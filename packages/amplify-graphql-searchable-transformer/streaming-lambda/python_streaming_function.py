@@ -20,7 +20,7 @@ OPENSEARCH_REGION = os.environ['OPENSEARCH_REGION']
 DEBUG = True if os.environ['DEBUG'] == "1" else False
 OPENSEARCH_USE_EXTERNAL_VERSIONING = True if os.environ['OPENSEARCH_USE_EXTERNAL_VERSIONING'] == "true" else False
 
-# ElasticSearch 6 deprecated having multiple mapping types in an index. Default to doc.
+# Multiple mapping types in an index is deprecated. Default to doc.
 DOC_TYPE = 'doc'
 OPENSEARCH_MAX_RETRIES = 3 # Max number of retries for exponential backoff
 
