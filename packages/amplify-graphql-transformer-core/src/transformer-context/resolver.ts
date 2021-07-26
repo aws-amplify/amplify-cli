@@ -181,7 +181,7 @@ export class TransformerResolver implements TransformerResolverProvider {
             dataSource = `$util.qr($ctx.stash.put("tableName", "${tableName}"))`;
           }
           break;
-        case 'AMAZON_OPENSEARCH':
+        case 'AMAZON_ELASTICSEARCH':
           if (this.datasource.ds.elasticsearchConfig && !isResolvableObject(this.datasource.ds.elasticsearchConfig)) {
             const endpoint = this.datasource.ds.elasticsearchConfig?.endpoint;
             dataSource = `$util.qr($ctx.stash.put("endpoint", "${endpoint}"))`;

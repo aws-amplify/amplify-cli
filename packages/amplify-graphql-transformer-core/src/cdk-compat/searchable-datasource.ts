@@ -21,7 +21,7 @@ export interface SearchableDataSourceProps extends BackedDataSourceProps {
 export class SearchableDataSource extends BaseDataSource {
   constructor(scope: Construct, id: string, props: SearchableDataSourceProps) {
     super(scope, id, props, {
-      type: 'AMAZON_OPENSEARCH',
+      type: 'AMAZON_ELASTICSEARCH',
       elasticsearchConfig: {
         awsRegion: props.region,
         endpoint: props.endpoint,
