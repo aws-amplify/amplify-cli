@@ -32,19 +32,19 @@ export async function pricingPlanWalkthrough<T extends ResourceParameters>(
     context.print.info(choosePricingPlan);
 
     const pricingPlanBusinessTypeChoices = [
-        { name: 'No, I only need to track consumers personal mobile devices', value: YesOrNo.No },
-        { name: 'Yes, I track commercial assets (For example, any mobile object that is tracked by a company in support of its business)', value: YesOrNo.Yes }
+        { name: 'No, I only need to track consumers personal mobile devices', value: false },
+        { name: 'Yes, I track commercial assets (For example, any mobile object that is tracked by a company in support of its business)', value: true }
     ];
     const pricingPlanBusinessTypePrompt = {
         type: 'list',
         name: 'pricingPlanBusinessType',
         message: 'Are you tracking commercial assets for your business in your app?',
         choices: pricingPlanBusinessTypeChoices,
-        default: pricingPlan === PricingPlan.RequestBasedUsage ? YesOrNo.No : YesOrNo.Yes
+        default: pricingPlan === PricingPlan.RequestBasedUsage ? false : true
     };
 
-    const pricingPlanBusinessTypeChoice = ((await inquirer.prompt([pricingPlanBusinessTypePrompt])).pricingPlanBusinessType as YesOrNo);
-    if (pricingPlanBusinessTypeChoice === YesOrNo.No) {
+    const pricingPlanBusinessTypeChoice = ((await inquirer.prompt([pricingPlanBusinessTypePrompt])).pricingPlanBusinessType as boolean);
+    if (pricingPlanBusinessTypeChoice === false) {
         pricingPlan = PricingPlan.RequestBasedUsage;
     }
     else {
@@ -82,8 +82,3 @@ const getServiceFriendlyName = (service: ServiceName): string => {
             return service;
     }
 };
-
-export const enum YesOrNo {
-    Yes = 'Yes',
-    No = 'No'
-}

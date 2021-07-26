@@ -3,7 +3,6 @@ import { DataSourceIntendedUse, PlaceIndexParameters } from '../../service-utils
 import { AccessType, DataProvider, PricingPlan } from '../../service-utils/resourceParams';
 import { provider, ServiceName } from '../../service-utils/constants';
 import { category } from '../../constants';
-import { YesOrNo } from '../../service-walkthroughs/resourceWalkthrough';
 
 jest.mock('amplify-cli-core');
 
@@ -86,7 +85,7 @@ describe('Search walkthrough works as expected', () => {
                     mockUserInput['dataSourceIntendedUse'] = mockPlaceIndexParameters.dataSourceIntendedUse;
                 }
                 else if(questions[0].name === 'pricingPlanBusinessType') {
-                    mockUserInput['pricingPlanBusinessType'] = YesOrNo.Yes;
+                    mockUserInput['pricingPlanBusinessType'] = true;
                 }
                 else if(questions[0].name === 'resourceName') {
                     mockUserInput['resourceName'] = mockPlaceIndexParameters.name;
