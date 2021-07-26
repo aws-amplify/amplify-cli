@@ -10,7 +10,7 @@ describe('map style construction works as expected', () => {
         "VectorHereBerlin"
     ];
 
-    it('parses various supported map styles', () => {
+    it('parses various supported geo map styles', () => {
         mapStyles.forEach(mapStyle => {
             const { dataProvider, mapStyleType } = getMapStyleComponents(mapStyle);
             expect(getGeoMapStyle(dataProvider, mapStyleType)).toEqual(mapStyle);
