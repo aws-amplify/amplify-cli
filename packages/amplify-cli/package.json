@@ -43,7 +43,7 @@
     "amplify-category-notifications": "2.19.4",
     "amplify-category-predictions": "2.9.4",
     "amplify-category-storage": "2.12.1",
-    "amplify-category-geo": "0.0.1",
+    "amplify-category-geo": "0.0.2",
     "amplify-category-xr": "2.8.13",
     "amplify-cli-core": "1.24.1",
     "amplify-cli-logger": "1.1.0",
