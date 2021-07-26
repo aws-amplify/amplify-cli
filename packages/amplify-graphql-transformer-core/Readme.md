@@ -304,7 +304,7 @@ and configures search resolvers that search that information.
 #### Definition
 
 ```graphql
-# Streams data from dynamodb into searchable and exposes search capabilities.
+# Streams data from dynamodb into opensearch and exposes search capabilities.
 directive @searchable(queries: SearchableQueryMap) on OBJECT
 input SearchableQueryMap {
   search: String
