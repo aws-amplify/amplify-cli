@@ -113,9 +113,9 @@ export function listEnvironment(cwd: string, settings: { numEnv?: number }): Pro
 // Get environment details and return them as JSON
 export function getEnvironment(cwd: string, settings: { envName: string }): Promise<string> {
   const envData = {};
-  let helper = output => {
-    let keyVal = output.split(/:(.+)/); // Split string on first ':' only
-    envData[keyVal[0].trim()] = keyVal[1].trim();
+  const helper = (output: string) => {
+    const [key, value] = output.split(/:(.+)/); // Split string on first ':' only
+    envData[key.trim()] = value.trim();
   };
   return new Promise((resolve, reject) => {
     spawn(getCLIPath(), ['env', 'get', '--name', settings.envName], { cwd, stripColors: true })
@@ -124,6 +124,7 @@ export function getEnvironment(cwd: string, settings: { envName: string }): Prom
       .wait('Provider')
       .wait('AuthRoleName', helper)
       .wait('UnauthRoleArn', helper)
+      .wait(/^AuthRoleArn/, helper) // Needs to be a regex to prevent matching UnauthRoleArn twice
       .wait('Region', helper)
       .wait('DeploymentBucketName', helper)
       .wait('UnauthRoleName', helper)
@@ -132,10 +133,8 @@ export function getEnvironment(cwd: string, settings: { envName: string }): Prom
       .wait('--------------')
       .sendEof()
       .run((err: Error) => {
-        let jsonEnvData = JSON.stringify({ awscloudformation: envData });
         if (!err) {
-          resolve(jsonEnvData);
-          return jsonEnvData;
+          resolve(JSON.stringify({ awscloudformation: envData }));
         } else {
           reject(err);
         }

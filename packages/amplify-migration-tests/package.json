@@ -49,7 +49,7 @@
       "/node_modules/",
       "lib"
     ],
-    "collectCoverage": true,
+    "collectCoverage": false,
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!**/node_modules/**",
