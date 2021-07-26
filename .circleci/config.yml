@@ -2018,7 +2018,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
     jobs:
       - build
       - publish_to_local_registry:
@@ -2040,7 +2040,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
     jobs:
       - build
       - cleanup_resources:
@@ -2065,7 +2065,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -2078,7 +2078,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - beta
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
@@ -2089,7 +2089,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - beta
                 - release
                 - /tagged-release\/.*/
@@ -2106,7 +2106,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
       - done_with_node_e2e_tests:
@@ -2178,7 +2178,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -2192,7 +2192,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -2206,7 +2206,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -2220,7 +2220,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -2234,7 +2234,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -2302,7 +2302,7 @@ workflows:
             branches:
               only:
                 - release
-                - master
+                - main
                 - beta
                 - /tagged-release\/.*/
                 - /tagged-release-without-e2e-tests\/.*/
@@ -2325,7 +2325,7 @@ workflows:
           filters: &ref_10
             branches:
               only:
-                - master
+                - main
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
@@ -2785,7 +2785,7 @@ workflows:
           filters: &ref_13
             branches:
               only:
-                - master
+                - main
                 - /tagged-release\/.*/
                 - /run-e2e\/*./
           requires:
