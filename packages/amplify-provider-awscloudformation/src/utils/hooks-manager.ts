@@ -117,7 +117,6 @@ export async function pullHooks(context: $TSContext): Promise<void> {
    * @return {Promise<void>}
    */
   // used by pull-backend
-  const amplifyDir = context.amplify.pathManager.getAmplifyDirPath();
   const hooksDirPath = pathManager.getHooksDirPath();
 
   const s3 = await S3.getInstance(context);

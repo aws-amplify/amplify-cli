@@ -1,7 +1,7 @@
 import { $TSContext, $TSAny } from '..';
 import { pathManager } from '../state-manager/pathManager';
 import { stateManager } from '../state-manager/stateManager';
-import { HooksExtension, HooksConfig, FileObj, EventPrefix, HooksEvent, DataParameter, ErrorParameter } from './hooksTypes';
+import { HooksConfig, FileObj, EventPrefix, HooksEvent, DataParameter, ErrorParameter } from './hooksTypes';
 
 import * as which from 'which';
 import * as fs from 'fs-extra';
@@ -103,7 +103,7 @@ function getHooksFileObjs(
     .readdirSync(hooksDirPath)
     .filter(relFilePath => fs.lstatSync(path.join(hooksDirPath, relFilePath)).isFile())
     .map(relFilePath => splitFileName(relFilePath))
-    .filter(fileObj => extensionsSupported.hasOwnProperty(fileObj.extension) && extensionsSupported.hasOwnProperty(fileObj.extension))
+    .filter(fileObj => extensionsSupported.hasOwnProperty(fileObj.extension))
     .map(fileObj => ({ ...fileObj, filePath: path.join(hooksDirPath, String(fileObj.fileName)) }));
 
   const commandType = hooksEvent.eventPrefix ? [hooksEvent.eventPrefix, hooksEvent.command].join(hooksEvent.seperator) : hooksEvent.command;
