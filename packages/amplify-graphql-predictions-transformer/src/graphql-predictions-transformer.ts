@@ -1,7 +1,6 @@
 import * as path from 'path';
 import { DirectiveWrapper, InvalidDirectiveError, MappingTemplate, TransformerPluginBase } from '@aws-amplify/graphql-transformer-core';
 import {
-  TransformerBeforeStepContextProvider,
   TransformerContextProvider,
   TransformerSchemaVisitStepContextProvider,
   TransformerTransformSchemaStepContextProvider,
@@ -71,18 +70,16 @@ export class PredictionsTransformer extends TransformerPluginBase {
     this.bucketName = predictionsConfig?.bucketName ?? '';
   }
 
-  before = (context: TransformerBeforeStepContextProvider): void => {
-    if (!this.bucketName) {
-      throw new InvalidDirectiveError('Please configure storage in your project in order to use the @predictions directive');
-    }
-  };
-
   field = (
     parent: ObjectTypeDefinitionNode | InterfaceTypeDefinitionNode,
     definition: FieldDefinitionNode,
     directive: DirectiveNode,
     context: TransformerSchemaVisitStepContextProvider,
   ): void => {
+    if (!this.bucketName) {
+      throw new InvalidDirectiveError('Please configure storage in your project in order to use the @predictions directive');
+    }
+
     if (parent.name.value !== context.output.getQueryTypeName()) {
       throw new InvalidDirectiveError('@predictions directive only works under Query operations.');
     }
