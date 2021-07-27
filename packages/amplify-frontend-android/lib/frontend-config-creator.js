@@ -264,7 +264,7 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     };
   }
 
-  Object.assign(cognitoConfig.Auth.Default, cognitoResource.frontEndConfig);
+  Object.assign(cognitoConfig.Auth.Default, cognitoResource.frontendAuthConfig);
 
   return cognitoConfig;
 }

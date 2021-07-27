@@ -50,6 +50,19 @@ export type MetaOutput = {
   CreatedSNSRole?: string;
 };
 
+export type AuthParameters = {
+  dependsOn?: any[];
+  triggers?: string;
+  identityPoolName?: string;
+  aliasAttributes?: string[];
+  authProviders?: string[];
+  requiredAttributes?: string[];
+  passwordPolicyMinLength?: string;
+  passwordPolicyCharacters?: string[];
+  mfaConfiguration?: string;
+  mfaTypes?: string[];
+};
+
 // Persisted into team-provider-info
 export type EnvSpecificResourceParameters = {
   userPoolId: string;
