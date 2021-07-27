@@ -24,7 +24,7 @@ describe('zero config auth ', () => {
     deleteProjectDir(projRoot);
   });
 
-  it.only('...should init a javascript project and add auth with a all uptions and update front end config', async () => {
+  it('...should init a javascript project and add auth with a all uptions and update front end config', async () => {
     await initJSProjectWithProfile(projRoot, defaultsSettings);
     await addAuthWithMaxOptions(projRoot, { useInclusiveTerminology: false });
     await amplifyPushAuth(projRoot);
