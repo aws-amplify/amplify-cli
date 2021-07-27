@@ -449,7 +449,7 @@ test('resolvers can be renamed by @model', () => {
 
 test('individual resolvers can be made null by @model', () => {
   const inputSchema = `
-    type Test@model(queries: { get: "testGet", list: null }) {
+    type Test @model(queries: { get: "testGet", list: null }) {
       id: ID! @primaryKey(sortKeyFields: ["email"])
       email: String
     }`;
