@@ -25,7 +25,7 @@ export function setProfile(awsConfigInfo: $TSAny, profileName: string) {
   }
 
   if (fs.existsSync(configFilePath)) {
-    logger('setProfile.credetialsFilePathExists', [credentialsFilePath])();
+    logger('setProfile.configFilePathExists', [configFilePath])();
     makeFileOwnerReadWrite(configFilePath);
     config = ini.parse(fs.readFileSync(configFilePath, 'utf-8'));
   }
