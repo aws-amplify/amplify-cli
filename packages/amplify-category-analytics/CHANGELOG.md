@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.21.14-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.21.13...amplify-category-analytics@2.21.14-beta.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* upgrade node default runtime to 14 ([#7700](https://github.com/aws-amplify/amplify-cli/issues/7700)) ([47968cc](https://github.com/aws-amplify/amplify-cli/commit/47968cc9c704ac1cffcbd0dbe40d164b1b1d48d6))
+
+
+### Reverts
+
+* Revert "fix: upgrade node default runtime to 14 (#7700)" (#7763) ([3ab8769](https://github.com/aws-amplify/amplify-cli/commit/3ab87694203584cdfa208bf75e648e0e944f5e18)), closes [#7700](https://github.com/aws-amplify/amplify-cli/issues/7700) [#7763](https://github.com/aws-amplify/amplify-cli/issues/7763)
+
+
+
+
+
 ## [2.21.13](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-analytics@2.21.12...amplify-category-analytics@2.21.13) (2021-07-16)
 
 **Note:** Version bump only for package amplify-category-analytics

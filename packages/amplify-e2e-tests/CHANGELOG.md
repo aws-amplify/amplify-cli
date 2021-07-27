@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.46.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.45.1...amplify-e2e-tests@2.46.0-beta.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* **cli:** prevent re-prompt of info on `amplify pull` ([#7730](https://github.com/aws-amplify/amplify-cli/issues/7730)) ([1919558](https://github.com/aws-amplify/amplify-cli/commit/19195589ab2d8b7382cac100c888bdbb62b9ba59))
+* disable layer version removal if fn depends on pinned version ([#7627](https://github.com/aws-amplify/amplify-cli/issues/7627)) ([a086789](https://github.com/aws-amplify/amplify-cli/commit/a086789661df95735679214a65a3808c8a5497e5))
+* upgrade node default runtime to 14 ([#7700](https://github.com/aws-amplify/amplify-cli/issues/7700)) ([47968cc](https://github.com/aws-amplify/amplify-cli/commit/47968cc9c704ac1cffcbd0dbe40d164b1b1d48d6))
+
+
+### Features
+
+* **amplify-category-auth:** use EnabledMFAs to only configure TOTP ([#7779](https://github.com/aws-amplify/amplify-cli/issues/7779)) ([c2102c5](https://github.com/aws-amplify/amplify-cli/commit/c2102c53fd2ca974fb95c4468ad7a87fefe14ab0))
+
+
+### Reverts
+
+* Revert "feat(amplify-category-auth): use EnabledMFAs to only configure TOTP (#7779)" (#7790) ([fa172c4](https://github.com/aws-amplify/amplify-cli/commit/fa172c4caf6f15de56925bd1ff4f8ee743788b52)), closes [#7779](https://github.com/aws-amplify/amplify-cli/issues/7779) [#7790](https://github.com/aws-amplify/amplify-cli/issues/7790)
+* Revert "Revert "ci: add support for e2e token rotation (#7665)" (#7759)" (#7762) ([9ea4c8e](https://github.com/aws-amplify/amplify-cli/commit/9ea4c8e115ae62d7c348c3f0d82c89d795eebf46)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759) [#7762](https://github.com/aws-amplify/amplify-cli/issues/7762)
+* Revert "fix: upgrade node default runtime to 14 (#7700)" (#7763) ([3ab8769](https://github.com/aws-amplify/amplify-cli/commit/3ab87694203584cdfa208bf75e648e0e944f5e18)), closes [#7700](https://github.com/aws-amplify/amplify-cli/issues/7700) [#7763](https://github.com/aws-amplify/amplify-cli/issues/7763)
+* Revert "ci: add support for e2e token rotation (#7665)" (#7759) ([aadc915](https://github.com/aws-amplify/amplify-cli/commit/aadc9155f5c25478c7f317aec77f51290c6b9cfe)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759)
+
+
+
+
+
 ## [2.45.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-e2e-tests@2.45.0...amplify-e2e-tests@2.45.1) (2021-07-16)
 
 

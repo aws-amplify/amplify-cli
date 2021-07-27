@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0-beta.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.1.2...@aws-amplify/cli@5.2.0-beta.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* **cli:** make delete clean local project if already deleted in cloud ([#7551](https://github.com/aws-amplify/amplify-cli/issues/7551)) ([3f0d0d1](https://github.com/aws-amplify/amplify-cli/commit/3f0d0d13ce782c9f784fd9bc5807d314186e48b0)), closes [#7515](https://github.com/aws-amplify/amplify-cli/issues/7515)
+* **cli:** prevent re-prompt of info on `amplify pull` ([#7730](https://github.com/aws-amplify/amplify-cli/issues/7730)) ([1919558](https://github.com/aws-amplify/amplify-cli/commit/19195589ab2d8b7382cac100c888bdbb62b9ba59))
+* **cli:** use more explicit amplify pragma in .gitignore ([#7568](https://github.com/aws-amplify/amplify-cli/issues/7568)) ([a48fd1c](https://github.com/aws-amplify/amplify-cli/commit/a48fd1c02779760685a09f6d2af39ae666ae91c9)), closes [#7250](https://github.com/aws-amplify/amplify-cli/issues/7250)
+
+
+### Features
+
+* **cli:** amplify folder deletes regardless of presence in the cloud ([#7740](https://github.com/aws-amplify/amplify-cli/issues/7740)) ([913dd4f](https://github.com/aws-amplify/amplify-cli/commit/913dd4ff141e9ca0d387b13bb881d511843c2a51)), closes [#7631](https://github.com/aws-amplify/amplify-cli/issues/7631)
+
+
+
+
+
 ## [5.1.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.1.1...@aws-amplify/cli@5.1.2) (2021-07-16)
 
 
