@@ -18,38 +18,15 @@ export class ViewResourceTableParams {
     public get command() {
         return this._command;
     }
-    public set command( command : string) {
-        this._command = command;
-    }
-
     public get verbose() {
         return this._verbose;
     }
-    public set verbose( tf: boolean ) {
-        this._verbose = tf;
-    }
-
     public get help() {
         return this._help;
     }
-    public set help( isHelp: boolean ) {
-        this._help = isHelp;
-    }
-
     public get categoryList() {
         return this._categoryList;
     }
-    public set categoryList( categories: string[] | [] ){
-        this._categoryList = categories
-    }
-
-    public get filteredResourceList() {
-        return this._filteredResourceList;
-    }
-    public set filteredResourceList( resourceList : any ) {
-        this._filteredResourceList = resourceList ;
-    }
-
     getCategoryFromCLIOptions(cliOptions: object) {
         if (cliOptions) {
             return Object.keys(cliOptions)
@@ -70,9 +47,6 @@ export class ViewResourceTableParams {
     }
     stylePrompt(str: string) {
         return chalk.bold(chalk.yellowBright(str));
-    }
-    styleNOOP(str: string) {
-        return chalk.italic(chalk.grey(str));
     }
     public getStyledHelp() {
         return `
