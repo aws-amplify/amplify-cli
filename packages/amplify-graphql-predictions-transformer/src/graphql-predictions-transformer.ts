@@ -178,7 +178,7 @@ export class PredictionsTransformer extends TransformerPluginBase {
         const datasourceName = actionToDataSourceMap.get(action) as string;
         const functionName = PredictionsResourceIDs.getPredictionFunctionName(action);
         const roleAction = actionToRoleAction.get(action);
-        let datasource = context.api.getDataSource(datasourceName);
+        let datasource = context.api.host.getDataSource(datasourceName);
 
         if (roleAction && !seenActions.has(action)) {
           role.attachInlinePolicy(
@@ -263,7 +263,7 @@ function createPredictionsDataSource(
     case identifyEntities:
     case identifyText:
     case identifyLabels:
-      datasource = context.api.addHttpDataSource(
+      datasource = context.api.host.addHttpDataSource(
         'RekognitionDataSource',
         cdk.Fn.sub('https://rekognition.${AWS::Region}.amazonaws.com'),
         {
@@ -276,7 +276,7 @@ function createPredictionsDataSource(
       );
       break;
     case translateText:
-      datasource = context.api.addHttpDataSource(
+      datasource = context.api.host.addHttpDataSource(
         'TranslateDataSource',
         cdk.Fn.sub('https://translate.${AWS::Region}.amazonaws.com'),
         {
@@ -290,7 +290,7 @@ function createPredictionsDataSource(
       break;
     case convertTextToSpeech:
     default:
-      datasource = context.api.addLambdaDataSource(
+      datasource = context.api.host.addLambdaDataSource(
         'LambdaDataSource',
         lambda.Function.fromFunctionAttributes(stack, 'LambdaDataSourceFunction', {
           functionArn: (lambdaFn as lambda.IFunction)?.functionArn,
@@ -321,7 +321,7 @@ function createResolver(
     substitutions.env = (env as unknown) as string;
   }
 
-  return context.api.addResolver(
+  return context.api.host.addResolver(
     config.resolverTypeName,
     config.resolverFieldName,
     MappingTemplate.inlineTemplateFromString(
@@ -374,7 +374,7 @@ function createPredictionsLambda(context: TransformerContextProvider, stack: cdk
 
   // Update the runtime to Node 14 once the following issue is resolved:
   // https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/80#issuecomment-831796699
-  return context.api.addLambdaFunction(
+  return context.api.host.addLambdaFunction(
     PredictionsResourceIDs.lambdaHandlerName,
     `functions/${functionId}.zip`,
     PredictionsResourceIDs.lambdaHandlerName,
@@ -669,7 +669,7 @@ function createActionFunction(context: TransformerContextProvider, stack: cdk.St
       break;
   }
 
-  return context.api.addAppSyncFunction(
+  return context.api.host.addAppSyncFunction(
     `${action}Function`,
     MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.request)),
     MappingTemplate.inlineTemplateFromString(print(actionFunctionResolver.response)),
