@@ -1,6 +1,8 @@
 import * as path from 'path';
 import { JSONUtilities, $TSAny, pathManager } from 'amplify-cli-core';
 import { transformUserPoolGroupSchema } from './transform-user-pool-group';
+import { authProviders as authProviderList } from '../assets/string-maps';
+
 /**
  * Factory function that returns a function that updates Amplify meta files after adding auth resource assets
  *
@@ -114,18 +116,13 @@ function getFrontEndConfig(authParameters: any) {
   }
 
   if (authParameters.authProviders) {
-    if (authParameters.authProviders.includes('accounts.google.com')) {
-      loginMechanism.push('GOOGLE');
-    }
-    if (authParameters.authProviders.includes('graph.facebook.com')) {
-      loginMechanism.push('FACEBOOK');
-    }
-    if (authParameters.authProviders.includes('www.amazon.com')) {
-      loginMechanism.push('AMAZON');
-    }
-    if (authParameters.authProviders.includes('appleid.apple.com')) {
-      loginMechanism.push('APPLE');
-    }
+    authParameters.authProviders.forEach((provider: string) => {
+      let name = authProviderList.find(it => it.value === provider)?.name;
+
+      if (name) {
+        loginMechanism.push(name.toUpperCase());
+      }
+    });
   }
 
   if (loginMechanism.length) {
