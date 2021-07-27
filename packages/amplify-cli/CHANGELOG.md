@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0-geo.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.2.0-geo.0...@aws-amplify/cli@5.2.0-geo.1) (2021-07-27)
+
+**Note:** Version bump only for package @aws-amplify/cli
+
+
+
+
+
 # [5.2.0-geo.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.1.2...@aws-amplify/cli@5.2.0-geo.0) (2021-07-26)
 
 

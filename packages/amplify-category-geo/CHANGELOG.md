@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.0.3-geo.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-geo@0.0.3-geo.0...amplify-category-geo@0.0.3-geo.1) (2021-07-27)
+
+
+### Bug Fixes
+
+* **amplify-category-geo:** remove updatePricingPlan method call ([fd4e942](https://github.com/aws-amplify/amplify-cli/commit/fd4e9423a87904876a7d0c00ae6a66f35146a2a5))
+
+
+
+
+
 ## 0.0.3-geo.0 (2021-07-26)
 
 
