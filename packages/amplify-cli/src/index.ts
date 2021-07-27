@@ -119,9 +119,6 @@ export async function run() {
     let pluginPlatform = await getPluginPlatform();
     let input = getCommandLineInput(pluginPlatform);
 
-    const hooksHandler = HooksHandler.initialize();
-    hooksHandler.setHooksEventFromInput(input);
-
     // with non-help command supplied, give notification before execution
     if (input.command !== 'help') {
       // Checks for available update, defaults to a 1 day interval for notification
@@ -162,9 +159,15 @@ export async function run() {
 
     rewireDeprecatedCommands(input);
     logInput(input);
+    const hooksHandler = HooksHandler.initialize();
+    hooksHandler.setHooksEventFromInput(input);
     const context = constructContext(pluginPlatform, input);
 
-    hooksHandler.dataParameter.amplify.environment = context.amplify.getEnvInfo()?.envName;
+    try {
+      hooksHandler.dataParameter.amplify.environment = context.amplify.getEnvInfo()?.envName;
+    } catch (err) {
+      // do nothing
+    }
 
     // Initialize feature flags
     const contextEnvironmentProvider = new CLIContextEnvironmentProvider({

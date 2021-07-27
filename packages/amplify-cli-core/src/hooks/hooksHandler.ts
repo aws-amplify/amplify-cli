@@ -1,5 +1,4 @@
 import { HooksEvent, DataParameter, EventPrefix } from './hooksTypes';
-import { $TSAny } from '../index';
 import { suppportedEvents, supportedEnvEvents } from './hooksConstants';
 import { stateManager } from '../state-manager';
 
@@ -66,7 +65,7 @@ export class HooksHandler {
         command = input.subCommands[0];
         break;
       case 'configure':
-        command = 'update';
+        if (input.plugin === 'notifications' || input.plugin === 'hosting') command = 'update';
         break;
       case 'gql-compile':
         command = 'gqlcompile';
@@ -90,4 +89,12 @@ export class HooksHandler {
     this.hooksEvent.eventPrefix = eventPrefix;
     this.hooksEvent.argv = input.argv;
   }
+
+  /**
+   * @internal
+   * private method used in unit tests to release the instance
+   */
+  public static releaseInstance = (): void => {
+    HooksHandler.instance = undefined;
+  };
 }
