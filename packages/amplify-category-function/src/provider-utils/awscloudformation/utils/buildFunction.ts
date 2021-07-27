@@ -5,7 +5,7 @@ import { categoryName } from '../../../constants';
 
 export const buildFunction = async (
   context: $TSContext,
-  { resourceName, lastBuildTimestamp, buildType = BuildType.PROD }: BuildRequestMeta,
+  { resourceName, lastBuildTimestamp, lastBuildType, buildType = BuildType.PROD }: BuildRequestMeta,
 ) => {
   const resourcePath = path.join(pathManager.getBackendDirPath(), categoryName, resourceName);
   const breadcrumbs = context.amplify.readBreadcrumbs(categoryName, resourceName);
@@ -35,9 +35,10 @@ export const buildFunction = async (
       runtime: breadcrumbs.functionRuntime,
       legacyBuildHookParams: {
         projectRoot: pathManager.findProjectRoot(),
-        resourceName: resourceName,
+        resourceName,
       },
       lastBuildTimeStamp: prevBuildTime,
+      lastBuildType,
     };
     rebuilt = (await runtimePlugin.build(buildRequest)).rebuilt;
   }
@@ -52,6 +53,7 @@ export const buildFunction = async (
 export interface BuildRequestMeta {
   resourceName: string;
   lastBuildTimestamp?: string;
+  lastBuildType?: BuildType;
   buildType?: BuildType;
 }
 

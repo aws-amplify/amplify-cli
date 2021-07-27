@@ -30,10 +30,25 @@ describe('legacy build resource', () => {
       srcRoot: 'resourceDir',
       runtime: 'other',
       buildType: BuildType.PROD,
+      lastBuildType: BuildType.PROD,
     });
 
     expect(result.rebuilt).toEqual(false);
     expect(glob_mock.sync.mock.calls.length).toBe(1);
     expect(fs_mock.statSync.mock.calls.length).toBe(5);
+  });
+
+  it('checks lastBuildType difference triggers rebuild', async () => {
+    glob_mock.sync.mockImplementationOnce(() => Array.from(stubFileTimestamps.keys()));
+    fs_mock.statSync.mockImplementation(file => ({ mtime: new Date(stubFileTimestamps.get(file.toString())!) } as any));
+
+    const result = await buildResource({
+      lastBuildTimeStamp: new Date(timestamp),
+      srcRoot: 'resourceDir',
+      runtime: 'other',
+      buildType: BuildType.PROD,
+    });
+
+    expect(result.rebuilt).toEqual(true);
   });
 });
