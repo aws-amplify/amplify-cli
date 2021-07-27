@@ -15,7 +15,7 @@ export const createEsDataSource = (
   const { ElasticsearchDataSourceLogicalID } = ResourceConstants.RESOURCES;
   assert(region);
   const dsEndpoint = 'https://' + domainEndpoint;
-  return graphqlApiProvider.addElasticSearchDataSource(
+  return graphqlApiProvider.host.addElasticSearchDataSource(
     ElasticsearchDataSourceLogicalID,
     region,
     dsEndpoint,
