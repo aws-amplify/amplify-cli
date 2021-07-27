@@ -207,6 +207,7 @@ export async function updateamplifyMetaAfterPush(resources: $TSObject[]) {
 export function updateamplifyMetaAfterBuild({ category, resourceName }: ResourceTuple, buildType: BuildType = BuildType.PROD) {
   const amplifyMeta = stateManager.getMeta();
   _.set(amplifyMeta, [category, resourceName, buildTypeKeyMap[buildType]], new Date());
+  _.set(amplifyMeta, [category, resourceName, 'lastBuildType'], buildType);
   stateManager.setMeta(undefined, amplifyMeta);
 }
 
