@@ -1,16 +1,16 @@
+import { $TSAny } from 'amplify-cli-core';
 import {
-  initJSProjectWithProfile,
-  getProjectMeta,
-  deleteProject,
+  addAuthWithMaxOptions,
   amplifyPushAuth,
   createNewProjectDir,
+  deleteProject,
   deleteProjectDir,
-  addAuthWithMaxOptions,
+  getProjectMeta,
+  initJSProjectWithProfile,
 } from 'amplify-e2e-core';
-import _ from 'lodash';
 
 const PROJECT_NAME = 'authTest';
-const defaultsSettings = {
+const defaultSettings = {
   name: PROJECT_NAME,
 };
 describe('zero config auth ', () => {
@@ -24,20 +24,41 @@ describe('zero config auth ', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should init a javascript project and add auth with a all uptions and update front end config', async () => {
-    await initJSProjectWithProfile(projRoot, defaultsSettings);
-    await addAuthWithMaxOptions(projRoot, { useInclusiveTerminology: false });
+  it('...should init a javascript project and add auth with a all options and update front end config', async () => {
+    await initJSProjectWithProfile(projRoot, defaultSettings);
+    await addAuthWithMaxOptions(projRoot, {});
     await amplifyPushAuth(projRoot);
-    let meta = getProjectMeta(projRoot);
 
-    let id = Object.keys(meta.auth)[0];
-    let authMeta = meta.auth[id];
+    const meta = getProjectMeta(projRoot);
+    const authMeta: $TSAny = Object.values(meta.auth)[0];
 
-    expect(authMeta.frontEndConfig).toBeDefined();
-    expect(authMeta.frontEndConfig.loginMechanism).toBeDefined();
-    expect(authMeta.frontEndConfig.signupAttributes).toBeDefined();
-    expect(authMeta.frontEndConfig.mfaConfiguration).toBeDefined();
-    expect(authMeta.frontEndConfig.mfaTypes).toBeDefined();
-    expect(authMeta.frontEndConfig.passwordProtectionSettings).toBeDefined();
+    expect(authMeta.frontendAuthConfig).toMatchInlineSnapshot(`
+      {
+        "loginMechanism": [
+          "EMAIL",
+          "FACEBOOK",
+          "GOOGLE",
+          "AMAZON",
+          "APPLE"
+        ],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": [
+            "REQUIRES_LOWERCASE",
+            "REQUIRES_UPPERCASE",
+            "REQUIRES_NUMBERS",
+            "REQUIRES_SYMBOLS"
+          ]
+        },
+        "mfaConfiguration": "ON",
+        "mfaTypes": [
+          "SMS",
+          "TOTP"
+        ]
+      }
+    `);
   });
 });
