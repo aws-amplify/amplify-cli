@@ -1,5 +1,5 @@
 import { getPackageManager } from 'amplify-cli-core';
-import { BuildRequest, BuildResult } from 'amplify-function-plugin-interface';
+import { BuildRequest, BuildResult, BuildType } from 'amplify-function-plugin-interface';
 import execa from 'execa';
 import * as fs from 'fs-extra';
 import glob from 'glob';
@@ -9,8 +9,8 @@ import * as path from 'path';
 export async function buildResource(request: BuildRequest): Promise<BuildResult> {
   const resourceDir = request.service ? request.srcRoot : path.join(request.srcRoot, 'src');
 
-  if (!request.lastBuildTimeStamp || isBuildStale(request.srcRoot, request.lastBuildTimeStamp)) {
-    installDependencies(resourceDir);
+  if (!request.lastBuildTimeStamp || isBuildStale(request.srcRoot, request.lastBuildTimeStamp, request.buildType, request.lastBuildType)) {
+    installDependencies(resourceDir, request.buildType);
     if (request.legacyBuildHookParams) {
       runBuildScriptHook(request.legacyBuildHookParams.resourceName, request.legacyBuildHookParams.projectRoot);
     }
@@ -22,7 +22,7 @@ export async function buildResource(request: BuildRequest): Promise<BuildResult>
 function runBuildScriptHook(resourceName: string, projectRoot: string) {
   const scriptName = `amplify:${resourceName}`;
   if (scriptExists(projectRoot, scriptName)) {
-    runPackageManager(projectRoot, scriptName);
+    runPackageManager(projectRoot, undefined, scriptName);
   }
 }
 
@@ -30,16 +30,17 @@ function scriptExists(projectRoot: string, scriptName: string) {
   const packageJsonPath = path.normalize(path.join(projectRoot, 'package.json'));
   if (fs.existsSync(packageJsonPath)) {
     const rootPackageJsonContents = require(packageJsonPath);
+
     return rootPackageJsonContents.scripts && rootPackageJsonContents.scripts[scriptName];
   }
   return false;
 }
 
-function installDependencies(resourceDir: string) {
-  runPackageManager(resourceDir);
+function installDependencies(resourceDir: string, buildType: BuildType) {
+  runPackageManager(resourceDir, buildType);
 }
 
-function runPackageManager(cwd: string, scriptName?: string) {
+function runPackageManager(cwd: string, buildType?: BuildType, scriptName?: string) {
   const packageManager = getPackageManager(cwd);
 
   if (packageManager === null) {
@@ -49,7 +50,7 @@ function runPackageManager(cwd: string, scriptName?: string) {
   }
 
   const useYarn = packageManager.packageManager === 'yarn';
-  const args = toPackageManagerArgs(useYarn, scriptName);
+  const args = toPackageManagerArgs(useYarn, buildType, scriptName);
   try {
     execa.sync(packageManager.executable, args, {
       cwd,
@@ -65,16 +66,26 @@ function runPackageManager(cwd: string, scriptName?: string) {
   }
 }
 
-function toPackageManagerArgs(useYarn: boolean, scriptName?: string) {
+function toPackageManagerArgs(useYarn: boolean, buildType?: BuildType, scriptName?: string) {
   if (scriptName) {
     return useYarn ? [scriptName] : ['run-script', scriptName];
   }
-  return useYarn ? [] : ['install'];
+
+  const args = useYarn ? [] : ['install'];
+
+  if (buildType === BuildType.PROD) {
+    args.push('--production');
+  }
+
+  return args;
 }
 
-function isBuildStale(resourceDir: string, lastBuildTimeStamp: Date) {
+function isBuildStale(resourceDir: string, lastBuildTimeStamp: Date, buildType: BuildType, lastBuildType?: BuildType) {
   const dirTime = new Date(fs.statSync(resourceDir).mtime);
-  if (dirTime > lastBuildTimeStamp) {
+  // If the last build type not matching we have to flag a stale build to force
+  // a npm/yarn install. This way devDependencies will not be packaged when we
+  // push to the cloud.
+  if (dirTime > lastBuildTimeStamp || buildType !== lastBuildType) {
     return true;
   }
   const fileUpdatedAfterLastBuild = glob
