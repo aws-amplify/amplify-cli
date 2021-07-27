@@ -125,7 +125,7 @@ export const updateGeoPricingPlan = async (context: $TSContext, pricingPlan: Pri
         'pricingPlan',
         pricingPlan
       );
-  
+
       // update CFN parameters for all Geo resources
       updateParametersFile(
         { pricingPlan: pricingPlan },
