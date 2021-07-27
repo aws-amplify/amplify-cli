@@ -37,7 +37,6 @@ describe('zero config auth ', () => {
     expect(authMeta.frontEndConfig.loginMechanism).toBeDefined();
     expect(authMeta.frontEndConfig.signupAttributes).toBeDefined();
     expect(authMeta.frontEndConfig.mfaConfiguration).toBeDefined();
-    expect(authMeta.frontEndConfig.mfaConfiguration).toEqual('ON');
     expect(authMeta.frontEndConfig.mfaTypes).toBeDefined();
     expect(authMeta.frontEndConfig.passwordProtectionSettings).toBeDefined();
   });
