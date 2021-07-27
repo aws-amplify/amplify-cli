@@ -1,4 +1,7 @@
 import { CLIParams, ViewResourceTableParams } from '../cliViewAPI';
+import chalk from 'chalk';
+import stripAnsi from 'strip-ansi';
+
 describe('CLI View tests', () => {
     test('Verbose mode CLI status with category list should correctly initialize ViewResourceTableParams [Non-Help]', () => {
         const cliParams : CLIParams  = {
@@ -30,7 +33,8 @@ describe('CLI View tests', () => {
         expect( view.categoryList).toStrictEqual([]);
         expect( view.help ).toBe(true);
         expect( view.verbose ).toBe(false);
-        expect(view.getStyledHelp()).toMatchSnapshot();
+        const styledHelp = stripAnsi(chalk.reset(view.getStyledHelp()));
+        expect(styledHelp).toMatchSnapshot();
     });
 
     test('Status Command should print error message to the screen', () => {
