@@ -500,8 +500,6 @@ const appClientsOAuthPropertiesMatching = async (
 
   // Compare the app client properties, they must match, otherwise show what is not matching. For convenience we show all the properties that are not matching,
   // not just the first mismatch.
-  const callbackUrlMatching = isArraysEqual(appClientWeb.CallbackURLs!, appClientNative.CallbackURLs!);
-  const logoutUrlsMatching = isArraysEqual(appClientWeb.LogoutURLs!, appClientNative.LogoutURLs!);
   const allowedOAuthFlowsMatching = isArraysEqual(appClientWeb.AllowedOAuthFlows!, appClientNative.AllowedOAuthFlows!);
   const allowedOAuthScopesMatching = isArraysEqual(appClientWeb.AllowedOAuthScopes!, appClientNative.AllowedOAuthScopes!);
   const allowedOAuthFlowsUserPoolClientMatching =
@@ -512,8 +510,6 @@ const appClientsOAuthPropertiesMatching = async (
   );
   let propertiesMatching =
     supportedIdentityProvidersMatching &&
-    callbackUrlMatching &&
-    logoutUrlsMatching &&
     allowedOAuthFlowsMatching &&
     allowedOAuthScopesMatching &&
     allowedOAuthFlowsUserPoolClientMatching;
@@ -548,28 +544,6 @@ const appClientsOAuthPropertiesMatching = async (
         appClientNative,
         [appClientWeb.AllowedOAuthFlowsUserPoolClient?.toString() || ''],
         [appClientNative.AllowedOAuthFlowsUserPoolClient?.toString() || ''],
-      );
-    }
-
-    if (!callbackUrlMatching) {
-      showValidationTable(
-        context,
-        importMessages.OAuth.CallbackURLs,
-        appClientWeb,
-        appClientNative,
-        appClientWeb.CallbackURLs,
-        appClientNative.CallbackURLs,
-      );
-    }
-
-    if (!logoutUrlsMatching) {
-      showValidationTable(
-        context,
-        importMessages.OAuth.LogoutURLs,
-        appClientWeb,
-        appClientNative,
-        appClientWeb.LogoutURLs,
-        appClientNative.LogoutURLs,
       );
     }
 
@@ -1197,6 +1171,7 @@ export const headlessImport = async (
   }
 
   // Check OAuth config matching and enablement
+  // ここ
   const oauthResult = await appClientsOAuthPropertiesMatching(context, answers.appClientWeb!, answers.appClientNative!, false);
 
   if (!oauthResult.isValid) {
