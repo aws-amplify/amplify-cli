@@ -1,8 +1,7 @@
-import { $TSContext, $TSAny } from '..';
-import { pathManager } from '../state-manager/pathManager';
-import { stateManager } from '../state-manager/stateManager';
+import { $TSAny } from '..';
+import { pathManager, stateManager } from '../state-manager';
 import { HooksConfig, FileObj, EventPrefix, HooksEvent, DataParameter, ErrorParameter } from './hooksTypes';
-
+import { defaultSupportedExt } from './hooksConstants';
 import * as which from 'which';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -10,9 +9,11 @@ import execa from 'execa';
 import { HooksHandler } from './hooksHandler';
 import _ from 'lodash';
 
-const defaultSupportedExt = { js: { runtime: 'node' }, sh: { runtime: 'bash' } };
-
-export async function executeHooks(context?: $TSAny, eventPrefix?: EventPrefix, errorParameter?: ErrorParameter): Promise<void> {
+export async function executeHooks(
+  context?: { input?: { command?: string; plugin?: string; subCommands?: string[]; argv?: string[] }; amplify?: $TSAny },
+  eventPrefix?: EventPrefix,
+  errorParameter?: ErrorParameter,
+): Promise<void> {
   const hooksHandler = HooksHandler.initialize();
 
   // if input is passed and command is not defined
@@ -64,7 +65,7 @@ async function exec(
 ): Promise<void> {
   if (!execFileObj?.filePath || !runtime) return;
 
-  const projectRoot = pathManager.findProjectRoot();
+  const projectRoot = pathManager.findProjectRoot() ?? process.cwd();
   if (!projectRoot) return;
 
   console.log(`\n----- ${execFileObj.baseName} execution start -----`);
@@ -79,7 +80,7 @@ async function exec(
         error: errorParameter ? errorParameter : undefined,
       }),
     });
-    childProcess.stdout?.pipe(process.stdout);
+    childProcess?.stdout?.pipe(process.stdout);
     await childProcess;
   } catch (err) {
     if (err?.stderr?.length > 0) console.error(err.stderr);
@@ -125,7 +126,7 @@ function getHooksFileObjs(
 
 function throwOnDuplicateHooksFiles(files: FileObj[]): FileObj | undefined {
   if (files.length > 1) {
-    throw Error('found duplicate hook scripts: ' + files.map(file => file.fileName).join(', '));
+    throw new Error(String('found duplicate hook scripts: ' + files.map(file => file.fileName).join(', ')));
   } else if (files.length === 1) {
     return files[0];
   }
