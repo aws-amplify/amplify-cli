@@ -1171,7 +1171,6 @@ export const headlessImport = async (
   }
 
   // Check OAuth config matching and enablement
-  // ここ
   const oauthResult = await appClientsOAuthPropertiesMatching(context, answers.appClientWeb!, answers.appClientNative!, false);
 
   if (!oauthResult.isValid) {
