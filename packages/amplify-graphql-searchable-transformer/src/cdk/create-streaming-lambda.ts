@@ -25,7 +25,7 @@ export const createLambda = (
     ES_USE_EXTERNAL_VERSIONING: isProjectUsingDataStore.toString(),
   };
 
-  return apiGraphql.addLambdaFunction(
+  return apiGraphql.host.addLambdaFunction(
     ElasticsearchStreamingLambdaFunctionLogicalID,
     'functions/' + ElasticsearchStreamingLambdaFunctionLogicalID + '.zip',
     parameterMap.get(ElasticsearchStreamingLambdaHandlerName)!.valueAsString,

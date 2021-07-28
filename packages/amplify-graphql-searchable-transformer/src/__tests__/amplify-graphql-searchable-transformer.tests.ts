@@ -197,7 +197,7 @@ test('it generates expected resources', () => {
       EBSOptions: anything(),
       ElasticsearchClusterConfig: anything(),
       ElasticsearchVersion: '7.10',
-    })
+    }),
   );
   cdkExpect(searchableStack).to(
     haveResource('AWS::AppSync::DataSource', {

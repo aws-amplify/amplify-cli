@@ -262,7 +262,7 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         removalPolicy: RemovalPolicy.DESTROY,
       });
       // Expose a better API to select what stack this belongs to
-      const dataSource = context.api.addDynamoDbDataSource(
+      const dataSource = context.api.host.addDynamoDbDataSource(
         `${def!.name.value}DS`,
         table,
         {
