@@ -15,7 +15,7 @@ export const createSearchableDataSource = (
   const { OpenSearchDataSourceLogicalID } = ResourceConstants.RESOURCES;
   assert(region);
   const dsEndpoint = 'https://' + domainEndpoint;
-  return graphqlApiProvider.addSearchableDataSource(
+  return graphqlApiProvider.host.addSearchableDataSource(
     OpenSearchDataSourceLogicalID,
     region,
     dsEndpoint,
