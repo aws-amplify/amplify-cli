@@ -99,8 +99,6 @@ export function cfnRef(valNode, { params, resources }: CloudFormationParseContex
   }
 
   if (params.hasOwnProperty(key)) {
-    // Substitute any pseudo parameters with their mock value
-    if (params.hasOwnProperty(params[key])) params[key] = params[params[key]];
     return params[key];
   }
 
@@ -137,10 +135,11 @@ export function cfnIf(valNode, { params, conditions, resources, exports }: Cloud
     throw new Error(`FN::If expects an array with  3 elements instead got ${JSON.stringify(valNode)}`);
   }
   const condition = conditions[valNode[0]];
-  if (condition) {
-    return processValue(valNode[1], { params, condition, resources, exports });
+  const result = condition ? valNode[1] : valNode[2];
+  if (result.Ref && result.Ref === 'AWS::NoValue') {
+    return undefined;
   }
-  return processValue(valNode[2], { params, condition, resources, exports });
+  return processValue(result, { params, condition, resources, exports });
 }
 
 export function cfnEquals(valNode, { params, conditions, resources, exports }: CloudFormationParseContext, processValue) {
