@@ -8,6 +8,9 @@ describe('cloudformation templates', () => {
       AlwaysTrue: {
         'Fn::Equals': ['true', 'true'],
       },
+      AlwaysFalse: {
+        'Fn::Equals': ['false', 'true'],
+      },
     },
     Resources: {
       DummyResource: {
@@ -17,7 +20,7 @@ describe('cloudformation templates', () => {
             'Fn::If': ['AlwaysTrue', 'ConditionIsTrue', { Ref: 'AWS::NoValue' }],
           },
           ConditionalRef: {
-            'Fn::If': ['AlwaysTrue', { Ref: 'SomeRef' }, { Ref: 'AWS::NoValue' }],
+            'Fn::If': ['AlwaysFalse', { Ref: 'AWS::NoValue' }, { Ref: 'SomeRef' }],
           },
           ConditionalNoValue: {
             'Fn::If': ['AlwaysTrue', { Ref: 'AWS::NoValue' }, { Ref: 'SomeRef' }],
@@ -30,6 +33,7 @@ describe('cloudformation templates', () => {
     params: {},
     conditions: {
       AlwaysTrue: true,
+      AlwaysFalse: false,
     },
     resources: {
       SomeRef: {
