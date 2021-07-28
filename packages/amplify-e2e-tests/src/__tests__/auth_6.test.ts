@@ -24,40 +24,40 @@ describe('zero config auth ', () => {
     deleteProjectDir(projRoot);
   });
 
-  it('...should init a javascript project and add auth with a all options and update front end config', async () => {
+  it('...should init a javascript project and add auth with all options and update front end config', async () => {
     await initJSProjectWithProfile(projRoot, defaultSettings);
     await addAuthWithMaxOptions(projRoot, {});
     await amplifyPushAuth(projRoot);
 
     const meta = getProjectMeta(projRoot);
-    const authMeta: $TSAny = Object.values(meta.auth)[0];
+    const authMeta: $TSAny = Object.values(meta.auth)[1];
 
     expect(authMeta.frontendAuthConfig).toMatchInlineSnapshot(`
-      {
-        "loginMechanism": [
+      Object {
+        "loginMechanism": Array [
           "EMAIL",
           "FACEBOOK",
           "GOOGLE",
           "AMAZON",
-          "APPLE"
+          "APPLE",
         ],
-        "signupAttributes": [
-          "EMAIL"
+        "mfaConfiguration": "ON",
+        "mfaTypes": Array [
+          "SMS",
+          "TOTP",
         ],
-        "passwordProtectionSettings": {
-          "passwordPolicyMinLength": 8,
-          "passwordPolicyCharacters": [
+        "passwordProtectionSettings": Object {
+          "passwordPolicyCharacters": Array [
             "REQUIRES_LOWERCASE",
             "REQUIRES_UPPERCASE",
             "REQUIRES_NUMBERS",
-            "REQUIRES_SYMBOLS"
-          ]
+            "REQUIRES_SYMBOLS",
+          ],
+          "passwordPolicyMinLength": 8,
         },
-        "mfaConfiguration": "ON",
-        "mfaTypes": [
-          "SMS",
-          "TOTP"
-        ]
+        "signupAttributes": Array [
+          "EMAIL",
+        ],
       }
     `);
   });
