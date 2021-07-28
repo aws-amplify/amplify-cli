@@ -1,5 +1,5 @@
 /* eslint-disable no-new */
-import { FeatureFlagProvider, GraphQLAPIProvider, TransformerPluginProvider } from '@aws-amplify/graphql-transformer-interfaces';
+import { FeatureFlagProvider, GraphQLAPIProvider, TransformerPluginProvider, TransformHostProvider } from '@aws-amplify/graphql-transformer-interfaces';
 import { AuthorizationMode, AuthorizationType } from '@aws-cdk/aws-appsync';
 import { App, Aws, CfnOutput, Fn } from '@aws-cdk/core';
 import assert from 'assert';
@@ -62,6 +62,7 @@ export interface GraphQLTransformOptions {
   readonly buildParameters?: Record<string, any>;
   readonly stacks?: Record<string, Template>;
   readonly featureFlags?: FeatureFlagProvider;
+  readonly host?: TransformHostProvider;
 }
 export type StackMapping = { [resourceId: string]: string };
 export class GraphQLTransform {
@@ -246,6 +247,7 @@ export class GraphQLTransform {
     const api = new GraphQLApi(rootStack, 'GraphQLAPI', {
       name: `${apiName}-${envName.valueAsString}`,
       authorizationConfig,
+      host: this.options.host
     });
     const authModes = [authorizationConfig.defaultAuthorization, ...(authorizationConfig.additionalAuthorizationModes || [])].map(
       mode => mode?.authorizationType,

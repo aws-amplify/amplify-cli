@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.1.2...@aws-amplify/cli@5.2.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* **cli:** make delete clean local project if already deleted in cloud ([#7551](https://github.com/aws-amplify/amplify-cli/issues/7551)) ([3f0d0d1](https://github.com/aws-amplify/amplify-cli/commit/3f0d0d13ce782c9f784fd9bc5807d314186e48b0)), closes [#7515](https://github.com/aws-amplify/amplify-cli/issues/7515)
+* **cli:** prevent re-prompt of info on `amplify pull` ([#7730](https://github.com/aws-amplify/amplify-cli/issues/7730)) ([1919558](https://github.com/aws-amplify/amplify-cli/commit/19195589ab2d8b7382cac100c888bdbb62b9ba59))
+* **cli:** use more explicit amplify pragma in .gitignore ([#7568](https://github.com/aws-amplify/amplify-cli/issues/7568)) ([a48fd1c](https://github.com/aws-amplify/amplify-cli/commit/a48fd1c02779760685a09f6d2af39ae666ae91c9)), closes [#7250](https://github.com/aws-amplify/amplify-cli/issues/7250)
+
+
+### Features
+
+* **cli:** amplify folder deletes regardless of presence in the cloud ([#7740](https://github.com/aws-amplify/amplify-cli/issues/7740)) ([913dd4f](https://github.com/aws-amplify/amplify-cli/commit/913dd4ff141e9ca0d387b13bb881d511843c2a51)), closes [#7631](https://github.com/aws-amplify/amplify-cli/issues/7631)
+
+
+
+
+
+## [5.1.2](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.1.1...@aws-amplify/cli@5.1.2) (2021-07-16)
+
+
+### Bug Fixes
+
+* [#7441](https://github.com/aws-amplify/amplify-cli/issues/7441) - init from git prompts for credentials twice ([#7682](https://github.com/aws-amplify/amplify-cli/issues/7682)) ([7471c5f](https://github.com/aws-amplify/amplify-cli/commit/7471c5fcc86af0e17a967066a388f67891f93355))
+* show friendly error message when pull fails with EPERM ([#7653](https://github.com/aws-amplify/amplify-cli/issues/7653)) ([38955e3](https://github.com/aws-amplify/amplify-cli/commit/38955e3c065538cec99059feb8641b9e644bd8aa)), closes [#7448](https://github.com/aws-amplify/amplify-cli/issues/7448)
+* **amplify-cli:** remove redundant prompt [#6535](https://github.com/aws-amplify/amplify-cli/issues/6535) ([#7098](https://github.com/aws-amplify/amplify-cli/issues/7098)) ([34560cd](https://github.com/aws-amplify/amplify-cli/commit/34560cd5e386119aef1adaa249cf2b2c13243200))
+* **auth:** standardize CloudFormation trigger templates, prevent errors at runtime ([#7219](https://github.com/aws-amplify/amplify-cli/issues/7219)) ([f9796bd](https://github.com/aws-amplify/amplify-cli/commit/f9796bd3aca6606f155d37ac6a8931d6bdec25b9))
+
+
+
+
+
 ## [5.1.1](https://github.com/aws-amplify/amplify-cli/compare/@aws-amplify/cli@5.1.0...@aws-amplify/cli@5.1.1) (2021-07-12)
 
 **Note:** Version bump only for package @aws-amplify/cli

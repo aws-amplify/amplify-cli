@@ -54,17 +54,17 @@ export function createParametersStack(stack: Stack): Map<string, CfnParameter> {
       new CfnParameter(stack, ElasticsearchStreamBatchSize, {
         description: 'The maximum number of records to stream to Elasticsearch per batch.',
         type: 'Number',
-        default: 100
-      })
+        default: 100,
+      }),
     ],
 
     [
       ElasticsearchStreamMaximumBatchingWindowInSeconds,
       new CfnParameter(stack, ElasticsearchStreamMaximumBatchingWindowInSeconds, {
-        description: "The maximum amount of time in seconds to wait for DynamoDB stream records before sending to streaming lambda.",
+        description: 'The maximum amount of time in seconds to wait for DynamoDB stream records before sending to streaming lambda.',
         type: 'Number',
-        default: 1
-      })
+        default: 1,
+      }),
     ],
 
     [

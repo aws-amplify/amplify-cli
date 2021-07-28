@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.2](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.1...amplify-migration-tests@3.1.2) (2021-07-27)
+
+
+
+# 5.2.0 (2021-07-26)
+
+
+### Reverts
+
+* Revert "Revert "ci: add support for e2e token rotation (#7665)" (#7759)" (#7762) ([9ea4c8e](https://github.com/aws-amplify/amplify-cli/commit/9ea4c8e115ae62d7c348c3f0d82c89d795eebf46)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759) [#7762](https://github.com/aws-amplify/amplify-cli/issues/7762)
+* Revert "ci: add support for e2e token rotation (#7665)" (#7759) ([aadc915](https://github.com/aws-amplify/amplify-cli/commit/aadc9155f5c25478c7f317aec77f51290c6b9cfe)), closes [#7665](https://github.com/aws-amplify/amplify-cli/issues/7665) [#7759](https://github.com/aws-amplify/amplify-cli/issues/7759)
+
+
+
+
+
+## [3.1.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.1.0...amplify-migration-tests@3.1.1) (2021-07-16)
+
+
+### Bug Fixes
+
+* add/update function when some LL are not yet migrated ([#7674](https://github.com/aws-amplify/amplify-cli/issues/7674)) ([9688681](https://github.com/aws-amplify/amplify-cli/commit/968868103744edcfbed6b082b3d9a92867180f73))
+
+
+
+
+
 # [3.1.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-migration-tests@3.0.2...amplify-migration-tests@3.1.0) (2021-07-12)
 
 

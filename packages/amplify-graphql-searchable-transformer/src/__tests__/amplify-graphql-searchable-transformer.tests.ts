@@ -197,7 +197,7 @@ test('it generates expected resources', () => {
       EBSOptions: anything(),
       ElasticsearchClusterConfig: anything(),
       ElasticsearchVersion: '7.10',
-    })
+    }),
   );
   cdkExpect(searchableStack).to(
     haveResource('AWS::AppSync::DataSource', {
@@ -316,4 +316,28 @@ test('it generates expected resources', () => {
       },
     }),
   );
+});
+
+test('Test SearchableModelTransformer enum type generates StringFilterInput', () => {
+  const validSchema = `
+    type Employee @model @searchable {
+      id: ID!
+      firstName: String!
+      lastName: String!
+      type: EmploymentType!
+    }
+    
+    enum EmploymentType {
+      FULLTIME
+      HOURLY
+    }
+    `;
+  const transformer = new GraphQLTransform({
+    transformers: [new ModelTransformer(), new SearchableModelTransformer()],
+    featureFlags,
+  });
+  const out = transformer.transform(validSchema);
+  expect(out).toBeDefined();
+  parse(out.schema);
+  expect(out.schema).toMatchSnapshot();
 });

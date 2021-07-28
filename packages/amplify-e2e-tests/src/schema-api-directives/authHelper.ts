@@ -70,6 +70,7 @@ export function getConfiguredCognitoClient(): CognitoIdentityServiceProvider {
   const awsconfig = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    sessionToken: process.env.AWS_SESSION_TOKEN,
     region: process.env.CLI_REGION,
   };
 
@@ -124,6 +125,7 @@ export function getConfiguredAppsyncClientIAMAuth(url: string, region: string): 
       credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        sessionToken: process.env.AWS_SESSION_TOKEN,
       },
     },
   });
@@ -184,13 +186,13 @@ export async function signInUser2(username: string, realPw: string) {
 export async function authenticateUser(user: any, details: any, realPw: string) {
   return new Promise((res, rej) => {
     user.authenticateUser(details, {
-      onSuccess: function(result: any) {
+      onSuccess: function (result: any) {
         res(result);
       },
-      onFailure: function(err: any) {
+      onFailure: function (err: any) {
         rej(err);
       },
-      newPasswordRequired: function(userAttributes: any, requiredAttributes: any) {
+      newPasswordRequired: function (userAttributes: any, requiredAttributes: any) {
         user.completeNewPasswordChallenge(realPw, user.Attributes, this);
       },
     });
