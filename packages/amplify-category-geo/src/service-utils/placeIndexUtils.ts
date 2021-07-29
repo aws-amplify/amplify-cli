@@ -22,7 +22,7 @@ export const createPlaceIndexResource = async (context: $TSContext, parameters: 
   }
 
   // update the pricing plan
-  await updateGeoPricingPlan(context, parameters.pricingPlan);
+  // await updateGeoPricingPlan(context, parameters.pricingPlan);
 
   context.amplify.updateamplifyMetaAfterResourceAdd(
     category,
