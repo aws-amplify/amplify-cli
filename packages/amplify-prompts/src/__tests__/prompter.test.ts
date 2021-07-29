@@ -64,7 +64,7 @@ describe('input', () => {
 
   it('returns transformed response if transformer present', async () => {
     const promptResponse = 'this is the result';
-    const transformedValue = 'transformmed valie';
+    const transformedValue = 'transformed value';
     prompt_mock.mockResolvedValueOnce({ result: promptResponse });
     expect(await prompter.input('test message', { transform: input => transformedValue })).toEqual(transformedValue);
   });
