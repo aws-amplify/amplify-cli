@@ -142,7 +142,7 @@
                 }
             },
             "required": [
-                "cognitoUserPoolId"
+                "mode"
             ]
         },
         "AppSyncOpenIDConnectAuthType": {
