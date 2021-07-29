@@ -21,6 +21,8 @@ import { loadConfiguration } from '../configuration-manager';
 import fs from 'fs-extra';
 import path from 'path';
 
+const environmentWorkflowStage = () => 'DEVELOPMENT';
+
 export type GQLResourceManagerProps = {
   cfnClient: CloudFormation;
   resourceMeta?: ResourceMeta;
@@ -103,6 +105,7 @@ export class GraphQLResourceManager {
       }
     }
     this.gsiManagement(gqlDiff.diff, gqlDiff.current, gqlDiff.next);
+    this.tableRecreationManagement(gqlDiff.diff, gqlDiff.current, gqlDiff.next);
     return await this.getDeploymentSteps();
   };
 
@@ -217,9 +220,9 @@ export class GraphQLResourceManager {
     });
 
     const tableWithGSIChanges = _.uniqBy(gsiChanges, diff => diff.path?.slice(0, 3).join('/')).map(gsiChange => {
-      const tableName = gsiChange.path[3];
+      const tableName = gsiChange.path[3] as string;
 
-      const stackName = gsiChange.path[1].split('.')[0];
+      const stackName = gsiChange.path[1].split('.')[0] as string;
 
       const currentTable = this.getTable(gsiChange, currentState);
       const nextTable = this.getTable(gsiChange, nextState);
@@ -233,9 +236,16 @@ export class GraphQLResourceManager {
     });
 
     for (const gsiChange of tableWithGSIChanges) {
-      const changeSteps = getGSIDiffs(gsiChange.currentTable, gsiChange.nextTable);
       const stackName = gsiChange.stackName;
       const tableName = gsiChange.tableName;
+      const changeSteps = getGSIDiffs(gsiChange.currentTable, gsiChange.nextTable);
+      if (environmentWorkflowStage() === 'DEVELOPMENT' && changeSteps.length > 1) {
+        const ddbResource = this.getStack(stackName, currentState);
+        this.dropTable(tableName, ddbResource);
+        this.templateState.add(stackName, JSONUtilities.stringify(ddbResource));
+        this.templateState.add(stackName, JSONUtilities.stringify(this.getStack(stackName, nextState)));
+        continue;
+      }
       for (const changeStep of changeSteps) {
         const ddbResource = this.templateState.getLatest(stackName) || this.getStack(stackName, currentState);
         let gsiRecord;
@@ -266,6 +276,27 @@ export class GraphQLResourceManager {
     }
   };
 
+  private tableRecreationManagement = (diffs: DiffChanges<DiffableProject>, currentState: DiffableProject, nextState: DiffableProject) => {
+    const tablesToRecreate = _.uniq(
+      diffs
+        .filter(diff => diff.path.includes('KeySchema')) // filter diffs with KeySchema changes
+        .map(diff => ({
+          // extract table name and stack name from diff path
+          tableName: diff.path?.[3] as string,
+          stackName: diff.path[1].split('.')[0] as string,
+        })),
+    );
+
+    tablesToRecreate.forEach(tableMeta => {
+      const ddbResource = this.getStack(tableMeta.stackName, currentState);
+      this.dropTable(tableMeta.tableName, ddbResource);
+      // clear any other states created by GSI updates as dropping and recreating supercedes those changes
+      this.clearTemplateState(tableMeta.stackName);
+      this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(ddbResource));
+      this.templateState.add(tableMeta.stackName, JSONUtilities.stringify(this.getStack(tableMeta.stackName, nextState)));
+    });
+  };
+
   private getTable = (gsiChange: Diff<any, any>, proj: DiffableProject): DynamoDB.Table => {
     return proj.stacks[gsiChange.path[1]].Resources[gsiChange.path[3]] as DynamoDB.Table;
   };
@@ -282,6 +313,16 @@ export class GraphQLResourceManager {
   private deleteGSI = (indexName: string, tableName: string, template: Template): void => {
     const table = template.Resources[tableName] as DynamoDB.Table;
     template.Resources[tableName] = removeGSI(indexName, table);
+  };
+
+  private dropTable = (tableName: string, template: Template): void => {
+    template.Resources[tableName] = undefined;
+  };
+
+  private clearTemplateState = (stackName: string) => {
+    while (this.templateState.has(stackName)) {
+      this.templateState.pop(stackName);
+    }
   };
 }
 
