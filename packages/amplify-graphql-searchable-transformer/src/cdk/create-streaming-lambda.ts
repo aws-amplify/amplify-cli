@@ -19,10 +19,10 @@ export const createLambda = (
   const { OpenSearchStreamingLambdaFunctionLogicalID } = ResourceConstants.RESOURCES;
   const { OpenSearchStreamingLambdaHandlerName, OpenSearchDebugStreamingLambda } = ResourceConstants.PARAMETERS;
   const enviroment: { [key: string]: string } = {
-    ES_ENDPOINT: 'https://' + endpoint,
-    ES_REGION: region,
+    OPENSEARCH_ENDPOINT: 'https://' + endpoint,
+    OPENSEARCH_REGION: region,
     DEBUG: parameterMap.get(OpenSearchDebugStreamingLambda)!.valueAsString,
-    ES_USE_EXTERNAL_VERSIONING: isProjectUsingDataStore.toString(),
+    OPENSEARCH_USE_EXTERNAL_VERSIONING: isProjectUsingDataStore.toString(),
   };
 
   return apiGraphql.host.addLambdaFunction(
