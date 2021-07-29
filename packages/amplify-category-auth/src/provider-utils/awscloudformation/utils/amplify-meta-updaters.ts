@@ -39,7 +39,7 @@ export const getPostAddAuthMetaUpdater = (context: any, resultMetadata: { servic
   }
 
   options.customAuth = customAuthConfigured;
-  options.frontendAuthConfig = getFrontEndConfig(authParameters);
+  options.frontendAuthConfig = getFrontendConfig(authParameters);
 
   context.amplify.updateamplifyMetaAfterResourceAdd('auth', resourceName, options);
 
@@ -83,7 +83,7 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
       triggers.VerifyAuthChallengeResponse.length > 0;
   }
   context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'customAuth', customAuthConfigured);
-  context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'frontendAuthConfig', getFrontEndConfig(authParameters));
+  context.amplify.updateamplifyMetaAfterResourceUpdate('auth', resourceName, 'frontendAuthConfig', getFrontendConfig(authParameters));
 
   // Update Identity Pool dependency attributes on userpool groups
   const allResources = context.amplify.getProjectMeta();
@@ -106,7 +106,7 @@ export const getPostUpdateAuthMetaUpdater = (context: any) => async (resourceNam
   return resourceName;
 };
 
-function getFrontEndConfig(authParameters: AuthParameters) {
+function getFrontendConfig(authParameters: AuthParameters) {
   const loginMechanism: string[] = [];
   loginMechanism.push(...(authParameters?.aliasAttributes || []).map((att: string) => att.toUpperCase()));
 
@@ -120,13 +120,11 @@ function getFrontEndConfig(authParameters: AuthParameters) {
     });
   }
 
-const signupAttributes = (authParameters?.requiredAttributes || []).map((att: string) => att.toUpperCase());
+  const signupAttributes = (authParameters?.requiredAttributes || []).map((att: string) => att.toUpperCase());
 
   const passwordProtectionSettings = {
     passwordPolicyMinLength: authParameters?.passwordPolicyMinLength,
-    passwordPolicyCharacters: authParameters?.passwordPolicyCharacters
-      ? authParameters.passwordPolicyCharacters.map((i: string) => i.replace(/ /g, '_').toUpperCase())
-      : [],
+    passwordPolicyCharacters: (authParameters?.passwordPolicyCharacters || []).map((i: string) => i.replace(/ /g, '_').toUpperCase()),
   };
 
   const mfaTypes: string[] = [];

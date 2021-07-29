@@ -289,15 +289,13 @@ function getCognitoConfig(cognitoResources, projectRegion) {
     federationTarget = 'COGNITO_IDENTITY_POOLS';
   }
 
-  let frontendAuthConfig;
-  if (cognitoResource && cognitoResource.frontEndConfig) {
-    frontendAuthConfig = {
-      aws_cognito_login_mechanism: cognitoResource.frontEndConfig.loginMechanism,
-      aws_cognito_signup_attributes: cognitoResource.frontEndConfig.signupAttributes,
-      aws_cognito_mfa_configuration: cognitoResource.frontEndConfig.mfaConfiguration,
-      aws_cognito_mfa_types: cognitoResource.frontEndConfig.mfaTypes,
-      aws_cognito_password_protection_settings: cognitoResource.frontEndConfig.passwordProtectionSettings,
-    };
+  const frontendAuthConfig = {};
+  if (cognitoResource.frontendAuthConfig) {
+    frontendAuthConfig.aws_cognito_login_mechanism = cognitoResource.frontendAuthConfig.loginMechanism;
+    frontendAuthConfig.aws_cognito_signup_attributes = cognitoResource.frontendAuthConfig.signupAttributes;
+    frontendAuthConfig.aws_cognito_mfa_configuration = cognitoResource.frontendAuthConfig.mfaConfiguration;
+    frontendAuthConfig.aws_cognito_mfa_types = cognitoResource.frontendAuthConfig.mfaTypes;
+    frontendAuthConfig.aws_cognito_password_protection_settings = cognitoResource.frontendAuthConfig.passwordProtectionSettings;
   }
 
   return {
