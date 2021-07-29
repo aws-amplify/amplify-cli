@@ -67,7 +67,7 @@
     "amplify-util-import": "1.5.6",
     "amplify-util-mock": "3.33.7",
     "aws-sdk": "^2.919.0",
-    "chalk": "^3.0.0",
+    "chalk": "^4.1.1",
     "ci-info": "^2.0.0",
     "cli-table3": "^0.6.0",
     "cloudform-types": "^4.2.0",
