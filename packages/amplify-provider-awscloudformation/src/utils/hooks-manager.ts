@@ -7,7 +7,7 @@ import * as aws from 'aws-sdk';
 import * as fs from 'fs-extra';
 import { sync } from 'glob';
 import { ProviderName } from '../constants';
-const S3_HOOKS_DIRECTORY = 'hooks/';
+export const S3_HOOKS_DIRECTORY = 'hooks/';
 
 export async function uploadHooksDirectory(context: $TSContext): Promise<void> {
   /**
@@ -21,7 +21,7 @@ export async function uploadHooksDirectory(context: $TSContext): Promise<void> {
    * @returns {Promise<void>} or throws error
    */
 
-  const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo.localEnvInfo.projectPath);
+  const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo?.localEnvInfo?.projectPath);
   await deleteHooksFromS3(context);
 
   if (!fs.existsSync(hooksDirectoryPath)) {
@@ -117,12 +117,14 @@ export async function pullHooks(context: $TSContext): Promise<void> {
    * @return {Promise<void>}
    */
   // used by pull-backend
+  const projectDetails = context.amplify.getProjectDetails();
+  const envName = context.amplify.getEnvInfo().envName;
+  const projectBucket = projectDetails.teamProviderInfo?.[envName]?.[ProviderName]?.DeploymentBucketName;
   const hooksDirPath = pathManager.getHooksDirPath();
 
   const s3 = await S3.getInstance(context);
-  // const file = await downloadZip(s3, tempDir, S3BackendZipFileName);
 
-  const listHookObjects = await s3.getObjects({
+  const listHookObjects = await s3.getAllObjectVersions(projectBucket, {
     Prefix: S3_HOOKS_DIRECTORY,
   });
 
@@ -143,10 +145,12 @@ export async function pullHooks(context: $TSContext): Promise<void> {
   }
 }
 
-export async function deleteHooksFromS3(context: $TSContext): Promise<void> {
-  const envName = context.amplify.getEnvInfo().envName;
-  const projectDetails = context.amplify.getProjectDetails();
-  const projectBucket = projectDetails.teamProviderInfo[envName][ProviderName].DeploymentBucketName;
+async function deleteHooksFromS3(context: $TSContext): Promise<void> {
+  const envName: string = context.amplify?.getEnvInfo()?.envName;
+  const projectDetails = context.amplify?.getProjectDetails();
+  const projectBucket: string = projectDetails.teamProviderInfo?.[envName]?.[ProviderName]?.DeploymentBucketName;
+
+  if (!envName || !projectDetails || !projectBucket) return;
 
   const s3 = await S3.getInstance(context);
   try {
@@ -164,7 +168,7 @@ function getHooksFilePathList(context: $TSContext): string[] {
    * @return {string[]} array of relative file paths to hooks directory
    */
 
-  const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo.localEnvInfo.projectPath);
+  const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo?.localEnvInfo?.projectPath);
   const posixHooksDirectoryPath = convertToPosixPath(hooksDirectoryPath);
 
   return sync(posixHooksDirectoryPath.concat('/**/*'))
@@ -182,8 +186,7 @@ function getNonIgnoredFileList(context: $TSContext): string[] {
   //
 
   const ig = ignore();
-  const configFile: HooksConfig = stateManager.getHooksConfigJson(context.exeInfo.localEnvInfo.projectPath) ?? {};
-
+  const configFile: HooksConfig = stateManager.getHooksConfigJson(context.exeInfo?.localEnvInfo?.projectPath) ?? {};
   if (configFile.ignore) ig.add(configFile.ignore);
 
   return ig.filter(getHooksFilePathList(context));
@@ -215,7 +218,7 @@ function cleanHooksDirectory(context: $TSContext): void {
    */
 
   const relativeFilePathsList = getNonIgnoredFileList(context);
-  const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo.localEnvInfo.projectPath);
+  const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo?.localEnvInfo?.projectPath);
   for (const relativeFilePath of relativeFilePathsList) {
     const absolutefilePathToUpload = path.join(hooksDirectoryPath, relativeFilePath);
     if (fs.lstatSync(absolutefilePathToUpload).isFile() && relativeFilePath.localeCompare(PathConstants.HooksConfigFileName) !== 0) {
