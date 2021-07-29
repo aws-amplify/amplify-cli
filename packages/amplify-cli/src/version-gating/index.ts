@@ -1,7 +1,7 @@
 import * as path from 'path';
 import _ from 'lodash';
 import semver from 'semver';
-import { $TSContext, $TSObject, JSONUtilities, stateManager } from 'amplify-cli-core';
+import { $TSContext, JSONUtilities, stateManager } from 'amplify-cli-core';
 import * as CloudFormation from 'aws-sdk/clients/cloudformation';
 
 const packageJsonFileName = 'package.json';
