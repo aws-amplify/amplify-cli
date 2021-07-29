@@ -159,7 +159,7 @@ export const askEnvironmentVariableCarryOut = async (
 };
 
 export const ensureEnvironmentVariableValues = async (context: $TSContext) => {
-  const yesFlagSet = context?.exeInfo?.inputParams?.yes;
+  const yesFlagSet = context?.exeInfo?.inputParams?.yes || context?.input?.options?.yes;
   const currentEnvName = stateManager.getLocalEnvInfo()?.envName;
   const teamProviderInfo = stateManager.getTeamProviderInfo(undefined, {
     throwIfNotExist: false,
