@@ -2,6 +2,7 @@ import { $TSAny } from '..';
 import { pathManager, stateManager } from '../state-manager';
 import { HooksConfig, FileObj, EventPrefix, HooksEvent, DataParameter, ErrorParameter } from './hooksTypes';
 import { defaultSupportedExt } from './hooksConstants';
+import { skipHooks } from './skipHooks';
 import * as which from 'which';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -14,6 +15,10 @@ export async function executeHooks(
   eventPrefix?: EventPrefix,
   errorParameter?: ErrorParameter,
 ): Promise<void> {
+  if (skipHooks()) {
+    return;
+  }
+
   const hooksHandler = HooksHandler.initialize();
 
   // if input is passed and command is not defined
