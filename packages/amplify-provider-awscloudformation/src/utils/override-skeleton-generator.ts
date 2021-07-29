@@ -21,10 +21,10 @@ export const generateOverrideSkeleton = async (context: $TSContext): Promise<voi
 
   // 2. Build Override Directory
 
-  buildOverrideDir(overrideDirPath);
+  await buildOverrideDir(overrideDirPath);
 };
 
-function buildOverrideDir(cwd: string) {
+export async function buildOverrideDir(cwd: string) {
   const packageManager = getPackageManager(cwd);
 
   if (packageManager === null) {
