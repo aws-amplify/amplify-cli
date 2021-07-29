@@ -120,9 +120,7 @@ function getFrontEndConfig(authParameters: AuthParameters) {
     });
   }
 
-  const signupAttributes: string[] = authParameters?.requiredAttributes
-    ? authParameters.requiredAttributes.map((att: string) => att.toUpperCase())
-    : [];
+const signupAttributes = (authParameters?.requiredAttributes || []).map((att: string) => att.toUpperCase());
 
   const passwordProtectionSettings = {
     passwordPolicyMinLength: authParameters?.passwordPolicyMinLength,
