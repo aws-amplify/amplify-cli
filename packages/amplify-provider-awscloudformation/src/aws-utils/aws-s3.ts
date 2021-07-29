@@ -148,7 +148,7 @@ export class S3 {
   async getAllObjectVersions(
     bucketName: string,
     options: OptionalExceptFor<ListObjectVersionsOutput, 'KeyMarker' | 'VersionIdMarker'> = null,
-  ) {
+  ): Promise<Required<ObjectIdentifier>[]> {
     const result = await pagedAWSCall<ListObjectVersionsOutput, Required<ObjectIdentifier>, typeof options, ListObjectVersionsRequest>(
       async (param, nextToken?) => {
         const parmaWithNextToken = nextToken ? { ...param, ...nextToken } : param;
@@ -166,21 +166,6 @@ export class S3 {
           : undefined,
     );
     return result;
-  }
-
-  async getObjects(s3Params: $TSAny, envName?: string): Promise<$TSAny[]> {
-    s3Params = this.attatchBucketToParams(s3Params, envName);
-
-    // TODO: logs
-    //   const log = logger("downloadHooks.s3.listObjects", [params]);
-    try {
-      // log();
-      const listObjects = await this.s3.listObjects(s3Params).promise();
-      return listObjects.Contents;
-    } catch (ex) {
-      // log(ex);
-      throw ex;
-    }
   }
 
   public async deleteDirectory(bucketName: string, dirPath: string): Promise<void> {
