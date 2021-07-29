@@ -1,6 +1,6 @@
 {
   "name": "graphql-transformer-common",
-  "version": "4.19.5",
+  "version": "4.19.6",
   "description": "Common code and constants for AppSync Transformers",
   "repository": {
     "type": "git",

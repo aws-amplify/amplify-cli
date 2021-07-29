@@ -79,18 +79,18 @@ export function makeSearchableXFilterInputObject(obj: ObjectTypeDefinitionNode, 
 
   fields.push(
     ...obj.fields
-    .filter((field: FieldDefinitionNode) => isEnum(field.type, document))
-    .map(
-      (field: FieldDefinitionNode) =>
-        ({
-          kind: Kind.INPUT_VALUE_DEFINITION,
-          name: field.name,
-          type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName('String')),
-          // TODO: Service does not support new style descriptions so wait.
-          // description: field.description,
-          directives: [],
-        } as InputValueDefinitionNode),
-    )
+      .filter((field: FieldDefinitionNode) => isEnum(field.type, document))
+      .map(
+        (field: FieldDefinitionNode) =>
+          ({
+            kind: Kind.INPUT_VALUE_DEFINITION,
+            name: field.name,
+            type: makeNamedType(SearchableResourceIDs.SearchableFilterInputTypeName('String')),
+            // TODO: Service does not support new style descriptions so wait.
+            // description: field.description,
+            directives: [],
+          } as InputValueDefinitionNode),
+      ),
   );
 
   fields.push(

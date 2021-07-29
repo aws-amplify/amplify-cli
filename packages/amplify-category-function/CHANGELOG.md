@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.34.0](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.33.1...amplify-category-function@2.34.0) (2021-07-27)
+
+
+### Bug Fixes
+
+* disable layer version removal if fn depends on pinned version ([#7627](https://github.com/aws-amplify/amplify-cli/issues/7627)) ([a086789](https://github.com/aws-amplify/amplify-cli/commit/a086789661df95735679214a65a3808c8a5497e5))
+
+
+### Features
+
+* **amplify-category-function:** skip unnecessary prompt for 'amplify update function' ([12872a4](https://github.com/aws-amplify/amplify-cli/commit/12872a40d178f829cab3666037ebefde5eda02c2))
+
+
+
+
+
 ## [2.33.1](https://github.com/aws-amplify/amplify-cli/compare/amplify-category-function@2.33.0...amplify-category-function@2.33.1) (2021-07-16)
 
 

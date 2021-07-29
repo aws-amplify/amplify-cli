@@ -64,7 +64,7 @@ export function generateSource(context: CompilerContext) {
 
     const output = generator.printer.printAndClear();
 
-    const outputFilePath = path.join(path.dirname(operation.filePath), '__generated__', `${operation.operationName}.js`);
+    const outputFilePath = path.posix.join(path.dirname(operation.filePath), '__generated__', `${operation.operationName}.js`);
 
     generatedFiles[outputFilePath] = new FlowGeneratedFile(output);
   });
@@ -76,7 +76,7 @@ export function generateSource(context: CompilerContext) {
 
     const output = generator.printer.printAndClear();
 
-    const outputFilePath = path.join(path.dirname(fragment.filePath), '__generated__', `${fragment.fragmentName}.js`);
+    const outputFilePath = path.posix.join(path.dirname(fragment.filePath), '__generated__', `${fragment.fragmentName}.js`);
 
     generatedFiles[outputFilePath] = new FlowGeneratedFile(output);
   });
