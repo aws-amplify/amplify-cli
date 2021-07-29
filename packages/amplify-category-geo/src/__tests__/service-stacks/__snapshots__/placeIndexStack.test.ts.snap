@@ -44,7 +44,17 @@ Object {
           },
         },
         "IndexName": Object {
-          "Ref": "indexName",
+          "Fn::Join": Array [
+            "-",
+            Array [
+              Object {
+                "Ref": "indexName",
+              },
+              Object {
+                "Ref": "env",
+              },
+            ],
+          ],
         },
         "PricingPlan": Object {
           "Ref": "pricingPlan",
@@ -74,10 +84,13 @@ Object {
         },
         "PolicyName": Object {
           "Fn::Join": Array [
-            "",
+            "-",
             Array [
               Object {
                 "Ref": "indexName",
+              },
+              Object {
+                "Ref": "env",
               },
               "Policy",
             ],
@@ -142,7 +155,17 @@ Object {
           },
         },
         "IndexName": Object {
-          "Ref": "indexName",
+          "Fn::Join": Array [
+            "-",
+            Array [
+              Object {
+                "Ref": "indexName",
+              },
+              Object {
+                "Ref": "env",
+              },
+            ],
+          ],
         },
         "PricingPlan": Object {
           "Ref": "pricingPlan",
@@ -172,10 +195,13 @@ Object {
         },
         "PolicyName": Object {
           "Fn::Join": Array [
-            "",
+            "-",
             Array [
               Object {
                 "Ref": "indexName",
+              },
+              Object {
+                "Ref": "env",
               },
               "Policy",
             ],

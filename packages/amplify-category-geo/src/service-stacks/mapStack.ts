@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import * as location from '@aws-cdk/aws-location';
 import * as iam from '@aws-cdk/aws-iam';
 import { MapParameters } from '../service-utils/mapParams';
-import { CfnResource } from '@aws-cdk/core';
+import { CfnResource, Fn } from '@aws-cdk/core';
 import { AccessType } from '../service-utils/resourceParams';
 import { BaseStack } from './baseStack';
 
@@ -28,6 +28,9 @@ export class MapStack extends BaseStack {
         new cdk.CfnOutput(this, 'Name', {
             value: this.resources.get('map')!.ref
         });
+        new cdk.CfnOutput(this, 'Style', {
+            value: this.parameters.get('mapStyle')!.valueAsString
+        });
     }
 
     private constructResources(): Map<string, CfnResource> {
@@ -44,7 +47,10 @@ export class MapStack extends BaseStack {
 
     private constructMapResource(): CfnResource {
         return new location.CfnMap(this, 'Map', {
-            mapName: this.parameters.get('mapName')!.valueAsString,
+            mapName: Fn.join('-', [
+                this.parameters.get('mapName')!.valueAsString,
+                this.parameters.get('env')!.valueAsString
+            ]),
             configuration: {
                 style: this.parameters.get('mapStyle')!.valueAsString
             },
@@ -76,7 +82,11 @@ export class MapStack extends BaseStack {
         }
 
         return new iam.CfnPolicy(this, 'MapPolicy', {
-            policyName: cdk.Fn.join("", [this.parameters.get('mapName')!.valueAsString, "Policy"]),
+            policyName: cdk.Fn.join('-', [
+                this.parameters.get('mapName')!.valueAsString,
+                this.parameters.get('env')!.valueAsString,
+                'Policy'
+            ]),
             roles: cognitoRoles,
             policyDocument: policy
         });
