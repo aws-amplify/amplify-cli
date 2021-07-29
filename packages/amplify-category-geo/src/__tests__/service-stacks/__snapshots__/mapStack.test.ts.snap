@@ -8,6 +8,11 @@ Object {
         "Ref": "Map",
       },
     },
+    "Style": Object {
+      "Value": Object {
+        "Ref": "mapStyle",
+      },
+    },
   },
   "Parameters": Object {
     "authRoleName": Object {
@@ -38,7 +43,17 @@ Object {
           },
         },
         "MapName": Object {
-          "Ref": "mapName",
+          "Fn::Join": Array [
+            "-",
+            Array [
+              Object {
+                "Ref": "mapName",
+              },
+              Object {
+                "Ref": "env",
+              },
+            ],
+          ],
         },
         "PricingPlan": Object {
           "Ref": "pricingPlan",
@@ -70,10 +85,13 @@ Object {
         },
         "PolicyName": Object {
           "Fn::Join": Array [
-            "",
+            "-",
             Array [
               Object {
                 "Ref": "mapName",
+              },
+              Object {
+                "Ref": "env",
               },
               "Policy",
             ],
@@ -102,6 +120,11 @@ Object {
         "Ref": "Map",
       },
     },
+    "Style": Object {
+      "Value": Object {
+        "Ref": "mapStyle",
+      },
+    },
   },
   "Parameters": Object {
     "authRoleName": Object {
@@ -132,7 +155,17 @@ Object {
           },
         },
         "MapName": Object {
-          "Ref": "mapName",
+          "Fn::Join": Array [
+            "-",
+            Array [
+              Object {
+                "Ref": "mapName",
+              },
+              Object {
+                "Ref": "env",
+              },
+            ],
+          ],
         },
         "PricingPlan": Object {
           "Ref": "pricingPlan",
@@ -164,10 +197,13 @@ Object {
         },
         "PolicyName": Object {
           "Fn::Join": Array [
-            "",
+            "-",
             Array [
               Object {
                 "Ref": "mapName",
+              },
+              Object {
+                "Ref": "env",
               },
               "Policy",
             ],

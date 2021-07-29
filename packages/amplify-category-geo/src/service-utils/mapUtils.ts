@@ -22,7 +22,7 @@ export const createMapResource = async (context: $TSContext, parameters: MapPara
   }
 
   // update the pricing plan
-  await updateGeoPricingPlan(context, parameters.pricingPlan);
+  // await updateGeoPricingPlan(context, parameters.pricingPlan);
 
   context.amplify.updateamplifyMetaAfterResourceAdd(
     category,
