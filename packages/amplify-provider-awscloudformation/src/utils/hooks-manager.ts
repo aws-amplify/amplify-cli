@@ -1,4 +1,4 @@
-import { $TSAny, $TSContext, pathManager, stateManager, PathConstants, HooksConfig } from 'amplify-cli-core';
+import { $TSAny, $TSContext, pathManager, stateManager, PathConstants, HooksConfig, skipHooks } from 'amplify-cli-core';
 import * as path from 'path';
 import _ from 'lodash';
 import ignore from 'ignore';
@@ -20,7 +20,9 @@ export async function uploadHooksDirectory(context: $TSContext): Promise<void> {
    * @param {$TSContext} context
    * @returns {Promise<void>} or throws error
    */
-
+  if (skipHooks()) {
+    return;
+  }
   const hooksDirectoryPath = pathManager.getHooksDirPath(context.exeInfo?.localEnvInfo?.projectPath);
   await deleteHooksFromS3(context);
 
@@ -62,6 +64,9 @@ export async function downloadHooks(
    * @param {aws.S3.ClientConfiguratio} awsConfigInfo aws credentials information to create S3 object
    * @return {Promise<void>}
    */
+  if (skipHooks()) {
+    return;
+  }
   if (!backendEnv) {
     return;
   }
@@ -117,6 +122,9 @@ export async function pullHooks(context: $TSContext): Promise<void> {
    * @return {Promise<void>}
    */
   // used by pull-backend
+  if (skipHooks()) {
+    return;
+  }
   const projectDetails = context.amplify.getProjectDetails();
   const envName = context.amplify.getEnvInfo().envName;
   const projectBucket = projectDetails.teamProviderInfo?.[envName]?.[ProviderName]?.DeploymentBucketName;

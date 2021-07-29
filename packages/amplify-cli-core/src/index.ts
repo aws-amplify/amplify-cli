@@ -21,9 +21,7 @@ export * from './utils';
 export * from './banner-message';
 export * from './cliGetCategories';
 export * from './cliRemoveResourcePrompt';
-export * from './hooks/hooksExecutioner';
-export * from './hooks/hooksTypes';
-export * from './hooks/hooksHandler';
+export * from './hooks';
 
 // Temporary types until we can finish full type definition across the whole CLI
 

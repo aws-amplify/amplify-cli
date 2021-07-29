@@ -1,8 +1,9 @@
-import { executeHooks } from '../../hooks/hooksExecutioner';
-import { HooksHandler } from '../../hooks/hooksHandler';
+import { executeHooks, HooksHandler, skipHooksFilePath } from '../../hooks';
+import * as skipHooksModule from '../../hooks/skipHooks';
 import * as execa from 'execa';
 import { pathManager, stateManager } from '../../state-manager';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 
 const pathToPython3Runtime = 'path/to/python3/runtime';
 const pathToPythonRuntime = 'path/to/python/runtime';
@@ -33,17 +34,39 @@ jest.mock('which', () => ({
   }),
 }));
 
+const mockSkipHooks = jest.spyOn(skipHooksModule, 'skipHooks');
+
 describe('hooksExecutioner tests', () => {
   beforeEach(async () => {
     HooksHandler.initialize();
+    mockSkipHooks.mockReturnValue(false);
     jest.clearAllMocks();
   });
   afterEach(() => {
     HooksHandler.releaseInstance();
   });
 
+  test('test skipHooks', async () => {
+    mockSkipHooks.mockRestore();
+
+    const orgSkipHooksExist = fs.existsSync(skipHooksFilePath);
+
+    fs.ensureFileSync(skipHooksFilePath);
+    // skip hooks file exists so no execa calls should be made
+    await executeHooks({ input: { command: 'push', plugin: 'core' } }, 'pre');
+    expect(execa).toHaveBeenCalledTimes(0);
+
+    fs.removeSync(skipHooksFilePath);
+    // skip hooks file does not exists so execa calls should be made
+    await executeHooks({ input: { command: 'push', plugin: 'core' } }, 'pre');
+    expect(execa).not.toHaveBeenCalledTimes(0);
+
+    // resoring the original state of skip hooks file
+    if (!orgSkipHooksExist) fs.removeSync(skipHooksFilePath);
+    else fs.ensureFileSync(skipHooksFilePath);
+  });
+
   test('executeHooks with no context', async () => {
-    //   context?: any, eventPrefix?: EventPrefix, errorParameter?: ErrorParameter
     await executeHooks();
     expect(execa).toHaveBeenCalledTimes(0);
     const hooksHandler = HooksHandler.initialize();
@@ -69,7 +92,7 @@ describe('hooksExecutioner tests', () => {
   //   expect(mockExit).toBeCalledWith(1);
   // });
 
-  test('should execu specificity execution order check', async () => {
+  test('should execute in specificity execution order', async () => {
     await executeHooks({ input: { command: 'add', plugin: 'auth' } }, 'pre');
     expect(execa).toHaveBeenNthCalledWith(1, pathToNodeRuntime, [path.join(testProjectHooksDirPath, preAddFileName)], expect.anything());
     expect(execa).toHaveBeenNthCalledWith(
@@ -102,7 +125,7 @@ describe('hooksExecutioner tests', () => {
     expect(execa).toHaveBeenCalledWith(pathToPythonRuntime, expect.anything(), expect.anything());
   });
 
-  test("should'nt run the script for undefined extension/runtime", async () => {
+  test('should not run the script for undefined extension/runtime', async () => {
     await executeHooks({ input: { command: 'pull', plugin: 'core' } }, 'pre');
     expect(execa).toBeCalledTimes(0);
   });
