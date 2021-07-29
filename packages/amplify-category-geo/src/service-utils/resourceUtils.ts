@@ -115,21 +115,23 @@ export const getGeoPricingPlan = async (): Promise<PricingPlan> => {
  * Update Geo pricing plan
  */
 export const updateGeoPricingPlan = async (context: $TSContext, pricingPlan: PricingPlan) => {
-  const geoMeta = stateManager.getMeta()?.[category]
-  Object.keys(geoMeta).forEach(resource => {
-    // update pricing plan in meta for all Geo resources
-    context.amplify.updateamplifyMetaAfterResourceUpdate(
-      category,
-      resource,
-      'pricingPlan',
-      pricingPlan
-    );
+  const geoMeta = stateManager.getMeta()?.[category];
+  if (geoMeta) {
+    Object.keys(geoMeta).forEach(resource => {
+      // update pricing plan in meta for all Geo resources
+      context.amplify.updateamplifyMetaAfterResourceUpdate(
+        category,
+        resource,
+        'pricingPlan',
+        pricingPlan
+      );
 
-    // update CFN parameters for all Geo resources
-    updateParametersFile(
-      { pricingPlan: pricingPlan },
-      resource,
-      parametersFileName
-    );
-  });
+      // update CFN parameters for all Geo resources
+      updateParametersFile(
+        { pricingPlan: pricingPlan },
+        resource,
+        parametersFileName
+      );
+    });
+  }
 }
