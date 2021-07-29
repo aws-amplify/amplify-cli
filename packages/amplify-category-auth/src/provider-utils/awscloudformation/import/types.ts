@@ -1,4 +1,4 @@
-import { $TSContext, $TSObject } from 'amplify-cli-core';
+import { $TSAny, $TSContext, $TSObject } from 'amplify-cli-core';
 import {
   GetUserPoolMfaConfigResponse,
   IdentityProviderType,
@@ -51,7 +51,7 @@ export type MetaOutput = {
 };
 
 export type AuthParameters = {
-  dependsOn?: any[];
+  dependsOn?: $TSAny[];
   triggers?: string;
   identityPoolName?: string;
   aliasAttributes?: string[];
