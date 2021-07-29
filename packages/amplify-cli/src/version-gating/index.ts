@@ -7,7 +7,7 @@ import * as CloudFormation from 'aws-sdk/clients/cloudformation';
 const packageJsonFileName = 'package.json';
 const disableVersionGatingEnvVarName = 'AMPLIFY_CLI_DISABLE_VERSION_CHECK';
 
-//const allowedCommands = ['configure', 'console', 'env' list, 'help', 'init', 'logout', 'version', 'status', pull
+// Allowed Commands: 'configure', 'console', 'env list', 'help', 'init', 'logout', 'version', 'status', 'pull'
 
 // Type used internally for object matching
 type CommandMatch = {
