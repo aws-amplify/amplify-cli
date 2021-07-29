@@ -33,6 +33,8 @@ import { $TSContext } from 'amplify-cli-core';
 export { resolveAppId } from './utils/resolve-appId';
 export { loadConfigurationForEnv } from './configuration-manager';
 import { updateEnv } from './update-env';
+export const rootStackFileName = 'root-cloudformation-stack.json';
+export { storeRootStackTemplate } from './initializer';
 
 function init(context) {
   return initializer.run(context);
@@ -156,4 +158,5 @@ module.exports = {
   loadConfigurationForEnv,
   getConfiguredSSMClient,
   updateEnv,
+  rootStackFileName,
 };

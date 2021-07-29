@@ -20,6 +20,11 @@ export const PathConstants = {
   BackendDirName: 'backend',
   CurrentCloudBackendDirName: '#current-cloud-backend',
 
+  // 2nd Level
+  OverrideDirName: 'overrides',
+  ProviderName: 'awscloudformation',
+  CfnStacksBuildDirName: 'build',
+
   // FileNames
   AmplifyAdminConfigFileName: 'config.json',
 
@@ -35,6 +40,7 @@ export const PathConstants = {
   LocalAWSInfoFileName: 'local-aws-info.json',
   TeamProviderInfoFileName: 'team-provider-info.json',
   BackendConfigFileName: 'backend-config.json',
+  OverrideFileName: 'override.ts',
 
   CLIJSONFileName: 'cli.json',
   CLIJSONFileNameGlob: 'cli*.json',
@@ -76,6 +82,43 @@ export class PathManager {
 
   getBackendDirPath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.BackendDirName]);
+
+  getOverrideDirPath = (projectPath: string, category: string, resourceName: string): string => {
+    return this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      category!,
+      resourceName!,
+      PathConstants.OverrideDirName,
+    ]);
+  };
+
+  getRootOverrideDirPath = (projectPath: string): string => {
+    return this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      PathConstants.ProviderName,
+      PathConstants.OverrideDirName,
+    ]);
+  };
+
+  getRootStackDirPath = (projectPath: string): string => {
+    return this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.BackendDirName,
+      PathConstants.ProviderName,
+      PathConstants.CfnStacksBuildDirName,
+    ]);
+  };
+
+  getCurrentCloudRootStackDirPath = (projectPath: string): string => {
+    return this.constructPath(projectPath, [
+      PathConstants.AmplifyDirName,
+      PathConstants.CurrentCloudBackendDirName,
+      PathConstants.ProviderName,
+      PathConstants.CfnStacksBuildDirName,
+    ]);
+  };
 
   getCurrentCloudBackendDirPath = (projectPath?: string): string =>
     this.constructPath(projectPath, [PathConstants.AmplifyDirName, PathConstants.CurrentCloudBackendDirName]);
