@@ -81,9 +81,6 @@ describe('Search walkthrough works as expected', () => {
                 else if(questions[0].name === 'dataProvider') {
                     mockUserInput['dataProvider'] = mockPlaceIndexParameters.dataProvider;
                 }
-                else if(questions[0].name === 'dataSourceIntendedUse') {
-                    mockUserInput['dataSourceIntendedUse'] = mockPlaceIndexParameters.dataSourceIntendedUse;
-                }
                 else if(questions[0].name === 'pricingPlanBusinessType') {
                     mockUserInput['pricingPlanBusinessType'] = true;
                 }
