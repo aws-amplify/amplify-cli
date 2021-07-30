@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { parametersFileName, provider, ServiceName } from './constants';
 import { category } from '../constants';
 import { PlaceIndexStack } from '../service-stacks/placeIndexStack';
-import { updateParametersFile, generateTemplateFile, updateDefaultResource, readResourceMetaParameters, updateGeoPricingPlan } from './resourceUtils';
+import { updateParametersFile, generateTemplateFile, updateDefaultResource, readResourceMetaParameters } from './resourceUtils';
 import { App } from '@aws-cdk/core';
 
 export const createPlaceIndexResource = async (context: $TSContext, parameters: PlaceIndexParameters) => {
