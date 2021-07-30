@@ -7,9 +7,9 @@ jest.mock('amplify-cli-core', () => ({
   },
 }));
 
-describe('emulator operations', () => {
-  const dbPath = `${__dirname}/dynamodb-data/${process.pid}`;
-  // taken from dynamodb examples.
+let emulators;
+const dbPath = `${__dirname}/dynamodb-data/${process.pid}`;
+// taken from dynamodb examples.
   const dbParams = {
     AttributeDefinitions: [
       {
@@ -37,6 +37,7 @@ describe('emulator operations', () => {
     },
   };
 
+describe('emulator operations', () => {
   const ensureNoDbPath = () => {
     if (fs.existsSync(dbPath)) {
       fs.removeSync(dbPath);
@@ -46,7 +47,6 @@ describe('emulator operations', () => {
   beforeEach(ensureNoDbPath);
   afterEach(ensureNoDbPath);
 
-  let emulators;
   beforeEach(() => {
     emulators = [];
     jest.setTimeout(40 * 1000);
@@ -61,6 +61,19 @@ describe('emulator operations', () => {
     const tables = await dynamo.listTables().promise();
     expect(tables).toEqual({ TableNames: [] });
   });
+
+  it('should start on specific port', async () => {
+    const port = await require('portfinder').getPortPromise();
+    const emu = await ddbSimulator.launch({ port });
+    emulators.push(emu);
+    expect(emu.port).toBe(port);
+  });
+
+  it('reports on invalid dbPath values', async () => {
+    expect.assertions(1);
+    await expect(ddbSimulator.launch({ dbPath: 'dynamodb-data' })).rejects.toThrow('invalid directory for database creation');
+  });
+});
 
   it('should preserve state between restarts with dbPath', async () => {
     const emuOne = await ddbSimulator.launch({ dbPath });
@@ -83,16 +96,3 @@ describe('emulator operations', () => {
     });
     emuTwo.terminate();
   });
-
-  it('should start on specific port', async () => {
-    const port = await require('portfinder').getPortPromise();
-    const emu = await ddbSimulator.launch({ port });
-    emulators.push(emu);
-    expect(emu.port).toBe(port);
-  });
-
-  it('reports on invalid dbPath values', async () => {
-    expect.assertions(1);
-    await expect(ddbSimulator.launch({ dbPath: 'dynamodb-data' })).rejects.toThrow('invalid directory for database creation');
-  });
-});
