@@ -94,11 +94,11 @@ describe('pick', () => {
     expect(await prompter.pick('test message', ['first opt', 'second opt'])).toEqual('first opt');
   });
 
-  it('returns selected items when multiselect', async () => {
+  it('returns selected items when multiSelect', async () => {
     const mockResult = ['val1', 'val3'];
     prompt_mock.mockResolvedValueOnce({ result: mockResult });
     expect(
-      await prompter.pick<'many'>('test message', ['val1', 'val2', 'val3'], { multiselect: true }),
+      await prompter.pick<'many'>('test message', ['val1', 'val2', 'val3'], { multiSelect: true }),
     ).toEqual(mockResult);
   });
 });

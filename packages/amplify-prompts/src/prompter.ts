@@ -75,7 +75,7 @@ class AmplifyPrompter implements Prompter {
    * Pick item(s) from a selection set.
    * @param message The prompt message
    * @param choices The selection set to choose from
-   * @param options Control prompt settings. options.multiselect = true is required if PickType = 'many'
+   * @param options Control prompt settings. options.multiSelect = true is required if PickType = 'many'
    * @returns The item(s) selected. If PickType = 'one' this is a single value. If PickType = 'many', this is an array
    */
   pick = async <M extends PickType, T = string>(
@@ -122,7 +122,7 @@ class AmplifyPrompter implements Prompter {
         // footer is not part of the TS interface but it's part of the JS API
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        footer: opts?.multiselect ? '(Use <space> to select, <ctrl + a> to toggle all)' : undefined,
+        footer: opts?.multiSelect ? '(Use <space> to select, <ctrl + a> to toggle all)' : undefined,
         type: 'autocomplete',
         name: 'result',
         message,
@@ -130,7 +130,7 @@ class AmplifyPrompter implements Prompter {
         // there is a typo in the .d.ts file for this field -- muliple -> multiple
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        multiple: opts?.multiselect,
+        multiple: opts?.multiSelect,
         choices: enquirerChoices,
       }));
     }
@@ -185,12 +185,12 @@ type TransformOption<T> = {
 
 type MaybeTransformOption<T> = T extends string ? Partial<TransformOption<T>> : TransformOption<T>;
 
-type MultiselectOption<M extends PickType> = M extends 'many'
+type MultiSelectOption<M extends PickType> = M extends 'many'
   ? {
-      multiselect: true;
+      multiSelect: true;
     }
   : {
-      multiselect?: false;
+      multiSelect?: false;
     };
 
 type Choices<T> = T extends string ? GenericChoice<T>[] | string[] : GenericChoice<T>[];
@@ -207,6 +207,6 @@ type PickType = 'many' | 'one';
 type PickReturn<M extends PickType, T> = M extends 'many' ? T[] : T;
 
 // the following types are the method input types
-type PickOptions<M extends PickType> = MultiselectOption<M> & InitialSelectionOption<M>;
+type PickOptions<M extends PickType> = MultiSelectOption<M> & InitialSelectionOption<M>;
 
 type InputOptions<T> = ValidateValueOption & InitialValueOption<T> & MaybeTransformOption<T> & HiddenInputOption;
