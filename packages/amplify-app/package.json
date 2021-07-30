@@ -32,7 +32,7 @@
     "amplify-frontend-flutter": "0.4.3",
     "amplify-frontend-ios": "2.20.8",
     "amplify-frontend-javascript": "2.23.3",
-    "chalk": "^3.0.0",
+    "chalk": "^4.1.1",
     "execa": "^4.1.0",
     "fs-extra": "^8.1.0",
     "graphql": "^14.5.8",
