@@ -15,9 +15,6 @@ import {
 
 const featureFlags = {
   getBoolean: jest.fn().mockImplementation((name, defaultValue) => {
-    if (name === 'improvePluralization') {
-      return true;
-    }
     if (name === 'validateTypeNameReservedWords') {
       return false;
     }
