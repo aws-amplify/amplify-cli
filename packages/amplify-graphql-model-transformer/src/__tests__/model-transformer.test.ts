@@ -280,35 +280,6 @@ describe('ModelTransformer: ', () => {
     expectFieldsOnInputType(deletePostInput!, ['different3']);
   });
 
-  it('should support non model objects contain id as a type for fields', () => {
-    const validSchema = `
-      type Post @model {
-        id: ID!
-        comments: [Comment]
-      }
-      type Comment {
-        id: String!
-        text: String!
-      }
-    `;
-    const transformer = new GraphQLTransform({
-      transformers: [new ModelTransformer()],
-      featureFlags,
-    });
-    const out = transformer.transform(validSchema);
-    expect(out).toBeDefined();
-    const definition = out.schema;
-    expect(definition).toBeDefined();
-    const parsed = parse(definition);
-    const commentInput = getInputType(parsed, 'CommentInput');
-    expectFieldsOnInputType(commentInput!, ['id', 'text']);
-    const commentObject = getObjectType(parsed, 'Comment');
-    const commentInputObject = getInputType(parsed, 'CommentInput');
-    const commentObjectIDField = getFieldOnObjectType(commentObject!, 'id');
-    const commentInputIDField = getFieldOnInputType(commentInputObject!, 'id');
-    verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
-  });
-
   it('should add default primary key when not defined', () => {
     const validSchema = `
       type Post @model{
@@ -394,5 +365,7 @@ describe('ModelTransformer: ', () => {
     const commentObjectIDField = getFieldOnObjectType(commentObject!, 'id');
     const commentInputIDField = getFieldOnInputType(commentInputObject!, 'id');
     verifyMatchingTypes(commentObjectIDField.type, commentInputIDField.type);
+    const subscriptionType = getObjectType(parsed, 'Subscription');
+    expect(subscriptionType).toBeDefined();
   });
 });
