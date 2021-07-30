@@ -12,8 +12,8 @@ import {
   TransformerPrepareStepContextProvider,
   TransformerResolverProvider,
 } from '@aws-amplify/graphql-transformer-interfaces';
-import { AttributeType, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
-import { RemovalPolicy } from '@aws-cdk/core';
+import { AttributeType, CfnTable, ITable, StreamViewType, Table, TableEncryption } from '@aws-cdk/aws-dynamodb';
+import * as cdk from '@aws-cdk/core';
 import { DirectiveNode, InputObjectTypeDefinitionNode, InputValueDefinitionNode, ObjectTypeDefinitionNode } from 'graphql';
 import {
   getBaseType,
@@ -25,6 +25,7 @@ import {
   makeNamedType,
   makeNonNullType,
   makeValueNode,
+  ResourceConstants,
   toCamelCase,
   toPascalCase,
 } from 'graphql-transformer-common';
@@ -250,6 +251,53 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
       const tableLogicalName = `${def!.name.value}Table`;
       const tableName = context.resourceHelper.generateResourceName(def!.name.value);
       const stack = context.stackManager.getStackFor(tableLogicalName, def!.name.value);
+
+      // Add parameters.
+      const env = context.stackManager.getParameter(ResourceConstants.PARAMETERS.Env) as cdk.CfnParameter;
+      const readIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableReadIOPS, {
+        description: 'The number of read IOPS the table should support.',
+        type: 'Number',
+        default: 5,
+      }).valueAsString;
+      const writeIops = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBModelTableWriteIOPS, {
+        description: 'The number of write IOPS the table should support.',
+        type: 'Number',
+        default: 5,
+      }).valueAsString;
+      const billingMode = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBBillingMode, {
+        description: 'Configure @model types to create DynamoDB tables with PAY_PER_REQUEST or PROVISIONED billing modes.',
+        type: 'String',
+        default: 'PAY_PER_REQUEST',
+        allowedValues: ['PAY_PER_REQUEST', 'PROVISIONED'],
+      }).valueAsString;
+      const pointInTimeRecovery = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnablePointInTimeRecovery, {
+        description: 'Whether to enable Point in Time Recovery on the table.',
+        type: 'String',
+        default: 'false',
+        allowedValues: ['true', 'false'],
+      }).valueAsString;
+      const enableSSE = new cdk.CfnParameter(stack, ResourceConstants.PARAMETERS.DynamoDBEnableServerSideEncryption, {
+        description: 'Enable server side encryption powered by KMS.',
+        type: 'String',
+        default: 'true',
+        allowedValues: ['true', 'false'],
+      }).valueAsString;
+
+      // Add conditions.
+      // eslint-disable-next-line no-new
+      new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.HasEnvironmentParameter, {
+        expression: cdk.Fn.conditionNot(cdk.Fn.conditionEquals(env, ResourceConstants.NONE)),
+      });
+      const useSSE = new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.ShouldUseServerSideEncryption, {
+        expression: cdk.Fn.conditionEquals(enableSSE, 'true'),
+      });
+      const usePayPerRequestBilling = new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.ShouldUsePayPerRequestBilling, {
+        expression: cdk.Fn.conditionEquals(billingMode, 'PAY_PER_REQUEST'),
+      });
+      const usePointInTimeRecovery = new cdk.CfnCondition(stack, ResourceConstants.CONDITIONS.ShouldUsePointInTimeRecovery, {
+        expression: cdk.Fn.conditionEquals(pointInTimeRecovery, 'true'),
+      });
+
       // Expose a way in context to allow proper resource naming
       const table = new Table(stack, tableLogicalName, {
         tableName,
@@ -259,8 +307,28 @@ export class ModelTransformer extends TransformerModelBase implements Transforme
         },
         stream: StreamViewType.NEW_AND_OLD_IMAGES,
         encryption: TableEncryption.DEFAULT,
-        removalPolicy: RemovalPolicy.DESTROY,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
       });
+      const cfnTable = table.node.defaultChild as CfnTable;
+
+      cfnTable.provisionedThroughput = cdk.Fn.conditionIf(usePayPerRequestBilling.logicalId, cdk.Fn.ref('AWS::NoValue'), {
+        ReadCapacityUnits: readIops,
+        WriteCapacityUnits: writeIops,
+      });
+      cfnTable.pointInTimeRecoverySpecification = cdk.Fn.conditionIf(
+        usePointInTimeRecovery.logicalId,
+        { PointInTimeRecoveryEnabled: true },
+        cdk.Fn.ref('AWS::NoValue'),
+      );
+      cfnTable.billingMode = cdk.Fn.conditionIf(
+        usePayPerRequestBilling.logicalId,
+        'PAY_PER_REQUEST',
+        cdk.Fn.ref('AWS::NoValue'),
+      ).toString();
+      cfnTable.sseSpecification = {
+        sseEnabled: cdk.Fn.conditionIf(useSSE.logicalId, true, false),
+      };
+
       // Expose a better API to select what stack this belongs to
       const dataSource = context.api.host.addDynamoDbDataSource(
         `${def!.name.value}DS`,
