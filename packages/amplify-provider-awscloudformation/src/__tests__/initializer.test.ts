@@ -55,12 +55,8 @@ describe('run', () => {
     JSONUtilities_mock.readJson.mockReturnValueOnce({});
     stateManager_mock.getLocalEnvInfo.mockReturnValueOnce({});
 
-    try {
-      // execute
-      await run(context_stub);
-    } catch (error) {
-      console.log(error.stack);
-    }
+    // execute
+    await run(context_stub);
 
     // verify
     expect(prePushCfnTemplateModifier).toBeCalled();
