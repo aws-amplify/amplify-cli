@@ -1,6 +1,6 @@
 {
   "name": "graphql-auth-transformer",
-  "version": "6.24.15",
+  "version": "6.24.16",
   "description": "Implements the @auth directive for the appsync model transform.",
   "repository": {
     "type": "git",
@@ -24,17 +24,17 @@
   },
   "dependencies": {
     "graphql": "^14.5.8",
-    "graphql-connection-transformer": "4.21.15",
+    "graphql-connection-transformer": "4.21.16",
     "graphql-mapping-template": "4.18.1",
     "graphql-transformer-common": "4.19.6",
-    "graphql-transformer-core": "6.29.0"
+    "graphql-transformer-core": "6.29.1"
   },
   "devDependencies": {
     "@types/node": "^12.12.6",
     "cloudform-types": "^4.2.0",
-    "graphql-dynamodb-transformer": "6.22.15",
-    "graphql-elasticsearch-transformer": "4.11.15",
-    "graphql-function-transformer": "2.5.14",
+    "graphql-dynamodb-transformer": "6.22.16",
+    "graphql-elasticsearch-transformer": "4.11.16",
+    "graphql-function-transformer": "2.5.15",
     "rimraf": "^3.0.0"
   },
   "jest": {
