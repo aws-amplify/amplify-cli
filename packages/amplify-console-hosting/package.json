@@ -9,7 +9,7 @@
         "amplify-cli-core": "1.25.1",
         "archiver": "^3.1.1",
         "aws-sdk": "^2.919.0",
-        "chalk": "^3.0.0",
+        "chalk": "^4.1.1",
         "cli-table3": "^0.6.0",
         "execa": "^4.1.0",
         "fs-extra": "^8.1.0",

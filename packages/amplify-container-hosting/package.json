@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "amplify-category-api": "2.31.17",
-    "chalk": "^3.0.0",
+    "chalk": "^4.1.1",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.3.3",
     "mime-types": "^2.1.26",
